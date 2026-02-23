@@ -1,0 +1,31 @@
+{
+    "name": "nwidart/lineintegration",
+    "description": "",
+    "authors": [
+        {
+            "name": "Nicolas Widart",
+            "email": "n.widart@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\LineIntegration\\": "",
+            "Modules\\LineIntegration\\App\\": "app/",
+            "Modules\\LineIntegration\\Database\\Factories\\": "database/factories/",
+            "Modules\\LineIntegration\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\LineIntegration\\Tests\\": "tests/"
+        }
+    }
+}

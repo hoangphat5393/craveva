@@ -1,0 +1,41 @@
+<?php
+
+return [
+    'menu' => [
+        'title' => '標題',
+        'createOffboardingTask' => '創建離職任務',
+        'createOnboardingTask' => '創建入職任務',
+        'taskFor' => '任務對象',
+        'employee' => '員工',
+        'company' => '公司',
+        'employeeCanSee' => '員工可見',
+        'editOffboardingTask' => '編輯離職任務',
+        'editOnboardingTask' => '編輯入職任務',
+        'onboardingSettings' => '入職設置',
+        'offboardingSettings' => '離職設置',
+        'onOffboardingSettings' => '入職/離職設置',
+        'addOnboardingTask' => '加入職任務',
+        'addOffboardingTask' => '加離職任務',
+        'onboarding' => '入職',
+        'completeTask' => '完成任務',
+        'file' => '文件',
+        'completed_on' => '完成時間',
+        'onboardingTask' => '入職任務',
+        'offboardingTask' => '離職任務',
+        'action' => '操作',
+        'onboardingUsers' => '入職用戶',
+        'offboardingUsers' => '離職用戶',
+        'notificationSetting' => '通知設置'
+    ],
+    'startOnboarding' => '開始入職',
+    'startOffboarding' => '開始離職',
+    'viewFile' => '查看文件',
+    'onboardingBtnNote' => '“開始入職”按鈕位於員工的個人資料頁面上。',
+    'offboardingBtnNote' => '“開始離職”按鈕位於員工的個人資料頁面上。',
+    'onboard-notification' => '給員工的入職通知',
+    'offboard-notification' => '給員工的離職通知',
+    'onboardingTasks' => '入職任務',
+    'offboardingTasks' => '離職任務',
+    'submittedOn' => '提交時間',
+
+];

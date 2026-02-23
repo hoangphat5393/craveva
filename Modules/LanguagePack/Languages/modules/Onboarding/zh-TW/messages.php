@@ -1,0 +1,23 @@
+<?php
+
+return array(
+    'onboardingStarted' => '入職已成功開始',
+    'cantStartOnboarding' => '抱歉！我們無法開始此員工的入職',
+    'offboardingStarted' => '離職已成功開始',
+    'noOffboardingCompletedUsers' => '沒有離職用戶可用',
+    'noOnboardingCompletedUsers' => '沒有入職用戶可用',
+    'confirmCancel' => '確認取消',
+    'cancelOnBoarding' => '取消入職',
+    'cancelOffBoarding' => '取消離職',
+    'requestCanceled' => '請求已成功取消',
+    'confirmOffboarding' => '是的，開始離職！',
+    'confirmOffboardingText' => '一旦離職開始，您將無法恢復！',
+    'confirmOnboarding' => '是的，開始入職！',
+    'confirmOnboardingText' => '一旦入職開始，您將無法恢復！',
+    'onboardingStartMailSubject' => '入職已開始',
+    'offboardingStartMailSubject' => '離職已開始',
+    'onboardingStartMailText' => '入職已開始，我們很高興看到您與我們一起踏上這段旅程，並期待您為我們的團隊帶來獨特的貢獻。',
+    'offboardingStartMailText' => '隨著您在 :companyName 的時間接近尾聲，我們希望確保您和團隊都能順利過渡。請完成以下離職任務。',
+    'markAllAsComplete' => '全部標記為完成',
+    'markAllAsCompleteConfirm' => '您確定要全部標記為完成嗎？',
+);

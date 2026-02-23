@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'menu' => '仓库',
+    'addNew' => '添加新仓库',
+    'name' => '仓库名称',
+    'code' => '仓库代码',
+    'address' => '地址',
+    'description' => '描述',
+    'isDefault' => '默认仓库',
+    'createTitle' => '创建新仓库',
+    'editTitle' => '编辑仓库',
+    'product' => '产品',
+    'warehouse' => '仓库',
+    'quantity' => '数量',
+    'addStock' => '添加库存',
+    'removeStock' => '减少库存',
+    'action' => '操作',
+    'reason' => '原因',
+    'allWarehouses' => '所有仓库',
+    'noStockFound' => '未找到库存',
+    'adjustStock' => '调整库存',
+    'transferStock' => '转移库存',
+    'fromWarehouse' => '从仓库',
+    'toWarehouse' => '到仓库',
+];

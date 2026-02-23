@@ -1,0 +1,37 @@
+<?php
+
+namespace Modules\Warehouse\Entities;
+
+use App\Models\BaseModel;
+use App\Models\Product;
+use App\Traits\HasCompany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+class Warehouse extends BaseModel
+{
+    use HasFactory, HasCompany;
+
+    protected $fillable = [
+        'company_id',
+        'name',
+        'code',
+        'address',
+        'description',
+        'is_default',
+        'status',
+    ];
+
+    public function stocks(): HasMany
+    {
+        return $this->hasMany(WarehouseProductStock::class);
+    }
+
+    public function products(): BelongsToMany
+    {
+        return $this->belongsToMany(Product::class, 'warehouse_product_stock')
+            ->withPivot('quantity')
+            ->withTimestamps();
+    }
+}

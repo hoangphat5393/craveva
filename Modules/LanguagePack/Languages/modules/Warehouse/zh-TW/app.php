@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'menu' => '倉庫',
+    'addNew' => '添加新倉庫',
+    'name' => '倉庫名稱',
+    'code' => '倉庫代碼',
+    'address' => '地址',
+    'description' => '描述',
+    'isDefault' => '默認倉庫',
+    'createTitle' => '創建新倉庫',
+    'editTitle' => '編輯倉庫',
+    'product' => '產品',
+    'warehouse' => '倉庫',
+    'quantity' => '數量',
+    'addStock' => '添加庫存',
+    'removeStock' => '減少庫存',
+    'action' => '操作',
+    'reason' => '原因',
+    'allWarehouses' => '所有倉庫',
+    'noStockFound' => '未找到庫存',
+    'adjustStock' => '調整庫存',
+    'transferStock' => '轉移庫存',
+    'fromWarehouse' => '從倉庫',
+    'toWarehouse' => '到倉庫',
+];

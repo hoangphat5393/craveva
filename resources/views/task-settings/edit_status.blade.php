@@ -1,0 +1,65 @@
+<link rel="stylesheet" href="{{ asset('vendor/css/bootstrap-colorpicker.css') }}"/>
+<div class="modal-header">
+    <h5 class="modal-title">@lang('modules.statusFields.editStatus')</h5>
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+</div>
+<x-form id="editStatus" method="POST" class="ajax-form">
+    <div class="modal-body">
+        <div class="portlet-body">
+            <div class="row">
+
+                <div class="col-sm-12">
+                    <x-forms.text :fieldLabel="__('app.name')"
+                                  fieldName="column_name"
+                                  fieldId="column_name"
+                                  fieldRequired="true"
+                                  :fieldValue="$taskboardColumn->column_name"/>
+                </div>
+
+                <div class="col-sm-6">
+                    <div id="colorpickeredit" class="input-group">
+                        <div class="form-group my-3 text-left">
+                            <x-forms.label fieldId="statusColorSelector" :fieldLabel="__('modules.tasks.labelColor')"
+                                           fieldRequired="true">
+                            </x-forms.label>
+                            <x-forms.input-group>
+                                <input type="text" name="label_color" id="editStatusColorSelector"
+                                       value="{{ $taskboardColumn->label_color }}"
+                                       class="form-control height-35 f-15 light_text">
+                                <x-slot name="append">
+                                    <span class="input-group-text colorpicker-input-addon height-35"><i></i></span>
+                                </x-slot>
+                            </x-forms.input-group>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <x-forms.button-cancel data-dismiss="modal" class="border-0 mr-3">@lang('app.cancel')</x-forms.button-cancel>
+        <x-forms.button-primary id="edit-status-setting" icon="check">@lang('app.save')</x-forms.button-primary>
+    </div>
+</x-form>
+
+<script>
+    $('#colorpickeredit').colorpicker({"color": "{{$taskboardColumn->label_color}}"});
+
+    $('#edit-status-setting').click(function () {
+        $.easyAjax({
+            container: '#editStatus',
+            type: "POST",
+            disableButton: true,
+            blockUI: true,
+            buttonSelector: "#edit-status-setting",
+            url: "{{ route('task-settings.statusUpdate', $taskboardColumn->id) }}",
+            data: $('#editStatus').serialize(),
+            success: function (response) {
+                if (response.status == 'success') {
+                    window.location.reload();
+                }
+            }
+        })
+    });
+</script>

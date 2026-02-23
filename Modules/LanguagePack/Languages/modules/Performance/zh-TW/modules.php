@@ -1,0 +1,26 @@
+<?php
+
+return array(
+    'viewedBy' => '可查看者',
+    'managedBy' => '可管理者',
+    'owner' => '所有者',
+    'reportingManager' => '匯報經理',
+    'orChooseRoles' => '或選擇角色',
+    'chooseRoles' => '選擇角色',
+    'defaultAdminMsg' => '管理員默認可以查看或管理',
+    'metricsName' => '指標名稱',
+    'keyResults' => '關鍵指標結果',
+    'whoCanCreateMeetings' => '誰可以創建或管理會議',
+    'whoCanViewMeetings' => '誰可以查看會議',
+    'participantsOnly' => '僅限參與者',
+    'participantsOnlyManage' => '參與者（僅限管理）',
+    'discussionPoints' => '討論點',
+    'listView' => '列表視圖',
+    'startOn' => '會議開始於',
+    'endOn' => '會議結束於',
+    'objectiveNotificationSettings' => '目標通知設置',
+    '1:1MeetingNotificationSettings' => '1:1 會議通知設置',
+    'sendReminderMeeting' => '發送待處理會議的提醒。',
+    'sendReminderObjective' => '發送此目標待處理簽入的提醒。',
+    'hideCompletedObjectives' => '隱藏已完成的目標',
+);

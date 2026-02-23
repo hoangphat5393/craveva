@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'menu' => 'Kho',
+    'addNew' => 'Thêm kho mới',
+    'name' => 'Tên kho',
+    'code' => 'Mã kho',
+    'address' => 'Địa chỉ',
+    'description' => 'Mô tả',
+    'isDefault' => 'Là kho mặc định',
+    'createTitle' => 'Tạo kho mới',
+    'editTitle' => 'Sửa kho',
+    'product' => 'Sản phẩm',
+    'warehouse' => 'Kho',
+    'quantity' => 'Số lượng',
+    'addStock' => 'Thêm tồn kho',
+    'removeStock' => 'Giảm tồn kho',
+    'action' => 'Hành động',
+    'reason' => 'Lý do',
+    'allWarehouses' => 'Tất cả kho',
+    'noStockFound' => 'Không tìm thấy tồn kho',
+    'adjustStock' => 'Điều chỉnh tồn kho',
+    'transferStock' => 'Chuyển kho',
+    'fromWarehouse' => 'Từ kho',
+    'toWarehouse' => 'Đến kho',
+];

@@ -1,0 +1,41 @@
+<?php
+
+return [
+    'menu' => [
+        'title' => '标题',
+        'createOffboardingTask' => '创建离职任务',
+        'createOnboardingTask' => '创建入职任务',
+        'taskFor' => '任务对象',
+        'employee' => '员工',
+        'company' => '公司',
+        'employeeCanSee' => '员工可见',
+        'editOffboardingTask' => '编辑离职任务',
+        'editOnboardingTask' => '编辑入职任务',
+        'onboardingSettings' => '入职设置',
+        'offboardingSettings' => '离职设置',
+        'onOffboardingSettings' => '入职/离职设置',
+        'addOnboardingTask' => '添加入职任务',
+        'addOffboardingTask' => '添加离职任务',
+        'onboarding' => '入职',
+        'completeTask' => '完成任务',
+        'file' => '文件',
+        'completed_on' => '完成时间',
+        'onboardingTask' => '入职任务',
+        'offboardingTask' => '离职任务',
+        'action' => '操作',
+        'onboardingUsers' => '入职用户',
+        'offboardingUsers' => '离职用户',
+        'notificationSetting' => '通知设置'
+    ],
+    'startOnboarding' => '开始入职',
+    'startOffboarding' => '开始离职',
+    'viewFile' => '查看文件',
+    'onboardingBtnNote' => '“开始入职”按钮位于员工的个人资料页面上。',
+    'offboardingBtnNote' => '“开始离职”按钮位于员工的个人资料页面上。',
+    'onboard-notification' => '给员工的入职通知',
+    'offboard-notification' => '给员工的离职通知',
+    'onboardingTasks' => '入职任务',
+    'offboardingTasks' => '离职任务',
+    'submittedOn' => '提交时间',
+
+];

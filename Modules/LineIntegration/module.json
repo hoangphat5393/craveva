@@ -1,0 +1,11 @@
+{
+    "name": "LineIntegration",
+    "alias": "lineintegration",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\LineIntegration\\Providers\\LineIntegrationServiceProvider"
+    ],
+    "files": []
+}

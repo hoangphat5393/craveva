@@ -1,0 +1,16 @@
+{
+    "name": "Pricing",
+    "alias": "pricing",
+    "description": "",
+    "keywords": [],
+    "active": 1,
+    "order": 2,
+    "providers": [
+        "Modules\\Pricing\\Providers\\PricingServiceProvider",
+        "Modules\\Pricing\\Providers\\RouteServiceProvider"
+    ],
+    "aliases": {},
+    "files": [
+        "start.php"
+    ]
+}

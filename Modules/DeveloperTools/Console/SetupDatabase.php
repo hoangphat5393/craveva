@@ -33,6 +33,9 @@ class SetupDatabase extends Command
             DB::statement("CREATE DATABASE IF NOT EXISTS `$gatewayDb`");
             $this->info("Database $gatewayDb checked/created.");
 
+            // Create Access Control Function in Main DB
+            $this->createAccessFunction($mainDb);
+
             // Get all tables
             $tables = DB::select('SHOW TABLES');
             $dbKey = "Tables_in_" . $mainDb;
@@ -41,7 +44,7 @@ class SetupDatabase extends Command
 
             foreach ($tables as $table) {
                 $tableName = $table->$dbKey;
-                
+
                 // Skip migrations table and other system tables
                 if (in_array($tableName, ['migrations', 'jobs', 'failed_jobs', 'password_resets', 'sessions', 'cache', 'db_user_mapping', 'developer_tools_credentials'])) {
                     continue;
@@ -58,36 +61,70 @@ class SetupDatabase extends Command
             }
 
             $this->info("Successfully created/updated $count secure views in $gatewayDb.");
-
         } catch (\Exception $e) {
             $this->error("Error: " . $e->getMessage());
         }
     }
 
+    private function createAccessFunction($mainDb)
+    {
+        $funcName = "get_developer_tools_company_id";
+
+        // Drop if exists
+        DB::statement("DROP FUNCTION IF EXISTS `$mainDb`.`$funcName`");
+
+        // Create Function
+        // Note: We use SUBSTRING_INDEX(USER(), '@', 1) to get the username part.
+        // This relies on db_user_mapping having the exact username.
+        $sql = "
+            CREATE FUNCTION `$mainDb`.`$funcName`() RETURNS INT
+            READS SQL DATA
+            DETERMINISTIC
+            BEGIN
+                DECLARE c_id INT;
+                SELECT company_id INTO c_id FROM `$mainDb`.`db_user_mapping`
+                WHERE db_username = SUBSTRING_INDEX(USER(), '@', 1)
+                LIMIT 1;
+                RETURN c_id;
+            END
+        ";
+
+        try {
+            DB::unprepared($sql);
+            $this->info("Created access control function: $funcName");
+        } catch (\Exception $e) {
+            $this->warn("Could not create function. Ensure you have SUPER privileges or log_bin_trust_function_creators is on. Error: " . $e->getMessage());
+            throw $e;
+        }
+    }
+
     private function createSecureView($gatewayDb, $mainDb, $tableName)
     {
-        // Dynamic View Logic: Join with db_user_mapping on the current MySQL user
+        // Use the function for filtering.
+        // This avoids JOIN in the VIEW, making it updatable (INSERT/UPDATE/DELETE).
+        $funcName = "`$mainDb`.`get_developer_tools_company_id`";
+
         $sql = "CREATE OR REPLACE VIEW `$gatewayDb`.`$tableName` AS
-                SELECT t.*
-                FROM `$mainDb`.`$tableName` t
-                JOIN `$mainDb`.`db_user_mapping` m ON m.db_username = SUBSTRING_INDEX(USER(), '@', 1)
-                WHERE t.company_id = m.company_id
+                SELECT *
+                FROM `$mainDb`.`$tableName`
+                WHERE company_id = $funcName()
                 WITH CHECK OPTION";
-        
+
         DB::statement($sql);
-        $this->line("Created view for: $tableName", 'v');
+        $this->line("Created secure view for: $tableName", 'v');
     }
 
     private function createCompanyView($gatewayDb, $mainDb)
     {
-        // Special case for 'companies' table, users can only see their own company row
+        $funcName = "`$mainDb`.`get_developer_tools_company_id`";
+
         $sql = "CREATE OR REPLACE VIEW `$gatewayDb`.`companies` AS
-                SELECT t.*
-                FROM `$mainDb`.`companies` t
-                JOIN `$mainDb`.`db_user_mapping` m ON m.db_username = SUBSTRING_INDEX(USER(), '@', 1)
-                WHERE t.id = m.company_id";
-        
+                SELECT *
+                FROM `$mainDb`.`companies`
+                WHERE id = $funcName()
+                WITH CHECK OPTION";
+
         DB::statement($sql);
-        $this->line("Created view for: companies", 'v');
+        $this->line("Created secure view for: companies", 'v');
     }
 }

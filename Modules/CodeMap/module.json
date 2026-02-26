@@ -1,0 +1,11 @@
+{
+    "name": "CodeMap",
+    "alias": "codemap",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\CodeMap\\Providers\\CodeMapServiceProvider"
+    ],
+    "files": []
+}

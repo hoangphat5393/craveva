@@ -13,6 +13,9 @@ use Modules\Sms\Entities\SmsTemplateId;
 use NotificationChannels\Twilio\TwilioChannel;
 use NotificationChannels\Twilio\TwilioSmsMessage;
 
+use Illuminate\Support\Facades\Log;
+use Exception;
+
 class TestMessage extends Notification implements ShouldQueue
 {
     use Queueable;
@@ -32,7 +35,7 @@ class TestMessage extends Notification implements ShouldQueue
     {
         $this->request = $request;
         $this->smsSetting = SmsNotificationSetting::withoutGlobalScope(CompanyScope::class)->where('slug', 'test-sms-notification')->first();
-        $this->smsTemplateId = SmsTemplateId::where('sms_setting_slug', $this->smsSetting->slug)->first();
+        $this->smsTemplateId = SmsTemplateId::where('sms_setting_slug', $this->smsSetting->slug->value)->first();
         $this->msg_flow_id = SmsTemplateId::where('sms_setting_slug', 'new-task')->first();
     }
 
@@ -44,27 +47,28 @@ class TestMessage extends Notification implements ShouldQueue
      */
     public function via($notifiable)
     {
-        if ($this->smsSetting && $this->smsSetting->send_sms != 'yes') {
-            return [];
-        }
+        // For TestMessage, we want to force send even if the setting is disabled in DB
+        // if ($this->smsSetting && $this->smsSetting->send_sms != 'yes') {
+        //     return [];
+        // }
 
         $via = [];
 
         if (sms_setting()->status) {
-            $number = $this->request['phone_code'].$this->request['mobile'];
+            $number = $this->request['phone_code'] . $this->request['mobile'];
             $notifiable->phone_number = $number;
             array_push($via, TwilioChannel::class);
         }
 
         if (sms_setting()->nexmo_status) {
-            $number = str_replace('+', '', $this->request['phone_code']).$this->request['mobile'];
+            $number = str_replace('+', '', $this->request['phone_code']) . $this->request['mobile'];
             $notifiable->phone_number = $number;
 
             array_push($via, 'vonage');
         }
 
         if (sms_setting()->msg91_status) {
-            $number = str_replace('+', '', $this->request['phone_code']).$this->request['mobile'];
+            $number = str_replace('+', '', $this->request['phone_code']) . $this->request['mobile'];
             $notifiable->phone_number = $number;
             array_push($via, 'msg91');
         }
@@ -81,21 +85,6 @@ class TestMessage extends Notification implements ShouldQueue
     {
         $settings = sms_setting();
         $message = 'This is twilio test message';
-
-        if ($settings->whatsapp_status && $this->smsTemplateId->whatsapp_template_sid) {
-            $toNumber = request()->phone_code.request()->mobile;
-            $fromNumber = $settings->whatapp_from_number;
-            $twilio = new \Twilio\Rest\Client($settings->account_sid, $settings->auth_token);
-            $twilio->messages
-                ->create(
-                    'whatsapp:'.$toNumber, // to
-                    [
-                        'from' => 'whatsapp:'.$fromNumber,
-                        'body' => __($this->smsSetting->slug->translationString(), ['gateway' => 'whatsapp']),
-                        'contentSid' => $this->smsTemplateId->whatsapp_template_sid,
-                    ]
-                );
-        }
 
         if ($settings->status) {
             return (new TwilioSmsMessage)
@@ -133,5 +122,4 @@ class TestMessage extends Notification implements ShouldQueue
             // Markdown supported.
             ->content($message);
     }
-
 }

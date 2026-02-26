@@ -191,8 +191,18 @@
 
 
             @if (in_array('admin', user_roles()))
-                {{-- SAAS --}}
-                <x-setting-menu-item :active="$activeMenu" menu="billing" :href="route('billing.index')"
+            <x-setting-menu-item :active="$activeMenu" menu="developertools" :href="route('developertools.index')"
+                                 text="Developer Tools"/>
+        @endif
+
+        @if (in_array('admin', user_roles()))
+            <x-setting-menu-item :active="$activeMenu" menu="funcnews" :href="route('funcnews.index')"
+                                 text="FUNC_NEWS"/>
+        @endif
+
+        @if (in_array('admin', user_roles()))
+            {{-- SAAS --}}
+            <x-setting-menu-item :active="$activeMenu" menu="billing" :href="route('billing.index')"
                                      :text="__('superadmin.menu.billing')"/>
             @endif
 

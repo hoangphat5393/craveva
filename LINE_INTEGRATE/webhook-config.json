@@ -1,6 +1,6 @@
 {
     "webhook_url": "https://ai.craveva.com/api/v1/webhooks/line",
-    "verification_code": "VERIFY_CODE",
+    "verification_code": "verify_1771909196711_gfq3",
     "platform": "line",
     "agent_id": "69900e4fa9d1d7e1d63707aa"
 }

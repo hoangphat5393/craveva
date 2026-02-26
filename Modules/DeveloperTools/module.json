@@ -1,0 +1,11 @@
+{
+    "name": "DeveloperTools",
+    "alias": "developertools",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\DeveloperTools\\Providers\\DeveloperToolsServiceProvider"
+    ],
+    "files": []
+}

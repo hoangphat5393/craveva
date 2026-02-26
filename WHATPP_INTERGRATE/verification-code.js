@@ -1,7 +1,7 @@
 // Webhook Verification Code
 // Use this code to verify your webhook endpoint
 
-const VERIFICATION_CODE = 'verify_1771909196711_gfq3';
+const VERIFICATION_CODE = 'VERIFY_CODE';
 
 // Example verification function
 function verifyWebhook(request, response) {

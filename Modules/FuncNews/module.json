@@ -1,0 +1,12 @@
+{
+    "name": "FuncNews",
+    "alias": "funcnews",
+    "description": "File metadata collection and management for FUNC_NEWS",
+    "keywords": ["func_news", "metadata", "files"],
+    "priority": 0,
+    "providers": [
+        "Modules\\FuncNews\\Providers\\FuncNewsServiceProvider",
+        "Modules\\FuncNews\\Providers\\RouteServiceProvider"
+    ],
+    "files": []
+}

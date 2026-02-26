@@ -21,7 +21,7 @@ class TestMessage extends FormRequest
             $rules['telegram_user_id'] = 'required|integer';
         }
         else {
-            $rules['mobile'] = 'required|integer';
+            $rules['mobile'] = 'required|numeric';
         }
 
         return $rules;

@@ -1,0 +1,6 @@
+{
+  "webhook_url": "https://ai.craveva.com/api/v1/webhooks/whatsapp",
+  "verification_code": "VERIFY_CODE",
+  "platform": "whatsapp",
+  "agent_id": "699fc42f39647d9053f2ccb5"
+}

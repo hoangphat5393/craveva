@@ -15,16 +15,17 @@ use Modules\Sms\Entities\SmsSetting;
 use Modules\Sms\Http\Requests\StoreSmsSetting;
 use Modules\Sms\Notifications\TestMessage;
 use Modules\Sms\Entities\SmsTemplateId;
+use App\Scopes\CompanyScope;
 
 class SmsSettingsController extends AccountBaseController
 {
     public function __construct()
     {
         parent::__construct();
-        $this->pageTitle = 'SMS '.__('app.menu.settings');
+        $this->pageTitle = 'SMS ' . __('app.menu.settings');
         $this->activeSettingMenu = 'sms_setting';
         $this->middleware(function ($request, $next) {
-            abort_403(!(user()->is_superadmin || in_array('admin',user_roles())) && !in_array(SmsSetting::MODULE_NAME, $this->user->modules));
+            abort_403(!(user()->is_superadmin || in_array('admin', user_roles())) && !in_array(SmsSetting::MODULE_NAME, $this->user->modules));
 
             return $next($request);
         });
@@ -39,13 +40,19 @@ class SmsSettingsController extends AccountBaseController
     {
         $this->smsSetting = sms_setting();
         $this->countries = countries();
-        $this->smsSettings = SmsNotificationSetting::get();
 
         $this->whatsappSettings = SmsTemplateId::get();
 
         // Set variables to control view logic
         $this->isSuperadmin = user()->is_superadmin;
-        $this->filteredSmsSettings = $this->isSuperadmin ? collect([]) : $this->smsSettings;
+
+        if ($this->isSuperadmin) {
+            $this->smsSettings = SmsNotificationSetting::withoutGlobalScope(CompanyScope::class)->whereNull('company_id')->get();
+            $this->filteredSmsSettings = $this->smsSettings;
+        } else {
+            $this->smsSettings = SmsNotificationSetting::get();
+            $this->filteredSmsSettings = $this->smsSettings;
+        }
 
         return view('sms::sms.index', $this->data);
     }
@@ -60,7 +67,7 @@ class SmsSettingsController extends AccountBaseController
     //phpcs:ignore
     public function update(StoreSmsSetting $request, $id)
     {
-        if(user()->is_superadmin) {
+        if (user()->is_superadmin) {
             $smsSetting = SmsSetting::first();
 
             $smsSetting->status = 0;
@@ -95,30 +102,33 @@ class SmsSettingsController extends AccountBaseController
                 $smsSetting->msg91_from = $request->msg91_from;
                 $smsSetting->msg91_status = 1;
 
-            if ($request->msg91_flow_id) {
-                foreach ($request->msg91_flow_id as $key => $templateSid) {
-                    SmsTemplateId::where('sms_setting_slug', $key)->update(['msg91_flow_id' => $templateSid]);
+                if ($request->msg91_flow_id) {
+                    foreach ($request->msg91_flow_id as $key => $templateSid) {
+                        SmsTemplateId::where('sms_setting_slug', $key)->update(['msg91_flow_id' => $templateSid]);
+                    }
                 }
             }
-        }
 
-        if ($request->active_gateway == 'telegram') {
-            $smsSetting->telegram_status = 1;
-            $smsSetting->telegram_bot_token = $request->telegram_bot_token;
-            $smsSetting->telegram_bot_name = str($request->telegram_bot_name)->replace('@', '');
-        }
+            if ($request->active_gateway == 'telegram') {
+                $smsSetting->telegram_status = 1;
+                $smsSetting->telegram_bot_token = $request->telegram_bot_token;
+                $smsSetting->telegram_bot_name = str($request->telegram_bot_name)->replace('@', '');
+            }
 
             $smsSetting->save();
             session(['sms_setting' => SmsSetting::first()]);
         }
 
         SmsNotificationSetting::whereNotNull('setting_name')->when(user()->is_superadmin, function ($query) {
-            $query->where('company_id', null);
+            $query->withoutGlobalScope(CompanyScope::class)->where('company_id', null);
         })->update(['send_sms' => 'no']);
 
         if ($request->has('send_sms')) {
             foreach ($request->send_sms as $smsSetting) {
-                $setting = SmsNotificationSetting::findOrFail($smsSetting);
+                $setting = SmsNotificationSetting::when(user()->is_superadmin, function ($query) {
+                    return $query->withoutGlobalScope(CompanyScope::class);
+                })->findOrFail($smsSetting);
+
                 $setting->send_sms = 'yes';
                 $setting->save();
             }
@@ -150,7 +160,11 @@ class SmsSettingsController extends AccountBaseController
 
         Config::set('twilio-notification-channel.auth_token', $this->smsSettings->auth_token);
         Config::set('twilio-notification-channel.account_sid', $this->smsSettings->account_sid);
-        Config::set('twilio-notification-channel.from', $this->smsSettings->from_number);
+        $fromNumber = $this->smsSettings->from_number;
+        if (!str_starts_with($fromNumber, '+')) {
+            $fromNumber = '+' . $fromNumber;
+        }
+        Config::set('twilio-notification-channel.from', $fromNumber);
 
         Config::set('vonage.api_key', $this->smsSettings->nexmo_api_key);
         Config::set('vonage.api_secret', $this->smsSettings->nexmo_api_secret);
@@ -161,12 +175,47 @@ class SmsSettingsController extends AccountBaseController
 
         Config::set('services.telegram-bot-api.token', $this->smsSettings->telegram_bot_token);
 
-        $number = $request->phone_code.$request->mobile;
-        $nexmoNumber = str_replace('+', '', $request->phone_code).$request->mobile;
-        $msg91Number = str_replace('+', '', $request->phone_code).$request->mobile;
+        $number = $request->phone_code . $request->mobile;
+        $nexmoNumber = str_replace('+', '', $request->phone_code) . $request->mobile;
+        $msg91Number = str_replace('+', '', $request->phone_code) . $request->mobile;
+
+        if ($this->smsSettings->whatsapp_status) {
+            $smsSetting = SmsNotificationSetting::withoutGlobalScope(CompanyScope::class)->where('slug', 'test-sms-notification')->first();
+            $smsTemplateId = SmsTemplateId::where('sms_setting_slug', $smsSetting->slug->value)->first();
+
+            if ($smsTemplateId && $smsTemplateId->whatsapp_template_sid) {
+                try {
+                    $mobile = ltrim($request->mobile, '0');
+                    $toNumber = $request->phone_code . $mobile;
+                    if (!str_starts_with($toNumber, '+')) {
+                        $toNumber = '+' . $toNumber;
+                    }
+
+                    $whatappFromNumber = $this->smsSettings->whatapp_from_number;
+                    if (!str_starts_with($whatappFromNumber, '+')) {
+                        $whatappFromNumber = '+' . $whatappFromNumber;
+                    }
+
+                    $twilio = new \Twilio\Rest\Client($this->smsSettings->account_sid, $this->smsSettings->auth_token);
+                    $twilio->messages->create(
+                        'whatsapp:' . $toNumber,
+                        [
+                            'from' => 'whatsapp:' . $whatappFromNumber,
+                            'body' => __($smsSetting->slug->translationString(), ['gateway' => 'whatsapp']),
+                            'contentSid' => $smsTemplateId->whatsapp_template_sid,
+                        ]
+                    );
+                } catch (\Exception $e) {
+                    // Log error but don't stop execution
+                }
+            }
+        }
 
         if ($this->smsSettings->status) {
-            Notification::route('twilio', $number)->notify(new TestMessage($request->toArray()));
+            // Check if from_number is the WhatsApp Sandbox number to prevent SMS errors
+            if (!str_contains($this->smsSettings->from_number, '14155238886')) {
+                Notification::route('twilio', $number)->notify(new TestMessage($request->toArray()));
+            }
         }
 
         if ($this->smsSettings->msg91_status) {
@@ -194,5 +243,4 @@ class SmsSettingsController extends AccountBaseController
 
         return $twilio->lookups->v1->phoneNumbers($number)->fetch();
     }
-
 }

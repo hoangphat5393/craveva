@@ -201,6 +201,7 @@ return array(
         'issues' => 'Issues',
         'timeLogs' => 'Timesheet',
         'tasks' => 'Tasks',
+        'taskRecurring' => 'Recurring Tasks',
         'attendance' => 'Attendance',
         'estimates' => 'Estimates',
         'quotation' => 'Quotation',

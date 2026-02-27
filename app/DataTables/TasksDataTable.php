@@ -71,6 +71,9 @@ class TasksDataTable extends BaseDataTable
         }
 
         $datatables = datatables()->eloquent($query);
+        $datatables->orderColumn('priority', function ($query, $order) {
+            $query->orderByRaw("FIELD(tasks.priority, 'low', 'medium', 'high') $order");
+        });
         $datatables->addColumn('check', fn($row) => $this->checkBox($row, (bool)$row->activeTimer));
         $datatables->addColumn(
             'action',

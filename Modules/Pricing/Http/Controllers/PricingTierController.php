@@ -17,6 +17,10 @@ class PricingTierController extends AccountBaseController
         $this->pageTitle = __('pricing::app.menu.pricing');
         $this->middleware(function ($request, $next) {
             abort_403(!in_array('pricing', array_map('strtolower', $this->user->modules)));
+            // Ensure strict company context - Super Admin cannot access without impersonation
+            if (!company()) {
+                abort(403, 'Company context is required.');
+            }
             return $next($request);
         });
     }
@@ -67,7 +71,12 @@ class PricingTierController extends AccountBaseController
         $tier->discount_type = $request->discount_type;
         $tier->discount_value = $request->discount_value;
         $tier->is_active = true;
-        $tier->company_id = user()->company_id ?? null;
+        $tier->company_id = user()->company_id;
+        
+        if (is_null($tier->company_id)) {
+            abort(403, 'Company context is required to create pricing tiers.');
+        }
+
         $tier->save();
 
         return Reply::successWithData(__('messages.recordSaved'), ['redirectUrl' => route('pricing.tiers.index')]);

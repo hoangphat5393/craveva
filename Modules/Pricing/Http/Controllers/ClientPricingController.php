@@ -16,6 +16,13 @@ class ClientPricingController extends AccountBaseController
     {
         parent::__construct();
         $this->pageTitle = __('pricing::app.menu.pricing');
+        $this->middleware(function ($request, $next) {
+            // Ensure strict company context
+            if (!company()) {
+                abort(403, 'Company context is required.');
+            }
+            return $next($request);
+        });
     }
 
     public function index()

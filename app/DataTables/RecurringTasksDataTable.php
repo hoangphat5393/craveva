@@ -72,6 +72,9 @@ class RecurringTasksDataTable extends BaseDataTable
         }
 
         $datatables = datatables()->eloquent($query);
+        $datatables->orderColumn('priority', function ($query, $order) {
+            $query->orderByRaw("FIELD(tasks.priority, 'low', 'medium', 'high') $order");
+        });
         $datatables->addColumn('check', fn($row) => $this->checkBox($row, (bool)$row->activeTimer));
         $datatables->addColumn(
             'action',
@@ -290,8 +293,22 @@ class RecurringTasksDataTable extends BaseDataTable
         });
 
         $datatables->addColumn('priority', function ($row) {
-            $priority = $row->priority;
-            return $priority ? __('modules.tasks.' . strtolower($priority)) : '--';
+            $priorityColors = [
+                'high' => '#dd0000',
+                'medium' => '#ffc202',
+                'low' => '#0a8a1f',
+            ];
+            $priorityLabels = [
+                'high' => __('modules.tasks.high'),
+                'medium' => __('modules.tasks.medium'),
+                'low' => __('modules.tasks.low'),
+            ];
+
+            if (isset($priorityColors[$row->priority])) {
+                return '<span style="background-color: ' . $priorityColors[$row->priority] . '; color: #fff;" class="badge badge-pill badge-light border abc">'
+                    . $priorityLabels[$row->priority] . '</span>';
+            }
+            return '--';
         });
 
         $datatables->addColumn('labels', function ($row) {

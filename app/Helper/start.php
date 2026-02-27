@@ -448,9 +448,9 @@ if (!function_exists('asset_url_local_s3')) {
         $storageUrl = $fullPath;
 
         if (config('filesystems.default') === 'local') {
-             if (!file_exists(public_path($fullPath))) {
-                 return asset('img/gravatar.png');
-             }
+            if (!file_exists(public_path($fullPath))) {
+                return asset('img/gravatar.png');
+            }
         }
 
         if (!Str::startsWith($storageUrl, 'http')) {

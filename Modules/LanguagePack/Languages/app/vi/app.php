@@ -204,6 +204,7 @@ return [
         'issues' => 'Vấn đề',
         'timeLogs' => 'Thời gian biểu',
         'tasks' => 'Nhiệm vụ',
+        'taskRecurring' => 'Nhiệm vụ định kỳ',
         'attendance' => 'Sự tham dự',
         'estimates' => 'ước tính',
         'expenses' => 'Chi phí',

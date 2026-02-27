@@ -22,10 +22,10 @@ class SmsSettingsController extends AccountBaseController
     public function __construct()
     {
         parent::__construct();
-        $this->pageTitle = 'SMS ' . __('app.menu.settings');
+        $this->pageTitle = 'SMS '.__('app.menu.settings');
         $this->activeSettingMenu = 'sms_setting';
         $this->middleware(function ($request, $next) {
-            abort_403(!(user()->is_superadmin || in_array('admin', user_roles())) && !in_array(SmsSetting::MODULE_NAME, $this->user->modules));
+            abort_403(!(user()->is_superadmin || in_array('admin',user_roles())) && !in_array(SmsSetting::MODULE_NAME, $this->user->modules));
 
             return $next($request);
         });
@@ -67,7 +67,7 @@ class SmsSettingsController extends AccountBaseController
     //phpcs:ignore
     public function update(StoreSmsSetting $request, $id)
     {
-        if (user()->is_superadmin) {
+        if(user()->is_superadmin) {
             $smsSetting = SmsSetting::first();
 
             $smsSetting->status = 0;
@@ -102,18 +102,18 @@ class SmsSettingsController extends AccountBaseController
                 $smsSetting->msg91_from = $request->msg91_from;
                 $smsSetting->msg91_status = 1;
 
-                if ($request->msg91_flow_id) {
-                    foreach ($request->msg91_flow_id as $key => $templateSid) {
-                        SmsTemplateId::where('sms_setting_slug', $key)->update(['msg91_flow_id' => $templateSid]);
-                    }
+            if ($request->msg91_flow_id) {
+                foreach ($request->msg91_flow_id as $key => $templateSid) {
+                    SmsTemplateId::where('sms_setting_slug', $key)->update(['msg91_flow_id' => $templateSid]);
                 }
             }
+        }
 
-            if ($request->active_gateway == 'telegram') {
-                $smsSetting->telegram_status = 1;
-                $smsSetting->telegram_bot_token = $request->telegram_bot_token;
-                $smsSetting->telegram_bot_name = str($request->telegram_bot_name)->replace('@', '');
-            }
+        if ($request->active_gateway == 'telegram') {
+            $smsSetting->telegram_status = 1;
+            $smsSetting->telegram_bot_token = $request->telegram_bot_token;
+            $smsSetting->telegram_bot_name = str($request->telegram_bot_name)->replace('@', '');
+        }
 
             $smsSetting->save();
             session(['sms_setting' => SmsSetting::first()]);
@@ -128,7 +128,7 @@ class SmsSettingsController extends AccountBaseController
                 $setting = SmsNotificationSetting::when(user()->is_superadmin, function ($query) {
                     return $query->withoutGlobalScope(CompanyScope::class);
                 })->findOrFail($smsSetting);
-
+                
                 $setting->send_sms = 'yes';
                 $setting->save();
             }
@@ -175,9 +175,9 @@ class SmsSettingsController extends AccountBaseController
 
         Config::set('services.telegram-bot-api.token', $this->smsSettings->telegram_bot_token);
 
-        $number = $request->phone_code . $request->mobile;
-        $nexmoNumber = str_replace('+', '', $request->phone_code) . $request->mobile;
-        $msg91Number = str_replace('+', '', $request->phone_code) . $request->mobile;
+        $number = $request->phone_code.$request->mobile;
+        $nexmoNumber = str_replace('+', '', $request->phone_code).$request->mobile;
+        $msg91Number = str_replace('+', '', $request->phone_code).$request->mobile;
 
         if ($this->smsSettings->whatsapp_status) {
             $smsSetting = SmsNotificationSetting::withoutGlobalScope(CompanyScope::class)->where('slug', 'test-sms-notification')->first();
@@ -243,4 +243,5 @@ class SmsSettingsController extends AccountBaseController
 
         return $twilio->lookups->v1->phoneNumbers($number)->fetch();
     }
+
 }

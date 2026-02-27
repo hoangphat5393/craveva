@@ -16,6 +16,10 @@ class VolumeRuleController extends AccountBaseController
         $this->pageTitle = __('pricing::app.menu.pricing');
         $this->middleware(function ($request, $next) {
             abort_403(!in_array('pricing', array_map('strtolower', $this->user->modules)));
+            // Ensure strict company context
+            if (!company()) {
+                abort(403, 'Company context is required.');
+            }
             return $next($request);
         });
     }
@@ -25,15 +29,7 @@ class VolumeRuleController extends AccountBaseController
         $viewPermission = user()->permission('view_pricing_tiers');
         abort_403($viewPermission == 'none');
 
-        $companyId = user()->company_id;
-
         $this->rules = VolumeDiscountRule::query()
-            ->where(function ($q) use ($companyId) {
-                $q->whereNull('company_id');
-                if ($companyId) {
-                    $q->orWhere('company_id', $companyId);
-                }
-            })
             ->orderByDesc('id')
             ->get();
 
@@ -71,7 +67,12 @@ class VolumeRuleController extends AccountBaseController
         ]);
 
         $rule = new VolumeDiscountRule();
-        $rule->company_id = user()->company_id ?? null;
+        $rule->company_id = user()->company_id;
+        
+        if (is_null($rule->company_id)) {
+            abort(403, 'Company context is required to create volume discount rules.');
+        }
+
         $rule->name = $request->name;
         $rule->discount_type = $request->discount_type;
         $rule->minimum_quantity = $request->minimum_quantity;

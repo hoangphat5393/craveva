@@ -1,16 +1,16 @@
 <?php
 
-namespace Modules\CodeMap\Services;
+namespace Modules\DeveloperTools\Services;
 
-use Modules\CodeMap\Entities\FileRecord;
-use Modules\CodeMap\Entities\FileDependency;
+use Modules\DeveloperTools\Entities\FileRecord;
+use Modules\DeveloperTools\Entities\FileDependency;
 
 class FileScanner
 {
     public function scanAndStore(): void
     {
-        $paths = config('codemap.scan_paths', []);
-        $allowed = config('codemap.allowed_extensions', []);
+        $paths = config('developertools.scan_paths', []);
+        $allowed = config('developertools.allowed_extensions', []);
 
         foreach ($paths as $path) {
             $this->scanPath($path, $allowed);

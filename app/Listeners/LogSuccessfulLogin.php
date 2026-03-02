@@ -2,7 +2,9 @@
 
 namespace App\Listeners;
 
+use App\Models\Company;
 use App\Models\User;
+use App\Scopes\CompanyScope;
 use Illuminate\Auth\Events\Login;
 
 class LogSuccessfulLogin
@@ -18,13 +20,33 @@ class LogSuccessfulLogin
     {
 
         if (!session()->has('impersonate') && !session()->has('stop_impersonate')) {
-            $user = $event->user->user;
+            $authUserId = $event->user?->id;
+
+            if (!$authUserId) {
+                return;
+            }
+
+            $user = User::withoutGlobalScope(CompanyScope::class)
+                ->where('user_auth_id', $authUserId)
+                ->where('status', 'active')
+                ->first();
+
+            if (!$user) {
+                return;
+            }
+
             $user->last_login = now();
             /* @phpstan-ignore-line */
             $user->save();
 
-            if (company()) {
-                $company = company();
+            if ($user->company_id) {
+                $company = Company::find($user->company_id);
+
+                if (!$company) {
+                    return;
+                }
+
+                session(['company' => $company]);
                 $company->last_login = now();  /* @phpstan-ignore-line */
                 $company->saveQuietly();
             }

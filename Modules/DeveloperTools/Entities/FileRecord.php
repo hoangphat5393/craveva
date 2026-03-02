@@ -1,12 +1,15 @@
 <?php
 
-namespace Modules\CodeMap\Entities;
+namespace Modules\DeveloperTools\Entities;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class FileRecord extends Model
 {
-    protected $table = 'code_map_files';
+    use HasFactory;
+
+    protected $table = 'developer_tools_files';
 
     protected $fillable = [
         'name',

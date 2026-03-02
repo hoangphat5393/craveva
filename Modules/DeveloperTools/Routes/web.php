@@ -15,5 +15,16 @@ use Modules\DeveloperTools\Http\Controllers\DeveloperToolsController;
 */
 
 Route::group(['middleware' => ['auth']], function () {
-    Route::resource('developertools', DeveloperToolsController::class)->names('developertools');
+    // Explicit routes for DeveloperTools
+    Route::get('developertools', [DeveloperToolsController::class, 'index'])->name('developertools.index');
+    Route::post('developertools/create-credential', [DeveloperToolsController::class, 'store'])->name('developertools.store');
+    Route::delete('developertools/revoke/{id}', [DeveloperToolsController::class, 'destroy'])->name('developertools.destroy');
+
+    // CodeMap routes merged into DeveloperTools
+    Route::get('developertools/codemap/view', [DeveloperToolsController::class, 'codeMap'])->name('developertools.codemap');
+    Route::post('developertools/codemap/scan', [DeveloperToolsController::class, 'scanCodeMap'])->name('developertools.codemap.scan');
+    Route::get('developertools/codemap/export', [DeveloperToolsController::class, 'exportCodeMap'])->name('developertools.codemap.export');
+
+    Route::get('funcnews', [DeveloperToolsController::class, 'codeMap'])->name('funcnews.index');
+    Route::get('funcnews/export', [DeveloperToolsController::class, 'exportCodeMap'])->name('funcnews.export');
 });

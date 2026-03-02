@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('code_map_files', function (Blueprint $table) {
+        Schema::create('developer_tools_files', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('path')->unique();
@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('module')->nullable();
             $table->string('version')->nullable();
             $table->timestamp('last_modified_at')->nullable();
-            $table->string('hash', 64)->nullable();
+            $table->string('hash')->nullable();
             $table->json('extra')->nullable();
             $table->timestamps();
         });
@@ -32,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('code_map_files');
+        Schema::dropIfExists('developer_tools_files');
     }
 };

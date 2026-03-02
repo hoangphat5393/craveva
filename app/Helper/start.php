@@ -52,8 +52,28 @@ if (!function_exists('user')) {
 
         if ($authId) {
 
+            // Auto-set company session for superadmins if missing
+            if (!session()->has('company')) {
+                $superadminUser = DB::table('users')->where('user_auth_id', $authId)->where('is_superadmin', 1)->first();
+                if ($superadminUser) {
+                    $firstActiveCompany = Company::where('status', 'active')->first();
+                    if ($firstActiveCompany) {
+                        session(['company' => $firstActiveCompany]);
+                    }
+                }
+            }
+
             if (session()->has('company')) {
                 $user = User::where('user_auth_id', $authId)->where('status', 'active')->first();
+
+                if (!$user) {
+                    // Try to find superadmin user (who has no company_id but can access company context)
+                    $user = User::withoutGlobalScope(\App\Scopes\CompanyScope::class)
+                        ->where('user_auth_id', $authId)
+                        ->where('status', 'active')
+                        ->where('is_superadmin', 1)
+                        ->first();
+                }
             } else {
                 $user = DB::table('users')->where('user_auth_id', $authId)->where('status', 'active')->first();
 
@@ -1145,7 +1165,21 @@ if (!function_exists('company')) {
     {
 
         if (session()->has('company')) {
-            return session('company');
+            $company = session('company');
+
+            if ($company instanceof Company) {
+                return $company;
+            }
+
+            if (is_object($company) && isset($company->id)) {
+                $companyModel = Company::find($company->id);
+                if ($companyModel) {
+                    session(['company' => $companyModel]);
+                    return $companyModel;
+                }
+            }
+
+            return $company;
         }
 
 

@@ -53,13 +53,20 @@ class FortifyServiceProvider extends ServiceProvider
 
             public function toResponse($request)
             {
-                session(['user' => User::find(user()->id)]);
+                $authUser = auth()->user();
+                $appUser = $authUser?->userWithoutCompany ?? $authUser?->user;
 
-                if (auth()->user() && auth()->user()->user->is_superadmin) {
+                if (!$appUser) {
+                    return redirect()->route('login');
+                }
+
+                session(['user' => User::find($appUser->id)]);
+
+                if ($appUser->is_superadmin) {
                     return redirect(RouteServiceProvider::SUPER_ADMIN_HOME);
                 }
 
-                $emailCountInCompanies = DB::table('users')->where('email', user()->email)->count();
+                $emailCountInCompanies = DB::table('users')->where('email', $appUser->email)->count();
                 session()->forget('user_company_count');
 
                 if ($emailCountInCompanies > 1) {
@@ -80,13 +87,20 @@ class FortifyServiceProvider extends ServiceProvider
 
             public function toResponse($request)
             {
-                session(['user' => User::find(user()->id)]);
+                $authUser = auth()->user();
+                $appUser = $authUser?->userWithoutCompany ?? $authUser?->user;
 
-                if (auth()->user() && auth()->user()->user->is_superadmin) {
+                if (!$appUser) {
+                    return redirect()->route('login');
+                }
+
+                session(['user' => User::find($appUser->id)]);
+
+                if ($appUser->is_superadmin) {
                     return redirect(RouteServiceProvider::SUPER_ADMIN_HOME);
                 }
 
-                $emailCountInCompanies = DB::table('users')->where('email', user()->email)->count();
+                $emailCountInCompanies = DB::table('users')->where('email', $appUser->email)->count();
                 session(['user_company_count' => $emailCountInCompanies]);
 
                 if ($emailCountInCompanies > 1) {

@@ -155,8 +155,8 @@
             <x-setting-menu-item :active="$activeMenu" menu="developertools" :href="route('developertools.index')" text="Developer Tools" />
         @endif
 
-        @if (in_array('admin', user_roles()))
-            <x-setting-menu-item :active="$activeMenu" menu="codemap" :href="route('codemap.index')" text="CodeMap" />
+        @if (user()->is_superadmin)
+            <x-setting-menu-item :active="$activeMenu" menu="codemap" :href="route('developertools.codemap')" text="CodeMap" />
         @endif
 
         @if (in_array('admin', user_roles()))

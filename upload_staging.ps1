@@ -289,9 +289,12 @@ $FilesToCopy += @(
     "resources/views/super-admin/theme-settings/ajax/cropper.blade.php",
     "public/vendor/cropper/cropper.min.css",
     "public/vendor/cropper/cropper.min.js",
-    "webpack.mix.js",
     "tests/Feature/ChatboxTest.php",
-    "tests/Feature/ChatboxToggleTest.php"
+    "tests/Feature/ChatboxToggleTest.php",
+    "Modules/Pricing/Database/Migrations/2026_02_11_121332_add_start_and_end_date_to_client_product_pricing_table.php",
+    "Modules/Pricing/docs/UserGuide.md",
+    "Modules/Pricing/docs/ReleaseNotes.md",
+    "Modules/Pricing/Tests/Unit/ContractPricingTest.php"
 )
 
 $DirsToCopy = @(
@@ -306,13 +309,6 @@ $DirsToCopy = @(
     "app/Imports",
     "app/Jobs",
     "resources/views/products"
-)
-
-$FilesToCopy += @(
-    "Modules/Pricing/Database/Migrations/2026_02_11_121332_add_start_and_end_date_to_client_product_pricing_table.php",
-    "Modules/Pricing/docs/UserGuide.md",
-    "Modules/Pricing/docs/ReleaseNotes.md",
-    "Modules/Pricing/Tests/Unit/ContractPricingTest.php"
 )
 
 # 3. Copy files to temp dir
@@ -378,43 +374,26 @@ scp $ZipFile "${StagingHost}:deploy_staging.zip"
 
 # 6. Extract and deploy on server (sudo may be required)
 Write-Host "Extracting on server and deploying to $StagingPath (sudo may be required)..."
-$RemoteCommand = "sudo mv ~/deploy_staging.zip $StagingPath/deploy_staging.zip && cd $StagingPath"
-# Debug: List zip content for the controller
-$RemoteCommand += " && echo 'Checking zip content for CompanyPricingController...'"
-$RemoteCommand += " && unzip -l deploy_staging.zip | grep CompanyPricingController.php || echo 'NOT IN ZIP'"
-# Safety: Remove existing Pricing module to ensure clean extract
-$RemoteCommand += " && echo 'Removing existing Pricing module directory...'"
-$RemoteCommand += " && sudo rm -rf Modules/Pricing"
-# Unzip
+$RemoteCommand = "sudo mv ~/deploy_staging.zip /tmp/deploy_staging.zip"
+$RemoteCommand += " && cd $StagingPath"
+# CLEANUP COMMAND: Deletes everything except .env and storage and .git
+$RemoteCommand += " && echo 'Cleaning staging directory (preserving .env and storage)...'"
+$RemoteCommand += " && sudo find . -maxdepth 1 ! -name '.' ! -name '..' ! -name '.env' ! -name 'storage' ! -name '.git' -exec rm -rf {} +"
+# Move zip back and unzip
+$RemoteCommand += " && sudo mv /tmp/deploy_staging.zip $StagingPath/deploy_staging.zip"
 $RemoteCommand += " && sudo unzip -o deploy_staging.zip && sudo rm deploy_staging.zip"
 # Fix permissions
-$RemoteCommand += " && sudo chown -R www-data:www-data $StagingPath/Modules/Pricing"
-$RemoteCommand += " && sudo chmod -R 755 $StagingPath/Modules/Pricing"
-$RemoteCommand += " && sudo chown -R www-data:www-data $StagingPath/storage"
-$RemoteCommand += " && sudo chown -R www-data:www-data $StagingPath/bootstrap/cache"
-$RemoteCommand += " && sudo chmod -R 775 $StagingPath/storage"
-$RemoteCommand += " && sudo chmod -R 775 $StagingPath/bootstrap/cache"
+$RemoteCommand += " && sudo chown -R www-data:www-data $StagingPath/Modules $StagingPath/resources $StagingPath/storage $StagingPath/bootstrap/cache $StagingPath/public"
+$RemoteCommand += " && sudo chmod -R 775 $StagingPath/storage $StagingPath/bootstrap/cache"
+$RemoteCommand += " && sudo chmod -R 755 $StagingPath/public"
+$RemoteCommand += " && sudo chown -R www-data:www-data $StagingPath/public/vendor"
+$RemoteCommand += " && sudo chmod -R 755 $StagingPath/public/vendor"
 # Clear caches and run migrations
 $RemoteCommand += " && sudo -u www-data php artisan migrate --force"
-$RemoteCommand += " && sudo -u www-data php artisan migrate --path=database/migrations/2026_02_02_140000_setup_pricing_module_core_merged.php --force"
-$RemoteCommand += " && sudo -u www-data php artisan migrate --path=Modules/Purchase/Database/Migrations/2026_02_02_150000_setup_purchase_custom_fields_merged.php --force"
-$RemoteCommand += " && sudo -u www-data php artisan migrate --path=Modules/Pricing/Database/Migrations/2026_02_02_160000_setup_pricing_module_permissions_and_activation.php --force"
-$RemoteCommand += " && sudo -u www-data php artisan migrate --path=Modules/Pricing/Database/Migrations/2026_02_11_121332_add_start_and_end_date_to_client_product_pricing_table.php --force"
-# $RemoteCommand += " && sudo -u www-data composer dump-autoload"
-$RemoteCommand += " && sudo -u www-data php artisan module:enable Pricing"
-$RemoteCommand += " && sudo -u www-data php artisan optimize:clear"
-$RemoteCommand += " && echo 'Running check_pricing_v2.php...'"
-$RemoteCommand += " && sudo -u www-data php check_pricing_v2.php"
-$RemoteCommand += " && echo 'Running fix_inventory_cf.php...'"
-$RemoteCommand += " && sudo -u www-data php fix_inventory_cf.php"
-$RemoteCommand += " && sudo -u www-data php artisan queue:restart"
+$RemoteCommand += " && sudo -u www-data php artisan migrate --path=database/migrations/2026_01_21_000000_add_storage_and_certification_to_products_table_fb.php --force"
 
-ssh -t "${StagingHost}" $RemoteCommand
+Write-Host "Executing remote commands..."
+# Use strict quoting for SSH
+ssh $StagingHost $RemoteCommand
 
-# 7. Local Cleanup
-Remove-Item -Recurse -Force $LocalTempDir
-Remove-Item -Force $ZipFile
-
-Write-Host "----------------------------------------------------------------"
-Write-Host "Upload and deployment to $StagingHost complete!"
-Write-Host "----------------------------------------------------------------"
+Write-Host "Deployment complete!"

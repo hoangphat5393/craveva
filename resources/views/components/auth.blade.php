@@ -23,6 +23,7 @@
 
     @stack('styles')
     <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 
     <style defer="defer">
         .login_header {
@@ -162,6 +163,23 @@
                     }
                 }
             })
+        });
+
+        $(document).ready(function() {
+            if ($.fn.tooltip) {
+                $('body').tooltip({
+                    selector: '[data-toggle="tooltip"]',
+                    trigger: 'hover',
+                });
+            }
+
+            //show hide secret values
+            $('body').on('click', '.toggle-password', function () {
+                var $selector = $(this).closest('.input-group').find('input.form-control');
+                $(this).find('.svg-inline--fa, i').toggleClass('fa-eye fa-eye-slash');
+                var $type = $selector.prop('type') === 'password' ? 'text' : 'password';
+                $selector.prop('type', $type);
+            });
         });
     </script>
 

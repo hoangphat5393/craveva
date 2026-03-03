@@ -125,9 +125,9 @@ if (el) {
 //show hide secret values
 $('body').on('click', '.toggle-password', function () {
     var $selector = $(this).closest('.input-group').find('input.form-control');
-    $(this).find('.svg-inline--fa').toggleClass('fa-eye fa-eye-slash');
-    var $type = $selector.attr('type') === 'password' ? 'text' : 'password';
-    $selector.attr('type', $type);
+    $(this).find('.svg-inline--fa, i').toggleClass('fa-eye fa-eye-slash');
+    var $type = $selector.prop('type') === 'password' ? 'text' : 'password';
+    $selector.prop('type', $type);
 });
 $('body').on('click', '.openRightModal', function (event) {
     event.preventDefault();

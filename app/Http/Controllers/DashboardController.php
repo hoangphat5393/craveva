@@ -44,7 +44,9 @@ class DashboardController extends AccountBaseController
 
         $this->middleware(function ($request, $next) {
 
-            abort_403(user()->is_superadmin);
+            if (user()->is_superadmin) {
+                return redirect()->route('superadmin.super_admin_dashboard');
+            }
 
             return $next($request);
         });

@@ -198,6 +198,7 @@ class DeveloperToolsController extends AccountBaseController
             // Clean up if user was created but DB transaction failed?
             // DB transaction doesn't cover CREATE USER usually.
             // We attempt to drop user if it exists.
+
             try {
                 DB::statement("DROP USER IF EXISTS '$dbUsername'@'%'");
             } catch (\Exception $dropEx) {

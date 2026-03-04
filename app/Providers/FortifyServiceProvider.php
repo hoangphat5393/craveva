@@ -35,6 +35,8 @@ use Laravel\Fortify\Actions\PrepareAuthenticatedSession;
 use Laravel\Fortify\Contracts\LogoutResponse;
 
 
+use Illuminate\Support\Facades\Log;
+
 class FortifyServiceProvider extends ServiceProvider
 {
 
@@ -53,10 +55,12 @@ class FortifyServiceProvider extends ServiceProvider
 
             public function toResponse($request)
             {
+                Log::info('LoginResponse triggered', ['wantsJson' => $request->wantsJson(), 'ajax' => $request->ajax()]);
                 $authUser = auth()->user();
                 $appUser = $authUser?->userWithoutCompany ?? $authUser?->user;
 
                 if (!$appUser) {
+                    Log::warning('LoginResponse: No app user found');
                     if ($request->wantsJson()) {
                         return response()->json([
                             'status' => 'success',
@@ -68,6 +72,7 @@ class FortifyServiceProvider extends ServiceProvider
                 }
 
                 session(['user' => User::find($appUser->id)]);
+                Log::info('LoginResponse: Session set for user', ['id' => $appUser->id]);
 
                 $redirectUrl = '';
 
@@ -89,6 +94,8 @@ class FortifyServiceProvider extends ServiceProvider
                         $redirectUrl = session()->has('url.intended') ? session()->get('url.intended') : RouteServiceProvider::HOME;
                     }
                 }
+
+                Log::info('LoginResponse: Redirecting', ['url' => $redirectUrl]);
 
                 if ($request->wantsJson()) {
                     return response()->json([
@@ -186,6 +193,7 @@ class FortifyServiceProvider extends ServiceProvider
 
         // Fortify::authenticateThrough();
         Fortify::authenticateUsing(function (Request $request) {
+            Log::info('AuthenticateUsing triggered', ['email' => $request->email]);
             $rules = [
                 'email' => 'required|email:rfc,strict'
             ];
@@ -195,17 +203,20 @@ class FortifyServiceProvider extends ServiceProvider
             $userAuth = UserAuth::where('email', $request->email)->first();
 
             if ($userAuth && Hash::check($request->password, $userAuth->password)) {
+                Log::info('AuthenticateUsing: Credentials matched', ['user_auth_id' => $userAuth->id]);
 
                 // Added for validation of account login in company
                 UserAuth::validateLoginActiveDisabled($userAuth);
+                Log::info('AuthenticateUsing: Validation passed');
 
-                session()->forget('locale');
                 session()->put([
                     'current_latitude' => $request->current_latitude,
                     'current_longitude' => $request->current_longitude,
                 ]);
+
                 return $userAuth;
             }
+            Log::warning('AuthenticateUsing: Credentials failed or user not found');
         });
 
 

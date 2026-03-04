@@ -231,14 +231,17 @@
         <script>
             $(document).ready(function() {
 
-                $("form#login-form").submit(function() {
-                    const button = $('form#login-form').find('#submit-login');
-
-                    const text =
-                        '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> {{ __('app.loading') }}';
-
-                    button.prop("disabled", true);
-                    button.html(text);
+                $("form#login-form").submit(function(e) {
+                    e.preventDefault();
+                    $.easyAjax({
+                        url: "{{ route('login') }}",
+                        container: '#login-form',
+                        type: "POST",
+                        blockUI: true,
+                        data: $('#login-form').serialize(),
+                        disableButton: true,
+                        buttonSelector: "#submit-login",
+                    });
                 });
 
                 function handleFormSubmit(e) {

@@ -61,7 +61,10 @@ class AccountBaseController extends Controller
             return true;
         }
 
-        $user = User::where('id', user()->id)->first();
+        $user = User::withoutGlobalScopes()->where('id', user()->id)->first();
+        if (!$user) {
+             return redirect()->route('login')->send();
+        }
         $userAuth = UserAuth::where('id', $user->user_auth_id)->first();
 
         if ($user->admin_approval === 0 && !empty($userAuth->email_verified_at)) {

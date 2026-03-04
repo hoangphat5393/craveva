@@ -13,15 +13,13 @@ return new class extends Migration
     {
         if (!Schema::hasColumn('purchase_stock_adjustments', 'warehouse_id')) {
             Schema::table('purchase_stock_adjustments', function (Blueprint $table) {
-                $table->unsignedInteger('warehouse_id')->nullable()->after('product_id');
-                // Note: using unsignedInteger because warehouses.id might be int, check first. 
-                // Earlier I saw warehouses migration use bigIncrements (unsignedBigInteger).
-                // Let's use unsignedBigInteger to be safe, matching standard Laravel id().
+                $table->unsignedBigInteger('warehouse_id')->nullable()->after('product_id');
+                // Note: using unsignedBigInteger because warehouses.id is bigIncrements (unsignedBigInteger).
             });
-            
-             Schema::table('purchase_stock_adjustments', function (Blueprint $table) {
+
+            Schema::table('purchase_stock_adjustments', function (Blueprint $table) {
                 $table->foreign('warehouse_id')->references('id')->on('warehouses')->onDelete('set null');
-             });
+            });
         }
     }
 

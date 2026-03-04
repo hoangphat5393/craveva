@@ -147,7 +147,7 @@
                         <th>@lang('app.email')</th>
                         <th class="pr-20 text-right">@lang('app.createdOn')</th>
                     </x-slot>
-                    @forelse ($latestClient->users as $item)
+                    @forelse ($latestClient ? $latestClient->users : [] as $item)
                         <tr>
                             <td class="pl-20">
                                 <x-client :user="$item"/>
@@ -180,7 +180,7 @@
                         <th>@lang('app.email')</th>
                         <th class="pr-20 text-right">@lang('app.lastLogin')</th>
                     </x-slot>
-                    @forelse ($recentLoginActivities->users as $item)
+                    @forelse ($recentLoginActivities ? $recentLoginActivities->users : [] as $item)
                         <tr>
                             <td class="pl-20">
                                 <x-client :user="$item"/>

@@ -5,7 +5,6 @@ namespace App\Http\Middleware;
 use Closure;
 use App\Models\User;
 use App\Models\Company;
-use App\Scopes\CompanyScope;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Auth\Middleware\Authenticate as Middleware;
@@ -41,6 +40,13 @@ class Authenticate extends Middleware
         $companyHashId = $request->route('hash');
         $routeName = $request->route()->getName();
 
+        \Illuminate\Support\Facades\Log::info('Authenticate Middleware Check', [
+            'url' => $request->fullUrl(),
+            'user_id' => user() ? user()->id : 'null',
+            'session_id' => session()->getId(),
+            'route' => $routeName
+        ]);
+
         if ($routeName === 'settings.qr-login') {
 
             $company = Company::where('hash', $companyHashId)->first();
@@ -56,13 +62,18 @@ class Authenticate extends Middleware
 
         if (user()) {
             $isActive = cache()->rememberForever('user_is_active_' . user()->id, function () {
-                return User::withoutGlobalScope(CompanyScope::class)
-                    ->where('id', user()->id)
+                return User::where('id', user()->id)
                     ->where('status', 'active')
                     ->exists();
             });
 
+            \Illuminate\Support\Facades\Log::info('Authenticate Middleware isActive Check', [
+                'user_id' => user()->id,
+                'isActive' => $isActive
+            ]);
+
             if (!$isActive) {
+                \Illuminate\Support\Facades\Log::info('Authenticate Middleware: User inactive, logging out');
                 auth()->logout();
                 session()->flush();
 

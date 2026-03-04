@@ -19,31 +19,31 @@
             const linkedin = "{{ route('social_login', 'linkedin-openid') }}";
         </script>
 
-        @if ($socialAuthSettings->google_status == 'enable')
+        @if ($socialAuthSettings?->google_status == 'enable')
             <a class="mb-3 height_50 rounded f-w-500" onclick="window.location.href = google;">
                 <span><img src="{{ asset('img/google.png') }}" alt="Google" /></span>
                 @lang('auth.signInGoogle')</a>
         @endif
-        @if ($socialAuthSettings->facebook_status == 'enable')
+        @if ($socialAuthSettings?->facebook_status == 'enable')
             <a class="mb-3 height_50 rounded f-w-500" onclick="window.location.href = facebook;">
                 <span><img src="{{ asset('img/fb.png') }}" alt="Google" /></span>
                 @lang('auth.signInFacebook')
             </a>
         @endif
-        @if ($socialAuthSettings->twitter_status == 'enable')
+        @if ($socialAuthSettings?->twitter_status == 'enable')
             <a class="mb-3 height_50 rounded f-w-500" onclick="window.location.href = twitter;">
                 <span><img src="{{ asset('img/twitter.png') }}" alt="Google" /></span>
                 @lang('auth.signInTwitter')
             </a>
         @endif
-        @if ($socialAuthSettings->linkedin_status == 'enable')
+        @if ($socialAuthSettings?->linkedin_status == 'enable')
             <a class="mb-3 height_50 rounded f-w-500" onclick="window.location.href = linkedin;">
                 <span><img src="{{ asset('img/linkedin.png') }}" alt="Google" /></span>
                 @lang('auth.signInLinkedin')
             </a>
         @endif
 
-        @if ($socialAuthSettings->social_auth_enable)
+        @if ($socialAuthSettings?->social_auth_enable)
             <p class="position-relative my-4">@lang('auth.useEmail')</p>
         @endif
 
@@ -55,14 +55,14 @@
             @if ($errors->has('email'))
                 <div class="invalid-feedback">{{ $errors->first('email') }}</div>
             @endif
-            @if ($socialAuthSettings->social_auth_enable_count > 1)
+            @if (($socialAuthSettings?->social_auth_enable_count ?? 0) > 1)
                 <div class="forgot_pswd mt-2" id="forget-pass-email-section">
                     <a href="{{ url('forgot-password') }}">@lang('app.forgotPassword')</a>
                 </div>
             @endif
         </div>
 
-        @if ($socialAuthSettings->social_auth_enable_count > 1 && !$errors->has('g-recaptcha-response'))
+        @if (($socialAuthSettings?->social_auth_enable_count ?? 0) > 1 && !$errors->has('g-recaptcha-response'))
             <button type="submit" id="submit-next" class="btn-primary f-w-500 rounded w-100 height-50 f-18">
                 @lang('auth.next') <i class="fa fa-arrow-right pl-1"></i></button>
 
@@ -84,7 +84,7 @@
 
         @endif
 
-        <div id="password-section" @if ($socialAuthSettings->social_auth_enable_count > 1 && !$errors->has('g-recaptcha-response')) class="d-none" @endif>
+        <div id="password-section" @if (($socialAuthSettings?->social_auth_enable_count ?? 0) > 1 && !$errors->has('g-recaptcha-response')) class="d-none" @endif>
             <div class="form-group text-left">
                 <label for="password">@lang('app.password')</label>
                 <x-forms.input-group>

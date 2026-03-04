@@ -282,7 +282,9 @@ class CompanyController extends AccountBaseController
 
         switch ($tab) {
         case 'billing':
-            $this->company = Company::with('currency', 'package', 'approvalBy')
+            $this->company = Company::with(['currency' => function ($query) {
+                $query->withoutGlobalScope(CompanyScope::class);
+            }], 'package', 'approvalBy')
                 ->withCount(['employees', 'fileStorage', 'clients', 'invoices', 'estimates', 'contracts', 'projects', 'tasks', 'leads', 'tickets', 'orders'])
                 ->withSum('fileStorage', 'size')
                 ->with(['companyAddress' => function ($query) {
@@ -295,7 +297,9 @@ class CompanyController extends AccountBaseController
             $this->view = 'super-admin.companies.ajax.headers';
             break;
         default:
-            $this->company = Company::with('currency', 'package', 'approvalBy')
+            $this->company = Company::with(['currency' => function ($query) {
+                $query->withoutGlobalScope(CompanyScope::class);
+            }], 'package', 'approvalBy')
                 ->withCount(['employees', 'fileStorage', 'clients', 'invoices', 'estimates', 'contracts', 'projects', 'tasks', 'leads', 'tickets', 'orders'])
                 ->withSum('fileStorage', 'size')
                 ->with(['companyAddress' => function ($query) {

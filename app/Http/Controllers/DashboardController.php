@@ -60,6 +60,11 @@ class DashboardController extends AccountBaseController
 
 
         session()->forget(['qr_clock_in']);
+
+        if (in_array('admin', user_roles())) {
+            return $this->advancedDashboard();
+        }
+
         if (in_array('employee', user_roles())) {
 
             $this->viewOverviewDashboard = user()->permission('view_overview_dashboard');

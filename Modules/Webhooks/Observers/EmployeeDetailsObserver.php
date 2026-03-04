@@ -11,8 +11,12 @@ class EmployeeDetailsObserver
     public function created(EmployeeDetails $employeeDetails)
     {
         $data = $employeeDetails->toArray();
-        $user = $employeeDetails->user->toArray();
-        $data = array_merge($data, $user);
+        $userModel = $employeeDetails->user()->withoutGlobalScopes()->first();
+
+        if ($userModel) {
+            $user = $userModel->toArray();
+            $data = array_merge($data, $user);
+        }
 
         SendWebhook::dispatch($data, 'Employee', $employeeDetails->company_id)
             ->delay(5)

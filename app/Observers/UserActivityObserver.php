@@ -9,7 +9,9 @@ class UserActivityObserver
 
     public function creating(UserActivity $model)
     {
-        $model->company_id = $model->user->company_id;
+        if ($model->user) {
+            $model->company_id = $model->user->company_id;
+        }
     }
 
 }

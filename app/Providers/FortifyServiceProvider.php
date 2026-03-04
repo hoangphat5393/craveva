@@ -35,6 +35,7 @@ use Laravel\Fortify\Actions\PrepareAuthenticatedSession;
 use Laravel\Fortify\Contracts\LogoutResponse;
 
 
+use App\Scopes\CompanyScope;
 use Illuminate\Support\Facades\Log;
 
 class FortifyServiceProvider extends ServiceProvider
@@ -71,7 +72,7 @@ class FortifyServiceProvider extends ServiceProvider
                     return redirect()->route('login');
                 }
 
-                session(['user' => User::find($appUser->id)]);
+                session(['user' => User::withoutGlobalScope(CompanyScope::class)->find($appUser->id)]);
                 Log::info('LoginResponse: Session set for user', ['id' => $appUser->id]);
 
                 $redirectUrl = '';
@@ -127,7 +128,7 @@ class FortifyServiceProvider extends ServiceProvider
                     return redirect()->route('login');
                 }
 
-                session(['user' => User::find($appUser->id)]);
+                session(['user' => User::withoutGlobalScope(CompanyScope::class)->find($appUser->id)]);
 
                 $redirectUrl = '';
 

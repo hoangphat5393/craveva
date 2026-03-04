@@ -617,7 +617,8 @@ class GlobalSetting extends BaseModel
     {
         $checkListCompleted = 2; // Installation and Admin Account setup
 
-        if (smtp_setting()->mail_from_email != 'from@email.com') {
+        $smtpSetting = smtp_setting();
+        if ($smtpSetting && isset($smtpSetting->mail_from_email) && $smtpSetting->mail_from_email != 'from@email.com') {
             $checkListCompleted++;
         }
 

@@ -149,7 +149,7 @@ class LoginController extends Controller
     {
 
         if (isCraveva()) {
-            session(['user' => User::find(user()->id)]);
+            session(['user' => User::withoutGlobalScope(\App\Scopes\CompanyScope::class)->find(user()->id)]);
 
             if (auth()->user() && auth()->user()->user->is_superadmin) {
                 return (session()->has('url.intended') ? session()->get('url.intended') : RouteServiceProvider::SUPER_ADMIN_HOME);

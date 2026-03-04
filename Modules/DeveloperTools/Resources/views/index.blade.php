@@ -38,7 +38,7 @@
 
                                     @if (session('new_db_password'))
                                         <div class="alert alert-warning">
-                                            <h4><i class="icon fa fa-warning"></i> IMPORTANT: Save these credentials now!</h4>
+                                            <h4><i class="icon fa fa-warning"></i>IMPORTANT: Save these credentials now!</h4>
                                             <p><strong>Database Host:</strong> {{ request()->getHost() }}</p>
                                             <p><strong>Database Name:</strong> {{ config('developertools.gateway_db', 'api_gateway_db') }}</p>
                                             <p><strong>Username:</strong> {{ session('new_db_username') }}</p>

@@ -64,7 +64,7 @@ class UserObserver
 
     public function creating(User $model)
     {
-        if (company()) {
+        if (company() && !$model->company_id) {
             $model->company_id = company()->id;
         }
 

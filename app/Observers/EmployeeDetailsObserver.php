@@ -26,7 +26,9 @@ class EmployeeDetailsObserver
             $detail->added_by = user()->id;
         }
 
-        $detail->company_id = $detail->user->company_id;
+        if (!$detail->company_id && $detail->user) {
+            $detail->company_id = $detail->user->company_id;
+        }
 
         if (is_null($detail->marital_status)) {
             $detail->marital_status = MaritalStatus::Single;

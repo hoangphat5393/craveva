@@ -57,29 +57,48 @@ class FortifyServiceProvider extends ServiceProvider
                 $appUser = $authUser?->userWithoutCompany ?? $authUser?->user;
 
                 if (!$appUser) {
+                    if ($request->wantsJson()) {
+                        return response()->json([
+                            'status' => 'success',
+                            'action' => 'redirect',
+                            'url' => route('login'),
+                        ]);
+                    }
                     return redirect()->route('login');
                 }
 
                 session(['user' => User::find($appUser->id)]);
 
+                $redirectUrl = '';
+
                 if ($appUser->is_superadmin) {
-                    return redirect(RouteServiceProvider::SUPER_ADMIN_HOME);
-                }
+                    $redirectUrl = RouteServiceProvider::SUPER_ADMIN_HOME;
+                } else {
+                    $emailCountInCompanies = DB::table('users')->where('email', $appUser->email)->count();
+                    session()->forget('user_company_count');
 
-                $emailCountInCompanies = DB::table('users')->where('email', $appUser->email)->count();
-                session()->forget('user_company_count');
-
-                if ($emailCountInCompanies > 1) {
-                    if (module_enabled('Subdomain')) {
-                        UserAuth::multipleUserLoginSubdomain();
+                    if ($emailCountInCompanies > 1) {
+                        if (module_enabled('Subdomain')) {
+                            UserAuth::multipleUserLoginSubdomain();
+                            $redirectUrl = session()->has('url.intended') ? session()->get('url.intended') : RouteServiceProvider::HOME;
+                        } else {
+                            session(['user_company_count' => $emailCountInCompanies]);
+                            $redirectUrl = route('superadmin.superadmin.workspaces');
+                        }
                     } else {
-                        session(['user_company_count' => $emailCountInCompanies]);
-
-                        return redirect(route('superadmin.superadmin.workspaces'));
+                        $redirectUrl = session()->has('url.intended') ? session()->get('url.intended') : RouteServiceProvider::HOME;
                     }
                 }
 
-                return redirect(session()->has('url.intended') ? session()->get('url.intended') : RouteServiceProvider::HOME);
+                if ($request->wantsJson()) {
+                    return response()->json([
+                        'status' => 'success',
+                        'action' => 'redirect',
+                        'url' => $redirectUrl,
+                    ]);
+                }
+
+                return redirect($redirectUrl);
             }
         });
 
@@ -91,23 +110,42 @@ class FortifyServiceProvider extends ServiceProvider
                 $appUser = $authUser?->userWithoutCompany ?? $authUser?->user;
 
                 if (!$appUser) {
+                    if ($request->wantsJson()) {
+                        return response()->json([
+                            'status' => 'success',
+                            'action' => 'redirect',
+                            'url' => route('login'),
+                        ]);
+                    }
                     return redirect()->route('login');
                 }
 
                 session(['user' => User::find($appUser->id)]);
 
+                $redirectUrl = '';
+
                 if ($appUser->is_superadmin) {
-                    return redirect(RouteServiceProvider::SUPER_ADMIN_HOME);
+                    $redirectUrl = RouteServiceProvider::SUPER_ADMIN_HOME;
+                } else {
+                    $emailCountInCompanies = DB::table('users')->where('email', $appUser->email)->count();
+                    session(['user_company_count' => $emailCountInCompanies]);
+
+                    if ($emailCountInCompanies > 1) {
+                        $redirectUrl = route('superadmin.superadmin.workspaces');
+                    } else {
+                        $redirectUrl = session()->has('url.intended') ? session()->get('url.intended') : RouteServiceProvider::HOME;
+                    }
                 }
 
-                $emailCountInCompanies = DB::table('users')->where('email', $appUser->email)->count();
-                session(['user_company_count' => $emailCountInCompanies]);
-
-                if ($emailCountInCompanies > 1) {
-                    return redirect(route('superadmin.superadmin.workspaces'));
+                if ($request->wantsJson()) {
+                    return response()->json([
+                        'status' => 'success',
+                        'action' => 'redirect',
+                        'url' => $redirectUrl,
+                    ]);
                 }
 
-                return redirect(session()->has('url.intended') ? session()->get('url.intended') : RouteServiceProvider::HOME);
+                return redirect($redirectUrl);
             }
         });
 

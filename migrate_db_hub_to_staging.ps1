@@ -26,22 +26,15 @@ Write-Host "----------------------------------------------------------------"
 # 1. Dump Hub DB
 Write-Host "1. Dumping Database from Hub Server ($HubHost)..."
 
-$HubCmd = "bash -lc " + '"' +
-    "set -euo pipefail; " +
-    "cd $HubPath; " +
-    "DB_HOST=`$(grep -E '^DB_HOST=' .env | head -n 1 | cut -d '=' -f2- | tr -d '`"' | tr -d '\r'); " +
-    "DB_PORT=`$(grep -E '^DB_PORT=' .env | head -n 1 | cut -d '=' -f2- | tr -d '`"' | tr -d '\r'); " +
-    "DB_DATABASE=`$(grep -E '^DB_DATABASE=' .env | head -n 1 | cut -d '=' -f2- | tr -d '`"' | tr -d '\r'); " +
-    "DB_USERNAME=`$(grep -E '^DB_USERNAME=' .env | head -n 1 | cut -d '=' -f2- | tr -d '`"' | tr -d '\r'); " +
-    "DB_PASSWORD=`$(grep -E '^DB_PASSWORD=' .env | head -n 1 | cut -d '=' -f2- | tr -d '\r'); " +
-    "DB_PASSWORD=`${DB_PASSWORD%$'\r'}; " +
-    "DB_PASSWORD=`${DB_PASSWORD#`"`"}; DB_PASSWORD=`${DB_PASSWORD%`"`"}; " +
-    "echo Dumping DB: `$DB_DATABASE; " +
-    "export MYSQL_PWD=`"$DB_PASSWORD`"; " +
-    "mysqldump -h `"$DB_HOST`" -P `"$DB_PORT`" -u `"$DB_USERNAME`" `"$DB_DATABASE`" --no-tablespaces --single-transaction --quick --routines --triggers --events | gzip -1 > ~/$RemoteDumpGz; " +
-    "unset MYSQL_PWD; " +
-    "sha256sum ~/$RemoteDumpGz > ~/$RemoteDumpSha" +
-    '"'
+$HubCmd = "cd $HubPath && " +
+    "DB_HOST=`$(grep -E '^DB_HOST=' .env | head -n 1 | cut -d '=' -f2- | tr -d '`"' | tr -d '\r') && " +
+    "DB_PORT=`$(grep -E '^DB_PORT=' .env | head -n 1 | cut -d '=' -f2- | tr -d '`"' | tr -d '\r') && " +
+    "DB_DATABASE=`$(grep -E '^DB_DATABASE=' .env | head -n 1 | cut -d '=' -f2- | tr -d '`"' | tr -d '\r') && " +
+    "DB_USERNAME=`$(grep -E '^DB_USERNAME=' .env | head -n 1 | cut -d '=' -f2- | tr -d '`"' | tr -d '\r') && " +
+    "DB_PASSWORD=`$(grep -E '^DB_PASSWORD=' .env | head -n 1 | cut -d '=' -f2- | tr -d '`"' | tr -d '\r') && " +
+    "echo 'Dumping DB: '`$DB_DATABASE && " +
+    "MYSQL_PWD=`"$DB_PASSWORD`" mysqldump -h `"$DB_HOST`" -P `"$DB_PORT`" -u `"$DB_USERNAME`" `"$DB_DATABASE`" --no-tablespaces --single-transaction --quick --routines --triggers --events | gzip -1 > ~/$RemoteDumpGz && " +
+    "sha256sum ~/$RemoteDumpGz > ~/$RemoteDumpSha"
 
 # Run ssh directly
 ssh $HubHost $HubCmd
@@ -88,26 +81,19 @@ if (-not $NoMaintenanceMode) {
     $MaintenanceCmd = "sudo -u www-data php artisan down || true; "
 }
 
-$StagingCmd = "bash -lc " + '"' +
-    "set -euo pipefail; " +
-    "cd $StagingPath; " +
-    "DB_HOST=`$(grep -E '^DB_HOST=' .env | head -n 1 | cut -d '=' -f2- | tr -d '`"' | tr -d '\r'); " +
-    "DB_PORT=`$(grep -E '^DB_PORT=' .env | head -n 1 | cut -d '=' -f2- | tr -d '`"' | tr -d '\r'); " +
-    "DB_DATABASE=`$(grep -E '^DB_DATABASE=' .env | head -n 1 | cut -d '=' -f2- | tr -d '`"' | tr -d '\r'); " +
-    "DB_USERNAME=`$(grep -E '^DB_USERNAME=' .env | head -n 1 | cut -d '=' -f2- | tr -d '`"' | tr -d '\r'); " +
-    "DB_PASSWORD=`$(grep -E '^DB_PASSWORD=' .env | head -n 1 | cut -d '=' -f2- | tr -d '\r'); " +
-    "DB_PASSWORD=`${DB_PASSWORD%$'\r'}; " +
-    "DB_PASSWORD=`${DB_PASSWORD#`"`"}; DB_PASSWORD=`${DB_PASSWORD%`"`"}; " +
+$StagingCmd = "cd $StagingPath && " +
+    "DB_HOST=`$(grep -E '^DB_HOST=' .env | head -n 1 | cut -d '=' -f2- | tr -d '`"' | tr -d '\r') && " +
+    "DB_PORT=`$(grep -E '^DB_PORT=' .env | head -n 1 | cut -d '=' -f2- | tr -d '`"' | tr -d '\r') && " +
+    "DB_DATABASE=`$(grep -E '^DB_DATABASE=' .env | head -n 1 | cut -d '=' -f2- | tr -d '`"' | tr -d '\r') && " +
+    "DB_USERNAME=`$(grep -E '^DB_USERNAME=' .env | head -n 1 | cut -d '=' -f2- | tr -d '`"' | tr -d '\r') && " +
+    "DB_PASSWORD=`$(grep -E '^DB_PASSWORD=' .env | head -n 1 | cut -d '=' -f2- | tr -d '`"' | tr -d '\r') && " +
     $MaintenanceCmd +
-    "BACKUP=staging_backup_before_hub_import_$Stamp.sql.gz; " +
-    "echo Backing up current staging DB to ~/$BACKUP; " +
-    "export MYSQL_PWD=`"$DB_PASSWORD`"; " +
-    "mysqldump -h `"$DB_HOST`" -P `"$DB_PORT`" -u `"$DB_USERNAME`" `"$DB_DATABASE`" --no-tablespaces --single-transaction --quick --routines --triggers --events | gzip -1 > ~/$BACKUP; " +
-    "sha256sum ~/$RemoteDumpGz | grep -q `$(cut -d ' ' -f1 ~/$RemoteDumpSha); " +
-    "echo Importing into DB: `$DB_DATABASE; " +
-    "gunzip -c ~/$RemoteDumpGz | mysql -h `"$DB_HOST`" -P `"$DB_PORT`" -u `"$DB_USERNAME`" `"$DB_DATABASE`"; " +
-    "unset MYSQL_PWD" +
-    '"'
+    "BACKUP=staging_backup_before_hub_import_$Stamp.sql.gz && " +
+    "echo 'Backing up current staging DB to ~/'`$BACKUP && " +
+    "MYSQL_PWD=`"$DB_PASSWORD`" mysqldump -h `"$DB_HOST`" -P `"$DB_PORT`" -u `"$DB_USERNAME`" `"$DB_DATABASE`" --no-tablespaces --single-transaction --quick --routines --triggers --events | gzip -1 > ~/" + '$BACKUP' + " && " +
+    "sha256sum ~/$RemoteDumpGz | grep -q `$(cut -d ' ' -f1 ~/$RemoteDumpSha) && " +
+    "echo 'Importing into DB: '`$DB_DATABASE && " +
+    "gunzip -c ~/$RemoteDumpGz | mysql -h `"$DB_HOST`" -P `"$DB_PORT`" -u `"$DB_USERNAME`" `"$DB_DATABASE`""
 
 ssh $StagingHost $StagingCmd
 

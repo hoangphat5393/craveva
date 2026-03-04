@@ -148,8 +148,18 @@ class DeveloperToolsController extends AccountBaseController
         $dbPassword = Str::random(20);
         $gatewayDb = config('developertools.gateway_db', 'api_gateway_db');
 
+        // Sanitize DB name just in case
+        $gatewayDbSafe = preg_replace('/[^a-zA-Z0-9_]/', '', $gatewayDb);
+
         try {
             Log::info('Attempting to create DB user: ' . $dbUsername);
+
+            // 0. Ensure Database Exists
+            $dbExists = DB::select("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?", [$gatewayDbSafe]);
+            if (empty($dbExists)) {
+                DB::statement("CREATE DATABASE `$gatewayDbSafe` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+                Log::info('Created database: ' . $gatewayDbSafe);
+            }
 
             // 2. Create MySQL User (Requires privileges)
             // Note: This runs as the application's DB user.
@@ -161,9 +171,6 @@ class DeveloperToolsController extends AccountBaseController
             // Grant permissions on the Gateway DB ONLY
             // We cannot bind parameters for GRANT statement in some drivers, so we carefully construct it.
             // Since $dbUsername and $gatewayDb are generated/config controlled, it's relatively safe.
-
-            // Sanitize DB name just in case
-            $gatewayDbSafe = preg_replace('/[^a-zA-Z0-9_]/', '', $gatewayDb);
 
             DB::statement("GRANT SELECT, INSERT, UPDATE, DELETE ON `$gatewayDbSafe`.* TO '$dbUsername'@'%'");
             DB::statement("FLUSH PRIVILEGES");

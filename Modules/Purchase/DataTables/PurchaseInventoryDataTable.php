@@ -16,6 +16,7 @@ class PurchaseInventoryDataTable extends BaseDataTable
     private $deleteInventoryPermission;
     private $editInventoryPermission;
     private $customFieldGroup;
+    private $customFieldAliasMap = [];
 
     public function __construct()
     {
@@ -23,6 +24,17 @@ class PurchaseInventoryDataTable extends BaseDataTable
         $this->editInventoryPermission = user()->permission('edit_inventory');
         $this->deleteInventoryPermission = user()->permission('delete_inventory');
         $this->customFieldGroup = (new PurchaseInventory())->getCustomFieldGroupsWithFields();
+
+        if ($this->customFieldGroup && !empty($this->customFieldGroup->fields)) {
+            foreach ($this->customFieldGroup->fields as $field) {
+                if ($field->name == 'batch_number') {
+                    continue;
+                }
+
+                $fieldName = Str::slug($field->name, '_');
+                $this->customFieldAliasMap[$fieldName] = 'cf_' . $fieldName . '_' . $field->id;
+            }
+        }
     }
 
     /**
@@ -156,6 +168,45 @@ class PurchaseInventoryDataTable extends BaseDataTable
             return '--';
         });
 
+        if ($this->customFieldGroup && !empty($this->customFieldGroup->fields)) {
+            $handledColumns = [
+                'check',
+                'id',
+                'date',
+                'sku',
+                'product_name',
+                'available_quantity',
+                'unit',
+                'status',
+                'reserved_quantity',
+                'inventory_value',
+                'recent_inbound_date',
+                'batch_number',
+                'specification',
+                'expiration_date',
+                'outbound_quantity',
+                'action',
+            ];
+
+            foreach ($this->customFieldGroup->fields as $field) {
+                if ($field->name == 'batch_number') {
+                    continue;
+                }
+
+                $fieldName = Str::slug($field->name, '_');
+
+                if (in_array($fieldName, $handledColumns, true)) {
+                    continue;
+                }
+
+                $alias = $this->customFieldAliasMap[$fieldName] ?? ('cf_' . $fieldName . '_' . $field->id);
+
+                $datatables->addColumn($fieldName, function ($row) use ($alias) {
+                    return $row->{$alias} ?? null;
+                });
+            }
+        }
+
         // Action
         $datatables->addColumn('action', function ($row) {
 
@@ -274,11 +325,9 @@ class PurchaseInventoryDataTable extends BaseDataTable
                         ->where($tableAlias . '.model', '=', PurchaseInventory::CUSTOM_FIELD_MODEL);
                 });
 
-                // Select the value with the field name as alias
-                // Important: We select the value column and alias it to the field name
-                // so DataTable can find it by 'data' => 'field_name'
                 $fieldName = Str::slug($field->name, '_');
-                $model->addSelect($tableAlias . '.value as ' . $fieldName);
+                $alias = $this->customFieldAliasMap[$fieldName] ?? ('cf_' . $fieldName . '_' . $field->id);
+                $model->addSelect($tableAlias . '.value as ' . $alias);
             }
         }
 
@@ -372,11 +421,11 @@ class PurchaseInventoryDataTable extends BaseDataTable
                 unset($column);
 
                 if (!$found) {
-                    // Ensure the data key matches the select alias in query()
                     $fieldName = Str::slug($field->name, '_');
+                    $alias = $this->customFieldAliasMap[$fieldName] ?? $fieldName;
                     $data[$fieldName] = [
-                        'data' => $fieldName, // This must match the alias in query()
-                        'name' => $fieldName,
+                        'data' => $alias,
+                        'name' => $alias,
                         'title' => __($field->label),
                         'orderable' => true,
                         'searchable' => true,

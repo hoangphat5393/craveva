@@ -12,7 +12,7 @@ class PublishTranslationCommand extends Command
      *
      * @var string
      */
-    protected $name = 'languagepack:publish-translation';
+    protected $signature = 'languagepack:publish-translation';
 
     /**
      * The console command description.

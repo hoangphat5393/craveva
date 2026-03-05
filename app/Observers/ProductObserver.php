@@ -25,9 +25,6 @@ class ProductObserver
     {
         if (!isRunningInConsoleOrSeeding() && user()) {
             self::createEmployeeActivity(user()->id, 'product-created', $product->id, 'product');
-
-
-
         }
     }
 
@@ -46,9 +43,6 @@ class ProductObserver
     {
         if (!isRunningInConsoleOrSeeding() && user()) {
             self::createEmployeeActivity(user()->id, 'product-updated', $product->id, 'product');
-
-
-
         }
     }
 
@@ -56,7 +50,6 @@ class ProductObserver
     {
         if (user()) {
             self::createEmployeeActivity(user()->id, 'product-deleted');
-
         }
     }
 
@@ -66,5 +59,4 @@ class ProductObserver
             $file->delete();
         });
     }
-
 }

@@ -4,9 +4,7 @@ return [
     'menu' => [
         'pricing' => 'Pricing',
         'tiers' => 'Pricing Tier Rules',
-        // DEPRECATED - Use contractPricing instead
         'clientPricing' => 'Client Price Overrides',
-        'contractPricing' => 'Contract Pricing',
         'companyPricing' => 'Client Contract Pricing',
         'clientTiers' => 'Client Tier Assignment',
         'volumeDiscounts' => 'Volume Discount Rules',
@@ -17,7 +15,6 @@ return [
     'addPricingTier' => 'Add Pricing Tier',
     'tierName' => 'Tier Name',
     'addClientPricing' => 'Add Client Pricing',
-    'addContractPricing' => 'Add Contract Pricing',
     'addCompanyPricing' => 'Add Company Pricing',
     'globalDiscount' => 'Global Discount',
     'customPrice' => 'Custom Price',
@@ -42,15 +39,8 @@ return [
     'importPricing' => 'Import Pricing',
     'importType' => 'Import Type',
     'clientProductPricing' => 'Client Product Pricing',
-    'contractProductPricing' => 'Contract Product Pricing',
     'pricingTierItems' => 'Pricing Tier Items',
     'quantity' => 'Quantity',
     'discount' => 'Discount',
     'priority' => 'Priority',
-    'startDate' => 'Start Date',
-    'endDate' => 'End Date',
-    'overlapError' => 'Contract pricing period overlaps with an existing record.',
-    'productRequired' => 'Please select a product.',
-    'startDateRequired' => 'Start date is required and must be today or future.',
-    'endDateAfterStartDate' => 'End date must be greater than or equal to start date.',
 ];

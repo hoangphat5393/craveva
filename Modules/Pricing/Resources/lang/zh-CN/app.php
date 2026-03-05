@@ -4,9 +4,7 @@ return [
     'menu' => [
         'pricing' => '定价',
         'tiers' => '定价层级',
-        // DEPRECATED - Use contractPricing instead
         'clientPricing' => '客户定价',
-        'contractPricing' => '合同定价',
         'clientTiers' => '客户层级',
     ],
     'assignPricingTier' => '分配定价层级',
@@ -38,6 +36,5 @@ return [
     'importPricing' => '导入定价',
     'importType' => '导入类型',
     'clientProductPricing' => '客户产品定价',
-    'contractProductPricing' => '合同产品定价',
     'pricingTierItems' => '定价层级项目',
 ];

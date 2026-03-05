@@ -13,7 +13,6 @@ class ProductFileObserver
         if (!isRunningInConsoleOrSeeding() && user()) {
             $productFiles->last_updated_by = user()->id;
         }
-
     }
 
     public function creating(ProductFiles $productFiles)
@@ -40,5 +39,4 @@ class ProductFileObserver
 
         Files::deleteFile($productFiles->hashname, ProductFiles::FILE_PATH);
     }
-
 }

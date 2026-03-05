@@ -146,7 +146,8 @@ class DeveloperToolsController extends AccountBaseController
         $dbUsername = substr($dbUsername, 0, 32);
 
         $dbPassword = Str::random(20);
-        $gatewayDb = config('developertools.gateway_db', 'api_gateway_db');
+        // NEW: Dynamic Database Name per Company for Virtual Data Layer
+        $gatewayDb = 'api_gateway_' . $company->id;
 
         // Sanitize DB name just in case
         $gatewayDbSafe = preg_replace('/[^a-zA-Z0-9_]/', '', $gatewayDb);
@@ -154,14 +155,75 @@ class DeveloperToolsController extends AccountBaseController
         try {
             Log::info('Attempting to create DB user: ' . $dbUsername);
 
-            // 0. Ensure Database Exists
-            $dbExists = DB::select("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?", [$gatewayDbSafe]);
-            if (empty($dbExists)) {
-                DB::statement("CREATE DATABASE `$gatewayDbSafe` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
-                Log::info('Created database: ' . $gatewayDbSafe);
+            // 1. Create Database if not exists
+            DB::statement("CREATE DATABASE IF NOT EXISTS `$gatewayDbSafe` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+            Log::info('Created/Verified database: ' . $gatewayDbSafe);
+
+            // 2. Create Views for Multi-tenancy (Virtual Data Layer)
+            $mainDb = DB::connection()->getDatabaseName();
+            $tables = DB::select('SHOW TABLES');
+            $tablesKey = "Tables_in_" . $mainDb;
+
+            foreach ($tables as $tableObj) {
+                // Handle different fetch modes or property names
+                $tableName = $tableObj->$tablesKey ?? current((array)$tableObj);
+
+                // Skip internal tables
+                if (in_array($tableName, ['migrations', 'jobs', 'failed_jobs', 'sessions', 'cache', 'password_resets'])) continue;
+
+                // Check if table has company_id using Schema builder
+                if (\Illuminate\Support\Facades\Schema::hasColumn($tableName, 'company_id')) {
+                    // Drop view if exists to ensure clean state
+                    DB::statement("DROP VIEW IF EXISTS `$gatewayDbSafe`.`$tableName`");
+
+                    // Create View filtering by company_id
+                    DB::statement("
+                        CREATE VIEW `$gatewayDbSafe`.`$tableName` AS
+                        SELECT * FROM `$mainDb`.`$tableName`
+                        WHERE `company_id` = {$company->id}
+                    ");
+                }
             }
 
-            // 2. Create MySQL User (Requires privileges)
+            $joinViews = [
+                'order_items' => [
+                    'select' => 'oi.*',
+                    'from' => "`$mainDb`.`order_items` oi JOIN `$mainDb`.`orders` o ON o.id = oi.order_id",
+                    'where' => "o.company_id = {$company->id}",
+                ],
+                'delivery_order_items' => [
+                    'select' => 'doi.*',
+                    'from' => "`$mainDb`.`delivery_order_items` doi JOIN `$mainDb`.`delivery_orders` d ON d.id = doi.delivery_order_id",
+                    'where' => "d.company_id = {$company->id}",
+                ],
+                'purchase_item_images' => [
+                    'select' => 'pii.*',
+                    'from' => "`$mainDb`.`purchase_item_images` pii JOIN `$mainDb`.`purchase_items` pi ON pi.id = pii.purchase_item_id",
+                    'where' => "pi.company_id = {$company->id}",
+                ],
+                'purchase_item_taxes' => [
+                    'select' => 'pit.*',
+                    'from' => "`$mainDb`.`purchase_item_taxes` pit JOIN `$mainDb`.`purchase_items` pi ON pi.id = pit.purchase_item_id",
+                    'where' => "pi.company_id = {$company->id}",
+                ],
+            ];
+
+            foreach ($joinViews as $viewName => $def) {
+                if (!\Illuminate\Support\Facades\Schema::hasTable($viewName)) {
+                    continue;
+                }
+
+                DB::statement("DROP VIEW IF EXISTS `$gatewayDbSafe`.`$viewName`");
+                DB::statement("
+                    CREATE VIEW `$gatewayDbSafe`.`$viewName` AS
+                    SELECT {$def['select']}
+                    FROM {$def['from']}
+                    WHERE {$def['where']}
+                ");
+            }
+            Log::info('Created Views for company: ' . $company->id);
+
+            // 3. Create MySQL User (Requires privileges)
             // Note: This runs as the application's DB user.
             // If it fails, the user needs to grant CREATE USER privileges to the app user.
             // DDL statements cause implicit commit, so we cannot use DB::beginTransaction() here.

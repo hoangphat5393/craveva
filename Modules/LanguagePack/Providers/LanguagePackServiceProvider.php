@@ -26,7 +26,7 @@ class LanguagePackServiceProvider extends ServiceProvider
         $this->registerTranslations();
         $this->registerConfig();
         $this->registerViews();
-        $this->loadMigrationsFrom(__DIR__.'/../Database/Migrations');
+        $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
         Blade::componentNamespace('Modules\\LanguagePack\\Views\\Components', 'languagepack');
         $this->commands([
             PublishTranslationCommand::class
@@ -51,11 +51,12 @@ class LanguagePackServiceProvider extends ServiceProvider
     protected function registerConfig()
     {
         $this->publishes([
-            __DIR__.'/../Config/config.php' => config_path('languagepack.php'),
+            __DIR__ . '/../Config/config.php' => config_path('languagepack.php'),
         ]);
 
         $this->mergeConfigFrom(
-            __DIR__.'/../Config/config.php', 'languagepack'
+            __DIR__ . '/../Config/config.php',
+            'languagepack'
         );
 
 
@@ -74,7 +75,7 @@ class LanguagePackServiceProvider extends ServiceProvider
     {
         $viewPath = base_path('resources/views/modules/languagepack');
 
-        $sourcePath = __DIR__.'/../Resources/views';
+        $sourcePath = __DIR__ . '/../Resources/views';
 
         $this->publishes([
             $sourcePath => $viewPath
@@ -96,9 +97,8 @@ class LanguagePackServiceProvider extends ServiceProvider
 
         if (is_dir($langPath)) {
             $this->loadTranslationsFrom($langPath, 'languagepack');
-        }
-        else {
-            $this->loadTranslationsFrom(__DIR__ .'/../Resources/lang', 'languagepack');
+        } else {
+            $this->loadTranslationsFrom(__DIR__ . '/../Resources/lang', 'languagepack');
         }
     }
 
@@ -111,5 +111,4 @@ class LanguagePackServiceProvider extends ServiceProvider
     {
         return array();
     }
-
 }

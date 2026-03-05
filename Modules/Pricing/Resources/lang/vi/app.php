@@ -4,9 +4,7 @@ return [
     'menu' => [
         'pricing' => 'Định giá',
         'tiers' => 'Quy tắc cấp độ giá',
-        // DEPRECATED - Use contractPricing instead
         'clientPricing' => 'Giá riêng khách hàng',
-        'contractPricing' => 'Định giá hợp đồng',
         'companyPricing' => 'Định giá hợp đồng',
         'clientTiers' => 'Gán cấp độ khách hàng',
         'volumeDiscounts' => 'Quy tắc chiết khấu số lượng',
@@ -18,7 +16,6 @@ return [
     'AddPricingTier' => 'Thêm cấp độ định giá',
     'tierName' => 'Tên cấp độ',
     'addClientPricing' => 'Thêm định giá khách hàng',
-    'addContractPricing' => 'Thêm định giá hợp đồng',
     'customPrice' => 'Giá tùy chỉnh',
     'discountType' => 'Loại giảm giá',
     'discountValue' => 'Giá trị giảm giá',
@@ -41,13 +38,6 @@ return [
     'importPricing' => 'Nhập dữ liệu định giá',
     'importType' => 'Loại nhập',
     'clientProductPricing' => 'Định giá sản phẩm khách hàng',
-    'contractProductPricing' => 'Định giá sản phẩm hợp đồng',
     'pricingTierItems' => 'Mục cấp độ định giá',
     'priority' => 'Độ ưu tiên',
-    'startDate' => 'Ngày bắt đầu',
-    'endDate' => 'Ngày kết thúc',
-    'overlapError' => 'Khoảng thời gian định giá hợp đồng trùng lặp với một bản ghi hiện có.',
-    'productRequired' => 'Vui lòng nhập tên sản phẩm.',
-    'startDateRequired' => 'Ngày bắt đầu không được để trống và phải lớn hơn hoặc bằng ngày hiện tại.',
-    'endDateAfterStartDate' => 'Ngày kết thúc phải lớn hơn hoặc bằng ngày bắt đầu.',
 ];

@@ -155,9 +155,9 @@ class Files
         $originalName = strtolower($uploadedFile->getClientOriginalName());
 
         // Prevent double extensions (e.g. file.php.jpg)
-       // Prevent double extensions (e.g. file.php.jpg)
-       if (preg_match('/\.(php[0-9]?|phtml|phar|sh|pl|cgi|exe|bat|cmd|com|scr|dll|js|jsp|asp|aspx|cer|csr|jspx|war|jar|vb|vbs|wsf|ps1|ps2|xml)(\..+)?$/i', $originalName)) {
-        throw new Exception('You are not allowed to upload files with dangerous extensions');
+        // Prevent double extensions (e.g. file.php.jpg)
+        if (preg_match('/\.(php[0-9]?|phtml|phar|sh|pl|cgi|exe|bat|cmd|com|scr|dll|js|jsp|asp|aspx|cer|csr|jspx|war|jar|vb|vbs|wsf|ps1|ps2|xml)(\..+)?$/i', $originalName)) {
+            throw new Exception('You are not allowed to upload files with dangerous extensions');
         }
 
         if (in_array($extension, $forbiddenExtensions)) {

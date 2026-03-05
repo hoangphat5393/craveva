@@ -260,8 +260,21 @@ class CompanyController extends AccountBaseController
         $this->deletePermission = user()->permission('delete_companies');
         abort_403(!($this->deletePermission == 'all'));
 
-        Company::where('id', $id)->update(['default_task_status' => null]);
-        Company::destroy($id);
+        $company = Company::withoutGlobalScope(CompanyScope::class)->find($id);
+
+        if (!$company) {
+            return Reply::error(__('messages.dataNotFound'));
+        }
+
+        DB::beginTransaction();
+        try {
+            Company::withoutGlobalScope(CompanyScope::class)->where('id', $id)->update(['default_task_status' => null]);
+            $company->delete();
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return Reply::error($e->getMessage());
+        }
 
         return Reply::successWithData(__('messages.deleteSuccess'), ['redirectUrl' => route('superadmin.companies.index')]);
     }

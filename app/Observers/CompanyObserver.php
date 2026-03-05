@@ -232,7 +232,9 @@ class CompanyObserver
 
     public function deleted()
     {
-        UserAuth::doesntHave('users')->delete();
+        UserAuth::whereDoesntHave('users', function ($query) {
+            $query->withoutGlobalScopes([CompanyScope::class, ActiveScope::class]);
+        })->delete();
     }
 
     public function currencies($company)

@@ -40,7 +40,7 @@
                                         <div class="alert alert-warning">
                                             <h4><i class="icon fa fa-warning"></i>IMPORTANT: Save these credentials now!</h4>
                                             <p><strong>Database Host:</strong> {{ request()->getHost() }}</p>
-                                            <p><strong>Database Name:</strong> {{ config('developertools.gateway_db', 'api_gateway_db') }}</p>
+                                            <p><strong>Database Name:</strong> {{ session('new_db_name', config('developertools.gateway_db', 'api_gateway_db')) }}</p>
                                             <p><strong>Username:</strong> {{ session('new_db_username') }}</p>
                                             <p><strong>Password:</strong> <span class="badge badge-warning" style="font-size: 1.2em">{{ session('new_db_password') }}</span></p>
                                             <p class="mb-0">The password will not be shown again.</p>
@@ -94,7 +94,13 @@
                                                 <li><strong>Driver:</strong> MySQL / MariaDB</li>
                                                 <li><strong>Host:</strong> {{ request()->getHost() }}</li>
                                                 <li><strong>Port:</strong> 3306 (Default)</li>
-                                                <li><strong>Database:</strong> {{ config('developertools.gateway_db', 'api_gateway_db') }}</li>
+                                                <li><strong>Database:</strong> 
+                                                    @if(isset($credentials) && $credentials->count() > 0)
+                                                        {{ $credentials->first()->db_database }}
+                                                    @else
+                                                        {{ config('developertools.gateway_db', 'api_gateway_db') }} (Generate credential first)
+                                                    @endif
+                                                </li>
                                                 <li><strong>Username:</strong> (Generated above)</li>
                                                 <li><strong>Password:</strong> (Generated above)</li>
                                             </ul>

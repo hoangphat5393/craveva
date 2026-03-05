@@ -161,25 +161,53 @@ class DeveloperToolsController extends AccountBaseController
 
             // 2. Create Views for Multi-tenancy (Virtual Data Layer)
             $mainDb = DB::connection()->getDatabaseName();
-            $tables = DB::select('SHOW TABLES');
             $tablesKey = "Tables_in_" . $mainDb;
 
-            foreach ($tables as $tableObj) {
-                // Handle different fetch modes or property names
-                $tableName = $tableObj->$tablesKey ?? current((array)$tableObj);
+            // Global tables that should be exposed to AI without company_id filter
+            $globalTables = ['countries', 'currencies', 'languages', 'permissions']; // Removed 'roles' to be safe
 
+            // Optimize: Get all tables that have company_id in one query
+            $companyTables = DB::table('information_schema.COLUMNS')
+                ->where('TABLE_SCHEMA', $mainDb)
+                ->where('COLUMN_NAME', 'company_id')
+                ->pluck('TABLE_NAME')
+                ->toArray();
+
+            // Merge global tables
+            $allTables = array_unique(array_merge($companyTables, $globalTables));
+
+            // Define sensitive tables and their allowed columns to protect data (e.g. passwords)
+            $sensitiveTables = [
+                'users' => 'id, name, email, mobile, image, status, login, created_at, updated_at, company_id',
+            ];
+
+            foreach ($allTables as $tableName) {
                 // Skip internal tables
                 if (in_array($tableName, ['migrations', 'jobs', 'failed_jobs', 'sessions', 'cache', 'password_resets'])) continue;
 
-                // Check if table has company_id using Schema builder
-                if (\Illuminate\Support\Facades\Schema::hasColumn($tableName, 'company_id')) {
-                    // Drop view if exists to ensure clean state
-                    DB::statement("DROP VIEW IF EXISTS `$gatewayDbSafe`.`$tableName`");
+                // Drop view if exists
+                DB::statement("DROP VIEW IF EXISTS `$gatewayDbSafe`.`$tableName`");
 
+                // Determine columns to select
+                $selectColumns = '*';
+                if (array_key_exists($tableName, $sensitiveTables)) {
+                    $selectColumns = $sensitiveTables[$tableName];
+                }
+
+                if (in_array($tableName, $globalTables)) {
+                     // Create View for global tables (No filter)
+                     if (\Illuminate\Support\Facades\Schema::hasTable($tableName)) {
+                        DB::statement("
+                            CREATE VIEW `$gatewayDbSafe`.`$tableName` AS
+                            SELECT $selectColumns FROM `$mainDb`.`$tableName`
+                        ");
+                     }
+                } else {
                     // Create View filtering by company_id
+                    // Since we got these from information_schema where column_name = company_id, we know the column exists.
                     DB::statement("
                         CREATE VIEW `$gatewayDbSafe`.`$tableName` AS
-                        SELECT * FROM `$mainDb`.`$tableName`
+                        SELECT $selectColumns FROM `$mainDb`.`$tableName`
                         WHERE `company_id` = {$company->id}
                     ");
                 }
@@ -258,6 +286,7 @@ class DeveloperToolsController extends AccountBaseController
             // Flash password to session (only show once)
             session()->flash('new_db_password', $dbPassword);
             session()->flash('new_db_username', $dbUsername);
+            session()->flash('new_db_name', $gatewayDb);
 
             return back()->with('success', 'Database credential created successfully. Please save the password now.');
         } catch (\Exception $e) {

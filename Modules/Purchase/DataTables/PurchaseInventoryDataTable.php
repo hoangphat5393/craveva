@@ -135,9 +135,11 @@ class PurchaseInventoryDataTable extends BaseDataTable
 
         // --- Tier 2: Drill-Down / Hidden by Default ---
 
-        $datatables->addColumn('reserved_quantity', function ($row) {
-            return '0'; // Placeholder
-        });
+        if (!isset($this->customFieldAliasMap['reserved_quantity'])) {
+            $datatables->addColumn('reserved_quantity', function ($row) {
+                return '0'; // Placeholder
+            });
+        }
 
         $datatables->addColumn('inventory_value', function ($row) {
             $qty = $row->stocks->first()->net_quantity ?? 0;
@@ -178,7 +180,6 @@ class PurchaseInventoryDataTable extends BaseDataTable
                 'available_quantity',
                 'unit',
                 'status',
-                'reserved_quantity',
                 'inventory_value',
                 'recent_inbound_date',
                 'batch_number',
@@ -312,8 +313,14 @@ class PurchaseInventoryDataTable extends BaseDataTable
         }
 
         if ($this->customFieldGroup && !empty($this->customFieldGroup->fields)) {
+            $addedFieldIds = [];
             foreach ($this->customFieldGroup->fields as $field) {
                 if ($field->name == 'batch_number') continue;
+                
+                if (in_array($field->id, $addedFieldIds)) {
+                    continue;
+                }
+                $addedFieldIds[] = $field->id;
 
                 // Create a unique alias for each custom field join to avoid collisions
                 $tableAlias = 'cf_table_' . $field->id;
@@ -403,6 +410,8 @@ class PurchaseInventoryDataTable extends BaseDataTable
 
         if ($this->customFieldGroup && !empty($this->customFieldGroup->fields)) {
             foreach ($this->customFieldGroup->fields as $field) {
+                if ($field->name == 'batch_number') continue;
+                
                 $found = false;
 
                 // Check if this field overrides a standard column
@@ -414,6 +423,11 @@ class PurchaseInventoryDataTable extends BaseDataTable
                     if ($columnName == $fieldName) {
                         $column['visible'] = ($field->visible == 'true');
                         $column['exportable'] = ($field->export == 1);
+                        
+                        $alias = $this->customFieldAliasMap[$fieldName] ?? ('cf_' . $fieldName . '_' . $field->id);
+                        $column['data'] = $alias;
+                        $column['name'] = $alias;
+
                         $found = true;
                         break;
                     }

@@ -1,6 +1,6 @@
 <?php
 
-return array(
+return [
     'qty' => '数量',
     'val' => '值',
     'sku' => 'SKU',
@@ -29,7 +29,7 @@ return array(
     'availableBalance' => '可用余额',
     'defaultImage' => '默认图片',
 
-    'menu' => array(
+    'menu' => [
         'purchase' => '采购',
         'purchaseSettings' => '采购设置',
         'purchaseNotificationSettings' => '采购通知设置',
@@ -76,13 +76,13 @@ return array(
         'paymentReceipt' => '付款收据',
         'vendorName' => '供应商名称',
         'bankAccount' => '银行账户',
-    ),
-    'purchaseOrder' => array(
+    ],
+    'purchaseOrder' => [
         'vendorPayments' => '供应商付款',
         'addVendorPayments' => '添加供应商付款',
         'purchaseOrder' => '采购订单',
         'vendorName' => '供应商名称',
         'paymentToVendor' => '支付给供应商',
 
-    )
-);
+    ],
+];

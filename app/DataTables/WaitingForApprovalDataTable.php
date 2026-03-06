@@ -4,26 +4,31 @@ namespace App\DataTables;
 
 use App\Helper\Common;
 use App\Models\BaseModel;
-use App\Models\Task;
 use App\Models\CustomField;
-use App\Models\TaskboardColumn;
-use App\Models\Project;
 use App\Models\CustomFieldGroup;
+use App\Models\Project;
+use App\Models\Task;
+use App\Models\TaskboardColumn;
 use App\Models\TaskSetting;
 use Carbon\CarbonInterval;
+use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
-use Illuminate\Support\Facades\DB;
 
 class WaitingForApprovalDataTable extends BaseDataTable
 {
-
     private $editTaskPermission;
+
     private $deleteTaskPermission;
+
     private $viewTaskPermission;
+
     private $changeStatusPermission;
+
     private $viewUnassignedTasksPermission;
+
     private $hasTimelogModule;
+
     private $projectView;
 
     public function __construct($projectView = false)
@@ -44,7 +49,7 @@ class WaitingForApprovalDataTable extends BaseDataTable
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
@@ -52,7 +57,7 @@ class WaitingForApprovalDataTable extends BaseDataTable
         $taskBoardColumns = TaskboardColumn::orderBy('priority')->get();
 
         $datatables = datatables()->eloquent($query);
-        $datatables->addColumn('check', fn($row) => $this->checkBox($row, $row->activeTimer ? true : false));
+        $datatables->addColumn('check', fn ($row) => $this->checkBox($row, $row->activeTimer ? true : false));
         $datatables->addColumn(
             'action',
             function ($row) {
@@ -65,36 +70,35 @@ class WaitingForApprovalDataTable extends BaseDataTable
 
                     <div class="dropdown">
                         <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" type="link"
-                            id="dropdownMenuLink-' . $row->id . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            id="dropdownMenuLink-'.$row->id.'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="icon-options-vertical icons"></i>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-' . $row->id . '" tabindex="0">';
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-'.$row->id.'" tabindex="0">';
 
-                $action .= '<a href="' . route('tasks.show', [$row->id]) . $this->tabUrl . '" class="dropdown-item openRightModal"><i class="fa fa-eye mr-2"></i>' . __('app.view') . '</a>';
+                $action .= '<a href="'.route('tasks.show', [$row->id]).$this->tabUrl.'" class="dropdown-item openRightModal"><i class="fa fa-eye mr-2"></i>'.__('app.view').'</a>';
 
                 if ($row->canEditTicket()) {
-                    if ($isAdmin || ($row->approval_send == 0 && $isEmployee && !$isAdmin) || $row->project_admin == user()->id) {
-                        $action .= '<a class="dropdown-item openRightModal" href="' . route('tasks.edit', [$row->id]) . '">
+                    if ($isAdmin || ($row->approval_send == 0 && $isEmployee && ! $isAdmin) || $row->project_admin == user()->id) {
+                        $action .= '<a class="dropdown-item openRightModal" href="'.route('tasks.edit', [$row->id]).'">
                                 <i class="fa fa-edit mr-2"></i>
-                                ' . trans('app.edit') . '
+                                '.trans('app.edit').'
                             </a>';
                     }
-                    $action .= '<a class="dropdown-item openRightModal" href="' . route('tasks.create') . '?duplicate_task=' . $row->id . '">
+                    $action .= '<a class="dropdown-item openRightModal" href="'.route('tasks.create').'?duplicate_task='.$row->id.'">
                                 <i class="fa fa-clone"></i>
-                                ' . trans('app.duplicate') . '
+                                '.trans('app.duplicate').'
                             </a>';
                 }
 
                 if ($row->canDeleteTicket()) {
-                    if ($isAdmin || ($row->approval_send == 0 && $isEmployee && !$isAdmin)) {
-                        $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-active-running = "' . ($row->activeTimer ? true : false) . '" data-user-id="' . $row->id . '">
+                    if ($isAdmin || ($row->approval_send == 0 && $isEmployee && ! $isAdmin)) {
+                        $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-active-running = "'.($row->activeTimer ? true : false).'" data-user-id="'.$row->id.'">
 
                                     <i class="fa fa-trash mr-2"></i>
-                                    ' . trans('app.delete') . '
+                                    '.trans('app.delete').'
                                 </a>';
                     }
                 }
-
 
                 $action .= '</div>
                     </div>
@@ -104,10 +108,10 @@ class WaitingForApprovalDataTable extends BaseDataTable
             }
         );
 
-        $datatables->editColumn('start_date', fn($row) => Common::dateColor($row->start_date, false));
-        $datatables->editColumn('due_date', fn($row) => Common::dateColor($row->due_date));
+        $datatables->editColumn('start_date', fn ($row) => Common::dateColor($row->start_date, false));
+        $datatables->editColumn('due_date', fn ($row) => Common::dateColor($row->due_date));
 
-        $datatables->editColumn('completed_on', fn($row) => Common::dateColor($row->completed_on));
+        $datatables->editColumn('completed_on', fn ($row) => Common::dateColor($row->completed_on));
 
         $datatables->editColumn('users', function ($row) {
 
@@ -120,15 +124,15 @@ class WaitingForApprovalDataTable extends BaseDataTable
 
             foreach ($row->users as $key => $member) {
                 if ($key < 4) {
-                    $img = '<img data-toggle="tooltip" data-original-title="' . $member->name . '" src="' . $member->image_url . '">';
+                    $img = '<img data-toggle="tooltip" data-original-title="'.$member->name.'" src="'.$member->image_url.'">';
                     $position = $key > 0 ? 'position-absolute' : '';
 
-                    $members .= '<div class="taskEmployeeImg rounded-circle ' . $position . '" style="left:  ' . ($key * 13) . 'px"><a href="' . route('employees.show', $member->id) . '">' . $img . '</a></div> ';
+                    $members .= '<div class="taskEmployeeImg rounded-circle '.$position.'" style="left:  '.($key * 13).'px"><a href="'.route('employees.show', $member->id).'">'.$img.'</a></div> ';
                 }
             }
 
             if (count($row->users) > 4 && $key) {
-                $members .= '<div class="taskEmployeeImg more-user-count text-center rounded-circle border bg-amt-grey position-absolute" style="left:  ' . (($key - 1) * 13) . 'px"><a href="' . route('tasks.show', [$row->id]) . '" class="text-dark f-10">+' . (count($row->users) - 4) . '</a></div> ';
+                $members .= '<div class="taskEmployeeImg more-user-count text-center rounded-circle border bg-amt-grey position-absolute" style="left:  '.(($key - 1) * 13).'px"><a href="'.route('tasks.show', [$row->id]).'" class="text-dark f-10">+'.(count($row->users) - 4).'</a></div> ';
             }
 
             $members .= '</div>';
@@ -142,7 +146,7 @@ class WaitingForApprovalDataTable extends BaseDataTable
                 return ' -- ';
             }
 
-            return '<a href="' . route('tasks.show', [$row->id]) . $this->tabUrl . '" class="text-darkest-grey openRightModal">' . $row->task_short_code . '</a>';
+            return '<a href="'.route('tasks.show', [$row->id]).$this->tabUrl.'" class="text-darkest-grey openRightModal">'.$row->task_short_code.'</a>';
         });
 
         $datatables->addColumn('name', function ($row) {
@@ -155,13 +159,14 @@ class WaitingForApprovalDataTable extends BaseDataTable
             return implode(',', $members);
         });
 
-        $datatables->editColumn('clientName', fn($row) => $row->clientName ?: '--');
-        $datatables->addColumn('task', fn($row) => $row->heading);
-        $datatables->addColumn('task_project_name', fn($row) => !is_null($row->project_id) ? $row->project_name : '--');
+        $datatables->editColumn('clientName', fn ($row) => $row->clientName ?: '--');
+        $datatables->addColumn('task', fn ($row) => $row->heading);
+        $datatables->addColumn('task_project_name', fn ($row) => ! is_null($row->project_id) ? $row->project_name : '--');
 
         $datatables->addColumn('estimateTime', function ($row) {
 
             $time = $row->estimate_hours * 60 + $row->estimate_minutes;
+
             return CarbonInterval::formatHuman($time);
         });
 
@@ -185,57 +190,58 @@ class WaitingForApprovalDataTable extends BaseDataTable
 
                 // Format output based on hours and minutes
                 $timeLog = $hours > 0
-                    ? $hours . 'h' . ($minutes > 0 ? ' ' . sprintf('%02dm', $minutes) : '')
+                    ? $hours.'h'.($minutes > 0 ? ' '.sprintf('%02dm', $minutes) : '')
                     : ($minutes > 0 ? sprintf('%dm', $minutes) : '0s');
             }
 
             if ($estimatedTime < $loggedHours) {
-                $loggedTime = '<span class="text-danger">' . $timeLog . '</span>';
+                $loggedTime = '<span class="text-danger">'.$timeLog.'</span>';
             } else {
-                $loggedTime = '<span>' . $timeLog . '</span>';
+                $loggedTime = '<span>'.$timeLog.'</span>';
             }
+
             return $loggedTime;
         });
         $datatables->editColumn('heading', function ($row) {
             $subTask = $labels = $private = $pin = $timer = '';
 
             if ($row->is_private) {
-                $private = '<span class="badge badge-secondary mr-1"><i class="fa fa-lock"></i> ' . __('app.private') . '</span>';
+                $private = '<span class="badge badge-secondary mr-1"><i class="fa fa-lock"></i> '.__('app.private').'</span>';
             }
 
             if (($row->pinned_task)) {
-                $pin = '<span class="badge badge-secondary mr-1"><i class="fa fa-thumbtack"></i> ' . __('app.pinned') . '</span>';
+                $pin = '<span class="badge badge-secondary mr-1"><i class="fa fa-thumbtack"></i> '.__('app.pinned').'</span>';
             }
 
             if ($row->active_timer_all_count > 1) {
-                $timer .= '<span class="badge badge-primary mr-1" ><i class="fa fa-clock"></i> ' . $row->active_timer_all_count . ' ' . __('modules.projects.activeTimers') . '</span>';
+                $timer .= '<span class="badge badge-primary mr-1" ><i class="fa fa-clock"></i> '.$row->active_timer_all_count.' '.__('modules.projects.activeTimers').'</span>';
             }
 
             if ($row->activeTimer && $row->active_timer_all_count == 1) {
-                $timer .= '<span class="badge badge-primary mr-1" data-toggle="tooltip" data-original-title="' . __('modules.projects.activeTimers') . '" ><i class="fa fa-clock"></i> ' . $row->activeTimer->timer . '</span>';
+                $timer .= '<span class="badge badge-primary mr-1" data-toggle="tooltip" data-original-title="'.__('modules.projects.activeTimers').'" ><i class="fa fa-clock"></i> '.$row->activeTimer->timer.'</span>';
             }
 
             if ($row->subtasks_count > 0) {
-                $subTask .= '<a href="' . route('tasks.show', [$row->id]) . '?view=sub_task" class="openRightModal"><span class="border rounded p-1 f-11 mr-1 text-dark-grey" data-toggle="tooltip" data-original-title="' . __('modules.tasks.subTask') . '"><i class="bi bi-diagram-2"></i> ' . $row->completed_subtasks_count . '/' . $row->subtasks_count . '</span></a>';
+                $subTask .= '<a href="'.route('tasks.show', [$row->id]).'?view=sub_task" class="openRightModal"><span class="border rounded p-1 f-11 mr-1 text-dark-grey" data-toggle="tooltip" data-original-title="'.__('modules.tasks.subTask').'"><i class="bi bi-diagram-2"></i> '.$row->completed_subtasks_count.'/'.$row->subtasks_count.'</span></a>';
             }
 
             foreach ($row->labels as $label) {
-                $labels .= '<span class="badge badge-secondary mr-1" style="background-color: ' . $label->label_color . '">' . $label->label_name . '</span>';
+                $labels .= '<span class="badge badge-secondary mr-1" style="background-color: '.$label->label_color.'">'.$label->label_name.'</span>';
             }
 
             $name = '';
 
-            if (!is_null($row->project_id) && !is_null($row->id)) {
-                $name .= '<h5 class="f-13 text-darkest-grey mb-0">' . $row->heading . '</h5><div class="text-muted f-11">' . $row->project_name . '</div>';
-            } else if (!is_null($row->id)) {
-                $name .= '<h5 class="f-13 text-darkest-grey mb-0 mr-1">' . $row->heading . '</h5>';
+            if (! is_null($row->project_id) && ! is_null($row->id)) {
+                $name .= '<h5 class="f-13 text-darkest-grey mb-0">'.$row->heading.'</h5><div class="text-muted f-11">'.$row->project_name.'</div>';
+            } elseif (! is_null($row->id)) {
+                $name .= '<h5 class="f-13 text-darkest-grey mb-0 mr-1">'.$row->heading.'</h5>';
             }
 
             if ($row->repeat) {
-                $name .= '<span class="badge badge-primary">' . __('modules.events.repeat') . '</span>';
+                $name .= '<span class="badge badge-primary">'.__('modules.events.repeat').'</span>';
             }
 
-            return BaseModel::clickAbleLink(route('tasks.show', [$row->id]) . $this->tabUrl, $name, $subTask . ' ' . $private . ' ' . $pin . ' ' . $timer . ' ' . $labels);
+            return BaseModel::clickAbleLink(route('tasks.show', [$row->id]).$this->tabUrl, $name, $subTask.' '.$private.' '.$pin.' '.$timer.' '.$labels);
         });
         $datatables->editColumn('board_column', function ($row) use ($taskBoardColumns) {
             $taskUsers = $row->users->pluck('id')->toArray();
@@ -248,11 +254,11 @@ class WaitingForApprovalDataTable extends BaseDataTable
                 || ($row->project_admin == user()->id)
             ) {
                 // Check if approval_send is 1, then disable the select dropdown
-                if ($row->approval_send == 1 && $row->need_approval_by_admin == 1 && (in_array('employee', user_roles()) && $row->project_admin != user()->id) && !in_array('admin', user_roles())) {
+                if ($row->approval_send == 1 && $row->need_approval_by_admin == 1 && (in_array('employee', user_roles()) && $row->project_admin != user()->id) && ! in_array('admin', user_roles())) {
                     return '<span class="p-2 disabled-select" data-toggle="tooltip" title=""><i class="fa fa-circle mr-1 text-yellow"
-                            style="color: ' . $row->boardColumn->label_color . '"></i>' . $row->boardColumn->column_name . '</span>';
+                            style="color: '.$row->boardColumn->label_color.'"></i>'.$row->boardColumn->column_name.'</span>';
                 } else {
-                    $status = '<select class="form-control select-picker change-status" data-size="8" data-task-id="' . $row->id . '">';
+                    $status = '<select class="form-control select-picker change-status" data-size="8" data-task-id="'.$row->id.'">';
 
                     foreach ($taskBoardColumns as $item) {
                         $status .= '<option ';
@@ -261,7 +267,7 @@ class WaitingForApprovalDataTable extends BaseDataTable
                             $status .= 'selected';
                         }
 
-                        $status .= '  data-content="<i class=\'fa fa-circle mr-2\' style=\'color: ' . $item->label_color . '\'></i> ' . $item->column_name . '" value="' . $item->slug . '">' . $item->column_name . '</option>';
+                        $status .= '  data-content="<i class=\'fa fa-circle mr-2\' style=\'color: '.$item->label_color.'\'></i> '.$item->column_name.'" value="'.$item->slug.'">'.$item->column_name.'</option>';
                     }
 
                     $status .= '</select>';
@@ -271,11 +277,11 @@ class WaitingForApprovalDataTable extends BaseDataTable
             }
 
             return '<span class="p-2"><i class="fa fa-circle mr-1 text-yellow"
-                    style="color: ' . $row->boardColumn->label_color . '"></i>' . $row->boardColumn->column_name . '</span>';
+                    style="color: '.$row->boardColumn->label_color.'"></i>'.$row->boardColumn->column_name.'</span>';
         });
-        $datatables->addColumn('status', fn($row) => $row->boardColumn->column_name);
-        $datatables->setRowId(fn($row) => 'row-' . $row->id);
-        $datatables->setRowClass(fn($row) => $row->pinned_task ? 'alert-primary' : '');
+        $datatables->addColumn('status', fn ($row) => $row->boardColumn->column_name);
+        $datatables->setRowId(fn ($row) => 'row-'.$row->id);
+        $datatables->setRowClass(fn ($row) => $row->pinned_task ? 'alert-primary' : '');
         $datatables->removeColumn('project_id');
         $datatables->removeColumn('image');
         $datatables->removeColumn('created_image');
@@ -290,7 +296,6 @@ class WaitingForApprovalDataTable extends BaseDataTable
     }
 
     /**
-     * @param Task $model
      * @return mixed
      */
     public function query(Task $model)
@@ -317,7 +322,7 @@ class WaitingForApprovalDataTable extends BaseDataTable
             ->leftJoin('mention_users', 'mention_users.task_id', 'tasks.id');
 
         if (($this->viewUnassignedTasksPermission == 'all'
-                && !in_array('client', user_roles())
+                && ! in_array('client', user_roles())
                 && ($request->assignedTo == 'unassigned' || $request->assignedTo == 'all'))
             || ($request->has('project_admin') && $request->project_admin == 1)
         ) {
@@ -333,7 +338,7 @@ class WaitingForApprovalDataTable extends BaseDataTable
             ->selectRaw(
                 'tasks.id, tasks.approval_send, tasks.estimate_hours, tasks.estimate_minutes, tasks.completed_on, tasks.task_short_code, tasks.start_date, tasks.added_by, projects.need_approval_by_admin, projects.project_name, projects.project_admin, tasks.heading, tasks.repeat, client.name as clientName, creator_user.name as created_by, creator_user.image as created_image, tasks.board_column_id,
              tasks.due_date, taskboard_columns.column_name as board_column, taskboard_columns.slug, taskboard_columns.label_color,
-              tasks.project_id, tasks.is_private ,( select count("id") from pinned where pinned.task_id = tasks.id and pinned.user_id = ' . user()->id . ') as pinned_task'
+              tasks.project_id, tasks.is_private ,( select count("id") from pinned where pinned.task_id = tasks.id and pinned.user_id = '.user()->id.') as pinned_task'
             )
             ->addSelect('tasks.company_id') // Company_id is fetched so the we have fetch company relation with it)
             ->with('users', 'activeTimerAll', 'boardColumn', 'activeTimer', 'timeLogged', 'timeLogged.breaks', 'userActiveTimer', 'userActiveTimer.activeBreak', 'labels', 'taskUsers')
@@ -345,7 +350,7 @@ class WaitingForApprovalDataTable extends BaseDataTable
             $model->where('pinned.user_id', user()->id);
         }
 
-        if (!in_array('admin', user_roles()) && (in_array('employee', user_roles()) && $projectIds->isEmpty())) {
+        if (! in_array('admin', user_roles()) && (in_array('employee', user_roles()) && $projectIds->isEmpty())) {
             if ($request->pinned == 'private') {
                 $model->where(
                     function ($q2) {
@@ -378,8 +383,7 @@ class WaitingForApprovalDataTable extends BaseDataTable
             }
         }
 
-
-        if ($request->assignedTo == 'unassigned' && $this->viewUnassignedTasksPermission == 'all' && !in_array('client', user_roles())) {
+        if ($request->assignedTo == 'unassigned' && $this->viewUnassignedTasksPermission == 'all' && ! in_array('client', user_roles())) {
             $model->whereDoesntHave('users');
         }
 
@@ -413,14 +417,14 @@ class WaitingForApprovalDataTable extends BaseDataTable
             $model->where('task_users.user_id', '=', $request->assignedTo);
         }
 
-        if (($request->has('project_admin') && $request->project_admin != 1) || !$request->has('project_admin')) {
+        if (($request->has('project_admin') && $request->project_admin != 1) || ! $request->has('project_admin')) {
             if ($this->viewTaskPermission == 'owned' && $this->projectView == false) {
                 $model->where(
                     function ($q) use ($request) {
                         $q->where('task_users.user_id', '=', user()->id);
                         $q->orWhere('mention_users.user_id', user()->id);
 
-                        if ($this->viewUnassignedTasksPermission == 'all' && !in_array('client', user_roles()) && $request->assignedTo == 'all') {
+                        if ($this->viewUnassignedTasksPermission == 'all' && ! in_array('client', user_roles()) && $request->assignedTo == 'all') {
                             $q->orWhereDoesntHave('users');
                         }
 
@@ -430,7 +434,7 @@ class WaitingForApprovalDataTable extends BaseDataTable
                     }
                 );
 
-                if ($projectId != 0 && $projectId != null && $projectId != 'all' && !in_array('client', user_roles())) {
+                if ($projectId != 0 && $projectId != null && $projectId != 'all' && ! in_array('client', user_roles())) {
                     $model->where(
                         function ($q) {
                             $q->where('projects.project_admin', '<>', user()->id)
@@ -461,7 +465,7 @@ class WaitingForApprovalDataTable extends BaseDataTable
                             $q->orWhere('projects.client_id', '=', user()->id);
                         }
 
-                        if ($this->viewUnassignedTasksPermission == 'all' && !in_array('client', user_roles()) && ($request->assignedTo == 'unassigned' || $request->assignedTo == 'all')) {
+                        if ($this->viewUnassignedTasksPermission == 'all' && ! in_array('client', user_roles()) && ($request->assignedTo == 'unassigned' || $request->assignedTo == 'all')) {
                             $q->orWhereDoesntHave('users');
                         }
                     }
@@ -473,7 +477,7 @@ class WaitingForApprovalDataTable extends BaseDataTable
             $model->where('creator_user.id', '=', $request->assignedBY);
         }
 
-        if (!in_array('admin', user_roles()) && (in_array('employee', user_roles()) && $projectIds->isEmpty())) {
+        if (! in_array('admin', user_roles()) && (in_array('employee', user_roles()) && $projectIds->isEmpty())) {
 
             $model->where('task_users.user_id', '=', user()->id)->where('tasks.board_column_id', '=', $taskBoardColumn->id);
         } else {
@@ -501,11 +505,11 @@ class WaitingForApprovalDataTable extends BaseDataTable
             $model->where(
                 function ($query) {
                     $safeTerm = Common::safeString(request('searchText'));
-                    $query->where('tasks.heading', 'like', '%' . $safeTerm . '%')
-                        ->orWhere('member.name', 'like', '%' . $safeTerm . '%')
-                        ->orWhere('projects.project_name', 'like', '%' . $safeTerm . '%')
-                        ->orWhere('projects.project_short_code', 'like', '%' . $safeTerm . '%')
-                        ->orWhere('tasks.task_short_code', 'like', '%' . $safeTerm . '%');
+                    $query->where('tasks.heading', 'like', '%'.$safeTerm.'%')
+                        ->orWhere('member.name', 'like', '%'.$safeTerm.'%')
+                        ->orWhere('projects.project_name', 'like', '%'.$safeTerm.'%')
+                        ->orWhere('projects.project_short_code', 'like', '%'.$safeTerm.'%')
+                        ->orWhere('tasks.task_short_code', 'like', '%'.$safeTerm.'%');
                 }
             );
         }
@@ -547,7 +551,7 @@ class WaitingForApprovalDataTable extends BaseDataTable
             );
 
         if (canDataTableExport()) {
-            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
+            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
         }
 
         return $dataTable;
@@ -570,7 +574,7 @@ class WaitingForApprovalDataTable extends BaseDataTable
                 'searchable' => false,
             ],
             __('app.id') => ['data' => 'id', 'name' => 'id', 'title' => __('app.id'), 'visible' => false],
-            __('modules.taskCode') => ['data' => 'short_code', 'name' => 'task_short_code', 'title' => __('modules.taskCode')]
+            __('modules.taskCode') => ['data' => 'short_code', 'name' => 'task_short_code', 'title' => __('modules.taskCode')],
         ];
 
         // if (in_array('timelogs', user_modules())) {
@@ -580,10 +584,10 @@ class WaitingForApprovalDataTable extends BaseDataTable
         $data2 = [
 
             __('app.task') => ['data' => 'heading', 'name' => 'heading', 'exportable' => false, 'title' => __('app.task')],
-            __('app.menu.tasks') . ' ' => ['data' => 'task', 'name' => 'heading', 'visible' => false, 'title' => __('app.menu.tasks')],
+            __('app.menu.tasks').' ' => ['data' => 'task', 'name' => 'heading', 'visible' => false, 'title' => __('app.menu.tasks')],
             __('app.project') => ['data' => 'task_project_name', 'visible' => false, 'name' => 'task_project_name', 'title' => __('app.project')],
             __('modules.tasks.assigned') => ['data' => 'name', 'name' => 'name', 'visible' => false, 'title' => __('modules.tasks.assigned')],
-            __('app.completedOn') => ['data' => 'completed_on', 'name' => 'completed_on', 'title' => __('app.completedOn')]
+            __('app.completedOn') => ['data' => 'completed_on', 'name' => 'completed_on', 'title' => __('app.completedOn')],
         ];
 
         $data = array_merge($data, $data2);
@@ -629,7 +633,7 @@ class WaitingForApprovalDataTable extends BaseDataTable
             $data[__('app.columnStatus')] = ['data' => 'board_column', 'name' => 'board_column', 'exportable' => false, 'searchable' => false, 'title' => __('app.columnStatus')];
         }
 
-        $data[__('app.task') . ' ' . __('app.status')] = ['data' => 'status', 'name' => 'board_column_id', 'visible' => false, 'title' => __('app.task')];
+        $data[__('app.task').' '.__('app.status')] = ['data' => 'status', 'name' => 'board_column_id', 'visible' => false, 'title' => __('app.task')];
 
         $action = [
             Column::computed('action', __('app.action'))
@@ -637,9 +641,9 @@ class WaitingForApprovalDataTable extends BaseDataTable
                 ->printable(false)
                 ->orderable(false)
                 ->searchable(false)
-                ->addClass('text-right pr-20')
+                ->addClass('text-right pr-20'),
         ];
 
-        return array_merge($data, CustomFieldGroup::customFieldsDataMerge(new Task()), $action);
+        return array_merge($data, CustomFieldGroup::customFieldsDataMerge(new Task), $action);
     }
 }

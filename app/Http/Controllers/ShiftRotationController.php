@@ -2,23 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Team;
-use App\Models\User;
 use App\Helper\Reply;
-use Illuminate\Http\Request;
-use App\Models\ShiftRotation;
-use App\Models\EmployeeShift;
-use App\Models\AutomateShift;
-use Illuminate\Support\Facades\DB;
-use App\Models\ShiftRotationSequence;
 use App\Http\Requests\EmployeeShift\StoreAutomateShift;
 use App\Http\Requests\EmployeeShift\StoreShiftRotationRequest;
+use App\Models\AutomateShift;
+use App\Models\EmployeeShift;
+use App\Models\ShiftRotation;
+use App\Models\ShiftRotationSequence;
+use App\Models\Team;
+use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
-
+use Illuminate\Support\Facades\DB;
 
 class ShiftRotationController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -26,7 +24,8 @@ class ShiftRotationController extends AccountBaseController
         $this->activeSettingMenu = 'attendance_settings';
 
         $this->middleware(function ($request, $next) {
-            abort_403(!(user()->permission('manage_attendance_setting') == 'all' && in_array('attendance', user_modules())));
+            abort_403(! (user()->permission('manage_attendance_setting') == 'all' && in_array('attendance', user_modules())));
+
             return $next($request);
         });
     }
@@ -54,7 +53,7 @@ class ShiftRotationController extends AccountBaseController
      */
     public function store(StoreShiftRotationRequest $request)
     {
-        if (!$request->has('shifts')) {
+        if (! $request->has('shifts')) {
             return Reply::error(__('messages.addShift'));
         }
 
@@ -81,6 +80,7 @@ class ShiftRotationController extends AccountBaseController
         }
 
         DB::commit();
+
         return Reply::success(__('messages.recordSaved'));
     }
 
@@ -90,7 +90,7 @@ class ShiftRotationController extends AccountBaseController
         $status = $request->status;
         $rotation = ShiftRotation::find($id);
 
-        if (!is_null($rotation)) {
+        if (! is_null($rotation)) {
             $rotation->status = $status;
             $rotation->save();
         }
@@ -112,7 +112,7 @@ class ShiftRotationController extends AccountBaseController
         $this->shiftRotation = ShiftRotation::with([
             'sequences' => function ($q) {
                 $q->with('rotation', 'shift');
-            }
+            },
         ])->findOrFail($id);
 
         $this->employeeShifts = EmployeeShift::where('shift_name', '<>', 'Day Off')->get();
@@ -120,6 +120,7 @@ class ShiftRotationController extends AccountBaseController
         if (request()->ajax()) {
             return $this->returnAjax($this->view);
         }
+
         return view('attendance-settings.create', $this->data);
     }
 
@@ -128,7 +129,7 @@ class ShiftRotationController extends AccountBaseController
      */
     public function update(StoreShiftRotationRequest $request, $id)
     {
-        if (!$request->has('shifts')) {
+        if (! $request->has('shifts')) {
             return Reply::error(__('messages.addShift'));
         }
 
@@ -166,7 +167,7 @@ class ShiftRotationController extends AccountBaseController
     {
         $rotation = ShiftRotation::findOrFail($id);
 
-        if (!$rotation) {
+        if (! $rotation) {
             return Reply::error(__('messages.rotationNotFound'));
         }
 
@@ -243,13 +244,14 @@ class ShiftRotationController extends AccountBaseController
     {
         if ($request->isMethod('post')) {
             $rotationIds = $request->input('rotation_ids');
-            if (!$rotationIds) {
+            if (! $rotationIds) {
                 return Reply::error(__('messages.noShiftRotation'));
             }
 
-                Artisan::call('assign-employee-shift-rotation', [
-                   '--rotation_ids' => $rotationIds
-                ]);
+            Artisan::call('assign-employee-shift-rotation', [
+                '--rotation_ids' => $rotationIds,
+            ]);
+
             return Reply::success(__('messages.rotationRunSuccessfully'));
         }
 
@@ -261,5 +263,4 @@ class ShiftRotationController extends AccountBaseController
 
         return view('attendance-settings.ajax.run-rotation', $this->data);
     }
-
 }

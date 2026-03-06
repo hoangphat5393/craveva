@@ -2,20 +2,20 @@
 
 namespace App\Observers;
 
-use App\Models\Notification;
-use App\Models\User;
-use App\Models\Order;
-use App\Models\Invoice;
-use App\Models\Payment;
-use App\Events\NewPaymentEvent;
-use App\Scopes\ActiveScope;
-use Exception;
-use Illuminate\Support\Facades\Log;
 use App\Events\InvoicePaymentReceivedEvent;
+use App\Events\NewPaymentEvent;
 use App\Http\Controllers\QuickbookController;
 use App\Models\BankAccount;
 use App\Models\BankTransaction;
+use App\Models\Invoice;
+use App\Models\Notification;
+use App\Models\Order;
+use App\Models\Payment;
+use App\Models\User;
+use App\Scopes\ActiveScope;
 use App\Traits\EmployeeActivityTrait;
+use Exception;
+use Illuminate\Support\Facades\Log;
 
 class PaymentObserver
 {
@@ -23,14 +23,14 @@ class PaymentObserver
 
     public function saving(Payment $payment)
     {
-        if (!isRunningInConsoleOrSeeding() && user()) {
+        if (! isRunningInConsoleOrSeeding() && user()) {
             $payment->last_updated_by = user()->id;
         }
     }
 
     public function creating(Payment $payment)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             $payment->added_by = user() ? user()->id : null;
         }
 
@@ -67,8 +67,7 @@ class PaymentObserver
 
             if ($payment->invoice_id) {
                 $invoice = $payment->invoice;
-            }
-            elseif ($payment->order_id) {
+            } elseif ($payment->order_id) {
                 $invoice = Invoice::where('order_id', $payment->invoice_id)->latest()->first();
             }
 
@@ -76,16 +75,15 @@ class PaymentObserver
 
             if (isset($payment->invoice)) {
                 $due = $payment->invoice->due_amount;
-            }
-            elseif (isset($payment->order)) {
+            } elseif (isset($payment->order)) {
                 $due = $payment->order->total;
             }
 
             $dueAmount = $due - $payment->amount;
 
-            if($dueAmount > 0){
+            if ($dueAmount > 0) {
                 $payment->invoice->status = 'partial';
-            }else{
+            } else {
                 $payment->invoice->status = 'paid';
             }
 
@@ -95,16 +93,15 @@ class PaymentObserver
 
             $invoice->save();
 
-
             try {
-                if (!isRunningInConsoleOrSeeding()) {
+                if (! isRunningInConsoleOrSeeding()) {
 
                     if ($payment->gateway != 'Offline') {
                         event(new InvoicePaymentReceivedEvent($payment));
                     }
 
                     if (quickbooks_setting()->status && quickbooks_setting()->access_token != '') {
-                        $quickBooks = new QuickbookController();
+                        $quickBooks = new QuickbookController;
                         $qbPaymentId = $quickBooks->createPayment($payment);
 
                         $payment->quickbooks_payment_id = $qbPaymentId;
@@ -117,13 +114,13 @@ class PaymentObserver
 
         }
 
-        if (!is_null($payment->bank_account_id) && $payment->status == 'complete') {
+        if (! is_null($payment->bank_account_id) && $payment->status == 'complete') {
 
             $bankAccount = BankAccount::find($payment->bank_account_id);
             $bankBalance = $bankAccount->bank_balance;
             $totalBalance = $bankBalance + $payment->amount;
 
-            $transaction = new BankTransaction();
+            $transaction = new BankTransaction;
             $transaction->company_id = $payment->company_id;
             $transaction->bank_account_id = $payment->bank_account_id;
             $transaction->payment_id = $payment->id;
@@ -146,7 +143,7 @@ class PaymentObserver
             return true;
         }
 
-        if (!is_null($payment->bank_account_id) && $payment->status == 'complete') {
+        if (! is_null($payment->bank_account_id) && $payment->status == 'complete') {
 
             if ($payment->isDirty('bank_account_id')) {
                 $originalAccount = $payment->getOriginal('bank_account_id');
@@ -159,7 +156,7 @@ class PaymentObserver
                     $bankBalance = $bankAccount->bank_balance;
                     $bankBalance -= $oldAmount;
 
-                    $transaction = new BankTransaction();
+                    $transaction = new BankTransaction;
                     $transaction->payment_id = $payment->id;
                     $transaction->invoice_id = $payment->invoice_id;
                     $transaction->type = 'Dr';
@@ -182,7 +179,7 @@ class PaymentObserver
                     $newBankBalance = $newBankAccount->bank_balance;
                     $newBankBalance += $newAmount;
 
-                    $transaction = new BankTransaction();
+                    $transaction = new BankTransaction;
                     $transaction->payment_id = $payment->id;
                     $transaction->invoice_id = $payment->invoice_id;
                     $transaction->type = 'Cr';
@@ -199,8 +196,7 @@ class PaymentObserver
                     $newBankAccount->save();
                 }
 
-            }
-            elseif (!$payment->isDirty('bank_account_id') && $payment->isDirty('amount')) {
+            } elseif (! $payment->isDirty('bank_account_id') && $payment->isDirty('amount')) {
                 $bankAccount = BankAccount::find($payment->bank_account_id);
                 $bankBalance = $bankAccount->bank_balance;
 
@@ -212,7 +208,7 @@ class PaymentObserver
                     $newBalance = $oldAmount - $newAmount;
                     $bankBalance -= $newBalance;
 
-                    $transaction = new BankTransaction();
+                    $transaction = new BankTransaction;
                     $transaction->payment_id = $payment->id;
                     $transaction->invoice_id = $payment->invoice_id;
                     $transaction->type = 'Dr';
@@ -230,7 +226,7 @@ class PaymentObserver
                     $newBalance = $newAmount - $oldAmount;
                     $bankBalance += $newBalance;
 
-                    $transaction = new BankTransaction();
+                    $transaction = new BankTransaction;
                     $transaction->payment_id = $payment->id;
                     $transaction->invoice_id = $payment->invoice_id;
                     $transaction->type = 'Cr';
@@ -247,14 +243,13 @@ class PaymentObserver
                 $bankAccount->bank_balance = round($bankBalance, 2);
                 $bankAccount->save();
 
-            }
-            elseif ($payment->isDirty('status')) {
+            } elseif ($payment->isDirty('status')) {
                 $bankAccount = BankAccount::find($payment->bank_account_id);
                 $bankBalance = $bankAccount->bank_balance;
 
                 $newBalance = $bankBalance + $payment->amount;
 
-                $transaction = new BankTransaction();
+                $transaction = new BankTransaction;
                 $transaction->payment_id = $payment->id;
                 $transaction->type = 'Cr';
                 $transaction->bank_account_id = $payment->bank_account_id;
@@ -275,12 +270,12 @@ class PaymentObserver
         if ($payment->isDirty('status') && $payment->status != 'complete') {
             $bankAccount = BankAccount::find($payment->bank_account_id);
 
-            if (!is_null($bankAccount)) {
+            if (! is_null($bankAccount)) {
                 $bankBalance = $bankAccount->bank_balance;
 
                 $newBalance = $bankBalance - $payment->amount;
 
-                $transaction = new BankTransaction();
+                $transaction = new BankTransaction;
                 $transaction->payment_id = $payment->id;
                 $transaction->type = 'Dr';
                 $transaction->bank_account_id = $payment->bank_account_id;
@@ -297,12 +292,11 @@ class PaymentObserver
             }
         }
 
-
     }
 
     public function updated(Payment $payment)
     {
-        if (!isRunningInConsoleOrSeeding() && user()) {
+        if (! isRunningInConsoleOrSeeding() && user()) {
             self::createEmployeeActivity(user()->id, 'payment-updated', $payment->id, 'payment');
 
         }
@@ -310,7 +304,7 @@ class PaymentObserver
 
     public function deleting(Payment $payment)
     {
-        if (!is_null($payment->bank_account_id) && $payment->status == 'complete') {
+        if (! is_null($payment->bank_account_id) && $payment->status == 'complete') {
 
             $account = $payment->bank_account_id;
             $amount = $payment->amount;
@@ -321,7 +315,7 @@ class PaymentObserver
                 $bankBalance = $bankAccount->bank_balance;
                 $bankBalance -= $amount;
 
-                $transaction = new BankTransaction();
+                $transaction = new BankTransaction;
                 $transaction->payment_id = $payment->id;
                 $transaction->invoice_id = $payment->invoice_id;
                 $transaction->type = 'Dr';
@@ -345,11 +339,9 @@ class PaymentObserver
 
             if ($due <= 0) {
                 $payment->invoice->status = 'paid';
-            }
-            else if ((float)$due >= (float)$payment->invoice->total) {
+            } elseif ((float) $due >= (float) $payment->invoice->total) {
                 $payment->invoice->status = 'unpaid';
-            }
-            else {
+            } else {
                 $payment->invoice->status = 'partial';
             }
 
@@ -364,9 +356,9 @@ class PaymentObserver
             $order->save();
         }
 
-        if (!is_null($payment->quickbooks_payment_id)) {
+        if (! is_null($payment->quickbooks_payment_id)) {
             if (quickbooks_setting()->status && quickbooks_setting()->access_token != '') {
-                $quickBooks = new QuickbookController();
+                $quickBooks = new QuickbookController;
                 $quickBooks->deletePayment($payment);
             }
         }
@@ -383,6 +375,4 @@ class PaymentObserver
 
         }
     }
-
 }
-

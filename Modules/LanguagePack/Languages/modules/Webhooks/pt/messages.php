@@ -1,5 +1,6 @@
-<?php 
+<?php
+
 return [
-  'webhookNotFound' => 'Webhook not found',
-  'headerNotFound' => 'Header not found',
+    'webhookNotFound' => 'Webhook not found',
+    'headerNotFound' => 'Header not found',
 ];

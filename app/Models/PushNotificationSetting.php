@@ -14,6 +14,7 @@ namespace App\Models;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read mixed $icon
  * @property-read mixed $notification_logo_url
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|PushNotificationSetting newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|PushNotificationSetting newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|PushNotificationSetting query()
@@ -24,20 +25,19 @@ namespace App\Models;
  * @method static \Illuminate\Database\Eloquent\Builder|PushNotificationSetting whereOnesignalRestApiKey($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PushNotificationSetting whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PushNotificationSetting whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class PushNotificationSetting extends BaseModel
 {
-
     protected $appends = ['notification_logo_url'];
 
     public function getNotificationLogoUrlAttribute()
     {
         if (is_null($this->notification_logo)) {
-            return 'http://via.placeholder.com/200x150.png?text=' . __('modules.slackSettings.uploadSlackLogo');
+            return 'http://via.placeholder.com/200x150.png?text='.__('modules.slackSettings.uploadSlackLogo');
         }
 
-        return asset_url_local_s3('notification-logo/' . $this->notification_logo);
+        return asset_url_local_s3('notification-logo/'.$this->notification_logo);
     }
-
 }

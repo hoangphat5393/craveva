@@ -9,16 +9,16 @@ use App\Models\DiscussionCategory;
 
 class DiscussionCategoryController extends AccountBaseController
 {
-
     /**
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
     public function create()
     {
         $this->addPermission = user()->permission('manage_discussion_category');
-        abort_403(!in_array($this->addPermission, ['all']));
+        abort_403(! in_array($this->addPermission, ['all']));
 
         $this->categories = DiscussionCategory::all();
+
         return view('discussions.create_category', $this->data);
 
     }
@@ -26,19 +26,18 @@ class DiscussionCategoryController extends AccountBaseController
     public function store(StoreRequest $request)
     {
         $this->addPermission = user()->permission('manage_discussion_category');
-        abort_403(!in_array($this->addPermission, ['all']));
+        abort_403(! in_array($this->addPermission, ['all']));
 
-
-        $category = new DiscussionCategory();
+        $category = new DiscussionCategory;
         $category->name = $request->category_name;
         $category->color = $request->color;
         $category->save();
 
         $categories = DiscussionCategory::all();
-        $options = '<option value="">' . __('app.all') . '</option>';
+        $options = '<option value="">'.__('app.all').'</option>';
 
         foreach ($categories as $item) {
-            $options .= '<option data-content="<i class=\'fa fa-circle mr-2\' style=\'color: ' . $item->color . '\'></i> ' . $item->name . '" value="' . $item->id . '"> ' . $item->name . ' </option>';
+            $options .= '<option data-content="<i class=\'fa fa-circle mr-2\' style=\'color: '.$item->color.'\'></i> '.$item->name.'" value="'.$item->id.'"> '.$item->name.' </option>';
         }
 
         return Reply::successWithData(__('messages.recordSaved'), ['data' => $options]);
@@ -60,10 +59,10 @@ class DiscussionCategoryController extends AccountBaseController
         $category->save();
 
         $categories = DiscussionCategory::all();
-        $options = '<option value="">' . __('app.all') . '</option>';
+        $options = '<option value="">'.__('app.all').'</option>';
 
         foreach ($categories as $item) {
-            $options .= '<option data-content="<i class=\'fa fa-circle mr-2\' style=\'color: ' . $item->color . '\'></i> ' . $item->name . '" value="' . $item->id . '"> ' . $item->name . ' </option>';
+            $options .= '<option data-content="<i class=\'fa fa-circle mr-2\' style=\'color: '.$item->color.'\'></i> '.$item->name.'" value="'.$item->id.'"> '.$item->name.' </option>';
         }
 
         return Reply::successWithData(__('messages.updateSuccess'), ['data' => $options]);
@@ -75,8 +74,8 @@ class DiscussionCategoryController extends AccountBaseController
         abort_403($this->addPermission !== 'all');
 
         DiscussionCategory::destroy($id);
+
         return Reply::success(__('messages.deleteSuccess'));
 
     }
-
 }

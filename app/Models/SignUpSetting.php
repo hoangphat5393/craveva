@@ -10,10 +10,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @method static \Illuminate\Database\Eloquent\Builder|SignUpSetting newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|SignUpSetting newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|SignUpSetting query()
+ *
  * @mixin \Eloquent
  */
 class SignUpSetting extends BaseModel
 {
-
     use HasFactory;
 }

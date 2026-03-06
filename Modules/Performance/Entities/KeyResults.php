@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class KeyResults extends BaseModel
 {
-
     use HasCompany;
 
     protected $table = 'key_results';
@@ -36,5 +35,4 @@ class KeyResults extends BaseModel
 
         return round($currentVal / $this->target_value * 100, 2);
     }
-
 }

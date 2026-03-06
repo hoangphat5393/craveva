@@ -11,14 +11,11 @@ use Illuminate\Support\Facades\Notification;
 
 class FileUploadListener
 {
-
     /**
      * Handle the event.
      *
-     * @param FileUploadEvent $event
      * @return void
      */
-
     public function handle(FileUploadEvent $event)
     {
         $project = Project::findOrFail($event->fileUpload->project_id);
@@ -34,5 +31,4 @@ class FileUploadListener
         }
 
     }
-
 }

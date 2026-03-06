@@ -2,17 +2,17 @@
 
 namespace App\Observers;
 
-use App\Models\Event;
-use App\Services\Google;
-use App\Models\Notification;
-use App\Models\EventAttendee;
-use App\Models\GoogleCalendarModule;
-use Carbon\Carbon;
-use App\Models\EventFile;
 use App\Helper\Files;
+use App\Models\Event;
+use App\Models\EventAttendee;
+use App\Models\EventFile;
+use App\Models\GoogleCalendarModule;
+use App\Models\Notification;
+use App\Services\Google;
+use App\Traits\EmployeeActivityTrait;
+use Carbon\Carbon;
 use Google\Service\Exception;
 use Google_Service_Calendar_Event;
-use App\Traits\EmployeeActivityTrait;
 
 class EventObserver
 {
@@ -20,7 +20,7 @@ class EventObserver
 
     public function saving(Event $event)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             $event->last_updated_by = user()->id;
 
             // Add/Update event to google calendar
@@ -30,21 +30,21 @@ class EventObserver
 
     public function created(Event $event)
     {
-        if (!isRunningInConsoleOrSeeding() && user()) {
+        if (! isRunningInConsoleOrSeeding() && user()) {
             self::createEmployeeActivity(user()->id, 'event-created', $event->id, 'event');
         }
     }
 
     public function updated(Event $event)
     {
-        if (!isRunningInConsoleOrSeeding() && user()) {
+        if (! isRunningInConsoleOrSeeding() && user()) {
             self::createEmployeeActivity(user()->id, 'event-updated', $event->id, 'event');
         }
     }
 
     public function creating(Event $event)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             $event->added_by = user()->id;
         }
 
@@ -56,7 +56,7 @@ class EventObserver
     public function deleting(Event $event)
     {
         /* Start of deleting event from google calendar */
-        $google = new Google();
+        $google = new Google;
         $googleAccount = company();
 
         if (company()->google_calendar_status == 'active' && $googleAccount->google_calendar_verification_status == 'verified' && $googleAccount->token) {
@@ -81,7 +81,7 @@ class EventObserver
         Notification::deleteNotification($notifyData, $event->id);
 
         $event->files()->each(function ($file) {
-            Files::deleteDirectory(EventFile::FILE_PATH . '/' . $file->event_id);
+            Files::deleteDirectory(EventFile::FILE_PATH.'/'.$file->event_id);
         });
 
         /* End of deleting event from google calendar */
@@ -93,7 +93,7 @@ class EventObserver
         $googleAccount = company();
 
         if (company()->google_calendar_status == 'active' && $googleAccount->google_calendar_verification_status == 'verified' && $googleAccount->token && $module->event_status == 1) {
-            $google = new Google();
+            $google = new Google;
             $attendiesData = [];
 
             $attendees = EventAttendee::with(['user'])->whereHas('user', function ($query) {
@@ -101,7 +101,7 @@ class EventObserver
             })->where('event_id', $event->id)->get();
 
             foreach ($attendees as $attend) {
-                if (!is_null($attend->user) && !is_null($attend->user->email)) {
+                if (! is_null($attend->user) && ! is_null($attend->user->email)) {
                     $attendiesData[] = ['email' => $attend->user->email];
                 }
             }
@@ -114,34 +114,33 @@ class EventObserver
                 // Create event
                 $google = $google->connectUsing($googleAccount->token);
 
-                $eventData = new Google_Service_Calendar_Event(array(
+                $eventData = new Google_Service_Calendar_Event([
                     'summary' => $event->event_name,
                     'location' => $event->where,
                     'description' => $event->description,
                     'colorId' => 3,
-                    'start' => array(
+                    'start' => [
                         'dateTime' => $startDate,
                         'timeZone' => $googleAccount->timezone,
-                    ),
-                    'end' => array(
+                    ],
+                    'end' => [
                         'dateTime' => $endDate,
                         'timeZone' => $googleAccount->timezone,
-                    ),
+                    ],
                     'attendees' => $attendiesData,
-                    'reminders' => array(
+                    'reminders' => [
                         'useDefault' => false,
-                        'overrides' => array(
-                            array('method' => 'email', 'minutes' => 24 * 60),
-                            array('method' => 'popup', 'minutes' => 10),
-                        ),
-                    ),
-                ));
+                        'overrides' => [
+                            ['method' => 'email', 'minutes' => 24 * 60],
+                            ['method' => 'popup', 'minutes' => 10],
+                        ],
+                    ],
+                ]);
 
                 try {
                     if ($event->event_id) {
                         $results = $google->service('Calendar')->events->patch('primary', $event->event_id, $eventData);
-                    }
-                    else {
+                    } else {
                         $results = $google->service('Calendar')->events->insert('primary', $eventData);
                     }
 
@@ -170,5 +169,4 @@ class EventObserver
 
         }
     }
-
 }

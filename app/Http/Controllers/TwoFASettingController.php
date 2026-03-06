@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Helper\Reply;
-use Illuminate\Http\Request;
 use App\Events\TwoFactorCodeEvent;
-use Illuminate\Support\Facades\Response;
+use App\Helper\Reply;
 use App\Http\Requests\TwoFaCodeValidation;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Response;
 
 class TwoFASettingController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -26,7 +25,7 @@ class TwoFASettingController extends AccountBaseController
         return view('auth.password-confirm-modal', $this->data);
     }
 
-    //phpcs:ignore
+    // phpcs:ignore
     public function update(Request $request, $id)
     {
         $user = auth()->user();
@@ -47,7 +46,7 @@ class TwoFASettingController extends AccountBaseController
             } elseif ($method == 'google_authenticator' && $status == 'disable') {
                 $twoFaVerifyVia = 'email';
             }
-        } elseif ($currentMethod != $method && !is_null($currentMethod) && $status == 'enable') {
+        } elseif ($currentMethod != $method && ! is_null($currentMethod) && $status == 'enable') {
             $twoFaVerifyVia = 'both';
         }
 
@@ -80,7 +79,7 @@ class TwoFASettingController extends AccountBaseController
         // File name that will be used in the download
         $fileName = 'codes.txt';
 
-        $headers = ['Content-type' => 'text/plain', 'Content-Disposition' => sprintf('attachment; filename="%s"', $fileName),'Content-Length' => strlen($content)];
+        $headers = ['Content-type' => 'text/plain', 'Content-Disposition' => sprintf('attachment; filename="%s"', $fileName), 'Content-Length' => strlen($content)];
 
         return Response::make($content, 200, $headers);
     }
@@ -94,7 +93,7 @@ class TwoFASettingController extends AccountBaseController
     {
         $confirmed = $request->user()->confirmTwoFactorAuth($request->code);
 
-        if (!$confirmed) {
+        if (! $confirmed) {
             return Reply::error(__('messages.invalid2FaCode'));
         }
 
@@ -106,6 +105,7 @@ class TwoFASettingController extends AccountBaseController
         $checkUser = auth()->user();
         $checkUser->generateTwoFactorCode();
         event(new TwoFactorCodeEvent($checkUser->user));
+
         return view('security-settings.ajax.validate-email-confirm-modal', $this->data);
     }
 
@@ -141,5 +141,4 @@ class TwoFASettingController extends AccountBaseController
 
         return Reply::success(__('messages.updateSuccess'));
     }
-
 }

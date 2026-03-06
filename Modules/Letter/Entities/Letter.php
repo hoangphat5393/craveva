@@ -37,5 +37,4 @@ class Letter extends BaseModel
             },
         );
     }
-
 }

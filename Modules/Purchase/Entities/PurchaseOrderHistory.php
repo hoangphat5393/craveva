@@ -10,8 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PurchaseOrderHistory extends BaseModel
 {
-
-    use HasFactory, HasCompany;
+    use HasCompany, HasFactory;
 
     protected $fillable = [];
 
@@ -19,5 +18,4 @@ class PurchaseOrderHistory extends BaseModel
     {
         return $this->belongsTo(User::class, 'user_id');
     }
-
 }

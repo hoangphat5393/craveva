@@ -7,7 +7,6 @@ use Illuminate\View\Component;
 
 class FilterBox extends Component
 {
-
     /**
      * Create a new component instance.
      *
@@ -27,5 +26,4 @@ class FilterBox extends Component
     {
         return view('components.filters.filter-box');
     }
-
 }

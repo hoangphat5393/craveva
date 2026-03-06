@@ -3,20 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Helper\Reply;
-use Illuminate\Http\Request;
+use App\Http\Requests\KnowledgeBase\KnowledgeBaseStore;
 use App\Models\KnowledgeBase;
 use App\Models\KnowledgeBaseCategory;
-use App\Http\Requests\KnowledgeBase\KnowledgeBaseStore;
+use Illuminate\Http\Request;
 
 class KnowledgeBaseController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'app.menu.knowledgebase';
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('knowledgebase', $this->user->modules));
+            abort_403(! in_array('knowledgebase', $this->user->modules));
 
             return $next($request);
         });
@@ -27,16 +26,15 @@ class KnowledgeBaseController extends AccountBaseController
      *
      * @return \Illuminate\Http\Response
      */
-
     public function index()
     {
         $viewPermission = user()->permission('view_knowledgebase');
-        abort_403(!in_array($viewPermission, ['all', 'added']));
+        abort_403(! in_array($viewPermission, ['all', 'added']));
 
         $this->categories = KnowledgeBaseCategory::with('knowledgebase')->get();
         $this->knowledgebases = KnowledgeBase::with('knowledgebasecategory');
 
-        if (!in_array('admin', user_roles())) {
+        if (! in_array('admin', user_roles())) {
             $this->knowledgebases = $this->knowledgebases->where('to', in_array('client', user_roles()) ? 'client' : 'employee');
 
             // Show only those records which has  knowledgebase means do not show categories that
@@ -49,8 +47,7 @@ class KnowledgeBaseController extends AccountBaseController
             $this->activeMenu = str_replace(' ', '_', $category->name);
             $this->knowledgebases = $this->knowledgebases->where('category_id', request('id'));
 
-        }
-        else {
+        } else {
             $this->activeMenu = 'all_category';
         }
 
@@ -68,10 +65,10 @@ class KnowledgeBaseController extends AccountBaseController
     public function create($id = null)
     {
         $this->addPermission = user()->permission('add_knowledgebase');
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
 
         $this->pageTitle = __('modules.knowledgeBase.addknowledgebase');
-        $knowledgeBase = new KnowledgeBase();
+        $knowledgeBase = new KnowledgeBase;
         $this->knowledgeBase = $knowledgeBase->appends;
         $this->categories = KnowledgeBaseCategory::all();
         $this->selected_category_id = $id;
@@ -94,9 +91,9 @@ class KnowledgeBaseController extends AccountBaseController
     public function store(KnowledgeBaseStore $request)
     {
         $this->addPermission = user()->permission('add_knowledgebase');
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
 
-        $knowledgeBase = new KnowledgeBase();
+        $knowledgeBase = new KnowledgeBase;
 
         $knowledgeBase->to = $request->to;
         $knowledgeBase->heading = $request->heading;
@@ -105,7 +102,7 @@ class KnowledgeBaseController extends AccountBaseController
         $knowledgeBase->added_by = user()->id;
         $knowledgeBase->save();
 
-        $redirectUrl = route('knowledgebase.index') . '?id=' . $knowledgeBase->category_id;
+        $redirectUrl = route('knowledgebase.index').'?id='.$knowledgeBase->category_id;
 
         return Reply::successWithData(__('messages.recordSaved'), ['redirectUrl' => $redirectUrl, 'knowledgeBaseId' => $knowledgeBase->id]);
     }
@@ -113,13 +110,13 @@ class KnowledgeBaseController extends AccountBaseController
     /**
      * Display the specified resource.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
         $this->viewPermission = user()->permission('view_knowledgebase');
-        abort_403(!in_array($this->viewPermission, ['all', 'added']));
+        abort_403(! in_array($this->viewPermission, ['all', 'added']));
 
         $this->knowledge = KnowledgeBase::findOrFail($id);
 
@@ -137,14 +134,13 @@ class KnowledgeBaseController extends AccountBaseController
     /**
      * Show the form for editing the specified resource.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-
     public function edit($id)
     {
         $this->editPermission = user()->permission('edit_knowledgebase');
-        abort_403(!in_array($this->editPermission, ['all', 'added']));
+        abort_403(! in_array($this->editPermission, ['all', 'added']));
 
         $this->knowledge = KnowledgeBase::findOrFail($id);
         $this->categories = KnowledgeBaseCategory::all();
@@ -163,7 +159,7 @@ class KnowledgeBaseController extends AccountBaseController
     public function update(KnowledgeBaseStore $request, $id)
     {
         $this->editPermission = user()->permission('edit_knowledgebase');
-        abort_403(!in_array($this->editPermission, ['all', 'added']));
+        abort_403(! in_array($this->editPermission, ['all', 'added']));
 
         $knowledge = KnowledgeBase::findOrFail($id);
         $knowledge->heading = $request->heading;
@@ -173,7 +169,7 @@ class KnowledgeBaseController extends AccountBaseController
         $knowledge->added_by = user()->id;
         $knowledge->save();
 
-        $redirectUrl = route('knowledgebase.index') . '?id=' . $knowledge->category_id;
+        $redirectUrl = route('knowledgebase.index').'?id='.$knowledge->category_id;
 
         return Reply::successWithData(__('messages.updateSuccess'), ['redirectUrl' => $redirectUrl]);
     }
@@ -181,13 +177,13 @@ class KnowledgeBaseController extends AccountBaseController
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
         $this->deletePermission = user()->permission('delete_knowledgebase');
-        abort_403(!in_array($this->deletePermission, ['all', 'added']));
+        abort_403(! in_array($this->deletePermission, ['all', 'added']));
 
         KnowledgeBase::destroy($id);
 
@@ -198,19 +194,19 @@ class KnowledgeBaseController extends AccountBaseController
     public function applyQuickAction(Request $request)
     {
         switch ($request->action_type) {
-        case 'delete':
-            $this->deleteRecords($request);
+            case 'delete':
+                $this->deleteRecords($request);
 
-            return Reply::success(__('messages.deleteSuccess'));
-        default:
-            return Reply::error(__('messages.selectAction'));
+                return Reply::success(__('messages.deleteSuccess'));
+            default:
+                return Reply::error(__('messages.selectAction'));
         }
     }
 
     protected function deleteRecords($request)
     {
         $this->deletePermission = user()->permission('delete_knowledgebase');
-        abort_403(!in_array($this->deletePermission, ['all', 'added']));
+        abort_403(! in_array($this->deletePermission, ['all', 'added']));
 
         KnowledgeBase::whereIn('id', explode(',', $request->row_ids))->forceDelete();
     }
@@ -220,18 +216,18 @@ class KnowledgeBaseController extends AccountBaseController
         $model = KnowledgeBase::query();
 
         if ($srch_query != '') {
-            $model->where('heading', 'LIKE', '%' . $srch_query . '%');
+            $model->where('heading', 'LIKE', '%'.$srch_query.'%');
         }
 
-        if (in_array('employee', user_roles()) && !in_array('admin', user_roles())) {
+        if (in_array('employee', user_roles()) && ! in_array('admin', user_roles())) {
             $model->where('to', 'employee');
         }
 
-        if (in_array('client', user_roles()) && !in_array('admin', user_roles())) {
+        if (in_array('client', user_roles()) && ! in_array('admin', user_roles())) {
             $model->where('to', 'client');
         }
 
-        if (user()->permission('view_knowledgebase') == 'added' && !in_array('admin', user_roles())) {
+        if (user()->permission('view_knowledgebase') == 'added' && ! in_array('admin', user_roles())) {
             $model->where('added_by', user()->id);
         }
 
@@ -248,5 +244,4 @@ class KnowledgeBaseController extends AccountBaseController
         return Reply::dataOnly(['status' => 'success', 'html' => $html]);
 
     }
-
 }

@@ -10,7 +10,6 @@ use Illuminate\Database\Seeder;
 
 class NonSaasToSaasSeeder extends Seeder
 {
-
     /**
      * Run the database seeds.
      *
@@ -18,7 +17,7 @@ class NonSaasToSaasSeeder extends Seeder
      */
     public function run()
     {
-        if (!config('app.non_saas_to_saas_enabled')) {
+        if (! config('app.non_saas_to_saas_enabled')) {
             return true;
         }
 
@@ -60,5 +59,4 @@ class NonSaasToSaasSeeder extends Seeder
         $globalSetting->currency_id = GlobalCurrency::first()->id;
         $globalSetting->save();
     }
-
 }

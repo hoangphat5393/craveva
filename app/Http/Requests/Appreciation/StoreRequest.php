@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class StoreRequest extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -27,8 +26,7 @@ class StoreRequest extends CoreRequest
         return [
             'award_date' => 'required',
             'given_to' => 'required',
-            'award' => 'required'
+            'award' => 'required',
         ];
     }
-
 }

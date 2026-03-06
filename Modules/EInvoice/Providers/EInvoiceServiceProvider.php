@@ -9,7 +9,6 @@ use Modules\EInvoice\Console\ActivateModuleCommand;
 
 class EInvoiceServiceProvider extends ServiceProvider
 {
-
     /**
      * Indicates if loading of the provider is deferred.
      *
@@ -77,11 +76,11 @@ class EInvoiceServiceProvider extends ServiceProvider
         $sourcePath = __DIR__.'/../Resources/views';
 
         $this->publishes([
-            $sourcePath => $viewPath
+            $sourcePath => $viewPath,
         ]);
 
         $this->loadViewsFrom(array_merge(array_map(function ($path) {
-            return $path . '/modules/einvoice';
+            return $path.'/modules/einvoice';
         }, Config::get('view.paths')), [$sourcePath]), 'einvoice');
     }
 
@@ -96,9 +95,8 @@ class EInvoiceServiceProvider extends ServiceProvider
 
         if (is_dir($langPath)) {
             $this->loadTranslationsFrom($langPath, 'einvoice');
-        }
-        else {
-            $this->loadTranslationsFrom(__DIR__ .'/../Resources/lang', 'einvoice');
+        } else {
+            $this->loadTranslationsFrom(__DIR__.'/../Resources/lang', 'einvoice');
         }
     }
 
@@ -109,7 +107,6 @@ class EInvoiceServiceProvider extends ServiceProvider
      */
     public function provides()
     {
-        return array();
+        return [];
     }
-
 }

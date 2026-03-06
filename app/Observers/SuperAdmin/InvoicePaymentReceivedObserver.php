@@ -2,16 +2,15 @@
 
 namespace App\Observers\SuperAdmin;
 
-use App\Models\SuperAdmin\ClientPayment;
 use App\Models\Invoice;
-use App\Notifications\InvoicePaymentReceived;
+use App\Models\SuperAdmin\ClientPayment;
 use App\Models\User;
+use App\Notifications\InvoicePaymentReceived;
 use Exception;
 use Illuminate\Support\Facades\Notification;
 
 class InvoicePaymentReceivedObserver
 {
-
     public function created(ClientPayment $payment)
     {
         if (isRunningInConsoleOrSeeding()) {
@@ -27,11 +26,9 @@ class InvoicePaymentReceivedObserver
                 Notification::send($admins, new InvoicePaymentReceived($invoice));
             }
 
-
         } catch (Exception $e) {
             info($e->getMessage());
         }
 
     }
-
 }

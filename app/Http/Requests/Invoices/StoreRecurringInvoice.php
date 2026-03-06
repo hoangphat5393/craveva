@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class StoreRecurringInvoice extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -32,11 +31,11 @@ class StoreRecurringInvoice extends CoreRequest
             'sub_total' => 'required',
             'total' => 'required',
             'currency_id' => 'required',
-            'billing_cycle' => 'required|integer|min:-1'
+            'billing_cycle' => 'required|integer|min:-1',
         ];
 
-        if (!$this->has('immediate_invoice')) {
-            $rules['issue_date'] = 'required|date_format:"' . $setting->date_format . '"|after:'.now()->format($setting->date_format);
+        if (! $this->has('immediate_invoice')) {
+            $rules['issue_date'] = 'required|date_format:"'.$setting->date_format.'"|after:'.now()->format($setting->date_format);
         }
 
         if ($this->show_shipping_address == 'on') {
@@ -49,5 +48,4 @@ class StoreRecurringInvoice extends CoreRequest
 
         return $rules;
     }
-
 }

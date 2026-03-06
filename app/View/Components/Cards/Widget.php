@@ -7,11 +7,14 @@ use Illuminate\View\Component;
 
 class Widget extends Component
 {
-
     public $title;
+
     public $value;
+
     public $icon;
+
     public $info;
+
     public $widgetId;
 
     /**
@@ -37,5 +40,4 @@ class Widget extends Component
     {
         return view('components.cards.widget');
     }
-
 }

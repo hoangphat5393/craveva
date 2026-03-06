@@ -4,20 +4,18 @@ namespace App\Observers;
 
 use App\Events\DealEvent;
 use App\Models\Deal;
+use App\Models\Lead;
 use App\Models\LeadAgent;
+use App\Models\LeadSetting;
+use App\Models\PipelineStage;
+use App\Models\Role;
 use App\Models\UniversalSearch;
 use App\Models\User;
-use App\Models\Role;
-use App\Models\Lead;
-use App\Models\PipelineStage;
 use App\Notifications\LeadAgentAssigned;
-use App\Models\LeadSetting;
-use Illuminate\Support\Facades\Notification;
-use App\Traits\EmployeeActivityTrait;
 use App\Notifications\LeadImported;
-
-
 use App\Traits\DealHistoryTrait;
+use App\Traits\EmployeeActivityTrait;
+use Illuminate\Support\Facades\Notification;
 
 class DealObserver
 {
@@ -26,8 +24,8 @@ class DealObserver
 
     public function saving(Deal $deal)
     {
-        if (!isRunningInConsoleOrSeeding()) {
-            $userID = (!is_null(user())) ? user()->id : null;
+        if (! isRunningInConsoleOrSeeding()) {
+            $userID = (! is_null(user())) ? user()->id : null;
             $deal->last_updated_by = $userID;
         }
 
@@ -38,14 +36,13 @@ class DealObserver
     {
         $deal->hash = md5(microtime());
 
-        if (!isRunningInConsoleOrSeeding()) {
-
+        if (! isRunningInConsoleOrSeeding()) {
 
             if (request()->has('added_by')) {
                 $deal->added_by = request('added_by');
             } else {
 
-                $userID = (!is_null(user())) ? user()->id : null;
+                $userID = (! is_null(user())) ? user()->id : null;
                 $deal->added_by = $userID;
             }
 
@@ -53,7 +50,7 @@ class DealObserver
                 $deal->company_id = company()->id;
             }
 
-            if (!isRunningInConsoleOrSeeding()) {
+            if (! isRunningInConsoleOrSeeding()) {
                 $categoryId = request()->category_id;
 
                 $ticketSettings = LeadSetting::select('status')->first();
@@ -75,12 +72,12 @@ class DealObserver
                     $diffAgent = array_diff($agentCategoryData, $dealData);
 
                     if (is_null(request()->agent_id)) {
-                        if (!empty($diffAgent)) {
+                        if (! empty($diffAgent)) {
                             $deal->agent_id = current($diffAgent);
                         } else {
                             $agentDuplicateCount = array_count_values($dealData);
 
-                            if (!empty($agentDuplicateCount)) {
+                            if (! empty($agentDuplicateCount)) {
                                 $minVal = min($agentDuplicateCount);
                                 $agent_id = array_search($minVal, $agentDuplicateCount);
                                 $deal->agent_id = $agent_id;
@@ -88,7 +85,7 @@ class DealObserver
                         }
                     } else {
                         $leadAgent = LeadAgent::where('user_id', request()->agent_id)->where('lead_category_id', $categoryId)->first();
-                        if (!is_null($leadAgent)) {
+                        if (! is_null($leadAgent)) {
                             $deal->agent_id = $leadAgent->id;
                         }
                     }
@@ -107,7 +104,7 @@ class DealObserver
 
     public function updated(Deal $deal)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
 
             $this->createClient($deal);
 
@@ -115,7 +112,7 @@ class DealObserver
                 self::createEmployeeActivity(user()->id, 'deal-updated', $deal->id, 'deal');
             }
 
-            if (user() && !$deal->isDirty('pipeline_stage_id') && !$deal->isDirty('lead_pipeline_id') && !$deal->isDirty('agent_id')) {
+            if (user() && ! $deal->isDirty('pipeline_stage_id') && ! $deal->isDirty('lead_pipeline_id') && ! $deal->isDirty('agent_id')) {
                 self::createDealHistory($deal->id, 'deal-updated', agentId: $deal->agent_id);
             }
 
@@ -136,14 +133,14 @@ class DealObserver
     public function created(Deal $deal)
     {
 
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             if (user()) {
                 self::createEmployeeActivity(user()->id, 'deal-created', $deal->id, 'deal');
             }
 
-            if (!session()->has('is_deal')) {
+            if (! session()->has('is_deal')) {
 
-                if (!session()->has('is_imported') && !session()->has('create_deal_with_lead')) {
+                if (! session()->has('is_imported') && ! session()->has('create_deal_with_lead')) {
 
                     if (request('agent_id') != '') {
 
@@ -153,14 +150,12 @@ class DealObserver
 
                         Notification::send(User::allAdmins($deal->company->id), new LeadAgentAssigned($deal));
                     }
-                } else if (session()->has('is_imported')) {
+                } elseif (session()->has('is_imported')) {
 
                     if (session('leads_count') == session('total_leads')) {
 
-
-
                         $admins = User::allAdmins(company()->id);
-                        Notification::send($admins, new LeadImported());
+                        Notification::send($admins, new LeadImported);
                     }
                 }
             }

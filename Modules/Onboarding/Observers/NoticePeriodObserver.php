@@ -9,22 +9,20 @@ use Modules\Onboarding\Events\NoticePeriodEvent;
 
 class NoticePeriodObserver
 {
-
     public function updating(EmployeeDetails $model)
     {
-        if(module_enabled('Onboarding')) {
-            if (!empty($model->notice_period_start_date) && $model->isDirty('notice_period_start_date')) {
+        if (module_enabled('Onboarding')) {
+            if (! empty($model->notice_period_start_date) && $model->isDirty('notice_period_start_date')) {
                 // Set offboard_completed to 0 when notice period starts
                 $model->offboard_completed = 0;
                 $model->onboard_completed = 1;
 
                 event(new NoticePeriodEvent($model->user, session('auth_pass'), $model->notice_period_start_date));
-            }
-            else {
+            } else {
                 // Clearing notice period, update offboard_completed to 1
                 // $model->offboard_completed = 1;
             }
-            
+
         }
     }
 
@@ -32,11 +30,10 @@ class NoticePeriodObserver
     {
         if (module_enabled('Onboarding')) {
 
-            if (!isRunningInConsoleOrSeeding()) {
+            if (! isRunningInConsoleOrSeeding()) {
                 if ($model->user->created_at->lt(now()->subDays(30))) {
                     $model->onboarding_status = 'old';
-                }
-                else {
+                } else {
                     $model->onboarding_status = 'new';
                     $model->onboard_completed = 0;
 
@@ -52,7 +49,7 @@ class NoticePeriodObserver
         if (module_enabled('Onboarding')) {
             // Fetch all onboarding tasks count
             $onboardTasksCount = OnboardingTask::where('type', 'onboard')->count();
-            
+
             // Fetch completed onboard tasks count for the user
             $completedOnboardTasksCount = OnboardingCompletedTask::where('user_id', $model->user_id)
                 ->whereIn('onboarding_task_id', function ($query) {
@@ -60,7 +57,7 @@ class NoticePeriodObserver
                 })
                 ->where('status', 'completed')
                 ->count();
-            
+
             // Check if all onboarding tasks are completed
             if ($completedOnboardTasksCount == $onboardTasksCount) {
                 // Set onboard_completed to 1 when all onboarding tasks are completed
@@ -68,5 +65,4 @@ class NoticePeriodObserver
             }
         }
     }
-
 }

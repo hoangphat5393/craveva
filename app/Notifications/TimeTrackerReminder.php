@@ -5,17 +5,16 @@ namespace App\Notifications;
 use Illuminate\Notifications\Messages\MailMessage;
 use NotificationChannels\OneSignal\OneSignalChannel;
 use NotificationChannels\OneSignal\OneSignalMessage;
-use App\Models\EmailNotificationSetting;
 
 class TimeTrackerReminder extends BaseNotification
 {
-
     /**
      * Create a new notification instance.
      *
      * @return void
      */
     private $event;
+
     private $emailSetting;
 
     public function __construct($event)
@@ -38,7 +37,7 @@ class TimeTrackerReminder extends BaseNotification
         }
 
         if (push_setting()->beams_push_status == 'active') {
-            $pushNotification = new \App\Http\Controllers\DashboardController();
+            $pushNotification = new \App\Http\Controllers\DashboardController;
             $pushUsersIds = [[$notifiable->id]];
             $pushNotification->sendPushNotifications($pushUsersIds, __('email.trackerReminder.subject'), __('email.trackerReminder.text'));
         }
@@ -49,17 +48,16 @@ class TimeTrackerReminder extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
-     * @return MailMessage
+     * @param  mixed  $notifiable
      */
     // phpcs:ignore
     public function toMail($notifiable): MailMessage
     {
         $build = parent::build($notifiable);
-        $url = route('tasks.index') . '?assignedTo=' . $notifiable->id;
+        $url = route('tasks.index').'?assignedTo='.$notifiable->id;
         $url = getDomainSpecificUrl($url, $this->company);
-        $greeting = __('email.trackerReminder.dear') . ' <strong>' . $notifiable->name . '</strong>,' . '<br>';
-        $content = $greeting . __('email.trackerReminder.text');
+        $greeting = __('email.trackerReminder.dear').' <strong>'.$notifiable->name.'</strong>,'.'<br>';
+        $content = $greeting.__('email.trackerReminder.text');
 
         $build
             ->subject(__('email.trackerReminder.subject'))
@@ -67,7 +65,7 @@ class TimeTrackerReminder extends BaseNotification
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
-                'actionText' => __('email.trackerReminder.action')
+                'actionText' => __('email.trackerReminder.action'),
             ]);
 
         parent::resetLocale();
@@ -86,7 +84,7 @@ class TimeTrackerReminder extends BaseNotification
     {
 
         return $this->slackBuild($notifiable)
-            ->content('>*' . __('email.trackerReminder.subject') . '*' . "\n" . __('email.trackerReminder.text') . ' ');
+            ->content('>*'.__('email.trackerReminder.subject').'*'."\n".__('email.trackerReminder.text').' ');
     }
 
     // phpcs:ignore
@@ -96,5 +94,4 @@ class TimeTrackerReminder extends BaseNotification
             ->setSubject(__('email.trackerReminder.subject'))
             ->setBody(__('email.trackerReminder.text'));
     }
-
 }

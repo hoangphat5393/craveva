@@ -3,15 +3,14 @@
 namespace App\Http\Controllers\SuperAdmin;
 
 use App\Helper\Reply;
-use App\Models\BaseModel;
-use App\Models\SuperAdmin\FaqCategory;
 use App\Http\Controllers\AccountBaseController;
 use App\Http\Requests\SuperAdmin\FaqCategory\StoreRequest;
 use App\Http\Requests\SuperAdmin\FaqCategory\UpdateRequest;
+use App\Models\BaseModel;
+use App\Models\SuperAdmin\FaqCategory;
 
 class FaqCategoryController extends AccountBaseController
 {
-
     /**
      * Show the form for creating a new resource.
      *
@@ -20,18 +19,18 @@ class FaqCategoryController extends AccountBaseController
     public function create()
     {
         $this->categories = FaqCategory::all();
+
         return view('super-admin.faq.ajax.create_category', $this->data);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  StoreRequest $request
      * @return \Illuminate\Http\Response
      */
     public function store(StoreRequest $request)
     {
-        $category = new FaqCategory();
+        $category = new FaqCategory;
         $category->name = $request->name;
         $category->save();
 
@@ -45,7 +44,6 @@ class FaqCategoryController extends AccountBaseController
     /**
      * Update the specified resource in storage.
      *
-     * @param  UpdateRequest  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
@@ -72,7 +70,7 @@ class FaqCategoryController extends AccountBaseController
         FaqCategory::destroy($id);
         $categories = FaqCategory::all();
         $options = BaseModel::options($categories, null, 'name');
+
         return Reply::successWithData(__('messages.deleteSuccess'), ['data' => $options]);
     }
-
 }

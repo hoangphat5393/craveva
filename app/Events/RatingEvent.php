@@ -9,11 +9,12 @@ use Illuminate\Queue\SerializesModels;
 
 class RatingEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $rating;
+
     public $type;
+
     public $multiDates;
 
     public function __construct(ProjectRating $rating, $type)
@@ -21,5 +22,4 @@ class RatingEvent
         $this->rating = $rating;
         $this->type = $type;
     }
-
 }

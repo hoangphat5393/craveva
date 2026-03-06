@@ -12,7 +12,6 @@ class StoreTransaction extends CoreRequest
      *
      * @return bool
      */
-
     public function authorize()
     {
         return true;
@@ -35,12 +34,10 @@ class StoreTransaction extends CoreRequest
             $rules = ['amount' => 'required|numeric|max:'.$bankBalance->bank_balance];
         }
 
-        if ($this->type == 'account')
-        {
+        if ($this->type == 'account') {
             $rules['to_bank_account'] = 'required';
         }
 
         return $rules;
     }
-
 }

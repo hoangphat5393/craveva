@@ -9,7 +9,6 @@ use Illuminate\Queue\SerializesModels;
 
 class NewProjectMemberEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $projectMember;
@@ -19,5 +18,4 @@ class NewProjectMemberEvent
         $this->projectMember = $projectMember;
 
     }
-
 }

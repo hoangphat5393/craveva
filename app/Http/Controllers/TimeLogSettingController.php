@@ -6,19 +6,17 @@ use App\Helper\Reply;
 use App\Http\Requests\TimeLogSetting\UpdateTimeLog;
 use App\Models\LogTimeFor;
 use App\Models\Role;
-use App\Models\User;
 use Carbon\Carbon;
 
 class TimeLogSettingController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'app.menu.timeLogSettings';
         $this->activeSettingMenu = 'timelog_settings';
         $this->middleware(function ($request, $next) {
-            abort_403(!(user()->permission('manage_time_log_setting') == 'all' && in_array('timelogs', user_modules())));
+            abort_403(! (user()->permission('manage_time_log_setting') == 'all' && in_array('timelogs', user_modules())));
 
             return $next($request);
         });
@@ -38,8 +36,8 @@ class TimeLogSettingController extends AccountBaseController
     }
 
     /**
-     * @param UpdateTimeLog $request
      * @return array
+     *
      * @throws \Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException
      */
     public function store(UpdateTimeLog $request)
@@ -74,5 +72,4 @@ class TimeLogSettingController extends AccountBaseController
         return Reply::success(__('messages.updateSuccess'));
 
     }
-
 }

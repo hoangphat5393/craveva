@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $office_open_days
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|EmployeeShift newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|EmployeeShift newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|EmployeeShift query()
@@ -39,15 +40,17 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder|EmployeeShift whereShiftName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|EmployeeShift whereShiftShortCode($value)
  * @method static \Illuminate\Database\Eloquent\Builder|EmployeeShift whereUpdatedAt($value)
+ *
  * @property-read \App\Models\Company|null $company
  * @property string|null $early_clock_in
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|EmployeeShift whereEarlyClockIn($value)
+ *
  * @mixin \Eloquent
  */
 class EmployeeShift extends BaseModel
 {
-
-    use HasFactory, HasCompany;
+    use HasCompany, HasFactory;
 
     protected $guarded = ['id'];
 
@@ -55,5 +58,4 @@ class EmployeeShift extends BaseModel
     {
         return $this->hasMany(EmployeeShiftSchedule::class, 'employee_shift_id', 'id');
     }
-
 }

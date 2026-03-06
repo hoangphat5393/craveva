@@ -7,13 +7,18 @@ use Illuminate\View\Component;
 
 class Checkbox extends Component
 {
-
     public $fieldLabel;
+
     public $fieldName;
+
     public $fieldId;
+
     public $checked;
+
     public $fieldValue;
+
     public $popover;
+
     public $fieldPermission;
 
     /**
@@ -41,5 +46,4 @@ class Checkbox extends Component
     {
         return view('components.forms.checkbox');
     }
-
 }

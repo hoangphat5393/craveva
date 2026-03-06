@@ -2,8 +2,8 @@
 
 namespace App\Models\SuperAdmin;
 
-use App\Models\Company;
 use App\Models\BaseModel;
+use App\Models\Company;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
@@ -40,6 +40,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property string|null $contact_url
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ *
  * @method static Builder|Package newModelQuery()
  * @method static Builder|Package newQuery()
  * @method static Builder|Package query()
@@ -71,7 +72,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @method static Builder|Package whereStripeAnnualPlanId($value)
  * @method static Builder|Package whereStripeMonthlyPlanId($value)
  * @method static Builder|Package whereUpdatedAt($value)
+ *
  * @mixin Eloquent
+ *
  * @property-read Collection|Company[] $companies
  * @property-read int|null $companies_count
  * @property-read \App\Models\SuperAdmin\GlobalCurrency|null $currency
@@ -80,14 +83,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  */
 class Package extends BaseModel
 {
-
     use HasFactory;
 
     protected $guarded = ['id'];
 
     protected $appends = [
         'formatted_annual_price',
-        'formatted_monthly_price'
+        'formatted_monthly_price',
     ];
 
     public function companies()
@@ -98,12 +100,10 @@ class Package extends BaseModel
     public function formatSizeUnits($bytes)
     {
         if ($bytes >= 1024) {
-            $bytes = number_format($bytes / 1024, 2) . ' GB';
-        }
-        elseif ($bytes > 1) {
-            $bytes = $bytes . ' MB';
-        }
-        else {
+            $bytes = number_format($bytes / 1024, 2).' GB';
+        } elseif ($bytes > 1) {
+            $bytes = $bytes.' MB';
+        } else {
             $bytes = '0 MB';
         }
 
@@ -113,7 +113,7 @@ class Package extends BaseModel
     /**
      * Convert bytes to megabytes (MB).
      *
-     * @param int $bytes
+     * @param  int  $bytes
      * @return float
      */
     public static function bytesToMB($bytes)
@@ -124,7 +124,7 @@ class Package extends BaseModel
     /**
      * Convert bytes to gigabytes (GB).
      *
-     * @param int $bytes
+     * @param  int  $bytes
      * @return float
      */
     public static function bytesToGB($bytes)
@@ -135,7 +135,7 @@ class Package extends BaseModel
     /**
      * Convert bytes to gigabytes (GB) and megabytes (MB).
      *
-     * @param int $bytes
+     * @param  int  $bytes
      * @return string
      */
     public static function bytesToGBMB($bytes)
@@ -144,10 +144,9 @@ class Package extends BaseModel
         $mb = round($bytes / 1048576, 2);
 
         if ($gb > 0) {
-            return $gb . ' GB';
-        }
-        else {
-            return $mb . ' MB';
+            return $gb.' GB';
+        } else {
+            return $mb.' MB';
         }
     }
 
@@ -165,5 +164,4 @@ class Package extends BaseModel
     {
         return global_currency_format($this->monthly_price, $this->currency_id);
     }
-
 }

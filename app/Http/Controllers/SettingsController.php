@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 
 class SettingsController extends AccountBaseController
 {
-
     use CurrencyExchange;
 
     public function __construct()

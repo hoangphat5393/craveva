@@ -3,36 +3,27 @@
 namespace App\Models;
 
 use App\Enums\Salutation;
-use App\Traits\HasCompany;
-
+use App\Helper\UserService;
 use App\Models\SuperAdmin\SupportTicket;
+use App\Notifications\ResetPassword;
 use App\Scopes\ActiveScope;
 use App\Scopes\CompanyScope;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\DB;
-use App\Notifications\ResetPassword;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Notifications\Notifiable;
+use App\Traits\HasCompany;
 use App\Traits\HasMaskImage;
-use Illuminate\Auth\Authenticatable;
-use Illuminate\Auth\Passwords\CanResetPassword;
-use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
-use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
-use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
-use Laravel\Fortify\TwoFactorAuthenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Foundation\Auth\Access\Authorizable;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use IvanoMatteo\LaravelDeviceTracking\Traits\UseDevices;
-use Laravel\Fortify\TwoFactorAuthenticationProvider;
+use Laravel\Fortify\TwoFactorAuthenticatable;
 use Trebol\Entrust\Traits\EntrustUserTrait;
-use App\Helper\UserService;
-use App\Models\EmployeeDocumentExpiry;
 
 /**
  * App\Models\User
@@ -115,6 +106,7 @@ use App\Models\EmployeeDocumentExpiry;
  * @property-read int|null $tickets_count
  * @property-read Collection|\App\Models\UserChat[] $userChat
  * @property-read int|null $user_chat_count
+ *
  * @method static \Database\Factories\UserFactory factory(...$parameters)
  * @method static Builder|User newModelQuery()
  * @method static Builder|User newQuery()
@@ -141,6 +133,7 @@ use App\Models\EmployeeDocumentExpiry;
  * @method static Builder|User whereTwoFactorSecret($value)
  * @method static Builder|User whereUpdatedAt($value)
  * @method static Builder|User withRole(string $role)
+ *
  * @property int $two_factor_confirmed
  * @property int $two_factor_email_confirmed
  * @property string|null $salutation
@@ -150,6 +143,7 @@ use App\Models\EmployeeDocumentExpiry;
  * @property int $admin_approval
  * @property int $permission_sync
  * @property-read int|null $leaves_count
+ *
  * @method static Builder|User whereAdminApproval($value)
  * @method static Builder|User wherePermissionSync($value)
  * @method static Builder|User whereSalutation($value)
@@ -158,6 +152,7 @@ use App\Models\EmployeeDocumentExpiry;
  * @method static Builder|User whereTwoFactorConfirmed($value)
  * @method static Builder|User whereTwoFactorEmailConfirmed($value)
  * @method static Builder|User whereTwoFactorExpiresAt($value)
+ *
  * @property-read Collection|\App\Models\ClientDocument[] $clientDocuments
  * @property-read Collection|\App\Models\EmployeeShiftSchedule[] $shifts
  * @property-read int|null $client_documents_count
@@ -176,9 +171,11 @@ use App\Models\EmployeeDocumentExpiry;
  * @property-read int|null $shifts_count
  * @property-read Collection|\App\Models\ProjectTemplateMember[] $templateMember
  * @property-read int|null $template_member_count
+ *
  * @method static Builder|User whereCompanyId($value)
  * @method static Builder|User whereCustomisedPermissions($value)
  * @method static Builder|User whereGoogleCalendarStatus($value)
+ *
  * @property-read Collection|\App\Models\Appreciation[] $appreciations
  * @property-read int|null $appreciations_count
  * @property-read Collection|\App\Models\Appreciation[] $appreciationsGrouped
@@ -195,34 +192,36 @@ use App\Models\EmployeeDocumentExpiry;
  * @property-read int|null $time_logs_count
  * @property-read Collection<int, \App\Models\VisaDetail> $visa
  * @property-read int|null $visa_count
+ *
  * @method static Builder|User onlyEmployee()
  * @method static Builder|User wherePmLastFour($value)
  * @method static Builder|User wherePmType($value)
  * @method static Builder|User whereStripeId($value)
  * @method static Builder|User whereTelegramUserId($value)
  * @method static Builder|User whereTrialEndsAt($value)
+ *
  * @property int|null $country_phonecode
  * @property-read Collection<int, \App\Models\TicketGroup> $agentGroup
  * @property-read int|null $agent_group_count
  * @property-read mixed $mobile_with_phone_code
+ *
  * @method static Builder|User whereCountryPhonecode($value)
+ *
  * @mixin \Eloquent
  */
 class User extends BaseModel
 {
-
-    use Notifiable, EntrustUserTrait, HasFactory, TwoFactorAuthenticatable;
+    use EntrustUserTrait, HasFactory, Notifiable, TwoFactorAuthenticatable;
     use HasCompany;
     use HasMaskImage;
-    # use UseDevices; Commmented interionally to reomve in saas and use in userAuth
-
+    // use UseDevices; Commmented interionally to reomve in saas and use in userAuth
 
     const ALL_ADDED_BOTH = ['all', 'added', 'both'];
 
     public static function boot()
     {
         parent::boot();
-        static::addGlobalScope(new ActiveScope());
+        static::addGlobalScope(new ActiveScope);
     }
 
     //    protected $with = ['session:id'];
@@ -233,7 +232,7 @@ class User extends BaseModel
         //        'company:id,company_name',
         //        'roles:name,display_name',
         'session:id',
-        'clientContact'
+        'clientContact',
     ];
 
     /**
@@ -242,7 +241,7 @@ class User extends BaseModel
      * @var array
      */
     protected $guarded = [
-        'id'
+        'id',
     ];
 
     /**
@@ -269,27 +268,27 @@ class User extends BaseModel
         // Prevent password from being saved to users table since it was moved to user_auths
         // If we have a linked UserAuth, update the password there
         if ($this->userAuth) {
-             $this->userAuth->update(['password' => $value]);
+            $this->userAuth->update(['password' => $value]);
         }
     }
 
     public function getNameSalutationAttribute()
     {
-        return ($this->salutation ? $this->salutation->label() . ' ' : '') . $this->name;
+        return ($this->salutation ? $this->salutation->label().' ' : '').$this->name;
     }
 
     public function getImageUrlAttribute()
     {
-        $gravatarHash = !is_null($this->email) ? md5(strtolower(trim($this->email))) : md5($this->id);
+        $gravatarHash = ! is_null($this->email) ? md5(strtolower(trim($this->email))) : md5($this->id);
 
-        return ($this->image) ? asset_url_local_s3('avatar/' . $this->image) : asset('img/gravatar.png');
+        return ($this->image) ? asset_url_local_s3('avatar/'.$this->image) : asset('img/gravatar.png');
     }
 
     public function maskedImageUrl(): Attribute
     {
         return Attribute::make(
             get: function () {
-                return ($this->image) ? $this->generateMaskedImageAppUrl('avatar/' . $this->image) : asset('img/gravatar.png');
+                return ($this->image) ? $this->generateMaskedImageAppUrl('avatar/'.$this->image) : asset('img/gravatar.png');
             },
         );
     }
@@ -298,14 +297,14 @@ class User extends BaseModel
     {
         // Craft a potential URL for the Gravatar and test its headers
         $hash = md5(strtolower(trim($email)));
-        $uri = 'http://www.gravatar.com/avatar/' . $hash . '?d=404';
+        $uri = 'http://www.gravatar.com/avatar/'.$hash.'?d=404';
         $headers = @get_headers($uri);
 
         // Check if the Gravatar URL returns a valid response
         $hasValidAvatar = true;
 
         try {
-            if (!preg_match('|200|', $headers[0])) {
+            if (! preg_match('|200|', $headers[0])) {
                 $hasValidAvatar = false;
             }
         } catch (\Exception $e) {
@@ -318,8 +317,8 @@ class User extends BaseModel
 
     public function getMobileWithPhoneCodeAttribute()
     {
-        if (!is_null($this->mobile) && !is_null($this->country_phonecode)) {
-            return '+' . $this->country_phonecode . $this->mobile;
+        if (! is_null($this->mobile) && ! is_null($this->country_phonecode)) {
+            return '+'.$this->country_phonecode.$this->mobile;
         }
 
         return '--';
@@ -350,9 +349,10 @@ class User extends BaseModel
         }
 
         // Check if $slack is not null before accessing its properties
-        if (!empty($slack)) {
+        if (! empty($slack)) {
             return $slack->slack_webhook;
         }
+
         // Return null or handle the case where $slack is not set
         return false;
     }
@@ -364,8 +364,8 @@ class User extends BaseModel
 
     public function routeNotificationForTwilio()
     {
-        if (!is_null($this->mobile) && !is_null($this->country_phonecode)) {
-            return '+' . $this->country_phonecode . $this->mobile;
+        if (! is_null($this->mobile) && ! is_null($this->country_phonecode)) {
+            return '+'.$this->country_phonecode.$this->mobile;
         }
 
         return null;
@@ -386,8 +386,8 @@ class User extends BaseModel
     // phpcs:ignore
     public function routeNotificationForNexmo($notification)
     {
-        if (!is_null($this->mobile) && !is_null($this->country_phonecode)) {
-            return $this->country_phonecode . $this->mobile;
+        if (! is_null($this->mobile) && ! is_null($this->country_phonecode)) {
+            return $this->country_phonecode.$this->mobile;
         }
 
         return null;
@@ -396,8 +396,8 @@ class User extends BaseModel
     // phpcs:ignore
     public function routeNotificationForVonage($notification)
     {
-        if (!is_null($this->mobile) && !is_null($this->country_phonecode)) {
-            return $this->country_phonecode . $this->mobile;
+        if (! is_null($this->mobile) && ! is_null($this->country_phonecode)) {
+            return $this->country_phonecode.$this->mobile;
         }
 
         return null;
@@ -406,8 +406,8 @@ class User extends BaseModel
     // phpcs:ignore
     public function routeNotificationForMsg91($notification)
     {
-        if (!is_null($this->mobile) && !is_null($this->country_phonecode)) {
-            return $this->country_phonecode . $this->mobile;
+        if (! is_null($this->mobile) && ! is_null($this->country_phonecode)) {
+            return $this->country_phonecode.$this->mobile;
         }
 
         return null;
@@ -602,7 +602,6 @@ class User extends BaseModel
         return $this->hasMany(ProjectTimeLog::class, 'user_id');
     }
 
-
     public function approvedCompany()
     {
         $company = $this->belongsTo(Company::class, 'company_id');
@@ -616,9 +615,9 @@ class User extends BaseModel
 
     public static function allClients($exceptId = null, $active = true, $overRidePermission = null, $companyId = null)
     {
-        if (!isRunningInConsoleOrSeeding() && !is_null($overRidePermission)) {
+        if (! isRunningInConsoleOrSeeding() && ! is_null($overRidePermission)) {
             $viewClientPermission = $overRidePermission;
-        } elseif (!isRunningInConsoleOrSeeding() && user()) {
+        } elseif (! isRunningInConsoleOrSeeding() && user()) {
             $viewClientPermission = user()->permission('view_clients');
         }
 
@@ -636,8 +635,7 @@ class User extends BaseModel
             ->whereNull('users.is_client_contact')
             ->where('roles.name', 'client');
 
-
-        if (!is_null($exceptId)) {
+        if (! is_null($exceptId)) {
             if (is_array($exceptId)) {
                 $clients->whereNotIn('users.id', $exceptId);
             } else {
@@ -651,15 +649,15 @@ class User extends BaseModel
             $clients->withoutGlobalScope(ActiveScope::class);
         }
 
-        if (!is_null($companyId)) {
+        if (! is_null($companyId)) {
             $clients->where('users.company_id', '<>', $companyId);
         }
 
-        if (!isRunningInConsoleOrSeeding() && isset($viewClientPermission) && $viewClientPermission == 'added') {
+        if (! isRunningInConsoleOrSeeding() && isset($viewClientPermission) && $viewClientPermission == 'added') {
             $clients->where('client_details.added_by', user()->id);
         }
 
-        if (!isRunningInConsoleOrSeeding() && in_array('client', user_roles())) {
+        if (! isRunningInConsoleOrSeeding() && in_array('client', user_roles())) {
             $clients->where('client_details.user_id', $id);
         }
 
@@ -684,9 +682,9 @@ class User extends BaseModel
 
     public static function allEmployees($exceptId = null, $active = false, $overRidePermission = null, $companyId = null)
     {
-        if (!isRunningInConsoleOrSeeding() && !is_null($overRidePermission)) {
+        if (! isRunningInConsoleOrSeeding() && ! is_null($overRidePermission)) {
             $viewEmployeePermission = $overRidePermission;
-        } elseif (!isRunningInConsoleOrSeeding() && user()) {
+        } elseif (! isRunningInConsoleOrSeeding() && user()) {
             $viewEmployeePermission = user()->permission('view_employees');
         }
 
@@ -695,7 +693,7 @@ class User extends BaseModel
             ->leftJoin('designations', 'employee_details.designation_id', '=', 'designations.id')
             ->select('users.id', 'users.company_id', 'users.name', 'users.email', 'users.created_at', 'users.image', 'designations.name as designation_name', 'users.email_notifications', 'users.mobile', 'users.country_id', 'users.status', 'users.last_activity');
 
-        if (!is_null($exceptId)) {
+        if (! is_null($exceptId)) {
             if (is_array($exceptId)) {
                 $users->whereNotIn('users.id', $exceptId);
             } else {
@@ -703,31 +701,31 @@ class User extends BaseModel
             }
         }
 
-        if (!is_null($companyId)) {
+        if (! is_null($companyId)) {
             $users->where('users.company_id', $companyId);
         }
 
-        if (!$active) {
+        if (! $active) {
             $users->withoutGlobalScope(ActiveScope::class);
         }
 
         $id = UserService::getUserId();
 
-        if (!isRunningInConsoleOrSeeding() && user()) {
+        if (! isRunningInConsoleOrSeeding() && user()) {
             if (isset($viewEmployeePermission)) {
-                if (($viewEmployeePermission == 'added' && !in_array('client', user_roles()))) {
+                if (($viewEmployeePermission == 'added' && ! in_array('client', user_roles()))) {
                     $users->where(function ($q) {
                         $q->where('employee_details.user_id', user()->id);
                         $q->orWhere('employee_details.added_by', user()->id);
                     });
-                } elseif ($viewEmployeePermission == 'owned' && !in_array('client', user_roles())) {
+                } elseif ($viewEmployeePermission == 'owned' && ! in_array('client', user_roles())) {
                     $users->where('users.id', user()->id);
-                } elseif ($viewEmployeePermission == 'both' && !in_array('client', user_roles())) {
+                } elseif ($viewEmployeePermission == 'both' && ! in_array('client', user_roles())) {
                     $users->where(function ($q) {
                         $q->where('employee_details.user_id', user()->id);
                         $q->orWhere('employee_details.added_by', user()->id);
                     });
-                } elseif (($viewEmployeePermission == 'none' || $viewEmployeePermission == '') && !in_array('client', user_roles())) {
+                } elseif (($viewEmployeePermission == 'none' || $viewEmployeePermission == '') && ! in_array('client', user_roles())) {
                     $users->where('users.id', user()->id);
                 }
             }
@@ -743,7 +741,7 @@ class User extends BaseModel
             }
         }
 
-        if (!isRunningInConsoleOrSeeding() && user() && in_array('client', user_roles())) {
+        if (! isRunningInConsoleOrSeeding() && user() && in_array('client', user_roles())) {
             $clientEmployess = Project::where('client_id', $id)->join('project_members', 'project_members.project_id', '=', 'projects.id')
                 ->select('project_members.user_id')->get()->pluck('user_id');
 
@@ -760,7 +758,7 @@ class User extends BaseModel
     {
         $users = User::withOut('clientDetails')->withRole('admin');
 
-        if (!is_null($companyId)) {
+        if (! is_null($companyId)) {
             return $users->where('users.company_id', $companyId)->get();
         }
 
@@ -781,7 +779,7 @@ class User extends BaseModel
         $termCnd = '';
 
         if ($term) {
-            $termCnd = 'and users.name like %' . $term . '%';
+            $termCnd = 'and users.name like %'.$term.'%';
         }
 
         $messageSetting = message_setting();
@@ -810,14 +808,14 @@ class User extends BaseModel
                     INNER JOIN users_chat ON users_chat.from = users.id
                     LEFT JOIN role_user ON role_user.user_id = users.id
                     LEFT JOIN roles ON roles.id = role_user.role_id
-                    WHERE users_chat.to = ' . $userID . ' ' . $termCnd . '
+                    WHERE users_chat.to = '.$userID.' '.$termCnd.'
                     UNION
                     SELECT users.id,"0" AS groupId, users.name,users.image, users.email, users_chat.created_at  as last_message, users_chat.message, users_chat.message_seen, users_chat.user_one
                     FROM users
                     INNER JOIN users_chat ON users_chat.to = users.id
                     LEFT JOIN role_user ON role_user.user_id = users.id
                     LEFT JOIN roles ON roles.id = role_user.role_id
-                    WHERE users_chat.from = ' . $userID . ' ' . $termCnd . '
+                    WHERE users_chat.from = '.$userID.' '.$termCnd.'
                     ) AS allUsers
                     ORDER BY  last_message DESC
                     ) AS allUsersSorted
@@ -906,9 +904,8 @@ class User extends BaseModel
     /**
      * Check if user has a permission by its name.
      *
-     * @param string|array $permission Permission string or array of permissions.
-     * @param bool $requireAll All permissions in the array are required.
-     *
+     * @param  string|array  $permission  Permission string or array of permissions.
+     * @param  bool  $requireAll  All permissions in the array are required.
      * @return bool
      */
     public function can($permission, $requireAll = false)
@@ -919,11 +916,11 @@ class User extends BaseModel
             foreach ($permission as $permName) {
                 $hasPerm = $this->can($permName);
 
-                if ($hasPerm && !$requireAll) {
+                if ($hasPerm && ! $requireAll) {
                     return true;
                 }
 
-                if (!$hasPerm && $requireAll) {
+                if (! $hasPerm && $requireAll) {
                     return false;
                 }
             }
@@ -955,7 +952,7 @@ class User extends BaseModel
         $nonClientRoles = cache()->remember(
             'non-client-roles',
             now()->addDay(),
-            fn() => Role::where('name', '<>', 'client')->orderBy('id')->get()
+            fn () => Role::where('name', '<>', 'client')->orderBy('id')->get()
         );
 
         foreach ($nonClientRoles as $role) {
@@ -978,7 +975,7 @@ class User extends BaseModel
      */
     public function permission($permission)
     {
-        $cacheKey = 'permission-' . $permission . '-' . $this->id;
+        $cacheKey = 'permission-'.$permission.'-'.$this->id;
 
         cache()->forget($cacheKey); // Clear the cache
 
@@ -1002,7 +999,7 @@ class User extends BaseModel
 
     public function permissionTypeId($permission)
     {
-        $cacheKey = 'permission-id-' . $permission . '-' . $this->id;
+        $cacheKey = 'permission-id-'.$permission.'-'.$this->id;
 
         if (cache()->has($cacheKey)) {
             return cache($cacheKey);
@@ -1030,17 +1027,11 @@ class User extends BaseModel
         return $this->belongsToMany(Permission::class, 'user_permissions')->withTimestamps();
     }
 
-    /**
-     * @return HasOne
-     */
     public function session(): HasOne
     {
         return $this->hasOne(Session::class, 'user_id')->select('user_id', 'ip_address', 'last_activity');
     }
 
-    /**
-     * @return HasMany
-     */
     public function contracts(): HasMany
     {
         return $this->hasMany(Contract::class, 'client_id', 'id');
@@ -1070,7 +1061,7 @@ class User extends BaseModel
     {
         $module = Module::where('module_name', $module)->first();
 
-        if (!$module) {
+        if (! $module) {
             return true;
         }
 
@@ -1107,12 +1098,12 @@ class User extends BaseModel
 
     public function userBadge()
     {
-        $itsYou = ' <span class="ml-1 badge badge-secondary pr-1">' . __('app.itsYou') . '</span>';
+        $itsYou = ' <span class="ml-1 badge badge-secondary pr-1">'.__('app.itsYou').'</span>';
         /** @phpstan-ignore-next-line */
         $name = $this->name_salutation;
 
         if (user() && user()->id == $this->id) {
-            return $name . $itsYou;
+            return $name.$itsYou;
         }
 
         return $name;
@@ -1138,7 +1129,7 @@ class User extends BaseModel
     /**
      * Send the password reset notification.
      *
-     * @param string $token
+     * @param  string  $token
      * @return void
      */
     public function sendPasswordResetNotification($token)
@@ -1148,9 +1139,9 @@ class User extends BaseModel
 
     public static function allLeaveReportEmployees($exceptId = null, $active = false, $overRidePermission = null, $companyId = null)
     {
-        if (!isRunningInConsoleOrSeeding() && !is_null($overRidePermission)) {
+        if (! isRunningInConsoleOrSeeding() && ! is_null($overRidePermission)) {
             $viewEmployeePermission = $overRidePermission;
-        } elseif (!isRunningInConsoleOrSeeding() && user()) {
+        } elseif (! isRunningInConsoleOrSeeding() && user()) {
             $viewEmployeePermission = user()->permission('view_leave_report');
         }
 
@@ -1159,7 +1150,7 @@ class User extends BaseModel
             ->leftJoin('designations', 'employee_details.designation_id', '=', 'designations.id')
             ->select('users.id', 'users.company_id', 'users.name', 'users.email', 'users.created_at', 'users.image', 'designations.name as designation_name', 'users.email_notifications', 'users.mobile', 'users.country_id');
 
-        if (!is_null($exceptId)) {
+        if (! is_null($exceptId)) {
             if (is_array($exceptId)) {
                 $users->whereNotIn('users.id', $exceptId);
             } else {
@@ -1167,28 +1158,28 @@ class User extends BaseModel
             }
         }
 
-        if (!is_null($companyId)) {
+        if (! is_null($companyId)) {
             $users->where('users.company_id', $companyId);
         }
 
-        if (!$active) {
+        if (! $active) {
             $users->withoutGlobalScope(ActiveScope::class);
         }
 
-        if (!isRunningInConsoleOrSeeding() && user()) {
+        if (! isRunningInConsoleOrSeeding() && user()) {
             if (isset($viewEmployeePermission)) {
-                if ($viewEmployeePermission == 'added' && !in_array('client', user_roles())) {
+                if ($viewEmployeePermission == 'added' && ! in_array('client', user_roles())) {
                     $users->where(function ($q) {
                         $q->where('employee_details.added_by', user()->id);
                     });
-                } elseif ($viewEmployeePermission == 'owned' && !in_array('client', user_roles())) {
+                } elseif ($viewEmployeePermission == 'owned' && ! in_array('client', user_roles())) {
                     $users->where('users.id', user()->id);
-                } elseif ($viewEmployeePermission == 'both' && !in_array('client', user_roles())) {
+                } elseif ($viewEmployeePermission == 'both' && ! in_array('client', user_roles())) {
                     $users->where(function ($q) {
                         $q->where('employee_details.user_id', user()->id);
                         $q->orWhere('employee_details.added_by', user()->id);
                     });
-                } elseif (($viewEmployeePermission == 'none' || $viewEmployeePermission == '') && !in_array('client', user_roles())) {
+                } elseif (($viewEmployeePermission == 'none' || $viewEmployeePermission == '') && ! in_array('client', user_roles())) {
                     $users->where('users.id', user()->id);
                 }
             }
@@ -1204,7 +1195,7 @@ class User extends BaseModel
             }
         }
 
-        if (!isRunningInConsoleOrSeeding() && user() && in_array('client', user_roles())) {
+        if (! isRunningInConsoleOrSeeding() && user() && in_array('client', user_roles())) {
             $clientEmployees = Project::where('client_id', user()->id)
                 ->join('project_members', 'project_members.project_id', '=', 'projects.id')
                 ->select('project_members.user_id')

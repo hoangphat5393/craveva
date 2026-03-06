@@ -3,15 +3,14 @@
 namespace App\Listeners;
 
 use App\Events\ProjectNoteUpdateEvent;
-use Illuminate\Support\Facades\Notification;
 use App\Notifications\ProjectNoteUpdated;
+use Illuminate\Support\Facades\Notification;
 
 class ProjectNoteUpdateListener
 {
     /**
      * Handle the event.
      *
-     * @param ProjectNoteUpdateEvent $event
      * @return void
      */
     public function handle(ProjectNoteUpdateEvent $event)

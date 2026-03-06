@@ -3,8 +3,8 @@
 namespace Modules\Pricing\Entities;
 
 use App\Models\BaseModel;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\Product;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PricingTierItem extends BaseModel
 {

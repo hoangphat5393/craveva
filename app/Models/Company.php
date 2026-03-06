@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use App\Models\SuperAdmin\Package;
 use App\Models\SuperAdmin\GlobalInvoice;
+use App\Models\SuperAdmin\Package;
 use App\Scopes\ActiveScope;
 use App\Scopes\CompanyScope;
 use App\Traits\CustomFieldsTrait;
@@ -76,6 +76,7 @@ use Laravel\Cashier\Billable;
  * @property-read mixed $login_background_url
  * @property-read mixed $logo_url
  * @property-read mixed $moment_date_format
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Setting newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Setting newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Setting query()
@@ -127,25 +128,30 @@ use Laravel\Cashier\Billable;
  * @method static \Illuminate\Database\Eloquent\Builder|Setting whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Setting whereWeatherKey($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Setting whereWebsite($value)
+ *
  * @property int $ticket_form_google_captcha
  * @property int $lead_form_google_captcha
  * @property string|null $last_cron_run
  * @property string $auth_theme
  * @property string|null $light_logo
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Setting whereAuthTheme($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Setting whereLastCronRun($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Setting whereLeadFormGoogleCaptcha($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Setting whereLightLogo($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Setting whereTicketFormGoogleCaptcha($value)
+ *
  * @property string $sidebar_logo_style
  * @property string $session_driver
  * @property int $allow_client_signup
  * @property int $admin_client_signup_approval
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Setting whereAdminClientSignupApproval($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Setting whereAllowClientSignup($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Setting whereAllowedFileTypes($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Setting whereSessionDriver($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Setting whereSidebarLogoStyle($value)
+ *
  * @property string $google_calendar_status
  * @property string|null $google_client_id
  * @property string|null $google_client_secret
@@ -153,6 +159,7 @@ use Laravel\Cashier\Billable;
  * @property string|null $google_id
  * @property string|null $name
  * @property string|null $token
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Setting whereGoogleCalendarStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Setting whereGoogleCalendarVerificationStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Setting whereGoogleClientId($value)
@@ -161,13 +168,16 @@ use Laravel\Cashier\Billable;
  * @method static \Illuminate\Database\Eloquent\Builder|Setting whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Setting whereToken($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Setting whereAllowedFileSize($value)
+ *
  * @property string $status
  * @property string|null $last_login
  * @property int $rtl
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Company whereAppName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Company whereLastLogin($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Company whereRtl($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Company whereStatus($value)
+ *
  * @property-read \App\Models\AttendanceSetting|null $attendanceSetting
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\CompanyAddress[] $companyAddress
  * @property-read int|null $company_address_count
@@ -201,7 +211,9 @@ use Laravel\Cashier\Billable;
  * @property-read \App\Models\LeaveSetting|null $leaveSetting
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ModuleSetting[] $moduleSetting
  * @property-read int|null $module_setting_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Company whereHash($value)
+ *
  * @property int|null $package_id
  * @property string $package_type
  * @property string|null $stripe_id
@@ -237,26 +249,36 @@ use Laravel\Cashier\Billable;
  * @property-read int|null $tasks_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Ticket[] $tickets
  * @property-read int|null $tickets_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Company whereYearStartsFrom($value)
+ *
  * @property string $header_color
  * @property int $datatable_row_limit
  * @property int $show_new_webhook_alert
  * @property string|null $pm_type
  * @property string|null $pm_last_four
  * @property-read \App\Models\CompanyAddress|null $defaultAddress
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Company whereDatatableRowLimit($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Company whereHeaderColor($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Company wherePmLastFour($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Company wherePmType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Company whereShowNewWebhookAlert($value)
+ *
  * @property string $auth_theme_text
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Company whereAuthThemeText($value)
+ *
  * @property int $employee_can_export_data
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Company whereEmployeeCanExportData($value)
+ *
  * @mixin \Eloquent
+ *
  * @property-read \App\Models\User|null $user
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User[] $users
  * @property-read int|null $users_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Company whereCardBrand($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Company whereCardLastFour($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Company whereLicenceExpireOn($value)
@@ -267,13 +289,12 @@ use Laravel\Cashier\Billable;
  */
 class Company extends BaseModel
 {
-
     use HasFactory;
     use HasMaskImage;
+
     const CUSTOM_FIELD_MODEL = 'App\Models\Company';
 
-    use CustomFieldsTrait, Billable;
-
+    use Billable, CustomFieldsTrait;
 
     protected $with = [];
 
@@ -282,17 +303,18 @@ class Company extends BaseModel
     public $dates = [
         'last_login',
         'subscription_updated_at',
-        'licence_expire_on'
+        'licence_expire_on',
     ];
 
     protected $casts = [
-        'google_calendar_status' => 'string'
+        'google_calendar_status' => 'string',
     ];
+
     protected $appends = [
         'logo_url',
         'login_background_url',
         'moment_date_format',
-        'favicon_url'
+        'favicon_url',
     ];
 
     const DATE_FORMATS = GlobalSetting::DATE_FORMATS;
@@ -351,7 +373,7 @@ class Company extends BaseModel
             return global_setting()->light_logo_url;
         }
 
-        return asset_url_local_s3('app-logo/' . $this->light_logo);
+        return asset_url_local_s3('app-logo/'.$this->light_logo);
     }
 
     public function defaultLogo()
@@ -360,7 +382,7 @@ class Company extends BaseModel
             return global_setting()->dark_logo_url;
         }
 
-        return asset_url_local_s3('app-logo/' . $this->logo);
+        return asset_url_local_s3('app-logo/'.$this->logo);
     }
 
     public function getLightLogoUrlAttribute()
@@ -369,7 +391,7 @@ class Company extends BaseModel
             return global_setting()->light_logo_url;
         }
 
-        return asset_url_local_s3('app-logo/' . $this->light_logo);
+        return asset_url_local_s3('app-logo/'.$this->light_logo);
     }
 
     public function getDarkLogoUrlAttribute()
@@ -379,7 +401,7 @@ class Company extends BaseModel
             return asset('img/craveva-logo.png');
         }
 
-        return asset_url_local_s3('app-logo/' . $this->logo);
+        return asset_url_local_s3('app-logo/'.$this->logo);
     }
 
     public function getLoginBackgroundUrlAttribute()
@@ -389,7 +411,7 @@ class Company extends BaseModel
             return null;
         }
 
-        return asset_url_local_s3('login-background/' . $this->login_background);
+        return asset_url_local_s3('login-background/'.$this->login_background);
     }
 
     public function maskedDefaultLogo(): Attribute
@@ -400,7 +422,7 @@ class Company extends BaseModel
                     return global_setting()->dark_logo_url;
                 }
 
-                return $this->generateMaskedImageAppUrl('app-logo/' . $this->logo);
+                return $this->generateMaskedImageAppUrl('app-logo/'.$this->logo);
             },
         );
     }
@@ -423,7 +445,7 @@ class Company extends BaseModel
                     return global_setting()->light_logo_url;
                 }
 
-                return $this->generateMaskedImageAppUrl('app-logo/' . $this->light_logo);
+                return $this->generateMaskedImageAppUrl('app-logo/'.$this->light_logo);
             },
         );
     }
@@ -436,7 +458,7 @@ class Company extends BaseModel
                     return global_setting()->light_logo_url;
                 }
 
-                return $this->generateMaskedImageAppUrl('app-logo/' . $this->light_logo);
+                return $this->generateMaskedImageAppUrl('app-logo/'.$this->light_logo);
             },
         );
     }
@@ -449,7 +471,7 @@ class Company extends BaseModel
                     return asset('img/craveva-logo.png');
                 }
 
-                return $this->generateMaskedImageAppUrl('app-logo/' . $this->logo);
+                return $this->generateMaskedImageAppUrl('app-logo/'.$this->logo);
             },
         );
     }
@@ -462,7 +484,7 @@ class Company extends BaseModel
                     return null;
                 }
 
-                return $this->generateMaskedImageAppUrl('login-background/' . $this->login_background);
+                return $this->generateMaskedImageAppUrl('login-background/'.$this->login_background);
             },
         );
     }
@@ -475,7 +497,7 @@ class Company extends BaseModel
                     return global_setting()->favicon_url;
                 }
 
-                return $this->generateMaskedImageAppUrl('favicon/' . $this->favicon);
+                return $this->generateMaskedImageAppUrl('favicon/'.$this->favicon);
             },
         );
     }
@@ -500,7 +522,7 @@ class Company extends BaseModel
             return global_setting()->favicon_url;
         }
 
-        return asset_url_local_s3('favicon/' . $this->favicon);
+        return asset_url_local_s3('favicon/'.$this->favicon);
     }
 
     public function paymentGatewayCredentials(): HasOne
@@ -684,7 +706,6 @@ class Company extends BaseModel
     {
         return $this->hasMany(User::class)->withoutGlobalScope(CompanyScope::class)->withoutGlobalScope('active');
     }
-
 
     public function approvalBy()
     {

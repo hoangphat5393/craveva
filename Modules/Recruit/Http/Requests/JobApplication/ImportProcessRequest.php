@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class ImportProcessRequest extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -42,8 +41,7 @@ class ImportProcessRequest extends CoreRequest
     public function messages()
     {
         return [
-            'recruit_job_id' => __('recruit::messages.selectJobField')
+            'recruit_job_id' => __('recruit::messages.selectJobField'),
         ];
     }
-
 }

@@ -27,6 +27,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read \App\Models\Contract $contract
  * @property-read mixed $file_url
  * @property-read mixed $icon
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ContractFile newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ContractFile newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ContractFile query()
@@ -45,37 +46,40 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|ContractFile whereSize($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ContractFile whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ContractFile whereUserId($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ContractFile whereCompanyId($value)
+ *
  * @property-read mixed $file
+ *
  * @mixin \Eloquent
  */
 class ContractFile extends BaseModel
 {
-
-    use IconTrait, HasCompany;
+    use HasCompany, IconTrait;
 
     const FILE_PATH = 'contract-files';
+
     protected $appends = ['file_url', 'icon', 'file'];
 
     public function getFileUrlAttribute()
     {
-        if($this->external_link){
+        if ($this->external_link) {
             return str($this->external_link)->contains('http') ? $this->external_link : asset_url_local_s3($this->external_link);
         }
 
-        return asset_url_local_s3(ContractFile::FILE_PATH . '/' . $this->contract_id . '/' . $this->hashname);
+        return asset_url_local_s3(ContractFile::FILE_PATH.'/'.$this->contract_id.'/'.$this->hashname);
     }
 
     public function getFileAttribute()
     {
-        return $this->external_link ?: (ContractFile::FILE_PATH . '/' . $this->contract_id . '/' . $this->hashname);
+        return $this->external_link ?: (ContractFile::FILE_PATH.'/'.$this->contract_id.'/'.$this->hashname);
     }
 
     public function contract(): BelongsTo
     {
         return $this->belongsTo(Contract::class);
     }
-
 }

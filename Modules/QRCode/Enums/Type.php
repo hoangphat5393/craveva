@@ -60,15 +60,15 @@ enum Type: string
 
     public function labelWithIcon(): string
     {
-        return '<i class="' . $this->iconClass() . '"></i> ' . $this->label();
+        return '<i class="'.$this->iconClass().'"></i> '.$this->label();
     }
 
     public function badge(): string
     {
-        return '<span class="badge badge-pill f-11 ' . $this->badgeStyle() . '">' . $this->labelWithIcon() . '</span>';
+        return '<span class="badge badge-pill f-11 '.$this->badgeStyle().'">'.$this->labelWithIcon().'</span>';
     }
 
-    public function badgeStyle() : string
+    public function badgeStyle(): string
     {
         return match ($this) {
             self::email => 'badge-primary',
@@ -98,5 +98,4 @@ enum Type: string
 
         return $types;
     }
-
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Requests\Holiday;
 
 use Illuminate\Support\Facades\Request;
@@ -10,7 +11,6 @@ class IndexRequest extends Request
      *
      * @return bool
      */
-
     public function authorize()
     {
         return true;
@@ -27,5 +27,4 @@ class IndexRequest extends Request
             //
         ];
     }
-
 }

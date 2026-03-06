@@ -9,9 +9,7 @@ use Illuminate\Queue\SerializesModels;
 
 class TwoFactorCodeEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
-
 
     public $user;
 
@@ -24,5 +22,4 @@ class TwoFactorCodeEvent
     {
         $this->user = $user;
     }
-
 }

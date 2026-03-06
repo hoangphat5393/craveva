@@ -10,13 +10,13 @@ use Illuminate\Http\Request;
 
 class MessageFileController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'app.menu.messages';
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('messages', $this->user->modules));
+            abort_403(! in_array('messages', $this->user->modules));
+
             return $next($request);
         });
     }
@@ -26,7 +26,7 @@ class MessageFileController extends AccountBaseController
         if ($request->hasFile('file')) {
 
             foreach ($request->file as $fileData) {
-                $file = new UserchatFile();
+                $file = new UserchatFile;
                 $file->users_chat_id = $request->message_id;
 
                 $filename = Files::uploadLocalOrS3($fileData, UserchatFile::FILE_PATH);
@@ -51,7 +51,7 @@ class MessageFileController extends AccountBaseController
     {
         $file = UserchatFile::findOrFail($id);
 
-        Files::deleteFile($file->hashname, 'message-files/' . $file->users_chat_id);
+        Files::deleteFile($file->hashname, 'message-files/'.$file->users_chat_id);
 
         UserchatFile::destroy($id);
 
@@ -59,14 +59,14 @@ class MessageFileController extends AccountBaseController
     }
 
     /**
-     * @param int $id
+     * @param  int  $id
      * @return \Symfony\Component\HttpFoundation\BinaryFileResponse|\Symfony\Component\HttpFoundation\StreamedResponse
      */
     // phpcs:ignore
     public function download($id)
     {
         $file = UserchatFile::whereRaw('md5(id) = ?', $id)->firstOrFail();
-        return download_local_s3($file, UserchatFile::FILE_PATH . '/' . $file->hashname);
-    }
 
+        return download_local_s3($file, UserchatFile::FILE_PATH.'/'.$file->hashname);
+    }
 }

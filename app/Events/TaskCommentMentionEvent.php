@@ -10,11 +10,12 @@ use Illuminate\Queue\SerializesModels;
 
 class TaskCommentMentionEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $task;
+
     public $comment;
+
     public $mentionuser;
 
     public function __construct(Task $task, TaskComment $comment, $mentionuser)
@@ -23,5 +24,4 @@ class TaskCommentMentionEvent
         $this->comment = $comment;
         $this->mentionuser = $mentionuser;
     }
-
 }

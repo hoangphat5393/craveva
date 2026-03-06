@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class RecruitApplicationStatus extends BaseModel
 {
-
     use HasCompany;
 
     protected $dates = ['end_date', 'start_date'];
@@ -33,5 +32,4 @@ class RecruitApplicationStatus extends BaseModel
     {
         return $this->belongsTo(RecruitApplicationStatusCategory::class, 'recruit_application_status_category_id');
     }
-
 }

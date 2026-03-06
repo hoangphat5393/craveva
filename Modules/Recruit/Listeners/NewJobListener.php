@@ -2,15 +2,14 @@
 
 namespace Modules\Recruit\Listeners;
 
-use Notification;
 use App\Models\User;
 use Modules\Recruit\Events\NewJobEvent;
-use Modules\Recruit\Notifications\JobRecruiter;
 use Modules\Recruit\Notifications\AdminNewJob;
+use Modules\Recruit\Notifications\JobRecruiter;
+use Notification;
 
 class NewJobListener
 {
-
     /**
      * Create the event listener.
      *
@@ -24,7 +23,7 @@ class NewJobListener
     /**
      * Handle the event.
      *
-     * @param object $event
+     * @param  object  $event
      * @return void
      */
     public function handle(NewJobEvent $event)
@@ -34,9 +33,8 @@ class NewJobListener
 
         Notification::send($event->job->recruiter, new JobRecruiter($event->job));
 
-        if (!in_array($id, $users)) {
+        if (! in_array($id, $users)) {
             Notification::send(User::allAdmins($event->job->company->id), new AdminNewJob($event->job));
         }
     }
-
 }

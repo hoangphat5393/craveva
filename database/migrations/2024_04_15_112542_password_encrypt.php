@@ -12,27 +12,25 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
     public function up(): void
     {
 
+        // SOCIAL AUTH SETTING
+        $this->changeToTextAndEncrypt(new SmtpSetting);
 
         // SOCIAL AUTH SETTING
-        $this->changeToTextAndEncrypt(new SmtpSetting());
-
-        // SOCIAL AUTH SETTING
-        $this->changeToTextAndEncrypt(new SocialAuthSetting());
+        $this->changeToTextAndEncrypt(new SocialAuthSetting);
 
         // Payment Gateway Setting
-        $this->changeToTextAndEncrypt(new PaymentGatewayCredentials());
+        $this->changeToTextAndEncrypt(new PaymentGatewayCredentials);
 
         // Payment Gateway Setting
-        $this->changeToTextAndEncrypt(new GlobalSetting());
-
+        $this->changeToTextAndEncrypt(new GlobalSetting);
 
         // STORAGE
         $storages = StorageSetting::all();
@@ -88,7 +86,7 @@ return new class extends Migration {
     private function saveEncrypt($model, $columns)
     {
 
-        if (!$model) {
+        if (! $model) {
             return true;
         }
 
@@ -98,7 +96,7 @@ return new class extends Migration {
 
             $rawValue = $model->getRawOriginal($fieldItem);
 
-            if (!is_null($rawValue) && $rawValue !== '') {
+            if (! is_null($rawValue) && $rawValue !== '') {
                 $fieldsToUpdate[$fieldItem] = $rawValue;
             }
         }

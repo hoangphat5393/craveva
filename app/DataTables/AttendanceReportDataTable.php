@@ -12,14 +12,20 @@ use Yajra\DataTables\Html\Button;
 
 class AttendanceReportDataTable extends BaseDataTable
 {
-
     private $attendanceSettings;
+
     private $totalWorkingDays;
+
     private $daysPresent;
+
     private $holidaysCount;
+
     private $extraDays;
+
     private $startTime;
+
     private $endTime;
+
     private $notClockedOut;
 
     public function __construct()
@@ -29,7 +35,7 @@ class AttendanceReportDataTable extends BaseDataTable
     }
 
     /**
-     * @param mixed $query
+     * @param  mixed  $query
      * @return \Yajra\DataTables\CollectionDataTable|\Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
@@ -53,8 +59,7 @@ class AttendanceReportDataTable extends BaseDataTable
         // if this month filter's end date is not equal to now
         if ($endDate->gt(now($this->company->timezone))) {
             $holidayDate = Holiday::whereBetween(DB::raw('DATE(holidays.`date`)'), [$startDate->toDateString(), now($this->company->timezone)])->get('date');
-        }
-        else {
+        } else {
             $holidayDate = Holiday::whereBetween(DB::raw('DATE(holidays.`date`)'), [$startDate->toDateString(), $endDate->toDateString()])->get('date');
         }
 
@@ -71,10 +76,10 @@ class AttendanceReportDataTable extends BaseDataTable
         return datatables()
             ->eloquent($query)
             ->addIndexColumn()
-            ->addColumn('employee_name', fn($row) => $row->name)
-            ->addColumn('name', fn($row) => view('components.employee', ['user' => $row]))
-            ->addColumn('present_days', fn($row) => $this->daysPresent = Attendance::countDaysPresentByUser($startDate, $endDate, $row->id) ?: '0')
-            ->addColumn('extra_days', fn($row) => $this->extraDays($startDate, $endDate, $row->id, $holidays))
+            ->addColumn('employee_name', fn ($row) => $row->name)
+            ->addColumn('name', fn ($row) => view('components.employee', ['user' => $row]))
+            ->addColumn('present_days', fn ($row) => $this->daysPresent = Attendance::countDaysPresentByUser($startDate, $endDate, $row->id) ?: '0')
+            ->addColumn('extra_days', fn ($row) => $this->extraDays($startDate, $endDate, $row->id, $holidays))
             ->addColumn('absent_days', function ($row) {
                 $this->holidaysCount = $this->holidaysCount - $this->extraDays;
 
@@ -84,9 +89,9 @@ class AttendanceReportDataTable extends BaseDataTable
 
                 return (($this->totalWorkingDays - ($this->daysPresent + $this->extraDays)) <= 0) ? '0' : ($this->totalWorkingDays - ($this->daysPresent + $this->extraDays));
             })
-            ->addColumn('hours_clocked', fn($row) => $this->calculateHours($period, $row))
-            ->addColumn('late_day_count', fn($row) => Attendance::countDaysLateByUser($startDate, $endDate, $row->id) ?: '0')
-            ->addColumn('half_day_count', fn($row) => Attendance::countHalfDaysByUser($startDate, $endDate, $row->id) ?: '0')
+            ->addColumn('hours_clocked', fn ($row) => $this->calculateHours($period, $row))
+            ->addColumn('late_day_count', fn ($row) => Attendance::countDaysLateByUser($startDate, $endDate, $row->id) ?: '0')
+            ->addColumn('half_day_count', fn ($row) => Attendance::countHalfDaysByUser($startDate, $endDate, $row->id) ?: '0')
             ->orderColumn('present_days', 'user_id $1')
             ->orderColumn('absent_days', 'user_id $1')
             ->orderColumn('extra_days', 'user_id $1')
@@ -135,7 +140,7 @@ class AttendanceReportDataTable extends BaseDataTable
             ]);
 
         if (canDataTableExport()) {
-            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
+            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
         }
 
         return $dataTable;
@@ -156,7 +161,7 @@ class AttendanceReportDataTable extends BaseDataTable
             __('modules.attendance.absent') => ['data' => 'absent_days', 'name' => 'absent_days', 'title' => __('modules.attendance.absent')],
             __('modules.attendance.extraDays') => ['data' => 'extra_days', 'name' => 'extra_days', 'title' => __('modules.attendance.extraDays')],
             __('modules.attendance.hoursClocked') => ['data' => 'hours_clocked', 'name' => 'hours_clocked', 'title' => __('modules.attendance.hoursClocked')],
-            __('app.days') . ' ' . __('modules.attendance.late') => ['data' => 'late_day_count', 'name' => 'late_day_count', 'title' => __('app.days') . ' ' . __('modules.attendance.late')],
+            __('app.days').' '.__('modules.attendance.late') => ['data' => 'late_day_count', 'name' => 'late_day_count', 'title' => __('app.days').' '.__('modules.attendance.late')],
             __('modules.attendance.halfDay') => ['data' => 'half_day_count', 'name' => 'half_day_count', 'title' => __('modules.attendance.halfDay')],
         ];
     }
@@ -177,17 +182,15 @@ class AttendanceReportDataTable extends BaseDataTable
 
                 $this->startTime = $value->clock_in_time->timezone($this->company->timezone);
 
-                if (!is_null($value->clock_out_time)) {
+                if (! is_null($value->clock_out_time)) {
                     $this->endTime = $value->clock_out_time->timezone($this->company->timezone);
-                }
-                elseif (($value->clock_in_time->timezone($this->company->timezone)->translatedFormat('Y-m-d') != now()->timezone($this->company->timezone)->translatedFormat('Y-m-d')) && is_null($value->clock_out_time)) {
-                    $this->endTime = Carbon::parse($this->startTime->translatedFormat('Y-m-d') . ' ' . $this->attendanceSettings->office_end_time, $this->company->timezone);
+                } elseif (($value->clock_in_time->timezone($this->company->timezone)->translatedFormat('Y-m-d') != now()->timezone($this->company->timezone)->translatedFormat('Y-m-d')) && is_null($value->clock_out_time)) {
+                    $this->endTime = Carbon::parse($this->startTime->translatedFormat('Y-m-d').' '.$this->attendanceSettings->office_end_time, $this->company->timezone);
                     if ($this->endTime->gt(now()->timezone($this->company->timezone))) {
                         $this->endTime = now()->timezone($this->company->timezone);
                     }
                     $this->notClockedOut = true;
-                }
-                else {
+                } else {
                     $this->notClockedOut = true;
                     $this->endTime = now()->timezone($this->company->timezone);
                 }
@@ -197,12 +200,11 @@ class AttendanceReportDataTable extends BaseDataTable
 
         }
 
-
         if ($timeLogInMinutes <= 59) {
-            return sprintf('%d' . __('app.hrs') . ' %d' . __('app.mins'), 0, $timeLogInMinutes);
+            return sprintf('%d'.__('app.hrs').' %d'.__('app.mins'), 0, $timeLogInMinutes);
         }
 
-        return sprintf('%d' . __('app.hrs') . ' %d' . __('app.mins'), floor($timeLogInMinutes / 60), floor($timeLogInMinutes % 60));
+        return sprintf('%d'.__('app.hrs').' %d'.__('app.mins'), floor($timeLogInMinutes / 60), floor($timeLogInMinutes % 60));
 
     }
 
@@ -216,5 +218,4 @@ class AttendanceReportDataTable extends BaseDataTable
 
         return $extraDays->attendance;
     }
-
 }

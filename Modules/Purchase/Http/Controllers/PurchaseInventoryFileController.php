@@ -14,7 +14,6 @@ use Modules\Purchase\Entities\PurchaseSetting;
 
 class PurchaseInventoryFileController extends AccountBaseController
 {
-
     use IconTrait;
 
     public function __construct()
@@ -23,7 +22,7 @@ class PurchaseInventoryFileController extends AccountBaseController
         $this->pageIcon = __('icon-people');
         $this->pageTitle = 'purchase::app.menu.inventory';
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array(PurchaseSetting::MODULE_NAME, $this->user->modules));
+            abort_403(! in_array(PurchaseSetting::MODULE_NAME, $this->user->modules));
 
             return $next($request);
         });
@@ -31,7 +30,7 @@ class PurchaseInventoryFileController extends AccountBaseController
 
     /**
      * Store a newly created resource in storage.
-     * @param Request $request
+     *
      * @return Renderable
      */
     public function store(Request $request)
@@ -41,7 +40,7 @@ class PurchaseInventoryFileController extends AccountBaseController
             $defaultImage = null;
 
             foreach ($request->file as $fileData) {
-                $file = new PurchaseInventoryFile();
+                $file = new PurchaseInventoryFile;
                 $file->inventory_id = $request->inventory_id;
 
                 $filename = Files::uploadLocalOrS3($fileData, PurchaseInventoryFile::FILE_PATH);
@@ -68,7 +67,8 @@ class PurchaseInventoryFileController extends AccountBaseController
 
     /**
      * Remove the specified resource from storage.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function destroy($id)
@@ -82,7 +82,6 @@ class PurchaseInventoryFileController extends AccountBaseController
     {
         $file = PurchaseInventoryFile::findOrFail($id);
 
-        return download_local_s3($file, PurchaseInventoryFile::FILE_PATH . '/' . $file->hashname);
+        return download_local_s3($file, PurchaseInventoryFile::FILE_PATH.'/'.$file->hashname);
     }
-
 }

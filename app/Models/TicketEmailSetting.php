@@ -21,6 +21,7 @@ use App\Traits\HasCompany;
  * @property int $sync_interval
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|TicketEmailSetting newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TicketEmailSetting newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TicketEmailSetting query()
@@ -38,14 +39,14 @@ use App\Traits\HasCompany;
  * @method static \Illuminate\Database\Eloquent\Builder|TicketEmailSetting whereSyncInterval($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TicketEmailSetting whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TicketEmailSetting whereVerified($value)
+ *
  * @property-read \App\Models\Company|null $company
+ *
  * @mixin \Eloquent
  */
 class TicketEmailSetting extends BaseModel
 {
-
     use HasCompany;
 
     protected $guarded = ['id'];
-
 }

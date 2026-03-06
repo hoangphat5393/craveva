@@ -2,22 +2,20 @@
 
 namespace Modules\ServerManager\Database\Seeders;
 
+use App\Models\ClientDetails;
+use App\Models\Project;
+use App\Models\User;
+use Illuminate\Database\Seeder;
 use Modules\ServerManager\Entities\ServerHosting;
 use Modules\ServerManager\Entities\ServerProvider;
 use Modules\ServerManager\Entities\ServerType;
-use App\Models\User;
-use App\Models\Project;
-use App\Models\ClientDetails;
-use Illuminate\Database\Seeder;
-use Modules\ServerManager\Database\Seeders\ServerProviderSeeder;
-use Modules\ServerManager\Database\Seeders\ServerTypeSeeder;
 
 class ServerHostingSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      *
-     * @param int $companyId
+     * @param  int  $companyId
      * @return void
      */
     public function run($companyId)
@@ -25,10 +23,10 @@ class ServerHostingSeeder extends Seeder
         $faker = \Faker\Factory::create();
 
         // Ensure providers and server types are seeded first
-        $providerSeeder = new ServerProviderSeeder();
+        $providerSeeder = new ServerProviderSeeder;
         $providerSeeder->seedProvidersForCompany($companyId);
 
-        $serverTypeSeeder = new ServerTypeSeeder();
+        $serverTypeSeeder = new ServerTypeSeeder;
         $serverTypeSeeder->seedServerTypesForCompany($companyId);
 
         // Get available users, projects, and clients for this company
@@ -38,9 +36,9 @@ class ServerHostingSeeder extends Seeder
 
         // Get providers and server types from database
         $providers = ServerProvider::where('company_id', $companyId)
-            ->where(function($query) {
+            ->where(function ($query) {
                 $query->where('type', 'hosting')
-                      ->orWhere('type', 'both');
+                    ->orWhere('type', 'both');
             })
             ->where('status', 'active')
             ->get(['id', 'name', 'url'])
@@ -52,7 +50,7 @@ class ServerHostingSeeder extends Seeder
             ->toArray();
 
         // Only create server hosting records if users exist (required for foreign key constraints)
-        if (!empty($users)) {
+        if (! empty($users)) {
             ServerHosting::factory()
                 ->count(20)
                 ->make()
@@ -70,17 +68,17 @@ class ServerHostingSeeder extends Seeder
                     $hosting->provider_url = $selectedProvider->url;
 
                     // Assign random server type from database if available
-                    if (!empty($serverTypes)) {
+                    if (! empty($serverTypes)) {
                         $hosting->server_type = $faker->randomElement($serverTypes);
                     }
 
                     // Assign random project if available
-                    if (!empty($projects)) {
+                    if (! empty($projects)) {
                         $hosting->project = $faker->optional(0.7)->randomElement($projects);
                     }
 
                     // Assign random client if available
-                    if (!empty($clients)) {
+                    if (! empty($clients)) {
                         $hosting->client = $faker->optional(0.6)->randomElement($clients);
                     }
 

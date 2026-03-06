@@ -7,7 +7,6 @@ use App\Models\Deal;
 
 class StoreRequest extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -30,13 +29,12 @@ class StoreRequest extends CoreRequest
 
         $rules = [];
 
-        if(request()->has('send_reminder')){
+        if (request()->has('send_reminder')) {
             $rules['remind_time'] = 'required';
         }
 
-        $rules['next_follow_up_date'] = 'required|date_format:"' . $setting->date_format . '"|after_or_equal:'.$deal->created_at->format($setting->date_format);
+        $rules['next_follow_up_date'] = 'required|date_format:"'.$setting->date_format.'"|after_or_equal:'.$deal->created_at->format($setting->date_format);
 
         return $rules;
     }
-
 }

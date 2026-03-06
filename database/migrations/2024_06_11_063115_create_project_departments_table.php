@@ -6,13 +6,12 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        if (!Schema::hasTable('project_departments')) {
+        if (! Schema::hasTable('project_departments')) {
             Schema::create('project_departments', function (Blueprint $table) {
                 $table->id();
                 $table->integer('project_id')->unsigned();
@@ -31,5 +30,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('project_departments');
     }
-
 };

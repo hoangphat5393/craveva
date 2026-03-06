@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class EmailCollectorRequest extends FormRequest
 {
-
     /**
      * Get the validation rules that apply to the request.
      */
@@ -19,7 +18,7 @@ class EmailCollectorRequest extends FormRequest
                 'string',
                 'email',
                 'max:255',
-            ]
+            ],
         ];
 
         if (request()->is_agreement == 1) {
@@ -36,5 +35,4 @@ class EmailCollectorRequest extends FormRequest
     {
         return true;
     }
-
 }

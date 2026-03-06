@@ -10,7 +10,6 @@ use Illuminate\Http\Request;
 
 class TicketReplyTemplatesController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -29,13 +28,13 @@ class TicketReplyTemplatesController extends AccountBaseController
     }
 
     /**
-     * @param StoreTemplate $request
      * @return array
+     *
      * @throws \Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException
      */
     public function store(StoreTemplate $request)
     {
-        $template = new TicketReplyTemplate();
+        $template = new TicketReplyTemplate;
         $template->reply_heading = trim_editor($request->reply_heading);
         $template->reply_text = $request->description;
         $template->save();
@@ -44,19 +43,20 @@ class TicketReplyTemplatesController extends AccountBaseController
     }
 
     /**
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
     public function edit($id)
     {
         $this->template = TicketReplyTemplate::findOrFail($id);
+
         return view('ticket-settings.edit-ticket-reply-template-modal', $this->data);
     }
 
     /**
-     * @param UpdateTemplate $request
-     * @param int $id
+     * @param  int  $id
      * @return array
+     *
      * @throws \Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException
      */
     public function update(UpdateTemplate $request, $id)
@@ -70,12 +70,13 @@ class TicketReplyTemplatesController extends AccountBaseController
     }
 
     /**
-     * @param int $id
+     * @param  int  $id
      * @return array
      */
     public function destroy($id)
     {
         TicketReplyTemplate::destroy($id);
+
         return Reply::success(__('messages.deleteSuccess'));
     }
 
@@ -83,7 +84,7 @@ class TicketReplyTemplatesController extends AccountBaseController
     {
         $templateId = $request->templateId;
         $template = TicketReplyTemplate::findOrFail($templateId);
+
         return Reply::dataOnly(['replyText' => $template->reply_text, 'status' => 'success']);
     }
-
 }

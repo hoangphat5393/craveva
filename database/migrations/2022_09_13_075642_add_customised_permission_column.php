@@ -1,12 +1,12 @@
 <?php
 
+use App\Models\Permission;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use App\Models\Permission;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      *
@@ -20,7 +20,7 @@ return new class extends Migration {
 
         Permission::where('name', 'view_client_note')
             ->update([
-                    'allowed_permissions' => Permission::ALL_4_ADDED_1_OWNED_2_BOTH_3_NONE_5]
+                'allowed_permissions' => Permission::ALL_4_ADDED_1_OWNED_2_BOTH_3_NONE_5]
             );
     }
 
@@ -35,5 +35,4 @@ return new class extends Migration {
             $table->dropColumn(['customised_permissions']);
         });
     }
-
 };

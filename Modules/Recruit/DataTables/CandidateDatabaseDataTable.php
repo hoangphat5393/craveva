@@ -2,20 +2,19 @@
 
 namespace Modules\Recruit\DataTables;
 
+use App\DataTables\BaseDataTable;
 use App\Models\CompanyAddress;
 use Illuminate\Support\Carbon;
-use App\DataTables\BaseDataTable;
-use Yajra\DataTables\Html\Button;
-use Modules\Recruit\Entities\RecruitSkill;
 use Modules\Recruit\Entities\RecruitCandidateDatabase;
+use Modules\Recruit\Entities\RecruitSkill;
+use Yajra\DataTables\Html\Button;
 
 class CandidateDatabaseDataTable extends BaseDataTable
 {
-
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
@@ -23,12 +22,12 @@ class CandidateDatabaseDataTable extends BaseDataTable
         return datatables()
             ->eloquent($query)
             ->addColumn('check', function ($row) {
-                return '<input type="checkbox" class="select-table-row" id="datatable-row-' . $row->id . '"  name="datatable_ids[]" value="' . $row->id . '" onclick="dataTableRowCheck(' . $row->id . ')">';
+                return '<input type="checkbox" class="select-table-row" id="datatable-row-'.$row->id.'"  name="datatable_ids[]" value="'.$row->id.'" onclick="dataTableRowCheck('.$row->id.')">';
             })
             ->editColumn('name', function ($row) {
                 return '<div class="media align-items-center">
             <div class="media-body">
-            <h5 class="mb-0 f-13 text-darkest-grey"><a href="' . route('candidate-database.show', [$row->id]) . '" class="openRightModal">' . $row->name . '</a></h5>
+            <h5 class="mb-0 f-13 text-darkest-grey"><a href="'.route('candidate-database.show', [$row->id]).'" class="openRightModal">'.$row->name.'</a></h5>
             </div>
             </div>';
             })
@@ -55,7 +54,7 @@ class CandidateDatabaseDataTable extends BaseDataTable
 
                 foreach ($applicant_skills as $item) {
                     $status .= '<li ';
-                    $status .= '>' . $item['name'] . '</li>';
+                    $status .= '>'.$item['name'].'</li>';
                 }
 
                 $status .= '</ul>';
@@ -69,14 +68,13 @@ class CandidateDatabaseDataTable extends BaseDataTable
                 return $skill;
             })
             ->addIndexColumn()
-            ->setRowId(fn($row) => 'row-' . $row->id)
+            ->setRowId(fn ($row) => 'row-'.$row->id)
             ->rawColumns(['name', 'job', 'location', 'skills', 'job_applied_on']);
     }
 
     /**
      * Get query source of dataTable.
      *
-     * @param  $model
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function query(RecruitCandidateDatabase $model)
@@ -101,7 +99,7 @@ class CandidateDatabaseDataTable extends BaseDataTable
 
         if ($this->request()->searchText != '') {
             $model = $model->where(function ($query) {
-                $query->where('name', 'like', '%' . request('searchText') . '%');
+                $query->where('name', 'like', '%'.request('searchText').'%');
             });
         }
 
@@ -110,7 +108,7 @@ class CandidateDatabaseDataTable extends BaseDataTable
         }
 
         if ($request->skill != 0 && $request->skill != 'all') {
-            $model->whereJsonContains('skills', (int)$request->skill);
+            $model->whereJsonContains('skills', (int) $request->skill);
         }
 
         if ($request->name != 0 && $request->name != 'all') {
@@ -148,10 +146,10 @@ class CandidateDatabaseDataTable extends BaseDataTable
                 'fnDrawCallback' => 'function( oSettings ) {
                    //
                    $(".select-picker").selectpicker();
-                 }'
+                 }',
 
             ])
-            ->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
+            ->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
     }
 
     /**
@@ -163,7 +161,7 @@ class CandidateDatabaseDataTable extends BaseDataTable
     {
         return [
             '#' => ['data' => 'DT_RowIndex', 'orderable' => false, 'searchable' => false, 'visible' => false, 'exportable' => false],
-            __('recruit::modules.jobApplication.serialNo') => ['data' => 'DT_RowIndex', 'orderable' => false, 'searchable' => false, 'visible' => false ,'title' => __('recruit::modules.jobApplication.serialNo')],
+            __('recruit::modules.jobApplication.serialNo') => ['data' => 'DT_RowIndex', 'orderable' => false, 'searchable' => false, 'visible' => false, 'title' => __('recruit::modules.jobApplication.serialNo')],
             __('recruit::modules.jobApplication.name') => ['data' => 'name', 'exportable' => false, 'name' => 'name', 'title' => __('recruit::modules.jobApplication.name')],
             __('recruit::modules.interviewSchedule.candidateName') => ['data' => 'candidate_name', 'visible' => false, 'name' => 'candidate_name', 'title' => __('recruit::modules.interviewSchedule.candidateName')],
             __('recruit::modules.job.job') => ['data' => 'job', 'name' => 'job', 'title' => __('recruit::modules.job.job')],
@@ -173,5 +171,4 @@ class CandidateDatabaseDataTable extends BaseDataTable
             __('recruit::modules.job.skillSet') => ['data' => 'skill', 'visible' => false, 'name' => 'skill', 'title' => __('recruit::modules.job.skillSet')],
         ];
     }
-
 }

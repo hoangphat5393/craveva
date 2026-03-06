@@ -3,14 +3,13 @@
 namespace Modules\Recruit\Notifications;
 
 use App\Notifications\BaseNotification;
-use Illuminate\Notifications\Messages\MailMessage;
 use Modules\Recruit\Entities\RecruitEmailNotificationSetting;
 use Modules\Recruit\Entities\RecruitJobApplication;
 
 class NewJobApplication extends BaseNotification
 {
-
     private $jobApplication;
+
     private $emailSetting;
 
     /**
@@ -18,7 +17,6 @@ class NewJobApplication extends BaseNotification
      *
      * @return void
      */
-
     public function __construct(RecruitJobApplication $jobApplication)
     {
         $this->jobApplication = $jobApplication;
@@ -30,7 +28,7 @@ class NewJobApplication extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -47,7 +45,7 @@ class NewJobApplication extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
@@ -57,12 +55,12 @@ class NewJobApplication extends BaseNotification
 
         $email = $this->jobApplication->email ?? __('recruit::modules.front.email');
 
-         $content = __(':full_name (:email) :text - :job_title', [
-        'full_name' => $this->jobApplication->full_name,
-        'email' => $email,
-        'text' => __('recruit::modules.newJobApplication.text'),
-        'job_title' => $this->jobApplication->job->title,
-          ]);
+        $content = __(':full_name (:email) :text - :job_title', [
+            'full_name' => $this->jobApplication->full_name,
+            'email' => $email,
+            'text' => __('recruit::modules.newJobApplication.text'),
+            'job_title' => $this->jobApplication->job->title,
+        ]);
 
         return parent::build()
             ->subject(__('recruit::modules.newJobApplication.subject'))
@@ -70,15 +68,15 @@ class NewJobApplication extends BaseNotification
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
-                'actionText' => __('app.view') . ' ' . __('recruit::modules.jobApplication.jobApplication'),
-                'notifiableName' => $notifiable->name
+                'actionText' => __('app.view').' '.__('recruit::modules.jobApplication.jobApplication'),
+                'notifiableName' => $notifiable->name,
             ]);
     }
 
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function toArray()
@@ -86,8 +84,7 @@ class NewJobApplication extends BaseNotification
         return [
             'user_id' => $this->jobApplication->job->recruiter_id,
             'jobApp_id' => $this->jobApplication->id,
-            'heading' => $this->jobApplication->full_name
+            'heading' => $this->jobApplication->full_name,
         ];
     }
-
 }

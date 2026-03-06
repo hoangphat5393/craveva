@@ -2,23 +2,20 @@
 
 namespace Modules\Payroll\Http\Controllers\API;
 
-use App\Models\EmployeeDetails;
 use Carbon\Carbon;
 use Froiden\RestAPI\ApiResponse;
-use Modules\Payroll\Entities\PayrollCompliance;
-use Modules\Payroll\Entities\PayrollSetting;
 use Modules\Payroll\Entities\API\SalarySlip;
 use Modules\Payroll\Entities\PayrollCycle;
 use Modules\Payroll\Http\Requests\API\Payroll\IndexRequest;
 use Modules\Payroll\Http\Requests\API\Payroll\ShowRequest;
 use Modules\RestAPI\Http\Controllers\ApiBaseController;
-use Modules\RestAPI\Http\Requests\ApiRequest;
 
 class PayrollApiController extends ApiBaseController
 {
     protected $model = SalarySlip::class;
 
     protected $indexRequest = IndexRequest::class;
+
     protected $showRequest = ShowRequest::class;
 
     public function modifyIndex($query)
@@ -44,7 +41,7 @@ class PayrollApiController extends ApiBaseController
         if ($payrollCycle->cycle == 'weekly') {
             $dateData = [];
             $weeks = 52;
-            $carbonFirst = new Carbon('first Monday of January ' . $year);
+            $carbonFirst = new Carbon('first Monday of January '.$year);
 
             for ($i = 1; $i <= $weeks; $i++) {
                 $dateData['start_date'][] = $carbonFirst->toDateString();
@@ -67,7 +64,7 @@ class PayrollApiController extends ApiBaseController
 
             $dateData = [];
             $weeks = 26;
-            $carbonFirst = new Carbon('first Monday of January ' . $year);
+            $carbonFirst = new Carbon('first Monday of January '.$year);
 
             $this->current = 0;
             $index = 0;
@@ -115,8 +112,7 @@ class PayrollApiController extends ApiBaseController
 
                 if ($endSecondDay > $daysInMonth) {
                     $dateData['end_date'][] = $endDateDataNew = Carbon::createFromDate($year, $month, $daysInMonth)->toDateString();
-                }
-                else {
+                } else {
                     $dateData['end_date'][] = $endDateDataNew = Carbon::createFromDate($year, $month, $endSecondDay)->toDateString();
                 }
 
@@ -137,13 +133,11 @@ class PayrollApiController extends ApiBaseController
 
             foreach ($months as $month) {
                 $date = Carbon::createFromDate($year, $month);
-                $dateData['start_date'][] = Carbon::parse(Carbon::parse('01-' . $month . '-' . $year))->startOfMonth()->toDateString();
-                $dateData['end_date'][] = Carbon::parse(Carbon::parse('01-' . $month . '-' . $year))->endOfMonth()->toDateString();
+                $dateData['start_date'][] = Carbon::parse(Carbon::parse('01-'.$month.'-'.$year))->startOfMonth()->toDateString();
+                $dateData['end_date'][] = Carbon::parse(Carbon::parse('01-'.$month.'-'.$year))->endOfMonth()->toDateString();
             }
 
             return ApiResponse::make(null, $dateData);
         }
     }
-
 }
-

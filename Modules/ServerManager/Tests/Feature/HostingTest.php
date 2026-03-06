@@ -2,10 +2,10 @@
 
 namespace Modules\ServerManager\Tests\Feature;
 
-use Tests\TestCase;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\ServerManager\Entities\ServerHosting;
-use App\Models\User;
+use Tests\TestCase;
 
 class HostingTest extends TestCase
 {

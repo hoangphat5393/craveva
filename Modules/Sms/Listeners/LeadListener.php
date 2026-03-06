@@ -24,5 +24,4 @@ class LeadListener
         } catch (\Exception $e) { // @codingStandardsIgnoreLine
         }
     }
-
 }

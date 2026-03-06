@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class StoreCurrency extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -30,8 +29,7 @@ class StoreCurrency extends CoreRequest
             'no_of_decimal' => 'required',
             'usd_price' => 'required_if:is_cryptocurrency,yes',
             'exchange_rate' => 'required_if:is_cryptocurrency,no',
-            'currency_code' => 'required|unique:currencies,currency_code,null,id,company_id,' . company()->id,
+            'currency_code' => 'required|unique:currencies,currency_code,null,id,company_id,'.company()->id,
         ];
     }
-
 }

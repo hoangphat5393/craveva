@@ -3,13 +3,12 @@
 namespace App\Models;
 
 use App\Traits\HasCompany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * Class EmployeeDocumentExpiry
  *
- * @package App\Models
  * @property int $id
  * @property int $company_id
  * @property int $user_id
@@ -18,7 +17,7 @@ use Carbon\Carbon;
  * @property \Carbon\Carbon $issue_date
  * @property \Carbon\Carbon $expiry_date
  * @property int $alert_before_days
- * @property boolean $alert_enabled
+ * @property bool $alert_enabled
  * @property string|null $filename
  * @property string|null $hashname
  * @property string|null $size
@@ -30,8 +29,8 @@ use Carbon\Carbon;
  * @property-read mixed $icon
  * @property-read \App\Models\User $user
  * @property-read \App\Models\Company|null $company
- * @property-read boolean $is_expired
- * @property-read boolean $is_expiring_soon
+ * @property-read bool $is_expired
+ * @property-read bool $is_expiring_soon
  * @property-read int $days_until_expiry
  */
 class EmployeeDocumentExpiry extends BaseModel
@@ -53,11 +52,13 @@ class EmployeeDocumentExpiry extends BaseModel
         'hashname',
         'size',
         'added_by',
-        'last_updated_by'
+        'last_updated_by',
     ];
 
     protected $guarded = ['id'];
+
     protected $table = 'employee_document_expiries';
+
     protected $appends = ['doc_url', 'icon', 'is_expired', 'is_expiring_soon', 'days_until_expiry'];
 
     protected $casts = [
@@ -74,19 +75,20 @@ class EmployeeDocumentExpiry extends BaseModel
     public function getDocUrlAttribute()
     {
         if ($this->hashname) {
-            return asset_url_local_s3(EmployeeDocumentExpiry::FILE_PATH . '/' . $this->user_id . '/' . $this->hashname);
+            return asset_url_local_s3(EmployeeDocumentExpiry::FILE_PATH.'/'.$this->user_id.'/'.$this->hashname);
         }
+
         return null;
     }
 
     public function getIconAttribute()
     {
-        if (!$this->hashname) {
+        if (! $this->hashname) {
             return 'fa-file';
         }
 
         $extension = pathinfo($this->filename, PATHINFO_EXTENSION);
-        
+
         switch (strtolower($extension)) {
             case 'pdf':
                 return 'fa-file-pdf';
@@ -113,12 +115,13 @@ class EmployeeDocumentExpiry extends BaseModel
 
     public function getIsExpiringSoonAttribute()
     {
-        if ($this->is_expired || !$this->alert_enabled) {
+        if ($this->is_expired || ! $this->alert_enabled) {
             return false;
         }
 
         // Show warning from 2 months (60 days) before expiry until expiry date
         $twoMonthsBefore = $this->expiry_date->copy()->subDays(60);
+
         return Carbon::now()->between($twoMonthsBefore, $this->expiry_date);
     }
 

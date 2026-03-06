@@ -1,29 +1,29 @@
 <?php
 
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
-use App\Models\SuperAdmin\Subscription;
-use Illuminate\Support\Facades\Artisan;
+use App\Models\SuperAdmin\AuthorizeInvoice;
+use App\Models\SuperAdmin\AuthorizeSubscription;
 use App\Models\SuperAdmin\GlobalInvoice;
+use App\Models\SuperAdmin\GlobalInvoiceSetting;
+use App\Models\SuperAdmin\GlobalSubscription;
 use App\Models\SuperAdmin\MollieInvoice;
-use App\Models\SuperAdmin\PaypalInvoice;
-use App\Models\SuperAdmin\StripeInvoice;
+use App\Models\SuperAdmin\MollieSubscription;
 use App\Models\SuperAdmin\OfflineInvoice;
 use App\Models\SuperAdmin\PayfastInvoice;
-use App\Models\SuperAdmin\PaystackInvoice;
-use App\Models\SuperAdmin\RazorpayInvoice;
-use App\Models\SuperAdmin\AuthorizeInvoice;
-use App\Models\SuperAdmin\GlobalSubscription;
-use App\Models\SuperAdmin\MollieSubscription;
-use Illuminate\Database\Migrations\Migration;
 use App\Models\SuperAdmin\PayfastSubscription;
-use App\Models\SuperAdmin\GlobalInvoiceSetting;
+use App\Models\SuperAdmin\PaypalInvoice;
+use App\Models\SuperAdmin\PaystackInvoice;
 use App\Models\SuperAdmin\PaystackSubscription;
+use App\Models\SuperAdmin\RazorpayInvoice;
 use App\Models\SuperAdmin\RazorpaySubscription;
-use App\Models\SuperAdmin\AuthorizeSubscription;
+use App\Models\SuperAdmin\StripeInvoice;
+use App\Models\SuperAdmin\Subscription;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      *
@@ -43,14 +43,13 @@ return new class extends Migration {
             Artisan::call('fix:company');
         }
 
-        if (!Schema::hasColumn('global_payment_gateway_credentials', 'razorpay_webhook_secret')) {
+        if (! Schema::hasColumn('global_payment_gateway_credentials', 'razorpay_webhook_secret')) {
             Schema::table('global_payment_gateway_credentials', function ($table) {
                 $table->string('razorpay_webhook_secret')->nullable()->after('test_razorpay_secret');
             });
         }
 
-
-        if (!Schema::hasTable('paystack_subscriptions')) {
+        if (! Schema::hasTable('paystack_subscriptions')) {
             Schema::create('paystack_subscriptions', function ($table) {
                 $table->bigIncrements('id');
                 $table->unsignedInteger('company_id');
@@ -65,7 +64,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasTable('authorize_subscriptions')) {
+        if (! Schema::hasTable('authorize_subscriptions')) {
             Schema::create('authorize_subscriptions', function ($table) {
                 $table->increments('id');
                 $table->unsignedInteger('company_id')->nullable();
@@ -79,7 +78,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasTable('payfast_subscriptions')) {
+        if (! Schema::hasTable('payfast_subscriptions')) {
             Schema::create('payfast_subscriptions', function ($table) {
                 $table->id();
                 $table->integer('company_id')->unsigned()->nullable();
@@ -93,7 +92,6 @@ return new class extends Migration {
         }
 
         DB::statement('ALTER TABLE companies MODIFY status ENUM("active", "inactive", "license_expired") DEFAULT "active"');
-
 
         if (Schema::hasTable('global_currencies')) {
             Schema::table('global_settings', function ($table) {
@@ -125,7 +123,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasTable('global_subscriptions')) {
+        if (! Schema::hasTable('global_subscriptions')) {
             Schema::create('global_subscriptions', function ($table) {
                 $table->increments('id');
                 $table->integer('company_id')->unsigned()->nullable();
@@ -158,7 +156,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasTable('global_invoices')) {
+        if (! Schema::hasTable('global_invoices')) {
             Schema::create('global_invoices', function ($table) {
                 $table->increments('id');
                 $table->integer('company_id')->unsigned()->nullable();
@@ -198,7 +196,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasTable('global_invoice_settings')) {
+        if (! Schema::hasTable('global_invoice_settings')) {
             Schema::create('global_invoice_settings', function ($table) {
                 $table->id();
                 $table->string('logo')->nullable();
@@ -210,7 +208,7 @@ return new class extends Migration {
                 $table->timestamps();
             });
 
-            $invoiceSetting = new GlobalInvoiceSetting();
+            $invoiceSetting = new GlobalInvoiceSetting;
             $invoiceSetting->template = 'invoice-5';
             $invoiceSetting->invoice_terms = 'Thank you for your business.';
             $invoiceSetting->save();
@@ -225,7 +223,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasColumn('offline_plan_changes', 'amount')) {
+        if (! Schema::hasColumn('offline_plan_changes', 'amount')) {
             Schema::table('offline_plan_changes', function ($table) {
                 $table->double('amount')->nullable()->after('package_type');
                 $table->date('pay_date')->nullable()->after('amount');

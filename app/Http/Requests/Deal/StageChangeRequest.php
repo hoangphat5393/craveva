@@ -8,6 +8,7 @@ use Illuminate\Foundation\Http\FormRequest;
 class StageChangeRequest extends FormRequest
 {
     use CustomFieldsRequestTrait;
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -24,8 +25,7 @@ class StageChangeRequest extends FormRequest
     public function rules()
     {
         return [
-            'close_date' => 'required'
+            'close_date' => 'required',
         ];
     }
-
 }

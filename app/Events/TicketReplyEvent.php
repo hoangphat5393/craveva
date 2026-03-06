@@ -9,11 +9,12 @@ use Illuminate\Queue\SerializesModels;
 
 class TicketReplyEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $ticketReply;
+
     public $notifyUser;
+
     public $ticketReplyUsers;
 
     public function __construct(TicketReply $ticketReply, $notifyUser, $ticketReplyUsers)
@@ -22,5 +23,4 @@ class TicketReplyEvent
         $this->notifyUser = $notifyUser;
         $this->ticketReplyUsers = $ticketReplyUsers;
     }
-
 }

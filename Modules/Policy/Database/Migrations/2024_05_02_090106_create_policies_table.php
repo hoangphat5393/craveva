@@ -1,20 +1,18 @@
 <?php
 
+use App\Models\Company;
+use App\Models\ModuleSetting;
+use App\Models\Permission;
+use App\Models\PermissionRole;
 use App\Models\Role;
 use App\Models\User;
-use App\Models\Company;
-use App\Models\Permission;
-use App\Scopes\CompanyScope;
-use App\Models\ModuleSetting;
-use App\Models\PermissionRole;
 use App\Models\UserPermission;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      */
@@ -28,7 +26,7 @@ return new class extends Migration
             ['name' => 'edit_policy', 'display_name' => 'Edit Policy', 'is_custom' => 1, 'allowed_permissions' => Permission::ALL_4_ADDED_1_OWNED_2_BOTH_3_NONE_5],
             ['name' => 'delete_policy', 'display_name' => 'Delete Policy', 'is_custom' => 1, 'allowed_permissions' => Permission::ALL_4_ADDED_1_OWNED_2_BOTH_3_NONE_5],
             ['name' => 'view_acknowledged', 'display_name' => 'View Acknowledged', 'is_custom' => 1, 'allowed_permissions' => Permission::ALL_4_OWNED_2_NONE_5],
-            ['name' => 'view_non_acknowledged', 'display_name' => 'View Non Acknowledged', 'is_custom' => 1, 'allowed_permissions' => Permission::ALL_NONE]
+            ['name' => 'view_non_acknowledged', 'display_name' => 'View Non Acknowledged', 'is_custom' => 1, 'allowed_permissions' => Permission::ALL_NONE],
         ];
 
         $companies = Company::select('id');
@@ -48,7 +46,6 @@ return new class extends Migration
                 'allowed_permissions' => $permissionType['allowed_permissions'],
             ]);
 
-
             foreach ($companies as $company) {
 
                 $role = Role::where('name', 'admin')
@@ -60,14 +57,13 @@ return new class extends Migration
                         ->where('role_id', $role->id)->where('permission_type_id', 4)->first();
 
                     if (is_null($permissionData)) {
-                        $permissionRole = new PermissionRole();
+                        $permissionRole = new PermissionRole;
                         $permissionRole->permission_id = $permission->id;
                         $permissionRole->role_id = $role->id;
                         $permissionRole->permission_type_id = 4;
                         $permissionRole->save();
                     }
                 }
-
 
                 $admins = User::allAdmins($company->id);
 
@@ -82,7 +78,6 @@ return new class extends Migration
                 }
             }
         }
-
 
         Schema::create('policies', function (Blueprint $table) {
             $table->increments('id');

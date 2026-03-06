@@ -13,12 +13,10 @@ use Modules\Payroll\DataTables\OvertimePolicyEmployeeDataTable;
 use Modules\Payroll\Entities\OvertimePolicy;
 use Modules\Payroll\Entities\PayCode;
 use Modules\Payroll\Entities\PayrollSetting;
-
 use Modules\Payroll\Http\Requests\StoreSalaryComponent;
 
 class OvertimeSettingController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -40,40 +38,40 @@ class OvertimeSettingController extends AccountBaseController
         $this->defaultCurrency = ($this->payrollSetting->currency_id) ? $payrollCurrency : company()->currency_id;
 
         switch ($tab) {
-        case 'pay-code':
-            $this->payCodes = PayCode::all();
+            case 'pay-code':
+                $this->payCodes = PayCode::all();
 
-            $this->view = 'payroll::overtime-setting.ajax.pay-code';
-            break;
+                $this->view = 'payroll::overtime-setting.ajax.pay-code';
+                break;
 
-        case 'overtime-policy':
+            case 'overtime-policy':
 
-            $this->overtimePolicies = OvertimePolicy::all();
-            $this->view = 'payroll::overtime-setting.ajax.overtime-policy';
-            break;
+                $this->overtimePolicies = OvertimePolicy::all();
+                $this->view = 'payroll::overtime-setting.ajax.overtime-policy';
+                break;
 
-        case 'overtime-policy-employee':
+            case 'overtime-policy-employee':
 
-            return $this->assignToEmployee();
-            break;
+                return $this->assignToEmployee();
+                break;
 
-        case 'overtime-request':
+            case 'overtime-request':
 
-            $this->salaryTdsPermission = user()->permission('manage_salary_tds');
-            abort_403($this->salaryTdsPermission !== 'all');
+                $this->salaryTdsPermission = user()->permission('manage_salary_tds');
+                abort_403($this->salaryTdsPermission !== 'all');
 
-            $this->view = 'payroll::payroll-setting.ajax.salary-tds';
-            break;
+                $this->view = 'payroll::payroll-setting.ajax.salary-tds';
+                break;
 
-        case 'employee-hourly-rate':
+            case 'employee-hourly-rate':
 
-            return $this->getHourlyRateData();
-            break;
+                return $this->getHourlyRateData();
+                break;
 
-        default:
-            $this->payCodes = PayCode::all();
-            $this->view = 'payroll::overtime-setting.ajax.pay-code';
-            break;
+            default:
+                $this->payCodes = PayCode::all();
+                $this->view = 'payroll::overtime-setting.ajax.pay-code';
+                break;
         }
 
         $this->activeTab = $tab ?: 'pay-code';
@@ -91,11 +89,11 @@ class OvertimeSettingController extends AccountBaseController
     {
         $this->activeTab = 'overtime-policy-employee';
 
-        $dataTable = new OvertimePolicyEmployeeDataTable();
+        $dataTable = new OvertimePolicyEmployeeDataTable;
 
         $this->overtimePolicies = OvertimePolicy::all();
 
-        $this->employees = User::allEmployees(companyId:company()->id);
+        $this->employees = User::allEmployees(companyId: company()->id);
 
         $this->view = 'payroll::overtime-setting.ajax.overtime-policy-employee';
 
@@ -107,9 +105,9 @@ class OvertimeSettingController extends AccountBaseController
     {
         $this->activeTab = 'employee-hourly-rate';
 
-        $dataTable = new EmployeeHourlyDataTable();
+        $dataTable = new EmployeeHourlyDataTable;
 
-        $this->employees = User::allEmployees(companyId:company()->id);
+        $this->employees = User::allEmployees(companyId: company()->id);
 
         $this->view = 'payroll::payroll-setting.ajax.employee-hourly-rate';
 
@@ -130,7 +128,6 @@ class OvertimeSettingController extends AccountBaseController
     /**
      * Store a newly created resource in storage.
      *
-     * @param  Request  $request
      * @return Response
      */
     public function store(Request $request)
@@ -138,9 +135,8 @@ class OvertimeSettingController extends AccountBaseController
         $employeeIds = $request->employee_id;
         $rate = $request->hourly_rate;
 
-        foreach($employeeIds as $employeeId){
-            if(!is_null($rate[$employeeId]))
-            {
+        foreach ($employeeIds as $employeeId) {
+            if (! is_null($rate[$employeeId])) {
                 $employee = EmployeeDetails::where('user_id', $employeeId)->first();
 
                 $employee->overtime_hourly_rate = (isset($rate[$employeeId])) ? $rate[$employeeId] : null;
@@ -196,5 +192,4 @@ class OvertimeSettingController extends AccountBaseController
     {
         //
     }
-
 }

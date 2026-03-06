@@ -1,6 +1,6 @@
 <?php
 
-return array(
+return [
     'unArchiveMessage' => 'Do you want to restore this policy.',
     'archiveMessage' => 'Do you want to archive this policy.',
     'policyRevertSuccessfully' => 'Policy reverted successfully.',
@@ -9,5 +9,4 @@ return array(
     'reminderSuccess' => 'Reminder sent successfully.',
     'archiveSuccess' => 'Policy archived successfully.',
     'processing' => 'Processing...',
-);
-
+];

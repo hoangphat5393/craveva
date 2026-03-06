@@ -3,10 +3,10 @@
 namespace App\Notifications;
 
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Notifications\Messages\MailMessage;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
 
 class DailyTimeLogReport extends BaseNotification
@@ -17,7 +17,9 @@ class DailyTimeLogReport extends BaseNotification
      * Create a new notification instance.
      */
     private $user;
+
     public $todayDate;
+
     public $role;
 
     public function __construct(User $user, $role)
@@ -41,7 +43,7 @@ class DailyTimeLogReport extends BaseNotification
     public function attachments()
     {
         return [
-            Attachment::fromData(fn() => $this->domPdfObjectForDownload()['pdf']->output(), 'TimeLog-Report-' . $this->todayDate . '.pdf')
+            Attachment::fromData(fn () => $this->domPdfObjectForDownload()['pdf']->output(), 'TimeLog-Report-'.$this->todayDate.'.pdf')
                 ->withMime('application/pdf'),
         ];
     }
@@ -92,17 +94,16 @@ class DailyTimeLogReport extends BaseNotification
         $pdf = app('dompdf.wrapper')->setPaper('A4', 'landscape');
 
         $options = $pdf->getOptions();
-        $options->set(array('enable_php' => true));
+        $options->set(['enable_php' => true]);
         $pdf->getDomPDF()->setOptions($options);
         /** @phpstan-ignore-line */
-
         $pdf->loadView('timelog-report', ['employees' => $employeeData, 'date' => $now, 'company' => $company]);
 
         $filename = 'timelog-report';
 
         return [
             'pdf' => $pdf,
-            'fileName' => $filename
+            'fileName' => $filename,
         ];
     }
 
@@ -113,14 +114,14 @@ class DailyTimeLogReport extends BaseNotification
     {
         $build = parent::build($notifiable);
 
-            $pdfOption = $this->domPdfObjectForDownload();
-            $pdf = $pdfOption['pdf'];
-            $filename = $pdfOption['fileName'];
-            $build->attachData($pdf->output(), $filename . '.pdf');
+        $pdfOption = $this->domPdfObjectForDownload();
+        $pdf = $pdfOption['pdf'];
+        $filename = $pdfOption['fileName'];
+        $build->attachData($pdf->output(), $filename.'.pdf');
 
-            App::setLocale($notifiable->locale ?? $this->company->locale ?? 'en');
+        App::setLocale($notifiable->locale ?? $this->company->locale ?? 'en');
 
-        $build->subject(__('email.dailyTimelogReport.subject') . ' ' . $this->todayDate)
+        $build->subject(__('email.dailyTimelogReport.subject').' '.$this->todayDate)
             ->markdown('mail.timelog.timelog-report', ['date' => $this->todayDate, 'name' => $this->user->name]);
 
         parent::resetLocale();
@@ -139,5 +140,4 @@ class DailyTimeLogReport extends BaseNotification
             //
         ];
     }
-
 }

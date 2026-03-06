@@ -20,5 +20,4 @@ class EventReminderListener
         } catch (\Exception $e) { // @codingStandardsIgnoreLine
         }
     }
-
 }

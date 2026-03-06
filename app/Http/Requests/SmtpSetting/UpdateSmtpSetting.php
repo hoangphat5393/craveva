@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class UpdateSmtpSetting extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -25,8 +24,7 @@ class UpdateSmtpSetting extends CoreRequest
     public function rules()
     {
 
-
-        if (!user()->is_superadmin) {
+        if (! user()->is_superadmin) {
             return [];
         }
 
@@ -38,7 +36,7 @@ class UpdateSmtpSetting extends CoreRequest
             'mail_password' => 'required_if:mail_driver,smtp',
             'mail_from_name' => 'required',
             'mail_from_email' => 'required|email:rfc,strict',
-            'mail_encryption' => 'required'
+            'mail_encryption' => 'required',
         ];
     }
 }

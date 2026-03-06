@@ -3,18 +3,16 @@
 namespace Modules\Recruit\DataTables;
 
 use App\DataTables\BaseDataTable;
-use Modules\Recruit\Entities\RecruitJob;
 use Modules\Recruit\Entities\RecruitApplicationStatus;
-use Modules\Recruit\Entities\RecruitJobApplication;
+use Modules\Recruit\Entities\RecruitJob;
 use Yajra\DataTables\Facades\DataTables;
 
 class DashboardPipelineWidgetDataTable extends BaseDataTable
 {
-
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
@@ -26,7 +24,7 @@ class DashboardPipelineWidgetDataTable extends BaseDataTable
         $datatable->addColumn('title', function ($row) {
             $totalApplicationCount = $row->applications->count();
 
-            return '<div class="media-bod1y column-width-title"><p class="mb-0">' . $row->title . '</p><p class="mb-0 f-12 text-dark-grey">' . __('recruit::modules.jobApplication.totalApplications') . ' ' . '-' . ' ' . $totalApplicationCount . '</p></div>';
+            return '<div class="media-bod1y column-width-title"><p class="mb-0">'.$row->title.'</p><p class="mb-0 f-12 text-dark-grey">'.__('recruit::modules.jobApplication.totalApplications').' '.'-'.' '.$totalApplicationCount.'</p></div>';
         });
 
         // Fetch all necessary RecruitApplicationStatus at once
@@ -43,21 +41,21 @@ class DashboardPipelineWidgetDataTable extends BaseDataTable
                 $totalCount = $row->applications->where('recruit_application_status_id', $column['id'])->count();
 
                 if ($totalCount == 1) {
-                    return '<span class="d-flex justify-content-center badge badge-pill text-white border-1 badge-light column-width" style="background-color: ' . $colorCode->color . '"><div class="d-inline-block mr-1"></div>' . $totalCount . ' ' . __('recruit::modules.interviewSchedule.candidate') . '</span>';
+                    return '<span class="d-flex justify-content-center badge badge-pill text-white border-1 badge-light column-width" style="background-color: '.$colorCode->color.'"><div class="d-inline-block mr-1"></div>'.$totalCount.' '.__('recruit::modules.interviewSchedule.candidate').'</span>';
                 }
 
                 if ($totalCount > 0) {
-                    return '<span class="d-flex justify-content-center badge badge-pill text-white border-1 badge-light column-width" style="background-color: ' . $colorCode->color . '"><div class="d-inline-block mr-1"></div>' . $totalCount . ' ' . __('recruit::modules.jobApplication.candidates') . '</span>';
+                    return '<span class="d-flex justify-content-center badge badge-pill text-white border-1 badge-light column-width" style="background-color: '.$colorCode->color.'"><div class="d-inline-block mr-1"></div>'.$totalCount.' '.__('recruit::modules.jobApplication.candidates').'</span>';
                 }
 
-                return '<span class="d-flex justify-content-center badge badge-pill border-1 badge-light column-width" style="height: 11mm"><div class="d-inline-block mr-1"></div>' . ' ' . '</span>';
+                return '<span class="d-flex justify-content-center badge badge-pill border-1 badge-light column-width" style="height: 11mm"><div class="d-inline-block mr-1"></div>'.' '.'</span>';
             });
         }
 
         $datatable->orderColumn('title', function ($query, $order) {
             $query->orderBy('title', $order);
         });
-        $datatable->addIndexColumn()->setRowId(fn($row) => 'row-' . $row->id);
+        $datatable->addIndexColumn()->setRowId(fn ($row) => 'row-'.$row->id);
         $rawColumns = $statusColumns->pluck('slug')->toArray();
         $rawColumns[] = array_push($rawColumns, 'title');
         $datatable->rawColumns($rawColumns)->make(true);
@@ -68,7 +66,6 @@ class DashboardPipelineWidgetDataTable extends BaseDataTable
     /**
      * Get query source of dataTable.
      *
-     * @param  $model
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function query(RecruitJob $model)
@@ -92,7 +89,7 @@ class DashboardPipelineWidgetDataTable extends BaseDataTable
                 'fnDrawCallback' => 'function( oSettings ) {
                    //
                    $(".select-picker").selectpicker();
-                }'
+                }',
 
             ]);
     }
@@ -115,5 +112,4 @@ class DashboardPipelineWidgetDataTable extends BaseDataTable
 
         return $newColumns;
     }
-
 }

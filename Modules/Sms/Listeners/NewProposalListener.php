@@ -19,8 +19,7 @@ class NewProposalListener
                 // Notify admins
                 if ($event->proposal->status == 'accepted') {
                     Notification::send($allAdmins, new ProposalApproved($event->proposal));
-                }
-                else {
+                } else {
                     Notification::send($allAdmins, new ProposalRejected($event->proposal));
                 }
             } else {
@@ -30,5 +29,4 @@ class NewProposalListener
         } catch (\Exception $e) { // @codingStandardsIgnoreLine
         }
     }
-
 }

@@ -1,12 +1,12 @@
 <?php
 
-return array(
+return [
     'affiliate' => '聯盟會員',
     'yes' => '是',
     'no' => '否',
     'fixed' => '固定',
     'percent' => '百分比',
-    'menu' => array(
+    'menu' => [
         'affiliate' => '聯盟會員',
         'affiliates' => '聯盟會員',
         'affiliateSettings' => '聯盟設置',
@@ -15,7 +15,7 @@ return array(
         'referrals' => '推薦',
         'affiliateDashboard' => '聯盟儀表板',
         'dashboard' => '儀表板',
-    ),
+    ],
     'addNewAffiliate' => '添加新聯盟會員',
     'createAffiliate' => '創建聯盟會員',
     'affiliateName' => '聯盟會員名稱',
@@ -64,4 +64,4 @@ return array(
     'everyTime' => '每次',
     'referralCode' => '推薦代碼',
     'referred' => '已推薦',
-);
+];

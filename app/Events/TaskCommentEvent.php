@@ -10,12 +10,14 @@ use Illuminate\Queue\SerializesModels;
 
 class TaskCommentEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $task;
+
     public $notifyUser;
+
     public $comment;
+
     public $client;
 
     public function __construct(Task $task, TaskComment $comment, $notifyUser, $client = null)
@@ -27,5 +29,4 @@ class TaskCommentEvent
         $this->client = $client;
 
     }
-
 }

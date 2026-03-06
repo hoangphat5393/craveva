@@ -5,22 +5,22 @@ namespace App\Http\Controllers;
 use App\Helper\Reply;
 use App\Models\LeadCategory;
 use App\Models\LeadPipeline;
+use App\Models\LeadSetting;
 use App\Models\LeadSource;
 use App\Models\PipelineStage;
 use App\Models\User;
 use Illuminate\Http\Request;
-use App\Models\LeadSetting;
 
 class LeadSettingController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'modules.deal.leadSetting';
         $this->activeSettingMenu = 'lead_settings';
         $this->middleware(function ($request, $next) {
-            abort_403(!(user()->permission('manage_lead_setting') == 'all' && in_array('leads', user_modules())));
+            abort_403(! (user()->permission('manage_lead_setting') == 'all' && in_array('leads', user_modules())));
+
             return $next($request);
         });
     }
@@ -60,6 +60,7 @@ class LeadSettingController extends AccountBaseController
 
         if (request()->ajax()) {
             $html = view($this->view, $this->data)->render();
+
             return Reply::dataOnly(['status' => 'success', 'html' => $html, 'title' => $this->pageTitle, 'activeTab' => $this->activeTab]);
         }
 
@@ -70,14 +71,13 @@ class LeadSettingController extends AccountBaseController
     /**
      * Update the lead setting.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function updateLeadSettingStatus($id, Request $request)
     {
         $leadSetting = LeadSetting::where('company_id', $id)->first();
 
-        if(!$leadSetting){
+        if (! $leadSetting) {
             $leadSetting = new LeadSetting;
             $leadSetting->company_id = $id;
             $leadSetting->user_id = $request->userId;
@@ -89,5 +89,4 @@ class LeadSettingController extends AccountBaseController
 
         return reply::success(__('messages.updateSuccess'));
     }
-
 }

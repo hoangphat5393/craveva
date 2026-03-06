@@ -7,7 +7,6 @@ use Illuminate\View\Component;
 
 class SettingCard extends Component
 {
-
     public $method;
 
     /**
@@ -29,5 +28,4 @@ class SettingCard extends Component
     {
         return view('components.setting-card');
     }
-
 }

@@ -8,13 +8,10 @@ use App\Scopes\CompanyScope;
 use App\Traits\HasCompany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\File;
-use Nwidart\Modules\Facades\Module;
 
 class RecruitSetting extends BaseModel
 {
-
-    use HasFactory, HasCompany;
+    use HasCompany, HasFactory;
 
     const MODULE_NAME = 'recruit';
 
@@ -22,7 +19,7 @@ class RecruitSetting extends BaseModel
 
     protected $casts = [
         'mail_setting' => 'json',
-        'form_settings' => 'json'
+        'form_settings' => 'json',
     ];
 
     protected $appends = [
@@ -32,12 +29,12 @@ class RecruitSetting extends BaseModel
 
     public function getBgImageUrlAttribute()
     {
-        return ($this->background_image) ? asset_url_local_s3('background/' . $this->background_image) : asset('img/image-bg.jpg');
+        return ($this->background_image) ? asset_url_local_s3('background/'.$this->background_image) : asset('img/image-bg.jpg');
     }
 
     public function getLogoUrlAttribute()
     {
-        return ($this->logo) ? asset_url_local_s3('company-logo/' . $this->logo) : $this->company->logo_url;
+        return ($this->logo) ? asset_url_local_s3('company-logo/'.$this->logo) : $this->company->logo_url;
     }
 
     public static function addModuleSetting($company)
@@ -82,8 +79,8 @@ class RecruitSetting extends BaseModel
                     'slug' => 'applied',
                     'position' => '1',
                     'color' => '#2b2b2b',
-                    'action' => 'yes'
-                ]
+                    'action' => 'yes',
+                ],
             ],
             [
                 'name' => 'shortlist',
@@ -92,8 +89,8 @@ class RecruitSetting extends BaseModel
                     'slug' => 'phone_screen',
                     'position' => '2',
                     'color' => '#f1e52e',
-                    'action' => 'yes'
-                ]
+                    'action' => 'yes',
+                ],
             ],
             [
                 'name' => 'interview',
@@ -102,8 +99,8 @@ class RecruitSetting extends BaseModel
                     'slug' => 'interview',
                     'position' => '3',
                     'color' => '#3d8ee8',
-                    'action' => 'yes'
-                ]
+                    'action' => 'yes',
+                ],
             ],
             [
                 'name' => 'hired',
@@ -112,8 +109,8 @@ class RecruitSetting extends BaseModel
                     'slug' => 'hired',
                     'position' => '4',
                     'color' => '#32ac16',
-                    'action' => 'yes'
-                ]
+                    'action' => 'yes',
+                ],
             ],
             [
                 'name' => 'rejected',
@@ -122,8 +119,8 @@ class RecruitSetting extends BaseModel
                     'slug' => 'rejected',
                     'position' => '5',
                     'color' => '#ee1127',
-                    'action' => 'yes'
-                ]
+                    'action' => 'yes',
+                ],
             ],
             ['name' => 'others'],
         ];
@@ -156,7 +153,7 @@ class RecruitSetting extends BaseModel
             $arr[$val->id] = [
                 'id' => $val->id,
                 'name' => $val->status,
-                'status' => true
+                'status' => true,
             ];
         }
 
@@ -166,73 +163,73 @@ class RecruitSetting extends BaseModel
             'id' => 1,
             'name' => 'email',
             'slug' => 'Email',
-            'status' => false
+            'status' => false,
         ];
 
         $formArr[2] = [
             'id' => 2,
             'name' => 'phone',
             'slug' => 'Phone',
-            'status' => false
+            'status' => false,
         ];
         $formArr[3] = [
             'id' => 3,
             'name' => 'gender',
             'slug' => 'Gender',
-            'status' => false
+            'status' => false,
         ];
         $formArr[4] = [
             'id' => 4,
             'name' => 'total_experience',
             'slug' => 'Total Experience',
-            'status' => false
+            'status' => false,
         ];
         $formArr[5] = [
             'id' => 5,
             'name' => 'current_location',
             'slug' => 'Current location',
-            'status' => false
+            'status' => false,
         ];
         $formArr[6] = [
             'id' => 6,
             'name' => 'current_ctc',
             'slug' => 'Current Ctc',
-            'status' => false
+            'status' => false,
         ];
         $formArr[7] = [
             'id' => 7,
             'name' => 'expected_ctc',
             'slug' => 'Expected Ctc',
-            'status' => false
+            'status' => false,
         ];
         $formArr[8] = [
             'id' => 8,
             'name' => 'notice_period',
             'slug' => 'Notice Period',
-            'status' => false
+            'status' => false,
         ];
         $formArr[9] = [
             'id' => 9,
             'name' => 'application_source',
             'slug' => 'Source',
-            'status' => false
+            'status' => false,
         ];
         $formArr[10] = [
             'id' => 10,
             'name' => 'status',
             'slug' => 'Status',
-            'status' => false
+            'status' => false,
         ];
         $formArr[11] = [
             'id' => 11,
             'name' => 'cover_letter',
             'slug' => 'Cover letter',
-            'status' => false
+            'status' => false,
         ];
 
         $setting = RecruitSetting::withoutGlobalScope(CompanyScope::class)->where('company_id', $company->id)->first();
 
-        if (Schema::hasColumn('recruit_settings', 'form_settings') && !is_null($setting)) {
+        if (Schema::hasColumn('recruit_settings', 'form_settings') && ! is_null($setting)) {
             $setting->form_settings = $formArr;
             $setting->saveQuietly();
         }
@@ -256,8 +253,8 @@ class RecruitSetting extends BaseModel
     </main>
     <footer>';
 
-        if (!$setting) {
-            $newSetting = new RecruitSetting();
+        if (! $setting) {
+            $newSetting = new RecruitSetting;
             $newSetting->company_id = $company->id;
             $newSetting->company_name = $company->company_name;
             $newSetting->company_website = $company->website;
@@ -289,7 +286,7 @@ class RecruitSetting extends BaseModel
         foreach ($workExperiences as $workExperience) {
             $data = RecruitWorkExperience::withoutGlobalScope(CompanyScope::class)->firstOrNew([
                 'work_experience' => $workExperience,
-                'company_id' => $company->id
+                'company_id' => $company->id,
             ]);
             $data->saveQuietly();
         }
@@ -312,7 +309,6 @@ class RecruitSetting extends BaseModel
         }
     }
 
-
     private static function applicationSource($company)
     {
         $sourceList = [
@@ -325,5 +321,4 @@ class RecruitSetting extends BaseModel
 
         ApplicationSource::insert($sourceList);
     }
-
 }

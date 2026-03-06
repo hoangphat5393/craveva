@@ -3,20 +3,23 @@
 namespace Modules\ServerManager\Exports;
 
 use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
-use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithStyles;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Modules\ServerManager\Entities\ServerHosting;
-use Carbon\Carbon;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class HostingExport implements FromCollection, WithHeadings, WithMapping, ShouldAutoSize, WithStyles
+class HostingExport implements FromCollection, ShouldAutoSize, WithHeadings, WithMapping, WithStyles
 {
     protected $hostings;
+
     protected $startDate;
+
     protected $endDate;
+
     protected $dateFilter;
+
     protected $exportAll;
 
     public function __construct($startDate = null, $endDate = null, $exportAll = false, $dateFilter = null)
@@ -29,10 +32,10 @@ class HostingExport implements FromCollection, WithHeadings, WithMapping, Should
         $query = ServerHosting::where('company_id', company()->id)
             ->with(['assignedTo', 'createdBy', 'updatedBy', 'project', 'client', 'clientDetails']);
 
-        if (!$this->exportAll && $this->startDate && $this->endDate) {
+        if (! $this->exportAll && $this->startDate && $this->endDate) {
             if ($this->dateFilter == 'purchase_date') {
                 $query->whereBetween('purchase_date', [$this->startDate->startOfDay(), $this->endDate->endOfDay()]);
-            } else if ($this->dateFilter == 'renewal_date') {
+            } elseif ($this->dateFilter == 'renewal_date') {
                 $query->whereBetween('renewal_date', [$this->startDate->startOfDay(), $this->endDate->endOfDay()]);
             }
         }

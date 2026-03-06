@@ -3,10 +3,9 @@
 namespace Modules\Biometric\Entities;
 
 use App\Models\BaseModel;
+use App\Models\User;
 use App\Traits\HasCompany;
 use Illuminate\Support\Facades\Log;
-use App\Models\User;
-use Modules\Biometric\Entities\BiometricDevice;
 
 class BiometricCommands extends BaseModel
 {
@@ -38,24 +37,27 @@ class BiometricCommands extends BaseModel
     {
 
         $commandId = "CREATEUSER-{$commandId}";
+
         return "C:$commandId:DATA USER PIN=$pin\tName=$name\n";
     }
 
     public static function queryUserCommand($commandId, $pin)
     {
         $commandId = "QUERYUSER-{$commandId}";
+
         return "C:{$commandId}:DATA QUERY USERINFO PIN={$pin}\n";
     }
 
     public static function deleteUserCommand($commandId, $pin)
     {
         $commandId = "DELETEUSER-{$commandId}";
+
         return "C:$commandId:DATA DELETE USERINFO PIN=$pin\n";
     }
 
     public static function commandExecuted($pendingCommand, $device)
     {
-        if (!$pendingCommand) {
+        if (! $pendingCommand) {
             return;
         }
 
@@ -66,15 +68,14 @@ class BiometricCommands extends BaseModel
 
             $biometricEmployee = BiometricEmployee::where('biometric_employee_id', $employeeId)->where('company_id', $device->company_id)->first();
 
-            if (!$biometricEmployee) {
+            if (! $biometricEmployee) {
                 BiometricEmployee::create([
                     'biometric_employee_id' => $employeeId,
                     'company_id' => $pendingCommand->company_id,
-                    'user_id' => $pendingCommand->user_id
+                    'user_id' => $pendingCommand->user_id,
                 ]);
             }
         }
-
 
         $pendingCommand->status = 'executed';
         $pendingCommand->executed_at = now();
@@ -83,7 +84,7 @@ class BiometricCommands extends BaseModel
 
     public static function commandFailed($pendingCommand)
     {
-        if (!$pendingCommand) {
+        if (! $pendingCommand) {
             return;
         }
 
@@ -99,7 +100,7 @@ class BiometricCommands extends BaseModel
      * - Asia/Kolkata (UTC+5:30) returns 330 (5*60 + 30)
      * - America/New_York (UTC-5:00) returns -300 (-5*60)
      *
-     * @param string $timezone Timezone identifier (e.g. 'Asia/Kolkata')
+     * @param  string  $timezone  Timezone identifier (e.g. 'Asia/Kolkata')
      * @return int Timezone offset in minutes
      */
     public static function timezoneToMinutes($timezone)
@@ -113,7 +114,7 @@ class BiometricCommands extends BaseModel
         } catch (\Exception $e) {
             Log::error('Error converting timezone to minutes', [
                 'timezone' => $timezone,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             return 330; // Default to UTC if there's an error

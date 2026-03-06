@@ -2,12 +2,9 @@
 
 namespace Modules\Purchase\Events;
 
-use Illuminate\Broadcasting\Channel;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Queue\SerializesModels;
 use Modules\Purchase\Entities\PurchaseVendorCredit;
 
 class VendorCreditEvent
@@ -19,8 +16,8 @@ class VendorCreditEvent
      *
      * @return void
      */
-
     public $vendorCredit;
+
     public $notifyUsers;
 
     public function __construct(PurchaseVendorCredit $vendorCredit, $notifyUsers)
@@ -29,5 +26,4 @@ class VendorCreditEvent
         $this->notifyUsers = $notifyUsers;
 
     }
-
 }

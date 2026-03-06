@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class StoreExpenseCategory extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -25,8 +24,7 @@ class StoreExpenseCategory extends CoreRequest
     public function rules()
     {
         return [
-            'category_name' => 'sometimes|required|unique:expenses_category,category_name,null,id,company_id,' . company()->id
+            'category_name' => 'sometimes|required|unique:expenses_category,category_name,null,id,company_id,'.company()->id,
         ];
     }
-
 }

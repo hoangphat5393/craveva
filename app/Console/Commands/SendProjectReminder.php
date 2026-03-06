@@ -12,7 +12,6 @@ use Illuminate\Support\Arr;
 
 class SendProjectReminder extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
@@ -27,13 +26,11 @@ class SendProjectReminder extends Command
      */
     protected $description = 'send project reminder to the admins before specified days of the project';
 
-
     /**
      * Execute the console command.
      *
      * @return mixed
      */
-
     public function handle()
     {
 
@@ -75,8 +72,7 @@ class SendProjectReminder extends Command
                         $admins = User::allAdmins($company->id)->makeHidden('unreadNotifications');
                         $users = $admins->merge($members);
 
-                    }
-                    else {
+                    } else {
 
                         if (in_array('admins', json_decode($company->remind_to))) {
                             $users = User::allAdmins($company->id)->makeHidden('unreadNotifications');
@@ -96,11 +92,10 @@ class SendProjectReminder extends Command
 
                         $projectsArr = collect(array_values($projectsArr));
 
-                        if (!$user->isAdmin($user->id)) {
+                        if (! $user->isAdmin($user->id)) {
                             $projectsArr = $this->filterProjects($projectsArr, $company);
-                        }
-                        else {
-                            $projectsArr = !in_array('admins', json_decode($company->remind_to)) ? $this->filterProjects($projectsArr, $company) : $projects;
+                        } else {
+                            $projectsArr = ! in_array('admins', json_decode($company->remind_to)) ? $this->filterProjects($projectsArr, $company) : $projects;
                         }
 
                         if ($projectsArr->count()) {
@@ -120,5 +115,4 @@ class SendProjectReminder extends Command
             return Carbon::parse($project->deadline, $company->timezone)->equalTo(now($company->timezone)->addDays($company->remind_time)->startOfDay());
         });
     }
-
 }

@@ -4,10 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Helper\Files;
 use App\Helper\Reply;
-use App\Models\VisaDetail;
-use Doctrine\DBAL\Schema\View;
 use App\Http\Requests\StoreVisaRequest;
 use App\Http\Requests\UpdateVisaRequest;
+use App\Models\VisaDetail;
 use Carbon\Carbon;
 
 class EmployeeVisaController extends AccountBaseController
@@ -17,13 +16,12 @@ class EmployeeVisaController extends AccountBaseController
      *
      * @return \Illuminate\Http\Response
      */
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = __('modules.employees.visaDetails');
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('employees', $this->user->modules));
+            abort_403(! in_array('employees', $this->user->modules));
 
             return $next($request);
         });
@@ -42,12 +40,13 @@ class EmployeeVisaController extends AccountBaseController
     public function create()
     {
         $this->countries = countries();
+
         return view('employees.ajax.create-visa-modal', $this->data);
     }
 
     public function store(StoreVisaRequest $request)
     {
-        $visa = new VisaDetail();
+        $visa = new VisaDetail;
         $userId = request()->emp_id;
         $visa->visa_number = $request->visa_number;
         $visa->user_id = $userId;
@@ -58,7 +57,7 @@ class EmployeeVisaController extends AccountBaseController
         $visa->country_id = $request->country;
         $visa->alert_before_months = $request->alert_before_months ?? 0;
 
-        if($request->has('file')) {
+        if ($request->has('file')) {
             $visa->file = Files::uploadLocalOrS3($request->file, VisaDetail::FILE_PATH);
         }
 
@@ -73,7 +72,6 @@ class EmployeeVisaController extends AccountBaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-
     public function show($id)
     {
         $this->visa = VisaDetail::findOrFail($id);
@@ -96,6 +94,7 @@ class EmployeeVisaController extends AccountBaseController
     {
         $this->countries = countries();
         $this->visa = VisaDetail::findOrFail($id);
+
         return view('employees.ajax.edit-visa-modal', $this->data);
     }
 
@@ -108,13 +107,12 @@ class EmployeeVisaController extends AccountBaseController
         $visa->country_id = $request->country;
         $visa->alert_before_months = $request->alert_before_months ?? 0;
 
-        if($request->file_delete == 'yes')
-        {
+        if ($request->file_delete == 'yes') {
             Files::deleteFile($visa->image, VisaDetail::FILE_PATH);
             $visa->file = null;
         }
 
-        if($request->has('file')) {
+        if ($request->has('file')) {
             Files::deleteFile($visa->image, VisaDetail::FILE_PATH);
             $visa->file = Files::uploadLocalOrS3($request->file, VisaDetail::FILE_PATH);
         }
@@ -140,5 +138,4 @@ class EmployeeVisaController extends AccountBaseController
 
         return Reply::success(__('messages.deleteSuccess'));
     }
-
 }

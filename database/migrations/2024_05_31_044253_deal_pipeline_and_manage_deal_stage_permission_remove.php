@@ -7,7 +7,6 @@ use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      */
@@ -15,9 +14,9 @@ return new class extends Migration
     {
         $permissions = [
             'add_deal_pipeline', 'view_deal_pipeline',
-            'delete_deal_pipeline', 'edit_deal_pipeline', 'manage_deal_stages'
+            'delete_deal_pipeline', 'edit_deal_pipeline', 'manage_deal_stages',
         ];
-        
+
         $permissionIds = Permission::whereIn('name', $permissions)
             ->pluck('id');
 
@@ -33,5 +32,4 @@ return new class extends Migration
     {
         //
     }
-
 };

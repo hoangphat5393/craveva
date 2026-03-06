@@ -1,12 +1,11 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      *
@@ -14,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        if (!Schema::hasTable('webhooks_requests')) {
+        if (! Schema::hasTable('webhooks_requests')) {
             Schema::create('webhooks_requests', function (Blueprint $table) {
                 $table->id();
 
@@ -26,7 +25,7 @@ return new class extends Migration
 
                 $table->string('headers_key')->nullable();
                 $table->string('headers_value')->nullable();
-                $table->enum('request_type', ['headers','body'])->default('headers');
+                $table->enum('request_type', ['headers', 'body'])->default('headers');
                 $table->string('body_key')->nullable();
                 $table->string('body_value')->nullable();
                 $table->timestamps();
@@ -43,5 +42,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('webhooks_requests');
     }
-
 };

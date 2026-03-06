@@ -7,7 +7,6 @@ use Illuminate\View\Component;
 
 class Flag extends Component
 {
-
     public $country;
 
     /**
@@ -29,5 +28,4 @@ class Flag extends Component
     {
         return view('components.flag');
     }
-
 }

@@ -9,11 +9,12 @@ use Illuminate\Queue\SerializesModels;
 
 class LeaveEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $leave;
+
     public $status;
+
     public $multiDates;
 
     public function __construct(Leave $leave, $status, $multiDates = null)
@@ -22,5 +23,4 @@ class LeaveEvent
         $this->status = $status;
         $this->multiDates = $multiDates;
     }
-
 }

@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreRequest extends FormRequest
 {
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -18,7 +17,7 @@ class StoreRequest extends FormRequest
 
         return [
             'employee' => 'required',
-            'date.*' => 'required|date_format:"' . $setting->date_format,
+            'date.*' => 'required|date_format:"'.$setting->date_format,
             'overtime_hours.*' => 'required|numeric',
 
         ];
@@ -36,12 +35,11 @@ class StoreRequest extends FormRequest
 
     public function messages()
     {
-        $messages = [ ];
+        $messages = [];
 
         $dates = $this->date;
 
-        foreach($dates as $key => $date)
-        {
+        foreach ($dates as $key => $date) {
             $dKey = 'date.'.$key;
             $ohKey = 'overtime_hours.'.$key;
 
@@ -52,5 +50,4 @@ class StoreRequest extends FormRequest
         return $messages;
 
     }
-
 }

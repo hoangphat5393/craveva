@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read mixed $icon
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Lead[] $leads
  * @property-read int|null $leads_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|LeadSource newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|LeadSource newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|LeadSource query()
@@ -26,14 +27,16 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder|LeadSource whereLastUpdatedBy($value)
  * @method static \Illuminate\Database\Eloquent\Builder|LeadSource whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|LeadSource whereUpdatedAt($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|LeadSource whereCompanyId($value)
+ *
  * @mixin \Eloquent
  */
 class LeadSource extends BaseModel
 {
-
     use HasCompany;
 
     protected $table = 'lead_sources';
@@ -44,5 +47,4 @@ class LeadSource extends BaseModel
     {
         return $this->hasMany(Lead::class, 'source_id')->orderBy('column_priority');
     }
-
 }

@@ -2,8 +2,6 @@
 
 namespace Modules\Webhooks\Enums;
 
-use Modules\Webhooks\Enums\Variable;
-
 enum EmployeeVariable: string implements Variable
 {
     case name = '##NAME##';
@@ -49,5 +47,4 @@ enum EmployeeVariable: string implements Variable
             'email_notifications',
         ];
     }
-
 }

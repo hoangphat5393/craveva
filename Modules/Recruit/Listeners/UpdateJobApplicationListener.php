@@ -11,7 +11,6 @@ use Modules\Recruit\Notifications\UpdateJobApplication;
 
 class UpdateJobApplicationListener
 {
-
     /**
      * Create the event listener.
      *
@@ -25,7 +24,7 @@ class UpdateJobApplicationListener
     /**
      * Handle the event.
      *
-     * @param object $event
+     * @param  object  $event
      * @return void
      */
     public function handle(UpdateJobApplicationEvent $event)
@@ -38,11 +37,9 @@ class UpdateJobApplicationListener
             $job->save();
 
             Notification::send($event->jobApplication->job->recruiter, new RecruiterJobApplicationStatusChanged($event->jobApplication));
-        }
-        else {
+        } else {
             Notification::send($event->jobApplication->job->recruiter, new UpdateJobApplication($event->jobApplication));
         }
 
     }
-
 }

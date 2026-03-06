@@ -12,6 +12,7 @@ namespace App\Models;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read mixed $icon
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|StorageSetting newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|StorageSetting newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|StorageSetting query()
@@ -21,17 +22,17 @@ namespace App\Models;
  * @method static \Illuminate\Database\Eloquent\Builder|StorageSetting whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|StorageSetting whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|StorageSetting whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class StorageSetting extends BaseModel
 {
-
     const HASH_TEMP_FILE_TIME = 60;
 
     protected $table = 'file_storage_settings';
 
     protected $casts = [
-        'auth_keys' => 'encrypted'
+        'auth_keys' => 'encrypted',
     ];
 
     protected $fillable = ['filesystem', 'auth_keys', 'status'];
@@ -71,7 +72,7 @@ class StorageSetting extends BaseModel
         'fra1' => 'Frankfurt, Germany',
         'tor1' => 'Toronto, Canada',
         'blr1' => 'Bangalore, India',
-        'syd1' => 'Sydney, Australia'
+        'syd1' => 'Sydney, Australia',
     ];
 
     const WASABI_REGIONS = [

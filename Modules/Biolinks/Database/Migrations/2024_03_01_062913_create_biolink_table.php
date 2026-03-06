@@ -6,13 +6,13 @@ use Illuminate\Support\Facades\Schema;
 use Modules\Biolinks\Enums\BlockHoverAnimation;
 use Modules\Biolinks\Enums\BlockSpacing;
 use Modules\Biolinks\Enums\Font;
-use Modules\Biolinks\Enums\YesNo;
 use Modules\Biolinks\Enums\Status;
 use Modules\Biolinks\Enums\Theme;
 use Modules\Biolinks\Enums\VerifiedBadge;
+use Modules\Biolinks\Enums\YesNo;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
@@ -63,5 +63,4 @@ return new class extends Migration {
     {
         Schema::dropIfExists(['biolink', 'biolink_settings']);
     }
-
 };

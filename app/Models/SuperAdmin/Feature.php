@@ -20,6 +20,7 @@ use App\Models\LanguageSetting;
  * @property Carbon|null $updated_at
  * @property-read mixed $image_url
  * @property-read LanguageSetting|null $language
+ *
  * @method static Builder|Feature newModelQuery()
  * @method static Builder|Feature newQuery()
  * @method static Builder|Feature query()
@@ -33,11 +34,11 @@ use App\Models\LanguageSetting;
  * @method static Builder|Feature whereTitle($value)
  * @method static Builder|Feature whereType($value)
  * @method static Builder|Feature whereUpdatedAt($value)
+ *
  * @mixin Eloquent
  */
 class Feature extends BaseModel
 {
-
     protected $appends = ['image_url'];
 
     public function language()
@@ -62,8 +63,8 @@ class Feature extends BaseModel
         }
 
         if ($this->type == 'apps') {
-            if (!is_null($this->image)) {
-                return asset_url_local_s3('front/feature/' . $this->image);
+            if (! is_null($this->image)) {
+                return asset_url_local_s3('front/feature/'.$this->image);
             }
 
             if (strtolower($this->title) == 'onesignal') {
@@ -82,10 +83,9 @@ class Feature extends BaseModel
                 return asset('saas/img/pages/pusher.svg');
             }
 
-            return asset('saas/img/pages/app-' . (($this->id) % 6) . '.png');
+            return asset('saas/img/pages/app-'.(($this->id) % 6).'.png');
         }
 
-        return ($this->image) ? asset_url_local_s3('front/feature/' . $this->image) : asset('front/img/tools.png');
+        return ($this->image) ? asset_url_local_s3('front/feature/'.$this->image) : asset('front/img/tools.png');
     }
-
 }

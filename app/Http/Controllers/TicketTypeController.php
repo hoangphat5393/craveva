@@ -9,7 +9,6 @@ use App\Models\TicketType;
 
 class TicketTypeController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -25,17 +24,18 @@ class TicketTypeController extends AccountBaseController
     public function create()
     {
         $this->ticketTypes = TicketType::all();
+
         return view('ticket-settings.create-ticket-type-modal', $this->data);
     }
 
     /**
-     * @param StoreTicketType $request
      * @return array
+     *
      * @throws \Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException
      */
     public function store(StoreTicketType $request)
     {
-        $type = new TicketType();
+        $type = new TicketType;
         $type->type = $request->type;
         $type->save();
 
@@ -43,7 +43,7 @@ class TicketTypeController extends AccountBaseController
 
         $select = '';
 
-        foreach($allTypes as $type){
+        foreach ($allTypes as $type) {
             $select .= '<option value="'.$type->id.'">'.$type->type.'</option>';
         }
 
@@ -59,13 +59,14 @@ class TicketTypeController extends AccountBaseController
     public function edit($id)
     {
         $this->type = TicketType::findOrFail($id);
+
         return view('ticket-settings.edit-ticket-type-modal', $this->data);
     }
 
     /**
-     * @param UpdateTicketType $request
-     * @param int $id
+     * @param  int  $id
      * @return array
+     *
      * @throws \Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException
      */
     public function update(UpdateTicketType $request, $id)
@@ -78,7 +79,7 @@ class TicketTypeController extends AccountBaseController
     }
 
     /**
-     * @param int $id
+     * @param  int  $id
      * @return array
      */
     public function destroy($id)
@@ -87,5 +88,4 @@ class TicketTypeController extends AccountBaseController
 
         return Reply::success(__('messages.deleteSuccess'));
     }
-
 }

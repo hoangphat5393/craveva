@@ -33,5 +33,4 @@ class ContractFactory extends Factory
             'contract_detail' => fake()->realText(300),
         ];
     }
-
 }

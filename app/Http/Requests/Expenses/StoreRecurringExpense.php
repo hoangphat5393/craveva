@@ -7,7 +7,6 @@ use App\Models\BankAccount;
 
 class StoreRecurringExpense extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -34,7 +33,6 @@ class StoreRecurringExpense extends CoreRequest
             'billing_cycle' => 'required|integer|min:-1',
         ];
 
-
         if (request('bank_account_id') != '') {
             $bankBalance = BankAccount::findOrFail(request('bank_account_id'));
 
@@ -43,11 +41,10 @@ class StoreRecurringExpense extends CoreRequest
 
         $issueDate = $this->get('hidden_issue_date', $this->get('issue_date'));
 
-        if (!$this->has('immediate_expense') && !$this->has('hidden_issue_date')) {
-            $rules['issue_date'] = 'required|date_format:"' . $setting->date_format . '"|after:'.now()->format($setting->date_format);
+        if (! $this->has('immediate_expense') && ! $this->has('hidden_issue_date')) {
+            $rules['issue_date'] = 'required|date_format:"'.$setting->date_format.'"|after:'.now()->format($setting->date_format);
         }
 
         return $rules;
     }
-
 }

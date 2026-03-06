@@ -15,10 +15,10 @@ use Illuminate\Support\Facades\Config;
 
 class BaseNotification extends Notification implements ShouldQueue
 {
-
-    use Queueable, Dispatchable;
+    use Dispatchable, Queueable;
 
     protected $company = null;
+
     protected $slack = null;
 
     /**
@@ -45,7 +45,7 @@ class BaseNotification extends Notification implements ShouldQueue
 
         // Set the application locale based on the company's locale or global settings
         if (isset($locale)) {
-            App::setLocale($locale ?? (!is_null($company) ? $company->locale : 'en'));
+            App::setLocale($locale ?? (! is_null($company) ? $company->locale : 'en'));
         } else {
             App::setLocale(session('locale') ?: $globalSetting->locale);
         }
@@ -66,7 +66,7 @@ class BaseNotification extends Notification implements ShouldQueue
         Config::set('app.name', $companyName);
 
         // If a company is specified, customize the reply name, email, logo URL, and application name
-        if (!is_null($company)) {
+        if (! is_null($company)) {
             $replyName = $company->company_name;
             $replyEmail = $company->company_email;
             Config::set('app.logo', $company->masked_logo_url);
@@ -96,10 +96,10 @@ class BaseNotification extends Notification implements ShouldQueue
         $slack = $notifiable->company->slackSetting;
 
         // Compose and return a Slack message
-        return (new SlackMessage())
+        return (new SlackMessage)
             ->from($notifiable->company->company_name) // Set the sender name
-            ->to('@' . $notifiable->employeeDetail->slack_username) // Set the recipient's Slack username
-            ->image(asset_url_local_s3('slack-logo/' . $slack->slack_logo)); // Set the image for Slack message
+            ->to('@'.$notifiable->employeeDetail->slack_username) // Set the recipient's Slack username
+            ->image(asset_url_local_s3('slack-logo/'.$slack->slack_logo)); // Set the image for Slack message
     }
 
     /**
@@ -110,7 +110,7 @@ class BaseNotification extends Notification implements ShouldQueue
         try {
             // Build a Slack message using the slackBuild function
             return $this->slackBuild($notifiable)
-                ->content('*' . __($subjectKey) . '*' . "\n" . 'This is a redirected notification. Add slack username for *' . $notifiable->name . '*');
+                ->content('*'.__($subjectKey).'*'."\n".'This is a redirected notification. Add slack username for *'.$notifiable->name.'*');
         } catch (\Exception $e) {
             // Catch and display any exceptions occurred
             echo $e->getMessage();
@@ -120,12 +120,11 @@ class BaseNotification extends Notification implements ShouldQueue
     /**
      * Check if the notifiable has a Slack username.
      *
-     * @param mixed $notifiable
-     * @return bool
+     * @param  mixed  $notifiable
      */
     protected function slackUserNameCheck($notifiable): bool
     {
-        if (!isset($notifiable->employeeDetail)) {
+        if (! isset($notifiable->employeeDetail)) {
             return false;
         }
 
@@ -136,7 +135,7 @@ class BaseNotification extends Notification implements ShouldQueue
         }
 
         // Check if the notifiable a non-empty Slack username
-        return (!is_null($notifiable->employeeDetail->slack_username) && ($notifiable->employeeDetail->slack_username != ''));
+        return ! is_null($notifiable->employeeDetail->slack_username) && ($notifiable->employeeDetail->slack_username != '');
     }
 
     public function resetLocale()
@@ -146,7 +145,7 @@ class BaseNotification extends Notification implements ShouldQueue
         $globalSetting = GlobalSetting::first();
 
         // Set the application locale based on the company's locale or global settings
-        if (!is_null($company)) {
+        if (! is_null($company)) {
             App::setLocale($company->locale ?? 'en');
         } else {
             App::setLocale(session('locale') ?: $globalSetting->locale);

@@ -4,11 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Helper\Files;
 use App\Helper\Reply;
+use App\Models\KnowledgeBase;
+use App\Models\KnowledgeBaseCategory;
+use App\Models\KnowledgeBaseFile;
 use App\Traits\IconTrait;
 use Illuminate\Http\Request;
-use App\Models\KnowledgeBase;
-use App\Models\KnowledgeBaseFile;
-use App\Models\KnowledgeBaseCategory;
 
 class KnowledgeBaseFileController extends AccountBaseController
 {
@@ -17,7 +17,6 @@ class KnowledgeBaseFileController extends AccountBaseController
      *
      * @return \Illuminate\Http\Response
      */
-
     use IconTrait;
 
     public function __construct()
@@ -30,18 +29,17 @@ class KnowledgeBaseFileController extends AccountBaseController
     /**
      * Store a newly crea   ted resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        if($request->has('file')) {
+        if ($request->has('file')) {
 
             foreach ($request->file as $fileData) {
-                $file = new KnowledgeBaseFile();
+                $file = new KnowledgeBaseFile;
                 $file->knowledge_base_id = $request->knowledge_base_id;
 
-                $filename = Files::uploadLocalOrS3($fileData, KnowledgeBaseFile::FILE_PATH . '/' . $request->knowledge_base_id);
+                $filename = Files::uploadLocalOrS3($fileData, KnowledgeBaseFile::FILE_PATH.'/'.$request->knowledge_base_id);
 
                 $file->filename = $fileData->getClientOriginalName();
                 $file->hashname = $filename;
@@ -56,13 +54,13 @@ class KnowledgeBaseFileController extends AccountBaseController
 
     public function destroy(Request $request, $id)
     {
-        abort_403(!in_array(user()->permission('edit_knowledgebase'), ['all', 'added']));
+        abort_403(! in_array(user()->permission('edit_knowledgebase'), ['all', 'added']));
 
         $file = KnowledgeBaseFile::findOrFail($id);
         $this->knowledge = KnowledgeBase::findOrFail($file->knowledge_base_id);
         $this->categories = KnowledgeBaseCategory::findOrFail($this->knowledge->category_id);
 
-        Files::deleteFile($file->hashname, KnowledgeBaseFile::FILE_PATH . '/' . $file->knowledge_base_id);
+        Files::deleteFile($file->hashname, KnowledgeBaseFile::FILE_PATH.'/'.$file->knowledge_base_id);
 
         KnowledgeBaseFile::destroy($id);
 
@@ -76,8 +74,8 @@ class KnowledgeBaseFileController extends AccountBaseController
     public function download($id)
     {
         $file = KnowledgeBaseFile::whereRaw('md5(id) = ?', $id)->firstOrFail();
-        return download_local_s3($file, KnowledgeBaseFile::FILE_PATH . '/' . $file->knowledge_base_id . '/' . $file->hashname);
+
+        return download_local_s3($file, KnowledgeBaseFile::FILE_PATH.'/'.$file->knowledge_base_id.'/'.$file->hashname);
 
     }
-
 }

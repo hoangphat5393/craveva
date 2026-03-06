@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property string|null $taxes
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|OrderItems newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|OrderItems newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|OrderItems query()
@@ -35,22 +36,28 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @method static \Illuminate\Database\Eloquent\Builder|OrderItems whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|OrderItems whereUnitPrice($value)
  * @method static \Illuminate\Database\Eloquent\Builder|OrderItems whereUpdatedAt($value)
+ *
  * @property int|null $product_id
  * @property-read \App\Models\OrderItemImage|null $orderItemImage
  * @property-read \App\Models\Product|null $product
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|OrderItems whereProductId($value)
+ *
  * @property-read mixed $tax_list
  * @property int|null $product_id
  * @property int|null $unit_id
  * @property-read \App\Models\UnitType|null $unit
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|OrderItems whereUnitId($value)
+ *
  * @property string|null $sku
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|OrderItems whereSku($value)
+ *
  * @mixin \Eloquent
  */
 class OrderItems extends BaseModel
 {
-
     protected $fillable = ['order_id', 'product_id', 'item_name', 'item_summary', 'type', 'quantity', 'unit_price', 'amount', 'hsn_sac_code', 'taxes', 'unit_id', 'sku', 'field_order'];
 
     protected $with = ['orderItemImage', 'product'];
@@ -78,12 +85,12 @@ class OrderItems extends BaseModel
         if ($orderItem && $orderItem->taxes) {
             $numItems = count(json_decode($orderItem->taxes));
 
-            if (!is_null($orderItem->taxes)) {
+            if (! is_null($orderItem->taxes)) {
                 foreach (json_decode($orderItem->taxes) as $index => $tax) {
                     $tax = $this->taxbyid($tax)->first();
-                    $taxes .= $tax->tax_name . ': ' . $tax->rate_percent . '%';
+                    $taxes .= $tax->tax_name.': '.$tax->rate_percent.'%';
 
-                    $taxes = ($index + 1 != $numItems) ? $taxes . ', ' : $taxes;
+                    $taxes = ($index + 1 != $numItems) ? $taxes.', ' : $taxes;
                 }
             }
         }
@@ -96,5 +103,4 @@ class OrderItems extends BaseModel
     {
         return $this->belongsTo(UnitType::class, 'unit_id');
     }
-
 }

@@ -13,7 +13,6 @@ use Modules\Recruit\Entities\RecruitInterviewEmployees;
 
 class DailyScheduleReminder extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
@@ -39,7 +38,6 @@ class DailyScheduleReminder extends Command
             ->toArray();
 
         $data = [];
-
 
         foreach ($companyIds as $companyId) {
 
@@ -78,15 +76,15 @@ class DailyScheduleReminder extends Command
                     $query->where('added_by', $user->id)
                         ->orWhere(function ($query) use ($user) {
                             $query->where(function ($q) use ($user) {
-                                $q->orWhere('department_id_json', 'like', '%"' . $user->employeeDetail->department_id . '"%')
+                                $q->orWhere('department_id_json', 'like', '%"'.$user->employeeDetail->department_id.'"%')
                                     ->orWhereNull('department_id_json');
                             });
                             $query->where(function ($q) use ($user) {
-                                $q->orWhere('designation_id_json', 'like', '%"' . $user->employeeDetail->designation_id . '"%')
+                                $q->orWhere('designation_id_json', 'like', '%"'.$user->employeeDetail->designation_id.'"%')
                                     ->orWhereNull('designation_id_json');
                             });
                             $query->where(function ($q) use ($user) {
-                                $q->orWhere('employment_type_json', 'like', '%"' . $user->employeeDetail->employment_type . '"%')
+                                $q->orWhere('employment_type_json', 'like', '%"'.$user->employeeDetail->employment_type.'"%')
                                     ->orWhereNull('employment_type_json');
                             });
                         });
@@ -109,5 +107,4 @@ class DailyScheduleReminder extends Command
             event(new DailyScheduleEvent($data));
         }
     }
-
 }

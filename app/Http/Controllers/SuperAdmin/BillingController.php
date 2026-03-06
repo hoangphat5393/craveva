@@ -15,7 +15,6 @@ use App\Models\Country;
 use App\Models\GlobalSetting;
 use App\Models\Module;
 use App\Models\OfflinePaymentMethod;
-use App\Models\PaymentGatewayCredentials;
 use App\Models\SuperAdmin\AuthorizeSubscription;
 use App\Models\SuperAdmin\GlobalCurrency;
 use App\Models\SuperAdmin\GlobalInvoice;
@@ -64,9 +63,7 @@ use Unicodeveloper\Paystack\Paystack;
 
 class BillingController extends AccountBaseController
 {
-
-    use StripeSettings, PaystackSettings, MollieSettings, MakePaymentTrait;
-
+    use MakePaymentTrait, MollieSettings, PaystackSettings, StripeSettings;
 
     public function __construct()
     {
@@ -83,16 +80,15 @@ class BillingController extends AccountBaseController
             $this->stripeSettings->paystack_status,
             $this->stripeSettings->mollie_status,
             $this->stripeSettings->payfast_status,
-            $this->stripeSettings->authorize_status
+            $this->stripeSettings->authorize_status,
         ])) {
             $this->paymentGatewatActive = true;
         }
 
-
         $this->offlinePaymentGateways = OfflinePaymentMethod::withoutGlobalScope(CompanyScope::class)->where('status', 'yes')->whereNull('company_id')->count();
         $this->paymentActive = false;
 
-        if (!($this->paymentGatewatActive == false && $this->offlinePaymentGateways == 0)) {
+        if (! ($this->paymentGatewatActive == false && $this->offlinePaymentGateways == 0)) {
             $this->paymentActive = true;
         }
 
@@ -114,10 +110,8 @@ class BillingController extends AccountBaseController
     {
         $this->managePermission = user()->permission('manage_billing');
 
-
-
         abort_403(user()->is_superadmin || in_array('client', user_roles()) ||
-            (in_array('employee', user_roles()) && !in_array('admin', user_roles())));
+            (in_array('employee', user_roles()) && ! in_array('admin', user_roles())));
 
         $this->activeSettingMenu = 'billing';
 
@@ -125,9 +119,8 @@ class BillingController extends AccountBaseController
 
             $paymentIntent = PaymentIntent::retrieve(request()->payment_intent);
 
-
             if ($paymentIntent->status === 'succeeded') {
-                $subscription = new GlobalSubscription();
+                $subscription = new GlobalSubscription;
                 $subscription->company_id = company()->id;
                 $subscription->package_id = session('plan_id');
                 $subscription->package_type = session('package_type');
@@ -152,7 +145,7 @@ class BillingController extends AccountBaseController
                     ->first();
 
                 if (is_null($existingInvoice)) {
-                    $stripeInvoice = new GlobalInvoice();
+                    $stripeInvoice = new GlobalInvoice;
                     $stripeInvoice->global_subscription_id = $subscription->id;
                     $stripeInvoice->company_id = company()->id;
                     $stripeInvoice->invoice_id = $invoiceId;
@@ -160,8 +153,8 @@ class BillingController extends AccountBaseController
                     $stripeInvoice->amount = $amount / 100;
                     $stripeInvoice->total = $amount / 100;
                     $stripeInvoice->currency_id = $package->currency_id;
-                    $stripeInvoice->package_type =  session('package_type');
-                    $stripeInvoice->package_id =  session('plan_id');
+                    $stripeInvoice->package_type = session('package_type');
+                    $stripeInvoice->package_id = session('plan_id');
                     $stripeInvoice->pay_date = now()->format('Y-m-d');
                     $stripeInvoice->next_pay_date = ($company->upcomingInvoice()->next_payment_attempt) ? Carbon::createFromTimeStamp($company->upcomingInvoice()->next_payment_attempt)->format('Y-m-d') : '';
                     $stripeInvoice->stripe_invoice_number = $invoiceId;
@@ -173,7 +166,7 @@ class BillingController extends AccountBaseController
                 // -----------------------------------
 
                 $company->package_id = session('plan_id');
-                $company->package_type =  session('package_type');
+                $company->package_type = session('package_type');
 
                 // Set company status active
                 $company->status = 'active';
@@ -192,6 +185,7 @@ class BillingController extends AccountBaseController
                 Notification::send($allAdmins, new CompanyUpdatedPlan($company, session('plan_id')));
 
                 Session::put('success', __('superadmin.paymentSuccessfullyDone', ['package' => company()->package->name, 'planType' => company()->package_type]));
+
                 return Redirect::route('billing.index');
             }
         }
@@ -231,7 +225,7 @@ class BillingController extends AccountBaseController
     {
         // $glob = GlobalInvoice::get();
         // dd($glob);
-        $dataTable = new InvoiceDataTable();
+        $dataTable = new InvoiceDataTable;
         $tab = request('tab');
         $this->activeTab = $tab ?: 'company';
 
@@ -242,7 +236,7 @@ class BillingController extends AccountBaseController
 
     public function offlineRequest()
     {
-        $dataTable = new OfflinePlanChangeDataTable();
+        $dataTable = new OfflinePlanChangeDataTable;
         $tab = request('tab');
         $this->activeTab = $tab ?: 'company';
 
@@ -252,7 +246,6 @@ class BillingController extends AccountBaseController
     }
 
     /**
-     * @param Request $request
      * @return \Illuminate\Contracts\Foundation\Application|Factory|\Illuminate\Contracts\View\View
      */
     public function upgradePlan(Request $request)
@@ -295,7 +288,7 @@ class BillingController extends AccountBaseController
 
         if ($request->ajax()) {
             return Reply::dataOnly([
-                'view' => view('super-admin.billing.plan', $this->data)->render()
+                'view' => view('super-admin.billing.plan', $this->data)->render(),
             ]);
         }
 
@@ -353,8 +346,6 @@ class BillingController extends AccountBaseController
         return View::make('super-admin.billing.payment-method-show', $this->data);
     }
 
-
-
     public function stripeValidate(StripeValidateRequest $request)
     {
 
@@ -375,15 +366,15 @@ class BillingController extends AccountBaseController
 
         try {
             $this->intent = $this->company->createSetupIntent([
-                'description' => $this->package->name . $request->type . ' Payment',
+                'description' => $this->package->name.$request->type.' Payment',
                 'metadata' => [
-                    'integration_check' => 'accept_a_payment'
-                ]
+                    'integration_check' => 'accept_a_payment',
+                ],
             ]);
         } catch (\Stripe\Exception\InvalidRequestException $e) {
             if (str_contains($e->getMessage(), 'No such customer')) {
                 // Smart Self-Healing Logic (Lock -> Search -> Link/Reset -> Log)
-                $lock = Cache::lock('stripe_fixing_company_' . $this->company->id, 10);
+                $lock = Cache::lock('stripe_fixing_company_'.$this->company->id, 10);
 
                 if ($lock->get()) {
                     try {
@@ -391,10 +382,10 @@ class BillingController extends AccountBaseController
                         $stripe = Cashier::stripe();
                         $customers = $stripe->customers->all([
                             'email' => $this->company->company_email,
-                            'limit' => 1
+                            'limit' => 1,
                         ]);
 
-                        if (!empty($customers->data)) {
+                        if (! empty($customers->data)) {
                             // Case A: Found existing customer on Stripe -> Link it
                             $existingCustomer = $customers->data[0];
                             $this->company->stripe_id = $existingCustomer->id;
@@ -411,13 +402,13 @@ class BillingController extends AccountBaseController
 
                         // Retry Intent Creation after fixing
                         $this->intent = $this->company->createSetupIntent([
-                            'description' => $this->package->name . $request->type . ' Payment',
+                            'description' => $this->package->name.$request->type.' Payment',
                             'metadata' => [
-                                'integration_check' => 'accept_a_payment'
-                            ]
+                                'integration_check' => 'accept_a_payment',
+                            ],
                         ]);
                     } catch (\Exception $ex) {
-                        Log::error("Stripe Self-Healing Failed: " . $ex->getMessage());
+                        Log::error('Stripe Self-Healing Failed: '.$ex->getMessage());
                         throw $e; // Throw original error if healing fails
                     } finally {
                         $lock->release();
@@ -429,10 +420,10 @@ class BillingController extends AccountBaseController
                     $this->company->refresh(); // Refresh model to get updated stripe_id
 
                     $this->intent = $this->company->createSetupIntent([
-                        'description' => $this->package->name . $request->type . ' Payment',
+                        'description' => $this->package->name.$request->type.' Payment',
                         'metadata' => [
-                            'integration_check' => 'accept_a_payment'
-                        ]
+                            'integration_check' => 'accept_a_payment',
+                        ],
                     ]);
                 }
             } else {
@@ -480,18 +471,18 @@ class BillingController extends AccountBaseController
 
         $subscriptionCancel = true;
 
-        if (!is_null($firstInvoice) && $firstInvoice->method == 'Paypal') {
+        if (! is_null($firstInvoice) && $firstInvoice->method == 'Paypal') {
             $subscriptionCancel = $this->cancelSubscriptionPaypal();
         }
 
-        if (!is_null($firstInvoice) && $firstInvoice->method == 'Razorpay') {
+        if (! is_null($firstInvoice) && $firstInvoice->method == 'Razorpay') {
             $subscriptionCancel = $this->cancelSubscriptionPaypal();
         }
 
         if ($subscriptionCancel) {
 
             if ($plan->max_employees < $this->company->employees->count()) {
-                \session()->put('error', 'You can\'t downgrade package because your employees length is ' . $this->company->employees->count() . ' and package max employees count is ' . $plan->max_employees);
+                \session()->put('error', 'You can\'t downgrade package because your employees length is '.$this->company->employees->count().' and package max employees count is '.$plan->max_employees);
 
                 return redirect()->route('billing.upgrade_plan');
             }
@@ -502,12 +493,12 @@ class BillingController extends AccountBaseController
 
             try {
                 if ($subscription->count() > 0) {
-                    $company->subscription('primary')->swap($plan->{'stripe_' . $request->type . '_plan_id'});
+                    $company->subscription('primary')->swap($plan->{'stripe_'.$request->type.'_plan_id'});
                 } else {
-                    $company->newSubscription('primary', $plan->{'stripe_' . $request->type . '_plan_id'})->create($token, ['email' => $email]);
+                    $company->newSubscription('primary', $plan->{'stripe_'.$request->type.'_plan_id'})->create($token, ['email' => $email]);
                 }
 
-                $subscription = new GlobalSubscription();
+                $subscription = new GlobalSubscription;
                 $subscription->company_id = company()->id;
                 $subscription->package_id = $plan->id;
                 $subscription->package_type = $request->type;
@@ -549,9 +540,9 @@ class BillingController extends AccountBaseController
 
                 //                return view('cashier::payment', [
                 //                    'stripeKey' => config('cashier.key'),
-                ////                    'payment' => new Payment(
-                ////                        StripePaymentIntent::retrieve($exception->payment->id, Cashier::stripeOptions())
-                ////                    ),
+                // //                    'payment' => new Payment(
+                // //                        StripePaymentIntent::retrieve($exception->payment->id, Cashier::stripeOptions())
+                // //                    ),
                 //                    'payment' => $exception->payment->id,
                 //                    'redirect' => route('billing.index'),
                 //                ]);
@@ -563,6 +554,7 @@ class BillingController extends AccountBaseController
             }
         }
     }
+
     public function download(Request $request, $invoiceId)
     {
 
@@ -588,10 +580,10 @@ class BillingController extends AccountBaseController
 
         if ($paypalInvoice) {
             $agreementId = $paypalInvoice->transaction_id;
-            $agreement = new Agreement();
+            $agreement = new Agreement;
 
             $agreement->setId($agreementId);
-            $agreementStateDescriptor = new AgreementStateDescriptor();
+            $agreementStateDescriptor = new AgreementStateDescriptor;
             $agreementStateDescriptor->setNote('Cancel the agreement');
 
             try {
@@ -632,7 +624,7 @@ class BillingController extends AccountBaseController
             $plan = Package::with('currency')->find($request->plan_id);
             $type = $request->type;
 
-            $expectedSignature = hash_hmac('sha256', $paymentId . '|' . $subscriptionId, $secretKey);
+            $expectedSignature = hash_hmac('sha256', $paymentId.'|'.$subscriptionId, $secretKey);
         } catch (\Exception $e) {
             \session()->put('error', $e->getMessage());
 
@@ -642,7 +634,7 @@ class BillingController extends AccountBaseController
         if ($expectedSignature === $razorpaySignature) {
 
             if ($plan->max_employees < $this->company->employees->count()) {
-                \session()->put('error', 'You can\'t downgrade package because your employees length is ' . $this->company->employees->count() . ' and package max employees count is ' . $plan->max_employees);
+                \session()->put('error', 'You can\'t downgrade package because your employees length is '.$this->company->employees->count().' and package max employees count is '.$plan->max_employees);
 
                 return Reply::redirect(route('billing.upgrade_plan'));
             }
@@ -653,7 +645,7 @@ class BillingController extends AccountBaseController
                 $payment = $api->payment->fetch($paymentId); // Returns a particular payment
 
                 if ($payment->status == 'authorized') {
-                    $payment->capture(array('amount' => $payment->amount, 'currency' => $plan->currency->currency_code));
+                    $payment->capture(['amount' => $payment->amount, 'currency' => $plan->currency->currency_code]);
                 }
 
                 $company = $this->company;
@@ -665,7 +657,7 @@ class BillingController extends AccountBaseController
                 $company->licence_expire_on = null;
                 $company->save();
 
-                $subscription = new GlobalSubscription();
+                $subscription = new GlobalSubscription;
                 $subscription->transaction_id = $subscriptionId;
                 $subscription->company_id = company()->id;
                 $subscription->currency_id = $plan->currency_id;
@@ -692,6 +684,7 @@ class BillingController extends AccountBaseController
                 return Reply::redirect(route('billing.upgrade_plan'));
             }
         }
+
         return Reply::redirect(route('billing.upgrade_plan'));
     }
 
@@ -771,12 +764,12 @@ class BillingController extends AccountBaseController
 
             if ($paypalInvoice) {
                 $agreementId = $paypalInvoice->transaction_id;
-                $agreement = new Agreement();
+                $agreement = new Agreement;
                 $paypalInvoice = PaypalInvoice::whereNotNull('transaction_id')->whereNull('end_on')
                     ->where('company_id', company()->id)->where('status', 'paid')->first();
 
                 $agreement->setId($agreementId);
-                $agreementStateDescriptor = new AgreementStateDescriptor();
+                $agreementStateDescriptor = new AgreementStateDescriptor;
                 $agreementStateDescriptor->setNote('Cancel the agreement');
 
                 try {
@@ -829,7 +822,7 @@ class BillingController extends AccountBaseController
 
             if ($subscriptionData) {
                 try {
-                    $paystack = new Paystack();
+                    $paystack = new Paystack;
                     $request->code = $subscriptionData->subscription_id;
                     $request->token = $subscriptionData->token;
 
@@ -872,15 +865,15 @@ class BillingController extends AccountBaseController
                 try {
 
                     $credential = GlobalPaymentGatewayCredentials::first();
-                    $merchantAuthentication = new AnetAPI\MerchantAuthenticationType();
+                    $merchantAuthentication = new AnetAPI\MerchantAuthenticationType;
 
                     $merchantAuthentication->setName($credential->authorize_api_login_id);
                     $merchantAuthentication->setTransactionKey($credential->authorize_transaction_key);
 
                     // Set the transaction's refId
-                    $refId = 'ref' . time();
+                    $refId = 'ref'.time();
 
-                    $request = new AnetAPI\ARBCancelSubscriptionRequest();
+                    $request = new AnetAPI\ARBCancelSubscriptionRequest;
                     $request->setMerchantAuthentication($merchantAuthentication);
                     $request->setRefId($refId);
                     $request->setSubscriptionId($subscriptionData->subscription_id);
@@ -914,10 +907,10 @@ class BillingController extends AccountBaseController
             $payfastInvoice = PayfastInvoice::orderBy('id', 'DESC')->first();
             $date = now();
             try {
-                $client = new Client();
+                $client = new Client;
                 $res = $client->request(
                     'PUT',
-                    'https://sandbox.payfast.co.za/subscriptions/' . $payfastInvoice->token . '/cancel',
+                    'https://sandbox.payfast.co.za/subscriptions/'.$payfastInvoice->token.'/cancel',
                     ['merchant-id' => $credential->payfast_key, 'version' => 'v1', 'timestamp' => $date->toDateTimeString(), 'signature' => $payfastInvoice->signature]
                 );
 
@@ -981,7 +974,7 @@ class BillingController extends AccountBaseController
         }
         $package = Package::find($request->package_id);
         // create offline plan change request
-        $offlinePlanChange = new OfflinePlanChange();
+        $offlinePlanChange = new OfflinePlanChange;
         $offlinePlanChange->package_id = $request->package_id;
         $offlinePlanChange->package_type = ($package->package == 'lifetime') ? 'lifetime' : $request->type;
         $offlinePlanChange->company_id = company()->id;
@@ -1012,7 +1005,7 @@ class BillingController extends AccountBaseController
             ->where('subscription_status', 'active')
             ->update(['subscription_status' => 'inactive']);
 
-        $subscription = new GlobalSubscription();
+        $subscription = new GlobalSubscription;
         $subscription->company_id = $company->id;
         $subscription->package_id = $package->id;
         $subscription->currency_id = $currencyId;
@@ -1024,7 +1017,7 @@ class BillingController extends AccountBaseController
         $subscription->transaction_id = str(str()->random(15))->upper();
         $subscription->save();
         // create offline invoice
-        $offlineInvoice = new GlobalInvoice();
+        $offlineInvoice = new GlobalInvoice;
         $offlineInvoice->global_subscription_id = $subscription->id;
         $offlineInvoice->company_id = $company->id;
         $offlineInvoice->currency_id = $currencyId;
@@ -1043,7 +1036,7 @@ class BillingController extends AccountBaseController
         // Change company package
         $company->package_id = $request->package_id;
         $company->package_type = $request->type;
-        $company->licence_expire_on =  ($package->package == 'lifetime') ? null : ($request->type == 'monthly' ? now()->addMonth()->format('Y-m-d') : now()->addYear()->format('Y-m-d'));
+        $company->licence_expire_on = ($package->package == 'lifetime') ? null : ($request->type == 'monthly' ? now()->addMonth()->format('Y-m-d') : now()->addYear()->format('Y-m-d'));
         $company->license_updated_at = $request->type == 'monthly' ? now()->addMonth()->format('Y-m-d') : now()->addYear()->format('Y-m-d');
         $company->save();
 
@@ -1058,13 +1051,13 @@ class BillingController extends AccountBaseController
     }
 
     /**
-     * @param int $id
+     * @param  int  $id
      * @return \Symfony\Component\HttpFoundation\BinaryFileResponse|\Symfony\Component\HttpFoundation\StreamedResponse
      */
     public function offlineFileDownload($id)
     {
         $file = OfflinePlanChange::whereRaw('md5(id) = ?', $id)->firstOrFail();
 
-        return download_local_s3($file, OfflinePlanChange::FILE_PATH . '/' . $file->file_name);
+        return download_local_s3($file, OfflinePlanChange::FILE_PATH.'/'.$file->file_name);
     }
 }

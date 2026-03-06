@@ -8,14 +8,13 @@ use Illuminate\Database\Eloquent\Scope;
 
 class CompanyScope implements Scope
 {
-
     public function apply(Builder $builder, Model $model)
     {
 
         // Check if model has company method which comes from HasCompany Trait.
         // If that has method then it has company otherwise it do not have company id
         // and we can simply return from here
-        if (!method_exists($model, 'company')) {
+        if (! method_exists($model, 'company')) {
             return $builder;
         }
 
@@ -31,9 +30,8 @@ class CompanyScope implements Scope
             // Otherwise we will get the error of company_id not found when application is updating or modules are installing
 
             if ($company) {
-                $builder->where($model->getTable() . '.company_id', '=', $company->id);
+                $builder->where($model->getTable().'.company_id', '=', $company->id);
             }
         }
     }
-
 }

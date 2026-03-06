@@ -7,8 +7,8 @@ use App\Models\User;
 
 class ObjectiveOwner extends BaseModel
 {
-
     protected $table = 'objective_owners';
+
     public $timestamps = false;
 
     public function objective()
@@ -20,5 +20,4 @@ class ObjectiveOwner extends BaseModel
     {
         return $this->belongsTo(User::class, 'owner_id');
     }
-
 }

@@ -7,17 +7,16 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      *
      * @return void
      */
-
     public function up()
     {
-        if (!Schema::hasColumn('currencies', 'no_of_decimal')) {
+        if (! Schema::hasColumn('currencies', 'no_of_decimal')) {
             Schema::table('currencies', function (Blueprint $table) {
                 $table->unsignedInteger('no_of_decimal')->default(2);
                 $table->string('thousand_separator')->nullable();
@@ -25,12 +24,10 @@ return new class extends Migration {
 
                 if (Schema::hasColumn('currencies', 'currency_position')) {
                     DB::statement("ALTER TABLE currencies CHANGE COLUMN currency_position currency_position ENUM('left', 'right', 'left_with_space', 'right_with_space') NOT NULL DEFAULT 'left'");
-                }
-                else {
+                } else {
                     $table->enum('currency_position', ['left', 'right', 'left_with_space', 'right_with_space'])->default('left');
                 }
             });
-
 
             $companies = Company::select('id')->get();
 
@@ -42,7 +39,7 @@ return new class extends Migration {
                         'currency_position' => $currencyFormat->currency_position,
                         'no_of_decimal' => $currencyFormat->no_of_decimal,
                         'thousand_separator' => $currencyFormat->thousand_separator,
-                        'decimal_separator' => $currencyFormat->decimal_separator
+                        'decimal_separator' => $currencyFormat->decimal_separator,
                     ]);
             }
         }
@@ -63,7 +60,5 @@ return new class extends Migration {
             $table->dropColumn('decimal_separator');
         });
 
-
     }
-
 };

@@ -3,21 +3,20 @@
 namespace Modules\Purchase\Http\Controllers;
 
 use App\Helper\Reply;
-use Illuminate\Http\Request;
-use Illuminate\Contracts\Support\Renderable;
-use Modules\Purchase\Entities\PurchaseSetting;
 use App\Http\Controllers\AccountBaseController;
+use Illuminate\Contracts\Support\Renderable;
+use Illuminate\Http\Request;
 use Modules\Purchase\Entities\PurchaseNotificationSetting;
+use Modules\Purchase\Entities\PurchaseSetting;
 use Modules\Purchase\Http\Requests\PurchaseSetting\UpdatePurchaseSettingRequest;
 
 class PurchaseSettingController extends AccountBaseController
 {
-
     /**
      * Display a listing of the resource.
+     *
      * @return Renderable
      */
-
     public function __construct()
     {
         parent::__construct();
@@ -25,7 +24,7 @@ class PurchaseSettingController extends AccountBaseController
         $this->activeSettingMenu = 'purchase_settings';
 
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array(PurchaseSetting::MODULE_NAME, $this->user->modules));
+            abort_403(! in_array(PurchaseSetting::MODULE_NAME, $this->user->modules));
 
             return $next($request);
         });
@@ -46,13 +45,13 @@ class PurchaseSettingController extends AccountBaseController
         $this->checkedAll = $this->emailSettings->count() == $sendEmailCount;
 
         switch ($tab) {
-        case 'purchase-notification-setting':
-            $this->view = 'purchase::purchase-settings.ajax.purchase-notification-setting';
-            break;
-        default:
-            $this->purchaseSetting = PurchaseSetting::first();
-            $this->view = 'purchase::purchase-settings.ajax.general';
-            break;
+            case 'purchase-notification-setting':
+                $this->view = 'purchase::purchase-settings.ajax.purchase-notification-setting';
+                break;
+            default:
+                $this->purchaseSetting = PurchaseSetting::first();
+                $this->view = 'purchase::purchase-settings.ajax.general';
+                break;
         }
 
         $this->activeTab = $tab ?: 'general';
@@ -68,6 +67,7 @@ class PurchaseSettingController extends AccountBaseController
 
     /**
      * Show the form for creating a new resource.
+     *
      * @return Renderable
      */
     public function create()
@@ -77,7 +77,7 @@ class PurchaseSettingController extends AccountBaseController
 
     /**
      * Store a newly created resource in storage.
-     * @param Request $request
+     *
      * @return Renderable
      */
     public function store(Request $request)
@@ -87,10 +87,10 @@ class PurchaseSettingController extends AccountBaseController
 
     /**
      * Show the specified resource.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
-
     public function show($id)
     {
         return view('purchase::show');
@@ -98,7 +98,8 @@ class PurchaseSettingController extends AccountBaseController
 
     /**
      * Show the form for editing the specified resource.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function edit($id)
@@ -108,19 +109,16 @@ class PurchaseSettingController extends AccountBaseController
 
     /**
      * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
-    public function update(Request $request, $id)
-    {
-
-
-    }
+    public function update(Request $request, $id) {}
 
     /**
      * Remove the specified resource from storage.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function destroy($id)
@@ -145,10 +143,9 @@ class PurchaseSettingController extends AccountBaseController
 
         $purchaseSetting->save();
 
-        cache()->forget('purchase_setting_' . $purchaseSetting->company_id);
+        cache()->forget('purchase_setting_'.$purchaseSetting->company_id);
 
         return Reply::success(__('messages.updateSuccess'));
 
     }
-
 }

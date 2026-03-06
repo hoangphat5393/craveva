@@ -7,12 +7,16 @@ use Illuminate\View\Component;
 
 class Radio extends Component
 {
-
     public $fieldLabel;
+
     public $fieldRequired;
+
     public $fieldValue;
+
     public $fieldName;
+
     public $fieldId;
+
     public $checked;
 
     /**
@@ -39,5 +43,4 @@ class Radio extends Component
     {
         return view('components.forms.radio');
     }
-
 }

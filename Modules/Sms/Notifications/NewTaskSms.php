@@ -3,21 +3,20 @@
 namespace Modules\Sms\Notifications;
 
 use App\Models\Task;
-use Illuminate\Support\Str;
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Modules\Sms\Entities\SmsTemplateId;
-use NotificationChannels\Twilio\TwilioChannel;
-use Modules\Sms\Entities\SmsNotificationSetting;
-use Modules\Sms\Http\Traits\WhatsappMessageTrait;
-use NotificationChannels\Twilio\TwilioSmsMessage;
-use NotificationChannels\Telegram\TelegramMessage;
 use Illuminate\Notifications\Messages\VonageMessage;
+use Illuminate\Notifications\Notification;
+use Illuminate\Support\Str;
+use Modules\Sms\Entities\SmsNotificationSetting;
+use Modules\Sms\Entities\SmsTemplateId;
+use Modules\Sms\Http\Traits\WhatsappMessageTrait;
+use NotificationChannels\Telegram\TelegramMessage;
+use NotificationChannels\Twilio\TwilioChannel;
+use NotificationChannels\Twilio\TwilioSmsMessage;
 
 class NewTaskSms extends Notification implements ShouldQueue
 {
-
     use Queueable, WhatsappMessageTrait;
 
     /**
@@ -26,8 +25,11 @@ class NewTaskSms extends Notification implements ShouldQueue
      * @return void
      */
     private $task;
+
     private $smsSetting;
+
     private $message;
+
     private $company;
 
     private $msg_flow_id;
@@ -44,22 +46,22 @@ class NewTaskSms extends Notification implements ShouldQueue
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
     {
         if ($this->smsSetting && $this->smsSetting->send_sms != 'yes') {
-            return array();
+            return [];
         }
 
-        $dueDate = $this->task->due_date ? __('app.dueDate') . ': ' . $this->task->due_date->format($this->task->company->date_format) : '';
+        $dueDate = $this->task->due_date ? __('app.dueDate').': '.$this->task->due_date->format($this->task->company->date_format) : '';
 
-        $this->message = __('email.newTask.subject') . "\n" . $this->task->heading . "\n" . __('app.task') . ' #' . $this->task->task_short_code . "\n" . $dueDate;
+        $this->message = __('email.newTask.subject')."\n".$this->task->heading."\n".__('app.task').' #'.$this->task->task_short_code."\n".$dueDate;
 
-        $via = array();
+        $via = [];
 
-        if (!is_null($notifiable->mobile) && !is_null($notifiable->country_phonecode)) {
+        if (! is_null($notifiable->mobile) && ! is_null($notifiable->country_phonecode)) {
             if (sms_setting()->status) {
                 array_push($via, TwilioChannel::class);
             }
@@ -90,24 +92,24 @@ class NewTaskSms extends Notification implements ShouldQueue
         );
 
         if (sms_setting()->status) {
-            return (new TwilioSmsMessage())
+            return (new TwilioSmsMessage)
                 ->content($this->message);
         }
     }
 
-    //phpcs:ignore
+    // phpcs:ignore
     public function toVonage($notifiable)
     {
         if (sms_setting()->nexmo_status) {
-            return (new VonageMessage())
+            return (new VonageMessage)
                 ->content($this->message);
         }
     }
 
-    //phpcs:ignore
+    // phpcs:ignore
     public function toMsg91($notifiable)
     {
-        $mobile = $notifiable->country_phonecode . $notifiable->mobile;
+        $mobile = $notifiable->country_phonecode.$notifiable->mobile;
         if (sms_setting()->msg91_status) {
             return (new \Craftsys\Notifications\Messages\Msg91SMS)
                 ->to($mobile)
@@ -127,5 +129,4 @@ class NewTaskSms extends Notification implements ShouldQueue
             ->content($this->message)
             ->button(__('app.view'), route('tasks.show', $this->task->id));
     }
-
 }

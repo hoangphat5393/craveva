@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class BannedSubdomainRequest extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -25,8 +24,7 @@ class BannedSubdomainRequest extends CoreRequest
     public function rules()
     {
         return [
-            'banned_subdomain' => 'required'
+            'banned_subdomain' => 'required',
         ];
     }
-
 }

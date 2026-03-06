@@ -10,17 +10,16 @@ use Illuminate\Support\Facades\Log;
 
 class RemovalRequestObserver
 {
-
     public function created(RemovalRequest $removalRequest)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             event(new RemovalRequestAdminEvent($removalRequest));
         }
     }
 
     public function updated(RemovalRequest $removal)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             try {
                 if ($removal->user) {
                     if ($removal->status != 'pending') {
@@ -39,5 +38,4 @@ class RemovalRequestObserver
             $model->company_id = company()->id;
         }
     }
-
 }

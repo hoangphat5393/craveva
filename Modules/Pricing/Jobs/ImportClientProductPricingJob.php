@@ -16,10 +16,12 @@ use Modules\Pricing\Entities\ClientProductPricing;
 
 class ImportClientProductPricingJob implements ShouldQueue
 {
-    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ExcelImportable;
+    use Batchable, Dispatchable, ExcelImportable, InteractsWithQueue, Queueable, SerializesModels;
 
     private $row;
+
     private $columns;
+
     private $company;
 
     public function __construct($row, $columns, $company = null)
@@ -40,29 +42,32 @@ class ImportClientProductPricingJob implements ShouldQueue
 
         $clientDetails = null;
 
-        if (!empty($customerCode)) {
+        if (! empty($customerCode)) {
             $clientDetails = ClientDetails::where('client_code', $customerCode)->first();
         }
 
-        if (!$clientDetails && $this->isEmailValid($email)) {
+        if (! $clientDetails && $this->isEmailValid($email)) {
             $user = User::where('email', $email)->first();
             $clientDetails = $user ? ClientDetails::where('user_id', $user->id)->first() : null;
         }
 
-        if (!$clientDetails) {
+        if (! $clientDetails) {
             $this->failJobWithMessage('Client not found: ');
+
             return;
         }
 
         if (empty($sku)) {
             $this->failJobWithMessage('Product SKU missing: ');
+
             return;
         }
 
         $product = Product::where('sku', $sku)->first();
 
-        if (!$product) {
+        if (! $product) {
             $this->failJob('Product not found: ');
+
             return;
         }
 

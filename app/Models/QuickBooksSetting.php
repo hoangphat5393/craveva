@@ -22,6 +22,7 @@ use App\Traits\HasCompany;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|QuickBooksSetting newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|QuickBooksSetting newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|QuickBooksSetting query()
@@ -39,6 +40,7 @@ use App\Traits\HasCompany;
  * @method static \Illuminate\Database\Eloquent\Builder|QuickBooksSetting whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|QuickBooksSetting whereSyncType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|QuickBooksSetting whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class QuickBooksSetting extends BaseModel

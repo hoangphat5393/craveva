@@ -7,7 +7,6 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-
     public function up(): void
     {
         \Illuminate\Support\Facades\Artisan::call('db:seed', [
@@ -15,5 +14,4 @@ return new class extends Migration
             '--force' => true,
         ]);
     }
-
 };

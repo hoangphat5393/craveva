@@ -8,10 +8,10 @@ use Modules\Policy\Entities\Policy;
 
 class SendReminderEvent
 {
-
     use Dispatchable, SerializesModels;
 
     public $policy;
+
     public $notifyUsers;
 
     /**
@@ -22,5 +22,4 @@ class SendReminderEvent
         $this->policy = $policy;
         $this->notifyUsers = $notifyUsers;
     }
-
 }

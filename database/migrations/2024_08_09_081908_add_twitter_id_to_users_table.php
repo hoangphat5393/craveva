@@ -6,13 +6,12 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        if (!Schema::hasColumn('user_auths', 'twitter_id')) {
+        if (! Schema::hasColumn('user_auths', 'twitter_id')) {
             Schema::table('user_auths', function (Blueprint $table) {
                 $table->string('twitter_id')->nullable()->after('email_code_expires_at');
             });
@@ -28,5 +27,4 @@ return new class extends Migration
             $table->dropColumn('twitter_id');
         });
     }
-
 };

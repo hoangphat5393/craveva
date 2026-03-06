@@ -4,7 +4,6 @@ namespace Modules\Biolinks\Enums;
 
 enum Heading: string
 {
-
     // phpcs:disable
     case H1 = 'h1';
     case H2 = 'h2';
@@ -18,9 +17,8 @@ enum Heading: string
     public function label(): string
     {
         return match ($this) {
-            self::H1, self::H2, self::H3, self::H4, self::H5, self::H6 => __('biolinks::app.' . $this->value),
+            self::H1, self::H2, self::H3, self::H4, self::H5, self::H6 => __('biolinks::app.'.$this->value),
             default => $this->value,
         };
     }
-
 }

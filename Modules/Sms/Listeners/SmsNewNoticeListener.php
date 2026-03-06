@@ -19,12 +19,10 @@ class SmsNewNoticeListener
         try {
             if (isset($event->action) && $event->action == 'update') {
                 Notification::send($event->notifyUser, new NoticeUpdate($event->notice));
-            }
-            else {
+            } else {
                 Notification::send($event->notifyUser, new NewNoticeSms($event->notice));
             }
         } catch (\Exception $e) { // @codingStandardsIgnoreLine
         }
     }
-
 }

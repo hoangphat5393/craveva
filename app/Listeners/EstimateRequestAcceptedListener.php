@@ -3,12 +3,11 @@
 namespace App\Listeners;
 
 use App\Events\EstimateRequestAcceptedEvent;
-use Illuminate\Support\Facades\Notification;
 use App\Notifications\EstimateRequestAccepted;
+use Illuminate\Support\Facades\Notification;
 
 class EstimateRequestAcceptedListener
 {
-
     /**
      * Handle the event.
      */
@@ -16,9 +15,8 @@ class EstimateRequestAcceptedListener
     {
         $notifiable = $event->estimateRequest->client;
 
-        if (isset($notifiable->email)){
+        if (isset($notifiable->email)) {
             Notification::send($notifiable, new EstimateRequestAccepted($event->estimateRequest));
         }
     }
-
 }

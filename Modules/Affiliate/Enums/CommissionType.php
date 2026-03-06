@@ -4,7 +4,6 @@ namespace Modules\Affiliate\Enums;
 
 enum CommissionType: string
 {
-
     // phpcs:disable
     case Fixed = 'fixed';
     case Percent = 'percent';
@@ -14,10 +13,9 @@ enum CommissionType: string
     public function label(): string
     {
         return match ($this) {
-            self::Fixed => __('affiliate::app.' . $this->value),
-            self::Percent => __('affiliate::app.' . $this->value),
+            self::Fixed => __('affiliate::app.'.$this->value),
+            self::Percent => __('affiliate::app.'.$this->value),
             default => $this->value,
         };
     }
-
 }

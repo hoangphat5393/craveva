@@ -4,7 +4,6 @@ namespace Modules\Biolinks\Enums;
 
 enum BorderStyle: string
 {
-
     // phpcs:disable
     case SOLID = 'solid';
     case DASHED = 'dashed';
@@ -17,9 +16,8 @@ enum BorderStyle: string
     public function label(): string
     {
         return match ($this) {
-            self::SOLID, self::DASHED, self::OUTSET, self::DOUBLE, self::INSET => __('biolinks::app.' . $this->value),
+            self::SOLID, self::DASHED, self::OUTSET, self::DOUBLE, self::INSET => __('biolinks::app.'.$this->value),
             default => $this->value,
         };
     }
-
 }

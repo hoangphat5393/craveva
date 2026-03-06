@@ -11,12 +11,11 @@ class StoreVendorContact extends FormRequest
      *
      * @return array
      */
-
     public function rules()
     {
         return [
             'contact_name' => 'required',
-            'email' => 'email:rfc|unique:purchase_vendor_contacts,email,null,id,company_id,' . company()->id
+            'email' => 'email:rfc|unique:purchase_vendor_contacts,email,null,id,company_id,'.company()->id,
         ];
     }
 
@@ -25,7 +24,6 @@ class StoreVendorContact extends FormRequest
      *
      * @return bool
      */
-    
     public function authorize()
     {
         return true;

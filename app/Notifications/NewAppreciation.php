@@ -2,20 +2,20 @@
 
 namespace App\Notifications;
 
-use App\Models\EmailNotificationSetting;
 use App\Models\Appreciation;
+use App\Models\EmailNotificationSetting;
 use NotificationChannels\OneSignal\OneSignalChannel;
 use NotificationChannels\OneSignal\OneSignalMessage;
 
 class NewAppreciation extends BaseNotification
 {
-
     /**
      * Create a new notification instance.
      *
      * @return void
      */
     private $userAppreciation;
+
     private $emailSetting;
 
     public function __construct(Appreciation $userAppreciation)
@@ -30,7 +30,7 @@ class NewAppreciation extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -50,7 +50,7 @@ class NewAppreciation extends BaseNotification
         }
 
         if ($this->emailSetting->send_push == 'yes' && push_setting()->beams_push_status == 'active') {
-            $pushNotification = new \App\Http\Controllers\DashboardController();
+            $pushNotification = new \App\Http\Controllers\DashboardController;
             $pushUsersIds = [[$notifiable->id]];
             $pushNotification->sendPushNotifications($pushUsersIds, __('email.newAppreciation.subject'), $this->userAppreciation->award->title);
         }
@@ -61,7 +61,7 @@ class NewAppreciation extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
@@ -78,7 +78,7 @@ class NewAppreciation extends BaseNotification
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
                 'actionText' => __('email.newAppreciation.action'),
-                'notifiableName' => $notifiable->name
+                'notifiableName' => $notifiable->name,
             ]);
 
         parent::resetLocale();
@@ -100,14 +100,14 @@ class NewAppreciation extends BaseNotification
             'heading' => $this->userAppreciation->award->title,
             'icon' => $this->userAppreciation->award->awardIcon->icon,
             'color_code' => $this->userAppreciation->award->color_code,
-            'image_url' => $this->userAppreciation->addedBy->image_url
+            'image_url' => $this->userAppreciation->addedBy->image_url,
         ];
     }
 
     /**
      * Get the Slack representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\SlackMessage
      */
     public function toSlack($notifiable)
@@ -117,8 +117,7 @@ class NewAppreciation extends BaseNotification
         $url = getDomainSpecificUrl($url, $this->company);
 
         return $this->slackBuild($notifiable)
-            ->content('*' . __('email.newAppreciation.subject') . '*' . "\n" . '<' . $url . '|' . $this->userAppreciation->award->title . '>');
-
+            ->content('*'.__('email.newAppreciation.subject').'*'."\n".'<'.$url.'|'.$this->userAppreciation->award->title.'>');
 
     }
 
@@ -129,5 +128,4 @@ class NewAppreciation extends BaseNotification
             ->setSubject(__('email.newAppreciation.subject'))
             ->setBody($this->userAppreciation->award->title);
     }
-
 }

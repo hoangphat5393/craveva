@@ -21,5 +21,4 @@ class InvoicePaymentReceivedListener
         } catch (\Exception $e) { // @codingStandardsIgnoreLine
         }
     }
-
 }

@@ -7,7 +7,6 @@ use Illuminate\Validation\Rule;
 
 class StoreCreditNotes extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -20,8 +19,7 @@ class StoreCreditNotes extends CoreRequest
 
     protected function prepareForValidation()
     {
-        if ($this->cn_number)
-        {
+        if ($this->cn_number) {
             $this->merge([
                 'cn_number' => \App\Helper\NumberFormat::creditNote($this->cn_number),
             ]);
@@ -43,9 +41,9 @@ class StoreCreditNotes extends CoreRequest
             'invoice_id' => Rule::unique('credit_notes'),
         ];
 
-        if (isset($this->adjustment_amount) && !is_null($this->adjustment_amount)) {
+        if (isset($this->adjustment_amount) && ! is_null($this->adjustment_amount)) {
             $min_adjustment_amount = -$this->min_adjustment_amount;
-            $rules['adjustment_amount'] = 'gte:' . $min_adjustment_amount;
+            $rules['adjustment_amount'] = 'gte:'.$min_adjustment_amount;
         }
 
         return $rules;
@@ -54,8 +52,7 @@ class StoreCreditNotes extends CoreRequest
     public function messages()
     {
         return [
-            'adjustment_amount.gte' => 'Adjustment amount must be greater than or equals to total payment amount of this invoice'
+            'adjustment_amount.gte' => 'Adjustment amount must be greater than or equals to total payment amount of this invoice',
         ];
     }
-
 }

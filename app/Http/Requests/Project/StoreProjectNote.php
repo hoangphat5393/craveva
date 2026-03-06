@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class StoreProjectNote extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -42,5 +41,4 @@ class StoreProjectNote extends CoreRequest
             'user_id.required' => 'The employee field is required.',
         ];
     }
-
 }

@@ -25,6 +25,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property-read mixed $icon
  * @property-read \App\Models\Ticket $ticket
  * @property-read \App\Models\User $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|TicketReply newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TicketReply newQuery()
  * @method static \Illuminate\Database\Query\Builder|TicketReply onlyTrashed()
@@ -38,18 +39,20 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @method static \Illuminate\Database\Eloquent\Builder|TicketReply whereUserId($value)
  * @method static \Illuminate\Database\Query\Builder|TicketReply withTrashed()
  * @method static \Illuminate\Database\Query\Builder|TicketReply withoutTrashed()
+ *
  * @property int|null $company_id
  * @property string|null $imap_message_id
  * @property string|null $imap_message_uid
  * @property string|null $imap_in_reply_to
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|TicketReply whereImapInReplyTo($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TicketReply whereImapMessageId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TicketReply whereImapMessageUid($value)
+ *
  * @mixin \Eloquent
  */
 class TicketReply extends BaseModel
 {
-
     use SoftDeletes;
 
     protected $casts = [
@@ -80,5 +83,4 @@ class TicketReply extends BaseModel
     {
         return $this->hasMany(TicketReplyUser::class, 'ticket_reply_id');
     }
-
 }

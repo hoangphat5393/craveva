@@ -9,7 +9,6 @@ use Illuminate\Support\Carbon;
 
 class LeavesQuotaRenew extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
@@ -45,7 +44,7 @@ class LeavesQuotaRenew extends Command
 
         if ($company->leaves_start_from == 'year_start') {
             $today = Carbon::now($company->timezone)->startOfDay();
-            $companyYearStart = Carbon::create($today->year, (int)$company->year_starts_from, tz: $company->timezone)->startOfDay();
+            $companyYearStart = Carbon::create($today->year, (int) $company->year_starts_from, tz: $company->timezone)->startOfDay();
 
             if ($today->ne($companyYearStart)) {
                 return;
@@ -82,14 +81,13 @@ class LeavesQuotaRenew extends Command
                 $noOfLeaves += $employeeLeaveType->leaves_remaining;
             }
 
-            $this->info('Renewing leaves quota for ' . $employee->name . ' for ' . $leaveType->type_name . ' with ' . $noOfLeaves . ' leaves');
+            $this->info('Renewing leaves quota for '.$employee->name.' for '.$leaveType->type_name.' with '.$noOfLeaves.' leaves');
 
             $employeeLeaveType->update([
                 'no_of_leaves' => $noOfLeaves,
                 'leaves_remaining' => $noOfLeaves,
-                'leaves_used' => 0
+                'leaves_used' => 0,
             ]);
         }
     }
-
 }

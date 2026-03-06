@@ -7,9 +7,8 @@ use App\Models\EmployeeShiftChangeRequest;
 
 class ShiftChangeRequest extends BaseNotification
 {
-
-
     public $employeeShiftSchedule;
+
     public $emailSetting;
 
     /**
@@ -27,7 +26,7 @@ class ShiftChangeRequest extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     // phpcs:ignore
@@ -45,7 +44,7 @@ class ShiftChangeRequest extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
@@ -54,16 +53,16 @@ class ShiftChangeRequest extends BaseNotification
         $url = route('shifts-change.index');
         $url = getDomainSpecificUrl($url, $this->company);
 
-        $content = __('email.shiftChange.text') . '<br>' . __('app.employee') . ': ' . $this->employeeShiftSchedule->shiftSchedule->user->name . '<br>'. __('app.date') . ': ' . $this->employeeShiftSchedule->shiftSchedule->date->toFormattedDateString() . '<br>'. __('app.previous') . ' ' . __('modules.attendance.shiftName') . ': ' . $this->employeeShiftSchedule->shiftSchedule->shift->shift_name . '<br>' . __('app.new') . ' ' . __('modules.attendance.shiftName') . ': ' . $this->employeeShiftSchedule->shift->shift_name;
+        $content = __('email.shiftChange.text').'<br>'.__('app.employee').': '.$this->employeeShiftSchedule->shiftSchedule->user->name.'<br>'.__('app.date').': '.$this->employeeShiftSchedule->shiftSchedule->date->toFormattedDateString().'<br>'.__('app.previous').' '.__('modules.attendance.shiftName').': '.$this->employeeShiftSchedule->shiftSchedule->shift->shift_name.'<br>'.__('app.new').' '.__('modules.attendance.shiftName').': '.$this->employeeShiftSchedule->shift->shift_name;
 
         $build
-            ->subject(__('email.shiftChange.subject') . ' - ' . config('app.name') . '.')
+            ->subject(__('email.shiftChange.subject').' - '.config('app.name').'.')
             ->markdown('mail.email', [
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
                 'actionText' => __('email.shiftChange.action'),
-                'notifiableName' => $notifiable->name
+                'notifiableName' => $notifiable->name,
             ]);
 
         parent::resetLocale();
@@ -77,8 +76,7 @@ class ShiftChangeRequest extends BaseNotification
             'user_id' => $this->employeeShiftSchedule->shiftSchedule->user_id,
             'shift_id' => $this->employeeShiftSchedule->shiftSchedule->employee_shift_id,
             'new_shift_id' => $this->employeeShiftSchedule->employee_shift_id,
-            'date' => $this->employeeShiftSchedule->shiftSchedule->date
+            'date' => $this->employeeShiftSchedule->shiftSchedule->date,
         ];
     }
-
 }

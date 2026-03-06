@@ -7,13 +7,12 @@ use Modules\Performance\Entities\PerformanceGlobalSetting;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        if (!Schema::hasTable('performance_global_settings')) {
+        if (! Schema::hasTable('performance_global_settings')) {
             Schema::create('performance_global_settings', function (Blueprint $table) {
                 $table->id();
                 $table->string('purchase_code')->nullable();
@@ -35,5 +34,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('performance_global_settings');
     }
-
 };

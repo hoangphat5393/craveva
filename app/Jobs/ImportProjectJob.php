@@ -2,30 +2,31 @@
 
 namespace App\Jobs;
 
-use App\Models\User;
 use App\Models\Project;
+use App\Models\ProjectActivity;
+use App\Models\User;
+use App\Traits\ExcelImportable;
+use App\Traits\UniversalSearchTrait;
 use Carbon\Exceptions\InvalidFormatException;
 use Exception;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
-use App\Traits\UniversalSearchTrait;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use App\Models\ProjectActivity;
-use App\Traits\ExcelImportable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class ImportProjectJob implements ShouldQueue
 {
-
     use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, UniversalSearchTrait;
     use ExcelImportable;
 
     private $row;
+
     private $columns;
+
     private $company;
 
     /**
@@ -50,7 +51,7 @@ class ImportProjectJob implements ShouldQueue
         if ($this->isColumnExists('project_name') && $this->isColumnExists('start_date')) {
             $client = null;
 
-            if (!empty($this->isColumnExists('client_email'))) {
+            if (! empty($this->isColumnExists('client_email'))) {
                 // user that have client role
                 $client = User::where('email', $this->getColumnValue('client_email'))->whereHas('roles', function ($q) {
                     $q->where('name', 'client');
@@ -59,14 +60,14 @@ class ImportProjectJob implements ShouldQueue
 
             DB::beginTransaction();
             try {
-                $project = new Project();
+                $project = new Project;
                 $project->company_id = $this->company?->id;
                 $project->project_name = $this->getColumnValue('project_name');
 
                 $project->project_summary = $this->isColumnExists('project_summary') ? $this->getColumnValue('project_summary') : null;
 
                 $project->start_date = Carbon::createFromFormat('Y-m-d', $this->getColumnValue('start_date'));
-                $project->deadline = $this->isColumnExists('deadline') ? (!empty(trim($this->getColumnValue('deadline'))) ? Carbon::createFromFormat('Y-m-d', $this->getColumnValue('deadline')) : null) : null;
+                $project->deadline = $this->isColumnExists('deadline') ? (! empty(trim($this->getColumnValue('deadline'))) ? Carbon::createFromFormat('Y-m-d', $this->getColumnValue('deadline')) : null) : null;
 
                 if ($this->isColumnExists('notes')) {
                     $project->notes = $this->getColumnValue('notes');
@@ -93,18 +94,16 @@ class ImportProjectJob implements ShouldQueue
                 $this->failJobWithMessage($e->getMessage());
             }
 
-        }
-        else {
+        } else {
             $this->failJob(__('messages.invalidData'));
         }
     }
 
     public function logProjectActivity($projectId, $text)
     {
-        $activity = new ProjectActivity();
+        $activity = new ProjectActivity;
         $activity->project_id = $projectId;
         $activity->activity = $text;
         $activity->save();
     }
-
 }

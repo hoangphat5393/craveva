@@ -17,6 +17,7 @@ use App\Traits\HasCompany;
  * @property int $holiday_status
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|GoogleCalendarModule newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|GoogleCalendarModule newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|GoogleCalendarModule query()
@@ -30,16 +31,17 @@ use App\Traits\HasCompany;
  * @method static \Illuminate\Database\Eloquent\Builder|GoogleCalendarModule whereLeaveStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|GoogleCalendarModule whereTaskStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|GoogleCalendarModule whereUpdatedAt($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|GoogleCalendarModule whereCompanyId($value)
+ *
  * @mixin \Eloquent
  */
 class GoogleCalendarModule extends BaseModel
 {
-
     use HasCompany;
 
     protected $table = 'google_calendar_modules';
-
 }

@@ -62,7 +62,7 @@ class GoalType extends BaseModel
         if (is_array($viewByRoles) || is_object($viewByRoles)) {
             $roleNames = array_map(function ($roleId) use ($roles) {
                 return $roles[$roleId]->display_name ?? '--';
-            }, (array)$viewByRoles);
+            }, (array) $viewByRoles);
         }
 
         if ($this->view_by_owner == 1) {
@@ -86,7 +86,7 @@ class GoalType extends BaseModel
         if (is_array($manageByRoles) || is_object($manageByRoles)) {
             $roleNames = array_map(function ($roleId) use ($roles) {
                 return $roles[$roleId]->display_name ?? '--';
-            }, (array)$manageByRoles);
+            }, (array) $manageByRoles);
         }
 
         if ($this->manage_by_owner == 1) {

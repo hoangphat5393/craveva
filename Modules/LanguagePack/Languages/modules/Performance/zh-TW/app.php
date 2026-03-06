@@ -1,6 +1,6 @@
 <?php
 
-return array(
+return [
     'performance' => '績效',
     'objective' => '目標',
     'objectives' => '目標',
@@ -143,4 +143,4 @@ return array(
     'pendingCheckIns' => '待處理簽入',
     'upcomingCheckIns' => '即將到來的簽入',
 
-);
+];

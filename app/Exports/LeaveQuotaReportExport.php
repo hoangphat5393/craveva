@@ -2,25 +2,28 @@
 
 namespace App\Exports;
 
-use App\Models\LeaveType;
 use App\Models\Leave;
+use App\Models\LeaveType;
 use App\Models\User;
 use App\Scopes\ActiveScope;
-use Maatwebsite\Excel\Concerns\WithStyles;
+use Carbon\Carbon;
 use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Events\AfterSheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use Maatwebsite\Excel\Concerns\WithEvents;
-use Carbon\Carbon;
 
-class LeaveQuotaReportExport implements FromCollection, WithStyles, WithEvents
+class LeaveQuotaReportExport implements FromCollection, WithEvents, WithStyles
 {
     /**
      * @return Collection
      */
     public $viewAttendancePermission;
+
     public $userId;
+
     public $forMontDate;
+
     public $thisMonthStartDate;
 
     public function __construct($id, $year, $month)
@@ -32,22 +35,22 @@ class LeaveQuotaReportExport implements FromCollection, WithStyles, WithEvents
     }
 
     /**
-    * @return \Illuminate\Support\Collection
-    */
+     * @return \Illuminate\Support\Collection
+     */
     public function collection()
     {
         $employees = User::with([
             'employeeDetail',
-             'employeeDetail.designation',
-             'employeeDetail.department',
-             'country',
-             'employee',
-             'roles'
-             ])
+            'employeeDetail.designation',
+            'employeeDetail.department',
+            'country',
+            'employee',
+            'roles',
+        ])
             ->onlyEmployee()
-            ->when(!$this->thisMonthStartDate->eq($this->forMontDate), function($query) {
+            ->when(! $this->thisMonthStartDate->eq($this->forMontDate), function ($query) {
                 $query->with([
-                    'leaveQuotaHistory' => function($query) {
+                    'leaveQuotaHistory' => function ($query) {
                         $query->where('for_month', $this->forMontDate);
                     },
                     'leaveQuotaHistory.leaveType',
@@ -55,7 +58,7 @@ class LeaveQuotaReportExport implements FromCollection, WithStyles, WithEvents
                     $query->where('for_month', $this->forMontDate);
                 });
             })
-            ->when($this->thisMonthStartDate->eq($this->forMontDate), function($query) {
+            ->when($this->thisMonthStartDate->eq($this->forMontDate), function ($query) {
                 $query->with([
                     'leaveTypes',
                     'leaveTypes.leaveType',
@@ -79,8 +82,8 @@ class LeaveQuotaReportExport implements FromCollection, WithStyles, WithEvents
         $leaveTypeHeaders = [];
 
         foreach ($leaveTypes as $leaveType) {
-            $leaveTypeHeaders[] = $leaveType->type_name . ' (' . ($leaveType->paid == 1 ? __('app.paid') : __('app.unpaid')) . ') ' . __('modules.leaves.leavesTaken');
-            $leaveTypeHeaders[] = $leaveType->type_name . ' (' . ($leaveType->paid == 1 ? __('app.paid') : __('app.unpaid')) . ') ' . __('modules.leaves.remainingLeaves');
+            $leaveTypeHeaders[] = $leaveType->type_name.' ('.($leaveType->paid == 1 ? __('app.paid') : __('app.unpaid')).') '.__('modules.leaves.leavesTaken');
+            $leaveTypeHeaders[] = $leaveType->type_name.' ('.($leaveType->paid == 1 ? __('app.paid') : __('app.unpaid')).') '.__('modules.leaves.remainingLeaves');
         }
 
         $monthHeaders = $months->map(function ($month) {
@@ -108,26 +111,26 @@ class LeaveQuotaReportExport implements FromCollection, WithStyles, WithEvents
                     ->whereYear('leave_date', Carbon::now()->year)
                     ->where('status', 'approved')
                     ->get()
-                    ->sum(function($leave) {
+                    ->sum(function ($leave) {
                         return $leave->half_day_type ? 0.5 : 1;
                     });
-                $leaveData[] = (string)$leavesTakenInMonth;
+                $leaveData[] = (string) $leavesTakenInMonth;
             }
 
             $futureLeaves = Leave::where('user_id', $employee->id)
                 ->where('leave_date', '>', Carbon::now()->endOfMonth())
                 ->where('status', 'approved')
                 ->get()
-                ->sum(function($leave) {
+                ->sum(function ($leave) {
                     return $leave->half_day_type ? 0.5 : 1;
                 });
 
-            $leaveData[] = (string)$futureLeaves;
+            $leaveData[] = (string) $futureLeaves;
 
             foreach ($leaveTypes as $leaveType) {
                 $history = $leaveQuotaHistory->where('leave_type_id', $leaveType->id)->first();
-                $leaveData[] = (string)($history ? $history->leaves_used : '0');
-                $leaveData[] = (string)($history ? $history->leaves_remaining : '0');
+                $leaveData[] = (string) ($history ? $history->leaves_used : '0');
+                $leaveData[] = (string) ($history ? $history->leaves_remaining : '0');
             }
 
             $rowData = [
@@ -147,7 +150,7 @@ class LeaveQuotaReportExport implements FromCollection, WithStyles, WithEvents
 
     protected function getAllowedLeavesQuota($employee)
     {
-        if (!$this->thisMonthStartDate->eq($this->forMontDate)) {
+        if (! $this->thisMonthStartDate->eq($this->forMontDate)) {
             return $employee->leaveQuotaHistory;
         }
 
@@ -178,14 +181,14 @@ class LeaveQuotaReportExport implements FromCollection, WithStyles, WithEvents
     public function registerEvents(): array
     {
         return [
-            AfterSheet::class => function(AfterSheet $event) {
+            AfterSheet::class => function (AfterSheet $event) {
                 $sheet = $event->sheet->getDelegate();
                 $columns = range('A', $sheet->getHighestColumn());
 
                 foreach ($columns as $column) {
                     $maxLength = 0;
                     foreach ($sheet->getRowIterator() as $row) {
-                        $cell = $sheet->getCell($column . $row->getRowIndex());
+                        $cell = $sheet->getCell($column.$row->getRowIndex());
                         $cellValue = $cell->getValue();
                         $cellLength = strlen($cellValue);
                         if ($cellLength > $maxLength) {
@@ -209,8 +212,7 @@ class LeaveQuotaReportExport implements FromCollection, WithStyles, WithEvents
                 ];
                 $sheet->getStyle('1:1')->applyFromArray($styleArray);
 
-            }
+            },
         ];
     }
-
 }

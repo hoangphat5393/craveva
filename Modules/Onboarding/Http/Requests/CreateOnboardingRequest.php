@@ -9,7 +9,6 @@ class CreateOnboardingRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      */
-
     public function rules(): array
     {
         $onboardId = request()->onboarding_status_id;
@@ -17,7 +16,7 @@ class CreateOnboardingRequest extends FormRequest
         return [
             'title' => [
                 'required',
-                'unique:onboarding_tasks,title,' . $onboardId . ',id,company_id,' . company()->id,
+                'unique:onboarding_tasks,title,'.$onboardId.',id,company_id,'.company()->id,
             ],
             'task_for' => 'required|in:company,employee',
             'employee_can_see' => 'nullable|boolean',
@@ -32,5 +31,4 @@ class CreateOnboardingRequest extends FormRequest
     {
         return true;
     }
-
 }

@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int|null $added_by
  * @property int|null $last_updated_by
  * @property-read \App\Models\Project $project
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectRating newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectRating newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectRating query()
@@ -29,14 +30,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectRating whereRating($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectRating whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectRating whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class ProjectRating extends BaseModel
 {
-
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
     }
-
 }

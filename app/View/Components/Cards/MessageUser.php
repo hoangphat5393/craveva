@@ -7,7 +7,6 @@ use Illuminate\View\Component;
 
 class MessageUser extends Component
 {
-
     public $message;
 
     /**
@@ -29,5 +28,4 @@ class MessageUser extends Component
     {
         return view('components.cards.message-user');
     }
-
 }

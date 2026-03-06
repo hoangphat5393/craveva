@@ -3,14 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Helper\Files;
-use App\Http\Requests\InvoicePaymentRequest;
-use Illuminate\Http\Request;
 use App\Helper\Reply;
+use App\Http\Requests\InvoicePaymentRequest;
 use App\Models\InvoicePaymentDetail;
 
 class InvoicePaymentDetailController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -32,8 +30,8 @@ class InvoicePaymentDetailController extends AccountBaseController
     public function store(InvoicePaymentRequest $request)
     {
         $this->addPermission = user()->permission('manage_project_category');
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
-        $payment = new InvoicePaymentDetail();
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
+        $payment = new InvoicePaymentDetail;
         $payment->title = $request->title;
         $payment->payment_details = $request->payment_details;
         $payment->company_id = $this->company->id;
@@ -51,6 +49,7 @@ class InvoicePaymentDetailController extends AccountBaseController
     public function edit(string $id)
     {
         $this->payment = InvoicePaymentDetail::findOrFail($id);
+
         return view('invoice-settings.ajax.payment-edit', $this->data);
     }
 
@@ -85,7 +84,7 @@ class InvoicePaymentDetailController extends AccountBaseController
     public function destroy(string $id)
     {
         $this->deletePermission = user()->permission('manage_project_category');
-        abort_403(!in_array($this->deletePermission, ['all', 'added']));
+        abort_403(! in_array($this->deletePermission, ['all', 'added']));
 
         $payment = InvoicePaymentDetail::findOrFail($id);
 

@@ -5,23 +5,21 @@ namespace App\Observers;
 use App\Events\TaskNoteEvent;
 use App\Events\TaskNoteMentionEvent;
 use App\Models\MentionUser;
-use App\Models\Task;
 use App\Models\TaskNote;
 use App\Models\User;
 
 class TaskNoteObserver
 {
-
     public function saving(TaskNote $note)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             $note->last_updated_by = user()->id;
         }
     }
 
     public function creating(TaskNote $note)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             $note->added_by = user()->id;
         }
     }
@@ -67,8 +65,7 @@ class TaskNoteObserver
 
                 }
 
-            }
-            else {
+            } else {
 
                 event(new TaskNoteEvent($task, $note->created_at, $task->project->projectMembers));
             }
@@ -79,8 +76,7 @@ class TaskNoteObserver
 
             }
 
-        }
-        else {
+        } else {
             event(new TaskNoteEvent($task, $note->created_at, $task->users));
         }
     }
@@ -99,18 +95,17 @@ class TaskNoteObserver
 
                 if (($mentionedUser) != null) {
 
-                    if (!in_array($value, json_decode($mentionedUser))) {
+                    if (! in_array($value, json_decode($mentionedUser))) {
 
                         $newMention[] = $value;
                     }
-                }
-                else {
+                } else {
 
                     $newMention[] = $value;
                 }
             }
 
-            if (!empty($newMention)) {
+            if (! empty($newMention)) {
 
                 event(new TaskNoteMentionEvent($note->task, $note, $newMention));
 
@@ -119,5 +114,4 @@ class TaskNoteObserver
         }
 
     }
-
 }

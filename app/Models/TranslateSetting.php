@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property string|null $google_key
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|TranslateSetting newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TranslateSetting newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TranslateSetting query()
@@ -18,11 +19,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @method static \Illuminate\Database\Eloquent\Builder|TranslateSetting whereGoogleKey($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TranslateSetting whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TranslateSetting whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class TranslateSetting extends BaseModel
 {
-
     protected $guarded = ['id'];
+
     use HasFactory;
 }

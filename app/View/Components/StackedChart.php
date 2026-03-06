@@ -7,7 +7,6 @@ use Illuminate\View\Component;
 
 class StackedChart extends Component
 {
-
     public $chartData;
 
     /**
@@ -29,5 +28,4 @@ class StackedChart extends Component
     {
         return view('components.stacked-chart');
     }
-
 }

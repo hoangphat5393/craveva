@@ -28,5 +28,4 @@ class BiolinkFactory extends Factory
             'page_link' => $faker->slug($nbWords = 2),
         ];
     }
-
 }

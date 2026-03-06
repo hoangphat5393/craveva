@@ -7,7 +7,6 @@ use Illuminate\View\Component;
 
 class Gender extends Component
 {
-
     public $gender;
 
     /**
@@ -29,5 +28,4 @@ class Gender extends Component
     {
         return view('components.gender');
     }
-
 }

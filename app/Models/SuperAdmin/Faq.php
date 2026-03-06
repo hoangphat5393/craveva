@@ -17,6 +17,7 @@ use App\Models\BaseModel;
  * @property-read Collection|FaqFile[] $files
  * @property-read int|null $files_count
  * @property-read mixed $image_url
+ *
  * @method static Builder|Faq newModelQuery()
  * @method static Builder|Faq newQuery()
  * @method static Builder|Faq query()
@@ -26,18 +27,20 @@ use App\Models\BaseModel;
  * @method static Builder|Faq whereId($value)
  * @method static Builder|Faq whereTitle($value)
  * @method static Builder|Faq whereUpdatedAt($value)
+ *
  * @mixin Eloquent
+ *
  * @property string|null $image
+ *
  * @method static Builder|Faq whereImage($value)
  */
 class Faq extends BaseModel
 {
-
     public $appends = ['image_url'];
 
     public function getImageUrlAttribute()
     {
-        return ($this->image) ? asset_url('faq-files/' . $this->id . '/' . $this->image) : asset('saas/img/svg/mock-2.svg');
+        return ($this->image) ? asset_url('faq-files/'.$this->id.'/'.$this->image) : asset('saas/img/svg/mock-2.svg');
     }
 
     public function category()
@@ -49,5 +52,4 @@ class Faq extends BaseModel
     {
         return $this->hasMany(FaqFile::class, 'faq_id');
     }
-
 }

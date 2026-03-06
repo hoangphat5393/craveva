@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class NoticeBoardUser extends BaseModel
 {
-
     use HasFactory;
 
     public function employees(): BelongsTo
@@ -19,5 +18,4 @@ class NoticeBoardUser extends BaseModel
     {
         return $this->belongsTo(Notice::class, 'user_id', 'id')->where('type', 'client');
     }
-
 }

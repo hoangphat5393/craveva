@@ -9,7 +9,6 @@ class ChatStoreRequest extends CoreRequest
      *
      * @return bool
      */
-
     public function authorize()
     {
         return true;
@@ -27,7 +26,6 @@ class ChatStoreRequest extends CoreRequest
      *
      * @return array
      */
-
     public function rules()
     {
 
@@ -36,7 +34,7 @@ class ChatStoreRequest extends CoreRequest
             'client_id' => 'required_if:user_type,client',
         ];
 
-        if($this->types == 'modal'){
+        if ($this->types == 'modal') {
             $rules['message'] = 'required';
         }
 
@@ -50,5 +48,4 @@ class ChatStoreRequest extends CoreRequest
             'client_id.required_if' => 'Select a client to send the message',
         ];
     }
-
 }

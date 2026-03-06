@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class CreateKeyResultsRequest extends FormRequest
 {
-
     /**
      * Get the validation rules that apply to the request.
      */
@@ -18,7 +17,7 @@ class CreateKeyResultsRequest extends FormRequest
             'objective_id' => 'required|integer|exists:objectives,id',
             'title' => [
                 'required',
-                'unique:key_results,title,'.$id.',id,company_id,' . company()->id,
+                'unique:key_results,title,'.$id.',id,company_id,'.company()->id,
             ],
             'metrics_id' => 'required|integer|exists:key_results_metrics,id',
             'target_value' => 'required|numeric',
@@ -33,5 +32,4 @@ class CreateKeyResultsRequest extends FormRequest
     {
         return true;
     }
-
 }

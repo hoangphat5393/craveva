@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class UpdateTicket extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -37,5 +36,4 @@ class UpdateTicket extends CoreRequest
             'message2' => __('messages.descriptionFieldRequired'),
         ];
     }
-
 }

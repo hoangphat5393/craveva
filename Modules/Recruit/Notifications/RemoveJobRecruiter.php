@@ -7,14 +7,13 @@ use Modules\Recruit\Entities\RecruitEmailNotificationSetting;
 
 class RemoveJobRecruiter extends BaseNotification
 {
-
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-
     private $job;
+
     private $emailSetting;
 
     public function __construct($job)
@@ -27,7 +26,7 @@ class RemoveJobRecruiter extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -44,7 +43,7 @@ class RemoveJobRecruiter extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
@@ -52,7 +51,7 @@ class RemoveJobRecruiter extends BaseNotification
         $url = route('jobs.show', $this->job->id);
         $url = getDomainSpecificUrl($url, $this->company);
 
-        $content = __('recruit::modules.updateJob.text') . ' - ' . ucwords($this->job['title']);
+        $content = __('recruit::modules.updateJob.text').' - '.ucwords($this->job['title']);
 
         return parent::build()
             ->subject(__('recruit::modules.updateJob.subject'))
@@ -60,15 +59,15 @@ class RemoveJobRecruiter extends BaseNotification
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
-                'actionText' => __('app.view') . ' ' . __('recruit::app.jobOffer.job'),
-                'notifiableName' => $notifiable->name
+                'actionText' => __('app.view').' '.__('recruit::app.jobOffer.job'),
+                'notifiableName' => $notifiable->name,
             ]);
     }
 
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function toArray($notifiable)
@@ -76,8 +75,7 @@ class RemoveJobRecruiter extends BaseNotification
         return [
             'user_id' => $notifiable->id,
             'job_id' => $this->job->id,
-            'heading' => $this->job->title
+            'heading' => $this->job->title,
         ];
     }
-
 }

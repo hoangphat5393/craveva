@@ -2,10 +2,8 @@
 
 namespace App\Models;
 
-use App\Models\User;
-use App\Traits\HasCompany;
 use App\Scopes\ActiveScope;
-use App\Models\ClientDetails;
+use App\Traits\HasCompany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class EstimateRequest extends BaseModel
@@ -44,7 +42,6 @@ class EstimateRequest extends BaseModel
 
     public static function lastRequestNumber()
     {
-        return (int)EstimateRequest::orderBy('id', 'desc')->first()?->original_request_number ?? 0;
+        return (int) EstimateRequest::orderBy('id', 'desc')->first()?->original_request_number ?? 0;
     }
-
 }

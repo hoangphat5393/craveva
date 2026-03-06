@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read int|null $agents_count
  * @property-read mixed $icon
  * @property-read mixed $enabledAgents
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|TicketGroup newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TicketGroup newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TicketGroup query()
@@ -24,17 +25,19 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder|TicketGroup whereGroupName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TicketGroup whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TicketGroup whereUpdatedAt($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
  * @property-read int|null $enabled_agents_count
+ *
  * @method static \Database\Factories\TicketGroupFactory factory(...$parameters)
  * @method static \Illuminate\Database\Eloquent\Builder|TicketGroup whereCompanyId($value)
+ *
  * @mixin \Eloquent
  */
 class TicketGroup extends BaseModel
 {
-
-    use HasFactory, HasCompany;
+    use HasCompany, HasFactory;
 
     public function tickets()
     {
@@ -45,5 +48,4 @@ class TicketGroup extends BaseModel
     {
         return $this->hasMany(TicketAgentGroups::class, 'group_id')->where('status', '=', 'enabled')->whereHas('user')->groupBy('agent_id');
     }
-
 }

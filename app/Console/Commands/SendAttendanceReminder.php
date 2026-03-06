@@ -12,7 +12,6 @@ use Illuminate\Console\Command;
 
 class SendAttendanceReminder extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
@@ -65,21 +64,20 @@ class SendAttendanceReminder extends Command
                             });
                         })->get();
 
-
                     foreach ($employeeShiftTime as $employeeShiftTimes) {
 
                         if (is_null($employeeShiftTimes->shift->office_start_time)) {
                             continue;
                         }
 
-                        $startDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $today . ' ' . $employeeShiftTimes->shift->office_start_time, $company->timezone);
+                        $startDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $today.' '.$employeeShiftTimes->shift->office_start_time, $company->timezone);
                         $currentDateTime = now($company->timezone)->addMinutes($company->alert_after);
 
                         if ($currentDateTime->greaterThan($startDateTime)) {
 
-                            $clockInCount = Attendance::getTotalUserClockInWithTime(Carbon::createFromFormat('Y-m-d H:i:s', $today . ' ' . $employeeShiftTimes->shift->office_start_time), Carbon::createFromFormat('Y-m-d H:i:s', $today . ' ' . $employeeShiftTimes->shift->office_end_time), $employeeShiftTimes->user_id);
+                            $clockInCount = Attendance::getTotalUserClockInWithTime(Carbon::createFromFormat('Y-m-d H:i:s', $today.' '.$employeeShiftTimes->shift->office_start_time), Carbon::createFromFormat('Y-m-d H:i:s', $today.' '.$employeeShiftTimes->shift->office_end_time), $employeeShiftTimes->user_id);
 
-                            if (!$clockInCount) {
+                            if (! $clockInCount) {
                                 event(new AttendanceReminderEvent($employeeShiftTimes->user));
                                 $employeeShiftTimes->user->employeeDetail->attendance_reminder = $today;
                                 $employeeShiftTimes->user->employeeDetail->saveQuietly();
@@ -95,5 +93,4 @@ class SendAttendanceReminder extends Command
         return Command::SUCCESS;
 
     }
-
 }

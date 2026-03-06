@@ -3,57 +3,53 @@
 namespace App\Http\Controllers\Payment;
 
 use App\Models\Company;
-use App\Traits\MakePaymentTrait;
-use Stripe\Stripe;
-use Stripe\Webhook;
-use App\Models\Order;
 use App\Models\Invoice;
+use App\Models\Order;
 use App\Models\Payment;
+use App\Traits\MakeOrderInvoiceTrait;
+use App\Traits\MakePaymentTrait;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use App\Traits\MakeOrderInvoiceTrait;
 use Stripe\Exception\SignatureVerificationException;
+use Stripe\Stripe;
+use Stripe\Webhook;
 
 class StripeWebhookController extends Controller
 {
-
     use MakeOrderInvoiceTrait, MakePaymentTrait;
 
     /**
-     * @param $companyHash
      * @return \Illuminate\Http\JsonResponse
      */
     public function getWebhook($companyHash = null)
     {
-        if (!$companyHash) {
+        if (! $companyHash) {
             return response()->json([
-                'message' => 'The route has been moved to another route. Please check the Stripe settings again.'
+                'message' => 'The route has been moved to another route. Please check the Stripe settings again.',
             ]);
         }
 
         $company = Company::where('hash', $companyHash)->first();
 
-        if (!$company) {
+        if (! $company) {
             return response()->json([
-                'message' => 'The webhook URL provided is incorrect.'
+                'message' => 'The webhook URL provided is incorrect.',
             ]);
         }
 
         return response()->json([
-            'message' => 'This URL should not be opened directly (GET Request). Only POST requests are accepted. Add this URL to your Stripe webhook.'
+            'message' => 'This URL should not be opened directly (GET Request). Only POST requests are accepted. Add this URL to your Stripe webhook.',
         ]);
     }
 
-    /**
-     */
     public function verifyStripeWebhook(Request $request, $companyHash)
     {
 
         $company = Company::where('hash', $companyHash)->first();
 
-        if (!$company) {
+        if (! $company) {
             return response()->json([
-                'message' => 'Please enter the correct webhook url. You have entered wrong webhook url'
+                'message' => 'Please enter the correct webhook url. You have entered wrong webhook url',
             ]);
         }
 
@@ -109,8 +105,7 @@ class StripeWebhookController extends Controller
                 /* Found payment with same transaction id */
                 $prevClientPayment->event_id = $eventId;
                 $prevClientPayment->save();
-            }
-            else {
+            } else {
                 /* Found nothing on payment table with same transaction id */
 
                 /* If it is an invoice payment */
@@ -187,5 +182,4 @@ class StripeWebhookController extends Controller
         $payment->payment_gateway_response = $errorMessage;
         $payment->save();
     }
-
 }

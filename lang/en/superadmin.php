@@ -1,4 +1,5 @@
 <?php
+
 // SAAS
 return [
     'superAdminDashboard' => 'Super Admin Dashboard',
@@ -341,11 +342,11 @@ return [
             'recoverVerifiedRequest' => 'You will not be able to recover once verified this request',
             'recoverRejectedRequest' => 'You will not be able to recover once rejected this request',
         ],
-        'offlineDescriptionPlaceholder' => 'Provide details of your offline payment'
+        'offlineDescriptionPlaceholder' => 'Provide details of your offline payment',
 
     ],
     'accountSettings' => [
-        'enableRegister' => 'Show signup button'
+        'enableRegister' => 'Show signup button',
     ],
     'emailInfoCompany' => 'These login details will be used by the company admin to login to his company',
     'loginInfo' => 'You will be logout from Super Admin account. Click Login to proceed.',
@@ -370,15 +371,15 @@ return [
     'showGetStartedPopover' => 'show Get Started button on the front page',
     'goToWebsite' => 'Go to Home',
 
-    'newCompany' => array(
+    'newCompany' => [
         'subject' => 'New company registered',
         'text' => 'Great news! A new company has been successfully registered in our system. It\'s now ready to start using our services.',
-    ),
-    'themeSettings' => array(
+    ],
+    'themeSettings' => [
         'adminPanelTheme' => 'Super Admin Panel Theme',
         'setThisCustomerTheme' => 'Set this theme for all customers',
         'setThisCustomerThemeInfo' => 'Customer will not be able to change the theme from admin panel',
-    ),
+    ],
     'frontDisableInfo' => 'Enabling it will disable the front website and will redirect to login page when any url from front website is opened',
     'featureImageSizeMessage' => 'Uploading image size should be 400x352.',
     'headerImageSizeMessage' => 'Uploading image size should be 688x504.',
@@ -392,65 +393,65 @@ return [
         'approvedChangedBy' => 'Approved Status Changed By',
         'companyNeedApproval' => 'Company approval is pending',
     ],
-    'companyApproved' => array(
+    'companyApproved' => [
         'subject' => 'Your company account is approved.',
         'text' => 'We are pleased to inform you that your company account has been successfully approved and is now ready for use. You may now log in to start accessing our services.',
-    ),
+    ],
     'emailVerification' => 'Turn On Email Verification',
     'verifiedEmail' => 'Verified Email',
     'notVerifiedEmail' => 'Email not Verified',
     'emailVerificationEnableDisable' => 'Enable to force newly registered users for email verification. <br><br><p>An email will be send to their email address with verification link.</p>',
-    'planPurchase' => array(
+    'planPurchase' => [
         'subject' => 'Plan Purchase',
         'text' => 'Company purchased plan',
-    ),
-    'cancelLicense' => array(
+    ],
+    'cancelLicense' => [
         'subject' => 'License cancelled due to failed payment.',
         'text' => 'License has been cancelled due to the failed payment. Please check the details.',
-    ),
-    'licenseExpirePre' => array(
+    ],
+    'licenseExpirePre' => [
         'subject' => 'Company license Expiring soon.',
         'text' => 'Your company license is expiring soon Please check your billing details.',
-    ),
-    'licenseExpire' => array(
+    ],
+    'licenseExpire' => [
         'subject' => 'Company Licence expired.',
         'text' => 'Your company license has been expired. Please check billing details.',
-    ),
-    'trialLicenseExpPre' => array(
+    ],
+    'trialLicenseExpPre' => [
         'subject' => 'Company trial package Expiring soon',
         'text' => 'Your company trial package is expiring soon Please check your billing details.',
-    ),
-    'trialLicenseExp' => array(
+    ],
+    'trialLicenseExp' => [
         'subject' => 'Company Trial package expired',
         'text' => 'Your company trial package has been expired and default package has been applied. Please check billing details soon.',
-    ),
-    'invoices' => array(
+    ],
+    'invoices' => [
         'paymentReceived' => 'Payment received for invoice.',
         'offlinePaymentRequest' => 'Offline Payment Request.',
-    ),
-    'planUpdate' => array(
+    ],
+    'planUpdate' => [
         'subject' => 'Company updated plan.',
         'text' => ':company has updated :package plan.',
-    ),
+    ],
     'signUpForCompany' => 'Sign up for :company',
     'clientRegistrationSuccess' => 'You have successfully registered.',
     'clientSignupUrl' => 'Client Signup URL',
     'clientSignupUrlNote' => 'This URL will be used by the client to register on the website.',
     'openInNewTab' => 'Open in new tab',
-    'newSupportTicketRequester' => array(
+    'newSupportTicketRequester' => [
         'subject' => 'New Support Ticket Has Been Generated For You.',
         'text' => 'New  ticket for support is has been generated for you. Login to view the ticket.',
-    ),
-    'newSupportTicket' => array(
+    ],
+    'newSupportTicket' => [
         'subject' => 'New Ticket For Support Requested',
         'text' => 'A new support ticket has been created for you. Please log in to view the ticket details.',
         'notificationText' => 'New support ticket has been created for you.',
-    ),
-    'offlinePackageChangeRequest' => array(
+    ],
+    'offlinePackageChangeRequest' => [
         'subject' => ':company Request for modification of package',
         'text' => 'A request has been made to change the package in <b>:company</b>',
         'packageName' => 'Package Name',
-    ),
+    ],
     'theme1' => 'Theme 1',
     'theme2' => 'Theme 2',
     'companyApprovedSuccess' => 'Company Approved Successfully',
@@ -461,20 +462,20 @@ return [
     'paystackPackageMessage' => 'Once activated, you must include the ID of the Paystack product plan for each package.',
     'payOnline' => 'Pay Online',
     'offlineUploadFile' => 'Please attach a file of your offline payment receipt',
-    'offlinePackageRequestChange' => array(
+    'offlinePackageRequestChange' => [
         'subject' => 'Offline package change request',
         'text' => 'Your request has been :status for package of :package',
-    ),
-    'offlineRequestStatus' => array(
+    ],
+    'offlineRequestStatus' => [
         'pending' => 'Pending',
         'verified' => 'Accepted',
         'rejected' => 'Declined',
-    ),
-    'offlineRequestStatusButton' => array(
+    ],
+    'offlineRequestStatusButton' => [
         'pending' => 'Pending',
         'verified' => 'Accept',
         'rejected' => 'Decline',
-    ),
+    ],
     'offlinePlanChangeConfirm' => 'Are you sure you want to change the plan status?',
     'offlinePlanChangeRequestReceived' => 'Your request has been successfully submitted and is currently under review. We appreciate your patience as we process your request. Our team will notify you of any updates or further actions required. Thank you for choosing to work with us.',
     'footerSettingPageType' => 'Private page can be use in other page as link. A Private page will not displayed in header or footer.',
@@ -485,22 +486,22 @@ return [
     'registerMessage' => 'This message will show on registration page when registration will close.',
     'footerScriptMessage' => 'The following script, if any, will be inserted before &#60;/body&#62; tag.',
     'headerScriptMessage' => ' The following script, if any, will be inserted into the &#60;head&#62; section.',
-    'supportTicketReply' => array(
+    'supportTicketReply' => [
         'subject' => 'Support Ticket Reply',
         'text' => 'New reply received on support ticket ',
         'action' => 'View Ticket',
-    ),
-    'offlineRequestChange' => array(
+    ],
+    'offlineRequestChange' => [
         'remarkRequired' => 'Remark is required',
         'paymentDateRequired' => 'Payment date is required',
         'nextPaymentDateRequired' => 'Next payment date is required',
-    ),
+    ],
     'subscriptionDate' => 'Subscription Date',
     'paymentFailed' => 'Payment Failed',
     'myAccount' => 'My Account',
     'contactSupport' => 'Contact Support',
     'myTickets' => 'My Tickets',
-    'theme2Login' => "<strong>Theme 2</strong> has 2 login view options",
+    'theme2Login' => '<strong>Theme 2</strong> has 2 login view options',
     'primaryColorTooltip' => 'The color will be displayed on the front-end website theme, including buttons, icons, and other elements.',
     'VisitFrontWebsite' => 'Visit Front Website',
     'cannotDeleteFirstSuperadmin' => 'You cannot delete the first superadmin.',
@@ -517,7 +518,7 @@ return [
     'clientSignUpApprovedMailVerificationPending' => 'Your account has been approved. Please verify your email to complete the setup process.',
     // 'approval' => 'Please verify your email.',
     'approval' => 'Your company has been successfully verified! Please verify your email to complete the setup process.',
-    'emailVerificationCode' => array(
+    'emailVerificationCode' => [
         'text' => 'Congratulations! Your account has been created successfully. You can login now and start using our service.',
         'action' => 'Email Verify',
         'line1' => 'Your email verification code is ',
@@ -528,11 +529,11 @@ return [
         'enterVerificationCode' => 'Enter verification code',
         'newEmailCodeSent' => 'A new email verification code has been emailed to you!',
         'enterVerificationCodeEmail' => 'Enter the verification code sent on your email.',
-    ),
-    'emailVerify' => array(
+    ],
+    'emailVerify' => [
         'subject' => 'Email Verification',
         'text' => 'Thank you for registration. Here are your email verification instructions. A request to your email verification has been made. If you did not make this request, simply ignore this email. If you did make this request, please verify ',
-    ),
+    ],
     'superadminRoleAndPermission' => 'Superadmin Role & Permission',
     'roleSweetAlertTitle' => 'Can\'t Delete',
     'roleSweetAlertMessage' => 'Users have this role. remove their role first.',
@@ -544,16 +545,16 @@ return [
     'issueWithCompanyText' => 'Please notify your company admin to resolve the issue.',
     'packageIssueNotified' => 'You have been notified about the issue to your company admin.',
     'issueNotifyButton' => 'Notify Admin',
-    'packageEmployeeIssueEmail' => array(
+    'packageEmployeeIssueEmail' => [
         'subject' => 'Issue with your company',
         'text' => 'Your users :userName is facing issue with your company. Please resolve the issue.',
-    ),
+    ],
     'youCanNotSignUp' => 'You can not sign up. Please contact your company admin.',
     'trialPackageSettings' => 'Trial Package Settings',
     'superadminPermissionsCantChange' => 'Superadmin permissions can not be changed.',
     'updatePlanNote' => 'The limit for your employee package has been exceeded. To address this, you have two options: either disable some employees or update your package to accommodate a higher limit.',
     'ok' => 'Ok',
-    'modules' => array(
+    'modules' => [
         'packages' => 'Packages',
         'companies' => 'Companies',
         'billing' => 'Billing',
@@ -563,7 +564,7 @@ return [
         'superadmin_ticket' => 'Superadmin Ticket',
         'superadmin_settings' => 'Superadmin Settings',
         'affiliate' => 'Affiliates',
-    ),
+    ],
     'companyCurrentPackage' => 'Company\'s Current Package',
     'noActivePackage' => 'No active package found',
     'emailCantUse' => 'This email can not be used.',
@@ -613,7 +614,7 @@ return [
         'platformVersion' => "Operating system's human-friendly version like XP, Vista, 10.",
         'platformVersionMajor' => "Operating system's semantic major version.",
         'platformVersionMinor' => "Operating system's semantic minor version.",
-        'platformVersionPatch' => "Operating system's semantic patch version."
+        'platformVersionPatch' => "Operating system's semantic patch version.",
     ],
     'billing_name' => 'Billing Name',
     'billing_address' => 'Billing Address',
@@ -622,6 +623,5 @@ return [
     'standard' => 'Standard',
     'lifetime' => 'Lifetime',
     'packageType' => 'Package Type',
-
 
 ];

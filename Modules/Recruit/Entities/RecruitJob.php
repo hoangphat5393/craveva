@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class RecruitJob extends BaseModel
 {
-    use SoftDeletes, HasCompany;
+    use HasCompany, SoftDeletes;
 
     protected $dates = ['end_date', 'start_date', 'deleted_at'];
 

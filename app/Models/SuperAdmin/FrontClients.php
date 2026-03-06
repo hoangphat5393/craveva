@@ -2,8 +2,8 @@
 
 namespace App\Models\SuperAdmin;
 
-use App\Models\LanguageSetting;
 use App\Models\BaseModel;
+use App\Models\LanguageSetting;
 
 /**
  * App\Models\SuperAdmin\FrontClients
@@ -16,6 +16,7 @@ use App\Models\BaseModel;
  * @property Carbon|null $updated_at
  * @property-read mixed $image_url
  * @property-read LanguageSetting|null $language
+ *
  * @method static Builder|FrontClients newModelQuery()
  * @method static Builder|FrontClients newQuery()
  * @method static Builder|FrontClients query()
@@ -25,12 +26,13 @@ use App\Models\BaseModel;
  * @method static Builder|FrontClients whereLanguageSettingId($value)
  * @method static Builder|FrontClients whereTitle($value)
  * @method static Builder|FrontClients whereUpdatedAt($value)
+ *
  * @mixin Eloquent
  */
 class FrontClients extends BaseModel
 {
-
     protected $guarded = ['id'];
+
     protected $appends = ['image_url'];
 
     public function language()
@@ -40,7 +42,6 @@ class FrontClients extends BaseModel
 
     public function getImageUrlAttribute()
     {
-        return ($this->image) ? asset_url_local_s3('front/client/' . $this->image) : asset('saas/img/home/client-' . ($this->id) . '.png');
+        return ($this->image) ? asset_url_local_s3('front/client/'.$this->image) : asset('saas/img/home/client-'.($this->id).'.png');
     }
-
 }

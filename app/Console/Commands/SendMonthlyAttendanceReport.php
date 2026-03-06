@@ -9,7 +9,6 @@ use Illuminate\Console\Command;
 
 class SendMonthlyAttendanceReport extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
@@ -34,8 +33,8 @@ class SendMonthlyAttendanceReport extends Command
                 foreach ($companies as $company) {
 
                     $roles = Role::with('users')
-                    ->whereIn('id', json_decode($company->monthly_report_roles))
-                    ->get();
+                        ->whereIn('id', json_decode($company->monthly_report_roles))
+                        ->get();
 
                     $uniqueUsers = collect();
 
@@ -48,7 +47,7 @@ class SendMonthlyAttendanceReport extends Command
 
                     // Now send emails only once per user
                     foreach ($uniqueUsers as $user) {
-                        $this->info('Email sent: ' . $user->email);
+                        $this->info('Email sent: '.$user->email);
                         event(new MonthlyAttendanceEvent($user, $company));
                     }
 
@@ -58,5 +57,4 @@ class SendMonthlyAttendanceReport extends Command
         return Command::SUCCESS;
 
     }
-
 }

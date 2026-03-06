@@ -9,11 +9,10 @@ use Yajra\DataTables\Html\Column;
 
 class ClientGDPRDataTable extends BaseDataTable
 {
-
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
@@ -28,13 +27,12 @@ class ClientGDPRDataTable extends BaseDataTable
                     default => ''
                 };
             })
-            ->editColumn('created_at', fn($row) => Carbon::parse($row->created_at)->translatedFormat($this->company->date_format))
-            ->editColumn('action', fn($row) => $row->status)
+            ->editColumn('created_at', fn ($row) => Carbon::parse($row->created_at)->translatedFormat($this->company->date_format))
+            ->editColumn('action', fn ($row) => $row->status)
             ->rawColumns(['status']);
     }
 
     /**
-     * @param PurposeConsentUser $model
      * @return \Illuminate\Database\Query\Builder
      */
     public function query(PurposeConsentUser $model)
@@ -69,7 +67,7 @@ class ClientGDPRDataTable extends BaseDataTable
             ]);
 
         if (canDataTableExport()) {
-            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
+            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
         }
 
         return $dataTable;
@@ -94,8 +92,7 @@ class ClientGDPRDataTable extends BaseDataTable
                 ->orderable(false)
                 ->searchable(false)
                 ->width(150)
-                ->addClass('text-right pr-20')
+                ->addClass('text-right pr-20'),
         ];
     }
-
 }

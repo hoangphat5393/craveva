@@ -12,7 +12,6 @@ use Illuminate\Validation\Rule;
 
 class StoreRequest extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -31,7 +30,7 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         Validator::extend('check_superadmin', function ($attribute, $value, $parameters, $validator) {
-            return !User::withoutGlobalScopes([ActiveScope::class, CompanyScope::class])
+            return ! User::withoutGlobalScopes([ActiveScope::class, CompanyScope::class])
                 ->where('email', $value)
                 ->where('is_superadmin', 1)
                 ->exists();
@@ -39,7 +38,7 @@ class StoreRequest extends FormRequest
 
         $regex = '/^[a-zA-Z0-9\-]+$/';
 
-        if (!$this->domain) {
+        if (! $this->domain) {
             $regex = '/^([a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,8})$/';
         }
 
@@ -51,10 +50,10 @@ class StoreRequest extends FormRequest
                 'banned_sub_domain',
                 ($this->domain ? 'min:1' : 'min:4'),
                 'max:75',
-                'regex:' . $regex,
+                'regex:'.$regex,
                 Rule::unique('companies')->where(function ($query) {
                     return $query->where('sub_domain', $this->sub_domain)
-                        ->orWhere('sub_domain', $this->sub_domain . $this->domain);
+                        ->orWhere('sub_domain', $this->sub_domain.$this->domain);
                 }),
             ] : '',
             'status' => 'required',
@@ -76,7 +75,7 @@ class StoreRequest extends FormRequest
                 $customField = CustomField::findOrFail($id);
 
                 if ($customField->required == 'yes' && (is_null($value) || $value == '')) {
-                    $rules['custom_fields_data[' . $key . ']'] = 'required';
+                    $rules['custom_fields_data['.$key.']'] = 'required';
                 }
             }
         }
@@ -107,12 +106,11 @@ class StoreRequest extends FormRequest
                 $customField = CustomField::findOrFail($id);
 
                 if ($customField->required == 'yes') {
-                    $attributes['custom_fields_data[' . $key . ']'] = $customField->label;
+                    $attributes['custom_fields_data['.$key.']'] = $customField->label;
                 }
             }
         }
 
         return $attributes;
     }
-
 }

@@ -9,8 +9,8 @@ use Modules\Recruit\Entities\RecruitJobOfferLetter;
 
 class RecruiterOfferLetter extends BaseNotification
 {
-
     private $offer;
+
     private $emailSetting;
 
     /**
@@ -28,7 +28,7 @@ class RecruiterOfferLetter extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -45,15 +45,14 @@ class RecruiterOfferLetter extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
+     * @param  mixed  $notifiable
      */
     public function toMail($notifiable): MailMessage
     {
         $url = route('job-offer-letter.show', $this->offer->id);
         $url = getDomainSpecificUrl($url, $this->company);
 
-        $content = __($this->offer->jobApplication->full_name) . ' (' . ($this->offer->jobApplication->email ? $this->offer->jobApplication->email : '') . ') - ' . __('recruit::modules.offerLetter.text') . ' ' . ucwords($this->offer->job->title);
+        $content = __($this->offer->jobApplication->full_name).' ('.($this->offer->jobApplication->email ? $this->offer->jobApplication->email : '').') - '.__('recruit::modules.offerLetter.text').' '.ucwords($this->offer->job->title);
 
         return parent::build()
             ->subject(__('recruit::modules.offerLetter.subject'))
@@ -61,15 +60,15 @@ class RecruiterOfferLetter extends BaseNotification
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
-                'actionText' => __('app.view') . ' ' . __('recruit::modules.job.offerletter'),
-                'notifiableName' => $notifiable->name
+                'actionText' => __('app.view').' '.__('recruit::modules.job.offerletter'),
+                'notifiableName' => $notifiable->name,
             ]);
     }
 
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function toArray()
@@ -77,8 +76,7 @@ class RecruiterOfferLetter extends BaseNotification
         return [
             'user_id' => $this->offer->job->recruiter_id,
             'offer_id' => $this->offer->id,
-            'heading' => $this->offer->jobApplication->full_name
+            'heading' => $this->offer->jobApplication->full_name,
         ];
     }
-
 }

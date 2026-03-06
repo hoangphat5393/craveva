@@ -5,27 +5,24 @@ namespace Modules\Purchase\DataTables;
 use App\DataTables\BaseDataTable;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use Modules\Purchase\Entities\PurchaseOrder;
 use Modules\Purchase\Entities\PurchaseStockAdjustment;
-use Yajra\DataTables\Html\Column;
 use Yajra\DataTables\Html\Button;
 
 class InventoryValuationSummaryDatatable extends BaseDataTable
 {
-
     public function dataTable($query)
     {
         return datatables()
             ->eloquent($query)
-            ->addColumn('item_name', fn($row) => $row->product ? $row->product->name : '----')
-            ->addColumn('sku', fn($row) => $row->product && !is_null($row->product->sku) ? $row->product->sku : '----')
-            ->editColumn('net_quantity', fn($row) => $row->net_quantity ?? '----')
-            ->editColumn('changed_value', fn($row) => currency_format($row->changed_value, company()->currency->id))
-            ->editColumn('id', fn($row) => $row->id)
+            ->addColumn('item_name', fn ($row) => $row->product ? $row->product->name : '----')
+            ->addColumn('sku', fn ($row) => $row->product && ! is_null($row->product->sku) ? $row->product->sku : '----')
+            ->editColumn('net_quantity', fn ($row) => $row->net_quantity ?? '----')
+            ->editColumn('changed_value', fn ($row) => currency_format($row->changed_value, company()->currency->id))
+            ->editColumn('id', fn ($row) => $row->id)
             ->addIndexColumn()
             ->smart(false)
-            ->setRowId(fn($row) => 'row-' . $row->id)
-            ->rawColumns(['changed_value',]);
+            ->setRowId(fn ($row) => 'row-'.$row->id)
+            ->rawColumns(['changed_value']);
     }
 
     public function query(PurchaseStockAdjustment $model)
@@ -37,7 +34,7 @@ class InventoryValuationSummaryDatatable extends BaseDataTable
         if ($request->searchText != '') {
             $model = $model->Where(function ($query) {
                 $query->whereHas('product', function ($q) {
-                    $q->where('name', 'like', '%' . request('searchText') . '%');
+                    $q->where('name', 'like', '%'.request('searchText').'%');
                 });
             });
         }
@@ -72,7 +69,7 @@ class InventoryValuationSummaryDatatable extends BaseDataTable
                     $(".select-picker").selectpicker();
                 }',
             ])
-            ->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
+            ->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
     }
 
     /**
@@ -93,5 +90,4 @@ class InventoryValuationSummaryDatatable extends BaseDataTable
 
         return $data;
     }
-
 }

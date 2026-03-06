@@ -1,6 +1,6 @@
 <?php
 
-return array(
+return [
     'minimumPayout' => '最低支出',
     'lowestValue' => '金额应至少为',
     'MaxValue' => '金额应小于或等于',
@@ -10,4 +10,4 @@ return array(
     'minimumPayoutMessage' => '最低支出为 :min_payout<br> 当前余额为 :current_balance',
     'alreadyRequested' => '已申请支出',
     'noAffiliate' => '尚未注册联属会员',
-);
+];

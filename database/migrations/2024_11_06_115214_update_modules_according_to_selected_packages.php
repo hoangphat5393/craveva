@@ -4,8 +4,6 @@ use App\Models\Company;
 use App\Models\ModuleSetting;
 use App\Models\SuperAdmin\Package;
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -16,8 +14,7 @@ return new class extends Migration
     {
         $companies = Company::all();
 
-
-        foreach($companies as $company){
+        foreach ($companies as $company) {
 
             $package = Package::findOrFail($company->package_id);
             $modulesInPackage = json_decode($package->module_in_package, true);

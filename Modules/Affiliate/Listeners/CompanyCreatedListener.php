@@ -16,21 +16,21 @@ class CompanyCreatedListener
      * Handle the new company created event.
      * Processes affiliate referrals and commissions when a new company is created.
      *
-     * @param NewCompanyCreatedEvent $event The company creation event
-     * @return void
+     * @param  NewCompanyCreatedEvent  $event  The company creation event
      */
     public function handle(NewCompanyCreatedEvent $event): void
     {
         // Check if there's a referral code in the session
-        if (!session()->has('referralCode')) {
+        if (! session()->has('referralCode')) {
             return;
         }
 
         // Find the active affiliate with the matching referral code
         $affiliate = $this->findActiveAffiliate(session()->get('referralCode'));
 
-        if (!$affiliate) {
+        if (! $affiliate) {
             session()->forget('referralCode');
+
             return;
         }
 
@@ -59,7 +59,7 @@ class CompanyCreatedListener
      */
     private function createReferral(Affiliate $affiliate, int $companyId): Referral
     {
-        $referral = new Referral();
+        $referral = new Referral;
         $referral->affiliate_id = $affiliate->id;
         $referral->company_id = $companyId;
         $referral->ip = request()->getClientIp();
@@ -76,7 +76,7 @@ class CompanyCreatedListener
     {
         $settings = AffiliateSetting::first();
 
-        if (!$this->isCommissionEligible($settings)) {
+        if (! $this->isCommissionEligible($settings)) {
             return;
         }
 

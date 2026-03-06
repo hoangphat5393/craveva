@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class ActionRequest extends FormRequest
 {
-
     /**
      * Get the validation rules that apply to the request.
      */
@@ -22,5 +21,4 @@ class ActionRequest extends FormRequest
     {
         return true;
     }
-
 }

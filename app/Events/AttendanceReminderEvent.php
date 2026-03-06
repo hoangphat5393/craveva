@@ -8,7 +8,6 @@ use Illuminate\Queue\SerializesModels;
 
 class AttendanceReminderEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $notifyUser;
@@ -17,5 +16,4 @@ class AttendanceReminderEvent
     {
         $this->notifyUser = $notifyUser;
     }
-
 }

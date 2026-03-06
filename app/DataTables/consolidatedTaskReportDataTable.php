@@ -8,7 +8,6 @@ use Yajra\DataTables\Html\Button;
 
 class consolidatedTaskReportDataTable extends BaseDataTable
 {
-
     public function dataTable($query)
     {
         return datatables()
@@ -19,17 +18,17 @@ class consolidatedTaskReportDataTable extends BaseDataTable
             })
 
             ->addColumn('estimate_hours', function ($row) {
-                return $row->estimate_hours . ' ' . trans('app.hour') . ' ' . $row->total_minutes . ' ' . trans('app.minutes');
+                return $row->estimate_hours.' '.trans('app.hour').' '.$row->total_minutes.' '.trans('app.minutes');
             })
 
             ->editColumn('spent_minutes', function ($row) {
                 $hours = floor($row->spent_minutes / 60);
                 $minutes = $row->spent_minutes % 60;
 
-                return $hours . ' ' . __('app.hour') . ' ' . $minutes . ' ' . __('app.minutes');
+                return $hours.' '.__('app.hour').' '.$minutes.' '.__('app.minutes');
             })
 
-            ->setRowId(fn($row) => 'row-' . $row->id)
+            ->setRowId(fn ($row) => 'row-'.$row->id)
             ->rawColumns(['total_logged_hours']);
 
     }
@@ -101,13 +100,13 @@ class consolidatedTaskReportDataTable extends BaseDataTable
                 'columnDefs' => [
                     [
                         'targets' => 1,
-                        'className' => 'noVis'
-                    ]
-                ]
+                        'className' => 'noVis',
+                    ],
+                ],
             ]);
 
         if (canDataTableExport()) {
-            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
+            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
         }
 
         return $dataTable;
@@ -133,7 +132,6 @@ class consolidatedTaskReportDataTable extends BaseDataTable
      */
     protected function filename(): string
     {
-        return 'EmployeeWiseTask_' . date('YmdHis');
+        return 'EmployeeWiseTask_'.date('YmdHis');
     }
-
 }

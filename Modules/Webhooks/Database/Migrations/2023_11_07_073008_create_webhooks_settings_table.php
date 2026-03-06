@@ -4,8 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      *
@@ -14,7 +14,7 @@ return new class extends Migration {
     public function up()
     {
 
-        if (!Schema::hasTable('webhooks_settings')) {
+        if (! Schema::hasTable('webhooks_settings')) {
             Schema::create('webhooks_settings', function (Blueprint $table) {
                 $table->id();
 
@@ -27,7 +27,7 @@ return new class extends Migration {
                 $table->string('url')->nullable();
                 $table->string('request_method')->nullable();
                 $table->string('request_format')->nullable();
-                $table->enum('status', ['active','inactive'])->default('active');
+                $table->enum('status', ['active', 'inactive'])->default('active');
                 $table->boolean('run_debug')->default(0);
                 $table->timestamps();
             });
@@ -45,5 +45,4 @@ return new class extends Migration {
     {
         Schema::dropIfExists('webhooks_settings');
     }
-
 };

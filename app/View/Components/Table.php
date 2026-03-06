@@ -7,7 +7,6 @@ use Illuminate\View\Component;
 
 class Table extends Component
 {
-
     public $headType = '';
 
     /**
@@ -29,5 +28,4 @@ class Table extends Component
     {
         return view('components.table');
     }
-
 }

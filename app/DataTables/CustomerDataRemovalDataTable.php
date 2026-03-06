@@ -10,11 +10,10 @@ use Yajra\DataTables\Html\Column;
 
 class CustomerDataRemovalDataTable extends BaseDataTable
 {
-
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
@@ -28,21 +27,21 @@ class CustomerDataRemovalDataTable extends BaseDataTable
 
                 if ($row->status == 'approved') {
                     return __('messages.requestApproved');
-                } else if ($row->status == 'rejected') {
+                } elseif ($row->status == 'rejected') {
                     return __('messages.requestRejected');
                 }
 
                 $action = '<div class="task_view mr-1">
-                        <a href="javascript:;" data-consent-id="' . $row->id . '" data-type="approved"
+                        <a href="javascript:;" data-consent-id="'.$row->id.'" data-type="approved"
                             class="table-action task_view_more d-flex align-items-center justify-content-center">
-                            <i class="fa fa-check icons mr-2"></i> ' . __('app.approve') . '
+                            <i class="fa fa-check icons mr-2"></i> '.__('app.approve').'
                         </a>
                     </div>';
 
                 $action .= '<div class="task_view">
-                        <a href="javascript:;" data-consent-id="' . $row->id . '" data-type="rejected"
+                        <a href="javascript:;" data-consent-id="'.$row->id.'" data-type="rejected"
                             class="table-action task_view_more d-flex align-items-center justify-content-center">
-                            <i class="fa fa-times icons mr-2"></i> ' . __('app.reject') . '
+                            <i class="fa fa-times icons mr-2"></i> '.__('app.reject').'
                         </a>
                     </div>';
 
@@ -50,9 +49,9 @@ class CustomerDataRemovalDataTable extends BaseDataTable
             })
             ->addColumn('status', function ($row) {
                 return match ($row->status) {
-                    'pending' => '<label class="label label-info">' . __('app.pending') . '</label>',
-                    'approved' => '<label class="label label-success">' . __('app.approved') . '</label>',
-                    'rejected' => '<label class="label label-danger">' . __('app.rejected') . '</label>',
+                    'pending' => '<label class="label label-info">'.__('app.pending').'</label>',
+                    'approved' => '<label class="label label-success">'.__('app.approved').'</label>',
+                    'rejected' => '<label class="label label-danger">'.__('app.rejected').'</label>',
                     default => ''
                 };
             })
@@ -62,7 +61,7 @@ class CustomerDataRemovalDataTable extends BaseDataTable
 
     /**
      * Get query source of dataTable.
-     * @param RemovalRequest $model
+     *
      * @return \Illuminate\Database\Query\Builder
      */
     public function query(RemovalRequest $model)
@@ -92,7 +91,7 @@ class CustomerDataRemovalDataTable extends BaseDataTable
             ]);
 
         if (canDataTableExport()) {
-            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
+            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
         }
 
         return $dataTable;
@@ -118,8 +117,7 @@ class CustomerDataRemovalDataTable extends BaseDataTable
                 ->orderable(false)
                 ->searchable(false)
                 ->width(200)
-                ->addClass('text-right pr-20')
+                ->addClass('text-right pr-20'),
         ];
     }
-
 }

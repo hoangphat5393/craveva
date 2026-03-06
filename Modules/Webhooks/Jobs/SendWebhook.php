@@ -18,14 +18,15 @@ use Psr\Http\Message\ResponseInterface;
 
 class SendWebhook implements ShouldQueue
 {
-
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $data;
+
     protected $webhookFor;
+
     protected $companyId;
 
-    public function __construct(array $data = [], string $webhookFor = '', int|null $companyId = null)
+    public function __construct(array $data = [], string $webhookFor = '', ?int $companyId = null)
     {
         $this->webhookFor = $webhookFor;
         $this->companyId = $companyId;
@@ -60,22 +61,21 @@ class SendWebhook implements ShouldQueue
     {
 
         $logger = new Logger('Zapier');
-        $logger->pushHandler(new StreamHandler(storage_path('logs/zapier-' . date('Y-m-d') . '.log')));
+        $logger->pushHandler(new StreamHandler(storage_path('logs/zapier-'.date('Y-m-d').'.log')));
 
         $stack = HandlerStack::create();
-//        $stack->push(
-//            Middleware::log(
-//                $logger,
-//                new MessageFormatter("{method} {uri} HTTP/{version} {req_body} | RESPONSE: {code} - {res_body}")
-//            )
-//        );
+        //        $stack->push(
+        //            Middleware::log(
+        //                $logger,
+        //                new MessageFormatter("{method} {uri} HTTP/{version} {req_body} | RESPONSE: {code} - {res_body}")
+        //            )
+        //        );
 
         $stack->push(Middleware::mapResponse(function (ResponseInterface $response) use ($webhook, $data, $headers) {
             $this->saveData($response, $webhook, $data, $headers);
 
             return $response;
         }));
-
 
         return new Client([
             'timeout' => 60,
@@ -91,16 +91,16 @@ class SendWebhook implements ShouldQueue
         $responseBody = $response->getBody();
 
         if (json_decode($responseBody)) {
-            $responseBody = json_encode(json_decode($responseBody), JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+            $responseBody = json_encode(json_decode($responseBody), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
         }
-        $log = new WebhooksLog();
+        $log = new WebhooksLog;
         $log->company_id = $webhook->company_id;
         $log->method = $webhook->request_method;
         $log->webhooks_setting_id = $webhook->id;
-        $log->headers = json_encode($headers, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+        $log->headers = json_encode($headers, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
         $log->action = $webhook->url;
         $log->webhook_for = $webhook->webhook_for;
-        $log->raw_content = json_encode($data, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+        $log->raw_content = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
         $log->response = $responseBody;
         $log->response_code = $response->getStatusCode();
         $log->save();
@@ -110,12 +110,12 @@ class SendWebhook implements ShouldQueue
     {
         foreach ($webhook->webhooksBodyRequests as $webhooksBodyRequest) {
 
-            $dataVariable = $this->getVariableClass()::tryFrom($webhooksBodyRequest->body_value);
+            $variableClass = $this->getVariableClass();
+            $dataVariable = $variableClass ? $variableClass::tryFrom($webhooksBodyRequest->body_value) : null;
 
             if ($dataVariable) {
                 $data[$webhooksBodyRequest->body_key] = $data[$dataVariable->key()] ?? '';
-            }
-            else {
+            } else {
                 $data[$webhooksBodyRequest->body_key] = $webhooksBodyRequest->body_value;
             }
         }
@@ -141,6 +141,7 @@ class SendWebhook implements ShouldQueue
             'Employee' => \Modules\Webhooks\Enums\EmployeeVariable::class,
             'Invoice' => \Modules\Webhooks\Enums\InvoiceVariable::class,
             'Lead' => \Modules\Webhooks\Enums\LeadVariable::class,
+            'Product' => \Modules\Webhooks\Enums\ProductVariable::class,
             'Project' => \Modules\Webhooks\Enums\ProjectVariable::class,
             'Proposal' => \Modules\Webhooks\Enums\ProposalVariable::class,
             'Task' => \Modules\Webhooks\Enums\TaskVariable::class,
@@ -152,26 +153,23 @@ class SendWebhook implements ShouldQueue
     {
         $invalidVariables = $this->getVariableClass() ? ($this->getVariableClass()::invalidVariables() ?? []) : [];
 
-
         foreach ($data as $key => $value) {
-            if(is_array($value)){
-               continue;
+            if (is_array($value)) {
+                continue;
             }
 
-            try{
+            try {
                 if (in_array($key, $invalidVariables)) {
                     unset($data[$key]);
-                }else{
+                } else {
                     $data[$key] = str_replace('\\/', '/', $value);
                 }
-            }catch(\Exception $e){
+            } catch (\Exception $e) {
 
             }
-
 
         }
 
         return $data;
     }
-
 }

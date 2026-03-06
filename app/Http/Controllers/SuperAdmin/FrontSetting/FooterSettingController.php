@@ -3,22 +3,21 @@
 namespace App\Http\Controllers\SuperAdmin\FrontSetting;
 
 use App\Helper\Reply;
-use Illuminate\Support\Str;
-use Illuminate\Http\Request;
-use App\Models\LanguageSetting;
-use App\Models\SuperAdmin\SeoDetail;
-use App\Models\SuperAdmin\FooterMenu;
-use App\Models\SuperAdmin\TrFrontDetail;
 use App\Http\Controllers\AccountBaseController;
 use App\Http\Requests\SuperAdmin\FooterSetting\CtaRequest;
+use App\Http\Requests\SuperAdmin\FooterSetting\FooterTextRequest;
 use App\Http\Requests\SuperAdmin\FooterSetting\StoreRequest;
 use App\Http\Requests\SuperAdmin\FooterSetting\UpdateRequest;
-use App\Http\Requests\SuperAdmin\FooterSetting\FooterTextRequest;
 use App\Models\GlobalSetting;
+use App\Models\LanguageSetting;
+use App\Models\SuperAdmin\FooterMenu;
+use App\Models\SuperAdmin\SeoDetail;
+use App\Models\SuperAdmin\TrFrontDetail;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class FooterSettingController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -76,12 +75,11 @@ class FooterSettingController extends AccountBaseController
     /**
      * Store a newly created resource in storage.
      *
-     * @param StoreRequest $request
      * @return \Illuminate\Http\Response
      */
     public function store(StoreRequest $request)
     {
-        $footer = new FooterMenu();
+        $footer = new FooterMenu;
 
         $footer->language_setting_id = $request->current_language_id;
         $footer->name = $request->title;
@@ -90,8 +88,7 @@ class FooterSettingController extends AccountBaseController
         if ($request->content == 'link') {
             $footer->description = null;
             $footer->external_link = $request->external_link;
-        }
-        else {
+        } else {
             $footer->description = str_replace('<p><br></p>', '', $request->description);
             $footer->external_link = null;
         }
@@ -107,7 +104,7 @@ class FooterSettingController extends AccountBaseController
                 'seo_title' => $request->seo_title,
                 'seo_description' => $request->seo_description,
                 'seo_author' => $request->seo_author,
-                'seo_keywords' => $request->seo_keywords
+                'seo_keywords' => $request->seo_keywords,
             ]
         );
 
@@ -122,7 +119,7 @@ class FooterSettingController extends AccountBaseController
     /**
      * Show the form for editing the specified resource.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function edit(Request $request, $id)
@@ -138,8 +135,7 @@ class FooterSettingController extends AccountBaseController
     /**
      * Update the specified resource in storage.
      *
-     * @param UpdateRequest $request
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function update(UpdateRequest $request, $id)
@@ -152,8 +148,7 @@ class FooterSettingController extends AccountBaseController
         if ($request->content == 'link') {
             $footer->description = null;
             $footer->external_link = $request->external_link;
-        }
-        else {
+        } else {
             $footer->description = $request->description;
             $footer->external_link = null;
         }
@@ -170,7 +165,7 @@ class FooterSettingController extends AccountBaseController
                 'seo_title' => $request->seo_title,
                 'seo_description' => $request->seo_description,
                 'seo_author' => $request->seo_author,
-                'seo_keywords' => $request->seo_keywords
+                'seo_keywords' => $request->seo_keywords,
             ]
         );
 
@@ -184,7 +179,7 @@ class FooterSettingController extends AccountBaseController
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy(Request $request, $id)
@@ -216,19 +211,18 @@ class FooterSettingController extends AccountBaseController
 
         $data = [
             'footer_copyright_text' => $request->footer_copyright_text,
-            'language_setting_id' => $request->language_setting_id
+            'language_setting_id' => $request->language_setting_id,
         ];
 
         if ($row) {
             $row->update($data);
-        }
-        else {
+        } else {
             $row = TrFrontDetail::create($data);
         }
 
         return Reply::successWithData(__('messages.updateSuccess'), [
             'data' => $request->footer_copyright_text,
-            'lang' => $row->language->language_code
+            'lang' => $row->language->language_code,
         ]);
     }
 
@@ -260,19 +254,18 @@ class FooterSettingController extends AccountBaseController
         $data = [
             'language_setting_id' => $request->language_setting_id,
             'cta_title' => $request->title,
-            'cta_detail' => $request->detail
+            'cta_detail' => $request->detail,
         ];
 
         if ($row) {
             $row->update($data);
-        }
-        else {
+        } else {
             $row = TrFrontDetail::create($data);
         }
 
         return Reply::successWithData(__('messages.updateSuccess'), [
             'data' => $request->title,
-            'lang' => $row->language->language_code
+            'lang' => $row->language->language_code,
         ]);
     }
 
@@ -289,9 +282,9 @@ class FooterSettingController extends AccountBaseController
 
     private function getUniqueSlug($slug, $activeLangId, $slugCount = null)
     {
-        if($slugCount){
+        if ($slugCount) {
             // remove last - and increment count
-            $slug = str($slug)->beforeLast('-') . '-' . ($slugCount + 1);
+            $slug = str($slug)->beforeLast('-').'-'.($slugCount + 1);
         }
 
         $count = FooterMenu::where('slug', $slug)->where('language_setting_id', $activeLangId)->count();
@@ -301,10 +294,9 @@ class FooterSettingController extends AccountBaseController
         }
 
         if ($count > 0) {
-            $slug = $slug . '-' . $count;
+            $slug = $slug.'-'.$count;
         }
 
         return self::getUniqueSlug($slug, $activeLangId, $count);
     }
-
 }

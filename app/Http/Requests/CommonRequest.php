@@ -4,7 +4,6 @@ namespace App\Http\Requests;
 
 class CommonRequest extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -26,5 +25,4 @@ class CommonRequest extends CoreRequest
             //
         ];
     }
-
 }

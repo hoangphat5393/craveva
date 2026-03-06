@@ -25,7 +25,6 @@ use Modules\Zoom\Traits\ZoomSettingsTrait;
 
 class ZoomMeetingController extends AccountBaseController
 {
-
     use ZoomSettingsTrait;
 
     public function __construct()
@@ -36,7 +35,7 @@ class ZoomMeetingController extends AccountBaseController
         $this->middleware(
             function ($request, $next) {
 
-                abort_403(!in_array(ZoomSetting::MODULE_NAME, $this->user->modules));
+                abort_403(! in_array(ZoomSetting::MODULE_NAME, $this->user->modules));
                 $this->setZoomConfigs();
 
                 return $next($request);
@@ -53,9 +52,9 @@ class ZoomMeetingController extends AccountBaseController
     {
         $viewPermission = user()->permission('view_zoom_meetings');
 
-        abort_403(!in_array($viewPermission, ['all', 'added', 'owned', 'both']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'owned', 'both']));
 
-        if (!request()->ajax()) {
+        if (! request()->ajax()) {
             $this->employees = User::allEmployees(null, true, ($viewPermission == 'all' ? 'all' : null));
             $this->clients = User::allClients();
             $this->events = ZoomMeeting::all();
@@ -77,7 +76,7 @@ class ZoomMeetingController extends AccountBaseController
 
         $this->addPermission = user()->permission('add_zoom_meetings');
 
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
 
         $this->employees = User::allEmployees(null, true, (($this->addPermission == 'all' || $this->addPermission == 'added') ? 'all' : null));
         $this->clients = User::allClients(($this->addPermission == 'all' ? 'all' : null));
@@ -105,7 +104,7 @@ class ZoomMeetingController extends AccountBaseController
     /**
      * Store a newly created resource in storage.
      *
-     * @param Request $request
+     * @param  Request  $request
      * @return Response
      */
     public function store(StoreMeeting $request)
@@ -118,7 +117,7 @@ class ZoomMeetingController extends AccountBaseController
     /**
      * Show the specified resource.
      *
-     * @param int $id
+     * @param  int  $id
      * @return Response
      */
     public function show($id)
@@ -127,7 +126,7 @@ class ZoomMeetingController extends AccountBaseController
         $this->viewPermission = user()->permission('view_zoom_meetings');
         $attendeesIds = $this->event->attendees->pluck('id')->toArray();
         abort_403(
-            !(
+            ! (
                 $this->viewPermission == 'all'
                 || ($this->viewPermission == 'added' && $this->event->added_by == user()->id)
                 || ($this->viewPermission == 'owned' && (in_array(user()->id, $attendeesIds || $this->event->created_by == user()->id)))
@@ -140,13 +139,13 @@ class ZoomMeetingController extends AccountBaseController
 
         switch ($tab) {
 
-        case 'notes':
-            $this->tab = 'zoom::meeting.ajax.notes';
-            break;
+            case 'notes':
+                $this->tab = 'zoom::meeting.ajax.notes';
+                break;
 
-        default:
-            $this->tab = 'zoom::meeting.ajax.notes';
-            break;
+            default:
+                $this->tab = 'zoom::meeting.ajax.notes';
+                break;
         }
 
         if (request()->ajax()) {
@@ -164,7 +163,7 @@ class ZoomMeetingController extends AccountBaseController
     /**
      * Show the form for editing the specified resource.
      *
-     * @param int $id
+     * @param  int  $id
      * @return Response
      */
     public function edit($id)
@@ -175,7 +174,7 @@ class ZoomMeetingController extends AccountBaseController
         $eventUsers = $this->event->attendees->pluck('id')->toArray();
 
         abort_403(
-            !(
+            ! (
                 $editPermission == 'all'
                 || ($editPermission == 'added' && user()->id == $this->event->added_by)
                 || ($editPermission == 'owned' && (in_array(user()->id, $eventUsers) || $this->event->created_by == user()->id))
@@ -188,7 +187,7 @@ class ZoomMeetingController extends AccountBaseController
         $this->categories = ZoomCategory::all();
         $this->projects = Project::allProjects();
 
-        if (!is_null($this->event->occurrence_id)) {
+        if (! is_null($this->event->occurrence_id)) {
             if (request()->ajax()) {
                 $html = view('zoom::meeting.ajax.edit_occurrence', $this->data)->render();
 
@@ -197,8 +196,7 @@ class ZoomMeetingController extends AccountBaseController
 
             $this->view = 'zoom::meeting.ajax.edit_occurrence';
 
-        }
-        else {
+        } else {
             if (request()->ajax()) {
                 $html = view('zoom::meeting.ajax.edit', $this->data)->render();
 
@@ -214,8 +212,8 @@ class ZoomMeetingController extends AccountBaseController
     /**
      * Update the specified resource in storage.
      *
-     * @param Request $request
-     * @param int $id
+     * @param  Request  $request
+     * @param  int  $id
      * @return Response
      */
     public function update(UpdateMeeting $request, $id)
@@ -229,7 +227,7 @@ class ZoomMeetingController extends AccountBaseController
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
+     * @param  int  $id
      * @return Response
      */
     public function destroy($id)
@@ -237,21 +235,19 @@ class ZoomMeetingController extends AccountBaseController
         $meeting = ZoomMeeting::findOrFail($id);
 
         // destroy meeting via zoom api
-        if (!is_null($meeting->occurrence_id)) {
+        if (! is_null($meeting->occurrence_id)) {
             $zoomMeeting = Zoom::meeting()->find($meeting->meeting_id);
 
             if (request()->has('recurring') && request('recurring') == 'yes') {
                 // Delete all occurrences
                 $zoomMeeting->occurrences()->delete();
 
-            }
-            else {
+            } else {
                 // Delete single occurrence
                 $occurrence = $zoomMeeting->occurrences()->find($meeting->occurrence_id);
                 $occurrence->delete();
             }
-        }
-        else {
+        } else {
             $zoomMeeting = Zoom::user()->find('me')->meetings()->find($meeting->meeting_id);
 
             if ($zoomMeeting) {
@@ -298,8 +294,7 @@ class ZoomMeetingController extends AccountBaseController
             $meeting->password = $savedMeeting->password;
             $meeting->save();
 
-        }
-        else {
+        } else {
 
             $user->meetings()->find($meeting->meeting_id)->update($commonSettings);
 
@@ -318,15 +313,14 @@ class ZoomMeetingController extends AccountBaseController
         if ($request->has('repeat') && $request->repeat) {
             $this->createRepeatMeeting($user, $request, $id);
 
-        }
-        else {
-            $startDate = Carbon::createFromFormat(company()->date_format . ' ' . company()->time_format, $request->start_date . ' ' . $request->start_time);
-            $endDate = Carbon::createFromFormat(company()->date_format . ' ' . company()->time_format, $request->end_date . ' ' . $request->end_time);
+        } else {
+            $startDate = Carbon::createFromFormat(company()->date_format.' '.company()->time_format, $request->start_date.' '.$request->start_time);
+            $endDate = Carbon::createFromFormat(company()->date_format.' '.company()->time_format, $request->end_date.' '.$request->end_time);
 
             $meeting = is_null($id) ? new ZoomMeeting : ZoomMeeting::find($id);
             $data = $request->all();
 
-            if (!$request->has('send_reminder')) {
+            if (! $request->has('send_reminder')) {
 
                 $data['send_reminder'] = 0;
                 $data['remind_time'] = 1;
@@ -353,8 +347,7 @@ class ZoomMeetingController extends AccountBaseController
 
                 event(new MeetingHostEvent($meeting, $host_user));
 
-            }
-            else {
+            } else {
                 $meeting->update($data);
                 $this->syncAttendees($request, $meeting);
 
@@ -437,14 +430,14 @@ class ZoomMeetingController extends AccountBaseController
      *
      * @return \Illuminate\Http\Response
      */
-    //phpcs:ignore
+    // phpcs:ignore
 
     public function createRepeatMeeting($user, $request, $id)
     {
         $host_user = User::find($request->created_by);
 
-        $startDate = Carbon::createFromFormat(company()->date_format . ' ' . company()->time_format, $request->start_date . ' ' . $request->start_time);
-        $endDate = Carbon::createFromFormat(company()->date_format . ' ' . company()->time_format, $request->end_date . ' ' . $request->end_time);
+        $startDate = Carbon::createFromFormat(company()->date_format.' '.company()->time_format, $request->start_date.' '.$request->start_time);
+        $endDate = Carbon::createFromFormat(company()->date_format.' '.company()->time_format, $request->end_date.' '.$request->end_time);
 
         $meeting = is_null($id) ? new ZoomMeeting : ZoomMeeting::findOrFail($id);
         $data = $request->all();
@@ -456,8 +449,7 @@ class ZoomMeetingController extends AccountBaseController
 
             $meeting = $meeting->create($data);
 
-        }
-        else {
+        } else {
 
             $meeting->update($data);
         }
@@ -488,13 +480,11 @@ class ZoomMeetingController extends AccountBaseController
 
             $repeatType = 1;
 
-        }
-        elseif ($request->repeat_type == 'week') {
+        } elseif ($request->repeat_type == 'week') {
 
             $repeatType = 2;
 
-        }
-        else {
+        } else {
 
             $repeatType = 3;
         }
@@ -527,8 +517,8 @@ class ZoomMeetingController extends AccountBaseController
      */
     public function updateOccurrence(UpdateOccurrence $request, $id)
     {
-        $startDate = Carbon::createFromFormat(company()->date_format . ' ' . company()->time_format, $request->start_date . ' ' . $request->start_time);
-        $endDate = Carbon::createFromFormat(company()->date_format . ' ' . company()->time_format, $request->end_date . ' ' . $request->end_time);
+        $startDate = Carbon::createFromFormat(company()->date_format.' '.company()->time_format, $request->start_date.' '.$request->start_time);
+        $endDate = Carbon::createFromFormat(company()->date_format.' '.company()->time_format, $request->end_date.' '.$request->end_time);
 
         $zoomMeeting = ZoomMeeting::find($id);
         $data = $request->all();
@@ -556,40 +546,38 @@ class ZoomMeetingController extends AccountBaseController
 
             $repeatData['end_date_time'] = Carbon::createFromFormat(company()->date_format, $request->recurrence_end_date_date);
 
-        }
-        else {
+        } else {
 
             $repeatData['end_times'] = $request->recurrence_end_date_after;
         }
 
         switch ($repeatType) {
 
-        case '2':
+            case '2':
 
-            $repeatData['repeat_interval'] = $request->repeat_every_weekly;
-            $repeatData['weekly_days'] = implode(',', $request->occurs_on);
-            break;
+                $repeatData['repeat_interval'] = $request->repeat_every_weekly;
+                $repeatData['weekly_days'] = implode(',', $request->occurs_on);
+                break;
 
-        case '3':
-            $repeatData['repeat_interval'] = $request->repeat_every_monthly;
+            case '3':
+                $repeatData['repeat_interval'] = $request->repeat_every_monthly;
 
-            if ($request->occurs_on_monthly == 'when') {
+                if ($request->occurs_on_monthly == 'when') {
 
-                $repeatData['monthly_week'] = $request->occurs_month_when;
-                $repeatData['monthly_week_day'] = $request->occurs_month_weekday;
+                    $repeatData['monthly_week'] = $request->occurs_month_when;
+                    $repeatData['monthly_week_day'] = $request->occurs_month_weekday;
 
-            }
-            else {
+                } else {
 
-                $repeatData['monthly_day'] = $request->occurs_month_day;
+                    $repeatData['monthly_day'] = $request->occurs_month_day;
 
-            }
+                }
 
-            break;
+                break;
 
-        default:
-            $repeatData['repeat_interval'] = $request->repeat_every_daily;
-            break;
+            default:
+                $repeatData['repeat_interval'] = $request->repeat_every_daily;
+                break;
         }
 
         return $repeatData;
@@ -598,16 +586,16 @@ class ZoomMeetingController extends AccountBaseController
     public function applyQuickAction(Request $request)
     {
         switch ($request->action_type) {
-        case 'delete':
-            $this->deleteRecords($request);
+            case 'delete':
+                $this->deleteRecords($request);
 
-            return Reply::success(__('messages.deleteSuccess'));
-        case 'change-status':
-            $this->changeBulkStatus($request);
+                return Reply::success(__('messages.deleteSuccess'));
+            case 'change-status':
+                $this->changeBulkStatus($request);
 
-            return Reply::success(__('messages.updateSuccess'));
-        default:
-            return Reply::error(__('messages.selectAction'));
+                return Reply::success(__('messages.updateSuccess'));
+            default:
+                return Reply::error(__('messages.selectAction'));
         }
     }
 
@@ -632,9 +620,9 @@ class ZoomMeetingController extends AccountBaseController
     public function calendar(Request $request)
     {
         $viewPermission = user()->permission('view_zoom_meetings');
-        abort_403(!in_array($viewPermission, ['all', 'added', 'owned', 'both']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'owned', 'both']));
 
-        if (!request()->ajax()) {
+        if (! request()->ajax()) {
             $this->employees = User::allEmployees();
             $this->clients = User::allClients();
             $this->events = ZoomMeeting::all();
@@ -663,12 +651,12 @@ class ZoomMeetingController extends AccountBaseController
                 'occurrence_order'
             );
 
-            if (!is_null($request->start)) {
+            if (! is_null($request->start)) {
 
                 $meetings->whereRaw('DATE(zoom_meetings.`start_date_time`) >= ?', [$startDate]);
             }
 
-            if (!is_null($request->end)) {
+            if (! is_null($request->end)) {
 
                 $meetings->whereRaw('DATE(zoom_meetings.`end_date_time`) <= ?', [$endDate]);
             }
@@ -678,8 +666,7 @@ class ZoomMeetingController extends AccountBaseController
 
                     $meetings->where('status', '<>', 'finished');
 
-                }
-                else {
+                } else {
 
                     $meetings->where('status', $request->status);
 
@@ -690,9 +677,9 @@ class ZoomMeetingController extends AccountBaseController
                 $meetings->whereHas(
                     'attendees', function ($query) use ($request) {
 
-                    return $query->where('user_id', $request->employee);
+                        return $query->where('user_id', $request->employee);
 
-                }
+                    }
                 );
             }
 
@@ -700,8 +687,8 @@ class ZoomMeetingController extends AccountBaseController
 
                 $meetings->whereHas(
                     'attendees', function ($query) use ($request) {
-                    return $query->where('user_id', $request->client);
-                }
+                        return $query->where('user_id', $request->client);
+                    }
                 );
             }
 
@@ -709,16 +696,16 @@ class ZoomMeetingController extends AccountBaseController
 
                 $meetings->whereHas(
                     'category', function ($query) use ($request) {
-                    return $query->where('id', $request->category);
-                }
+                        return $query->where('id', $request->category);
+                    }
                 );
             }
 
             if (request()->has('project') && $request->project != 0 && $request->project != 'undefined') {
                 $meetings->whereHas(
                     'project', function ($query) use ($request) {
-                    return $query->where('id', $request->project);
-                }
+                        return $query->where('id', $request->project);
+                    }
                 );
             }
 
@@ -726,13 +713,13 @@ class ZoomMeetingController extends AccountBaseController
 
                 $meetings->where(
                     function ($query) {
-                        $query->where('zoom_meetings.meeting_name', 'like', '%' . request('searchText') . '%');
+                        $query->where('zoom_meetings.meeting_name', 'like', '%'.request('searchText').'%');
                     }
                 );
                 $meetings->where(
                     function ($query) {
 
-                        $query->where('zoom_meetings.meeting_name', 'like', '%' . request('searchText') . '%');
+                        $query->where('zoom_meetings.meeting_name', 'like', '%'.request('searchText').'%');
 
                     }
                 );
@@ -757,5 +744,4 @@ class ZoomMeetingController extends AccountBaseController
         return view('zoom::meeting.calendar', $this->data);
 
     }
-
 }

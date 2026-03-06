@@ -2,6 +2,7 @@
 
 namespace Modules\ServerManager\Jobs;
 
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -9,16 +10,13 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Modules\ServerManager\Entities\ServerHosting;
 use Modules\ServerManager\Notifications\HostingExpiringNotification;
-use App\Models\User;
-use App\Models\Permission;
-use App\Models\PermissionType;
-use App\Models\UserPermission;
 
 class CheckExpiringHostingsJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $timeout = 120;
+
     protected $companyId;
 
     /**

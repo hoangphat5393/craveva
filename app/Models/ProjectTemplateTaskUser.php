@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\ProjectTemplateTask $task
  * @property-read \App\Models\User $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectTemplateTaskUser newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectTemplateTaskUser newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectTemplateTaskUser query()
@@ -23,11 +24,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectTemplateTaskUser whereProjectTemplateTaskId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectTemplateTaskUser whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectTemplateTaskUser whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class ProjectTemplateTaskUser extends BaseModel
 {
-
     protected $guarded = ['id'];
 
     public function user(): BelongsTo
@@ -39,5 +40,4 @@ class ProjectTemplateTaskUser extends BaseModel
     {
         return $this->belongsTo(ProjectTemplateTask::class, 'project_template_task_id');
     }
-
 }

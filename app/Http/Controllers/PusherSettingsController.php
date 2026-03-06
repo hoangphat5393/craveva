@@ -10,7 +10,6 @@ use Pusher\Pusher;
 
 class PusherSettingsController extends AccountBaseController
 {
-
     use pusherConfigTrait;
 
     public function __construct()
@@ -19,7 +18,7 @@ class PusherSettingsController extends AccountBaseController
         $this->pageTitle = 'app.menu.pusherSettings';
         $this->pageIcon = 'icon-settings';
         $this->middleware(function ($request, $next) {
-            abort_403(user()->permission('manage_notification_setting') !== 'all' && (!user()->is_superadmin));
+            abort_403(user()->permission('manage_notification_setting') !== 'all' && (! user()->is_superadmin));
 
             return $next($request);
         });
@@ -35,13 +34,13 @@ class PusherSettingsController extends AccountBaseController
                 $request->pusher_app_id,
                 [
                     'cluster' => $request->pusher_cluster,
-                    'useTLS' => $request->force_tls
+                    'useTLS' => $request->force_tls,
                 ]
             );
 
             try {
                 $checkPusher->trigger('test-pusher-channel', 'test-pusher-message', ['message' => 'done']);
-            } catch(\Exception $e) {
+            } catch (\Exception $e) {
                 return Reply::dataOnly(['error' => $e->getMessage()]);
             }
         }
@@ -61,5 +60,4 @@ class PusherSettingsController extends AccountBaseController
 
         return Reply::successWithData(__('messages.updateSuccess'), ['status' => $pusher->status]);
     }
-
 }

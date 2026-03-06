@@ -2,15 +2,13 @@
 
 namespace App\Http\Requests\CustomField;
 
-use App\Models\CustomField;
 use App\Http\Requests\CoreRequest;
-use Google\Service\BinaryAuthorization\Check;
+use App\Models\CustomField;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
 
 class StoreCustomField extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -28,11 +26,11 @@ class StoreCustomField extends CoreRequest
      */
     public function rules()
     {
-        Validator::extend('not_custom_fields', function($attribute, $value, $parameters, $validator) {
+        Validator::extend('not_custom_fields', function ($attribute, $value, $parameters, $validator) {
             $userColumns = Schema::getColumnListing('users');
             $customModules = CustomField::where('custom_field_group_id', $this->module)->pluck('label')->toArray();
 
-            if((!in_array($this->get('label'), $userColumns) || $this->get('label') == '') && !in_array($this->label, $customModules)){
+            if ((! in_array($this->get('label'), $userColumns) || $this->get('label') == '') && ! in_array($this->label, $customModules)) {
                 return true;
             }
 
@@ -40,9 +38,9 @@ class StoreCustomField extends CoreRequest
         });
 
         $rules = [
-            'label'     => 'required|not_custom_fields',
-            'required'  => 'required',
-            'type'      => 'required'
+            'label' => 'required|not_custom_fields',
+            'required' => 'required',
+            'type' => 'required',
         ];
 
         if (in_array($this->type, ['select', 'radio', 'checkbox'])) {
@@ -58,5 +56,4 @@ class StoreCustomField extends CoreRequest
             'value.*' => __('app.value'),
         ];
     }
-
 }

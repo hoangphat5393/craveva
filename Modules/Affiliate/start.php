@@ -2,11 +2,11 @@
 
 use Modules\Affiliate\Entities\Affiliate;
 
-if (!function_exists('isAffiliate')) {
+if (! function_exists('isAffiliate')) {
 
     function isAffiliate()
     {
-        if (!session()->has('isAffiliate')) {
+        if (! session()->has('isAffiliate')) {
             session(['isAffiliate' => Affiliate::where('user_id', user()->id)->where('status', 'active')->exists()]);
         }
 
@@ -15,8 +15,7 @@ if (!function_exists('isAffiliate')) {
 
 }
 
-
-if (!function_exists('isUserAffiliate')) {
+if (! function_exists('isUserAffiliate')) {
 
     function isUserAffiliate($userId)
     {

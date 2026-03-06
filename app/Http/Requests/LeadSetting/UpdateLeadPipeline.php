@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class UpdateLeadPipeline extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -25,9 +24,8 @@ class UpdateLeadPipeline extends CoreRequest
     public function rules()
     {
         return [
-            'name' => 'required|unique:lead_pipelines,name,'.$this->route('lead_pipeline_setting').',id,company_id,' . company()->id,
-            'label_color' => 'required'
+            'name' => 'required|unique:lead_pipelines,name,'.$this->route('lead_pipeline_setting').',id,company_id,'.company()->id,
+            'label_color' => 'required',
         ];
     }
-
 }

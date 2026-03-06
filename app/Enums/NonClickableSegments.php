@@ -4,7 +4,6 @@ namespace App\Enums;
 
 enum NonClickableSegments: string
 {
-
     // phpcs:disable
     case APPLIED_CREDITS = 'applied-credits';
     case CREDIT_INVOICES = 'credited-invoices';
@@ -17,9 +16,8 @@ enum NonClickableSegments: string
 
     public static function getValues()
     {
-        return array_map(function($enum) {
+        return array_map(function ($enum) {
             return $enum->value;
         }, self::cases());
     }
-
 }

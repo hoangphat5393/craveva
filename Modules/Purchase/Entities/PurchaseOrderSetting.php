@@ -7,6 +7,5 @@ use App\Traits\HasCompany;
 
 class PurchaseOrderSetting extends BaseModel
 {
-
     use HasCompany;
 }

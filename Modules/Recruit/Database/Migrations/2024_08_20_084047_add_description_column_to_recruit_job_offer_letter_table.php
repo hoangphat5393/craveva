@@ -21,8 +21,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('recruit_job_offer_letter', function (Blueprint $table) {
-
-        });
+        Schema::table('recruit_job_offer_letter', function (Blueprint $table) {});
     }
 };

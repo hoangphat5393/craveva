@@ -11,12 +11,12 @@ use App\Models\PipelineStage;
 
 class LeadPipelineSettingController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('leads', $this->user->modules));
+            abort_403(! in_array('leads', $this->user->modules));
+
             return $next($request);
         });
     }
@@ -32,15 +32,16 @@ class LeadPipelineSettingController extends AccountBaseController
     }
 
     /**
-     * @param StoreLeadStatus $request
+     * @param  StoreLeadStatus  $request
      * @return array
+     *
      * @throws \Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException
      */
     public function store(StoreLeadPipeline $request)
     {
         $maxPriority = LeadPipeline::max('priority');
 
-        $pipeline = new LeadPipeline();
+        $pipeline = new LeadPipeline;
         $pipeline->name = $request->name;
         $pipeline->label_color = $request->label_color;
         $pipeline->added_by = user()->id;
@@ -60,13 +61,15 @@ class LeadPipelineSettingController extends AccountBaseController
         $this->pipeline = LeadPipeline::findOrFail($id);
 
         $this->maxPriority = LeadPipeline::max('priority');
+
         return view('lead-settings.edit-pipeline-modal', $this->data);
     }
 
     /**
-     * @param UpdateLeadStatus $request
-     * @param int $id
+     * @param  UpdateLeadStatus  $request
+     * @param  int  $id
      * @return array
+     *
      * @throws \Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException
      */
     public function update(UpdateLeadPipeline $request, $id)
@@ -83,11 +86,10 @@ class LeadPipelineSettingController extends AccountBaseController
     {
         $allLeadSPipelines = LeadPipeline::select('id', 'default')->get();
 
-        foreach($allLeadSPipelines as $pipeline){
-            if($pipeline->id == $id){
+        foreach ($allLeadSPipelines as $pipeline) {
+            if ($pipeline->id == $id) {
                 $pipeline->default = '1';
-            }
-            else{
+            } else {
                 $pipeline->default = '0';
             }
 
@@ -112,5 +114,4 @@ class LeadPipelineSettingController extends AccountBaseController
 
         return Reply::success(__('messages.deleteSuccess'));
     }
-
 }

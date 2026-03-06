@@ -3,34 +3,32 @@
 namespace Modules\Recruit\Http\Controllers;
 
 use App\Helper\Reply;
-use Illuminate\Http\Request;
-use App\Models\CompanyAddress;
-use Modules\Recruit\Entities\RecruitJob;
-use Modules\Recruit\Entities\RecruitSetting;
-use Modules\Recruit\Entities\RecruitSkill;
-use Illuminate\Contracts\Support\Renderable;
-use Modules\Recruit\Entities\RecruitJobSkill;
 use App\Http\Controllers\AccountBaseController;
+use App\Models\CompanyAddress;
 use App\Models\Currency;
-use Modules\Recruit\Entities\RecruitJobApplication;
-use Modules\Recruit\Entities\RecruitCandidateDatabase;
+use Illuminate\Contracts\Support\Renderable;
+use Illuminate\Http\Request;
 use Modules\Recruit\DataTables\CandidateDatabaseDataTable;
 use Modules\Recruit\Entities\RecruitApplicationSkill;
+use Modules\Recruit\Entities\RecruitCandidateDatabase;
+use Modules\Recruit\Entities\RecruitJob;
+use Modules\Recruit\Entities\RecruitJobApplication;
+use Modules\Recruit\Entities\RecruitSetting;
+use Modules\Recruit\Entities\RecruitSkill;
 
 class CandidateDatabaseController extends AccountBaseController
 {
-
     /**
      * Display a listing of the resource.
+     *
      * @return Renderable
      */
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = __('recruit::app.menu.candidatedatabase');
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array(RecruitSetting::MODULE_NAME, $this->user->modules));
+            abort_403(! in_array(RecruitSetting::MODULE_NAME, $this->user->modules));
 
             return $next($request);
         });
@@ -39,7 +37,7 @@ class CandidateDatabaseController extends AccountBaseController
     public function index(CandidateDatabaseDataTable $dataTable)
     {
         $viewPermission = user()->permission('view_job_application');
-        abort_403(!in_array($viewPermission, ['all', 'added', 'owned']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'owned']));
 
         $this->jobs = RecruitJob::all();
         $this->locations = CompanyAddress::all();
@@ -54,14 +52,14 @@ class CandidateDatabaseController extends AccountBaseController
         $application = RecruitJobApplication::with('job')->find($request->row_id);
         $skillsdata = RecruitApplicationSkill::where('recruit_job_application_id', $application->id)->get('recruit_skill_id');
 
-        $applicant_skills = array();
+        $applicant_skills = [];
 
         foreach ($skillsdata as $skills) {
             $applicant_skill = RecruitSkill::where('id', $skills->recruit_skill_id)->select('id')->get();
             $applicant_skills[] = $applicant_skill[0]['id'];
         }
 
-        $jobArchive = new RecruitCandidateDatabase();
+        $jobArchive = new RecruitCandidateDatabase;
         $jobArchive->name = $application->full_name;
         $jobArchive->recruit_job_id = $application->job->id;
         $jobArchive->location_id = $application->location_id;
@@ -80,7 +78,7 @@ class CandidateDatabaseController extends AccountBaseController
     {
 
         $viewPermission = user()->permission('view_job_application');
-        abort_403(!in_array($viewPermission, ['all', 'added', 'owned']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'owned']));
 
         $this->database = RecruitCandidateDatabase::with('job', 'job.address')->findOrfail($id);
 
@@ -117,5 +115,4 @@ class CandidateDatabaseController extends AccountBaseController
 
         return Reply::successWithData(__('recruit::messages.retriveSuccess'), ['status' => 'success']);
     }
-
 }

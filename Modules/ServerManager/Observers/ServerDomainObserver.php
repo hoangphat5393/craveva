@@ -27,7 +27,7 @@ class ServerDomainObserver
                 'entity_id' => $serverDomain->id,
                 'action' => 'created',
                 'performed_by' => $performedBy,
-                'description' => 'Domain "' . $serverDomain->domain_name . '" was created',
+                'description' => 'Domain "'.$serverDomain->domain_name.'" was created',
             ]);
         }
 
@@ -53,7 +53,7 @@ class ServerDomainObserver
                 'entity_id' => $serverDomain->id,
                 'action' => 'updated',
                 'performed_by' => $performedBy,
-                'description' => 'Domain "' . $serverDomain->domain_name . '" was updated',
+                'description' => 'Domain "'.$serverDomain->domain_name.'" was updated',
             ]);
         }
 
@@ -83,7 +83,7 @@ class ServerDomainObserver
                 'entity_id' => $serverDomain->id,
                 'action' => 'deleted',
                 'performed_by' => $performedBy,
-                'description' => 'Domain "' . $serverDomain->domain_name . '" was deleted',
+                'description' => 'Domain "'.$serverDomain->domain_name.'" was deleted',
             ]);
         }
     }
@@ -106,7 +106,7 @@ class ServerDomainObserver
                 'entity_id' => $serverDomain->id,
                 'action' => 'restored',
                 'performed_by' => $performedBy,
-                'description' => 'Domain "' . $serverDomain->domain_name . '" was restored',
+                'description' => 'Domain "'.$serverDomain->domain_name.'" was restored',
             ]);
         }
     }
@@ -129,7 +129,7 @@ class ServerDomainObserver
                 'entity_id' => $serverDomain->id,
                 'action' => 'force_deleted',
                 'performed_by' => $performedBy,
-                'description' => 'Domain "' . $serverDomain->domain_name . '" was force deleted',
+                'description' => 'Domain "'.$serverDomain->domain_name.'" was force deleted',
             ]);
         }
     }

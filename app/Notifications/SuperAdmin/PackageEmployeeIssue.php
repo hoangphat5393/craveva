@@ -2,14 +2,13 @@
 
 namespace App\Notifications\SuperAdmin;
 
-use Illuminate\Bus\Queueable;
 use App\Models\PackageUpdateNotify;
 use App\Notifications\BaseNotification;
+use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 
 class PackageEmployeeIssue extends BaseNotification
 {
-
     use Queueable;
 
     public $packageUpdateNotify;
@@ -26,8 +25,7 @@ class PackageEmployeeIssue extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
-     * @return array
+     * @param  mixed  $notifiable
      */
     public function via($notifiable): array
     {
@@ -47,7 +45,7 @@ class PackageEmployeeIssue extends BaseNotification
     {
         $mail = parent::build()
             ->subject(__('superadmin.packageEmployeeIssueEmail.subject'))
-            ->greeting(__('email.hello') . ' ' . $notifiable->name . '!')
+            ->greeting(__('email.hello').' '.$notifiable->name.'!')
             ->line(__('superadmin.packageEmployeeIssueEmail.text', ['userName' => $this->packageUpdateNotify->user->name]))
             ->action(__('email.loginDashboard'), getDomainSpecificUrl(route('dashboard'), $notifiable->company))
             ->line(__('email.thankyouNote'));
@@ -66,5 +64,4 @@ class PackageEmployeeIssue extends BaseNotification
             //
         ];
     }
-
 }

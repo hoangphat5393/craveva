@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class UpdateTicketType extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -25,8 +24,7 @@ class UpdateTicketType extends CoreRequest
     public function rules()
     {
         return [
-            'type' => 'required|unique:ticket_types,type,'.$this->route('ticketType').',id,company_id,' . company()->id,
+            'type' => 'required|unique:ticket_types,type,'.$this->route('ticketType').',id,company_id,'.company()->id,
         ];
     }
-
 }

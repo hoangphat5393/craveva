@@ -1,11 +1,9 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\DB;
 use App\Models\Company;
 use App\Models\RecurringInvoice;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -25,12 +23,12 @@ return new class extends Migration
             }
 
             $duplicates = DB::table('invoice_recurring_items')
-            ->select('invoice_recurring_id', 'product_id', DB::raw('COUNT(*) as count'))
-            ->whereIn('invoice_recurring_id', $invoiceIds)
-            ->whereNotNull('product_id')
-            ->groupBy('invoice_recurring_id', 'product_id')
-            ->having('count', '>', 1)
-            ->get();
+                ->select('invoice_recurring_id', 'product_id', DB::raw('COUNT(*) as count'))
+                ->whereIn('invoice_recurring_id', $invoiceIds)
+                ->whereNotNull('product_id')
+                ->groupBy('invoice_recurring_id', 'product_id')
+                ->having('count', '>', 1)
+                ->get();
 
             foreach ($duplicates as $dup) {
 

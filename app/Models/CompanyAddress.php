@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property string|null $tax_number
  * @property string|null $tax_name
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|CompanyAddress newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|CompanyAddress newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|CompanyAddress query()
@@ -26,24 +27,30 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|CompanyAddress whereTaxName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|CompanyAddress whereTaxNumber($value)
  * @method static \Illuminate\Database\Eloquent\Builder|CompanyAddress whereUpdatedAt($value)
+ *
  * @property string|null $location
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|CompanyAddress whereLocation($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
  * @property int|null $country_id
  * @property-read \App\Models\Country|null $country
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|CompanyAddress whereCompanyId($value)
+ *
  * @property string|null $latitude
  * @property string|null $longitude
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|CompanyAddress whereLatitude($value)
  * @method static \Illuminate\Database\Eloquent\Builder|CompanyAddress whereLongitude($value)
  * @method static \Illuminate\Database\Eloquent\Builder|CompanyAddress whereCountryId($value)
+ *
  * @mixin \Eloquent
  */
 class CompanyAddress extends BaseModel
 {
-
-    use HasFactory, HasCompany;
+    use HasCompany, HasFactory;
 
     protected $fillable = ['country_id', 'address', 'is_default', 'location', 'tax_number', 'tax_name', 'longitude', 'latitude'];
 
@@ -56,5 +63,4 @@ class CompanyAddress extends BaseModel
     {
         return $this->belongsTo(Country::class);
     }
-
 }

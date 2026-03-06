@@ -8,17 +8,13 @@ use Illuminate\Support\Facades\Notification;
 
 class InvoiceReminderListener
 {
-
     /**
      * Handle the event.
      *
-     * @param InvoiceReminderEvent $event
      * @return void
      */
-
     public function handle(InvoiceReminderEvent $event)
     {
         Notification::send($event->notifyUser, new InvoiceReminder($event->invoice));
     }
-
 }

@@ -2,20 +2,19 @@
 
 namespace App\Http\Controllers\SuperAdmin;
 
+use App\Http\Controllers\Controller;
 use App\Models\SuperAdmin\GlobalInvoice;
 use App\Models\SuperAdmin\GlobalSubscription;
-use App\Notifications\SuperAdmin\CompanyUpdatedPlan;
 use App\Models\SuperAdmin\Package;
-use App\Traits\SuperAdmin\PaystackSettings;
 use App\Models\User;
+use App\Notifications\SuperAdmin\CompanyUpdatedPlan;
+use App\Traits\SuperAdmin\PaystackSettings;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Notification;
 use Unicodeveloper\Paystack\Paystack;
 
 class PaystackController extends Controller
 {
-
     use PaystackSettings;
 
     protected $client;
@@ -28,19 +27,19 @@ class PaystackController extends Controller
 
         $this->setPaystackConfigs();
         $package = Package::find($request->plan_id);
-        $paystack = new Paystack();
+        $paystack = new Paystack;
         $request->first_name = $request->name;
         $request->orderID = '1';
-        $request->amount = $package->{$request->type . '_price'};
+        $request->amount = $package->{$request->type.'_price'};
         $request->quantity = '1';
         $request->callback_url = route('billing.paystack.callback');
         $request->reference = $paystack->genTranxRef();
         $request->key = config('paystack.secretKey');
-        $request->plan = $package->{'paystack_' . $request->type . '_plan_id'};
+        $request->plan = $package->{'paystack_'.$request->type.'_plan_id'};
         $request->currency = $package->currency->currency_code;
 
         $subscription = GlobalSubscription::where('gateway_name', 'paystack')->where('company_id', company()->id)->where('subscription_status', 'inactive')->whereNull('ends_at')->latest()->first();
-        $subscription = $subscription ?: new GlobalSubscription();
+        $subscription = $subscription ?: new GlobalSubscription;
 
         $subscription->company_id = company()->id;
         $subscription->package_id = $package->id;
@@ -54,7 +53,7 @@ class PaystackController extends Controller
 
         $request->metadata = [
             'subscription_id' => $subscription->id,
-            'package_amount' => $package->{$request->type . '_price'},
+            'package_amount' => $package->{$request->type.'_price'},
         ];
 
         // Customer details
@@ -73,7 +72,7 @@ class PaystackController extends Controller
 
         session([
             'subscription_id' => $subscription->id,
-            'package_amount' => $package->{$request->type . '_price'},
+            'package_amount' => $package->{$request->type.'_price'},
         ]);
 
         return $paystack->getAuthorizationUrl()->redirectNow();
@@ -81,12 +80,13 @@ class PaystackController extends Controller
 
     /**
      * Obtain Paystack payment information
+     *
      * @return void
      */
     public function handleGatewayCallback()
     {
         $this->setPaystackConfigs();
-        $paystack = new Paystack();
+        $paystack = new Paystack;
         $paymentDetails = $paystack->getPaymentData();
 
         if ($paymentDetails['status'] && ($paymentDetails['data']['status'] == 'success')) {
@@ -101,7 +101,7 @@ class PaystackController extends Controller
 
             $invoice = GlobalInvoice::where('transaction_id', $paymentDetails['data']['reference'])->first();
             $package = Package::find($globalSubscription->package_id);
-            $invoice = $invoice ?: new GlobalInvoice();
+            $invoice = $invoice ?: new GlobalInvoice;
 
             $invoice->company_id = $globalSubscription->company_id;
             $invoice->package_id = $globalSubscription->package_id;
@@ -133,12 +133,10 @@ class PaystackController extends Controller
             Notification::send($generatedBy, new CompanyUpdatedPlan($company, $globalSubscription->package_id));
             Notification::send($allAdmins, new CompanyUpdatedPlan($company, $globalSubscription->package_id));
             session()->put('success', __('superadmin.paymentSuccessfullyDone', ['package' => company()->package->name, 'planType' => company()->package_type]));
-        }
-        else {
+        } else {
             session()->put('error', __('superadmin.paymentFailed'));
         }
 
         return redirect()->route('billing.index');
     }
-
 }

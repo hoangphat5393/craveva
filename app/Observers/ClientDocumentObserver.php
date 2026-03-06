@@ -6,10 +6,6 @@ use App\Models\ClientDocument;
 
 class ClientDocumentObserver
 {
-
-    /**
-     * @param ClientDocument $clientDocs
-     */
     public function saving(ClientDocument $clientDocs)
     {
         if (user()) {
@@ -27,5 +23,4 @@ class ClientDocumentObserver
             $clientDocs->company_id = company()->id;
         }
     }
-
 }

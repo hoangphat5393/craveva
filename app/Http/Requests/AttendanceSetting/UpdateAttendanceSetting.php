@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class UpdateAttendanceSetting extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -26,22 +25,18 @@ class UpdateAttendanceSetting extends CoreRequest
     {
         $data = [];
 
-        if($this->radius_check == 'yes')
-        {
+        if ($this->radius_check == 'yes') {
             $data['radius'] = 'required';
         }
 
-        if($this->has('alert_after_status') && $this->has('alert_after_status') == 'on')
-        {
+        if ($this->has('alert_after_status') && $this->has('alert_after_status') == 'on') {
             $data['alert_after'] = 'required';
         }
 
-        if($this->has('monthly_report') && $this->has('monthly_report') == '1')
-        {
+        if ($this->has('monthly_report') && $this->has('monthly_report') == '1') {
             $data['monthly_report_roles'] = 'required';
         }
 
         return $data;
     }
-
 }

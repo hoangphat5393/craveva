@@ -8,15 +8,14 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\VonageMessage;
 use Illuminate\Notifications\Notification;
 use Modules\Sms\Entities\SmsNotificationSetting;
+use Modules\Sms\Entities\SmsTemplateId;
 use Modules\Sms\Http\Traits\WhatsappMessageTrait;
 use NotificationChannels\Telegram\TelegramMessage;
-use Modules\Sms\Entities\SmsTemplateId;
 use NotificationChannels\Twilio\TwilioChannel;
 use NotificationChannels\Twilio\TwilioSmsMessage;
 
 class NewUser extends Notification implements ShouldQueue
 {
-
     use Queueable, WhatsappMessageTrait;
 
     /**
@@ -45,7 +44,7 @@ class NewUser extends Notification implements ShouldQueue
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -54,11 +53,11 @@ class NewUser extends Notification implements ShouldQueue
             return [];
         }
 
-        $this->message = __('email.newUser.subject') . ' ' . config('app.name') . '.' . "\n" . __('email.newUser.text') . "\n" . __('app.email') . ':- ' . $notifiable->email . "\n" . __('app.password') . ':- ' . $this->password;
+        $this->message = __('email.newUser.subject').' '.config('app.name').'.'."\n".__('email.newUser.text')."\n".__('app.email').':- '.$notifiable->email."\n".__('app.password').':- '.$this->password;
 
         $via = [];
 
-        if (!is_null($notifiable->mobile) && !is_null($notifiable->country_phonecode)) {
+        if (! is_null($notifiable->mobile) && ! is_null($notifiable->country_phonecode)) {
             if (sms_setting()->status) {
                 array_push($via, TwilioChannel::class);
             }
@@ -94,7 +93,7 @@ class NewUser extends Notification implements ShouldQueue
         }
     }
 
-    //phpcs:ignore
+    // phpcs:ignore
     public function toVonage($notifiable)
     {
         if (sms_setting()->nexmo_status) {
@@ -103,10 +102,10 @@ class NewUser extends Notification implements ShouldQueue
         }
     }
 
-    //phpcs:ignore
+    // phpcs:ignore
     public function toMsg91($notifiable)
     {
-        $mobile = $notifiable->country_phonecode . $notifiable->mobile;
+        $mobile = $notifiable->country_phonecode.$notifiable->mobile;
         if ($this->smsSetting->msg91_flow_id && sms_setting()->msg91_status) {
             return (new \Craftsys\Notifications\Messages\Msg91SMS)
                 ->to($mobile)
@@ -125,5 +124,4 @@ class NewUser extends Notification implements ShouldQueue
             ->content($this->message)
             ->button(__('email.newUser.action'), route('login'));
     }
-
 }

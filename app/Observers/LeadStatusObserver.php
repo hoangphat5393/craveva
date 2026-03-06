@@ -9,16 +9,15 @@ use App\Models\UserLeadboardSetting;
 
 class LeadStatusObserver
 {
-
     public function created(LeadStatus $leadStatus)
     {
-        if (!isRunningInConsoleOrSeeding() && user()) {
+        if (! isRunningInConsoleOrSeeding() && user()) {
             $employees = User::allEmployees();
 
             foreach ($employees as $item) {
                 UserLeadboardSetting::create([
                     'user_id' => $item->id,
-                    'board_column_id' => $leadStatus->id
+                    'board_column_id' => $leadStatus->id,
                 ]);
             }
         }
@@ -38,5 +37,4 @@ class LeadStatusObserver
             $leadStatus->company_id = company()->id;
         }
     }
-
 }

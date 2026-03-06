@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use App\Scopes\ActiveScope;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class DealHistory extends BaseModel
 {
@@ -22,7 +22,7 @@ class DealHistory extends BaseModel
         'follow_up_id',
         'note_id',
         'agent_id',
-        'proposal_id'
+        'proposal_id',
     ];
 
     protected $with = [];
@@ -41,5 +41,4 @@ class DealHistory extends BaseModel
     {
         return $this->belongsTo(PipelineStage::class, 'deal_stage_to_id');
     }
-
 }

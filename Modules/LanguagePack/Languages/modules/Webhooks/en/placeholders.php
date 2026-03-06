@@ -1,5 +1,5 @@
 <?php
 
-return array(
+return [
     'webhookName' => 'Write name of webhook',
-);
+];

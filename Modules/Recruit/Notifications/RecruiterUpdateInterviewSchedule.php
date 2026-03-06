@@ -3,14 +3,13 @@
 namespace Modules\Recruit\Notifications;
 
 use App\Notifications\BaseNotification;
-use Illuminate\Notifications\Messages\MailMessage;
 use Modules\Recruit\Entities\RecruitEmailNotificationSetting;
 use Modules\Recruit\Entities\RecruitInterviewSchedule;
 
 class RecruiterUpdateInterviewSchedule extends BaseNotification
 {
-
     private $interview;
+
     private $emailSetting;
 
     /**
@@ -18,7 +17,6 @@ class RecruiterUpdateInterviewSchedule extends BaseNotification
      *
      * @return void
      */
-
     public function __construct(RecruitInterviewSchedule $interview)
     {
         $this->interview = $interview;
@@ -29,7 +27,7 @@ class RecruiterUpdateInterviewSchedule extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -46,7 +44,7 @@ class RecruiterUpdateInterviewSchedule extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
@@ -54,23 +52,20 @@ class RecruiterUpdateInterviewSchedule extends BaseNotification
         $url = route('interview-schedule.show', $this->interview->id);
         $url = getDomainSpecificUrl($url, $this->company);
 
-        $content = __($this->interview->jobApplication->full_name) . ' ' . __('recruit::modules.adminMail.updateInterviewText') . ' - ' . $this->interview->jobApplication->job->title . '<br>' . ' ' .
-        __('recruit::modules.email.on') . ' - ' . $this->interview->schedule_date->setTimeZone($this->company->timezone)->format($this->company->date_format. ' - ' . $this->company->time_format) . '<br>';
+        $content = __($this->interview->jobApplication->full_name).' '.__('recruit::modules.adminMail.updateInterviewText').' - '.$this->interview->jobApplication->job->title.'<br>'.' '.
+        __('recruit::modules.email.on').' - '.$this->interview->schedule_date->setTimeZone($this->company->timezone)->format($this->company->date_format.' - '.$this->company->time_format).'<br>';
 
         if ($this->interview->interview_type == 'in person') {
-            $content .= __('recruit::modules.interviewSchedule.interviewType') . ' - ' . __('recruit::app.interviewSchedule.inPerson');
-        }
-        elseif ($this->interview->interview_type == 'video') {
+            $content .= __('recruit::modules.interviewSchedule.interviewType').' - '.__('recruit::app.interviewSchedule.inPerson');
+        } elseif ($this->interview->interview_type == 'video') {
 
             if ($this->interview->video_type == 'zoom') {
-                $content .= __('recruit::modules.interviewSchedule.interviewType') . ' - ' . __('recruit::app.interviewSchedule.zoom');
+                $content .= __('recruit::modules.interviewSchedule.interviewType').' - '.__('recruit::app.interviewSchedule.zoom');
+            } else {
+                $content .= __('recruit::modules.interviewSchedule.interviewType').' - '.$this->interview->other_link;
             }
-            else {
-                $content .= __('recruit::modules.interviewSchedule.interviewType') . ' - ' . $this->interview->other_link;
-            }
-        }
-        elseif ($this->interview->interview_type == 'phone') {
-            $content .= __('recruit::modules.interviewSchedule.interviewType') . ' - ' . $this->interview->phone;
+        } elseif ($this->interview->interview_type == 'phone') {
+            $content .= __('recruit::modules.interviewSchedule.interviewType').' - '.$this->interview->phone;
         }
 
         return parent::build()
@@ -79,15 +74,15 @@ class RecruiterUpdateInterviewSchedule extends BaseNotification
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
-                'actionText' => __('app.view') . ' ' . __('recruit::modules.interviewSchedule.interview'),
-                'notifiableName' => $notifiable->name
+                'actionText' => __('app.view').' '.__('recruit::modules.interviewSchedule.interview'),
+                'notifiableName' => $notifiable->name,
             ]);
     }
 
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function toArray()
@@ -95,8 +90,7 @@ class RecruiterUpdateInterviewSchedule extends BaseNotification
         return [
             'user_id' => $this->interview->jobApplication->job->recruiter_id,
             'interview_id' => $this->interview->id,
-            'heading' => $this->interview->jobApplication->full_name
+            'heading' => $this->interview->jobApplication->full_name,
         ];
     }
-
 }

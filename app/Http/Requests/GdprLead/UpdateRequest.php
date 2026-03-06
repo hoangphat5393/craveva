@@ -2,12 +2,11 @@
 
 namespace App\Http\Requests\GdprLead;
 
-use App\Models\Deal;
 use App\Http\Requests\CoreRequest;
+use App\Models\Deal;
 
 class UpdateRequest extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -30,10 +29,9 @@ class UpdateRequest extends CoreRequest
         $rules = [
             'company_name' => 'required',
             'client_name' => 'required',
-            'client_email' => 'required|email:rfc,strict|unique:leads,client_email,'.$lead->id.',id,company_id,' . company()->id,
+            'client_email' => 'required|email:rfc,strict|unique:leads,client_email,'.$lead->id.',id,company_id,'.company()->id,
         ];
 
         return $rules;
     }
-
 }

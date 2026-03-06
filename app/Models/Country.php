@@ -12,6 +12,7 @@ namespace App\Models;
  * @property string|null $iso3
  * @property int|null $numcode
  * @property int $phonecode
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Country newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Country newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Country query()
@@ -22,16 +23,18 @@ namespace App\Models;
  * @method static \Illuminate\Database\Eloquent\Builder|Country whereNicename($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Country whereNumcode($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Country wherePhonecode($value)
+ *
  * @property-read mixed $nationality
+ *
  * @mixin \Eloquent
  */
 class Country extends BaseModel
 {
-
     protected $appends = ['nationality'];
+
     public $timestamps = false;
 
-    const NATIONALITY = array(
+    const NATIONALITY = [
         'AF' => 'Afghan',
         'AL' => 'Albanian',
         'DZ' => 'Algerian',
@@ -275,8 +278,8 @@ class Country extends BaseModel
         'IM' => 'Manx',
         'JE' => 'Channel Islander',
         'BL' => 'Saint Barthélemy Islander',
-        'MF' => 'Saint Martin Islander'
-    );
+        'MF' => 'Saint Martin Islander',
+    ];
 
     public function getNationalityAttribute()
     {
@@ -285,7 +288,6 @@ class Country extends BaseModel
 
     public function flagSpanCountryCode()
     {
-        return '+' . $this->phonecode;
+        return '+'.$this->phonecode;
     }
-
 }

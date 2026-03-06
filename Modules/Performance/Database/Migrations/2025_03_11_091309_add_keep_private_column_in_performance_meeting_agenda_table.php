@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      */
@@ -34,5 +33,4 @@ return new class extends Migration
             $table->date('next_check_in')->nullable()->after('last_check_in');
         });
     }
-
 };

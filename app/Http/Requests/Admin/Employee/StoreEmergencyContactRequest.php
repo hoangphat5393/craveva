@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class StoreEmergencyContactRequest extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -36,5 +35,4 @@ class StoreEmergencyContactRequest extends CoreRequest
 
         return $rules;
     }
-
 }

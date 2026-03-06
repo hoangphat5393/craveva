@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class StoreProductSubCategory extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -29,5 +28,4 @@ class StoreProductSubCategory extends CoreRequest
             'category_name' => 'required',
         ];
     }
-
 }

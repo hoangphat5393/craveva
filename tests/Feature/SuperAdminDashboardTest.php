@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\Permission;
 use App\Models\User;
 use App\Models\UserAuth;
-use App\Models\Permission;
 use App\Models\UserPermission;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
@@ -18,7 +18,7 @@ class SuperAdminDashboardTest extends TestCase
         $this->withoutExceptionHandling();
 
         // 1. Create UserAuth (Authenticatable)
-        $userAuth = new UserAuth();
+        $userAuth = new UserAuth;
         $userAuth->email = 'superadmintest@example.com';
         $userAuth->password = bcrypt('password');
         $userAuth->save();

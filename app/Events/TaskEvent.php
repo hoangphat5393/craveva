@@ -9,11 +9,12 @@ use Illuminate\Queue\SerializesModels;
 
 class TaskEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $task;
+
     public $notifyUser;
+
     public $notificationName;
 
     public function __construct(Task $task, $notifyUser, $notificationName)
@@ -22,5 +23,4 @@ class TaskEvent
         $this->notifyUser = $notifyUser;
         $this->notificationName = $notificationName;
     }
-
 }

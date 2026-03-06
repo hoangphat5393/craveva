@@ -2,20 +2,18 @@
 
 namespace Modules\ServerManager\Http\Controllers;
 
+use App\Helper\Reply;
 use App\Http\Controllers\AccountBaseController;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
+use Modules\ServerManager\DataTables\ProviderDataTable;
 use Modules\ServerManager\Entities\ServerProvider;
 use Modules\ServerManager\Entities\ServerSetting;
-use Modules\ServerManager\DataTables\ProviderDataTable;
+use Modules\ServerManager\Exports\ProviderExport;
 use Modules\ServerManager\Http\Requests\Provider\StoreProviderRequest;
 use Modules\ServerManager\Http\Requests\Provider\UpdateProviderRequest;
-use App\Helper\Reply;
-use App\Models\User;
-use Maatwebsite\Excel\Facades\Excel;
-use Modules\ServerManager\Exports\ProviderExport;
-use Carbon\Carbon;
 
 class ProviderController extends AccountBaseController
 {
@@ -26,7 +24,7 @@ class ProviderController extends AccountBaseController
         parent::__construct();
         $this->pageTitle = __('servermanager::app.menu.providerList');
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array(ServerSetting::MODULE_NAME, $this->user->modules));
+            abort_403(! in_array(ServerSetting::MODULE_NAME, $this->user->modules));
 
             return $next($request);
         });
@@ -35,7 +33,7 @@ class ProviderController extends AccountBaseController
     public function index(ProviderDataTable $dataTable)
     {
         $viewPermission = user()->permission('view_provider');
-        abort_403(!in_array($viewPermission, ['all', 'added']));
+        abort_403(! in_array($viewPermission, ['all', 'added']));
 
         $companyId = company()->id;
 
@@ -53,7 +51,7 @@ class ProviderController extends AccountBaseController
     public function create()
     {
         $addPermission = user()->permission('add_provider');
-        abort_403(!in_array($addPermission, ['all']));
+        abort_403(! in_array($addPermission, ['all']));
 
         $this->pageTitle = __('servermanager::app.provider.addProvider');
 
@@ -81,7 +79,7 @@ class ProviderController extends AccountBaseController
     public function store(StoreProviderRequest $request)
     {
         $addPermission = user()->permission('add_provider');
-        abort_403(!in_array($addPermission, ['all']));
+        abort_403(! in_array($addPermission, ['all']));
 
         $provider = ServerProvider::create([
             'company_id' => company()->id,
@@ -99,7 +97,7 @@ class ProviderController extends AccountBaseController
     public function show($id)
     {
         $viewPermission = user()->permission('view_provider');
-        abort_403(!in_array($viewPermission, ['all', 'added']));
+        abort_403(! in_array($viewPermission, ['all', 'added']));
 
         $provider = ServerProvider::where('company_id', company()->id)
             ->with(['createdBy', 'updatedBy'])
@@ -129,7 +127,7 @@ class ProviderController extends AccountBaseController
     public function edit($id)
     {
         $editPermission = user()->permission('edit_provider');
-        abort_403(!in_array($editPermission, ['all', 'added']));
+        abort_403(! in_array($editPermission, ['all', 'added']));
 
         $this->pageTitle = __('servermanager::app.provider.editProvider');
 
@@ -152,7 +150,7 @@ class ProviderController extends AccountBaseController
     public function update(UpdateProviderRequest $request, $id)
     {
         $editPermission = user()->permission('edit_provider');
-        abort_403(!in_array($editPermission, ['all', 'added']));
+        abort_403(! in_array($editPermission, ['all', 'added']));
 
         $provider = ServerProvider::where('company_id', company()->id)->findOrFail($id);
 
@@ -173,7 +171,7 @@ class ProviderController extends AccountBaseController
     public function destroy($id)
     {
         $deletePermission = user()->permission('delete_provider');
-        abort_403(!in_array($deletePermission, ['all', 'added']));
+        abort_403(! in_array($deletePermission, ['all', 'added']));
 
         $provider = ServerProvider::where('company_id', company()->id)->findOrFail($id);
         $provider->delete();
@@ -185,11 +183,13 @@ class ProviderController extends AccountBaseController
     {
         if ($request->action_type === 'delete') {
             $this->deleteRecords($request);
+
             return Reply::success(__('messages.deleteSuccess'));
         }
 
         if ($request->action_type === 'change-status') {
             $this->changeBulkStatus($request);
+
             return Reply::success(__('messages.statusUpdatedSuccessfully'));
         }
 
@@ -215,7 +215,7 @@ class ProviderController extends AccountBaseController
     public function exportAllProviders(Request $request)
     {
         $exportPermission = user()->permission('export_provider');
-        abort_403(!in_array($exportPermission, ['all', 'added', 'owned', 'both']));
+        abort_403(! in_array($exportPermission, ['all', 'added', 'owned', 'both']));
 
         $startDate = null;
         $endDate = null;
@@ -228,9 +228,9 @@ class ProviderController extends AccountBaseController
             $exportAll = true;
         }
 
-        $dateRange = $exportAll ? 'All_Data' : $startDate->format('Y-m-d') . '_to_' . $endDate->format('Y-m-d');
+        $dateRange = $exportAll ? 'All_Data' : $startDate->format('Y-m-d').'_to_'.$endDate->format('Y-m-d');
 
-        return Excel::download(new ProviderExport($startDate, $endDate, $exportAll), 'Provider_From_' . $dateRange . '.xlsx');
+        return Excel::download(new ProviderExport($startDate, $endDate, $exportAll), 'Provider_From_'.$dateRange.'.xlsx');
     }
 
     public function getProviderUrl(Request $request)
@@ -244,13 +244,13 @@ class ProviderController extends AccountBaseController
         if ($provider) {
             return Reply::dataOnly([
                 'status' => 'success',
-                'url' => $provider->url
+                'url' => $provider->url,
             ]);
         }
 
         return Reply::dataOnly([
             'status' => 'error',
-            'message' => 'Provider not found'
+            'message' => 'Provider not found',
         ]);
     }
 }

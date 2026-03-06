@@ -15,7 +15,6 @@ use Illuminate\Support\Facades\Hash;
 
 class ProfileController extends AccountBaseController
 {
-
     // phpcs:ignore
     public function update(UpdateProfile $request, $id)
     {
@@ -23,7 +22,7 @@ class ProfileController extends AccountBaseController
         $redirect = false;
         $logout = false;
 
-        //if (session()->has('clientContact') && session('clientContact')) {
+        // if (session()->has('clientContact') && session('clientContact')) {
 
         //     $clientContact = ClientContact::findOrFail(session('clientContact')->id);
         //     $clientContact->contact_name = $request->name;
@@ -70,12 +69,10 @@ class ProfileController extends AccountBaseController
             $redirect = true;
         }
 
-
         // Update email in userauth also
         if ($user->isDirty('email')) {
 
             $userCount = User::withoutGlobalScopes([CompanyScope::class, ActiveScope::class])->where('user_auth_id', $user->user_auth_id)->count();
-
 
             if ($userCount > 1) {
                 $userAuth = $user->userAuth->replicate();
@@ -93,7 +90,7 @@ class ProfileController extends AccountBaseController
 
         $user->save();
 
-        if (!is_null($request->password)) {
+        if (! is_null($request->password)) {
             $user->userAuth->update(['password' => Hash::make($request->password)]);
         }
 
@@ -105,11 +102,10 @@ class ProfileController extends AccountBaseController
         } else {
             // adding address to employee_details
 
-            if (!$user->is_superadmin) {
+            if (! $user->is_superadmin) {
                 $this->addEmployeeDetail($request, $user);
             }
         }
-
 
         session()->forget('user');
         session()->forget('isRtl');
@@ -120,7 +116,6 @@ class ProfileController extends AccountBaseController
 
         if ($redirectUrl == '') {
             $redirectUrl = route('profile-settings.index');
-
 
             if ($user->is_superadmin) {
                 $redirectUrl = route('superadmin.settings.super-admin-profile.index');
@@ -141,7 +136,7 @@ class ProfileController extends AccountBaseController
         $employee = EmployeeDetails::where('user_id', $user->id)->first();
 
         if (empty($employee)) {
-            $employee = new EmployeeDetails();
+            $employee = new EmployeeDetails;
             $employee->user_id = $user->id;
         }
 
@@ -164,6 +159,7 @@ class ProfileController extends AccountBaseController
         $user->dark_theme = $request->darkTheme;
         $user->save();
         session()->forget('user');
+
         return Reply::success(__('messages.updateSuccess'));
     }
 

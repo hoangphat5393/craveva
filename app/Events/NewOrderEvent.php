@@ -9,12 +9,12 @@ use Illuminate\Queue\SerializesModels;
 
 class NewOrderEvent
 {
-
     use Dispatchable;
     use InteractsWithSockets;
     use SerializesModels;
 
     public $order;
+
     public $notifyUser;
 
     public function __construct(Order $order, $notifyUser)
@@ -22,5 +22,4 @@ class NewOrderEvent
         $this->order = $order;
         $this->notifyUser = $notifyUser;
     }
-
 }

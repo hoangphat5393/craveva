@@ -3,30 +3,26 @@
 namespace App\Observers;
 
 use App\Enums\MaritalStatus;
-use Illuminate\Support\Carbon;
-use App\Models\EmployeeDetails;
-use App\Models\EmployeeLeaveQuota;
 use App\Events\NewUserSlackEvent;
-use App\Models\User;
+use App\Models\EmployeeDetails;
 use Illuminate\Support\Facades\Artisan;
 
 class EmployeeDetailsObserver
 {
-
     public function saving(EmployeeDetails $detail)
     {
-        if (!isRunningInConsoleOrSeeding() && auth()->check() && user()) {
+        if (! isRunningInConsoleOrSeeding() && auth()->check() && user()) {
             $detail->last_updated_by = user()->id;
         }
     }
 
     public function creating(EmployeeDetails $detail)
     {
-        if (!isRunningInConsoleOrSeeding() && auth()->check()) {
+        if (! isRunningInConsoleOrSeeding() && auth()->check()) {
             $detail->added_by = user()->id;
         }
 
-        if (!$detail->company_id && $detail->user) {
+        if (! $detail->company_id && $detail->user) {
             $detail->company_id = $detail->user->company_id;
         }
 
@@ -38,7 +34,7 @@ class EmployeeDetailsObserver
 
     public function created(EmployeeDetails $detail)
     {
-        if (!isset($detail->joining_date)) {
+        if (! isset($detail->joining_date)) {
             return true;
         }
 
@@ -47,19 +43,17 @@ class EmployeeDetailsObserver
 
         $user = $detail->user;
 
-        Artisan::call('app:recalculate-leaves-quotas ' . $detail->company_id . ' ' . $user->id);
+        Artisan::call('app:recalculate-leaves-quotas '.$detail->company_id.' '.$user->id);
 
         event(new NewUserSlackEvent($user));
-
 
     }
 
     public function updated(EmployeeDetails $detail)
     {
-        if (user() && $detail->isDirty('joining_date'))  {
-            Artisan::call('app:recalculate-leaves-quotas ' . $detail->company_id . ' ' . $detail->user_id);
+        if (user() && $detail->isDirty('joining_date')) {
+            Artisan::call('app:recalculate-leaves-quotas '.$detail->company_id.' '.$detail->user_id);
         }
 
     }
-
 }

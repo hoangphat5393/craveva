@@ -2,15 +2,14 @@
 
 namespace Modules\Performance\Console;
 
-use Carbon\Carbon;
 use App\Models\Company;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Modules\Performance\Entities\Objective;
 use Modules\Performance\Entities\ObjectiveProgressStatus;
 
 class SetObjectiveStatusCommand extends Command
 {
-
     /**
      * The name and signature of the console command.
      */
@@ -75,8 +74,7 @@ class SetObjectiveStatusCommand extends Command
                             ['objective_id' => $objective->id],
                             $objectiveProgressStatus
                         );
-                    }
-                    elseif ($startDate->isToday() || $endDate->isToday() || ($startDate <= $today && $endDate >= $today)) {
+                    } elseif ($startDate->isToday() || $endDate->isToday() || ($startDate <= $today && $endDate >= $today)) {
 
                         // Time Left Formula...
                         $startDate = Carbon::parse($objective->start_date);
@@ -88,8 +86,7 @@ class SetObjectiveStatusCommand extends Command
                             $elapsedDays = $startDate->diffInDays($today);
                             $remainingDays = $totalDays - $elapsedDays;
                             $timeLeftPercentage = ($remainingDays / $totalDays) * 100;
-                        }
-                        else {
+                        } else {
                             // If start and end dates are the same, no time left
                             $timeLeftPercentage = 0;
                         }
@@ -99,20 +96,16 @@ class SetObjectiveStatusCommand extends Command
                         if ($objectiveProgress >= 100) {
                             $status = 'completed';
                             $color = 'primary';
-                        }
-                        elseif ($objectiveProgress > 70 && $timeLeftPercentage > 50) {
+                        } elseif ($objectiveProgress > 70 && $timeLeftPercentage > 50) {
                             $status = 'onTrack';
                             $color = 'success';
-                        }
-                        elseif ($objectiveProgress > 60 && $timeLeftPercentage <= 50) {
+                        } elseif ($objectiveProgress > 60 && $timeLeftPercentage <= 50) {
                             $status = 'atRisk';
                             $color = 'warning';
-                        }
-                        elseif (($objectiveProgress == 0.0 || ($objectiveProgress >= 40 && $objectiveProgress <= 60)) && $timeLeftPercentage <= 50) {
+                        } elseif (($objectiveProgress == 0.0 || ($objectiveProgress >= 40 && $objectiveProgress <= 60)) && $timeLeftPercentage <= 50) {
                             $status = 'offTrack';
                             $color = 'danger';
-                        }
-                        else {
+                        } else {
                             $status = 'onTrack';
                             $color = 'success';
                         }
@@ -136,5 +129,4 @@ class SetObjectiveStatusCommand extends Command
 
         return Command::SUCCESS;
     }
-
 }

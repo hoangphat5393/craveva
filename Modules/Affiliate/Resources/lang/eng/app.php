@@ -1,12 +1,12 @@
 <?php
 
-return array(
+return [
     'affiliate' => 'Affiliate',
     'yes' => 'Yes',
     'no' => 'No',
     'fixed' => 'Fixed',
     'percent' => 'Percent',
-    'menu' => array(
+    'menu' => [
         'affiliate' => 'Affiliate',
         'affiliates' => 'Affiliates',
         'affiliateSettings' => 'Affiliate Settings',
@@ -15,7 +15,7 @@ return array(
         'referrals' => 'Referrals',
         'affiliateDashboard' => 'Affiliate Dashboard',
         'dashboard' => 'Dashboard',
-    ),
+    ],
     'addNewAffiliate' => 'Add New Affiliate',
     'createAffiliate' => 'Create Affiliate',
     'affiliateName' => 'Affiliate Name',
@@ -64,4 +64,4 @@ return array(
     'everyTime' => 'Every Time',
     'referralCode' => 'Referral Code',
     'referred' => 'Referred',
-);
+];

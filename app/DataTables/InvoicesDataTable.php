@@ -2,26 +2,32 @@
 
 namespace App\DataTables;
 
-use App\Models\Invoice;
+use App\Helper\Common;
+use App\Helper\UserService;
 use App\Models\CustomField;
 use App\Models\CustomFieldGroup;
 use App\Models\GlobalSetting;
+use App\Models\Invoice;
+use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
-use Illuminate\Support\Facades\DB;
-use App\Helper\UserService;
-use App\Helper\Common;
 
 class InvoicesDataTable extends BaseDataTable
 {
-
     protected $firstInvoice;
+
     private $viewInvoicePermission;
+
     private $deleteInvoicePermission;
+
     private $editInvoicePermission;
+
     private $addPaymentPermission;
+
     private $addInvoicesPermission;
+
     private $viewProjectInvoicePermission;
+
     private $ignoreInvoicesWithTrashed;
 
     public function __construct($ignoreInvoicesWithTrashed = false)
@@ -39,7 +45,7 @@ class InvoicesDataTable extends BaseDataTable
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
@@ -48,78 +54,78 @@ class InvoicesDataTable extends BaseDataTable
         $firstInvoice = $this->firstInvoice;
         $datatables = datatables()->eloquent($query);
         $datatables->addIndexColumn();
-        $datatables->addColumn('action', function ($row) use ($firstInvoice, $userId) {
+        $datatables->addColumn('action', function ($row) use ($userId) {
             $action = '<div class="task_view">
 
                 <div class="dropdown dropup">
                     <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" type="link"
-                        id="dropdownMenuLink-' . $row->id . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        id="dropdownMenuLink-'.$row->id.'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="icon-options-vertical icons"></i>
                     </a>
-                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-' . $row->id . '" tabindex="0">';
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-'.$row->id.'" tabindex="0">';
 
-            $action .= '<a href="' . route('invoices.show', [$row->id]) . '" class="dropdown-item"><i class="fa fa-eye mr-2"></i>' . __('app.view') . '</a>';
+            $action .= '<a href="'.route('invoices.show', [$row->id]).'" class="dropdown-item"><i class="fa fa-eye mr-2"></i>'.__('app.view').'</a>';
 
             if (
                 $this->viewInvoicePermission == 'all'
                 || ($this->viewInvoicePermission == 'added' && ($userId == $row->added_by || user()->id == $row->added_by))
                 || ($this->viewInvoicePermission == 'owned' && $userId == $row->client_id)
-                || $this->viewProjectInvoicePermission == 'owned' && !is_null($row->project_id) && $userId == $row->project->client_id
+                || $this->viewProjectInvoicePermission == 'owned' && ! is_null($row->project_id) && $userId == $row->project->client_id
             ) {
-                $action .= '<a class="dropdown-item" href="' . route('invoices.download', [$row->id]) . '">
+                $action .= '<a class="dropdown-item" href="'.route('invoices.download', [$row->id]).'">
                                 <i class="fa fa-download mr-2"></i>
-                                ' . trans('app.download') . '
+                                '.trans('app.download').'
                             </a>';
-                $action .= '<a class="dropdown-item" target="_blank" href="' . route('invoices.download', [$row->id, 'view' => true]) . '">
+                $action .= '<a class="dropdown-item" target="_blank" href="'.route('invoices.download', [$row->id, 'view' => true]).'">
                                 <i class="fa fa-eye mr-2"></i>
-                                ' . trans('app.viewPdf') . '
+                                '.trans('app.viewPdf').'
                             </a>';
 
                 if ($row->status == 'paid' && $row->file != null) {
-                    $action .= '<a class="dropdown-item" href="' . route('invoices.download', [$row->id, 'download-uploaded' => true]) . '">
+                    $action .= '<a class="dropdown-item" href="'.route('invoices.download', [$row->id, 'download-uploaded' => true]).'">
                                     <i class="fa fa-download mr-2"></i>
-                                    ' . trans('app.download') . '
-                                    ' . trans('app.uploadedFile') . '
+                                    '.trans('app.download').'
+                                    '.trans('app.uploadedFile').'
                                 </a>';
                 }
             }
 
-            if ($row->status != 'canceled' && !in_array('client', user_roles()) && $row->credit_note == 0) {
-                $action .= '<a class="dropdown-item sendButton" href="javascript:;" data-toggle="tooltip"  data-invoice-id="' . $row->id . '" data-amt="' . (($row->total == 0 && $row->status != 'paid') ? 0 : 1) . '" >
+            if ($row->status != 'canceled' && ! in_array('client', user_roles()) && $row->credit_note == 0) {
+                $action .= '<a class="dropdown-item sendButton" href="javascript:;" data-toggle="tooltip"  data-invoice-id="'.$row->id.'" data-amt="'.(($row->total == 0 && $row->status != 'paid') ? 0 : 1).'" >
                                 <i class="fa fa-paper-plane mr-2"></i>
-                                ' . trans('app.send') . '
+                                '.trans('app.send').'
                             </a>';
             }
 
-            if ($row->status == 'pending-confirmation' && !in_array('client', user_roles()) && !empty($row->payment)) {
+            if ($row->status == 'pending-confirmation' && ! in_array('client', user_roles()) && ! empty($row->payment)) {
 
-                $action .= '<a class="dropdown-item approveButton" href="javascript:;" data-toggle="tooltip"  data-invoice-id="' . $row->id . '" data-invoice-amt="' . $row->total . '" >
+                $action .= '<a class="dropdown-item approveButton" href="javascript:;" data-toggle="tooltip"  data-invoice-id="'.$row->id.'" data-invoice-amt="'.$row->total.'" >
                                 <i class="fa fa-check mr-2"></i>
-                                ' . trans('app.approve') . '
+                                '.trans('app.approve').'
                             </a>';
             }
 
-            if ($row->status != 'canceled' && !in_array('client', user_roles()) && $row->credit_note == 0 && $row->send_status == 0) {
-                $action .= '<a class="dropdown-item sendButton d-flex justify-content-between align-items-center" data-type="mark_as_send" href="javascript:;"  data-invoice-id="' . $row->id . '" data-amt="' . (($row->total == 0 && $row->status != 'paid') ? 0 : 1) . '" >
+            if ($row->status != 'canceled' && ! in_array('client', user_roles()) && $row->credit_note == 0 && $row->send_status == 0) {
+                $action .= '<a class="dropdown-item sendButton d-flex justify-content-between align-items-center" data-type="mark_as_send" href="javascript:;"  data-invoice-id="'.$row->id.'" data-amt="'.(($row->total == 0 && $row->status != 'paid') ? 0 : 1).'" >
                                 <div><i class="fa fa-check-double mr-2"></i>
-                                ' . trans('app.markSent') . '
+                                '.trans('app.markSent').'
                                 </div>
-                                <i class="fa fa-question-circle" data-toggle="tooltip" data-original-title="' . __('messages.markSentInfo') . '"></i>
+                                <i class="fa fa-question-circle" data-toggle="tooltip" data-original-title="'.__('messages.markSentInfo').'"></i>
                             </a>';
             }
 
-            $edit = (!is_null($row->project) && is_null($row->project->deleted_at)) ? '<a class="dropdown-item" href="' . route('invoices.edit', $row->id) . '" >
+            $edit = (! is_null($row->project) && is_null($row->project->deleted_at)) ? '<a class="dropdown-item" href="'.route('invoices.edit', $row->id).'" >
                         <i class="fa fa-edit mr-2"></i>
-                        ' . trans('app.edit') . '
-                    </a>' : ((is_null($row->project_id)) ? '<a class="dropdown-item" href="' . route('invoices.edit', $row->id) . '" >
+                        '.trans('app.edit').'
+                    </a>' : ((is_null($row->project_id)) ? '<a class="dropdown-item" href="'.route('invoices.edit', $row->id).'" >
                         <i class="fa fa-edit mr-2"></i>
-                        ' . trans('app.edit') . '
+                        '.trans('app.edit').'
                     </a>' : '');
 
-            if ($row->status == 'paid' && !in_array('client', user_roles()) && $row->credit_note == 0) {
-                $action .= '<a class="dropdown-item invoice-upload" href="javascript:;" data-toggle="tooltip" data-original-title="' . __('messages.uploadOtherInvoice') . '" data-invoice-id="' . $row->id . '">
+            if ($row->status == 'paid' && ! in_array('client', user_roles()) && $row->credit_note == 0) {
+                $action .= '<a class="dropdown-item invoice-upload" href="javascript:;" data-toggle="tooltip" data-original-title="'.__('messages.uploadOtherInvoice').'" data-invoice-id="'.$row->id.'">
                                 <i class="fa fa-upload mr-2"></i>
-                                ' . trans('app.upload') . '
+                                '.trans('app.upload').'
                             </a>';
 
                 if ($row->amountPaid() == 0 && $row->amountDue() > 0) {
@@ -139,15 +145,15 @@ class InvoicesDataTable extends BaseDataTable
                     }
                 }
 
-                if (!in_array('client', user_roles()) && in_array('payments', $this->user->modules) && $row->credit_note == 0 && $row->status != 'draft' && $row->send_status && $row->status !== 'pending-confirmation') {
+                if (! in_array('client', user_roles()) && in_array('payments', $this->user->modules) && $row->credit_note == 0 && $row->status != 'draft' && $row->send_status && $row->status !== 'pending-confirmation') {
                     if (
                         $this->addPaymentPermission == 'all'
                         || ($this->addPaymentPermission == 'added' && ($row->added_by == $userId || $row->added_by == user()->id))
                     ) {
                         $action .= '<a class="dropdown-item openRightModal"
-                        data-redirect-url="' . route('invoices.index') . '" href="' . route('payments.create') . '?invoice_id=' . $row->id . '&default_client=' . $row->client_id . '" >
+                        data-redirect-url="'.route('invoices.index').'" href="'.route('payments.create').'?invoice_id='.$row->id.'&default_client='.$row->client_id.'" >
                                     <i class="fa fa-plus mr-2"></i>
-                                    ' . trans('modules.payments.addPayment') . '
+                                    '.trans('modules.payments.addPayment').'
                                 </a>';
                     }
                 }
@@ -155,66 +161,66 @@ class InvoicesDataTable extends BaseDataTable
 
             if ($row->status != 'canceled' && $row->credit_note == 0) {
                 if ($row->clientdetails) {
-                    if (!is_null($row->clientdetails->shipping_address)) {
+                    if (! is_null($row->clientdetails->shipping_address)) {
 
-                        $action .= ($row->show_shipping_address == 'yes') ? '<a class="dropdown-item toggle-shipping-address" href="javascript:;" data-toggle="tooltip"  data-invoice-id="' . $row->id . '">
+                        $action .= ($row->show_shipping_address == 'yes') ? '<a class="dropdown-item toggle-shipping-address" href="javascript:;" data-toggle="tooltip"  data-invoice-id="'.$row->id.'">
                                 <i class="fa fa-eye-slash mr-2"></i>
-                                ' . __('app.hideShippingAddress') . '
-                            </a>' : '<a class="dropdown-item toggle-shipping-address" href="javascript:;" data-toggle="tooltip"  data-invoice-id="' . $row->id . '">
+                                '.__('app.hideShippingAddress').'
+                            </a>' : '<a class="dropdown-item toggle-shipping-address" href="javascript:;" data-toggle="tooltip"  data-invoice-id="'.$row->id.'">
                                 <i class="fa fa-eye mr-2"></i>
-                                ' . __('app.showShippingAddress') . '
+                                '.__('app.showShippingAddress').'
                             </a>';
                     } else {
-                        $action .= '<a class="dropdown-item add-shipping-address" href="javascript:;" data-toggle="tooltip"  data-invoice-id="' . $row->id . '">
+                        $action .= '<a class="dropdown-item add-shipping-address" href="javascript:;" data-toggle="tooltip"  data-invoice-id="'.$row->id.'">
                             <i class="fa fa-plus mr-2"></i>
-                            ' . __('app.addShippingAddress') . '
+                            '.__('app.addShippingAddress').'
                         </a>';
                     }
                 } else {
                     if ($row->project && $row->project->clientdetails) {
-                        if (!is_null($row->project->clientdetails->shipping_address)) {
-                            $action .= ($row->show_shipping_address == 'yes') ? '<a class="dropdown-item toggle-shipping-address" href="javascript:;" data-toggle="tooltip"  data-invoice-id="' . $row->id . '">
+                        if (! is_null($row->project->clientdetails->shipping_address)) {
+                            $action .= ($row->show_shipping_address == 'yes') ? '<a class="dropdown-item toggle-shipping-address" href="javascript:;" data-toggle="tooltip"  data-invoice-id="'.$row->id.'">
                                     <i class="fa fa-eye-slash mr-2"></i>
-                                    ' . __('app.hideShippingAddress') . '
-                                </a>' : '<a class="dropdown-item toggle-shipping-address" href="javascript:;" data-toggle="tooltip" data-invoice-id="' . $row->id . '">
+                                    '.__('app.hideShippingAddress').'
+                                </a>' : '<a class="dropdown-item toggle-shipping-address" href="javascript:;" data-toggle="tooltip" data-invoice-id="'.$row->id.'">
                                     <i class="fa fa-eye mr-2"></i>
-                                    ' . __('app.showShippingAddress') . '
+                                    '.__('app.showShippingAddress').'
                                 </a>';
                         } else {
-                            $action .= '<a class="dropdown-item add-shipping-address" href="javascript:;" data-invoice-id="' . $row->id . '">
+                            $action .= '<a class="dropdown-item add-shipping-address" href="javascript:;" data-invoice-id="'.$row->id.'">
                                 <i class="fa fa-plus mr-2"></i>
-                                ' . __('app.addShippingAddress') . '
+                                '.__('app.addShippingAddress').'
                             </a>';
                         }
                     }
                 }
             }
 
-            if (($row->status == 'unpaid' || $row->status == 'draft' || $row->status == 'pending-confirmation') && !in_array('client', user_roles())) {
-                $action .= '<a class="dropdown-item cancel-invoice" href="javascript:;"  data-invoice-id="' . $row->id . '">
+            if (($row->status == 'unpaid' || $row->status == 'draft' || $row->status == 'pending-confirmation') && ! in_array('client', user_roles())) {
+                $action .= '<a class="dropdown-item cancel-invoice" href="javascript:;"  data-invoice-id="'.$row->id.'">
                     <i class="fa fa-times mr-2"></i>
-                    ' . trans('app.cancel') . '
+                    '.trans('app.cancel').'
                 </a>';
             }
 
             if ($row->credit_note == 0 && $row->status != 'draft' && $row->status != 'canceled' && $row->send_status) {
-                $action .= '<a class="dropdown-item btn-copy" href="javascript:;" data-clipboard-text="' . url()->temporarySignedRoute('front.invoice', now()->addDays(GlobalSetting::SIGNED_ROUTE_EXPIRY), $row->hash) . '"><i class="fa fa-copy mr-2"></i>' . trans('modules.invoices.copyPaymentLink') . '</a>';
+                $action .= '<a class="dropdown-item btn-copy" href="javascript:;" data-clipboard-text="'.url()->temporarySignedRoute('front.invoice', now()->addDays(GlobalSetting::SIGNED_ROUTE_EXPIRY), $row->hash).'"><i class="fa fa-copy mr-2"></i>'.trans('modules.invoices.copyPaymentLink').'</a>';
 
-                $action .= '<a class="dropdown-item" href="' . url()->temporarySignedRoute('front.invoice', now()->addDays(GlobalSetting::SIGNED_ROUTE_EXPIRY), $row->hash) . '" target="_blank"><i class="fa fa-external-link-alt mr-2"></i>' . trans('modules.payments.paymentLink') . '</a>';
+                $action .= '<a class="dropdown-item" href="'.url()->temporarySignedRoute('front.invoice', now()->addDays(GlobalSetting::SIGNED_ROUTE_EXPIRY), $row->hash).'" target="_blank"><i class="fa fa-external-link-alt mr-2"></i>'.trans('modules.payments.paymentLink').'</a>';
             }
 
-            if ($row->credit_note == 0 && $row->status != 'draft' && $row->status != 'canceled' && $row->status != 'unpaid' && !in_array('client', user_roles())) {
+            if ($row->credit_note == 0 && $row->status != 'draft' && $row->status != 'canceled' && $row->status != 'unpaid' && ! in_array('client', user_roles())) {
                 if ($row->amountPaid() > 0) {
                     if ($row->status == 'paid') {
-                        $action .= '<a class="dropdown-item" href="' . route('creditnotes.create') . '?invoice=' . $row->id . '"><i class="fa fa-plus mr-2"></i>' . trans('modules.credit-notes.addCreditNote') . '</a>';
+                        $action .= '<a class="dropdown-item" href="'.route('creditnotes.create').'?invoice='.$row->id.'"><i class="fa fa-plus mr-2"></i>'.trans('modules.credit-notes.addCreditNote').'</a>';
                     } else {
-                        $action .= '<a class="dropdown-item unpaidAndPartialPaidCreditNote" data-toggle="tooltip"  data-invoice-id="' . $row->id . '" href="javascript:;"><i class="fa fa-plus mr-2"></i>' . trans('modules.credit-notes.addCreditNote') . '</a>';
+                        $action .= '<a class="dropdown-item unpaidAndPartialPaidCreditNote" data-toggle="tooltip"  data-invoice-id="'.$row->id.'" href="javascript:;"><i class="fa fa-plus mr-2"></i>'.trans('modules.credit-notes.addCreditNote').'</a>';
                     }
                 }
             }
 
-            if ($row->status != 'paid' && $row->status != 'draft' && $row->status != 'canceled' && $row->credit_note == 0 && !in_array('client', user_roles()) && $row->send_status) {
-                $action .= '<a class="dropdown-item reminderButton" data-toggle="tooltip"  data-invoice-id="' . $row->id . '" href="javascript:;"><i class="fa fa-bell mr-2"></i>' . trans('app.paymentReminder') . '</a>';
+            if ($row->status != 'paid' && $row->status != 'draft' && $row->status != 'canceled' && $row->credit_note == 0 && ! in_array('client', user_roles()) && $row->send_status) {
+                $action .= '<a class="dropdown-item reminderButton" data-toggle="tooltip"  data-invoice-id="'.$row->id.'" href="javascript:;"><i class="fa fa-bell mr-2"></i>'.trans('app.paymentReminder').'</a>';
             }
 
             if (
@@ -225,16 +231,16 @@ class InvoicesDataTable extends BaseDataTable
             ) {
                 // if ($firstInvoice->id == $row->id && ($row->status != 'paid' && $row->status != 'partial')) {
                 if ($row->status != 'paid' && $row->status != 'partial') {
-                    $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-toggle="tooltip"  data-invoice-id="' . $row->id . '">
+                    $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-toggle="tooltip"  data-invoice-id="'.$row->id.'">
                         <i class="fa fa-trash mr-2"></i>
-                        ' . trans('app.delete') . '
+                        '.trans('app.delete').'
                     </a>';
                 }
             }
 
             if ($this->addInvoicesPermission == 'all' || $this->addInvoicesPermission == 'added') {
 
-                $action .= '<a href="' . route('invoices.create') . '?invoice=' . $row->id . '" class="dropdown-item"><i class="fa fa-copy mr-2"></i> ' . __('app.create') . ' ' . __('app.duplicate') . '</a>';
+                $action .= '<a href="'.route('invoices.create').'?invoice='.$row->id.'" class="dropdown-item"><i class="fa fa-copy mr-2"></i> '.__('app.create').' '.__('app.duplicate').'</a>';
             }
 
             $action .= '</div>
@@ -245,13 +251,13 @@ class InvoicesDataTable extends BaseDataTable
         });
         $datatables->editColumn('project_name', function ($row) {
             if ($row->project_id != null) {
-                return '<a href="' . route('projects.show', $row->project_id) . '" class="text-darkest-grey">' . $row->project->project_name . '</a>';
+                return '<a href="'.route('projects.show', $row->project_id).'" class="text-darkest-grey">'.$row->project->project_name.'</a>';
             }
 
             return '--';
         });
         $datatables->addColumn('short_code', function ($row) {
-            if (!is_null($row->project)) {
+            if (! is_null($row->project)) {
                 return $row->project->project_short_code;
             }
 
@@ -291,16 +297,16 @@ class InvoicesDataTable extends BaseDataTable
         $datatables->editColumn('name', function ($row) {
             if ($row->client) {
                 $client = $row->client;
-            } else if ($row->project && $row->project->client) {
+            } elseif ($row->project && $row->project->client) {
                 $client = $row->project->client;
-            } else if ($row->estimate && $row->estimate->client) {
+            } elseif ($row->estimate && $row->estimate->client) {
                 $client = $row->estimate->client;
             } else {
                 return '--';
             }
 
             return view('components.client', [
-                'user' => $client
+                'user' => $client,
             ]);
         });
         $datatables->addColumn('invoice', function ($row) {
@@ -310,17 +316,17 @@ class InvoicesDataTable extends BaseDataTable
         $datatables->editColumn('invoice_number', function ($row) {
             $recurring = '';
 
-            if (!is_null($row->invoice_recurring_id)) {
-                $recurring = '<span class="badge badge-primary"> ' . __('app.recurring') . ' </span>';
+            if (! is_null($row->invoice_recurring_id)) {
+                $recurring = '<span class="badge badge-primary"> '.__('app.recurring').' </span>';
             }
 
             if ($row->is_timelog_invoice) {
-                $recurring = '<span class="badge badge-primary"> ' . __('app.timelog') . ' </span>';
+                $recurring = '<span class="badge badge-primary"> '.__('app.timelog').' </span>';
             }
 
             return '<div class="media align-items-center">
                         <div class="media-body">
-                    <h5 class="mb-0 f-13 text-darkest-grey"><a href="' . route('invoices.show', [$row->id]) . '">' . $row->invoice_number . '</a></h5><p class="mb-0">' . $recurring . '</p>
+                    <h5 class="mb-0 f-13 text-darkest-grey"><a href="'.route('invoices.show', [$row->id]).'">'.$row->invoice_number.'</a></h5><p class="mb-0">'.$recurring.'</p>
                     </div>
                   </div>';
         });
@@ -328,38 +334,38 @@ class InvoicesDataTable extends BaseDataTable
             $status = '';
 
             if ($row->credit_note) {
-                $status .= ' <i class="fa fa-circle mr-1 text-yellow f-10"></i>' . __('app.credit-note');
+                $status .= ' <i class="fa fa-circle mr-1 text-yellow f-10"></i>'.__('app.credit-note');
             } else {
                 if ($row->status == 'unpaid') {
-                    $status .= ' <i class="fa fa-circle mr-1 text-red f-10"></i>' . __('app.' . $row->status);
+                    $status .= ' <i class="fa fa-circle mr-1 text-red f-10"></i>'.__('app.'.$row->status);
                 } elseif ($row->status == 'paid') {
-                    $status .= ' <i class="fa fa-circle mr-1 text-dark-green f-10"></i>' . __('app.' . $row->status);
+                    $status .= ' <i class="fa fa-circle mr-1 text-dark-green f-10"></i>'.__('app.'.$row->status);
                 } elseif ($row->status == 'draft') {
-                    $status .= ' <i class="fa fa-circle mr-1 text-blue f-10"></i>' . __('app.' . $row->status);
+                    $status .= ' <i class="fa fa-circle mr-1 text-blue f-10"></i>'.__('app.'.$row->status);
                 } elseif ($row->status == 'canceled') {
-                    $status .= ' <i class="fa fa-circle mr-1 text-red f-10"></i>' . __('app.' . $row->status);
+                    $status .= ' <i class="fa fa-circle mr-1 text-red f-10"></i>'.__('app.'.$row->status);
                 } elseif ($row->status == 'pending-confirmation') {
-                    $status .= '<i class="fa fa-circle mr-1 text- f-10"></i>' . __('app.' . $row->status);
+                    $status .= '<i class="fa fa-circle mr-1 text- f-10"></i>'.__('app.'.$row->status);
 
                     $status .= '<i data-toggle="tooltip" data-placement="top" data-html="true" data-trigger="hover"
                     data-original-title="This status occurs when an invoice is paid offline.
                     Upon successful approval, it changes to paid."
                     class="fa fa-question-circle ml-1"></i>';
                 } else {
-                    $status .= ' <i class="fa fa-circle mr-1 text-blue f-10"></i>' . __('modules.invoices.partial');
+                    $status .= ' <i class="fa fa-circle mr-1 text-blue f-10"></i>'.__('modules.invoices.partial');
                 }
             }
 
-            if (!$row->send_status && $row->status != 'draft') {
-                $status .= '<br><br><span class="badge badge-secondary">' . __('modules.invoices.notSent') . '</span>';
+            if (! $row->send_status && $row->status != 'draft') {
+                $status .= '<br><br><span class="badge badge-secondary">'.__('modules.invoices.notSent').'</span>';
             }
 
-            return '<div class="status-cell text-darkest-grey">' . $status . '</div>';
+            return '<div class="status-cell text-darkest-grey">'.$status.'</div>';
         });
         $datatables->editColumn('total', function ($row) {
             $currencyId = $row->currency->id;
 
-            return '<div class="text-right">' . __('app.total') . ': ' . currency_format($row->total, $currencyId) . '<p class="my-0"><span class="text-success mt-1">' . __('app.paid') . ':</span> ' . currency_format($row->amountPaid(), $currencyId) . '</p><span class="text-danger">' . __('app.unpaid') . ':</span> ' . currency_format($row->amountDue(), $currencyId) . '</div>';
+            return '<div class="text-right">'.__('app.total').': '.currency_format($row->total, $currencyId).'<p class="my-0"><span class="text-success mt-1">'.__('app.paid').':</span> '.currency_format($row->amountPaid(), $currencyId).'</p><span class="text-danger">'.__('app.unpaid').':</span> '.currency_format($row->amountDue(), $currencyId).'</div>';
         });
         $datatables->editColumn('export_total', function ($row) {
             $currencyId = $row->currency->id;
@@ -456,7 +462,7 @@ class InvoicesDataTable extends BaseDataTable
             $model = $model->where(DB::raw('DATE(invoices.`issue_date`)'), '<=', $endDate);
         }
 
-        if ($request->status != 'all' && !is_null($request->status)) {
+        if ($request->status != 'all' && ! is_null($request->status)) {
             if ($request->status == 'pending') {
                 $model = $model->where(function ($q) {
                     $q->where('invoices.status', '=', 'unpaid');
@@ -477,36 +483,36 @@ class InvoicesDataTable extends BaseDataTable
             });
         }
 
-        if ($request->projectID != 'all' && !is_null($request->projectID)) {
+        if ($request->projectID != 'all' && ! is_null($request->projectID)) {
             $model = $model->where('invoices.project_id', '=', $request->projectID);
         }
 
-        if ($request->clientID != 'all' && !is_null($request->clientID)) {
+        if ($request->clientID != 'all' && ! is_null($request->clientID)) {
             $model = $model->where('invoices.client_id', '=', $request->clientID);
         }
 
         $safeTerm = Common::safeString(request('searchText'));
         if ($request->searchText != '') {
             $model->where(function ($query) use ($safeTerm) {
-                $query->where('invoices.invoice_number', 'like', '%' . $safeTerm . '%')
-                    ->orWhere('invoices.custom_invoice_number', 'like', '%' . $safeTerm . '%')
-                    ->orWhere('invoices.id', 'like', '%' . $safeTerm . '%')
-                    ->orWhere('invoices.total', 'like', '%' . $safeTerm . '%')
-                    ->orWhere('client_details.company_name', 'like', '%' . $safeTerm . '%')
-                    ->orWhere('users.salutation', 'like', '%' . $safeTerm . '%')
+                $query->where('invoices.invoice_number', 'like', '%'.$safeTerm.'%')
+                    ->orWhere('invoices.custom_invoice_number', 'like', '%'.$safeTerm.'%')
+                    ->orWhere('invoices.id', 'like', '%'.$safeTerm.'%')
+                    ->orWhere('invoices.total', 'like', '%'.$safeTerm.'%')
+                    ->orWhere('client_details.company_name', 'like', '%'.$safeTerm.'%')
+                    ->orWhere('users.salutation', 'like', '%'.$safeTerm.'%')
                     ->orWhere(function ($query) use ($safeTerm) {
                         $query->whereHas('client', function ($q) use ($safeTerm) {
-                            $q->where('name', 'like', '%' . $safeTerm . '%');
+                            $q->where('name', 'like', '%'.$safeTerm.'%');
                         });
                     })
                     ->orWhere(function ($query) use ($safeTerm) {
                         $query->whereHas('project', function ($q) use ($safeTerm) {
-                            $q->where('project_name', 'like', '%' . $safeTerm . '%')
-                                ->orWhere('project_short_code', 'like', '%' . $safeTerm . '%'); // project short code
+                            $q->where('project_name', 'like', '%'.$safeTerm.'%')
+                                ->orWhere('project_short_code', 'like', '%'.$safeTerm.'%'); // project short code
                         });
                     })
                     ->orWhere(function ($query) use ($safeTerm) {
-                        $query->where('invoices.status', 'like', '%' . $safeTerm . '%');
+                        $query->where('invoices.status', 'like', '%'.$safeTerm.'%');
                     });
             });
         }
@@ -560,7 +566,7 @@ class InvoicesDataTable extends BaseDataTable
             ]);
 
         if (canDataTableExport()) {
-            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
+            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
         }
 
         return $dataTable;
@@ -576,18 +582,18 @@ class InvoicesDataTable extends BaseDataTable
         $data = [
             __('app.id') => ['data' => 'id', 'name' => 'id', 'visible' => false, 'title' => __('app.id')],
             __('modules.taskCode') => ['data' => 'short_code', 'name' => 'short_code', 'title' => __('modules.taskCode')],
-            __('app.invoice') . '#' => ['data' => 'invoice_number', 'name' => 'invoice_number', 'exportable' => false, 'title' => __('app.invoice')],
-            __('app.invoiceNumber') . '#' => ['data' => 'invoice', 'name' => 'invoice_number', 'visible' => false, 'title' => __('app.invoiceNumber')],
+            __('app.invoice').'#' => ['data' => 'invoice_number', 'name' => 'invoice_number', 'exportable' => false, 'title' => __('app.invoice')],
+            __('app.invoiceNumber').'#' => ['data' => 'invoice', 'name' => 'invoice_number', 'visible' => false, 'title' => __('app.invoiceNumber')],
             __('app.project') => ['data' => 'project_name', 'name' => 'project.project_name', 'title' => __('app.project'), 'visible' => in_array('projects', user_modules()), 'exportable' => in_array('projects', user_modules())],
-            __('app.client') => ['data' => 'name', 'name' => 'project.client.name', 'exportable' => false, 'title' => __('app.client'), 'visible' => (!in_array('client', user_roles()) && in_array('clients', user_modules()))],
+            __('app.client') => ['data' => 'name', 'name' => 'project.client.name', 'exportable' => false, 'title' => __('app.client'), 'visible' => (! in_array('client', user_roles()) && in_array('clients', user_modules()))],
             __('app.customers') => ['data' => 'client_name', 'name' => 'project.client.name', 'visible' => false, 'title' => __('app.customers')],
             __('app.email') => ['data' => 'client_email', 'name' => 'project.client.email', 'visible' => false, 'title' => __('app.email')],
             __('modules.invoices.total') => ['data' => 'total', 'name' => 'total', 'class' => 'text-right', 'exportable' => false, 'visible' => true, 'title' => __('modules.invoices.total')],
-            __('modules.invoices.total') . ' ' . __('modules.invoices.amount') => ['data' => 'export_total', 'name' => 'export_total', 'visible' => false, 'exportable' => true, 'title' => __('modules.invoices.total') . ' ' . __('modules.invoices.amount')],
-            __('modules.invoices.paid') => ['data' => 'export_paid', 'name' => 'paid', 'visible' => false, 'title' => __('modules.invoices.paid') . ' ' . __('modules.invoices.amount')],
-            __('modules.invoices.unpaid') => ['data' => 'export_unpaid', 'name' => 'unpaid', 'visible' => false, 'title' => __('modules.invoices.unpaid') . ' ' . __('modules.invoices.amount')],
+            __('modules.invoices.total').' '.__('modules.invoices.amount') => ['data' => 'export_total', 'name' => 'export_total', 'visible' => false, 'exportable' => true, 'title' => __('modules.invoices.total').' '.__('modules.invoices.amount')],
+            __('modules.invoices.paid') => ['data' => 'export_paid', 'name' => 'paid', 'visible' => false, 'title' => __('modules.invoices.paid').' '.__('modules.invoices.amount')],
+            __('modules.invoices.unpaid') => ['data' => 'export_unpaid', 'name' => 'unpaid', 'visible' => false, 'title' => __('modules.invoices.unpaid').' '.__('modules.invoices.amount')],
             __('modules.invoices.invoiceDate') => ['data' => 'issue_date', 'name' => 'issue_date', 'title' => __('modules.invoices.invoiceDate')],
-            __('app.status') => ['data' => 'status', 'name' => 'status', 'width' => '10%', 'title' => __('app.status')]
+            __('app.status') => ['data' => 'status', 'name' => 'status', 'width' => '10%', 'title' => __('app.status')],
         ];
 
         $action = [
@@ -596,9 +602,9 @@ class InvoicesDataTable extends BaseDataTable
                 ->printable(false)
                 ->orderable(false)
                 ->searchable(false)
-                ->addClass('text-right pr-20')
+                ->addClass('text-right pr-20'),
         ];
 
-        return array_merge($data, CustomFieldGroup::customFieldsDataMerge(new Invoice()), $action);
+        return array_merge($data, CustomFieldGroup::customFieldsDataMerge(new Invoice), $action);
     }
 }

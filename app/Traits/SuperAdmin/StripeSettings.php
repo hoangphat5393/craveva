@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: DEXTER
@@ -13,7 +14,6 @@ use Illuminate\Support\Facades\Config;
 
 trait StripeSettings
 {
-
     public function setStripConfigs()
     {
         $settings = GlobalPaymentGatewayCredentials::first();
@@ -22,8 +22,7 @@ trait StripeSettings
             $stripeClientId = $settings->test_stripe_client_id;
             $stripeSecret = $settings->test_stripe_secret;
             $stripeWebhookSecret = $settings->test_stripe_webhook_secret;
-        }
-        else {
+        } else {
             $stripeClientId = $settings->live_stripe_client_id;
             $stripeSecret = $settings->live_stripe_secret;
             $stripeWebhookSecret = $settings->live_stripe_webhook_secret;
@@ -36,8 +35,4 @@ trait StripeSettings
         Config::set('cashier.secret', $apiSecret);
         Config::set('cashier.webhook.secret', $webhookKey);
     }
-
 }
-
-
-

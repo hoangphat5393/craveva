@@ -9,7 +9,6 @@ use Illuminate\Queue\SerializesModels;
 
 class NewProductPurchaseEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $invoice;
@@ -18,5 +17,4 @@ class NewProductPurchaseEvent
     {
         $this->invoice = $invoice;
     }
-
 }

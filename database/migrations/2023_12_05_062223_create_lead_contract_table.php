@@ -8,10 +8,10 @@ use App\Models\DealFollowUp;
 use App\Models\Lead;
 use App\Models\LeadPipeline;
 use App\Models\LeadProduct;
-use App\Models\PipelineStage;
 use App\Models\Module;
 use App\Models\Permission;
 use App\Models\PermissionType;
+use App\Models\PipelineStage;
 use App\Models\Proposal;
 use App\Models\PurposeConsentLead;
 use App\Models\RoleUser;
@@ -22,8 +22,8 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
@@ -38,7 +38,7 @@ return new class extends Migration {
 
     private function createTables()
     {
-        if (!Schema::hasTable('lead_pipelines')) {
+        if (! Schema::hasTable('lead_pipelines')) {
             Schema::create('lead_pipelines', function (Blueprint $table) {
                 $table->id();
                 $table->integer('company_id')->unsigned()->nullable();
@@ -52,7 +52,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasTable('pipeline_stages')) {
+        if (! Schema::hasTable('pipeline_stages')) {
             Schema::create('pipeline_stages', function (Blueprint $table) {
                 $table->increments('id');
                 $table->integer('company_id')->unsigned()->nullable();
@@ -68,7 +68,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasTable('deals')) {
+        if (! Schema::hasTable('deals')) {
             Schema::create('deals', function (Blueprint $table) {
                 $table->id();
                 $table->integer('company_id')->unsigned()->nullable();
@@ -98,7 +98,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasTable('lead_pipeline_stages')) {
+        if (! Schema::hasTable('lead_pipeline_stages')) {
             Schema::create('lead_pipeline_stages', function (Blueprint $table) {
                 $table->increments('id');
                 $table->unsignedBigInteger('lead_pipeline_id')->unsigned()->nullable();
@@ -119,12 +119,11 @@ return new class extends Migration {
                 echo $e->getMessage();
             }
 
-
             $table->unsignedInteger('pipeline_stage_id')->nullable()->after('user_id');
             $table->foreign('pipeline_stage_id')->references(['id'])->on('pipeline_stages')->onUpdate('CASCADE')->onDelete('SET NULL');
         });
 
-        if (!Schema::hasTable('deal_notes')) {
+        if (! Schema::hasTable('deal_notes')) {
             Schema::create('deal_notes', function (Blueprint $table) {
                 $table->increments('id');
                 $table->string('title');
@@ -181,13 +180,13 @@ return new class extends Migration {
                 continue;
             }
 
-            $pipeline = (new \App\Observers\CompanyObserver())->leadStages($company);
+            $pipeline = (new \App\Observers\CompanyObserver)->leadStages($company);
 
             $leadStatus = DB::table('lead_status')->where('company_id', $company->id)->get();
 
             foreach ($leadStatus as $status) {
-                if (!in_array($status->type, ['pending', 'in process', 'done'])) {
-                    $pipelineStage = new PipelineStage();
+                if (! in_array($status->type, ['pending', 'in process', 'done'])) {
+                    $pipelineStage = new PipelineStage;
                     $pipelineStage->company_id = $company->id;
                     $pipelineStage->lead_pipeline_id = $pipeline->id;
                     $pipelineStage->name = $status->type;
@@ -197,7 +196,6 @@ return new class extends Migration {
 
             $leadBoardSettings = UserLeadboardSetting::where('company_id', $company->id)->get();
             $leadStages = PipelineStage::where('company_id', $company->id)->get();
-
 
             foreach ($leadBoardSettings as $leadBoard) {
                 $statusData = $leadStatus->where('id', $leadBoard->pipeline_stage_id)->first();
@@ -252,7 +250,7 @@ return new class extends Migration {
                 };
 
                 // Lead Details save in deals
-                $deal = new Deal();
+                $deal = new Deal;
                 $deal->company_id = $lead->company_id;
                 $deal->name = $lead->client_name;
                 $deal->lead_pipeline_id = $pipeline->id;
@@ -275,10 +273,9 @@ return new class extends Migration {
                 DealFile::where('lead_id', $lead->id)->update(['deal_id' => $deal->id]);
 
             } catch (\Exception $e) {
-                echo "\nError in lead id: " . $lead->id . ' Error: ' . $e->getMessage() . "\n";
+                echo "\nError in lead id: ".$lead->id.' Error: '.$e->getMessage()."\n";
             }
         }
-
 
         $tables = [
             'lead_follow_up',
@@ -298,7 +295,6 @@ return new class extends Migration {
             }
         }
 
-
         try {
             Schema::whenTableHasColumn('deal_files', 'lead_id', function (Blueprint $table) {
                 $table->dropColumn('lead_id');
@@ -307,14 +303,13 @@ return new class extends Migration {
             echo $exception->getMessage();
         }
 
-
     }
 
     private function addDealModulePermission()
     {
         $addDealsPermission = Permission::where('name', 'add_deals')->first();
 
-        if (!$addDealsPermission) {
+        if (! $addDealsPermission) {
             $leadsModule = Module::firstOrCreate(['module_name' => 'leads']);
 
             $dealPer = [
@@ -440,7 +435,7 @@ return new class extends Migration {
                         [
                             'user_id' => $item->user_id,
                             'permission_id' => $dealPermission->id,
-                            'permission_type_id' => $allTypePermission->id ?? PermissionType::ALL
+                            'permission_type_id' => $allTypePermission->id ?? PermissionType::ALL,
                         ]
                     );
                 }
@@ -471,5 +466,4 @@ return new class extends Migration {
         Schema::dropIfExists('pipeline_stages');
         Schema::dropIfExists('lead_pipeline_stages');
     }
-
 };

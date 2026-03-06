@@ -14,7 +14,6 @@ use Illuminate\Support\Facades\Config;
 
 trait SocialAuthSettings
 {
-
     public function setSocailAuthConfigs()
     {
         $settings = SocialAuthSetting::first();

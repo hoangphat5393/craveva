@@ -4,17 +4,16 @@ namespace App\Http\Controllers\SuperAdmin;
 
 use App\Helper\Reply;
 use App\Http\Controllers\AccountBaseController;
-use App\Http\Requests\SuperAdmin\GlobalCurrency\StoreGlobalCurrencyExchangeKey;
 use App\Http\Requests\SuperAdmin\GlobalCurrency\StoreGlobalCurrency;
+use App\Http\Requests\SuperAdmin\GlobalCurrency\StoreGlobalCurrencyExchangeKey;
 use App\Http\Requests\SuperAdmin\GlobalCurrency\UpdateGlobalCurrency;
 use App\Models\GlobalSetting;
 use App\Models\SuperAdmin\GlobalCurrency;
-use GuzzleHttp\Client;
 use App\Traits\SuperAdmin\GlobalCurrencyExchange;
+use GuzzleHttp\Client;
 
 class GlobalCurrencySettingController extends AccountBaseController
 {
-
     use GlobalCurrencyExchange;
 
     public function __construct()
@@ -64,13 +63,13 @@ class GlobalCurrencySettingController extends AccountBaseController
     }
 
     /**
-     * @param StoreGlobalCurrency $request
      * @return array|string[]
+     *
      * @throws \Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException
      */
     public function store(StoreGlobalCurrency $request)
     {
-        $currency = new GlobalCurrency();
+        $currency = new GlobalCurrency;
         $currency->currency_name = $request->currency_name;
         $currency->currency_symbol = $request->currency_symbol;
         $currency->currency_code = $request->currency_code;
@@ -96,7 +95,7 @@ class GlobalCurrencySettingController extends AccountBaseController
     /**
      * Show the form for editing the specified resource.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
     public function edit($id)
@@ -110,8 +109,8 @@ class GlobalCurrencySettingController extends AccountBaseController
     /**
      * Update the specified resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param int $id
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
      * @return array|string[]
      */
     public function update(UpdateGlobalCurrency $request, $id)
@@ -129,7 +128,7 @@ class GlobalCurrencySettingController extends AccountBaseController
         $currency->decimal_separator = $request->decimal_separator;
         $currency->save();
 
-        cache()->forget('global_currency_format_setting' . $currency->id);
+        cache()->forget('global_currency_format_setting'.$currency->id);
 
         return Reply::success(__('messages.updateSuccess'));
     }
@@ -137,7 +136,7 @@ class GlobalCurrencySettingController extends AccountBaseController
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
+     * @param  int  $id
      * @return array
      */
     public function destroy($id)
@@ -158,11 +157,11 @@ class GlobalCurrencySettingController extends AccountBaseController
 
         try {
             // Get exchange rate
-            $client = new Client();
-            $res = $client->request('GET', 'https://' . $currencyApiKeyVersion . '.currconv.com/api/v7/convert?q=' . $this->global->currency->currency_code . '_' . $currency . '&compact=ultra&apiKey=' . $currencyApiKey);
+            $client = new Client;
+            $res = $client->request('GET', 'https://'.$currencyApiKeyVersion.'.currconv.com/api/v7/convert?q='.$this->global->currency->currency_code.'_'.$currency.'&compact=ultra&apiKey='.$currencyApiKey);
             $conversionRate = $res->getBody();
             $conversionRate = json_decode($conversionRate, true);
-            $rate = $conversionRate[mb_strtoupper($this->global->currency->currency_code) . '_' . $currency];
+            $rate = $conversionRate[mb_strtoupper($this->global->currency->currency_code).'_'.$currency];
 
             return Reply::dataOnly(['status' => 'success', 'value' => $rate]);
 
@@ -196,7 +195,6 @@ class GlobalCurrencySettingController extends AccountBaseController
     }
 
     /**
-     * @param StoreGlobalCurrencyExchangeKey $request
      * @return array
      */
     public function currencyExchangeKeyStore(StoreGlobalCurrencyExchangeKey $request)
@@ -204,9 +202,9 @@ class GlobalCurrencySettingController extends AccountBaseController
         $this->global->currency_converter_key = $request->currency_converter_key;
         $this->global->currency_key_version = $request->currency_key_version;
 
-        if($request->currency_key_version == 'dedicated'){
+        if ($request->currency_key_version == 'dedicated') {
             $this->global->dedicated_subdomain = $request->dedicated_subdomain;
-        }else{
+        } else {
             $this->global->dedicated_subdomain = null;
         }
 
@@ -215,8 +213,6 @@ class GlobalCurrencySettingController extends AccountBaseController
         // remove cache
         cache()->forget('global_setting');
 
-
         return Reply::success(__('messages.currencyConvertKeyUpdated'));
     }
-
 }

@@ -1,10 +1,9 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
-use App\Models\ModuleSetting;
 use App\Models\Company;
+use App\Models\ModuleSetting;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -17,7 +16,7 @@ return new class extends Migration
     {
         // Use try-catch to avoid issues if tables don't exist during fresh install
         try {
-            if (!Schema::hasTable('companies') || !Schema::hasTable('module_settings')) {
+            if (! Schema::hasTable('companies') || ! Schema::hasTable('module_settings')) {
                 return;
             }
 
@@ -31,8 +30,8 @@ return new class extends Migration
                         ->where('type', 'client')
                         ->exists();
 
-                    if (!$exists) {
-                        $setting = new ModuleSetting();
+                    if (! $exists) {
+                        $setting = new ModuleSetting;
                         $setting->company_id = $company->id;
                         $setting->module_name = $moduleName;
                         $setting->status = 'active';

@@ -15,6 +15,7 @@ namespace App\Models;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read mixed $icon
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|PusherSetting newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|PusherSetting newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|PusherSetting query()
@@ -27,13 +28,13 @@ namespace App\Models;
  * @method static \Illuminate\Database\Eloquent\Builder|PusherSetting wherePusherCluster($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PusherSetting whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PusherSetting whereUpdatedAt($value)
+ *
  * @property int $taskboard
  * @property int $messages
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|PusherSetting whereMessages($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PusherSetting whereTaskboard($value)
+ *
  * @mixin \Eloquent
  */
-class PusherSetting extends BaseModel
-{
-
-}
+class PusherSetting extends BaseModel {}

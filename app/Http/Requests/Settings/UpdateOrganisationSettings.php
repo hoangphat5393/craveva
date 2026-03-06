@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class UpdateOrganisationSettings extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -28,16 +27,14 @@ class UpdateOrganisationSettings extends CoreRequest
             'company_name' => 'required|max:60',
             'company_email' => 'required|email:rfc,strict|max:100',
             'company_phone' => 'required|max:20',
-            'website' => 'nullable|url|max:50'
+            'website' => 'nullable|url|max:50',
         ];
 
-        if($this->has('google_recaptcha') && $this->google_recaptcha == 'on')
-        {
+        if ($this->has('google_recaptcha') && $this->google_recaptcha == 'on') {
             $rules['google_recaptcha_key'] = 'required';
             $rules['google_recaptcha_secret'] = 'required';
         }
 
         return $rules;
     }
-
 }

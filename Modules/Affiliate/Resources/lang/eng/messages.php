@@ -1,6 +1,6 @@
 <?php
 
-return array(
+return [
     'minimumPayout' => 'Minimum Payout',
     'lowestValue' => 'The amount should be at least',
     'MaxValue' => 'The amount should be less or equl to',
@@ -10,5 +10,4 @@ return array(
     'minimumPayoutMessage' => 'Minimum payout is :min_payout<br> Current balance is :current_balance',
     'alreadyRequested' => 'Already requested for payout',
     'noAffiliate' => 'No affiliate registered yet',
-);
-
+];

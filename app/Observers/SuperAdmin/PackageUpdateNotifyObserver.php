@@ -2,17 +2,15 @@
 
 namespace App\Observers\SuperAdmin;
 
-use App\Models\PackageUpdateNotify;
 use App\Events\SuperAdmin\PackageUpdateNotifyEvent;
+use App\Models\PackageUpdateNotify;
 
 class PackageUpdateNotifyObserver
 {
-
     public function created(PackageUpdateNotify $packageUpdateNotify)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             event(new PackageUpdateNotifyEvent($packageUpdateNotify));
         }
     }
-
 }

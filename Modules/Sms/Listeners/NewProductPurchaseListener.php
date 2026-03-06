@@ -16,5 +16,4 @@ class NewProductPurchaseListener
         } catch (\Exception $e) { // @codingStandardsIgnoreLine
         }
     }
-
 }

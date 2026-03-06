@@ -6,14 +6,13 @@ use App\Helper\Reply;
 use App\Http\Requests\LeaveType\StoreLeaveType;
 use App\Models\BaseModel;
 use App\Models\Designation;
+use App\Models\Leave;
 use App\Models\LeaveType;
 use App\Models\Role;
 use App\Models\Team;
-use App\Models\Leave;
 
 class LeaveTypeController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -36,23 +35,23 @@ class LeaveTypeController extends AccountBaseController
     }
 
     /**
-     * @param StoreLeaveType $request
      * @return array
+     *
      * @throws \Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException
      */
     public function store(StoreLeaveType $request)
     {
-        $leaveType = new LeaveType();
+        $leaveType = new LeaveType;
         $leaveType->type_name = $request->type_name;
         $leaveType->leavetype = $request->leavetype;
         $leaveType->color = $request->color;
         $leaveType->paid = $request->paid;
 
-        if($request->leavetype == 'monthly'){
+        if ($request->leavetype == 'monthly') {
             $leaveType->no_of_leaves = $request->monthly_leave_number;
             $leaveType->monthly_limit = 0;
 
-        }else{
+        } else {
             $leaveType->no_of_leaves = $request->yearly_leave_number;
             $leaveType->monthly_limit = $request->monthly_limit;
         }
@@ -109,25 +108,25 @@ class LeaveTypeController extends AccountBaseController
 
         $leaveType = LeaveType::findOrFail($id);
 
-        if ($request->paid !== (string)$leaveType->paid) {
+        if ($request->paid !== (string) $leaveType->paid) {
             Leave::where('leave_type_id', $leaveType->id)->update(['paid' => $request->paid]);
         }
 
         $leaveType->type_name = $request->type_name;
         $leaveType->color = $request->color;
         $leaveType->paid = $request->paid;
-        
+
         // need values later no of leaves early one
         session([
-                'old_leaves' => $leaveType->no_of_leaves,
-                'old_leavetype' => $leaveType->leavetype
-            ]);
+            'old_leaves' => $leaveType->no_of_leaves,
+            'old_leavetype' => $leaveType->leavetype,
+        ]);
 
-        if($leaveType->leavetype == 'monthly'){
+        if ($leaveType->leavetype == 'monthly') {
             $leaveType->no_of_leaves = $request->monthly_leave_number;
             $leaveType->monthly_limit = 0;
 
-        }else{
+        } else {
             $leaveType->no_of_leaves = $request->yearly_leave_number;
             $leaveType->monthly_limit = $request->monthly_limit;
         }
@@ -162,6 +161,7 @@ class LeaveTypeController extends AccountBaseController
         if (request()->has('restore') && request()->restore == 'restore') {
             if ($leaveType && $leaveType->trashed()) {
                 $leaveType->restore();
+
                 return Reply::success(__('messages.restoreSuccess'));
             }
         }
@@ -169,6 +169,7 @@ class LeaveTypeController extends AccountBaseController
         if (request()->has('archive') && request()->archive == 'archive') {
             if ($leaveType) {
                 $leaveType->delete();
+
                 return Reply::success(__('messages.archiveSuccess'));
             }
         }
@@ -176,12 +177,13 @@ class LeaveTypeController extends AccountBaseController
         if (request()->has('force_delete') && request()->force_delete == 'force_delete') {
             if ($leaveType) {
                 $leaveType->forceDelete();
+
                 return Reply::success(__('messages.deleteSuccess'));
             }
         }
 
         LeaveType::destroy($id);
+
         return Reply::success(__('messages.deleteSuccess'));
     }
-
 }

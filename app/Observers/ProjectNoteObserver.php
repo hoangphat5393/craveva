@@ -5,28 +5,24 @@ namespace App\Observers;
 use App\Events\ProjectNoteEvent;
 use App\Events\ProjectNoteMentionEvent;
 use App\Events\ProjectNoteUpdateEvent;
-use App\Models\ProjectUserNote;
 use App\Models\ProjectNote;
+use App\Models\ProjectUserNote;
 use App\Models\User;
 
 // use function GuzzleHttp\json_decode;
 
 class ProjectNoteObserver
 {
-
-    /**
-     * @param ProjectNote $ProjectNote
-     */
     public function saving(ProjectNote $ProjectNote)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             $ProjectNote->last_updated_by = user()->id;
         }
     }
 
     public function creating(ProjectNote $ProjectNote)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             $ProjectNote->added_by = user()->id;
         }
     }
@@ -60,8 +56,7 @@ class ProjectNoteObserver
 
             }
 
-        }
-        else {
+        } else {
 
             if ($projectNote->type == 0) {
                 event(new ProjectNoteEvent($project, $projectNote->created_at, $projectNote->project->projectMembers));
@@ -76,12 +71,12 @@ class ProjectNoteObserver
 
     public function updating(ProjectNote $projectNote)
     {
-        $mentionedUser = ProjectUserNote::where('project_note_id', $projectNote->id)->pluck('user_id')->map(fn($id) => (string) $id)->toArray();
+        $mentionedUser = ProjectUserNote::where('project_note_id', $projectNote->id)->pluck('user_id')->map(fn ($id) => (string) $id)->toArray();
         $requestUserId = request()->user_id ?? [];
         $newMention = array_diff($requestUserId, $mentionedUser);
         $project = $projectNote->project;
 
-        if (!empty($newMention) && $projectNote->type == '1') {
+        if (! empty($newMention) && $projectNote->type == '1') {
             event(new ProjectNoteMentionEvent($project, $projectNote->created_at, $newMention));
         }
 
@@ -91,19 +86,19 @@ class ProjectNoteObserver
         if ($projectNote->isDirty('title')) {
             $changes['title'] = [
                 'old' => $projectNote->getOriginal('title'),
-                'new' => $projectNote->title
+                'new' => $projectNote->title,
             ];
         }
 
         if ($projectNote->isDirty('details')) {
             $changes['details'] = [
                 'old' => $projectNote->getOriginal('details'),
-                'new' => $projectNote->details
+                'new' => $projectNote->details,
             ];
         }
 
         // If there are changes in title or details, send notification
-        if (!empty($changes)) {
+        if (! empty($changes)) {
             $notifyUsers = collect();
 
             if ($projectNote->type == 0) {
@@ -119,5 +114,4 @@ class ProjectNoteObserver
             }
         }
     }
-
 }

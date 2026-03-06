@@ -3,7 +3,8 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-return new class extends Migration {
+return new class extends Migration
+{
     public function up(): void
     {
         DB::table('custom_field_groups')
@@ -26,4 +27,3 @@ return new class extends Migration {
             ->update(['model' => 'App\\Models\\OrderDelivery']);
     }
 };
-

@@ -7,30 +7,31 @@ use App\Models\SuperAdmin\GlobalCurrency;
 use App\Models\SuperAdmin\GlobalInvoice;
 use App\Models\SuperAdmin\GlobalPaymentGatewayCredentials;
 use App\Models\SuperAdmin\GlobalSubscription;
-use App\Notifications\SuperAdmin\CompanyPurchasedPlan;
-use App\Notifications\SuperAdmin\CompanyUpdatedPlan;
 use App\Models\SuperAdmin\Package;
 use App\Models\SuperAdmin\RazorpayInvoice;
 use App\Models\User;
+use App\Notifications\SuperAdmin\CompanyPurchasedPlan;
+use App\Notifications\SuperAdmin\CompanyUpdatedPlan;
 use Carbon\Carbon;
 use Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Notification;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Notification;
 use Razorpay\Api\Api;
 use Razorpay\Api\Errors;
 
 class RazorpayWebhookController extends Controller
 {
-
     const SUBSCRIPTION_CHARGED = 'subscription.charged';
+
     const PAYMENT_FAILED = 'payment.failed';
+
     const SUBSCRIPTION_CANCELLED = 'subscription.cancelled';
 
     public function saveInvoices(Request $request)
     {
-        if (!isset($_SERVER['HTTP_X_RAZORPAY_SIGNATURE'])) {
-            echo('Signature mismatched Razorpay webhook saas');
+        if (! isset($_SERVER['HTTP_X_RAZORPAY_SIGNATURE'])) {
+            echo 'Signature mismatched Razorpay webhook saas';
 
             return false;
         }
@@ -41,8 +42,7 @@ class RazorpayWebhookController extends Controller
             $apiKey = $credential->test_razorpay_key;
             $secretKey = $credential->test_razorpay_secret;
             $secretWebhook = $credential->test_razorpay_webhook_secret;
-        }
-        else {
+        } else {
             $apiKey = $credential->live_razorpay_key;
             $secretKey = $credential->live_razorpay_secret;
             $secretWebhook = $credential->live_razorpay_webhook_secret;
@@ -54,13 +54,13 @@ class RazorpayWebhookController extends Controller
         $notes = $requestData['payload']['payment']['entity']['notes'] ?? null;
 
         if (is_null($notes)) {
-            echo('Notes Payload not found');
+            echo 'Notes Payload not found';
+
             return false;
         }
 
-
         if (isset($notes['webhook_hash']) && $notes['webhook_hash'] !== global_setting()->hash) {
-            echo('Main app hash mismatched: This indicates that the webhook for another app has been called.');
+            echo 'Main app hash mismatched: This indicates that the webhook for another app has been called.';
 
             return false;
         }
@@ -70,7 +70,7 @@ class RazorpayWebhookController extends Controller
         try {
             $api = new Api($apiKey, $secretKey);
             $api->utility->verifyWebhookSignature($post, $_SERVER['HTTP_X_RAZORPAY_SIGNATURE'], $razorpayWebhookSecret);
-        } catch (Errors\SignatureVerificationError | \Exception $e) {
+        } catch (Errors\SignatureVerificationError|\Exception $e) {
             info($e->getMessage());
 
             return;
@@ -97,7 +97,9 @@ class RazorpayWebhookController extends Controller
 
     /**
      * Does nothing for the main payments flow currently
-     * @param array $requestData Webook Data
+     *
+     * @param  array  $requestData  Webook Data
+     *
      * @throws RelatedResourceNotFoundException
      */
     protected function subscriptionCancelled(array $requestData)
@@ -106,7 +108,7 @@ class RazorpayWebhookController extends Controller
 
         $razorpaySubscription = GlobalSubscription::where('gateway_name', 'razorpay')->where('subscription_status', 'active')->where('transaction_id', $requestData['payload']['subscription']['entity']['id'])->first();
 
-        if (!is_null($razorpaySubscription)) {
+        if (! is_null($razorpaySubscription)) {
             $razorpaySubscription->ends_at = Carbon::createFromTimestamp($subscriptionEndedAt)->format('Y-m-d');
             $razorpaySubscription->save();
 
@@ -119,7 +121,6 @@ class RazorpayWebhookController extends Controller
     }
 
     /**
-     * @param array $requestData
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
     protected function paymentAuthorized(array $requestData)
@@ -143,8 +144,7 @@ class RazorpayWebhookController extends Controller
         if ($credential->razorpay_mode == 'test') {
             $apiKey = $credential->test_razorpay_key;
             $secretKey = $credential->test_razorpay_secret;
-        }
-        else {
+        } else {
             $apiKey = $credential->live_razorpay_key;
             $secretKey = $credential->live_razorpay_secret;
         }
@@ -176,16 +176,15 @@ class RazorpayWebhookController extends Controller
 
             if ($currency) {
                 $currencyID = $currency->id;
-            }
-            else {
+            } else {
                 $currencyID = GlobalCurrency::where('currency_code', 'USD')->first()->id;
             }
 
             $razorpayInvoice = GlobalInvoice::where('gateway_name', 'razorpay')->where('invoice_id', $invoiceID)->first();
 
             // Store invoice details
-            if (!$razorpayInvoice) {
-                $razorpayInvoice = new GlobalInvoice();
+            if (! $razorpayInvoice) {
+                $razorpayInvoice = new GlobalInvoice;
             }
 
             $razorpayInvoice->company_id = $company->id;
@@ -218,8 +217,7 @@ class RazorpayWebhookController extends Controller
             if ($lastInvoice) {
                 Notification::send($generatedBy, new CompanyUpdatedPlan($company, $plan->id));
 
-            }
-            else {
+            } else {
                 Notification::send($generatedBy, new CompanyPurchasedPlan($company, $plan->id));
 
             }
@@ -230,11 +228,11 @@ class RazorpayWebhookController extends Controller
             //
             // Capture will fail if the payment is already captured
             //
-            $log = array(
+            $log = [
                 'message' => $e->getMessage(),
                 'payment_id' => $razorpayPaymentId,
-                'event' => $requestData['event']
-            );
+                'event' => $requestData['event'],
+            ];
             error_log(json_encode($log));
         }
 
@@ -242,5 +240,4 @@ class RazorpayWebhookController extends Controller
         exit;
 
     }
-
 }

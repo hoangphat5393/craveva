@@ -19,7 +19,6 @@ return new class extends Migration
      *
      * @return void
      */
-
     public function up()
     {
         Schema::table('leave_types', function (Blueprint $table) {
@@ -38,9 +37,8 @@ return new class extends Migration
 
         $companies = Company::all();
 
-        if($companies){
-            foreach($companies as $company)
-            {
+        if ($companies) {
+            foreach ($companies as $company) {
                 $teams = Team::where('company_id', $company->id)->pluck('id')->toArray();
                 $designations = Designation::where('company_id', $company->id)->pluck('id')->toArray();
                 $roles = Role::where('name', '<>', 'client')->where('company_id', $company->id)->pluck('id')->toArray();
@@ -55,12 +53,11 @@ return new class extends Migration
             }
         }
 
-
         User::whereNull('gender')->update([
-            'gender' => 'male'
+            'gender' => 'male',
         ]);
         EmployeeDetails::whereNull('marital_status')->update([
-            'marital_status' => MaritalStatus::Single
+            'marital_status' => MaritalStatus::Single,
         ]);
 
     }
@@ -86,5 +83,4 @@ return new class extends Migration
             $table->dropColumn('role');
         });
     }
-
 };

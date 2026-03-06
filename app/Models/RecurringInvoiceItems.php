@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property string|null $hsn_sac_code
  * @property mixed $recurringInvoiceItemImage
  * @property-read mixed $icon
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|RecurringInvoiceItems newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|RecurringInvoiceItems newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|RecurringInvoiceItems query()
@@ -37,17 +38,20 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @method static \Illuminate\Database\Eloquent\Builder|RecurringInvoiceItems whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|RecurringInvoiceItems whereUnitPrice($value)
  * @method static \Illuminate\Database\Eloquent\Builder|RecurringInvoiceItems whereUpdatedAt($value)
+ *
  * @property int|null $product_id
  * @property int|null $unit_id
  * @property \App\Models\UnitType|null $unit
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|RecurringInvoiceItems whereProductId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|RecurringInvoiceItems whereUnitId($value)
+ *
  * @mixin \Eloquent
  */
 class RecurringInvoiceItems extends BaseModel
 {
-
     protected $table = 'invoice_recurring_items';
+
     protected $guarded = ['id'];
 
     public static function taxbyid($id)
@@ -64,5 +68,4 @@ class RecurringInvoiceItems extends BaseModel
     {
         return $this->belongsTo(UnitType::class, 'unit_id');
     }
-    
 }

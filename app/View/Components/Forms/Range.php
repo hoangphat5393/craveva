@@ -7,14 +7,20 @@ use Illuminate\View\Component;
 
 class Range extends Component
 {
-
     public $fieldLabel;
+
     public $fieldValue;
+
     public $fieldName;
+
     public $fieldId;
+
     public $fieldHelp;
+
     public $disabled;
+
     public $max;
+
     public $min;
 
     /**
@@ -43,5 +49,4 @@ class Range extends Component
     {
         return view('components.forms.range');
     }
-
 }

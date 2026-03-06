@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Scopes\ActiveScope;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class EmployeeActivity extends BaseModel
 {
     use HasFactory;
+
     protected $table = 'employee_activity';
 
     protected $fillable = [
@@ -33,11 +34,11 @@ class EmployeeActivity extends BaseModel
         'order_id',
         'contract_id',
     ];
+
     protected $with = [];
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'emp_id')->withoutGlobalScope(ActiveScope::class);
     }
-
 }

@@ -8,7 +8,6 @@ use Modules\Affiliate\Entities\AffiliateSetting;
 
 class StorePayout extends FormRequest
 {
-
     /**
      * Get the validation rules that apply to the request.
      */
@@ -19,7 +18,7 @@ class StorePayout extends FormRequest
 
         return [
             'affiliate_id' => 'required',
-            'amount' => request('affiliate_id') == null ? 'required' : 'required|numeric|min:' . $min_payout . '|max:' . $affiliateBalance,
+            'amount' => request('affiliate_id') == null ? 'required' : 'required|numeric|min:'.$min_payout.'|max:'.$affiliateBalance,
             'payment_method' => 'required',
             'other_payment_method' => 'required_if:payment_method,other',
         ];
@@ -42,5 +41,4 @@ class StorePayout extends FormRequest
             'affiliate_id' => __('affiliate::app.affiliateName'),
         ];
     }
-
 }

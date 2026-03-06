@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class ClientChatStore extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -38,5 +37,4 @@ class ClientChatStore extends CoreRequest
             'admin_id.required_if' => 'Select an admin to send the message',
         ];
     }
-
 }

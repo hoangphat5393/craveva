@@ -1,19 +1,19 @@
 <?php
 
+use App\Models\Permission;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use App\Models\Permission;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
     public function up(): void
     {
         // This is created as old file was not executed for many customers
-        if (!Schema::hasColumn('holidays', 'department_id_json')) {
+        if (! Schema::hasColumn('holidays', 'department_id_json')) {
             Schema::table('holidays', function (Blueprint $table) {
                 $table->text('department_id_json')->nullable();
                 $table->text('designation_id_json')->nullable();
@@ -28,7 +28,6 @@ return new class extends Migration {
                 $table->dropColumn('employment_type');
             });
         }
-
 
         Permission::whereIn('name', ['view_holiday', 'edit_holiday', 'delete_holiday'])->update(['allowed_permissions' => Permission::ALL_4_ADDED_1_OWNED_2_BOTH_3_NONE_5]);
 
@@ -45,5 +44,4 @@ return new class extends Migration {
             $table->dropColumn('employment_type_json');
         });
     }
-
 };

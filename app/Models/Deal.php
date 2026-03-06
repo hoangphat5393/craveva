@@ -59,6 +59,7 @@ use Illuminate\Notifications\Notifiable;
  * @property-read \App\Models\LeadStatus|null $leadStatus
  * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
  * @property-read int|null $notifications_count
+ *
  * @method static \Database\Factories\LeadFactory factory(...$parameters)
  * @method static \Illuminate\Database\Eloquent\Builder|Lead newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Lead newQuery()
@@ -91,12 +92,17 @@ use Illuminate\Notifications\Notifiable;
  * @method static \Illuminate\Database\Eloquent\Builder|Lead whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Lead whereValue($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Lead whereWebsite($value)
+ *
  * @property string|null $hash
  * @property-read \App\Models\LeadCategory|null $category
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Lead whereHash($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Lead whereCompanyId($value)
+ *
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Product> $products
  * @property-read int|null $products_count
  * @property-read int|null $follow_up_date_next
@@ -109,19 +115,20 @@ use Illuminate\Notifications\Notifiable;
  * @property-read \App\Models\Lead|null $contact
  * @property-read \App\Models\PipelineStage|null $leadStage
  * @property-read \App\Models\LeadPipeline|null $pipeline
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Deal whereCloseDate($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Deal whereLeadId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Deal whereLeadPipelineId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Deal whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Deal wherePipelineStageId($value)
+ *
  * @mixin \Eloquent
  */
 class Deal extends BaseModel
 {
-
-    use Notifiable, HasFactory;
     use CustomFieldsTrait;
     use HasCompany;
+    use HasFactory, Notifiable;
 
     const CUSTOM_FIELD_MODEL = 'App\Models\Deal';
 
@@ -136,13 +143,13 @@ class Deal extends BaseModel
     {
         $gravatarHash = md5(strtolower(trim($this->name)));
 
-        return 'https://www.gravatar.com/avatar/' . $gravatarHash . '.png?s=200&d=mp';
+        return 'https://www.gravatar.com/avatar/'.$gravatarHash.'.png?s=200&d=mp';
     }
 
     /**
      * Route notifications for the mail channel.
      *
-     * @param \Illuminate\Notifications\Notification $notification
+     * @param  \Illuminate\Notifications\Notification  $notification
      * @return string
      */
     // phpcs:ignore
@@ -251,5 +258,4 @@ class Deal extends BaseModel
     {
         return $this->belongsTo(User::class, 'added_by')->withoutGlobalScope(ActiveScope::class);
     }
-
 }

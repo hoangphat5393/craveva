@@ -2,8 +2,8 @@
 
 namespace App\Models\SuperAdmin;
 
-use App\Models\Company;
 use App\Models\BaseModel;
+use App\Models\Company;
 
 /**
  * App\Models\SuperAdmin\StripeInvoice
@@ -20,6 +20,7 @@ use App\Models\BaseModel;
  * @property Carbon|null $updated_at
  * @property-read Company $company
  * @property-read Package $package
+ *
  * @method static Builder|StripeInvoice newModelQuery()
  * @method static Builder|StripeInvoice newQuery()
  * @method static Builder|StripeInvoice query()
@@ -33,11 +34,11 @@ use App\Models\BaseModel;
  * @method static Builder|StripeInvoice wherePayDate($value)
  * @method static Builder|StripeInvoice whereTransactionId($value)
  * @method static Builder|StripeInvoice whereUpdatedAt($value)
+ *
  * @mixin Eloquent
  */
 class StripeInvoice extends BaseModel
 {
-
     protected $dates = ['pay_date', 'next_pay_date'];
 
     protected $casts = [
@@ -54,5 +55,4 @@ class StripeInvoice extends BaseModel
     {
         return $this->belongsTo(Package::class);
     }
-
 }

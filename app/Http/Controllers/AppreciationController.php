@@ -7,15 +7,14 @@ use App\Helper\Files;
 use App\Helper\Reply;
 use App\Http\Requests\Appreciation\StoreRequest;
 use App\Http\Requests\Appreciation\UpdateRequest;
+use App\Models\Appreciation;
 use App\Models\Award;
 use App\Models\User;
-use App\Models\Appreciation;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class AppreciationController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -33,7 +32,7 @@ class AppreciationController extends AccountBaseController
         $this->appreciations = Award::with('awardIcon')->get();
         $this->employees = User::allEmployees(null, true, 'all');
 
-        abort_403(!in_array($viewPermission, ['all', 'added', 'owned', 'both']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'owned', 'both']));
 
         return $dataTable->render('appreciations.index', $this->data);
     }
@@ -67,7 +66,7 @@ class AppreciationController extends AccountBaseController
         $this->addPermission = user()->permission('add_appreciation');
         abort_403($this->addPermission != 'all');
 
-        $appreciation = new Appreciation();
+        $appreciation = new Appreciation;
         $appreciation->award_id = $request->award;
         $appreciation->summary = trim_editor($request->summery);
         $appreciation->award_date = Carbon::createFromFormat($this->company->date_format, $request->award_date);
@@ -94,7 +93,7 @@ class AppreciationController extends AccountBaseController
     /**
      * Display the specified resource.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -103,7 +102,7 @@ class AppreciationController extends AccountBaseController
         $this->viewPermission = user()->permission('view_appreciation');
         $this->pageTitle = __('app.menu.appreciation');
 
-        abort_403(!(
+        abort_403(! (
             $this->viewPermission == 'all'
             || ($this->viewPermission == 'added' && $this->appreciation->added_by == user()->id)
             || ($this->viewPermission == 'owned' && $this->appreciation->award_to == user()->id)
@@ -122,7 +121,7 @@ class AppreciationController extends AccountBaseController
     /**
      * Show the form for editing the specified resource.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -130,7 +129,7 @@ class AppreciationController extends AccountBaseController
         $this->editPermission = user()->permission('edit_appreciation');
         $this->appreciation = Appreciation::findOrFail($id);
 
-        abort_403(!(
+        abort_403(! (
             $this->editPermission == 'all'
             || ($this->editPermission == 'added' && $this->appreciation->added_by == user()->id)
             || ($this->editPermission == 'owned' && $this->appreciation->award_to == user()->id)
@@ -153,7 +152,6 @@ class AppreciationController extends AccountBaseController
         }
 
         $this->appreciationTypes = Award::with('awardIcon')->where('status', 'active')->get();
-
 
         $this->view = 'appreciations.ajax.edit';
 
@@ -197,14 +195,14 @@ class AppreciationController extends AccountBaseController
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
         $this->appreciation = Appreciation::findOrFail($id);
         $this->deletePermission = user()->permission('delete_appreciation');
-        abort_403(!(
+        abort_403(! (
             $this->deletePermission == 'all'
             || ($this->deletePermission == 'added' && $this->appreciation->added_by == user()->id)
             || ($this->deletePermission == 'owned' && $this->appreciation->award_to == user()->id)
@@ -220,12 +218,12 @@ class AppreciationController extends AccountBaseController
     public function applyQuickAction(Request $request)
     {
         switch ($request->action_type) {
-        case 'delete':
-            $this->deleteRecords($request);
+            case 'delete':
+                $this->deleteRecords($request);
 
-            return Reply::success(__('messages.deleteSuccess'));
-        default:
-            return Reply::error(__('messages.selectAction'));
+                return Reply::success(__('messages.deleteSuccess'));
+            default:
+                return Reply::error(__('messages.selectAction'));
         }
     }
 
@@ -241,5 +239,4 @@ class AppreciationController extends AccountBaseController
 
         Appreciation::whereIn('id', $item)->delete();
     }
-
 }

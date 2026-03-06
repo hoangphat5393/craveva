@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Warehouse extends BaseModel
 {
-    use HasFactory, HasCompany;
+    use HasCompany, HasFactory;
 
     protected $fillable = [
         'company_id',

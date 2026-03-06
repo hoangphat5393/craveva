@@ -3,15 +3,14 @@
 namespace App\Observers;
 
 use App\Events\TicketReplyEvent;
+use App\Helper\Files;
 use App\Models\TicketActivity;
+use App\Models\TicketFile;
 use App\Models\TicketReply;
 use App\Models\User;
-use App\Helper\Files;
-use App\Models\TicketFile;
 
 class TicketReplyObserver
 {
-
     public function saving(TicketReply $ticketReply)
     {
         if (user() && is_null($ticketReply->ticket->agent_id)) {
@@ -38,14 +37,13 @@ class TicketReplyObserver
         if ($message != '') {
             if (count($ticketReply->ticket->reply) > 1) {
 
-                if (!is_null($ticketReply->ticket->agent)) {
+                if (! is_null($ticketReply->ticket->agent)) {
                     if ($ticketReply->type == 'note') {
                         // Don't notify the agent if they are the one who created the note
                         if ($ticketReply->ticket->agent->id != $ticketReply->user_id) {
                             event(new TicketReplyEvent($ticketReply, $ticketReply->ticket->agent, $ticketReplyUsers));
                         }
-                    }
-                    else {
+                    } else {
                         // Don't notify the agent if they are the one who replied
                         if ($ticketReply->ticket->agent->id != $ticketReply->user_id) {
                             event(new TicketReplyEvent($ticketReply, $ticketReply->ticket->agent, null));
@@ -56,23 +54,21 @@ class TicketReplyObserver
                     if ($ticketReply->type != 'note' && $ticketReply->ticket->client->id != $ticketReply->user_id) {
                         event(new TicketReplyEvent($ticketReply, $ticketReply->ticket->client, null));
                     }
-                }
-                else if (is_null($ticketReply->ticket->agent)) {
+                } elseif (is_null($ticketReply->ticket->agent)) {
                     event(new TicketReplyEvent($ticketReply, null, null));
 
                     // Don't notify the client if they are the one who replied
                     if ($ticketReply->ticket->client->id != $ticketReply->user_id) {
                         event(new TicketReplyEvent($ticketReply, $ticketReply->ticket->client, null));
                     }
-                }
-                else {
+                } else {
                     // Don't notify the client if they are the one who replied
                     if ($ticketReply->ticket->client->id != $ticketReply->user_id) {
                         event(new TicketReplyEvent($ticketReply, $ticketReply->ticket->client, null));
                     }
                 }
 
-                $ticketActivity = new TicketActivity();
+                $ticketActivity = new TicketActivity;
                 $ticketActivity->ticket_id = $ticketReply->ticket->id;
                 $ticketActivity->user_id = $ticketReply->user_id;
                 $ticketActivity->assigned_to = $ticketReply->ticket->agent_id;
@@ -93,12 +89,12 @@ class TicketReplyObserver
 
         $ticketReply->files()->each(function ($file) {
 
-            Files::deleteFile($file->hashname, 'ticket-files/' . $file->ticket_reply_id);
+            Files::deleteFile($file->hashname, 'ticket-files/'.$file->ticket_reply_id);
             $file->delete();
 
         });
 
-        Files::deleteDirectory(TicketFile::FILE_PATH . '/' . $ticketReply->id);
+        Files::deleteDirectory(TicketFile::FILE_PATH.'/'.$ticketReply->id);
 
     }
 }

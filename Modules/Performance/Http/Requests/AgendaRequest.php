@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class AgendaRequest extends FormRequest
 {
-
     /**
      * Get the validation rules that apply to the request.
      */
@@ -14,8 +13,7 @@ class AgendaRequest extends FormRequest
     {
         if (request()->send_mail == 'no') {
             return ['discussion_point' => 'required'];
-        }
-        else {
+        } else {
             return [
                 'discussion_points' => 'required|array',
                 'discussion_points.*' => 'required|string',
@@ -40,5 +38,4 @@ class AgendaRequest extends FormRequest
             'discussion_points.*.string' => __('performance::messages.discussionPointMustBeString'),
         ];
     }
-
 }

@@ -6,7 +6,6 @@ use App\Models\ContractTemplate;
 
 class ContractTemplateObserver
 {
-
     public function creating(ContractTemplate $contract)
     {
 
@@ -18,7 +17,6 @@ class ContractTemplateObserver
             $contract->company_id = company()->id;
         }
 
-        $contract->contract_template_number = (int)ContractTemplate::max('contract_template_number') + 1;
+        $contract->contract_template_number = (int) ContractTemplate::max('contract_template_number') + 1;
     }
-
 }

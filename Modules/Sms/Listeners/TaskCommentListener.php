@@ -19,12 +19,10 @@ class TaskCommentListener
         try {
             if ($event->client == 'client') {
                 Notification::send($event->notifyUser, new TaskCommentClient($event->task, $event->comment));
-            }
-            else {
+            } else {
                 Notification::send($event->notifyUser, new TaskComment($event->task, $event->comment));
             }
         } catch (\Exception $e) { // @codingStandardsIgnoreLine
         }
     }
-
 }

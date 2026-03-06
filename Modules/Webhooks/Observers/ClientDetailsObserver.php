@@ -7,7 +7,6 @@ use Modules\Webhooks\Jobs\SendWebhook;
 
 class ClientDetailsObserver
 {
-
     public function created(ClientDetails $clientDetails)
     {
         $data = $clientDetails->toArray();
@@ -18,5 +17,4 @@ class ClientDetailsObserver
             ->delay(5)
             ->onQueue('default');
     }
-
 }

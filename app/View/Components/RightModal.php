@@ -7,7 +7,6 @@ use Illuminate\View\Component;
 
 class RightModal extends Component
 {
-
     /**
      * Create a new component instance.
      *
@@ -27,5 +26,4 @@ class RightModal extends Component
     {
         return view('components.right-modal');
     }
-
 }

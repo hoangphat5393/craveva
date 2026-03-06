@@ -6,7 +6,6 @@ use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      */
@@ -37,5 +36,4 @@ return new class extends Migration
     {
         EmailNotificationSetting::where('slug', 'shift-assign-notification')->delete();
     }
-
 };

@@ -2,39 +2,38 @@
 
 namespace App\Http\Controllers\SuperAdmin;
 
-use stdClass;
-use Carbon\Carbon;
-use App\Models\User;
 use App\Helper\Reply;
-use Razorpay\Api\Api;
-use GuzzleHttp\Client;
-use PayPal\Api\Agreement;
-use Illuminate\Support\Str;
-use PayPal\Rest\ApiContext;
-use Illuminate\Http\Request;
-use Mollie\Laravel\Facades\Mollie;
-use PayPal\Auth\OAuthTokenCredential;
-use Unicodeveloper\Paystack\Paystack;
-use Illuminate\Support\Facades\Config;
-use App\Models\SuperAdmin\Subscription;
-use Illuminate\Support\Facades\Session;
-use App\Models\SuperAdmin\GlobalInvoice;
-use Illuminate\Support\Facades\Redirect;
-use PayPal\Api\AgreementStateDescriptor;
-use App\Traits\SuperAdmin\MollieSettings;
-use Illuminate\Support\Facades\Notification;
-use App\Models\SuperAdmin\GlobalSubscription;
-use net\authorize\api\contract\v1 as AnetAPI;
-use App\Models\SuperAdmin\PayfastSubscription;
 use App\Http\Controllers\AccountBaseController;
 use App\Models\GlobalSetting;
-use net\authorize\api\constants\ANetEnvironment;
-use net\authorize\api\controller as AnetController;
-use App\Notifications\SuperAdmin\CompanyUpdatedPlan;
+use App\Models\SuperAdmin\GlobalInvoice;
 use App\Models\SuperAdmin\GlobalPaymentGatewayCredentials;
+use App\Models\SuperAdmin\GlobalSubscription;
 use App\Models\SuperAdmin\Package;
+use App\Models\SuperAdmin\PayfastSubscription;
+use App\Models\SuperAdmin\Subscription;
+use App\Models\User;
+use App\Notifications\SuperAdmin\CompanyUpdatedPlan;
 use App\Traits\PaymentGatewayTrait;
-use Billow\Payfast;
+use App\Traits\SuperAdmin\MollieSettings;
+use Carbon\Carbon;
+use GuzzleHttp\Client;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Str;
+use Mollie\Laravel\Facades\Mollie;
+use net\authorize\api\constants\ANetEnvironment;
+use net\authorize\api\contract\v1 as AnetAPI;
+use net\authorize\api\controller as AnetController;
+use PayPal\Api\Agreement;
+use PayPal\Api\AgreementStateDescriptor;
+use PayPal\Auth\OAuthTokenCredential;
+use PayPal\Rest\ApiContext;
+use Razorpay\Api\Api;
+use stdClass;
+use Unicodeveloper\Paystack\Paystack;
 
 class PayFastController extends AccountBaseController
 {
@@ -56,10 +55,10 @@ class PayFastController extends AccountBaseController
 
         if ($subcriptionCancel) {
             if ($plan->max_employees < $company->employees->count()) {
-                return back()->withError('You can\'t downgrade package because your employees length is ' . $company->employees->count() . ' and package max employees count is ' . $plan->max_employees)->withInput();
+                return back()->withError('You can\'t downgrade package because your employees length is '.$company->employees->count().' and package max employees count is '.$plan->max_employees)->withInput();
             }
 
-            $credential = new stdClass();
+            $credential = new stdClass;
             $globalCredential = GlobalPaymentGatewayCredentials::first();
 
             if ($globalCredential->payfast_status != 'active') {
@@ -82,14 +81,14 @@ class PayFastController extends AccountBaseController
             $amount = $type == 'monthly' ? $package->monthly_price : $package->annual_price;
             $plan = $type == 'monthly' ? '3' : '6';
             $packageId = $package->id;
-            $planType = strtolower($package->name) . '_' . $type;
+            $planType = strtolower($package->name).'_'.$type;
             $companyId = $company->id;
             // Construct variables
             $cartTotal = $amount; // This amount needs to be sourced from your application
 
             $subscription = GlobalSubscription::where('company_id', company()->id)->where('gateway_name', 'payfast')->where('subscription_status', 'inactive')->whereNull('ends_at')->latest()->first();
 
-            $subscription = $subscription ? $subscription : new GlobalSubscription();
+            $subscription = $subscription ? $subscription : new GlobalSubscription;
             $subscription->company_id = company()->id;
             $subscription->package_id = $package->id;
             $subscription->currency_id = $package->currency_id;
@@ -106,7 +105,7 @@ class PayFastController extends AccountBaseController
 
                 $subscriptionId = $subscription->id;
 
-                $data = array(
+                $data = [
                     'merchant_id' => $credential->payfast_key,
                     'merchant_key' => $credential->payfast_secret,
                     'return_url' => route('billing.payfast-success', compact('subscriptionId', 'cartTotal')),
@@ -117,7 +116,7 @@ class PayFastController extends AccountBaseController
                     // Transaction details
                     'm_payment_id' => $randomString, // Unique payment ID to pass through to notify_url
                     'amount' => number_format(sprintf('%.2f', $cartTotal), 2, '.', ''),
-                    'item_name' => $package->name . ' ' . ucfirst($type),
+                    'item_name' => $package->name.' '.ucfirst($type),
                     'custom_int1' => company()->id,
                     'custom_int2' => $package->id,
                     'custom_int3' => $subscriptionId,
@@ -128,22 +127,22 @@ class PayFastController extends AccountBaseController
                     'billing_date' => now()->format('Y-m-d'),
                     'recurring_amount' => number_format(sprintf('%.2f', $cartTotal), 2, '.', ''),
                     'frequency' => $plan,
-                    'cycles' => '0'
-                );
+                    'cycles' => '0',
+                ];
 
                 $signature = $this->generateSignature($data, $credential->payfast_salt_passphrase);
 
                 $data['signature'] = $signature;
 
-                $htmlForm = '<form action="' . $environment . '" method="post" class="d-inline">';
+                $htmlForm = '<form action="'.$environment.'" method="post" class="d-inline">';
 
                 foreach ($data as $name => $value) {
-                    $htmlForm .= '<input name="' . $name . '" type="hidden" value=\'' . $value . '\' />';
+                    $htmlForm .= '<input name="'.$name.'" type="hidden" value=\''.$value.'\' />';
                 }
 
                 $htmlForm .= '<button class="btn-light border rounded f-15 btn px-4 py-3 payFastPayment" type="submit">
-                        <img style="height: 15px;" src="' . asset('img/payfast.png') . '">
-                            ' . __('app.payfast') . '
+                        <img style="height: 15px;" src="'.asset('img/payfast.png').'">
+                            '.__('app.payfast').'
                         </button>';
 
                 $htmlForm .= '</form>';
@@ -161,7 +160,7 @@ class PayFastController extends AccountBaseController
 
         $subscriptionId = $subscription->id;
 
-        $data = array(
+        $data = [
             // Merchant details
             'merchant_id' => $credential->payfast_key,
             'merchant_key' => $credential->payfast_secret,
@@ -174,7 +173,7 @@ class PayFastController extends AccountBaseController
             // Transaction details
             'm_payment_id' => $randomString, // Unique payment ID to pass through to notify_url
             'amount' => number_format(sprintf('%.2f', $cartTotal), 2, '.', ''),
-            'item_name' => $package->name . ' ' . ucfirst($type),
+            'item_name' => $package->name.' '.ucfirst($type),
             'custom_int1' => company()->id,
             'custom_int2' => $package->id,
             'custom_int3' => $subscriptionId,
@@ -185,29 +184,28 @@ class PayFastController extends AccountBaseController
             'billing_date' => now()->format('Y-m-d'),
             'recurring_amount' => number_format(sprintf('%.2f', $cartTotal), 2, '.', ''),
             'frequency' => $plan,
-            'cycles' => '0'
-        );
+            'cycles' => '0',
+        ];
 
         $signature = $this->generateSignature($data, $credential->payfast_salt_passphrase);
 
         $data['signature'] = $signature;
 
-        $htmlForm = '<form action="' . $environment . '" method="post" class="d-inline">';
+        $htmlForm = '<form action="'.$environment.'" method="post" class="d-inline">';
 
         foreach ($data as $name => $value) {
-            $htmlForm .= '<input name="' . $name . '" type="hidden" value=\'' . $value . '\' />';
+            $htmlForm .= '<input name="'.$name.'" type="hidden" value=\''.$value.'\' />';
         }
 
         $htmlForm .= '<button class="btn-light border rounded f-15 btn px-4 py-3 payFastPayment" type="submit">
-                            <img style="height: 15px;" src="' . asset('img/payfast.png') . '">
-                                ' . __('app.payfast') . '
+                            <img style="height: 15px;" src="'.asset('img/payfast.png').'">
+                                '.__('app.payfast').'
                             </button>';
 
         $htmlForm .= '</form>';
 
         return $htmlForm;
     }
-
 
     public function generateSignature($data, $passPhrase = null)
     {
@@ -217,7 +215,7 @@ class PayFastController extends AccountBaseController
         foreach ($data as $key => $val) {
 
             if ($val !== '') {
-                $pfOutput .= $key . '=' . urlencode(trim($val)) . '&';
+                $pfOutput .= $key.'='.urlencode(trim($val)).'&';
             }
         }
 
@@ -225,7 +223,7 @@ class PayFastController extends AccountBaseController
         $getString = substr($pfOutput, 0, -1);
 
         if ($passPhrase !== null) {
-            $getString .= '&passphrase=' . urlencode(trim($passPhrase));
+            $getString .= '&passphrase='.urlencode(trim($passPhrase));
         }
 
         return md5($getString);
@@ -242,7 +240,7 @@ class PayFastController extends AccountBaseController
                 $subscription->save();
 
                 $invoice = GlobalInvoice::where('global_subscription_id', $subscription->id)->first();
-                $invoice = $invoice ? $invoice : new GlobalInvoice();
+                $invoice = $invoice ? $invoice : new GlobalInvoice;
                 $invoice->company_id = $subscription->company_id;
                 $invoice->package_id = $subscription->package_id;
                 $invoice->currency_id = $subscription->currency_id;
@@ -276,6 +274,7 @@ class PayFastController extends AccountBaseController
         } catch (\Exception $e) {
             error_log($e->getMessage());
             \session()->put('error', $e->getMessage());
+
             return redirect()->route('billing.upgrade_plan');
         }
     }
@@ -294,12 +293,12 @@ class PayFastController extends AccountBaseController
 
             if ($paypalInvoice) {
                 $agreementId = $paypalInvoice->transaction_id;
-                $agreement = new Agreement();
+                $agreement = new Agreement;
                 $paypalInvoice = GlobalInvoice::where('gateway_name', 'paypal')->whereNotNull('transaction_id')->whereNull('end_on')
                     ->where('company_id', company()->id)->where('status', 'paid')->first();
 
                 $agreement->setId($agreementId);
-                $agreementStateDescriptor = new AgreementStateDescriptor();
+                $agreementStateDescriptor = new AgreementStateDescriptor;
                 $agreementStateDescriptor->setNote('Cancel the agreement');
 
                 try {
@@ -311,21 +310,22 @@ class PayFastController extends AccountBaseController
                     $paypalInvoice->save();
                 } catch (\Exception $ex) {
                     \Session::put('error', $ex->getMessage());
+
                     return redirect()->route('billing.upgrade_plan');
                 }
             }
         } elseif ($type == 'razorpay') {
 
-            $apiKey    = $credential->razorpay_key;
+            $apiKey = $credential->razorpay_key;
             $secretKey = $credential->razorpay_secret;
-            $api       = new Api($apiKey, $secretKey);
+            $api = new Api($apiKey, $secretKey);
 
             // Get subscription for unsubscribe
             $subscriptionData = GlobalSubscription::where('gateway_name', 'razorpay')->where('company_id', company()->id)->whereNull('ends_at')->first();
 
             if ($subscriptionData) {
                 try {
-                    $subscription  = $api->subscription->fetch($subscriptionData->subscription_id);
+                    $subscription = $api->subscription->fetch($subscriptionData->subscription_id);
 
                     if ($subscription->status == 'active') {
 
@@ -338,8 +338,10 @@ class PayFastController extends AccountBaseController
                     }
                 } catch (\Exception $ex) {
                     \Session::put('error', $ex->getMessage());
+
                     return redirect()->route('billing.upgrade_plan');
                 }
+
                 return Reply::redirectWithError(route('billing.packages'), 'There is no data found for this subscription');
             }
         } elseif ($type == 'paystack') {
@@ -349,7 +351,7 @@ class PayFastController extends AccountBaseController
 
             if ($subscriptionData) {
                 try {
-                    $paystack = new Paystack();
+                    $paystack = new Paystack;
                     $paystack->code = $subscriptionData->subscription_id;
                     $paystack->token = $subscriptionData->token;
 
@@ -359,6 +361,7 @@ class PayFastController extends AccountBaseController
                     $subscriptionData->save();
                 } catch (\Exception $ex) {
                     \Session::put('error', $ex->getMessage());
+
                     return redirect()->route('billing.upgrade_plan');
                 }
             }
@@ -376,6 +379,7 @@ class PayFastController extends AccountBaseController
                 } catch (\Exception $ex) {
 
                     session()->put('error', $ex->getMessage());
+
                     return redirect()->route('billing.upgrade_plan');
                 }
             }
@@ -388,15 +392,15 @@ class PayFastController extends AccountBaseController
                 try {
 
                     $credential = GlobalPaymentGatewayCredentials::first();
-                    $merchantAuthentication = new AnetAPI\MerchantAuthenticationType();
+                    $merchantAuthentication = new AnetAPI\MerchantAuthenticationType;
 
                     $merchantAuthentication->setName($credential->authorize_api_login_id);
                     $merchantAuthentication->setTransactionKey($credential->authorize_transaction_key);
 
                     // Set the transaction's refId
-                    $refId = 'ref' . time();
+                    $refId = 'ref'.time();
 
-                    $request = new AnetAPI\ARBCancelSubscriptionRequest();
+                    $request = new AnetAPI\ARBCancelSubscriptionRequest;
                     $request->setMerchantAuthentication($merchantAuthentication);
                     $request->setRefId($refId);
                     $request->setSubscriptionId($subscriptionData->subscription_id);
@@ -414,16 +418,18 @@ class PayFastController extends AccountBaseController
                         $subscriptionData->save();
                     } else {
                         $errorMessages = $response->getMessages()->getMessage();
+
                         return Reply::error($errorMessages[0]->getText());
                     }
                 } catch (\Exception $ex) {
 
                     \Session::put('error', $ex->getMessage());
+
                     return redirect()->route('billing.upgrade_plan');
                 }
             }
         } elseif ($type == 'payfast') {
-            $credential = new stdClass();
+            $credential = new stdClass;
             $globalCredential = GlobalPaymentGatewayCredentials::first();
 
             if ($globalCredential->payfast_mode == 'sandbox') {
@@ -441,9 +447,9 @@ class PayFastController extends AccountBaseController
             $payfastInvoice = GlobalInvoice::where('gateway_name', 'payfast')->latest()->first();
             $date = now()->format('Y-m-d\TH:i:s');
             try {
-                $url = 'https://api.payfast.co.za/subscriptions/' . $payfastInvoice->token . '/cancel' . $cancelSandbox;
+                $url = 'https://api.payfast.co.za/subscriptions/'.$payfastInvoice->token.'/cancel'.$cancelSandbox;
                 $header = ['merchant-id' => $credential->payfast_key, 'version' => 'v1', 'timestamp' => $date, 'signature' => $payfastInvoice->signature];
-                $client = new Client();
+                $client = new Client;
                 $res = $client->request('PUT', $url, ['headers' => $header]);
 
                 $conversionRate = $res->getBody();
@@ -464,6 +470,7 @@ class PayFastController extends AccountBaseController
                 }
             } catch (\Exception $ex) {
                 \Session::put('error', $ex->getMessage());
+
                 return redirect()->route('billing.upgrade_plan');
             }
         } else {
@@ -476,6 +483,7 @@ class PayFastController extends AccountBaseController
                     $company->subscription('primary')->cancel();
                 } catch (\Exception $ex) {
                     \Session::put('error', $ex->getMessage());
+
                     return redirect()->route('billing.upgrade_plan');
                 }
             }
@@ -487,6 +495,7 @@ class PayFastController extends AccountBaseController
     public function payFastPaymentCancel()
     {
         \Session::put('error', __('messages.paymentFailed'));
+
         return Redirect::route('billing.index');
     }
 
@@ -495,7 +504,8 @@ class PayFastController extends AccountBaseController
         $plan = Package::findOrFail($id);
         $company = company();
 
-        $this->makePayment('Payfast', $plan->monthly_price, $company, 'payfast_' . $plan->id, ($status == 'success' ? 'complete' : 'failed'));
+        $this->makePayment('Payfast', $plan->monthly_price, $company, 'payfast_'.$plan->id, ($status == 'success' ? 'complete' : 'failed'));
+
         return redirect(url()->temporarySignedRoute('billing.index', now()->addDays(GlobalSetting::SIGNED_ROUTE_EXPIRY), $company->hash));
     }
 
@@ -508,7 +518,7 @@ class PayFastController extends AccountBaseController
         // $invoice->status = ($request->payment_status == 'COMPLETE') ? 'paid' : 'unpaid';
         $this->makePayment('Payfast', $request->amount_gross, $company, $request->m_payment_id, (($request->payment_status == 'COMPLETE') ? 'complete' : 'failed'));
 
-        $invoice = new GlobalInvoice();
+        $invoice = new GlobalInvoice;
         $invoice->company_id = $company->id;
         $invoice->package_id = $plan->id;
         $invoice->currency_id = $plan->currency_id;

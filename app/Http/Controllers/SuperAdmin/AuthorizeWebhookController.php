@@ -9,12 +9,11 @@ use App\Models\SuperAdmin\Package;
 use App\Models\User;
 use App\Notifications\SuperAdmin\CompanyUpdatedPlan;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Notification;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Notification;
 
 class AuthorizeWebhookController extends Controller
 {
-
     public function saveInvoices(Request $request, $id)
     {
         if ($request->eventType == 'net.authorize.customer.subscription.created') {
@@ -26,14 +25,14 @@ class AuthorizeWebhookController extends Controller
 
             $authorizeInvoices = GlobalInvoice::where('gateway_name', 'authorize')->where('transaction_id', $request->payload['profile']['customerPaymentProfileId'])->first();
 
-            if (!$authorizeInvoices) {
-                $authorizeInvoices = new GlobalInvoice();
+            if (! $authorizeInvoices) {
+                $authorizeInvoices = new GlobalInvoice;
             }
 
             $authorizeInvoices->company_id = $subscription->company_id;
             $authorizeInvoices->package_id = $subscription->package_id;
             $authorizeInvoices->transaction_id = $request->payload['profile']['customerPaymentProfileId'];
-            $authorizeInvoices->total = $package->{$subscription->package_type . '_price'};
+            $authorizeInvoices->total = $package->{$subscription->package_type.'_price'};
             $authorizeInvoices->pay_date = now()->format('Y-m-d');
             $authorizeInvoices->gateway_name = $subscription->gateway_name;
             $authorizeInvoices->currency_id = $package->currency_id;

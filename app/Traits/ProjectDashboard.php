@@ -9,17 +9,11 @@ use App\Models\ProjectStatusSetting;
 use App\Models\ProjectTimeLog;
 use App\Models\ProjectTimeLogBreak;
 use Carbon\Carbon;
-use Carbon\CarbonInterval;
 use Illuminate\Support\Facades\DB;
 
-/**
- *
- */
 trait ProjectDashboard
 {
-
     /**
-     *
      * @return void
      */
     public function projectDashboard()
@@ -59,16 +53,15 @@ trait ProjectDashboard
 
         // Format output based on hours and minutes
         $this->totalHoursLogged = $hours > 0
-            ? $hours . 'h' . ($minutes > 0 ? ' ' . sprintf('%02dm', $minutes) : '')
+            ? $hours.'h'.($minutes > 0 ? ' '.sprintf('%02dm', $minutes) : '')
             : ($minutes > 0 ? sprintf('%dm', $minutes) : '0s');
 
         /** @phpstan-ignore-next-line */
-
         if ($todayDate >= $startDate && $todayDate <= $endDate) {
             $this->totalOverdueProject = Project::whereNotNull('deadline')
                 ->whereRaw('Date(projects.deadline) >= ?', [$startDate])
                 ->whereRaw('Date(projects.deadline) < ?', [$todayDate])->count();
-        }else{
+        } else {
             $this->totalOverdueProject = Project::whereNotNull('deadline')->whereBetween(DB::raw('DATE(`deadline`)'), [$startDate, $endDate])->count();
         }
 
@@ -101,5 +94,4 @@ trait ProjectDashboard
 
         return $data;
     }
-
 }

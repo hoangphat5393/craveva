@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
 use App\Traits\HasCompany;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\Attribute;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * App\Models\Payment
@@ -47,6 +47,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read \App\Models\Invoice|null $invoice
  * @property-read \App\Models\OfflinePaymentMethod|null $offlineMethod
  * @property-read \App\Models\Project|null $project
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Payment newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Payment newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Payment query()
@@ -69,49 +70,58 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|Payment whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Payment whereTransactionId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Payment whereUpdatedAt($value)
+ *
  * @property int|null $order_id
  * @property string|null $payment_gateway_response null = success
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Payment completed()
  * @method static \Illuminate\Database\Eloquent\Builder|Payment whereOrderId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Payment wherePaymentGatewayResponse($value)
+ *
  * @property int|null $credit_notes_id
  * @property string|null $payload_id
  * @property-read \App\Models\CreditNotes|null $creditNote
  * @property-read \App\Models\Order|null $order
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Payment whereCreditNotesId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Payment wherePayloadId($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Payment whereCompanyId($value)
+ *
  * @property int|null $bank_account_id
  * @property int|null $quickbooks_payment_id
  * @property-read OfflinePaymentMethod|null $offlineMethods
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\BankTransaction> $transactions
  * @property-read int|null $transactions_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Payment whereBankAccountId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Payment whereDefaultCurrencyId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Payment whereExchangeRate($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Payment whereQuickbooksPaymentId($value)
+ *
  * @mixin \Eloquent
  */
 class Payment extends BaseModel
 {
-
     use HasCompany;
 
     const FILE_PATH = 'payment-receipt';
 
     protected $casts = [
         'paid_on' => 'datetime',
-        'payment_gateway_response' => 'object'
+        'payment_gateway_response' => 'object',
     ];
 
     protected $appends = ['total_amount', 'paid_date', 'file_url', 'default_currency_price'];
+
     protected $with = ['currency', 'order'];
 
     public function client()
     {
-        if (!is_null($this->project_id) && $this->project->client_id) {
+        if (! is_null($this->project_id) && $this->project->client_id) {
             return $this->project->client;
         }
 
@@ -120,7 +130,7 @@ class Payment extends BaseModel
                 return $this->invoice->client;
             }
 
-            if (!is_null($this->invoice->project_id) && $this->invoice->project->client_id) {
+            if (! is_null($this->invoice->project_id) && $this->invoice->project->client_id) {
                 return $this->invoice->project->client;
             }
         }
@@ -165,17 +175,17 @@ class Payment extends BaseModel
 
     public function getTotalAmountAttribute()
     {
-        return (!is_null($this->amount) && !is_null($this->currency_id)) ? $this->amount : '';
+        return (! is_null($this->amount) && ! is_null($this->currency_id)) ? $this->amount : '';
     }
 
     public function getPaidDateAttribute()
     {
-        return !is_null($this->paid_on) ? Carbon::parse($this->paid_on)->format('d F, Y H:i A') : '';
+        return ! is_null($this->paid_on) ? Carbon::parse($this->paid_on)->format('d F, Y H:i A') : '';
     }
 
     public function getFileUrlAttribute()
     {
-        return asset_url_local_s3(Payment::FILE_PATH . '/' . $this->bill);
+        return asset_url_local_s3(Payment::FILE_PATH.'/'.$this->bill);
     }
 
     public function scopeCompleted($query)
@@ -188,7 +198,7 @@ class Payment extends BaseModel
         return $this->belongsTo(OfflinePaymentMethod::class, 'offline_method_id');
     }
 
-    public function defaultCurrencyPrice() : Attribute
+    public function defaultCurrencyPrice(): Attribute
     {
         return Attribute::make(
             get: function () {
@@ -197,15 +207,15 @@ class Payment extends BaseModel
                     return $this->amount;
                 }
 
-                if($this->exchange_rate){
-                    return ($this->amount * ((float)$this->exchange_rate));
+                if ($this->exchange_rate) {
+                    return $this->amount * ((float) $this->exchange_rate);
                 }
 
                 // Retrieve the currency associated with the payment
                 $currency = Currency::find($this->currency_id);
 
-                if($currency && $currency->exchange_rate){
-                    return ($this->amount * ((float)$currency->exchange_rate));
+                if ($currency && $currency->exchange_rate) {
+                    return $this->amount * ((float) $currency->exchange_rate);
                 }
 
                 // If exchange rate is not available or invalid, return the original amount
@@ -213,5 +223,4 @@ class Payment extends BaseModel
             },
         );
     }
-
 }

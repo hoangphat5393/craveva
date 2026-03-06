@@ -17,7 +17,7 @@ class UpdatePurchaseProductRequest extends CoreRequest
     public function rules()
     {
         $rules = [
-            'name' => 'required|unique:products,name,'.$this->route('purchase_product').',id,company_id,' . company()->id,
+            'name' => 'required|unique:products,name,'.$this->route('purchase_product').',id,company_id,'.company()->id,
             'track_inventory' => 'sometimes',
             'type' => 'required|in:goods,service',
             'selling_price' => 'required|numeric',

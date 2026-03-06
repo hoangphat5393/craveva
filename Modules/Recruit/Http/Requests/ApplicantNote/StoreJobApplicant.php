@@ -6,13 +6,11 @@ use App\Http\Requests\CoreRequest;
 
 class StoreJobApplicant extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
-
     public function authorize()
     {
         return true;
@@ -21,8 +19,7 @@ class StoreJobApplicant extends CoreRequest
     public function rules()
     {
         return [
-            'note' => ['required']
+            'note' => ['required'],
         ];
     }
-
 }

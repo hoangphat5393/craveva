@@ -13,7 +13,7 @@ class StoreSmsSetting extends FormRequest
      */
     public function rules()
     {
-        if(!user()->is_superadmin) {
+        if (! user()->is_superadmin) {
             return [];
         }
 
@@ -24,7 +24,7 @@ class StoreSmsSetting extends FormRequest
                 'account_sid' => 'required',
                 'auth_token' => 'required',
                 'from_number' => 'required',
-                'whatapp_from_number' => 'required_if:whatsapp_status,1'
+                'whatapp_from_number' => 'required_if:whatsapp_status,1',
             ];
         }
 

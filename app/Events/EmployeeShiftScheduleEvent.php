@@ -9,7 +9,6 @@ use Illuminate\Queue\SerializesModels;
 
 class EmployeeShiftScheduleEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $employeeShiftSchedule;
@@ -23,5 +22,4 @@ class EmployeeShiftScheduleEvent
     {
         $this->employeeShiftSchedule = $employeeShiftSchedule;
     }
-
 }

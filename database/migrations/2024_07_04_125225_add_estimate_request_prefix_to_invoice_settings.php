@@ -5,8 +5,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
@@ -27,8 +27,8 @@ return new class extends Migration {
 
             $zero = str_repeat('0', $invoiceSetting->estimate_request_digit - strlen($lastEstimate));
 
-            $originalNumber = $zero . $lastEstimate;
-            $requestNumber = $invoiceSetting->estimate_request_prefix . $invoiceSetting->estimate_request_number_separator . $zero . $lastEstimate;
+            $originalNumber = $zero.$lastEstimate;
+            $requestNumber = $invoiceSetting->estimate_request_prefix.$invoiceSetting->estimate_request_number_separator.$zero.$lastEstimate;
             $estimateRequest->update([
                 'estimate_request_number' => $requestNumber,
                 'original_request_number' => $originalNumber,
@@ -36,7 +36,7 @@ return new class extends Migration {
 
             if ($estimateRequest->estimate_id) {
                 $estimateRequest->estimate->update([
-                    'estimate_request_id' => $estimateRequest->id
+                    'estimate_request_id' => $estimateRequest->id,
                 ]);
             }
         }
@@ -51,5 +51,4 @@ return new class extends Migration {
             $table->dropColumn(['estimate_request_prefix', 'estimate_request_number_separator', 'estimate_request_number_length']);
         });
     }
-
 };

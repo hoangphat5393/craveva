@@ -1,20 +1,19 @@
 <?php
 
+use App\Models\Company;
 use App\Models\GlobalSetting;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use App\Models\Company;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      *
      * @return void
      */
-
     public function up()
     {
         $tables = GlobalSetting::COMPANY_TABLES;
@@ -34,7 +33,7 @@ return new class extends Migration {
             foreach ($tables as $table) {
 
                 // Check if company id exists in database
-                if (!Schema::hasColumn($table, 'company_id')) {
+                if (! Schema::hasColumn($table, 'company_id')) {
 
                     Schema::table($table, function (Blueprint $table) {
                         $table->integer('company_id')->unsigned()->nullable()->after('id');
@@ -55,7 +54,7 @@ return new class extends Migration {
             dd($e->getMessage());
         }
 
-        if (!Schema::hasColumn('companies', 'status')) {
+        if (! Schema::hasColumn('companies', 'status')) {
             Schema::table('companies', function (Blueprint $table) {
                 $table->integer('default_task_status')->unsigned()->nullable()->default(null)->change();
                 $table->enum('status', ['active', 'inactive'])->after('active_theme')->default('active');
@@ -64,7 +63,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasColumn('companies', 'hash')) {
+        if (! Schema::hasColumn('companies', 'hash')) {
             Schema::table('companies', function (Blueprint $table) {
                 $table->string('hash')->nullable()->after('token');
             });

@@ -10,7 +10,6 @@ use Illuminate\Http\Request;
 
 class ProductSubCategoryController extends AccountBaseController
 {
-
     /**
      * Show the form for creating a new resource.
      *
@@ -26,13 +25,13 @@ class ProductSubCategoryController extends AccountBaseController
     }
 
     /**
-     * @param StoreProductSubCategory $request
      * @return array
+     *
      * @throws \Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException
      */
     public function store(StoreProductSubCategory $request)
     {
-        $newSubCategory = new ProductSubCategory();
+        $newSubCategory = new ProductSubCategory;
         $newSubCategory->category_id = $request->category_id;
         $newSubCategory->category_name = $request->category_name;
 
@@ -50,16 +49,15 @@ class ProductSubCategoryController extends AccountBaseController
 
         foreach ($categoryData as $data) {
             $selected = ($categoryID == $data->id) ? 'selected' : '';
-            $categoryOptions .= '<option value=' . $data->id . ' ' . $selected . '>' . $data->category_name . ' </option>';
+            $categoryOptions .= '<option value='.$data->id.' '.$selected.'>'.$data->category_name.' </option>';
         }
 
         if ($categoryID) {
             foreach ($subCategoryData as $item) {
                 $selected = ($categoryID == $item->category_id) ? 'selected' : '';
-                $subCategoryOptions .= '<option value=' . $item->id . ' ' . $selected . '>' . $item->category_name . ' </option>';
+                $subCategoryOptions .= '<option value='.$item->id.' '.$selected.'>'.$item->category_name.' </option>';
             }
         }
-
 
         return Reply::successWithData(__('messages.recordSaved'), ['data' => $categoryOptions, 'subCategoryData' => $subCategoryOptions]);
     }
@@ -67,7 +65,6 @@ class ProductSubCategoryController extends AccountBaseController
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
@@ -93,6 +90,7 @@ class ProductSubCategoryController extends AccountBaseController
     public function destroy($id)
     {
         ProductSubCategory::destroy($id);
+
         return Reply::success(__('messages.deleteSuccess'));
     }
 
@@ -105,11 +103,11 @@ class ProductSubCategoryController extends AccountBaseController
         foreach ($categoryData as $item) {
             $selected = '';
 
-            if (!is_null($selectId) && $item->id == $selectId) {
+            if (! is_null($selectId) && $item->id == $selectId) {
                 $selected = 'selected';
             }
 
-            $categoryOptions .= '<option ' . $selected . ' value="' . $item->id . '"> ' . $item->category_name . ' </option>';
+            $categoryOptions .= '<option '.$selected.' value="'.$item->id.'"> '.$item->category_name.' </option>';
         }
 
         return $categoryOptions;
@@ -128,7 +126,7 @@ class ProductSubCategoryController extends AccountBaseController
                 $selected = 'selected';
             }
 
-            $subCategoryOptions .= '<option ' . $selected . ' value="' . $item->id . '"> ' . $item->category_name . ' </option>';
+            $subCategoryOptions .= '<option '.$selected.' value="'.$item->id.'"> '.$item->category_name.' </option>';
         }
 
         return $subCategoryOptions;

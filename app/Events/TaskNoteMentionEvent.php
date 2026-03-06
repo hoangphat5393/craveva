@@ -9,11 +9,12 @@ use Illuminate\Queue\SerializesModels;
 
 class TaskNoteMentionEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $task;
+
     public $created_at;
+
     public $mentionuser;
 
     public function __construct(Task $task, $created_at, $mentionuser)
@@ -23,5 +24,4 @@ class TaskNoteMentionEvent
         $this->mentionuser = $mentionuser;
 
     }
-
 }

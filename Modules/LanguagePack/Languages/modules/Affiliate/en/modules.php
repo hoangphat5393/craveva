@@ -1,11 +1,11 @@
 <?php
 
-return array(
-    'settings' => array(
+return [
+    'settings' => [
         'commissionEnabled' => 'Commission Enabled',
         'commissionType' => 'Commission Type',
         'commissionCap' => 'Commission Cap',
         'minimumPayout' => 'Minimum Payout',
         'payoutMethods' => 'Minimum Methods',
-    ),
-);
+    ],
+];

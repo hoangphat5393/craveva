@@ -37,13 +37,13 @@ use Modules\Recruit\Http\Requests\StoreJobRequest;
 
 class JobController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'recruit::app.menu.job';
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array(RecruitSetting::MODULE_NAME, user()->modules));
+            abort_403(! in_array(RecruitSetting::MODULE_NAME, user()->modules));
+
             // dd($this->user);
             return $next($request);
         });
@@ -52,7 +52,7 @@ class JobController extends AccountBaseController
     public function index(JobDataTable $dataTable)
     {
         $viewPermission = user()->permission('view_job');
-        abort_403(!in_array($viewPermission, ['all', 'added', 'owned', 'both']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'owned', 'both']));
 
         $this->departments = Team::all();
         $this->employees = Recruiter::with('user:id,name,image')
@@ -68,7 +68,7 @@ class JobController extends AccountBaseController
         $this->pageTitle = __('recruit::modules.job.addJob');
 
         $addPermission = user()->permission('add_job');
-        abort_403(!in_array($addPermission, ['all', 'added']));
+        abort_403(! in_array($addPermission, ['all', 'added']));
 
         $this->job = (request()['duplicate_job']) ? RecruitJob::with('team', 'skills', 'address', 'workExperience', 'employee', 'jobType', 'recruiter')->findOrFail(request()['duplicate_job']) : null;
         $this->jobSkills = RecruitJobSkill::where('recruit_job_id', request()['duplicate_job'])->get()->pluck('recruit_skill_id')->toArray();
@@ -105,13 +105,12 @@ class JobController extends AccountBaseController
 
         if ($this->job->currency_id != null) {
             $this->currencySymbol = Currency::where('id', '=', $this->job->currency_id)->first();
-        }
-        else {
+        } else {
             $this->currencySymbol = null;
         }
 
         $this->viewPermission = user()->permission('view_job');
-        abort_403(!($this->viewPermission == 'all'
+        abort_403(! ($this->viewPermission == 'all'
             || ($this->viewPermission == 'added' && $this->job->added_by == user()->id)
             || ($this->viewPermission == 'owned' && user()->id == $this->job->recruiter_id)
             || ($this->viewPermission == 'both' && user()->id == $this->job->recruiter_id)
@@ -123,17 +122,17 @@ class JobController extends AccountBaseController
         $this->activeTab = $tab ?: 'profile';
 
         switch ($tab) {
-        case 'interview':
-            return $this->interview($id);
-        case 'candidate':
-            return $this->candidate($id);
-        case 'offerletter':
-            return $this->jobOffer($id);
-        case 'history':
-            return $this->history($id);
-        default:
-            $this->view = 'recruit::jobs.ajax.profile';
-            break;
+            case 'interview':
+                return $this->interview($id);
+            case 'candidate':
+                return $this->candidate($id);
+            case 'offerletter':
+                return $this->jobOffer($id);
+            case 'history':
+                return $this->history($id);
+            default:
+                $this->view = 'recruit::jobs.ajax.profile';
+                break;
         }
 
         $this->openingsCount = $this->job->total_positions;
@@ -180,7 +179,7 @@ class JobController extends AccountBaseController
     public function jobOffer($id)
     {
         $viewPermission = user()->permission('view_offer_letter');
-        abort_403(!in_array($viewPermission, ['all', 'added', 'owned', 'both']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'owned', 'both']));
 
         $this->jobId = $id;
         $this->jobs = RecruitJob::all();
@@ -197,7 +196,7 @@ class JobController extends AccountBaseController
     public function candidate($id)
     {
         $viewPermission = user()->permission('view_job_application');
-        abort_403(!in_array($viewPermission, ['all', 'added', 'owned', 'both']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'owned', 'both']));
         $this->jobId = $id;
         $this->jobs = RecruitJob::all();
         $this->jobApp = RecruitJob::where('id', $id)->first();
@@ -216,7 +215,7 @@ class JobController extends AccountBaseController
     public function history($id)
     {
         $viewPermission = user()->permission('view_job');
-        abort_403(!in_array($viewPermission, ['all', 'added', 'owned']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'owned']));
 
         $this->activity = RecruitJobHistory::where('recruit_job_id', $id)->orderByDesc('updated_at')->get();
         $tab = request('tab');
@@ -231,7 +230,7 @@ class JobController extends AccountBaseController
     public function interview($id)
     {
         $viewPermission = user()->permission('view_interview_schedule');
-        abort_403(!in_array($viewPermission, ['all', 'added', 'owned', 'both']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'owned', 'both']));
 
         $this->jobId = $id;
         $tab = request('tab');
@@ -247,9 +246,9 @@ class JobController extends AccountBaseController
     {
 
         $addPermission = user()->permission('add_job');
-        abort_403(!in_array($addPermission, ['all', 'added']));
+        abort_403(! in_array($addPermission, ['all', 'added']));
 
-        $endDate = !$request->has('without_end_date') ? Carbon::createFromFormat($this->company->date_format, $request->end_date)->format('Y-m-d') : null;
+        $endDate = ! $request->has('without_end_date') ? Carbon::createFromFormat($this->company->date_format, $request->end_date)->format('Y-m-d') : null;
 
         $job = new RecruitJob;
         $job->title = $request->title;
@@ -286,7 +285,7 @@ class JobController extends AccountBaseController
         $job->is_expectedctc_require = $request->is_expectedctc_require ?: '0';
         $job->save();
 
-        if (!empty($request->skill_id)) {
+        if (! empty($request->skill_id)) {
             foreach ($request->skill_id as $tag) {
                 $jobSkill = new RecruitJobSkill;
                 $jobSkill->recruit_job_id = $job->id;
@@ -295,7 +294,7 @@ class JobController extends AccountBaseController
             }
         }
 
-        if (!empty($request->stage_id)) {
+        if (! empty($request->stage_id)) {
             foreach ($request->stage_id as $stageID) {
                 $interviewStage = new JobInterviewStage;
                 $interviewStage->recruit_job_id = $job->id;
@@ -304,7 +303,7 @@ class JobController extends AccountBaseController
             }
         }
 
-        if (!empty($request->location_id)) {
+        if (! empty($request->location_id)) {
             foreach ($request->location_id as $locationID) {
                 $jobAddress = new RecruitJobAddress;
                 $jobAddress->recruit_job_id = $job->id;
@@ -333,7 +332,7 @@ class JobController extends AccountBaseController
         $this->employees = Recruiter::with('user')->where('status', '=', 'enabled')->get();
 
         $this->editPermission = user()->permission('edit_job');
-        abort_403(!($this->editPermission == 'all'
+        abort_403(! ($this->editPermission == 'all'
             || ($this->editPermission == 'added' && $this->job->added_by == user()->id)
             || ($this->editPermission == 'owned' && user()->id == $this->job->recruiter_id)
             || ($this->editPermission == 'both' && user()->id == $this->job->recruiter_id)
@@ -355,7 +354,7 @@ class JobController extends AccountBaseController
         $this->questions = RecruitCustomQuestion::where('status', 'enable')->where('category', 'job_application')->get();
         $this->allQuestions = RecruitJobQuestion::where('recruit_job_id', $id)->get();
         $this->selectedQuestions = $this->allQuestions->pluck('recruit_custom_question_id')->toArray();
-        $this->subcategories = !is_null($this->job->recruit_job_sub_category_id) ? RecruitJobSubCategory::where('id', $this->job->recruit_job_sub_category_id)->get() : [];
+        $this->subcategories = ! is_null($this->job->recruit_job_sub_category_id) ? RecruitJobSubCategory::where('id', $this->job->recruit_job_sub_category_id)->get() : [];
 
         if (request()->ajax()) {
             $html = view('recruit::jobs.ajax.edit', $this->data)->render();
@@ -372,13 +371,13 @@ class JobController extends AccountBaseController
     {
         $this->editPermission = user()->permission('edit_job');
         $job = RecruitJob::findOrFail($id);
-        abort_403(!($this->editPermission == 'all'
+        abort_403(! ($this->editPermission == 'all'
             || ($this->editPermission == 'added' && $job->added_by == user()->id)
             || ($this->editPermission == 'owned' && user()->id == $job->recruiter_id)
             || ($this->editPermission == 'both' && user()->id == $job->recruiter_id)
             || $job->added_by == user()->id));
 
-        $endDate = !$request->has('without_end_date') ? Carbon::createFromFormat($this->company->date_format, $request->end_date)->format('Y-m-d') : null;
+        $endDate = ! $request->has('without_end_date') ? Carbon::createFromFormat($this->company->date_format, $request->end_date)->format('Y-m-d') : null;
 
         $job->title = $request->title;
         $job->slug = Str::slug($request->title, '-');
@@ -412,13 +411,12 @@ class JobController extends AccountBaseController
         $job->is_currentctc_require = $request->is_currentctc_require ?: '0';
         $job->is_expectedctc_require = $request->is_expectedctc_require ?: '0';
 
-
         $job->save();
 
         $job->address()->sync($request->location_id);
         $job->question()->sync($request->checkQuestionColumn);
 
-        if (!empty($request->skill_id)) {
+        if (! empty($request->skill_id)) {
             RecruitJobSkill::where('recruit_job_id', $id)->delete();
 
             foreach ($request->skill_id as $tag) {
@@ -429,7 +427,7 @@ class JobController extends AccountBaseController
             }
         }
 
-        if (!empty($request->stage_id)) {
+        if (! empty($request->stage_id)) {
             JobInterviewStage::where('recruit_job_id', $id)->delete();
 
             foreach ($request->stage_id as $stageID) {
@@ -447,7 +445,7 @@ class JobController extends AccountBaseController
     {
         $job = RecruitJob::findOrFail($id);
         $this->deletePermission = user()->permission('delete_job');
-        abort_403(!($this->deletePermission == 'all'
+        abort_403(! ($this->deletePermission == 'all'
             || ($this->deletePermission == 'added' && $job->added_by == user()->id)
             || ($this->deletePermission == 'owned' && user()->id == $job->recruiter_id)
             || ($this->deletePermission == 'both' && user()->id == $job->recruiter_id)
@@ -466,16 +464,16 @@ class JobController extends AccountBaseController
     public function applyQuickAction(Request $request)
     {
         switch ($request->action_type) {
-        case 'delete':
-            $this->deleteRecords($request);
+            case 'delete':
+                $this->deleteRecords($request);
 
-            return Reply::success(__('messages.deleteSuccess'));
-        case 'change-status':
-            $this->changeStatus($request);
+                return Reply::success(__('messages.deleteSuccess'));
+            case 'change-status':
+                $this->changeStatus($request);
 
-            return Reply::success(__('messages.updateSuccess'));
-        default:
-            return Reply::error(__('messages.selectAction'));
+                return Reply::success(__('messages.updateSuccess'));
+            default:
+                return Reply::error(__('messages.selectAction'));
         }
     }
 
@@ -502,7 +500,7 @@ class JobController extends AccountBaseController
         $this->job = RecruitJob::findOrFail($jobId);
 
         $this->editPermission = user()->permission('edit_job');
-        abort_403(!($this->editPermission == 'all'
+        abort_403(! ($this->editPermission == 'all'
             || ($this->editPermission == 'added' && $this->job->added_by == user()->id)
             || ($this->editPermission == 'owned' && user()->id == $this->job->recruiter_id)
             || ($this->editPermission == 'both' && user()->id == $this->job->recruiter_id)
@@ -524,5 +522,4 @@ class JobController extends AccountBaseController
 
         return Reply::dataOnly(['status' => 'success', 'stages' => $data]);
     }
-
 }

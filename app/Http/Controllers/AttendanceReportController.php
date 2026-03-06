@@ -7,7 +7,6 @@ use App\Models\User;
 
 class AttendanceReportController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -18,7 +17,7 @@ class AttendanceReportController extends AccountBaseController
     {
         abort_403(user()->permission('view_attendance_report') != 'all');
 
-        if (!request()->ajax()) {
+        if (! request()->ajax()) {
             $this->fromDate = now($this->company->timezone)->startOfMonth();
             $this->toDate = now($this->company->timezone);
             $this->employees = User::allEmployees();
@@ -26,5 +25,4 @@ class AttendanceReportController extends AccountBaseController
 
         return $dataTable->render('reports.attendance.index', $this->data);
     }
-
 }

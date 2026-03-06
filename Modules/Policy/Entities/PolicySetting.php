@@ -3,9 +3,8 @@
 namespace Modules\Policy\Entities;
 
 use App\Models\ModuleSetting;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Modules\Policy\Database\factories\PolicySettingFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class PolicySetting extends Model
 {

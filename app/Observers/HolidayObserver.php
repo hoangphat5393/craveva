@@ -2,24 +2,23 @@
 
 namespace App\Observers;
 
-use App\Models\User;
-use App\Models\Holiday;
 use App\Events\HolidayEvent;
 use App\Models\EmployeeShiftSchedule;
+use App\Models\Holiday;
+use App\Models\User;
 
 class HolidayObserver
 {
-
     public function saving(Holiday $holiday)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             $holiday->last_updated_by = user()->id;
         }
     }
 
     public function creating(Holiday $holiday)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             $holiday->added_by = user()->id;
         }
 
@@ -60,10 +59,8 @@ class HolidayObserver
         EmployeeShiftSchedule::whereDate('date', $holiday->date)->where('company_id', $holiday->company_id)->delete();
     }
 
-
     public function updated(Holiday $holiday)
     {
         EmployeeShiftSchedule::whereDate('date', $holiday->date)->where('company_id', $holiday->company_id)->delete();
     }
-
 }

@@ -6,7 +6,6 @@ use App\Models\BaseModel;
 
 class ObjectiveProgressStatus extends BaseModel
 {
-
     public $timestamps = false;
 
     public function objective()
@@ -19,7 +18,7 @@ class ObjectiveProgressStatus extends BaseModel
         $this->timestamps = false;
         $result = parent::update($attributes, $options);
         $this->timestamps = true;
+
         return $result;
     }
-
 }

@@ -2,31 +2,32 @@
 
 namespace Modules\Policy\DataTables;
 
-use App\Models\Team;
-use App\Models\Designation;
 use App\DataTables\BaseDataTable;
+use App\Models\Designation;
 use App\Models\EmployeeDetails;
-use App\Models\User;
-use Yajra\DataTables\Html\Button;
-use Yajra\DataTables\Html\Column;
+use App\Models\Team;
+use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Illuminate\Support\Facades\DB;
 use Modules\Policy\Entities\Policy;
 use Yajra\DataTables\Html\Builder as HtmlBuilder;
-use Illuminate\Database\Eloquent\Builder as QueryBuilder;
+use Yajra\DataTables\Html\Button;
+use Yajra\DataTables\Html\Column;
 
 class PolicyDataTable extends BaseDataTable
 {
-
     /**
      * Build the DataTable class.
      *
-     * @param QueryBuilder $query Results from query() method.
+     * @param  QueryBuilder  $query  Results from query() method.
      */
-
     private $addPermission;
+
     private $viewPermission;
+
     private $deletePermission;
+
     private $editPermission;
+
     private $canArchivePermission;
 
     public function __construct()
@@ -49,54 +50,53 @@ class PolicyDataTable extends BaseDataTable
 
                 $action .= '<div class="dropdown">
                     <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" type="link"
-                        id="dropdownMenuLink-' . $row->id . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        id="dropdownMenuLink-'.$row->id.'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="icon-options-vertical icons"></i>
                     </a>
-                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-' . $row->id . '" tabindex="0">';
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-'.$row->id.'" tabindex="0">';
 
                 if ($this->viewPermission == 'all' || ($this->viewPermission == 'added' && user()->id == $row->added_by) || ($this->viewPermission == 'owned') || ($this->viewPermission == 'both')) {
-                    $action .= '<a href="' . route('policy.show', [$row->id]) . '" class="dropdown-item"><i class="mr-2 fa fa-eye"></i>' . __('app.view') . '</a>';
+                    $action .= '<a href="'.route('policy.show', [$row->id]).'" class="dropdown-item"><i class="mr-2 fa fa-eye"></i>'.__('app.view').'</a>';
                 }
 
                 if (empty($row->filename)) {
-                    $action .= '<a href="' . route('policy.download', [$row->id, user()->id]) . '" class="dropdown-item"><i class="mr-2 fa fa-download"></i>' . __('app.download') . '</a>';
+                    $action .= '<a href="'.route('policy.download', [$row->id, user()->id]).'" class="dropdown-item"><i class="mr-2 fa fa-download"></i>'.__('app.download').'</a>';
                 } else {
-                    $action .= '<a href="' . route('policy-file.download', md5($row->id)) . '?type=only-file' . '" class="dropdown-item"><i class="fa fa-download mr-1"></i>' . __('app.download') . '</a>';
+                    $action .= '<a href="'.route('policy-file.download', md5($row->id)).'?type=only-file'.'" class="dropdown-item"><i class="fa fa-download mr-1"></i>'.__('app.download').'</a>';
                 }
 
-
-                $department = !is_null($row->department_id_json) ? in_array(user()->employeeDetails->department_id, json_decode($row->department_id_json)) : true;
-                $designation = !is_null($row->designation_id_json) ? in_array(user()->employeeDetails->designation_id, json_decode($row->designation_id_json)) : true;
-                $employmentType = !is_null($row->employment_type_json) ? in_array(user()->employeeDetails->employment_type, json_decode($row->employment_type_json)) : true;
+                $department = ! is_null($row->department_id_json) ? in_array(user()->employeeDetails->department_id, json_decode($row->department_id_json)) : true;
+                $designation = ! is_null($row->designation_id_json) ? in_array(user()->employeeDetails->designation_id, json_decode($row->designation_id_json)) : true;
+                $employmentType = ! is_null($row->employment_type_json) ? in_array(user()->employeeDetails->employment_type, json_decode($row->employment_type_json)) : true;
 
                 if ($row->employeeAcknowledge->isEmpty() && (($this->editPermission == 'all'
                     || ($this->editPermission == 'added' && $row->added_by == user()->id)
                     || ($this->editPermission == 'owned' && $department && $designation && $employmentType))
                     || ($this->editPermission == 'both' && (($department && $designation && $employmentType) || $row->added_by == user()->id)))) {
-                    $action .= '<a class="dropdown-item openRightModal" href="' . route('policy.edit', $row->id) . '" >
+                    $action .= '<a class="dropdown-item openRightModal" href="'.route('policy.edit', $row->id).'" >
                             <i class="mr-2 fa fa-edit"></i>
-                            ' . trans('app.edit') . '
+                            '.trans('app.edit').'
                         </a>';
                 }
 
-                if (!$row->trashed() && $row->status == 'draft' && (user()->hasRole('admin') || $this->addPermission == 'all')) {
-                    $action .= '<a class="dropdown-item publish-policy" href="javascript:;" data-toggle="tooltip"  data-policy-id="' . $row->id . '">
+                if (! $row->trashed() && $row->status == 'draft' && (user()->hasRole('admin') || $this->addPermission == 'all')) {
+                    $action .= '<a class="dropdown-item publish-policy" href="javascript:;" data-toggle="tooltip"  data-policy-id="'.$row->id.'">
                             <i class="mr-2 fa fa-check-circle"></i>
-                            ' . trans('policy::app.publish') . '
+                            '.trans('policy::app.publish').'
                         </a>';
                 }
 
                 if ($row->status == 'published' && ($this->canArchivePermission == 'all' || in_array('admin', user_roles()))) {
-                    $action .= '<a class="dropdown-item archive-policy" href="javascript:;" data-policy-id="' . $row->id . '">
+                    $action .= '<a class="dropdown-item archive-policy" href="javascript:;" data-policy-id="'.$row->id.'">
                             <i class="fa fa-archive mr-2"></i>
-                            ' . trans('app.archive') . '
+                            '.trans('app.archive').'
                         </a>';
                 }
 
                 if ($row->status == 'draft' && ($this->deletePermission == 'all' || ($this->deletePermission == 'added' && $row->added_by == user()->id) || $this->deletePermission == 'owned' || $this->deletePermission == 'both')) {
-                    $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-toggle="tooltip"  data-policy-id="' . $row->id . '">
+                    $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-toggle="tooltip"  data-policy-id="'.$row->id.'">
                         <i class="mr-2 fa fa-trash"></i>
-                        ' . trans('app.delete') . '
+                        '.trans('app.delete').'
                     </a>';
                 }
 
@@ -109,7 +109,7 @@ class PolicyDataTable extends BaseDataTable
             ->addColumn('title', function ($row) {
 
                 if ($this->viewPermission == 'all' || ($this->viewPermission == 'added' && user()->id == $row->added_by) || ($this->viewPermission == 'owned') || ($this->viewPermission == 'both')) {
-                    return '<a class="text-darkest-grey" href="' . route('policy.show', [$row->id]) . '">' . $row->title . '</a>';
+                    return '<a class="text-darkest-grey" href="'.route('policy.show', [$row->id]).'">'.$row->title.'</a>';
                 }
 
                 return $row->title;
@@ -119,7 +119,7 @@ class PolicyDataTable extends BaseDataTable
             })
             ->addColumn('department', function ($row) {
                 // Get departments as an array
-                $departments = (!empty($row->department_id_json) && $row->department_id_json != 'null')
+                $departments = (! empty($row->department_id_json) && $row->department_id_json != 'null')
                     ? Policy::department(json_decode($row->department_id_json))
                     : [];
 
@@ -129,28 +129,28 @@ class PolicyDataTable extends BaseDataTable
 
                 // Render each department as a badge
                 $badges = collect($departments)->map(function ($val) {
-                    return '<span class="badge badge-secondary mr-1">' . e($val) . '</span>';
+                    return '<span class="badge badge-secondary mr-1">'.e($val).'</span>';
                 })->implode(' ');
 
                 return $badges;
             })
             ->addColumn('gender', function ($row) {
-                if (!$row->gender) {
+                if (! $row->gender) {
                     return '--';
                 }
 
-                $icon = match($row->gender) {
+                $icon = match ($row->gender) {
                     'male' => '<i class="bi bi-gender-male mr-1"></i>',
                     'female' => '<i class="bi bi-gender-female mr-1"></i>',
                     'others' => '<i class="bi bi-gender-trans mr-1"></i>',
                     default => ''
                 };
 
-                return '<span class="badge badge-info">' . $icon . __('app.'.$row->gender) . '</span>';
+                return '<span class="badge badge-info">'.$icon.__('app.'.$row->gender).'</span>';
             })
             ->addColumn('designation', function ($row) {
                 // Get designations as an array
-                $designations = (!empty($row->designation_id_json) && $row->designation_id_json != 'null')
+                $designations = (! empty($row->designation_id_json) && $row->designation_id_json != 'null')
                     ? Policy::designation(json_decode($row->designation_id_json))
                     : [];
 
@@ -160,35 +160,34 @@ class PolicyDataTable extends BaseDataTable
 
                 // Render each designation as a badge
                 $badges = collect($designations)->map(function ($val) {
-                    return '<span class="badge badge-secondary mr-1">' . e($val) . '</span>';
+                    return '<span class="badge badge-secondary mr-1">'.e($val).'</span>';
                 })->implode(' ');
 
                 return $badges;
             })
             ->addColumn('employment_type', function ($row) {
-                $value = !empty($row->employment_type_json) ? collect(json_decode($row->employment_type_json))
+                $value = ! empty($row->employment_type_json) ? collect(json_decode($row->employment_type_json))
                     ->map(function ($employmentType) {
-                        return '<ul>' . __('modules.employees.' . $employmentType) . '</ul>';
+                        return '<ul>'.__('modules.employees.'.$employmentType).'</ul>';
                     })
                     ->implode('') : '--';
+
                 return $value !== '' ? $value : '--';
             })
             ->addColumn('signature_required', function ($row) {
                 if ($row->signature_required == 'yes') {
-                    $signature = '<span class="badge badge-success">' . __('app.yes') . '</span> ';
-                }
-                else {
-                    $signature = '<span class="badge badge-danger">' . __('app.no')  . '</span> ';
+                    $signature = '<span class="badge badge-success">'.__('app.yes').'</span> ';
+                } else {
+                    $signature = '<span class="badge badge-danger">'.__('app.no').'</span> ';
                 }
 
                 return $signature;
             })
             ->addColumn('acknowledged', function ($row) {
                 if ($row->is_acknowledged > 0) {
-                    return '<span class="badge badge-success">' . __('app.yes') . '</span> ';
-                }
-                else {
-                    return '<span class="badge badge-danger">' . __('app.no') . '</span> ';
+                    return '<span class="badge badge-success">'.__('app.yes').'</span> ';
+                } else {
+                    return '<span class="badge badge-danger">'.__('app.no').'</span> ';
                 }
             })
             ->addColumn('employee_action', function ($row) {
@@ -196,14 +195,13 @@ class PolicyDataTable extends BaseDataTable
 
                 $totalEmployees = $this->getEmployeeTotal($row);
 
-                return $row->employee_acknowledged . '/' . $totalEmployees;
+                return $row->employee_acknowledged.'/'.$totalEmployees;
             })
             ->addColumn('status', function ($row) {
                 if ($row->status == 'published') {
-                    $status = '<span class="badge badge-success">' . __('policy::app.published') . '</span> ';
-                }
-                else {
-                    $status = '<span class="badge badge-danger">' . __('policy::app.draft')  . '</span> ';
+                    $status = '<span class="badge badge-success">'.__('policy::app.published').'</span> ';
+                } else {
+                    $status = '<span class="badge badge-danger">'.__('policy::app.draft').'</span> ';
                 }
 
                 return $status;
@@ -244,8 +242,8 @@ class PolicyDataTable extends BaseDataTable
                 from policy_employee_acknowledged as packn
                 join users on users.id = packn.user_id
                 where packn.policy_id = policies.id
-                and packn.user_id = ' . user()->id . '
-                and packn.company_id = ' . company()->id . '
+                and packn.user_id = '.user()->id.'
+                and packn.company_id = '.company()->id.'
                 and users.status = "active"
             ) as is_acknowledged'
         );
@@ -261,15 +259,15 @@ class PolicyDataTable extends BaseDataTable
         if ($this->viewPermission == 'owned') {
             $model->where(function ($query) {
                 $query->where(function ($q) {
-                    $q->orWhere('department_id_json', 'like', '%"' . user()->employeeDetails->department_id . '"%')
+                    $q->orWhere('department_id_json', 'like', '%"'.user()->employeeDetails->department_id.'"%')
                         ->orWhereNull('department_id_json');
                 });
                 $query->where(function ($q) {
-                    $q->orWhere('designation_id_json', 'like', '%"' . user()->employeeDetails->designation_id . '"%')
+                    $q->orWhere('designation_id_json', 'like', '%"'.user()->employeeDetails->designation_id.'"%')
                         ->orWhereNull('designation_id_json');
                 });
                 $query->where(function ($q) {
-                    $q->orWhere('employment_type_json', 'like', '%"' . user()->employeeDetails->employment_type . '"%')
+                    $q->orWhere('employment_type_json', 'like', '%"'.user()->employeeDetails->employment_type.'"%')
                         ->orWhereNull('employment_type_json');
                 });
 
@@ -285,15 +283,15 @@ class PolicyDataTable extends BaseDataTable
                 $query->where('added_by', user()->id)
                     ->orWhere(function ($query) {
                         $query->where(function ($q) {
-                            $q->orWhere('department_id_json', 'like', '%"' . user()->employeeDetails->department_id . '"%')
+                            $q->orWhere('department_id_json', 'like', '%"'.user()->employeeDetails->department_id.'"%')
                                 ->orWhereNull('department_id_json');
                         });
                         $query->where(function ($q) {
-                            $q->orWhere('designation_id_json', 'like', '%"' . user()->employeeDetails->designation_id . '"%')
+                            $q->orWhere('designation_id_json', 'like', '%"'.user()->employeeDetails->designation_id.'"%')
                                 ->orWhereNull('designation_id_json');
                         });
                         $query->where(function ($q) {
-                            $q->orWhere('employment_type_json', 'like', '%"' . user()->employeeDetails->employment_type . '"%')
+                            $q->orWhere('employment_type_json', 'like', '%"'.user()->employeeDetails->employment_type.'"%')
                                 ->orWhereNull('employment_type_json');
                         });
 
@@ -308,15 +306,15 @@ class PolicyDataTable extends BaseDataTable
         }
 
         if ($request->department != null && $request->department != '' && $request->department != 'all') {
-            $model->where('department_id_json', 'like', '%"' . $request->department . '"%');
+            $model->where('department_id_json', 'like', '%"'.$request->department.'"%');
         }
 
         if ($request->designation != null && $request->designation != '' && $request->designation != 'all') {
-            $model->where('designation_id_json', 'like', '%"' . $request->designation . '"%');
+            $model->where('designation_id_json', 'like', '%"'.$request->designation.'"%');
         }
 
         if ($request->employmentType != null && $request->employmentType != '' && $request->employmentType != 'all') {
-            $model->where('employment_type_json', 'like', '%"' . $request->employmentType . '"%');
+            $model->where('employment_type_json', 'like', '%"'.$request->employmentType.'"%');
         }
 
         if ($request->gender != null && $request->gender != '' && $request->gender != 'all') {
@@ -324,23 +322,23 @@ class PolicyDataTable extends BaseDataTable
         }
 
         if ($request->signatureRequired != null && $request->signatureRequired != '' && $request->signatureRequired != 'all') {
-            $model->where('signature_required', 'like', '%' . $request->signatureRequired . '%');
+            $model->where('signature_required', 'like', '%'.$request->signatureRequired.'%');
         }
 
         if ($request->searchText != '') {
-            $teams = Team::where('team_name', 'like', '%' . request('searchText') . '%')->get();
-            $designations = Designation::where('name', 'like', '%' . request('searchText') . '%')->get();
+            $teams = Team::where('team_name', 'like', '%'.request('searchText').'%')->get();
+            $designations = Designation::where('name', 'like', '%'.request('searchText').'%')->get();
             $model->where(
                 function ($query) use ($teams, $designations) {
-                    $query->where('policies.title', 'like', '%' . request('searchText') . '%');
-                    $query->orWhere('policies.employment_type_json', 'like', '%' . request('searchText') . '%');
+                    $query->where('policies.title', 'like', '%'.request('searchText').'%');
+                    $query->orWhere('policies.employment_type_json', 'like', '%'.request('searchText').'%');
 
                     foreach ($teams as $team) {
-                        $query->orWhere('policies.department_id_json', 'like', '%' . $team->id . '%');
+                        $query->orWhere('policies.department_id_json', 'like', '%'.$team->id.'%');
                     }
 
                     foreach ($designations as $designation) {
-                        $query->orWhere('policies.designation_id_json', 'like', '%' . $designation->id . '%');
+                        $query->orWhere('policies.designation_id_json', 'like', '%'.$designation->id.'%');
                     }
                 }
             );
@@ -372,7 +370,7 @@ class PolicyDataTable extends BaseDataTable
             );
 
         if (canDataTableExport()) {
-            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
+            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
         }
 
         return $dataTable;
@@ -403,7 +401,7 @@ class PolicyDataTable extends BaseDataTable
                 ->printable(false)
                 ->orderable(false)
                 ->searchable(false)
-                ->addClass('text-right pr-20')
+                ->addClass('text-right pr-20'),
         ];
 
         return $data;
@@ -416,25 +414,25 @@ class PolicyDataTable extends BaseDataTable
         $designation = $policy->designation_id_json ? json_decode($policy->designation_id_json) : [];
         $employmentType = $policy->employment_type_json ? json_decode($policy->employment_type_json) : [];
 
-        $totalEmployees = EmployeeDetails::with('user')->whereHas('user', function($q) use($policy) {
+        $totalEmployees = EmployeeDetails::with('user')->whereHas('user', function ($q) use ($policy) {
             $q->where('status', 'active');
 
-            if (!is_null($policy->gender)) {
+            if (! is_null($policy->gender)) {
                 $q->where('gender', $policy->gender);
             }
 
         });
 
         $totalEmployees = $totalEmployees->where(function ($q) use ($department, $designation, $employmentType) {
-            if (!empty($department)) {
+            if (! empty($department)) {
                 $q->whereIn('department_id', $department);
             }
 
-            if (!empty($designation)) {
+            if (! empty($designation)) {
                 $q->whereIn('designation_id', $designation);
             }
 
-            if (!empty($employmentType)) {
+            if (! empty($employmentType)) {
                 $q->whereIn('employment_type', $employmentType);
             }
         });
@@ -442,5 +440,4 @@ class PolicyDataTable extends BaseDataTable
         return $totalEmployees->count();
 
     }
-
 }

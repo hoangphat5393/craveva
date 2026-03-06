@@ -28,6 +28,7 @@ use Illuminate\Support\Facades\DB;
  * @property-read \App\Models\User|null $fromUser
  * @property-read mixed $icon
  * @property-read \App\Models\User|null $toUser
+ *
  * @method static Builder|UserChat lastPerGroup(?array $fields = null)
  * @method static Builder|UserChat newModelQuery()
  * @method static Builder|UserChat newQuery()
@@ -41,29 +42,34 @@ use Illuminate\Support\Facades\DB;
  * @method static Builder|UserChat whereUpdatedAt($value)
  * @method static Builder|UserChat whereUserId($value)
  * @method static Builder|UserChat whereUserOne($value)
+ *
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\UserchatFile[] $files
  * @property-read int|null $files_count
+ *
  * @method static \Database\Factories\UserChatFactory factory(...$parameters)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static Builder|UserChat whereCompanyId($value)
  * @method static Builder|UserChat whereNotificationSent($value)
+ *
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MentionUser> $mentionProject
  * @property-read int|null $mention_project_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $mentionUser
  * @property-read int|null $mention_user_count
+ *
  * @mixin \Eloquent
  */
 class UserChat extends BaseModel
 {
-
     use HasCompany;
     use HasFactory;
 
     protected $table = 'users_chat';
 
     protected $guarded = [
-        'id'
+        'id',
     ];
 
     public function fromUser(): BelongsTo
@@ -99,10 +105,7 @@ class UserChat extends BaseModel
      * Each group is composed of one or more columns that make a unique combination to return the
      * last entry for.
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param array|null $fields A list of fields that's considered as a unique entry by the query.
-     *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @param  array|null  $fields  A list of fields that's considered as a unique entry by the query.
      */
     public function scopeLastPerGroup(Builder $query, ?array $fields = null): Builder
     {
@@ -126,15 +129,14 @@ class UserChat extends BaseModel
     {
         // Prepare bindings array
         $bindings = [$userID, $userID];
-        
+
         // Build the WHERE clause securely
         if ($term) {
             $termCnd = 'AND (users.name LIKE ? OR u.name LIKE ?)';
             // Add term parameter bindings with wildcards
-            $bindings[] = '%' . $term . '%';
-            $bindings[] = '%' . $term . '%';
-        }
-        else {
+            $bindings[] = '%'.$term.'%';
+            $bindings[] = '%'.$term.'%';
+        } else {
             $termCnd = '';
         }
 
@@ -157,7 +159,7 @@ class UserChat extends BaseModel
                 ON LEAST(t1.user_one, t1.user_id) = t2.sender AND
                 GREATEST(t1.user_one, t1.user_id) = t2.receiver AND
                 t1.id = t2.max_id
-                WHERE (t1.user_one = ? OR t1.user_id = ?) ' . $termCnd . '
+                WHERE (t1.user_one = ? OR t1.user_id = ?) '.$termCnd.'
                 ORDER BY t1.created_at DESC
             ', $bindings);
     }
@@ -197,5 +199,4 @@ class UserChat extends BaseModel
     {
         return $this->hasMany(MentionUser::class, 'project_id');
     }
-
 }

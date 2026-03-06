@@ -17,13 +17,12 @@ use Illuminate\Http\Request;
 
 class RecurringExpenseController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'app.menu.expensesRecurring';
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('expenses', $this->user->modules));
+            abort_403(! in_array('expenses', $this->user->modules));
 
             return $next($request);
         });
@@ -32,9 +31,9 @@ class RecurringExpenseController extends AccountBaseController
     public function index(RecurringExpensesDataTable $dataTable)
     {
         $viewPermission = user()->permission('view_expenses');
-        abort_403(!in_array($viewPermission, ['all', 'added', 'owned', 'both']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'owned', 'both']));
 
-        if (!request()->ajax()) {
+        if (! request()->ajax()) {
             $this->employees = User::allEmployees();
             $this->projects = Project::allProjects();
             $this->categories = ExpenseCategoryController::getCategoryByCurrentRole();
@@ -52,7 +51,7 @@ class RecurringExpenseController extends AccountBaseController
     public function create()
     {
         $this->addPermission = user()->permission('manage_recurring_expense');
-        abort_403(!in_array($this->addPermission, ['all']));
+        abort_403(! in_array($this->addPermission, ['all']));
 
         $this->currencies = Currency::all();
         $this->categories = ExpenseCategoryController::getCategoryByCurrentRole();
@@ -60,7 +59,7 @@ class RecurringExpenseController extends AccountBaseController
         $this->pageTitle = __('modules.expensesRecurring.addExpense');
         $this->projectId = request('project_id') ? request('project_id') : null;
 
-        if (!is_null($this->projectId)) {
+        if (! is_null($this->projectId)) {
             $employees = Project::with('projectMembers')->where('id', $this->projectId)->first();
             $this->employees = $employees->projectMembers;
 
@@ -68,7 +67,7 @@ class RecurringExpenseController extends AccountBaseController
             $this->employees = User::allEmployees();
         }
 
-        $expense = new Expense();
+        $expense = new Expense;
         $getCustomFieldGroupsWithFields = $expense->getCustomFieldGroupsWithFields();
         if ($getCustomFieldGroupsWithFields) {
             $this->fields = $getCustomFieldGroupsWithFields->fields;
@@ -79,7 +78,7 @@ class RecurringExpenseController extends AccountBaseController
 
         $bankAccounts = BankAccount::where('status', 1)->where('currency_id', company()->currency_id);
 
-        if($this->viewBankAccountPermission == 'added'){
+        if ($this->viewBankAccountPermission == 'added') {
             $bankAccounts = $bankAccounts->where('added_by', user()->id);
         }
 
@@ -88,35 +87,36 @@ class RecurringExpenseController extends AccountBaseController
 
         if (request()->ajax()) {
             $html = view('recurring-expenses.ajax.create', $this->data)->render();
+
             return Reply::dataOnly(['status' => 'success', 'html' => $html, 'title' => $this->pageTitle]);
         }
 
         $this->view = 'recurring-expenses.ajax.create';
+
         return view('expenses.show', $this->data);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  StoreRecurringExpense $request
      * @return \Illuminate\Http\Response
      */
     public function store(StoreRecurringExpense $request)
     {
-        $expenseRecurring = new ExpenseRecurring();
-        $expenseRecurring->item_name           = $request->item_name;
-        $expenseRecurring->price               = round($request->price, 2);
-        $expenseRecurring->currency_id         = $request->currency_id;
-        $expenseRecurring->category_id         = $request->category_id;
-        $expenseRecurring->user_id             = $request->user_id;
-        $expenseRecurring->status              = $request->status;
-        $expenseRecurring->rotation            = $request->rotation;
-        $expenseRecurring->billing_cycle       = $request->billing_cycle > 0 ? $request->billing_cycle : null;
+        $expenseRecurring = new ExpenseRecurring;
+        $expenseRecurring->item_name = $request->item_name;
+        $expenseRecurring->price = round($request->price, 2);
+        $expenseRecurring->currency_id = $request->currency_id;
+        $expenseRecurring->category_id = $request->category_id;
+        $expenseRecurring->user_id = $request->user_id;
+        $expenseRecurring->status = $request->status;
+        $expenseRecurring->rotation = $request->rotation;
+        $expenseRecurring->billing_cycle = $request->billing_cycle > 0 ? $request->billing_cycle : null;
         $expenseRecurring->unlimited_recurring = $request->billing_cycle < 0 ? 1 : 0;
-        $expenseRecurring->description         = trim_editor($request->description);
-        $expenseRecurring->created_by          = $this->user->id;
+        $expenseRecurring->description = trim_editor($request->description);
+        $expenseRecurring->created_by = $this->user->id;
         $expenseRecurring->purchase_from = $request->purchase_from;
-        $expenseRecurring->issue_date = !is_null($request->issue_date) ? companyToYmd($request->issue_date) : now()->format('Y-m-d');
+        $expenseRecurring->issue_date = ! is_null($request->issue_date) ? companyToYmd($request->issue_date) : now()->format('Y-m-d');
 
         if ($request->project_id > 0) {
             $expenseRecurring->project_id = $request->project_id;
@@ -132,11 +132,11 @@ class RecurringExpenseController extends AccountBaseController
         $expenseRecurring->status = 'active';
         $expenseRecurring->save();
 
-        if($request->immediate_expense){
+        if ($request->immediate_expense) {
 
             $currency = Currency::where('id', $request->currency_id)->first();
 
-            $expense = new Expense();
+            $expense = new Expense;
             $expense->expenses_recurring_id = $expenseRecurring->id;
             $expense->category_id = $request->category_id;
             $expense->project_id = $request->project_id;
@@ -180,8 +180,7 @@ class RecurringExpenseController extends AccountBaseController
 
         $this->exp = Expense::where('expenses_recurring_id', $id)->first();
 
-        if($this->exp)
-        {
+        if ($this->exp) {
             $this->exp = $this->exp->withCustomFields();
 
             $getCustomFieldGroupsWithFields = $this->exp->getCustomFieldGroupsWithFields();
@@ -191,7 +190,6 @@ class RecurringExpenseController extends AccountBaseController
             }
         }
 
-
         $this->daysOfWeek = [
             '1' => 'sunday',
             '2' => 'monday',
@@ -199,17 +197,17 @@ class RecurringExpenseController extends AccountBaseController
             '4' => 'wednesday',
             '5' => 'thursday',
             '6' => 'friday',
-            '7' => 'saturday'
+            '7' => 'saturday',
         ];
 
         $tab = request('tab');
 
         switch ($tab) {
-        case 'expenses':
+            case 'expenses':
                 return $this->expenses($id);
-        default:
-            $this->view = 'recurring-expenses.ajax.show';
-            break;
+            default:
+                $this->view = 'recurring-expenses.ajax.show';
+                break;
         }
 
         if (request()->ajax()) {
@@ -230,7 +228,7 @@ class RecurringExpenseController extends AccountBaseController
     public function edit($id)
     {
         $this->addPermission = user()->permission('manage_recurring_expense');
-        abort_403(!in_array($this->addPermission, ['all']));
+        abort_403(! in_array($this->addPermission, ['all']));
 
         $this->expense = ExpenseRecurring::findOrFail($id);
 
@@ -244,8 +242,7 @@ class RecurringExpenseController extends AccountBaseController
 
         $this->exp = Expense::where('expenses_recurring_id', $id)->first();
 
-        if($this->exp)
-        {
+        if ($this->exp) {
             $this->exp = $this->exp->withCustomFields();
             $getCustomFieldGroupsWithFields = $this->exp->getCustomFieldGroupsWithFields();
 
@@ -256,7 +253,7 @@ class RecurringExpenseController extends AccountBaseController
 
         $bankAccounts = BankAccount::where('status', 1)->where('currency_id', $this->expense->currency_id);
 
-        if($this->viewBankAccountPermission == 'added'){
+        if ($this->viewBankAccountPermission == 'added') {
             $bankAccounts = $bankAccounts->where('added_by', user()->id);
         }
 
@@ -265,16 +262,15 @@ class RecurringExpenseController extends AccountBaseController
 
         $userId = $this->expense->user_id;
 
-        if (!is_null($userId)) {
+        if (! is_null($userId)) {
             $this->projects = Project::with('members')->whereHas('members', function ($q) use ($userId) {
                 $q->where('user_id', $userId);
             })->get();
-        }
-        else {
+        } else {
             $this->projects = Project::get();
         }
 
-        if (!is_null($this->projectId)) {
+        if (! is_null($this->projectId)) {
             $employees = Project::with('projectMembers')->where('id', $this->projectId)->first();
             $this->employees = $employees->projectMembers;
 
@@ -294,7 +290,6 @@ class RecurringExpenseController extends AccountBaseController
     /**
      * Update the specified resource in storage.
      *
-     * @param  StoreRecurringExpense  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
@@ -302,22 +297,21 @@ class RecurringExpenseController extends AccountBaseController
     {
         $expense = ExpenseRecurring::findOrFail($id);
 
-        if($request->expense_count == 0)
-        {
-            $expense->item_name           = $request->item_name;
-            $expense->price               = round($request->price, 2);
-            $expense->currency_id         = $request->currency_id;
-            $expense->category_id         = $request->category_id;
-            $expense->user_id             = $request->user_id;
-            $expense->rotation            = $request->rotation;
-            $expense->billing_cycle       = $request->billing_cycle > 0 ? $request->billing_cycle : null;
+        if ($request->expense_count == 0) {
+            $expense->item_name = $request->item_name;
+            $expense->price = round($request->price, 2);
+            $expense->currency_id = $request->currency_id;
+            $expense->category_id = $request->category_id;
+            $expense->user_id = $request->user_id;
+            $expense->rotation = $request->rotation;
+            $expense->billing_cycle = $request->billing_cycle > 0 ? $request->billing_cycle : null;
             $expense->unlimited_recurring = $request->billing_cycle < 0 ? 1 : 0;
-            $expense->description         = trim_editor($request->description);
-            $expense->purchase_from       = $request->purchase_from;
-            $expense->bank_account_id     = $request->bank_account_id;
+            $expense->description = trim_editor($request->description);
+            $expense->purchase_from = $request->purchase_from;
+            $expense->bank_account_id = $request->bank_account_id;
 
-            if(!is_null($request->issue_date)){
-                $expense->issue_date =  companyToYmd($request->issue_date);
+            if (! is_null($request->issue_date)) {
+                $expense->issue_date = companyToYmd($request->issue_date);
             }
 
             if ($request->project_id > 0) {
@@ -330,8 +324,7 @@ class RecurringExpenseController extends AccountBaseController
             }
 
             $expense->save();
-        }
-        else {
+        } else {
 
             if (request()->has('status')) {
                 $expense->status = $request->status;
@@ -342,8 +335,7 @@ class RecurringExpenseController extends AccountBaseController
 
         $this->exp = Expense::where('expenses_recurring_id', $id)->first();
 
-        if($this->exp)
-        {
+        if ($this->exp) {
             $this->exp = $this->exp->withCustomFields();
 
             if ($request->custom_fields_data) {
@@ -370,17 +362,18 @@ class RecurringExpenseController extends AccountBaseController
     {
         $this->expense = ExpenseRecurring::findOrFail($id);
         $this->deletePermission = user()->permission('delete_expenses');
-        abort_403(!($this->deletePermission == 'all' || ($this->deletePermission == 'added' && $this->expense->added_by == user()->id)));
+        abort_403(! ($this->deletePermission == 'all' || ($this->deletePermission == 'added' && $this->expense->added_by == user()->id)));
 
         ExpenseRecurring::destroy($id);
+
         return Reply::success(__('messages.deleteSuccess'));
     }
 
     public function expenses($recurringID)
     {
-        $dataTable = new ExpensesDataTable();
+        $dataTable = new ExpensesDataTable;
         $viewPermission = user()->permission('view_expenses');
-        abort_403(!in_array($viewPermission, ['all', 'added', 'owned', 'both']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'owned', 'both']));
 
         $this->recurringID = $recurringID;
         $this->expense = ExpenseRecurring::findOrFail($recurringID);
@@ -400,7 +393,7 @@ class RecurringExpenseController extends AccountBaseController
         $expense = ExpenseRecurring::findOrFail($expenseId);
         $expense->status = $status;
         $expense->save();
+
         return Reply::success(__('messages.updateSuccess'));
     }
-
 }

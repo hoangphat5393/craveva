@@ -2,18 +2,15 @@
 
 namespace Modules\Purchase\Entities;
 
+use App\Models\BaseModel;
 use App\Models\Tax;
 use App\Models\UnitType;
-use App\Models\BaseModel;
-use App\Models\ProposalItemImage;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class PurchaseVendorItem extends BaseModel
 {
-
     use HasFactory;
 
     protected $fillable = [];
@@ -46,17 +43,16 @@ class PurchaseVendorItem extends BaseModel
         if ($PurchaseVendorItem && $PurchaseVendorItem->taxes) {
             $numItems = count(json_decode($PurchaseVendorItem->taxes));
 
-            if (!is_null($PurchaseVendorItem->taxes)) {
+            if (! is_null($PurchaseVendorItem->taxes)) {
                 foreach (json_decode($PurchaseVendorItem->taxes) as $index => $tax) {
                     $tax = $this->taxbyid($tax)->first();
-                    $taxes .= $tax->tax_name . ': ' . $tax->rate_percent . '%';
+                    $taxes .= $tax->tax_name.': '.$tax->rate_percent.'%';
 
-                    $taxes = ($index + 1 != $numItems) ? $taxes . ', ' : $taxes;
+                    $taxes = ($index + 1 != $numItems) ? $taxes.', ' : $taxes;
                 }
             }
         }
 
         return $taxes;
     }
-
 }

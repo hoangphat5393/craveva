@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      */
@@ -92,7 +91,7 @@ return new class extends Migration
             $leadModule = Module::where('module_name', 'leads')->first();
             $dealModule = Module::where('module_name', 'deals')->first();
 
-            if($dealModule){
+            if ($dealModule) {
                 Permission::where('module_id', $dealModule->id)->update(['module_id' => $leadModule->id, 'is_custom' => 1]);
                 $dealModule->delete();
             }
@@ -108,5 +107,4 @@ return new class extends Migration
     {
         //
     }
-
 };

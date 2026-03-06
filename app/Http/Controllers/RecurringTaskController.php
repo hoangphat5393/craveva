@@ -2,37 +2,36 @@
 
 namespace App\Http\Controllers;
 
-use Carbon\Carbon;
-use App\Models\Task;
-use App\Models\User;
-use App\Helper\Files;
-use App\Helper\Reply;
-use App\Models\Project;
-use App\Models\SubTask;
-use App\Models\TaskFile;
-use App\Models\TaskUser;
-use App\Models\TaskLabel;
-use App\Models\SubTaskFile;
-use App\Models\TaskSetting;
-use App\Models\TaskCategory;
-use Illuminate\Http\Request;
-use App\Models\TaskLabelList;
-use App\Models\ProjectTimeLog;
-use App\Models\TaskboardColumn;
-use App\Traits\ProjectProgress;
-use App\Models\ProjectMilestone;
 use App\DataTables\RecurringTasksDataTable;
 use App\DataTables\TasksDataTable;
-use Illuminate\Support\Facades\DB;
+use App\Events\TaskEvent;
+use App\Helper\Files;
+use App\Helper\Reply;
+use App\Helper\UserService;
 use App\Http\Requests\Tasks\StoreTask;
 use App\Http\Requests\Tasks\UpdateTask;
-use App\Events\TaskEvent;
-use App\Helper\UserService;
 use App\Models\ClientContact;
+use App\Models\Project;
+use App\Models\ProjectMilestone;
+use App\Models\ProjectTimeLog;
+use App\Models\SubTask;
+use App\Models\SubTaskFile;
+use App\Models\Task;
+use App\Models\TaskboardColumn;
+use App\Models\TaskCategory;
+use App\Models\TaskFile;
+use App\Models\TaskLabel;
+use App\Models\TaskLabelList;
+use App\Models\TaskSetting;
+use App\Models\TaskUser;
+use App\Models\User;
+use App\Traits\ProjectProgress;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class RecurringTaskController extends AccountBaseController
 {
-
     use ProjectProgress;
 
     public function __construct()
@@ -41,7 +40,7 @@ class RecurringTaskController extends AccountBaseController
         $this->pageTitle = 'app.menu.taskRecurring';
         $this->middleware(
             function ($request, $next) {
-                abort_403(!in_array('tasks', $this->user->modules));
+                abort_403(! in_array('tasks', $this->user->modules));
 
                 return $next($request);
             }
@@ -52,9 +51,9 @@ class RecurringTaskController extends AccountBaseController
     {
         $viewPermission = user()->permission('view_tasks');
 
-        abort_403(!in_array($viewPermission, ['all', 'added', 'owned', 'both']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'owned', 'both']));
 
-        if (!request()->ajax()) {
+        if (! request()->ajax()) {
             $this->assignedTo = request()->assignedTo;
 
             if (request()->has('assignee') && request()->assignee == 'me') {
@@ -65,8 +64,7 @@ class RecurringTaskController extends AccountBaseController
 
             if (in_array('client', user_roles())) {
                 $this->clients = User::client();
-            }
-            else {
+            } else {
                 $this->clients = User::allClients();
             }
 
@@ -80,12 +78,12 @@ class RecurringTaskController extends AccountBaseController
 
             $projectIds = Project::where('project_admin', user()->id)->pluck('id');
 
-            if (!in_array('admin', user_roles()) && (in_array('employee', user_roles()) && $projectIds->isEmpty())) {
+            if (! in_array('admin', user_roles()) && (in_array('employee', user_roles()) && $projectIds->isEmpty())) {
                 $user = User::findOrFail(user()->id);
                 $this->waitingApprovalCount = $user->tasks()->where('board_column_id', $taskBoardColumn->id)->where('company_id', company()->id)->count();
-            }elseif(!in_array('admin', user_roles()) && (in_array('employee', user_roles()) && !$projectIds->isEmpty())) {
+            } elseif (! in_array('admin', user_roles()) && (in_array('employee', user_roles()) && ! $projectIds->isEmpty())) {
                 $this->waitingApprovalCount = Task::whereIn('project_id', $projectIds)->where('board_column_id', $taskBoardColumn->id)->where('company_id', company()->id)->count();
-            }else{
+            } else {
                 $this->waitingApprovalCount = Task::where('board_column_id', $taskBoardColumn->id)->where('company_id', company()->id)->count();
             }
         }
@@ -101,29 +99,29 @@ class RecurringTaskController extends AccountBaseController
     public function applyQuickAction(Request $request)
     {
         switch ($request->action_type) {
-        case 'delete':
-            $result = $this->deleteRecords($request);
+            case 'delete':
+                $result = $this->deleteRecords($request);
 
-            if ($result == true) {
+                if ($result == true) {
 
-                return response()->json([
-                    'status' => 'success',
-                    'message' => __('messages.deleteSuccess'),
-                    'redirectUrl' => route('recurring-task.index')
-                ]);
-            }
+                    return response()->json([
+                        'status' => 'success',
+                        'message' => __('messages.deleteSuccess'),
+                        'redirectUrl' => route('recurring-task.index'),
+                    ]);
+                }
 
-            return Reply::success(__('messages.deleteSuccess'));
-        case 'change-status':
-            $this->changeBulkStatus($request);
+                return Reply::success(__('messages.deleteSuccess'));
+            case 'change-status':
+                $this->changeBulkStatus($request);
 
-            return Reply::success(__('messages.updateSuccess'));
-        case 'milestone':
-            $this->changeMilestones($request);
+                return Reply::success(__('messages.updateSuccess'));
+            case 'milestone':
+                $this->changeMilestones($request);
 
-            return Reply::success(__('messages.updateSuccess'));
-        default:
-            return Reply::error(__('messages.selectAction'));
+                return Reply::success(__('messages.updateSuccess'));
+            default:
+                return Reply::error(__('messages.selectAction'));
         }
     }
 
@@ -155,10 +153,9 @@ class RecurringTaskController extends AccountBaseController
             Task::whereIn('id', $taskIds)->update([
                 'status' => 'completed',
                 'board_column_id' => $request->status,
-                'completed_on' => now()->format('Y-m-d')
+                'completed_on' => now()->format('Y-m-d'),
             ]);
-        }
-        else {
+        } else {
             Task::whereIn('id', $taskIds)->update(['board_column_id' => $request->status]);
         }
 
@@ -171,7 +168,7 @@ class RecurringTaskController extends AccountBaseController
         $taskIds = explode(',', $request->row_ids);
 
         Task::whereIn('id', $taskIds)->update([
-            'milestone_id' => $request->milestone
+            'milestone_id' => $request->milestone,
         ]);
     }
 
@@ -185,7 +182,7 @@ class RecurringTaskController extends AccountBaseController
         $redirectUrl = false;
 
         abort_403(
-            !($this->deletePermission == 'all'
+            ! ($this->deletePermission == 'all'
                 || ($this->deletePermission == 'owned' && in_array(user()->id, $taskUsers))
                 || ($task->project && ($task->project->project_admin == user()->id))
                 || ($this->deletePermission == 'added' && $task->added_by == user()->id)
@@ -202,13 +199,13 @@ class RecurringTaskController extends AccountBaseController
 
         $remainingTask = Task::where('id', $id)->orWhere('recurring_task_id', $id)->count();
 
-        if($remainingTask == 0){
+        if ($remainingTask == 0) {
 
             $viewPermission = user()->permission('view_tasks');
 
-            abort_403(!in_array($viewPermission, ['all', 'added', 'owned', 'both']));
+            abort_403(! in_array($viewPermission, ['all', 'added', 'owned', 'both']));
 
-            if (!request()->ajax()) {
+            if (! request()->ajax()) {
                 $this->assignedTo = request()->assignedTo;
 
                 if (request()->has('assignee') && request()->assignee == 'me') {
@@ -219,8 +216,7 @@ class RecurringTaskController extends AccountBaseController
 
                 if (in_array('client', user_roles())) {
                     $this->clients = User::client();
-                }
-                else {
+                } else {
                     $this->clients = User::allClients();
                 }
 
@@ -234,23 +230,24 @@ class RecurringTaskController extends AccountBaseController
 
                 $projectIds = Project::where('project_admin', user()->id)->pluck('id');
 
-                if (!in_array('admin', user_roles()) && (in_array('employee', user_roles()) && $projectIds->isEmpty())) {
+                if (! in_array('admin', user_roles()) && (in_array('employee', user_roles()) && $projectIds->isEmpty())) {
                     $user = User::findOrFail(user()->id);
                     $this->waitingApprovalCount = $user->tasks()->where('board_column_id', $taskBoardColumn->id)->where('company_id', company()->id)->count();
-                }elseif(!in_array('admin', user_roles()) && (in_array('employee', user_roles()) && !$projectIds->isEmpty())) {
+                } elseif (! in_array('admin', user_roles()) && (in_array('employee', user_roles()) && ! $projectIds->isEmpty())) {
                     $this->waitingApprovalCount = Task::whereIn('project_id', $projectIds)->where('board_column_id', $taskBoardColumn->id)->where('company_id', company()->id)->count();
-                }else{
+                } else {
                     $this->waitingApprovalCount = Task::where('board_column_id', $taskBoardColumn->id)->where('company_id', company()->id)->count();
                 }
             }
 
-            if($task->recurring_task_id == null){
+            if ($task->recurring_task_id == null) {
                 $redirectUrl = true;
             }
 
-            if($redirectUrl == true){
+            if ($redirectUrl == true) {
                 return Reply::successWithData(__('messages.deleteSuccess'), ['redirectUrl' => route('recurring-task.index')]);
             }
+
             return Reply::success(__('messages.deleteSuccess'));
         }
 
@@ -264,14 +261,14 @@ class RecurringTaskController extends AccountBaseController
      */
     public function create()
     {
-        $this->pageTitle = __('app.add') . ' ' . __('app.menu.taskRecurring');
+        $this->pageTitle = __('app.add').' '.__('app.menu.taskRecurring');
 
         $this->addPermission = user()->permission('add_tasks');
         $this->projectShortCode = '';
         $this->project = request('task_project_id') ? Project::with('projectMembers')->findOrFail(request('task_project_id')) : null;
 
         if (is_null($this->project) || ($this->project->project_admin != user()->id)) {
-            abort_403(!in_array($this->addPermission, ['all', 'added']));
+            abort_403(! in_array($this->addPermission, ['all', 'added']));
         }
 
         $this->task = (request()['duplicate_task']) ? Task::with('users', 'label', 'project')->findOrFail(request()['duplicate_task'])->withCustomFields() : null;
@@ -288,12 +285,10 @@ class RecurringTaskController extends AccountBaseController
             $this->projectShortCode = $project->project_short_code;
             $this->taskLabels = TaskLabelList::where('project_id', request('task_project_id'))->orWhere('project_id', null)->get();
             $this->milestones = ProjectMilestone::where('project_id', request('task_project_id'))->whereNot('status', 'complete')->get();
-        }
-        else {
+        } else {
             if ($this->task && $this->task->project) {
                 $this->milestones = $this->task->project->incompleteMilestones;
-            }
-            else {
+            } else {
                 $this->milestones = collect([]);
             }
         }
@@ -314,37 +309,32 @@ class RecurringTaskController extends AccountBaseController
 
         $this->allTasks = $completedTaskColumn ? Task::where('board_column_id', '<>', $completedTaskColumn->id)->whereNotNull('due_date')->get() : [];
 
-        if (!is_null($this->project)) {
+        if (! is_null($this->project)) {
             if ($this->project->public) {
                 $this->employees = User::allEmployees(null, true, ($this->addPermission == 'all' ? 'all' : null));
 
-            }
-            else {
+            } else {
 
                 $this->employees = $this->project->projectMembers;
             }
-        }
-        else if (!is_null($this->task) && !is_null($this->task->project_id)) {
+        } elseif (! is_null($this->task) && ! is_null($this->task->project_id)) {
             if ($this->task->project->public) {
                 $this->employees = User::allEmployees(null, true, ($this->addPermission == 'all' ? 'all' : null));
-            }
-            else {
+            } else {
 
                 $this->employees = $this->task->project->projectMembers;
             }
-        }
-        else {
+        } else {
             if (in_array('client', user_roles())) {
                 $this->employees = collect([]); // Do not show all employees to client
 
-            }
-            else {
+            } else {
                 $this->employees = User::allEmployees(null, true, ($this->addPermission == 'all' ? 'all' : null));
             }
 
         }
 
-        $task = new Task();
+        $task = new Task;
 
         $getCustomFieldGroupsWithFields = $task->getCustomFieldGroupsWithFields();
 
@@ -382,7 +372,7 @@ class RecurringTaskController extends AccountBaseController
 
         if (is_null($project) || ($project->project_admin != user()->id)) {
             $this->addPermission = user()->permission('add_tasks');
-            abort_403(!in_array($this->addPermission, ['all', 'added']));
+            abort_403(! in_array($this->addPermission, ['all', 'added']));
         }
 
         DB::beginTransaction();
@@ -390,7 +380,7 @@ class RecurringTaskController extends AccountBaseController
         $gantTaskLinkArray = [];
 
         $taskBoardColumn = TaskboardColumn::where('slug', 'incomplete')->first();
-        $task = new Task();
+        $task = new Task;
         $task->heading = $request->heading;
         $task->description = trim_editor($request->description);
         $dueDate = ($request->has('without_duedate')) ? null : Carbon::createFromFormat(company()->date_format, $request->due_date);
@@ -404,7 +394,7 @@ class RecurringTaskController extends AccountBaseController
         if ($request->has('dependent') && $request->has('dependent_task_id') && $request->dependent_task_id != '') {
             $dependentTask = Task::findOrFail($request->dependent_task_id);
 
-            if (!is_null($dependentTask->due_date) && !is_null($dueDate) && $dependentTask->due_date->greaterThan($dueDate)) {
+            if (! is_null($dependentTask->due_date) && ! is_null($dueDate) && $dependentTask->due_date->greaterThan($dueDate)) {
                 /* @phpstan-ignore-line */
                 return Reply::error(__('messages.taskDependentDate'));
             }
@@ -422,9 +412,9 @@ class RecurringTaskController extends AccountBaseController
         }
 
         $waitingApprovalTaskBoardColumn = TaskboardColumn::waitingForApprovalColumn();
-        if($request->board_column_id == $waitingApprovalTaskBoardColumn->id){
+        if ($request->board_column_id == $waitingApprovalTaskBoardColumn->id) {
             $task->approval_send = 1;
-        }else{
+        } else {
             $task->approval_send = 0;
         }
 
@@ -445,9 +435,8 @@ class RecurringTaskController extends AccountBaseController
             $projectLastTaskCount = Task::projectTaskCount($project->id);
 
             if (isset($project->project_short_code)) {
-                $task->task_short_code = $project->project_short_code . '-' . $this->getTaskShortCode($project->project_short_code, $projectLastTaskCount);
-            }
-            else{
+                $task->task_short_code = $project->project_short_code.'-'.$this->getTaskShortCode($project->project_short_code, $projectLastTaskCount);
+            } else {
                 $task->task_short_code = $projectLastTaskCount + 1;
             }
         }
@@ -458,38 +447,34 @@ class RecurringTaskController extends AccountBaseController
 
         $task->labels()->sync($request->task_labels);
 
-
-        if (!is_null($request->taskId)) {
+        if (! is_null($request->taskId)) {
 
             $taskExists = TaskFile::where('task_id', $request->taskId)->get();
 
             if ($taskExists) {
                 foreach ($taskExists as $taskExist) {
-                    $file = new TaskFile();
+                    $file = new TaskFile;
                     $file->user_id = $taskExist->user_id;
                     $file->task_id = $task->id;
 
                     $fileName = Files::generateNewFileName($taskExist->filename);
 
-                    Files::copy(TaskFile::FILE_PATH . '/' . $taskExist->task_id . '/' . $taskExist->hashname, TaskFile::FILE_PATH . '/' . $task->id . '/' . $fileName);
+                    Files::copy(TaskFile::FILE_PATH.'/'.$taskExist->task_id.'/'.$taskExist->hashname, TaskFile::FILE_PATH.'/'.$task->id.'/'.$fileName);
 
                     $file->filename = $taskExist->filename;
                     $file->hashname = $fileName;
                     $file->size = $taskExist->size;
                     $file->save();
 
-
                     $this->logTaskActivity($task->id, $this->user->id, 'fileActivity', $task->board_column_id);
                 }
             }
 
-
             $subTask = SubTask::with(['files'])->where('task_id', $request->taskId)->get();
-
 
             if ($subTask) {
                 foreach ($subTask as $subTasks) {
-                    $subTaskData = new SubTask();
+                    $subTaskData = new SubTask;
                     $subTaskData->title = $subTasks->title;
                     $subTaskData->task_id = $task->id;
                     $subTaskData->description = trim_editor($subTasks->description);
@@ -505,13 +490,13 @@ class RecurringTaskController extends AccountBaseController
 
                     if ($subTasks->files) {
                         foreach ($subTasks->files as $fileData) {
-                            $file = new SubTaskFile();
+                            $file = new SubTaskFile;
                             $file->user_id = $fileData->user_id;
                             $file->sub_task_id = $subTaskData->id;
 
                             $fileName = Files::generateNewFileName($fileData->filename);
 
-                            Files::copy(SubTaskFile::FILE_PATH . '/' . $fileData->sub_task_id . '/' . $fileData->hashname, SubTaskFile::FILE_PATH . '/' . $subTaskData->id . '/' . $fileName);
+                            Files::copy(SubTaskFile::FILE_PATH.'/'.$fileData->sub_task_id.'/'.$fileData->hashname, SubTaskFile::FILE_PATH.'/'.$subTaskData->id.'/'.$fileName);
 
                             $file->filename = $fileData->filename;
                             $file->hashname = $fileName;
@@ -529,7 +514,7 @@ class RecurringTaskController extends AccountBaseController
         }
 
         // For gantt chart
-        if ($request->page_name && !is_null($task->due_date) && $request->page_name == 'ganttChart') {
+        if ($request->page_name && ! is_null($task->due_date) && $request->page_name == 'ganttChart') {
             $task = Task::find($task->id);
             $parentGanttId = $request->parent_gantt_id;
 
@@ -545,17 +530,16 @@ class RecurringTaskController extends AccountBaseController
                 'start_date' => $task->start_date->format('Y-m-d'), /* @phpstan-ignore-line */
                 'duration' => $taskDuration,
                 'parent' => $parentGanttId,
-                'taskid' => $task->id
+                'taskid' => $task->id,
             ];
 
             $gantTaskLinkArray[] = [
-                'id' => 'link_' . $task->id,
+                'id' => 'link_'.$task->id,
                 'source' => $task->dependent_task_id != '' ? $task->dependent_task_id : $parentGanttId,
                 'target' => $task->id,
-                'type' => $task->dependent_task_id != '' ? 0 : 1
+                'type' => $task->dependent_task_id != '' ? 0 : 1,
             ];
         }
-
 
         DB::commit();
 
@@ -572,7 +556,7 @@ class RecurringTaskController extends AccountBaseController
                 'messages.recordSaved',
                 [
                     'tasks' => $ganttTaskArray,
-                    'links' => $gantTaskLinkArray
+                    'links' => $gantTaskLinkArray,
                 ]
             );
         }
@@ -601,7 +585,7 @@ class RecurringTaskController extends AccountBaseController
 
         $this->task = Task::with(
             ['boardColumn', 'project', 'users', 'label', 'approvedTimeLogs', 'mentionTask',
-                'approvedTimeLogs.user', 'approvedTimeLogs.activeBreak', 'comments','activeUsers',
+                'approvedTimeLogs.user', 'approvedTimeLogs.activeBreak', 'comments', 'activeUsers',
                 'comments.commentEmoji', 'comments.like', 'comments.dislike', 'comments.likeUsers',
                 'comments.dislikeUsers', 'comments.user', 'subtasks.files', 'userActiveTimer',
                 'files' => function ($q) use ($viewTaskFilePermission) {
@@ -627,7 +611,7 @@ class RecurringTaskController extends AccountBaseController
 
         $usersData = $this->task->users;
 
-        if ($this->task->createBy && !in_array($this->task->createBy->id, $taskUsers)) {
+        if ($this->task->createBy && ! in_array($this->task->createBy->id, $taskUsers)) {
             $url = route('employees.show', [$this->task->createBy->user_id ?? $this->task->createBy->id]);
             $taskuserData[] = ['id' => $this->task->createBy->user_id ?? $this->task->createBy->id, 'value' => $this->task->createBy->user->name ?? $this->task->createBy->name, 'image' => $this->task->createBy->user->image_url ?? $this->task->createBy->image_url, 'link' => $url];
         }
@@ -652,7 +636,7 @@ class RecurringTaskController extends AccountBaseController
         }
 
         abort_403(
-            !(
+            ! (
                 $overrideViewPermission == true
                 || $viewTaskPermission == 'all'
                 || ($viewTaskPermission == 'added' && $this->task->added_by == $this->userId)
@@ -662,26 +646,26 @@ class RecurringTaskController extends AccountBaseController
                 || ($viewTaskPermission == 'both' && in_array('client', user_roles()) && $this->task->project_id && $this->task->project->client_id == $this->userId)
                 || ($this->viewUnassignedTasksPermission == 'all' && in_array('employee', user_roles()))
                 || ($this->task->project_id && $this->task->project->project_admin == $this->userId)
-                || ((!is_null($this->task->mentionTask)) && in_array($this->userId, $mentionUser))
+                || ((! is_null($this->task->mentionTask)) && in_array($this->userId, $mentionUser))
             )
 
         );
 
-        if (!$this->task->project_id || ($this->task->project_id && $this->task->project->project_admin != $this->userId)) {
+        if (! $this->task->project_id || ($this->task->project_id && $this->task->project->project_admin != $this->userId)) {
 
             abort_403($this->viewUnassignedTasksPermission == 'none' && count($taskUsers) == 0 && ((is_null($this->task->mentionTask)) && in_array($this->userId, $mentionUser)));
 
         }
 
-        $this->pageTitle = __('app.task') . ' ' . __('app.details');
+        $this->pageTitle = __('app.task').' '.__('app.details');
         $tab = request('tab');
 
         switch ($tab) {
-        case 'task':
+            case 'task':
                 return $this->tasks($id);
-        default:
-            $this->view = 'recurring-task.ajax.show';
-            break;
+            default:
+                $this->view = 'recurring-task.ajax.show';
+                break;
         }
 
         if (request()->ajax()) {
@@ -695,9 +679,9 @@ class RecurringTaskController extends AccountBaseController
 
     public function tasks($recurringID)
     {
-        $dataTable = new TasksDataTable();
+        $dataTable = new TasksDataTable;
         $viewPermission = user()->permission('view_tasks');
-        abort_403(!in_array($viewPermission, ['all', 'added', 'owned', 'both']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'owned', 'both']));
 
         $this->recurringID = $recurringID;
         $this->task = Task::findOrFail($recurringID);
@@ -710,8 +694,8 @@ class RecurringTaskController extends AccountBaseController
         /* year range from last 5 year to next year */
         $years = [];
 
-        $latestFifthYear = (int)now()->subYears(5)->format('Y');
-        $nextYear = (int)now()->addYear()->format('Y');
+        $latestFifthYear = (int) now()->subYears(5)->format('Y');
+        $nextYear = (int) now()->addYear()->format('Y');
 
         for ($i = $latestFifthYear; $i <= $nextYear; $i++) {
             $years[] = $i;
@@ -734,7 +718,7 @@ class RecurringTaskController extends AccountBaseController
         $taskUsers = $task->users->pluck('id')->toArray();
 
         abort_403(
-            !($editTaskPermission == 'all'
+            ! ($editTaskPermission == 'all'
                 || ($editTaskPermission == 'owned' && in_array(user()->id, $taskUsers))
                 || ($editTaskPermission == 'added' && $task->added_by == user()->id)
                 || ($task->project && ($task->project->project_admin == user()->id))
@@ -752,7 +736,6 @@ class RecurringTaskController extends AccountBaseController
         $task->task_category_id = $request->category_id;
         $task->priority = $request->priority;
 
-
         if ($request->has('board_column_id')) {
 
             $task->board_column_id = $request->board_column_id;
@@ -761,13 +744,12 @@ class RecurringTaskController extends AccountBaseController
 
             if ($taskBoardColumn->slug == 'completed') {
                 $task->completed_on = now()->format('Y-m-d');
-            }
-            else {
+            } else {
                 $task->completed_on = null;
             }
         }
 
-        if($request->select_value == 'Waiting Approval'){
+        if ($request->select_value == 'Waiting Approval') {
 
             $taskBoardColumn = TaskboardColumn::where('column_name', $request->select_value)->where('company_id', company()->id)->first();
             $task->board_column_id = $taskBoardColumn->id;
@@ -783,8 +765,7 @@ class RecurringTaskController extends AccountBaseController
         if ($request->project_id != '') {
             $task->project_id = $request->project_id;
             ProjectTimeLog::where('task_id', $id)->update(['project_id' => $request->project_id]);
-        }
-        else {
+        } else {
             $task->project_id = null;
         }
 
@@ -795,7 +776,7 @@ class RecurringTaskController extends AccountBaseController
         if ($request->has('dependent') && $request->has('dependent_task_id') && $request->dependent_task_id != '') {
             $dependentTask = Task::findOrFail($request->dependent_task_id);
 
-            if (!is_null($dependentTask->due_date) && !is_null($dueDate) && $dependentTask->due_date->greaterThan($dueDate)) {
+            if (! is_null($dependentTask->due_date) && ! is_null($dueDate) && $dependentTask->due_date->greaterThan($dueDate)) {
                 return Reply::error(__('messages.taskDependentDate'));
             }
 
@@ -817,7 +798,7 @@ class RecurringTaskController extends AccountBaseController
 
         if ($project && $task->isDirty('project_id')) {
             $projectLastTaskCount = Task::projectTaskCount($project->id);
-            $task->task_short_code = $project->project_short_code . '-' . $this->getTaskShortCode($project->project_short_code, $projectLastTaskCount);
+            $task->task_short_code = $project->project_short_code.'-'.$this->getTaskShortCode($project->project_short_code, $projectLastTaskCount);
         }
         $task->save();
 
@@ -832,9 +813,9 @@ class RecurringTaskController extends AccountBaseController
         // Sync task users
         $task->users()->sync($request->user_id);
 
-        if(!empty($request->user_id)){
+        if (! empty($request->user_id)) {
             $newlyAssignedUserIds = array_diff($request->user_id, $taskUsers);
-            if (!empty($newlyAssignedUserIds)) {
+            if (! empty($newlyAssignedUserIds)) {
                 $newUsers = User::whereIn('id', $newlyAssignedUserIds)->get();
                 event(new TaskEvent($task, $newUsers, 'NewTask'));
             }
@@ -845,7 +826,7 @@ class RecurringTaskController extends AccountBaseController
 
     public function getTaskShortCode($projectShortCode, $lastProjectCount)
     {
-        $task = Task::where('task_short_code', $projectShortCode . '-' . $lastProjectCount)->exists();
+        $task = Task::where('task_short_code', $projectShortCode.'-'.$lastProjectCount)->exists();
 
         if ($task) {
             return $this->getTaskShortCode($projectShortCode, $lastProjectCount + 1);
@@ -854,5 +835,4 @@ class RecurringTaskController extends AccountBaseController
         return $lastProjectCount;
 
     }
-
 }

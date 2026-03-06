@@ -9,7 +9,6 @@ use Modules\Performance\Entities\Objective;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      */
@@ -55,8 +54,7 @@ return new class extends Migration
 
         if ($frequency == 'monthly' || $frequency == 'quarterly') {
             $schedule = $objective->rotation_date;
-        }
-        else {
+        } else {
             $schedule = $objective->schedule_on;
         }
 
@@ -98,9 +96,8 @@ return new class extends Migration
     /**
      * Helper function to get the next weekday (e.g., Monday, Tuesday, etc.)
      *
-     * @param Carbon $startDate
-     * @param string $schedule (Day of the week, e.g., "Monday")
-     * @param int $interval Interval to add in case of bi-weekly (default 1)
+     * @param  string  $schedule  (Day of the week, e.g., "Monday")
+     * @param  int  $interval  Interval to add in case of bi-weekly (default 1)
      * @return Carbon
      */
     private function getNextWeekDay(Carbon $startDate, $schedule, $interval = 1)
@@ -131,8 +128,7 @@ return new class extends Migration
     /**
      * Helper function to get the next day for monthly frequency
      *
-     * @param Carbon $startDate
-     * @param string $schedule
+     * @param  string  $schedule
      * @return Carbon
      */
     private function getNextMonthDay(Carbon $startDate, $schedule)
@@ -145,8 +141,7 @@ return new class extends Migration
             // Check for February
             if ($nextDate->month == 2) {
                 $daysInMonth = $nextDate->isLeapYear() ? 29 : 28;
-            }
-            else {
+            } else {
                 $daysInMonth = $nextDate->daysInMonth;
             }
 
@@ -166,8 +161,7 @@ return new class extends Migration
     /**
      * Helper function to get the next quarterly date
      *
-     * @param Carbon $startDate
-     * @param string $schedule
+     * @param  string  $schedule
      * @return Carbon
      */
     private function getNextQuarterDay(Carbon $startDate, $schedule)
@@ -189,5 +183,4 @@ return new class extends Migration
 
         return $nextDate;
     }
-
 };

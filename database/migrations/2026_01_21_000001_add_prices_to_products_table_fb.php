@@ -12,13 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('products', function (Blueprint $table) {
-            if (!Schema::hasColumn('products', 'wholesale_price')) {
+            if (! Schema::hasColumn('products', 'wholesale_price')) {
                 $table->double('wholesale_price')->nullable()->after('price');
             }
-            if (!Schema::hasColumn('products', 'price_per_box')) {
+            if (! Schema::hasColumn('products', 'price_per_box')) {
                 $table->double('price_per_box')->nullable()->after('wholesale_price');
             }
-            if (!Schema::hasColumn('products', 'employee_price')) {
+            if (! Schema::hasColumn('products', 'employee_price')) {
                 $table->double('employee_price')->nullable()->after('price_per_box');
             }
         });

@@ -6,11 +6,9 @@ use App\Http\Requests\CoreRequest;
 
 /**
  * Class StoreStickyNote
- * @package App\Http\Requests\Sticky
  */
 class StoreStripeDetail extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -36,5 +34,4 @@ class StoreStripeDetail extends CoreRequest
             'line1' => 'required',
         ];
     }
-
 }

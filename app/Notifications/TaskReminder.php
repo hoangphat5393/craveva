@@ -9,13 +9,13 @@ use NotificationChannels\OneSignal\OneSignalMessage;
 
 class TaskReminder extends BaseNotification
 {
-
     /**
      * Create a new notification instance.
      *
      * @return void
      */
     private $task;
+
     private $emailSetting;
 
     public function __construct(Task $task)
@@ -29,12 +29,12 @@ class TaskReminder extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
     {
-        $via = array();
+        $via = [];
 
         if ($notifiable->email_notifications && $notifiable->email != '') {
             array_push($via, 'mail');
@@ -49,7 +49,7 @@ class TaskReminder extends BaseNotification
         }
 
         if ($this->emailSetting->send_push == 'yes' && push_setting()->beams_push_status == 'active') {
-            $pushNotification = new \App\Http\Controllers\DashboardController();
+            $pushNotification = new \App\Http\Controllers\DashboardController;
             $pushUsersIds = [[$notifiable->id]];
             $pushNotification->sendPushNotifications($pushUsersIds, __('email.reminder.subject'), $this->task->heading);
         }
@@ -60,7 +60,7 @@ class TaskReminder extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
@@ -70,20 +70,20 @@ class TaskReminder extends BaseNotification
 
         $url = getDomainSpecificUrl($url, $this->company);
 
-        $content = $this->task->heading . ' #' . $this->task->task_short_code . '<p>';
+        $content = $this->task->heading.' #'.$this->task->task_short_code.'<p>';
 
         if ($this->task->due_date) {
-            $content .= '<b style="color: green">' . __('app.dueDate') . ' : ' . $this->task->due_date->format($this->company->date_format) . '</b>
+            $content .= '<b style="color: green">'.__('app.dueDate').' : '.$this->task->due_date->format($this->company->date_format).'</b>
             </p>';
         }
 
         $build
-            ->subject(__('email.reminder.subject') . ' #' . $this->task->task_short_code . ' - ' . config('app.name') . '.')
-            ->greeting(__('email.hello') . ' ' . $notifiable->name . ',')
+            ->subject(__('email.reminder.subject').' #'.$this->task->task_short_code.' - '.config('app.name').'.')
+            ->greeting(__('email.hello').' '.$notifiable->name.',')
             ->markdown('mail.task.reminder', [
                 'url' => $url,
                 'content' => $content,
-                'themeColor' => $this->company->header_color
+                'themeColor' => $this->company->header_color,
             ]);
 
         parent::resetLocale();
@@ -94,32 +94,32 @@ class TaskReminder extends BaseNotification
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
-    //phpcs:ignore
+    // phpcs:ignore
     public function toArray($notifiable)
     {
         return [
             'id' => $this->task->id,
             'created_at' => $this->task->created_at->format('Y-m-d H:i:s'),
-            'heading' => $this->task->heading
+            'heading' => $this->task->heading,
         ];
     }
 
     /**
      * Get the Slack representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\SlackMessage
      */
     public function toSlack($notifiable)
     {
 
-        $dueDate = (!is_null($this->task->due_date)) ? $this->task->due_date->format($this->company->date_format) : null;
+        $dueDate = (! is_null($this->task->due_date)) ? $this->task->due_date->format($this->company->date_format) : null;
 
         return $this->slackBuild($notifiable)
-            ->content('*' . __('email.reminder.subject') . '*' . "\n" . $this->task->heading . "\n" . ' #' . $this->task->task_short_code . "\n" . __('app.dueDate') . ': ' . $dueDate);
+            ->content('*'.__('email.reminder.subject').'*'."\n".$this->task->heading."\n".' #'.$this->task->task_short_code."\n".__('app.dueDate').': '.$dueDate);
 
     }
 
@@ -128,7 +128,6 @@ class TaskReminder extends BaseNotification
     {
         return OneSignalMessage::create()
             ->setSubject(__('email.reminder.subject'))
-            ->setBody($this->task->heading . ' #' . $this->task->task_short_code);
+            ->setBody($this->task->heading.' #'.$this->task->task_short_code);
     }
-
 }

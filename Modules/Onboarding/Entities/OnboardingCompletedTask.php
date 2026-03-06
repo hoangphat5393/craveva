@@ -4,9 +4,8 @@ namespace Modules\Onboarding\Entities;
 
 use App\Models\User;
 use App\Scopes\ActiveScope;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Model;
 
 class OnboardingCompletedTask extends Model
 {
@@ -16,9 +15,9 @@ class OnboardingCompletedTask extends Model
      * The attributes that are mass assignable.
      */
     protected $fillable = [
-        'onboarding_task_id', 
-        'user_id', 
-        'completed_on', 
+        'onboarding_task_id',
+        'user_id',
+        'completed_on',
         'file',
         'type',
         'employee_id',
@@ -29,7 +28,7 @@ class OnboardingCompletedTask extends Model
         'approved_on',
         'rejection_reason',
         'rejected_by',
-        'rejected_on'
+        'rejected_on',
     ];
 
     protected $table = 'onboarding_completed_task';
@@ -73,12 +72,11 @@ class OnboardingCompletedTask extends Model
 
     public function getLogoUrlAttribute()
     {
-        return (is_null($this->file)) ? $this->company->logo_url : asset_url_local_s3('onboarding-files/' . $this->file);
+        return (is_null($this->file)) ? $this->company->logo_url : asset_url_local_s3('onboarding-files/'.$this->file);
     }
 
     public function getAuthorisedSignatorySignatureUrlAttribute()
     {
-        return (is_null($this->file)) ? '' : asset_url_local_s3('onboarding-files/' . $this->file);
+        return (is_null($this->file)) ? '' : asset_url_local_s3('onboarding-files/'.$this->file);
     }
-
 }

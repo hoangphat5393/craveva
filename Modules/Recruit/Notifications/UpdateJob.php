@@ -3,13 +3,12 @@
 namespace Modules\Recruit\Notifications;
 
 use App\Notifications\BaseNotification;
-use Illuminate\Notifications\Messages\MailMessage;
 use Modules\Recruit\Entities\RecruitEmailNotificationSetting;
 
 class UpdateJob extends BaseNotification
 {
-
     private $job;
+
     private $emailSetting;
 
     /**
@@ -17,7 +16,6 @@ class UpdateJob extends BaseNotification
      *
      * @return void
      */
-
     public function __construct($job)
     {
         $this->job = $job;
@@ -28,7 +26,7 @@ class UpdateJob extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -45,7 +43,7 @@ class UpdateJob extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
@@ -53,7 +51,7 @@ class UpdateJob extends BaseNotification
         $url = route('jobs.show', $this->job->id);
         $url = getDomainSpecificUrl($url, $this->company);
 
-        $content = $this->job->title . ' - ' . __('recruit::modules.updateJob.text2');
+        $content = $this->job->title.' - '.__('recruit::modules.updateJob.text2');
 
         return parent::build()
             ->subject(__('recruit::modules.updateJob.subject2'))
@@ -61,15 +59,15 @@ class UpdateJob extends BaseNotification
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
-                'actionText' => __('app.view') . ' ' . __('recruit::app.jobOffer.job'),
-                'notifiableName' => $notifiable->name
+                'actionText' => __('app.view').' '.__('recruit::app.jobOffer.job'),
+                'notifiableName' => $notifiable->name,
             ]);
     }
 
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function toArray($notifiable)
@@ -77,8 +75,7 @@ class UpdateJob extends BaseNotification
         return [
             'user_id' => $notifiable->id,
             'job_id' => $this->job->id,
-            'heading' => $this->job->title
+            'heading' => $this->job->title,
         ];
     }
-
 }

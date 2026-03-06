@@ -7,14 +7,12 @@ use Yajra\DataTables\Html\Column;
 
 class LabelDataTable extends BaseDataTable
 {
-
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
-
     public function dataTable($query)
     {
         return datatables()
@@ -23,8 +21,8 @@ class LabelDataTable extends BaseDataTable
                 $action = '<div class="btn-group dropdown m-r-10">
                 <button aria-expanded="false" data-toggle="dropdown" class="btn btn-default dropdown-toggle waves-effect waves-light" type="button"><i class="fa fa-gears "></i></button>
                 <ul role="menu" class="dropdown-menu pull-right">
-                  <li><a href="' . route('admin.task-label.edit', [$row->id]) . '"><i class="fa fa-pencil" aria-hidden="true"></i> ' . trans('app.edit') . '</a></li>
-                  <li><a href="javascript:;"   data-contract-id="' . $row->id . '"  class="sa-params"><i class="fa fa-times" aria-hidden="true"></i> ' . trans('app.delete') . '</a></li>';
+                  <li><a href="'.route('admin.task-label.edit', [$row->id]).'"><i class="fa fa-pencil" aria-hidden="true"></i> '.trans('app.edit').'</a></li>
+                  <li><a href="javascript:;"   data-contract-id="'.$row->id.'"  class="sa-params"><i class="fa fa-times" aria-hidden="true"></i> '.trans('app.delete').'</a></li>';
 
                 $action .= '</ul> </div>';
 
@@ -33,10 +31,10 @@ class LabelDataTable extends BaseDataTable
             ->editColumn('label_name', function ($row) {
 
                 if ($row->color) {
-                    return '<label class="badge" style="background: ' . $row->color . ';">' . $row->label_name . '</label>';
+                    return '<label class="badge" style="background: '.$row->color.';">'.$row->label_name.'</label>';
                 }
 
-                return '<label class="badge"  style="background:#3b0ae1;">' . $row->label_name . '</label>';
+                return '<label class="badge"  style="background:#3b0ae1;">'.$row->label_name.'</label>';
             })
             ->editColumn('description', function ($row) {
                 if ($row->description) {
@@ -50,7 +48,6 @@ class LabelDataTable extends BaseDataTable
     }
 
     /**
-     * @param TaskLabelList $model
      * @return \Illuminate\Database\Query\Builder
      */
     public function query(TaskLabelList $model)
@@ -99,8 +96,7 @@ class LabelDataTable extends BaseDataTable
                 ->orderable(false)
                 ->searchable(false)
                 ->width(150)
-                ->addClass('text-center')
+                ->addClass('text-center'),
         ];
     }
-
 }

@@ -7,7 +7,6 @@ use Illuminate\Console\Command;
 
 class RemoveSeenNotification extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
@@ -27,12 +26,10 @@ class RemoveSeenNotification extends Command
      *
      * @return mixed
      */
-
     public function handle()
     {
         Notification::whereNotNull('read_at')->delete();
 
         return Command::SUCCESS;
     }
-
 }

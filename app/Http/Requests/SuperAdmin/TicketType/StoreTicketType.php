@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class StoreTicketType extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -25,8 +24,7 @@ class StoreTicketType extends CoreRequest
     public function rules()
     {
         return [
-            'type' => 'required|unique:support_ticket_types'
+            'type' => 'required|unique:support_ticket_types',
         ];
     }
-
 }

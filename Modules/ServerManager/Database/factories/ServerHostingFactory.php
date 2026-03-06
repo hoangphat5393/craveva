@@ -2,8 +2,8 @@
 
 namespace Modules\ServerManager\Database\factories;
 
-use Modules\ServerManager\Entities\ServerHosting;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\ServerManager\Entities\ServerHosting;
 
 class ServerHostingFactory extends Factory
 {
@@ -25,7 +25,7 @@ class ServerHostingFactory extends Factory
             'Production Server', 'Staging Environment', 'Development Server',
             'Client Website', 'E-commerce Platform', 'Blog Server', 'API Server',
             'Database Server', 'File Server', 'Backup Server', 'Load Balancer',
-            'CDN Server', 'Mail Server', 'DNS Server', 'Application Server'
+            'CDN Server', 'Mail Server', 'DNS Server', 'Application Server',
         ];
 
         $providers = [
@@ -42,13 +42,13 @@ class ServerHostingFactory extends Factory
             'HostGator' => 'https://hostgator.com',
             'SiteGround' => 'https://siteground.com',
             'A2 Hosting' => 'https://a2hosting.com',
-            'InMotion Hosting' => 'https://inmotionhosting.com'
+            'InMotion Hosting' => 'https://inmotionhosting.com',
         ];
 
         $serverTypes = [
             'Shared Hosting', 'VPS', 'Dedicated Server', 'Cloud Server',
             'WordPress Hosting', 'E-commerce Hosting', 'Reseller Hosting',
-            'Colocation', 'Managed Hosting', 'Unmanaged Hosting'
+            'Colocation', 'Managed Hosting', 'Unmanaged Hosting',
         ];
 
         $controlPanels = [
@@ -59,12 +59,12 @@ class ServerHostingFactory extends Factory
             'ISPConfig' => 'https://ispconfig.org',
             'Froxlor' => 'https://froxlor.org',
             'VestaCP' => 'https://vestacp.com',
-            'CyberPanel' => 'https://cyberpanel.net'
+            'CyberPanel' => 'https://cyberpanel.net',
         ];
 
         $sslTypes = [
             'Let\'s Encrypt', 'Comodo SSL', 'DigiCert', 'GeoTrust',
-            'GlobalSign', 'Thawte', 'Symantec', 'GoDaddy SSL'
+            'GlobalSign', 'Thawte', 'Symantec', 'GoDaddy SSL',
         ];
 
         // $backupFrequencies = ['daily', 'weekly', 'monthly', 'on-demand'];
@@ -85,14 +85,14 @@ class ServerHostingFactory extends Factory
             'password' => fake()->password(),
             'control_panel' => $selectedControlPanel,
             'control_panel_url' => $controlPanels[$selectedControlPanel],
-            'cpanel_url' => 'https://' . fake()->domainName() . ':2083',
+            'cpanel_url' => 'https://'.fake()->domainName().':2083',
             'project' => fake()->optional(0.8)->company(),
             'client' => fake()->optional(0.6)->company(),
             'ftp_host' => fake()->domainName(),
             'ftp_username' => fake()->userName(),
             'ftp_password' => fake()->password(),
             'database_host' => fake()->domainName(),
-            'database_name' => fake()->word() . '_db',
+            'database_name' => fake()->word().'_db',
             'database_username' => fake()->userName(),
             'database_password' => fake()->password(),
             'purchase_date' => fake()->dateTimeBetween('-2 years', 'now'),
@@ -112,7 +112,7 @@ class ServerHostingFactory extends Factory
             'expiry_notification' => fake()->boolean(),
             'notification_days_before' => fake()->randomElement([7, 14, 30, 60]),
             'notification_time_unit' => 'days',
-            'server_location' => fake()->city() . ', ' . fake()->country(),
+            'server_location' => fake()->city().', '.fake()->country(),
             'disk_space' => fake()->randomElement(['10GB', '25GB', '50GB', '100GB', '250GB', '500GB', '1TB']),
             'bandwidth' => fake()->randomElement(['1TB', '2TB', '5TB', '10TB', 'Unlimited']),
             'database_limit' => fake()->randomElement(['5', '10', '25', '50', '100', 'Unlimited']),

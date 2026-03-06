@@ -1,6 +1,6 @@
 <?php
 
-return array(
+return [
     'onboardingStarted' => 'Onboarding Started Successfully',
     'cantStartOnboarding' => 'Sorry! we can\'t start onboarding for this employee',
     'offboardingStarted' => 'Offboarding Started Successfully',
@@ -20,4 +20,4 @@ return array(
     'offboardingStartMailText' => 'As your time with :companyName comes to a close, we want to ensure a smooth transition for both you and the team. Please complete the following offboarding tasks.',
     'markAllAsComplete' => 'Mark All As Complete',
     'markAllAsCompleteConfirm' => 'Are you sure you want to mark all as complete?',
-);
+];

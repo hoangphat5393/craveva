@@ -2,17 +2,18 @@
 
 namespace App\DataTables;
 
+use App\Helper\Common;
 use App\Models\Project;
 use App\Models\ProjectStatusSetting;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
-use App\Helper\Common;
 
 class ArchiveProjectsDataTable extends BaseDataTable
 {
-
     private $viewProjectPermission;
+
     private $editProjectPermission;
+
     private $deleteProjectPermission;
 
     public function __construct()
@@ -26,7 +27,7 @@ class ArchiveProjectsDataTable extends BaseDataTable
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
@@ -47,7 +48,7 @@ class ArchiveProjectsDataTable extends BaseDataTable
                 ) {
                     $action .= '
                     <a href="javascript:;" class="btn btn-sm btn-secondary restore-project mr-2"
-                    data-toggle="tooltip" data-user-id="' . $row->id . '" data-original-title="' . __('app.unarchive') . '"><i class="fa fa-undo" aria-hidden="true"></i></a>';
+                    data-toggle="tooltip" data-user-id="'.$row->id.'" data-original-title="'.__('app.unarchive').'"><i class="fa fa-undo" aria-hidden="true"></i></a>';
                 }
 
                 if (
@@ -60,7 +61,7 @@ class ArchiveProjectsDataTable extends BaseDataTable
                 ) {
                     $action .= '
                      <a href="javascript:;" class="btn btn-sm btn-secondary delete-table-row"
-                    data-toggle="tooltip" data-user-id="' . $row->id . '" data-original-title="' . __('app.delete') . '"><i class="fa fa-times" aria-hidden="true"></i></a>';
+                    data-toggle="tooltip" data-user-id="'.$row->id.'" data-original-title="'.__('app.delete').'"><i class="fa fa-times" aria-hidden="true"></i></a>';
                 }
 
                 return $action;
@@ -70,9 +71,9 @@ class ArchiveProjectsDataTable extends BaseDataTable
 
                 if (count($row->members) > 0) {
                     foreach ($row->members as $member) {
-                        $img = '<img data-toggle="tooltip" data-original-title="' . $member->user->name . '" src="' . $member->user->image_url . '">';
+                        $img = '<img data-toggle="tooltip" data-original-title="'.$member->user->name.'" src="'.$member->user->image_url.'">';
 
-                        $members .= '<div class="taskEmployeeImg rounded-circle"><a href="' . route('employees.show', $member->user->id) . '">' . $img . '</a></div> ';
+                        $members .= '<div class="taskEmployeeImg rounded-circle"><a href="'.route('employees.show', $member->user->id).'">'.$img.'</a></div> ';
                     }
                 } else {
                     $members .= __('messages.noMemberAddedToProject');
@@ -97,13 +98,13 @@ class ArchiveProjectsDataTable extends BaseDataTable
 
                 return '<div class="media align-items-center">
                         <div class="media-body">
-                    <h5 class="mb-0 f-13 text-darkest-grey"><a href="' . route('projects.show', [$row->id]) . '">' . $row->project_name . '</a></h5>
+                    <h5 class="mb-0 f-13 text-darkest-grey"><a href="'.route('projects.show', [$row->id]).'">'.$row->project_name.'</a></h5>
                     </div>
                 </div>';
             })
-            ->editColumn('start_date', fn($row) => $row->start_date ? $row->start_date->translatedFormat($this->company->date_format) : '')
-            ->editColumn('deadline', fn($row) => $row->deadline ? $row->deadline->translatedFormat($this->company->date_format) : '-')
-            ->editColumn('client_id', fn($row) => is_null($row->client_id) ? '' : view('components.client', ['user' => $row->client]))
+            ->editColumn('start_date', fn ($row) => $row->start_date ? $row->start_date->translatedFormat($this->company->date_format) : '')
+            ->editColumn('deadline', fn ($row) => $row->deadline ? $row->deadline->translatedFormat($this->company->date_format) : '-')
+            ->editColumn('client_id', fn ($row) => is_null($row->client_id) ? '' : view('components.client', ['user' => $row->client]))
             ->editColumn('status', function ($row) {
 
                 $projectStatus = ProjectStatusSetting::all();
@@ -112,7 +113,7 @@ class ArchiveProjectsDataTable extends BaseDataTable
                     if ($row->status == $status->status_name) {
                         $color = $status->color;
 
-                        return ' <i class="fa fa-circle mr-1 f-10" style="color:' . $color . '"></i>' . $status->status_name;
+                        return ' <i class="fa fa-circle mr-1 f-10" style="color:'.$color.'"></i>'.$status->status_name;
                     }
                 }
             })
@@ -126,12 +127,12 @@ class ArchiveProjectsDataTable extends BaseDataTable
                 }
 
                 return '<div class="progress" style="height: 15px;">
-                <div class="progress-bar f-12 bg-' . $statusColor . '" role="progressbar" style="width: ' . $row->completion_percent . '%;" aria-valuenow="' . $row->completion_percent . '" aria-valuemin="0" aria-valuemax="100">' . $row->completion_percent . '%</div>
+                <div class="progress-bar f-12 bg-'.$statusColor.'" role="progressbar" style="width: '.$row->completion_percent.'%;" aria-valuenow="'.$row->completion_percent.'" aria-valuemin="0" aria-valuemax="100">'.$row->completion_percent.'%</div>
               </div>';
             })
-            ->addColumn('completion_export', fn($row) => $row->completion_percent . '% ' . __('app.complete'))
+            ->addColumn('completion_export', fn ($row) => $row->completion_percent.'% '.__('app.complete'))
             ->addIndexColumn()
-            ->setRowId(fn($row) => 'row-' . $row->id)
+            ->setRowId(fn ($row) => 'row-'.$row->id)
             ->rawColumns(['project_name', 'action', 'completion_percent', 'members', 'status', 'client_id', 'check'])
             ->removeColumn('project_summary')
             ->removeColumn('notes')
@@ -141,7 +142,6 @@ class ArchiveProjectsDataTable extends BaseDataTable
     }
 
     /**
-     * @param Project $model
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function query(Project $model)
@@ -156,9 +156,9 @@ class ArchiveProjectsDataTable extends BaseDataTable
             ->selectRaw('projects.id, projects.added_by, projects.project_name, projects.start_date, projects.deadline, projects.client_id,
               projects.completion_percent, projects.project_budget, projects.currency_id,
               projects.status, users.name, client.name as client_name,
-           ( select count("id") from pinned where pinned.project_id = projects.id and pinned.user_id = ' . user()->id . ') as pinned_project');
+           ( select count("id") from pinned where pinned.project_id = projects.id and pinned.user_id = '.user()->id.') as pinned_project');
 
-        if (!is_null($request->status) && $request->status != 'all') {
+        if (! is_null($request->status) && $request->status != 'all') {
             if ($request->status == 'not finished') {
                 $model->where('projects.completion_percent', '!=', 100);
             } else {
@@ -175,19 +175,19 @@ class ArchiveProjectsDataTable extends BaseDataTable
             });
         }
 
-        if (!is_null($request->client_id) && $request->client_id != 'all') {
+        if (! is_null($request->client_id) && $request->client_id != 'all') {
             $model->where('client_id', $request->client_id);
         }
 
-        if (!is_null($request->team_id) && $request->team_id != 'all') {
+        if (! is_null($request->team_id) && $request->team_id != 'all') {
             $model->where('team_id', $request->team_id);
         }
 
-        if (!is_null($request->category_id) && $request->category_id != 'all') {
+        if (! is_null($request->category_id) && $request->category_id != 'all') {
             $model->where('category_id', $request->category_id);
         }
 
-        if (!is_null($request->employee_id) && $request->employee_id != 'all') {
+        if (! is_null($request->employee_id) && $request->employee_id != 'all') {
             $model->where('project_members.user_id', $request->employee_id);
         }
 
@@ -209,8 +209,8 @@ class ArchiveProjectsDataTable extends BaseDataTable
         if ($request->searchText != '') {
             $model->where(function ($query) {
                 $safeTerm = Common::safeString(request('searchText'));
-                $query->where('projects.project_name', 'like', '%' . $safeTerm . '%')
-                    ->orWhere('users.name', 'like', '%' . $safeTerm . '%');
+                $query->where('projects.project_name', 'like', '%'.$safeTerm.'%')
+                    ->orWhere('users.name', 'like', '%'.$safeTerm.'%');
             });
         }
 
@@ -240,7 +240,7 @@ class ArchiveProjectsDataTable extends BaseDataTable
             ]);
 
         if (canDataTableExport()) {
-            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
+            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
         }
 
         return $dataTable;
@@ -270,7 +270,7 @@ class ArchiveProjectsDataTable extends BaseDataTable
                 ->orderable(false)
                 ->searchable(false)
                 ->width(150)
-                ->addClass('text-right pr-20')
+                ->addClass('text-right pr-20'),
         ];
     }
 }

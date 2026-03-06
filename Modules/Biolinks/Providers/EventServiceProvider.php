@@ -10,7 +10,6 @@ use Modules\Biolinks\Listeners\PhoneCollectionEmailListener;
 
 class EventServiceProvider extends ServiceProvider
 {
-
     protected $listen = [
         NewCompanyCreatedEvent::class => [CompanyCreatedListener::class],
         PhoneCollectionEmailEvent::class => [PhoneCollectionEmailListener::class],
@@ -19,5 +18,4 @@ class EventServiceProvider extends ServiceProvider
     protected $observers = [
 
     ];
-
 }

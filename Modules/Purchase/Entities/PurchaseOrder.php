@@ -5,27 +5,26 @@ namespace Modules\Purchase\Entities;
 use App\Models\BaseModel;
 use App\Models\CompanyAddress;
 use App\Models\Currency;
-use App\Traits\HasCompany;
 use App\Traits\CustomFieldsTrait;
+use App\Traits\HasCompany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class PurchaseOrder extends BaseModel
 {
-
-    use HasCompany, CustomFieldsTrait;
+    use CustomFieldsTrait, HasCompany;
 
     const CUSTOM_FIELD_MODEL = 'Modules\\Purchase\\Entities\\PurchaseOrder';
 
     protected $casts = [
         'purchase_date' => 'datetime',
-        'expected_delivery_date' => 'datetime'
+        'expected_delivery_date' => 'datetime',
     ];
 
     public static function lastOrderNumber()
     {
-        return (int)PurchaseOrder::max('purchase_order_number');
+        return (int) PurchaseOrder::max('purchase_order_number');
     }
 
     public function vendor(): BelongsTo
@@ -60,7 +59,7 @@ class PurchaseOrder extends BaseModel
 
     public function getOriginalOrderNumberAttribute()
     {
-        $purchaseSetting = cache()->rememberForever('purchase_setting_' . $this->company_id, function () {
+        $purchaseSetting = cache()->rememberForever('purchase_setting_'.$this->company_id, function () {
             return PurchaseSetting::first();
         });
 
@@ -70,10 +69,11 @@ class PurchaseOrder extends BaseModel
             $condition = $purchaseSetting->purchase_order_number_digit - strlen($this->attributes['purchase_order_number']);
 
             for ($i = 0; $i < $condition; $i++) {
-                $zero = '0' . $zero;
+                $zero = '0'.$zero;
             }
         }
-        return $zero . $this->attributes['purchase_order_number'];
+
+        return $zero.$this->attributes['purchase_order_number'];
     }
 
     public function getPurchaseOrderNumberAttribute($value)
@@ -82,9 +82,9 @@ class PurchaseOrder extends BaseModel
             return '';
         }
 
-        $purchaseSetting = cache()->rememberForever('purchase_setting_' . $this->company_id, function () {
+        $purchaseSetting = cache()->rememberForever('purchase_setting_'.$this->company_id, function () {
             return PurchaseSetting::first();
-        });;
+        });
 
         $zero = '';
 
@@ -92,10 +92,10 @@ class PurchaseOrder extends BaseModel
             $condition = $purchaseSetting->purchase_order_number_digit - strlen($value);
 
             for ($i = 0; $i < $condition; $i++) {
-                $zero = '0' . $zero;
+                $zero = '0'.$zero;
             }
         }
 
-        return $purchaseSetting->purchase_order_prefix . $purchaseSetting->purchase_order_number_separator . $zero . $value;
+        return $purchaseSetting->purchase_order_prefix.$purchaseSetting->purchase_order_number_separator.$zero.$value;
     }
 }

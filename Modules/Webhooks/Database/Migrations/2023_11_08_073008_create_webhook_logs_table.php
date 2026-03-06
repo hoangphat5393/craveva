@@ -3,10 +3,9 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use Modules\Webhooks\Entities\WebhooksGlobalSetting;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      *
@@ -15,7 +14,7 @@ return new class extends Migration {
     public function up()
     {
 
-        if (!Schema::hasTable('webhooks_logs')) {
+        if (! Schema::hasTable('webhooks_logs')) {
             Schema::create('webhooks_logs', function (Blueprint $table) {
                 $table->id();
 
@@ -47,5 +46,4 @@ return new class extends Migration {
     {
         Schema::dropIfExists('webhooks_logs');
     }
-
 };

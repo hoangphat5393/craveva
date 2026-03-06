@@ -9,7 +9,6 @@ use Illuminate\Database\Seeder;
 
 class FrontSeeder extends Seeder
 {
-
     public function run()
     {
         $language = LanguageSetting::where('language_code', 'en')->first();
@@ -19,13 +18,13 @@ class FrontSeeder extends Seeder
 
         $this->frontDetailsInsert();
 
-        $command = new FixUpgradeCompanyCommand();
+        $command = new FixUpgradeCompanyCommand;
         $command->languageFixFront();
     }
 
     private function frontDetailsInsert()
     {
-        $frontDetails = new FrontDetail();
+        $frontDetails = new FrontDetail;
         $frontDetails->primary_color = '#453130';
         $frontDetails->get_started_show = 'yes';
         $frontDetails->sign_in_show = 'yes';
@@ -38,7 +37,7 @@ class FrontSeeder extends Seeder
             ['name' => 'facebook', 'link' => 'https://www.facebook.com/cravevaapp'],
             ['name' => 'twitter', 'link' => 'https://twitter.com/cravevaapp'],
             ['name' => 'instagram', 'link' => 'https://www.instagram.com/cravevaapp/'],
-            ['name' => 'dribbble', 'link' => 'https://dribbble.com']
+            ['name' => 'dribbble', 'link' => 'https://dribbble.com'],
         ]);
 
         $frontDetails->save();

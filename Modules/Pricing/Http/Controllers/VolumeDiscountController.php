@@ -13,7 +13,7 @@ class VolumeDiscountController extends AccountBaseController
     {
         $items = $request->input('items', []);
 
-        if (!is_array($items)) {
+        if (! is_array($items)) {
             $items = [];
         }
 

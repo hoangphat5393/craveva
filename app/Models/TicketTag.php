@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read mixed $icon
  * @property-read \App\Models\TicketTagList $tag
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|TicketTag newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TicketTag newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TicketTag query()
@@ -23,14 +24,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|TicketTag whereTagId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TicketTag whereTicketId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TicketTag whereUpdatedAt($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|TicketTag whereCompanyId($value)
+ *
  * @mixin \Eloquent
  */
 class TicketTag extends BaseModel
 {
-
     use HasCompany;
 
     protected $guarded = ['id'];
@@ -39,5 +42,4 @@ class TicketTag extends BaseModel
     {
         return $this->belongsTo(TicketTagList::class, 'tag_id');
     }
-
 }

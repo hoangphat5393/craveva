@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\DB;
 
 class LeaveReportController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -23,9 +22,9 @@ class LeaveReportController extends AccountBaseController
     public function index(LeaveReportDataTable $dataTable)
     {
         $viewPermission = user()->permission('view_leave_report');
-        abort_403(!in_array($viewPermission, ['all', 'added', 'owned', 'both']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'owned', 'both']));
 
-        if (!request()->ajax()) {
+        if (! request()->ajax()) {
             $this->employees = User::allLeaveReportEmployees(null, true);
             $this->fromDate = now($this->company->timezone)->startOfMonth();
             $this->toDate = now($this->company->timezone)->endOfMonth();
@@ -53,12 +52,12 @@ class LeaveReportController extends AccountBaseController
             }
 
             switch ($view) {
-            case 'pending':
-                $query->where('status', 'pending')->where('user_id', $id);
-                break;
-            default:
-                $query->where('status', 'approved')->where('user_id', $id);
-                break;
+                case 'pending':
+                    $query->where('status', 'pending')->where('user_id', $id);
+                    break;
+                default:
+                    $query->where('status', 'approved')->where('user_id', $id);
+                    break;
             }
         }, 'leaves.type'])->get();
 
@@ -74,10 +73,10 @@ class LeaveReportController extends AccountBaseController
     public function leaveQuota(LeaveQuotaReportDataTable $dataTable)
     {
         $viewPermission = user()->permission('view_leave_report');
-        abort_403(!in_array($viewPermission, ['all', 'added', 'owned', 'both']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'owned', 'both']));
         $this->pageTitle = 'app.leaveQuotaReport';
 
-        if (!request()->ajax()) {
+        if (! request()->ajax()) {
             $this->year = now()->format('Y');
             $this->month = now()->format('m');
             $this->employees = User::allLeaveReportEmployees(null, true);
@@ -92,33 +91,32 @@ class LeaveReportController extends AccountBaseController
         $thisMonthStartDate = now()->startOfMonth();
 
         $this->employee = User::with([
-        'employeeDetail',
-         'employeeDetail.designation',
-         'employeeDetail.department',
-         'country',
-         'employee',
-         'roles'
-         ])
+            'employeeDetail',
+            'employeeDetail.designation',
+            'employeeDetail.department',
+            'country',
+            'employee',
+            'roles',
+        ])
             ->onlyEmployee()
-            ->when(!$thisMonthStartDate->eq($forMontDate), function($query) use($forMontDate) {
+            ->when(! $thisMonthStartDate->eq($forMontDate), function ($query) use ($forMontDate) {
                 $query->with([
-                'leaveQuotaHistory' => function($query) use($forMontDate) {
-                    $query->where('for_month', $forMontDate);
-                },
-                'leaveQuotaHistory.leaveType',
-                ])->whereHas('leaveQuotaHistory', function($query) use($forMontDate) {
+                    'leaveQuotaHistory' => function ($query) use ($forMontDate) {
+                        $query->where('for_month', $forMontDate);
+                    },
+                    'leaveQuotaHistory.leaveType',
+                ])->whereHas('leaveQuotaHistory', function ($query) use ($forMontDate) {
                     $query->where('for_month', $forMontDate);
                 });
             })
-        ->when($thisMonthStartDate->eq($forMontDate), function($query) {
-            $query->with([
-                'leaveTypes',
-                'leaveTypes.leaveType',
-            ]);
-        })
-        ->withoutGlobalScope(ActiveScope::class)
-        ->findOrFail($id);
-
+            ->when($thisMonthStartDate->eq($forMontDate), function ($query) {
+                $query->with([
+                    'leaveTypes',
+                    'leaveTypes.leaveType',
+                ]);
+            })
+            ->withoutGlobalScope(ActiveScope::class)
+            ->findOrFail($id);
 
         $settings = company();
         $now = Carbon::now();
@@ -126,7 +124,7 @@ class LeaveReportController extends AccountBaseController
         $leaveStartDate = null;
         $leaveEndDate = null;
 
-        if($settings && $settings->leaves_start_from == 'year_start'){
+        if ($settings && $settings->leaves_start_from == 'year_start') {
 
             if ($yearStartMonth > $now->month) {
                 // Not completed a year yet
@@ -138,9 +136,9 @@ class LeaveReportController extends AccountBaseController
                 $leaveEndDate = $leaveStartDate->copy()->addYear()->subDay();
             }
 
-        } elseif ($settings && $settings->leaves_start_from == 'joining_date'){
+        } elseif ($settings && $settings->leaves_start_from == 'joining_date') {
 
-            $joiningDate = Carbon::parse($this->employee->employeedetails->joining_date->format((now(company()->timezone)->year) . '-m-d'));
+            $joiningDate = Carbon::parse($this->employee->employeedetails->joining_date->format((now(company()->timezone)->year).'-m-d'));
             $joinMonth = $joiningDate->month;
             $joinDay = $joiningDate->day;
 
@@ -179,13 +177,12 @@ class LeaveReportController extends AccountBaseController
                 $totalLeaves = $totalLeaves + ($leavesQuota?->leaves_remaining ?: 0);
             }
         }
-        
+
         $this->leaveCounts = $leaveCounts;
         $this->hasLeaveQuotas = $hasLeaveQuotas;
         $this->allowedEmployeeLeavesQuotas = $allowedEmployeeLeavesQuotas;
         $this->allowedLeaves = $totalLeaves + $overUtilizedLeaves; // remining leaves
-    
+
         return view('reports.leave-quota.show', $this->data);
     }
-
 }

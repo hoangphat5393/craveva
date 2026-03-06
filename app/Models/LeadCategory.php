@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property int|null $added_by
  * @property int|null $last_updated_by
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|LeadCategory newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|LeadCategory newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|LeadCategory query()
@@ -23,22 +24,24 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder|LeadCategory whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|LeadCategory whereLastUpdatedBy($value)
  * @method static \Illuminate\Database\Eloquent\Builder|LeadCategory whereUpdatedAt($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|LeadCategory whereCompanyId($value)
+ *
  * @mixin \Eloquent
  */
 class LeadCategory extends BaseModel
 {
-
     use HasCompany;
 
     protected $table = 'lead_category';
+
     protected $default = ['id', 'category_name'];
 
     public function enabledAgents(): HasMany
     {
         return $this->hasMany(LeadAgent::class, 'lead_category_id')->where('status', '=', 'enabled');
     }
-
 }

@@ -3,14 +3,16 @@
 namespace Modules\Purchase\Events;
 
 use Illuminate\Queue\SerializesModels;
-use Modules\Purchase\Entities\PurchasePaymentBill;
 use Modules\Purchase\Entities\PurchaseVendorCredit;
 
 class VendorCreditPaymentMade
 {
     use SerializesModels;
+
     public $creditNote;
+
     public $amount;
+
     public $remainingAmount;
 
     /**

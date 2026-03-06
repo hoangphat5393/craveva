@@ -25,9 +25,8 @@ class TicketFactory extends Factory
             'subject' => fake()->text(20),
             'status' => fake()->randomElement(['open', 'pending', 'resolved', 'closed']),
             'priority' => fake()->randomElement(['low', 'high', 'medium', 'urgent']),
-            'created_at' => fake()->randomElement([date('Y-m-d', strtotime( '+'.mt_rand(0, 7).' days')), fake()->dateTimeThisYear($max = 'now')]),
-            'updated_at' => fake()->randomElement([date('Y-m-d', strtotime( '+'.mt_rand(0, 7).' days')), fake()->dateTimeThisYear($max = 'now')]),
+            'created_at' => fake()->randomElement([date('Y-m-d', strtotime('+'.mt_rand(0, 7).' days')), fake()->dateTimeThisYear($max = 'now')]),
+            'updated_at' => fake()->randomElement([date('Y-m-d', strtotime('+'.mt_rand(0, 7).' days')), fake()->dateTimeThisYear($max = 'now')]),
         ];
     }
-
 }

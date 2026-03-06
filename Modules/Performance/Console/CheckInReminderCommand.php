@@ -2,8 +2,8 @@
 
 namespace Modules\Performance\Console;
 
-use Carbon\Carbon;
 use App\Models\Company;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Modules\Performance\Entities\Objective;
 use Modules\Performance\Entities\ObjectiveOwner;
@@ -11,7 +11,6 @@ use Modules\Performance\Notifications\CheckInReminderNotification;
 
 class CheckInReminderCommand extends Command
 {
-
     /**
      * The name and signature of the console command.
      */
@@ -79,6 +78,7 @@ class CheckInReminderCommand extends Command
 
             case 'bi-weekly':
                 $daysSinceStart = $currentCarbonDate->diffInDays($startDate);
+
                 return $currentCarbonDate->isBetween($startDate, $endDate) &&
                     $this->isScheduledDay($objective->schedule_on, $currentCarbonDate) &&
                     ($daysSinceStart % 14 === 0);
@@ -141,7 +141,7 @@ class CheckInReminderCommand extends Command
      */
     private function shouldSendQuarterlyReminder($startDate, $endDate, $currentDate, $rotationDate)
     {
-        if (!$currentDate->isBetween($startDate, $endDate)) {
+        if (! $currentDate->isBetween($startDate, $endDate)) {
             return false;
         }
 
@@ -153,5 +153,4 @@ class CheckInReminderCommand extends Command
         // Ensure the reminder is sent every 3 months on the exact same day as the start date or rotation date
         return $monthsSinceStart % 3 === 0 && $currentDate->day == $rotationDay;
     }
-
 }

@@ -7,15 +7,22 @@ use Illuminate\View\Component;
 
 class Text extends Component
 {
-
     public $fieldLabel;
+
     public $fieldRequired;
+
     public $fieldPlaceholder;
+
     public $fieldValue;
+
     public $fieldName;
+
     public $fieldId;
+
     public $fieldHelp;
+
     public $fieldReadOnly;
+
     public $popover;
 
     /**
@@ -46,5 +53,4 @@ class Text extends Component
     {
         return view('components.forms.text');
     }
-
 }

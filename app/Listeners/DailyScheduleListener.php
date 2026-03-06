@@ -17,10 +17,8 @@ class DailyScheduleListener
      */
     public function handle(DailyScheduleEvent $event)
     {
-        foreach($event->userData as $key => $notifiable)
-        {
+        foreach ($event->userData as $key => $notifiable) {
             Notification::send($notifiable['user'], new DailyScheduleNotification($event->userData[$key]));
         }
     }
-
 }

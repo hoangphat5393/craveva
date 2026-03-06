@@ -9,7 +9,6 @@ use App\Models\TicketGroup;
 
 class TicketGroupController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -25,17 +24,18 @@ class TicketGroupController extends AccountBaseController
     public function create()
     {
         $this->groups = TicketGroup::all();
+
         return view('ticket-settings.group-modal', $this->data);
     }
 
     /**
-     * @param StoreTicketGroup $request
      * @return array
+     *
      * @throws \Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException
      */
     public function store(StoreTicketGroup $request)
     {
-        $group = new TicketGroup();
+        $group = new TicketGroup;
         $group->group_name = $request->group_name;
         $group->save();
 
@@ -54,13 +54,15 @@ class TicketGroupController extends AccountBaseController
     public function destroy($id)
     {
         TicketGroup::destroy($id);
+
         return Reply::success(__('messages.deleteSuccess'));
     }
 
     public function edit($id)
     {
         $this->group = TicketGroup::findOrFail($id);
-        return view('ticket-settings.edit-group-modal', $this->data );
+
+        return view('ticket-settings.edit-group-modal', $this->data);
     }
 
     public function update(StoreTicketGroup $request, $id)
@@ -71,5 +73,4 @@ class TicketGroupController extends AccountBaseController
 
         return Reply::success(__('messages.updateSuccess'));
     }
-
 }

@@ -9,10 +9,10 @@ use Illuminate\Queue\SerializesModels;
 
 class AppreciationEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $userAppreciation;
+
     public $notifyUser;
 
     public function __construct(Appreciation $userAppreciation, $notifyUser)
@@ -20,5 +20,4 @@ class AppreciationEvent
         $this->userAppreciation = $userAppreciation;
         $this->notifyUser = $notifyUser;
     }
-
 }

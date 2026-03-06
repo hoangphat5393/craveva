@@ -5,7 +5,6 @@ use Modules\Biometric\Http\Controllers\ZKTecoController;
 
 // ZKTeco device routes
 
-
 Route::get('/iclock/cdata', [ZKTecoController::class, 'handshake']);
 
 Route::get('/iclock/test', [ZKTecoController::class, 'test']);

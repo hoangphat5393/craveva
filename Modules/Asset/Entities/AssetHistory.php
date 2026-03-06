@@ -13,7 +13,7 @@ class AssetHistory extends BaseModel
 {
     use HasFactory;
 
-    //region Properties
+    // region Properties
 
     protected $table = 'asset_lending_history';
 
@@ -63,9 +63,9 @@ class AssetHistory extends BaseModel
 
     protected $with = ['user', 'lender', 'returner'];
 
-    //endregion
+    // endregion
 
-    //region Relations
+    // region Relations
 
     public function asset(): BelongsTo
     {
@@ -87,9 +87,9 @@ class AssetHistory extends BaseModel
         return $this->belongsTo(User::class);
     }
 
-    //endregion
+    // endregion
 
-    //region Custom Functions
+    // region Custom Functions
 
     /**
      * Create a new factory instance for the model.

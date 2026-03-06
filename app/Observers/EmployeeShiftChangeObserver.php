@@ -8,10 +8,9 @@ use App\Models\EmployeeShiftSchedule;
 
 class EmployeeShiftChangeObserver
 {
-
     public function created(EmployeeShiftChangeRequest $changeRequest)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             event(new EmployeeShiftChangeEvent($changeRequest));
         }
     }
@@ -25,7 +24,7 @@ class EmployeeShiftChangeObserver
 
     public function updated(EmployeeShiftChangeRequest $changeRequest)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             if ($changeRequest->isDirty('status')) {
 
                 if ($changeRequest->status == 'accepted') {
@@ -36,5 +35,4 @@ class EmployeeShiftChangeObserver
             }
         }
     }
-
 }

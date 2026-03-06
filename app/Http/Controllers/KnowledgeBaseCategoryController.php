@@ -3,22 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Helper\Reply;
-use App\Models\KnowledgeBaseCategory;
 use App\Http\Requests\KnowledgeBase\KnowledgeBaseCategoryStore;
 use App\Models\BaseModel;
+use App\Models\KnowledgeBaseCategory;
 
 class KnowledgeBaseCategoryController extends AccountBaseController
 {
-
     public function create()
     {
         $this->categories = KnowledgeBaseCategory::all();
+
         return view('knowledge-base.create_category', $this->data);
     }
 
     public function store(KnowledgeBaseCategoryStore $request)
     {
-        $category = new KnowledgeBaseCategory();
+        $category = new KnowledgeBaseCategory;
         $category->name = strip_tags($request->category_name);
         $category->save();
         $categoryData = KnowledgeBaseCategory::all();
@@ -49,7 +49,7 @@ class KnowledgeBaseCategoryController extends AccountBaseController
         $category = KnowledgeBaseCategory::findOrFail($id);
         $category->delete();
         $categoryData = KnowledgeBaseCategory::all();
+
         return Reply::successWithData(__('messages.deleteSuccess'), ['data' => $categoryData]);
     }
-
 }

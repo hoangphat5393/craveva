@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectStatusSetting newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectStatusSetting newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectStatusSetting query()
@@ -28,14 +29,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectStatusSetting whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectStatusSetting whereStatusName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectStatusSetting whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class ProjectStatusSetting extends BaseModel
 {
-
-    use HasFactory, HasCompany;
+    use HasCompany, HasFactory;
 
     const ACTIVE = '1';
+
     const INACTIVE = '0';
 
     const COLUMNS = [
@@ -43,9 +45,8 @@ class ProjectStatusSetting extends BaseModel
         ['status_name' => 'not started', 'alias' => 'not started', 'color' => '#616e80', 'status' => 'active', 'default_status' => self::INACTIVE],
         ['status_name' => 'on hold', 'alias' => 'on hold', 'color' => '#f5c308', 'status' => 'active', 'default_status' => self::INACTIVE],
         ['status_name' => 'canceled', 'alias' => 'canceled', 'color' => '#d21010', 'status' => 'active', 'default_status' => self::INACTIVE],
-        ['status_name' => 'finished', 'alias' => 'finished', 'color' => '#679c0d', 'status' => 'active', 'default_status' => self::INACTIVE]
+        ['status_name' => 'finished', 'alias' => 'finished', 'color' => '#679c0d', 'status' => 'active', 'default_status' => self::INACTIVE],
     ];
 
     protected $fillable = ['status_name', 'alias', 'color', 'status', 'default_status'];
-
 }

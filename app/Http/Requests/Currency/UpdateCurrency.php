@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class UpdateCurrency extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -29,8 +28,7 @@ class UpdateCurrency extends CoreRequest
             'currency_symbol' => 'required',
             'usd_price' => 'required_if:is_cryptocurrency,yes',
             'exchange_rate' => 'required_if:is_cryptocurrency,no',
-            'currency_code' => 'required|unique:currencies,currency_code,' . $this->route('currency_setting') . ',id,company_id,' . company()->id,
+            'currency_code' => 'required|unique:currencies,currency_code,'.$this->route('currency_setting').',id,company_id,'.company()->id,
         ];
     }
-
 }

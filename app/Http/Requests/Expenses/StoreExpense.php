@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\Expenses;
 
-use App\Models\BankAccount;
 use App\Http\Requests\CoreRequest;
+use App\Models\BankAccount;
 use App\Traits\CustomFieldsRequestTrait;
 
 class StoreExpense extends CoreRequest
@@ -31,11 +31,10 @@ class StoreExpense extends CoreRequest
             'item_name' => 'required',
             'purchase_date' => 'required',
             'price' => 'required|numeric',
-            'currency_id' => 'required'
+            'currency_id' => 'required',
         ];
 
         $rules = $this->customFieldRules($rules);
-
 
         if (request('bank_account_id') != '') {
             $bankBalance = BankAccount::findOrFail(request('bank_account_id'));
@@ -60,5 +59,4 @@ class StoreExpense extends CoreRequest
 
         return $attributes;
     }
-
 }

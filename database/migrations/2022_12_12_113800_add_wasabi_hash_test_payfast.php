@@ -4,8 +4,8 @@ use App\Models\GlobalSetting;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      *
@@ -13,7 +13,7 @@ return new class extends Migration {
      */
     public function up()
     {
-        if (!Schema::hasColumn('global_settings', 'header_color')) {
+        if (! Schema::hasColumn('global_settings', 'header_color')) {
 
             DB::statement("ALTER TABLE file_storage CHANGE COLUMN storage_location storage_location ENUM('local', 'aws_s3', 'digitalocean','wasabi') NOT NULL DEFAULT 'local'");
 
@@ -28,7 +28,6 @@ return new class extends Migration {
                 $globalSetting->hash = md5(microtime());
                 $globalSetting->saveQuietly();
             }
-
 
             Schema::table('companies', function (Blueprint $table) {
                 $table->string('header_color')->after('logo_background_color')->default('#1D82F5');
@@ -47,9 +46,5 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function down()
-    {
-
-    }
-
+    public function down() {}
 };

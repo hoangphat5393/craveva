@@ -1,16 +1,15 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      *
      * @return void
      */
-
     public function up()
     {
         \Schema::table('companies', function (Blueprint $table) {
@@ -24,9 +23,5 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function down()
-    {
-
-    }
-
+    public function down() {}
 };

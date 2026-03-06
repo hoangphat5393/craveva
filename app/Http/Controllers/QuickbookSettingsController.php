@@ -8,7 +8,6 @@ use App\Models\QuickBooksSetting;
 
 class QuickbookSettingsController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -16,6 +15,7 @@ class QuickbookSettingsController extends AccountBaseController
         $this->pageIcon = 'icon-settings';
         $this->middleware(function ($request, $next) {
             abort_403(user()->permission('manage_finance_setting') !== 'all');
+
             return $next($request);
         });
     }
@@ -31,8 +31,7 @@ class QuickbookSettingsController extends AccountBaseController
             if ($credential->isDirty('sandbox_client_id') || $credential->isDirty('sandbox_client_secret')) {
                 $credential->access_token = null;
             }
-        }
-        else {
+        } else {
             $credential->client_id = $request->client_id;
             $credential->client_secret = $request->client_secret;
 
@@ -48,5 +47,4 @@ class QuickbookSettingsController extends AccountBaseController
 
         return Reply::redirect(route('invoice-settings.index').'?tab=quickbooks', __('messages.updateSuccess'));
     }
-
 }

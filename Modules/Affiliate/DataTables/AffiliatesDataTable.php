@@ -2,18 +2,19 @@
 
 namespace Modules\Affiliate\DataTables;
 
+use App\DataTables\BaseDataTable;
 use App\Scopes\ActiveScope;
 use App\Scopes\CompanyScope;
-use App\DataTables\BaseDataTable;
-use Yajra\DataTables\Html\Column;
-use Modules\Affiliate\Enums\Status;
 use Modules\Affiliate\Entities\Affiliate;
+use Modules\Affiliate\Enums\Status;
+use Yajra\DataTables\Html\Column;
 
 class AffiliatesDataTable extends BaseDataTable
 {
-
     private $viewAffiliatesPermission;
+
     private $deleteAffiliatesPermission;
+
     private $manageAffiliateStatusPermission;
 
     public function __construct()
@@ -28,7 +29,7 @@ class AffiliatesDataTable extends BaseDataTable
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
@@ -36,28 +37,28 @@ class AffiliatesDataTable extends BaseDataTable
         return datatables()
             ->eloquent($query)
             ->addIndexColumn()
-            ->addColumn('name', fn($row) => $row->user->name)
-            ->addColumn('email', fn($row) => $row->user->email)
-            ->editColumn('balance', fn($row) => global_currency_format($row->balance))
+            ->addColumn('name', fn ($row) => $row->user->name)
+            ->addColumn('email', fn ($row) => $row->user->email)
+            ->editColumn('balance', fn ($row) => global_currency_format($row->balance))
             ->addColumn('action', function ($row) {
 
                 $action = '<div class="task_view">
 
                 <div class="dropdown">
                     <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" type="link"
-                        id="dropdownMenuLink-' . $row->id . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        id="dropdownMenuLink-'.$row->id.'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="icon-options-vertical icons"></i>
                     </a>
-                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-' . $row->id . '" tabindex="0">';
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-'.$row->id.'" tabindex="0">';
 
                 if ($this->viewAffiliatesPermission == 'all') {
-                    $action .= '<a href="' . route('affiliate.show', [$row->id]) . '" class="dropdown-item"><i class="fa fa-eye mr-2"></i>' . __('app.view') . '</a>';
+                    $action .= '<a href="'.route('affiliate.show', [$row->id]).'" class="dropdown-item"><i class="fa fa-eye mr-2"></i>'.__('app.view').'</a>';
                 }
 
                 if ($this->deleteAffiliatesPermission == 'all') {
-                    $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-toggle="tooltip"  data-affiliate-id="' . $row->id . '">
+                    $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-toggle="tooltip"  data-affiliate-id="'.$row->id.'">
                             <i class="fa fa-trash mr-2"></i>
-                            ' . trans('app.delete') . '
+                            '.trans('app.delete').'
                         </a>';
                 }
 
@@ -69,10 +70,10 @@ class AffiliatesDataTable extends BaseDataTable
             })
             ->addColumn('status', function ($row) {
                 if ($this->manageAffiliateStatusPermission == 'all') {
-                    $select = '<select class="form-control select-picker change-affiliate-status" data-affiliate-id="' . $row->id . '">';
+                    $select = '<select class="form-control select-picker change-affiliate-status" data-affiliate-id="'.$row->id.'">';
 
                     foreach (Status::cases() as $status) {
-                        $select .= '<option value="' . $status->value . '" data-content="' . $status->html() . '" ' . ($status == $row->status ? 'selected' : '') . '>' . $status->label() . '</option>';
+                        $select .= '<option value="'.$status->value.'" data-content="'.$status->html().'" '.($status == $row->status ? 'selected' : '').'>'.$status->label().'</option>';
                     }
 
                     $select .= '</select>';
@@ -100,8 +101,8 @@ class AffiliatesDataTable extends BaseDataTable
             }])
             ->withoutGlobalScopes([ActiveScope::class, CompanyScope::class])
             ->whereHas('user', function ($query) use ($searchText) {
-                $query->where('name', 'like', '%' . $searchText . '%')
-                    ->orWhere('email', 'like', '%' . $searchText . '%');
+                $query->where('name', 'like', '%'.$searchText.'%')
+                    ->orWhere('email', 'like', '%'.$searchText.'%');
             });
 
     }
@@ -147,8 +148,7 @@ class AffiliatesDataTable extends BaseDataTable
                 ->orderable(false)
                 ->searchable(false)
                 ->width(150)
-                ->addClass('text-right pr-20')
+                ->addClass('text-right pr-20'),
         ];
     }
-
 }

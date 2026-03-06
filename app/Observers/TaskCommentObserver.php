@@ -5,23 +5,21 @@ namespace App\Observers;
 use App\Events\TaskCommentEvent;
 use App\Events\TaskCommentMentionEvent;
 use App\Models\MentionUser;
-use App\Models\Task;
 use App\Models\TaskComment;
 use App\Models\User;
 
 class TaskCommentObserver
 {
-
     public function saving(TaskComment $comment)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             $comment->last_updated_by = user()->id;
         }
     }
 
     public function creating(TaskComment $comment)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             $comment->added_by = user()->id;
         }
     }
@@ -58,8 +56,7 @@ class TaskCommentObserver
 
             }
 
-        }
-        else {
+        } else {
 
             event(new TaskCommentEvent($task, $comment, $task->users, 'null'));
         }
@@ -86,18 +83,17 @@ class TaskCommentObserver
             foreach ($requestMentionIds as $value) {
 
                 if (($mentionedUser) != null) {
-                    if (!in_array($value, json_decode($mentionedUser))) {
+                    if (! in_array($value, json_decode($mentionedUser))) {
 
                         $newMention[] = $value;
                     }
-                }
-                else {
+                } else {
 
                     $newMention[] = $value;
                 }
             }
 
-            if (!empty($newMention)) {
+            if (! empty($newMention)) {
 
                 event(new TaskCommentMentionEvent($comment->task, $comment, $newMention));
 
@@ -106,5 +102,4 @@ class TaskCommentObserver
         }
 
     }
-
 }

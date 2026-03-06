@@ -2,12 +2,12 @@
 
 namespace Modules\Pricing\Http\Controllers;
 
-use App\Http\Controllers\AccountBaseController;
-use Illuminate\Http\Request;
 use App\Helper\Reply;
+use App\Http\Controllers\AccountBaseController;
+use App\Models\Product;
+use Illuminate\Http\Request;
 use Modules\Pricing\Entities\PricingTier;
 use Modules\Pricing\Entities\PricingTierItem;
-use App\Models\Product;
 
 class PricingTierController extends AccountBaseController
 {
@@ -16,11 +16,12 @@ class PricingTierController extends AccountBaseController
         parent::__construct();
         $this->pageTitle = __('pricing::app.menu.pricing');
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('pricing', array_map('strtolower', $this->user->modules)));
+            abort_403(! in_array('pricing', array_map('strtolower', $this->user->modules)));
             // Ensure strict company context - Super Admin cannot access without impersonation
-            if (!company()) {
+            if (! company()) {
                 abort(403, 'Company context is required.');
             }
+
             return $next($request);
         });
     }
@@ -31,6 +32,7 @@ class PricingTierController extends AccountBaseController
         abort_403($viewPermission == 'none');
 
         $this->tiers = PricingTier::orderBy('id', 'desc')->get();
+
         return view('pricing::tiers.index', $this->data);
     }
 
@@ -62,7 +64,7 @@ class PricingTierController extends AccountBaseController
             'discount_value' => 'nullable|numeric|min:0',
         ]);
 
-        $tier = new PricingTier();
+        $tier = new PricingTier;
         $tier->name = $request->name;
         $tier->description = $request->description;
         $tier->priority = $request->priority;
@@ -72,7 +74,7 @@ class PricingTierController extends AccountBaseController
         $tier->discount_value = $request->discount_value;
         $tier->is_active = true;
         $tier->company_id = user()->company_id;
-        
+
         if (is_null($tier->company_id)) {
             abort(403, 'Company context is required to create pricing tiers.');
         }
@@ -131,6 +133,7 @@ class PricingTierController extends AccountBaseController
         abort_403($deletePermission == 'none');
 
         PricingTier::destroy($id);
+
         return Reply::successWithData(__('messages.deleteSuccess'), ['redirectUrl' => route('pricing.tiers.index')]);
     }
 
@@ -161,7 +164,7 @@ class PricingTierController extends AccountBaseController
             'discount_value' => 'required|numeric|min:0',
         ]);
 
-        $item = new PricingTierItem();
+        $item = new PricingTierItem;
         $item->pricing_tier_id = $id;
         $item->product_id = $request->product_id;
         $item->discount_type = $request->discount_type;
@@ -178,11 +181,13 @@ class PricingTierController extends AccountBaseController
                 $deletePermission = user()->permission('delete_pricing_tiers');
                 abort_403($deletePermission == 'none');
                 $this->deleteRecords($request);
+
                 return Reply::success(__('messages.deleteSuccess'));
             case 'change-status':
                 $editPermission = user()->permission('edit_pricing_tiers');
                 abort_403($editPermission == 'none');
                 $this->changeBulkStatus($request);
+
                 return Reply::success(__('messages.updateSuccess'));
             default:
                 return Reply::error(__('messages.selectAction'));
@@ -196,6 +201,7 @@ class PricingTierController extends AccountBaseController
 
         if ($request->action_type === 'delete') {
             $this->deleteItemRecords($request);
+
             return Reply::success(__('messages.deleteSuccess'));
         }
 
@@ -232,6 +238,7 @@ class PricingTierController extends AccountBaseController
         abort_403($editPermission == 'none');
 
         PricingTierItem::destroy($itemId);
+
         return Reply::success(__('messages.deleteSuccess'));
     }
 }

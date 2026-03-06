@@ -3,25 +3,25 @@
 namespace App\Http\Controllers\Payment;
 
 use App\Helper\Reply;
-use App\Models\Company;
-use App\Models\Order;
-use Razorpay\Api\Api;
-use App\Models\Invoice;
-use App\Traits\MakePaymentTrait;
 use App\Http\Controllers\Controller;
+use App\Models\Company;
 use App\Models\GlobalSetting;
+use App\Models\Invoice;
+use App\Models\Order;
 use App\Traits\MakeOrderInvoiceTrait;
+use App\Traits\MakePaymentTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
-use App\Models\PaymentGatewayCredentials;
+use Razorpay\Api\Api;
 
 class RazorPayController extends Controller
 {
-
-    use MakePaymentTrait, MakeOrderInvoiceTrait;
+    use MakeOrderInvoiceTrait, MakePaymentTrait;
 
     private $apiKey;
+
     private $secretKey;
+
     private $webhookSecret;
 
     public function __construct()
@@ -30,14 +30,13 @@ class RazorPayController extends Controller
 
         $this->pageTitle = 'Razorpay';
 
-
     }
 
     public function setKeys($companyHash)
     {
         $company = Company::where('hash', $companyHash)->first();
 
-        if (!$company) {
+        if (! $company) {
             throw new \Exception('Please enter the correct webhook url. You have entered wrong webhook url');
         }
 
@@ -61,7 +60,7 @@ class RazorPayController extends Controller
         $purchaseId = $payment->notes->purchase_id;
 
         /* Razorpay payment for invoices */
-        if (!isset(request()->type)) {
+        if (! isset(request()->type)) {
             $invoice = Invoice::findOrFail($purchaseId);
         }
 
@@ -77,11 +76,11 @@ class RazorPayController extends Controller
             $currencyCode = isset(request()->type) && request()->type == 'order' ? $order->currency->currency_code : $invoice->currency->currency_code;
 
             /** @phpstan-ignore-next-line */
-            $payment->capture(array('amount' => $payment->amount, 'currency' => $currencyCode));
+            $payment->capture(['amount' => $payment->amount, 'currency' => $currencyCode]);
 
             /* Mark invoice as paid */
             /** @phpstan-ignore-next-line */
-            if (!isset(request()->type) && isset($invoice)) {
+            if (! isset(request()->type) && isset($invoice)) {
                 $invoice->status = 'paid';
                 $invoice->save();
             }
@@ -102,7 +101,7 @@ class RazorPayController extends Controller
 
             Session::put('success', __('messages.paymentSuccessful'));
 
-            if (!auth()->check() && isset($invoice)) {
+            if (! auth()->check() && isset($invoice)) {
                 $redirectRoute = url()->temporarySignedRoute('front.invoice', now()->addDays(\App\Models\GlobalSetting::SIGNED_ROUTE_EXPIRY), $invoice->hash);
 
                 return Reply::redirect($redirectRoute, __('messages.paymentSuccessful'));
@@ -116,11 +115,10 @@ class RazorPayController extends Controller
             if (isset($invoice)) {
                 return Reply::redirect(route('invoices.show', $invoice->id), __('messages.paymentSuccessful'));
             }
-        }
-        elseif ($payment->status == 'captured') {
+        } elseif ($payment->status == 'captured') {
             Session::put('success', __('messages.paymentSuccessful'));
 
-            if (!auth()->check() && isset($invoice)) {
+            if (! auth()->check() && isset($invoice)) {
                 return Reply::redirect(url()->temporarySignedRoute('front.invoice', now()->addDays(GlobalSetting::SIGNED_ROUTE_EXPIRY), $invoice->hash), __('messages.paymentSuccessful'));
             }
 
@@ -154,31 +152,30 @@ class RazorPayController extends Controller
             return true;
         }
 
-        $payment->capture(array('amount' => $payment->amount, 'currency' => $payment->currency));
+        $payment->capture(['amount' => $payment->amount, 'currency' => $payment->currency]);
 
         switch ($payment->notes->type) {
-        case 'invoice':
-            $invoice = Invoice::findOrFail($payment->notes->purchase_id);
-            $invoice->status = 'paid';
-            $invoice->save();
+            case 'invoice':
+                $invoice = Invoice::findOrFail($payment->notes->purchase_id);
+                $invoice->status = 'paid';
+                $invoice->save();
 
-            $payment = $this->makePayment('Razorpay', ($payment->amount / 100), $invoice, $payment->id, 'complete');
+                $payment = $this->makePayment('Razorpay', ($payment->amount / 100), $invoice, $payment->id, 'complete');
 
-            break;
-        case 'order':
-            $order = Order::findOrFail($payment->notes->purchase_id);
-            $order->status = 'completed';
-            $order->save();
+                break;
+            case 'order':
+                $order = Order::findOrFail($payment->notes->purchase_id);
+                $order->status = 'completed';
+                $order->save();
 
-            $invoice = $this->makeOrderInvoice($order);
+                $invoice = $this->makeOrderInvoice($order);
 
-            $payment = $this->makePayment('Razorpay', ($payment->amount / 100), $invoice, $payment->id, 'complete');
+                $payment = $this->makePayment('Razorpay', ($payment->amount / 100), $invoice, $payment->id, 'complete');
 
-            break;
+                break;
         }
 
         return response()->json(['message' => 'Webhook Handled']);
 
     }
-
 }

@@ -13,6 +13,7 @@ use App\Models\BaseModel;
  * @property Carbon|null $updated_at
  * @property-read Collection|Faq[] $faqs
  * @property-read int|null $faqs_count
+ *
  * @method static Builder|FaqCategory newModelQuery()
  * @method static Builder|FaqCategory newQuery()
  * @method static Builder|FaqCategory query()
@@ -20,14 +21,13 @@ use App\Models\BaseModel;
  * @method static Builder|FaqCategory whereId($value)
  * @method static Builder|FaqCategory whereName($value)
  * @method static Builder|FaqCategory whereUpdatedAt($value)
+ *
  * @mixin Eloquent
  */
 class FaqCategory extends BaseModel
 {
-
     public function faqs()
     {
         return $this->hasMany(Faq::class, 'faq_category_id', 'id');
     }
-
 }

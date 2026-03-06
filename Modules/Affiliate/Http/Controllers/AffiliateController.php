@@ -2,31 +2,31 @@
 
 namespace Modules\Affiliate\Http\Controllers;
 
-use App\Models\User;
 use App\Helper\Reply;
-use App\Scopes\ActiveScope;
-use Illuminate\Http\Request;
-use Modules\Affiliate\Entities\Payout;
-use Modules\Affiliate\Entities\Referral;
-use Modules\Affiliate\Entities\Affiliate;
 use App\Http\Controllers\AccountBaseController;
 use App\Models\GlobalSetting;
+use App\Models\User;
+use App\Scopes\ActiveScope;
+use Illuminate\Http\Request;
 use Modules\Affiliate\DataTables\AffiliatesDataTable;
 use Modules\Affiliate\DataTables\PayoutsDataTable;
 use Modules\Affiliate\DataTables\ReferralsDataTable;
+use Modules\Affiliate\Entities\Affiliate;
 use Modules\Affiliate\Entities\AffiliateSetting;
+use Modules\Affiliate\Entities\Payout;
+use Modules\Affiliate\Entities\Referral;
 use Modules\Affiliate\Http\Requests\StoreAffiliates;
 
 class AffiliateController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'affiliate::app.menu.affiliates';
 
-        $this->middleware(function ($request, $next){
+        $this->middleware(function ($request, $next) {
             abort_403(GlobalSetting::validateSuperAdmin());
+
             return $next($request);
         });
     }
@@ -37,7 +37,7 @@ class AffiliateController extends AccountBaseController
     public function index(AffiliatesDataTable $dataTable)
     {
         $this->managePermission = user()->permission('view_affiliates');
-        abort_403(!($this->managePermission == 'all'));
+        abort_403(! ($this->managePermission == 'all'));
 
         return $dataTable->render('affiliate::affiliate.index', $this->data);
     }
@@ -48,7 +48,7 @@ class AffiliateController extends AccountBaseController
     public function create()
     {
         $this->managePermission = user()->permission('add_affiliates');
-        abort_403(!($this->managePermission == 'all'));
+        abort_403(! ($this->managePermission == 'all'));
 
         $this->pageTitle = __('affiliate::app.createAffiliate');
         $this->view = 'affiliate::affiliate.ajax.create';
@@ -70,7 +70,7 @@ class AffiliateController extends AccountBaseController
     {
         abort_403(user()->permission('add_affiliates') != 'all');
 
-        $affiliate = new Affiliate();
+        $affiliate = new Affiliate;
         $affiliate->user_id = $request->user_id;
         $affiliate->referral_code = $this->generateUniqueReferralCode();
         $affiliate->save();
@@ -117,8 +117,7 @@ class AffiliateController extends AccountBaseController
 
         if (user()->is_superadmin) {
             $currencyId = global_setting()->currency_id;
-        }
-        else {
+        } else {
             $currencyId = user()->company->currency_id;
         }
 
@@ -129,13 +128,13 @@ class AffiliateController extends AccountBaseController
         $tab = request('tab');
 
         switch ($tab) {
-        case 'payouts':
-            return $this->payouts();
-        case 'referrals':
-            return $this->referrals();
-        default:
-            $this->view = 'affiliate::affiliate.ajax.affiliates';
-            break;
+            case 'payouts':
+                return $this->payouts();
+            case 'referrals':
+                return $this->referrals();
+            default:
+                $this->view = 'affiliate::affiliate.ajax.affiliates';
+                break;
         }
 
         if (request()->ajax()) {
@@ -151,7 +150,7 @@ class AffiliateController extends AccountBaseController
     {
         abort_403(user()->permission('view_payouts') != 'all');
 
-        $dataTable = new PayoutsDataTable();
+        $dataTable = new PayoutsDataTable;
         $tab = request('tab');
         $this->activeTab = $tab ?: 'payouts';
 
@@ -164,7 +163,7 @@ class AffiliateController extends AccountBaseController
     {
         abort_403(user()->permission('view_referrals') != 'all');
 
-        $dataTable = new ReferralsDataTable();
+        $dataTable = new ReferralsDataTable;
         $tab = request('tab');
         $this->activeTab = $tab ?: 'referrals';
 
@@ -193,12 +192,10 @@ class AffiliateController extends AccountBaseController
 
         if ($request->status) {
             Affiliate::where('id', $request->id)->update(['status' => $request->status]);
-        }
-        else {
+        } else {
             return Reply::error(__('messages.selectAction'));
         }
 
         return Reply::success(__('messages.updateSuccess'));
     }
-
 }

@@ -16,6 +16,7 @@ use App\Traits\HasCompany;
  * @property int|null $setting_menu
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Menu newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Menu newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Menu query()
@@ -28,16 +29,17 @@ use App\Traits\HasCompany;
  * @method static \Illuminate\Database\Eloquent\Builder|Menu whereSettingMenu($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Menu whereTranslateName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Menu whereUpdatedAt($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Menu whereCompanyId($value)
+ *
  * @mixin \Eloquent
  */
 class Menu extends BaseModel
 {
-
     use HasCompany;
 
     protected $guarded = ['id'];
-
 }

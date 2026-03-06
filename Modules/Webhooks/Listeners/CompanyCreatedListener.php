@@ -6,7 +6,6 @@ use Modules\Webhooks\Entities\WebhooksGlobalSetting;
 
 class CompanyCreatedListener
 {
-
     /**
      * Handle the event.
      *
@@ -18,5 +17,4 @@ class CompanyCreatedListener
         $company = $event->company;
         WebhooksGlobalSetting::addModuleSetting($company);
     }
-
 }

@@ -1,11 +1,11 @@
 <?php
+
 namespace App\Http\Requests\ClientDocs;
 
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
  * Class CreateRequest
- * @package App\Http\Requests\Admin\Client
  */
 class UpdateRequest extends FormRequest
 {
@@ -14,7 +14,6 @@ class UpdateRequest extends FormRequest
      *
      * @return bool
      */
-
     public function authorize()
     {
         // If admin
@@ -30,10 +29,9 @@ class UpdateRequest extends FormRequest
     {
 
         return [
-            'name'  => 'required',
-            'file' => 'required_if:file_delete,yes'
+            'name' => 'required',
+            'file' => 'required_if:file_delete,yes',
         ];
 
     }
-
 }

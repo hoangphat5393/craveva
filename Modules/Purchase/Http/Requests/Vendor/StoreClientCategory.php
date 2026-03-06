@@ -6,18 +6,16 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreClientCategory extends FormRequest
 {
-
     /**
      * Get the validation rules that apply to the request.
      *
      * @return array
      */
-
     public function rules()
     {
 
         return [
-            'category_name' => 'required|max:100'
+            'category_name' => 'required|max:100',
         ];
     }
 
@@ -30,5 +28,4 @@ class StoreClientCategory extends FormRequest
     {
         return true;
     }
-
 }

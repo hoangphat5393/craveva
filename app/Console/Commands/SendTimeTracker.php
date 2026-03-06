@@ -2,18 +2,17 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
+use App\Events\TimeTrackerReminderEvent;
+use App\Models\Company;
 use App\Models\Holiday;
 use App\Models\Leave;
-use App\Models\User;
-use App\Models\Company;
 use App\Models\ProjectTimeLog;
-use App\Events\TimeTrackerReminderEvent;
+use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Console\Command;
 
 class SendTimeTracker extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
@@ -27,10 +26,6 @@ class SendTimeTracker extends Command
      * @var string
      */
     protected $description = 'send time tracker';
-
-    /**
-     *
-     */
 
     public function handle()
     {
@@ -50,7 +45,7 @@ class SendTimeTracker extends Command
 
         foreach ($companies as $company) {
 
-            $startDateTime = Carbon::parse($currentDay . ' ' . $company->time);
+            $startDateTime = Carbon::parse($currentDay.' '.$company->time);
             $currentDateTime = now()->timezone($company->timezone);
 
             if ($currentDateTime->format('H:i') == $startDateTime->format('H:i')) {
@@ -78,7 +73,7 @@ class SendTimeTracker extends Command
 
                     $user = User::find($employeeId);
 
-                    if (!$leaveExists && !$timeLogExists && $user && $user->email_notifications) {
+                    if (! $leaveExists && ! $timeLogExists && $user && $user->email_notifications) {
                         event(new TimeTrackerReminderEvent($user));
                     }
                 });
@@ -87,5 +82,4 @@ class SendTimeTracker extends Command
 
         return Command::SUCCESS;
     }
-
 }

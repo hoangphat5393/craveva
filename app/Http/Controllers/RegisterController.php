@@ -2,30 +2,29 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Role;
-use App\Models\User;
+use App\Events\NewUserRegistrationViaInviteEvent;
 use App\Helper\Reply;
 use App\Http\Requests\User\AcceptInviteRequest;
 use App\Http\Requests\User\AccountSetupRequest;
+use App\Models\Company;
 use App\Models\EmployeeDetails;
 use App\Models\GlobalSetting;
-use App\Models\Company;
 use App\Models\Permission;
 use App\Models\PermissionType;
+use App\Models\Role;
+use App\Models\SuperAdmin\FrontWidget;
 use App\Models\SuperAdmin\GlobalCurrency;
 use App\Models\UniversalSearch;
+use App\Models\User;
 use App\Models\UserAuth;
 use App\Models\UserInvitation;
 use Database\Seeders\SuperAdminUsersTableSeeder;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use App\Events\NewUserRegistrationViaInviteEvent;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\Mailer\Exception\TransportException;
-use App\Models\SuperAdmin\FrontWidget;
 
 class RegisterController extends Controller
 {
-
     public function invitation($code)
     {
         if (Auth::check()) {
@@ -52,7 +51,7 @@ class RegisterController extends Controller
 
         $this->company = $invite->company;
 
-        if (!checkCompanyCanAddMoreEmployees($invite->company_id) || (is_null($invite) || ($invite->invitation_type == 'email' && $request->email != $invite->email))) {
+        if (! checkCompanyCanAddMoreEmployees($invite->company_id) || (is_null($invite) || ($invite->invitation_type == 'email' && $request->email != $invite->email))) {
             return Reply::error('messages.acceptInviteError');
         }
 
@@ -66,7 +65,7 @@ class RegisterController extends Controller
                 $approval = 1;
             }
 
-            $user = new User();
+            $user = new User;
             $user->name = $request->name;
             $user->company_id = $invite->company_id;
             $user->email = $request->email;
@@ -80,10 +79,10 @@ class RegisterController extends Controller
             $checkifExistEmployeeId = EmployeeDetails::select('id')->where('employee_id', ($lastEmployeeID + 1))->where('company_id', $invite->company_id)->first();
 
             if ($user->id) {
-                $employee = new EmployeeDetails();
+                $employee = new EmployeeDetails;
                 $employee->user_id = $user->id;
                 $employee->company_id = $invite->company_id;
-                $employee->employee_id = ((!$checkifExistEmployeeId) ? ($lastEmployeeID + 1) : null);
+                $employee->employee_id = ((! $checkifExistEmployeeId) ? ($lastEmployeeID + 1) : null);
                 $employee->joining_date = now($this->company->timezone)->format('Y-m-d');
                 $employee->added_by = $user->id;
                 $employee->last_updated_by = $user->id;
@@ -95,7 +94,7 @@ class RegisterController extends Controller
 
             $user->assignUserRolePermission($employeeRole->id);
 
-            $logSearch = new AccountBaseController();
+            $logSearch = new AccountBaseController;
             $logSearch->logSearchEntry($user->id, $user->name, 'employees.show', 'employee');
 
             if ($invite->invitation_type == 'email') {
@@ -125,12 +124,12 @@ class RegisterController extends Controller
             // Rollback Transaction
             DB::rollback();
 
-            return Reply::error('Please configure SMTP details. Visit Settings -> notification setting to set smtp: ' . $e->getMessage(), 'smtp_error');
+            return Reply::error('Please configure SMTP details. Visit Settings -> notification setting to set smtp: '.$e->getMessage(), 'smtp_error');
         } catch (\Exception $e) {
             // Rollback Transaction
             DB::rollback();
 
-            return Reply::error('Some error occurred when inserting the data. Please try again or contact support: ' . $e->getMessage());
+            return Reply::error('Some error occurred when inserting the data. Please try again or contact support: '.$e->getMessage());
         }
 
         return view('auth.invitation', $this->data);
@@ -145,6 +144,7 @@ class RegisterController extends Controller
     {
         if (isCraveva()) {
             $this->saasSetup($request);
+
             return Reply::success('CRAVEVA Application account created successfully. You will redirected to dashboard soon');
         }
 
@@ -159,20 +159,20 @@ class RegisterController extends Controller
         $setting->save();
 
         // Create admin user
-        $user = new User();
+        $user = new User;
         $user->name = $request->full_name;
         $user->email = $request->email;
         $user->password = bcrypt($request->password);
         $user->company_id = $setting->id;
         $user->save();
 
-        $employee = new EmployeeDetails();
+        $employee = new EmployeeDetails;
         $employee->user_id = $user->id;
         $employee->employee_id = $user->id;
         $employee->company_id = $setting->id;
         $employee->save();
 
-        $search = new UniversalSearch();
+        $search = new UniversalSearch;
         $search->searchable_id = $user->id;
         $search->title = $user->name;
         $search->route_name = 'employees.show';
@@ -205,7 +205,6 @@ class RegisterController extends Controller
         $globalSetting->google_recaptcha_v3_status = 'deactive';
         $globalSetting->app_debug = false;
 
-
         $globalCurrency = GlobalCurrency::first();
         $globalSetting->currency_id = $globalCurrency->id;
 
@@ -223,7 +222,7 @@ class RegisterController extends Controller
         $globalSetting->save();
 
         // Create admin user
-        $superadmin = new User();
+        $superadmin = new User;
         $superadmin->is_superadmin = true;
         $superadmin->name = $request->full_name;
         $superadmin->email = $request->email;
@@ -246,7 +245,7 @@ class RegisterController extends Controller
         $setting->save();
 
         // Create admin user
-        $user = new User();
+        $user = new User;
         $user->name = 'Admin';
         // Check if superadmin email is not same
         $user->email = ($request->email !== 'admin@example.com') ? 'admin@example.com' : 'admin@test.com';
@@ -257,13 +256,13 @@ class RegisterController extends Controller
         $user->user_auth_id = $userAuth->id;
         $user->saveQuietly();
 
-        $employee = new EmployeeDetails();
+        $employee = new EmployeeDetails;
         $employee->user_id = $user->id;
         $employee->employee_id = 'EMP-1';
         $employee->company_id = $setting->id;
         $employee->save();
 
-        $search = new UniversalSearch();
+        $search = new UniversalSearch;
         $search->searchable_id = $user->id;
         $search->title = $user->name;
         $search->route_name = 'employees.show';

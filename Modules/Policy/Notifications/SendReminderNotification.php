@@ -2,18 +2,19 @@
 
 namespace Modules\Policy\Notifications;
 
-use Illuminate\Bus\Queueable;
-use App\Notifications\BaseNotification;
 use App\Models\EmailNotificationSetting;
+use App\Notifications\BaseNotification;
+use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 
 class SendReminderNotification extends BaseNotification
 {
-
     use Queueable;
 
     private $policy;
+
     private $emailSetting;
+
     /**
      * Create a new notification instance.
      */
@@ -64,13 +65,13 @@ class SendReminderNotification extends BaseNotification
         $content = __('policy::email.acknowlwdgePolicy.text');
 
         return $build
-            ->subject(__('policy::email.acknowlwdgePolicy.subject') . ' - ' . config('app.name') . __('!'))
+            ->subject(__('policy::email.acknowlwdgePolicy.subject').' - '.config('app.name').__('!'))
             ->markdown('mail.email', [
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
                 'actionText' => __('policy::email.acknowlwdgePolicy.action'),
-                'notifiableName' => $notifiable->name
+                'notifiableName' => $notifiable->name,
             ]);
     }
 
@@ -91,16 +92,15 @@ class SendReminderNotification extends BaseNotification
             $url = route('policy.show', $this->policy->id);
             $url = getDomainSpecificUrl($url, $this->company);
 
-            $subject = '*' .__('policy::email.acknowlwdgePolicy.subject'). '*';
-            $notifiableName = __('email.hello') . ' ' . $notifiable->name;
+            $subject = '*'.__('policy::email.acknowlwdgePolicy.subject').'*';
+            $notifiableName = __('email.hello').' '.$notifiable->name;
 
             $content = __('policy::email.acknowlwdgePolicy.text');
 
             return $this->slackBuild($notifiable)
-                ->content($subject."\n\n". $notifiableName ."\n\n". $content  . "\n\n" . $url);
+                ->content($subject."\n\n".$notifiableName."\n\n".$content."\n\n".$url);
         } catch (\Exception $e) {
             return $this->slackRedirectMessage('policy::email.acknowlwdgePolicy.subject', $notifiable);
         }
     }
-
 }

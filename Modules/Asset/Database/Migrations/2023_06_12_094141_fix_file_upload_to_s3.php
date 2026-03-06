@@ -1,12 +1,11 @@
 <?php
 
 use App\Helper\Files;
-use Modules\Asset\Entities\Asset;
 use Illuminate\Database\Migrations\Migration;
+use Modules\Asset\Entities\Asset;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      */
@@ -40,5 +39,4 @@ return new class extends Migration
     {
         //
     }
-
 };

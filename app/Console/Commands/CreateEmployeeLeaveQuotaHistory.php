@@ -32,8 +32,7 @@ class CreateEmployeeLeaveQuotaHistory extends Command
 
         foreach ($employees as $employee) {
             foreach ($employee->leaveTypes as $leaveQuota) {
-                if ($leaveQuota->leaveType && ($leaveQuota->leaveType->leaveTypeCondition($leaveQuota->leaveType, $employee)))
-                {
+                if ($leaveQuota->leaveType && ($leaveQuota->leaveType->leaveTypeCondition($leaveQuota->leaveType, $employee))) {
                     $employeeLeaveQuotaHistories[] = [
                         'user_id' => $employee->id,
                         'leave_type_id' => $leaveQuota->leave_type_id,
@@ -52,5 +51,4 @@ class CreateEmployeeLeaveQuotaHistory extends Command
 
         EmployeeLeaveQuotaHistory::insert($employeeLeaveQuotaHistories);
     }
-
 }

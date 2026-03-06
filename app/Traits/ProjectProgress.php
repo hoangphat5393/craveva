@@ -10,55 +10,51 @@
 namespace App\Traits;
 
 use App\Models\Project;
+use App\Models\ProjectTimeLog;
 use App\Models\Task;
 use App\Models\TaskboardColumn;
-use App\Models\ProjectTimeLog;
-use Carbon\Carbon;
 
 trait ProjectProgress
 {
-
     public function calculateProjectProgress($projectId, $projectProgress = 'false')
     {
         $project = Project::withTrashed()->findOrFail($projectId);
 
-        if (!is_null($project) && ($project->calculate_task_progress == 'task_completion' || $projectProgress == 'true')) {
+        if (! is_null($project) && ($project->calculate_task_progress == 'task_completion' || $projectProgress == 'true')) {
             $taskBoardColumn = TaskboardColumn::completeColumn();
-           
+
             if (is_null($projectId)) {
                 return false;
             }
-           
+
             $totalTasks = Task::where('project_id', $projectId)->whereNull('deleted_at')->count();
 
             if ($totalTasks == 0) {
                 info('totalTasks is 0');
                 $percentComplete = 0;
                 $project->completion_percent = $percentComplete;
-           
-            
+
                 if ($project->calculate_task_progress == 'task_completion') {
-                    
-                    if($percentComplete == 100){
+
+                    if ($percentComplete == 100) {
                         $project->status = 'finished';
-                    }else if($percentComplete < 100 && $project->status == 'finished'){
+                    } elseif ($percentComplete < 100 && $project->status == 'finished') {
                         $project->status = 'in progress';
                     }
                 }
 
                 $project->save();
 
-                
                 return '0';
             }
-           
+
             $completedTasks = Task::where('project_id', $projectId)->whereNull('deleted_at')
                 ->where('tasks.board_column_id', $taskBoardColumn->id)
                 ->whereNull('deleted_at')
                 ->count();
-           
+
             $percentComplete = ($completedTasks / $totalTasks) * 100;
-            
+
             $project->completion_percent = $percentComplete;
 
             // Update project status based on completion
@@ -67,18 +63,18 @@ trait ProjectProgress
             } elseif ($project->status == 'finished' && $percentComplete < 100) {
                 $project->status = 'in progress';
             }
-            
+
             $project->save();
 
             return $percentComplete;
-        
+
         }
     }
 
     /**
      * Calculate project progress based on total time allocated vs time spent
-     * 
-     * @param int $projectId
+     *
+     * @param  int  $projectId
      * @return float|false
      */
     public function calculateProjectProgressByTime($projectId)
@@ -86,13 +82,13 @@ trait ProjectProgress
         $project = Project::withTrashed()->findOrFail($projectId);
 
         if (is_null($project) || $project->calculate_task_progress != 'project_total_time') {
-            
+
             return false;
         }
 
         // Get total allocated hours for the project
         $totalAllocatedHours = $project->hours_allocated;
-        
+
         if (is_null($totalAllocatedHours) || $totalAllocatedHours <= 0) {
             return false;
         }
@@ -108,18 +104,18 @@ trait ProjectProgress
                     // For active timers, calculate current elapsed time
                     $startTime = $timeLog->start_time;
                     $currentTime = now();
-                    
+
                     // Subtract any break time
                     $breakMinutes = $timeLog->breaks->sum('total_minutes');
                     $activeBreakMinutes = 0;
-                    
+
                     if ($timeLog->activeBreak) {
                         $activeBreakMinutes = $timeLog->activeBreak->start_time->diffInMinutes($currentTime);
                     }
-                    
+
                     $totalBreakMinutes = $breakMinutes + $activeBreakMinutes;
                     $elapsedMinutes = $startTime->diffInMinutes($currentTime) - $totalBreakMinutes;
-                    
+
                     return max(0, $elapsedMinutes);
                 } else {
                     // For completed timers, use the stored total_minutes
@@ -127,23 +123,20 @@ trait ProjectProgress
                 }
             });
 
-       
-
         // Convert allocated hours to minutes
         $totalAllocatedMinutes = $totalAllocatedHours * 60;
-       
+
         // Calculate progress percentage
         $percentComplete = ($totalTimeSpentMinutes / $totalAllocatedMinutes) * 100;
-       
-        
+
         // Ensure we have a valid numeric value
         $percentComplete = (float) $percentComplete;
-        
+
         // Cap at 100%
         if ($percentComplete > 100) {
             $percentComplete = 100;
         }
-        
+
         // Ensure minimum of 0
         if ($percentComplete < 0) {
             $percentComplete = 0;
@@ -151,7 +144,7 @@ trait ProjectProgress
 
         // Update project completion percentage
         $project->completion_percent = $percentComplete;
-        
+
         // Update project status based on completion
         if ($percentComplete >= 100) {
             $project->status = 'finished';
@@ -171,8 +164,8 @@ trait ProjectProgress
 
     /**
      * Get remaining time for a project in minutes
-     * 
-     * @param int $projectId
+     *
+     * @param  int  $projectId
      * @return float|false
      */
     public function getProjectRemainingTime($projectId)
@@ -185,7 +178,7 @@ trait ProjectProgress
 
         // Get total allocated hours for the project
         $totalAllocatedHours = $project->hours_allocated;
-        
+
         if (is_null($totalAllocatedHours) || $totalAllocatedHours <= 0) {
             return false;
         }
@@ -201,18 +194,18 @@ trait ProjectProgress
                     // For active timers, calculate current elapsed time
                     $startTime = $timeLog->start_time;
                     $currentTime = now();
-                    
+
                     // Subtract any break time
                     $breakMinutes = $timeLog->breaks->sum('total_minutes');
                     $activeBreakMinutes = 0;
-                    
+
                     if ($timeLog->activeBreak) {
                         $activeBreakMinutes = $timeLog->activeBreak->start_time->diffInMinutes($currentTime);
                     }
-                    
+
                     $totalBreakMinutes = $breakMinutes + $activeBreakMinutes;
                     $elapsedMinutes = $startTime->diffInMinutes($currentTime) - $totalBreakMinutes;
-                    
+
                     return max(0, $elapsedMinutes);
                 } else {
                     // For completed timers, use the stored total_minutes
@@ -231,20 +224,21 @@ trait ProjectProgress
 
     /**
      * Check if project has remaining time
-     * 
-     * @param int $projectId
+     *
+     * @param  int  $projectId
      * @return bool
      */
     public function hasProjectRemainingTime($projectId)
     {
         $remainingTime = $this->getProjectRemainingTime($projectId);
+
         return $remainingTime !== false && $remainingTime > 0;
     }
 
     /**
      * Calculate project progress based on project deadline
-     * 
-     * @param int $projectId
+     *
+     * @param  int  $projectId
      * @return float|false
      */
     public function calculateProjectProgressByDeadline($projectId)
@@ -264,12 +258,11 @@ trait ProjectProgress
         // Add one day to deadline so 100% completion happens the day after deadline
         // This ensures the project reaches 100% on the day after the deadline date
         $deadline = $project->deadline->copy()->addDay();
-        
+
         $currentDate = now();
 
         // Calculate total project duration in days
         $totalDuration = $startDate->diffInDays($deadline);
-        
 
         if ($totalDuration <= 0) {
             // If deadline is same as or before start date, set to 100%
@@ -277,15 +270,15 @@ trait ProjectProgress
         } else {
             // Calculate elapsed time in days
             $elapsedDays = $startDate->diffInDays($currentDate);
-            
+
             // Calculate progress percentage
             $percentComplete = ($elapsedDays / $totalDuration) * 100;
-            
+
             // Cap at 100%
             if ($percentComplete > 100) {
                 $percentComplete = 100;
             }
-            
+
             // Ensure minimum of 0
             if ($percentComplete < 0) {
                 $percentComplete = 0;
@@ -297,7 +290,7 @@ trait ProjectProgress
 
         // Update project completion percentage
         $project->completion_percent = $percentComplete;
-        
+
         // Update project status based on completion
         if ($percentComplete >= 100) {
             $project->status = 'finished';
@@ -309,5 +302,4 @@ trait ProjectProgress
 
         return $percentComplete;
     }
-
 }

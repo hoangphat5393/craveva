@@ -2,17 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\DiscussionFile;
 use App\Helper\Files;
 use App\Helper\Reply;
+use App\Models\DiscussionFile;
 use Illuminate\Http\Request;
 
 class DiscussionFilesController extends AccountBaseController
 {
-
     /**
-     * @param Request $request
      * @return array
+     *
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Throwable
      */
@@ -21,7 +20,7 @@ class DiscussionFilesController extends AccountBaseController
         if ($request->hasFile('file')) {
 
             foreach ($request->file as $fileData) {
-                $file = new DiscussionFile();
+                $file = new DiscussionFile;
 
                 $file->discussion_id = $request->discussion_id;
 
@@ -59,7 +58,7 @@ class DiscussionFilesController extends AccountBaseController
     public function download($id)
     {
         $file = DiscussionFile::whereRaw('md5(id) = ?', $id)->firstOrFail();
-        return download_local_s3($file, DiscussionFile::FILE_PATH . '/' . $file->hashname);
-    }
 
+        return download_local_s3($file, DiscussionFile::FILE_PATH.'/'.$file->hashname);
+    }
 }

@@ -1,11 +1,11 @@
 <?php
 
+use App\Models\Company;
+use App\Models\CustomFieldGroup;
+use App\Models\Order;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use App\Models\CustomFieldGroup;
-use App\Models\Order;
-use App\Models\Company;
 
 return new class extends Migration
 {
@@ -23,8 +23,8 @@ return new class extends Migration
                     [
                         'name' => 'Order',
                         'model' => Order::CUSTOM_FIELD_MODEL,
-                        'company_id' => $company->id
-                    ]
+                        'company_id' => $company->id,
+                    ],
                 ];
             }
 

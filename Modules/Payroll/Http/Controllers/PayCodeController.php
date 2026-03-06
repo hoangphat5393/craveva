@@ -13,7 +13,6 @@ use Modules\Payroll\Http\Requests\OvertimeSetting\Paycode\PayCodeUpdateRequest;
 
 class PayCodeController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -49,18 +48,18 @@ class PayCodeController extends AccountBaseController
      */
     public function store(PayCodeStoreRequest $request)
     {
-        $payCode = new PayCode();
+        $payCode = new PayCode;
 
         $payCode->name = $request->name;
         $payCode->code = $request->code;
         $payCode->regular_time_rate = ($request->has('rate_type') && $request->rate_type == 'time') ? $request->regular_time_rate : 0;
         $payCode->holiday_time_rate = ($request->has('rate_type') && $request->rate_type == 'time') ? $request->holiday_time_rate : 0;
         $payCode->day_off_time_rate = ($request->has('rate_type') && $request->rate_type == 'time') ? $request->day_off_time_rate : 0;
-        $payCode->regular_fixed_amount = (!$request->has('rate_type') && $request->rate_type != 'time') ? $request->regular_fixed_amount : 0;
-        $payCode->holiday_fixed_amount = (!$request->has('rate_type') && $request->rate_type != 'time') ? $request->holiday_fixed_amount : 0;
-        $payCode->day_off_fixed_amount = (!$request->has('rate_type') && $request->rate_type != 'time') ? $request->day_off_fixed_amount : 0;
+        $payCode->regular_fixed_amount = (! $request->has('rate_type') && $request->rate_type != 'time') ? $request->regular_fixed_amount : 0;
+        $payCode->holiday_fixed_amount = (! $request->has('rate_type') && $request->rate_type != 'time') ? $request->holiday_fixed_amount : 0;
+        $payCode->day_off_fixed_amount = (! $request->has('rate_type') && $request->rate_type != 'time') ? $request->day_off_fixed_amount : 0;
         $payCode->description = $request->description;
-        $payCode->fixed = (!$request->has('rate_type') && $request->rate_type != 'time') ? 1 : 0;
+        $payCode->fixed = (! $request->has('rate_type') && $request->rate_type != 'time') ? 1 : 0;
         $payCode->save();
 
         return Reply::success(__('messages.recordSaved'));
@@ -86,6 +85,7 @@ class PayCodeController extends AccountBaseController
     public function edit($id)
     {
         $this->payCode = PayCode::findOrFail($id);
+
         return view('payroll::overtime-setting.ajax.pay-code.edit', $this->data);
     }
 
@@ -106,11 +106,11 @@ class PayCodeController extends AccountBaseController
         $payCode->regular_time_rate = ($request->has('rate_type') && $request->rate_type == 'time') ? $request->regular_time_rate : 0;
         $payCode->holiday_time_rate = ($request->has('rate_type') && $request->rate_type == 'time') ? $request->holiday_time_rate : 0;
         $payCode->day_off_time_rate = ($request->has('rate_type') && $request->rate_type == 'time') ? $request->day_off_time_rate : 0;
-        $payCode->regular_fixed_amount = (!$request->has('rate_type') && $request->rate_type != 'time') ? $request->regular_fixed_amount : 0;
-        $payCode->holiday_fixed_amount = (!$request->has('rate_type') && $request->rate_type != 'time') ? $request->holiday_fixed_amount : 0;
-        $payCode->day_off_fixed_amount = (!$request->has('rate_type') && $request->rate_type != 'time') ? $request->day_off_fixed_amount : 0;
+        $payCode->regular_fixed_amount = (! $request->has('rate_type') && $request->rate_type != 'time') ? $request->regular_fixed_amount : 0;
+        $payCode->holiday_fixed_amount = (! $request->has('rate_type') && $request->rate_type != 'time') ? $request->holiday_fixed_amount : 0;
+        $payCode->day_off_fixed_amount = (! $request->has('rate_type') && $request->rate_type != 'time') ? $request->day_off_fixed_amount : 0;
         $payCode->description = $request->description;
-        $payCode->fixed = (!$request->has('rate_type') && $request->rate_type != 'time') ? 1 : 0;
+        $payCode->fixed = (! $request->has('rate_type') && $request->rate_type != 'time') ? 1 : 0;
         $payCode->save();
 
         return Reply::success(__('messages.updateSuccess'));
@@ -126,7 +126,7 @@ class PayCodeController extends AccountBaseController
     {
         $payCode = PayCode::findOrFail($id);
         $payCode->delete();
+
         return Reply::success(__('messages.recordDeleted'));
     }
-
 }

@@ -1,13 +1,12 @@
 <?php
 
-namespace  App\Http\Requests\SuperAdmin\GlobalCurrency;;
+namespace App\Http\Requests\SuperAdmin\GlobalCurrency;
 
 use App\Http\Requests\CoreRequest;
 use Illuminate\Validation\Rule;
 
 class UpdateGlobalCurrency extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -39,5 +38,4 @@ class UpdateGlobalCurrency extends CoreRequest
             ],
         ];
     }
-
 }

@@ -19,6 +19,7 @@ use App\Traits\HasCompany;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read mixed $icon
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ThemeSetting newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ThemeSetting newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ThemeSetting query()
@@ -32,18 +33,22 @@ use App\Traits\HasCompany;
  * @method static \Illuminate\Database\Eloquent\Builder|ThemeSetting whereSidebarTheme($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ThemeSetting whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ThemeSetting whereUserCss($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ThemeSetting whereCompanyId($value)
+ *
  * @mixin \Eloquent
+ *
  * @property int $enable_rounded_theme
  * @property string|null $login_background
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ThemeSetting whereEnableRoundedTheme($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ThemeSetting whereLoginBackground($value)
  */
 class ThemeSetting extends BaseModel
 {
-
     use HasCompany;
 
     //

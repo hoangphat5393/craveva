@@ -8,7 +8,6 @@ use Illuminate\Validation\Rule;
 
 class StoreRequest extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -42,23 +41,22 @@ class StoreRequest extends FormRequest
 
         $gateways = GlobalPaymentGatewayCredentials::first();
 
-        if(request()->package == 'lifetime' && request()->package_type != 'free'){
+        if (request()->package == 'lifetime' && request()->package_type != 'free') {
             $data['price'] = 'required';
         }
-        if(request()->package_type == 'paid' && $this->has('monthly_status') && request()->package != 'lifetime'){
+        if (request()->package_type == 'paid' && $this->has('monthly_status') && request()->package != 'lifetime') {
             $data['monthly_price'] = 'required|numeric|gt:0';
 
-
-            if(($this->get('annual_price') > 0 && $this->get('monthly_price') > 0 ) && $gateways->razorpay_status == 'active'){
+            if (($this->get('annual_price') > 0 && $this->get('monthly_price') > 0) && $gateways->razorpay_status == 'active') {
                 $data['razorpay_annual_plan_id'] = 'required';
                 $data['razorpay_monthly_plan_id'] = 'required';
             }
         }
 
-        if(request()->package_type == 'paid' && $this->has('annual_status')  && request()->package != 'lifetime'){
+        if (request()->package_type == 'paid' && $this->has('annual_status') && request()->package != 'lifetime') {
             $data['annual_price'] = 'required|numeric|gt:0';
 
-            if($this->get('annual_price') > 0 && $this->get('monthly_price') > 0 && $gateways->stripe_status == 'active'){
+            if ($this->get('annual_price') > 0 && $this->get('monthly_price') > 0 && $gateways->stripe_status == 'active') {
                 $data['stripe_annual_plan_id'] = 'required';
                 $data['stripe_monthly_plan_id'] = 'required';
             }
@@ -66,5 +64,4 @@ class StoreRequest extends FormRequest
 
         return $data;
     }
-
 }

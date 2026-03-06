@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use App\Traits\HasCompany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * App\Models\Passport
@@ -24,6 +24,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read \App\Models\Country|null $country
  * @property-read mixed $image_url
  * @property-read \App\Models\User|null $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Passport newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Passport newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Passport query()
@@ -38,14 +39,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|Passport wherePassportNumber($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Passport whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Passport whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class Passport extends BaseModel
 {
-
     use HasCompany;
 
     protected $table = 'passport_details';
+
     const FILE_PATH = 'passport';
 
     protected $appends = ['image_url'];
@@ -62,12 +64,11 @@ class Passport extends BaseModel
 
     public function getImageUrlAttribute()
     {
-        return asset_url_local_s3(Passport::FILE_PATH . '/' . $this->file);
+        return asset_url_local_s3(Passport::FILE_PATH.'/'.$this->file);
     }
 
     public function country(): HasOne
     {
         return $this->hasOne(Country::class, 'id', 'country_id');
     }
-
 }

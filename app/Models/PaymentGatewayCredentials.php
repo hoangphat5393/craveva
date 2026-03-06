@@ -24,6 +24,7 @@ use App\Traits\HasCompany;
  * @property string|null $sandbox_paypal_client_id
  * @property string|null $sandbox_paypal_secret
  * @property-read mixed $icon
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|PaymentGatewayCredentials newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|PaymentGatewayCredentials newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|PaymentGatewayCredentials query()
@@ -43,6 +44,7 @@ use App\Traits\HasCompany;
  * @method static \Illuminate\Database\Eloquent\Builder|PaymentGatewayCredentials whereStripeStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PaymentGatewayCredentials whereStripeWebhookSecret($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PaymentGatewayCredentials whereUpdatedAt($value)
+ *
  * @property string|null $live_stripe_client_id
  * @property string|null $live_stripe_secret
  * @property string|null $live_stripe_webhook_secret
@@ -76,6 +78,7 @@ use App\Traits\HasCompany;
  * @property string|null $square_location_id
  * @property string $square_environment
  * @property string $square_status
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|PaymentGatewayCredentials whereAuthorizeApiLoginId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PaymentGatewayCredentials whereAuthorizeEnvironment($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PaymentGatewayCredentials whereAuthorizeStatus($value)
@@ -109,6 +112,7 @@ use App\Traits\HasCompany;
  * @method static \Illuminate\Database\Eloquent\Builder|PaymentGatewayCredentials whereTestStripeClientId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PaymentGatewayCredentials whereTestStripeSecret($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PaymentGatewayCredentials whereTestStripeWebhookSecret($value)
+ *
  * @property string $paystack_mode
  * @property string|null $test_paystack_key
  * @property string|null $test_paystack_secret
@@ -121,6 +125,7 @@ use App\Traits\HasCompany;
  * @property string|null $live_flutterwave_key
  * @property string|null $live_flutterwave_secret
  * @property string|null $live_flutterwave_hash
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|PaymentGatewayCredentials whereFlutterwaveMode($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PaymentGatewayCredentials whereFlutterwaveStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PaymentGatewayCredentials whereLiveFlutterwaveHash($value)
@@ -133,24 +138,28 @@ use App\Traits\HasCompany;
  * @method static \Illuminate\Database\Eloquent\Builder|PaymentGatewayCredentials whereTestPaystackKey($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PaymentGatewayCredentials whereTestPaystackMerchantEmail($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PaymentGatewayCredentials whereTestPaystackSecret($value)
+ *
  * @property int|null $company_id
  * @property string|null $flutterwave_webhook_secret_hash
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|PaymentGatewayCredentials whereCompanyId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PaymentGatewayCredentials whereFlutterwaveWebhookSecretHash($value)
+ *
  * @property string|null $test_payfast_merchant_id
  * @property string|null $test_payfast_merchant_key
  * @property string|null $test_payfast_passphrase
  * @property-read mixed $show_pay
  * @property-read bool $show_pay_webhook
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|PaymentGatewayCredentials whereTestPayfastMerchantId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PaymentGatewayCredentials whereTestPayfastMerchantKey($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PaymentGatewayCredentials whereTestPayfastPassphrase($value)
+ *
  * @mixin \Eloquent
  */
 class PaymentGatewayCredentials extends BaseModel
 {
-
     use HasCompany;
 
     protected $guarded = ['id'];
@@ -184,13 +193,13 @@ class PaymentGatewayCredentials extends BaseModel
             $this->attributes['authorize_status'],
             $this->attributes['flutterwave_status'],
             $this->attributes['square_status'],
-            $this->attributes['payfast_status']
+            $this->attributes['payfast_status'],
         ]);
     }
 
     /**
      * @return bool
-     * This is to show message on dashboard to change the webhhok url
+     *              This is to show message on dashboard to change the webhhok url
      */
     public function getShowPayWebhookAttribute()
     {
@@ -201,8 +210,7 @@ class PaymentGatewayCredentials extends BaseModel
             $this->attributes['razorpay_status'],
             $this->attributes['flutterwave_status'],
             $this->attributes['square_status'],
-            $this->attributes['payfast_status']
+            $this->attributes['payfast_status'],
         ]);
     }
-
 }

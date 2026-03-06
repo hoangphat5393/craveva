@@ -2,16 +2,17 @@
 
 namespace App\DataTables\SuperAdmin;
 
-use Carbon\Carbon;
 use App\DataTables\BaseDataTable;
+use App\Models\SuperAdmin\SupportTicket;
+use Carbon\Carbon;
+use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
-use Yajra\DataTables\EloquentDataTable;
-use App\Models\SuperAdmin\SupportTicket;
 
 class SupportTicketDataTable extends BaseDataTable
 {
     private $deleteTicketPermission;
+
     private $viewTicketPermission;
 
     public function __construct()
@@ -25,42 +26,42 @@ class SupportTicketDataTable extends BaseDataTable
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
     {
         return (new EloquentDataTable($query))
-            ->addColumn('check', fn($row) => $this->checkBox($row))
+            ->addColumn('check', fn ($row) => $this->checkBox($row))
             ->addIndexColumn()
             ->addColumn('action', function ($row) {
                 $action = '<div class="task_view">';
 
                 $action .= '<div class="dropdown">
                     <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" type="link"
-                        id="dropdownMenuLink-' . $row->id . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        id="dropdownMenuLink-'.$row->id.'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="icon-options-vertical icons"></i>
                     </a>
-                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-' . $row->id . '" tabindex="0">';
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-'.$row->id.'" tabindex="0">';
 
                 if (
-                        in_array('admin', user_roles()) || $this->viewTicketPermission == 'all'
-                        || ($this->viewTicketPermission == 'added' && user()->id == $row->created_by)
-                        || ($this->viewTicketPermission == 'owned' && (user()->id == $row->user_id || $row->agent_id == user()->id))
-                        || ($this->viewTicketPermission == 'both' && (user()->id == $row->user_id || $row->agent_id == user()->id || $row->created_by == user()->id))
-                    ) {
-                    $action .= '<a href="' . route('superadmin.support-tickets.show', [$row->id]) . '" class="dropdown-item"><i class="fa fa-eye mr-2"></i>' . __('app.view') . '</a>';
+                    in_array('admin', user_roles()) || $this->viewTicketPermission == 'all'
+                    || ($this->viewTicketPermission == 'added' && user()->id == $row->created_by)
+                    || ($this->viewTicketPermission == 'owned' && (user()->id == $row->user_id || $row->agent_id == user()->id))
+                    || ($this->viewTicketPermission == 'both' && (user()->id == $row->user_id || $row->agent_id == user()->id || $row->created_by == user()->id))
+                ) {
+                    $action .= '<a href="'.route('superadmin.support-tickets.show', [$row->id]).'" class="dropdown-item"><i class="fa fa-eye mr-2"></i>'.__('app.view').'</a>';
                 }
 
                 if (
-                        $this->deleteTicketPermission == 'all'
-                        || ($this->deleteTicketPermission == 'added' && user()->id == $row->created_by)
-                        || ($this->deleteTicketPermission == 'owned' && (user()->id == $row->agent_id || user()->id == $row->user_id))
-                        || ($this->deleteTicketPermission == 'both' && (user()->id == $row->agent_id || user()->id == $row->created_by || user()->id == $row->user_id))
-                    ) {
-                    $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-ticket-id="' . $row->id . '">
+                    $this->deleteTicketPermission == 'all'
+                    || ($this->deleteTicketPermission == 'added' && user()->id == $row->created_by)
+                    || ($this->deleteTicketPermission == 'owned' && (user()->id == $row->agent_id || user()->id == $row->user_id))
+                    || ($this->deleteTicketPermission == 'both' && (user()->id == $row->agent_id || user()->id == $row->created_by || user()->id == $row->user_id))
+                ) {
+                    $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-ticket-id="'.$row->id.'">
                             <i class="fa fa-trash mr-2"></i>
-                            ' . trans('app.delete') . '
+                            '.trans('app.delete').'
                         </a>';
                 }
 
@@ -73,8 +74,8 @@ class SupportTicketDataTable extends BaseDataTable
             ->addColumn('others', function ($row) {
                 $others = '';
 
-                if (!is_null($row->agent)) {
-                    $others .= '<div class="mb-2">' . __('modules.tickets.agent') . ': ' . (is_null($row->agent_id) ? '-' : $row->agent->name) . '</div> ';
+                if (! is_null($row->agent)) {
+                    $others .= '<div class="mb-2">'.__('modules.tickets.agent').': '.(is_null($row->agent_id) ? '-' : $row->agent->name).'</div> ';
                 }
 
                 $badgeClass = match ($row->status) {
@@ -84,14 +85,14 @@ class SupportTicketDataTable extends BaseDataTable
                     'closed' => 'badge-primary',
                     default => 'badge-secondary',
                 };
-                $others .= '<div>' . __('app.status') . ': <label class="badge ' . $badgeClass . '">' . __('app.' . $row->status) . '</label></div> ';
-                $others .= '<div>' . __('modules.tasks.priority') . ': ' . __('app.' . $row->priority) . '</div> ';
+                $others .= '<div>'.__('app.status').': <label class="badge '.$badgeClass.'">'.__('app.'.$row->status).'</label></div> ';
+                $others .= '<div>'.__('modules.tasks.priority').': '.__('app.'.$row->priority).'</div> ';
 
                 return $others;
             })
 
             ->editColumn('subject', function ($row) {
-                return '<a href="' . route('superadmin.support-tickets.show', $row->id) . '" class="text-darkest-grey" >' . $row->subject . '</a>'.$row->badge();
+                return '<a href="'.route('superadmin.support-tickets.show', $row->id).'" class="text-darkest-grey" >'.$row->subject.'</a>'.$row->badge();
             })
             ->addColumn('name', function ($row) {
                 return $row->requester?->name ?? '--';
@@ -107,9 +108,9 @@ class SupportTicketDataTable extends BaseDataTable
                 return $name ?? '--';
             })
             ->editColumn('created_at', function ($row) {
-                return $row->created_at->timezone(global_setting()->timezone)->format(global_setting()->date_format . ' ' . global_setting()->time_format);
+                return $row->created_at->timezone(global_setting()->timezone)->format(global_setting()->date_format.' '.global_setting()->time_format);
             })
-            ->setRowId(fn($row) => 'row-' . $row->id)
+            ->setRowId(fn ($row) => 'row-'.$row->id)
             ->rawColumns(['others', 'action', 'subject', 'check'])
             ->removeColumn('agent_id')
             ->removeColumn('channel_id')
@@ -118,7 +119,6 @@ class SupportTicketDataTable extends BaseDataTable
     }
 
     /**
-     * @param SupportTicket $model
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function query(SupportTicket $model)
@@ -143,8 +143,7 @@ class SupportTicketDataTable extends BaseDataTable
         if ($request->ticketStatus && $request->ticketStatus != 'all') {
             if ($request->ticketStatus == 'unassigned') {
                 $model->whereNull('agent_id');
-            }
-            else {
+            } else {
                 $model->where('status', $request->ticketStatus);
             }
         }
@@ -159,12 +158,12 @@ class SupportTicketDataTable extends BaseDataTable
 
         if ($request->searchText) {
             $model->where(function ($query) use ($request) {
-                $query->where('subject', 'like', '%' . $request->searchText . '%')
-                    ->orWhere('id', 'like', '%' . $request->searchText . '%')
-                    ->orWhere('status', 'like', '%' . $request->searchText . '%')
-                    ->orWhere('priority', 'like', '%' . $request->searchText . '%')
+                $query->where('subject', 'like', '%'.$request->searchText.'%')
+                    ->orWhere('id', 'like', '%'.$request->searchText.'%')
+                    ->orWhere('status', 'like', '%'.$request->searchText.'%')
+                    ->orWhere('priority', 'like', '%'.$request->searchText.'%')
                     ->orWhereHas('requester', function ($query) use ($request) {
-                        $query->where('name', 'like', '%' . $request->searchText . '%');
+                        $query->where('name', 'like', '%'.$request->searchText.'%');
                     });
             });
         }
@@ -218,7 +217,7 @@ class SupportTicketDataTable extends BaseDataTable
                     })
                 }',
             ])
-            ->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
+            ->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
     }
 
     /**
@@ -234,10 +233,10 @@ class SupportTicketDataTable extends BaseDataTable
                 'exportable' => false,
                 'orderable' => false,
                 'searchable' => false,
-                'visible' => !in_array('admin', user_roles())
+                'visible' => ! in_array('admin', user_roles()),
             ],
-            __('modules.tickets.ticket') . ' #' => ['data' => 'id', 'name' => 'id', 'title' => __('modules.tickets.ticket') . ' #'],
-            __('modules.tickets.ticketSubject')  => ['data' => 'subject', 'name' => 'subject', 'title' => __('modules.tickets.ticketSubject')],
+            __('modules.tickets.ticket').' #' => ['data' => 'id', 'name' => 'id', 'title' => __('modules.tickets.ticket').' #'],
+            __('modules.tickets.ticketSubject') => ['data' => 'subject', 'name' => 'subject', 'title' => __('modules.tickets.ticketSubject')],
             __('app.name') => ['data' => 'name', 'name' => 'user_id', 'visible' => false, 'title' => __('app.name')],
             __('modules.tickets.requesterName') => ['data' => 'user_id', 'name' => 'name', 'visible' => true, 'exportable' => false, 'title' => __('modules.tickets.requesterName')],
             __('modules.tickets.requestedOn') => ['data' => 'created_at', 'name' => 'created_at', 'title' => __('modules.tickets.requestedOn')],
@@ -247,8 +246,7 @@ class SupportTicketDataTable extends BaseDataTable
                 ->printable(false)
                 ->orderable(false)
                 ->searchable(false)
-                ->addClass('text-right pr-20')
+                ->addClass('text-right pr-20'),
         ];
     }
-
 }

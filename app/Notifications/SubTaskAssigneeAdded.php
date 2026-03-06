@@ -8,14 +8,13 @@ use Illuminate\Notifications\Messages\MailMessage;
 
 class SubTaskAssigneeAdded extends BaseNotification
 {
-
-
     /**
      * Create a new notification instance.
      *
      * @return void
      */
     private $subTask;
+
     private $emailSetting;
 
     public function __construct(SubTask $subTask)
@@ -28,10 +27,10 @@ class SubTaskAssigneeAdded extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
-    //phpcs:ignore
+    // phpcs:ignore
     public function via($notifiable)
     {
         $via = ['database'];
@@ -49,15 +48,15 @@ class SubTaskAssigneeAdded extends BaseNotification
         $url = route('tasks.show', [$this->subTask->task->id, 'view' => 'sub_task']);
         $url = getDomainSpecificUrl($url, $this->company);
 
-        $content = $this->subTask->title . ' ' . __('email.subTaskAssigneeAdded.subject') . '.' . '<br>' . ((!is_null($this->subTask->task->project)) ? __('app.project') . ' - ' . $this->subTask->task->project->project_name : '') . '<br>';
+        $content = $this->subTask->title.' '.__('email.subTaskAssigneeAdded.subject').'.'.'<br>'.((! is_null($this->subTask->task->project)) ? __('app.project').' - '.$this->subTask->task->project->project_name : '').'<br>';
 
         $build
-            ->subject(__('email.subTaskAssigneeAdded.subject') . ' - ' . config('app.name') . '.')
+            ->subject(__('email.subTaskAssigneeAdded.subject').' - '.config('app.name').'.')
             ->markdown('mail.email', [
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
-                'actionText' => __('email.subTaskAssigneeAdded.action'), 'notifiableName' => $notifiable->name
+                'actionText' => __('email.subTaskAssigneeAdded.action'), 'notifiableName' => $notifiable->name,
             ]);
 
         parent::resetLocale();
@@ -68,17 +67,16 @@ class SubTaskAssigneeAdded extends BaseNotification
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
-    //phpcs:ignore
+    // phpcs:ignore
     public function toArray($notifiable)
     {
         return [
             'id' => $this->subTask->task->id,
             'created_at' => $this->subTask->created_at->format('Y-m-d H:i:s'),
-            'heading' => $this->subTask->title
+            'heading' => $this->subTask->title,
         ];
     }
-
 }

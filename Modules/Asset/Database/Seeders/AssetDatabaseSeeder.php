@@ -2,12 +2,7 @@
 
 namespace Modules\Asset\Database\Seeders;
 
-use App\Models\Company;
-use App\Models\User;
 use Illuminate\Database\Seeder;
-use Modules\Asset\Entities\Asset;
-use Modules\Asset\Entities\AssetHistory;
-use Modules\Asset\Entities\AssetType;
 
 class AssetDatabaseSeeder extends Seeder
 {
@@ -20,8 +15,6 @@ class AssetDatabaseSeeder extends Seeder
     {
 
         config(['app.seeding' => true]);
-
-
 
         config(['app.seeding' => false]);
     }

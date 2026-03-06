@@ -1,9 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Modules\Biolinks\Http\Controllers\BiolinksController;
 use Modules\Biolinks\Http\Controllers\BiolinkBlocksController;
 use Modules\Biolinks\Http\Controllers\BiolinkPageController;
+use Modules\Biolinks\Http\Controllers\BiolinksController;
 use Modules\Biolinks\Http\Controllers\BiolinkSettingsController;
 
 Route::get('bio/{slug}', [BiolinkPageController::class, 'index'])->name('biolink.index');

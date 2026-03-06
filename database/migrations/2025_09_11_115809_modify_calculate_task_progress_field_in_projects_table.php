@@ -1,10 +1,8 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\DB;
 use App\Models\Project;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -14,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         // get the ids of the projects where calculate_task_progress is true
-        $projectstrue = Project::where('calculate_task_progress', 'true')->get(); 
+        $projectstrue = Project::where('calculate_task_progress', 'true')->get();
         $projectsfalse = Project::where('calculate_task_progress', 'false')->get();
 
         // Use raw SQL to modify the enum column

@@ -8,20 +8,19 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\VonageMessage;
 use Illuminate\Notifications\Notification;
 use Modules\Sms\Entities\SmsNotificationSetting;
-use NotificationChannels\Telegram\TelegramMessage;
 use Modules\Sms\Entities\SmsTemplateId;
+use NotificationChannels\Telegram\TelegramMessage;
 use NotificationChannels\Twilio\TwilioChannel;
 use NotificationChannels\Twilio\TwilioSmsMessage;
-
-use Illuminate\Support\Facades\Log;
-use Exception;
 
 class TestMessage extends Notification implements ShouldQueue
 {
     use Queueable;
 
     private $smsTemplateId;
+
     private $smsSetting;
+
     private $msg_flow_id;
 
     private $request;
@@ -55,20 +54,20 @@ class TestMessage extends Notification implements ShouldQueue
         $via = [];
 
         if (sms_setting()->status) {
-            $number = $this->request['phone_code'] . $this->request['mobile'];
+            $number = $this->request['phone_code'].$this->request['mobile'];
             $notifiable->phone_number = $number;
             array_push($via, TwilioChannel::class);
         }
 
         if (sms_setting()->nexmo_status) {
-            $number = str_replace('+', '', $this->request['phone_code']) . $this->request['mobile'];
+            $number = str_replace('+', '', $this->request['phone_code']).$this->request['mobile'];
             $notifiable->phone_number = $number;
 
             array_push($via, 'vonage');
         }
 
         if (sms_setting()->msg91_status) {
-            $number = str_replace('+', '', $this->request['phone_code']) . $this->request['mobile'];
+            $number = str_replace('+', '', $this->request['phone_code']).$this->request['mobile'];
             $notifiable->phone_number = $number;
             array_push($via, 'msg91');
         }
@@ -80,7 +79,7 @@ class TestMessage extends Notification implements ShouldQueue
         return $via;
     }
 
-    //phpcs:ignore
+    // phpcs:ignore
     public function toTwilio($notifiable)
     {
         $settings = sms_setting();
@@ -92,7 +91,7 @@ class TestMessage extends Notification implements ShouldQueue
         }
     }
 
-    //phpcs:ignore
+    // phpcs:ignore
     public function toVonage(object $notifiable)
     {
         $message = 'This is vonage test message';
@@ -101,10 +100,10 @@ class TestMessage extends Notification implements ShouldQueue
             ->content($message)->unicode();
     }
 
-    //phpcs:ignore
+    // phpcs:ignore
     public function toMsg91($notifiable)
     {
-        $mobile = $notifiable->country_phonecode . $notifiable->mobile;
+        $mobile = $notifiable->country_phonecode.$notifiable->mobile;
         if ($this->smsSetting->msg91_flow_id && sms_setting()->msg91_status) {
             return (new \Craftsys\Notifications\Messages\Msg91SMS)
                 ->to($mobile)

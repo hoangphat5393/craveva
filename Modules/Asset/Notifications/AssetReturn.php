@@ -30,7 +30,7 @@ class AssetReturn extends BaseNotification
      * @param  mixed  $notifiable
      * @return array
      */
-    //phpcs:ignore
+    // phpcs:ignore
     public function via($notifiable)
     {
         return ['mail'];
@@ -50,9 +50,9 @@ class AssetReturn extends BaseNotification
             ->line(__('asset::app.assetReturnMessageForMail'))
             ->line(__('asset::app.assetName').': '.$this->asset->name)
             ->line(__('asset::app.dateGiven').': '.$this->history->date_given->format('d F Y H:i A'))
-            //phpcs:ignore
+            // phpcs:ignore
             ->line(__('asset::app.returnDate').': '.(! is_null($this->history->return_date) ? $this->history->return_date->format('d F Y H:i A') : '-'))
-            //phpcs:ignore
+            // phpcs:ignore
             ->line(__('asset::app.dateOfReturn').': '.(! is_null($this->history->date_of_return) ? $this->history->date_of_return->format('d F Y H:i A') : '-'))
             ->line(__('asset::app.lendBy').': '.$this->history->lender->name)
             ->line(__('asset::app.returnedBy').': '.$this->history->returner->name)
@@ -66,7 +66,7 @@ class AssetReturn extends BaseNotification
      * @param  mixed  $notifiable
      * @return array
      */
-    //phpcs:ignore
+    // phpcs:ignore
     public function toArray($notifiable)
     {
         return [

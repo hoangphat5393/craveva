@@ -1,11 +1,11 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use App\Models\ModuleSetting;
 use App\Models\Company;
+use App\Models\ModuleSetting;
 use App\Models\User;
 use App\Scopes\ActiveScope;
 use App\Scopes\CompanyScope;
+use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
@@ -16,7 +16,7 @@ return new class extends Migration
      */
     public function up()
     {
-        if (!Schema::hasTable('companies') || !Schema::hasTable('module_settings')) {
+        if (! Schema::hasTable('companies') || ! Schema::hasTable('module_settings')) {
             return;
         }
 
@@ -36,16 +36,16 @@ return new class extends Migration
                         ],
                         [
                             'status' => 'active',
-                            'is_allowed' => 1
+                            'is_allowed' => 1,
                         ]
                     );
             }
 
             // Clear cache for users of this company
-             User::withoutGlobalScopes([ActiveScope::class, CompanyScope::class])
+            User::withoutGlobalScopes([ActiveScope::class, CompanyScope::class])
                 ->where('company_id', $company->id)->each(function ($user) {
-                    cache()->forget('user_modules_' . $user->id);
-                    cache()->forget('sidebar_user_perms_' . $user->id);
+                    cache()->forget('user_modules_'.$user->id);
+                    cache()->forget('sidebar_user_perms_'.$user->id);
                 });
         }
     }

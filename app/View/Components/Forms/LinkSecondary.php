@@ -7,8 +7,8 @@ use Illuminate\View\Component;
 
 class LinkSecondary extends Component
 {
-
     public $icon;
+
     public $link;
 
     /**
@@ -31,5 +31,4 @@ class LinkSecondary extends Component
     {
         return view('components.forms.link-secondary');
     }
-
 }

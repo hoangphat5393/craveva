@@ -7,7 +7,6 @@ use Modules\Letter\Entities\Template;
 
 class CompanyCreatedListener
 {
-
     /**
      * Handle the event.
      *
@@ -25,7 +24,7 @@ class CompanyCreatedListener
     public function addLetters($company): void
     {
 
-        $incrementLetter = <<<HOD
+        $incrementLetter = <<<'HOD'
 <span style="font-size: 12px;"><b>##EMPLOYEE_NAME##</b></span><br>
 Employee ID:&nbsp;<span style="font-size: 12px;"><b>##EMPLOYEE_ID##</b></span><br>
 Designation:&nbsp;<span style="font-size: 12px;"><b>##EMPLOYEE_DESIGNATION##</b></span><br>
@@ -47,7 +46,7 @@ __________________________<br><span style="font-size: 12px;">##SIGNATORY##,<br><
 
 HOD;
 
-        $offerLetter = <<<HOD
+        $offerLetter = <<<'HOD'
 
 <p>       <br>
 June 09, 2014<br><br><span style="font-size: 12px;"><b>##EMPLOYEE_NAME##</b></span><br><span style="font-size: 12px;">##EMPLOYEE_ADDRESS##<br></span><br>Dear<b>&nbsp;<span style="font-size: 12px;">##EMPLOYEE_NAME##,</span></b></p><p><br>
@@ -97,8 +96,7 @@ Please note that you must submit a copy of your Permanent Account Number (PAN) c
 Date:<br><span style="font-size: 12px;">##EMPLOYEE_NAME##</span><br>Read and accepted</p>
 HOD;
 
-
-        $joiningLetter = <<<HOD
+        $joiningLetter = <<<'HOD'
 
                                        <p>                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br><div style="text-align: center;">&nbsp;<b>Joining Letter</b></div>
 <br>
@@ -120,7 +118,7 @@ _____________________________<br><span style="font-size: 12px;">##SIGNATORY##</s
 
 HOD;
 
-        $acceptanceLetter = <<<HOD
+        $acceptanceLetter = <<<'HOD'
 <p><br></p><p><div style="text-align: center;"><b>Acceptance Letter</b></div>
 <br>
 <br><span style="font-size: 12px;">##EMPLOYEE_JOINING_DATE##</span><br><span style="font-size: 12px;">##SIGNATORY_DESIGNATION##</span>,<br><span style="font-size: 12px;">##SIGNATORY_DESIGNATION## , ##SIGNATORY_DEPARTMENT##</span>,<br><br><span style="font-size: 12px;">##COMPANY_NAME##,</span><br><span style="font-size: 12px;">##CONTACT_ADDRESS##</span><br>
@@ -140,7 +138,7 @@ Regards,<br>
 </p>
 HOD;
 
-        $welcomeLetter = <<<HOD
+        $welcomeLetter = <<<'HOD'
 <p><br></p><p><div style="text-align: center;"><b>Welcome Letter</b></div>
 <br>
 <br><span style="font-size: 12px;">##EMPLOYEE_NAME##</span><br><span style="font-size: 12px;">##EMPLOYEE_ADDRESS##</span><br>
@@ -163,7 +161,7 @@ _____________________________<br><span style="font-size: 12px;">##SIGNATORY##</s
 
 HOD;
 
-        $relievingLetter = <<<HOD
+        $relievingLetter = <<<'HOD'
 
 <br>
 <br>
@@ -188,7 +186,7 @@ Regards,<br><br><span style="font-size: 12px;">##SIGNATORY##</span><br><span sty
 
 HOD;
 
-        $attendanceLetter = <<<HOD
+        $attendanceLetter = <<<'HOD'
 
 <br><div style="text-align: center;"><b>Excellent Attendance Letter</b></div>
 <br>
@@ -218,32 +216,32 @@ HOD;
         $letters = [
             [
                 'title' => 'Joining Letter',
-                'template' => $joiningLetter
+                'template' => $joiningLetter,
             ],
             [
                 'title' => 'Offer Letter',
-                'template' => $offerLetter
+                'template' => $offerLetter,
             ],
             [
                 'title' => 'Increment Letter',
-                'template' => $incrementLetter
+                'template' => $incrementLetter,
             ],
             [
                 'title' => 'Acceptance Letter',
-                'template' => $acceptanceLetter
+                'template' => $acceptanceLetter,
             ],
             [
                 'title' => 'Welcome Letter',
-                'template' => $welcomeLetter
+                'template' => $welcomeLetter,
             ],
             [
                 'title' => 'Relieving and Experience Letter',
-                'template' => $relievingLetter
+                'template' => $relievingLetter,
             ],
             [
                 'title' => 'Excellent Attendance Letter',
-                'template' => $attendanceLetter
-            ]
+                'template' => $attendanceLetter,
+            ],
 
         ];
 
@@ -259,10 +257,11 @@ HOD;
 
                 $let->description = $letter['template'];
                 $let->save();
+
                 continue;
             }
 
-            $let = new Template();
+            $let = new Template;
             $let->company_id = $company->id;
             $let->title = $letter['title'];
 
@@ -271,5 +270,4 @@ HOD;
         }
 
     }
-
 }

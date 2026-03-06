@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      *
@@ -15,7 +14,7 @@ return new class extends Migration
      */
     public function up()
     {
-        if (!Schema::hasTable('global_payment_gateway_credentials')) {
+        if (! Schema::hasTable('global_payment_gateway_credentials')) {
             Schema::create('global_payment_gateway_credentials', function (Blueprint $table) {
                 $table->increments('id');
                 $table->string('paypal_client_id')->nullable();
@@ -90,8 +89,8 @@ return new class extends Migration
 
         $oldCredentials = DB::table('stripe_setting')->first();
 
-        if($oldCredentials){
-            $globalPaymentGatewayCredentials = new GlobalPaymentGatewayCredentials();
+        if ($oldCredentials) {
+            $globalPaymentGatewayCredentials = new GlobalPaymentGatewayCredentials;
 
             $globalPaymentGatewayCredentials->live_stripe_client_id = $oldCredentials->api_key;
             $globalPaymentGatewayCredentials->live_stripe_secret = $oldCredentials->api_secret;
@@ -132,7 +131,7 @@ return new class extends Migration
             $globalPaymentGatewayCredentials->save();
         }
 
-        if (!Schema::hasTable('mollie_subscriptions')) {
+        if (! Schema::hasTable('mollie_subscriptions')) {
             Schema::create('mollie_subscriptions', function (Blueprint $table) {
                 $table->id();
                 $table->unsignedInteger('company_id')->nullable();
@@ -154,5 +153,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('global_payment_gateway_credentials');
     }
-
 };

@@ -20,5 +20,4 @@ class NewPaymentListener
         } catch (\Exception $e) { // @codingStandardsIgnoreLine
         }
     }
-
 }

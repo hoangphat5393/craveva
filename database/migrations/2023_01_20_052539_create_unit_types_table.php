@@ -13,17 +13,16 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      *
      * @return void
      */
-
     public function up()
     {
-        if (!Schema::hasTable('unit_types')) {
+        if (! Schema::hasTable('unit_types')) {
             Schema::create('unit_types', function (Blueprint $table) {
                 $table->bigIncrements('id');
                 $table->integer('company_id')->unsigned()->nullable();
@@ -42,12 +41,11 @@ return new class extends Migration {
             'credit_notes',
             'estimate_templates',
             'proposal_templates',
-            'invoice_recurring'
+            'invoice_recurring',
         ];
 
-
         foreach ($tablesForUnitId as $table) {
-            if (!Schema::hasColumn($table, 'unit_id')) {
+            if (! Schema::hasColumn($table, 'unit_id')) {
                 Schema::table($table, function (Blueprint $table) {
                     $table->bigInteger('unit_id')->unsigned()->nullable()->default(null);
                     $table->foreign('unit_id')
@@ -66,7 +64,7 @@ return new class extends Migration {
             $units = [
                 'unit_type' => 'Pcs',
                 'default' => 1,
-                'company_id' => $company->id
+                'company_id' => $company->id,
             ];
 
             $unitData = UnitType::create($units);
@@ -96,7 +94,6 @@ return new class extends Migration {
      *
      * @return void
      */
-
     public function down()
     {
         Schema::table('products', function (Blueprint $table) {
@@ -127,5 +124,4 @@ return new class extends Migration {
         Schema::dropIfExists('unit_types');
 
     }
-
 };

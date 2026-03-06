@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class StoreTicketRequest extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -26,8 +25,7 @@ class StoreTicketRequest extends CoreRequest
     {
         return [
             'subject' => 'required',
-            'description' => 'required'
+            'description' => 'required',
         ];
     }
-
 }

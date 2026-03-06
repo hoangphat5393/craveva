@@ -16,7 +16,6 @@ use App\Models\EstimateItemImage;
 use App\Models\Invoice;
 use App\Models\InvoiceItemImage;
 use App\Models\InvoiceItems;
-use App\Models\SmtpSetting;
 use App\Scopes\ActiveScope;
 use App\Traits\UniversalSearchTrait;
 use Carbon\Carbon;
@@ -24,11 +23,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
-use Nwidart\Modules\Facades\Module;
 
 class PublicUrlController extends Controller
 {
-
     use UniversalSearchTrait;
 
     /* Contract */
@@ -56,7 +53,7 @@ class PublicUrlController extends Controller
             'pageTitle' => $pageTitle,
             'pageIcon' => $pageIcon,
             'invoiceSetting' => $invoiceSetting,
-            'fields' => $fields
+            'fields' => $fields,
         ]);
     }
 
@@ -70,9 +67,9 @@ class PublicUrlController extends Controller
             return Reply::error(__('messages.alreadySigned'));
         }
 
-        $sign = new ContractSign();
+        $sign = new ContractSign;
         $sign->company_id = $this->company->id;
-        $sign->full_name = $request->first_name . ' ' . $request->last_name;
+        $sign->full_name = $request->first_name.' '.$request->last_name;
         $sign->contract_id = $this->contract->id;
         $sign->email = $request->email;
         $sign->place = $request->place;
@@ -83,11 +80,11 @@ class PublicUrlController extends Controller
             $image = $request->signature;  // your base64 encoded
             $image = str_replace('data:image/png;base64,', '', $image);
             $image = str_replace(' ', '+', $image);
-            $imageName = str_random(32) . '.' . 'jpg';
+            $imageName = str_random(32).'.'.'jpg';
 
             Files::createDirectoryIfNotExist('contract/sign');
 
-            File::put(public_path() . '/' . Files::UPLOAD_FOLDER . '/contract/sign/' . $imageName, base64_decode($image));
+            File::put(public_path().'/'.Files::UPLOAD_FOLDER.'/contract/sign/'.$imageName, base64_decode($image));
             Files::uploadLocalFile($imageName, 'contract/sign', $this->company->id);
         } else {
             if ($request->hasFile('image')) {
@@ -127,9 +124,9 @@ class PublicUrlController extends Controller
 
         $pdf->loadView('contracts.contract-pdf', ['contract' => $contract, 'company' => $company, 'fields' => $fields, 'invoiceSetting' => $this->invoiceSetting]);
 
-        $filename = 'contract-' . $contract->id;
+        $filename = 'contract-'.$contract->id;
 
-        return $pdf->download($filename . '.pdf');
+        return $pdf->download($filename.'.pdf');
     }
 
     public function estimateView($hash)
@@ -149,8 +146,7 @@ class PublicUrlController extends Controller
             }
         }
 
-
-        $taxList = array();
+        $taxList = [];
 
         $items = EstimateItem::whereNotNull('taxes')
             ->where('estimate_id', $estimate->id)
@@ -162,18 +158,18 @@ class PublicUrlController extends Controller
                 $this->tax = EstimateItem::taxbyid($tax)->first();
 
                 if ($this->tax) {
-                    if (!isset($taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'])) {
+                    if (! isset($taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'])) {
 
                         if ($estimate->calculate_tax == 'after_discount' && $this->discount > 0) {
-                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = ($item->amount - ($item->amount / $estimate->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
+                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = ($item->amount - ($item->amount / $estimate->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
                         } else {
-                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $item->amount * ($this->tax->rate_percent / 100);
+                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $item->amount * ($this->tax->rate_percent / 100);
                         }
                     } else {
                         if ($estimate->calculate_tax == 'after_discount' && $this->discount > 0) {
-                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + (($item->amount - ($item->amount / $estimate->sub_total) * $this->discount) * ($this->tax->rate_percent / 100));
+                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + (($item->amount - ($item->amount / $estimate->sub_total) * $this->discount) * ($this->tax->rate_percent / 100));
                         } else {
-                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + ($item->amount * ($this->tax->rate_percent / 100));
+                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + ($item->amount * ($this->tax->rate_percent / 100));
                         }
                     }
                 }
@@ -192,7 +188,7 @@ class PublicUrlController extends Controller
             'pageTitle' => $pageTitle,
             'pageIcon' => $pageIcon,
             'invoiceSetting' => $this->invoiceSetting,
-            'defaultAddress' => $defaultAddress
+            'defaultAddress' => $defaultAddress,
         ]);
     }
 
@@ -208,9 +204,9 @@ class PublicUrlController extends Controller
             return Reply::error(__('messages.alreadySigned'));
         }
 
-        $accept = new AcceptEstimate();
+        $accept = new AcceptEstimate;
         $accept->company_id = $estimate->company->id;
-        $accept->full_name = $request->first_name . ' ' . $request->last_name;
+        $accept->full_name = $request->first_name.' '.$request->last_name;
         $accept->estimate_id = $estimate->id;
         $accept->email = $request->email;
         $imageName = null;
@@ -219,11 +215,11 @@ class PublicUrlController extends Controller
             $image = $request->signature;  // your base64 encoded
             $image = str_replace('data:image/png;base64,', '', $image);
             $image = str_replace(' ', '+', $image);
-            $imageName = str_random(32) . '.' . 'jpg';
+            $imageName = str_random(32).'.'.'jpg';
 
             Files::createDirectoryIfNotExist('estimate/accept');
 
-            File::put(public_path() . '/' . Files::UPLOAD_FOLDER . '/estimate/accept/' . $imageName, base64_decode($image));
+            File::put(public_path().'/'.Files::UPLOAD_FOLDER.'/estimate/accept/'.$imageName, base64_decode($image));
             Files::uploadLocalFile($imageName, 'estimate/accept', $estimate->company_id);
         } else {
             if ($request->hasFile('image')) {
@@ -237,7 +233,7 @@ class PublicUrlController extends Controller
         $estimate->status = 'accepted';
         $estimate->saveQuietly();
 
-        $invoice = new Invoice();
+        $invoice = new Invoice;
 
         $invoice->company_id = $company->id;
         $invoice->client_id = $estimate->client_id;
@@ -255,9 +251,9 @@ class PublicUrlController extends Controller
         $invoice->save();
 
         /** @phpstan-ignore-next-line */
-        foreach ($estimate->items as $item) :
+        foreach ($estimate->items as $item) {
 
-            if (!is_null($item)) {
+            if (! is_null($item)) {
                 $invoiceItem = InvoiceItems::create(
                     [
                         'invoice_id' => $invoice->id,
@@ -267,21 +263,21 @@ class PublicUrlController extends Controller
                         'quantity' => $item->quantity,
                         'unit_price' => round($item->unit_price, 2),
                         'amount' => round($item->amount, 2),
-                        'taxes' => $item->taxes
+                        'taxes' => $item->taxes,
                     ]
                 );
 
                 $estimateItemImage = $item->estimateItemImage;
 
-                if (!is_null($estimateItemImage)) {
+                if (! is_null($estimateItemImage)) {
 
-                    $file = new InvoiceItemImage();
+                    $file = new InvoiceItemImage;
 
                     $file->invoice_item_id = $invoiceItem->id;
 
                     $fileName = Files::generateNewFileName($estimateItemImage->filename);
 
-                    Files::copy(EstimateItemImage::FILE_PATH . '/' . $estimateItemImage->item->id . '/' . $estimateItemImage->hashname, InvoiceItemImage::FILE_PATH . '/' . $invoiceItem->id . '/' . $fileName);
+                    Files::copy(EstimateItemImage::FILE_PATH.'/'.$estimateItemImage->item->id.'/'.$estimateItemImage->hashname, InvoiceItemImage::FILE_PATH.'/'.$invoiceItem->id.'/'.$fileName);
 
                     $file->filename = $estimateItemImage->filename;
                     $file->hashname = $fileName;
@@ -290,7 +286,7 @@ class PublicUrlController extends Controller
                 }
             }
 
-        endforeach;
+        }
 
         // Log search
         $this->logSearchEntry($invoice->id, $invoice->invoice_number, 'invoices.show', 'invoice');
@@ -320,7 +316,7 @@ class PublicUrlController extends Controller
         $pdf = $pdfOption['pdf'];
         $filename = $pdfOption['fileName'];
 
-        return $pdf->download($filename . '.pdf');
+        return $pdf->download($filename.'.pdf');
     }
 
     public function domPdfObjectForDownload($id)
@@ -342,8 +338,7 @@ class PublicUrlController extends Controller
             }
         }
 
-
-        $taxList = array();
+        $taxList = [];
 
         $items = EstimateItem::whereNotNull('taxes')
             ->where('estimate_id', $this->estimate->id)
@@ -355,18 +350,18 @@ class PublicUrlController extends Controller
                 $this->tax = EstimateItem::taxbyid($tax)->first();
 
                 if ($this->tax) {
-                    if (!isset($taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'])) {
+                    if (! isset($taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'])) {
 
                         if ($this->estimate->calculate_tax == 'after_discount' && $this->discount > 0) {
-                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = ($item->amount - ($item->amount / $this->estimate->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
+                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = ($item->amount - ($item->amount / $this->estimate->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
                         } else {
-                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $item->amount * ($this->tax->rate_percent / 100);
+                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $item->amount * ($this->tax->rate_percent / 100);
                         }
                     } else {
                         if ($this->estimate->calculate_tax == 'after_discount' && $this->discount > 0) {
-                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + (($item->amount - ($item->amount / $this->estimate->sub_total) * $this->discount) * ($this->tax->rate_percent / 100));
+                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + (($item->amount - ($item->amount / $this->estimate->sub_total) * $this->discount) * ($this->tax->rate_percent / 100));
                         } else {
-                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + ($item->amount * ($this->tax->rate_percent / 100));
+                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + ($item->amount * ($this->tax->rate_percent / 100));
                         }
                     }
                 }
@@ -380,13 +375,13 @@ class PublicUrlController extends Controller
         $pdf->setOption('isHtml5ParserEnabled', true);
         $pdf->setOption('isRemoteEnabled', true);
 
-        $pdf->loadView('estimates.pdf.' . $this->invoiceSetting->template, $this->data);
+        $pdf->loadView('estimates.pdf.'.$this->invoiceSetting->template, $this->data);
 
         $filename = $this->estimate->estimate_number;
 
         return [
             'pdf' => $pdf,
-            'fileName' => $filename
+            'fileName' => $filename,
         ];
     }
 }

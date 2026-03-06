@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read mixed $icon
  * @property-read \App\Models\Project $project
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectActivity newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectActivity newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectActivity query()
@@ -22,11 +23,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectActivity whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectActivity whereProjectId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectActivity whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class ProjectActivity extends BaseModel
 {
-
     protected $table = 'project_activity';
 
     public function project(): BelongsTo
@@ -51,5 +52,4 @@ class ProjectActivity extends BaseModel
 
         return $projectActivity;
     }
-
 }

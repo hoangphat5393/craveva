@@ -3,20 +3,19 @@
 namespace Modules\Recruit\Http\Controllers;
 
 use App\Helper\Reply;
-use Modules\Recruit\Http\Requests\InterviewStage\StoreRequest;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Recruit\Entities\RecruitInterviewStage;
+use Modules\Recruit\Http\Requests\InterviewStage\StoreRequest;
 
 class InterviewStageController extends Controller
 {
-
     /**
      * Show the form for creating a new resource.
+     *
      * @return Renderable
      */
-
     public function create(Request $request)
     {
         $selectedStages = $request->stage;
@@ -27,20 +26,20 @@ class InterviewStageController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     * @param Request $request
+     *
+     * @param  Request  $request
      * @return Renderable
      */
     public function store(StoreRequest $request)
     {
-        $group = new RecruitInterviewStage();
+        $group = new RecruitInterviewStage;
         $group->name = $request->name;
         $group->save();
 
         if ($request->selectedStages != '') {
-            $selectedStages = $request->selectedStages . ',' . $group->id;
+            $selectedStages = $request->selectedStages.','.$group->id;
             $selectedStages = explode(',', $selectedStages);
-        }
-        else {
+        } else {
             $selectedStages = [$group->id];
         }
 
@@ -55,9 +54,9 @@ class InterviewStageController extends Controller
                 $checkSelected = 'selected';
             }
 
-            $options .= '<option ' . $checkSelected . '
-            data-content="<span class=\'badge badge-pill badge-light border\'><div class=\'d-inline-block mr-1\'></div> ' . $stage->name . ' </span>"
-            value="' . $stage->id . '"> ' . $stage->name . '</option>';
+            $options .= '<option '.$checkSelected.'
+            data-content="<span class=\'badge badge-pill badge-light border\'><div class=\'d-inline-block mr-1\'></div> '.$stage->name.' </span>"
+            value="'.$stage->id.'"> '.$stage->name.'</option>';
         }
 
         return Reply::successWithData(__('recruit::modules.message.stageSelected'), ['data' => $options]);
@@ -65,8 +64,9 @@ class InterviewStageController extends Controller
 
     /**
      * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
+     *
+     * @param  Request  $request
+     * @param  int  $id
      * @return Renderable
      */
     public function update(StoreRequest $request, $id)
@@ -76,10 +76,9 @@ class InterviewStageController extends Controller
         $group->save();
 
         if ($request->selectedStages != '') {
-            $selectedStages = $request->selectedStages . ',' . $group->id;
+            $selectedStages = $request->selectedStages.','.$group->id;
             $selectedStages = explode(',', $selectedStages);
-        }
-        else {
+        } else {
             $selectedStages = [$group->id];
         }
 
@@ -93,9 +92,9 @@ class InterviewStageController extends Controller
                 $checkSelected = 'selected';
             }
 
-            $options .= '<option ' . $checkSelected . '
-            data-content="<span class=\'badge badge-pill badge-light border\'><div class=\'d-inline-block mr-1\'></div> ' . $stage->name . ' </span>"
-            value="' . $stage->id . '"> ' . $stage->name . '</option>';
+            $options .= '<option '.$checkSelected.'
+            data-content="<span class=\'badge badge-pill badge-light border\'><div class=\'d-inline-block mr-1\'></div> '.$stage->name.' </span>"
+            value="'.$stage->id.'"> '.$stage->name.'</option>';
         }
 
         return Reply::successWithData(__('messages.updateSuccess'), ['data' => $options]);
@@ -103,7 +102,8 @@ class InterviewStageController extends Controller
 
     /**
      * Remove the specified resource from storage.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function destroy($id)
@@ -112,5 +112,4 @@ class InterviewStageController extends Controller
 
         return Reply::success(__('recruit::modules.message.deleteSuccess'));
     }
-
 }

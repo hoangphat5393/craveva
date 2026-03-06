@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateRequest extends FormRequest
 {
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -18,7 +17,7 @@ class UpdateRequest extends FormRequest
 
         return [
             'user_id' => 'required',
-            'date' => 'required|date_format:"' . $setting->date_format,
+            'date' => 'required|date_format:"'.$setting->date_format,
             'overtime_hours' => 'required',
 
         ];
@@ -33,5 +32,4 @@ class UpdateRequest extends FormRequest
     {
         return true;
     }
-
 }

@@ -11,20 +11,18 @@ class PayCodeUpdateRequest extends FormRequest
      *
      * @return array
      */
-
     public function rules()
     {
         $rules = [
-            'name' => 'required | unique:pay_codes,name,' . $this->route('pay_code') .',id,company_id,' . company()->id,
-            'code' => 'required | unique:pay_codes,code,' . $this->route('pay_code') .',id,company_id,' . company()->id,
+            'name' => 'required | unique:pay_codes,name,'.$this->route('pay_code').',id,company_id,'.company()->id,
+            'code' => 'required | unique:pay_codes,code,'.$this->route('pay_code').',id,company_id,'.company()->id,
         ];
 
-        if($this->has('rate_type') && $this->rate_type == 'time'){
+        if ($this->has('rate_type') && $this->rate_type == 'time') {
             $rules['regular_time_rate'] = 'required';
             $rules['holiday_time_rate'] = 'required';
             $rules['day_off_time_rate'] = 'required';
-        }
-        else{
+        } else {
             $rules['regular_fixed_amount'] = 'required';
             $rules['holiday_fixed_amount'] = 'required';
             $rules['day_off_fixed_amount'] = 'required';
@@ -43,5 +41,4 @@ class PayCodeUpdateRequest extends FormRequest
     {
         return true;
     }
-
 }

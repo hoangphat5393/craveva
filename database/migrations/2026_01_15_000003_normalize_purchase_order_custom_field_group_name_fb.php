@@ -3,8 +3,8 @@
 use App\Models\CustomFieldGroup;
 use Illuminate\Database\Migrations\Migration;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     public function up(): void
     {
         CustomFieldGroup::withoutGlobalScopes()
@@ -13,8 +13,5 @@ return new class extends Migration {
             ->update(['name' => 'Purchase Order']);
     }
 
-    public function down(): void
-    {
-    }
+    public function down(): void {}
 };
-

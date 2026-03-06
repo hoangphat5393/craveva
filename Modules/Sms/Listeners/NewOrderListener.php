@@ -23,5 +23,4 @@ class NewOrderListener
         } catch (\Exception $e) { // @codingStandardsIgnoreLine
         }
     }
-
 }

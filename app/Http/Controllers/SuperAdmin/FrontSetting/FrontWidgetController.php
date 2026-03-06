@@ -3,14 +3,13 @@
 namespace App\Http\Controllers\SuperAdmin\FrontSetting;
 
 use App\Helper\Reply;
-use App\Models\SuperAdmin\FrontWidget;
 use App\Http\Controllers\AccountBaseController;
 use App\Http\Requests\SuperAdmin\FrontWidget\StoreRequest;
 use App\Models\GlobalSetting;
+use App\Models\SuperAdmin\FrontWidget;
 
 class FrontWidgetController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -42,7 +41,7 @@ class FrontWidgetController extends AccountBaseController
             [
                 'name' => $request->name,
                 'header_script' => $request->header_script,
-                'footer_script' => $request->footer_script
+                'footer_script' => $request->footer_script,
             ]
         );
 
@@ -52,6 +51,7 @@ class FrontWidgetController extends AccountBaseController
     public function edit($id)
     {
         $this->frontWidget = FrontWidget::find($id);
+
         return view('super-admin.front-setting.front-widget.edit', $this->data);
     }
 
@@ -62,7 +62,7 @@ class FrontWidgetController extends AccountBaseController
             [
                 'name' => $request->name,
                 'header_script' => $request->header_script,
-                'footer_script' => $request->footer_script
+                'footer_script' => $request->footer_script,
             ]
         );
 
@@ -75,5 +75,4 @@ class FrontWidgetController extends AccountBaseController
 
         return Reply::success(__('messages.deleteSuccess'));
     }
-
 }

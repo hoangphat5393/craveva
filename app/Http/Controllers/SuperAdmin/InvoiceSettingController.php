@@ -5,13 +5,12 @@ namespace App\Http\Controllers\SuperAdmin;
 use App\Helper\Files;
 use App\Helper\Reply;
 use App\Http\Controllers\AccountBaseController;
-use App\Models\SuperAdmin\GlobalInvoiceSetting;
 use App\Http\Requests\SuperAdmin\GlobalInvoiceSetting\UpdateInvoiceSetting;
 use App\Models\GlobalSetting;
+use App\Models\SuperAdmin\GlobalInvoiceSetting;
 
 class InvoiceSettingController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -47,8 +46,8 @@ class InvoiceSettingController extends AccountBaseController
     }
 
     /**
-     * @param UpdateInvoiceSetting $request
      * @return array
+     *
      * @throws \Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
@@ -81,5 +80,4 @@ class InvoiceSettingController extends AccountBaseController
 
         return Reply::success(__('messages.updateSuccess'));
     }
-
 }

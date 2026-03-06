@@ -4,16 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Helper\Reply;
 use App\Http\Requests\EmployeeShift\StoreEmployeeShift;
-use App\Models\AttendanceSetting;
-use App\Models\Company;
 use App\Models\EmployeeShift;
 use App\Models\Holiday;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 
 class EmployeeShiftController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -28,7 +24,7 @@ class EmployeeShiftController extends AccountBaseController
 
     public function store(StoreEmployeeShift $request)
     {
-        $setting = new EmployeeShift();
+        $setting = new EmployeeShift;
         $setting->shift_name = $request->shift_name;
         $setting->shift_short_code = $request->shift_short_code;
         $setting->color = $request->color;
@@ -48,6 +44,7 @@ class EmployeeShiftController extends AccountBaseController
 
         $setting->save();
         session()->forget('attendance_setting');
+
         return Reply::success(__('messages.employeeShiftAdded'));
     }
 
@@ -55,23 +52,25 @@ class EmployeeShiftController extends AccountBaseController
     {
         $this->employeeShift = EmployeeShift::findOrFail($id);
         $this->openDays = json_decode($this->employeeShift->office_open_days);
+
         return view('employee-shifts.edit', $this->data);
     }
 
     public function destroy($id)
     {
         EmployeeShift::destroy($id);
+
         return Reply::success(__('messages.deleteSuccess'));
     }
 
     public function setDefaultShift()
     {
         $this->company->attendanceSetting->update([
-            'default_employee_shift' => request()->shiftID
+            'default_employee_shift' => request()->shiftID,
         ]);
 
-
         session()->forget('attendance_setting');
+
         return Reply::success(__('messages.updateSuccess'));
     }
 
@@ -96,6 +95,7 @@ class EmployeeShiftController extends AccountBaseController
 
         $setting->save();
         session()->forget('attendance_setting');
+
         return Reply::success(__('messages.updateSuccess'));
     }
 
@@ -108,5 +108,4 @@ class EmployeeShiftController extends AccountBaseController
 
         return view('employee-shifts.index', $this->data);
     }
-
 }

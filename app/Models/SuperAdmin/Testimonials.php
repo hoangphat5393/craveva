@@ -2,8 +2,8 @@
 
 namespace App\Models\SuperAdmin;
 
-use App\Models\LanguageSetting;
 use App\Models\BaseModel;
+use App\Models\LanguageSetting;
 
 /**
  * App\Models\SuperAdmin\Testimonials
@@ -16,6 +16,7 @@ use App\Models\BaseModel;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read LanguageSetting|null $language
+ *
  * @method static Builder|Testimonials newModelQuery()
  * @method static Builder|Testimonials newQuery()
  * @method static Builder|Testimonials query()
@@ -26,16 +27,15 @@ use App\Models\BaseModel;
  * @method static Builder|Testimonials whereName($value)
  * @method static Builder|Testimonials whereRating($value)
  * @method static Builder|Testimonials whereUpdatedAt($value)
+ *
  * @mixin Eloquent
  */
 class Testimonials extends BaseModel
 {
-
     protected $guarded = ['id'];
 
     public function language()
     {
         return $this->belongsTo(LanguageSetting::class, 'language_setting_id');
     }
-
 }

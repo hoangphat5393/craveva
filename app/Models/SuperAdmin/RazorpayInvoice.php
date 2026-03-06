@@ -2,8 +2,8 @@
 
 namespace App\Models\SuperAdmin;
 
-use App\Models\Company;
 use App\Models\BaseModel;
+use App\Models\Company;
 
 /**
  * App\Models\SuperAdmin\RazorpayInvoice
@@ -23,6 +23,7 @@ use App\Models\BaseModel;
  * @property Carbon|null $updated_at
  * @property-read Company $company
  * @property-read Package $package
+ *
  * @method static Builder|RazorpayInvoice newModelQuery()
  * @method static Builder|RazorpayInvoice newQuery()
  * @method static Builder|RazorpayInvoice query()
@@ -39,11 +40,11 @@ use App\Models\BaseModel;
  * @method static Builder|RazorpayInvoice whereSubscriptionId($value)
  * @method static Builder|RazorpayInvoice whereTransactionId($value)
  * @method static Builder|RazorpayInvoice whereUpdatedAt($value)
+ *
  * @mixin Eloquent
  */
 class RazorpayInvoice extends BaseModel
 {
-
     protected $dates = ['pay_date', 'next_pay_date'];
 
     protected $casts = [
@@ -65,5 +66,4 @@ class RazorpayInvoice extends BaseModel
     {
         return $this->belongsTo(Package::class);
     }
-
 }

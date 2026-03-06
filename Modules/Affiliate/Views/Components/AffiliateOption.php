@@ -8,8 +8,11 @@ use Illuminate\View\View;
 class AffiliateOption extends Component
 {
     public $user;
+
     public $selected;
+
     public $affiliateId;
+
     public $additionalText;
 
     /**
@@ -30,5 +33,4 @@ class AffiliateOption extends Component
     {
         return view('affiliate::components.affiliate-option');
     }
-
 }

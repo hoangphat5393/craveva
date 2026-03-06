@@ -1,6 +1,6 @@
 <?php
 
-return array(
+return [
     'qty' => 'Qty',
     'val' => 'Val',
     'sku' => 'SKU',
@@ -31,7 +31,7 @@ return array(
     'erpShipmentRef' => 'ERP Shipment Reference',
     'wmsShipmentRef' => 'WMS Shipment Reference',
 
-    'menu' => array(
+    'menu' => [
         'purchase' => 'Purchase',
         'purchaseSettings' => 'Purchase Settings',
         'purchaseNotificationSettings' => 'Purchase Notification Settings',
@@ -78,13 +78,13 @@ return array(
         'paymentReceipt' => 'Payment Receipt',
         'vendorName' => 'Vendor Name',
         'bankAccount' => 'Bank Account',
-    ),
-    'purchaseOrder' => array(
+    ],
+    'purchaseOrder' => [
         'vendorPayments' => 'Vendor Payments',
         'addVendorPayments' => 'Add Vendor Payment',
         'purchaseOrder' => 'Purchase Order',
         'vendorName' => 'Vendor Name',
         'paymentToVendor' => 'Payment To Vendor',
 
-    )
-);
+    ],
+];

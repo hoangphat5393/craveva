@@ -3,21 +3,20 @@
 namespace Modules\Biolinks\Http\Controllers;
 
 use App\Helper\Reply;
+use App\Http\Controllers\AccountBaseController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
+use Modules\Biolinks\DataTables\BiolinksDataTable;
 use Modules\Biolinks\Entities\Biolink;
 use Modules\Biolinks\Entities\BiolinkBlocks;
 use Modules\Biolinks\Entities\BiolinkSetting;
-use App\Http\Controllers\AccountBaseController;
-use Modules\Biolinks\DataTables\BiolinksDataTable;
 use Modules\Biolinks\Entities\BiolinksGlobalSetting;
 use Modules\Biolinks\Enums\Status;
 use Modules\Biolinks\Http\Requests\CreateBiolinkRequest;
 
 class BiolinksController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -25,7 +24,7 @@ class BiolinksController extends AccountBaseController
         $this->baseUrl = URL::to('/');
 
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array(BiolinksGlobalSetting::MODULE_NAME, $this->user->modules));
+            abort_403(! in_array(BiolinksGlobalSetting::MODULE_NAME, $this->user->modules));
 
             return $next($request);
         });
@@ -64,13 +63,13 @@ class BiolinksController extends AccountBaseController
     {
         DB::BeginTransaction();
 
-        $biolink = new Biolink();
+        $biolink = new Biolink;
         $biolink->company_id = $this->company->id;
         $biolink->page_link = $request->page_link;
         $biolink->status = Status::Active;
         $biolink->save();
 
-        $setting = new BiolinkSetting();
+        $setting = new BiolinkSetting;
         $setting->biolink_id = $biolink->id;
         $setting->save();
 
@@ -143,7 +142,7 @@ class BiolinksController extends AccountBaseController
 
     public function changeStatus(Request $request)
     {
-        if (!$request->status) {
+        if (! $request->status) {
             return Reply::error(__('messages.selectAction'));
         }
 
@@ -158,5 +157,4 @@ class BiolinksController extends AccountBaseController
 
         return view('biolinks::biolinks.ajax.edit-slug', $this->data);
     }
-
 }

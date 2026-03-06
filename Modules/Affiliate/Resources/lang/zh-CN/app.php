@@ -1,12 +1,12 @@
 <?php
 
-return array(
+return [
     'affiliate' => '联盟会员',
     'yes' => '是',
     'no' => '否',
     'fixed' => '固定',
     'percent' => '百分比',
-    'menu' => array(
+    'menu' => [
         'affiliate' => '联盟会员',
         'affiliates' => '联盟会员',
         'affiliateSettings' => '联盟设置',
@@ -15,7 +15,7 @@ return array(
         'referrals' => '推荐',
         'affiliateDashboard' => '联盟仪表板',
         'dashboard' => '仪表板',
-    ),
+    ],
     'addNewAffiliate' => '添加新联盟会员',
     'createAffiliate' => '创建联盟会员',
     'affiliateName' => '联盟会员名称',
@@ -64,4 +64,4 @@ return array(
     'everyTime' => '每次',
     'referralCode' => '推荐代码',
     'referred' => '已推荐',
-);
+];

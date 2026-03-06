@@ -2,19 +2,21 @@
 
 namespace Modules\Policy\Notifications;
 
-use Illuminate\Bus\Queueable;
-use App\Notifications\BaseNotification;
 use App\Models\EmailNotificationSetting;
+use App\Notifications\BaseNotification;
+use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 
 class PolicyAcknowledgedNotification extends BaseNotification
 {
-
     use Queueable;
 
     private $policy;
+
     private $emailSetting;
+
     private $acknowledgeBy;
+
     /**
      * Create a new notification instance.
      */
@@ -63,16 +65,16 @@ class PolicyAcknowledgedNotification extends BaseNotification
         $url = route('policy.show', $this->policy->id);
         $url = getDomainSpecificUrl($url, $this->company);
 
-        $content = __('policy::email.PolicyAcknowlwdged.textOne') . ' <b>' . $this->policy->title . '</b> ' . __('policy::email.PolicyAcknowlwdged.textTwo') . ' <b>' . $this->acknowledgeBy . '</b> ' . __('policy::email.PolicyAcknowlwdged.textThree');
+        $content = __('policy::email.PolicyAcknowlwdged.textOne').' <b>'.$this->policy->title.'</b> '.__('policy::email.PolicyAcknowlwdged.textTwo').' <b>'.$this->acknowledgeBy.'</b> '.__('policy::email.PolicyAcknowlwdged.textThree');
 
         return $build
-            ->subject(__('policy::email.PolicyAcknowlwdged.subject') . ' - ' . config('app.name') . __('!'))
+            ->subject(__('policy::email.PolicyAcknowlwdged.subject').' - '.config('app.name').__('!'))
             ->markdown('mail.email', [
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
                 'actionText' => __('policy::email.PolicyAcknowlwdged.action'),
-                'notifiableName' => $notifiable->name
+                'notifiableName' => $notifiable->name,
             ]);
     }
 
@@ -90,19 +92,18 @@ class PolicyAcknowledgedNotification extends BaseNotification
     public function toSlack($notifiable)
     {
         try {
-            $url = route('policy.show', $this->policy->id) . '?tab=acknowledged';
+            $url = route('policy.show', $this->policy->id).'?tab=acknowledged';
             $url = getDomainSpecificUrl($url, $this->company);
 
-            $subject = '*' .__('policy::email.PolicyAcknowlwdged.subject'). '*';
-            $notifiableName = __('email.hello') . ' ' . $notifiable->name;
+            $subject = '*'.__('policy::email.PolicyAcknowlwdged.subject').'*';
+            $notifiableName = __('email.hello').' '.$notifiable->name;
 
-            $content = __('policy::email.PolicyAcknowlwdged.textOne') . ' *' . $this->policy->title . '* ' . __('policy::email.PolicyAcknowlwdged.textTwo') . ' *' . $this->acknowledgeBy . '* ' . __('policy::email.PolicyAcknowlwdged.textThree');
+            $content = __('policy::email.PolicyAcknowlwdged.textOne').' *'.$this->policy->title.'* '.__('policy::email.PolicyAcknowlwdged.textTwo').' *'.$this->acknowledgeBy.'* '.__('policy::email.PolicyAcknowlwdged.textThree');
 
             return $this->slackBuild($notifiable)
-                ->content($subject."\n\n". $notifiableName ."\n\n". $content  . "\n\n" . $url);
+                ->content($subject."\n\n".$notifiableName."\n\n".$content."\n\n".$url);
         } catch (\Exception $e) {
             return $this->slackRedirectMessage('policy::email.PolicyAcknowlwdged.subject', $notifiable);
         }
     }
-
 }

@@ -1,9 +1,9 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
 use App\Models\Company;
 use App\Models\CustomField;
 use App\Models\CustomFieldGroup;
+use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
@@ -12,7 +12,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (!class_exists(Company::class)) {
+        if (! class_exists(Company::class)) {
             return;
         }
 
@@ -132,8 +132,8 @@ return new class extends Migration
 
     private function createFieldIfMissing(CustomFieldGroup $group, Company $company, array $definition): void
     {
-        if (!CustomField::where('custom_field_group_id', $group->id)->where('name', $definition['name'])->exists()) {
-            $field = new CustomField();
+        if (! CustomField::where('custom_field_group_id', $group->id)->where('name', $definition['name'])->exists()) {
+            $field = new CustomField;
             $field->custom_field_group_id = $group->id;
             $field->company_id = $company->id;
             $field->label = $definition['label'];
@@ -151,7 +151,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        if (!class_exists(Company::class)) {
+        if (! class_exists(Company::class)) {
             return;
         }
 
@@ -197,4 +197,3 @@ return new class extends Migration
         }
     }
 };
-

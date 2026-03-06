@@ -9,7 +9,6 @@ use Illuminate\Console\Command;
 
 class BirthdayReminderCommand extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
@@ -43,7 +42,7 @@ class BirthdayReminderCommand extends Command
                 $upcomingBirthday = EmployeeDetails::join('users', 'employee_details.user_id', '=', 'users.id')
                     ->where('employee_details.company_id', $company->id)
                     ->where('users.status', 'active')
-                    ->whereRaw('DATE_FORMAT(`date_of_birth`, "%m-%d") = "' . $currentDay . '"')
+                    ->whereRaw('DATE_FORMAT(`date_of_birth`, "%m-%d") = "'.$currentDay.'"')
                     ->orderBy('employee_details.date_of_birth')
                     ->select('employee_details.company_id', 'employee_details.date_of_birth', 'users.name', 'users.image', 'users.id')
                     ->get()
@@ -58,5 +57,4 @@ class BirthdayReminderCommand extends Command
 
         return Command::SUCCESS;
     }
-
 }

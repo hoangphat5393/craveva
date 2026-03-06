@@ -2,16 +2,16 @@
 
 namespace Modules\Biolinks\DataTables;
 
-use Yajra\DataTables\Html\Button;
-use Yajra\DataTables\Html\Column;
 use App\DataTables\BaseDataTable;
 use Modules\Biolinks\Entities\Biolink;
 use Modules\Biolinks\Enums\Status;
+use Yajra\DataTables\Html\Button;
+use Yajra\DataTables\Html\Column;
 
 class BiolinksDataTable extends BaseDataTable
 {
-
     private $editBiolinkPermission;
+
     private $deleteBiolinkPermission;
 
     public function __construct()
@@ -24,7 +24,7 @@ class BiolinksDataTable extends BaseDataTable
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
@@ -38,21 +38,21 @@ class BiolinksDataTable extends BaseDataTable
 
                     <div class="dropdown">
                         <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" type="link"
-                            id="dropdownMenuLink-' . $row->id . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            id="dropdownMenuLink-'.$row->id.'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="icon-options-vertical icons"></i>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-' . $row->id . '" tabindex="0">';
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-'.$row->id.'" tabindex="0">';
 
-            $action .= '<a target="_blank" href="' . route('biolink.index', $row->page_link) . '" class="dropdown-item"><i class="fa fa-eye mr-2"></i>' . __('app.view') . '</a>';
+            $action .= '<a target="_blank" href="'.route('biolink.index', $row->page_link).'" class="dropdown-item"><i class="fa fa-eye mr-2"></i>'.__('app.view').'</a>';
 
             if ($this->editBiolinkPermission != 'none') {
-                $action .= '<a class="dropdown-item" href="' . route('biolinks.edit', [$row->id]) . '">
-                                <i class="fa fa-edit mr-2"></i>' . trans('app.edit') . '
+                $action .= '<a class="dropdown-item" href="'.route('biolinks.edit', [$row->id]).'">
+                                <i class="fa fa-edit mr-2"></i>'.trans('app.edit').'
                             </a>';
             }
 
             if ($this->deleteBiolinkPermission != 'none') {
-                $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-biolink-id="' . $row->id . '"><i class="fa fa-trash mr-2"></i>' . trans('app.delete') . '</a>';
+                $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-biolink-id="'.$row->id.'"><i class="fa fa-trash mr-2"></i>'.trans('app.delete').'</a>';
             }
 
             $action .= '</div>
@@ -61,31 +61,30 @@ class BiolinksDataTable extends BaseDataTable
 
             return $action;
         });
-        $datatables->editColumn('page_link', fn($row) => '<a target="_blank" href="' . route('biolink.index', $row->page_link) . '" class="text-darkest-grey">' . $row->page_link . '</a>');
-        $datatables->addColumn('page_url', fn($row) => route('biolink.index', $row->page_link));
-        $datatables->addColumn('total_page_views', fn($row) => $row->total_page_views ?? 0);
+        $datatables->editColumn('page_link', fn ($row) => '<a target="_blank" href="'.route('biolink.index', $row->page_link).'" class="text-darkest-grey">'.$row->page_link.'</a>');
+        $datatables->addColumn('page_url', fn ($row) => route('biolink.index', $row->page_link));
+        $datatables->addColumn('total_page_views', fn ($row) => $row->total_page_views ?? 0);
         $datatables->addColumn('status', function ($row) {
-            $select = '<select class="form-control select-picker change-biolink-status" data-biolink-id="' . $row->id . '">';
+            $select = '<select class="form-control select-picker change-biolink-status" data-biolink-id="'.$row->id.'">';
 
             foreach (Status::cases() as $status) {
-                $select .= '<option value="' . $status->value . '" data-content="' . $status->html() . '" ' . ($status == $row->status ? 'selected' : '') . '>' . $status->label() . '</option>';
+                $select .= '<option value="'.$status->value.'" data-content="'.$status->html().'" '.($status == $row->status ? 'selected' : '').'>'.$status->label().'</option>';
             }
 
             $select .= '</select>';
 
             return $select;
         });
-        $datatables->addColumn('export-status', fn($row) => $row->status->label() ?? '');
-        $datatables->editColumn('created_at', fn($row) => $row->created_at->translatedFormat($this->company->date_format));
+        $datatables->addColumn('export-status', fn ($row) => $row->status->label() ?? '');
+        $datatables->editColumn('created_at', fn ($row) => $row->created_at->translatedFormat($this->company->date_format));
         $datatables->smart(false);
-        $datatables->setRowId(fn($row) => 'row-' . $row->id);
+        $datatables->setRowId(fn ($row) => 'row-'.$row->id);
         $datatables->rawColumns(['page_link', 'status', 'action']);
 
         return $datatables;
     }
 
     /**
-     * @param Biolink $model
      * @return Biolink|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder
      */
     public function query(Biolink $model)
@@ -94,7 +93,7 @@ class BiolinksDataTable extends BaseDataTable
 
         if (request('searchText') != '') {
             $biolinks = $model->where(function ($query) {
-                $query->where('page_link', 'like', '%' . request('searchText') . '%');
+                $query->where('page_link', 'like', '%'.request('searchText').'%');
             });
         }
 
@@ -126,7 +125,7 @@ class BiolinksDataTable extends BaseDataTable
             );
 
         if (canDataTableExport()) {
-            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
+            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
         }
 
         return $dataTable;
@@ -156,10 +155,9 @@ class BiolinksDataTable extends BaseDataTable
                 ->printable(false)
                 ->orderable(false)
                 ->searchable(false)
-                ->addClass('text-right pr-20')
+                ->addClass('text-right pr-20'),
         ];
 
         return array_merge($data, $action);
     }
-
 }

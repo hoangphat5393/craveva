@@ -3,25 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Helper\Reply;
+use App\Helper\UserService;
 use App\Http\Requests\DiscussionReply\StoreRequest;
 use App\Models\Discussion;
 use App\Models\DiscussionReply;
 use App\Models\Project;
-use App\Helper\UserService;
 
 class DiscussionReplyController extends AccountBaseController
 {
-
     public function create()
     {
         $this->discussionId = request('id');
+
         return view('discussions.replies.create', $this->data);
     }
 
     public function store(StoreRequest $request)
     {
         $this->userId = UserService::getUserId();
-        $reply = new DiscussionReply();
+        $reply = new DiscussionReply;
         $reply->user_id = $this->userId;
         $reply->discussion_id = $request->discussion_id;
         $reply->body = trim_editor($request->description);
@@ -44,6 +44,7 @@ class DiscussionReplyController extends AccountBaseController
         $this->userRoles = user()->roles->pluck('name')->toArray();
         $this->discussion = Discussion::with('category', 'replies', 'replies.user', 'replies.files')->findOrFail($reply->discussion_id);
         $html = view('discussions.replies.show', $this->data)->render();
+
         return Reply::dataOnly(['status' => 'success', 'html' => $html, 'discussion_reply_id' => $reply->id]);
     }
 
@@ -67,12 +68,14 @@ class DiscussionReplyController extends AccountBaseController
         $this->userData = $userData;
         $this->userRoles = user()->roles->pluck('name')->toArray();
         $html = view('discussions.replies.show', $this->data)->render();
+
         return Reply::dataOnly(['status' => 'success', 'html' => $html]);
     }
 
     public function edit($id)
     {
         $this->reply = DiscussionReply::findOrFail($id); /* @phpstan-ignore-line */
+
         return view('discussions.replies.edit', $this->data);
     }
 
@@ -100,6 +103,7 @@ class DiscussionReplyController extends AccountBaseController
         $this->userData = $userData;
         $this->userRoles = user()->roles->pluck('name')->toArray();
         $html = view('discussions.replies.show', $this->data)->render();
+
         return Reply::dataOnly(['status' => 'success', 'html' => $html]);
     }
 
@@ -127,7 +131,7 @@ class DiscussionReplyController extends AccountBaseController
         $this->userRoles = user()->roles->pluck('name')->toArray();
         $this->discussion = Discussion::with('category', 'replies', 'replies.user', 'replies.files')->findOrFail($reply->discussion_id);
         $html = view('discussions.replies.show', $this->data)->render();
+
         return Reply::dataOnly(['status' => 'success', 'html' => $html]);
     }
-
 }

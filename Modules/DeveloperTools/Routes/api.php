@@ -2,7 +2,6 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Modules\DeveloperTools\Http\Controllers\DeveloperToolsController;
 
 /*
     |--------------------------------------------------------------------------

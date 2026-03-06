@@ -3,12 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Helper\Reply;
-use Illuminate\Http\Request;
 use App\Models\PackageUpdateNotify;
+use Illuminate\Http\Request;
 
 class NotificationController extends AccountBaseController
 {
-
     public function showNotifications()
     {
         $this->userType = 'all';
@@ -18,6 +17,7 @@ class NotificationController extends AccountBaseController
         }
 
         $view = view('notifications.user_notifications', $this->data)->render();
+
         return Reply::dataOnly(['status' => 'success', 'html' => $view]);
     }
 
@@ -36,12 +36,14 @@ class NotificationController extends AccountBaseController
     public function markAllRead()
     {
         $this->user->unreadNotifications->markAsRead();
+
         return Reply::success(__('messages.notificationRead'));
     }
 
     public function markRead(Request $request)
     {
         $this->user->unreadNotifications->where('id', $request->id)->markAsRead();
+
         return Reply::dataOnly(['status' => 'success']);
     }
 
@@ -54,6 +56,7 @@ class NotificationController extends AccountBaseController
         }
 
         $this->isNotified = PackageUpdateNotify::where('company_id', user()->company_id)->where('user_id', user()->id)->exists();
+
         return view('super-admin.billing.notify-admin', $this->data);
     }
 
@@ -61,10 +64,9 @@ class NotificationController extends AccountBaseController
     {
         PackageUpdateNotify::create([
             'company_id' => user()->company_id,
-            'user_id' => user()->id
+            'user_id' => user()->id,
         ]);
 
         return Reply::success(__('superadmin.packageIssueNotified'));
     }
-
 }

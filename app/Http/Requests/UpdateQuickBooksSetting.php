@@ -4,7 +4,6 @@ namespace App\Http\Requests;
 
 class UpdateQuickBooksSetting extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -22,7 +21,7 @@ class UpdateQuickBooksSetting extends CoreRequest
      */
     public function rules()
     {
-        if (!request()->has('status')) {
+        if (! request()->has('status')) {
             return [];
         }
 
@@ -31,13 +30,11 @@ class UpdateQuickBooksSetting extends CoreRequest
         if ($this->environment == 'Development') {
             $rules['sandbox_client_id'] = 'required';
             $rules['sandbox_client_secret'] = 'required';
-        }
-        else {
+        } else {
             $rules['client_id'] = 'required';
             $rules['client_secret'] = 'required';
         }
 
         return $rules;
     }
-
 }

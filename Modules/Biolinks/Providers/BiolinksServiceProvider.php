@@ -64,8 +64,7 @@ class BiolinksServiceProvider extends ServiceProvider
         if (is_dir($langPath)) {
             $this->loadTranslationsFrom($langPath, $this->moduleNameLower);
             $this->loadJsonTranslationsFrom($langPath);
-        }
-        else {
+        } else {
             $this->loadTranslationsFrom(module_path($this->moduleName, 'Resources/lang'), $this->moduleNameLower);
             $this->loadJsonTranslationsFrom(module_path($this->moduleName, 'Resources/lang'));
         }
@@ -81,7 +80,7 @@ class BiolinksServiceProvider extends ServiceProvider
 
         $this->mergeConfigFrom(
             module_path($this->moduleNameLower, 'Config/xss_ignore.php'),
-            $this->moduleNameLower . '::xss_ignore'
+            $this->moduleNameLower.'::xss_ignore'
         );
     }
 
@@ -133,5 +132,4 @@ class BiolinksServiceProvider extends ServiceProvider
             app(Factory::class)->load(__DIR__.'/../Database/factories');
         }
     }
-
 }

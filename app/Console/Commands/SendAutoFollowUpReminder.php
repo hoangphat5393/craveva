@@ -9,7 +9,6 @@ use Illuminate\Console\Command;
 
 class SendAutoFollowUpReminder extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
@@ -24,13 +23,11 @@ class SendAutoFollowUpReminder extends Command
      */
     protected $description = 'Send notification of followup to employee or added by user';
 
-
     /**
      * Execute the console command.
      *
      * @return mixed
      */
-
     public function handle()
     {
         Company::active()->chunk(50, function ($companies) {
@@ -59,11 +56,9 @@ class SendAutoFollowUpReminder extends Command
 
             if ($followup->remind_type == 'day') {
                 $reminderDate = $followup->next_follow_up_date->subDays($remindTime);
-            }
-            elseif ($followup->remind_type == 'hour') {
+            } elseif ($followup->remind_type == 'hour') {
                 $reminderDate = $followup->next_follow_up_date->subHours($remindTime);
-            }
-            else {
+            } else {
                 $reminderDate = $followup->next_follow_up_date->subMinutes($remindTime);
             }
 
@@ -85,7 +80,4 @@ class SendAutoFollowUpReminder extends Command
         }
 
     }
-
 }
-
-

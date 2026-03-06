@@ -13,9 +13,11 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property-read \App\Models\Appreciation|null $appreciation
  * @property-read \App\Models\AwardIcon|null $awardIcon
  * @property-read \App\Models\Company|null $company
+ *
  * @method static Builder|Award newModelQuery()
  * @method static Builder|Award newQuery()
  * @method static Builder|Award query()
+ *
  * @property int $id
  * @property int|null $company_id
  * @property string $title
@@ -27,6 +29,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Appreciation[] $appreciations
  * @property-read int|null $appreciations_count
+ *
  * @method static Builder|Award whereAwardIconId($value)
  * @method static Builder|Award whereColorCode($value)
  * @method static Builder|Award whereCompanyId($value)
@@ -36,11 +39,11 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @method static Builder|Award whereSummary($value)
  * @method static Builder|Award whereTitle($value)
  * @method static Builder|Award whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class Award extends BaseModel
 {
-
     use HasCompany;
 
     public function appreciation(): HasOne
@@ -57,5 +60,4 @@ class Award extends BaseModel
     {
         return $this->belongsTo(AwardIcon::class);
     }
-
 }

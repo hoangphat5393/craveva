@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 /**
  * Class Holiday
  *
- * @package App\Models
  * @property int $id
  * @property int $user_id
  * @property string $name
@@ -23,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read mixed $doc_url
  * @property-read mixed $icon
  * @property-read \App\Models\User $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|EmployeeDocument newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|EmployeeDocument newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|EmployeeDocument query()
@@ -36,22 +36,27 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|EmployeeDocument whereSize($value)
  * @method static \Illuminate\Database\Eloquent\Builder|EmployeeDocument whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|EmployeeDocument whereUserId($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|EmployeeDocument whereCompanyId($value)
+ *
  * @mixin \Eloquent
  */
 class EmployeeDocument extends BaseModel
 {
-
-    use IconTrait, HasCompany;
+    use HasCompany, IconTrait;
 
     const FILE_PATH = 'employee-docs';
+
     // Don't forget to fill this array
     protected $fillable = [];
 
     protected $guarded = ['id'];
+
     protected $table = 'employee_docs';
+
     protected $appends = ['doc_url', 'icon'];
 
     public function user(): BelongsTo
@@ -61,7 +66,6 @@ class EmployeeDocument extends BaseModel
 
     public function getDocUrlAttribute()
     {
-        return asset_url_local_s3(EmployeeDocument::FILE_PATH . '/' . $this->user_id . '/' . $this->hashname);
+        return asset_url_local_s3(EmployeeDocument::FILE_PATH.'/'.$this->user_id.'/'.$this->hashname);
     }
-
 }

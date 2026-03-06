@@ -7,7 +7,6 @@ use Illuminate\Database\Seeder;
 
 class TaxTableSeeder extends Seeder
 {
-
     /**
      * Run the database seeds.
      *
@@ -26,5 +25,4 @@ class TaxTableSeeder extends Seeder
         Tax::insert($taxes);
 
     }
-
 }

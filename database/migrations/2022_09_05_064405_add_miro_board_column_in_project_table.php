@@ -11,17 +11,16 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      *
      * @return void
      */
-
     public function up()
     {
-        if (!Schema::hasColumn('projects', 'enable_miroboard')) {
+        if (! Schema::hasColumn('projects', 'enable_miroboard')) {
             Schema::table('projects', function (Blueprint $table) {
                 $table->boolean('enable_miroboard')->default(false);
                 $table->string('miro_board_id')->nullable();
@@ -31,7 +30,7 @@ return new class extends Migration {
 
         $module = Module::where('module_name', 'projects')->first();
 
-        if (!is_null($module)) {
+        if (! is_null($module)) {
             $permissionName = 'view_miroboard';
 
             $permission = Permission::updateOrCreate(
@@ -39,7 +38,7 @@ return new class extends Migration {
                 [
                     'display_name' => ucwords(str_replace('_', ' ', $permissionName)),
                     'is_custom' => 1,
-                    'allowed_permissions' => Permission::ALL_ADDED_NONE
+                    'allowed_permissions' => Permission::ALL_ADDED_NONE,
                 ]
             );
 
@@ -50,18 +49,17 @@ return new class extends Migration {
                     ->where('company_id', $company->id)
                     ->first();
 
-                $permissionRole = new PermissionRole();
+                $permissionRole = new PermissionRole;
                 $permissionRole->permission_id = $permission->id;
                 $permissionRole->role_id = $role->id;
                 $permissionRole->permission_type_id = 4; // All
                 $permissionRole->save();
             }
 
-
             $adminUser = User::allAdmins();
 
             foreach ($adminUser as $adminUsers) {
-                $userPermission = new UserPermission();
+                $userPermission = new UserPermission;
                 $userPermission->user_id = $adminUsers->id;
                 $userPermission->permission_id = $permission->id;
                 $userPermission->permission_type_id = 4; // All
@@ -85,5 +83,4 @@ return new class extends Migration {
             $table->dropColumn('client_access');
         });
     }
-
 };

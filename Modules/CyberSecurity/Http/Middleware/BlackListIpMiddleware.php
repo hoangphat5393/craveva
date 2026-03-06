@@ -8,7 +8,6 @@ use Modules\CyberSecurity\Entities\BlacklistIp;
 
 class BlackListIpMiddleware
 {
-
     /**
      * Handle an incoming request.
      */
@@ -17,6 +16,7 @@ class BlackListIpMiddleware
         if (BlacklistIp::where('ip_address', $request->ip())->exists()) {
             abort(403, __('cybersecurity::messages.blacklistIp'));
         }
+
         return $next($request);
     }
 }

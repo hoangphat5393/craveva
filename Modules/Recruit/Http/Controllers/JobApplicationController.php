@@ -2,53 +2,51 @@
 
 namespace Modules\Recruit\Http\Controllers;
 
-use App\Models\Team;
 use App\Helper\Files;
 use App\Helper\Reply;
-use Illuminate\Http\Request;
-use App\Models\CompanyAddress;
-use Modules\Recruit\Entities\RecruitJob;
-use Modules\Recruit\Entities\RecruitSkill;
-use Modules\Recruit\Entities\RecruitSetting;
 use App\Http\Controllers\AccountBaseController;
-use Modules\Recruit\Imports\JobApplicationImport;
+use App\Models\CompanyAddress;
 use App\Models\Currency;
+use App\Models\Team;
 use App\Traits\ImportExcel;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Modules\Recruit\DataTables\JobApplicationsDataTable;
 use Modules\Recruit\Entities\ApplicationSource;
-use Modules\Recruit\Entities\RecruitJobApplication;
 use Modules\Recruit\Entities\RecruitApplicationFile;
 use Modules\Recruit\Entities\RecruitApplicationSkill;
 use Modules\Recruit\Entities\RecruitApplicationStatus;
-use Modules\Recruit\DataTables\JobApplicationsDataTable;
 use Modules\Recruit\Entities\RecruitCandidateFollowUp;
+use Modules\Recruit\Entities\RecruitCustomQuestion;
 use Modules\Recruit\Entities\RecruitInterviewSchedule;
+use Modules\Recruit\Entities\RecruitJob;
 use Modules\Recruit\Entities\RecruitJobAddress;
-use Modules\Recruit\Entities\RecruitJobHistory;
+use Modules\Recruit\Entities\RecruitJobApplication;
 use Modules\Recruit\Entities\RecruitJobCustomAnswer;
+use Modules\Recruit\Entities\RecruitJobHistory;
+use Modules\Recruit\Entities\RecruitJobQuestion;
+use Modules\Recruit\Entities\RecruitSetting;
+use Modules\Recruit\Entities\RecruitSkill;
 use Modules\Recruit\Events\JobApplicationStatusChangeEvent;
 use Modules\Recruit\Http\Requests\JobApplication\ImportProcessRequest;
 use Modules\Recruit\Http\Requests\JobApplication\ImportRequest;
 use Modules\Recruit\Http\Requests\JobApplication\StoreJobApplication;
 use Modules\Recruit\Http\Requests\JobApplication\StoreQuickApplication;
 use Modules\Recruit\Http\Requests\JobApplication\UpdateJobApplication;
+use Modules\Recruit\Imports\JobApplicationImport;
 use Modules\Recruit\Jobs\ImportJobApplicationJob;
-use PhpParser\Node\Expr\Empty_;
-use Modules\Recruit\Entities\RecruitApplicationStatusCategory;
-use Modules\Recruit\Entities\RecruitCustomQuestion;
-use Modules\Recruit\Entities\RecruitJobQuestion;
 use Modules\Recruit\Traits\CustomQuestion;
 
 class JobApplicationController extends AccountBaseController
 {
-    use ImportExcel, CustomQuestion;
+    use CustomQuestion, ImportExcel;
 
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = __('recruit::app.menu.jobApplication');
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array(RecruitSetting::MODULE_NAME, $this->user->modules));
+            abort_403(! in_array(RecruitSetting::MODULE_NAME, $this->user->modules));
 
             return $next($request);
         });
@@ -57,7 +55,7 @@ class JobApplicationController extends AccountBaseController
     public function index(JobApplicationsDataTable $dataTable)
     {
         $viewPermission = user()->permission('view_job_application');
-        abort_403(!in_array($viewPermission, ['all', 'added', 'owned', 'both']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'owned', 'both']));
 
         $this->applicationStatus = RecruitApplicationStatus::select('id', 'status', 'position', 'color')->orderBy('position')->get();
         $this->applicationSources = ApplicationSource::all();
@@ -90,12 +88,13 @@ class JobApplicationController extends AccountBaseController
 
     /**
      * Show the form for creating a new resource.
+     *
      * @return Renderable
      */
     public function create()
     {
         $addPermission = user()->permission('add_job_application');
-        abort_403(!in_array($addPermission, ['all', 'added']));
+        abort_403(! in_array($addPermission, ['all', 'added']));
         $this->jobId = request()->id ?? null;
 
         $this->pageTitle = __('recruit::modules.jobApplication.addJobApplications');
@@ -141,15 +140,16 @@ class JobApplicationController extends AccountBaseController
 
     /**
      * Store a newly created resource in storage.
-     * @param Request $request
+     *
+     * @param  Request  $request
      * @return Renderable
      */
     public function store(StoreJobApplication $request)
     {
         $addPermission = user()->permission('add_job_application');
-        abort_403(!in_array($addPermission, ['all', 'added']));
+        abort_403(! in_array($addPermission, ['all', 'added']));
 
-        $jobApp = new RecruitJobApplication();
+        $jobApp = new RecruitJobApplication;
         $jobApp->recruit_job_id = $request->job_id;
         $jobApp->full_name = $request->full_name;
         $jobApp->email = $this->emailValidation($request);
@@ -185,7 +185,6 @@ class JobApplicationController extends AccountBaseController
         $jobApp->column_priority = 0;
         $jobApp->send_email = $request->send_email ?? 0;
 
-
         if ($request->hasFile('photo')) {
             Files::deleteFile($jobApp->photo, 'avatar');
             $jobApp->photo = Files::uploadLocalOrS3($request->photo, 'avatar', 300);
@@ -193,7 +192,7 @@ class JobApplicationController extends AccountBaseController
 
         $jobApp->save();
 
-        if (!empty($request->answer)) {
+        if (! empty($request->answer)) {
             foreach ($request->answer as $key => $value) {
                 $fieldType = RecruitCustomQuestion::findOrFail($key)->type;
 
@@ -201,16 +200,16 @@ class JobApplicationController extends AccountBaseController
                     $value = ($fieldType == 'date') ? Carbon::createFromFormat($this->company->date_format, $value)->format('Y-m-d') : $value;
                 }
 
-                $answer = new RecruitJobCustomAnswer();
+                $answer = new RecruitJobCustomAnswer;
                 $answer->recruit_job_application_id = $jobApp->id;
                 $answer->recruit_job_id = $request->job_id;
                 $answer->recruit_job_question_id = $key;
                 $answer->answer = $value;
 
-                if ($request->hasFile('answer.' . $key)) {
-                    Files::deleteFile($answer->filename, RecruitJobCustomAnswer::FILE_PATH . '/' . $key);
+                if ($request->hasFile('answer.'.$key)) {
+                    Files::deleteFile($answer->filename, RecruitJobCustomAnswer::FILE_PATH.'/'.$key);
                     $answer->filename = $value->getClientOriginalName();
-                    $answer->hashname = Files::uploadLocalOrS3($value, RecruitJobCustomAnswer::FILE_PATH . '/' . $key);
+                    $answer->hashname = Files::uploadLocalOrS3($value, RecruitJobCustomAnswer::FILE_PATH.'/'.$key);
                     $answer->answer = null;
                 }
                 $answer->save();
@@ -218,10 +217,10 @@ class JobApplicationController extends AccountBaseController
         }
 
         if (request()->hasFile('resume')) {
-            $file = new RecruitApplicationFile();
+            $file = new RecruitApplicationFile;
             $file->recruit_job_application_id = $jobApp->id;
             Files::deleteFile($jobApp->resume, 'application-files/');
-            $filename = Files::uploadLocalOrS3(request()->resume, 'application-files/' . $jobApp->id);
+            $filename = Files::uploadLocalOrS3(request()->resume, 'application-files/'.$jobApp->id);
             $file->filename = request()->resume->getClientOriginalName();
             $file->hashname = $filename;
             $file->size = request()->resume->getSize();
@@ -245,7 +244,8 @@ class JobApplicationController extends AccountBaseController
 
     /**
      * Show the specified resource.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function show($id)
@@ -262,7 +262,7 @@ class JobApplicationController extends AccountBaseController
 
         $this->viewPermission = user()->permission('view_job_application');
         $this->interviewViewPermission = user()->permission('view_interview_schedule');
-        abort_403(!($this->viewPermission == 'all'
+        abort_403(! ($this->viewPermission == 'all'
             || ($this->viewPermission == 'added' && $this->application->added_by == user()->id)
             || ($this->viewPermission == 'owned' && user()->id == $this->application->job->recruiter_id)
             || ($this->viewPermission == 'owned' && in_array(user()->id, $interviewer))
@@ -283,38 +283,38 @@ class JobApplicationController extends AccountBaseController
         $tab = request('view');
 
         switch ($tab) {
-        case 'applicant_notes':
-            $this->tab = 'recruit::job-applications.notes.notes';
-            break;
-        case 'skill':
-            $this->tab = 'recruit::job-applications.ajax.skill';
-            break;
-        case 'custom':
-            $this->tab = 'recruit::job-applications.ajax.custom-question';
-            break;
-        case 'follow-up':
-            $this->tab = 'recruit::job-applications.ajax.follow-up';
-            break;
-        case 'resume':
-            $this->tab = 'recruit::job-applications.ajax.resume';
-            break;
+            case 'applicant_notes':
+                $this->tab = 'recruit::job-applications.notes.notes';
+                break;
+            case 'skill':
+                $this->tab = 'recruit::job-applications.ajax.skill';
+                break;
+            case 'custom':
+                $this->tab = 'recruit::job-applications.ajax.custom-question';
+                break;
+            case 'follow-up':
+                $this->tab = 'recruit::job-applications.ajax.follow-up';
+                break;
+            case 'resume':
+                $this->tab = 'recruit::job-applications.ajax.resume';
+                break;
 
-        default:
-            $this->editInterviewSchedulePermission = user()->permission('edit_interview_schedule');
-            $this->deleteInterviewSchedulePermission = user()->permission('delete_interview_schedule');
-            $this->viewInterviewSchedulePermission = user()->permission('view_interview_schedule');
-            $this->reschedulePermission = user()->permission('reschedule_interview');
-            $this->applicationStatuses = ['pending', 'hired', 'canceled','completed','rejected'];
+            default:
+                $this->editInterviewSchedulePermission = user()->permission('edit_interview_schedule');
+                $this->deleteInterviewSchedulePermission = user()->permission('delete_interview_schedule');
+                $this->viewInterviewSchedulePermission = user()->permission('view_interview_schedule');
+                $this->reschedulePermission = user()->permission('reschedule_interview');
+                $this->applicationStatuses = ['pending', 'hired', 'canceled', 'completed', 'rejected'];
 
-            $this->interviewSchedule = RecruitInterviewSchedule::with(['employeesData', 'employeesData.user'])
-                ->select('recruit_interview_schedules.id', 'recruit_interview_schedules.recruit_job_application_id', 'recruit_interview_schedules.interview_type', 'recruit_interview_schedules.recruit_interview_stage_id', 'recruit_interview_employees.user_id as employee_id', 'recruit_interview_employees.user_accept_status', 'recruit_interview_employees.id as emp_id', 'recruit_job_applications.full_name', 'recruit_interview_schedules.status', 'recruit_interview_schedules.schedule_date', 'recruit_interview_stages.name')
-                ->where('recruit_job_application_id', $id)
-                ->leftjoin('recruit_job_applications', 'recruit_job_applications.id', 'recruit_interview_schedules.recruit_job_application_id')
-                ->leftjoin('recruit_interview_stages', 'recruit_interview_stages.id', 'recruit_interview_schedules.recruit_interview_stage_id')
-                ->leftjoin('recruit_interview_employees', 'recruit_interview_employees.recruit_interview_schedule_id', 'recruit_interview_schedules.id')
-                ->groupBy('recruit_interview_schedules.id')->get();
-            $this->tab = 'recruit::job-applications.ajax.interview-schedule';
-            break;
+                $this->interviewSchedule = RecruitInterviewSchedule::with(['employeesData', 'employeesData.user'])
+                    ->select('recruit_interview_schedules.id', 'recruit_interview_schedules.recruit_job_application_id', 'recruit_interview_schedules.interview_type', 'recruit_interview_schedules.recruit_interview_stage_id', 'recruit_interview_employees.user_id as employee_id', 'recruit_interview_employees.user_accept_status', 'recruit_interview_employees.id as emp_id', 'recruit_job_applications.full_name', 'recruit_interview_schedules.status', 'recruit_interview_schedules.schedule_date', 'recruit_interview_stages.name')
+                    ->where('recruit_job_application_id', $id)
+                    ->leftjoin('recruit_job_applications', 'recruit_job_applications.id', 'recruit_interview_schedules.recruit_job_application_id')
+                    ->leftjoin('recruit_interview_stages', 'recruit_interview_stages.id', 'recruit_interview_schedules.recruit_interview_stage_id')
+                    ->leftjoin('recruit_interview_employees', 'recruit_interview_employees.recruit_interview_schedule_id', 'recruit_interview_schedules.id')
+                    ->groupBy('recruit_interview_schedules.id')->get();
+                $this->tab = 'recruit::job-applications.ajax.interview-schedule';
+                break;
         }
 
         if (request()->ajax()) {
@@ -336,7 +336,8 @@ class JobApplicationController extends AccountBaseController
 
     /**
      * Show the form for editing the specified resource.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function edit($id)
@@ -346,7 +347,7 @@ class JobApplicationController extends AccountBaseController
         $this->job = RecruitJob::where('id', $this->jobApplication->recruit_job_id)->get();
         $this->currency = $this->job ? Currency::where('id', '=', $this->jobApplication->job->currency_id)->first() : null;
         $this->editPermission = user()->permission('edit_job_application');
-        abort_403(!($this->editPermission == 'all'
+        abort_403(! ($this->editPermission == 'all'
             || ($this->editPermission == 'added' && $this->jobApplication->added_by == user()->id)
             || ($this->editPermission == 'owned' && user()->id == $this->job->recruiter_id)
             || ($this->editPermission == 'both' && user()->id == $this->job->recruiter_id)
@@ -371,8 +372,9 @@ class JobApplicationController extends AccountBaseController
 
     /**
      * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
+     *
+     * @param  Request  $request
+     * @param  int  $id
      * @return Renderable
      */
     public function update(UpdateJobApplication $request, $id)
@@ -380,7 +382,7 @@ class JobApplicationController extends AccountBaseController
         $this->editPermission = user()->permission('edit_job_application');
         $jobApp = RecruitJobApplication::with('job')->findOrFail($id);
 
-        abort_403(!($this->editPermission == 'all'
+        abort_403(! ($this->editPermission == 'all'
             || ($this->editPermission == 'added' && $jobApp->added_by == user()->id)
             || ($this->editPermission == 'owned' && user()->id == $jobApp->job->recruiter_id)
             || ($this->editPermission == 'both' && user()->id == $jobApp->job->recruiter_id)
@@ -406,11 +408,13 @@ class JobApplicationController extends AccountBaseController
 
         if ($request->has('current_ctc')) {
             $jobApp->current_ctc = $request->current_ctc;
-            $jobApp->currenct_ctc_rate = $request->currenct_ctc_rate;        }
+            $jobApp->currenct_ctc_rate = $request->currenct_ctc_rate;
+        }
 
         if ($request->has('expected_ctc')) {
             $jobApp->expected_ctc = $request->expected_ctc;
-            $jobApp->expected_ctc_rate = $request->expected_ctc_rate;        }
+            $jobApp->expected_ctc_rate = $request->expected_ctc_rate;
+        }
 
         if ($request->date_of_birth != null) {
             if ($request->has('date_of_birth')) {
@@ -438,9 +442,9 @@ class JobApplicationController extends AccountBaseController
         // Handle resume upload if present
         if (request()->hasFile('resume')) {
             $file = RecruitApplicationFile::where('recruit_job_application_id', $jobApp->id)->first() ?? new RecruitApplicationFile;
-            $file->recruit_job_application_id ? Files::deleteFile($file->recruit_job_application_id, 'application-files/' . $jobApp->id) : '';
+            $file->recruit_job_application_id ? Files::deleteFile($file->recruit_job_application_id, 'application-files/'.$jobApp->id) : '';
             $file->recruit_job_application_id = $jobApp->id;
-            $filename = Files::uploadLocalOrS3(request()->resume, 'application-files/' . $jobApp->id);
+            $filename = Files::uploadLocalOrS3(request()->resume, 'application-files/'.$jobApp->id);
             $file->filename = request()->resume->getClientOriginalName();
             $file->hashname = $filename;
             $file->size = request()->resume->getSize();
@@ -456,7 +460,7 @@ class JobApplicationController extends AccountBaseController
             }
         }
 
-        if (!empty($request->answer)) {
+        if (! empty($request->answer)) {
             foreach ($request->answer as $key => $value) {
                 $fieldType = RecruitCustomQuestion::findOrFail($key)->type;
 
@@ -465,18 +469,18 @@ class JobApplicationController extends AccountBaseController
                 }
 
                 $answer = RecruitJobCustomAnswer::where('recruit_job_application_id', $jobApp->id)->where('recruit_job_question_id', $key)->first();
-                if (!$answer) {
-                    $answer = new RecruitJobCustomAnswer();
+                if (! $answer) {
+                    $answer = new RecruitJobCustomAnswer;
                 }
                 $answer->recruit_job_application_id = $jobApp->id;
                 $answer->recruit_job_id = $request->job_id;
                 $answer->recruit_job_question_id = $key;
                 $answer->answer = $value;
 
-                if ($request->hasFile('answer.' . $key)) {
-                    Files::deleteFile($answer->filename, RecruitJobCustomAnswer::FILE_PATH . '/' . $key);
+                if ($request->hasFile('answer.'.$key)) {
+                    Files::deleteFile($answer->filename, RecruitJobCustomAnswer::FILE_PATH.'/'.$key);
                     $answer->filename = $value->getClientOriginalName();
-                    $answer->hashname = Files::uploadLocalOrS3($value, RecruitJobCustomAnswer::FILE_PATH . '/' . $key);
+                    $answer->hashname = Files::uploadLocalOrS3($value, RecruitJobCustomAnswer::FILE_PATH.'/'.$key);
                     $answer->answer = null;
                 }
 
@@ -489,7 +493,8 @@ class JobApplicationController extends AccountBaseController
 
     /**
      * Remove the specified resource from storage.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function destroy($id)
@@ -497,7 +502,7 @@ class JobApplicationController extends AccountBaseController
         $jobApp = RecruitJobApplication::with('job')->findOrFail($id);
 
         $this->deletePermission = user()->permission('delete_job_application');
-        abort_403(!($this->deletePermission == 'all'
+        abort_403(! ($this->deletePermission == 'all'
             || ($this->deletePermission == 'added' && $jobApp->added_by == user()->id)
             || ($this->deletePermission == 'owned' && user()->id == $jobApp->job->recruiter_id)
             || ($this->deletePermission == 'both' && user()->id == $jobApp->job->recruiter_id)
@@ -511,16 +516,16 @@ class JobApplicationController extends AccountBaseController
     public function applyQuickAction(Request $request)
     {
         switch ($request->action_type) {
-        case 'delete':
-            $this->deleteRecords($request);
+            case 'delete':
+                $this->deleteRecords($request);
 
-            return Reply::success(__('messages.deleteSuccess'));
-        case 'change-status':
-            $this->changeStatus($request);
+                return Reply::success(__('messages.deleteSuccess'));
+            case 'change-status':
+                $this->changeStatus($request);
 
-            return Reply::success(__('messages.updateSuccess'));
-        default:
-            return Reply::error(__('messages.selectAction'));
+                return Reply::success(__('messages.updateSuccess'));
+            default:
+                return Reply::error(__('messages.selectAction'));
         }
     }
 
@@ -549,7 +554,7 @@ class JobApplicationController extends AccountBaseController
         $status = RecruitApplicationStatus::with('category')->where('id', $statusId)->first();
         $send = $this->statusForMailSend($statusId);
 
-        foreach($item as $id){
+        foreach ($item as $id) {
             $mail = RecruitJobApplication::findOrFail($id);
 
             $mail->recruit_application_status_id = $request->status;
@@ -559,7 +564,6 @@ class JobApplicationController extends AccountBaseController
                 event(new JobApplicationStatusChangeEvent($mail, $status));
             }
         }
-
 
         return Reply::dataOnly(['status' => 'success', 'status' => $status, 'interviewPermission' => $interviewPermission, 'offerLetterPermission' => $offerLetterPermission]);
     }
@@ -598,14 +602,12 @@ class JobApplicationController extends AccountBaseController
 
             if (in_array($request->email, $mail)) {
                 $this->validate($request, [
-                    'email' => 'unique:recruit_job_applications|email'
+                    'email' => 'unique:recruit_job_applications|email',
                 ]);
-            }
-            else {
+            } else {
                 return $request->email;
             }
-        }
-        else {
+        } else {
             return $request->email;
         }
     }
@@ -613,9 +615,9 @@ class JobApplicationController extends AccountBaseController
     public function quickAddFormStore(StoreQuickApplication $request)
     {
         $addPermission = user()->permission('add_job_application');
-        abort_403(!in_array($addPermission, ['all', 'added']));
+        abort_403(! in_array($addPermission, ['all', 'added']));
 
-        $jobApp = new RecruitJobApplication();
+        $jobApp = new RecruitJobApplication;
         $jobApp->recruit_job_id = $request->job_id;
         $jobApp->full_name = $request->full_name;
         $jobApp->email = $this->emailValidation($request);
@@ -645,7 +647,7 @@ class JobApplicationController extends AccountBaseController
             $redirectUrl = route('job-applications.index');
         }
 
-        return Reply::dataOnly(['redirectUrl' => $redirectUrl,'application_id' => $jobApp->id]);
+        return Reply::dataOnly(['redirectUrl' => $redirectUrl, 'application_id' => $jobApp->id]);
     }
 
     public function importJobApplication()
@@ -653,10 +655,9 @@ class JobApplicationController extends AccountBaseController
         $this->pageTitle = __('recruit::modules.jobApplication.importJobCandidates');
 
         $this->addPermission = user()->permission('add_job_application');
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
 
         $this->view = 'recruit::job-applications.ajax.import';
-
 
         if (request()->ajax()) {
             return $this->returnAjax($this->view);
@@ -687,5 +688,4 @@ class JobApplicationController extends AccountBaseController
     {
         return response()->download(storage_path('csv/job-application-sample.xlsx'));
     }
-
 }

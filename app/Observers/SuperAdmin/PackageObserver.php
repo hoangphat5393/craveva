@@ -8,7 +8,6 @@ use App\Observers\CompanyObserver;
 
 class PackageObserver
 {
-
     public function saving(Package $package)
     {
         if (($package->is_free || $package->default === 'yes') && $package->package != 'lifetime') {
@@ -21,7 +20,7 @@ class PackageObserver
     {
         $package->companies->each(function ($company) use ($package) {
             if ($package->isDirty('module_in_package')) {
-                (new CompanyObserver())->updateModuleSettings($company);
+                (new CompanyObserver)->updateModuleSettings($company);
             }
 
             $companyEmployeesCount = $company->employees()->count();
@@ -34,5 +33,4 @@ class PackageObserver
         });
 
     }
-
 }

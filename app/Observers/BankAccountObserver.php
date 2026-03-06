@@ -7,7 +7,6 @@ use App\Models\BankTransaction;
 
 class BankAccountObserver
 {
-
     public function saving(BankAccount $bankAccount)
     {
         if (user()) {
@@ -28,7 +27,7 @@ class BankAccountObserver
 
     public function created(BankAccount $bankAccount)
     {
-        $transaction = new BankTransaction();
+        $transaction = new BankTransaction;
         $transaction->company_id = $bankAccount->company_id;
         $transaction->bank_account_id = $bankAccount->id;
         $transaction->transaction_date = now()->format('Y-m-d');
@@ -49,7 +48,7 @@ class BankAccountObserver
             $currentBankAccount = BankAccount::find($bankAccount->id);
             $bankBalance = $currentBankAccount->bank_balance;
 
-            $transaction = new BankTransaction();
+            $transaction = new BankTransaction;
 
             if ($bankAccount->getOriginal('opening_balance') > $bankAccount->opening_balance) {
                 $newBalance = $originalBalance - $getCurrentBalance;
@@ -73,5 +72,4 @@ class BankAccountObserver
         }
 
     }
-
 }

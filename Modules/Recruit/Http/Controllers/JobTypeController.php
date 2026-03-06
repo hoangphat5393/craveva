@@ -3,21 +3,20 @@
 namespace Modules\Recruit\Http\Controllers;
 
 use App\Helper\Reply;
-use App\Models\BaseModel;
-use Illuminate\Http\Request;
-use Illuminate\Contracts\Support\Renderable;
-use Modules\Recruit\Entities\RecruitJobType;
 use App\Http\Controllers\AccountBaseController;
+use App\Models\BaseModel;
+use Illuminate\Contracts\Support\Renderable;
+use Illuminate\Http\Request;
+use Modules\Recruit\Entities\RecruitJobType;
 use Modules\Recruit\Http\Requests\StoreJobType;
 
 class JobTypeController extends AccountBaseController
 {
-
     /**
      * Show the form for creating a new resource.
+     *
      * @return Renderable
      */
-
     public function create()
     {
         $this->jobTypes = RecruitJobType::all();
@@ -27,20 +26,20 @@ class JobTypeController extends AccountBaseController
 
     /**
      * Store a newly created resource in storage.
-     * @param Request $request
+     *
+     * @param  Request  $request
      * @return array
      */
     public function store(StoreJobType $request)
     {
-        $group = new RecruitJobType();
+        $group = new RecruitJobType;
         $group->job_type = $request->job_type;
         $group->save();
 
         if ($request->selectedStages != '') {
-            $selectedStages = $request->selectedStages . ',' . $group->id;
+            $selectedStages = $request->selectedStages.','.$group->id;
             $selectedStages = explode(',', $selectedStages);
-        }
-        else {
+        } else {
             $selectedStages = [$group->id];
         }
 
@@ -54,9 +53,9 @@ class JobTypeController extends AccountBaseController
                 $checkSelected = 'selected';
             }
 
-            $options .= '<option ' . $checkSelected . '
-            data-content="<span class=\'badge badge-pill badge-light border\'><div class=\'d-inline-block mr-1\'></div> ' . $stage->job_type . ' </span>"
-            value="' . $stage->id . '"> ' . $stage->job_type . '</option>';
+            $options .= '<option '.$checkSelected.'
+            data-content="<span class=\'badge badge-pill badge-light border\'><div class=\'d-inline-block mr-1\'></div> '.$stage->job_type.' </span>"
+            value="'.$stage->id.'"> '.$stage->job_type.'</option>';
         }
 
         return Reply::successWithData(__('recruit::messages.jobTypeAdded'), ['data' => $options]);
@@ -64,8 +63,9 @@ class JobTypeController extends AccountBaseController
 
     /**
      * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
+     *
+     * @param  Request  $request
+     * @param  int  $id
      * @return Renderable
      */
     public function update(StoreJobType $request, $id)
@@ -83,7 +83,8 @@ class JobTypeController extends AccountBaseController
 
     /**
      * Remove the specified resource from storage.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function destroy($id)
@@ -95,5 +96,4 @@ class JobTypeController extends AccountBaseController
 
         return Reply::successWithData(__('messages.deleteSuccess'), ['data' => $options]);
     }
-
 }

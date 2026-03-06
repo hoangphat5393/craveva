@@ -9,14 +9,15 @@ use Illuminate\Queue\SerializesModels;
 
 class BulkShiftEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     /**
      * Create a new event instance.
      */
     public $userData;
+
     public $dateRange;
+
     public $userId;
 
     public function __construct(User $userData, $dateRange, $userId)
@@ -25,5 +26,4 @@ class BulkShiftEvent
         $this->dateRange = $dateRange;
         $this->userId = $userId;
     }
-
 }

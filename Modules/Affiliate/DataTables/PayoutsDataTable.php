@@ -2,20 +2,22 @@
 
 namespace Modules\Affiliate\DataTables;
 
+use App\DataTables\BaseDataTable;
 use App\Scopes\ActiveScope;
 use App\Scopes\CompanyScope;
-use App\DataTables\BaseDataTable;
-use Yajra\DataTables\Html\Button;
-use Yajra\DataTables\Html\Column;
 use Modules\Affiliate\Entities\Payout;
 use Modules\Affiliate\Enums\PaymentStatus;
+use Yajra\DataTables\Html\Button;
+use Yajra\DataTables\Html\Column;
 
 class PayoutsDataTable extends BaseDataTable
 {
-
     private $viewPayoutsPermission;
+
     private $editPayoutsPermission;
+
     private $deletePayoutsPermission;
+
     private $changePayoutsStatusPermission;
 
     public function __construct()
@@ -31,7 +33,7 @@ class PayoutsDataTable extends BaseDataTable
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
@@ -39,41 +41,41 @@ class PayoutsDataTable extends BaseDataTable
         return datatables()
             ->eloquent($query)
             ->addIndexColumn()
-            ->addColumn('affiliate_name', fn($row) => $row->affiliate->user->name)
-            ->addColumn('balance', fn($row) => global_currency_format($row->balance))
-            ->addColumn('amount_requested', fn($row) => global_currency_format($row->amount_requested))
-            ->addColumn('payment_method', fn($row) => $row->payment_method->label())
-            ->addColumn(('note'), fn($row) => $row->note ?? '-')
-            ->editColumn('paid_at', fn($row) => $row->paid_at ? $row->paid_at->format(global_setting()->date_format) : '-')
-            ->editColumn('created_at', fn($row) => $row->created_at->format(global_setting()->date_format))
+            ->addColumn('affiliate_name', fn ($row) => $row->affiliate->user->name)
+            ->addColumn('balance', fn ($row) => global_currency_format($row->balance))
+            ->addColumn('amount_requested', fn ($row) => global_currency_format($row->amount_requested))
+            ->addColumn('payment_method', fn ($row) => $row->payment_method->label())
+            ->addColumn(('note'), fn ($row) => $row->note ?? '-')
+            ->editColumn('paid_at', fn ($row) => $row->paid_at ? $row->paid_at->format(global_setting()->date_format) : '-')
+            ->editColumn('created_at', fn ($row) => $row->created_at->format(global_setting()->date_format))
             ->addColumn('action', function ($row) {
 
                 $action = '<div class="task_view">
 
                 <div class="dropdown">
                     <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" type="link"
-                        id="dropdownMenuLink-' . $row->id . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        id="dropdownMenuLink-'.$row->id.'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="icon-options-vertical icons"></i>
                     </a>
-                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-' . $row->id . '" tabindex="0">';
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-'.$row->id.'" tabindex="0">';
 
                 if ($this->viewPayoutsPermission == 'all' || (user()->id == $row->affiliate->user_id)) {
-                    $action .= '<a href="' . route('payout.show', $row->id) . '" class="openRightModal dropdown-item"><i class="fa fa-eye mr-2"></i>' . __('app.view') . '</a>';
+                    $action .= '<a href="'.route('payout.show', $row->id).'" class="openRightModal dropdown-item"><i class="fa fa-eye mr-2"></i>'.__('app.view').'</a>';
                 }
 
                 if ($row->status == PaymentStatus::Pending) {
 
                     if ($this->editPayoutsPermission == 'all' || (user()->id == $row->affiliate->user_id)) {
-                        $action .= '<a class="dropdown-item openRightModal" href="' . route('payout.edit', $row->id) . '" >
+                        $action .= '<a class="dropdown-item openRightModal" href="'.route('payout.edit', $row->id).'" >
                             <i class="fa fa-edit mr-2"></i>
-                            ' . trans('app.edit') . '
+                            '.trans('app.edit').'
                         </a>';
                     }
 
                     if ($this->deletePayoutsPermission == 'all' || (user()->id == $row->affiliate->user_id)) {
-                        $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-toggle="tooltip"  data-payout-id="' . $row->id . '">
+                        $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-toggle="tooltip"  data-payout-id="'.$row->id.'">
                                 <i class="fa fa-trash mr-2"></i>
-                                ' . trans('app.delete') . '
+                                '.trans('app.delete').'
                             </a>';
                     }
                 }
@@ -87,20 +89,20 @@ class PayoutsDataTable extends BaseDataTable
             ->addColumn('status', function ($row) {
                 if ($this->changePayoutsStatusPermission == 'all') {
 
-                    $select = '<select class="form-control select-picker change-payout-status" data-payout-id="' . $row->id . '">';
+                    $select = '<select class="form-control select-picker change-payout-status" data-payout-id="'.$row->id.'">';
 
                     if ($row->status == PaymentStatus::Paid) {
-                        $select .= '<option value="' . PaymentStatus::Paid->value . '" data-content="' . PaymentStatus::Paid->html() . '" selected>' . PaymentStatus::Paid->label() . '</option>';
+                        $select .= '<option value="'.PaymentStatus::Paid->value.'" data-content="'.PaymentStatus::Paid->html().'" selected>'.PaymentStatus::Paid->label().'</option>';
                     }
 
                     if ($row->status == PaymentStatus::Pending) {
-                        $select .= '<option value="' . PaymentStatus::Pending->value . '" data-content="' . PaymentStatus::Pending->html() . '" selected>' . PaymentStatus::Pending->label() . '</option>';
-                        $select .= '<option value="' . PaymentStatus::Paid->value . '" data-content="' . PaymentStatus::Paid->html() . '">' . PaymentStatus::Paid->label() . '</option>';
-                        $select .= '<option value="' . PaymentStatus::Canceled->value . '" data-content="' . PaymentStatus::Canceled->html() . '">' . PaymentStatus::Canceled->label() . '</option>';
+                        $select .= '<option value="'.PaymentStatus::Pending->value.'" data-content="'.PaymentStatus::Pending->html().'" selected>'.PaymentStatus::Pending->label().'</option>';
+                        $select .= '<option value="'.PaymentStatus::Paid->value.'" data-content="'.PaymentStatus::Paid->html().'">'.PaymentStatus::Paid->label().'</option>';
+                        $select .= '<option value="'.PaymentStatus::Canceled->value.'" data-content="'.PaymentStatus::Canceled->html().'">'.PaymentStatus::Canceled->label().'</option>';
                     }
 
                     if ($row->status == PaymentStatus::Canceled) {
-                        $select .= '<option value="' . PaymentStatus::Canceled->value . '" data-content="' . PaymentStatus::Canceled->html() . '" selected>' . PaymentStatus::Canceled->label() . '</option>';
+                        $select .= '<option value="'.PaymentStatus::Canceled->value.'" data-content="'.PaymentStatus::Canceled->html().'" selected>'.PaymentStatus::Canceled->label().'</option>';
                     }
 
                     $select .= '</select>';
@@ -136,7 +138,7 @@ class PayoutsDataTable extends BaseDataTable
         $model = $model->with('affiliate.user')
             ->withoutGlobalScopes([ActiveScope::class, CompanyScope::class])
             ->whereHas('affiliate.user', function ($query) use ($searchText) {
-                $query->where('name', 'like', '%' . $searchText . '%');
+                $query->where('name', 'like', '%'.$searchText.'%');
             });
 
         if (request('affiliateUserId')) {
@@ -176,7 +178,7 @@ class PayoutsDataTable extends BaseDataTable
                 }',
             ]);
 
-        $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
+        $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
 
         return $dataTable;
     }
@@ -203,8 +205,7 @@ class PayoutsDataTable extends BaseDataTable
                 ->printable(false)
                 ->orderable(false)
                 ->searchable(false)
-                ->addClass('text-right pr-20')
+                ->addClass('text-right pr-20'),
         ];
     }
-
 }

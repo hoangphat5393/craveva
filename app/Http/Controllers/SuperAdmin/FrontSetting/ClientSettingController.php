@@ -4,18 +4,17 @@ namespace App\Http\Controllers\SuperAdmin\FrontSetting;
 
 use App\Helper\Files;
 use App\Helper\Reply;
-use Illuminate\Http\Request;
-use App\Models\LanguageSetting;
-use App\Models\SuperAdmin\FrontClients;
-use App\Models\SuperAdmin\TrFrontDetail;
 use App\Http\Controllers\AccountBaseController;
 use App\Http\Requests\SuperAdmin\ClientSettings\StoreRequest;
 use App\Http\Requests\SuperAdmin\ClientSettings\UpdateRequest;
 use App\Models\GlobalSetting;
+use App\Models\LanguageSetting;
+use App\Models\SuperAdmin\FrontClients;
+use App\Models\SuperAdmin\TrFrontDetail;
+use Illuminate\Http\Request;
 
 class ClientSettingController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -39,7 +38,6 @@ class ClientSettingController extends AccountBaseController
         $this->activeSettingMenu = 'client_settings';
 
         $this->lang = LanguageSetting::where('language_code', $lang)->first();
-
 
         $this->trFrontDetail = TrFrontDetail::select('client_title', 'client_detail', 'language_setting_id')->where('language_setting_id', $this->lang->id)->first();
         $this->allLangTranslation = TrFrontDetail::select('language_setting_id')->whereNotNull('client_title')->get()->toArray();
@@ -74,12 +72,11 @@ class ClientSettingController extends AccountBaseController
     /**
      * Store a newly created resource in storage.
      *
-     * @param StoreRequest $request
      * @return \Illuminate\Http\Response
      */
     public function store(StoreRequest $request)
     {
-        $frontClients = new FrontClients();
+        $frontClients = new FrontClients;
 
         $frontClients->language_setting_id = $request->current_language_id;
         $frontClients->title = $request->title;
@@ -101,7 +98,7 @@ class ClientSettingController extends AccountBaseController
     /**
      * Show the form for editing the specified resource.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function edit(Request $request, $id)
@@ -116,8 +113,7 @@ class ClientSettingController extends AccountBaseController
     /**
      * Update the specified resource in storage.
      *
-     * @param UpdateRequest $request
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function update(UpdateRequest $request, $id)
@@ -150,7 +146,7 @@ class ClientSettingController extends AccountBaseController
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy(Request $request, $id)
@@ -175,17 +171,15 @@ class ClientSettingController extends AccountBaseController
             'language_setting_id' => $request->language_setting_id,
         ];
 
-        if (!is_null($row)) {
+        if (! is_null($row)) {
             $row->update($data);
-        }
-        else {
+        } else {
             $row = TrFrontDetail::create($data);
         }
 
         return Reply::successWithData(__('messages.updateSuccess'), [
             'data' => $request->title,
-            'lang' => $row->language->language_code
+            'lang' => $row->language->language_code,
         ]);
     }
-
 }

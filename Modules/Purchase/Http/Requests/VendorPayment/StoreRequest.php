@@ -6,13 +6,11 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreRequest extends FormRequest
 {
-
     /**
      * Get the validation rules that apply to the request.
      *
      * @return array
      */
-
     public function rules()
     {
         $data = [];
@@ -21,12 +19,12 @@ class StoreRequest extends FormRequest
             // 'vendor_id' => 'required',
             'payment_made' => 'required|gt:0',
             'payment_date' => 'required',
-            'excess' => 'required|numeric|min:0'
+            'excess' => 'required|numeric|min:0',
         ];
 
         request()->due = is_null(request()->due) ? [] : request()->due;
 
-        if(in_array(1, request()->due)){
+        if (in_array(1, request()->due)) {
             $data['due'] = 'required|numeric|min:0';
         }
 
@@ -46,8 +44,7 @@ class StoreRequest extends FormRequest
     public function messages()
     {
         return [
-            'excess.require' => __('purchase::modules.vendorPayment.shouldBeGreater')
+            'excess.require' => __('purchase::modules.vendorPayment.shouldBeGreater'),
         ];
     }
-
 }

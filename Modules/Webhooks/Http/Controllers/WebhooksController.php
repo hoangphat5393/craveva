@@ -21,13 +21,12 @@ use Modules\Webhooks\Http\Requests\StoreWebhookRequest;
 
 class WebhooksController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = __('webhooks::app.webhooks');
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('webhooks', $this->user->modules));
+            abort_403(! in_array('webhooks', $this->user->modules));
 
             return $next($request);
         });
@@ -35,6 +34,7 @@ class WebhooksController extends AccountBaseController
 
     /**
      * Display a listing of the resource.
+     *
      * @return Renderable
      */
     public function index(WebhookDataTable $dataTable)
@@ -46,6 +46,7 @@ class WebhooksController extends AccountBaseController
 
     /**
      * Show the form for creating a new resource.
+     *
      * @return Renderable
      */
     public function create()
@@ -66,7 +67,8 @@ class WebhooksController extends AccountBaseController
 
     /**
      * Store a newly created resource in storage.
-     * @param Request $request
+     *
+     * @param  Request  $request
      * @return Renderable
      */
     public function store(StoreWebhookRequest $request)
@@ -74,11 +76,11 @@ class WebhooksController extends AccountBaseController
         abort_403(user()->permission('add_webhooks') != 'all');
         DB::beginTransaction();
 
-        $webhook = new WebhooksSetting();
+        $webhook = new WebhooksSetting;
         $webhook->name = $request->name;
         $webhook->company_id = $this->company->id;
         $webhook->webhook_for = $request->webhook_for;
-        $webhook->action = (int)$request->webhook_action;
+        $webhook->action = (int) $request->webhook_action;
         $webhook->url = $request->request_url;
         $webhook->request_method = $request->request_method;
         $webhook->request_format = $request->request_format;
@@ -87,7 +89,7 @@ class WebhooksController extends AccountBaseController
         if (isset($request->headers_name)) {
 
             foreach ($request->headers_name as $key => $header) {
-                $headers = new WebhooksRequest();
+                $headers = new WebhooksRequest;
                 $headers->company_id = $this->company->id;
                 $headers->webhooks_setting_id = $webhook->id;
                 $headers->headers_key = $header;
@@ -103,7 +105,7 @@ class WebhooksController extends AccountBaseController
         if (isset($request->body_key)) {
 
             foreach ($request->body_key as $key => $data) {
-                $body = new WebhooksRequest();
+                $body = new WebhooksRequest;
                 $body->company_id = $this->company->id;
                 $body->webhooks_setting_id = $webhook->id;
                 $body->request_type = 'body';
@@ -123,7 +125,8 @@ class WebhooksController extends AccountBaseController
 
     /**
      * Show the form for editing the specified resource.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function edit($id)
@@ -146,8 +149,9 @@ class WebhooksController extends AccountBaseController
 
     /**
      * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
+     *
+     * @param  Request  $request
+     * @param  int  $id
      * @return Renderable
      */
     public function update(StoreWebhookRequest $request, $id)
@@ -159,7 +163,7 @@ class WebhooksController extends AccountBaseController
         $webhook->name = $request->name;
         $webhook->company_id = $this->company->id;
         $webhook->webhook_for = $request->webhook_for;
-        $webhook->action = (int)$request->webhook_action;
+        $webhook->action = (int) $request->webhook_action;
         $webhook->url = $request->request_url;
         $webhook->request_method = $request->request_method;
         $webhook->request_format = $request->request_format;
@@ -170,7 +174,7 @@ class WebhooksController extends AccountBaseController
         if (isset($request->headers_name)) {
 
             foreach ($request->headers_name as $key => $header) {
-                $headers = new WebhooksRequest();
+                $headers = new WebhooksRequest;
                 $headers->company_id = $this->company->id;
                 $headers->webhooks_setting_id = $webhook->id;
                 $headers->headers_key = $header;
@@ -186,7 +190,7 @@ class WebhooksController extends AccountBaseController
         if (isset($request->body_key)) {
 
             foreach ($request->body_key as $key => $data) {
-                $body = new WebhooksRequest();
+                $body = new WebhooksRequest;
                 $body->company_id = $this->company->id;
                 $body->webhooks_setting_id = $webhook->id;
                 $body->request_type = 'body';
@@ -206,7 +210,8 @@ class WebhooksController extends AccountBaseController
 
     /**
      * Remove the specified resource from storage.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function destroy($id)
@@ -214,14 +219,13 @@ class WebhooksController extends AccountBaseController
         abort_403(user()->permission('delete_webhooks') != 'all');
         $webhook = WebhooksSetting::findOrFail($id);
 
-        if (!$webhook) {
+        if (! $webhook) {
             return Reply::error(__('webhooks::messages.webhookNotFound'));
         }
 
         // Delete webhook and associated requests
         $webhook->webhooksRequests()->delete();
         $webhook->delete();
-
 
         return Reply::successWithData(__('messages.deleteSuccess'), ['redirectUrl' => route('webhooks.index')]);
     }
@@ -230,11 +234,9 @@ class WebhooksController extends AccountBaseController
     {
         if ($request->type == 'status') {
             WebhooksSetting::where('id', $request->id)->update(['status' => $request->status]);
-        }
-        elseif ($request->type == 'debug') {
+        } elseif ($request->type == 'debug') {
             WebhooksSetting::where('id', $request->id)->update(['run_debug' => $request->status]);
-        }
-        else {
+        } else {
             return Reply::error(__('messages.selectAction'));
         }
 
@@ -256,5 +258,4 @@ class WebhooksController extends AccountBaseController
 
         return Reply::dataOnly(['options' => $options]);
     }
-
 }

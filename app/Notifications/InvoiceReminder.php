@@ -7,7 +7,6 @@ use Illuminate\Support\HtmlString;
 
 class InvoiceReminder extends BaseNotification
 {
-
     private $invoice;
 
     /**
@@ -24,7 +23,7 @@ class InvoiceReminder extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     // phpcs:ignore
@@ -42,7 +41,7 @@ class InvoiceReminder extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
@@ -55,16 +54,16 @@ class InvoiceReminder extends BaseNotification
         $url = url()->temporarySignedRoute('front.invoice', now()->addDays(GlobalSetting::SIGNED_ROUTE_EXPIRY), $this->invoice->hash);
         $url = getDomainSpecificUrl($url, $this->company);
 
-        $content = __('email.invoiceReminder.text') . ' ' . now($setting->timezone)->addDays($invoice_setting)->toFormattedDateString() . '<br>' . new HtmlString($invoice_number) . '<br>' . __('email.messages.loginForMoreDetails');
+        $content = __('email.invoiceReminder.text').' '.now($setting->timezone)->addDays($invoice_setting)->toFormattedDateString().'<br>'.new HtmlString($invoice_number).'<br>'.__('email.messages.loginForMoreDetails');
 
         $build
-            ->subject(__('email.invoiceReminder.subject') . ' - ' . config('app.name'))
+            ->subject(__('email.invoiceReminder.subject').' - '.config('app.name'))
             ->markdown('mail.email', [
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
                 'actionText' => __('email.invoiceReminder.action'),
-                'notifiableName' => $notifiable->name
+                'notifiableName' => $notifiable->name,
             ]);
 
         parent::resetLocale();
@@ -75,13 +74,12 @@ class InvoiceReminder extends BaseNotification
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
-//phpcs:ignore
+    // phpcs:ignore
     public function toArray($notifiable)
     {
         return $notifiable->toArray();
     }
-
 }

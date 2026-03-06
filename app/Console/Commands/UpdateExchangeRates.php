@@ -3,18 +3,17 @@
 namespace App\Console\Commands;
 
 use App\Models\Company;
+use App\Models\Currency;
+use App\Models\Expense;
 use App\Models\GlobalSetting;
 use App\Models\Invoice;
-use App\Models\Currency;
 use App\Models\Payment;
-use App\Models\Expense;
 use Exception;
 use GuzzleHttp\Client;
 use Illuminate\Console\Command;
 
 class UpdateExchangeRates extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
@@ -29,18 +28,16 @@ class UpdateExchangeRates extends Command
      */
     protected $description = 'Updates the exchange rates for all the currencies in currencies table.';
 
-
     /**
      * Execute the console command.
      *
      * @return mixed
      */
-
     public function handle()
     {
         $globalSetting = GlobalSetting::first();
 
-        if (!$globalSetting) {
+        if (! $globalSetting) {
             return Command::SUCCESS;
         }
 
@@ -48,13 +45,13 @@ class UpdateExchangeRates extends Command
 
         if ($globalSetting->currency_key_version == 'dedicated') {
             $currencyApiKeyVersion = $globalSetting->dedicated_subdomain;
-        }else{
+        } else {
             $currencyApiKeyVersion = $globalSetting->currency_key_version === 'premium' ? 'api' : $globalSetting->currency_key_version;
         }
 
         if ($currencyApiKey && $currencyApiKeyVersion) {
 
-            $client = new Client();
+            $client = new Client;
 
             $this->info('Updating exchange rates...');
 
@@ -66,11 +63,12 @@ class UpdateExchangeRates extends Command
             $exchangeRateCache = [];
 
             try {
-                $response = $client->request('GET', 'https://' . $currencyApiKeyVersion . '.currconv.com/api/v7/convert?q=USD_USD&compact=ultra&apiKey=' . $currencyApiKey);
+                $response = $client->request('GET', 'https://'.$currencyApiKeyVersion.'.currconv.com/api/v7/convert?q=USD_USD&compact=ultra&apiKey='.$currencyApiKey);
                 $response = json_decode($response->getBody(), true);
             } catch (Exception $e) {
                 // Mark this conversion as failed in cache to avoid retrying
                 $exchangeRateCache['USD_USD'] = false;
+
                 // echo $e->getMessage();
                 return Command::SUCCESS;
             }
@@ -79,18 +77,17 @@ class UpdateExchangeRates extends Command
                 ->chunk(50, function ($companies) use ($currencyApiKey, $currencyApiKeyVersion, $client, $progressBar, &$exchangeRateCache) {
                     foreach ($companies as $company) {
                         $company->currencies->each(function ($currency) use ($currencyApiKey, $currencyApiKeyVersion, $company, $client, &$exchangeRateCache) {
-                            $conversionKey = $currency->currency_code . '_' . $company->currency->currency_code;
+                            $conversionKey = $currency->currency_code.'_'.$company->currency->currency_code;
 
                             // Skip if we've already had an API error for this conversion
                             if (isset($exchangeRateCache[$conversionKey]) && $exchangeRateCache[$conversionKey] === false) {
                                 return;
                             }
 
-
                             try {
                                 // Check if we already have this conversion rate cached
-                                if (!isset($exchangeRateCache[$conversionKey])) {
-                                    $response = $client->request('GET', 'https://' . $currencyApiKeyVersion . '.currconv.com/api/v7/convert?q=' . $conversionKey . '&compact=ultra&apiKey=' . $currencyApiKey);
+                                if (! isset($exchangeRateCache[$conversionKey])) {
+                                    $response = $client->request('GET', 'https://'.$currencyApiKeyVersion.'.currconv.com/api/v7/convert?q='.$conversionKey.'&compact=ultra&apiKey='.$currencyApiKey);
                                     $response = json_decode($response->getBody(), true);
                                     $exchangeRateCache[$conversionKey] = $response[$conversionKey];
                                 }

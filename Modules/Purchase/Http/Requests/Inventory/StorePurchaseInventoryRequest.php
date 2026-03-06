@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class StorePurchaseInventoryRequest extends CoreRequest
 {
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -18,7 +17,7 @@ class StorePurchaseInventoryRequest extends CoreRequest
             'date' => 'required|date',
             'reason_id' => 'required|numeric',
             'warehouse_id' => 'nullable|numeric',
-            'type'=> 'required|in:quantity,value',
+            'type' => 'required|in:quantity,value',
             'quantity_adjusted*' => 'required_if:type,quantity',
             'adjusted_value*' => 'required_if:type,value',
             'manufacturing_date.*' => 'nullable|date',
@@ -32,7 +31,7 @@ class StorePurchaseInventoryRequest extends CoreRequest
     {
         return [
             'reason_id.required' => __('purchase::messages.inventory.reason'),
-            'type.required' => __('purchase::messages.inventory.type')
+            'type.required' => __('purchase::messages.inventory.type'),
         ];
     }
 
@@ -44,7 +43,8 @@ class StorePurchaseInventoryRequest extends CoreRequest
                 if ($date) {
                     try {
                         $manufacturingDates[$key] = \Carbon\Carbon::createFromFormat('d/m/Y', $date)->format('Y-m-d');
-                    } catch (\Exception $e) {}
+                    } catch (\Exception $e) {
+                    }
                 }
             }
             $this->merge(['manufacturing_date' => $manufacturingDates]);
@@ -56,7 +56,8 @@ class StorePurchaseInventoryRequest extends CoreRequest
                 if ($date) {
                     try {
                         $expirationDates[$key] = \Carbon\Carbon::createFromFormat('d/m/Y', $date)->format('Y-m-d');
-                    } catch (\Exception $e) {}
+                    } catch (\Exception $e) {
+                    }
                 }
             }
             $this->merge(['expiration_date' => $expirationDates]);
@@ -72,5 +73,4 @@ class StorePurchaseInventoryRequest extends CoreRequest
     {
         return true;
     }
-
 }

@@ -25,5 +25,4 @@ class UserChatFactory extends Factory
             'message' => fake()->realText(200),
         ];
     }
-
 }

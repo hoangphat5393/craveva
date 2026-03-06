@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class StoreLeave extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -30,7 +29,7 @@ class StoreLeave extends CoreRequest
             'duration' => 'required',
             'leave_date' => 'required_if:duration,single',
             'multi_date' => 'required_if:duration,multiple',
-            'reason' => 'required'
+            'reason' => 'required',
         ];
     }
 
@@ -40,5 +39,4 @@ class StoreLeave extends CoreRequest
             'leave_type_id' => __('modules.leaves.leaveType'),
         ];
     }
-
 }

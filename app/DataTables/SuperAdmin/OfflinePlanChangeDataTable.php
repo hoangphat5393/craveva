@@ -9,11 +9,10 @@ use Yajra\DataTables\Html\Column;
 
 class OfflinePlanChangeDataTable extends BaseDataTable
 {
-
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
@@ -29,28 +28,27 @@ class OfflinePlanChangeDataTable extends BaseDataTable
 
                     <div class="dropdown">
                         <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" type="link"
-                            id="dropdownMenuLink-' . $row->id . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            id="dropdownMenuLink-'.$row->id.'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="icon-options-vertical icons"></i>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-' . $row->id . '" tabindex="0">';
-            $action .= '<a href="' . route('superadmin.billin-offline-plan.download', md5($row->id)) . '" id="downloadFile"
-                            data-id="' . $row->id . '" class="dropdown-item">
-                            <i class="fa fa-download mr-2"></i>' . __('app.download') . ' ' . __('app.receipt') . '
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-'.$row->id.'" tabindex="0">';
+            $action .= '<a href="'.route('superadmin.billin-offline-plan.download', md5($row->id)).'" id="downloadFile"
+                            data-id="'.$row->id.'" class="dropdown-item">
+                            <i class="fa fa-download mr-2"></i>'.__('app.download').' '.__('app.receipt').'
                         </a>';
 
-
             if (user()->is_superadmin) {
-                $action .= '<a href="' . route('superadmin.offline-plan.show', $row->id) . '" class="dropdown-item openRightModal">
-                    <i class="fa fa-eye mr-2"></i>' . __('app.view') . '</a>';
+                $action .= '<a href="'.route('superadmin.offline-plan.show', $row->id).'" class="dropdown-item openRightModal">
+                    <i class="fa fa-eye mr-2"></i>'.__('app.view').'</a>';
 
                 if ($row->status == 'pending' && $acceptPermission == 'all') {
-                    $action .= '<a href="javascript:;" data-id="' . $row->id . '" data-status="verified" class="dropdown-item change-status">
-                                <i class="fa fa-check mr-2"></i>' . __('superadmin.offlineRequestStatusButton.verified')
-                        . '</a>';
+                    $action .= '<a href="javascript:;" data-id="'.$row->id.'" data-status="verified" class="dropdown-item change-status">
+                                <i class="fa fa-check mr-2"></i>'.__('superadmin.offlineRequestStatusButton.verified')
+                        .'</a>';
 
-                    $action .= '<a href="javascript:;" data-id="' . $row->id . '" data-status="rejected" class="dropdown-item change-status">
-                                <i class="fa fa-times mr-2"></i>' . __('superadmin.offlineRequestStatusButton.rejected')
-                        . '</a>';
+                    $action .= '<a href="javascript:;" data-id="'.$row->id.'" data-status="rejected" class="dropdown-item change-status">
+                                <i class="fa fa-times mr-2"></i>'.__('superadmin.offlineRequestStatusButton.rejected')
+                        .'</a>';
                 }
             }
 
@@ -67,18 +65,19 @@ class OfflinePlanChangeDataTable extends BaseDataTable
                 default => 'yellow',
             };
 
-            return '<i class="fa fa-circle mr-1 text-' . $status . ' f-10"></i>' . __('superadmin.offlineRequestStatus.' . $row->status);
+            return '<i class="fa fa-circle mr-1 text-'.$status.' f-10"></i>'.__('superadmin.offlineRequestStatus.'.$row->status);
         });
         $datatables->addColumn('package_name', function ($row) {
-            if($row->package->package == 'lifetime') {
+            if ($row->package->package == 'lifetime') {
                 return $row->package->name;
 
             }
-            return $row->package->name . ' (' . ($row->package_type == 'annual' ? __('app.annually') : __('app.monthly')) . ')';
+
+            return $row->package->name.' ('.($row->package_type == 'annual' ? __('app.annually') : __('app.monthly')).')';
         });
         $datatables->addColumn('company_name', function ($row) {
 
-            return user()->is_superadmin ? '<a href="' . route('superadmin.offline-plan.show', $row->id) . '"  class="text-darkest-grey openRightModal">' . $row->company->company_name . '</a>' : $row->company->company_name;
+            return user()->is_superadmin ? '<a href="'.route('superadmin.offline-plan.show', $row->id).'"  class="text-darkest-grey openRightModal">'.$row->company->company_name.'</a>' : $row->company->company_name;
         });
 
         $datatables->addColumn('payment_by', function ($row) {
@@ -86,7 +85,7 @@ class OfflinePlanChangeDataTable extends BaseDataTable
         });
 
         $datatables->editColumn('created_at', function ($row) {
-            return $row->created_at->setTimezone(companyOrGlobalSetting()->timezone)->translatedFormat(companyOrGlobalSetting()->date_format . ' ' . companyOrGlobalSetting()->time_format);
+            return $row->created_at->setTimezone(companyOrGlobalSetting()->timezone)->translatedFormat(companyOrGlobalSetting()->date_format.' '.companyOrGlobalSetting()->time_format);
         });
 
         $datatables->rawColumns(['company_name', 'action', 'status']);
@@ -96,7 +95,6 @@ class OfflinePlanChangeDataTable extends BaseDataTable
     }
 
     /**
-     * @param OfflinePlanChange $model
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function query(OfflinePlanChange $model)
@@ -104,7 +102,7 @@ class OfflinePlanChangeDataTable extends BaseDataTable
         return $model->with(['company' => function ($q) {
             $q->select('id', 'company_name');
         }, 'package' => function ($q) {
-            $q->select('id', 'name','package');
+            $q->select('id', 'name', 'package');
         }, 'offlineMethod' => function ($q) {
             $q->select('id', 'name');
         }])->select('offline_plan_changes.*');
@@ -130,7 +128,7 @@ class OfflinePlanChangeDataTable extends BaseDataTable
                     $(".statusChange").selectpicker();
                 }',
             ])
-            ->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
+            ->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
     }
 
     /**
@@ -142,7 +140,7 @@ class OfflinePlanChangeDataTable extends BaseDataTable
     {
 
         $data1 = [
-            '#' => ['data' => 'DT_RowIndex', 'orderable' => false, 'searchable' => false, 'visible' => !showId(), 'title' => '#'],
+            '#' => ['data' => 'DT_RowIndex', 'orderable' => false, 'searchable' => false, 'visible' => ! showId(), 'title' => '#'],
             __('app.id') => ['data' => 'id', 'name' => 'id', 'title' => __('app.id'), 'visible' => showId()],
         ];
 
@@ -164,11 +162,10 @@ class OfflinePlanChangeDataTable extends BaseDataTable
                 ->printable(false)
                 ->orderable(false)
                 ->searchable(false)
-                ->addClass('text-right pr-20')
+                ->addClass('text-right pr-20'),
         ];
 
         return array_merge($data1, $company, $data2);
 
     }
-
 }

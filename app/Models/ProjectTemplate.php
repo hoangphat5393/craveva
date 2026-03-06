@@ -32,6 +32,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read int|null $members_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ProjectTemplateTask[] $tasks
  * @property-read int|null $tasks_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectTemplate newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectTemplate newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectTemplate query()
@@ -47,19 +48,22 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectTemplate whereProjectName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectTemplate whereProjectSummary($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectTemplate whereUpdatedAt($value)
+ *
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User[] $projectMembers
  * @property-read int|null $members_many_count
  * @property int|null $company_id
  * @property int $added_by
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectTemplate whereAddedBy($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectTemplate whereCompanyId($value)
+ *
  * @property-read int|null $project_members_count
+ *
  * @mixin \Eloquent
  */
 class ProjectTemplate extends BaseModel
 {
-
     use CustomFieldsTrait;
     use HasCompany;
 
@@ -99,8 +103,7 @@ class ProjectTemplate extends BaseModel
 
         if ($project > 0) {
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
@@ -116,8 +119,7 @@ class ProjectTemplate extends BaseModel
 
         if ($project > 0) {
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
@@ -138,5 +140,4 @@ class ProjectTemplate extends BaseModel
     {
         return $this->belongsToMany(User::class, 'project_template_members');
     }
-
 }

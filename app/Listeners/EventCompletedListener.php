@@ -9,11 +9,9 @@ use Illuminate\Support\Facades\Notification;
 
 class EventCompletedListener
 {
-
     /**
      * Handle the event.
      */
-
     public function handle(EventCompletedEvent $event)
     {
         $notifyUsers = $event->notifyUser->filter(function ($user) use ($event) {
@@ -29,5 +27,4 @@ class EventCompletedListener
         }
 
     }
-
 }

@@ -30,8 +30,7 @@ use PayPal\Rest\ApiContext;
 
 class PaypalController extends Controller
 {
-
-    use MakePaymentTrait, MakeOrderInvoiceTrait;
+    use MakeOrderInvoiceTrait, MakePaymentTrait;
 
     private $api_context;
 
@@ -50,7 +49,7 @@ class PaypalController extends Controller
     {
         $company = Company::where('hash', $companyHash)->first();
 
-        if (!$company) {
+        if (! $company) {
             throw new ApiException('Please enter the correct webhook url. You have entered wrong webhook url', null, 200);
         }
 
@@ -83,13 +82,12 @@ class PaypalController extends Controller
     /**
      * Store a details of payment with PayPal.
      *
-     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    /* Id could be order id OR invoice id, differentiate according to type  */
+    /* Id could be order id OR invoice id, differentiate according to type */
     public function paymentWithpaypal(Request $request, $id)
     {
-        
+
         $redirectRoute = $request->type == 'order' ? 'orders.show' : 'invoices.show';
         $redirectRoute = url()->temporarySignedRoute($redirectRoute, now()->addDays(GlobalSetting::SIGNED_ROUTE_EXPIRY), $id);
 
@@ -117,7 +115,7 @@ class PaypalController extends Controller
             /** @phpstan-ignore-next-line */
             $currencyCode = $order->currency->currency_code;
             $payAmount = $order->total;
-            $paymentTitle = 'Payment for order #' . $order->id;
+            $paymentTitle = 'Payment for order #'.$order->id;
         } else {
             $invoice = Invoice::findOrFail($id);
             Session::put('enc_invoice_id', $invoice->hash);
@@ -125,17 +123,17 @@ class PaypalController extends Controller
 
             $currencyCode = $invoice->currency->currency_code;
             $payAmount = $invoice->due_amount;
-            $paymentTitle = 'Payment for invoice #' . $invoice->invoice_number;
+            $paymentTitle = 'Payment for invoice #'.$invoice->invoice_number;
         }
 
         $this->setKeys($company->hash);
         $companyName = $company->company_name;
-        $paymentType = !is_null($type) ? 'order' : 'invoice';
+        $paymentType = ! is_null($type) ? 'order' : 'invoice';
 
-        $payer = new Payer();
+        $payer = new Payer;
         $payer->setPaymentMethod('paypal');
 
-        $item_1 = new Item();
+        $item_1 = new Item;
 
         $item_1->setName($paymentTitle)
             /** item name **/
@@ -143,20 +141,19 @@ class PaypalController extends Controller
             ->setQuantity(1)
             ->setPrice($payAmount);
         /** unit price **/
+        $item_list = new ItemList;
+        $item_list->setItems([$item_1]);
 
-        $item_list = new ItemList();
-        $item_list->setItems(array($item_1));
-
-        $amount = new Amount();
+        $amount = new Amount;
         $amount->setCurrency($currencyCode)
             ->setTotal($payAmount);
 
-        $transaction = new Transaction();
+        $transaction = new Transaction;
         $transaction->setAmount($amount)
             ->setItemList($item_list)
-            ->setDescription($companyName . ' ' . $paymentTitle);
+            ->setDescription($companyName.' '.$paymentTitle);
 
-        $redirect_urls = new RedirectUrls();
+        $redirect_urls = new RedirectUrls;
         $redirect_urls->setReturnUrl(route('get_paypal_status'))
             /** Specify return URL **/
             ->setCancelUrl(route('get_paypal_status'));
@@ -166,11 +163,11 @@ class PaypalController extends Controller
             $invoice = $this->makeOrderInvoice($order);
         }
 
-        $payment = new Payment();
+        $payment = new Payment;
         $payment->setIntent('Sale')
             ->setPayer($payer)
             ->setRedirectUrls($redirect_urls)
-            ->setTransactions(array($transaction));
+            ->setTransactions([$transaction]);
 
         config(['paypal.secret' => $this->paypalClientSecret]);
         config(['paypal.settings.mode' => $this->paypalMode]);
@@ -240,7 +237,7 @@ class PaypalController extends Controller
 
         $payment_gateway_response = ['code' => $exception->getCode(), 'message' => $exception->getMessage()];
 
-        $payment = new ModelsPayment();
+        $payment = new ModelsPayment;
         $payment->status = 'failed';
         $payment->payment_gateway_response = $payment_gateway_response;
 
@@ -266,7 +263,6 @@ class PaypalController extends Controller
         $enc_invoice_id = Session::get('enc_invoice_id');
         $redirectRoute = 'invoices.show';
         $id = $invoiceId;
-
 
         if (empty($enc_invoice_id)) {
             return redirect(route('dashboard'));
@@ -300,12 +296,11 @@ class PaypalController extends Controller
         /** to execute a PayPal account payment. **/
         /** The payer_id is added to the request query parameters **/
         /** when the user is redirected from paypal back to your site **/
-        $execution = new PaymentExecution();
+        $execution = new PaymentExecution;
         $execution->setPayerId($request->get('PayerID'));
         /**Execute the payment **/
         $result = $payment->execute($execution, $this->api_context);
         /** DEBUG RESULT, remove it later **/
-
         if ($result->getState() == 'approved') {
             /** it's all right **/
             /** Here Write your database logic like that insert record or value in database if you want **/
@@ -354,7 +349,7 @@ class PaypalController extends Controller
 
         if ($requestObject->get('success') && $requestObject->has('token')) {
             $token = $requestObject->get('token');
-            $agreement = new Agreement();
+            $agreement = new Agreement;
             try {
                 // Execute Agreement
                 // Execute the agreement by passing in the token
@@ -389,7 +384,7 @@ class PaypalController extends Controller
                     return redirect(url()->temporarySignedRoute($redirectRoute, now()->addDays(GlobalSetting::SIGNED_ROUTE_EXPIRY), [$enc_invoice_id]));
                 }
             }
-        } else if ($requestObject->get('fail')) {
+        } elseif ($requestObject->get('fail')) {
             Session::put('error', __('messages.paymentFailed'));
 
             return redirect(url()->temporarySignedRoute($redirectRoute, now()->addDays(GlobalSetting::SIGNED_ROUTE_EXPIRY), [$enc_invoice_id]));

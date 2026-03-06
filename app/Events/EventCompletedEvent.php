@@ -9,10 +9,10 @@ use Illuminate\Queue\SerializesModels;
 
 class EventCompletedEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $event;
+
     public $notifyUser;
 
     public function __construct(Event $event, $notifyUser)
@@ -20,5 +20,4 @@ class EventCompletedEvent
         $this->event = $event;
         $this->notifyUser = $notifyUser;
     }
-
 }

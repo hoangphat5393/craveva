@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * App\Models\EstimateItem
@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property string|null $hsn_sac_code
  * @property-read mixed $icon
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|EstimateItem newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|EstimateItem newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|EstimateItem query()
@@ -36,18 +37,20 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|EstimateItem whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|EstimateItem whereUnitPrice($value)
  * @method static \Illuminate\Database\Eloquent\Builder|EstimateItem whereUpdatedAt($value)
+ *
  * @property-read \App\Models\EstimateItemImage|null $estimateItemImage
  * @property-read mixed $tax_list
  * @property int|null $product_id
  * @property int|null $unit_id
  * @property-read \App\Models\UnitType|null $unit
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|EstimateItem whereProductId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|EstimateItem whereUnitId($value)
+ *
  * @mixin \Eloquent
  */
 class EstimateItem extends BaseModel
 {
-
     protected $guarded = ['id'];
 
     protected $with = ['estimateItemImage'];
@@ -75,17 +78,16 @@ class EstimateItem extends BaseModel
         if ($estimateItem && $estimateItem->taxes) {
             $numItems = count(json_decode($estimateItem->taxes));
 
-            if (!is_null($estimateItem->taxes)) {
+            if (! is_null($estimateItem->taxes)) {
                 foreach (json_decode($estimateItem->taxes) as $index => $tax) {
                     $tax = $this->taxbyid($tax)->first();
-                    $taxes .= $tax->tax_name . ': ' . $tax->rate_percent . '%';
+                    $taxes .= $tax->tax_name.': '.$tax->rate_percent.'%';
 
-                    $taxes = ($index + 1 != $numItems) ? $taxes . ', ' : $taxes;
+                    $taxes = ($index + 1 != $numItems) ? $taxes.', ' : $taxes;
                 }
             }
         }
 
         return $taxes;
     }
-
 }

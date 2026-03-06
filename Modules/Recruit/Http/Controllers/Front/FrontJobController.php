@@ -2,60 +2,55 @@
 
 namespace Modules\Recruit\Http\Controllers\Front;
 
-use App\Models\GlobalSetting;
-use Carbon\Carbon;
-use App\Models\Team;
-use App\Models\User;
 use App\Helper\Files;
 use App\Helper\Reply;
 use App\Models\Company;
-use Illuminate\Http\Request;
 use App\Models\CompanyAddress;
 use App\Models\Currency;
+use App\Models\GlobalSetting;
 use App\Models\InvoiceSetting;
+use App\Models\Team;
+use App\Models\User;
 use App\Scopes\CompanyScope;
-use GuzzleHttp\Client;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
-use Modules\Recruit\Entities\RecruitJob;
 use Illuminate\Support\Facades\Notification;
-use Illuminate\Support\Facades\Session;
-use Modules\Recruit\Entities\RecruitSetting;
 use Modules\Recruit\Entities\ApplicationSource;
-use Modules\Recruit\Entities\RecruitJobAddress;
-use Modules\Recruit\Events\NewJobApplicationEvent;
-use Modules\Recruit\Entities\RecruitJobApplication;
-use Modules\Recruit\Entities\RecruitJobOfferLetter;
 use Modules\Recruit\Entities\RecruitApplicationFile;
 use Modules\Recruit\Entities\RecruitApplicationSkill;
 use Modules\Recruit\Entities\RecruitApplicationStatus;
 use Modules\Recruit\Entities\RecruitCustomQuestion;
 use Modules\Recruit\Entities\RecruitFooterLink;
+use Modules\Recruit\Entities\RecruitJob;
+use Modules\Recruit\Entities\RecruitJobAddress;
 use Modules\Recruit\Entities\RecruitJobAlert;
+use Modules\Recruit\Entities\RecruitJobApplication;
 use Modules\Recruit\Entities\RecruitJobCategory;
 use Modules\Recruit\Entities\RecruitJobCustomAnswer;
+use Modules\Recruit\Entities\RecruitJobOfferLetter;
 use Modules\Recruit\Entities\RecruitJobOfferQuestion;
 use Modules\Recruit\Entities\RecruitJobQuestion;
 use Modules\Recruit\Entities\RecruitJobSkill;
 use Modules\Recruit\Entities\RecruitJobType;
 use Modules\Recruit\Entities\RecruitSalaryStructure;
 use Modules\Recruit\Entities\RecruitSelectedSalaryComponent;
+use Modules\Recruit\Entities\RecruitSetting;
 use Modules\Recruit\Entities\RecruitWorkExperience;
-use Modules\Recruit\Notifications\OfferLetterAccept;
-use Modules\Recruit\Notifications\NewJobApplication;
-use Modules\Recruit\Notifications\OfferLetterReject;
 use Modules\Recruit\Events\JobOfferStatusChangeEvent;
 use Modules\Recruit\Http\Controllers\JobOfferLetterController;
-use Modules\Recruit\Notifications\FrontJobApplyCandidate;
 use Modules\Recruit\Http\Requests\Front\FrontJobApplication;
 use Modules\Recruit\Http\Requests\Front\StoreJobAlertRequest;
 use Modules\Recruit\Http\Requests\OfferLetter\StoreAcceptRequest;
+use Modules\Recruit\Notifications\FrontJobApplyCandidate;
+use Modules\Recruit\Notifications\OfferLetterAccept;
+use Modules\Recruit\Notifications\OfferLetterReject;
 
 class FrontJobController extends FrontBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -70,24 +65,23 @@ class FrontJobController extends FrontBaseController
                 ->where('hash', $slug)
                 ->first();
 
-            if (!is_null($this->company)) {
+            if (! is_null($this->company)) {
                 $careerSite = RecruitSetting::where('company_id', $this->company->id)
                     ->select('career_site')
                     ->first();
 
-                abort_if(!$careerSite, 404);
+                abort_if(! $careerSite, 404);
 
                 if (Auth::user() && User::isAdmin(user()->id) && $careerSite->career_site != 'yes') {
                     session(['messageforAdmin' => 'admin']);
-                }
-                else {
+                } else {
                     abort_if($careerSite->career_site != 'yes', 404);
                 }
 
                 $this->customPages = RecruitFooterLink::where('company_id', '=', $this->company->id)->where('status', 'active')->get();
 
                 App::setLocale($this->company->locale);
-                setlocale(LC_TIME, $this->company->locale . '_' . strtoupper($this->company->locale));
+                setlocale(LC_TIME, $this->company->locale.'_'.strtoupper($this->company->locale));
             }
 
             $this->messageforAdmin = null;
@@ -102,7 +96,7 @@ class FrontJobController extends FrontBaseController
 
     public function index($slug = null)
     {
-        if(!$this->company || !isset($this->company->id)){
+        if (! $this->company || ! isset($this->company->id)) {
             abort(404);
         }
 
@@ -162,9 +156,9 @@ class FrontJobController extends FrontBaseController
         return view('recruit::front.job-openings', $this->data);
     }
 
-    public function jobApply($slug, $locationId, $company = null )
+    public function jobApply($slug, $locationId, $company = null)
     {
-        if(!$company){
+        if (! $company) {
             abort(404);
         }
 
@@ -219,7 +213,7 @@ class FrontJobController extends FrontBaseController
             ->where('company_id', $this->company->id)
             ->first();
 
-        abort_if(!$this->job, 404);
+        abort_if(! $this->job, 404);
 
         $this->jobLocation = CompanyAddress::findOrFail($locationId);
 
@@ -303,19 +297,18 @@ class FrontJobController extends FrontBaseController
                 $image = $request->signature;  // your base64 encoded
                 $image = str_replace('data:image/png;base64,', '', $image);
                 $image = str_replace(' ', '+', $image);
-                $imageName = str_random(32) . '.' . 'jpg';
+                $imageName = str_random(32).'.'.'jpg';
 
                 Files::createDirectoryIfNotExist('offer/accept');
 
-                File::put(public_path() . '/' . Files::UPLOAD_FOLDER . '/offer/accept/' . $imageName, base64_decode($image));
+                File::put(public_path().'/'.Files::UPLOAD_FOLDER.'/offer/accept/'.$imageName, base64_decode($image));
 
                 $jobOffer->sign_image = $imageName;
             }
 
             Notification::send($jobOffer->jobApplication, new OfferLetterAccept($jobOffer->job, $jobOffer->jobApplication));
 
-        }
-        elseif ($request->status == 'decline') {
+        } elseif ($request->status == 'decline') {
             $jobOffer->decline_reason = $request->reason;
 
             Notification::send($jobOffer->jobApplication, new OfferLetterReject($jobOffer->job, $jobOffer->jobApplication));
@@ -327,7 +320,7 @@ class FrontJobController extends FrontBaseController
         $jobOffer->save();
 
         if ($request->status == 'accept') {
-            if (!empty($request->answer)) {
+            if (! empty($request->answer)) {
 
                 foreach ($request->answer as $key => $value) {
                     $fieldType = RecruitCustomQuestion::findOrFail($key)->type;
@@ -336,20 +329,19 @@ class FrontJobController extends FrontBaseController
                         $value = ($fieldType == 'date') ? Carbon::createFromFormat($jobOffer->company->date_format, $value)->format('Y-m-d') : $value;
                     }
 
-                    $answer = new RecruitJobCustomAnswer();
+                    $answer = new RecruitJobCustomAnswer;
                     $answer->recruit_job_offer_letter_id = $jobOffer->id;
                     $answer->recruit_job_application_id = $jobOffer->jobApplication->id;
                     $answer->recruit_job_id = $jobOffer->job->id;
                     $answer->recruit_job_question_id = $key;
 
-                    if ($request->hasFile('answer.' . $key)) {
+                    if ($request->hasFile('answer.'.$key)) {
                         Files::deleteFile($answer->filename, RecruitJobCustomAnswer::FILE_PATH);
-                        $filename = Files::uploadLocalOrS3($value, RecruitJobCustomAnswer::FILE_PATH . '/' . $key);
+                        $filename = Files::uploadLocalOrS3($value, RecruitJobCustomAnswer::FILE_PATH.'/'.$key);
                         $answer->filename = $value->getClientOriginalName();
                         $answer->hashname = $filename;
                         $answer->answer = null;
-                    }
-                    else {
+                    } else {
                         $answer->answer = $value;
                     }
 
@@ -377,23 +369,19 @@ class FrontJobController extends FrontBaseController
         $this->label_class = '';
         $this->msg = '';
 
-        if (!$this->job_not_expired) {
+        if (! $this->job_not_expired) {
             $this->label_class = 'badge badge-dark f-15';
             $this->msg = 'Expired';
-        }
-        elseif ($this->jobOffer->status == 'accept') {
+        } elseif ($this->jobOffer->status == 'accept') {
             $this->label_class = 'badge badge-success f-15';
             $this->msg = 'Accepted';
-        }
-        elseif ($this->jobOffer->status == 'decline') {
+        } elseif ($this->jobOffer->status == 'decline') {
             $this->label_class = 'badge badge-danger f-15';
             $this->msg = 'Declined';
-        }
-        elseif ($this->jobOffer->status == 'withdraw') {
+        } elseif ($this->jobOffer->status == 'withdraw') {
             $this->label_class = 'badge badge-info f-15';
             $this->msg = 'Withdrawn';
-        }
-        elseif ($this->jobOffer->status == 'pending') {
+        } elseif ($this->jobOffer->status == 'pending') {
             $this->label_class = 'badge badge-warning f-15';
             $this->msg = 'Pending';
         }
@@ -406,7 +394,7 @@ class FrontJobController extends FrontBaseController
 
         $this->salaryStructure = RecruitSalaryStructure::where('recruit_job_offer_letter_id', $this->jobOffer->id)->first() ?? null;
 
-        if (!is_null($this->salaryStructure)) {
+        if (! is_null($this->salaryStructure)) {
             $this->selectedEarningsComponent = RecruitSelectedSalaryComponent::where('rss_id', $this->salaryStructure->id)->where('component_type', 'earning')->get();
             $this->selectedDeductionsComponent = RecruitSelectedSalaryComponent::where('rss_id', $this->salaryStructure->id)->where('component_type', 'deduction')->get();
             $earn = JobOfferLetterController::totalEarnings($this->salaryStructure);
@@ -422,7 +410,6 @@ class FrontJobController extends FrontBaseController
     }
 
     /**
-     * @param FrontJobApplication $request
      * @return mixed
      */
     public function saveApplication(FrontJobApplication $request)
@@ -438,14 +425,14 @@ class FrontJobController extends FrontBaseController
                 $gRecaptchaResponse = $request->{$gRecaptchaResponseInput};
                 $validateRecaptcha = GlobalSetting::validateGoogleRecaptcha($gRecaptchaResponse);
 
-                if (!$validateRecaptcha) {
+                if (! $validateRecaptcha) {
                     return Reply::error(__('auth.recaptchaFailed'));
                 }
             }
         }
 
         $status = RecruitApplicationStatus::where('company_id', '=', $this->company->id)->where('slug', 'applied')->first();
-        $jobApplication = new RecruitJobApplication();
+        $jobApplication = new RecruitJobApplication;
         $jobApplication->company_id = $this->company->id;
         $jobApplication->full_name = $request->full_name;
         $jobApplication->recruit_job_id = $request->job_id;
@@ -491,12 +478,12 @@ class FrontJobController extends FrontBaseController
         Notification::send($jobApplication, new FrontJobApplyCandidate($jobApplication, $job));
 
         if (request()->hasFile('resume')) {
-            Files::deleteFile($jobApplication->resume, 'application-files/' . $jobApplication->id);
+            Files::deleteFile($jobApplication->resume, 'application-files/'.$jobApplication->id);
 
-            $file = new RecruitApplicationFile();
+            $file = new RecruitApplicationFile;
             $file->recruit_job_application_id = $jobApplication->id;
             $file->filename = request()->resume->getClientOriginalName();
-            $file->hashname = Files::uploadLocalOrS3(request()->resume, 'application-files/' . $jobApplication->id);
+            $file->hashname = Files::uploadLocalOrS3(request()->resume, 'application-files/'.$jobApplication->id);
             $file->size = request()->resume->getSize();
             $file->save();
         }
@@ -509,18 +496,18 @@ class FrontJobController extends FrontBaseController
             $jobApplication->dob = $request->dob;
         }
 
-        if (!empty($request->skill_id)) {
+        if (! empty($request->skill_id)) {
             RecruitApplicationSkill::where('recruit_job_application_id', $request->application_id)->delete();
 
             foreach ($request->skill_id as $tag) {
-                $jobSkill = new RecruitApplicationSkill();
+                $jobSkill = new RecruitApplicationSkill;
                 $jobSkill->recruit_job_application_id = $jobApplication->id;
                 $jobSkill->recruit_skill_id = $tag;
                 $jobSkill->save();
             }
         }
 
-        if (!empty($request->answer)) {
+        if (! empty($request->answer)) {
 
             foreach ($request->answer as $key => $value) {
                 $fieldType = RecruitCustomQuestion::findOrFail($key)->type;
@@ -529,23 +516,22 @@ class FrontJobController extends FrontBaseController
                     $value = ($fieldType == 'date') ? Carbon::createFromFormat($this->company->date_format, $value)->format('Y-m-d') : $value;
                 }
 
-                $answer = new RecruitJobCustomAnswer();
+                $answer = new RecruitJobCustomAnswer;
                 $answer->recruit_job_application_id = $jobApplication->id;
                 $answer->recruit_job_id = $request->job_id;
                 $answer->recruit_job_question_id = $key;
                 $answer->answer = $value;
 
-                if ($request->hasFile('answer.' . $key)) {
-                    Files::deleteFile($answer->filename, RecruitJobCustomAnswer::FILE_PATH . '/' . $key);
+                if ($request->hasFile('answer.'.$key)) {
+                    Files::deleteFile($answer->filename, RecruitJobCustomAnswer::FILE_PATH.'/'.$key);
                     $answer->filename = $value->getClientOriginalName();
-                    $answer->hashname = Files::uploadLocalOrS3($value, RecruitJobCustomAnswer::FILE_PATH . '/' . $key);
+                    $answer->hashname = Files::uploadLocalOrS3($value, RecruitJobCustomAnswer::FILE_PATH.'/'.$key);
                     $answer->answer = null;
                 }
 
                 $answer->save();
             }
         }
-
 
         return Reply::dataOnly(['status' => 'success', 'redirectUrl' => route('front.thankyou-page', $slug), 'application_id' => $jobApplication->id]);
     }
@@ -612,7 +598,7 @@ class FrontJobController extends FrontBaseController
     {
         $this->company = Company::withoutGlobalScope(CompanyScope::class)->where('hash', $request->slug)->firstOrFail();
 
-        $alert = new RecruitJobAlert();
+        $alert = new RecruitJobAlert;
         $alert->company_id = $this->company->id;
         $alert->email = $request->email;
         $alert->recruit_job_category_id = $request->job_category;
@@ -651,7 +637,7 @@ class FrontJobController extends FrontBaseController
 
         $this->salaryStructure = RecruitSalaryStructure::where('recruit_job_offer_letter_id', $id)->first() ?? null;
 
-        if (!is_null($this->salaryStructure)) {
+        if (! is_null($this->salaryStructure)) {
             $this->selectedEarningsComponent = RecruitSelectedSalaryComponent::where('rss_id', $this->salaryStructure->id)->where('component_type', 'earning')->get();
             $this->selectedDeductionsComponent = RecruitSelectedSalaryComponent::where('rss_id', $this->salaryStructure->id)->where('component_type', 'deduction')->get();
             $earn = JobOfferLetterController::totalEarnings($this->salaryStructure);
@@ -673,11 +659,11 @@ class FrontJobController extends FrontBaseController
 
         $dom_pdf = $pdf->getDomPDF();
         $canvas = $dom_pdf->get_canvas();
-        $canvas->page_text(530, 820, 'Page {PAGE_NUM} of {PAGE_COUNT}', null, 10, array(0, 0, 0));
+        $canvas->page_text(530, 820, 'Page {PAGE_NUM} of {PAGE_COUNT}', null, 10, [0, 0, 0]);
 
-        $filename = 'offer-letter-' . $this->jobOffer->jobApplication->full_name;
+        $filename = 'offer-letter-'.$this->jobOffer->jobApplication->full_name;
 
-        return $pdf->download($filename . '.pdf');
+        return $pdf->download($filename.'.pdf');
     }
 
     public function fetchQuestion($selectedQuestions)
@@ -721,5 +707,4 @@ class FrontJobController extends FrontBaseController
 
         return view('recruit::jobs.offer-letter.accept-job-offer', $this->data);
     }
-
 }

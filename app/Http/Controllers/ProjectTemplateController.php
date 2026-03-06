@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\DataTables\ProjectTemplateTasksDataTable;
 use App\DataTables\ProjectTemplatesDataTable;
+use App\DataTables\ProjectTemplateTasksDataTable;
 use App\Helper\Reply;
 use App\Http\Requests\ProjectTemplate\StoreProject;
-use App\Models\Project;
 use App\Models\ProjectCategory;
 use App\Models\ProjectSubCategory;
 use App\Models\ProjectTemplate;
@@ -16,14 +15,14 @@ use Illuminate\Http\Request;
 
 class ProjectTemplateController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'app.menu.projectTemplate';
 
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('projects', $this->user->modules));
+            abort_403(! in_array('projects', $this->user->modules));
+
             return $next($request);
         });
     }
@@ -38,8 +37,9 @@ class ProjectTemplateController extends AccountBaseController
         $this->manageProjectTemplatePermission = user()->permission('manage_project_template');
         $this->viewProjectTemplatePermission = user()->permission('view_project_template');
 
-        abort_403(!in_array($this->viewProjectTemplatePermission, ['all']) && !in_array($this->manageProjectTemplatePermission, ['all', 'added']));
+        abort_403(! in_array($this->viewProjectTemplatePermission, ['all']) && ! in_array($this->manageProjectTemplatePermission, ['all', 'added']));
         $this->categories = ProjectCategory::all();
+
         return $dataTable->render('project-templates.index', $this->data);
     }
 
@@ -52,7 +52,7 @@ class ProjectTemplateController extends AccountBaseController
     {
 
         $this->manageProjectTemplatePermission = user()->permission('manage_project_template');
-        abort_403(!in_array($this->manageProjectTemplatePermission, ['all', 'added']));
+        abort_403(! in_array($this->manageProjectTemplatePermission, ['all', 'added']));
 
         $this->pageTitle = __('app.menu.addProjectTemplate');
         $this->categories = ProjectCategory::all();
@@ -67,8 +67,8 @@ class ProjectTemplateController extends AccountBaseController
     }
 
     /**
-     * @param StoreProject $request
      * @return mixed|void
+     *
      * @throws \Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException
      */
     public function store(StoreProject $request)
@@ -76,9 +76,9 @@ class ProjectTemplateController extends AccountBaseController
 
         $this->manageProjectTemplatePermission = user()->permission('manage_project_template');
 
-        abort_403(!in_array($this->manageProjectTemplatePermission, ['all', 'added']));
+        abort_403(! in_array($this->manageProjectTemplatePermission, ['all', 'added']));
 
-        $project = new ProjectTemplate();
+        $project = new ProjectTemplate;
         $project->project_name = $request->project_name;
 
         if ($request->project_summary != '') {
@@ -99,28 +99,26 @@ class ProjectTemplateController extends AccountBaseController
 
         if ($request->client_view_task) {
             $project->client_view_task = 'enable';
-        }
-        else {
+        } else {
             $project->client_view_task = 'disable';
         }
 
         if (($request->client_view_task) && ($request->client_task_notification)) {
             $project->allow_client_notification = 'enable';
-        }
-        else {
+        } else {
             $project->allow_client_notification = 'disable';
         }
 
         if ($request->manual_timelog) {
             $project->manual_timelog = 'enable';
-        }
-        else {
+        } else {
             $project->manual_timelog = 'disable';
         }
 
         $project->added_by = user()->id;
 
         $project->save();
+
         return Reply::dataOnly(['projectID' => $project->id]);
 
     }
@@ -128,7 +126,7 @@ class ProjectTemplateController extends AccountBaseController
     /**
      * Display the specified resource.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -137,24 +135,25 @@ class ProjectTemplateController extends AccountBaseController
         $this->manageProjectTemplatePermission = user()->permission('manage_project_template');
         $this->viewProjectTemplatePermission = user()->permission('view_project_template');
 
-        abort_403(!in_array($this->viewProjectTemplatePermission, ['all']) && !in_array($this->manageProjectTemplatePermission, ['all', 'added']));
+        abort_403(! in_array($this->viewProjectTemplatePermission, ['all']) && ! in_array($this->manageProjectTemplatePermission, ['all', 'added']));
 
         $tab = request('tab');
 
         switch ($tab) {
-        case 'members':
-            $this->view = 'project-templates.ajax.members';
+            case 'members':
+                $this->view = 'project-templates.ajax.members';
                 break;
-        case 'milestones':
+            case 'milestones':
 
-            $this->project =  $this->template;
-            $this->view = 'project-templates.ajax.milestones';
-            break;
-        case 'tasks':
-            $this->taskBoardStatus = TaskboardColumn::all();
+                $this->project = $this->template;
+                $this->view = 'project-templates.ajax.milestones';
+                break;
+            case 'tasks':
+                $this->taskBoardStatus = TaskboardColumn::all();
+
                 return $this->tasks();
-        default:
-            $this->view = 'project-templates.ajax.overview';
+            default:
+                $this->view = 'project-templates.ajax.overview';
                 break;
         }
 
@@ -165,7 +164,6 @@ class ProjectTemplateController extends AccountBaseController
         $this->activeTab = $tab ?: 'overview';
 
         return view('project-templates.show', $this->data);
-
 
     }
 
@@ -180,7 +178,8 @@ class ProjectTemplateController extends AccountBaseController
 
         $this->view = 'project-templates.ajax.tasks';
 
-        $dataTable = new ProjectTemplateTasksDataTable();
+        $dataTable = new ProjectTemplateTasksDataTable;
+
         return $dataTable->render('project-templates.show', $this->data);
 
     }
@@ -188,23 +187,23 @@ class ProjectTemplateController extends AccountBaseController
     /**
      * Show the form for editing the specified resource.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
     {
         $this->template = ProjectTemplate::findOrFail($id);
         $this->manageProjectTemplatePermission = user()->permission('manage_project_template');
-        abort_403(!in_array($this->manageProjectTemplatePermission, ['all', 'added']));
+        abort_403(! in_array($this->manageProjectTemplatePermission, ['all', 'added']));
 
-        $this->pageTitle = __('app.update') . ' ' . __('app.project');
+        $this->pageTitle = __('app.update').' '.__('app.project');
 
         $this->categoryData = collect();
 
-        if (!is_null($this->template->category_id)) {
+        if (! is_null($this->template->category_id)) {
             $this->categoryData = ProjectSubCategory::where('category_id', $this->template->category_id)->get();
         }
-        
+
         $this->categories = ProjectCategory::all();
         $this->view = 'project-templates.ajax.edit';
 
@@ -217,9 +216,9 @@ class ProjectTemplateController extends AccountBaseController
     }
 
     /**
-     * @param StoreProject $request
-     * @param int $id
+     * @param  int  $id
      * @return array
+     *
      * @throws \Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException
      */
     public function update(StoreProject $request, $id)
@@ -241,29 +240,25 @@ class ProjectTemplateController extends AccountBaseController
 
         if ($request->sub_category_id != '') {
             $project->sub_category_id = $request->sub_category_id;
-        }else{
+        } else {
             $project->sub_category_id = null;
         }
 
-
         if ($request->client_view_task) {
             $project->client_view_task = 'enable';
-        }
-        else {
+        } else {
             $project->client_view_task = 'disable';
         }
 
         if (($request->client_view_task) && ($request->client_task_notification)) {
             $project->allow_client_notification = 'enable';
-        }
-        else {
+        } else {
             $project->allow_client_notification = 'disable';
         }
 
         if ($request->manual_timelog) {
             $project->manual_timelog = 'enable';
-        }
-        else {
+        } else {
             $project->manual_timelog = 'disable';
         }
 
@@ -271,43 +266,46 @@ class ProjectTemplateController extends AccountBaseController
         $project->feedback = $request->feedback;
 
         $project->save();
+
         return Reply::successWithData(__('messages.updateSuccess'), ['redirectUrl' => route('project-template.index')]);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
         $this->manageProjectTemplatePermission = user()->permission('manage_project_template');
 
-        if(!in_array($this->manageProjectTemplatePermission, ['all', 'added'])) {
+        if (! in_array($this->manageProjectTemplatePermission, ['all', 'added'])) {
 
             return Reply::error(__('messages.permissionDenied'));
         }
 
         ProjectTemplate::destroy($id);
+
         return Reply::success(__('messages.deleteSuccess'));
     }
 
     public function applyQuickAction(Request $request)
     {
         switch ($request->action_type) {
-        case 'delete':
-            $this->manageProjectTemplatePermission = user()->permission('manage_project_template');
+            case 'delete':
+                $this->manageProjectTemplatePermission = user()->permission('manage_project_template');
 
-            if(!in_array($this->manageProjectTemplatePermission, ['all', 'added'])) {
+                if (! in_array($this->manageProjectTemplatePermission, ['all', 'added'])) {
 
-                return Reply::error(__('messages.permissionDenied'));
-            }
+                    return Reply::error(__('messages.permissionDenied'));
+                }
 
-            $this->deleteRecords($request);
-            return Reply::success(__('messages.deleteSuccess'));
+                $this->deleteRecords($request);
 
-        default:
+                return Reply::success(__('messages.deleteSuccess'));
+
+            default:
                 return Reply::error(__('messages.selectAction'));
         }
     }
@@ -316,5 +314,4 @@ class ProjectTemplateController extends AccountBaseController
     {
         ProjectTemplate::whereIn('id', explode(',', $request->row_ids))->delete();
     }
-
 }

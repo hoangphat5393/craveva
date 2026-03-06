@@ -1,4 +1,5 @@
 <?php
+
 /*
 * File:     imap.php
 * Category: config
@@ -47,10 +48,10 @@ return [
     'accounts' => [
 
         'default' => [// account identifier
-            'host'  => env('IMAP_HOST', 'localhost'),
-            'port'  => env('IMAP_PORT', 993),
-            'protocol'  => env('IMAP_PROTOCOL', 'imap'), // Might also use imap, [pop3 or nntp (untested)]
-            'encryption'    => env('IMAP_ENCRYPTION', 'ssl'), // Supported: false, 'ssl', 'tls', 'notls', 'starttls'
+            'host' => env('IMAP_HOST', 'localhost'),
+            'port' => env('IMAP_PORT', 993),
+            'protocol' => env('IMAP_PROTOCOL', 'imap'), // Might also use imap, [pop3 or nntp (untested)]
+            'encryption' => env('IMAP_ENCRYPTION', 'ssl'), // Supported: false, 'ssl', 'tls', 'notls', 'starttls'
             'validate_cert' => env('IMAP_VALIDATE_CERT', true),
             'username' => env('IMAP_USERNAME', 'root@example.com'),
             'password' => env('IMAP_PASSWORD', ''),
@@ -60,7 +61,7 @@ return [
                 'request_fulluri' => false,
                 'username' => null,
                 'password' => null,
-            ]
+            ],
         ],
 
         /*
@@ -151,8 +152,8 @@ return [
         ],
         'decoder' => [
             'message' => 'utf-8', // mimeheader
-            'attachment' => 'utf-8' // mimeheader
-        ]
+            'attachment' => 'utf-8', // mimeheader
+        ],
     ],
 
     /*
@@ -195,6 +196,6 @@ return [
     */
     'masks' => [
         'message' => \Webklex\PHPIMAP\Support\Masks\MessageMask::class,
-        'attachment' => \Webklex\PHPIMAP\Support\Masks\AttachmentMask::class
-    ]
+        'attachment' => \Webklex\PHPIMAP\Support\Masks\AttachmentMask::class,
+    ],
 ];

@@ -8,7 +8,6 @@ use Illuminate\Notifications\Messages\MailMessage;
 
 class TrialLicenseExp extends BaseNotification
 {
-
     private $forCompany;
 
     /**
@@ -41,8 +40,8 @@ class TrialLicenseExp extends BaseNotification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject(__('superadmin.trialLicenseExp.subject') . ' - ' . config('app.name') . '!')
-            ->greeting(__('email.hello') . ' ' . $notifiable->name . '!')
+            ->subject(__('superadmin.trialLicenseExp.subject').' - '.config('app.name').'!')
+            ->greeting(__('email.hello').' '.$notifiable->name.'!')
             ->line(__('superadmin.trialLicenseExp.text'))
             ->action(__('email.loginDashboard'), getDomainSpecificUrl(url('/login'), $this->forCompany))
             ->line(__('email.thankyouNote'));
@@ -57,5 +56,4 @@ class TrialLicenseExp extends BaseNotification
     {
         return $notifiable->toArray();
     }
-
 }

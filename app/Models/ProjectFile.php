@@ -26,6 +26,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read mixed $file_url
  * @property-read mixed $icon
  * @property-read \App\Models\Project $project
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectFile newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectFile newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectFile query()
@@ -44,13 +45,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectFile whereSize($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectFile whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectFile whereUserId($value)
+ *
  * @property int|null $company_id
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectFile whereCompanyId($value)
+ *
  * @mixin \Eloquent
  */
 class ProjectFile extends BaseModel
 {
-
     use IconTrait;
 
     const FILE_PATH = 'project-files';
@@ -59,12 +62,11 @@ class ProjectFile extends BaseModel
 
     public function getFileUrlAttribute()
     {
-        return (!is_null($this->external_link)) ? $this->external_link : asset_url_local_s3(ProjectFile::FILE_PATH . '/' . $this->project_id . '/' . $this->hashname);
+        return (! is_null($this->external_link)) ? $this->external_link : asset_url_local_s3(ProjectFile::FILE_PATH.'/'.$this->project_id.'/'.$this->hashname);
     }
 
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
     }
-
 }

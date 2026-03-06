@@ -7,14 +7,13 @@ use App\Models\Task;
 
 class TaskCompletedClient extends BaseNotification
 {
-
-
     /**
      * Create a new notification instance.
      *
      * @return void
      */
     private $task;
+
     private $emailSetting;
 
     public function __construct(Task $task)
@@ -27,7 +26,7 @@ class TaskCompletedClient extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -44,7 +43,7 @@ class TaskCompletedClient extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
@@ -52,17 +51,17 @@ class TaskCompletedClient extends BaseNotification
         $build = parent::build($notifiable);
         $url = route('tasks.show', $this->task->id);
         $url = getDomainSpecificUrl($url, $this->company);
-        $taskShortCode = (!is_null($this->task->task_short_code)) ? '#' . $this->task->task_short_code : ' ';
-        $content = $this->task->heading . ' ' . __('email.taskComplete.subject') . ' #' . $this->task->task_short_code;
+        $taskShortCode = (! is_null($this->task->task_short_code)) ? '#'.$this->task->task_short_code : ' ';
+        $content = $this->task->heading.' '.__('email.taskComplete.subject').' #'.$this->task->task_short_code;
 
         $build
-            ->subject(__('email.taskComplete.subject') . $taskShortCode . ' - ' . config('app.name') . '.')
+            ->subject(__('email.taskComplete.subject').$taskShortCode.' - '.config('app.name').'.')
             ->markdown('mail.email', [
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
                 'actionText' => __('email.taskComplete.action'),
-                'notifiableName' => $notifiable->name
+                'notifiableName' => $notifiable->name,
             ]);
 
         parent::resetLocale();
@@ -81,8 +80,7 @@ class TaskCompletedClient extends BaseNotification
             'id' => $this->task->id,
             'created_at' => $this->task->created_at->format('Y-m-d H:i:s'),
             'heading' => $this->task->heading,
-            'completed_on' => $this->task->completed_on ? $this->task->completed_on->format('Y-m-d H:i:s') : null
+            'completed_on' => $this->task->completed_on ? $this->task->completed_on->format('Y-m-d H:i:s') : null,
         ];
     }
-
 }

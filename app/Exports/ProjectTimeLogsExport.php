@@ -2,8 +2,8 @@
 
 namespace App\Exports;
 
-use App\Models\ProjectTimeLog;
 use App\Models\CustomField;
+use App\Models\ProjectTimeLog;
 use Carbon\Carbon;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Support\Facades\DB;
@@ -17,26 +17,26 @@ use Maatwebsite\Excel\Facades\Excel;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class ProjectTimeLogsExport implements FromCollection, WithHeadings, WithMapping, ShouldAutoSize, WithColumnFormatting, WithStyles, Responsable
+class ProjectTimeLogsExport implements FromCollection, Responsable, ShouldAutoSize, WithColumnFormatting, WithHeadings, WithMapping, WithStyles
 {
-
     /**
      * Optional filters
      */
     protected ?string $startDate;
+
     protected ?string $endDate;
+
     protected ?int $userId;
-    
+
     /**
      * Custom fields to export
      */
     protected $customFields;
+
     protected $customFieldsData;
 
     /**
      * The file name for download
-     *
-     * @var string
      */
     public string $fileName = 'project-time-logs.xlsx';
 
@@ -45,9 +45,9 @@ class ProjectTimeLogsExport implements FromCollection, WithHeadings, WithMapping
         $this->startDate = $startDate;
         $this->endDate = $endDate;
         $this->userId = $userId;
-        
+
         // Load custom fields that should be exported
-        $this->customFields = CustomField::exportCustomFields(new ProjectTimeLog());
+        $this->customFields = CustomField::exportCustomFields(new ProjectTimeLog);
     }
 
     /**
@@ -80,15 +80,15 @@ class ProjectTimeLogsExport implements FromCollection, WithHeadings, WithMapping
             ->orderBy('start_time', 'desc');
 
         $timelogs = $query->get();
-        
+
         // Initialize customFieldsData as empty collection
         $this->customFieldsData = collect();
-        
+
         // Load custom fields data for all timelogs
         if ($this->customFields->isNotEmpty() && $timelogs->isNotEmpty()) {
             $customFieldsId = $this->customFields->pluck('id')->toArray();
             $timelogIds = $timelogs->pluck('id')->toArray();
-            
+
             $this->customFieldsData = DB::table('custom_fields_data')
                 ->where('model', ProjectTimeLog::CUSTOM_FIELD_MODEL)
                 ->whereIn('custom_field_id', $customFieldsId)
@@ -112,17 +112,17 @@ class ProjectTimeLogsExport implements FromCollection, WithHeadings, WithMapping
             __('modules.timeLogs.endTime'),
             __('modules.timeLogs.totalHours'),
         ];
-        
+
         // Add custom field headings
         foreach ($this->customFields as $field) {
             $headings[] = $field->label;
         }
-        
+
         return $headings;
     }
 
     /**
-     * @param ProjectTimeLog $log
+     * @param  ProjectTimeLog  $log
      */
     public function map($log): array
     {
@@ -131,8 +131,8 @@ class ProjectTimeLogsExport implements FromCollection, WithHeadings, WithMapping
         $end = $log->end_time ? ($log->end_time instanceof Carbon ? $log->end_time : Carbon::parse($log->end_time)) : null;
 
         // Stored in UTC; convert to company timezone for display
-        $start = $start->clone()->tz($companyTz)->translatedFormat(company()->date_format . ' ' . company()->time_format);
-        $end = $end ? $end->clone()->tz($companyTz)->translatedFormat(company()->date_format . ' ' . company()->time_format) : null;
+        $start = $start->clone()->tz($companyTz)->translatedFormat(company()->date_format.' '.company()->time_format);
+        $end = $end ? $end->clone()->tz($companyTz)->translatedFormat(company()->date_format.' '.company()->time_format) : null;
 
         $row = [
             optional($log->user)->name,
@@ -143,15 +143,15 @@ class ProjectTimeLogsExport implements FromCollection, WithHeadings, WithMapping
             $end,
             $this->formatTotalHours($log),
         ];
-        
+
         // Add custom field values
         foreach ($this->customFields as $field) {
             $row[] = $this->getCustomFieldValue($log, $field);
         }
-        
+
         return $row;
     }
-    
+
     /**
      * Get custom field value for export
      */
@@ -159,35 +159,36 @@ class ProjectTimeLogsExport implements FromCollection, WithHeadings, WithMapping
     {
         // Get custom fields data for this timelog
         $timelogCustomFieldsData = $this->customFieldsData[$log->id] ?? collect();
-        
+
         // Find the specific field value
         $fieldData = $timelogCustomFieldsData->firstWhere('custom_field_id', $customField->id);
-        
-        if (!$fieldData || is_null($fieldData->value) || $fieldData->value === '') {
+
+        if (! $fieldData || is_null($fieldData->value) || $fieldData->value === '') {
             return '--';
         }
-        
+
         // Format based on field type
         switch ($customField->type) {
             case 'select':
                 // Select fields store the index, need to look up the value
                 $values = json_decode($customField->values, true);
+
                 return isset($values[$fieldData->value]) ? $values[$fieldData->value] : '--';
-            
+
             case 'radio':
                 // Radio fields store the actual value directly (not index)
                 return $fieldData->value;
-                
+
             case 'date':
                 try {
                     return Carbon::parse($fieldData->value)->translatedFormat(company()->date_format);
                 } catch (\Exception $e) {
                     return $fieldData->value;
                 }
-                
+
             case 'checkbox':
                 return $fieldData->value;
-                
+
             default:
                 return $fieldData->value;
         }
@@ -206,10 +207,10 @@ class ProjectTimeLogsExport implements FromCollection, WithHeadings, WithMapping
         // Calculate the last column letter based on standard columns + custom fields
         $totalColumns = 7 + $this->customFields->count(); // 7 standard columns + custom fields
         $lastColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($totalColumns);
-        
+
         // Bold header row and center it
-        $sheet->getStyle('A1:' . $lastColumn . '1')->getFont()->setBold(true);
-        $sheet->getStyle('A1:' . $lastColumn . '1')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A1:'.$lastColumn.'1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:'.$lastColumn.'1')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
 
         return [];
     }
@@ -244,5 +245,3 @@ class ProjectTimeLogsExport implements FromCollection, WithHeadings, WithMapping
         return Excel::download($this, $this->fileName);
     }
 }
-
-

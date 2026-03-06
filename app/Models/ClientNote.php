@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int|null $last_updated_by
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ClientNote newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ClientNote newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ClientNote query()
@@ -36,17 +37,19 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder|ClientNote whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ClientNote whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ClientNote whereUpdatedAt($value)
+ *
  * @property-read \App\Models\User|null $client
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ClientUserNote[] $members
  * @property-read int|null $members_count
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ClientNote whereCompanyId($value)
+ *
  * @mixin \Eloquent
  */
 class ClientNote extends BaseModel
 {
-
     use HasCompany;
 
     public function client(): BelongsTo
@@ -58,5 +61,4 @@ class ClientNote extends BaseModel
     {
         return $this->hasMany(ClientUserNote::class, 'client_note_id');
     }
-
 }

@@ -24,14 +24,14 @@ class UpdateMeeting extends CoreRequest
     public function rules()
     {
         $data = [];
-    
+
         if ($this->interview_type == 'phone') {
             $data['phone'] = 'required|numeric';
         } else {
             $data['candidate_id'] = 'required';
             $data['employee_id.0'] = 'required';
         }
-    
+
         if ($this->interview_type == 'video') {
             if ($this->video_type == 'zoom') {
                 $data['meeting_title'] = 'required';
@@ -39,7 +39,7 @@ class UpdateMeeting extends CoreRequest
                 $data['end_date'] = 'required|after_or_equal:scheduleDate';
                 $data['end_time'] = 'required';
                 $data['employee_id.0'] = 'required';
-    
+
                 if ($this->scheduleDate == $this->end_date) {
                     $data['end_time'] .= '|required|after_or_equal:scheduleTime';
                 }
@@ -49,7 +49,7 @@ class UpdateMeeting extends CoreRequest
                 $data['employee_id.0'] = 'required';
             }
         }
-    
+
         return $data;
     }
 

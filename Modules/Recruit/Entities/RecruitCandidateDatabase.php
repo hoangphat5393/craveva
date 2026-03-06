@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class RecruitCandidateDatabase extends BaseModel
 {
-    use HasFactory, HasCompany;
+    use HasCompany, HasFactory;
 
     protected $table = 'recruit_candidate_database';
 

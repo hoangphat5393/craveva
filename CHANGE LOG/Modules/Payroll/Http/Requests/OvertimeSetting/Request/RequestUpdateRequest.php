@@ -12,14 +12,13 @@ class RequestUpdateRequest extends FormRequest
      *
      * @return array
      */
-
     public function rules()
     {
         $setting = company();
 
         $rules = [
-            'start_date' => 'required|date_format:"' . $setting->date_format . '"',
-            'end_date' => 'required|date_format:"' . $setting->date_format . '"|after_or_equal:start_date'
+            'start_date' => 'required|date_format:"'.$setting->date_format.'"',
+            'end_date' => 'required|date_format:"'.$setting->date_format.'"|after_or_equal:start_date',
         ];
 
         return $rules;

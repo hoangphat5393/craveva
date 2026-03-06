@@ -20,12 +20,10 @@ return [
 
     'name' => 'Craveva',
 
-
     // We will use this for email copyright message
     'global_app_name' => 'craveva',
 
     'main_domain_name' => env('MAIN_DOMAIN_NAME', null),
-
 
     /*
     |--------------------------------------------------------------------------
@@ -41,7 +39,6 @@ return [
     'app_configuration_mode' => env('APP_CONFIGURATION_MODE', 'browser'),
 
     'non_saas_to_saas_enabled' => env('NON_SAAS_TO_SAAS_ENABLED', false),
-
 
     /*
     |--------------------------------------------------------------------------
@@ -83,7 +80,7 @@ return [
     |
     */
 
-    'debug' => (bool)env('APP_DEBUG', false),
+    'debug' => (bool) env('APP_DEBUG', false),
 
     /*
         |--------------------------------------------------------------------------
@@ -177,7 +174,6 @@ return [
     |
     */
 
-
     'key' => env('APP_KEY'),
 
     'cipher' => 'AES-256-CBC',
@@ -208,7 +204,6 @@ return [
     | this array to grant expanded functionality to your applications.
     |
     */
-
 
     'providers' => [
 
@@ -259,7 +254,6 @@ return [
         Macellan\Zip\ZipServiceProvider::class,
         Froiden\LaravelInstaller\Providers\LaravelInstallerServiceProvider::class,
 
-
         App\Providers\SuperAdmin\EventServiceProvider::class,
     ],
 
@@ -278,7 +272,7 @@ return [
         'ApiRoute' => Froiden\RestAPI\Facades\ApiRoute::class,
         'DataTables' => Yajra\DataTables\Facades\DataTables::class,
         'Zip' => Macellan\Zip\ZipFacade::class,
-        'PDFMerger' => Webklex\PDFMerger\Facades\PDFMergerFacade::class
+        'PDFMerger' => Webklex\PDFMerger\Facades\PDFMergerFacade::class,
     ])->toArray(),
 
     'debug_blacklist' => [
@@ -292,7 +286,7 @@ return [
             'FTP_PASSWORD',
             'RAZORPAY_SECRET',
             'AWS_ACCESS_KEY_ID',
-            'AWS_SECRET_ACCESS_KEY'
+            'AWS_SECRET_ACCESS_KEY',
         ],
         '_SERVER' => [
             'APP_KEY',
@@ -304,7 +298,7 @@ return [
             'FTP_PASSWORD',
             'RAZORPAY_SECRET',
             'AWS_ACCESS_KEY_ID',
-            'AWS_SECRET_ACCESS_KEY'
+            'AWS_SECRET_ACCESS_KEY',
 
         ],
         '_POST' => [

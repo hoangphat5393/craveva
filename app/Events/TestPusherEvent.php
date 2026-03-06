@@ -9,16 +9,13 @@ use Illuminate\Queue\SerializesModels;
 
 class TestPusherEvent implements ShouldBroadcast
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
-
 
     /**
      * Get the channels the event should broadcast on.
      *
      * @return \Illuminate\Broadcasting\Channel|array
      */
-
     public function broadcastOn()
     {
         return ['test-pusher-channel'];
@@ -28,5 +25,4 @@ class TestPusherEvent implements ShouldBroadcast
     {
         return 'test-pusher-message';
     }
-
 }

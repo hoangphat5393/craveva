@@ -1,6 +1,6 @@
 <?php
 
-return array(
+return [
     'acknowlwdgePolicy' => [
         'subject' => 'Acknowledge Policy',
         'text' => 'Please take a moment to acknowledge the policy. If you have not done already, kindly click the button below to acknowledge it.',
@@ -19,4 +19,4 @@ return array(
         'text' => 'Please take a moment to view the new published policy. If you have not read already, kindly click the button below to find details.',
         'action' => 'View Policy',
     ],
-);
+];

@@ -12,7 +12,6 @@ use App\Models\SuperAdmin\GlobalPaymentGatewayCredentials;
 
 class PaymentGatewayCredentialController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();

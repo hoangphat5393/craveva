@@ -15,10 +15,12 @@ use Modules\Pricing\Entities\PricingTierItem;
 
 class ImportPricingTierItemsJob implements ShouldQueue
 {
-    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ExcelImportable;
+    use Batchable, Dispatchable, ExcelImportable, InteractsWithQueue, Queueable, SerializesModels;
 
     private $row;
+
     private $columns;
+
     private $company;
 
     public function __construct($row, $columns, $company = null)
@@ -37,6 +39,7 @@ class ImportPricingTierItemsJob implements ShouldQueue
 
         if (empty($tierName)) {
             $this->failJobWithMessage('Tier Name missing: ');
+
             return;
         }
 
@@ -46,20 +49,23 @@ class ImportPricingTierItemsJob implements ShouldQueue
         }
         $tier = $tierQuery->first();
 
-        if (!$tier) {
+        if (! $tier) {
             $this->failJob('Pricing Tier not found: ');
+
             return;
         }
 
         if (empty($sku)) {
             $this->failJobWithMessage('Product SKU missing: ');
+
             return;
         }
 
         $product = Product::where('sku', $sku)->first();
 
-        if (!$product) {
+        if (! $product) {
             $this->failJob('Product not found: ');
+
             return;
         }
 

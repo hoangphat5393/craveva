@@ -14,6 +14,7 @@ use App\Traits\HasCompany;
  * @property int|null $added_by
  * @property int|null $last_updated_by
  * @property-read mixed $icon
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|TaskCategory newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TaskCategory newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TaskCategory query()
@@ -23,14 +24,16 @@ use App\Traits\HasCompany;
  * @method static \Illuminate\Database\Eloquent\Builder|TaskCategory whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TaskCategory whereLastUpdatedBy($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TaskCategory whereUpdatedAt($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|TaskCategory whereCompanyId($value)
+ *
  * @mixin \Eloquent
  */
 class TaskCategory extends BaseModel
 {
-
     use HasCompany;
 
     protected $table = 'task_category';
@@ -39,10 +42,8 @@ class TaskCategory extends BaseModel
     {
         if (user()->permission('view_task_category') == 'all') {
             return TaskCategory::all();
-        }
-        else {
+        } else {
             return TaskCategory::where('added_by', user()->id)->get();
         }
     }
-
 }

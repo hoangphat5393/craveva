@@ -1,6 +1,6 @@
 <?php
 
-return array(
+return [
     'qty' => '數量',
     'val' => '值',
     'sku' => 'SKU',
@@ -29,7 +29,7 @@ return array(
     'availableBalance' => '可用餘額',
     'defaultImage' => '默認圖片',
 
-    'menu' => array(
+    'menu' => [
         'purchase' => '採購',
         'purchaseSettings' => '採購設置',
         'purchaseNotificationSettings' => '採購通知設置',
@@ -76,13 +76,13 @@ return array(
         'paymentReceipt' => '付款收據',
         'vendorName' => '供應商名稱',
         'bankAccount' => '銀行賬戶',
-    ),
-    'purchaseOrder' => array(
+    ],
+    'purchaseOrder' => [
         'vendorPayments' => '供應商付款',
         'addVendorPayments' => '添加供應商付款',
         'purchaseOrder' => '採購訂單',
         'vendorName' => '供應商名稱',
         'paymentToVendor' => '支付給供應商',
 
-    )
-);
+    ],
+];

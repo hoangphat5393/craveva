@@ -1,20 +1,19 @@
 <?php
 
 use App\Models\Company;
-use Illuminate\Support\Facades\Schema;
 use App\Models\EmailNotificationSetting;
 use App\Models\EmployeeShift;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      *
      * @return void
      */
-
     public function up()
     {
         $companies = Company::select('id')->get();
@@ -61,7 +60,7 @@ return new class extends Migration {
                     'send_slack' => 'no',
                     'setting_name' => 'Message Notification',
                     'slug' => 'message-notification',
-                ]
+                ],
             ];
 
             EmailNotificationSetting::insert($settings);
@@ -72,14 +71,13 @@ return new class extends Migration {
             $table->string('status')->after('remind_type')->nullable();
         });
 
-
         foreach ($companies as $company) {
             EmployeeShift::create([
                 'company_id' => $company->id,
                 'shift_name' => 'Day Off',
                 'shift_short_code' => 'DO',
                 'late_mark_duration' => 0,
-                'clockin_in_day' => 0
+                'clockin_in_day' => 0,
             ]);
         }
     }
@@ -95,5 +93,4 @@ return new class extends Migration {
             $table->dropColumn('status');
         });
     }
-
 };

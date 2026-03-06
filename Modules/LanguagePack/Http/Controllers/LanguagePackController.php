@@ -10,7 +10,6 @@ use Modules\LanguagePack\Http\Requests\PublishLanguageRequest;
 
 class LanguagePackController extends AccountBaseController
 {
-
     public function publishAll()
     {
         $languages = LanguageSetting::all();
@@ -33,10 +32,11 @@ class LanguagePackController extends AccountBaseController
         } catch (\Throwable $th) {
             return Reply::error($th->getMessage());
         }
+
         return Reply::success(__('languagepack::messages.languagePublished'));
     }
 
-    private function publishLanguage ($languageCode)
+    private function publishLanguage($languageCode)
     {
         $path = lang_path($languageCode);
 
@@ -57,9 +57,9 @@ class LanguagePackController extends AccountBaseController
         }
     }
 
-    private function publishModuleLanguage ($module, $languageCode)
+    private function publishModuleLanguage($module, $languageCode)
     {
-        $path = module_path($module, 'Resources/lang/' . $languageCode);
+        $path = module_path($module, 'Resources/lang/'.$languageCode);
 
         if (File::isDirectory($path)) {
             File::deleteDirectory($path);
@@ -71,5 +71,4 @@ class LanguagePackController extends AccountBaseController
             File::copyDirectory($sourcePath, $path);
         }
     }
-
 }

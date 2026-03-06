@@ -8,31 +8,30 @@ use App\Models\SubTask;
 
 class SubTaskObserver
 {
-
     public function saving(SubTask $task)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             $task->last_updated_by = user()->id;
         }
     }
 
     public function creating(SubTask $task)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             $task->added_by = user()->id;
         }
     }
 
     public function created(SubTask $subTask)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             event(new SubTaskCompletedEvent($subTask, 'created'));
         }
     }
 
     public function updated(SubTask $subTask)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             if ($subTask->isDirty('status') && $subTask->status == 'complete') {
                 event(new SubTaskCompletedEvent($subTask, 'completed'));
             }
@@ -43,11 +42,10 @@ class SubTaskObserver
     {
         $notifyData = [
             'App\Notifications\SubTaskCompleted',
-            'App\Notifications\SubTaskCreated'
+            'App\Notifications\SubTaskCreated',
         ];
 
         Notification::deleteNotification($notifyData, $subTask->id);
 
     }
-
 }

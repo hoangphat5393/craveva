@@ -2,23 +2,22 @@
 
 namespace App\Http\Controllers\Payment;
 
-use Log;
 use App\Helper\Reply;
-use App\Models\Order;
-use App\Models\Invoice;
-use Illuminate\Http\Request;
-use App\Traits\MakePaymentTrait;
-use Mollie\Laravel\Facades\Mollie;
-use App\Traits\PaymentGatewayTrait;
 use App\Http\Controllers\Controller;
 use App\Models\GlobalSetting;
+use App\Models\Invoice;
+use App\Models\Order;
 use App\Traits\MakeOrderInvoiceTrait;
+use App\Traits\MakePaymentTrait;
+use App\Traits\PaymentGatewayTrait;
+use Illuminate\Http\Request;
+use Log;
 use Mollie\Api\Exceptions\ApiException;
+use Mollie\Laravel\Facades\Mollie;
 
 class MollieController extends Controller
 {
-
-    use MakePaymentTrait, MakeOrderInvoiceTrait, PaymentGatewayTrait;
+    use MakeOrderInvoiceTrait, MakePaymentTrait, PaymentGatewayTrait;
 
     public function __construct()
     {
@@ -41,41 +40,41 @@ class MollieController extends Controller
         ]);
 
         switch ($request->type) {
-        case 'invoice':
-            $invoice = Invoice::findOrFail($id);
-            $company = $invoice->company;
-            $description = __('app.invoice') . ' ' . $invoice->invoice_number;
-            $metadata = [
-                'invoice_number' => $invoice->invoice_number,
-                'type' => $request->type
-            ];
-            $amount = $invoice->amountDue();
-            $currency = $invoice->currency ? $invoice->currency->currency_code : 'ZAR';
-            $callback_url = route('mollie.callback', [$id, 'invoice',$invoice->company->hash]);
-            break;
+            case 'invoice':
+                $invoice = Invoice::findOrFail($id);
+                $company = $invoice->company;
+                $description = __('app.invoice').' '.$invoice->invoice_number;
+                $metadata = [
+                    'invoice_number' => $invoice->invoice_number,
+                    'type' => $request->type,
+                ];
+                $amount = $invoice->amountDue();
+                $currency = $invoice->currency ? $invoice->currency->currency_code : 'ZAR';
+                $callback_url = route('mollie.callback', [$id, 'invoice', $invoice->company->hash]);
+                break;
 
-        case 'order':
-            $order = Order::findOrFail($id);
-            $company = $order->company;
-            $description = __('app.order') . ' ' . $order->order_number;
-            $metadata = [
-                'order_number' => $order->order_number,
-                'type' => $request->type
-            ];
-            $amount = $order->total;
-            $currency = $order->currency ? $order->currency->currency_code : 'USD';
-            $callback_url = route('mollie.callback', [$id, 'order',$order->company->hash]);
-            break;
+            case 'order':
+                $order = Order::findOrFail($id);
+                $company = $order->company;
+                $description = __('app.order').' '.$order->order_number;
+                $metadata = [
+                    'order_number' => $order->order_number,
+                    'type' => $request->type,
+                ];
+                $amount = $order->total;
+                $currency = $order->currency ? $order->currency->currency_code : 'USD';
+                $callback_url = route('mollie.callback', [$id, 'order', $order->company->hash]);
+                break;
 
-        default:
-            return Reply::error(__('messages.paymentTypeNotFound'));
+            default:
+                return Reply::error(__('messages.paymentTypeNotFound'));
         }
 
         try {
-            $payment = Mollie::api()->payments->create([ /* @phpstan-ignore-line */
+            $payment = Mollie::api()->payments->create([/* @phpstan-ignore-line */
                 'amount' => [
                     'currency' => $currency,
-                    'value' => number_format((float)$amount, 2, '.', '') // You must send the correct number of decimals, thus we enforce the use of strings
+                    'value' => number_format((float) $amount, 2, '.', ''), // You must send the correct number of decimals, thus we enforce the use of strings
                 ],
                 'description' => $description,
                 'customerId' => $customer->id,
@@ -89,7 +88,7 @@ class MollieController extends Controller
         } catch (ApiException $e) {
 
             if ($e->getField() == 'webhookUrl' && $e->getCode() == '422') {
-                return Reply::error('Mollie Webhook will work on live server or you can try ngrok. It will not work on localhost' . $e->getMessage());
+                return Reply::error('Mollie Webhook will work on live server or you can try ngrok. It will not work on localhost'.$e->getMessage());
             }
 
             return Reply::error($e->getMessage());
@@ -110,24 +109,24 @@ class MollieController extends Controller
             $payment = Mollie::api()->payments()->get(session()->get('mollie_payment_id'));
 
             switch ($type) {
-            case 'invoice':
-                $invoice = Invoice::findOrFail($id);
-                $invoice->status = $payment->isPaid() ? 'paid' : 'unpaid';
-                $invoice->save();
+                case 'invoice':
+                    $invoice = Invoice::findOrFail($id);
+                    $invoice->status = $payment->isPaid() ? 'paid' : 'unpaid';
+                    $invoice->save();
 
-                $this->makePayment('Mollie', $payment->amount->value, $invoice, $payment->id, ($payment->isPaid() ? 'complete' : 'failed'));
+                    $this->makePayment('Mollie', $payment->amount->value, $invoice, $payment->id, ($payment->isPaid() ? 'complete' : 'failed'));
 
-                return redirect(url()->temporarySignedRoute('front.invoice', now()->addDays(GlobalSetting::SIGNED_ROUTE_EXPIRY), $invoice->hash));
+                    return redirect(url()->temporarySignedRoute('front.invoice', now()->addDays(GlobalSetting::SIGNED_ROUTE_EXPIRY), $invoice->hash));
 
-            case 'order':
-                $order = Order::findOrFail($id);
-                $invoice = $this->makeOrderInvoice($order, ($payment->isPaid() ? 'completed' : 'failed'));
-                $this->makePayment('Mollie', $payment->amount->value, $invoice, $payment->id, ($payment->isPaid() ? 'complete' : 'failed'));
+                case 'order':
+                    $order = Order::findOrFail($id);
+                    $invoice = $this->makeOrderInvoice($order, ($payment->isPaid() ? 'completed' : 'failed'));
+                    $this->makePayment('Mollie', $payment->amount->value, $invoice, $payment->id, ($payment->isPaid() ? 'complete' : 'failed'));
 
-                return redirect()->route('orders.show', $id);
+                    return redirect()->route('orders.show', $id);
 
-            default:
-                return redirect()->route('dashboard');
+                default:
+                    return redirect()->route('dashboard');
             }
 
         } catch (ApiException $e) {
@@ -147,23 +146,23 @@ class MollieController extends Controller
             $payment = Mollie::api()->payments()->get($request->id);
 
             switch ($payment->metadata->type) {
-            case 'invoice':
-                $invoice = Invoice::findOrFail($payment->metadata->id);
-                $invoice->status = $payment->isPaid() ? 'paid' : 'unpaid';
-                $invoice->save();
-                $this->makePayment('Mollie', $payment->amount->value, $invoice, $payment->id, ($payment->isPaid() ? 'complete' : 'failed'));
-                break;
+                case 'invoice':
+                    $invoice = Invoice::findOrFail($payment->metadata->id);
+                    $invoice->status = $payment->isPaid() ? 'paid' : 'unpaid';
+                    $invoice->save();
+                    $this->makePayment('Mollie', $payment->amount->value, $invoice, $payment->id, ($payment->isPaid() ? 'complete' : 'failed'));
+                    break;
 
-            case 'order':
+                case 'order':
 
-                $order = Order::findOrFail($payment->metadata->id);
-                $invoice = $this->makeOrderInvoice($order, ($payment->isPaid() ? 'completed' : 'failed'));
-                $this->makePayment('Mollie', $payment->amount->value, $invoice, $payment->id, ($payment->isPaid() ? 'complete' : 'failed'));
+                    $order = Order::findOrFail($payment->metadata->id);
+                    $invoice = $this->makeOrderInvoice($order, ($payment->isPaid() ? 'completed' : 'failed'));
+                    $this->makePayment('Mollie', $payment->amount->value, $invoice, $payment->id, ($payment->isPaid() ? 'complete' : 'failed'));
 
-                break;
+                    break;
 
-            default:
-                break;
+                default:
+                    break;
             }
 
         } catch (ApiException $e) {
@@ -178,5 +177,4 @@ class MollieController extends Controller
 
         return response()->json(['status' => 'success']);
     }
-
 }

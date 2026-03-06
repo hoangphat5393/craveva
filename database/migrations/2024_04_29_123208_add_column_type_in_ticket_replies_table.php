@@ -9,7 +9,6 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-
     public function up(): void
     {
         Schema::table('ticket_replies', function (Blueprint $table) {
@@ -27,5 +26,4 @@ return new class extends Migration
             $table->dropColumn('type');
         });
     }
-
 };

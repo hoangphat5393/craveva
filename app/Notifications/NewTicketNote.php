@@ -15,7 +15,9 @@ class NewTicketNote extends BaseNotification
      * Create a new notification instance.
      */
     private $ticket;
+
     private $ticketReply;
+
     private $emailSetting;
 
     public function __construct(TicketReply $ticket)
@@ -57,24 +59,23 @@ class NewTicketNote extends BaseNotification
         $url = getDomainSpecificUrl($url, $this->company);
 
         if ($this->ticketReply->user_id == $notifiable->id) {
-            $text = '<p>' . $this->ticketReply->user->name . ' ' . __('email.ticketReply.receivedNote');
+            $text = '<p>'.$this->ticketReply->user->name.' '.__('email.ticketReply.receivedNote');
 
-        }
-        else {
-            $text = '<p>' . $this->ticketReply->user->name . ' ' . __('email.ticketReply.receivedNote');
+        } else {
+            $text = '<p>'.$this->ticketReply->user->name.' '.__('email.ticketReply.receivedNote');
 
         }
 
         $content = new HtmlString($text);
 
         $build
-            ->subject(__('email.ticketReply.noteAdded') . ' - ' . $this->ticket->subject)
+            ->subject(__('email.ticketReply.noteAdded').' - '.$this->ticket->subject)
             ->markdown('mail.email', [
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
                 'actionText' => __('email.ticketReply.action'),
-                'notifiableName' => $notifiable->name
+                'notifiableName' => $notifiable->name,
             ]);
 
         parent::resetLocale();
@@ -89,17 +90,17 @@ class NewTicketNote extends BaseNotification
         $url = getDomainSpecificUrl($url, $this->company);
 
         return $this->slackBuild($notifiable)
-            ->content('*' . __('email.ticketReply.subject') . '*' . "\n" . $this->ticket->subject . "\n" . __('modules.tickets.requesterName') . ' - ' . $this->ticket->requester->name . "\n" . '<' . $url . '|' . __('modules.tickets.ticket') . ' #' . $this->ticket->id . '>' . "\n");
+            ->content('*'.__('email.ticketReply.subject').'*'."\n".$this->ticket->subject."\n".__('modules.tickets.requesterName').' - '.$this->ticket->requester->name."\n".'<'.$url.'|'.__('modules.tickets.ticket').' #'.$this->ticket->id.'>'."\n");
 
     }
 
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
-    //phpcs:ignore
+    // phpcs:ignore
     public function toArray($notifiable)
     {
         return [
@@ -109,8 +110,7 @@ class NewTicketNote extends BaseNotification
             'user_id' => $this->ticketReply->user_id,
             'status' => $this->ticket->status,
             'agent_id' => $this->ticket->agent_id,
-            'ticket_number' => $this->ticket->ticket_number
+            'ticket_number' => $this->ticket->ticket_number,
         ];
     }
-
 }

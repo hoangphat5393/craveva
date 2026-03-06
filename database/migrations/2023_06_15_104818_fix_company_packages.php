@@ -6,14 +6,13 @@ use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      */
     public function up(): void
     {
         Company::get()->each(function ($company) {
-            (new CompanyObserver())->createModuleSettings($company);
+            (new CompanyObserver)->createModuleSettings($company);
         });
     }
 
@@ -24,5 +23,4 @@ return new class extends Migration
     {
         //
     }
-
 };

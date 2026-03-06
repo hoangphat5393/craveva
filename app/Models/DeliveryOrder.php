@@ -2,16 +2,16 @@
 
 namespace App\Models;
 
-use App\Traits\HasCompany;
 use App\Traits\CustomFieldsTrait;
+use App\Traits\HasCompany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Modules\Purchase\Entities\PurchaseOrder;
 use Modules\Purchase\Entities\DeliveryOrderItem;
+use Modules\Purchase\Entities\PurchaseOrder;
 
 class DeliveryOrder extends BaseModel
 {
-    use HasCompany, CustomFieldsTrait;
+    use CustomFieldsTrait, HasCompany;
 
     protected $table = 'delivery_orders';
 

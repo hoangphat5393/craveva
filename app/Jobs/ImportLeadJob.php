@@ -23,12 +23,13 @@ use Illuminate\Support\Facades\Session;
 
 class ImportLeadJob implements ShouldQueue
 {
-
     use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, UniversalSearchTrait;
     use ExcelImportable;
 
     private $row;
+
     private $columns;
+
     private $company;
 
     /**
@@ -63,12 +64,11 @@ class ImportLeadJob implements ShouldQueue
 
                 if ($lead || $user) {
 
-                    $this->failJobWithMessage(__('messages.duplicateEntryForEmail') . $this->getColumnValue('email'));
+                    $this->failJobWithMessage(__('messages.duplicateEntryForEmail').$this->getColumnValue('email'));
 
                     return;
                 }
-            }
-            else {
+            } else {
                 $this->failJob(__('messages.invalidData'));
 
                 return;
@@ -85,7 +85,7 @@ class ImportLeadJob implements ShouldQueue
                     $leadSource = LeadSource::where('type', $this->getColumnValue('source'))->where('company_id', $this->company?->id)->first();
                 }
 
-                $lead = new Lead();
+                $lead = new Lead;
                 $lead->company_id = $this->company?->id;
                 $lead->client_name = $this->getColumnValue('name');
                 $lead->client_email = $this->isColumnExists('email') && filter_var($this->getColumnValue('email'), FILTER_VALIDATE_EMAIL) ? $this->getColumnValue('email') : null;
@@ -105,7 +105,7 @@ class ImportLeadJob implements ShouldQueue
                 $leads = Session::get('leads', []);
 
                 $leads[] = [
-                    'lead_name'  => $lead->client_name,
+                    'lead_name' => $lead->client_name,
                     'email' => $lead->client_email,
                     'deal_name' => $lead->client_name,
                 ];
@@ -118,7 +118,7 @@ class ImportLeadJob implements ShouldQueue
                 $leadPipeline = LeadPipeline::where('default', '1')->where('company_id', $lead->company_id)->first();
                 $leadStage = PipelineStage::where('default', '1')->where('lead_pipeline_id', $leadPipeline->id)->where('company_id', $lead->company_id)->first();
 
-                $deal = new Deal();
+                $deal = new Deal;
                 $deal->company_id = $lead->company_id;
                 $deal->lead_id = $lead->id;
                 $deal->name = $lead->client_name ?? '';
@@ -131,11 +131,11 @@ class ImportLeadJob implements ShouldQueue
                 // Log search
                 $this->logSearchEntry($lead->id, $lead->client_name, 'lead-contact', 'lead', $lead->company_id);
 
-                if (!is_null($lead->client_email)) {
+                if (! is_null($lead->client_email)) {
                     $this->logSearchEntry($lead->id, $lead->client_email, 'lead-contact', 'lead', $lead->company_id);
                 }
 
-                if (!is_null($lead->company_name)) {
+                if (! is_null($lead->company_name)) {
                     $this->logSearchEntry($lead->id, $lead->company_name, 'lead-contact', 'lead', $lead->company_id);
                 }
 
@@ -144,13 +144,9 @@ class ImportLeadJob implements ShouldQueue
                 DB::rollBack();
                 $this->failJobWithMessage($e->getMessage());
             }
-        }
-        else {
+        } else {
             $this->failJob(__('messages.invalidData'));
         }
 
-
     }
-
 }
-

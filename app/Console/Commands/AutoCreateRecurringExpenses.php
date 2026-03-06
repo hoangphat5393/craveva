@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\DB;
 
 class AutoCreateRecurringExpenses extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
@@ -32,7 +31,6 @@ class AutoCreateRecurringExpenses extends Command
      *
      * @return mixed
      */
-
     public function handle()
     {
 
@@ -42,7 +40,7 @@ class AutoCreateRecurringExpenses extends Command
                 'timezone',
                 'expenses_recurring.id as rid',
                 'expenses_recurring.*',
-                DB::raw('count(expenses.id) as expense_count')
+                DB::raw('count(expenses.id) as expense_count'),
             ])
             ->rightJoin('expenses_recurring', 'expenses_recurring.company_id', '=', 'companies.id')
             ->leftJoin('expenses', function ($join) {
@@ -57,7 +55,6 @@ class AutoCreateRecurringExpenses extends Command
                 }
             });
 
-
         return Command::SUCCESS;
     }
 
@@ -68,7 +65,7 @@ class AutoCreateRecurringExpenses extends Command
         if ($company->unlimited_recurring == 1 || ($totalExistingCount < $company->billing_cycle)) {
 
             if ((Carbon::parse($company->issue_date, $company->timezone)->isToday() && $totalExistingCount == 0) || (Carbon::parse($company->next_expense_date, $company->timezone)->isToday())) {
-                $this->info('Running for recurring expense:' . $company->id);
+                $this->info('Running for recurring expense:'.$company->id);
                 $this->makeExpense($company);
                 $this->saveNextInvoiceDate($company);
             }
@@ -78,7 +75,7 @@ class AutoCreateRecurringExpenses extends Command
 
     private function makeExpense($recurring)
     {
-        $expense = new Expense();
+        $expense = new Expense;
         $expense->company_id = $recurring->company_id;
         $expense->expenses_recurring_id = $recurring->rid;
         $expense->category_id = $recurring->category_id;
@@ -121,5 +118,4 @@ class AutoCreateRecurringExpenses extends Command
 
         ExpenseRecurring::where('id', $recurring->rid)->update(['next_expense_date' => $days]);
     }
-
 }

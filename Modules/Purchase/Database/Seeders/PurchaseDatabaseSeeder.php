@@ -6,17 +6,14 @@ use App\Models\Company;
 use Illuminate\Database\Seeder;
 use Modules\Purchase\Entities\PurchaseSetting;
 use Modules\Purchase\Entities\PurchaseStockAdjustmentReason;
-use Illuminate\Support\Facades\App;
 
 class PurchaseDatabaseSeeder extends Seeder
 {
-
     /**
      * Run the database seeds.
      *
      * @return void
      */
-
     public function run()
     {
         config(['app.seeding' => true]);
@@ -33,7 +30,7 @@ class PurchaseDatabaseSeeder extends Seeder
 
     public function purchaseSettingSeeder($companyId)
     {
-        $purchaseSetting = new PurchaseSetting();
+        $purchaseSetting = new PurchaseSetting;
         $purchaseSetting->company_id = $companyId;
         $purchaseSetting->save();
     }
@@ -45,22 +42,22 @@ class PurchaseDatabaseSeeder extends Seeder
 
     public function stockAdjustmentReasonSeeder($companyId)
     {
-        $purchaseSetting = new PurchaseStockAdjustmentReason();
+        $purchaseSetting = new PurchaseStockAdjustmentReason;
         $purchaseSetting->company_id = $companyId;
         $purchaseSetting->name = 'Stock on fire';
         $purchaseSetting->save();
 
-        $purchaseSetting = new PurchaseStockAdjustmentReason();
+        $purchaseSetting = new PurchaseStockAdjustmentReason;
         $purchaseSetting->company_id = $companyId;
         $purchaseSetting->name = 'Stolen';
         $purchaseSetting->save();
 
-        $purchaseSetting = new PurchaseStockAdjustmentReason();
+        $purchaseSetting = new PurchaseStockAdjustmentReason;
         $purchaseSetting->company_id = $companyId;
         $purchaseSetting->name = 'flood';
         $purchaseSetting->save();
 
-        $purchaseSetting = new PurchaseStockAdjustmentReason();
+        $purchaseSetting = new PurchaseStockAdjustmentReason;
         $purchaseSetting->company_id = $companyId;
         $purchaseSetting->name = 'destroyed';
         $purchaseSetting->save();

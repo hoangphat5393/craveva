@@ -9,10 +9,10 @@ use Illuminate\Notifications\Messages\VonageMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Str;
 use Modules\Sms\Entities\SmsNotificationSetting;
+use Modules\Sms\Entities\SmsTemplateId;
 use Modules\Sms\Http\Traits\WhatsappMessageTrait;
 use NotificationChannels\Telegram\TelegramMessage;
 use NotificationChannels\Twilio\TwilioChannel;
-use Modules\Sms\Entities\SmsTemplateId;
 use NotificationChannels\Twilio\TwilioSmsMessage;
 
 class TaskCompletedSms extends Notification implements ShouldQueue
@@ -55,7 +55,7 @@ class TaskCompletedSms extends Notification implements ShouldQueue
             return [];
         }
 
-        $this->message = __('email.taskComplete.subject')."\n".$this->task->heading."\n".__('app.task').' #'.$this->task->task_short_code."\n".($this->task->project ? __('app.project').' - '. $this->task->project->project_name : '');
+        $this->message = __('email.taskComplete.subject')."\n".$this->task->heading."\n".__('app.task').' #'.$this->task->task_short_code."\n".($this->task->project ? __('app.project').' - '.$this->task->project->project_name : '');
 
         $via = [];
 
@@ -96,7 +96,7 @@ class TaskCompletedSms extends Notification implements ShouldQueue
         }
     }
 
-    //phpcs:ignore
+    // phpcs:ignore
     public function toVonage($notifiable)
     {
         if (sms_setting()->nexmo_status) {
@@ -105,10 +105,10 @@ class TaskCompletedSms extends Notification implements ShouldQueue
         }
     }
 
-    //phpcs:ignore
+    // phpcs:ignore
     public function toMsg91($notifiable)
     {
-        $mobile = $notifiable->country_phonecode . $notifiable->mobile;
+        $mobile = $notifiable->country_phonecode.$notifiable->mobile;
         if ($this->smsSetting->msg91_flow_id && sms_setting()->msg91_status) {
             return (new \Craftsys\Notifications\Messages\Msg91SMS)
                 ->to($mobile)

@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class UpdateCreditNote extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -27,11 +26,10 @@ class UpdateCreditNote extends CoreRequest
         $rules = [
             'issue_date' => 'required',
             'sub_total' => 'required',
-            'total' => 'required'
+            'total' => 'required',
         ];
 
-        if($this->recurring_payment == 'yes')
-        {
+        if ($this->recurring_payment == 'yes') {
             $rules['billing_frequency'] = 'required';
             $rules['billing_interval'] = 'required|integer';
             $rules['billing_cycle'] = 'required|integer';
@@ -39,5 +37,4 @@ class UpdateCreditNote extends CoreRequest
 
         return $rules;
     }
-
 }

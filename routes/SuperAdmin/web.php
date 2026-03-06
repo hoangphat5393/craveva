@@ -1,53 +1,53 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CustomModuleController;
 use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\SuperAdmin\FaqController;
-use App\Http\Controllers\SuperAdmin\MollieController;
+use App\Http\Controllers\SuperAdmin\AuthorizeController;
+use App\Http\Controllers\SuperAdmin\AuthorizeWebhookController;
 use App\Http\Controllers\SuperAdmin\BillingController;
 use App\Http\Controllers\SuperAdmin\CompanyController;
-use App\Http\Controllers\SuperAdmin\InvoiceController;
-use App\Http\Controllers\SuperAdmin\PackageController;
-use App\Http\Controllers\SuperAdmin\PayFastController;
-use App\Http\Controllers\SuperAdmin\PaystackController;
-use App\Http\Controllers\SuperAdmin\AuthorizeController;
-use App\Http\Controllers\SuperAdmin\DashboardController;
-use App\Http\Controllers\SuperAdmin\PaypalIPNController;
-use App\Http\Controllers\SuperAdmin\SuperAdminController;
 use App\Http\Controllers\SuperAdmin\CustomFieldController;
+use App\Http\Controllers\SuperAdmin\DashboardController;
 use App\Http\Controllers\SuperAdmin\FaqCategoryController;
-use App\Http\Controllers\SuperAdmin\ThemeSettingController;
-use App\Http\Controllers\SuperAdmin\StripeWebhookController;
-use App\Http\Controllers\SuperAdmin\InvoiceSettingController;
-use App\Http\Controllers\SuperAdmin\PayFastWebhookController;
-use App\Http\Controllers\SuperAdmin\ProfileSettingController;
-use App\Http\Controllers\SuperAdmin\SupportTicketsController;
-use App\Http\Controllers\SuperAdmin\PaystackWebhookController;
-use App\Http\Controllers\SuperAdmin\RazorpayWebhookController;
-use App\Http\Controllers\SuperAdmin\AuthorizeWebhookController;
-use App\Http\Controllers\SuperAdmin\SuperAdminPaypalController;
-use App\Http\Controllers\SuperAdmin\OfflinePlanChangeController;
-use App\Http\Controllers\SuperAdmin\SupportTicketFileController;
-use App\Http\Controllers\SuperAdmin\SupportTicketTypeController;
-use App\Http\Controllers\SuperAdmin\SupportTicketReplyController;
-use App\Http\Controllers\SuperAdmin\FrontSetting\SignUpController;
-use App\Http\Controllers\SuperAdmin\GlobalCurrencySettingController;
-use App\Http\Controllers\SuperAdmin\OfflinePaymentSettingController;
-use App\Http\Controllers\SuperAdmin\FrontSetting\FrontMenuController;
-use App\Http\Controllers\SuperAdmin\FrontSetting\SeoDetailController;
-use App\Http\Controllers\SuperAdmin\FrontSetting\FaqSettingController;
-use App\Http\Controllers\SuperAdmin\FrontSetting\FrontWidgetController;
-use App\Http\Controllers\SuperAdmin\PaymentGatewayCredentialController;
-use App\Http\Controllers\SuperAdmin\SuperadminRolePermissionController;
-use App\Http\Controllers\SuperAdmin\FrontSetting\FrontSettingController;
+use App\Http\Controllers\SuperAdmin\FaqController;
 use App\Http\Controllers\SuperAdmin\FrontSetting\ClientSettingController;
-use App\Http\Controllers\SuperAdmin\FrontSetting\FooterSettingController;
+use App\Http\Controllers\SuperAdmin\FrontSetting\FaqSettingController;
 use App\Http\Controllers\SuperAdmin\FrontSetting\FeatureSettingController;
+use App\Http\Controllers\SuperAdmin\FrontSetting\FeatureTranslationSettingController;
+use App\Http\Controllers\SuperAdmin\FrontSetting\FooterSettingController;
+use App\Http\Controllers\SuperAdmin\FrontSetting\FrontMenuController;
+use App\Http\Controllers\SuperAdmin\FrontSetting\FrontSettingController;
+use App\Http\Controllers\SuperAdmin\FrontSetting\FrontWidgetController;
+use App\Http\Controllers\SuperAdmin\FrontSetting\SeoDetailController;
+use App\Http\Controllers\SuperAdmin\FrontSetting\SignUpController;
 use App\Http\Controllers\SuperAdmin\FrontSetting\SocialLinkSettingController;
 use App\Http\Controllers\SuperAdmin\FrontSetting\TestimonialSettingController;
-use App\Http\Controllers\SuperAdmin\FrontSetting\FeatureTranslationSettingController;
 use App\Http\Controllers\SuperAdmin\FrontSetting\ThemeSettingController as FrontThemeSettingController;
+use App\Http\Controllers\SuperAdmin\GlobalCurrencySettingController;
+use App\Http\Controllers\SuperAdmin\InvoiceController;
+use App\Http\Controllers\SuperAdmin\InvoiceSettingController;
+use App\Http\Controllers\SuperAdmin\MollieController;
+use App\Http\Controllers\SuperAdmin\OfflinePaymentSettingController;
+use App\Http\Controllers\SuperAdmin\OfflinePlanChangeController;
+use App\Http\Controllers\SuperAdmin\PackageController;
+use App\Http\Controllers\SuperAdmin\PayFastController;
+use App\Http\Controllers\SuperAdmin\PayFastWebhookController;
+use App\Http\Controllers\SuperAdmin\PaymentGatewayCredentialController;
+use App\Http\Controllers\SuperAdmin\PaypalIPNController;
+use App\Http\Controllers\SuperAdmin\PaystackController;
+use App\Http\Controllers\SuperAdmin\PaystackWebhookController;
+use App\Http\Controllers\SuperAdmin\ProfileSettingController;
+use App\Http\Controllers\SuperAdmin\RazorpayWebhookController;
+use App\Http\Controllers\SuperAdmin\StripeWebhookController;
+use App\Http\Controllers\SuperAdmin\SuperAdminController;
+use App\Http\Controllers\SuperAdmin\SuperAdminPaypalController;
+use App\Http\Controllers\SuperAdmin\SuperadminRolePermissionController;
+use App\Http\Controllers\SuperAdmin\SupportTicketFileController;
+use App\Http\Controllers\SuperAdmin\SupportTicketReplyController;
+use App\Http\Controllers\SuperAdmin\SupportTicketsController;
+use App\Http\Controllers\SuperAdmin\SupportTicketTypeController;
+use App\Http\Controllers\SuperAdmin\ThemeSettingController;
+use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => ['auth'], 'prefix' => 'account', 'as' => 'superadmin.'], function () {
     Route::get('impersonate/stop_impersonate', [SuperAdminController::class, 'stopImpersonate'])->name('superadmin.stop_impersonate');
@@ -187,10 +187,9 @@ Route::group(['middleware' => ['auth', 'multi-company-select'], 'prefix' => 'acc
     Route::get('billing/select-package/{packageID}', [BillingController::class, 'selectPackage'])->name('billing.select-package');
     Route::get('billing/package', [BillingController::class, 'packages'])->name('billing.packages');
 
-
     // Paypal IPN
-    #Route::post('paypal-webhook/{hash}', [BillingController::class, 'webhook'])->name('paypal.webhook');
-    #Route::get('paypal-webhook/{hash}', [BillingController::class, 'getWebhook'])->name('get_paypal.webhook');
+    // Route::post('paypal-webhook/{hash}', [BillingController::class, 'webhook'])->name('paypal.webhook');
+    // Route::get('paypal-webhook/{hash}', [BillingController::class, 'getWebhook'])->name('get_paypal.webhook');
 
     Route::post('billing/stripe-validate', [BillingController::class, 'stripeValidate'])->name('billing.stripe-validate');
     Route::post('billing/payment-stripe', [BillingController::class, 'payment'])->name('billing.stripe');
@@ -202,8 +201,8 @@ Route::group(['middleware' => ['auth', 'multi-company-select'], 'prefix' => 'acc
     Route::get('billing/payfast-cancel', [PayFastController::class, 'payFastPaymentCancel'])->name('billing.payfast-cancel');
 
     Route::post('billing/payfast-pay', [PaystackController::class, 'redirectToGateway'])->name('billing.paystack');
-    #Route::get('payfast/callback/{id}/{type}/{status}', [PayfastController::class, 'handleGatewayCallback'])->name('payfast.callback');
-   # Route::post('payfast-webhook/{hash}', [PayfastController::class, 'handleGatewayWebhook'])->name('payfast.webhook');
+    // Route::get('payfast/callback/{id}/{type}/{status}', [PayfastController::class, 'handleGatewayCallback'])->name('payfast.callback');
+    // Route::post('payfast-webhook/{hash}', [PayfastController::class, 'handleGatewayWebhook'])->name('payfast.webhook');
 
     Route::post('billing/mollie', [MollieController::class, 'redirectToGateway'])->name('billing.mollie');
 
@@ -215,7 +214,6 @@ Route::group(['middleware' => ['auth', 'multi-company-select'], 'prefix' => 'acc
     Route::get('billing/paywithpaypal', [SuperAdminPaypalController::class, 'payWithPaypal'])->name('billing.paywithpaypal');
     Route::get('billing/cancel-agreement', [SuperAdminPaypalController::class, 'cancelAgreement'])->name('billing.cancel-agreement');
 
-
     Route::post('billing/lifetime', [BillingController::class, 'saveLifetimePackage'])->name('billing.lifetime');
     Route::post('billing/stripeNew/{companyId}', [BillingController::class, 'lifetimepaymentWithStripe'])->name('billing.stripeNew');
 
@@ -224,15 +222,11 @@ Route::group(['middleware' => ['auth', 'multi-company-select'], 'prefix' => 'acc
     // Route::get('paypal', [BillingController::class, 'getPaymentStatus'])->name('get_paypal_status');
     // Route::get('paypal-recurring', [BillingController::class, 'payWithPaypalRecurring'])->name('paypal_recurring');
 
-
-
     // route for check status responce
     Route::get('billing/offline-payment', [BillingController::class, 'offlinePayment'])->name('billing.offline-payment');
     Route::post('billing/offline-payment-submit', [BillingController::class, 'offlinePaymentSubmit'])->name('billing.offline-payment-submit');
 
-
     Route::get('paypal', [SuperAdminPaypalController::class, 'getPaymentStatus'])->name('billing.paypal');
-
 
     Route::get('billing', [BillingController::class, 'index'])->name('billing.index');
 });

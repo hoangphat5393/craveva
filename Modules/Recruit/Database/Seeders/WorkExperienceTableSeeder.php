@@ -11,7 +11,7 @@ class WorkExperienceTableSeeder extends Seeder
     /**
      * Run the database seeds.
      *
-     * @param int $companyId
+     * @param  int  $companyId
      * @return void
      */
     public function run($companyId)
@@ -24,23 +24,23 @@ class WorkExperienceTableSeeder extends Seeder
                 '3-5 years',
                 '5-8 years',
                 '8-12 years',
-                '12+ years'
+                '12+ years',
             ];
 
             foreach ($workExperiences as $experience) {
                 try {
                     RecruitWorkExperience::create([
                         'work_experience' => $experience,
-                        'company_id' => $companyId
+                        'company_id' => $companyId,
                     ]);
                 } catch (\Exception $e) {
                     // Log error but continue with other records
-                    Log::error("Failed to create work experience '{$experience}' for company ID {$companyId}: " . $e->getMessage());
+                    Log::error("Failed to create work experience '{$experience}' for company ID {$companyId}: ".$e->getMessage());
                 }
             }
 
         } catch (\Exception $e) {
-            Log::error("WorkExperienceTableSeeder failed for company ID {$companyId}: " . $e->getMessage());
+            Log::error("WorkExperienceTableSeeder failed for company ID {$companyId}: ".$e->getMessage());
             throw $e;
         }
     }

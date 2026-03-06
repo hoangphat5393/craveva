@@ -4,14 +4,13 @@ namespace App\Http\Controllers\SuperAdmin\FrontSetting;
 
 use App\Helper\Reply;
 use App\Http\Controllers\AccountBaseController;
-use App\Models\SuperAdmin\FrontDetail;
-use Illuminate\Support\Arr;
 use App\Http\Requests\SuperAdmin\FrontSetting\UpdateFrontSettings;
 use App\Models\GlobalSetting;
+use App\Models\SuperAdmin\FrontDetail;
+use Illuminate\Support\Arr;
 
 class SocialLinkSettingController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -58,5 +57,4 @@ class SocialLinkSettingController extends AccountBaseController
 
         return Reply::success(__('messages.updateSuccess'));
     }
-
 }

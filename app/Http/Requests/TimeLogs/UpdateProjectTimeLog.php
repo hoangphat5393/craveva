@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class UpdateProjectTimeLog extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -25,8 +24,7 @@ class UpdateProjectTimeLog extends CoreRequest
     public function rules()
     {
         return [
-            'reason' => 'required|string|max:255'
+            'reason' => 'required|string|max:255',
         ];
     }
-
 }

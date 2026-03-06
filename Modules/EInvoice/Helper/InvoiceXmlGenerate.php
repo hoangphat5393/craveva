@@ -7,7 +7,6 @@ use Modules\EInvoice\Helper\XmlGenerator\Romania;
 
 class InvoiceXmlGenerate
 {
-
     public static function generateXml(Invoice $invoice)
     {
         return match ($invoice->company->name) {
@@ -15,5 +14,4 @@ class InvoiceXmlGenerate
             default => Romania::generate($invoice)
         };
     }
-
 }

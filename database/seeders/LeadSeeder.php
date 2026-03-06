@@ -14,7 +14,6 @@ use Illuminate\Database\Seeder;
 
 class LeadSeeder extends Seeder
 {
-
     /**
      * Run the database seeds.
      *
@@ -30,17 +29,17 @@ class LeadSeeder extends Seeder
             [
                 'category_name' => 'Best Case',
                 'company_id' => $companyId,
-                'is_default' => 1
+                'is_default' => 1,
             ],
             [
                 'category_name' => 'Closed',
                 'company_id' => $companyId,
-                'is_default' => 0
+                'is_default' => 0,
             ],
             [
                 'category_name' => 'Commit',
                 'company_id' => $companyId,
-                'is_default' => 0
+                'is_default' => 0,
             ],
         ];
 
@@ -59,7 +58,7 @@ class LeadSeeder extends Seeder
         $categories = $this->getCategories($companyId);
 
         for ($i = 1; $i <= 4; $i++) {
-            $agent = new LeadAgent();
+            $agent = new LeadAgent;
             $agent->company_id = $companyId;
             $agent->user_id = $faker->randomElement($leadAgents);
             $agent->lead_category_id = $faker->randomElement($categories);
@@ -74,7 +73,7 @@ class LeadSeeder extends Seeder
         $randomStageId = PipelineStage::where('company_id', $companyId)->where('lead_pipeline_id', $randomPipelineId)->inRandomOrder()->first()->id;
 
         foreach (range(0, 10) as $number) {
-            $leadContact = new Lead();
+            $leadContact = new Lead;
             $leadContact->company_id = $companyId;
             $leadContact->website = 'https://craveva.com';
             $leadContact->address = $faker->address;
@@ -86,7 +85,7 @@ class LeadSeeder extends Seeder
             $leadContact->save();
         }
 
-        $lead = new Deal();
+        $lead = new Deal;
         $lead->lead_id = $leadContact->id;
         $lead->lead_pipeline_id = $randomPipelineId;
         $lead->pipeline_stage_id = $randomStageId;

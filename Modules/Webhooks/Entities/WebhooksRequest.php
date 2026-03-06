@@ -4,7 +4,6 @@ namespace Modules\Webhooks\Entities;
 
 use App\Models\BaseModel;
 use App\Traits\HasCompany;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class WebhooksRequest extends BaseModel
@@ -17,5 +16,4 @@ class WebhooksRequest extends BaseModel
     {
         return $this->belongsTo(WebhooksSetting::class, 'webhooks_setting_id');
     }
-
 }

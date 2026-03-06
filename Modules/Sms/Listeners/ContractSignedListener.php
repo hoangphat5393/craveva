@@ -9,7 +9,6 @@ use Modules\Sms\Notifications\ContractSigned;
 
 class ContractSignedListener
 {
-
     /**
      * Handle the event.
      *
@@ -22,5 +21,4 @@ class ContractSignedListener
         } catch (\Exception $e) { // @codingStandardsIgnoreLine
         }
     }
-
 }

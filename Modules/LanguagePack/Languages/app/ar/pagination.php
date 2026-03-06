@@ -1,5 +1,6 @@
-<?php 
+<?php
+
 return [
-  'previous' => '" سابق',
-  'next' => 'التالي "',
+    'previous' => '" سابق',
+    'next' => 'التالي "',
 ];

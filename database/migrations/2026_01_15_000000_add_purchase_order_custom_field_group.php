@@ -4,8 +4,8 @@ use App\Models\Company;
 use App\Models\CustomFieldGroup;
 use Illuminate\Database\Migrations\Migration;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     public function up(): void
     {
         // Tạo nhóm custom field "Purchase Order" cho tất cả company hiện có
@@ -38,4 +38,3 @@ return new class extends Migration {
         // Không xóa dữ liệu để tránh ảnh hưởng các custom field đã tạo
     }
 };
-

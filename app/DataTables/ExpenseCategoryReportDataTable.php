@@ -8,14 +8,12 @@ use Yajra\DataTables\Html\Button;
 
 class ExpenseCategoryReportDataTable extends BaseDataTable
 {
-
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
-
     public function dataTable($query)
     {
         return datatables()
@@ -27,21 +25,20 @@ class ExpenseCategoryReportDataTable extends BaseDataTable
                 return currency_format($row->expenses->sum('default_currency_price'), company()->currency_id);
             })
             ->smart(false)
-            ->setRowId(fn($row) => 'row-' . $row->id)
+            ->setRowId(fn ($row) => 'row-'.$row->id)
             ->addIndexColumn();
     }
 
     /**
      * Get query source of dataTable.
      *
-     * @param ExpensesCategory $model
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function query(ExpensesCategory $model)
     {
         $request = $this->request();
 
-        if ($request->categoryID != 'all' && !is_null($request->categoryID)) {
+        if ($request->categoryID != 'all' && ! is_null($request->categoryID)) {
             $model = $model->where('id', '=', $request->categoryID);
         }
 
@@ -81,7 +78,7 @@ class ExpenseCategoryReportDataTable extends BaseDataTable
             ]);
 
         if (canDataTableExport()) {
-            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
+            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
         }
 
         return $dataTable;
@@ -100,5 +97,4 @@ class ExpenseCategoryReportDataTable extends BaseDataTable
             __('app.total').' '.__('app.price') => ['data' => 'converted_price', 'name' => 'converted_price', 'orderable' => false, 'title' => __('app.total').' '.__('app.price')],
         ];
     }
-
 }

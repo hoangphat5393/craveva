@@ -15,7 +15,7 @@ class QrCode
 
     public static function generate()
     {
-        $result = new QrBuilder();
+        $result = new QrBuilder;
 
         $result->encoding(new Encoding('UTF-8'))
             ->errorCorrectionLevel(ErrorCorrectionLevel::High)
@@ -30,34 +30,37 @@ class QrCode
     /**
      * Converts a hexadecimal, rgb and rgba color code to a Color object.
      *
-     * @param string $hex The hexadecimal color code.
+     * @param  string  $hex  The hexadecimal color code.
      * @return Color The Color object representing the converted color.
      */
     public static function color(string $hex = '#1100ff')
     {
-        if (!str($hex)->startsWith('#')) {
+        if (! str($hex)->startsWith('#')) {
             $colorArray = explode(',', str_replace(' ', '', $hex));
 
             if (count($colorArray) >= 3) {
 
                 if (count($colorArray) == 4) {
                     [$r, $g, $b, $a] = $colorArray;
+
                     return new Color($r, $g, $b, self::opacityConvert($a));
                 }
 
                 [$r, $g, $b] = $colorArray;
+
                 return new Color($r, $g, $b);
             }
         }
 
-        list($r, $g, $b) = sscanf($hex, '#%02x%02x%02x');
+        [$r, $g, $b] = sscanf($hex, '#%02x%02x%02x');
+
         return new Color($r, $g, $b);
     }
 
     /**
      * Converts the opacity value to the appropriate format.
      *
-     * @param float $opacity The opacity value to be converted.
+     * @param  float  $opacity  The opacity value to be converted.
      * @return int The converted opacity value.
      */
     public static function opacityConvert($opacity)
@@ -68,7 +71,7 @@ class QrCode
 
         $converted = ($opacity * 127);
 
-        return (int)(127 - $converted);
+        return (int) (127 - $converted);
     }
 
     public static function buildQrCode(QrCodeData $qrData, $logo = true)
@@ -92,7 +95,7 @@ class QrCode
         return $qr;
     }
 
-    public static function qrLogoSize(int|float $qrSize, int|float $logoSize) : int
+    public static function qrLogoSize(int|float $qrSize, int|float $logoSize): int
     {
         $qr30Percent = $qrSize * 0.3;
 
@@ -101,8 +104,7 @@ class QrCode
         // calculate logo size of 30% of the qr code
         $logoSize = ($qr30Percent * $logoSizePercent) / 100;
 
-        return (int)round($logoSize);
+        return (int) round($logoSize);
 
     }
-
 }

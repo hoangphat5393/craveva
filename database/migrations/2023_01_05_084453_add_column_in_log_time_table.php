@@ -6,20 +6,19 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      *
      * @return void
      */
-
     public function up()
     {
 
         $this->faviconToCompany();
 
-        if (!Schema::hasColumn('log_time_for', 'tracker_reminder')) {
+        if (! Schema::hasColumn('log_time_for', 'tracker_reminder')) {
             Schema::table('log_time_for', function (Blueprint $table) {
                 $table->boolean('tracker_reminder')->after('approval_required');
                 $table->time('time')->nullable();
@@ -27,7 +26,7 @@ return new class extends Migration {
 
         }
 
-        if (!Schema::hasColumn('lead_notes', 'details')) {
+        if (! Schema::hasColumn('lead_notes', 'details')) {
 
             Schema::table('lead_notes', function (Blueprint $table) {
                 $table->longText('details')->change();
@@ -51,7 +50,7 @@ return new class extends Migration {
 
     private function faviconToCompany()
     {
-        if (!Schema::hasColumn('companies', 'favicon')) {
+        if (! Schema::hasColumn('companies', 'favicon')) {
             Schema::table('companies', function (Blueprint $table) {
                 $table->string('favicon')->nullable()->after('logo');
             });
@@ -65,5 +64,4 @@ return new class extends Migration {
             }
         }
     }
-
 };

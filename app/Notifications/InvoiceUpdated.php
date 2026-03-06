@@ -6,19 +6,19 @@ use App\Http\Controllers\InvoiceController;
 use App\Models\EmailNotificationSetting;
 use App\Models\GlobalSetting;
 use App\Models\Invoice;
+use Illuminate\Support\Facades\App;
 use NotificationChannels\OneSignal\OneSignalChannel;
 use NotificationChannels\OneSignal\OneSignalMessage;
-use Illuminate\Support\Facades\App;
 
 class InvoiceUpdated extends BaseNotification
 {
-
     /**
      * Create a new notification instance.
      *
      * @return void
      */
     private $invoice;
+
     private $emailSetting;
 
     public function __construct(Invoice $invoice)
@@ -31,7 +31,7 @@ class InvoiceUpdated extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -43,7 +43,7 @@ class InvoiceUpdated extends BaseNotification
         }
 
         if ($this->emailSetting->send_push == 'yes' && push_setting()->beams_push_status == 'active') {
-            $pushNotification = new \App\Http\Controllers\DashboardController();
+            $pushNotification = new \App\Http\Controllers\DashboardController;
             $pushUsersIds = [[$notifiable->id]];
             $pushNotification->sendPushNotifications($pushUsersIds, __('email.invoice.updateSubject'), $this->invoice->invoice_number);
         }
@@ -54,22 +54,22 @@ class InvoiceUpdated extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage|void
      */
     public function toMail($notifiable)
     {
         $invoiceUpdate = parent::build($notifiable);
 
-        if (($this->invoice->project && !is_null($this->invoice->project->client)) || !is_null($this->invoice->client_id)) {
+        if (($this->invoice->project && ! is_null($this->invoice->project->client)) || ! is_null($this->invoice->client_id)) {
             // For Sending pdf to email
-            $invoiceController = new InvoiceController();
+            $invoiceController = new InvoiceController;
 
             if ($pdfOption = $invoiceController->domPdfObjectForDownload($this->invoice->id)) {
 
                 $pdf = $pdfOption['pdf'];
                 $filename = $pdfOption['fileName'];
-                $invoiceUpdate->attachData($pdf->output(), $filename . '.pdf');
+                $invoiceUpdate->attachData($pdf->output(), $filename.'.pdf');
 
                 App::setLocale($notifiable->locale ?? $this->company->locale ?? 'en');
 
@@ -78,13 +78,13 @@ class InvoiceUpdated extends BaseNotification
 
                 $content = __('email.invoice.updateText');
 
-                $invoiceUpdate->subject(__('email.invoice.updateSubject') . ' - ' . config('app.name') . '.')
+                $invoiceUpdate->subject(__('email.invoice.updateSubject').' - '.config('app.name').'.')
                     ->markdown('mail.email', [
                         'url' => $url,
                         'content' => $content,
                         'themeColor' => $this->company->header_color,
                         'actionText' => __('email.viewInvoice'),
-                        'notifiableName' => $notifiable->name
+                        'notifiableName' => $notifiable->name,
                     ]);
 
                 return $invoiceUpdate;
@@ -95,15 +95,15 @@ class InvoiceUpdated extends BaseNotification
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
-    //phpcs:ignore
+    // phpcs:ignore
     public function toArray($notifiable)
     {
         return [
             'id' => $this->invoice->id,
-            'invoice_number' => $this->invoice->invoice_number
+            'invoice_number' => $this->invoice->invoice_number,
         ];
     }
 
@@ -114,5 +114,4 @@ class InvoiceUpdated extends BaseNotification
             ->setSubject(__('email.invoice.updateSubject'))
             ->setBody(__('email.invoice.updateText'));
     }
-
 }

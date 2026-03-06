@@ -9,7 +9,6 @@ use Modules\Performance\Entities\PerformanceSetting;
 
 class ActivateModuleCommand extends Command
 {
-
     /**
      * The name and signature of the console command.
      */

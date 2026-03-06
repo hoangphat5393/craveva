@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreEmployeeShift extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -32,7 +31,7 @@ class StoreEmployeeShift extends FormRequest
         $data['color'] = 'required';
         $data['clockin_in_day'] = 'required | integer | min:0';
 
-        if (!request()->has('office_open_days')) {
+        if (! request()->has('office_open_days')) {
             $data['office_open_days'] = 'required';
         }
 
@@ -49,5 +48,4 @@ class StoreEmployeeShift extends FormRequest
 
         return $data;
     }
-
 }

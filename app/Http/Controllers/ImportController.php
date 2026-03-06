@@ -3,26 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Helper\Reply;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\DB;
 
 class ImportController extends Controller
 {
-
     /**
      * Get import progress percentage
-     * @param mixed $id
+     *
+     * @param  mixed  $id
      * @return mixed
      */
     public function getImportProgress($name, $id)
     {
         // Get Count of Execution of Jobs
-        $execution_jobs = (int)(ini_get('max_execution_time') / 10);
+        $execution_jobs = (int) (ini_get('max_execution_time') / 10);
 
         // Execute Jobs
-        Artisan::call('queue:work database  --max-jobs=' . ($execution_jobs > 1 ? $execution_jobs : 1)  . ' --queue=' . $name . ' --stop-when-empty');
+        Artisan::call('queue:work database  --max-jobs='.($execution_jobs > 1 ? $execution_jobs : 1).' --queue='.$name.' --stop-when-empty');
 
         $batch = Bus::findBatch($id);
         $progress = 0;
@@ -52,16 +51,18 @@ class ImportController extends Controller
             ->get();
 
         foreach ($exceptions as $exception) {
-            $exception->exception = '[' . $exception->queue . '] ' . $this->parseExceptionMessage($exception->exception);
+            $exception->exception = '['.$exception->queue.'] '.$this->parseExceptionMessage($exception->exception);
         }
 
         $view = view('import.import_exception', $this->data)->with(['exceptions' => $exceptions])->render();
+
         return Reply::dataOnly(['view' => $view, 'count' => count($exceptions)]);
     }
 
     private function parseExceptionMessage($exceptionTrace)
     {
         $lines = explode("\n", $exceptionTrace);
+
         return $lines[0];
     }
 }

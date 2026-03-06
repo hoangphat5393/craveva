@@ -9,21 +9,20 @@ use Illuminate\Support\Facades\Session;
 
 class GoogleAuthController extends Controller
 {
-
     public function index(Request $request, Google $google)
     {
 
-        if (!$request->code) {
+        if (! $request->code) {
             /** @phpstan-ignore-next-line */
             return redirect($google->createAuthUrl());
         }
-
 
         if ($request->state) {
             /** @phpstan-ignore-next-line */
             $google->authenticate($request->code);
             $account = $google->service('Oauth2')->userinfo->get();
-            return redirect($request->state . '?google_id=' . $account->id . '&userName=' . $account->name . '&access_token=' . json_encode($google->getAccessToken()) . '&code=' . $request->code);
+
+            return redirect($request->state.'?google_id='.$account->id.'&userName='.$account->name.'&access_token='.json_encode($google->getAccessToken()).'&code='.$request->code);
         }
 
         if (isNonCraveva()) {

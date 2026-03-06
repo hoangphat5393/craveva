@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreEventNote extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -26,5 +25,4 @@ class StoreEventNote extends FormRequest
             // 'note' => 'required'
         ];
     }
-
 }

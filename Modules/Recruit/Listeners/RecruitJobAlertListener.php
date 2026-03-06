@@ -48,5 +48,4 @@ class RecruitJobAlertListener
                     : null;
             });
     }
-
 }

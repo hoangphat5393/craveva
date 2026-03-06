@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class StoreRating extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -27,5 +26,4 @@ class StoreRating extends CoreRequest
             'comment' => 'required',
         ];
     }
-
 }

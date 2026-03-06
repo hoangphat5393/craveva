@@ -1,11 +1,11 @@
 <?php
+
 namespace App\Http\Requests\TemplateTasks;
 
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
  * Class CreateRequest
- * @package App\Http\Requests\Admin\Employee
  */
 class SubTaskStoreRequest extends FormRequest
 {
@@ -14,7 +14,6 @@ class SubTaskStoreRequest extends FormRequest
      *
      * @return bool
      */
-
     public function authorize()
     {
         return true;
@@ -28,9 +27,8 @@ class SubTaskStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'title'  => 'required',
+            'title' => 'required',
         ];
 
     }
-
 }

@@ -11,7 +11,6 @@ use Illuminate\Console\Command;
 
 class SendInvoiceReminder extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
@@ -31,7 +30,6 @@ class SendInvoiceReminder extends Command
      *
      * @return mixed
      */
-
     public function handle()
     {
         Company::active()->select('id', 'timezone')->with('currency')->chunk(50, function ($companies) {
@@ -45,7 +43,6 @@ class SendInvoiceReminder extends Command
                     ->where('status', '!=', 'draft')
                     ->where('company_id', $company->id);
 
-
                 if ($invoice_setting->send_reminder != 0) {
                     $invoicesBefore = $invoices
                         ->whereDate('due_date', now($company->timezone)->addDays($invoice_setting->send_reminder))
@@ -54,7 +51,7 @@ class SendInvoiceReminder extends Command
                     foreach ($invoicesBefore as $invoice) {
                         $notifyUser = $invoice->client;
 
-                        if (!is_null($notifyUser)) {
+                        if (! is_null($notifyUser)) {
                             event(new InvoiceReminderEvent($invoice, $notifyUser, $invoice_setting->send_reminder));
                         }
                     }
@@ -68,14 +65,13 @@ class SendInvoiceReminder extends Command
                     foreach ($invoicesAfter as $invoice) {
                         $notifyUser = $invoice->client;
 
-                        if (!is_null($notifyUser)) {
+                        if (! is_null($notifyUser)) {
                             event(new InvoiceReminderAfterEvent($invoice, $notifyUser, $invoice_setting->send_reminder_after));
                         }
 
                     }
 
-                }
-                else {
+                } else {
                     $invoicesEvery = $invoices
                         ->whereDate('due_date', '<', now($company->timezone))
                         ->get();
@@ -85,7 +81,7 @@ class SendInvoiceReminder extends Command
                         $date_diff = $invoice->due_date->diffInDays(now());
 
                         if ($invoice_setting->send_reminder_after != 0) {
-                            if ($date_diff % $invoice_setting->send_reminder_after == 0 && !is_null($notifyUser)) {
+                            if ($date_diff % $invoice_setting->send_reminder_after == 0 && ! is_null($notifyUser)) {
                                 event(new InvoiceReminderAfterEvent($invoice, $notifyUser, $invoice_setting->send_reminder_after));
                             }
                         }
@@ -98,5 +94,4 @@ class SendInvoiceReminder extends Command
 
         return Command::SUCCESS;
     }
-
 }

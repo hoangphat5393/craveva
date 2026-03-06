@@ -1,11 +1,11 @@
 <?php
+
 namespace App\Http\Requests\Gdpr;
 
 use App\Http\Requests\CoreRequest;
 
 /**
  * Class CreateRequest
- * @package App\Http\Requests\Admin\Employee
  */
 class SaveConsentLeadDataRequest extends CoreRequest
 {
@@ -14,7 +14,6 @@ class SaveConsentLeadDataRequest extends CoreRequest
      *
      * @return bool
      */
-
     public function authorize()
     {
         // If admin
@@ -29,15 +28,13 @@ class SaveConsentLeadDataRequest extends CoreRequest
     public function rules()
     {
         $rules = [
-            'additional_description'  => 'required',
+            'additional_description' => 'required',
         ];
 
-        if($this->has('consent_description'))
-        {
+        if ($this->has('consent_description')) {
             $rules['consent_description'] = 'required';
         }
 
         return $rules;
     }
-
 }

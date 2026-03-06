@@ -10,11 +10,9 @@ use Illuminate\Support\Facades\Notification;
 
 class CompanyRegisteredListener
 {
-
     /**
      * Handle the event.
      *
-     * @param NewCompanyCreatedEvent $event
      * @return true
      */
     public function handle(NewCompanyCreatedEvent $event)
@@ -38,5 +36,4 @@ class CompanyRegisteredListener
 
         Notification::send($generatedBy, clone $notification);
     }
-
 }

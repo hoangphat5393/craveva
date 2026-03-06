@@ -8,19 +8,19 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     public function up()
     {
 
-        if (!Schema::hasColumn('invoice_recurring', 'next_invoice_date')) {
+        if (! Schema::hasColumn('invoice_recurring', 'next_invoice_date')) {
             Schema::table('invoice_recurring', function (Blueprint $table) {
                 $table->boolean('immediate_invoice')->default(false);
                 $table->date('next_invoice_date')->nullable()->after('issue_date');
             });
         }
 
-        if (!Schema::hasColumn('expenses_recurring', 'issue_date')) {
+        if (! Schema::hasColumn('expenses_recurring', 'issue_date')) {
             Schema::table('expenses_recurring', function (Blueprint $table) {
                 $table->date('issue_date')->after('billing_cycle');
                 $table->boolean('immediate_expense')->default(false)->after('purchase_from');
@@ -52,7 +52,6 @@ return new class extends Migration {
                 echo $exception->getMessage();
             }
 
-
             $this->saveNextInvoiceDate($recurring, 'invoice');
         }
 
@@ -60,7 +59,7 @@ return new class extends Migration {
 
         foreach ($recurringExpenses as $recurring) {
 
-            if (!$recurring->recurrings) {
+            if (! $recurring->recurrings) {
                 return false;
             }
 
@@ -103,7 +102,7 @@ return new class extends Migration {
 
     private function saveNextInvoiceDate($recurring, $type)
     {
-        if (!$recurring->recurrings) {
+        if (! $recurring->recurrings) {
             return false;
         }
 
@@ -111,8 +110,7 @@ return new class extends Migration {
 
         if ($type == 'invoice') {
             $date = $issueDate->issue_date ?? now();
-        }
-        else {
+        } else {
             $date = $issueDate->purchase_date ?? now();
         }
 
@@ -129,13 +127,10 @@ return new class extends Migration {
 
         if ($type == 'invoice') {
             $recurring->next_invoice_date = $days->format('Y-m-d');
-        }
-        else {
+        } else {
             $recurring->next_expense_date = $days->format('Y-m-d');
         }
 
-
         $recurring->saveQuietly();
     }
-
 };

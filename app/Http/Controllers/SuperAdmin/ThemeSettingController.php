@@ -12,7 +12,6 @@ use App\Scopes\CompanyScope;
 
 class ThemeSettingController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -20,6 +19,7 @@ class ThemeSettingController extends AccountBaseController
         $this->activeSettingMenu = 'theme_settings';
         $this->middleware(function ($request, $next) {
             abort_403(GlobalSetting::validateSuperAdmin('manage_superadmin_theme_settings'));
+
             return $next($request);
         });
     }
@@ -32,7 +32,6 @@ class ThemeSettingController extends AccountBaseController
     }
 
     /**
-     * @param UpdateThemeSetting $request
      * @return array
      */
     public function store(UpdateThemeSetting $request)
@@ -114,5 +113,4 @@ class ThemeSettingController extends AccountBaseController
 
         ThemeSetting::withoutGlobalScope(CompanyScope::class)->update(['restrict_admin_theme_change' => $restrictAdminThemeChange]);
     }
-
 }

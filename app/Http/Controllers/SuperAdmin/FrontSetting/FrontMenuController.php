@@ -3,16 +3,14 @@
 namespace App\Http\Controllers\SuperAdmin\FrontSetting;
 
 use App\Helper\Reply;
+use App\Http\Controllers\AccountBaseController;
 use App\Http\Requests\SuperAdmin\FrontSetting\UpdateFrontMenu;
-use App\Models\SuperAdmin\FrontMenu;
-use Illuminate\Http\Request;
 use App\Models\GlobalSetting;
 use App\Models\LanguageSetting;
-use App\Http\Controllers\AccountBaseController;
+use App\Models\SuperAdmin\FrontMenu;
 
 class FrontMenuController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -53,8 +51,8 @@ class FrontMenuController extends AccountBaseController
     /**
      * Update the specified resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param int $id
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     // @codingStandardsIgnoreLine
@@ -74,8 +72,7 @@ class FrontMenuController extends AccountBaseController
 
         return Reply::successWithData(__('messages.updateSuccess'), [
             'data' => $request->message,
-            'lang' => $frontMenu->language->language_code
+            'lang' => $frontMenu->language->language_code,
         ]);
     }
-
 }

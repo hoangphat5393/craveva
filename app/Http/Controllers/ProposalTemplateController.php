@@ -2,21 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use Carbon\Carbon;
-use App\Models\Tax;
+use App\DataTables\ProposalTemplateDataTable;
 use App\Helper\Files;
 use App\Helper\Reply;
-use App\Models\Product;
+use App\Http\Requests\ProposalTemplate\StoreRequest;
 use App\Models\Currency;
-use App\Models\UnitType;
-use Illuminate\Http\Request;
+use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\ProposalTemplate;
-use Illuminate\Support\Facades\App;
 use App\Models\ProposalTemplateItem;
 use App\Models\ProposalTemplateItemImage;
-use App\DataTables\ProposalTemplateDataTable;
-use App\Http\Requests\ProposalTemplate\StoreRequest;
+use App\Models\Tax;
+use App\Models\UnitType;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 
 class ProposalTemplateController extends AccountBaseController
 {
@@ -25,7 +25,6 @@ class ProposalTemplateController extends AccountBaseController
      *
      * @return \Illuminate\Http\Response
      */
-
     public function __construct()
     {
         parent::__construct();
@@ -33,6 +32,7 @@ class ProposalTemplateController extends AccountBaseController
 
         $this->middleware(function ($request, $next) {
             abort_403(in_array('contract', $this->user->modules));
+
             return $next($request);
         });
     }
@@ -49,7 +49,7 @@ class ProposalTemplateController extends AccountBaseController
         $this->pageTitle = __('modules.proposal.createProposalTemplate');
 
         $this->addPermission = user()->permission('manage_proposal_template');
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
 
         $this->taxes = Tax::all();
         $this->units = UnitType::all();
@@ -72,7 +72,7 @@ class ProposalTemplateController extends AccountBaseController
     public function store(StoreRequest $request)
     {
         $this->manageProjectTemplatePermission = user()->permission('manage_proposal_template');
-        abort_403(!in_array($this->manageProjectTemplatePermission, ['all', 'added']));
+        abort_403(! in_array($this->manageProjectTemplatePermission, ['all', 'added']));
 
         $items = $request->item_name;
         $cost_per_item = $request->cost_per_item;
@@ -84,19 +84,19 @@ class ProposalTemplateController extends AccountBaseController
         }
 
         foreach ($quantity as $qty) {
-            if (!is_numeric($qty) && (intval($qty) < 1)) {
+            if (! is_numeric($qty) && (intval($qty) < 1)) {
                 return Reply::error(__('messages.quantityNumber'));
             }
         }
 
         foreach ($cost_per_item as $rate) {
-            if (!is_numeric($rate)) {
+            if (! is_numeric($rate)) {
                 return Reply::error(__('messages.unitPriceNumber'));
             }
         }
 
         foreach ($amount as $amt) {
-            if (!is_numeric($amt)) {
+            if (! is_numeric($amt)) {
                 return Reply::error(__('messages.amountNumber'));
             }
         }
@@ -107,7 +107,7 @@ class ProposalTemplateController extends AccountBaseController
             }
         }
 
-        $proposal = new ProposalTemplate();
+        $proposal = new ProposalTemplate;
         $proposal->name = $request->name;
         $proposal->sub_total = $request->sub_total;
         $proposal->total = $request->total;
@@ -125,7 +125,7 @@ class ProposalTemplateController extends AccountBaseController
             $redirectUrl = route('proposal-template.index');
         }
 
-        $this->logSearchEntry($proposal->id, 'Proposal #' . $proposal->id, 'proposals.show', 'proposal');
+        $this->logSearchEntry($proposal->id, 'Proposal #'.$proposal->id, 'proposals.show', 'proposal');
 
         return Reply::redirect($redirectUrl, __('messages.recordSaved'));
     }
@@ -133,25 +133,23 @@ class ProposalTemplateController extends AccountBaseController
     public function show($id)
     {
         $this->manageProposalTemplatePermission = user()->permission('manage_project_template');
-        abort_403(!in_array($this->manageProposalTemplatePermission, ['all', 'added']));
+        abort_403(! in_array($this->manageProposalTemplatePermission, ['all', 'added']));
 
         $this->invoice = ProposalTemplate::with('items', 'lead', 'items.proposalTemplateItemImage', 'units')->findOrFail($id);
 
-        $this->pageTitle = __('modules.lead.proposalTemplate') . '#' . $this->invoice->id;
+        $this->pageTitle = __('modules.lead.proposalTemplate').'#'.$this->invoice->id;
 
         if ($this->invoice->discount > 0) {
             if ($this->invoice->discount_type == 'percent') {
                 $this->discount = (($this->invoice->discount / 100) * $this->invoice->sub_total);
-            }
-            else {
+            } else {
                 $this->discount = $this->invoice->discount;
             }
-        }
-        else {
+        } else {
             $this->discount = 0;
         }
 
-        $taxList = array();
+        $taxList = [];
         $items = ProposalTemplateItem::whereNotNull('taxes')
             ->where('proposal_template_id', $this->invoice->id)
             ->get();
@@ -161,24 +159,23 @@ class ProposalTemplateController extends AccountBaseController
             foreach (json_decode($item->taxes) as $tax) {
                 $this->tax = ProposalTemplateItem::taxbyid($tax)->first();
 
-                if (!isset($taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'])) {
+                if (! isset($taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'])) {
 
                     /** @phpstan-ignore-next-line */
                     if ($this->invoice->calculate_tax == 'after_discount' && $this->discount > 0) {
-                        $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = ($item->amount - ($item->amount / $this->invoice->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
-
-                    } else{
-                        $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $item->amount * ($this->tax->rate_percent / 100);
-                    }
-
-                }
-                else {
-                    /** @phpstan-ignore-next-line */
-                    if ($this->invoice->calculate_tax == 'after_discount' && $this->discount > 0) {
-                        $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + (($item->amount - ($item->amount / $this->invoice->sub_total) * $this->discount) * ($this->tax->rate_percent / 100));
+                        $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = ($item->amount - ($item->amount / $this->invoice->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
 
                     } else {
-                        $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + ($item->amount * ($this->tax->rate_percent / 100));
+                        $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $item->amount * ($this->tax->rate_percent / 100);
+                    }
+
+                } else {
+                    /** @phpstan-ignore-next-line */
+                    if ($this->invoice->calculate_tax == 'after_discount' && $this->discount > 0) {
+                        $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + (($item->amount - ($item->amount / $this->invoice->sub_total) * $this->discount) * ($this->tax->rate_percent / 100));
+
+                    } else {
+                        $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + ($item->amount * ($this->tax->rate_percent / 100));
                     }
                 }
             }
@@ -195,7 +192,7 @@ class ProposalTemplateController extends AccountBaseController
     public function edit($id)
     {
         $this->manageProposalTemplatePermission = user()->permission('manage_proposal_template');
-        abort_403(!in_array($this->manageProposalTemplatePermission, ['all', 'added']));
+        abort_403(! in_array($this->manageProposalTemplatePermission, ['all', 'added']));
 
         $this->pageTitle = __('modules.proposal.updateProposalTemplate');
         $this->taxes = Tax::all();
@@ -227,19 +224,19 @@ class ProposalTemplateController extends AccountBaseController
         }
 
         foreach ($quantity as $qty) {
-            if (!is_numeric($qty)) {
+            if (! is_numeric($qty)) {
                 return Reply::error(__('messages.quantityNumber'));
             }
         }
 
         foreach ($cost_per_item as $rate) {
-            if (!is_numeric($rate)) {
+            if (! is_numeric($rate)) {
                 return Reply::error(__('messages.unitPriceNumber'));
             }
         }
 
         foreach ($amount as $amt) {
-            if (!is_numeric($amt)) {
+            if (! is_numeric($amt)) {
                 return Reply::error(__('messages.amountNumber'));
             }
         }
@@ -267,6 +264,7 @@ class ProposalTemplateController extends AccountBaseController
     public function destroy($id)
     {
         ProposalTemplate::findOrFail($id)->delete();
+
         return Reply::success(__('messages.deleteSuccess'));
     }
 
@@ -275,7 +273,7 @@ class ProposalTemplateController extends AccountBaseController
         $item = ProposalTemplateItemImage::where('proposal_template_item_id', $request->invoice_item_id)->first();
 
         if ($item) {
-            Files::deleteFile($item->hashname, 'proposal-files/' . $item->id . '/');
+            Files::deleteFile($item->hashname, 'proposal-files/'.$item->id.'/');
             $item->delete();
         }
 
@@ -286,12 +284,13 @@ class ProposalTemplateController extends AccountBaseController
     {
         $this->proposalTemplate = ProposalTemplate::findOrFail($id);
         $this->manageProjectTemplatePermission = user()->permission('manage_proposal_template');
-        abort_403(!in_array($this->manageProjectTemplatePermission, ['all', 'added']));
+        abort_403(! in_array($this->manageProjectTemplatePermission, ['all', 'added']));
 
         $pdfOption = $this->domPdfObjectForDownload($id);
         $pdf = $pdfOption['pdf'];
         $filename = $pdfOption['fileName'];
-        return $pdf->download($filename . '.pdf');
+
+        return $pdf->download($filename.'.pdf');
     }
 
     public function domPdfObjectForDownload($id)
@@ -304,16 +303,14 @@ class ProposalTemplateController extends AccountBaseController
         if ($this->proposalTemplate->discount > 0) {
             if ($this->proposalTemplate->discount_type == 'percent') {
                 $this->discount = (($this->proposalTemplate->discount / 100) * $this->proposalTemplate->sub_total);
-            }
-            else {
+            } else {
                 $this->discount = $this->proposalTemplate->discount;
             }
-        }
-        else {
+        } else {
             $this->discount = 0;
         }
 
-        $taxList = array();
+        $taxList = [];
 
         $items = ProposalTemplateItem::whereNotNull('taxes')
             ->where('proposal_template_id', $this->proposalTemplate->id)
@@ -326,19 +323,18 @@ class ProposalTemplateController extends AccountBaseController
                 $this->tax = ProposalTemplateItem::taxbyid($tax)->first();
 
                 if ($this->tax) {
-                    if (!isset($taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'])) {
+                    if (! isset($taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'])) {
 
                         /** @phpstan-ignore-next-line */
                         if ($this->proposalTemplate->calculate_tax == 'after_discount' && $this->discount > 0) {
-                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = ($item->amount - ($item->amount / $this->proposalTemplate->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
+                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = ($item->amount - ($item->amount / $this->proposalTemplate->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
 
-                        } else{
-                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $item->amount * ($this->tax->rate_percent / 100);
+                        } else {
+                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $item->amount * ($this->tax->rate_percent / 100);
                         }
 
-                    }
-                    else {
-                        $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + ($item->amount * ($this->tax->rate_percent / 100));
+                    } else {
+                        $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + ($item->amount * ($this->tax->rate_percent / 100));
                     }
                 }
             }
@@ -353,14 +349,13 @@ class ProposalTemplateController extends AccountBaseController
         $pdf->setOption('isHtml5ParserEnabled', true);
         $pdf->setOption('isRemoteEnabled', true);
 
-
         $pdf->loadView('proposal-template.pdf.invoice-5', $this->data);
 
-        $filename = __('modules.lead.proposal') . '-' . $this->proposalTemplate->id;
+        $filename = __('modules.lead.proposal').'-'.$this->proposalTemplate->id;
 
         return [
             'pdf' => $pdf,
-            'fileName' => $filename
+            'fileName' => $filename,
         ];
     }
 
@@ -371,34 +366,31 @@ class ProposalTemplateController extends AccountBaseController
 
         $exchangeRate = Currency::findOrFail($request->currencyId);
 
-        if($exchangeRate->exchange_rate == $request->exchangeRate){
+        if ($exchangeRate->exchange_rate == $request->exchangeRate) {
             $exRate = $exchangeRate->exchange_rate;
-        }else{
+        } else {
             $exRate = floatval($request->exchangeRate);
         }
 
-        if (!is_null($exchangeRate) && !is_null($exchangeRate->exchange_rate)) {
+        if (! is_null($exchangeRate) && ! is_null($exchangeRate->exchange_rate)) {
             if ($this->items->total_amount != '') {
                 /** @phpstan-ignore-next-line */
                 $this->items->price = floor($this->items->total_amount / $exRate);
-            }
-            else {
+            } else {
 
                 $this->items->price = floatval($this->items->price) / floatval($exRate);
             }
-        }
-        else {
+        } else {
             if ($this->items->total_amount != '') {
                 $this->items->price = $this->items->total_amount;
             }
         }
 
-        $this->items->price = number_format((float)$this->items->price, 2, '.', '');
+        $this->items->price = number_format((float) $this->items->price, 2, '.', '');
         $this->taxes = Tax::all();
         $this->units = UnitType::all();
         $view = view('invoices.ajax.add_item', $this->data)->render();
 
         return Reply::dataOnly(['status' => 'success', 'view' => $view]);
     }
-
 }

@@ -9,7 +9,6 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-
     public function up(): void
     {
         Schema::table('invoice_recurring', function (Blueprint $table) {
@@ -46,5 +45,4 @@ return new class extends Migration
             $table->dropColumn('bank_account_id');
         });
     }
-
 };

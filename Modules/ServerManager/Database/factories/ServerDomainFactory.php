@@ -2,8 +2,8 @@
 
 namespace Modules\ServerManager\Database\factories;
 
-use Modules\ServerManager\Entities\ServerDomain;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\ServerManager\Entities\ServerDomain;
 
 class ServerDomainFactory extends Factory
 {
@@ -25,7 +25,7 @@ class ServerDomainFactory extends Factory
         $domainNames = [
             'example', 'mycompany', 'business', 'startup', 'tech', 'digital',
             'web', 'app', 'service', 'platform', 'solution', 'enterprise',
-            'global', 'local', 'online', 'webapp', 'portal', 'dashboard'
+            'global', 'local', 'online', 'webapp', 'portal', 'dashboard',
         ];
 
         $providers = [
@@ -36,7 +36,7 @@ class ServerDomainFactory extends Factory
             'Hover' => 'https://hover.com',
             'Porkbun' => 'https://porkbun.com',
             'Name.com' => 'https://name.com',
-            'Domain.com' => 'https://domain.com'
+            'Domain.com' => 'https://domain.com',
         ];
 
         $registrars = [
@@ -45,12 +45,12 @@ class ServerDomainFactory extends Factory
             'Google Domains' => 'https://domains.google',
             'Cloudflare' => 'https://cloudflare.com',
             'Hover' => 'https://hover.com',
-            'Porkbun' => 'https://porkbun.com'
+            'Porkbun' => 'https://porkbun.com',
         ];
 
         $dnsProviders = [
             'Cloudflare', 'GoDaddy', 'Namecheap', 'Google Cloud DNS',
-            'AWS Route 53', 'DigitalOcean', 'Vercel', 'Netlify'
+            'AWS Route 53', 'DigitalOcean', 'Vercel', 'Netlify',
         ];
 
         $billingCycles = ['monthly', 'quarterly', 'semi-annually', 'annually'];
@@ -60,7 +60,7 @@ class ServerDomainFactory extends Factory
 
         $selectedProvider = fake()->randomElement(array_keys($providers));
         $selectedRegistrar = fake()->randomElement(array_keys($registrars));
-        $domainName = fake()->randomElement($domainNames) . '.' . fake()->randomElement($domainTypes);
+        $domainName = fake()->randomElement($domainNames).'.'.fake()->randomElement($domainTypes);
 
         return [
             'domain_name' => $domainName,
@@ -83,30 +83,30 @@ class ServerDomainFactory extends Factory
             'dns_provider' => fake()->randomElement($dnsProviders),
             'dns_status' => fake()->randomElement($dnsStatuses),
             'nameservers' => [
-                'ns1.' . fake()->domainName(),
-                'ns2.' . fake()->domainName(),
-                'ns3.' . fake()->domainName()
+                'ns1.'.fake()->domainName(),
+                'ns2.'.fake()->domainName(),
+                'ns3.'.fake()->domainName(),
             ],
             'dns_records' => [
                 [
                     'type' => 'A',
                     'name' => '@',
                     'value' => fake()->ipv4(),
-                    'ttl' => 3600
+                    'ttl' => 3600,
                 ],
                 [
                     'type' => 'CNAME',
                     'name' => 'www',
                     'value' => '@',
-                    'ttl' => 3600
+                    'ttl' => 3600,
                 ],
                 [
                     'type' => 'MX',
                     'name' => '@',
-                    'value' => 'mail.' . fake()->domainName(),
+                    'value' => 'mail.'.fake()->domainName(),
                     'priority' => 10,
-                    'ttl' => 3600
-                ]
+                    'ttl' => 3600,
+                ],
             ],
             'whois_protection' => fake()->boolean(),
             'auto_renewal' => fake()->boolean(),

@@ -11,7 +11,6 @@ return new class extends Migration
      *
      * @return void
      */
-
     public function up()
     {
         Schema::table('contracts', function (Blueprint $table) {
@@ -31,14 +30,12 @@ return new class extends Migration
      *
      * @return void
      */
-
     public function down()
     {
 
-            Schema::dropIfExists('contracts');
-            
-            Schema::dropIfExists('contract_signs');
+        Schema::dropIfExists('contracts');
+
+        Schema::dropIfExists('contract_signs');
 
     }
-
 };

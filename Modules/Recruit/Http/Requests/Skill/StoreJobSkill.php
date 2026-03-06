@@ -2,7 +2,6 @@
 
 namespace Modules\Recruit\Http\Requests\Skill;
 
-use Illuminate\Validation\Rule;
 use App\Http\Requests\CoreRequest;
 
 class StoreJobSkill extends CoreRequest
@@ -16,7 +15,7 @@ class StoreJobSkill extends CoreRequest
     {
 
         return [
-            'names' => 'required|unique:recruit_skills,name,null,id,company_id,' . company()->id
+            'names' => 'required|unique:recruit_skills,name,null,id,company_id,'.company()->id,
 
         ];
     }

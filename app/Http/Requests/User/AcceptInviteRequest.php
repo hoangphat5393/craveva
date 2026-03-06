@@ -7,7 +7,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class AcceptInviteRequest extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -26,7 +25,7 @@ class AcceptInviteRequest extends FormRequest
     public function rules()
     {
         \Illuminate\Support\Facades\Validator::extend('check_superadmin', function ($attribute, $value, $parameters, $validator) {
-            return !\App\Models\User::withoutGlobalScopes([\App\Scopes\ActiveScope::class, \App\Scopes\CompanyScope::class])
+            return ! \App\Models\User::withoutGlobalScopes([\App\Scopes\ActiveScope::class, \App\Scopes\CompanyScope::class])
                 ->where('email', $value)
                 ->where('is_superadmin', 1)
                 ->exists();
@@ -38,7 +37,7 @@ class AcceptInviteRequest extends FormRequest
 
         $rules = [
             'name' => 'required',
-            'password' => 'required|min:8'
+            'password' => 'required|min:8',
         ];
 
         if (request()->has('email_address')) {
@@ -51,7 +50,7 @@ class AcceptInviteRequest extends FormRequest
             $rules['terms_and_conditions'] = 'required';
         }
 
-        $rules['email'] = 'required|email:rfc,strict|check_superadmin|unique:users,email,null,id,company_id,' . $invite->company->id;
+        $rules['email'] = 'required|email:rfc,strict|check_superadmin|unique:users,email,null,id,company_id,'.$invite->company->id;
 
         return $rules;
     }
@@ -62,5 +61,4 @@ class AcceptInviteRequest extends FormRequest
             'email.check_superadmin' => __('superadmin.emailAlreadyExist'),
         ];
     }
-
 }

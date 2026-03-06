@@ -8,7 +8,6 @@ use App\Traits\HasCompany;
 
 class PurchaseSetting extends BaseModel
 {
-
     use HasCompany;
 
     protected $table = 'purchase_settings';
@@ -25,7 +24,7 @@ class PurchaseSetting extends BaseModel
 
     public static function purchaseSettingInsert($company)
     {
-        $setting = new PurchaseSetting();
+        $setting = new PurchaseSetting;
         $setting->company_id = $company->id;
         $setting->purchase_order_prefix = 'PO';
         $setting->purchase_order_number_separator = '#';
@@ -82,5 +81,4 @@ class PurchaseSetting extends BaseModel
             $notificationSetting->saveQuietly();
         }
     }
-
 }

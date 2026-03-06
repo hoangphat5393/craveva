@@ -10,14 +10,13 @@ use NotificationChannels\OneSignal\OneSignalMessage;
 
 class NoticeUpdate extends BaseNotification
 {
-
-
     /**
      * Create a new notification instance.
      *
      * @return void
      */
     private $notice;
+
     private $emailSetting;
 
     public function __construct(Notice $notice)
@@ -30,7 +29,7 @@ class NoticeUpdate extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -50,7 +49,7 @@ class NoticeUpdate extends BaseNotification
         }
 
         if ($this->emailSetting->send_push == 'yes' && push_setting()->beams_push_status == 'active') {
-            $pushNotification = new \App\Http\Controllers\DashboardController();
+            $pushNotification = new \App\Http\Controllers\DashboardController;
             $pushUsersIds = [[$notifiable->id]];
             $pushNotification->sendPushNotifications($pushUsersIds, __('email.noticeUpdate.subject'), $this->notice->heading);
         }
@@ -61,8 +60,7 @@ class NoticeUpdate extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
-     * @return MailMessage
+     * @param  mixed  $notifiable
      */
     public function toMail($notifiable): MailMessage
     {
@@ -71,16 +69,16 @@ class NoticeUpdate extends BaseNotification
         $url = route('notices.show', $this->notice->id);
         $url = getDomainSpecificUrl($url, $this->company);
 
-        $content = __('email.noticeUpdate.text') . '<br>' . $this->notice->heading;
+        $content = __('email.noticeUpdate.text').'<br>'.$this->notice->heading;
 
         $build
-            ->subject(__('email.noticeUpdate.subject') . ' - ' . config('app.name'))
+            ->subject(__('email.noticeUpdate.subject').' - '.config('app.name'))
             ->markdown('mail.email', [
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
                 'actionText' => __('email.noticeUpdate.action'),
-                'notifiableName' => $notifiable->name
+                'notifiableName' => $notifiable->name,
             ]);
 
         parent::resetLocale();
@@ -91,10 +89,10 @@ class NoticeUpdate extends BaseNotification
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
-//phpcs:ignore
+    // phpcs:ignore
     public function toArray($notifiable)
     {
         return $this->notice->toArray();
@@ -103,13 +101,13 @@ class NoticeUpdate extends BaseNotification
     /**
      * Get the Slack representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\SlackMessage
      */
     public function toSlack($notifiable)
     {
         return $this->slackBuild($notifiable)
-            ->content('*' . __('email.noticeUpdate.subject') . ' : ' . $this->notice->heading . '*' . "\n" . $this->notice->description);
+            ->content('*'.__('email.noticeUpdate.subject').' : '.$this->notice->heading.'*'."\n".$this->notice->description);
     }
 
     // phpcs:ignore
@@ -119,5 +117,4 @@ class NoticeUpdate extends BaseNotification
             ->setSubject(__('email.noticeUpdate.subject'))
             ->setBody($this->notice->heading);
     }
-
 }

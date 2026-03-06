@@ -7,7 +7,6 @@ use App\Models\Contract;
 
 class RenewRequest extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -29,14 +28,13 @@ class RenewRequest extends CoreRequest
 
         $rules = [
             'amount' => 'required',
-            'end_date' => 'nullable|date_format:"' . $setting->date_format . '"|after_or_equal:start_date',
+            'end_date' => 'nullable|date_format:"'.$setting->date_format.'"|after_or_equal:start_date',
         ];
-
 
         if (request()->has('contract_id')) {
             $contract = Contract::findOrFail(request()->contract_id);
             $startDate = $contract->end_date ? $contract->end_date->format($setting->date_format) : $contract->start_date->format($setting->date_format);
-            $rules['start_date'] = 'required|date_format:"' . $setting->date_format . '"|after_or_equal:' . $startDate;
+            $rules['start_date'] = 'required|date_format:"'.$setting->date_format.'"|after_or_equal:'.$startDate;
         }
 
         return $rules;
@@ -48,8 +46,7 @@ class RenewRequest extends CoreRequest
         return [
             'amount.required' => 'The amount field is required.',
             'start_date.required' => 'The start date field is required.',
-            'end_date.required' => 'The end date field is required.'
+            'end_date.required' => 'The end date field is required.',
         ];
     }
-
 }

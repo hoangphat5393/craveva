@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreRequest extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -27,14 +26,12 @@ class StoreRequest extends FormRequest
         $rules['title'] = 'required';
         $rules['slug'] = 'required|alpha_dash|unique:footer_menu,slug';
 
-        if($this->get('content') == 'desc'){
+        if ($this->get('content') == 'desc') {
             $rules['description'] = 'required';
-        }
-        else{
+        } else {
             $rules['external_link'] = 'required|url';
         }
 
         return $rules;
     }
-
 }

@@ -7,14 +7,14 @@ use Illuminate\Support\Facades\Schema;
 use Modules\Recruit\Entities\ApplicationSource;
 use Modules\Recruit\Entities\RecruitJobApplication;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        if (!Schema::hasColumn('application_sources', 'is_predefined')) {
+        if (! Schema::hasColumn('application_sources', 'is_predefined')) {
             Schema::table('application_sources', function (Blueprint $table) {
                 $table->boolean('is_predefined')->default(true);
                 $table->integer('company_id')->unsigned()->after('id')->nullable();
@@ -24,13 +24,11 @@ return new class extends Migration {
 
         $companies = Company::all();
 
-
         foreach ($companies as $key => $company) {
             if ($key == 0) {
                 ApplicationSource::whereNull('company_id')->update(['company_id' => $company->id]);
 
-            }
-            else {
+            } else {
                 $sourceList = [
                     ['application_source' => 'LinkedIn', 'company_id' => $company->id, 'is_predefined' => true],
                     ['application_source' => 'Facebook', 'company_id' => $company->id, 'is_predefined' => true],
@@ -59,7 +57,6 @@ return new class extends Migration {
                 }
             }
 
-
         }
 
     }
@@ -73,5 +70,4 @@ return new class extends Migration {
             $table->dropColumn('company_id');
         });
     }
-
 };

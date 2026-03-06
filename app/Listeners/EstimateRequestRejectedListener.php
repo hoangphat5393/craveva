@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Notification;
 
 class EstimateRequestRejectedListener
 {
-
     /**
      * Handle the event.
      */
@@ -17,9 +16,8 @@ class EstimateRequestRejectedListener
         $company = $event->estimateRequest->company;
         $notifiable = $event->estimateRequest->client;
 
-        if (isset($notifiable->email)){
+        if (isset($notifiable->email)) {
             Notification::send($notifiable, new EstimateRequestRejected($event->estimateRequest));
         }
     }
-
 }

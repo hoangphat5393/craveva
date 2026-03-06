@@ -1,6 +1,7 @@
-<?php 
+<?php
+
 return [
-  'assets' => [
-    'name' => 'например Ноутбук, iPhone и т. д.',
-  ],
+    'assets' => [
+        'name' => 'например Ноутбук, iPhone и т. д.',
+    ],
 ];

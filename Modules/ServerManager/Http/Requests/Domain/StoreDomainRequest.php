@@ -3,8 +3,8 @@
 namespace Modules\ServerManager\Http\Requests\Domain;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class StoreDomainRequest extends FormRequest
 {
@@ -16,6 +16,7 @@ class StoreDomainRequest extends FormRequest
     public function authorize()
     {
         $addPermission = user()->permission('add_domain');
+
         return in_array($addPermission, ['all', 'added']);
     }
 
@@ -27,6 +28,7 @@ class StoreDomainRequest extends FormRequest
     public function rules()
     {
         $setting = company();
+
         return [
             'domain_name' => 'required|string|max:255',
             'domain_provider' => 'required|string|max:255',
@@ -37,9 +39,9 @@ class StoreDomainRequest extends FormRequest
             'registrar_username' => 'nullable|string|max:255',
             'registrar_password' => 'nullable|string|max:255',
             'registrar_status' => 'nullable|in:active,inactive,expired,suspended,transferred,pending',
-            'registration_date' => 'required|date_format:"' . $setting->date_format . '"',
-            'expiry_date' => 'required|date_format:"' . $setting->date_format . '"|after:registration_date',
-            'renewal_date' => 'nullable|date_format:"' . $setting->date_format . '"|after:registration_date',
+            'registration_date' => 'required|date_format:"'.$setting->date_format.'"',
+            'expiry_date' => 'required|date_format:"'.$setting->date_format.'"|after:registration_date',
+            'renewal_date' => 'nullable|date_format:"'.$setting->date_format.'"|after:registration_date',
             'username' => 'nullable|string|max:255',
             'password' => 'nullable|string|max:255',
             'annual_cost' => 'nullable|numeric|min:0|max:999999.99',
@@ -63,7 +65,7 @@ class StoreDomainRequest extends FormRequest
                 'integer',
                 function ($attribute, $value, $fail) {
                     $exists = DB::table('client_details')->where('user_id', $value)->exists();
-                    if ($value !== null && !$exists) {
+                    if ($value !== null && ! $exists) {
                         $fail(__('The selected client id is invalid.'));
                     }
                 },

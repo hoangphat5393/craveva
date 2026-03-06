@@ -8,9 +8,7 @@ use Modules\QRCode\Listeners\CompanyCreatedListener;
 
 class EventServiceProvider extends ServiceProvider
 {
-
     protected $listen = [
         NewCompanyCreatedEvent::class => [CompanyCreatedListener::class],
     ];
-
 }

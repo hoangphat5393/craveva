@@ -2,12 +2,11 @@
 
 namespace App\Models\SuperAdmin;
 
-use App\Models\Company;
 use App\Models\BaseModel;
+use App\Models\Company;
 
 class AuthorizationInvoice extends BaseModel
 {
-
     protected $table = 'authorize_invoices';
 
     protected $dates = [
@@ -29,5 +28,4 @@ class AuthorizationInvoice extends BaseModel
     {
         return $this->belongsTo(Package::class);
     }
-
 }

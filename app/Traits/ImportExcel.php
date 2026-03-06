@@ -3,17 +3,16 @@
 namespace App\Traits;
 
 use App\Helper\Files;
-use Illuminate\Support\Facades\Bus;
-use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Session;
+use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\HeadingRowImport;
 use Maatwebsite\Excel\Imports\HeadingRowFormatter;
 use ReflectionClass;
 
 trait ImportExcel
 {
-
     public function importFileProcess($request, $importClass)
     {
         // get class name from $importClass
@@ -22,7 +21,7 @@ trait ImportExcel
         $this->file = Files::upload($request->import_file, Files::IMPORT_FOLDER);
 
         $importInstance = new $importClass;
-        Excel::import($importInstance, public_path(Files::UPLOAD_FOLDER . '/' . Files::IMPORT_FOLDER . '/' . $this->file));
+        Excel::import($importInstance, public_path(Files::UPLOAD_FOLDER.'/'.Files::IMPORT_FOLDER.'/'.$this->file));
         $excelData = $importInstance->getProcessedData();
         if ($request->has('heading')) {
             array_shift($excelData);
@@ -42,24 +41,24 @@ trait ImportExcel
         }
 
         $this->hasHeading = $request->has('heading');
-        $this->heading = array();
-        $this->fileHeading = array();
+        $this->heading = [];
+        $this->fileHeading = [];
 
         $this->columns = $importClass::fields();
-        $this->importMatchedColumns = array();
-        $this->matchedColumns = array();
+        $this->importMatchedColumns = [];
+        $this->matchedColumns = [];
 
         if ($this->hasHeading) {
-            $this->heading = (new HeadingRowImport)->toArray(public_path(Files::UPLOAD_FOLDER . '/' . Files::IMPORT_FOLDER . '/' . $this->file))[0][0];
+            $this->heading = (new HeadingRowImport)->toArray(public_path(Files::UPLOAD_FOLDER.'/'.Files::IMPORT_FOLDER.'/'.$this->file))[0][0];
 
             // Excel Format None for get Heading Row Without Format and after change back to config
             HeadingRowFormatter::default('none');
-            $this->fileHeading = (new HeadingRowImport)->toArray(public_path(Files::UPLOAD_FOLDER . '/' . Files::IMPORT_FOLDER . '/' . $this->file))[0][0];
+            $this->fileHeading = (new HeadingRowImport)->toArray(public_path(Files::UPLOAD_FOLDER.'/'.Files::IMPORT_FOLDER.'/'.$this->file))[0][0];
             HeadingRowFormatter::default(config('excel.imports.heading_row.formatter'));
 
             array_shift($excelData);
             $this->matchedColumns = collect($this->columns)->whereIn('id', $this->heading)->pluck('id');
-            $importMatchedColumns = array();
+            $importMatchedColumns = [];
 
             foreach ($this->matchedColumns as $matchedColumn) {
                 $importMatchedColumns[$matchedColumn] = 1;
@@ -77,7 +76,7 @@ trait ImportExcel
         $importClassName = (new ReflectionClass($importClass))->getShortName();
 
         // clear previous import
-        Artisan::call('queue:clear database --queue=' . $importClassName);
+        Artisan::call('queue:clear database --queue='.$importClassName);
         Artisan::call('queue:flush');
         // Get index of an array not null value with key
         $columns = array_filter($request->columns, function ($value) {
@@ -85,7 +84,7 @@ trait ImportExcel
         });
 
         $importInstance = new $importClass;
-        Excel::import($importInstance, public_path(Files::UPLOAD_FOLDER . '/' . Files::IMPORT_FOLDER . '/' . $request->file));
+        Excel::import($importInstance, public_path(Files::UPLOAD_FOLDER.'/'.Files::IMPORT_FOLDER.'/'.$request->file));
         $excelData = $importInstance->getProcessedData();
 
         if ($request->has_heading) {

@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class UpdateProfile extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -30,15 +29,15 @@ class UpdateProfile extends CoreRequest
             'password' => 'nullable|min:8|max:50',
             'image' => 'image|max:2048',
             'mobile' => 'nullable|numeric',
-            'date_of_birth' => 'nullable|date_format:"' . $setting->date_format . '"|before_or_equal:'.now($setting->timezone)->format($setting->date_format),
-            'twitter_id' => 'nullable|unique:user_auths,twitter_id,' . $this->route('profile'),
+            'date_of_birth' => 'nullable|date_format:"'.$setting->date_format.'"|before_or_equal:'.now($setting->timezone)->format($setting->date_format),
+            'twitter_id' => 'nullable|unique:user_auths,twitter_id,'.$this->route('profile'),
         ];
 
         if (user()->email != $this->email) {
             $rules['email'] = [
                 'required',
                 'email:rfc,strict',
-                'unique:user_auths,email,' . user()->user_auth_id . ',id',
+                'unique:user_auths,email,'.user()->user_auth_id.',id',
             ];
         }
 
@@ -56,6 +55,4 @@ class UpdateProfile extends CoreRequest
             'image.image' => 'Profile picture should be an image',
         ];
     }
-
 }
-

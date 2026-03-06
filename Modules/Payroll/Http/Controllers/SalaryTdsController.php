@@ -142,5 +142,4 @@ class SalaryTdsController extends AccountBaseController
 
         return Reply::success(__('messages.updateSuccess'));
     }
-
 }

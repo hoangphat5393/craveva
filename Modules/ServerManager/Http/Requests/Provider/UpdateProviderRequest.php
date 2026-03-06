@@ -14,6 +14,7 @@ class UpdateProviderRequest extends FormRequest
     public function authorize()
     {
         $editPermission = user()->permission('edit_provider');
+
         return in_array($editPermission, ['all', 'added', 'owned', 'both']);
     }
 
@@ -48,5 +49,4 @@ class UpdateProviderRequest extends FormRequest
             'status' => __('servermanager::validation.attributes.status'),
         ];
     }
-
 }

@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class StoreCurrencyExchangeKey extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -29,5 +28,4 @@ class StoreCurrencyExchangeKey extends CoreRequest
             'dedicated_subdomain' => 'required_if:currency_key_version,dedicated',
         ];
     }
-
 }

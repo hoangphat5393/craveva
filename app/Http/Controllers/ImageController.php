@@ -7,13 +7,11 @@ use App\Helper\Files;
 
 class ImageController extends Controller
 {
-
-
     const FILE_PATH = 'quill-images';
 
     /**
-     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
+     *
      * @throws \Exception
      */
     public function store(\Illuminate\Http\Request $request)
@@ -30,7 +28,7 @@ class ImageController extends Controller
         $imagePath = '';
         try {
             $decrypted = Common::encryptDecrypt($imageEncrypted, 'decrypt');
-            $file_data = file_get_contents(asset_url_local_s3(self::FILE_PATH . '/' . $decrypted), false, stream_context_create([
+            $file_data = file_get_contents(asset_url_local_s3(self::FILE_PATH.'/'.$decrypted), false, stream_context_create([
                 'ssl' => [
                     'verify_peer' => false,
                     'verify_peer_name' => false,
@@ -51,5 +49,4 @@ class ImageController extends Controller
 
         return view('theme-settings.ajax.cropper', $this->data);
     }
-
 }

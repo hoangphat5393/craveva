@@ -73,7 +73,7 @@ return [
         'api_users' => [
             'driver' => 'eloquent',
             'model' => Modules\RestAPI\Entities\UserAuth::class,
-            'table' => 'users'
+            'table' => 'users',
         ],
     ],
 
@@ -115,7 +115,7 @@ return [
     'password_timeout' => 10800,
 
     'verification' => [
-        'expire' => 60
-    ]
+        'expire' => 60,
+    ],
 
 ];

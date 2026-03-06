@@ -2,8 +2,8 @@
 
 namespace Modules\ServerManager\Services;
 
-use Modules\ServerManager\Entities\ServerHosting;
 use Illuminate\Support\Collection;
+use Modules\ServerManager\Entities\ServerHosting;
 
 class HostingService
 {

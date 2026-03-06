@@ -5,23 +5,22 @@ namespace App\Http\Controllers\SuperAdmin;
 use App\Models\Company;
 use App\Models\SuperAdmin\GlobalInvoice;
 use App\Models\SuperAdmin\GlobalSubscription;
-use App\Notifications\SuperAdmin\CompanyPurchasedPlan;
-use App\Notifications\SuperAdmin\CompanyUpdatedPlan;
+use App\Models\SuperAdmin\Package;
 use App\Models\SuperAdmin\StripeInvoice;
 use App\Models\SuperAdmin\Subscription;
-use App\Traits\SuperAdmin\StripeSettings;
 use App\Models\User;
+use App\Notifications\SuperAdmin\CompanyPurchasedPlan;
+use App\Notifications\SuperAdmin\CompanyUpdatedPlan;
+use App\Traits\SuperAdmin\StripeSettings;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Notification;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Notification;
 use Stripe\Exception\SignatureVerificationException;
 use Stripe\Webhook;
-use App\Models\SuperAdmin\Package;
 
 class StripeWebhookController extends Controller
 {
-
     use StripeSettings;
 
     public function verifyStripeWebhook(Request $request)
@@ -55,22 +54,22 @@ class StripeWebhookController extends Controller
             );
         } catch (\UnexpectedValueException $e) {
             // Invalid payload
-            return response('Invalid Payload' . $e->getMessage(), 400);
+            return response('Invalid Payload'.$e->getMessage(), 400);
         } catch (SignatureVerificationException $e) {
             // Invalid signature
-            return response('Invalid signature' . $e->getMessage(), 400);
+            return response('Invalid signature'.$e->getMessage(), 400);
         }
 
         $payload = json_decode($request->getContent(), true);
 
-        if (!isset($payload['data']['object']['object'])) {
+        if (! isset($payload['data']['object']['object'])) {
             return response('Payload data not found', 200);
         }
 
         $customerId = $payload['data']['object']['customer'];
         $company = Company::where('stripe_id', $customerId)->first();
 
-        if (!$company) {
+        if (! $company) {
             return response('Customer not found', 200);
         }
         // Do something with $event
@@ -94,7 +93,7 @@ class StripeWebhookController extends Controller
 
                 if (is_null($stripInvoiceData)) {
                     // Store invoice details
-                    $stripeInvoice = new GlobalInvoice();
+                    $stripeInvoice = new GlobalInvoice;
                     $stripeInvoice->global_subscription_id = $globalSubscription->id;
                     $stripeInvoice->company_id = $company->id;
                     $stripeInvoice->invoice_id = $invoiceRealId;
@@ -159,7 +158,6 @@ class StripeWebhookController extends Controller
 
             $subscription = Subscription::where('company_id', $company->id)->latest()->first();
             $globalSubscription = GlobalSubscription::where('gateway_name', 'stripe')->where('company_id', $company->id)->first();
-
 
             if ($payload['type'] == 'payment_intent.succeeded') {
 

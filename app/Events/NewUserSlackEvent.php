@@ -9,7 +9,6 @@ use Illuminate\Queue\SerializesModels;
 
 class NewUserSlackEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $user;
@@ -18,5 +17,4 @@ class NewUserSlackEvent
     {
         $this->user = $user;
     }
-
 }

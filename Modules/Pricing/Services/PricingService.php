@@ -2,14 +2,13 @@
 
 namespace Modules\Pricing\Services;
 
+use App\Models\ClientDetails;
+use App\Models\Product;
+use App\Models\User;
 use Modules\Pricing\Entities\ClientProductPricing;
-use Modules\Pricing\Entities\PricingTierItem;
 use Modules\Pricing\Entities\CompanyCustomerPricing;
 use Modules\Pricing\Entities\CompanyCustomerProductPricing;
-use Modules\Pricing\Services\VolumeDiscountService;
-use App\Models\Product;
-use App\Models\ClientDetails;
-use App\Models\User;
+use Modules\Pricing\Entities\PricingTierItem;
 
 class PricingService
 {
@@ -38,6 +37,7 @@ class PricingService
 
         if ($specific) {
             $unit = $this->applyDiscount($basePrice, $specific->discount_type, $specific->discount_value, $specific->custom_price);
+
             return $this->applyStage2($unit, $quantity, $productId, $sellerCompanyId, 'client_product_pricing');
         }
 
@@ -77,12 +77,14 @@ class PricingService
 
                     if ($tierItem) {
                         $unit = $this->applyDiscount($basePrice, $tierItem->discount_type, $tierItem->discount_value, null);
+
                         return $this->applyStage2($unit, $quantity, $productId, $sellerCompanyId, 'pricing_tier_item', $tierId);
                     }
 
                     // Tier Level Discount
                     if ($tier->discount_type && $tier->discount_value !== null) {
                         $unit = $this->applyDiscount($basePrice, $tier->discount_type, $tier->discount_value, null);
+
                         return $this->applyStage2($unit, $quantity, $productId, $sellerCompanyId, 'pricing_tier', $tierId);
                     }
                 }
@@ -103,8 +105,8 @@ class PricingService
             [
                 'product_id' => $productId,
                 'price' => $unitPrice,
-                'quantity' => $quantity
-            ]
+                'quantity' => $quantity,
+            ],
         ];
 
         // Apply Volume Discount
@@ -119,7 +121,7 @@ class PricingService
             'price' => round($finalTotal, 2),     // The Final Total Price
             'applied' => $appliedSource,
             'tier_id' => $tierId,
-            'volume_discount' => round($volumeDiscountAmount, 2)
+            'volume_discount' => round($volumeDiscountAmount, 2),
         ];
     }
 
@@ -127,7 +129,7 @@ class PricingService
     {
         $price = $base;
 
-        if (!is_null($customPrice) && $customPrice > 0) {
+        if (! is_null($customPrice) && $customPrice > 0) {
             $price = (float) $customPrice;
         }
 
@@ -191,7 +193,7 @@ class PricingService
             ->where('is_active', true)
             ->first();
 
-        if (!$relation) {
+        if (! $relation) {
             return null;
         }
 
@@ -210,7 +212,7 @@ class PricingService
         if ($relation->custom_discount_type && $relation->custom_discount_value) {
             $product = Product::find($productId);
 
-            if (!$product) {
+            if (! $product) {
                 return null;
             }
 
@@ -242,6 +244,7 @@ class PricingService
 
                 if ($tierItem) {
                     $unit = $this->applyDiscount($basePrice, $tierItem->discount_type, $tierItem->discount_value, null);
+
                     return [
                         'unit_price' => $unit,
                         'source' => 'corporate_pricing_tier_item',
@@ -250,6 +253,7 @@ class PricingService
 
                 if ($tier->discount_type && $tier->discount_value !== null) {
                     $unit = $this->applyDiscount($basePrice, $tier->discount_type, $tier->discount_value, null);
+
                     return [
                         'unit_price' => $unit,
                         'source' => 'corporate_pricing_tier',

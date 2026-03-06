@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class StoreLeadSource extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -25,8 +24,7 @@ class StoreLeadSource extends CoreRequest
     public function rules()
     {
         return [
-            'type' => 'required|unique:lead_sources,type,null,id,company_id,' . company()->id
+            'type' => 'required|unique:lead_sources,type,null,id,company_id,'.company()->id,
         ];
     }
-
 }

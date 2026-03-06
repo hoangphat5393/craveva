@@ -7,8 +7,8 @@ use Modules\Performance\Entities\KeyResults;
 
 class CreateCheckInRequest extends FormRequest
 {
-
     protected $originalCurrentValue;
+
     protected $originalTargetValue;
 
     /**
@@ -24,7 +24,7 @@ class CreateCheckInRequest extends FormRequest
             'key_result_id' => 'required|exists:key_results,id',
             'current_value' => 'required|numeric',
             'confidence_level' => 'required|in:low,medium,high',
-            'check_in_date' => 'required|date_format:"' . company()->date_format . '"',
+            'check_in_date' => 'required|date_format:"'.company()->date_format.'"',
         ];
     }
 
@@ -35,5 +35,4 @@ class CreateCheckInRequest extends FormRequest
     {
         return true;
     }
-
 }

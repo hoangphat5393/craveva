@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class StorePromotionRequest extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -23,9 +22,9 @@ class StorePromotionRequest extends CoreRequest
     public function rules(): array
     {
         return [
-            'date' => 'required|date_format:"' . company()->date_format . '"',
+            'date' => 'required|date_format:"'.company()->date_format.'"',
             'current_designation_id' => 'required|numeric',
-            'current_department_id' => 'required|numeric'
+            'current_department_id' => 'required|numeric',
         ];
     }
 
@@ -36,5 +35,4 @@ class StorePromotionRequest extends CoreRequest
             'current_department_id.required' => __('messages.SelectaDesignation'),
         ];
     }
-
 }

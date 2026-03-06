@@ -54,6 +54,7 @@ use Illuminate\Notifications\Notifiable;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Payment[] $payment
  * @property-read int|null $payment_count
  * @property-read \App\Models\Project|null $project
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|CreditNotes newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|CreditNotes newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|CreditNotes query()
@@ -82,29 +83,39 @@ use Illuminate\Notifications\Notifiable;
  * @method static \Illuminate\Database\Eloquent\Builder|CreditNotes whereSubTotal($value)
  * @method static \Illuminate\Database\Eloquent\Builder|CreditNotes whereTotal($value)
  * @method static \Illuminate\Database\Eloquent\Builder|CreditNotes whereUpdatedAt($value)
+ *
  * @property float|null $adjustment_amount
  * @property string $calculate_tax
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|CreditNotes whereAdjustmentAmount($value)
  * @method static \Illuminate\Database\Eloquent\Builder|CreditNotes whereCalculateTax($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|CreditNotes whereCompanyId($value)
+ *
  * @property-read \App\Models\UnitType|null $unit
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|CreditNotes whereUnitId($value)
+ *
  * @property string|null $original_credit_note_number
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|CreditNotes whereOriginalCreditNoteNumber($value)
+ *
  * @mixin \Eloquent
  */
 class CreditNotes extends BaseModel
 {
-
-    use Notifiable, HasCompany;
+    use HasCompany, Notifiable;
 
     protected $casts = [
         'issue_date' => 'datetime',
         'due_date' => 'datetime',
     ];
+
     protected $appends = ['total_amount', 'issue_on'];
+
     protected $with = ['currency'];
 
     public function project(): BelongsTo
@@ -175,7 +186,7 @@ class CreditNotes extends BaseModel
     /* This is overall amount, cannot be used for particular credit note */
     public function creditAmountRemaining()
     {
-        return ($this->total) - $this->creditAmountUsed();
+        return $this->total - $this->creditAmountUsed();
     }
 
     public function getTotalAmountAttribute()
@@ -185,7 +196,7 @@ class CreditNotes extends BaseModel
 
     public function getIssueOnAttribute()
     {
-        if (!is_null($this->issue_date)) {
+        if (! is_null($this->issue_date)) {
             return Carbon::parse($this->issue_date)->format('d F, Y');
         }
 
@@ -194,33 +205,60 @@ class CreditNotes extends BaseModel
 
     public function setIssueDateAttribute($issue_date)
     {
-        $issue_date = Carbon::createFromFormat(company()->date_format, $issue_date, company()->timezone)->format('Y-m-d');
-        $issue_date = Carbon::parse($issue_date)->setTimezone('UTC');
+        if (!$issue_date) {
+            return;
+        }
 
-        $this->attributes['issue_date'] = $issue_date;
+        if ($issue_date instanceof Carbon) {
+            $this->attributes['issue_date'] = $issue_date->format('Y-m-d');
+            return;
+        }
+
+        $company = company();
+        $dateFormat = $company ? $company->date_format : ($this->company ? $this->company->date_format : 'Y-m-d');
+        $timezone = $company ? $company->timezone : ($this->company ? $this->company->timezone : 'UTC');
+
+        try {
+            $issue_date = Carbon::createFromFormat($dateFormat, $issue_date, $timezone)->format('Y-m-d');
+            $issue_date = Carbon::parse($issue_date)->setTimezone('UTC');
+            $this->attributes['issue_date'] = $issue_date;
+        } catch (\Exception $e) {
+            // If format fails, try standard parsing
+            $this->attributes['issue_date'] = Carbon::parse($issue_date)->format('Y-m-d');
+        }
     }
 
     public function setDueDateAttribute($due_date)
     {
-        if (!is_null($due_date)) {
+        if (! is_null($due_date)) {
+            if ($due_date instanceof Carbon) {
+                $this->attributes['due_date'] = $due_date->format('Y-m-d');
+                return;
+            }
 
-            $due_date = Carbon::createFromFormat(company()->date_format, $due_date, company()->timezone)->format('Y-m-d');
+            $company = company();
+            $dateFormat = $company ? $company->date_format : ($this->company ? $this->company->date_format : 'Y-m-d');
+            $timezone = $company ? $company->timezone : ($this->company ? $this->company->timezone : 'UTC');
 
-            $due_date = Carbon::parse($due_date)->setTimezone('UTC');
-
-            $this->attributes['due_date'] = $due_date;
+            try {
+                $due_date = Carbon::createFromFormat($dateFormat, $due_date, $timezone)->format('Y-m-d');
+                $due_date = Carbon::parse($due_date)->setTimezone('UTC');
+                $this->attributes['due_date'] = $due_date;
+            } catch (\Exception $e) {
+                $this->attributes['due_date'] = Carbon::parse($due_date)->format('Y-m-d');
+            }
         }
     }
 
     public function formatCreditNoteNumber()
     {
         $invoiceSettings = company() ? company()->invoiceSetting : $this->company->invoiceSetting;
+
         return \App\Helper\NumberFormat::creditNote($this->cn_number, $invoiceSettings);
     }
 
     public static function lastEstimateNumber()
     {
-        return (int)CreditNotes::latest()->first()?->original_credit_note_number ?? 0;
+        return (int) CreditNotes::latest()->first()?->original_credit_note_number ?? 0;
     }
-
 }

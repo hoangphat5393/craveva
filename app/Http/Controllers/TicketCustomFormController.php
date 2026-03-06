@@ -8,13 +8,12 @@ use Illuminate\Http\Request;
 
 class TicketCustomFormController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'modules.ticketForm';
         $this->middleware(function ($request, $next) {
-            if (!in_array('tickets', $this->user->modules)) {
+            if (! in_array('tickets', $this->user->modules)) {
                 abort(403);
             }
 
@@ -36,9 +35,9 @@ class TicketCustomFormController extends AccountBaseController
      */
     public function update(Request $request, $id)
     {
-            TicketCustomForm::where('id', $id)->update([
-                'status' => $request->status
-            ]);
+        TicketCustomForm::where('id', $id)->update([
+            'status' => $request->status,
+        ]);
 
         return Reply::dataOnly([]);
     }
@@ -58,5 +57,4 @@ class TicketCustomFormController extends AccountBaseController
 
         return Reply::dataOnly([]);
     }
-
 }

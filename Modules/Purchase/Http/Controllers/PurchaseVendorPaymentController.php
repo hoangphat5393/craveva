@@ -2,36 +2,31 @@
 
 namespace Modules\Purchase\Http\Controllers;
 
-use Carbon\Carbon;
 use App\Helper\Reply;
-use App\Models\Invoice;
-use App\Models\BankAccount;
-use Illuminate\Http\Request;
-use Modules\Purchase\Entities\PurchaseBill;
-use Illuminate\Contracts\Support\Renderable;
-use Modules\Purchase\Entities\PurchaseOrder;
-use Modules\Purchase\Entities\PurchaseVendor;
-use Modules\Purchase\Entities\PurchaseSetting;
 use App\Http\Controllers\AccountBaseController;
+use App\Models\BankAccount;
 use App\Models\Expense;
-use App\Models\ExpensesCategory;
+use Carbon\Carbon;
+use Illuminate\Contracts\Support\Renderable;
+use Illuminate\Http\Request;
+use Modules\Purchase\DataTables\VendorPaymentDataTable;
+use Modules\Purchase\Entities\PurchaseBill;
 use Modules\Purchase\Entities\PurchasePaymentBill;
+use Modules\Purchase\Entities\PurchasePaymentHistory;
+use Modules\Purchase\Entities\PurchaseSetting;
+use Modules\Purchase\Entities\PurchaseVendor;
 use Modules\Purchase\Entities\PurchaseVendorCredit;
 use Modules\Purchase\Entities\PurchaseVendorPayment;
-use Modules\Purchase\Entities\PurchasePaymentHistory;
-use Modules\Purchase\Entities\PurchaseStockAdjustment;
-use Modules\Purchase\DataTables\VendorPaymentDataTable;
 use Modules\Purchase\Http\Requests\VendorPayment\StoreRequest;
 
 class PurchaseVendorPaymentController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = __('purchase::app.purchaseOrder.vendorPayments');
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array(PurchaseSetting::MODULE_NAME, $this->user->modules));
+            abort_403(! in_array(PurchaseSetting::MODULE_NAME, $this->user->modules));
 
             return $next($request);
         });
@@ -39,13 +34,13 @@ class PurchaseVendorPaymentController extends AccountBaseController
 
     /**
      * Display a listing of the resource.
+     *
      * @return Renderable
      */
-
     public function index(VendorPaymentDataTable $dataTable)
     {
         $viewPermission = user()->permission('view_vendor_payment');
-        abort_403(!in_array($viewPermission, ['all', 'added', 'owned', 'both']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'owned', 'both']));
         $this->pageTitle = __('purchase::app.purchaseOrder.vendorPayments');
 
         return $dataTable->render('purchase::vendor-payments.index', $this->data);
@@ -53,12 +48,13 @@ class PurchaseVendorPaymentController extends AccountBaseController
 
     /**
      * Show the form for creating a new resource.
+     *
      * @return Renderable
      */
     public function create()
     {
         $addPermission = user()->permission('add_vendor_payment');
-        abort_403(!in_array($addPermission, ['all', 'added']));
+        abort_403(! in_array($addPermission, ['all', 'added']));
         $this->pageTitle = __('purchase::modules.vendorPayment.addPayment');
         $this->vendors = PurchaseVendor::all();
         $this->bills = PurchaseBill::all();
@@ -85,7 +81,8 @@ class PurchaseVendorPaymentController extends AccountBaseController
 
     /**
      * Store a newly created resource in storage.
-     * @param Request $request
+     *
+     * @param  Request  $request
      * @return Renderable
      */
     public function store(StoreRequest $request)
@@ -96,7 +93,7 @@ class PurchaseVendorPaymentController extends AccountBaseController
             $redirectUrl = route('vendor-payments.index');
         }
 
-        $payment = new PurchaseVendorPayment();
+        $payment = new PurchaseVendorPayment;
         $payment->purchase_vendor_id = $request->vendor_id;
         $payment->payment_date = $request->payment_date == null ? $request->payment_date : Carbon::createFromFormat($this->company->date_format, $request->payment_date)->format('Y-m-d');
         $payment->bank_account_id = $request->bank_account_id;
@@ -107,25 +104,24 @@ class PurchaseVendorPaymentController extends AccountBaseController
         $payment->save();
         $amounts = array_combine($request->bill_id, $request->amount_paid_per);
 
-        $this->vendors = PurchaseVendor::where('id',$request->vendor_id)->first();
-        $billNumber =PurchaseBill::where('purchase_vendor_id',$request->vendor_id);
+        $this->vendors = PurchaseVendor::where('id', $request->vendor_id)->first();
+        $billNumber = PurchaseBill::where('purchase_vendor_id', $request->vendor_id);
         $countBill = count($request->bill_id);
         if ($countBill > 1) {
             $billNumber = $billNumber->pluck('purchase_bill_number')->toArray();
+        } else {
+            $billNumber = $billNumber->whereIn('id', $request->bill_id)->pluck('purchase_bill_number')->toArray();
         }
-        else{
-            $billNumber = $billNumber->whereIn('id',$request->bill_id)->pluck('purchase_bill_number')->toArray();
-        }
-        $prefix =PurchaseSetting::first();
-        $prefixBill = array_map(fn($item) => $prefix->bill_prefix .'#'. $item, $billNumber);
-        $prefixBill = implode(",", $prefixBill);
-        $expenses =new Expense();
+        $prefix = PurchaseSetting::first();
+        $prefixBill = array_map(fn ($item) => $prefix->bill_prefix.'#'.$item, $billNumber);
+        $prefixBill = implode(',', $prefixBill);
+        $expenses = new Expense;
         $expenses->item_name = __('purchase::app.purchaseOrder.paymentToVendor');
         $expenses->purchase_date = $request->payment_date == null ? $request->payment_date : Carbon::createFromFormat($this->company->date_format, $request->payment_date)->format('Y-m-d');
         $expenses->price = round($request->payment_made, 2);
         $expenses->user_id = user()->id;
         $expenses->company_id = company()->id;
-        $expenses->description = $prefixBill. '  ' . '  ,'. 'Excess Payment'. ' = ' .round($request->excess, 2);
+        $expenses->description = $prefixBill.'  '.'  ,'.'Excess Payment'.' = '.round($request->excess, 2);
         $expenses->currency_id = $this->vendors->currency_id;
         $expenses->purchase_from = $this->vendors->primary_name;
         $expenses->save();
@@ -134,20 +130,18 @@ class PurchaseVendorPaymentController extends AccountBaseController
             $bill = PurchaseBill::with('order', 'order.items')->where('id', $key)->first();
 
             $totalPaid = PurchasePaymentBill::where('purchase_bill_id', $bill->id)->sum('total_paid');
-            $item = new PurchasePaymentBill();
+            $item = new PurchasePaymentBill;
             $item->purchase_bill_id = $key;
             $item->total_paid = $amt;
             $item->purchase_vendor_id = $request->vendor_id;
             $item->purchase_vendor_payment_id = $payment->id;
             $item->save();
 
-            if ((float)($totalPaid + $amt) >= (float)$bill->total) {
+            if ((float) ($totalPaid + $amt) >= (float) $bill->total) {
                 $bill->status = 'paid';
-            }
-            elseif ($totalPaid + $amt == 0) {
+            } elseif ($totalPaid + $amt == 0) {
                 $bill->status = 'open';
-            }
-            else {
+            } else {
                 $bill->status = 'partially_paid';
             }
 
@@ -155,12 +149,11 @@ class PurchaseVendorPaymentController extends AccountBaseController
         }
 
         if ($payment->excess_payment > 0) {
-            $vendorCredit = new PurchaseVendorCredit();
+            $vendorCredit = new PurchaseVendorCredit;
 
-            if (!is_null($vendorCredit->latest()->first())) {
+            if (! is_null($vendorCredit->latest()->first())) {
                 $CreditNoteNo = $vendorCredit->latest()->first()->credit_note_no + 1;
-            }
-            else {
+            } else {
                 $CreditNoteNo = 1;
             }
 
@@ -178,13 +171,14 @@ class PurchaseVendorPaymentController extends AccountBaseController
 
     /**
      * Show the specified resource.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function show($id)
     {
         $viewPermission = user()->permission('view_vendor_payment');
-        abort_403(!in_array($viewPermission, ['all', 'added', 'owned']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'owned']));
         $this->vendorPayment = PurchaseVendorPayment::with('vendor', 'bankAccount', 'vendor.currency')->findOrFail($id);
         $this->bills = PurchasePaymentBill::with('bill', 'bill.order')->where('purchase_vendor_id', $this->vendorPayment->purchase_vendor_id)->where('purchase_vendor_payment_id', $this->vendorPayment->id)->get();
 
@@ -200,13 +194,13 @@ class PurchaseVendorPaymentController extends AccountBaseController
         $this->billArray = $billArray;
 
         switch ($tab) {
-        case 'history':
-            $this->history = PurchasePaymentHistory::where('purchase_payment_id', $id)->orderByDesc('id')->get();
-            $this->view = 'purchase::vendor-payments.ajax.history';
-            break;
-        default:
-            $this->view = 'purchase::vendor-payments.ajax.overview';
-            break;
+            case 'history':
+                $this->history = PurchasePaymentHistory::where('purchase_payment_id', $id)->orderByDesc('id')->get();
+                $this->view = 'purchase::vendor-payments.ajax.history';
+                break;
+            default:
+                $this->view = 'purchase::vendor-payments.ajax.overview';
+                break;
         }
 
         if (request()->ajax()) {
@@ -223,14 +217,15 @@ class PurchaseVendorPaymentController extends AccountBaseController
 
     /**
      * Show the form for editing the specified resource.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function edit($id)
     {
         $this->payment = PurchaseVendorPayment::with('vendor', 'vendor.currency')->findOrFail($id);
         $this->editPermission = user()->permission('edit_vendor_payment');
-        abort_403(!($this->editPermission == 'all'
+        abort_403(! ($this->editPermission == 'all'
             || ($this->editPermission == 'added' && $this->payment->added_by == user()->id)));
 
         $this->vendors = PurchaseVendor::all();
@@ -271,8 +266,9 @@ class PurchaseVendorPaymentController extends AccountBaseController
 
     /**
      * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
+     *
+     * @param  Request  $request
+     * @param  int  $id
      * @return Renderable
      */
     public function update(StoreRequest $request, $id)
@@ -285,16 +281,15 @@ class PurchaseVendorPaymentController extends AccountBaseController
         $payment->internal_note = $request->internal_note;
         $payment->save();
 
-
         $amounts = array_combine($request->bill_id, $request->amount_paid_per);
 
-        if(!($amounts === $amounts)){
+        if (! ($amounts === $amounts)) {
             PurchasePaymentBill::where('purchase_vendor_payment_id', $id)->delete();
 
             foreach ($amounts as $key => $amt) {
                 $bill = PurchaseBill::with('order')->where('id', $key)->first();
 
-                $item = new PurchasePaymentBill();
+                $item = new PurchasePaymentBill;
                 $item->purchase_bill_id = $key;
                 $item->total_paid = $amt;
                 $item->purchase_vendor_id = $request->vendor_id;
@@ -319,14 +314,15 @@ class PurchaseVendorPaymentController extends AccountBaseController
 
     /**
      * Remove the specified resource from storage.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function destroy($id)
     {
         $vendorPayment = PurchaseVendorPayment::findOrFail($id);
 
-        $vendorBillsAmt = array();
+        $vendorBillsAmt = [];
         PurchasePaymentBill::where('purchase_vendor_payment_id', $vendorPayment->id)->get()->map(function ($item) use (&$vendorBillsAmt) {
             $vendorBillsAmt[$item->purchase_bill_id] = $item->total_paid;
         });
@@ -347,7 +343,7 @@ class PurchaseVendorPaymentController extends AccountBaseController
         }
 
         $this->deletePermission = user()->permission('delete_vendor_payment');
-        abort_403(!($this->deletePermission == 'all'
+        abort_403(! ($this->deletePermission == 'all'
             || ($this->deletePermission == 'added' && $vendorPayment->added_by == user()->id)));
         $vendorPayment->delete();
 
@@ -357,12 +353,12 @@ class PurchaseVendorPaymentController extends AccountBaseController
     public function applyQuickAction(Request $request)
     {
         switch ($request->action_type) {
-        case 'delete':
-            $this->deleteRecords($request);
+            case 'delete':
+                $this->deleteRecords($request);
 
-            return Reply::success(__('messages.deleteSuccess'));
-        default:
-            return Reply::error(__('messages.selectAction'));
+                return Reply::success(__('messages.deleteSuccess'));
+            default:
+                return Reply::error(__('messages.selectAction'));
         }
     }
 
@@ -372,7 +368,7 @@ class PurchaseVendorPaymentController extends AccountBaseController
 
         $purchaseVendorPayment = PurchaseVendorPayment::whereIn('id', explode(',', $request->row_ids))->get();
 
-        foreach ($purchaseVendorPayment as $paymentData){
+        foreach ($purchaseVendorPayment as $paymentData) {
             $paymentData->delete();
         }
 
@@ -389,8 +385,7 @@ class PurchaseVendorPaymentController extends AccountBaseController
                 ->whereIn('status', ['open', 'partially_paid'])
                 ->get();
 
-        }
-        else {
+        } else {
             $this->bills = PurchaseBill::with('vendor', 'order')
                 ->where('purchase_vendor_id', $id)
                 ->whereIn('status', ['open', 'partially_paid'])
@@ -418,8 +413,7 @@ class PurchaseVendorPaymentController extends AccountBaseController
 
             $bankAccounts = $bankAccounts->get();
             $this->bankDetails = $bankAccounts;
-        }
-        else {
+        } else {
             $this->allBills = $this->bills->pluck('id');
         }
 
@@ -448,8 +442,8 @@ class PurchaseVendorPaymentController extends AccountBaseController
         $pdf = app('dompdf.wrapper');
         $pdf->loadView('purchase::vendor-payments.pdf.payment', $this->data);
         $filename = __('app.receipt');
-        return $pdf->download($filename . '.pdf');
+
+        return $pdf->download($filename.'.pdf');
 
     }
-
 }

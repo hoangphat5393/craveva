@@ -5,7 +5,6 @@ namespace Modules\CyberSecurity\Http\Middleware;
 use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\RateLimiter;
 use Modules\CyberSecurity\Entities\BlacklistEmail;
@@ -15,7 +14,6 @@ use Modules\CyberSecurity\Events\LockoutEmailEvent;
 
 class CyberSecurityMiddleware
 {
-
     /**
      * Handle an incoming request.
      */
@@ -43,7 +41,7 @@ class CyberSecurityMiddleware
                 return response()->json(
                     [
                         'status' => 'fail',
-                        'message' => __('cybersecurity::messages.blacklistIp')
+                        'message' => __('cybersecurity::messages.blacklistIp'),
                     ],
                     403
                 );
@@ -54,7 +52,7 @@ class CyberSecurityMiddleware
                     return response()->json(
                         [
                             'status' => 'fail',
-                            'message' => __('cybersecurity::messages.blacklistEmail')
+                            'message' => __('cybersecurity::messages.blacklistEmail'),
                         ],
                         403
                     );
@@ -63,26 +61,25 @@ class CyberSecurityMiddleware
                 return redirect()->route('login')->with('message', __('cybersecurity::messages.blacklistEmail'));
             }
 
-            if (RateLimiter::attempts('cybersecurity:loginLockout' . $request->ip()) >= $cyberSecurity->max_lockouts) {
-                return $this->toManyAttemptsRedirect('cybersecurity:loginLockout' . $request->ip());
+            if (RateLimiter::attempts('cybersecurity:loginLockout'.$request->ip()) >= $cyberSecurity->max_lockouts) {
+                return $this->toManyAttemptsRedirect('cybersecurity:loginLockout'.$request->ip());
             }
 
-            if (RateLimiter::tooManyAttempts('cybersecurity:login' . $request->ip(), $cyberSecurity->max_retries)) {
-                return $this->toManyAttemptsRedirect('cybersecurity:login' . $request->ip());
+            if (RateLimiter::tooManyAttempts('cybersecurity:login'.$request->ip(), $cyberSecurity->max_retries)) {
+                return $this->toManyAttemptsRedirect('cybersecurity:login'.$request->ip());
             }
 
             RateLimiter::attempt(
-                'cybersecurity:login' . $request->ip(),
+                'cybersecurity:login'.$request->ip(),
                 $cyberSecurity->max_retries,
                 function () {},
                 $this->getLockoutTime($cyberSecurity)
             );
 
-            if (RateLimiter::tooManyAttempts('cybersecurity:login' . $request->ip(), $cyberSecurity->max_retries)) {
+            if (RateLimiter::tooManyAttempts('cybersecurity:login'.$request->ip(), $cyberSecurity->max_retries)) {
                 $this->loginLockoutCheck($cyberSecurity);
             }
         }
-
 
         if (auth()->check()) {
 
@@ -116,14 +113,14 @@ class CyberSecurityMiddleware
         $seconds = RateLimiter::availableIn($key);
 
         $message = __('cybersecurity::messages.maxRetries', [
-            'time' => now()->addSeconds($seconds)->diffForHumans()
+            'time' => now()->addSeconds($seconds)->diffForHumans(),
         ]);
 
         if (request()->expectsJson()) {
             return response()->json(
                 [
                     'status' => 'fail',
-                    'message' => $message
+                    'message' => $message,
                 ],
                 403
             );
@@ -135,9 +132,9 @@ class CyberSecurityMiddleware
 
     private function loginLockoutCheck($cyberSecurity)
     {
-        RateLimiter::hit('cybersecurity:loginLockout' . request()->ip(), ($cyberSecurity->reset_retries * 60 * 60));
+        RateLimiter::hit('cybersecurity:loginLockout'.request()->ip(), ($cyberSecurity->reset_retries * 60 * 60));
 
-        $attemptLockout = RateLimiter::attempts('cybersecurity:loginLockout' . request()->ip());
+        $attemptLockout = RateLimiter::attempts('cybersecurity:loginLockout'.request()->ip());
 
         if ($cyberSecurity->alert_after_lockouts && $attemptLockout == $cyberSecurity->alert_after_lockouts) {
             event(new LockoutEmailEvent(request()->email, request()->ip()));
@@ -146,14 +143,13 @@ class CyberSecurityMiddleware
 
     private function getLockoutTime($cyberSecurity): int
     {
-        $attempts = RateLimiter::attempts('cybersecurity:loginLockout' . request()->ip());
+        $attempts = RateLimiter::attempts('cybersecurity:loginLockout'.request()->ip());
         $lockouts = 0;
 
         if ($attempts) {
             $lockouts = $cyberSecurity->extended_lockout_time * 60;
         }
 
-        return (int)(($cyberSecurity->lockout_time + $lockouts) * 60);
+        return (int) (($cyberSecurity->lockout_time + $lockouts) * 60);
     }
-
 }

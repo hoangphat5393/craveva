@@ -1,20 +1,18 @@
 <?php
 
 use App\Models\Company;
-use App\Models\CompanyAddress;
 use App\Models\DashboardWidget;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      *
      * @return void
      */
-
     public function up()
     {
         Schema::create('task_comment_emoji', function (Blueprint $table) {
@@ -27,12 +25,10 @@ return new class extends Migration {
             $table->timestamps();
         });
 
-
         Schema::table('company_addresses', function (Blueprint $table) {
             $table->decimal('latitude', 10, 8)->default(null)->nullable();
             $table->decimal('longitude', 11, 8)->default(null)->nullable();
         });
-
 
         $companies = Company::get();
 
@@ -42,7 +38,7 @@ return new class extends Migration {
             $company->companyAddress()->whereNull('latitude')
                 ->update([
                     'latitude' => $company->latitude,
-                    'longitude' => $company->longitude
+                    'longitude' => $company->longitude,
                 ]);
 
             // Create new widget ticket
@@ -71,5 +67,4 @@ return new class extends Migration {
             $table->dropColumn(['longitude']);
         });
     }
-
 };

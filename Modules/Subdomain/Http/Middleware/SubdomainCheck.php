@@ -3,18 +3,15 @@
 namespace Modules\Subdomain\Http\Middleware;
 
 use App\Models\Company;
-use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Closure;
+use Illuminate\Http\Request;
 
 class SubdomainCheck
 {
-
     /**
      * Handle an incoming request.
      *
-     * @param Request $request
-     * @param Closure $next
+     * @param  Request  $request
      * @return mixed
      */
     public function handle($request, Closure $next)
@@ -25,7 +22,6 @@ class SubdomainCheck
 
         $rootCrmSubDomain = preg_replace('#^https?://#', '', $subdomain); // Remove 'http://' or 'https://'
 
-        
         $root = getDomain();
 
         $routeName = request()->route()->getName();
@@ -35,7 +31,7 @@ class SubdomainCheck
         if ($rootCrmSubDomain !== null && $rootCrmSubDomain == $host) {
             // Check login page
             if ($routeName === 'login') {
-                return redirect('//' . $host . '/signin');
+                return redirect('//'.$host.'/signin');
             }
 
             return $next($request);
@@ -80,13 +76,12 @@ class SubdomainCheck
             // If opened login in main domain then redirect to workspace login page
             // https://craveva.craveva.test/login
             if ($root == $host) {
-                return redirect('//' . $root . '/signin');
+                return redirect('//'.$root.'/signin');
             }
 
             // Show Company Not found Error Page
             $this->companyNotFound();
         }
-
 
         if ($subdomain == array_first(explode('.', $root))) {
             return $next($request);
@@ -94,16 +89,16 @@ class SubdomainCheck
 
         // Redirect to forgot-password when from 325 page
         if ($routeName == 'front.forgot-company') {
-            return redirect('//' . $root . '/forgot-company');
+            return redirect('//'.$root.'/forgot-company');
         }
 
         // Redirect to signup when from 325 page
         if ($routeName == 'front.signup.index') {
-            return redirect('//' . $root . '/signup');
+            return redirect('//'.$root.'/signup');
         }
 
         // If sub-domain do not exist in database then redirect to craveva
-        return redirect('//' . $root . '/signin');
+        return redirect('//'.$root.'/signin');
     }
 
     public function companyNotFound(): void
@@ -123,8 +118,8 @@ class SubdomainCheck
         }
 
         // Build signup and forgot-company links
-        $signupLink = '//' . $domain . '/signup';
-        $forgetLink = '//' . $domain . '/forgot-company';
+        $signupLink = '//'.$domain.'/signup';
+        $forgetLink = '//'.$domain.'/forgot-company';
 
         // Abort with custom HTTP status code and message
         abort(325, __('subdomain::app.companyNotFound'), ['signup' => $signupLink, 'forgot-company' => $forgetLink]);

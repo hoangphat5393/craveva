@@ -9,7 +9,6 @@ use Modules\Performance\Entities\PerformanceSetting;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      */
@@ -42,7 +41,7 @@ return new class extends Migration
             $metrics = ['Percentage', 'Revenue', 'Units'];
 
             foreach ($metrics as $metric) {
-                if (!in_array($metric, $existingMetrics)) {
+                if (! in_array($metric, $existingMetrics)) {
                     $data[] = [
                         'company_id' => $company->id,
                         'name' => $metric,
@@ -53,7 +52,7 @@ return new class extends Migration
             }
 
             // Insert data only if there are new entries to add
-            if (!empty($data)) {
+            if (! empty($data)) {
                 KeyResultsMetrics::insert($data);
             }
         }

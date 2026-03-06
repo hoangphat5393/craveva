@@ -4,10 +4,11 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     public function up()
     {
-        if (!Schema::hasTable('client_product_pricing')) {
+        if (! Schema::hasTable('client_product_pricing')) {
             Schema::create('client_product_pricing', function (Blueprint $table) {
                 $table->bigIncrements('id');
                 $table->unsignedInteger('company_id')->nullable()->index();

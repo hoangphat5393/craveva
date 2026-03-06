@@ -9,12 +9,10 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Modules\Payroll\DataTables\EmployeeHourlyDataTable;
 use Modules\Payroll\Entities\PayrollSetting;
-
 use Modules\Payroll\Http\Requests\StoreSalaryComponent;
 
 class EmployeeHourlyRateSettingController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -48,14 +46,13 @@ class EmployeeHourlyRateSettingController extends AccountBaseController
     {
         //
 
-        //return Reply::dataOnly(['viewData' => $view]);
+        // return Reply::dataOnly(['viewData' => $view]);
 
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  Request  $request
      * @return Response
      */
     public function store(Request $request)
@@ -63,9 +60,8 @@ class EmployeeHourlyRateSettingController extends AccountBaseController
         $employeeIds = $request->employee_id;
         $rate = $request->hourly_rate;
 
-        foreach($employeeIds as $employeeId){
-            if(!is_null($rate[$employeeId]))
-            {
+        foreach ($employeeIds as $employeeId) {
+            if (! is_null($rate[$employeeId])) {
                 $employee = EmployeeDetails::where('user_id', $employeeId)->first();
 
                 $employee->overtime_hourly_rate = (isset($rate[$employeeId])) ? $rate[$employeeId] : null;
@@ -121,5 +117,4 @@ class EmployeeHourlyRateSettingController extends AccountBaseController
     {
         //
     }
-
 }

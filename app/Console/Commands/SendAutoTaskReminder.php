@@ -10,7 +10,6 @@ use Illuminate\Console\Command;
 
 class SendAutoTaskReminder extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
@@ -30,7 +29,6 @@ class SendAutoTaskReminder extends Command
      *
      * @return mixed
      */
-
     public function handle()
     {
 
@@ -73,5 +71,4 @@ class SendAutoTaskReminder extends Command
         return Command::SUCCESS;
 
     }
-
 }

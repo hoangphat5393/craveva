@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property string|null $deleted_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|GlobalCurrency newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|GlobalCurrency newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|GlobalCurrency query()
@@ -35,13 +36,14 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @method static \Illuminate\Database\Eloquent\Builder|GlobalCurrency whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|GlobalCurrency whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|GlobalCurrency whereUsdPrice($value)
+ *
  * @mixin Eloquent
+ *
  * @method static Builder|GlobalCurrency onlyTrashed()
  * @method static Builder|GlobalCurrency withTrashed()
  * @method static Builder|GlobalCurrency withoutTrashed()
  */
 class GlobalCurrency extends BaseModel
 {
-
     use SoftDeletes;
 }

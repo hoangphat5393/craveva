@@ -10,6 +10,7 @@ namespace App\Models;
  * @property int $lead_note_id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|LeadUserNote newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|LeadUserNote newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|LeadUserNote query()
@@ -18,12 +19,12 @@ namespace App\Models;
  * @method static \Illuminate\Database\Eloquent\Builder|LeadUserNote whereLeadNoteId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|LeadUserNote whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|LeadUserNote whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class LeadUserNote extends BaseModel
 {
-
     protected $table = 'lead_user_notes';
-    protected $fillable = ['user_id', 'lead_note_id'];
 
+    protected $fillable = ['user_id', 'lead_note_id'];
 }

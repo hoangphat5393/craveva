@@ -4,26 +4,29 @@ namespace Modules\Payroll\DataTables;
 
 use App\DataTables\BaseDataTable;
 use App\Models\Role;
-use Yajra\DataTables\Html\Column;
 use Modules\Payroll\Entities\OvertimeRequest;
 use Modules\Payroll\Entities\PayrollSetting;
+use Yajra\DataTables\Html\Column;
 
 class OvertimeRequestDataTable extends BaseDataTable
 {
     private $roleId;
+
     private $payrollSetting;
+
     private $payCode;
 
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
     {
         $this->roleId = self::getUserSecondRole();
         $this->payrollSetting = PayrollSetting::first();
+
         return datatables()
             ->eloquent($query)
             ->addColumn('action', function ($row) {
@@ -35,25 +38,23 @@ class OvertimeRequestDataTable extends BaseDataTable
                 if ($row->status == 'reject') {
                     $statusColor = 'danger';
                     $status = __('app.rejected');
-                }
-                elseif ($row->status == 'pending') {
+                } elseif ($row->status == 'pending') {
                     $statusColor = 'warning';
                     $status = __('app.pending');
-                }
-                else {
+                } else {
                     $statusColor = 'success';
                     $status = __('app.accepted');
                 }
 
                 if ($row->status == 'pending' && (user()->hasRole('admin') || in_array($this->roleId, $allowRoles) || $reportingTo == user()->id)) {
-                    $action .= '<button type="button" id="edit"  data-request-id="' . $row->id . '" data-type="edit" class="btn-primary btn-sm rounded f-14 p-2 editRequest mr-1"> <i class="fa fa-edit "></i> </button>';
-                    $action .= '<button type="button" id="reject"  data-request-id="' . $row->id . '" data-type="reject" class="btn-danger btn-sm rounded f-14 p-2 acceptButton"> <i class="fa fa-times mr-1"></i> '.__('app.reject').'</button>';
+                    $action .= '<button type="button" id="edit"  data-request-id="'.$row->id.'" data-type="edit" class="btn-primary btn-sm rounded f-14 p-2 editRequest mr-1"> <i class="fa fa-edit "></i> </button>';
+                    $action .= '<button type="button" id="reject"  data-request-id="'.$row->id.'" data-type="reject" class="btn-danger btn-sm rounded f-14 p-2 acceptButton"> <i class="fa fa-times mr-1"></i> '.__('app.reject').'</button>';
 
-                    $action .= ' <button type="button" id="acceptButton"  data-request-id="' . $row->id . '" data-type="accept" class="btn-primary btn-sm rounded f-14 p-2 acceptButton">  <i class="fa fa-check mr-1"></i>'.__('app.accept').'</button>';
+                    $action .= ' <button type="button" id="acceptButton"  data-request-id="'.$row->id.'" data-type="accept" class="btn-primary btn-sm rounded f-14 p-2 acceptButton">  <i class="fa fa-check mr-1"></i>'.__('app.accept').'</button>';
                 }
 
-                if($row->status != 'pending'){
-                    return '<i class="mr-1 fa fa-circle text-'.$statusColor.'" ></i>' . $status.'<br> <p>'.__('payroll::modules.payroll.actionBy').' : '.$row->actionByName.'</p>';
+                if ($row->status != 'pending') {
+                    return '<i class="mr-1 fa fa-circle text-'.$statusColor.'" ></i>'.$status.'<br> <p>'.__('payroll::modules.payroll.actionBy').' : '.$row->actionByName.'</p>';
                 }
 
                 return $action;
@@ -61,7 +62,7 @@ class OvertimeRequestDataTable extends BaseDataTable
 
             ->editColumn('user_id', function ($row) {
                 return view('components.employee', [
-                    'user' => $row->user
+                    'user' => $row->user,
                 ]);
             })
 
@@ -74,14 +75,15 @@ class OvertimeRequestDataTable extends BaseDataTable
             })
 
             ->editColumn('overtime_reason', function ($row) {
-                return $row->overtime_reason ? '<p data-toggle="tooltip" data-original-title="' . $row->overtime_reason . '">'. mb_strimwidth($row->overtime_reason, 0, 40, '...') . '</p>' : '--';
+                return $row->overtime_reason ? '<p data-toggle="tooltip" data-original-title="'.$row->overtime_reason.'">'.mb_strimwidth($row->overtime_reason, 0, 40, '...').'</p>' : '--';
             })
 
             ->editColumn('hours', function ($row) {
                 $typeLabel = __('payroll::modules.payroll.'.$row->type);
-                $type = '<span class="badge badge-primary mr-1" >' . $typeLabel . '</span>';
-                $hours = $row->hours .' '.__('app.hour');
-                $minutes = ( $row->minutes != 0) ? $row->minutes .' '. __('app.minute') : '';
+                $type = '<span class="badge badge-primary mr-1" >'.$typeLabel.'</span>';
+                $hours = $row->hours.' '.__('app.hour');
+                $minutes = ($row->minutes != 0) ? $row->minutes.' '.__('app.minute') : '';
+
                 return $hours.' '.$minutes.' '.$type;
             })
 
@@ -95,27 +97,22 @@ class OvertimeRequestDataTable extends BaseDataTable
                 // Determine hourly rate based on request type
                 if ($row->type == 'working') {
                     if ($row->policy->payCode->fixed == 1) {
-                        $calculation = '('. $row->regular_fixed_amount .' '.__('payroll::app.fixed') .') * '. $minutes;
+                        $calculation = '('.$row->regular_fixed_amount.' '.__('payroll::app.fixed').') * '.$minutes;
+                    } else {
+                        $calculation = '( '.$hourlyRate.' ( *'.$row->policy->payCode->regular_time_rate.' '.__('payroll::app.times').') * '.$minutes.')';
                     }
-                    else {
-                        $calculation = '( '.$hourlyRate.' ( *'. $row->policy->payCode->regular_time_rate .' '.__('payroll::app.times') .') * '. $minutes.')';
-                    }
-                }
-                elseif ($row->type == 'holiday') {
+                } elseif ($row->type == 'holiday') {
                     if ($row->policy->payCode->fixed == 1) {
-                        $calculation = '('. $row->holiday_fixed_amount  .' '.__('payroll::app.fixed') .') * '. $minutes;
-                    }
-                    else {
-                        $calculation = '( '.$row->policy->payCode->holiday_time_rate .' '.__('payroll::app.times') .') * '. $minutes.')';
+                        $calculation = '('.$row->holiday_fixed_amount.' '.__('payroll::app.fixed').') * '.$minutes;
+                    } else {
+                        $calculation = '( '.$row->policy->payCode->holiday_time_rate.' '.__('payroll::app.times').') * '.$minutes.')';
                     }
 
-                }
-                elseif ($row->type == 'dayoff') {
+                } elseif ($row->type == 'dayoff') {
                     if ($row->policy->payCode->fixed == 1) {
-                        $calculation = '( '.$row->day_off_fixed_amount  .' '.__('payroll::app.fixed') .') * '. $minutes;
-                    }
-                    else {
-                        $calculation = '( '.$hourlyRate.' ( *'. $row->policy->payCode->day_off_time_rate .' '.__('payroll::app.times') .') * '. $minutes.')';
+                        $calculation = '( '.$row->day_off_fixed_amount.' '.__('payroll::app.fixed').') * '.$minutes;
+                    } else {
+                        $calculation = '( '.$hourlyRate.' ( *'.$row->policy->payCode->day_off_time_rate.' '.__('payroll::app.times').') * '.$minutes.')';
                     }
                 }
 
@@ -129,10 +126,9 @@ class OvertimeRequestDataTable extends BaseDataTable
     /**
      * Get query source of dataTable.
      *
-     * @param  $model
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    //phpcs:ignore
+    // phpcs:ignore
     public function query(OvertimeRequest $model)
     {
         $request = $this->request();
@@ -141,7 +137,7 @@ class OvertimeRequestDataTable extends BaseDataTable
 
         $overtimeRequest = $model->with('actionBy', 'user', 'company', 'policy', 'policy.payCode')
             ->select('overtime_requests.*', 'users.name', 'users.email as user_email', 'actionby.email', 'actionby.name as actionByName', 'pay_codes.fixed', 'pay_codes.fixed_amount', 'pay_codes.regular_fixed_amount',
-            'pay_codes.regular_time_rate', 'pay_codes.weekend_fixed_amount', 'pay_codes.weekend_time_rate', 'pay_codes.holiday_fixed_amount', 'pay_codes.day_off_fixed_amount', 'pay_codes.holiday_time_rate', 'employee_details.overtime_hourly_rate')
+                'pay_codes.regular_time_rate', 'pay_codes.weekend_fixed_amount', 'pay_codes.weekend_time_rate', 'pay_codes.holiday_fixed_amount', 'pay_codes.day_off_fixed_amount', 'pay_codes.holiday_time_rate', 'employee_details.overtime_hourly_rate')
             ->leftJoin('users', 'users.id', '=', 'overtime_requests.user_id')
             ->leftJoin('overtime_policy_employees', 'users.id', '=', 'overtime_policy_employees.user_id')
             ->leftJoin('overtime_policies', 'overtime_policies.id', '=', 'overtime_policy_employees.overtime_policy_id')
@@ -149,8 +145,7 @@ class OvertimeRequestDataTable extends BaseDataTable
             ->leftJoin('employee_details', 'users.id', '=', 'employee_details.user_id')
             ->leftJoin('users as actionby', 'actionby.id', '=', 'overtime_requests.action_by');
 
-        if (!in_array('admin', user_roles()))
-        {
+        if (! in_array('admin', user_roles())) {
 
             $overtimeRequest = $overtimeRequest->where(function ($query) use ($roleId) {
                 // Allow the user to see their own overtime requests
@@ -232,35 +227,31 @@ class OvertimeRequestDataTable extends BaseDataTable
                 ->printable(false)
                 ->orderable(false)
                 ->searchable(false)
-                ->addClass('text-right pr-20')
+                ->addClass('text-right pr-20'),
         ];
     }
 
-    static public function getUserSecondRole()
+    public static function getUserSecondRole()
     {
         $roles = Role::all();
 
         $roleIds = user()->roles()->pluck('role_id')->toArray();
 
-        if(count($roleIds) > 1){
-            if(isset($roleIds[1]))
-            {
+        if (count($roleIds) > 1) {
+            if (isset($roleIds[1])) {
                 $userRole = $roles->filter(function ($value, $key) use ($roleIds) {
                     return $value->id == $roleIds[1];
                 })->first();
 
                 $userSecondRole = ($userRole->name != 'employee') ? $roleIds[1] : $roleIds[0];
 
-            }
-            else{
+            } else {
                 $userSecondRole = $roleIds[0];
             }
-        }
-        else{
+        } else {
             $userSecondRole = $roleIds[0];
         }
 
         return $userSecondRole;
     }
-
 }

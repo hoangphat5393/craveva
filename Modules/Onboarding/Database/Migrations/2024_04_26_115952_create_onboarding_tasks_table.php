@@ -3,16 +3,14 @@
 use App\Models\Company;
 use App\Models\DashboardWidget;
 use App\Models\ModuleSetting;
+use App\Models\Permission;
+use App\Models\PermissionRole;
+use App\Models\Role;
+use App\Models\User;
+use App\Models\UserPermission;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use App\Models\Permission;
-use App\Models\PermissionRole;
-use App\Models\PermissionType;
-use App\Models\Role;
-use App\Models\RoleUser;
-use App\Models\User;
-use App\Models\UserPermission;
 use Modules\Onboarding\Entities\OnboardingTask;
 
 return new class extends Migration
@@ -20,7 +18,6 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-
     public function up(): void
     {
         Schema::create('onboarding_tasks', function (Blueprint $table) {
@@ -36,8 +33,6 @@ return new class extends Migration
             $table->foreign('added_by')->references('id')->on('users')->onDelete('SET NULL')->onUpdate('cascade');
             $table->timestamps();
         });
-
-
 
         Schema::create('onboarding_completed_task', function (Blueprint $table) {
             $table->increments('id');
@@ -96,7 +91,6 @@ return new class extends Migration
                 'allowed_permissions' => $permissionType['allowed_permissions'],
             ]);
 
-
             foreach ($companies as $company) {
 
                 $role = Role::where('name', 'admin')
@@ -108,14 +102,13 @@ return new class extends Migration
                         ->where('role_id', $role->id)->where('permission_type_id', 4)->first();
 
                     if (is_null($permissionData)) {
-                        $permissionRole = new PermissionRole();
+                        $permissionRole = new PermissionRole;
                         $permissionRole->permission_id = $permission->id;
                         $permissionRole->role_id = $role->id;
                         $permissionRole->permission_type_id = 4;
                         $permissionRole->save();
                     }
                 }
-
 
                 $admins = User::allAdmins($company->id);
 
@@ -139,14 +132,14 @@ return new class extends Migration
                 'widget_name' => 'onboarding',
                 'status' => 1,
                 'company_id' => $company->id,
-                'dashboard_type' => 'private-dashboard'
+                'dashboard_type' => 'private-dashboard',
             ]);
 
             DashboardWidget::firstOrCreate([
                 'widget_name' => 'onboarding',
                 'status' => 1,
                 'company_id' => $company->id,
-                'dashboard_type' => 'admin-hr-dashboard'
+                'dashboard_type' => 'admin-hr-dashboard',
             ]);
 
             // Insert default onboard tasks...
@@ -206,7 +199,7 @@ return new class extends Migration
                     'type' => 'offboard',
                     'column_priority' => 3,
                     'company_id' => $company->id,
-                ]
+                ],
             ]);
         }
     }

@@ -8,18 +8,17 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      *
      * @return void
      */
-
     public function up()
     {
         foreach (['invoices', 'payments', 'expenses'] as $tableName) {
-            if (!Schema::hasColumn($tableName, 'default_currency_id')) {
+            if (! Schema::hasColumn($tableName, 'default_currency_id')) {
                 Schema::table($tableName, function (Blueprint $table) {
                     $table->integer('default_currency_id')->unsigned()->nullable()->after('currency_id');
                     $table->foreign('default_currency_id')
@@ -64,5 +63,4 @@ return new class extends Migration {
             });
         }
     }
-
 };

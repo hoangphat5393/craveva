@@ -2,9 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use Modules\Asset\Http\Controllers\AssetController;
-use Modules\Asset\Http\Controllers\AssetTypeController;
 use Modules\Asset\Http\Controllers\AssetHistoryController;
 use Modules\Asset\Http\Controllers\AssetSettingController;
+use Modules\Asset\Http\Controllers\AssetTypeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,7 +21,7 @@ Route::group(['middleware' => 'auth', 'prefix' => 'account'], function () {
     Route::resource('assets', AssetController::class);
 
     Route::prefix('assets')->group(function () {
-        //phpcs:ignore
+        // phpcs:ignore
         Route::get('/asset/{asset}/history/return/{history}', [AssetHistoryController::class, 'returnAsset'])->name('assets.return');
         Route::resource('/asset/{asset}/history', AssetHistoryController::class)->names([
             'create' => 'history.create',
@@ -33,6 +33,6 @@ Route::group(['middleware' => 'auth', 'prefix' => 'account'], function () {
 
         Route::resource('asset-type', AssetTypeController::class);
     });
-    
+
     Route::resource('/asset-setting', AssetSettingController::class);
 });

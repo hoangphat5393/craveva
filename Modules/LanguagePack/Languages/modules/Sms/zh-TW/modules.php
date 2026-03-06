@@ -15,5 +15,5 @@ return [
     'telegramTelegramBotName' => 'Telegram 機器人名稱',
     'telegramBotNameInfo' => '注意：您需要在 telegram 帳戶上的以下機器人鏈接開始聊天。',
     'smsConfigure' => '從右側邊欄選擇您想要接收的所有短信通知。',
-    'notificationConfigure' => '通知選擇和對公司的分配從管理面板管理，而不是超級管理面板。'
+    'notificationConfigure' => '通知選擇和對公司的分配從管理面板管理，而不是超級管理面板。',
 ];

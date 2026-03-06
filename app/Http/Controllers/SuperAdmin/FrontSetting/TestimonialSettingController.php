@@ -3,18 +3,16 @@
 namespace App\Http\Controllers\SuperAdmin\FrontSetting;
 
 use App\Helper\Reply;
-use Illuminate\Http\Request;
-use App\Models\SuperAdmin\Testimonials;
-use App\Models\SuperAdmin\TrFrontDetail;
 use App\Http\Controllers\AccountBaseController;
 use App\Http\Requests\SuperAdmin\TestimonialSettings\StoreRequest;
-use App\Http\Requests\SuperAdmin\TestimonialSettings\UpdateRequest;
 use App\Http\Requests\SuperAdmin\TestimonialSettings\TitleStoreUpdateRequest;
+use App\Http\Requests\SuperAdmin\TestimonialSettings\UpdateRequest;
 use App\Models\GlobalSetting;
+use App\Models\SuperAdmin\Testimonials;
+use App\Models\SuperAdmin\TrFrontDetail;
 
 class TestimonialSettingController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -41,15 +39,14 @@ class TestimonialSettingController extends AccountBaseController
         $this->view = 'super-admin.front-setting.testimonial-settings.testimonial';
         $tab = request('tab');
 
-
         switch ($tab) {
-        case 'title':
-            $this->titles = TrFrontDetail::with('language')->select('id', 'testimonial_title', 'language_setting_id')->get();
-            $this->view = 'super-admin.front-setting.testimonial-settings.translation';
-            break;
-        default:
-            $this->view = 'super-admin.front-setting.testimonial-settings.testimonial';
-            break;
+            case 'title':
+                $this->titles = TrFrontDetail::with('language')->select('id', 'testimonial_title', 'language_setting_id')->get();
+                $this->view = 'super-admin.front-setting.testimonial-settings.translation';
+                break;
+            default:
+                $this->view = 'super-admin.front-setting.testimonial-settings.testimonial';
+                break;
         }
 
         $this->activeTab = $tab ?: 'setting';
@@ -77,12 +74,11 @@ class TestimonialSettingController extends AccountBaseController
     /**
      * Store a newly created resource in storage.
      *
-     * @param StoreRequest $request
      * @return \Illuminate\Http\Response
      */
     public function store(StoreRequest $request)
     {
-        $testimonial = new Testimonials();
+        $testimonial = new Testimonials;
         $testimonial->language_setting_id = $request->language == 0 ? null : $request->language;
         $testimonial->name = $request->name;
         $testimonial->comment = $request->comment;
@@ -96,7 +92,7 @@ class TestimonialSettingController extends AccountBaseController
     /**
      * Show the form for editing the specified resource.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -109,8 +105,7 @@ class TestimonialSettingController extends AccountBaseController
     /**
      * Update the specified resource in storage.
      *
-     * @param UpdateRequest $request
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function update(UpdateRequest $request, $id)
@@ -129,7 +124,7 @@ class TestimonialSettingController extends AccountBaseController
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
@@ -152,7 +147,7 @@ class TestimonialSettingController extends AccountBaseController
             ],
             [
                 'language_setting_id' => $request->language,
-                'testimonial_title' => $request->testimonial_title
+                'testimonial_title' => $request->testimonial_title,
             ]
         );
 
@@ -165,5 +160,4 @@ class TestimonialSettingController extends AccountBaseController
 
         return view('super-admin.front-setting.testimonial-settings.ajax.edit-title', $this->data);
     }
-
 }

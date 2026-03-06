@@ -5,12 +5,12 @@ namespace Modules\Onboarding\Entities;
 use App\Models\User;
 use App\Scopes\ActiveScope;
 use App\Traits\HasCompany;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class OnboardingTask extends Model
 {
-    use HasFactory, HasCompany;
+    use HasCompany, HasFactory;
 
     /**
      * The attributes that are mass assignable.
@@ -89,8 +89,7 @@ class OnboardingTask extends Model
                 'type' => 'offboard',
                 'column_priority' => 3,
                 'company_id' => $company->id,
-            ]
+            ],
         ]);
     }
-
 }

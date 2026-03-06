@@ -7,8 +7,8 @@ use Illuminate\View\Component;
 
 class PublicTaskCard extends Component
 {
-
     public $task;
+
     public $draggable;
 
     /**
@@ -31,5 +31,4 @@ class PublicTaskCard extends Component
     {
         return view('components.cards.public-task-card');
     }
-
 }

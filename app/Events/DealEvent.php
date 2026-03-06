@@ -9,11 +9,12 @@ use Illuminate\Queue\SerializesModels;
 
 class DealEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $task;
+
     public $notifyUser;
+
     public $notificationName;
 
     public $deal;
@@ -24,5 +25,4 @@ class DealEvent
         $this->notifyUser = $notifyUser;
         $this->notificationName = $notificationName;
     }
-
 }

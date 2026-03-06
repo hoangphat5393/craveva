@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class StoreTask extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -26,15 +25,14 @@ class StoreTask extends CoreRequest
     {
         return [
             'heading' => 'required',
-            'priority' => 'required'
+            'priority' => 'required',
         ];
     }
 
     public function messages()
     {
         return [
-          'project_id.required' => __('messages.chooseProject'),
+            'project_id.required' => __('messages.chooseProject'),
         ];
     }
-
 }

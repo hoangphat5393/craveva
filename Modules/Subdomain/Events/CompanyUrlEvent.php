@@ -9,7 +9,6 @@ use Illuminate\Queue\SerializesModels;
 
 class CompanyUrlEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $company;
@@ -18,5 +17,4 @@ class CompanyUrlEvent
     {
         $this->company = $company;
     }
-
 }

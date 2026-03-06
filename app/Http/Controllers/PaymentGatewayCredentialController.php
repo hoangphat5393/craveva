@@ -11,7 +11,6 @@ use Illuminate\Contracts\Encryption\DecryptException;
 
 class PaymentGatewayCredentialController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -38,43 +37,43 @@ class PaymentGatewayCredentialController extends AccountBaseController
         $this->fixPayloadMismatch($this->credentials);
 
         switch ($tab) {
-        case 'stripe':
+            case 'stripe':
 
-            $this->webhookRoute = route('stripe.webhook', [$hash]);
-            $this->view = 'payment-gateway-settings.ajax.stripe';
-            break;
-        case 'razorpay':
-            $this->webhookRoute = route('razorpay.webhook', [$hash]);
-            $this->view = 'payment-gateway-settings.ajax.razorpay';
-            break;
-        case 'paystack':
-            $this->webhookRoute = route('paystack.webhook', [$hash]);
-            $this->view = 'payment-gateway-settings.ajax.paystack';
-            break;
-        case 'flutterwave':
-            $this->webhookRoute = route('flutterwave.webhook', [$hash]);
-            $this->view = 'payment-gateway-settings.ajax.flutterwave';
-            break;
-        case 'mollie':
-            $this->view = 'payment-gateway-settings.ajax.mollie';
-            break;
-        case 'payfast':
-            $this->view = 'payment-gateway-settings.ajax.payfast';
-            break;
-        case 'authorize':
-            $this->view = 'payment-gateway-settings.ajax.authorize';
-            break;
-        case 'square':
-            $this->webhookRoute = route('square.webhook', [$hash]);
-            $this->view = 'payment-gateway-settings.ajax.square';
-            break;
-        case 'offline':
-            $this->view = 'payment-gateway-settings.ajax.offline';
-            break;
-        default:
-            $this->webhookRoute = route('paypal.webhook', [$hash]);
-            $this->view = 'payment-gateway-settings.ajax.paypal';
-            break;
+                $this->webhookRoute = route('stripe.webhook', [$hash]);
+                $this->view = 'payment-gateway-settings.ajax.stripe';
+                break;
+            case 'razorpay':
+                $this->webhookRoute = route('razorpay.webhook', [$hash]);
+                $this->view = 'payment-gateway-settings.ajax.razorpay';
+                break;
+            case 'paystack':
+                $this->webhookRoute = route('paystack.webhook', [$hash]);
+                $this->view = 'payment-gateway-settings.ajax.paystack';
+                break;
+            case 'flutterwave':
+                $this->webhookRoute = route('flutterwave.webhook', [$hash]);
+                $this->view = 'payment-gateway-settings.ajax.flutterwave';
+                break;
+            case 'mollie':
+                $this->view = 'payment-gateway-settings.ajax.mollie';
+                break;
+            case 'payfast':
+                $this->view = 'payment-gateway-settings.ajax.payfast';
+                break;
+            case 'authorize':
+                $this->view = 'payment-gateway-settings.ajax.authorize';
+                break;
+            case 'square':
+                $this->webhookRoute = route('square.webhook', [$hash]);
+                $this->view = 'payment-gateway-settings.ajax.square';
+                break;
+            case 'offline':
+                $this->view = 'payment-gateway-settings.ajax.offline';
+                break;
+            default:
+                $this->webhookRoute = route('paypal.webhook', [$hash]);
+                $this->view = 'payment-gateway-settings.ajax.paypal';
+                break;
         }
 
         $this->activeTab = $tab ?: 'paypal';
@@ -97,33 +96,33 @@ class PaymentGatewayCredentialController extends AccountBaseController
         $method = $request->payment_method;
 
         switch ($method) {
-        case 'stripe':
-            $this->stripe($request, $credential);
-            break;
-        case 'razorpay':
-            $this->razorpay($request, $credential);
-            break;
-        case 'paystack':
-            $this->paystack($request, $credential);
-            break;
-        case 'flutterwave':
-            $this->flutterwave($request, $credential);
-            break;
-        case 'mollie':
-            $this->mollie($request, $credential);
-            break;
-        case 'payfast':
-            $this->payfast($request, $credential);
-            break;
-        case 'authorize':
-            $this->authorizeSave($request, $credential);
-            break;
-        case 'square':
-            $this->square($request, $credential);
-            break;
-        default:
-            $this->paypal($request, $credential);
-            break;
+            case 'stripe':
+                $this->stripe($request, $credential);
+                break;
+            case 'razorpay':
+                $this->razorpay($request, $credential);
+                break;
+            case 'paystack':
+                $this->paystack($request, $credential);
+                break;
+            case 'flutterwave':
+                $this->flutterwave($request, $credential);
+                break;
+            case 'mollie':
+                $this->mollie($request, $credential);
+                break;
+            case 'payfast':
+                $this->payfast($request, $credential);
+                break;
+            case 'authorize':
+                $this->authorizeSave($request, $credential);
+                break;
+            case 'square':
+                $this->square($request, $credential);
+                break;
+            default:
+                $this->paypal($request, $credential);
+                break;
         }
 
         $credential->save();
@@ -140,8 +139,7 @@ class PaymentGatewayCredentialController extends AccountBaseController
             if ($request->paypal_mode == 'sandbox') {
                 $credential->sandbox_paypal_client_id = $request->sandbox_paypal_client_id;
                 $credential->sandbox_paypal_secret = $request->sandbox_paypal_secret;
-            }
-            else {
+            } else {
                 $credential->paypal_client_id = $request->live_paypal_client_id;
                 $credential->paypal_secret = $request->live_paypal_secret;
             }
@@ -156,8 +154,7 @@ class PaymentGatewayCredentialController extends AccountBaseController
             $credential->test_stripe_client_id = $request->test_stripe_client_id;
             $credential->test_stripe_secret = $request->test_stripe_secret;
             $credential->test_stripe_webhook_secret = $request->test_stripe_webhook_secret;
-        }
-        else {
+        } else {
             $credential->live_stripe_client_id = $request->live_stripe_client_id;
             $credential->live_stripe_secret = $request->live_stripe_secret;
             $credential->live_stripe_webhook_secret = $request->live_stripe_webhook_secret;
@@ -173,13 +170,11 @@ class PaymentGatewayCredentialController extends AccountBaseController
             $credential->test_razorpay_key = $request->test_razorpay_key;
             $credential->test_razorpay_secret = $request->test_razorpay_secret;
             $credential->test_razorpay_webhook_secret = $request->test_razorpay_webhook_secret;
-        }
-        else {
+        } else {
             $credential->live_razorpay_key = $request->live_razorpay_key;
             $credential->live_razorpay_secret = $request->live_razorpay_secret;
             $credential->live_razorpay_webhook_secret = $request->live_razorpay_webhook_secret;
         }
-
 
         $credential->razorpay_mode = $request->razorpay_mode;
         $credential->razorpay_status = ($request->razorpay_status) ? 'active' : 'inactive';
@@ -211,8 +206,7 @@ class PaymentGatewayCredentialController extends AccountBaseController
             $credential->test_payfast_merchant_id = $request->test_payfast_merchant_id;
             $credential->test_payfast_merchant_key = $request->test_payfast_merchant_key;
             $credential->test_payfast_passphrase = $request->test_payfast_passphrase;
-        }
-        else {
+        } else {
             $credential->payfast_merchant_id = $request->payfast_merchant_id;
             $credential->payfast_merchant_key = $request->payfast_merchant_key;
             $credential->payfast_passphrase = $request->payfast_passphrase;
@@ -256,7 +250,7 @@ class PaymentGatewayCredentialController extends AccountBaseController
 
     public function fixPayloadMismatch($gateway)
     {
-        $casts = (new PaymentGatewayCredentials())->getCasts();
+        $casts = (new PaymentGatewayCredentials)->getCasts();
 
         // Filter out the encrypted fields
         $encryptedFields = array_keys(array_filter($casts, function ($value) {
@@ -280,5 +274,4 @@ class PaymentGatewayCredentialController extends AccountBaseController
             $gateway->save();
         }
     }
-
 }

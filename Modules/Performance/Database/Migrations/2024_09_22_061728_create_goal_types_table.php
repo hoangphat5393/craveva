@@ -1,21 +1,20 @@
 <?php
 
+use App\Models\Company;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Modules\Performance\Entities\GoalType;
 use Modules\Performance\Entities\KeyResultsMetrics;
-use App\Models\Company;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        if (!Schema::hasTable('goal_types')) {
+        if (! Schema::hasTable('goal_types')) {
             Schema::create('goal_types', function (Blueprint $table) {
                 $table->id();
                 $table->integer('company_id')->unsigned()->nullable();
@@ -31,7 +30,7 @@ return new class extends Migration
             });
         }
 
-        if (!Schema::hasTable('key_results_metrics')) {
+        if (! Schema::hasTable('key_results_metrics')) {
             Schema::create('key_results_metrics', function (Blueprint $table) {
                 $table->id();
                 $table->integer('company_id')->unsigned()->nullable();
@@ -41,7 +40,7 @@ return new class extends Migration
             });
         }
 
-        if (!Schema::hasTable('objectives')) {
+        if (! Schema::hasTable('objectives')) {
             Schema::create('objectives', function (Blueprint $table) {
                 $table->id();
                 $table->integer('company_id')->unsigned()->nullable();
@@ -64,7 +63,7 @@ return new class extends Migration
             });
         }
 
-        if (!Schema::hasTable('objective_owners')) {
+        if (! Schema::hasTable('objective_owners')) {
             Schema::create('objective_owners', function (Blueprint $table) {
                 $table->id();
                 $table->foreignId('objective_id')->constrained('objectives')->onDelete('cascade');
@@ -72,7 +71,7 @@ return new class extends Migration
                 $table->foreign('owner_id')->references('id')->on('users')->onDelete('cascade');
             });
         }
-        if (!Schema::hasTable('key_results')) {
+        if (! Schema::hasTable('key_results')) {
             Schema::create('key_results', function (Blueprint $table) {
                 $table->id();
                 $table->integer('company_id')->unsigned()->nullable();
@@ -90,7 +89,7 @@ return new class extends Migration
             });
         }
 
-        if (!Schema::hasTable('check_ins')) {
+        if (! Schema::hasTable('check_ins')) {
             Schema::create('check_ins', function (Blueprint $table) {
                 $table->id();
                 $table->integer('company_id')->unsigned()->nullable();
@@ -108,7 +107,7 @@ return new class extends Migration
             });
         }
 
-        if (!Schema::hasTable('objective_progress_statuses')) {
+        if (! Schema::hasTable('objective_progress_statuses')) {
             Schema::create('objective_progress_statuses', function (Blueprint $table) {
                 $table->id();
                 $table->foreignId('objective_id')->constrained('objectives')->onDelete('cascade');
@@ -132,7 +131,6 @@ return new class extends Migration
         }
     }
 
-
     /**
      * Reverse the migrations.
      */
@@ -146,5 +144,4 @@ return new class extends Migration
         Schema::dropIfExists('key_results_metrics');
         Schema::dropIfExists('goal_types');
     }
-
 };

@@ -7,15 +7,22 @@ use Illuminate\View\Component;
 
 class Select extends Component
 {
-
     public $multiple;
+
     public $search;
+
     public $alignRight;
+
     public $fieldLabel;
+
     public $fieldRequired;
+
     public $fieldName;
+
     public $fieldId;
+
     public $popover;
+
     public $changeDealStage;
 
     /**
@@ -33,8 +40,7 @@ class Select extends Component
         bool $alignRight = false,
         $popover = null,
         $changeDealStage = null
-    )
-    {
+    ) {
         $this->fieldName = $fieldName;
         $this->fieldLabel = $fieldLabel;
         $this->fieldId = $fieldId;
@@ -55,5 +61,4 @@ class Select extends Component
     {
         return view('components.forms.select');
     }
-
 }

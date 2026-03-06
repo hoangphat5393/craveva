@@ -19,7 +19,6 @@ use App\Models\SuperAdmin\PackageSetting;
 
 class PackageController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -36,7 +35,7 @@ class PackageController extends AccountBaseController
     {
         $this->viewPermission = user()->permission('view_packages');
 
-        abort_403(!($this->viewPermission == 'all'));
+        abort_403(! ($this->viewPermission == 'all'));
 
         return $dataTable->render('super-admin.packages.index', $this->data);
     }
@@ -50,13 +49,12 @@ class PackageController extends AccountBaseController
     {
         $this->addPermission = user()->permission('add_packages');
 
-        abort_403(!($this->addPermission == 'all'));
+        abort_403(! ($this->addPermission == 'all'));
 
         $this->global = GlobalSetting::first();
         $this->paymentGateway = GlobalPaymentGatewayCredentials::first();
         $this->pageTitle = __('superadmin.packages.create');
         $this->position = Package::count();
-
 
         $this->packageModules = Module::where('module_name', '<>', 'settings')
             ->where('module_name', '<>', 'dashboards')
@@ -82,14 +80,13 @@ class PackageController extends AccountBaseController
     /**
      * Store a newly created resource in storage.
      *
-     * @param StoreRequest $request
      * @return \Illuminate\Http\Response
      */
     public function store(StoreRequest $request)
     {
         $this->addPermission = user()->permission('add_packages');
 
-        abort_403(!($this->addPermission == 'all'));
+        abort_403(! ($this->addPermission == 'all'));
 
         if ($request->module_in_package == null) {
             return Reply::error(__('superadmin.messages.moduleBlank'));
@@ -108,14 +105,14 @@ class PackageController extends AccountBaseController
     /**
      * Show the form for editing the specified resource.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
     {
         $this->editPermission = user()->permission('edit_packages');
 
-        abort_403(!($this->editPermission == 'all'));
+        abort_403(! ($this->editPermission == 'all'));
 
         $this->pageTitle = __('superadmin.packages.edit');
         $this->package = Package::findOrFail($id);
@@ -149,15 +146,14 @@ class PackageController extends AccountBaseController
     /**
      * Update the specified resource in storage.
      *
-     * @param UpdateRequest $request
-     * @param int $id
+     * @param  int  $id
      * @return array
      */
     public function update(UpdateRequest $request, $id)
     {
         $this->editPermission = user()->permission('edit_packages');
 
-        abort_403(!($this->editPermission == 'all'));
+        abort_403(! ($this->editPermission == 'all'));
 
         if ($request->module_in_package == null) {
             return Reply::error(__('superadmin.messages.moduleBlank'));
@@ -193,13 +189,13 @@ class PackageController extends AccountBaseController
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
         $this->deletePermission = user()->permission('delete_packages');
-        abort_403(!($this->deletePermission == 'all'));
+        abort_403(! ($this->deletePermission == 'all'));
 
         $package = Package::findOrFail($id);
 
@@ -259,6 +255,7 @@ class PackageController extends AccountBaseController
                 $data['annual_price'] = 0;
             }
         }
+
         return $data;
     }
 
@@ -268,7 +265,7 @@ class PackageController extends AccountBaseController
         $currencyId = $package->currency_id ?: global_setting()->currency_id;
         $planExpireDate = $company->licence_expire_on;
 
-        if (!$planExpireDate) {
+        if (! $planExpireDate) {
             $planExpireDate = $packageType == 'annual' ? now()->addYear() : now()->addMonth();
         }
 
@@ -276,7 +273,7 @@ class PackageController extends AccountBaseController
             ->where('subscription_status', 'active')
             ->update(['subscription_status' => 'inactive']);
 
-        $subscription = new GlobalSubscription();
+        $subscription = new GlobalSubscription;
         $subscription->company_id = $company->id;
         $subscription->package_id = $package->id;
         $subscription->currency_id = $currencyId;
@@ -289,7 +286,7 @@ class PackageController extends AccountBaseController
         $subscription->transaction_id = str(str()->random(15))->upper();
         $subscription->save();
 
-        $offlineInvoice = new GlobalInvoice();
+        $offlineInvoice = new GlobalInvoice;
         $offlineInvoice->global_subscription_id = $subscription->id;
         $offlineInvoice->company_id = $company->id;
         $offlineInvoice->currency_id = $currencyId;

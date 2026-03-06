@@ -1,18 +1,16 @@
 <?php
 
-
-use App\Models\Role;
-use App\Models\User;
-use App\Models\Module;
 use App\Models\Company;
+use App\Models\Module;
 use App\Models\Permission;
 use App\Models\PermissionRole;
+use App\Models\Role;
+use App\Models\User;
 use App\Models\UserPermission;
 use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      */
@@ -20,7 +18,7 @@ return new class extends Migration
     {
         $module = Module::where('module_name', 'employees')->first();
 
-        if($module){
+        if ($module) {
 
             $permissions = [
                 [
@@ -28,15 +26,15 @@ return new class extends Migration
                     'name' => 'view_increment_promotion',
                     'display_name' => 'View Increment Promotion',
                     'allowed_permissions' => Permission::ALL_NONE,
-                    'is_custom' => 1
+                    'is_custom' => 1,
                 ],
                 [
                     'module_id' => $module->id,
                     'name' => 'manage_increment_promotion',
                     'display_name' => 'Manage Increment Promotion',
                     'allowed_permissions' => Permission::ALL_NONE,
-                    'is_custom' => 1
-                ]
+                    'is_custom' => 1,
+                ],
             ];
 
             $companies = Company::select('id')->get();
@@ -65,7 +63,7 @@ return new class extends Migration
                             ->where('role_id', $role->id)
                             ->first();
 
-                        $permissionRole = $permissionRole ?: new PermissionRole();
+                        $permissionRole = $permissionRole ?: new PermissionRole;
                         $permissionRole->permission_id = $permission->id;
                         $permissionRole->role_id = $role->id;
                         $permissionRole->permission_type_id = 4; // All
@@ -76,7 +74,7 @@ return new class extends Migration
                 $adminUsers = User::allAdmins();
 
                 foreach ($adminUsers as $adminUser) {
-                    $userPermission = UserPermission::where('user_id', $adminUser->id)->where('permission_id', $permission->id)->first() ?: new UserPermission();
+                    $userPermission = UserPermission::where('user_id', $adminUser->id)->where('permission_id', $permission->id)->first() ?: new UserPermission;
                     $userPermission->user_id = $adminUser->id;
                     $userPermission->permission_id = $permission->id;
                     $userPermission->permission_type_id = 4; // All
@@ -93,7 +91,7 @@ return new class extends Migration
     {
         $module = Module::where('module_name', 'employees')->first();
 
-        if (!is_null($module)) {
+        if (! is_null($module)) {
             $permissions = ['view_increment_promotion', 'manage_increment_promotion'];
 
             foreach ($permissions as $permissionName) {
@@ -112,5 +110,4 @@ return new class extends Migration
             }
         }
     }
-
 };

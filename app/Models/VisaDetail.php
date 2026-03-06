@@ -3,15 +3,17 @@
 namespace App\Models;
 
 use App\Traits\HasCompany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * App\Models\VisaDetail
  *
  * @property string|null $image
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Estimate whereCompanyId($value)
+ *
  * @property int $id
  * @property int|null $company_id
  * @property int|null $user_id
@@ -26,6 +28,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read \App\Models\Country|null $country
  * @property-read mixed $image_url
  * @property-read \App\Models\User|null $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|VisaDetail newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|VisaDetail newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|VisaDetail query()
@@ -39,16 +42,18 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|VisaDetail whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|VisaDetail whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|VisaDetail whereVisaNumber($value)
+ *
  * @mixin \Eloquent
  */
-
 class VisaDetail extends BaseModel
 {
     use HasCompany;
 
     const FILE_PATH = 'visa';
+
     // protected $table = 'passport';
     protected $appends = ['image_url'];
+
     protected $casts = [
         'issue_date' => 'datetime',
         'expiry_date' => 'datetime',
@@ -61,12 +66,11 @@ class VisaDetail extends BaseModel
 
     public function getImageUrlAttribute()
     {
-        return asset_url_local_s3(VisaDetail::FILE_PATH . '/'  . $this->file);
+        return asset_url_local_s3(VisaDetail::FILE_PATH.'/'.$this->file);
     }
 
     public function country(): HasOne
     {
         return $this->hasOne(Country::class, 'id', 'country_id');
     }
-
 }

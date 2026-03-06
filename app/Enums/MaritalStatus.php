@@ -4,7 +4,6 @@ namespace App\Enums;
 
 enum MaritalStatus: string
 {
-
     // phpcs:disable
     case Single = 'single';
     case Married = 'married';
@@ -19,7 +18,7 @@ enum MaritalStatus: string
     public function label(): string
     {
         return match ($this) {
-            self::Single, self::Married, self::Widow, self::Widower, self::Separate, self::Divorced, self::Engaged => __('app.maritalStatus.' . $this->value),
+            self::Single, self::Married, self::Widow, self::Widower, self::Separate, self::Divorced, self::Engaged => __('app.maritalStatus.'.$this->value),
             default => $this->value,
         };
     }
@@ -30,10 +29,9 @@ enum MaritalStatus: string
         $maritalStatus = [];
 
         foreach (MaritalStatus::cases() as $status) {
-            $maritalStatus [] = $status->value;
+            $maritalStatus[] = $status->value;
         }
 
         return $maritalStatus;
     }
-
 }

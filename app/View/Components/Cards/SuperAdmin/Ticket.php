@@ -6,8 +6,8 @@ use Illuminate\View\Component;
 
 class Ticket extends Component
 {
-
     public $message;
+
     public $user;
 
     /**
@@ -30,5 +30,4 @@ class Ticket extends Component
     {
         return view('components.cards.super-admin.ticket');
     }
-
 }

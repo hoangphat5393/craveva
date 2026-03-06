@@ -4,7 +4,6 @@ namespace Modules\Biolinks\Enums;
 
 enum Animation: string
 {
-
     // phpcs:disable
     case NONE = 'none';
     case SPIN = 'spin';
@@ -17,9 +16,8 @@ enum Animation: string
     public function label(): string
     {
         return match ($this) {
-            self::NONE, self::SPIN, self::PING, self::PULSE, self::BOUNCE => __('biolinks::app.' . $this->value),
+            self::NONE, self::SPIN, self::PING, self::PULSE, self::BOUNCE => __('biolinks::app.'.$this->value),
             default => $this->value,
         };
     }
-
 }

@@ -6,10 +6,12 @@ use Illuminate\View\Component;
 
 class ClientSelectionDropdown extends Component
 {
-
     public $clients;
+
     public $selected;
+
     public $fieldRequired;
+
     public $labelClass;
 
     /**
@@ -34,5 +36,4 @@ class ClientSelectionDropdown extends Component
     {
         return view('components.client-selection-dropdown');
     }
-
 }

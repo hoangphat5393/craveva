@@ -22,15 +22,17 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
-class ImportExpenseJob implements ShouldQueue, ShouldBeUnique
+class ImportExpenseJob implements ShouldBeUnique, ShouldQueue
 {
-
     use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, UniversalSearchTrait;
     use ExcelImportable;
 
     private $row;
+
     private $columns;
+
     private $company;
+
     private $user;
 
     /**
@@ -58,12 +60,12 @@ class ImportExpenseJob implements ShouldQueue, ShouldBeUnique
             DB::beginTransaction();
             try {
 
-                $expense = new Expense();
+                $expense = new Expense;
                 $expense->company_id = $this->company->id;
                 $expense->item_name = $this->getColumnValue('item_name');
                 $expense->purchase_date = $this->isColumnExists('purchase_date') ? Carbon::createFromFormat('Y-m-d', $this->getColumnValue('purchase_date')) : Carbon::now();
                 $expense->purchase_from = $this->getColumnValue('purchase_from');
-                $expense->price = round((float)$this->getColumnValue('price'), 2);
+                $expense->price = round((float) $this->getColumnValue('price'), 2);
                 $expense->currency_id = $this->company->currency_id;
                 $expense->default_currency_id = $this->company->currency_id;
                 $expense->exchange_rate = 1;
@@ -85,8 +87,8 @@ class ImportExpenseJob implements ShouldQueue, ShouldBeUnique
                 if ($this->getColumnValue('category')) {
                     $category = ExpensesCategory::where('category_name', $this->getColumnValue('category'))->where('company_id', $this->company->id)->first();
 
-                    if (!$category) {
-                        $category = new ExpensesCategory();
+                    if (! $category) {
+                        $category = new ExpensesCategory;
                         $category->category_name = $this->getColumnValue('category');
                         $category->company_id = $this->company->id;
                         $category->save();
@@ -94,7 +96,7 @@ class ImportExpenseJob implements ShouldQueue, ShouldBeUnique
                         $rolesData = Role::where('name', '<>', 'admin')->where('name', '<>', 'client')->where('company_id', $this->company->id)->get();
 
                         foreach ($rolesData as $roleData) {
-                            $expansesCategoryRoles = new ExpensesCategoryRole();
+                            $expansesCategoryRoles = new ExpensesCategoryRole;
                             $expansesCategoryRoles->expenses_category_id = $category->id;
                             $expansesCategoryRoles->role_id = $roleData->id;
                             $expansesCategoryRoles->company_id = $this->company->id;
@@ -118,10 +120,8 @@ class ImportExpenseJob implements ShouldQueue, ShouldBeUnique
                 DB::rollBack();
                 $this->failJobWithMessage($e->getMessage());
             }
-        }
-        else {
+        } else {
             $this->failJob(__('messages.invalidData'));
         }
     }
-
 }

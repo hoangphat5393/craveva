@@ -2,9 +2,9 @@
 
 namespace Modules\ServerManager\Database\Seeders;
 
+use App\Models\Company;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use App\Models\Company;
 
 class ServerProviderSeeder extends Seeder
 {
@@ -374,7 +374,7 @@ class ServerProviderSeeder extends Seeder
             DB::table('server_providers')->updateOrInsert(
                 [
                     'company_id' => $companyId,
-                    'name' => $providerData['name']
+                    'name' => $providerData['name'],
                 ],
                 [
                     'url' => $providerData['url'],

@@ -7,7 +7,6 @@ use Illuminate\View\Component;
 
 class User extends Component
 {
-
     public $image;
 
     /**
@@ -29,5 +28,4 @@ class User extends Component
     {
         return view('components.cards.user');
     }
-
 }

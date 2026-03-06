@@ -38,7 +38,7 @@ class SetupDatabase extends Command
 
             // Get all tables
             $tables = DB::select('SHOW TABLES');
-            $dbKey = "Tables_in_" . $mainDb;
+            $dbKey = 'Tables_in_'.$mainDb;
 
             $count = 0;
 
@@ -62,13 +62,13 @@ class SetupDatabase extends Command
 
             $this->info("Successfully created/updated $count secure views in $gatewayDb.");
         } catch (\Exception $e) {
-            $this->error("Error: " . $e->getMessage());
+            $this->error('Error: '.$e->getMessage());
         }
     }
 
     private function createAccessFunction($mainDb)
     {
-        $funcName = "get_developer_tools_company_id";
+        $funcName = 'get_developer_tools_company_id';
 
         // Drop if exists
         DB::statement("DROP FUNCTION IF EXISTS `$mainDb`.`$funcName`");
@@ -93,7 +93,7 @@ class SetupDatabase extends Command
             DB::unprepared($sql);
             $this->info("Created access control function: $funcName");
         } catch (\Exception $e) {
-            $this->warn("Could not create function. Ensure you have SUPER privileges or log_bin_trust_function_creators is on. Error: " . $e->getMessage());
+            $this->warn('Could not create function. Ensure you have SUPER privileges or log_bin_trust_function_creators is on. Error: '.$e->getMessage());
             throw $e;
         }
     }
@@ -125,6 +125,6 @@ class SetupDatabase extends Command
                 WITH CHECK OPTION";
 
         DB::statement($sql);
-        $this->line("Created secure view for: companies", 'v');
+        $this->line('Created secure view for: companies', 'v');
     }
 }

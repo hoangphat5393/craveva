@@ -27,7 +27,7 @@ class ServerManagerServiceProvider extends ServiceProvider
         $this->registerTranslations();
         $this->registerConfig();
         $this->registerViews();
-        $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
+        $this->loadMigrationsFrom(__DIR__.'/../Database/Migrations');
         $this->registerCommands();
     }
 
@@ -49,11 +49,11 @@ class ServerManagerServiceProvider extends ServiceProvider
     protected function registerConfig()
     {
         $this->publishes([
-            __DIR__ . '/../Config/config.php' => config_path('server-manager.php'),
+            __DIR__.'/../Config/config.php' => config_path('server-manager.php'),
         ]);
 
         $this->mergeConfigFrom(
-            __DIR__ . '/../Config/config.php',
+            __DIR__.'/../Config/config.php',
             'server-manager'
         );
 
@@ -72,7 +72,7 @@ class ServerManagerServiceProvider extends ServiceProvider
     {
         $viewPath = base_path('resources/views/modules/server-manager');
 
-        $sourcePath = __DIR__ . '/../Resources/views';
+        $sourcePath = __DIR__.'/../Resources/views';
 
         $this->publishes([
             $sourcePath => $viewPath,
@@ -93,7 +93,7 @@ class ServerManagerServiceProvider extends ServiceProvider
         if (is_dir($langPath)) {
             $this->loadTranslationsFrom($langPath, 'server-manager');
         } else {
-            $this->loadTranslationsFrom(__DIR__ . '/../Resources/lang', 'server-manager');
+            $this->loadTranslationsFrom(__DIR__.'/../Resources/lang', 'server-manager');
         }
     }
 

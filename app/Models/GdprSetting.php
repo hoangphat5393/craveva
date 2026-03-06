@@ -23,6 +23,7 @@ namespace App\Models;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read mixed $icon
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|GdprSetting newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|GdprSetting newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|GdprSetting query()
@@ -43,11 +44,10 @@ namespace App\Models;
  * @method static \Illuminate\Database\Eloquent\Builder|GdprSetting whereTermsCustomerFooter($value)
  * @method static \Illuminate\Database\Eloquent\Builder|GdprSetting whereTopInformationBlock($value)
  * @method static \Illuminate\Database\Eloquent\Builder|GdprSetting whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class GdprSetting extends BaseModel
 {
-
     protected $guarded = ['id'];
-
 }

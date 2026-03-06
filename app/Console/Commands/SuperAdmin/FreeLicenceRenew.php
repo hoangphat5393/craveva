@@ -7,7 +7,6 @@ use Illuminate\Console\Command;
 
 class FreeLicenceRenew extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
@@ -44,5 +43,4 @@ class FreeLicenceRenew extends Command
             $company->save();
         }
     }
-
 }

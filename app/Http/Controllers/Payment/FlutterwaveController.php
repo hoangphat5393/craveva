@@ -3,21 +3,20 @@
 namespace App\Http\Controllers\Payment;
 
 use App\Helper\Reply;
-use App\Models\Order;
-use App\Models\Invoice;
-use Illuminate\Http\Request;
-use App\Traits\MakePaymentTrait;
-use App\Traits\PaymentGatewayTrait;
 use App\Http\Controllers\Controller;
-use App\Traits\MakeOrderInvoiceTrait;
-use KingFlamez\Rave\Facades\Rave as Flutterwave;
 use App\Http\Requests\PaymentGateway\FlutterwaveRequest;
 use App\Models\GlobalSetting;
+use App\Models\Invoice;
+use App\Models\Order;
+use App\Traits\MakeOrderInvoiceTrait;
+use App\Traits\MakePaymentTrait;
+use App\Traits\PaymentGatewayTrait;
+use Illuminate\Http\Request;
+use KingFlamez\Rave\Facades\Rave as Flutterwave;
 
 class FlutterwaveController extends Controller
 {
-
-    use MakePaymentTrait, MakeOrderInvoiceTrait, PaymentGatewayTrait;
+    use MakeOrderInvoiceTrait, MakePaymentTrait, PaymentGatewayTrait;
 
     public function __construct()
     {
@@ -29,28 +28,28 @@ class FlutterwaveController extends Controller
     {
 
         switch ($request->type) {
-        case 'invoice':
-            $invoice = Invoice::findOrFail($id);
-            $company = $invoice->company;
-            $client = $invoice->client_id ? $invoice->client : $invoice->project->client;
-            $description = __('app.invoice') . ' ' . $invoice->invoice_number;
-            $amount = $invoice->amountDue();
-            $currency = $invoice->currency ? $invoice->currency->currency_code : 'NGN';
-            $callback_url = route('flutterwave.callback', [$id, 'invoice', $company->hash]);
-            break;
+            case 'invoice':
+                $invoice = Invoice::findOrFail($id);
+                $company = $invoice->company;
+                $client = $invoice->client_id ? $invoice->client : $invoice->project->client;
+                $description = __('app.invoice').' '.$invoice->invoice_number;
+                $amount = $invoice->amountDue();
+                $currency = $invoice->currency ? $invoice->currency->currency_code : 'NGN';
+                $callback_url = route('flutterwave.callback', [$id, 'invoice', $company->hash]);
+                break;
 
-        case 'order':
-            $order = Order::findOrFail($id);
-            $company = $order->company;
-            $client = $order->client;
-            $description = __('app.order') . ' ' . $order->order_number;
-            $amount = $order->total;
-            $currency = $order->currency ? $order->currency->currency_code : 'NGN';
-            $callback_url = route('flutterwave.callback', [$id, 'order', $company->hash]);
-            break;
+            case 'order':
+                $order = Order::findOrFail($id);
+                $company = $order->company;
+                $client = $order->client;
+                $description = __('app.order').' '.$order->order_number;
+                $amount = $order->total;
+                $currency = $order->currency ? $order->currency->currency_code : 'NGN';
+                $callback_url = route('flutterwave.callback', [$id, 'order', $company->hash]);
+                break;
 
-        default:
-            return Reply::error(__('messages.paymentTypeNotFound'));
+            default:
+                return Reply::error(__('messages.paymentTypeNotFound'));
         }
 
         $this->flutterwaveSet($company->hash);
@@ -70,20 +69,20 @@ class FlutterwaveController extends Controller
                 'customer' => [
                     'email' => $request->email,
                     'phone_number' => $request->phone,
-                    'name' => $request->name
+                    'name' => $request->name,
                 ],
                 'meta' => [
                     'reference' => $reference,
                     'description' => $description,
                     'client_id' => $client->id,
                     'type' => $request->type,
-                    'id' => $id
+                    'id' => $id,
                 ],
 
                 'customizations' => [
                     'title' => $client,
-                    'description' => $description
-                ]
+                    'description' => $description,
+                ],
             ];
 
             /** @phpstan-ignore-next-line */
@@ -109,7 +108,7 @@ class FlutterwaveController extends Controller
         /** @phpstan-ignore-next-line */
         $data = Flutterwave::verifyTransaction($request->transaction_id);
         $amount = $data ? $data['data']['amount'] : 0;
-        $transactionId = array();
+        $transactionId = [];
 
         if ($request->transaction_id) {
             $transactionId[] = $request->transaction_id;
@@ -120,25 +119,25 @@ class FlutterwaveController extends Controller
         }
 
         switch ($type) {
-        case 'invoice':
-            $invoice = Invoice::findOrFail($id);
-            $invoice->status = ($status == 'successful') ? 'paid' : 'unpaid';
-            $invoice->save();
+            case 'invoice':
+                $invoice = Invoice::findOrFail($id);
+                $invoice->status = ($status == 'successful') ? 'paid' : 'unpaid';
+                $invoice->save();
 
-            $this->makePayment('Flutterwave', ($amount ?: $invoice->amountDue()), $invoice, $transactionId, (($status == 'successful') ? 'complete' : 'failed'));
+                $this->makePayment('Flutterwave', ($amount ?: $invoice->amountDue()), $invoice, $transactionId, (($status == 'successful') ? 'complete' : 'failed'));
 
-            return redirect(url()->temporarySignedRoute('front.invoice', now()->addDays(GlobalSetting::SIGNED_ROUTE_EXPIRY), $invoice->hash));
+                return redirect(url()->temporarySignedRoute('front.invoice', now()->addDays(GlobalSetting::SIGNED_ROUTE_EXPIRY), $invoice->hash));
 
-        case 'order':
-            $order = Order::findOrFail($id);
-            $invoice = $this->makeOrderInvoice($order, (($status == 'successful') ? 'completed' : 'failed'));
+            case 'order':
+                $order = Order::findOrFail($id);
+                $invoice = $this->makeOrderInvoice($order, (($status == 'successful') ? 'completed' : 'failed'));
 
-            $this->makePayment('Flutterwave', ($amount ?: $order->total), $invoice, $transactionId, (($status == 'successful') ? 'complete' : 'failed'));
+                $this->makePayment('Flutterwave', ($amount ?: $order->total), $invoice, $transactionId, (($status == 'successful') ? 'complete' : 'failed'));
 
-            return redirect()->route('orders.show', $id);
+                return redirect()->route('orders.show', $id);
 
-        default:
-            return redirect()->route('dashboard');
+            default:
+                return redirect()->route('dashboard');
         }
     }
 
@@ -156,24 +155,24 @@ class FlutterwaveController extends Controller
                 $status = $data['data']['status'];
 
                 switch ($data['data']['meta']['type']) {
-                case 'invoice':
-                    $invoice = Invoice::findOrFail($data['data']['meta']['id']);
-                    $invoice->status = ($status == 'successful') ? 'paid' : 'unpaid';
-                    $invoice->save();
+                    case 'invoice':
+                        $invoice = Invoice::findOrFail($data['data']['meta']['id']);
+                        $invoice->status = ($status == 'successful') ? 'paid' : 'unpaid';
+                        $invoice->save();
 
-                    $this->makePayment('Flutterwave', ($amount ?: $invoice->amountDue()), $invoice, $transactionId, (($status == 'successful') ? 'complete' : 'failed'));
+                        $this->makePayment('Flutterwave', ($amount ?: $invoice->amountDue()), $invoice, $transactionId, (($status == 'successful') ? 'complete' : 'failed'));
 
-                    break;
+                        break;
 
-                case 'order':
+                    case 'order':
 
-                    $order = Order::findOrFail($data['data']['meta']['id']);
+                        $order = Order::findOrFail($data['data']['meta']['id']);
 
-                    $invoice = $this->makeOrderInvoice($order, (($status == 'successful') ? 'completed' : 'failed'));
+                        $invoice = $this->makeOrderInvoice($order, (($status == 'successful') ? 'completed' : 'failed'));
 
-                    $this->makePayment('Flutterwave', ($amount ?: $order->total), $invoice, $transactionId, (($status == 'successful') ? 'complete' : 'failed'));
+                        $this->makePayment('Flutterwave', ($amount ?: $order->total), $invoice, $transactionId, (($status == 'successful') ? 'complete' : 'failed'));
 
-                    break;
+                        break;
                 }
             }
         }
@@ -181,5 +180,4 @@ class FlutterwaveController extends Controller
         return response();
 
     }
-
 }

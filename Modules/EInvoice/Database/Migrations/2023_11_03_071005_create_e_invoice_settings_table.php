@@ -5,8 +5,8 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Modules\EInvoice\Entities\EInvoiceSetting;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      *
@@ -16,7 +16,7 @@ return new class extends Migration {
     {
         \App\Models\Module::validateVersion(EInvoiceSetting::MODULE_NAME);
 
-        if (!Schema::hasTable('e_invoice_settings')) {
+        if (! Schema::hasTable('e_invoice_settings')) {
             Schema::create('e_invoice_settings', function (Blueprint $table) {
                 $table->id();
                 $table->string('purchase_code')->nullable();
@@ -38,5 +38,4 @@ return new class extends Migration {
     {
         Schema::dropIfExists('e_invoice_settings');
     }
-
 };

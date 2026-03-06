@@ -14,7 +14,6 @@ use Illuminate\Http\Request;
 
 class ContractTemplateController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -26,7 +25,6 @@ class ContractTemplateController extends AccountBaseController
      *
      * @return \Illuminate\Http\Response
      */
-
     public function index(ContractTemplatesDataTable $dataTable)
     {
         abort_403(user()->permission('manage_contract_template') == 'none');
@@ -68,7 +66,7 @@ class ContractTemplateController extends AccountBaseController
 
     public function store(StoreContractTemplate $request)
     {
-        $contract = new ContractTemplate();
+        $contract = new ContractTemplate;
         $contract->subject = $request->subject;
         $contract->amount = $request->amount;
         $contract->currency_id = $request->currency_id;
@@ -84,14 +82,14 @@ class ContractTemplateController extends AccountBaseController
     /**
      * Display the specified resource.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
         $this->contract = ContractTemplate::findOrFail($id);
         $this->manageContractTemplatePermission = user()->permission('manage_contract_template');
-        abort_403(!in_array($this->manageContractTemplatePermission, ['all', 'added']));
+        abort_403(! in_array($this->manageContractTemplatePermission, ['all', 'added']));
 
         $this->pageTitle = __('app.menu.contractTemplate');
         $this->view = 'contract-template.ajax.overview';
@@ -107,20 +105,19 @@ class ContractTemplateController extends AccountBaseController
     /**
      * Show the form for editing the specified resource.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-
     public function edit($id)
     {
         $this->contract = ContractTemplate::findOrFail($id);
         $this->manageContractTemplatePermission = user()->permission('manage_contract_template');
-        abort_403(!in_array($this->manageContractTemplatePermission, ['all', 'added']));
+        abort_403(! in_array($this->manageContractTemplatePermission, ['all', 'added']));
 
         $this->contractTypes = ContractType::all();
         $this->currencies = Currency::all();
 
-        $this->pageTitle = __('app.update') . ' ' . __('app.menu.contractTemplate');
+        $this->pageTitle = __('app.update').' '.__('app.menu.contractTemplate');
 
         $this->view = 'contract-template.ajax.edit';
 
@@ -169,7 +166,7 @@ class ContractTemplateController extends AccountBaseController
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
@@ -180,5 +177,4 @@ class ContractTemplateController extends AccountBaseController
 
         return Reply::success(__('messages.deleteSuccess'));
     }
-
 }

@@ -9,7 +9,6 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-
     public function up(): void
     {
         Schema::whenTableHasColumn('tr_front_details', 'price_description', function (Blueprint $table) {
@@ -17,5 +16,4 @@ return new class extends Migration
             $table->text('feature_description')->nullable()->change();
         });
     }
-
 };

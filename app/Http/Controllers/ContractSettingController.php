@@ -8,14 +8,13 @@ use App\Models\InvoiceSetting;
 
 class ContractSettingController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'app.menu.contractSettings';
         $this->activeSettingMenu = 'contract_settings';
         $this->middleware(function ($request, $next) {
-            abort_403(!(user()->permission('manage_contract_setting') == 'all' && in_array('contracts', user_modules())));
+            abort_403(! (user()->permission('manage_contract_setting') == 'all' && in_array('contracts', user_modules())));
 
             return $next($request);
         });
@@ -24,7 +23,6 @@ class ContractSettingController extends AccountBaseController
     /**
      * Display a listing of the resource.
      */
-
     public function index()
     {
         $this->contractSetting = InvoiceSetting::first();
@@ -48,5 +46,4 @@ class ContractSettingController extends AccountBaseController
 
         return Reply::success(__('messages.updateSuccess'));
     }
-
 }

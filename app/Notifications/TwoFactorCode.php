@@ -7,15 +7,13 @@ use Illuminate\Support\HtmlString;
 
 class TwoFactorCode extends BaseNotification
 {
-
-
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
-    //phpcs:ignore
+    // phpcs:ignore
     public function via($notifiable)
     {
         return ['mail'];
@@ -24,27 +22,25 @@ class TwoFactorCode extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
+     * @param  mixed  $notifiable
      */
     public function toMail($notifiable): MailMessage
     {
         $build = parent::build($notifiable);
         $this->company = $notifiable->company;
 
-        $twoFaCode = '<p style="color:#1d82f5"><strong>' . $notifiable->userAuth->two_factor_code . '</strong></p>';
+        $twoFaCode = '<p style="color:#1d82f5"><strong>'.$notifiable->userAuth->two_factor_code.'</strong></p>';
 
-        $content = __('email.twoFactor.line1') . '<br>' . new HtmlString($twoFaCode) . '<br>' . __('email.twoFactor.line2') . '<br>' . __('email.twoFactor.line3');
+        $content = __('email.twoFactor.line1').'<br>'.new HtmlString($twoFaCode).'<br>'.__('email.twoFactor.line2').'<br>'.__('email.twoFactor.line3');
 
         $build
             ->markdown('mail.email', [
                 'content' => $content,
-                'notifiableName' => $notifiable->name
+                'notifiableName' => $notifiable->name,
             ]);
 
         parent::resetLocale();
 
         return $build;
     }
-
 }

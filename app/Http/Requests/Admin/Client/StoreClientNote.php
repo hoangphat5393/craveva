@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class StoreClientNote extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -29,7 +28,7 @@ class StoreClientNote extends CoreRequest
             'details' => 'required',
         ];
 
-        if ($this->type == 1 && is_null($this->user_id) && !in_array('client', user_roles())) {
+        if ($this->type == 1 && is_null($this->user_id) && ! in_array('client', user_roles())) {
             $rules['user_id'] = 'required';
         }
 
@@ -42,5 +41,4 @@ class StoreClientNote extends CoreRequest
             'user_id.required' => 'The employee field is required.',
         ];
     }
-
 }

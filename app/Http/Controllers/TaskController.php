@@ -2,45 +2,44 @@
 
 namespace App\Http\Controllers;
 
-use Carbon\Carbon;
-use App\Models\Task;
-use App\Models\User;
+use App\DataTables\TasksDataTable;
+use App\DataTables\WaitingForApprovalDataTable;
+use App\Events\TaskEvent;
+use App\Events\TaskReminderEvent;
 use App\Helper\Files;
 use App\Helper\Reply;
+use App\Helper\UserService;
+use App\Http\Requests\Tasks\ActionTask;
+use App\Http\Requests\Tasks\StoreTask;
+use App\Http\Requests\Tasks\UpdateTask;
+use App\Models\BaseModel;
+use App\Models\ClientContact;
 use App\Models\Leave;
 use App\Models\Pinned;
 use App\Models\Project;
-use App\Models\SubTask;
-use App\Models\TaskFile;
-use App\Models\TaskUser;
-use App\Http\Requests\Tasks\ActionTask;
-use App\Models\TaskComment;
-use App\Models\BaseModel;
-use App\Models\TaskLabel;
-use App\Models\SubTaskFile;
-use App\Models\TaskSetting;
-use App\Models\TaskCategory;
-use Illuminate\Http\Request;
-use App\Models\TaskLabelList;
-use App\Models\ProjectTimeLog;
-use App\Models\TaskboardColumn;
-use App\Traits\ProjectProgress;
 use App\Models\ProjectMilestone;
-use App\Events\TaskReminderEvent;
-use App\DataTables\TasksDataTable;
-use App\DataTables\WaitingForApprovalDataTable;
-use Illuminate\Support\Facades\DB;
+use App\Models\ProjectTimeLog;
 use App\Models\ProjectTimeLogBreak;
-use App\Http\Requests\Tasks\StoreTask;
+use App\Models\SubTask;
+use App\Models\SubTaskFile;
+use App\Models\Task;
+use App\Models\TaskboardColumn;
+use App\Models\TaskCategory;
+use App\Models\TaskComment;
+use App\Models\TaskFile;
+use App\Models\TaskLabel;
+use App\Models\TaskLabelList;
+use App\Models\TaskSetting;
+use App\Models\TaskUser;
+use App\Models\User;
+use App\Traits\ProjectProgress;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
-use App\Http\Requests\Tasks\UpdateTask;
-use App\Events\TaskEvent;
-use App\Helper\UserService;
-use App\Models\ClientContact;
+use Illuminate\Support\Facades\DB;
 
 class TaskController extends AccountBaseController
 {
-
     use ProjectProgress;
 
     public function __construct()
@@ -49,7 +48,7 @@ class TaskController extends AccountBaseController
         $this->pageTitle = 'app.menu.tasks';
         $this->middleware(
             function ($request, $next) {
-                abort_403(!in_array('tasks', $this->user->modules));
+                abort_403(! in_array('tasks', $this->user->modules));
 
                 return $next($request);
             }
@@ -60,9 +59,9 @@ class TaskController extends AccountBaseController
     {
         $viewPermission = user()->permission('view_tasks');
 
-        abort_403(!in_array($viewPermission, ['all', 'added', 'owned', 'both']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'owned', 'both']));
 
-        if (!request()->ajax()) {
+        if (! request()->ajax()) {
             $this->assignedTo = request()->assignedTo;
 
             if (request()->has('assignee') && request()->assignee == 'me') {
@@ -87,10 +86,10 @@ class TaskController extends AccountBaseController
 
             $projectIds = Project::where('project_admin', user()->id)->pluck('id');
 
-            if (!in_array('admin', user_roles()) && (in_array('employee', user_roles()) && $projectIds->isEmpty())) {
+            if (! in_array('admin', user_roles()) && (in_array('employee', user_roles()) && $projectIds->isEmpty())) {
                 $user = User::findOrFail(user()->id);
                 $this->waitingApprovalCount = $user->tasks()->where('board_column_id', $taskBoardColumn->id)->where('company_id', user()->company_id)->count();
-            } elseif (!in_array('admin', user_roles()) && (in_array('employee', user_roles()) && !$projectIds->isEmpty())) {
+            } elseif (! in_array('admin', user_roles()) && (in_array('employee', user_roles()) && ! $projectIds->isEmpty())) {
                 $this->waitingApprovalCount = Task::whereIn('project_id', $projectIds)->where('board_column_id', $taskBoardColumn->id)->where('company_id', user()->company_id)->count();
             } else {
                 $this->waitingApprovalCount = Task::where('board_column_id', $taskBoardColumn->id)->where('company_id', user()->company_id)->count();
@@ -147,7 +146,7 @@ class TaskController extends AccountBaseController
             Task::whereIn('id', $taskIds)->update([
                 'status' => 'completed',
                 'board_column_id' => $request->status,
-                'completed_on' => now()->format('Y-m-d')
+                'completed_on' => now()->format('Y-m-d'),
             ]);
         } else {
             Task::whereIn('id', $taskIds)->update(['board_column_id' => $request->status]);
@@ -161,7 +160,7 @@ class TaskController extends AccountBaseController
         $taskIds = explode(',', $request->row_ids);
 
         Task::whereIn('id', $taskIds)->update([
-            'milestone_id' => $request->milestone
+            'milestone_id' => $request->milestone,
         ]);
     }
 
@@ -177,7 +176,7 @@ class TaskController extends AccountBaseController
         $this->editPermission = user()->permission('edit_tasks');
         $this->changeStatusPermission = user()->permission('change_status');
         abort_403(
-            !(
+            ! (
                 $this->changeStatusPermission == 'all'
                 || ($this->changeStatusPermission == 'added' && $task->added_by == user()->id)
                 || ($this->changeStatusPermission == 'owned' && in_array(user()->id, $taskUsers))
@@ -206,7 +205,6 @@ class TaskController extends AccountBaseController
         } else {
             $task->save();
         }
-
 
         if ($task->project_id != null) {
 
@@ -239,7 +237,7 @@ class TaskController extends AccountBaseController
         $taskUsers = $task->users->pluck('id')->toArray();
 
         abort_403(
-            !(
+            ! (
                 ($editTaskPermission == 'all'
                     || ($editTaskPermission == 'owned' && in_array(user()->id, $taskUsers))
                     || ($editTaskPermission == 'added' && $task->added_by == user()->id)
@@ -271,7 +269,7 @@ class TaskController extends AccountBaseController
         $taskUsers = $task->users->pluck('id')->toArray();
 
         abort_403(
-            !($this->deletePermission == 'all'
+            ! ($this->deletePermission == 'all'
                 || ($this->deletePermission == 'owned' && in_array(user()->id, $taskUsers))
                 || ($task->project && ($task->project->project_admin == user()->id))
                 || ($this->deletePermission == 'added' && $task->added_by == user()->id)
@@ -304,7 +302,7 @@ class TaskController extends AccountBaseController
         $this->project = request('task_project_id') ? Project::with('projectMembers')->findOrFail(request('task_project_id')) : null;
 
         if (is_null($this->project) || ($this->project->project_admin != user()->id)) {
-            abort_403(!in_array($this->addPermission, ['all', 'added']));
+            abort_403(! in_array($this->addPermission, ['all', 'added']));
         }
 
         $this->task = (request()['duplicate_task']) ? Task::with('users', 'label', 'project')->findOrFail(request()['duplicate_task'])->withCustomFields() : null;
@@ -347,14 +345,14 @@ class TaskController extends AccountBaseController
 
         $viewEmployeePermission = user()->permission('view_employees');
 
-        if (!is_null($this->project)) {
+        if (! is_null($this->project)) {
             if ($this->project->public) {
                 $this->employees = User::allEmployees(null, true, ($viewEmployeePermission == 'all' ? 'all' : null));
             } else {
 
                 $this->employees = $this->project->projectMembers;
             }
-        } else if (!is_null($this->task) && !is_null($this->task->project_id)) {
+        } elseif (! is_null($this->task) && ! is_null($this->task->project_id)) {
             if ($this->task->project->public) {
                 $this->employees = User::allEmployees(null, true, ($viewEmployeePermission == 'all' ? 'all' : null));
             } else {
@@ -370,7 +368,7 @@ class TaskController extends AccountBaseController
             }
         }
 
-        $task = new Task();
+        $task = new Task;
 
         $getCustomFieldGroupsWithFields = $task->getCustomFieldGroupsWithFields();
 
@@ -407,12 +405,12 @@ class TaskController extends AccountBaseController
 
         if (is_null($project) || ($project->project_admin != user()->id)) {
             $this->addPermission = user()->permission('add_tasks');
-            abort_403(!in_array($this->addPermission, ['all', 'added']));
+            abort_403(! in_array($this->addPermission, ['all', 'added']));
         }
 
         // Check if project has remaining time for time-based projects
         if ($project && $project->calculate_task_progress == 'project_total_time') {
-            if (!$this->hasProjectRemainingTime($project->id)) {
+            if (! $this->hasProjectRemainingTime($project->id)) {
                 return Reply::error(__('messages.projectTimeExceeded'));
             }
         }
@@ -422,7 +420,7 @@ class TaskController extends AccountBaseController
         $gantTaskLinkArray = [];
 
         $taskBoardColumn = TaskboardColumn::where('slug', 'incomplete')->first();
-        $task = new Task();
+        $task = new Task;
         $task->heading = $request->heading;
         $task->description = trim_editor($request->description);
         $dueDate = ($request->has('without_duedate')) ? null : Carbon::createFromFormat(company()->date_format, $request->due_date);
@@ -436,7 +434,7 @@ class TaskController extends AccountBaseController
         if ($request->has('dependent') && $request->has('dependent_task_id') && $request->dependent_task_id != '') {
             $dependentTask = Task::findOrFail($request->dependent_task_id);
 
-            if (!is_null($dependentTask->due_date) && !is_null($dueDate) && $dependentTask->due_date->greaterThan($dueDate)) {
+            if (! is_null($dependentTask->due_date) && ! is_null($dueDate) && $dependentTask->due_date->greaterThan($dueDate)) {
                 /* @phpstan-ignore-line */
                 return Reply::error(__('messages.taskDependentDate'));
             }
@@ -471,7 +469,7 @@ class TaskController extends AccountBaseController
             $projectLastTaskCount = Task::projectTaskCount($project->id);
 
             if (isset($project->project_short_code)) {
-                $task->task_short_code = $project->project_short_code . '-' . $this->getTaskShortCode($project->project_short_code, $projectLastTaskCount);
+                $task->task_short_code = $project->project_short_code.'-'.$this->getTaskShortCode($project->project_short_code, $projectLastTaskCount);
             } else {
                 $task->task_short_code = $projectLastTaskCount + 1;
             }
@@ -483,38 +481,34 @@ class TaskController extends AccountBaseController
 
         $task->labels()->sync($request->task_labels);
 
-
-        if (!is_null($request->taskId)) {
+        if (! is_null($request->taskId)) {
 
             $taskExists = TaskFile::where('task_id', $request->taskId)->get();
 
             if ($taskExists) {
                 foreach ($taskExists as $taskExist) {
-                    $file = new TaskFile();
+                    $file = new TaskFile;
                     $file->user_id = $taskExist->user_id;
                     $file->task_id = $task->id;
 
                     $fileName = Files::generateNewFileName($taskExist->filename);
 
-                    Files::copy(TaskFile::FILE_PATH . '/' . $taskExist->task_id . '/' . $taskExist->hashname, TaskFile::FILE_PATH . '/' . $task->id . '/' . $fileName);
+                    Files::copy(TaskFile::FILE_PATH.'/'.$taskExist->task_id.'/'.$taskExist->hashname, TaskFile::FILE_PATH.'/'.$task->id.'/'.$fileName);
 
                     $file->filename = $taskExist->filename;
                     $file->hashname = $fileName;
                     $file->size = $taskExist->size;
                     $file->save();
 
-
                     $this->logTaskActivity($task->id, $this->user->id, 'fileActivity', $task->board_column_id);
                 }
             }
 
-
             $subTask = SubTask::with(['files'])->where('task_id', $request->taskId)->get();
-
 
             if ($subTask) {
                 foreach ($subTask as $subTasks) {
-                    $subTaskData = new SubTask();
+                    $subTaskData = new SubTask;
                     $subTaskData->title = $subTasks->title;
                     $subTaskData->task_id = $task->id;
                     $subTaskData->description = trim_editor($subTasks->description);
@@ -530,13 +524,13 @@ class TaskController extends AccountBaseController
 
                     if ($subTasks->files) {
                         foreach ($subTasks->files as $fileData) {
-                            $file = new SubTaskFile();
+                            $file = new SubTaskFile;
                             $file->user_id = $fileData->user_id;
                             $file->sub_task_id = $subTaskData->id;
 
                             $fileName = Files::generateNewFileName($fileData->filename);
 
-                            Files::copy(SubTaskFile::FILE_PATH . '/' . $fileData->sub_task_id . '/' . $fileData->hashname, SubTaskFile::FILE_PATH . '/' . $subTaskData->id . '/' . $fileName);
+                            Files::copy(SubTaskFile::FILE_PATH.'/'.$fileData->sub_task_id.'/'.$fileData->hashname, SubTaskFile::FILE_PATH.'/'.$subTaskData->id.'/'.$fileName);
 
                             $file->filename = $fileData->filename;
                             $file->hashname = $fileName;
@@ -554,7 +548,7 @@ class TaskController extends AccountBaseController
         }
 
         // For gantt chart
-        if ($request->page_name && !is_null($task->due_date) && $request->page_name == 'ganttChart') {
+        if ($request->page_name && ! is_null($task->due_date) && $request->page_name == 'ganttChart') {
             $task = Task::find($task->id);
             $parentGanttId = $request->parent_gantt_id;
 
@@ -570,17 +564,16 @@ class TaskController extends AccountBaseController
                 'start_date' => $task->start_date->format('Y-m-d'), /* @phpstan-ignore-line */
                 'duration' => $taskDuration,
                 'parent' => $parentGanttId,
-                'taskid' => $task->id
+                'taskid' => $task->id,
             ];
 
             $gantTaskLinkArray[] = [
-                'id' => 'link_' . $task->id,
+                'id' => 'link_'.$task->id,
                 'source' => $task->dependent_task_id != '' ? $task->dependent_task_id : $parentGanttId,
                 'target' => $task->id,
-                'type' => $task->dependent_task_id != '' ? 0 : 1
+                'type' => $task->dependent_task_id != '' ? 0 : 1,
             ];
         }
-
 
         DB::commit();
 
@@ -597,7 +590,7 @@ class TaskController extends AccountBaseController
                 'messages.recordSaved',
                 [
                     'tasks' => $ganttTaskArray,
-                    'links' => $gantTaskLinkArray
+                    'links' => $gantTaskLinkArray,
                 ]
             );
         }
@@ -619,11 +612,11 @@ class TaskController extends AccountBaseController
     public function edit($id)
     {
         $editTaskPermission = user()->permission('edit_tasks');
-        $this->task = Task::with('users', 'label', 'project',)->findOrFail($id)->withCustomFields();
+        $this->task = Task::with('users', 'label', 'project')->findOrFail($id)->withCustomFields();
         $this->taskUsers = $taskUsers = $this->task->users->pluck('id')->toArray();
         $this->type = request()->type;
         abort_403(
-            !($editTaskPermission == 'all'
+            ! ($editTaskPermission == 'all'
                 || ($editTaskPermission == 'owned' && in_array(user()->id, $taskUsers))
                 || ($editTaskPermission == 'added' && $this->task->added_by == user()->id)
                 || ($this->task->project && ($this->task->project->project_admin == user()->id))
@@ -638,7 +631,6 @@ class TaskController extends AccountBaseController
         if ($getCustomFieldGroupsWithFields) {
             $this->fields = $getCustomFieldGroupsWithFields->fields;
         }
-
 
         $this->pageTitle = __('modules.tasks.updateTask');
         $this->labelIds = $this->task->label->pluck('label_id')->toArray();
@@ -676,7 +668,6 @@ class TaskController extends AccountBaseController
             }
         }
 
-
         $uniqueId = $this->task->task_short_code;
         // check if unuqueId contains -
         if (strpos($uniqueId, '-') !== false) {
@@ -693,12 +684,12 @@ class TaskController extends AccountBaseController
         $dueDate = $this->task->due_date;
         $leaves = $this->leaves($userId, $startDate, $dueDate);
 
-        if (!is_null($leaves)) {
+        if (! is_null($leaves)) {
             $data = [];
 
             foreach ($leaves as $key => $value) {
                 $values = implode(', ', $value);
-                $data[] = $key . __('modules.tasks.leaveOn') . ' ' . $values;
+                $data[] = $key.__('modules.tasks.leaveOn').' '.$values;
             }
 
             $this->leaveData = implode("\n", $data);
@@ -734,7 +725,7 @@ class TaskController extends AccountBaseController
         $taskUsers = $task->users->pluck('id')->toArray();
 
         abort_403(
-            !($editTaskPermission == 'all'
+            ! ($editTaskPermission == 'all'
                 || ($editTaskPermission == 'owned' && in_array(user()->id, $taskUsers))
                 || ($editTaskPermission == 'added' && $task->added_by == user()->id)
                 || ($task->project && ($task->project->project_admin == user()->id))
@@ -751,7 +742,6 @@ class TaskController extends AccountBaseController
         $task->due_date = $dueDate;
         $task->task_category_id = $request->category_id;
         $task->priority = $request->priority;
-
 
         if ($request->has('board_column_id')) {
 
@@ -793,7 +783,7 @@ class TaskController extends AccountBaseController
         if ($request->has('dependent') && $request->has('dependent_task_id') && $request->dependent_task_id != '') {
             $dependentTask = Task::findOrFail($request->dependent_task_id);
 
-            if (!is_null($dependentTask->due_date) && !is_null($dueDate) && $dependentTask->due_date->greaterThan($dueDate)) {
+            if (! is_null($dependentTask->due_date) && ! is_null($dueDate) && $dependentTask->due_date->greaterThan($dueDate)) {
                 return Reply::error(__('messages.taskDependentDate'));
             }
 
@@ -815,7 +805,7 @@ class TaskController extends AccountBaseController
 
         if ($project && $task->isDirty('project_id')) {
             $projectLastTaskCount = Task::projectTaskCount($project->id);
-            $task->task_short_code = $project->project_short_code . '-' . $this->getTaskShortCode($project->project_short_code, $projectLastTaskCount);
+            $task->task_short_code = $project->project_short_code.'-'.$this->getTaskShortCode($project->project_short_code, $projectLastTaskCount);
         }
         $task->save();
 
@@ -830,9 +820,9 @@ class TaskController extends AccountBaseController
         // Sync task users
         $task->users()->sync($request->user_id);
 
-        if (!empty($request->user_id)) {
+        if (! empty($request->user_id)) {
             $newlyAssignedUserIds = array_diff($request->user_id, $taskUsers);
-            if (!empty($newlyAssignedUserIds)) {
+            if (! empty($newlyAssignedUserIds)) {
                 $newUsers = User::whereIn('id', $newlyAssignedUserIds)->get();
                 event(new TaskEvent($task, $newUsers, 'NewTask'));
             }
@@ -842,13 +832,11 @@ class TaskController extends AccountBaseController
     }
 
     /**
-     * @param $projectShortCode
-     * @param $lastProjectCount
      * @return mixed
      */
     public function getTaskShortCode($projectShortCode, $lastProjectCount)
     {
-        $task = Task::where('task_short_code', $projectShortCode . '-' . $lastProjectCount)->exists();
+        $task = Task::where('task_short_code', $projectShortCode.'-'.$lastProjectCount)->exists();
 
         if ($task) {
             return $this->getTaskShortCode($projectShortCode, $lastProjectCount + 1);
@@ -898,12 +886,11 @@ class TaskController extends AccountBaseController
                     if ($viewSubTaskPermission == 'added') {
                         $q->where('added_by', $this->userId);
                     }
-                }
+                },
             ]
         )
             ->withCount('subtasks', 'files', 'comments', 'activeTimerAll')
             ->findOrFail($id)->withCustomFields();
-
 
         $this->taskUsers = $taskUsers = $this->task->users->pluck('id')->toArray();
 
@@ -911,7 +898,7 @@ class TaskController extends AccountBaseController
 
         $usersData = $this->task->users;
 
-        if ($this->task->createBy && !in_array($this->task->createBy->id, $taskUsers)) {
+        if ($this->task->createBy && ! in_array($this->task->createBy->id, $taskUsers)) {
             $url = route('employees.show', [$this->task->createBy->user_id ?? $this->task->createBy->id]);
             $taskuserData[] = ['id' => $this->task->createBy->user_id ?? $this->task->createBy->id, 'value' => $this->task->createBy->user->name ?? $this->task->createBy->name, 'image' => $this->task->createBy->user->image_url ?? $this->task->createBy->image_url, 'link' => $url];
         }
@@ -935,7 +922,7 @@ class TaskController extends AccountBaseController
         }
 
         abort_403(
-            !(
+            ! (
                 $overrideViewPermission == true
                 || $viewTaskPermission == 'all'
                 || ($viewTaskPermission == 'added' && $this->task->added_by == $this->userId)
@@ -945,18 +932,18 @@ class TaskController extends AccountBaseController
                 || ($viewTaskPermission == 'both' && in_array('client', user_roles()) && $this->task->project_id && $this->task->project->client_id == $this->userId)
                 || ($this->viewUnassignedTasksPermission == 'all' && in_array('employee', user_roles()))
                 || ($this->task->project_id && $this->task->project->project_admin == $this->userId)
-                || ((!is_null($this->task->mentionTask)) && in_array($this->userId, $mentionUser))
+                || ((! is_null($this->task->mentionTask)) && in_array($this->userId, $mentionUser))
             )
 
         );
 
-        if (!$this->task->project_id || ($this->task->project_id && $this->task->project->project_admin != $this->userId)) {
+        if (! $this->task->project_id || ($this->task->project_id && $this->task->project->project_admin != $this->userId)) {
 
             abort_403($this->viewUnassignedTasksPermission == 'none' && count($taskUsers) == 0 && ((is_null($this->task->mentionTask)) && in_array($this->userId, $mentionUser)));
         }
 
         if ($this->task->task_short_code) {
-            $this->pageTitle = __('app.task') . ' # ' . $this->task->task_short_code;
+            $this->pageTitle = __('app.task').' # '.$this->task->task_short_code;
         } else {
             $this->pageTitle = __('app.task');
         }
@@ -967,11 +954,9 @@ class TaskController extends AccountBaseController
             $this->fields = $getCustomFieldGroupsWithFields->fields;
         }
 
-
         $this->employees = User::join('employee_details', 'users.id', '=', 'employee_details.user_id')
             ->leftJoin('project_time_logs', 'project_time_logs.user_id', '=', 'users.id')
             ->leftJoin('designations', 'employee_details.designation_id', '=', 'designations.id');
-
 
         $this->employees = $this->employees->select(
             'users.name',
@@ -1044,7 +1029,7 @@ class TaskController extends AccountBaseController
                 $this->tab = 'tasks.ajax.history';
                 break;
             case 'time_logs':
-                abort_403(!in_array('timelogs', user_modules()));
+                abort_403(! in_array('timelogs', user_modules()));
                 $this->tab = 'tasks.ajax.timelogs';
                 break;
             default:
@@ -1064,7 +1049,7 @@ class TaskController extends AccountBaseController
                 } elseif ($this->taskSettings->history == 'yes' && in_array('client', user_roles())) {
                     abort_403($this->viewTaskNotePermission == 'none');
                     $this->tab = 'tasks.ajax.history';
-                } elseif (!in_array('client', user_roles())) {
+                } elseif (! in_array('client', user_roles())) {
                     $this->tab = 'tasks.ajax.files';
                 }
                 break;
@@ -1076,7 +1061,6 @@ class TaskController extends AccountBaseController
             return $this->returnAjax($view);
         }
 
-
         $this->view = 'tasks.ajax.show';
 
         return view('tasks.create', $this->data);
@@ -1085,7 +1069,7 @@ class TaskController extends AccountBaseController
     public function storePin(Request $request)
     {
         $userId = UserService::getUserId();
-        $pinned = new Pinned();
+        $pinned = new Pinned;
         $pinned->task_id = $request->task_id;
         $pinned->project_id = $request->project_id;
         $pinned->user_id = $userId;
@@ -1129,9 +1113,9 @@ class TaskController extends AccountBaseController
     {
         $viewPermission = user()->permission('view_tasks');
 
-        abort_403(!in_array($viewPermission, ['all', 'added', 'owned', 'both']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'owned', 'both']));
 
-        if (!request()->ajax()) {
+        if (! request()->ajax()) {
             $this->assignedTo = request()->assignedTo;
 
             if (request()->has('assignee') && request()->assignee == 'me') {
@@ -1156,10 +1140,10 @@ class TaskController extends AccountBaseController
 
             $projectIds = Project::where('project_admin', user()->id)->pluck('id');
 
-            if (!in_array('admin', user_roles()) && (in_array('employee', user_roles()) && $projectIds->isEmpty())) {
+            if (! in_array('admin', user_roles()) && (in_array('employee', user_roles()) && $projectIds->isEmpty())) {
                 $user = User::findOrFail(user()->id);
                 $this->waitingApprovalCount = $user->tasks()->where('board_column_id', $taskBoardColumn->id)->count();
-            } elseif (!in_array('admin', user_roles()) && (in_array('employee', user_roles()) && !$projectIds->isEmpty())) {
+            } elseif (! in_array('admin', user_roles()) && (in_array('employee', user_roles()) && ! $projectIds->isEmpty())) {
                 $this->waitingApprovalCount = Task::whereIn('project_id', $projectIds)->where('board_column_id', $taskBoardColumn->id)->count();
             } else {
                 $this->waitingApprovalCount = Task::where('board_column_id', $taskBoardColumn->id)->count();
@@ -1188,7 +1172,7 @@ class TaskController extends AccountBaseController
         $task->approval_send = 0;
         $task->save();
 
-        $comment = new TaskComment();
+        $comment = new TaskComment;
         $comment->comment = $request->reason;
         $comment->task_id = $request->taskId;
         $comment->user_id = user()->id;
@@ -1201,12 +1185,12 @@ class TaskController extends AccountBaseController
     {
         $project = Project::with('client')->findOrFail($request->id);
 
-        if (!is_null($project->client)) {
-            $data = '<h5 class= "mb-2 f-13"> ' . __('modules.projects.projectClient') . '</h5>';
+        if (! is_null($project->client)) {
+            $data = '<h5 class= "mb-2 f-13"> '.__('modules.projects.projectClient').'</h5>';
             $data .= view('components.client', ['user' => $project->client]);
             /* @phpstan-ignore-line */
         } else {
-            $data = '<p> ' . __('modules.projects.projectDoNotHaveClient') . '</p>';
+            $data = '<p> '.__('modules.projects.projectDoNotHaveClient').'</p>';
         }
 
         return Reply::dataOnly(['data' => $data]);
@@ -1216,7 +1200,7 @@ class TaskController extends AccountBaseController
     {
         $task = Task::findOrFail($id);
         $task->start_date = Carbon::createFromFormat('d/m/Y', $request->start_date)->format('Y-m-d');
-        $task->due_date = (!is_null($task->due_date)) ? Carbon::createFromFormat('d/m/Y', $request->end_date)->addDay()->format('Y-m-d') : null;
+        $task->due_date = (! is_null($task->due_date)) ? Carbon::createFromFormat('d/m/Y', $request->end_date)->addDay()->format('Y-m-d') : null;
         $task->save();
 
         return Reply::success('messages.updateSuccess');
@@ -1245,7 +1229,7 @@ class TaskController extends AccountBaseController
 
         foreach ($tasks as $item) {
 
-            $options .= '<option  data-content="<div class=\'d-inline-block mr-1\'></div>  ' . $item->heading . ' ( Due date: ' . $item->due_date->format(company()->date_format) . ' ) " value="' . $item->id . '"> ' . $item->heading . '  ' . $item->due_date . ' </option>';
+            $options .= '<option  data-content="<div class=\'d-inline-block mr-1\'></div>  '.$item->heading.' ( Due date: '.$item->due_date->format(company()->date_format).' ) " value="'.$item->id.'"> '.$item->heading.'  '.$item->due_date.' </option>';
         }
 
         return Reply::dataOnly(['status' => 'success', 'data' => $options]);
@@ -1261,10 +1245,10 @@ class TaskController extends AccountBaseController
             $members = Task::with('users')->findOrFail($id);
 
             foreach ($members->users as $item) {
-                $self_select = (user() && user()->id == $item->id) ? '<span class=\'ml-2 badge badge-secondary\'>' . __('app.itsYou') . '</span>' : '';
+                $self_select = (user() && user()->id == $item->id) ? '<span class=\'ml-2 badge badge-secondary\'>'.__('app.itsYou').'</span>' : '';
                 if ($item->status == 'active') {
                     $content = ($item->status == 'deactive') ? "<span class='badge badge-pill badge-danger border align-center ml-2 px-2'>Inactive</span>" : '';
-                    $options .= '<option  data-content="<div class=\'d-inline-block mr-1\'><img class=\'taskEmployeeImg rounded-circle\' src=' . $item->image_url . ' ></div>  ' . $item->name . '' . $self_select . '' . $content . '" value="' . $item->id . '"> ' . $item->name . ' </option>';
+                    $options .= '<option  data-content="<div class=\'d-inline-block mr-1\'><img class=\'taskEmployeeImg rounded-circle\' src='.$item->image_url.' ></div>  '.$item->name.''.$self_select.''.$content.'" value="'.$item->id.'"> '.$item->name.' </option>';
                 }
             }
 

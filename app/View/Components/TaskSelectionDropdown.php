@@ -7,8 +7,8 @@ use Illuminate\View\Component;
 
 class TaskSelectionDropdown extends Component
 {
-
     public $tasks;
+
     public $fieldRequired;
 
     /**
@@ -31,5 +31,4 @@ class TaskSelectionDropdown extends Component
     {
         return view('components.task-selection-dropdown');
     }
-
 }

@@ -9,11 +9,12 @@ use Illuminate\Queue\SerializesModels;
 
 class ProjectNoteMentionEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $project;
+
     public $mentionuser;
+
     public $created_at;
 
     public function __construct(Project $project, $created_at, $mentionuser)
@@ -24,5 +25,4 @@ class ProjectNoteMentionEvent
         $this->mentionuser = $mentionuser;
 
     }
-
 }

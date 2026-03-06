@@ -9,8 +9,8 @@ use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Config;
 
 class MonthlyAttendance extends BaseNotification
 {
@@ -20,8 +20,11 @@ class MonthlyAttendance extends BaseNotification
      * Create a new notification instance.
      */
     private $user;
+
     public $month;
+
     public $year;
+
     public $previousMonth;
 
     public function __construct(User $user)
@@ -48,7 +51,7 @@ class MonthlyAttendance extends BaseNotification
     public function attachments()
     {
         return [
-            Attachment::fromData(fn() => $this->domPdfObjectForDownload()['pdf']->output(), 'Attendance-Report-' . Carbon::parse('01-' . $this->month . '-' . $this->year)->format('F-Y') . '.pdf')
+            Attachment::fromData(fn () => $this->domPdfObjectForDownload()['pdf']->output(), 'Attendance-Report-'.Carbon::parse('01-'.$this->month.'-'.$this->year)->format('F-Y').'.pdf')
                 ->withMime('application/pdf'),
         ];
     }
@@ -87,11 +90,10 @@ class MonthlyAttendance extends BaseNotification
         $final = [];
         $holidayOccasions = [];
 
-        $daysInMonth = Carbon::parse('01-' . $this->month . '-' . $this->year)->daysInMonth;
-
+        $daysInMonth = Carbon::parse('01-'.$this->month.'-'.$this->year)->daysInMonth;
 
         $now = now()->timezone($this->company->timezone);
-        $requestedDate = Carbon::parse(Carbon::parse('01-' . $this->month . '-' . $this->year))->endOfMonth();
+        $requestedDate = Carbon::parse(Carbon::parse('01-'.$this->month.'-'.$this->year))->endOfMonth();
 
         foreach ($employees as $employee) {
 
@@ -99,14 +101,13 @@ class MonthlyAttendance extends BaseNotification
 
             $dataTillToday = array_fill(1, $now->copy()->format('d'), 'Absent');
 
-            if (($now->copy()->format('d') != $daysInMonth) && !$requestedDate->isPast()) {
-                $dataFromTomorrow = array_fill($now->copy()->addDay()->format('d'), ((int)$daysInMonth - (int)$now->copy()->format('d')), '-');
-            }
-            else {
-                $dataFromTomorrow = array_fill($now->copy()->addDay()->format('d'), ((int)$daysInMonth - (int)$now->copy()->format('d')), 'Absent');
+            if (($now->copy()->format('d') != $daysInMonth) && ! $requestedDate->isPast()) {
+                $dataFromTomorrow = array_fill($now->copy()->addDay()->format('d'), ((int) $daysInMonth - (int) $now->copy()->format('d')), '-');
+            } else {
+                $dataFromTomorrow = array_fill($now->copy()->addDay()->format('d'), ((int) $daysInMonth - (int) $now->copy()->format('d')), 'Absent');
             }
 
-            $final[$employee->id . '#' . $employee->name] = array_replace($dataTillToday, $dataFromTomorrow);
+            $final[$employee->id.'#'.$employee->name] = array_replace($dataTillToday, $dataFromTomorrow);
 
             $shiftScheduleCollection = $employee->shifts->keyBy('date');
 
@@ -114,41 +115,36 @@ class MonthlyAttendance extends BaseNotification
                 $clockInTime = Carbon::createFromFormat('Y-m-d H:i:s', $attendance->clock_in_time->timezone($company->timezone)->toDateTimeString(), 'UTC');
 
                 if (isset($shiftScheduleCollection[$clockInTime->copy()->startOfDay()->toDateTimeString()])) {
-                    $shiftStartTime = Carbon::parse($clockInTime->copy()->toDateString() . ' ' . $shiftScheduleCollection[$clockInTime->copy()->startOfDay()->toDateTimeString()]->shift->office_start_time);
-                    $shiftEndTime = Carbon::parse($clockInTime->copy()->toDateString() . ' ' . $shiftScheduleCollection[$clockInTime->copy()->startOfDay()->toDateTimeString()]->shift->office_end_time);
+                    $shiftStartTime = Carbon::parse($clockInTime->copy()->toDateString().' '.$shiftScheduleCollection[$clockInTime->copy()->startOfDay()->toDateTimeString()]->shift->office_start_time);
+                    $shiftEndTime = Carbon::parse($clockInTime->copy()->toDateString().' '.$shiftScheduleCollection[$clockInTime->copy()->startOfDay()->toDateTimeString()]->shift->office_end_time);
 
                     if ($clockInTime->between($shiftStartTime, $shiftEndTime)) {
-                        $final[$employee->id . '#' . $employee->name][$clockInTime->day] = '&check;';
+                        $final[$employee->id.'#'.$employee->name][$clockInTime->day] = '&check;';
 
-                    }
-                    else if ($attendance->employee_shift_id == $shiftScheduleCollection[$clockInTime->copy()->startOfDay()->toDateTimeString()]->shift->id) {
-                        $final[$employee->id . '#' . $employee->name][$clockInTime->day] = '&check;';
+                    } elseif ($attendance->employee_shift_id == $shiftScheduleCollection[$clockInTime->copy()->startOfDay()->toDateTimeString()]->shift->id) {
+                        $final[$employee->id.'#'.$employee->name][$clockInTime->day] = '&check;';
 
-                    }
-                    elseif ($clockInTime->betweenIncluded($shiftStartTime->copy()->subDay(), $shiftEndTime->copy()->subDay())) {
-                        $final[$employee->id . '#' . $employee->name][$clockInTime->copy()->subDay()->day] = '&check;';
+                    } elseif ($clockInTime->betweenIncluded($shiftStartTime->copy()->subDay(), $shiftEndTime->copy()->subDay())) {
+                        $final[$employee->id.'#'.$employee->name][$clockInTime->copy()->subDay()->day] = '&check;';
 
-                    }
-                    else {
-                        $final[$employee->id . '#' . $employee->name][$clockInTime->day] = '&check;';
+                    } else {
+                        $final[$employee->id.'#'.$employee->name][$clockInTime->day] = '&check;';
                     }
 
-                }
-                else {
-                    $final[$employee->id . '#' . $employee->name][$clockInTime->day] = '&check;';
+                } else {
+                    $final[$employee->id.'#'.$employee->name][$clockInTime->day] = '&check;';
                 }
             }
 
             $emplolyeeName = $employee->name;
 
-            $final[$employee->id . '#' . $employee->name][] = $emplolyeeName;
+            $final[$employee->id.'#'.$employee->name][] = $emplolyeeName;
 
-            if ($employee->employeeDetail->joining_date->greaterThan(Carbon::parse(Carbon::parse('01-' . $this->month . '-' . $this->year)))) {
+            if ($employee->employeeDetail->joining_date->greaterThan(Carbon::parse(Carbon::parse('01-'.$this->month.'-'.$this->year)))) {
                 if ($this->month == $employee->employeeDetail->joining_date->format('m') && $this->year == $employee->employeeDetail->joining_date->format('Y')) {
                     if ($employee->employeeDetail->joining_date->format('d') == '01') {
                         $dataBeforeJoin = array_fill(1, $employee->employeeDetail->joining_date->format('d'), '-');
-                    }
-                    else {
+                    } else {
                         $dataBeforeJoin = array_fill(1, $employee->employeeDetail->joining_date->subDay()->format('d'), '-');
                     }
                 }
@@ -158,29 +154,28 @@ class MonthlyAttendance extends BaseNotification
                 }
             }
 
-            if (Carbon::parse('01-' . $this->month . '-' . $this->year)->isFuture()) {
+            if (Carbon::parse('01-'.$this->month.'-'.$this->year)->isFuture()) {
                 $dataBeforeJoin = array_fill(1, $daysInMonth, '-');
             }
 
-            if (!is_null($dataBeforeJoin)) {
-                $final[$employee->id . '#' . $employee->name] = array_replace($final[$employee->id . '#' . $employee->name], $dataBeforeJoin);
+            if (! is_null($dataBeforeJoin)) {
+                $final[$employee->id.'#'.$employee->name] = array_replace($final[$employee->id.'#'.$employee->name], $dataBeforeJoin);
             }
 
             foreach ($employee->leaves as $leave) {
                 if ($leave->duration == 'half day') {
-                    if ($final[$employee->id . '#' . $employee->name][$leave->leave_date->day] == '-' || $final[$employee->id . '#' . $employee->name][$leave->leave_date->day] == 'Absent') {
-                        $final[$employee->id . '#' . $employee->name][$leave->leave_date->day] = 'Half Day';
+                    if ($final[$employee->id.'#'.$employee->name][$leave->leave_date->day] == '-' || $final[$employee->id.'#'.$employee->name][$leave->leave_date->day] == 'Absent') {
+                        $final[$employee->id.'#'.$employee->name][$leave->leave_date->day] = 'Half Day';
                     }
-                }
-                else {
-                    $final[$employee->id . '#' . $employee->name][$leave->leave_date->day] = 'Leave';
+                } else {
+                    $final[$employee->id.'#'.$employee->name][$leave->leave_date->day] = 'Leave';
                 }
 
             }
 
             foreach ($holidays as $holiday) {
-                if ($final[$employee->id . '#' . $employee->name][$holiday->date->day] == 'Absent' || $final[$employee->id . '#' . $employee->name][$holiday->date->day] == '-') {
-                    $final[$employee->id . '#' . $employee->name][$holiday->date->day] = 'Holiday';
+                if ($final[$employee->id.'#'.$employee->name][$holiday->date->day] == 'Absent' || $final[$employee->id.'#'.$employee->name][$holiday->date->day] == '-') {
+                    $final[$employee->id.'#'.$employee->name][$holiday->date->day] = 'Holiday';
                     $holidayOccasions[$holiday->date->day] = $holiday->occassion;
                 }
             }
@@ -193,17 +188,16 @@ class MonthlyAttendance extends BaseNotification
         $pdf = app('dompdf.wrapper')->setPaper('A4', 'landscape');
 
         $options = $pdf->getOptions();
-        $options->set(array('enable_php' => true));
+        $options->set(['enable_php' => true]);
         $pdf->getDomPDF()->setOptions($options);
         /** @phpstan-ignore-line */
-
         $pdf->loadView('attendance-report', ['daysInMonth' => $daysInMonth, 'month' => $this->month, 'year' => $this->year, 'weekMap' => $weekMap, 'employeeAttendence' => $employeeAttendence, 'holidayOccasions' => $holidayOccasions, 'company' => $company]);
 
         $filename = 'attendance-report';
 
         return [
             'pdf' => $pdf,
-            'fileName' => $filename
+            'fileName' => $filename,
         ];
     }
 
@@ -214,15 +208,15 @@ class MonthlyAttendance extends BaseNotification
     {
         $build = parent::build($notifiable);
 
-            $pdfOption = $this->domPdfObjectForDownload();
-            $pdf = $pdfOption['pdf'];
-            $filename = $pdfOption['fileName'];
-            $build->attachData($pdf->output(), $filename . '.pdf');
+        $pdfOption = $this->domPdfObjectForDownload();
+        $pdf = $pdfOption['pdf'];
+        $filename = $pdfOption['fileName'];
+        $build->attachData($pdf->output(), $filename.'.pdf');
 
-            App::setLocale($notifiable->locale ?? $this->company->locale ?? 'en');
+        App::setLocale($notifiable->locale ?? $this->company->locale ?? 'en');
 
-        $build->subject(__('email.attendanceReport.subject') . ' ' . Carbon::parse('01-' . $this->month . '-' . $this->year)->format('F-Y'))
-            ->markdown('mail.attendance.monthly-report', ['month' => Carbon::parse('01-' . $this->month . '-' . $this->year)->format('F-Y')]);
+        $build->subject(__('email.attendanceReport.subject').' '.Carbon::parse('01-'.$this->month.'-'.$this->year)->format('F-Y'))
+            ->markdown('mail.attendance.monthly-report', ['month' => Carbon::parse('01-'.$this->month.'-'.$this->year)->format('F-Y')]);
 
         parent::resetLocale();
 
@@ -240,5 +234,4 @@ class MonthlyAttendance extends BaseNotification
             //
         ];
     }
-
 }

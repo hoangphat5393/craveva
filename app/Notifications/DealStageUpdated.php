@@ -2,18 +2,18 @@
 
 namespace App\Notifications;
 
-use App\Models\EmailNotificationSetting;
 use App\Models\Deal;
+use App\Models\EmailNotificationSetting;
 
 class DealStageUpdated extends BaseNotification
 {
-
     /**
      * Create a new notification instance.
      *
      * @return void
      */
     private $deal;
+
     private $emailSetting;
 
     public function __construct(Deal $deal)
@@ -26,12 +26,12 @@ class DealStageUpdated extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
     {
-        $via = array('database');
+        $via = ['database'];
 
         if ($this->emailSetting->send_email == 'yes' && $notifiable->email_notifications && $notifiable->email != '') {
             array_push($via, 'mail');
@@ -43,7 +43,7 @@ class DealStageUpdated extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
@@ -52,18 +52,18 @@ class DealStageUpdated extends BaseNotification
         $url = route('deals.show', $this->deal->id);
         $url = getDomainSpecificUrl($url, $this->company);
 
-        $leadStage = __('modules.leadContact.stage') . ': ';
-        $leadPipeline = __('modules.deal.pipeline') . ': ';
-        $content = __('email.dealStatus.subject') . '<br>' . __('modules.lead.clientName') . ': ' .   $this->deal->contact->client_name_salutation . '<br>' . $leadPipeline . $this->deal->pipeline->name. '<br>' . $leadStage . $this->deal->leadStage->name;
+        $leadStage = __('modules.leadContact.stage').': ';
+        $leadPipeline = __('modules.deal.pipeline').': ';
+        $content = __('email.dealStatus.subject').'<br>'.__('modules.lead.clientName').': '.$this->deal->contact->client_name_salutation.'<br>'.$leadPipeline.$this->deal->pipeline->name.'<br>'.$leadStage.$this->deal->leadStage->name;
 
         $build
-            ->subject(__('email.dealStatus.subject') . ' - ' . config('app.name'))
+            ->subject(__('email.dealStatus.subject').' - '.config('app.name'))
             ->markdown('mail.email', [
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
                 'actionText' => __('email.dealStatus.action'),
-                'notifiableName' => $notifiable->name
+                'notifiableName' => $notifiable->name,
             ]);
 
         parent::resetLocale();
@@ -74,10 +74,10 @@ class DealStageUpdated extends BaseNotification
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
-    //phpcs:ignore
+    // phpcs:ignore
     public function toArray($notifiable)
     {
         return [
@@ -85,8 +85,7 @@ class DealStageUpdated extends BaseNotification
             'name' => $this->deal->name,
             'stage' => $this->deal->leadStage->name,
             'agent_id' => $notifiable->id,
-            'added_by' => $this->deal->added_by
+            'added_by' => $this->deal->added_by,
         ];
     }
-
 }

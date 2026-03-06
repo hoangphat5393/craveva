@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class FooterTextRequest extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -28,5 +27,4 @@ class FooterTextRequest extends FormRequest
             'footer_copyright_text' => 'required',
         ];
     }
-
 }

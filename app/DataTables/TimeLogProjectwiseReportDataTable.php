@@ -9,11 +9,10 @@ use Yajra\DataTables\Html\Button;
 
 class TimeLogProjectwiseReportDataTable extends BaseDataTable
 {
-
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
@@ -28,8 +27,9 @@ class TimeLogProjectwiseReportDataTable extends BaseDataTable
             })
             ->editColumn('employee_name', function ($logs) {
                 $user = $logs->first()->user;
+
                 return view('components.employee', [
-                    'user' => $user
+                    'user' => $user,
                 ]);
             })
             ->addColumn('projects', function ($logs) {
@@ -37,13 +37,14 @@ class TimeLogProjectwiseReportDataTable extends BaseDataTable
 
                 foreach ($logs->unique('project_id') as $log) {
                     $projectsHtml .= '<li class="mb-3 mt-3">
-                        <a href="' . route('projects.show', $log->project->id) . '" class="text-darkest-grey">'
-                        . $log->project->project_name .
+                        <a href="'.route('projects.show', $log->project->id).'" class="text-darkest-grey">'
+                        .$log->project->project_name.
                         '</a>
                     </li>';
                 }
 
                 $projectsHtml .= '</ul>';
+
                 return $projectsHtml;
             })
             ->addColumn('total_hours', function ($logs) {
@@ -57,8 +58,7 @@ class TimeLogProjectwiseReportDataTable extends BaseDataTable
                                 ? $log->activeBreak->start_time->diffInMinutes($log->start_time)
                                 : now()->diffInMinutes($log->start_time)
                             ) - $log->breaks->sum('total_minutes');
-                        }
-                        else {
+                        } else {
                             return $log->total_minutes - $log->breaks->sum('total_minutes');
                         }
                     });
@@ -66,20 +66,19 @@ class TimeLogProjectwiseReportDataTable extends BaseDataTable
                     $hours = intdiv($totalMinutesForProject, 60);
                     $minutes = $totalMinutesForProject % 60;
 
-                    $formattedTime = ($hours ? $hours . 'h' : '') . ($minutes > 0 ? ' ' . sprintf('%02dm', $minutes) : ($hours ? '' : '0s'));
+                    $formattedTime = ($hours ? $hours.'h' : '').($minutes > 0 ? ' '.sprintf('%02dm', $minutes) : ($hours ? '' : '0s'));
 
-                    $timeLog = '<span data-trigger="hover" data-toggle="popover" data-content="' . $log->memo . '">' . $formattedTime . '</span>';
+                    $timeLog = '<span data-trigger="hover" data-toggle="popover" data-content="'.$log->memo.'">'.$formattedTime.'</span>';
 
                     if (is_null($log->end_time)) {
-                        $timeLog .= ' <i data-toggle="tooltip" data-original-title="' . __('app.active') . '" class="fa fa-hourglass-start" ></i>';
-                    }
-                    else {
+                        $timeLog .= ' <i data-toggle="tooltip" data-original-title="'.__('app.active').'" class="fa fa-hourglass-start" ></i>';
+                    } else {
                         if ($log->approved) {
-                            $timeLog .= ' <i data-toggle="tooltip" data-original-title="' . __('app.approved') . '" class="fa fa-check-circle text-primary"></i>';
+                            $timeLog .= ' <i data-toggle="tooltip" data-original-title="'.__('app.approved').'" class="fa fa-check-circle text-primary"></i>';
                         }
                     }
 
-                    $totalHoursHtml .= '<li class="mb-3 mt-3">' . $timeLog . '</li>';
+                    $totalHoursHtml .= '<li class="mb-3 mt-3">'.$timeLog.'</li>';
                 }
 
                 $totalHoursHtml .= '</ul>';
@@ -95,20 +94,20 @@ class TimeLogProjectwiseReportDataTable extends BaseDataTable
                         return $log->breaks->sum('total_minutes');
                     });
                     $breakTime = CarbonInterval::formatHuman($breakDurationForProject);
-                    $totalBreakHtml .= '<li class="mb-3 mt-3">' . $breakTime . '</li>';
+                    $totalBreakHtml .= '<li class="mb-3 mt-3">'.$breakTime.'</li>';
                 }
 
                 $totalBreakHtml .= '</ul>';
+
                 return $totalBreakHtml;
             })
             ->setRowId(function ($logs) {
-                return 'row-' . $logs->first()->user_id;
+                return 'row-'.$logs->first()->user_id;
             })
             ->rawColumns(['employee_name', 'projects', 'total_hours', 'break_duration']);
     }
 
     /**
-     * @param ProjectTimeLog $model
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function query(ProjectTimeLog $model)
@@ -128,7 +127,7 @@ class TimeLogProjectwiseReportDataTable extends BaseDataTable
         if ($request->startDate !== null && $request->startDate != 'null' && $request->startDate != '') {
             $startDate = companyToDateString($request->startDate);
 
-            if (!is_null($startDate)) {
+            if (! is_null($startDate)) {
                 $model = $model->where(DB::raw('DATE(project_time_logs.start_time)'), '>=', $startDate);
             }
         }
@@ -136,16 +135,16 @@ class TimeLogProjectwiseReportDataTable extends BaseDataTable
         if ($request->endDate !== null && $request->endDate != 'null' && $request->endDate != '') {
             $endDate = companyToDateString($request->endDate);
 
-            if (!is_null($endDate)) {
+            if (! is_null($endDate)) {
                 $model = $model->where(DB::raw('DATE(project_time_logs.end_time)'), '<=', $endDate);
             }
         }
 
-        if (!is_null($employee) && $employee !== 'all') {
+        if (! is_null($employee) && $employee !== 'all') {
             $model->where('project_time_logs.user_id', $employee);
         }
 
-        if (!is_null($project) && $project !== 'all') {
+        if (! is_null($project) && $project !== 'all') {
             $model->where('projects.id', $project);
         }
 
@@ -171,11 +170,11 @@ class TimeLogProjectwiseReportDataTable extends BaseDataTable
                 }',
                 'fnDrawCallback' => 'function( oSettings ) {
                     $(".select-picker").selectpicker();
-                }'
+                }',
             ]);
 
         if (canDataTableExport()) {
-            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
+            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
         }
 
         return $dataTable;
@@ -194,7 +193,7 @@ class TimeLogProjectwiseReportDataTable extends BaseDataTable
                 'orderable' => false,
                 'searchable' => false,
                 'visible' => true,
-                'title' => '#'
+                'title' => '#',
             ],
             __('app.id') => ['data' => 'id', 'name' => 'id', 'visible' => false, 'title' => __('app.id')],
             __('app.employee') => ['data' => 'employee_name', 'name' => 'user.name', 'exportable' => false, 'title' => __('app.employee')],
@@ -203,5 +202,4 @@ class TimeLogProjectwiseReportDataTable extends BaseDataTable
             __('modules.timeLogs.breakDuration') => ['data' => 'break_duration', 'name' => 'break_duration', 'title' => __('modules.timeLogs.breakDuration')],
         ];
     }
-
 }

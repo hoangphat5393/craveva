@@ -5,7 +5,6 @@ use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      */
@@ -14,5 +13,4 @@ return new class extends Migration
         Module::where('module_name', 'cybersecurity')->delete();
 
     }
-
 };

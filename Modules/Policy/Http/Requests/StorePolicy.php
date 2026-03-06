@@ -15,10 +15,11 @@ class StorePolicy extends FormRequest
 
         $rules = [
             'title' => 'required',
-            'date' => 'required|date_format:"' . $setting->date_format . '"',
+            'date' => 'required|date_format:"'.$setting->date_format.'"',
             'description' => 'required_without:file',
-            'file' => 'required_without:description'
+            'file' => 'required_without:description',
         ];
+
         return $rules;
 
     }

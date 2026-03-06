@@ -2,37 +2,37 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use App\Helper\Reply;
-use App\Models\Ticket;
-use App\Models\TicketTag;
-use App\Models\TicketType;
-use App\Models\TicketGroup;
-use App\Models\TicketSettingForAgents;
-use App\Models\TicketReply;
-use Illuminate\Http\Request;
-use App\Models\TicketChannel;
-use App\Models\TicketTagList;
-use App\Models\TicketAgentGroups;
-use Illuminate\Support\Facades\DB;
 use App\DataTables\TicketDataTable;
-use App\Models\TicketReplyTemplate;
+use App\Helper\Reply;
+use App\Helper\UserService;
 use App\Http\Requests\Tickets\StoreTicket;
 use App\Http\Requests\Tickets\UpdateTicket;
 use App\Http\Requests\Tickets\UpdateTicketDetailRequest;
-use App\Models\Project;
-use App\Scopes\ActiveScope;
 use App\Models\ClientContact;
-use App\Helper\UserService;
+use App\Models\Project;
+use App\Models\Ticket;
+use App\Models\TicketAgentGroups;
+use App\Models\TicketChannel;
+use App\Models\TicketGroup;
+use App\Models\TicketReply;
+use App\Models\TicketReplyTemplate;
+use App\Models\TicketSettingForAgents;
+use App\Models\TicketTag;
+use App\Models\TicketTagList;
+use App\Models\TicketType;
+use App\Models\User;
+use App\Scopes\ActiveScope;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
 class TicketController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'app.menu.tickets';
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('tickets', $this->user->modules));
+            abort_403(! in_array('tickets', $this->user->modules));
 
             return $next($request);
         });
@@ -41,26 +41,23 @@ class TicketController extends AccountBaseController
     public function index(TicketDataTable $dataTable)
     {
         $this->viewPermission = user()->permission('view_tickets');
-        abort_403(!in_array($this->viewPermission, ['all', 'added', 'owned', 'both']));
+        abort_403(! in_array($this->viewPermission, ['all', 'added', 'owned', 'both']));
 
         $managePermission = user()->permission('manage_ticket_agent');
 
         $id = UserService::getUserId();
 
-        if (!request()->ajax()) {
+        if (! request()->ajax()) {
             $this->channels = TicketChannel::all();
             $this->groups = $managePermission == 'none' ? null : TicketGroup::with(['enabledAgents' => function ($q) use ($managePermission, $id) {
 
                 if ($managePermission == 'added') {
                     $q->where('added_by', $id);
-                }
-                elseif ($managePermission == 'owned') {
+                } elseif ($managePermission == 'owned') {
                     $q->where('agent_id', $id);
-                }
-                elseif ($managePermission == 'both') {
+                } elseif ($managePermission == 'both') {
                     $q->where('agent_id', $id)->orWhere('added_by', $id);
-                }
-                else {
+                } else {
                     $q->get();
                 }
 
@@ -89,16 +86,16 @@ class TicketController extends AccountBaseController
     public function applyQuickAction(Request $request)
     {
         switch ($request->action_type) {
-        case 'delete':
-            $this->deleteRecords($request);
+            case 'delete':
+                $this->deleteRecords($request);
 
-            return Reply::success(__('messages.deleteSuccess'));
-        case 'change-status':
-            $this->changeBulkStatus($request);
+                return Reply::success(__('messages.deleteSuccess'));
+            case 'change-status':
+                $this->changeBulkStatus($request);
 
-            return Reply::success(__('messages.updateSuccess'));
-        default:
-            return Reply::error(__('messages.selectAction'));
+                return Reply::success(__('messages.updateSuccess'));
+            default:
+                return Reply::error(__('messages.selectAction'));
         }
     }
 
@@ -119,7 +116,7 @@ class TicketController extends AccountBaseController
     public function create()
     {
         $this->addPermission = user()->permission('add_tickets');
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
 
         $this->groups = TicketGroup::with('enabledAgents', 'enabledAgents.user')->get();
         $this->types = TicketType::all();
@@ -131,14 +128,13 @@ class TicketController extends AccountBaseController
         $this->lastTicket = Ticket::orderBy('id', 'desc')->first();
         $this->pageTitle = __('modules.tickets.addTicket');
 
-        $ticket = new Ticket();
+        $ticket = new Ticket;
 
         $getCustomFieldGroupsWithFields = $ticket->getCustomFieldGroupsWithFields();
 
         if ($getCustomFieldGroupsWithFields) {
             $this->fields = $getCustomFieldGroupsWithFields->fields;
         }
-
 
         if (request()->default_client) {
             $this->client = User::find(request()->default_client);
@@ -163,7 +159,7 @@ class TicketController extends AccountBaseController
 
         $id = UserService::getUserId();
 
-        $ticket = new Ticket();
+        $ticket = new Ticket;
         $ticket->subject = $request->subject;
         $ticket->status = 'open';
 
@@ -182,7 +178,7 @@ class TicketController extends AccountBaseController
         $ticket->save();
 
         // Save first message
-        $reply = new TicketReply();
+        $reply = new TicketReply;
         $reply->message = trim_editor($request->description);
         $reply->ticket_id = $ticket->id;
         $reply->user_id = $id; // Current logged in user
@@ -200,7 +196,7 @@ class TicketController extends AccountBaseController
 
         foreach ($tags as $tag) {
             $tag = TicketTagList::firstOrCreate([
-                'tag_name' => $tag
+                'tag_name' => $tag,
             ]);
             $ticket->ticketTags()->attach($tag);
         }
@@ -231,13 +227,13 @@ class TicketController extends AccountBaseController
             $query->where('agent_id', $userid)->orWhereNull('agent_id');
         })->exists();
 
-        if($userAssignedInGroup == false){
+        if ($userAssignedInGroup == false) {
 
-            abort_403(!$this->ticket->canViewTicket());
-        }else{
+            abort_403(! $this->ticket->canViewTicket());
+        } else {
 
             $ticketSetting = TicketSettingForAgents::first();
-            if($ticketSetting?->ticket_scope == 'group_tickets'){
+            if ($ticketSetting?->ticket_scope == 'group_tickets') {
 
                 $userGroupIds = TicketGroup::whereHas('enabledAgents', function ($query) use ($userid) {
                     $query->where('agent_id', $userid);
@@ -246,22 +242,22 @@ class TicketController extends AccountBaseController
                 $ticketSettingGroupIds = is_array($ticketSetting?->group_id) ? $ticketSetting?->group_id : explode(',', $ticketSetting?->group_id);
                 $commonGroupIds = array_intersect($userGroupIds, $ticketSettingGroupIds);
 
-                if($commonGroupIds && !in_array($this->ticket->group_id, $commonGroupIds)){
+                if ($commonGroupIds && ! in_array($this->ticket->group_id, $commonGroupIds)) {
 
-                    abort_403(!$this->ticket->canViewTicket());
-                }else{
+                    abort_403(! $this->ticket->canViewTicket());
+                } else {
                     $this->isEditable = true;
                 }
-            }elseif($ticketSetting?->ticket_scope == 'assigned_tickets'){
+            } elseif ($ticketSetting?->ticket_scope == 'assigned_tickets') {
                 $this->isEditable = true;
-                abort_403(!$this->ticket->canViewTicket());
-            }elseif($ticketSetting?->ticket_scope == 'all_tickets'){
+                abort_403(! $this->ticket->canViewTicket());
+            } elseif ($ticketSetting?->ticket_scope == 'all_tickets') {
                 $this->isEditable = true;
             }
-        };
+        }
 
         $this->ticket = $this->ticket->withCustomFields();
-        $this->pageTitle = __('app.menu.ticket') . '#' . $this->ticket->ticket_number;
+        $this->pageTitle = __('app.menu.ticket').'#'.$this->ticket->ticket_number;
 
         $userData = [];
         $groups = TicketGroup::with('enabledAgents', 'enabledAgents.user')->findOrfail($this->ticket->group_id);
@@ -297,7 +293,7 @@ class TicketController extends AccountBaseController
         } elseif ($managePermission == 'owned') {
             $this->agents->where('agent_id', $id);
         } elseif ($managePermission == 'both') {
-            $this->agents->where(function($q) use ($id) {
+            $this->agents->where(function ($q) use ($id) {
                 $q->where('agent_id', $id)
                     ->orWhere('added_by', $id);
             });
@@ -343,7 +339,7 @@ class TicketController extends AccountBaseController
         $userid = UserService::getUserId();
 
         if ($request->type == 'reply') {
-            $reply = new TicketReply();
+            $reply = new TicketReply;
             $reply->message = $request->message;
             $reply->ticket_id = $ticket->id;
             $reply->user_id = $userid; // Current logged in user
@@ -355,7 +351,7 @@ class TicketController extends AccountBaseController
         }
 
         if ($request->type == 'note') {
-            $reply = new TicketReply();
+            $reply = new TicketReply;
             $reply->message = $request->message2;
             $reply->ticket_id = $ticket->id;
             $reply->user_id = $userid; // Current logged in user
@@ -375,7 +371,7 @@ class TicketController extends AccountBaseController
     {
         $ticket = Ticket::findOrFail($id);
 
-        abort_403(!$ticket->canDeleteTicket());
+        abort_403(! $ticket->canDeleteTicket());
 
         Ticket::destroy($id);
 
@@ -402,7 +398,7 @@ class TicketController extends AccountBaseController
             $ticketReply = TicketReply::findOrFail($request->ticket_reply_id);
             $ticketReply->message = trim_editor($request->description);
             $ticketReply->save();
-        }elseif ($description == '' && $request->ticket_reply_id != null) {
+        } elseif ($description == '' && $request->ticket_reply_id != null) {
 
             return Reply::error(__('messages.descriptionFieldRequired'));
         }
@@ -437,21 +433,19 @@ class TicketController extends AccountBaseController
 
         if (is_null(request()->agent_id)) {
 
-            if (!empty($diffAgent)) {
+            if (! empty($diffAgent)) {
                 $ticket->agent_id = current($diffAgent);
-            }
-            else {
+            } else {
                 $agentDuplicateCount = array_count_values($ticketData);
 
-                if (!empty($agentDuplicateCount)) {
+                if (! empty($agentDuplicateCount)) {
                     $minVal = min($agentDuplicateCount);
                     $agentId = array_search($minVal, $agentDuplicateCount);
                     $ticket->agent_id = $agentId;
                 }
 
             }
-        }
-        else {
+        } else {
             $ticket->agent_id = request()->agent_id;
         }
 
@@ -463,7 +457,7 @@ class TicketController extends AccountBaseController
 
         foreach ($tags as $tag) {
             $tag = TicketTagList::firstOrCreate([
-                'tag_name' => $tag
+                'tag_name' => $tag,
             ]);
             $ticket->ticketTags()->attach($tag);
         }
@@ -475,14 +469,14 @@ class TicketController extends AccountBaseController
     {
         $viewPermission = user()->permission('view_tickets');
 
-        $tickets = Ticket::with('agent','group.enabledAgents');
+        $tickets = Ticket::with('agent', 'group.enabledAgents');
 
-        if (!is_null($request->startDate) && $request->startDate != '') {
+        if (! is_null($request->startDate) && $request->startDate != '') {
             $startDate = companyToDateString($request->startDate);
             $tickets->where(DB::raw('DATE(`created_at`)'), '>=', $startDate);
         }
 
-        if (!is_null($request->endDate) && $request->endDate != '') {
+        if (! is_null($request->endDate) && $request->endDate != '') {
             $endDate = companyToDateString($request->endDate);
             $tickets->where(DB::raw('DATE(`created_at`)'), '<=', $endDate);
         }
@@ -493,47 +487,47 @@ class TicketController extends AccountBaseController
 
         if (is_array($request->tagId) && $request->tagId[0] !== 'all') {
             $tickets->join('ticket_tags', 'ticket_tags.ticket_id', 'tickets.id')
-              ->whereIn('ticket_tags.tag_id', $tagIds)
-              ->groupBy('tickets.id');
-        } elseif(is_array($request->tagId) && $request->tagId[0] !== 'all' && $totaltags > 0){
+                ->whereIn('ticket_tags.tag_id', $tagIds)
+                ->groupBy('tickets.id');
+        } elseif (is_array($request->tagId) && $request->tagId[0] !== 'all' && $totaltags > 0) {
             $tickets->join('ticket_tags', 'ticket_tags.ticket_id', 'tickets.id')
                 ->whereIn('ticket_tags.tag_id', $tagIds)
                 ->groupBy('tickets.id');
-        } elseif(is_array($request->tagId) && $request->tagId[0] == 'all' && $totaltags > 0 && count($tagIds) !== 1){
+        } elseif (is_array($request->tagId) && $request->tagId[0] == 'all' && $totaltags > 0 && count($tagIds) !== 1) {
             $tickets->leftJoin('ticket_tags', 'ticket_tags.ticket_id', '=', 'tickets.id')
                 ->where(function ($query) use ($tagIds) {
                     $query->whereIn('ticket_tags.tag_id', $tagIds)
                         ->orWhereNull('ticket_tags.tag_id');
                 })->groupBy('tickets.id');
-        }elseif(is_array($request->tagId) && $request->tagId[0] == 'all' && count($tagIds) == 1){
+        } elseif (is_array($request->tagId) && $request->tagId[0] == 'all' && count($tagIds) == 1) {
             $tickets->whereNotExists(function ($query) {
-                    $query->select(DB::raw(1))
-                        ->from('ticket_tags')
-                        ->whereColumn('ticket_tags.ticket_id', 'tickets.id');
-                });
+                $query->select(DB::raw(1))
+                    ->from('ticket_tags')
+                    ->whereColumn('ticket_tags.ticket_id', 'tickets.id');
+            });
         }
 
-        if (!is_null($request->agentId) && $request->agentId != 'all') {
+        if (! is_null($request->agentId) && $request->agentId != 'all') {
             $tickets->where('agent_id', '=', $request->agentId);
         }
 
-        if (!is_null($request->priority) && $request->priority != 'all') {
+        if (! is_null($request->priority) && $request->priority != 'all') {
             $tickets->where('priority', '=', $request->priority);
         }
 
-        if (!is_null($request->channelId) && $request->channelId != 'all') {
+        if (! is_null($request->channelId) && $request->channelId != 'all') {
             $tickets->where('channel_id', '=', $request->channelId);
         }
 
-        if (!is_null($request->typeId) && $request->typeId != 'all') {
+        if (! is_null($request->typeId) && $request->typeId != 'all') {
             $tickets->where('type_id', '=', $request->typeId);
         }
 
-        if (!is_null($request->groupId) && $request->groupId != 'all') {
+        if (! is_null($request->groupId) && $request->groupId != 'all') {
             $tickets->where('group_id', '=', $request->groupId);
         }
 
-        if (!is_null($request->projectID) && $request->projectID != 'all') {
+        if (! is_null($request->projectID) && $request->projectID != 'all') {
             $tickets->whereHas('project', function ($q) use ($request) {
                 $q->withTrashed()->where('tickets.project_id', $request->projectID);
             });
@@ -542,13 +536,13 @@ class TicketController extends AccountBaseController
         $userid = UserService::getUserId();
 
         $userAssignedInGroup = false;
-        if(in_array('employee', user_roles()) && !in_array('admin', user_roles()) && !in_array('client', user_roles())){
+        if (in_array('employee', user_roles()) && ! in_array('admin', user_roles()) && ! in_array('client', user_roles())) {
             $userAssignedInGroup = TicketGroup::whereHas('enabledAgents', function ($query) use ($userid) {
                 $query->where('agent_id', $userid)->orWhereNull('agent_id');
             })->exists();
         }
 
-        if($userAssignedInGroup == false){
+        if ($userAssignedInGroup == false) {
 
             if ($viewPermission == 'added') {
                 $tickets->where('added_by', '=', $userid);
@@ -568,11 +562,11 @@ class TicketController extends AccountBaseController
                         ->orWhere('agent_id', '=', $userid);
                 });
             }
-        }else{
+        } else {
 
             $ticketSetting = TicketSettingForAgents::first();
 
-            if($ticketSetting?->ticket_scope == 'group_tickets'){
+            if ($ticketSetting?->ticket_scope == 'group_tickets') {
 
                 $userGroupIds = TicketGroup::whereHas('enabledAgents', function ($query) use ($userid) {
                     $query->where('agent_id', $userid);
@@ -583,7 +577,7 @@ class TicketController extends AccountBaseController
                 // Find the common group IDs
                 $commonGroupIds = array_intersect($userGroupIds, $ticketSettingGroupIds);
 
-                if($commonGroupIds){
+                if ($commonGroupIds) {
                     $tickets->where(function ($query) use ($commonGroupIds, $userid) {
                         $query->where(function ($subQuery) use ($commonGroupIds, $userid) {
                             // Conditions related to user and agent
@@ -594,12 +588,12 @@ class TicketController extends AccountBaseController
                                 ->whereIn('group_id', $commonGroupIds);
                         })
                         // Add orWhere for tickets where agent_id is null
-                        ->orWhere(function ($subQuery) use ($commonGroupIds) {
-                            $subQuery->whereNull('agent_id')
-                                ->whereIn('group_id', $commonGroupIds);
-                        });
+                            ->orWhere(function ($subQuery) use ($commonGroupIds) {
+                                $subQuery->whereNull('agent_id')
+                                    ->whereIn('group_id', $commonGroupIds);
+                            });
                     });
-                }else{
+                } else {
                     $tickets->where(function ($query) use ($userGroupIds, $userid) {
                         $query->where(function ($subQuery) use ($userGroupIds, $userid) {
                             // Conditions related to user and agent
@@ -610,15 +604,15 @@ class TicketController extends AccountBaseController
                                 ->whereIn('group_id', $userGroupIds);
                         })
                         // Add orWhere for tickets where agent_id is null
-                        ->orWhere(function ($subQuery) use ($userGroupIds) {
-                            $subQuery->whereNull('agent_id')
-                                ->whereIn('group_id', $userGroupIds);
-                        });
+                            ->orWhere(function ($subQuery) use ($userGroupIds) {
+                                $subQuery->whereNull('agent_id')
+                                    ->whereIn('group_id', $userGroupIds);
+                            });
                     });
                 }
             }
 
-            if($ticketSetting?->ticket_scope == 'assigned_tickets'){
+            if ($ticketSetting?->ticket_scope == 'assigned_tickets') {
                 $tickets->where(function ($query) use ($userid) {
                     $query->where('agent_id', '=', $userid)
                         ->orWhere('user_id', '=', $userid)
@@ -652,7 +646,7 @@ class TicketController extends AccountBaseController
             'closedTickets' => $closedTickets,
             'openTickets' => $openTickets,
             'pendingTickets' => $pendingTickets,
-            'resolvedTickets' => $resolvedTickets
+            'resolvedTickets' => $resolvedTickets,
         ];
 
         return Reply::dataOnly($ticketData);
@@ -669,13 +663,13 @@ class TicketController extends AccountBaseController
             $query->where('agent_id', $userid)->orWhereNull('agent_id');
         })->exists();
 
-        if($userAssignedInGroup == false){
+        if ($userAssignedInGroup == false) {
 
-            abort_403(!$ticket->canEditTicket());
-        }else{
+            abort_403(! $ticket->canEditTicket());
+        } else {
 
             $ticketSetting = TicketSettingForAgents::first();
-            if($ticketSetting?->ticket_scope == 'group_tickets'){
+            if ($ticketSetting?->ticket_scope == 'group_tickets') {
 
                 $userGroupIds = TicketGroup::whereHas('enabledAgents', function ($query) use ($userid) {
                     $query->where('agent_id', $userid);
@@ -684,19 +678,19 @@ class TicketController extends AccountBaseController
                 $ticketSettingGroupIds = is_array($ticketSetting?->group_id) ? $ticketSetting?->group_id : explode(',', $ticketSetting?->group_id);
                 $commonGroupIds = array_intersect($userGroupIds, $ticketSettingGroupIds);
 
-                if($commonGroupIds && !in_array($ticket->group_id, $commonGroupIds)){
+                if ($commonGroupIds && ! in_array($ticket->group_id, $commonGroupIds)) {
 
-                    abort_403(!$ticket->canEditTicket());
-                }else{
+                    abort_403(! $ticket->canEditTicket());
+                } else {
                     $this->isEditable = true;
                 }
-            }elseif($ticketSetting?->ticket_scope == 'assigned_tickets'){
+            } elseif ($ticketSetting?->ticket_scope == 'assigned_tickets') {
                 $this->isEditable = true;
-                abort_403(!$ticket->canEditTicket());
-            }elseif($ticketSetting?->ticket_scope == 'all_tickets'){
+                abort_403(! $ticket->canEditTicket());
+            } elseif ($ticketSetting?->ticket_scope == 'all_tickets') {
                 $this->isEditable = true;
             }
-        };
+        }
 
         $ticket->update(['status' => $request->status]);
 
@@ -716,11 +710,11 @@ class TicketController extends AccountBaseController
             $data = [];
             foreach ($groups->enabledAgents as $agent) {
 
-                if($agent->user->id == (int)$exceptThis ?? 0) {
+                if ($agent->user->id == (int) $exceptThis ?? 0) {
                     continue;
                 }
 
-                $selected = !is_null($ticket) && $agent->user->id == $ticket->agent_id;
+                $selected = ! is_null($ticket) && $agent->user->id == $ticket->agent_id;
 
                 $url = route('employees.show', [$agent->user->id]);
                 $userData[] = ['id' => $agent->user->id, 'value' => $agent->user->name, 'image' => $agent->user->image_url, 'link' => $url];
@@ -734,12 +728,11 @@ class TicketController extends AccountBaseController
             }
 
             $groupData = $userData;
-        }
-        else {
+        } else {
             $data = '<option value="">--</option>';
         }
 
-        if($exceptThis !== "null" && $exceptThis !== null) {
+        if ($exceptThis !== 'null' && $exceptThis !== null) {
             $users = User::findOrFail($exceptThis);
             $url = route('clients.show', [$users->id]);
             $userData[] = ['id' => $users->id, 'value' => $users->name, 'image' => $users->image_url, 'link' => $url];
@@ -748,7 +741,5 @@ class TicketController extends AccountBaseController
 
         return Reply::dataOnly(['data' => $data, 'groupData' => $groupData]);
 
-
     }
-
 }

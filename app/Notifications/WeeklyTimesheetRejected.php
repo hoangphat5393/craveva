@@ -2,11 +2,10 @@
 
 namespace App\Notifications;
 
+use App\Models\WeeklyTimesheet;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use App\Models\WeeklyTimesheet;
 
 class WeeklyTimesheetRejected extends BaseNotification
 {
@@ -38,7 +37,7 @@ class WeeklyTimesheetRejected extends BaseNotification
     {
         $build = parent::build($notifiable);
 
-        $build  
+        $build
             ->subject(__('email.weeklyTimesheetRejected.subject'))
             ->greeting(__('email.weeklyTimesheetRejected.greeting'))
             ->line(__('email.weeklyTimesheetRejected.text'))

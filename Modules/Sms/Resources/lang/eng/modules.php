@@ -15,5 +15,5 @@ return [
     'telegramTelegramBotName' => 'Telegram Bot Name',
     'telegramBotNameInfo' => 'Note: You need to start chat on below bot link on your telegram account.',
     'smsConfigure' => 'Choose from right sidebar all the sms notifications you want to receive.',
-    'notificationConfigure' => 'Notification selection and assignment to companies are managed from the Admin Panel, not the Super Admin Panel.'
+    'notificationConfigure' => 'Notification selection and assignment to companies are managed from the Admin Panel, not the Super Admin Panel.',
 ];

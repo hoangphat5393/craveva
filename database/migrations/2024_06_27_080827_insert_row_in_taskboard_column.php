@@ -1,10 +1,10 @@
 <?php
 
+use App\Models\Company;
+use App\Models\TaskboardColumn;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use App\Models\Company;
-use App\Models\TaskboardColumn;
 
 return new class extends Migration
 {

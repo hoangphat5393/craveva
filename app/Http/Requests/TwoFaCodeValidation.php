@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class TwoFaCodeValidation extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -25,8 +24,7 @@ class TwoFaCodeValidation extends FormRequest
     public function rules()
     {
         return [
-            'code' => 'required'
+            'code' => 'required',
         ];
     }
-
 }

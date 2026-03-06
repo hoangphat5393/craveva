@@ -11,7 +11,6 @@ return new class extends Migration
      *
      * @return void
      */
-
     public function up()
     {
         $companies = Company::get();
@@ -19,7 +18,7 @@ return new class extends Migration
         foreach ($companies as $company) {
             $LeadCustomProductForm = LeadCustomForm::where('company_id', $company->id)->where('field_name', 'product')->first();
 
-            if(is_null($LeadCustomProductForm)){
+            if (is_null($LeadCustomProductForm)) {
                 LeadCustomForm::create([
                     'field_display_name' => 'Product',
                     'field_name' => 'product',
@@ -31,7 +30,7 @@ return new class extends Migration
 
             $LeadCustomSourceForm = LeadCustomForm::where('company_id', $company->id)->where('field_name', 'source')->first();
 
-            if(is_null($LeadCustomSourceForm)){
+            if (is_null($LeadCustomSourceForm)) {
                 LeadCustomForm::create([
                     'field_display_name' => 'Source',
                     'field_name' => 'source',
@@ -48,10 +47,8 @@ return new class extends Migration
      *
      * @return void
      */
-
     public function down()
     {
         //
     }
-
 };

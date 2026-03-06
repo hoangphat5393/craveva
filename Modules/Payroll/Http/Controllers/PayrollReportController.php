@@ -7,27 +7,23 @@ use App\Http\Controllers\AccountBaseController;
 use App\Models\Designation;
 use App\Models\Team;
 use App\Models\User;
-use Carbon\Carbon;
+use DB;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 use Modules\Payroll\Entities\PayrollSetting;
 use Modules\Payroll\Entities\SalarySlip;
-use Maatwebsite\Excel\Facades\Excel;
-use DB;
-use Modules\Payroll\Exports\SalaryComulativeReport;
 use Modules\Payroll\Exports\SalaryCumulativeReport;
 use Modules\Payroll\Exports\SalaryMonthlyReport;
-use Modules\Payroll\Exports\SalaryMonthlyReportDone;
 
 class PayrollReportController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = __('payroll::app.menu.payroll');
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array(PayrollSetting::MODULE_NAME, $this->user->modules));
+            abort_403(! in_array(PayrollSetting::MODULE_NAME, $this->user->modules));
 
             return $next($request);
         });
@@ -35,11 +31,12 @@ class PayrollReportController extends AccountBaseController
 
     /**
      * Display a listing of the resource.
+     *
      * @return Renderable
      */
     public function index()
     {
-        if (!in_array('admin', user_roles())) {
+        if (! in_array('admin', user_roles())) {
             abort(403);
         }
 
@@ -47,7 +44,6 @@ class PayrollReportController extends AccountBaseController
         $this->employees = User::allEmployees(null, true);
         $this->payrollSetting = PayrollSetting::first();
         $this->currency = PayrollSetting::with('currency')->first();
-
 
         $totals = SalarySlip::select('month',
             DB::raw('SUM(tds) as total_tds')
@@ -62,25 +58,26 @@ class PayrollReportController extends AccountBaseController
         $tab = request('tab');
 
         switch ($tab) {
-        case 'employee-tds':
-            $this->view = 'payroll::payroll-report.ajax.employee-tds';
-            break;
-        case 'company-tds':
-            $this->view = 'payroll::payroll-report.ajax.employee-tds';
-            break;
-        default:
-            $this->departments = Team::all();
-            $this->designations = Designation::all();
-            $this->startDate = now()->format('m-Y');
+            case 'employee-tds':
+                $this->view = 'payroll::payroll-report.ajax.employee-tds';
+                break;
+            case 'company-tds':
+                $this->view = 'payroll::payroll-report.ajax.employee-tds';
+                break;
+            default:
+                $this->departments = Team::all();
+                $this->designations = Designation::all();
+                $this->startDate = now()->format('m-Y');
 
-            $this->view = 'payroll::payroll-report.ajax.salary-report';
-            break;
+                $this->view = 'payroll::payroll-report.ajax.salary-report';
+                break;
         }
 
         $this->activeTab = $tab ?: 'salary-report';
 
         if (request()->ajax()) {
             $html = view($this->view, $this->data)->render();
+
             return Reply::dataOnly(['status' => 'success', 'html' => $html, 'title' => $this->pageTitle, 'activeTab' => $this->activeTab]);
         }
 
@@ -89,6 +86,7 @@ class PayrollReportController extends AccountBaseController
 
     /**
      * Show the form for creating a new resource.
+     *
      * @return Renderable
      */
     public function create()
@@ -98,7 +96,7 @@ class PayrollReportController extends AccountBaseController
 
     /**
      * Store a newly created resource in storage.
-     * @param Request $request
+     *
      * @return Renderable
      */
     public function store(Request $request)
@@ -108,7 +106,8 @@ class PayrollReportController extends AccountBaseController
 
     /**
      * Show the specified resource.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function show($id)
@@ -118,7 +117,8 @@ class PayrollReportController extends AccountBaseController
 
     /**
      * Show the form for editing the specified resource.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function edit($id)
@@ -128,8 +128,8 @@ class PayrollReportController extends AccountBaseController
 
     /**
      * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function update(Request $request, $id)
@@ -139,7 +139,8 @@ class PayrollReportController extends AccountBaseController
 
     /**
      * Remove the specified resource from storage.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function destroy($id)
@@ -155,8 +156,7 @@ class PayrollReportController extends AccountBaseController
         $departmentId = $request->department ?? null;
         $type = $request->type;
 
-        if($type == 'monthly')
-        {
+        if ($type == 'monthly') {
             return Excel::download(new SalaryMonthlyReport($startDate, $endDate, $departmentId, $designationId), 'salary_slip_report.xlsx');
         }
 
@@ -181,5 +181,4 @@ class PayrollReportController extends AccountBaseController
 
         return Reply::dataOnly(['status' => 'success', 'data' => $this->data, 'html' => $view]);
     }
-
 }

@@ -12,6 +12,7 @@ class PromotionAddedEvent
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $promotion;
+
     public $user;
 
     /**
@@ -22,5 +23,4 @@ class PromotionAddedEvent
         $this->promotion = $promotion;
         $this->user = User::where('id', $promotion->employee_id)->first();
     }
-
 }

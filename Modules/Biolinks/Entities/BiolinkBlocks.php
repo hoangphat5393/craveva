@@ -3,23 +3,21 @@
 namespace Modules\Biolinks\Entities;
 
 use App\Models\BaseModel;
-use Modules\Biolinks\Enums\Size;
-use Modules\Biolinks\Enums\Status;
-use Modules\Biolinks\Enums\Heading;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Notifications\Notifiable;
 use Modules\Biolinks\Enums\Alignment;
 use Modules\Biolinks\Enums\Animation;
-use Modules\Biolinks\Enums\ObjectFit;
 use Modules\Biolinks\Enums\AvatarSize;
-use Modules\Biolinks\Enums\PaypalType;
-use Illuminate\Database\Eloquent\Model;
-use Modules\Biolinks\Enums\BorderStyle;
-use Illuminate\Notifications\Notifiable;
 use Modules\Biolinks\Enums\BorderRadius;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\Biolinks\Enums\BorderStyle;
+use Modules\Biolinks\Enums\Heading;
+use Modules\Biolinks\Enums\ObjectFit;
+use Modules\Biolinks\Enums\PaypalType;
+use Modules\Biolinks\Enums\Size;
+use Modules\Biolinks\Enums\Status;
 
 class BiolinkBlocks extends BaseModel
 {
-
     use HasFactory, Notifiable;
 
     /**
@@ -50,7 +48,6 @@ class BiolinkBlocks extends BaseModel
             return $this->image;
         }
 
-        return ($this->image) ? asset_url_local_s3('biolinks/' . $this->image) : '';
+        return ($this->image) ? asset_url_local_s3('biolinks/'.$this->image) : '';
     }
-
 }

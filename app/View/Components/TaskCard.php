@@ -7,9 +7,10 @@ use Illuminate\View\Component;
 
 class TaskCard extends Component
 {
-
     public $task;
+
     public $draggable;
+
     public $company;
 
     /**
@@ -17,7 +18,7 @@ class TaskCard extends Component
      *
      * @return void
      */
-    public function __construct($task, $draggable = 'true', $company)
+    public function __construct($task, $draggable, $company)
     {
         $this->task = $task;
         $this->draggable = $draggable;
@@ -33,5 +34,4 @@ class TaskCard extends Component
     {
         return view('components.cards.task-card');
     }
-
 }

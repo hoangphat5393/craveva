@@ -54,60 +54,60 @@ class UpdateProjectProgressByDeadline extends Command
                 if ($newProgress !== false) {
                     // Reload the project to get updated values
                     $project->refresh();
-                    
+
                     $newStatus = $project->status;
-                    
+
                     // Log significant changes
                     if ($oldProgress != $newProgress || $oldStatus != $newStatus) {
-                        Log::info("Project progress updated", [
+                        Log::info('Project progress updated', [
                             'project_id' => $project->id,
                             'project_name' => $project->project_name,
                             'old_progress' => $oldProgress,
                             'new_progress' => $newProgress,
                             'old_status' => $oldStatus,
                             'new_status' => $newStatus,
-                            'deadline' => $project->deadline->format('Y-m-d')
+                            'deadline' => $project->deadline->format('Y-m-d'),
                         ]);
-                        
+
                         $this->line("Updated project: {$project->project_name} - Progress: {$oldProgress}% → {$newProgress}%");
-                        
+
                         if ($oldStatus != $newStatus) {
                             $this->line("  Status changed: {$oldStatus} → {$newStatus}");
                         }
                     }
-                    
+
                     $updatedCount++;
                 } else {
                     $this->warn("Failed to calculate progress for project: {$project->project_name} (ID: {$project->id})");
                     $errorCount++;
                 }
             } catch (\Exception $e) {
-                Log::error("Error updating project progress", [
+                Log::error('Error updating project progress', [
                     'project_id' => $project->id,
                     'project_name' => $project->project_name,
                     'error' => $e->getMessage(),
-                    'trace' => $e->getTraceAsString()
+                    'trace' => $e->getTraceAsString(),
                 ]);
-                
-                $this->error("Error updating project {$project->project_name}: " . $e->getMessage());
+
+                $this->error("Error updating project {$project->project_name}: ".$e->getMessage());
                 $errorCount++;
             }
         }
 
-        $this->info("Project progress update completed.");
-        $this->info("Projects processed: " . $projects->count());
+        $this->info('Project progress update completed.');
+        $this->info('Projects processed: '.$projects->count());
         $this->info("Successfully updated: {$updatedCount}");
-        
+
         if ($errorCount > 0) {
             $this->warn("Errors encountered: {$errorCount}");
         }
 
         // Log summary
-        Log::info("Daily project progress update completed", [
+        Log::info('Daily project progress update completed', [
             'total_projects' => $projects->count(),
             'updated_count' => $updatedCount,
             'error_count' => $errorCount,
-            'execution_time' => now()->toDateTimeString()
+            'execution_time' => now()->toDateTimeString(),
         ]);
 
         return Command::SUCCESS;

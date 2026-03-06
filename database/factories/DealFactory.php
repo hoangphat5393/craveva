@@ -28,5 +28,4 @@ class DealFactory extends Factory
             'next_follow_up' => 'yes',
         ];
     }
-
 }

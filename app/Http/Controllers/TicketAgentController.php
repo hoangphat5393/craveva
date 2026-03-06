@@ -12,7 +12,6 @@ use Illuminate\Http\Request;
 
 class TicketAgentController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -33,6 +32,7 @@ class TicketAgentController extends AccountBaseController
             ->where('roles.name', 'employee')
             ->get();
         $this->groups = TicketGroup::all();
+
         return view('ticket-settings.create-agent-modal', $this->data);
 
     }
@@ -42,7 +42,7 @@ class TicketAgentController extends AccountBaseController
         $groups = $request->group_id;
 
         foreach ($groups as $group) {
-            $agent = new TicketAgentGroups();
+            $agent = new TicketAgentGroups;
             $agent->agent_id = $request->user_id;
             $agent->group_id = $group;
             $agent->added_by = user()->id;
@@ -56,10 +56,10 @@ class TicketAgentController extends AccountBaseController
             foreach ($groups as $group) {
                 if (count($group->enabledAgents) > 0) {
 
-                    $agentList .= '<optgroup label="' . $group->group_name . '">';
+                    $agentList .= '<optgroup label="'.$group->group_name.'">';
 
                     foreach ($group->enabledAgents as $agent) {
-                        $agentList .= '<option value="' . $agent->user->id . '">' . $agent->user->name . ' [' . $agent->user->email . ']' . '</option>';
+                        $agentList .= '<option value="'.$agent->user->id.'">'.$agent->user->name.' ['.$agent->user->email.']'.'</option>';
                     }
 
                     $agentList .= '</optgroup>';
@@ -75,13 +75,13 @@ class TicketAgentController extends AccountBaseController
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
         TicketAgentGroups::where('agent_id', $id)->update(['status' => $request->status]);
+
         return Reply::success(__('messages.updateSuccess'));
     }
 
@@ -89,10 +89,10 @@ class TicketAgentController extends AccountBaseController
     {
         TicketAgentGroups::where('agent_id', $id)->delete();
 
-        foreach($request->groupId as $groupId) {
+        foreach ($request->groupId as $groupId) {
             TicketAgentGroups::firstOrCreate([
                 'agent_id' => $id,
-                'group_id' => $groupId
+                'group_id' => $groupId,
             ]);
         }
 
@@ -117,20 +117,16 @@ class TicketAgentController extends AccountBaseController
 
         $ticketAgentGroup = TicketAgentGroups::where('agent_id', request()->agent_id)->pluck('group_id')->toArray();
 
-        if(!empty($ticketAgentGroup))
-        {
+        if (! empty($ticketAgentGroup)) {
 
             $ticketGroup = TicketGroup::whereNotIn('id', $ticketAgentGroup)->get();
 
             return Reply::dataOnly(['data' => $ticketGroup]);
 
-        }
-        else
-        {
+        } else {
             $ticketGroup = TicketGroup::all();
 
             return Reply::dataOnly(['data' => $ticketGroup]);
         }
     }
-
 }

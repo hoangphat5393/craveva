@@ -7,8 +7,8 @@ use Illuminate\View\Component;
 
 class Employee extends Component
 {
-
     public $user;
+
     public $disabledLink;
 
     /**
@@ -31,5 +31,4 @@ class Employee extends Component
     {
         return view('components.employee');
     }
-
 }

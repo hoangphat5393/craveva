@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateRequest extends FormRequest
 {
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -38,5 +37,4 @@ class UpdateRequest extends FormRequest
             'asset_type_id.exists' => 'The asset type field is not exists.',
         ];
     }
-
 }

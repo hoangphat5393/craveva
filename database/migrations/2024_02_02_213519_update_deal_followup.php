@@ -4,8 +4,8 @@ use App\Models\Deal;
 use App\Models\DealFollowUp;
 use Illuminate\Database\Migrations\Migration;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
@@ -21,5 +21,4 @@ return new class extends Migration {
 
         DealFollowUp::where('status', 'incomplete')->update(['status' => 'pending']);
     }
-
 };

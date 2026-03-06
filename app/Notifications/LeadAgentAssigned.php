@@ -2,18 +2,18 @@
 
 namespace App\Notifications;
 
-use App\Models\EmailNotificationSetting;
 use App\Models\Deal;
+use App\Models\EmailNotificationSetting;
 
 class LeadAgentAssigned extends BaseNotification
 {
-
     /**
      * Create a new notification instance.
      *
      * @return void
      */
     private $deal;
+
     private $emailSetting;
 
     public function __construct(Deal $deal)
@@ -26,12 +26,12 @@ class LeadAgentAssigned extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
     {
-        $via = array('database');
+        $via = ['database'];
 
         if ($this->emailSetting->send_email == 'yes' && $notifiable->email_notifications && $notifiable->email != '') {
             array_push($via, 'mail');
@@ -43,7 +43,7 @@ class LeadAgentAssigned extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
@@ -52,18 +52,18 @@ class LeadAgentAssigned extends BaseNotification
         $url = route('deals.show', $this->deal->id);
         $url = getDomainSpecificUrl($url, $this->company);
 
-        $leadEmail = __('modules.lead.clientEmail') . ': ';
-        $clientEmail = !is_null($this->deal->contact->client_email) ? $leadEmail : '';
-        $content = __('email.leadAgent.subject') . '<br>' .__('modules.deal.dealName') . ': '  . $this->deal->name . '<br>' .  __('modules.lead.clientName') . ': '  . $this->deal->contact->client_name_salutation . '<br>' . $clientEmail . $this->deal->contact->client_email;
+        $leadEmail = __('modules.lead.clientEmail').': ';
+        $clientEmail = ! is_null($this->deal->contact->client_email) ? $leadEmail : '';
+        $content = __('email.leadAgent.subject').'<br>'.__('modules.deal.dealName').': '.$this->deal->name.'<br>'.__('modules.lead.clientName').': '.$this->deal->contact->client_name_salutation.'<br>'.$clientEmail.$this->deal->contact->client_email;
 
         $build
-            ->subject(__('email.leadAgent.subject') . ' - ' . config('app.name'))
+            ->subject(__('email.leadAgent.subject').' - '.config('app.name'))
             ->markdown('mail.email', [
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
                 'actionText' => __('email.leadAgent.action'),
-                'notifiableName' => $notifiable->name
+                'notifiableName' => $notifiable->name,
             ]);
 
         parent::resetLocale();
@@ -74,18 +74,17 @@ class LeadAgentAssigned extends BaseNotification
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
-    //phpcs:ignore
+    // phpcs:ignore
     public function toArray($notifiable)
     {
         return [
             'id' => $this->deal->id,
             'name' => $this->deal->name,
             'agent_id' => $notifiable->id,
-            'added_by' => $this->deal->added_by
+            'added_by' => $this->deal->added_by,
         ];
     }
-
 }

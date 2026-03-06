@@ -8,7 +8,6 @@ use Illuminate\Queue\SerializesModels;
 
 class EmailVerificationEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $user;
@@ -22,5 +21,4 @@ class EmailVerificationEvent
     {
         $this->user = $user;
     }
-
 }

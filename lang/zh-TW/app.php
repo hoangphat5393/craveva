@@ -1,6 +1,6 @@
 <?php
 
-return array(
+return [
     'dealWatcher' => '交易觀察者',
     'leadContact' => '潛在客戶聯絡人',
     'deal' => '交易',
@@ -143,7 +143,7 @@ return array(
     'quantityExceed' => 'Quantity Exceed',
     'SorryTheQuantityExceedsFor' => 'Sorry, the quantity exceeds for',
     'doItLater' => 'Do It Later',
-    'months' => array(
+    'months' => [
         'January' => 'January',
         'February' => 'February',
         'March' => 'March',
@@ -156,8 +156,8 @@ return array(
         'October' => 'October',
         'November' => 'November',
         'December' => 'December',
-    ),
-    'menu' => array(
+    ],
+    'menu' => [
         'units' => '單位',
         'prefixSettings' => '前綴設置',
         'parent_id' => '上級',
@@ -285,26 +285,26 @@ return array(
         'invoicePaymentDetails' => '發票付款詳情',
         'projectCalendar' => '專案日曆',
         'customLink' => '自定義連結',
-        'pusher' => array(
+        'pusher' => [
             'appId' => 'App Id',
             'appKey' => 'App Key',
             'appSecret' => 'App Secret',
             'appCluster' => 'App Cluster',
             'forceTLS' => 'Force TLS',
-        ),
+        ],
         'content' => '內容',
         'decline' => '拒絕',
         'signed' => '已簽署',
         'download' => '下載',
         'applyToInvoice' => '使用貸項通知單支付發票',
-        'credit-notes' => array(
+        'credit-notes' => [
             'invoiceDate' => '發票日期',
             'invoiceAmount' => '發票金額',
             'invoiceBalanceDue' => '發票應付餘額',
             'amountToCredit' => '貸項金額',
             'remainingAmount' => '剩餘金額',
             'amountCredited' => '已貸項金額',
-        ),
+        ],
         'creditedInvoices' => '已貸項發票',
         'appliedCredits' => '已應用貸項',
         'ticketFiles' => '工單文件',
@@ -356,7 +356,7 @@ return array(
         'receipt' => '收據',
         'callback' => '回調',
         'addSubTask' => '新增子任務',
-        'socialAuthSettings' => array(
+        'socialAuthSettings' => [
             'google' => 'Google',
             'facebook' => 'Facebook',
             'linkedin' => 'Linkedin',
@@ -369,7 +369,7 @@ return array(
             'facebookSecret' => 'Facebook Secret',
             'twitterSecret' => 'Twitter Secret',
             'linkedinSecret' => 'Linkedin Secret',
-        ),
+        ],
         'saveSend' => '儲存並發送',
         'saveDraft' => '儲存為草稿',
         'send' => '發送',
@@ -474,7 +474,7 @@ return array(
         'adminIt' => '行政與IT',
         'lettersTemplates' => '信函範本',
         'helpSupport' => '幫助與支援',
-    ),
+    ],
     'parentId' => 'Parent',
     'childId' => 'Child',
     'language' => 'Language',
@@ -645,59 +645,59 @@ return array(
     'bankaccount' => 'Bank Account',
     'bankaccounts' => 'Bank Accounts',
     'Changestatus' => 'Lead Status',
-    'pusher' => array(
+    'pusher' => [
         'appId' => 'App Id',
         'appKey' => 'App Key',
         'appSecret' => 'App Secret',
         'appCluster' => 'App Cluster',
         'forceTLS' => 'Force TLS',
-    ),
+    ],
     'content' => 'Content',
     'decline' => 'Decline',
     'signed' => 'Signed',
     'download' => 'Download',
     'applyToInvoice' => 'Pay Invoice using Credit Note',
-    'credit-notes' => array(
+    'credit-notes' => [
         'invoiceDate' => 'Invoice Date',
         'invoiceAmount' => 'Invoice Amount',
         'invoiceBalanceDue' => 'Invoice Balance Due',
         'amountToCredit' => 'Amount To Credit',
         'remainingAmount' => 'Remaining Amount',
         'amountCredited' => 'Amount Credited',
-    ),
-    'onesignal' => array(
+    ],
+    'onesignal' => [
         'actionMessage' => 'We\'d like to show you notifications for the latest news and updates.',
         'acceptButtonText' => 'ALLOW',
         'cancelButtonText' => 'NO THANKS',
-        'tip' => array(
-            'state' => array(
+        'tip' => [
+            'state' => [
                 'unsubscribed' => 'Subscribe to notifications',
                 'subscribed' => 'You\'re subscribed to notifications',
                 'blocked' => 'You\'ve blocked notifications',
-            ),
-        ),
-        'message' => array(
+            ],
+        ],
+        'message' => [
             'prenotify' => 'Click to subscribe to notifications',
-            'action' => array(
+            'action' => [
                 'subscribed' => 'Thanks for subscribing!',
                 'resubscribed' => 'You\'re subscribed to notifications',
                 'unsubscribed' => 'You won\'t receive notifications again',
-            ),
-        ),
-        'dialog' => array(
-            'main' => array(
+            ],
+        ],
+        'dialog' => [
+            'main' => [
                 'title' => 'Manage Site Notifications',
-                'button' => array(
+                'button' => [
                     'subscribe' => 'SUBSCRIBE',
                     'unsubscribe' => 'UNSUBSCRIBE',
-                ),
-            ),
-            'blocked' => array(
+                ],
+            ],
+            'blocked' => [
                 'title' => 'Unblock Notifications',
                 'message' => 'Follow these instructions to allow notifications:',
-            ),
-        ),
-    ),
+            ],
+        ],
+    ],
     'creditedInvoices' => 'Invoices Credited',
     'appliedCredits' => 'Applied Credits',
     'ticketFiles' => 'Ticket Files',
@@ -753,7 +753,7 @@ return array(
     'mins' => 'mins',
     'receipt' => 'Receipt',
     'callback' => 'Callback',
-    'socialAuthSettings' => array(
+    'socialAuthSettings' => [
         'google' => 'Google',
         'facebook' => 'Facebook',
         'linkedin' => 'Linkedin',
@@ -766,7 +766,7 @@ return array(
         'facebookSecret' => 'Facebook Secret',
         'twitterSecret' => 'Twitter Secret',
         'linkedinSecret' => 'Linkedin Secret',
-    ),
+    ],
     'saveSend' => 'Save & Send',
     'saveMark' => 'Save & Mark as Send',
     'markSent' => 'Mark as Sent',
@@ -914,7 +914,7 @@ return array(
     'stripeSecret' => 'Stripe Secret',
     'stripeWebhookSecret' => 'Stripe Webhook Signing Secret',
     'razorpayWebhookSecret' => 'Razorpay Webhook Signing Secret',
-    'storageSetting' => array(
+    'storageSetting' => [
         'selectStorage' => 'Select Storage',
         'local' => 'Local (Default)',
         'aws_s3' => 'AWS S3 Storage (Amazon Web Services S3)',
@@ -951,7 +951,7 @@ return array(
         'storageSuggestion' => '<b>Suggestion:</b> Consider using <a href="https://digitalocean.pxf.io/froiden" target="_blank">DigitalOcean Spaces</a>, <a href="https://aws.amazon.com/s3" target="_blank">AWS S3</a>, <a href="https://wasabi.com" target="_blank">Wasabi</a> or <a href="https://min.io/" target="_blank">Minio</a> Storage for an additional layer of security',
         'localStorageNote' => 'means that the files you upload will be stored on your own server within the <b>public/user-uploads</b> directory.',
         'testMinioSetting' => 'Test Minio Storage Settings',
-    ),
+    ],
     'message' => 'Message',
     'verify' => 'Verify',
     'itemSelected' => 'items selected',
@@ -1136,13 +1136,13 @@ return array(
     'moduleSwitchMessage' => 'Activate or deactivate :name module',
     'updateModule' => 'Update Module',
     'eventMonthlyOn' => 'Monthly on the :week :day',
-    'eventDay' => array(
+    'eventDay' => [
         1 => 'first',
         2 => 'second',
         3 => 'third',
         4 => 'fourth',
         5 => 'last',
-    ),
+    ],
     'thisEvent' => 'This event',
     'allEvent' => 'All events',
     'totalDays' => 'Total Days',
@@ -1271,7 +1271,7 @@ return array(
     'moduleNotifySwitchMessage' => 'This will hide/show new update message on dashboard for :name module',
     'leadContact' => 'Lead Contact',
     'deal' => 'Deals',
-    'maritalStatus' => array(
+    'maritalStatus' => [
         'single' => 'Single',
         'married' => 'Married',
         'widower' => 'Widower',
@@ -1279,8 +1279,8 @@ return array(
         'separate' => 'Separate',
         'divorced' => 'Divorced',
         'engaged' => 'Engaged',
-        'unmarried' => 'Unmarried'
-    ),
+        'unmarried' => 'Unmarried',
+    ],
     'sku' => 'SKU',
     'host' => 'Host',
     'cancelled' => 'Cancelled',
@@ -1369,4 +1369,4 @@ return array(
     'qrCode' => 'QR 碼',
     'recruit' => '招聘',
     'restApi' => 'Rest API',
-);
+];

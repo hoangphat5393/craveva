@@ -5,7 +5,6 @@ namespace Modules\Purchase\Database\Seeders;
 use App\Models\Company;
 use Faker\Factory;
 use Illuminate\Database\Seeder;
-use Illuminate\Database\Eloquent\Model;
 use Modules\Purchase\Entities\PurchaseVendor;
 use Modules\Purchase\Entities\PurchaseVendorCredit;
 
@@ -16,7 +15,6 @@ class VendorCreditTableSeeder extends Seeder
      *
      * @return void
      */
-
     public function run($companyId)
     {
         $faker = Factory::create();
@@ -24,7 +22,7 @@ class VendorCreditTableSeeder extends Seeder
         $setting = Company::find($companyId);
 
         for ($i = 0; $i < 5; $i++) {
-            $vendorCredit = new PurchaseVendorCredit();
+            $vendorCredit = new PurchaseVendorCredit;
             $vendorCredit->company_id = $companyId;
             $vendorCredit->vendor_id = $vendorId->random();
             $vendorCredit->credit_note_no = $faker->unique()->numberBetween(1, 10);
@@ -37,5 +35,4 @@ class VendorCreditTableSeeder extends Seeder
             $vendorCredit->save();
         }
     }
-
 }

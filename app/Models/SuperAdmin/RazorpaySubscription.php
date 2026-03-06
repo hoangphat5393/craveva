@@ -2,13 +2,12 @@
 
 namespace App\Models\SuperAdmin;
 
+use App\Models\BaseModel;
 use App\Models\Company;
 use App\Models\Currency;
-use App\Models\BaseModel;
 
 class RazorpaySubscription extends BaseModel
 {
-
     protected $dates = ['created_at'];
 
     protected $casts = ['created_at'];
@@ -24,5 +23,4 @@ class RazorpaySubscription extends BaseModel
     {
         return $this->belongsTo(Currency::class);
     }
-
 }

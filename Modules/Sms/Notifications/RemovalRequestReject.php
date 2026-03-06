@@ -94,7 +94,7 @@ class RemovalRequestReject extends Notification implements ShouldQueue
         }
     }
 
-    //phpcs:ignore
+    // phpcs:ignore
     public function toVonage($notifiable)
     {
         if (sms_setting()->nexmo_status) {
@@ -103,10 +103,10 @@ class RemovalRequestReject extends Notification implements ShouldQueue
         }
     }
 
-    //phpcs:ignore
+    // phpcs:ignore
     public function toMsg91($notifiable)
     {
-        $mobile = $notifiable->country_phonecode . $notifiable->mobile;
+        $mobile = $notifiable->country_phonecode.$notifiable->mobile;
         if ($this->smsSetting->msg91_flow_id && sms_setting()->msg91_status) {
             return (new \Craftsys\Notifications\Messages\Msg91SMS)
                 ->to($mobile)

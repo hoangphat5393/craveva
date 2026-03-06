@@ -16,9 +16,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  *
  * @property int $id
  * @property string $item_name
- * @property double $total
+ * @property float $total
  * @property string $date
- * @property double $total
+ * @property float $total
  * @property string $exchange_rate
  * @property \Illuminate\Support\Carbon $purchase_date
  * @property string|null $purchase_from
@@ -51,6 +51,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read int|null $recurrings_count
  * @property-read \App\Models\User $user
  * @property-read \App\Models\User $approver
+ *
  * @method static \Database\Factories\ExpenseFactory factory(...$parameters)
  * @method static \Illuminate\Database\Eloquent\Builder|Expense newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Expense newQuery()
@@ -74,35 +75,43 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder|Expense whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Expense whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Expense whereUserId($value)
+ *
  * @property-read \App\Models\ExpensesCategory|null $category
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Expense whereApproverId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Expense whereCompanyId($value)
+ *
  * @property int|null $bank_account_id
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\BankTransaction> $transactions
  * @property-read int|null $transactions_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Expense whereBankAccountId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Expense whereDefaultCurrencyId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Expense whereExchangeRate($value)
+ *
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $mentionUser
  * @property-read int|null $mention_user_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\BankTransaction> $transactions
+ *
  * @mixin \Eloquent
  */
 class Expense extends BaseModel
 {
-
-    use CustomFieldsTrait, HasFactory, HasCompany;
+    use CustomFieldsTrait, HasCompany, HasFactory;
 
     const FILE_PATH = 'expense-invoice';
+
     const CUSTOM_FIELD_MODEL = 'App\Models\Expense';
 
     protected $casts = [
         'purchase_date' => 'datetime',
         'purchase_on' => 'datetime',
     ];
+
     protected $appends = ['total_amount', 'purchase_on', 'bill_url', 'default_currency_price'];
+
     protected $with = ['currency', 'company:id'];
 
     public function getBillUrlAttribute()
@@ -148,8 +157,13 @@ class Expense extends BaseModel
     public function getTotalAmountAttribute()
     {
 
-        if (!is_null($this->price) && !is_null($this->currency_id)) {
-            return currency_format($this->price, $this->currency_id);
+        if (! is_null($this->price) && ! is_null($this->currency_id)) {
+            // Ensure currency exists to avoid helper crash
+            $currency = Currency::find($this->currency_id);
+            if ($currency) {
+                return currency_format($this->price, $this->currency_id);
+            }
+            return $this->price;
         }
 
         return '';
@@ -162,7 +176,6 @@ class Expense extends BaseModel
         }
 
         return $this->purchase_date->format($this->company ? $this->company->date_format : company()->date_format);
-
     }
 
     public function mentionUser(): BelongsToMany
@@ -170,20 +183,32 @@ class Expense extends BaseModel
         return $this->belongsToMany(User::class, 'mention_users')->withoutGlobalScope(ActiveScope::class)->using(MentionUser::class);
     }
 
-    public function defaultCurrencyPrice() : Attribute
+    public function defaultCurrencyPrice(): Attribute
     {
         return Attribute::make(
             get: function () {
-                $currency = (company() == null) ? $this->company->currency_id : company()->currency_id;
+                $company = company();
+                $currency = null;
+
+                if ($company) {
+                    $currency = $company->currency_id;
+                } elseif ($this->relationLoaded('company') && $this->company) {
+                    $currency = $this->company->currency_id;
+                }
+
+                if (!$currency) {
+                    return $this->price;
+                }
+
                 if ($this->currency_id == $currency) {
                     return $this->price;
                 }
 
-                if(!$this->exchange_rate){
+                if (! $this->exchange_rate) {
                     return $this->price;
                 }
 
-                return ($this->price * ((float)$this->exchange_rate));
+                return $this->price * ((float) $this->exchange_rate);
             },
         );
     }
@@ -192,5 +217,4 @@ class Expense extends BaseModel
     {
         return $this->belongsTo(BankAccount::class, 'bank_account_id');
     }
-
 }

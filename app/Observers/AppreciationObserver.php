@@ -8,7 +8,6 @@ use App\Models\Notification;
 
 class AppreciationObserver
 {
-
     public function creating(Appreciation $userAppreciation)
     {
         if (company()) {
@@ -18,7 +17,7 @@ class AppreciationObserver
 
     public function created(Appreciation $userAppreciation)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             event(new AppreciationEvent($userAppreciation, $userAppreciation->awardTo));
         }
     }
@@ -28,8 +27,7 @@ class AppreciationObserver
         Notification::where('type', 'App\Notifications\NewAppreciation')
             ->whereNull('read_at')
             ->where(function ($q) use ($appreciation) {
-                $q->where('data', 'like', '{"id":' . $appreciation->id . ',%');
+                $q->where('data', 'like', '{"id":'.$appreciation->id.',%');
             })->delete();
     }
-
 }

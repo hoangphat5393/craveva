@@ -14,13 +14,11 @@ class RemovalRequestApprovedRejectListener
         try {
             if ($event->removalRequest->status == 'approved') {
                 Notification::send($event->removalRequest->user, new RemovalRequestApproved($event->removalRequest->user));
-            }
-            else {
+            } else {
                 Notification::send($event->removalRequest->user, new RemovalRequestReject($event->removalRequest->user));
             }
         } catch (\Exception $e) { // @codingStandardsIgnoreLine
         }
 
     }
-
 }

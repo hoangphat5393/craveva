@@ -9,10 +9,10 @@ use Illuminate\Queue\SerializesModels;
 
 class NewCreditNoteEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $creditNote;
+
     public $notifyUser;
 
     public function __construct(CreditNotes $creditNote, $notifyUser)
@@ -20,5 +20,4 @@ class NewCreditNoteEvent
         $this->creditNote = $creditNote;
         $this->notifyUser = $notifyUser;
     }
-
 }

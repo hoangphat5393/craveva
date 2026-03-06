@@ -2,12 +2,10 @@
 
 namespace Modules\Onboarding\Notifications;
 
+use App\Notifications\BaseNotification;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use App\Models\User;
-use App\Notifications\BaseNotification;
 use Modules\Onboarding\Entities\OnboardingNotificationSetting;
 
 class TaskApprovalNotification extends BaseNotification
@@ -15,14 +13,19 @@ class TaskApprovalNotification extends BaseNotification
     use Queueable;
 
     protected $task;
+
     protected $status;
+
     protected $rejectionReason;
+
     protected $approver;
+
     protected $emailSetting;
+
     /**
      * Create a new notification instance.
      */
-    public function __construct($task, $status, $approver, $rejectionReason = null, $company)
+    public function __construct($task, $status, $approver, $rejectionReason, $company)
     {
         $this->task = $task;
         $this->status = $status;
@@ -57,20 +60,20 @@ class TaskApprovalNotification extends BaseNotification
 
         if ($this->status === 'approved') {
             return (new MailMessage)
-                ->subject('Task Approved: ' . $taskName)
-                ->greeting('Hello ' . $notifiable->name . '!')
-                ->line('Your task "' . $taskName . '" has been approved by ' . $approverName . '.')
+                ->subject('Task Approved: '.$taskName)
+                ->greeting('Hello '.$notifiable->name.'!')
+                ->line('Your task "'.$taskName.'" has been approved by '.$approverName.'.')
                 ->line('The task is now marked as completed.')
-                ->action('View Task', url('/account/employees/' . $notifiable->id))
+                ->action('View Task', url('/account/employees/'.$notifiable->id))
                 ->line('Thank you for your contribution!');
         } else {
             return (new MailMessage)
-                ->subject('Task Rejected: ' . $taskName)
-                ->greeting('Hello ' . $notifiable->name . '!')
-                ->line('Your task "' . $taskName . '" has been rejected by ' . $approverName . '.')
-                ->line('Reason: ' . $this->rejectionReason)
+                ->subject('Task Rejected: '.$taskName)
+                ->greeting('Hello '.$notifiable->name.'!')
+                ->line('Your task "'.$taskName.'" has been rejected by '.$approverName.'.')
+                ->line('Reason: '.$this->rejectionReason)
                 ->line('Please review and resubmit the task.')
-                ->action('View Task', url('/account/employees/' . $notifiable->id))
+                ->action('View Task', url('/account/employees/'.$notifiable->id))
                 ->line('Please make the necessary corrections and submit again.');
         }
     }

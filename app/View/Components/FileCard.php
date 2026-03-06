@@ -7,8 +7,8 @@ use Illuminate\View\Component;
 
 class FileCard extends Component
 {
-
     public $fileName;
+
     public $dateAdded;
 
     /**
@@ -31,5 +31,4 @@ class FileCard extends Component
     {
         return view('components.cards.file-card');
     }
-
 }

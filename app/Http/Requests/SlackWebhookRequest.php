@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class SlackWebhookRequest extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -35,11 +34,10 @@ class SlackWebhookRequest extends FormRequest
 
     public function messages()
     {
-        $message = __('validation.slack_webhook') . ' <a href="https://my.slack.com/services/new/incoming-webhook/" class="text-darkest-grey f-w-500" target="_blank"><u><i class="fa fa-external-link-alt"></i> ' . __('app.link') . '</u></a>';
+        $message = __('validation.slack_webhook').' <a href="https://my.slack.com/services/new/incoming-webhook/" class="text-darkest-grey f-w-500" target="_blank"><u><i class="fa fa-external-link-alt"></i> '.__('app.link').'</u></a>';
 
         return [
-            'slack_webhook.regex' => $message
+            'slack_webhook.regex' => $message,
         ];
     }
-
 }

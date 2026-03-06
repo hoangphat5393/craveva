@@ -4,16 +4,14 @@ namespace Modules\Biolinks\Http\Controllers;
 
 use App\Helper\Files;
 use App\Helper\Reply;
-use Illuminate\Http\Request;
+use App\Http\Controllers\AccountBaseController;
 use Illuminate\Support\Facades\Hash;
 use Modules\Biolinks\Entities\BiolinkSetting;
-use App\Http\Controllers\AccountBaseController;
 use Modules\Biolinks\Entities\BiolinksGlobalSetting;
 use Modules\Biolinks\Http\Requests\BiolinkSettingRequest;
 
 class BiolinkSettingsController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -21,7 +19,7 @@ class BiolinkSettingsController extends AccountBaseController
         $this->activeSettingMenu = 'settings';
 
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array(BiolinksGlobalSetting::MODULE_NAME, $this->user->modules));
+            abort_403(! in_array(BiolinksGlobalSetting::MODULE_NAME, $this->user->modules));
 
             return $next($request);
         });
@@ -37,9 +35,8 @@ class BiolinkSettingsController extends AccountBaseController
         $keywords = json_encode($values);
 
         if ($request->theme == 'Custom') {
-            $themeColor = 'linear-gradient(to bottom,  ' . $request->custom_color_one . ',  ' . $request->custom_color_two . ')';
-        }
-        else {
+            $themeColor = 'linear-gradient(to bottom,  '.$request->custom_color_one.',  '.$request->custom_color_two.')';
+        } else {
             $themeColor = $request->theme_color;
         }
 
@@ -64,8 +61,8 @@ class BiolinkSettingsController extends AccountBaseController
         $biolinkSetting->page_title = $request->page_title;
         $biolinkSetting->meta_keywords = $request->meta_keywords ? $keywords : null;
         $biolinkSetting->meta_description = $request->meta_description;
-//        $biolinkSetting->custom_css = $request->custom_css;
-//        $biolinkSetting->custom_js = $request->custom_js;
+        //        $biolinkSetting->custom_css = $request->custom_css;
+        //        $biolinkSetting->custom_js = $request->custom_js;
 
         if ($request->favicon_delete == 'yes') {
             Files::deleteFile($biolinkSetting->favicon, 'favicon');
@@ -80,5 +77,4 @@ class BiolinkSettingsController extends AccountBaseController
 
         return Reply::success(__('messages.recordSaved'));
     }
-
 }

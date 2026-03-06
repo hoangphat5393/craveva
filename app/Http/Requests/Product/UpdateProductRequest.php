@@ -45,5 +45,4 @@ class UpdateProductRequest extends CoreRequest
 
         return $attributes;
     }
-
 }

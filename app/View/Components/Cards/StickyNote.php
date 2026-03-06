@@ -7,7 +7,6 @@ use Illuminate\View\Component;
 
 class StickyNote extends Component
 {
-
     public $stickyNote;
 
     /**
@@ -29,5 +28,4 @@ class StickyNote extends Component
     {
         return view('components.cards.sticky-note');
     }
-
 }

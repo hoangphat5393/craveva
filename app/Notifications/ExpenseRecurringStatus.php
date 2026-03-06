@@ -9,13 +9,13 @@ use NotificationChannels\OneSignal\OneSignalMessage;
 
 class ExpenseRecurringStatus extends BaseNotification
 {
-
     /**
      * Create a new notification instance.
      *
      * @return void
      */
     private $expense;
+
     private $emailSetting;
 
     public function __construct(ExpenseRecurring $expense)
@@ -29,7 +29,7 @@ class ExpenseRecurringStatus extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -49,9 +49,9 @@ class ExpenseRecurringStatus extends BaseNotification
         }
 
         if ($this->emailSetting->send_push == 'yes' && push_setting()->beams_push_status == 'active') {
-            $pushNotification = new \App\Http\Controllers\DashboardController();
+            $pushNotification = new \App\Http\Controllers\DashboardController;
             $pushUsersIds = [[$notifiable->id]];
-            $pushNotification->sendPushNotifications($pushUsersIds, __('email.expenseRecurringStatus.subject'), $this->expense->item_name . ' - ' . __('email.expenseRecurringStatus.text') . ' ' . $this->expense->status . '.');
+            $pushNotification->sendPushNotifications($pushUsersIds, __('email.expenseRecurringStatus.subject'), $this->expense->item_name.' - '.__('email.expenseRecurringStatus.text').' '.$this->expense->status.'.');
         }
 
         return $via;
@@ -60,7 +60,7 @@ class ExpenseRecurringStatus extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
@@ -69,16 +69,16 @@ class ExpenseRecurringStatus extends BaseNotification
         $url = route('recurring-expenses.show', $this->expense->id);
         $url = getDomainSpecificUrl($url, $this->company);
 
-        $content = $this->expense->item_name . ' - ' . __('email.expenseRecurringStatus.text') . ' ' . $this->expense->status . '.';
+        $content = $this->expense->item_name.' - '.__('email.expenseRecurringStatus.text').' '.$this->expense->status.'.';
 
         $build
-            ->subject(__('email.expenseRecurringStatus.subject') . ' - ' . config('app.name'))
+            ->subject(__('email.expenseRecurringStatus.subject').' - '.config('app.name'))
             ->markdown('mail.email', [
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
                 'actionText' => __('email.expenseRecurringStatus.action'),
-                'notifiableName' => $notifiable->name
+                'notifiableName' => $notifiable->name,
             ]);
 
         parent::resetLocale();
@@ -89,10 +89,10 @@ class ExpenseRecurringStatus extends BaseNotification
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
-    //phpcs:ignore
+    // phpcs:ignore
     public function toArray($notifiable)
     {
         return $this->expense->toArray();
@@ -101,14 +101,14 @@ class ExpenseRecurringStatus extends BaseNotification
     /**
      * Get the Slack representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\SlackMessage
      */
     public function toSlack($notifiable)
     {
 
         return $this->slackBuild($notifiable)
-            ->content(__('email.expenseRecurringStatus.text') . ' ' . $this->expense->status . ' - ' . $this->expense->item_name . ' - ' . $this->expense->currency->currency_symbol . $this->expense->price);
+            ->content(__('email.expenseRecurringStatus.text').' '.$this->expense->status.' - '.$this->expense->item_name.' - '.$this->expense->currency->currency_symbol.$this->expense->price);
 
     }
 
@@ -117,7 +117,6 @@ class ExpenseRecurringStatus extends BaseNotification
     {
         return OneSignalMessage::create()
             ->setSubject(__('email.expenseRecurringStatus.subject'))
-            ->setBody($this->expense->item_name . ' - ' . __('email.expenseStatus.text') . ' ' . $this->expense->status . '.');
+            ->setBody($this->expense->item_name.' - '.__('email.expenseStatus.text').' '.$this->expense->status.'.');
     }
-
 }

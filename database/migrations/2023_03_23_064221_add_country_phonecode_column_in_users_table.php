@@ -1,26 +1,25 @@
 <?php
 
+use App\Models\SuperAdmin\FooterMenu;
 use App\Models\User;
+use App\Observers\SuperAdmin\FooterMenuObserver;
 use App\Scopes\ActiveScope;
 use App\Scopes\CompanyScope;
-use Illuminate\Support\Facades\DB;
-use App\Models\SuperAdmin\FooterMenu;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
-use App\Observers\SuperAdmin\FooterMenuObserver;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      *
      * @return void
      */
-
     public function up()
     {
-        if (!Schema::hasColumn('users', 'country_phonecode')) {
+        if (! Schema::hasColumn('users', 'country_phonecode')) {
             Schema::table('users', function (Blueprint $table) {
                 $table->integer('country_phonecode')->nullable()->after('image');
             });
@@ -31,9 +30,9 @@ return new class extends Migration {
                 ->update(['country_phonecode' => DB::raw('(SELECT phonecode FROM countries WHERE countries.id = users.country_id)')]);
         }
 
-        if (!Schema::hasColumn('global_settings', 'time_format')) {
+        if (! Schema::hasColumn('global_settings', 'time_format')) {
             Schema::table('global_settings', function (Blueprint $table) {
-                $table->after('currency_key_version', function($table){
+                $table->after('currency_key_version', function ($table) {
                     $table->string('date_format', 20)->default('d-m-Y');
                     $table->string('time_format', 20)->default('h:i a');
                 });
@@ -41,7 +40,7 @@ return new class extends Migration {
         }
 
         FooterMenu::get()->each(function ($menu) {
-            (new FooterMenuObserver())->createDuplicateForOtherLanguage($menu);
+            (new FooterMenuObserver)->createDuplicateForOtherLanguage($menu);
         });
 
     }
@@ -57,5 +56,4 @@ return new class extends Migration {
             $table->dropColumn('country_phonecode');
         });
     }
-
 };

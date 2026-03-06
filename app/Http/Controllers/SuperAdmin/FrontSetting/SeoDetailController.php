@@ -4,17 +4,16 @@ namespace App\Http\Controllers\SuperAdmin\FrontSetting;
 
 use App\Helper\Files;
 use App\Helper\Reply;
-use App\Models\LanguageSetting;
-use App\Models\SuperAdmin\TrFrontDetail;
-use Illuminate\Http\Request;
-use App\Models\SuperAdmin\SeoDetail;
-use App\Models\SuperAdmin\FooterMenu;
 use App\Http\Controllers\AccountBaseController;
 use App\Models\GlobalSetting;
+use App\Models\LanguageSetting;
+use App\Models\SuperAdmin\FooterMenu;
+use App\Models\SuperAdmin\SeoDetail;
+use App\Models\SuperAdmin\TrFrontDetail;
+use Illuminate\Http\Request;
 
 class SeoDetailController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -65,7 +64,7 @@ class SeoDetailController extends AccountBaseController
     /**
      * Show the form for editing the specified resource.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -80,8 +79,7 @@ class SeoDetailController extends AccountBaseController
     /**
      * Update the specified resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -99,5 +97,4 @@ class SeoDetailController extends AccountBaseController
 
         return Reply::redirect(route('superadmin.front-settings.seo-detail.index', $this->langCode));
     }
-
 }

@@ -3,17 +3,16 @@
 namespace Modules\Purchase\Entities;
 
 use App\Models\BaseModel;
-use App\Traits\HasCompany;
 use App\Traits\CustomFieldsTrait;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Traits\HasCompany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Notifications\Notifiable;
 
 class PurchaseInventory extends BaseModel
 {
-
-    use HasCompany, HasFactory, Notifiable, CustomFieldsTrait;
+    use CustomFieldsTrait, HasCompany, HasFactory, Notifiable;
 
     const FILE_PATH = 'inventory';
 
@@ -31,7 +30,7 @@ class PurchaseInventory extends BaseModel
             return $this->default_image;
         }
 
-        return ($this->default_image) ? asset_url_local_s3(PurchaseInventory::FILE_PATH . '/' . $this->default_image) : '';
+        return ($this->default_image) ? asset_url_local_s3(PurchaseInventory::FILE_PATH.'/'.$this->default_image) : '';
     }
 
     public function stocks(): HasMany
@@ -55,5 +54,4 @@ class PurchaseInventory extends BaseModel
             ->withPivot(['quantity_adjustment', 'net_quantity', 'type', 'changed_value', 'adjusted_value', 'expiration_date', 'manufacturing_date'])
             ->withTimestamps();
     }
-
 }

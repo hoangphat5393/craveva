@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class PublishLanguageRequest extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -29,5 +28,4 @@ class PublishLanguageRequest extends FormRequest
             'isRepublish' => 'required',
         ];
     }
-
 }

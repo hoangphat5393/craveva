@@ -3,9 +3,7 @@
 namespace App\Notifications;
 
 use App\Models\EmployeeShiftSchedule;
-use App\Models\ShiftRotation;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
@@ -14,8 +12,11 @@ class ShiftRotationNotification extends BaseNotification
     use Queueable;
 
     protected $dates;
+
     protected $rotationFrequency;
+
     protected $company;
+
     protected $userId;
 
     /**
@@ -42,14 +43,13 @@ class ShiftRotationNotification extends BaseNotification
     /**
      * Get the mail representation of the notification.
      */
-    
     public function toMail($notifiable): MailMessage
     {
         $build = parent::build($notifiable);
         $shiftRotations = EmployeeShiftSchedule::with('shift')
-        ->whereIn('date', $this->dates)
-        ->where('user_id', $this->userId->id)
-        ->get();
+            ->whereIn('date', $this->dates)
+            ->where('user_id', $this->userId->id)
+            ->get();
 
         $build
             ->subject(__('email.shiftScheduled.subject'))
@@ -63,6 +63,7 @@ class ShiftRotationNotification extends BaseNotification
 
         return $build;
     }
+
     /**
      * Get the array representation of the notification.
      *

@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property string|null $code
  * @property string|null $continent
  * @property string|null $name
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Flag newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Flag newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Flag query()
@@ -20,10 +21,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @method static \Illuminate\Database\Eloquent\Builder|Flag whereContinent($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Flag whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Flag whereName($value)
+ *
  * @mixin \Eloquent
  */
 class Flag extends BaseModel
 {
-
     use HasFactory;
 }

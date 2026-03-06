@@ -4,14 +4,13 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      *
      * @return void
      */
-
     public function up()
     {
         Schema::create('proposal_templates', function (Blueprint $table) {
@@ -62,7 +61,7 @@ return new class extends Migration {
 
             $table->timestamps();
         });
-        
+
         Schema::create('proposal_template_item_images', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('company_id')->unsigned()->nullable();
@@ -91,5 +90,4 @@ return new class extends Migration {
         Schema::dropIfExists('proposal_template_items');
         Schema::dropIfExists('proposal_template_item_images');
     }
-
 };

@@ -16,7 +16,6 @@ use Modules\Payroll\Http\Requests\OvertimeSetting\Policy\PolicyUpdateRequest;
 
 class OvertimePolicyController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -55,7 +54,7 @@ class OvertimePolicyController extends AccountBaseController
      */
     public function store(PolicyStoreRequest $request)
     {
-        $overtimePolicy = new OvertimePolicy();
+        $overtimePolicy = new OvertimePolicy;
 
         $overtimePolicy->name = $request->name;
         $overtimePolicy->pay_code_id = $request->pay_code;
@@ -92,6 +91,7 @@ class OvertimePolicyController extends AccountBaseController
         $this->policy = OvertimePolicy::findOrFail($id);
         $this->payCodes = PayCode::all();
         $this->roles = Role::where('name', '<>', 'admin')->where('name', '<>', 'client')->get();
+
         return view('payroll::overtime-setting.ajax.policy.edit', $this->data);
     }
 
@@ -129,6 +129,7 @@ class OvertimePolicyController extends AccountBaseController
     {
         $overtimePolicy = OvertimePolicy::findOrFail($id);
         $overtimePolicy->delete();
+
         return Reply::success(__('messages.recordDeleted'));
     }
 
@@ -143,10 +144,9 @@ class OvertimePolicyController extends AccountBaseController
         $employeeIds = $request->employeeIds;
         $policyId = $request->policyId;
 
-        foreach($employeeIds as $employeeId){
+        foreach ($employeeIds as $employeeId) {
 
-            if(is_numeric($employeeId))
-            {
+            if (is_numeric($employeeId)) {
                 $rowRecord = ['company_id' => company()->id, 'user_id' => $employeeId, 'overtime_policy_id' => $policyId];
                 OvertimePolicyEmployee::updateOrCreate($rowRecord);
             }
@@ -169,5 +169,4 @@ class OvertimePolicyController extends AccountBaseController
         return Reply::success(__('messages.updateSuccess'));
 
     }
-
 }

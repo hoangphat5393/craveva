@@ -7,7 +7,6 @@ use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      *
@@ -22,7 +21,7 @@ return new class extends Migration
         foreach ($companies as $company) {
             $tasks = Task::whereNotNull('project_id')->whereHas('timeLogged')->where('company_id', $company->id)->select('id', 'project_id')->get();
 
-            foreach($tasks as $task) {
+            foreach ($tasks as $task) {
                 ProjectTimeLog::where('task_id', $task->id)->update(['project_id' => $task->project_id]);
             }
         }
@@ -37,5 +36,4 @@ return new class extends Migration
     {
         //
     }
-
 };

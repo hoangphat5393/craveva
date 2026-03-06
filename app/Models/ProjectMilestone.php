@@ -2,10 +2,9 @@
 
 namespace App\Models;
 
+use App\Traits\HasCompany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Traits\HasCompany;
-
 
 /**
  * App\Models\ProjectMilestone
@@ -28,6 +27,7 @@ use App\Traits\HasCompany;
  * @property-read \App\Models\Project|null $project
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Task[] $tasks
  * @property-read int|null $tasks_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectMilestone newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectMilestone newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectMilestone query()
@@ -44,17 +44,19 @@ use App\Traits\HasCompany;
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectMilestone whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectMilestone whereSummary($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectMilestone whereUpdatedAt($value)
+ *
  * @property \Illuminate\Support\Carbon|null $start_date
  * @property \Illuminate\Support\Carbon|null $end_date
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectMilestone whereEndDate($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectMilestone whereStartDate($value)
+ *
  * @mixin \Eloquent
  */
 class ProjectMilestone extends BaseModel
 {
-
     use HasCompany;
-    
+
     protected $casts = [
         'start_date' => 'datetime',
         'end_date' => 'datetime',
@@ -78,6 +80,7 @@ class ProjectMilestone extends BaseModel
     public function completeTasks(): HasMany
     {
         $taskBoardColumn = TaskboardColumn::completeColumn();
+
         return $this->hasMany(Task::class, 'milestone_id')->where('tasks.board_column_id', $taskBoardColumn->id);
     }
 
@@ -86,7 +89,7 @@ class ProjectMilestone extends BaseModel
         $taskBoardColumn = TaskboardColumn::completeColumn();
         $tasks = $this->tasks()->count();
         $completedTasks = $this->tasks()->where('tasks.board_column_id', $taskBoardColumn->id)->count();
+
         return ($completedTasks / $tasks) * 100;
     }
-
 }

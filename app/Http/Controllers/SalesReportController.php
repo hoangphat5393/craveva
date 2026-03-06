@@ -3,13 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\SalesReportDataTable;
-use App\Models\Company;
 use App\Models\User;
-use Illuminate\Http\Request;
 
 class SalesReportController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -21,12 +18,11 @@ class SalesReportController extends AccountBaseController
      *
      * @return \Illuminate\Http\Response
      */
-
     public function index(SalesReportDataTable $dataTable) /** @phpstan-ignore-line */
     {
         abort_403(user()->permission('view_sales_report') != 'all');
 
-        if (!request()->ajax()) {
+        if (! request()->ajax()) {
             $this->fromDate = now($this->company->timezone)->startOfMonth();
             $this->toDate = now($this->company->timezone);
         }
@@ -35,5 +31,4 @@ class SalesReportController extends AccountBaseController
 
         return $dataTable->render('reports.sales.index', $this->data); /** @phpstan-ignore-line */
     }
-
 }

@@ -2,15 +2,13 @@
 
 namespace App\Observers;
 
-use App\Models\LeaveType;
-use Illuminate\Support\Carbon;
 use App\Models\EmployeeDetails;
 use App\Models\EmployeeLeaveQuota;
+use App\Models\LeaveType;
 use Illuminate\Support\Facades\Artisan;
 
 class LeaveTypeObserver
 {
-
     public function creating(LeaveType $leaveType)
     {
         if (company()) {
@@ -20,12 +18,12 @@ class LeaveTypeObserver
 
     public function created(LeaveType $leaveType)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             $employees = EmployeeDetails::select('id', 'user_id', 'joining_date')->get();
             $settings = company();
 
             foreach ($employees as $key => $employee) {
-                Artisan::call('app:recalculate-leaves-quotas ' . $settings->id . ' ' . $employee->user_id . ' ' . $leaveType->id);
+                Artisan::call('app:recalculate-leaves-quotas '.$settings->id.' '.$employee->user_id.' '.$leaveType->id);
             }
         }
     }
@@ -45,10 +43,10 @@ class LeaveTypeObserver
             return true;
         }
 
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
 
             try {
-                if (!$leaveType->isDirty('over_utilization')) {
+                if (! $leaveType->isDirty('over_utilization')) {
 
                     $employeeLeaveQuotaUserIds = EmployeeLeaveQuota::where('leave_type_id', $leaveType->id)->where('leave_type_impact', 1)
                         ->pluck('user_id')
@@ -60,7 +58,7 @@ class LeaveTypeObserver
 
                     foreach ($employees as $employee) {
 
-                        Artisan::call('app:recalculate-leaves-quotas ' . $settings->id . ' ' . $employee->user_id . ' ' . $leaveType->id);
+                        Artisan::call('app:recalculate-leaves-quotas '.$settings->id.' '.$employee->user_id.' '.$leaveType->id);
                     }
 
                     $keysToForget = ['old_leaves', 'old_leavetype'];
@@ -72,7 +70,7 @@ class LeaveTypeObserver
                     }
                 }
             } catch (\Exception $e) {
-                //Log::error('Error in LeaveTypeObserver: ' . $e->getMessage());
+                // Log::error('Error in LeaveTypeObserver: ' . $e->getMessage());
             }
         }
     }

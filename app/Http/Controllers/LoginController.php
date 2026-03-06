@@ -2,26 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use Exception;
-use App\Models\User;
-use App\Helper\Reply;
-use App\Models\Social;
-use App\Models\UserAuth;
-use Illuminate\Http\Request;
-use Laravel\Fortify\Fortify;
 use App\Events\TwoFactorCodeEvent;
-use App\Traits\SocialAuthSettings;
-use Froiden\Envato\Traits\AppBoot;
-use Illuminate\Support\Facades\DB;
+use App\Helper\Reply;
 use App\Http\Requests\LoginRequest;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Social;
+use App\Models\User;
+use App\Models\UserAuth;
 use App\Providers\RouteServiceProvider;
+use App\Traits\SocialAuthSettings;
+use Exception;
+use Froiden\Envato\Traits\AppBoot;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
+use Laravel\Fortify\Fortify;
 use Laravel\Socialite\Facades\Socialite;
-use \Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
 {
-
     use AppBoot, SocialAuthSettings;
 
     protected $redirectTo = 'account/dashboard';
@@ -37,7 +36,7 @@ class LoginController extends Controller
         }
 
         return response([
-            'status' => 'success'
+            'status' => 'success',
         ]);
     }
 
@@ -56,7 +55,6 @@ class LoginController extends Controller
 
             // Attempt login
             Auth::login($user);
-
 
             if ($user->user->is_superadmin) {
                 return redirect()->route('superadmin.super_admin_dashboard');
@@ -114,7 +112,7 @@ class LoginController extends Controller
                 $user = UserAuth::where(['email' => $data->email])->first();
             }
 
-            if (!$user) {
+            if (! $user) {
                 return redirect()->route('login')->with(['message' => __('messages.unAuthorisedUser')]);
             }
 
@@ -152,7 +150,7 @@ class LoginController extends Controller
             session(['user' => User::withoutGlobalScope(\App\Scopes\CompanyScope::class)->find(user()->id)]);
 
             if (auth()->user() && auth()->user()->user->is_superadmin) {
-                return (session()->has('url.intended') ? session()->get('url.intended') : RouteServiceProvider::SUPER_ADMIN_HOME);
+                return session()->has('url.intended') ? session()->get('url.intended') : RouteServiceProvider::SUPER_ADMIN_HOME;
             }
 
             $emailCountInCompanies = DB::table('users')->where('email', user()->email)->count();
@@ -168,7 +166,7 @@ class LoginController extends Controller
                 }
             }
 
-            return (session()->has('url.intended') ? session()->get('url.intended') : RouteServiceProvider::HOME);
+            return session()->has('url.intended') ? session()->get('url.intended') : RouteServiceProvider::HOME;
         }
 
         if (method_exists($this, 'redirectTo')) {

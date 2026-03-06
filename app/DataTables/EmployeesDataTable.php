@@ -3,24 +3,25 @@
 namespace App\DataTables;
 
 use App\Helper\Common;
-use App\Models\EmployeeDetails;
-use App\Scopes\ActiveScope;
-use Carbon\Carbon;
-use App\Models\Role;
-use App\Models\User;
 use App\Models\CustomField;
 use App\Models\CustomFieldGroup;
+use App\Models\EmployeeDetails;
+use App\Models\Role;
+use App\Models\User;
+use App\Scopes\ActiveScope;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
-use Illuminate\Support\Facades\DB;
-
 
 class EmployeesDataTable extends BaseDataTable
 {
-
     private $editEmployeePermission;
+
     private $deleteEmployeePermission;
+
     private $viewEmployeePermission;
+
     private $changeEmployeeRolePermission;
 
     public function __construct()
@@ -35,7 +36,7 @@ class EmployeesDataTable extends BaseDataTable
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
@@ -51,7 +52,6 @@ class EmployeesDataTable extends BaseDataTable
             return '--';
         });
 
-
         $datatables->editColumn('current_role_name', function ($row) {
             $userRole = $row->roles->pluck('name')->toArray();
 
@@ -59,7 +59,7 @@ class EmployeesDataTable extends BaseDataTable
                 return $row->roles()->withoutGlobalScopes()->latest()->first()->display_name;
             }
 
-            return !empty($row->current_role_name) ? $row->current_role_name : $row->roles->pluck('display_name')->last();
+            return ! empty($row->current_role_name) ? $row->current_role_name : $row->roles->pluck('display_name')->last();
         });
         $datatables->addColumn('role', function ($row) use ($roles) {
             $userRole = $row->roles->pluck('name')->toArray();
@@ -70,15 +70,15 @@ class EmployeesDataTable extends BaseDataTable
                 $uRole = $row->current_role_name;
             }
 
-            if (in_array('admin', $userRole) && !in_array('admin', user_roles())) {
-                return $uRole . ' <i data-toggle="tooltip" data-original-title="' . __('messages.roleCannotChange') . '" class="fa fa-info-circle"></i>';
+            if (in_array('admin', $userRole) && ! in_array('admin', user_roles())) {
+                return $uRole.' <i data-toggle="tooltip" data-original-title="'.__('messages.roleCannotChange').'" class="fa fa-info-circle"></i>';
             }
 
             if ($row->id == user()->id) {
-                return $uRole . ' <i data-toggle="tooltip" data-original-title="' . __('messages.roleCannotChange') . '" class="fa fa-info-circle"></i>';
+                return $uRole.' <i data-toggle="tooltip" data-original-title="'.__('messages.roleCannotChange').'" class="fa fa-info-circle"></i>';
             }
 
-            $role = '<select class="form-control select-picker assign_role" data-user-id="' . $row->id . '" data-size="3">';
+            $role = '<select class="form-control select-picker assign_role" data-user-id="'.$row->id.'" data-size="3">';
 
             foreach ($roles as $item) {
                 if (
@@ -90,12 +90,12 @@ class EmployeesDataTable extends BaseDataTable
 
                     if (
                         (in_array($item->name, $userRole) && $item->name == 'admin')
-                        || (in_array($item->name, $userRole) && !in_array('admin', $userRole))
+                        || (in_array($item->name, $userRole) && ! in_array('admin', $userRole))
                     ) {
                         $role .= 'selected';
                     }
 
-                    $role .= ' value="' . $item->id . '">' . $item->display_name . '</option>';
+                    $role .= ' value="'.$item->id.'">'.$item->display_name.'</option>';
                 }
             }
 
@@ -109,12 +109,12 @@ class EmployeesDataTable extends BaseDataTable
 
                     <div class="dropdown">
                         <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" type="link"
-                            id="dropdownMenuLink-' . $row->id . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            id="dropdownMenuLink-'.$row->id.'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="icon-options-vertical icons"></i>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-' . $row->id . '" tabindex="0">';
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-'.$row->id.'" tabindex="0">';
 
-            $action .= '<a href="' . route('employees.show', [$row->id]) . '" class="dropdown-item"><i class="fa fa-eye mr-2"></i>' . __('app.view') . '</a>';
+            $action .= '<a href="'.route('employees.show', [$row->id]).'" class="dropdown-item"><i class="fa fa-eye mr-2"></i>'.__('app.view').'</a>';
 
             if (
                 $this->editEmployeePermission == 'all'
@@ -122,19 +122,19 @@ class EmployeesDataTable extends BaseDataTable
                 || ($this->editEmployeePermission == 'owned' && user()->id == $row->id)
                 || ($this->editEmployeePermission == 'both' && (user()->id == $row->id || user()->id == $row->added_by))
             ) {
-                if (!in_array('admin', $userRole) || (in_array('admin', $userRole) && in_array('admin', user_roles()))) {
-                    $action .= '<a class="dropdown-item openRightModal" href="' . route('employees.edit', [$row->id]) . '">
+                if (! in_array('admin', $userRole) || (in_array('admin', $userRole) && in_array('admin', user_roles()))) {
+                    $action .= '<a class="dropdown-item openRightModal" href="'.route('employees.edit', [$row->id]).'">
                                 <i class="fa fa-edit mr-2"></i>
-                                ' . trans('app.edit') . '
+                                '.trans('app.edit').'
                             </a>';
                 }
             }
 
             if ($this->deleteEmployeePermission == 'all' || ($this->deleteEmployeePermission == 'added' && user()->id == $row->added_by)) {
-                if ((!in_array('admin', $userRole) && user()->id !== $row->id) || (user()->id !== $row->id && in_array('admin', $userRole) && in_array('admin', user_roles()))) {
-                    $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-user-id="' . $row->id . '">
+                if ((! in_array('admin', $userRole) && user()->id !== $row->id) || (user()->id !== $row->id && in_array('admin', $userRole) && in_array('admin', user_roles()))) {
+                    $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-user-id="'.$row->id.'">
                                 <i class="fa fa-trash mr-2"></i>
-                                ' . trans('app.delete') . '
+                                '.trans('app.delete').'
                             </a>';
                 }
             }
@@ -145,9 +145,9 @@ class EmployeesDataTable extends BaseDataTable
 
             return $action;
         });
-        $datatables->addColumn('employee_name', fn($row) => $row->name);
-        $datatables->editColumn('created_at', fn($row) => Carbon::parse($row->created_at)->translatedFormat($this->company->date_format));
-        $datatables->editColumn('status', fn($row) => $row->status == 'active' ? Common::active() : Common::inactive());
+        $datatables->addColumn('employee_name', fn ($row) => $row->name);
+        $datatables->editColumn('created_at', fn ($row) => Carbon::parse($row->created_at)->translatedFormat($this->company->date_format));
+        $datatables->editColumn('status', fn ($row) => $row->status == 'active' ? Common::active() : Common::inactive());
 
         $datatables->editColumn('name', function ($row) {
             $employmentTypeBadge = '';
@@ -155,19 +155,19 @@ class EmployeesDataTable extends BaseDataTable
 
             if ($row->status == 'active') {
                 if ($employeeDetail?->probation_end_date > now()->toDateString()) {
-                    $employmentTypeBadge .= '<span class="badge badge-info">' . __('app.onProbation') . '</span> ';
+                    $employmentTypeBadge .= '<span class="badge badge-info">'.__('app.onProbation').'</span> ';
                 }
                 if ($employeeDetail?->employment_type == 'internship' || $employeeDetail?->internship_end_date > now()->toDateString()) {
-                    $employmentTypeBadge .= '<span class="badge badge-info">' . __('app.onInternship') . '</span> ';
+                    $employmentTypeBadge .= '<span class="badge badge-info">'.__('app.onInternship').'</span> ';
                 }
                 if ($employeeDetail?->notice_period_end_date > now()->toDateString()) {
-                    $employmentTypeBadge .= '<span class="badge badge-info">' . __('app.onNoticePeriod') . '</span> ';
+                    $employmentTypeBadge .= '<span class="badge badge-info">'.__('app.onNoticePeriod').'</span> ';
                 }
                 if ($employeeDetail?->joining_date >= now()->subDays(30)->toDateString() && $employeeDetail?->joining_date <= now()->addDay()->toDateString()) {
-                    $employmentTypeBadge .= '<span class="badge badge-info">' . __('app.newHires') . '</span> ';
+                    $employmentTypeBadge .= '<span class="badge badge-info">'.__('app.newHires').'</span> ';
                 }
                 if ($employeeDetail?->joining_date <= now()->subYears(2)->toDateString()) {
-                    $employmentTypeBadge .= '<span class="badge badge-info">' . __('app.longStanding') . '</span> ';
+                    $employmentTypeBadge .= '<span class="badge badge-info">'.__('app.longStanding').'</span> ';
                 }
             }
 
@@ -183,45 +183,45 @@ class EmployeesDataTable extends BaseDataTable
             $employeeDetail = $row->employeeDetail;
 
             if ($employeeDetail?->probation_end_date > now()->toDateString()) {
-                $employmentType .= __('app.onProbation') . ' ';
+                $employmentType .= __('app.onProbation').' ';
             }
             if ($employeeDetail?->employment_type == 'internship' || $employeeDetail?->internship_end_date > now()->toDateString()) {
-                $employmentType .= __('app.onInternship') . ' ';
+                $employmentType .= __('app.onInternship').' ';
             }
             if ($employeeDetail?->notice_period_end_date > now()->toDateString()) {
-                $employmentType .= __('app.onNoticePeriod') . ' ';
+                $employmentType .= __('app.onNoticePeriod').' ';
             }
             if ($employeeDetail?->joining_date >= now()->subDays(30)->toDateString() && $employeeDetail->joining_date <= now()->addDay()->toDateString()) {
-                $employmentType .= __('app.newHires') . ' ';
+                $employmentType .= __('app.newHires').' ';
             }
             if ($employeeDetail?->joining_date <= now()->subYears(2)->toDateString()) {
-                $employmentType .= __('app.longStanding') . ' ';
+                $employmentType .= __('app.longStanding').' ';
             }
 
             return $employmentType;
         });
 
-        $datatables->editColumn('employee_id', fn($row) => '<a href="' . route('employees.show', [$row->id]) . '" class="text-darkest-grey">' . $row->employee_id . '</a>');
-        $datatables->editColumn('joining_date', fn($row) => Carbon::parse($row->joining_date)->translatedFormat('Y-m-d'));
+        $datatables->editColumn('employee_id', fn ($row) => '<a href="'.route('employees.show', [$row->id]).'" class="text-darkest-grey">'.$row->employee_id.'</a>');
+        $datatables->editColumn('joining_date', fn ($row) => Carbon::parse($row->joining_date)->translatedFormat('Y-m-d'));
 
         $datatables->addColumn('reporting_to', function ($row) {
             return $row->employeeDetail->reportingTo->name ?? '--';
         });
 
         $datatables->addColumn('mobile', function ($row) {
-            if (!is_null($row->mobile) && !is_null($row->country_phonecode)) {
-                return '+' . $row->country_phonecode . ' ' . $row->mobile;
+            if (! is_null($row->mobile) && ! is_null($row->country_phonecode)) {
+                return '+'.$row->country_phonecode.' '.$row->mobile;
             }
 
             return '--';
         });
 
-        $datatables->addColumn('designation_name', fn($row) => $row->employeeDetail->designation->name ?? '--');
+        $datatables->addColumn('designation_name', fn ($row) => $row->employeeDetail->designation->name ?? '--');
 
-        $datatables->addColumn('department_name', fn($row) => $row->department_name ?? '--');
+        $datatables->addColumn('department_name', fn ($row) => $row->department_name ?? '--');
 
         $datatables->addIndexColumn();
-        $datatables->setRowId(fn($row) => 'row-' . $row->id);
+        $datatables->setRowId(fn ($row) => 'row-'.$row->id);
         $datatables->removeColumn('roleId');
         $datatables->removeColumn('roleName');
         $datatables->removeColumn('current_role');
@@ -235,7 +235,6 @@ class EmployeesDataTable extends BaseDataTable
     }
 
     /**
-     * @param User $model
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function query(User $model)
@@ -289,7 +288,7 @@ class EmployeesDataTable extends BaseDataTable
                     WHEN users.inactive_date IS NULL THEN "active"
                     WHEN users.inactive_date <= CURDATE() THEN "inactive"
                     ELSE "active"
-                    END as status')
+                    END as status'),
             ])
             ->groupBy('users.id')->whereHas('roles', function ($query) {
                 $query->where('name', 'employee');
@@ -341,7 +340,6 @@ class EmployeesDataTable extends BaseDataTable
             $users = $users->where('employee_details.reporting_to', $request->reporting_employee);
         }
 
-
         if ($request->designation != 'all' && $request->designation != '') {
             $users = $users->where('employee_details.designation_id', $request->designation);
         }
@@ -391,9 +389,9 @@ class EmployeesDataTable extends BaseDataTable
         if ($request->searchText != '') {
             $users = $users->where(function ($query) {
                 $safeTerm = Common::safeString(request('searchText'));
-                $query->where('users.name', 'like', '%' . $safeTerm . '%')
-                    ->orWhere('users.email', 'like', '%' . $safeTerm . '%')
-                    ->orWhere('employee_details.employee_id', 'like', '%' . $safeTerm . '%');
+                $query->where('users.name', 'like', '%'.$safeTerm.'%')
+                    ->orWhere('users.email', 'like', '%'.$safeTerm.'%')
+                    ->orWhere('employee_details.employee_id', 'like', '%'.$safeTerm.'%');
             });
         }
 
@@ -423,7 +421,6 @@ class EmployeesDataTable extends BaseDataTable
             }
         }
 
-
         return $users->groupBy('users.id');
     }
 
@@ -446,7 +443,7 @@ class EmployeesDataTable extends BaseDataTable
             ]);
 
         if (canDataTableExport()) {
-            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
+            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
         }
 
         return $dataTable;
@@ -465,7 +462,7 @@ class EmployeesDataTable extends BaseDataTable
                 'title' => '<input type="checkbox" name="select_all_table" id="select-all-table" onclick="selectAllTable(this)">',
                 'exportable' => false,
                 'orderable' => false,
-                'searchable' => false
+                'searchable' => false,
             ],
             '#' => ['data' => 'DT_RowIndex', 'orderable' => false, 'searchable' => false, 'visible' => false, 'title' => '#'],
             __('app.id') => ['data' => 'id', 'name' => 'id', 'title' => __('app.id'), 'visible' => false],
@@ -481,7 +478,7 @@ class EmployeesDataTable extends BaseDataTable
             __('modules.employees.department') => ['data' => 'department_name', 'name' => 'department_name', 'visible' => false, 'title' => __('modules.employees.department')],
             __('modules.employees.reportingTo') => ['data' => 'reporting_to', 'name' => 'reporting_to', 'title' => __('modules.employees.reportingTo')],
             __('modules.employees.joiningDate') => ['data' => 'joining_date', 'name' => 'joining_date', 'visible' => false, 'title' => __('modules.employees.joiningDate')],
-            __('app.status') => ['data' => 'status', 'name' => 'status', 'title' => __('app.status')]
+            __('app.status') => ['data' => 'status', 'name' => 'status', 'title' => __('app.status')],
         ];
 
         $action = [
@@ -490,9 +487,9 @@ class EmployeesDataTable extends BaseDataTable
                 ->printable(false)
                 ->orderable(false)
                 ->searchable(false)
-                ->addClass('text-right pr-20')
+                ->addClass('text-right pr-20'),
         ];
 
-        return array_merge($data, CustomFieldGroup::customFieldsDataMerge(new EmployeeDetails()), $action);
+        return array_merge($data, CustomFieldGroup::customFieldsDataMerge(new EmployeeDetails), $action);
     }
 }

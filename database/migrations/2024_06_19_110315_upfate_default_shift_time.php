@@ -1,15 +1,12 @@
 <?php
 
 use App\Models\Company;
+use App\Models\EmployeeShift;
 use App\Scopes\ActiveScope;
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
-use App\Models\AttendanceSetting;
-use App\Models\EmployeeShift;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
@@ -25,8 +22,7 @@ return new class extends Migration {
                     ->where('company_id', $company->id)
                     ->where('id', $attendanceSetting->default_employee_shift)
                     ->update(['halfday_mark_time' => '13:00:00']);
-            }
-            else {
+            } else {
 
                 $employeeShift = EmployeeShift::withoutGlobalScope(ActiveScope::class)
                     ->where('company_id', $company->id)
@@ -41,7 +37,6 @@ return new class extends Migration {
             }
         }
 
-
     }
 
     /**
@@ -51,5 +46,4 @@ return new class extends Migration {
     {
         //
     }
-
 };

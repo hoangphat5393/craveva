@@ -4,8 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      * We have changed the file_name as 2018 for the purpose of modules
@@ -15,7 +15,6 @@ return new class extends Migration {
     public function up()
     {
 
-
         // BIG NOTE: THIS FILE IS GETTING LOADED FROM schema/mysql-schema.dump
         //
         // We are checking if companies exists in database or not
@@ -24,7 +23,7 @@ return new class extends Migration {
         // it will try to run this new migration. But since we are checking companies
         // exists or not and accordingly run this migration
         // We are not checking every table as it will create extra queries for every table
-        if (!Schema::hasTable('companies') && !Schema::hasTable('organisation_settings')) {
+        if (! Schema::hasTable('companies') && ! Schema::hasTable('organisation_settings')) {
 
             Schema::create('currencies', function (Blueprint $table) {
                 $table->increments('id');
@@ -257,8 +256,6 @@ return new class extends Migration {
                 $table->string('week_start_from')->default('1');
                 $table->boolean('allow_shift_change')->default(true);
                 $table->enum('show_clock_in_button', ['yes', 'no'])->default('no');
-
-
 
                 $table->timestamps();
             });

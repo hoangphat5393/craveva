@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Scopes\ActiveScope;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * App\Models\TaskCommentEmoji
@@ -16,6 +16,7 @@ use App\Scopes\ActiveScope;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\TaskComment|null $taskComment
  * @property-read \App\Models\User|null $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|TaskCommentEmoji newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TaskCommentEmoji newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TaskCommentEmoji query()
@@ -25,11 +26,11 @@ use App\Scopes\ActiveScope;
  * @method static \Illuminate\Database\Eloquent\Builder|TaskCommentEmoji whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TaskCommentEmoji whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TaskCommentEmoji whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class TaskCommentEmoji extends BaseModel
 {
-
     public function taskComment(): BelongsTo
     {
         return $this->belongsTo(TaskComment::class);
@@ -39,5 +40,4 @@ class TaskCommentEmoji extends BaseModel
     {
         return $this->belongsTo(User::class, 'user_id')->withoutGlobalScope(ActiveScope::class);
     }
-
 }

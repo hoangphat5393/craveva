@@ -9,7 +9,6 @@ use Notification;
 
 class HostInterviewListener
 {
-
     /**
      * Create the event listener.
      *
@@ -23,7 +22,7 @@ class HostInterviewListener
     /**
      * Handle the event.
      *
-     * @param object $event
+     * @param  object  $event
      * @return void
      */
     public function handle(HostInterviewEvent $interviewSchedule)
@@ -35,5 +34,4 @@ class HostInterviewListener
 
         Notification::send($host, new HostInterview($interviewSchedule->interviewSchedule));
     }
-
 }

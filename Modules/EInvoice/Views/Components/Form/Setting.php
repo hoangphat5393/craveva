@@ -6,7 +6,6 @@ use Illuminate\View\Component;
 
 class Setting extends Component
 {
-
     public $setting;
 
     /**
@@ -28,5 +27,4 @@ class Setting extends Component
     {
         return view('einvoice::components.form.setting');
     }
-
 }

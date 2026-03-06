@@ -49,7 +49,6 @@ return [
         'title' => 'You can even follow below pattern',
         'pattern' => '<p>1. <b>test</b> (exact match)</p>
                             <p>2. <b>%test%</b> (match anywhere in the string)</p>
-                            <p>3. <b>%test</b> (match anywhere but must end with \'test\')</p>'
-    ]
+                            <p>3. <b>%test</b> (match anywhere but must end with \'test\')</p>',
+    ],
 ];
-

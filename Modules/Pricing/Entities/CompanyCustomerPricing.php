@@ -5,9 +5,9 @@ namespace Modules\Pricing\Entities;
 use App\Models\BaseModel;
 use App\Models\Company;
 use App\Models\User;
+use App\Traits\HasCompany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Traits\HasCompany;
 
 class CompanyCustomerPricing extends BaseModel
 {

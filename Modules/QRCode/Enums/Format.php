@@ -39,7 +39,6 @@ enum Format: string
 
     public function labelWithIcon(): string
     {
-        return '<i class="' . $this->iconClass() . '"></i> ' . $this->label();
+        return '<i class="'.$this->iconClass().'"></i> '.$this->label();
     }
-
 }

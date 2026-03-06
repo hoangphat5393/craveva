@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class StoreNotice extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -35,8 +34,7 @@ class StoreNotice extends CoreRequest
     {
         return [
             'employees.0.required_if' => __('messages.atleastOneValidation'),
-            'clients.0.required_if' => __('messages.atleastOneValidation')
+            'clients.0.required_if' => __('messages.atleastOneValidation'),
         ];
     }
-
 }

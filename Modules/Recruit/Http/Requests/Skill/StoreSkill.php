@@ -14,7 +14,7 @@ class StoreSkill extends CoreRequest
     public function rules()
     {
         return [
-            'names.*' => 'required|unique:recruit_skills,name,null,id,company_id,' . company()->id
+            'names.*' => 'required|unique:recruit_skills,name,null,id,company_id,'.company()->id,
 
         ];
     }

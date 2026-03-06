@@ -6,18 +6,16 @@ use Illuminate\Notifications\Messages\MailMessage;
 
 class TestEmail extends BaseNotification
 {
-
-
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     // phpcs:ignore
     public function via($notifiable)
     {
-        $via = array();
+        $via = [];
         array_push($via, 'mail');
 
         return $via;
@@ -26,8 +24,7 @@ class TestEmail extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
-     * @return MailMessage
+     * @param  mixed  $notifiable
      */
     // phpcs:ignore
     public function toMail($notifiable): MailMessage
@@ -41,7 +38,7 @@ class TestEmail extends BaseNotification
             ->markdown('mail.email', [
                 'url' => $url,
                 'content' => $content,
-                'actionText' => __('email.notificationAction')
+                'actionText' => __('email.notificationAction'),
             ]);
 
         parent::resetLocale();
@@ -52,10 +49,10 @@ class TestEmail extends BaseNotification
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
-    //phpcs:ignore
+    // phpcs:ignore
     public function toArray($notifiable)
     {
         return [

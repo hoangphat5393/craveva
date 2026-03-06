@@ -2,17 +2,15 @@
 
 namespace Modules\Payroll\Http\Controllers;
 
+use App\Helper\Reply;
+use App\Http\Controllers\AccountBaseController;
+use App\Models\Designation;
 use App\Models\Team;
 use App\Models\User;
-use App\Helper\Reply;
-use App\Models\Designation;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use App\Http\Controllers\AccountBaseController;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use Modules\Payroll\Entities\EmployeeSalaryGroup;
-use Modules\Payroll\Entities\EmployeeMonthlySalary;
 use Modules\Payroll\DataTables\OvertimeRequestDataTable;
 use Modules\Payroll\Entities\OvertimePolicy;
 use Modules\Payroll\Entities\OvertimePolicyEmployee;
@@ -23,13 +21,12 @@ use Modules\Payroll\Http\Requests\OvertimeRequest\UpdateRequest;
 
 class OvertimeRequestController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'payroll::app.menu.overtimeRequest';
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array(PayrollSetting::MODULE_NAME, $this->user->modules));
+            abort_403(! in_array(PayrollSetting::MODULE_NAME, $this->user->modules));
 
             return $next($request);
         });
@@ -37,13 +34,14 @@ class OvertimeRequestController extends AccountBaseController
 
     /**
      * Display a listing of the resource.
+     *
      * @return Response
      */
     public function index(OvertimeRequestDataTable $dataTable, Request $request)
     {
         $this->departments = Team::all();
         $this->designations = Designation::allDesignations();
-        $this->employees = User::allEmployees(active:true);
+        $this->employees = User::allEmployees(active: true);
         $this->userData = User::with('employeeDetail')->find(user()->id);
 
         $now = now();
@@ -54,7 +52,6 @@ class OvertimeRequestController extends AccountBaseController
         $this->userPolicy = OvertimePolicy::join('overtime_policy_employees', 'overtime_policy_employees.overtime_policy_id', 'overtime_policies.id')
             ->where('overtime_policy_employees.user_id', user()->id)
             ->first();
-
 
         return $dataTable->render('payroll::overtime-request.index', $this->data);
     }
@@ -71,11 +68,11 @@ class OvertimeRequestController extends AccountBaseController
             ->leftJoin('employee_details', 'users.id', '=', 'employee_details.user_id');
 
         // Apply filters
-        if (!is_null($request->designation) && $request->designation != 'all' && $request->designation != '') {
+        if (! is_null($request->designation) && $request->designation != 'all' && $request->designation != '') {
             $overtimeRequestBase = $overtimeRequestBase->where('employee_details.designation_id', $request->designation);
         }
 
-        if (!is_null($request->department) && $request->department != 'all' && $request->department != '') {
+        if (! is_null($request->department) && $request->department != 'all' && $request->department != '') {
             $overtimeRequestBase = $overtimeRequestBase->where('employee_details.department_id', $request->department);
         }
 
@@ -91,8 +88,7 @@ class OvertimeRequestController extends AccountBaseController
             $overtimeRequestBase = $overtimeRequestBase->whereMonth('overtime_requests.user_id', $request->employee);
         }
 
-        if (!in_array('admin', user_roles()))
-        {
+        if (! in_array('admin', user_roles())) {
             $overtimeRequestBase = $overtimeRequestBase->where(function ($query) use ($roleId) {
                 // Allow the user to see their own overtime requests
                 $query->where('overtime_requests.user_id', user()->id);
@@ -143,12 +139,12 @@ class OvertimeRequestController extends AccountBaseController
 
     }
 
-    static public function formatMinutesToHours($existedHours, $minutes)
+    public static function formatMinutesToHours($existedHours, $minutes)
     {
         $hours = floor($minutes / 60);
         $remainingMinutes = $minutes % 60;
 
-        if($remainingMinutes > 0 ){
+        if ($remainingMinutes > 0) {
             return sprintf('%d hrs %d mins', ($hours + $existedHours), $remainingMinutes);
         }
 
@@ -158,6 +154,7 @@ class OvertimeRequestController extends AccountBaseController
 
     /**
      * Show the form for creating a new resource.
+     *
      * @return Response
      */
     public function create()
@@ -165,19 +162,20 @@ class OvertimeRequestController extends AccountBaseController
         $this->userPolicy = $this->policy = OvertimePolicy::leftJoin('overtime_policy_employees', 'overtime_policy_employees.overtime_policy_id', 'overtime_policies.id')
             ->where('overtime_policy_employees.user_id', user()->id)->first();
 
-            $this->employees = User::select('users.id', 'users.company_id', 'users.name', 'users.email', 'users.created_at', 'users.image', 'designations.name as designation_name', 'users.email_notifications', 'users.mobile', 'users.country_id', 'users.status', 'employee_details.overtime_hourly_rate')
-                ->join('employee_details', 'employee_details.user_id', '=', 'users.id')
-                ->leftJoin('designations', 'employee_details.designation_id', '=', 'designations.id')
-                ->join('overtime_policy_employees', 'overtime_policy_employees.user_id', '=', 'users.id')
-                ->groupBy('users.id')
-                ->get();
+        $this->employees = User::select('users.id', 'users.company_id', 'users.name', 'users.email', 'users.created_at', 'users.image', 'designations.name as designation_name', 'users.email_notifications', 'users.mobile', 'users.country_id', 'users.status', 'employee_details.overtime_hourly_rate')
+            ->join('employee_details', 'employee_details.user_id', '=', 'users.id')
+            ->leftJoin('designations', 'employee_details.designation_id', '=', 'designations.id')
+            ->join('overtime_policy_employees', 'overtime_policy_employees.user_id', '=', 'users.id')
+            ->groupBy('users.id')
+            ->get();
 
         return view('payroll::overtime-request.ajax.create', $this->data);
     }
 
     /**
      * Store a newly created resource in storage.
-     * @param Request $request
+     *
+     * @param  Request  $request
      * @return Response
      */
     public function store(StoreRequest $request)
@@ -201,28 +199,27 @@ class OvertimeRequestController extends AccountBaseController
             ->map(function ($date) {
                 return Carbon::parse($date)->format('Y-m-d');
             })
-        ->toArray();
+            ->toArray();
 
         $userPolicy = OvertimePolicyEmployee::with('policy', 'policy.payCode')->where('user_id', $userId)->first();
 
         $userData = User::find($userId);
 
-        $convertedDates = array_map(function($datesOvertime) {
+        $convertedDates = array_map(function ($datesOvertime) {
             $carbonDate = Carbon::createFromFormat(company()->date_format, $datesOvertime);
+
             return $carbonDate->format('Y-m-d');
         }, $datesOvertime);
 
-        foreach($convertedDates as $overDates)
-        {
-            if(in_array($overDates, $requestRecords))
-            {
+        foreach ($convertedDates as $overDates) {
+            if (in_array($overDates, $requestRecords)) {
                 return Reply::error(__('payroll::messages.recordInsertedAlready'));
             }
         }
 
         $hours = array_sum($request->overtime_hours);
 
-        if($request->overtime_hours){
+        if ($request->overtime_hours) {
 
             $overtimeHours = $request->overtime_hours;
             $overtimeDates = $request->date;
@@ -232,7 +229,7 @@ class OvertimeRequestController extends AccountBaseController
 
             $batch_key = \Str::random(16);
 
-            foreach($overtimeHours as $key => $hours){
+            foreach ($overtimeHours as $key => $hours) {
 
                 $minutes = $overtimeMinutes[$key] ?? 0;
                 $payCode = $userPolicy->policy->payCode;
@@ -242,7 +239,7 @@ class OvertimeRequestController extends AccountBaseController
 
                 $date = Carbon::createFromFormat(company()->date_format, $overtimeDates[$key])->format('Y-m-d');
 
-                $overtimeRequest = new OvertimeRequest();
+                $overtimeRequest = new OvertimeRequest;
                 $overtimeRequest->user_id = $userId;
                 $overtimeRequest->start_date = $startDate;
                 $overtimeRequest->end_date = $endDate;
@@ -265,42 +262,34 @@ class OvertimeRequestController extends AccountBaseController
 
     private function getAmount($minutes, $payCode, $overtimeType, $userData, $userPolicy, $hours)
     {
-        if($userPolicy->policy->payCode->fixed == 1){
-            if($overtimeType == 'working')
-            {
+        if ($userPolicy->policy->payCode->fixed == 1) {
+            if ($overtimeType == 'working') {
                 $fixedAmount = $payCode->regular_fixed_amount;
             }
 
-            if($overtimeType == 'holiday')
-            {
+            if ($overtimeType == 'holiday') {
                 $fixedAmount = $payCode->holiday_fixed_amount;
             }
 
-            if($overtimeType == 'dayoff')
-            {
+            if ($overtimeType == 'dayoff') {
                 $fixedAmount = $payCode->day_off_fixed_amount;
             }
 
             $amount = $hours * $fixedAmount;
-                $perMinAmount = $fixedAmount / 60;
-                $amount = ($amount + ($minutes * $perMinAmount));
+            $perMinAmount = $fixedAmount / 60;
+            $amount = ($amount + ($minutes * $perMinAmount));
 
+        } else {
 
-        }
-        else{
-
-            if($overtimeType == 'working')
-            {
+            if ($overtimeType == 'working') {
                 $timeRate = $payCode->regular_time_rate;
             }
 
-            if($overtimeType == 'holiday')
-            {
+            if ($overtimeType == 'holiday') {
                 $timeRate = $payCode->holiday_time_rate;
             }
 
-            if($overtimeType == 'dayoff')
-            {
+            if ($overtimeType == 'dayoff') {
                 $timeRate = $payCode->day_off_time_rate;
             }
 
@@ -315,7 +304,8 @@ class OvertimeRequestController extends AccountBaseController
 
     /**
      * Show the specified resource.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Response
      */
     public function show($id)
@@ -327,13 +317,11 @@ class OvertimeRequestController extends AccountBaseController
         $this->employee = $this->overtimeRequest->user;
         $userPolicy = OvertimePolicyEmployee::with('policy', 'policy.payCode')->where('user_id', $this->employee->id)->first();
 
-        if($userPolicy->policy->payCode->fixed == 1){
+        if ($userPolicy->policy->payCode->fixed == 1) {
             $this->amount = $userPolicy->policy->payCode->fixed_amount;
-        }
-        else{
+        } else {
             $this->amount = $this->employee->employeeDetail->overtime_hourly_rate;
         }
-
 
         $this->roleId = OvertimeRequestDataTable::getUserSecondRole();
         $this->allowRoles = $this->overtimeRequest->policy->allow_roles;
@@ -346,13 +334,14 @@ class OvertimeRequestController extends AccountBaseController
 
     /**
      * Show the form for editing the specified resource.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Response
      */
     public function edit($id)
     {
         $viewPermission = user()->permission('manage_employee_salary');
-        abort_403(!in_array($viewPermission, ['all', 'added']));
+        abort_403(! in_array($viewPermission, ['all', 'added']));
 
         $this->overtimeRequest = OvertimeRequest::find($id);
 
@@ -363,7 +352,7 @@ class OvertimeRequestController extends AccountBaseController
 
     public function update(UpdateRequest $request, $id)
     {
-        $date = Carbon::createFromFormat( company()->date_format, $request->date)->format('Y-m-d');
+        $date = Carbon::createFromFormat(company()->date_format, $request->date)->format('Y-m-d');
 
         $overtimeRequest = OvertimeRequest::find($id);
 
@@ -372,8 +361,7 @@ class OvertimeRequestController extends AccountBaseController
             ->where('id', '<>', $id)
             ->first();
 
-        if(!is_null($requestRecord))
-        {
+        if (! is_null($requestRecord)) {
             return Reply::error(__('payroll::messages.recordInsertedAlready'));
         }
 
@@ -404,7 +392,8 @@ class OvertimeRequestController extends AccountBaseController
 
     /**
      * Remove the specified resource from storage.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Response
      */
     public function destroy($id)
@@ -416,14 +405,13 @@ class OvertimeRequestController extends AccountBaseController
         return Reply::success(__('messages.deleteSuccess'));
     }
 
-    static public function policyData($overtimeData, $userPolicy, $userData, $dateData, $type)
+    public static function policyData($overtimeData, $userPolicy, $userData, $dateData, $type)
     {
         $hours = $overtimeData[$dateData]->overtime_hours;
 
-        if($userPolicy->payCode->fixed == 1){
+        if ($userPolicy->payCode->fixed == 1) {
             $amount = $hours * $userPolicy->payCode->fixed_amount;
-        }
-        else{
+        } else {
             $amount = $hours * ($userData->employeeDetail->overtime_hourly_rate * $userPolicy->payCode->time);
         }
 
@@ -434,11 +422,11 @@ class OvertimeRequestController extends AccountBaseController
     {
 
         $overtimes = DB::table('attendances as a')
-            ->leftJoin('employee_shift_schedules as ess', function($join) {
+            ->leftJoin('employee_shift_schedules as ess', function ($join) {
                 $join->on('a.employee_shift_id', '=', 'ess.id')
                     ->where('ess.date', '=', DB::raw('DATE(a.shift_start_time)'));
             })
-            ->join('employee_shifts as es', function($join) {
+            ->join('employee_shifts as es', function ($join) {
                 $join->on('ess.employee_shift_id', '=', 'es.id')
                     ->orOn('a.employee_shift_id', '=', 'es.id');
             })
@@ -480,7 +468,7 @@ class OvertimeRequestController extends AccountBaseController
     public function calculateTotalHours($userId, $startDate, $endDate)
     {
         $results = DB::table('attendances as a')
-            ->join('employee_shift_schedules as ess', function($join) {
+            ->join('employee_shift_schedules as ess', function ($join) {
                 $join->on('a.user_id', '=', 'ess.user_id')
                     ->on(DB::raw('DATE(a.clock_in_time)'), '=', 'ess.date')
                     ->on('a.employee_shift_id', '=', 'ess.employee_shift_id')
@@ -498,7 +486,7 @@ class OvertimeRequestController extends AccountBaseController
         $formattedResults = [];
 
         foreach ($results as $result) {
-            $formattedResults[$result->work_date] = (int)$result->total_hours;
+            $formattedResults[$result->work_date] = (int) $result->total_hours;
         }
 
         // Output the formatted results
@@ -530,6 +518,7 @@ class OvertimeRequestController extends AccountBaseController
     public function getUserPolicy($id)
     {
         $policyData = $this->getUserPOlicyData($id);
+
         return Reply::dataOnly(['applyDate' => $policyData['applyDate']->format('Y-m-d'), 'typeOptions' => $policyData['typeOptions'], 'currentMonthDate' => $policyData['currentMonthDate']->format('Y-m-d')]);
     }
 
@@ -543,29 +532,24 @@ class OvertimeRequestController extends AccountBaseController
 
         if ($daysBefore->month < $currentDate->month) {
             $resultDate = $currentDate->copy()->startOfMonth();
-        }
-        else {
+        } else {
             $resultDate = $daysBefore;
         }
 
         $typeOptions = '';
 
-        if($this->userPolicy->working_days == 1)
-        {
+        if ($this->userPolicy->working_days == 1) {
             $typeOptions .= '<option value="working">'.__('payroll::modules.payroll.workingDay').'</option>';
         }
 
-        if($this->userPolicy->week_end == 1)
-        {
+        if ($this->userPolicy->week_end == 1) {
             $typeOptions .= '<option value="dayoff">'.__('payroll::modules.payroll.dayOff').'</option>';
         }
 
-        if($this->userPolicy->holiday == 1)
-        {
-            $typeOptions .= '<option value="holiday">'. __('payroll::modules.payroll.holiday').'</option>';
+        if ($this->userPolicy->holiday == 1) {
+            $typeOptions .= '<option value="holiday">'.__('payroll::modules.payroll.holiday').'</option>';
         }
 
         return ['applyDate' => $resultDate, 'currentMonthDate' => $currentDate->copy(), 'typeOptions' => $typeOptions];
     }
-
 }

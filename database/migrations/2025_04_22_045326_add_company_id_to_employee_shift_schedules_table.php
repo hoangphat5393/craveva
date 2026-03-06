@@ -2,8 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -12,7 +12,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (!Schema::hasColumn('employee_shift_schedules', 'company_id')) {
+        if (! Schema::hasColumn('employee_shift_schedules', 'company_id')) {
             Schema::table('employee_shift_schedules', function (Blueprint $table) {
                 $table->integer('company_id')->unsigned()->nullable()->after('user_id');
                 $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade')->onUpdate('cascade');

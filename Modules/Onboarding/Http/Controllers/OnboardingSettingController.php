@@ -4,9 +4,6 @@ namespace Modules\Onboarding\Http\Controllers;
 
 use App\Helper\Reply;
 use App\Http\Controllers\AccountBaseController;
-use Carbon\Carbon;
-use Illuminate\Http\RedirectResponse;
-use Modules\Onboarding\Entities\OnboardingCompletedTask;
 use Modules\Onboarding\Entities\OnboardingNotificationSetting;
 use Modules\Onboarding\Entities\OnboardingTask;
 use Modules\Onboarding\Http\Requests\CreateOnboardingRequest;
@@ -16,16 +13,15 @@ class OnboardingSettingController extends AccountBaseController
     /**
      * Display a listing of the resource.
      */
-
     public function __construct()
     {
-         parent::__construct();
-         $this->pageTitle = 'onboarding::clan.menu.onboardingSettings';
-         $this->activeSettingMenu = 'onboarding_settings';
-         $this->middleware(function ($request, $next) {
+        parent::__construct();
+        $this->pageTitle = 'onboarding::clan.menu.onboardingSettings';
+        $this->activeSettingMenu = 'onboarding_settings';
+        $this->middleware(function ($request, $next) {
 
-             return $next($request);
-         });
+            return $next($request);
+        });
 
     }
 
@@ -39,33 +35,33 @@ class OnboardingSettingController extends AccountBaseController
         $viewonboardingPermission = user()->permission('manage_employee_onboarding');
         $viewoffboardingPermission = user()->permission('manage_employee_offboarding');
 
-        abort_403(!($viewonboardingPermission == 'all' || $viewoffboardingPermission == 'all'));
+        abort_403(! ($viewonboardingPermission == 'all' || $viewoffboardingPermission == 'all'));
         $this->emailSettings = OnboardingNotificationSetting::all();
         $this->activeTab = $tab ?: 'onboarding';
         $onboardingTasks = OnboardingTask::where('company_id', $companyId)->get();
 
         switch ($tab) {
 
-        case 'offboarding':
+            case 'offboarding':
 
-            $this->onboardingSetting = $onboardingTasks->filter(function ($value) {
-                return $value->type == 'offboard';
-            });
+                $this->onboardingSetting = $onboardingTasks->filter(function ($value) {
+                    return $value->type == 'offboard';
+                });
 
-            $this->view = 'onboarding::onboarding-settings.ajax.offboarding';
-            break;
+                $this->view = 'onboarding::onboarding-settings.ajax.offboarding';
+                break;
 
-        case 'onboard-notification-setting':
-            $this->view = 'onboarding::onboarding-settings.ajax.onboard-notification-setting';
-            break;
+            case 'onboard-notification-setting':
+                $this->view = 'onboarding::onboarding-settings.ajax.onboard-notification-setting';
+                break;
 
-        default:
-            $this->onboardingSetting = $onboardingTasks->filter(function ($value) {
-                return $value->type == 'onboard';
-            });
+            default:
+                $this->onboardingSetting = $onboardingTasks->filter(function ($value) {
+                    return $value->type == 'onboard';
+                });
 
-            $this->view = 'onboarding::onboarding-settings.ajax.onboarding';
-            break;
+                $this->view = 'onboarding::onboarding-settings.ajax.onboarding';
+                break;
         }
 
         if (request()->ajax()) {
@@ -82,8 +78,7 @@ class OnboardingSettingController extends AccountBaseController
      */
     public function create()
     {
-        if(request()->type == 'onboarding')
-        {
+        if (request()->type == 'onboarding') {
             return view('onboarding::onboarding-settings.create-onboarding-settings-modal', $this->data);
         }
 
@@ -96,7 +91,7 @@ class OnboardingSettingController extends AccountBaseController
      */
     public function store(CreateOnboardingRequest $request)
     {
-        $onboardingSetting = new OnboardingTask();
+        $onboardingSetting = new OnboardingTask;
 
         // Determine the value of 'employee_can_see' based on 'task_for'
         $taskFor = $request->input('task_for');
@@ -137,8 +132,7 @@ class OnboardingSettingController extends AccountBaseController
         // Retrieve the existing onboarding setting
         $onboardingSetting = OnboardingTask::where('company_id', company()->id)->findOrFail($id);
 
-        if(request()->type == 'onboarding')
-        {
+        if (request()->type == 'onboarding') {
             // Pass the onboarding setting data to the view
             return view('onboarding::onboarding-settings.edit-onboarding-settings-modal', ['onboardingSetting' => $onboardingSetting]);
         }
@@ -168,10 +162,10 @@ class OnboardingSettingController extends AccountBaseController
 
         // Update the onboarding task with the values from the request
         $onboardingSetting->update([
-        'title' => $request->input('title'),
-        'task_for' => $taskFor,
-        'employee_can_see' => $employeeCanSee,
-        'type' => $type,
+            'title' => $request->input('title'),
+            'task_for' => $taskFor,
+            'employee_can_see' => $employeeCanSee,
+            'type' => $type,
         ]);
 
         return Reply::success(__('messages.updateSuccess'));
@@ -192,8 +186,7 @@ class OnboardingSettingController extends AccountBaseController
     {
         $order = request()->order;
 
-        foreach ($order as $index => $id)
-        {
+        foreach ($order as $index => $id) {
             OnboardingTask::where('company_id', company()->id)->where('id', $id)->update(['column_priority' => $index + 1]);
         }
 
@@ -205,13 +198,11 @@ class OnboardingSettingController extends AccountBaseController
     {
         $order = request()->order;
 
-        foreach ($order as $index => $id)
-        {
+        foreach ($order as $index => $id) {
             OnboardingTask::where('company_id', company()->id)->where('id', $id)->update(['column_priority' => $index + 1]);
         }
 
         return Reply::success(__('messages.updateSuccess'));
 
     }
-
 }

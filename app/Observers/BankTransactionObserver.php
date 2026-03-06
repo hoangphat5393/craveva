@@ -7,7 +7,6 @@ use App\Models\BankTransaction;
 
 class BankTransactionObserver
 {
-
     public function saving(BankTransaction $bankTransaction)
     {
         if (user()) {
@@ -31,7 +30,7 @@ class BankTransactionObserver
     {
         $bankAccount = BankAccount::find($bankTransaction->bank_account_id);
 
-        if (!is_null($bankAccount) && !is_null($bankTransaction)) {
+        if (! is_null($bankAccount) && ! is_null($bankTransaction)) {
             $bankBalance = $bankAccount->bank_balance;
 
             if (is_null($bankTransaction->type) || $bankTransaction->type == 'Cr') {
@@ -47,5 +46,4 @@ class BankTransactionObserver
             $bankAccount->save();
         }
     }
-
 }

@@ -7,7 +7,6 @@ use Illuminate\Notifications\Messages\MailMessage;
 
 class ProjectRating extends BaseNotification
 {
-
     private $project;
 
     /**
@@ -25,7 +24,7 @@ class ProjectRating extends BaseNotification
      */
     public function via(object $notifiable): array
     {
-        $via = array('database');
+        $via = ['database'];
 
         if ($notifiable->email_notifications && $notifiable->email != '') {
             array_push($via, 'mail');
@@ -41,19 +40,19 @@ class ProjectRating extends BaseNotification
     {
         $build = parent::build($notifiable);
 
-        $url = route('projects.show', $this->project->id) . '?tab=rating';
+        $url = route('projects.show', $this->project->id).'?tab=rating';
         $url = getDomainSpecificUrl($url, $this->company);
 
-        $content = __('email.projectRating.text') . ' ' . $this->project->project_name;
+        $content = __('email.projectRating.text').' '.$this->project->project_name;
 
         $build
-            ->subject(__('email.projectRating.subject') . ' - ' . config('app.name'))
+            ->subject(__('email.projectRating.subject').' - '.config('app.name'))
             ->markdown('mail.email', [
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company?->header_color,
                 'actionText' => __('email.projectRating.action'),
-                'notifiableName' => $notifiable->name
+                'notifiableName' => $notifiable->name,
             ]);
 
         parent::resetLocale();
@@ -66,7 +65,7 @@ class ProjectRating extends BaseNotification
      *
      * @return array<string, mixed>
      */
-    //phpcs:ignore
+    // phpcs:ignore
     public function toArray(object $notifiable): array
     {
         return [
@@ -75,5 +74,4 @@ class ProjectRating extends BaseNotification
             'heading' => __('email.projectRating.subject'),
         ];
     }
-
 }

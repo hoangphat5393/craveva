@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read mixed $file_url
  * @property-read mixed $icon
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|KnowledgeBaseFile newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|KnowledgeBaseFile newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|KnowledgeBaseFile query()
@@ -38,23 +39,24 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @method static \Illuminate\Database\Eloquent\Builder|KnowledgeBaseFile whereLastUpdatedBy($value)
  * @method static \Illuminate\Database\Eloquent\Builder|KnowledgeBaseFile whereSize($value)
  * @method static \Illuminate\Database\Eloquent\Builder|KnowledgeBaseFile whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class KnowledgeBaseFile extends BaseModel
 {
-
     use HasFactory;
     use IconTrait;
 
     const FILE_PATH = 'knowledgebase';
 
     protected $fillable = [];
+
     protected $guarded = ['id'];
+
     protected $appends = ['file_url', 'icon'];
 
     public function getFileUrlAttribute()
     {
-        return (!is_null($this->external_link)) ? $this->external_link : asset_url_local_s3(KnowledgeBaseFile::FILE_PATH . '/' . $this->knowledge_base_id . '/' . $this->hashname);
+        return (! is_null($this->external_link)) ? $this->external_link : asset_url_local_s3(KnowledgeBaseFile::FILE_PATH.'/'.$this->knowledge_base_id.'/'.$this->hashname);
     }
-
 }

@@ -13,10 +13,9 @@ enum YesNo: string
     public function label(): string
     {
         return match ($this) {
-            self::Yes => __('app.' . $this->value),
-            self::No => __('app.' . $this->value),
+            self::Yes => __('app.'.$this->value),
+            self::No => __('app.'.$this->value),
             default => $this->value,
         };
     }
-
 }

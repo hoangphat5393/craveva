@@ -8,15 +8,15 @@ use Illuminate\Support\HtmlString;
 
 class NewTicketReply extends BaseNotification
 {
-
-
     /**
      * Create a new notification instance.
      *
      * @return void
      */
     private $ticket;
+
     private $ticketReply;
+
     private $emailSetting;
 
     public function __construct(TicketReply $ticket)
@@ -30,7 +30,7 @@ class NewTicketReply extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -56,22 +56,21 @@ class NewTicketReply extends BaseNotification
         $url = getDomainSpecificUrl($url, $this->company);
 
         if ($this->ticketReply->user_id == $notifiable->id) {
-            $text = '<p>' . __('email.ticketReply.repliedText') . $this->ticket->subject . ' #' . $this->ticket->ticket_number . '</p>' . __('app.by') . ' ' . $this->ticketReply->user->name;
-        }
-        else {
-            $text = '<p>' . __('email.ticketReply.receivedText') . $this->ticket->subject . ' #' . $this->ticket->ticket_number . '</p>' . __('app.by') . ' ' . $this->ticketReply->user->name;
+            $text = '<p>'.__('email.ticketReply.repliedText').$this->ticket->subject.' #'.$this->ticket->ticket_number.'</p>'.__('app.by').' '.$this->ticketReply->user->name;
+        } else {
+            $text = '<p>'.__('email.ticketReply.receivedText').$this->ticket->subject.' #'.$this->ticket->ticket_number.'</p>'.__('app.by').' '.$this->ticketReply->user->name;
         }
 
         $content = new HtmlString($text);
 
         $build
-            ->subject(__('email.ticketReply.subject') . ' - ' . $this->ticket->subject)
+            ->subject(__('email.ticketReply.subject').' - '.$this->ticket->subject)
             ->markdown('mail.email', [
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
                 'actionText' => __('email.ticketReply.action'),
-                'notifiableName' => $notifiable->name
+                'notifiableName' => $notifiable->name,
             ]);
 
         parent::resetLocale();
@@ -86,17 +85,17 @@ class NewTicketReply extends BaseNotification
         $url = getDomainSpecificUrl($url, $this->company);
 
         return $this->slackBuild($notifiable)
-            ->content('*' . __('email.ticketReply.subject') . '*' . "\n" . $this->ticket->subject . "\n" . __('modules.tickets.requesterName') . ' - ' . $this->ticket->requester->name . "\n" . '<' . $url . '|' . __('modules.tickets.ticket') . ' #' . $this->ticket->id . '>' . "\n");
+            ->content('*'.__('email.ticketReply.subject').'*'."\n".$this->ticket->subject."\n".__('modules.tickets.requesterName').' - '.$this->ticket->requester->name."\n".'<'.$url.'|'.__('modules.tickets.ticket').' #'.$this->ticket->id.'>'."\n");
 
     }
 
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
-    //phpcs:ignore
+    // phpcs:ignore
     public function toArray($notifiable)
     {
         return [
@@ -106,8 +105,7 @@ class NewTicketReply extends BaseNotification
             'user_id' => $this->ticketReply->user_id,
             'status' => $this->ticket->status,
             'agent_id' => $this->ticket->agent_id,
-            'ticket_number' => $this->ticket->ticket_number
+            'ticket_number' => $this->ticket->ticket_number,
         ];
     }
-
 }

@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\ContractType $contractType
  * @property-read \App\Models\Currency|null $currency
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ContractTemplate newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ContractTemplate newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ContractTemplate query()
@@ -36,15 +37,17 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|ContractTemplate whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ContractTemplate whereSubject($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ContractTemplate whereUpdatedAt($value)
+ *
  * @property int|null $contract_template_number
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ContractTemplate whereContractTemplateNumber($value)
+ *
  * @mixin \Eloquent
  */
 class ContractTemplate extends BaseModel
 {
-
-    use HasFactory, HasCompany;
+    use HasCompany, HasFactory;
 
     public function contractType(): BelongsTo
     {
@@ -55,5 +58,4 @@ class ContractTemplate extends BaseModel
     {
         return $this->belongsTo(Currency::class, 'currency_id');
     }
-
 }

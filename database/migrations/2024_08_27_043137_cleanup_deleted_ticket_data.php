@@ -1,15 +1,13 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
-use App\Models\Ticket;
-use App\Models\TicketReply;
-use App\Models\TicketFile;
 use App\Helper\Files;
+use App\Models\Ticket;
+use App\Models\TicketFile;
+use App\Models\TicketReply;
+use Illuminate\Database\Migrations\Migration;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
@@ -45,7 +43,7 @@ return new class extends Migration {
     /**
      * Delete files associated with a given reply.
      *
-     * @param TicketReply $reply
+     * @param  TicketReply  $reply
      */
     private function deleteFilesForReply($reply)
     {
@@ -54,7 +52,7 @@ return new class extends Migration {
 
         foreach ($replyFiles as $file) {
 
-            $filePath = TicketFile::FILE_PATH . '/' . $file->ticket_reply_id;
+            $filePath = TicketFile::FILE_PATH.'/'.$file->ticket_reply_id;
 
             Files::deleteFile($file->hashname, TicketFile::FILE_PATH);
             Files::deleteDirectory($filePath);
@@ -70,5 +68,4 @@ return new class extends Migration {
     {
         //
     }
-
 };

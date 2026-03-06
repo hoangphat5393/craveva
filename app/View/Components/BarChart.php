@@ -7,9 +7,10 @@ use Illuminate\View\Component;
 
 class BarChart extends Component
 {
-
     public $chartData;
+
     public $multiple;
+
     public $spaceRatio;
 
     /**
@@ -33,5 +34,4 @@ class BarChart extends Component
     {
         return view('components.bar-chart');
     }
-
 }

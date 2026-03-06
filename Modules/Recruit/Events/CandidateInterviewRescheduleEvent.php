@@ -9,11 +9,12 @@ use Modules\Recruit\Entities\RecruitInterviewSchedule;
 
 class CandidateInterviewRescheduleEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $interview;
+
     public $jobApplication;
+
     public $candidateComment;
 
     /**
@@ -21,7 +22,6 @@ class CandidateInterviewRescheduleEvent
      *
      * @return void
      */
-
     public function __construct(RecruitInterviewSchedule $interview, $jobApplication, $candidateComment)
     {
         $this->interview = $interview;
@@ -38,5 +38,4 @@ class CandidateInterviewRescheduleEvent
     {
         return [];
     }
-
 }

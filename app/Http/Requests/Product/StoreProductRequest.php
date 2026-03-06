@@ -52,5 +52,4 @@ class StoreProductRequest extends CoreRequest
 
         return $attributes;
     }
-
 }

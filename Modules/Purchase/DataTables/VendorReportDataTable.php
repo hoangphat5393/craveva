@@ -2,24 +2,22 @@
 
 namespace Modules\Purchase\DataTables;
 
-use Carbon\Carbon;
 use App\DataTables\BaseDataTable;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use Yajra\DataTables\Html\Button;
-use Yajra\DataTables\Html\Column;
 use Modules\Purchase\Entities\PurchaseVendor;
-use Modules\Purchase\Entities\PurchaseVendorNote;
+use Yajra\DataTables\Html\Button;
 
 class VendorReportDataTable extends BaseDataTable
 {
-
     private $editClientNotePermission;
+
     private $deleteClientNotePermission;
 
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
@@ -42,15 +40,14 @@ class VendorReportDataTable extends BaseDataTable
             })
             ->addIndexColumn()
             ->smart(false)
-            ->setRowId(fn($row) => 'row-' . $row->id)
+            ->setRowId(fn ($row) => 'row-'.$row->id)
             ->rawColumns(['billed_amount']);
     }
 
     /**
-     * @param ClientNote $model
+     * @param  ClientNote  $model
      * @return ClientNote|\Illuminate\Database\Eloquent\Builder
      */
-
     public function query(PurchaseVendor $model)
     {
         $request = $this->request();
@@ -59,30 +56,30 @@ class VendorReportDataTable extends BaseDataTable
 
         $model = $model
             ->select('purchase_vendors.primary_name', 'purchase_vendors.id', 'purchase_vendors.opening_balance', 'purchase_vendors.currency_id',
-            DB::raw('( select sum(billedAmount.total) from purchase_bills as billedAmount where billedAmount.purchase_vendor_id = purchase_vendors.id) as billed_amount'),
-            DB::raw("( select sum(purchase_bills.total) from purchase_bills where purchase_bills.purchase_vendor_id = purchase_vendors.id and purchase_bills.status = 'paid') as amount_paid"),
-        )
+                DB::raw('( select sum(billedAmount.total) from purchase_bills as billedAmount where billedAmount.purchase_vendor_id = purchase_vendors.id) as billed_amount'),
+                DB::raw("( select sum(purchase_bills.total) from purchase_bills where purchase_bills.purchase_vendor_id = purchase_vendors.id and purchase_bills.status = 'paid') as amount_paid"),
+            )
             ->join('purchase_bills', 'purchase_bills.purchase_vendor_id', 'purchase_vendors.id');
 
         if ($request->startDate !== null && $request->startDate != 'null' && $request->startDate != '') {
             $startDate = Carbon::createFromFormat($this->company->date_format, $request->startDate)->toDateString();
-            if (!is_null($startDate)) {
+            if (! is_null($startDate)) {
 
                 $model = $model->where(DB::raw('DATE(purchase_vendors.`created_at`)'), '>=', $startDate);
             }
         }
-        
+
         if ($request->endDate !== null && $request->endDate != 'null' && $request->endDate != '') {
             $endDate = Carbon::createFromFormat($this->company->date_format, $request->endDate)->toDateString();
-            
-            if (!is_null($endDate)) {
+
+            if (! is_null($endDate)) {
                 $model = $model->where(function ($query) use ($endDate) {
                     $query->where(DB::raw('DATE(purchase_vendors.`created_at`)'), '<=', $endDate);
                 });
             }
         }
 
-        if (!is_null($vendor) && $vendor !== 'all') {
+        if (! is_null($vendor) && $vendor !== 'all') {
             $model = $model->where('purchase_vendors.id', $vendor);
         }
 
@@ -96,7 +93,6 @@ class VendorReportDataTable extends BaseDataTable
      *
      * @return \Yajra\DataTables\Html\Builder
      */
-
     public function html()
     {
         return $this->setBuilder('vendor-report-table', 2)
@@ -110,7 +106,7 @@ class VendorReportDataTable extends BaseDataTable
                   $(".select-picker").selectpicker();
                 }',
             ])
-            ->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
+            ->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
     }
 
     /**
@@ -129,5 +125,4 @@ class VendorReportDataTable extends BaseDataTable
             __('purchase::modules.vendor.closingBalance') => ['data' => 'closing_balance', 'name' => 'closing_balance', 'title' => __('purchase::modules.vendor.closingBalance')],
         ];
     }
-
 }

@@ -2,12 +2,11 @@
 
 namespace Modules\ServerManager\Tests\Feature;
 
-use Tests\TestCase;
+use App\Models\Company;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\ServerManager\Entities\ServerHosting;
-use App\Models\User;
-use App\Models\Company;
-use Carbon\Carbon;
+use Tests\TestCase;
 
 class HostingExpiryNotificationTest extends TestCase
 {
@@ -108,7 +107,7 @@ class HostingExpiryNotificationTest extends TestCase
         $adminUser = User::factory()->create(['role' => 'admin']);
 
         // Mock the job to test the getUsersToNotify method
-        $job = new \Modules\ServerManager\Jobs\CheckExpiringHostingsJob();
+        $job = new \Modules\ServerManager\Jobs\CheckExpiringHostingsJob;
         $reflection = new \ReflectionClass($job);
         $method = $reflection->getMethod('getUsersToNotify');
         $method->setAccessible(true);

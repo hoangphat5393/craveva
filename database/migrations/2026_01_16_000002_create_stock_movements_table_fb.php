@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (!Schema::hasTable('stock_movements')) {
+        if (! Schema::hasTable('stock_movements')) {
             Schema::create('stock_movements', function (Blueprint $table) {
                 $table->bigIncrements('id');
                 $table->unsignedBigInteger('company_id')->nullable();
@@ -36,4 +36,3 @@ return new class extends Migration
         // Không drop bảng để tránh mất dữ liệu production
     }
 };
-

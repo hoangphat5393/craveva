@@ -8,7 +8,6 @@ use Illuminate\Support\Collection;
 
 class ClearLogs extends Command
 {
-
     protected $signature = 'log:clean {--keep-last : Whether the last log file should be kept} {--keep=* : Log files to keep (without extension)}';
 
     protected $description = 'Remove every log files in the log directory';
@@ -31,14 +30,12 @@ class ClearLogs extends Command
 
         $deleted = $this->delete($files);
 
-        if (!$deleted) {
+        if (! $deleted) {
             $this->info('There was no log file to delete in the log folder');
-        }
-        elseif ($deleted == 1) {
+        } elseif ($deleted == 1) {
             $this->info('1 log file has been deleted');
-        }
-        else {
-            $this->info($deleted . ' log files have been deleted');
+        } else {
+            $this->info($deleted.' log files have been deleted');
         }
 
         return Command::SUCCESS;
@@ -60,7 +57,7 @@ class ClearLogs extends Command
     private function filesToDelete(Collection $files, array $fileNames): Collection
     {
         return $files->filter(function ($value, $key) use ($fileNames) {
-            return !in_array($value->getFilenameWithoutExtension(), $fileNames);
+            return ! in_array($value->getFilenameWithoutExtension(), $fileNames);
         });
     }
 
@@ -73,5 +70,4 @@ class ClearLogs extends Command
             $this->disk->delete($file);
         })->count();
     }
-
 }

@@ -7,7 +7,6 @@ use Laravel\Fortify\Fortify;
 
 class VerifyLoginRequest extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -30,5 +29,4 @@ class VerifyLoginRequest extends FormRequest
             'password' => 'required|string',
         ];
     }
-
 }

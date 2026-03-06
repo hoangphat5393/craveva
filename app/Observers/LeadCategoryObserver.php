@@ -6,17 +6,16 @@ use App\Models\LeadCategory;
 
 class LeadCategoryObserver
 {
-
     public function saving(LeadCategory $leadCategory)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             $leadCategory->last_updated_by = user()->id;
         }
     }
 
     public function creating(LeadCategory $leadCategory)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             $leadCategory->added_by = user()->id;
         }
 
@@ -24,5 +23,4 @@ class LeadCategoryObserver
             $leadCategory->company_id = company()->id;
         }
     }
-
 }

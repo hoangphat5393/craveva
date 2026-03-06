@@ -14,12 +14,11 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-
     public function up()
     {
         $module = Module::where('module_name', 'settings')->first();
 
-        if (!is_null($module)) {
+        if (! is_null($module)) {
             $permissionName = 'manage_contract_setting';
 
             $permission = Permission::firstOrCreate([
@@ -27,7 +26,7 @@ return new class extends Migration
                 'display_name' => ucwords(str_replace('_', ' ', $permissionName)),
                 'is_custom' => 1,
                 'module_id' => $module->id,
-                'allowed_permissions' => Permission::ALL_NONE
+                'allowed_permissions' => Permission::ALL_NONE,
             ]);
 
             $companies = Company::select('id')->get();
@@ -37,18 +36,17 @@ return new class extends Migration
                     ->where('company_id', $company->id)
                     ->first();
 
-                $permissionRole = PermissionRole::where('permission_id', $permission->id)->where('role_id', $role->id)->first() ?: new PermissionRole();
+                $permissionRole = PermissionRole::where('permission_id', $permission->id)->where('role_id', $role->id)->first() ?: new PermissionRole;
                 $permissionRole->permission_id = $permission->id;
                 $permissionRole->role_id = $role->id;
                 $permissionRole->permission_type_id = 4; // All
                 $permissionRole->save();
             }
 
-
             $adminUser = User::allAdmins();
 
             foreach ($adminUser as $adminUsers) {
-                $userPermission = UserPermission::where('permission_id', $permission->id)->where('user_id', $adminUsers->id)->first() ?: new UserPermission();
+                $userPermission = UserPermission::where('permission_id', $permission->id)->where('user_id', $adminUsers->id)->first() ?: new UserPermission;
                 $userPermission->user_id = $adminUsers->id;
                 $userPermission->permission_id = $permission->id;
                 $userPermission->permission_type_id = 4; // All
@@ -64,5 +62,4 @@ return new class extends Migration
     {
         //
     }
-
 };

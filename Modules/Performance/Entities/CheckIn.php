@@ -19,5 +19,4 @@ class CheckIn extends BaseModel
     {
         return $this->belongsTo(User::class, 'check_in_by');
     }
-
 }

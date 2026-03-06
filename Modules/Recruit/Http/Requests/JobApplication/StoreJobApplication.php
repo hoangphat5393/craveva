@@ -4,13 +4,14 @@ namespace Modules\Recruit\Http\Requests\JobApplication;
 
 use App\Http\Requests\CoreRequest;
 use Modules\Recruit\Entities\RecruitJob;
-use Modules\Recruit\Rules\CheckApplication;
 use Modules\Recruit\Entities\RecruitJobQuestion;
+use Modules\Recruit\Rules\CheckApplication;
 use Modules\Recruit\Traits\CustomQuestion;
 
 class StoreJobApplication extends CoreRequest
 {
     use CustomQuestion;
+
     /**
      * Determine if the user is authorized to make this request.
      *

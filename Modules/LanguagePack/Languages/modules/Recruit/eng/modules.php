@@ -1,8 +1,8 @@
 <?php
 
-return array(
+return [
 
-    'form' => array(
+    'form' => [
         'email' => 'Email',
         'phone' => 'Phone',
         'gender' => 'Gender',
@@ -13,17 +13,17 @@ return array(
         'notice_period' => 'Notice Period',
         'application_source' => 'Application Source',
         'status' => 'Status',
-        'cover_letter' => 'Cover Letter'
-    ),
+        'cover_letter' => 'Cover Letter',
+    ],
 
-    'name' => array(
+    'name' => [
         'HR round' => 'HR Round',
         'Technical round' => 'Technical Round',
-        'Manager round' => 'Manager Round'
+        'Manager round' => 'Manager Round',
 
-    ),
+    ],
 
-    'type' => array(
+    'type' => [
         'text' => 'Text',
         'number' => 'Number',
         'password' => 'Password',
@@ -32,18 +32,18 @@ return array(
         'radio' => 'Radio',
         'date' => 'Date',
         'checkbox' => 'Checkbox',
-        'file' => 'File'
-    ),
+        'file' => 'File',
+    ],
 
-    'skill' => array(
+    'skill' => [
         'skilldepartment' => 'Skill Department',
         'skillname' => 'Skill Name',
         'fieldRequired' => 'This Field is required',
         'addSkills' => 'Skill cannot be blank.',
-        'createnew' => 'Create New'
-    ),
+        'createnew' => 'Create New',
+    ],
 
-    'message' => array(
+    'message' => [
         'jobOfferStatus' => 'Job Offer',
         'mailsent' => 'Mail sent succesfully.',
         'withdraw' => 'Withdrawn succesfully.',
@@ -63,9 +63,9 @@ return array(
         'selectStatus' => 'Please select status',
         'photoRequired' => 'The photo field is required.',
         'fullTime' => 'e.g. Full time',
-        'stageSelected' => 'Stage Added successfully.'
-    ),
-    'job' => array(
+        'stageSelected' => 'Stage Added successfully.',
+    ],
+    'job' => [
         'startDate' => 'Start Date',
         'endDate' => 'End Date',
         'jobTitle' => 'Job Title',
@@ -112,10 +112,10 @@ return array(
         'salaryDisclosed' => 'Salary not disclosed',
         'payAccording' => 'Pay according',
         'requiredFiled' => '<p>Selected field will be visible and considered as mandatatory field for <strong>Job Application Form</strong></p>',
-        'selectJob' => 'Select Job'
+        'selectJob' => 'Select Job',
 
-    ),
-    'jobApplication' => array(
+    ],
+    'jobApplication' => [
         'fullName' => 'full name',
         'status' => 'Status',
         'scheduleInterview' => 'Schedule Interview',
@@ -189,9 +189,9 @@ return array(
         'importJobCandidates' => 'Import Job Candidates',
         'applicationNotMoved' => 'Application was not moved to this stage',
         'sendMailToJobApplicant' => 'Send Email Notification To Job Applicant',
-    ),
+    ],
 
-    'interviewSchedule' => array(
+    'interviewSchedule' => [
         'employee' => 'Employee',
         'startDate' => 'Start Date',
         'schedule_date' => 'Schedule Date',
@@ -310,8 +310,8 @@ return array(
         'hired' => 'Hired',
         'canceled' => 'Canceled',
         'completed' => 'Completed',
-    ),
-    'email' => array(
+    ],
+    'email' => [
         'response' => 'For accept or refuse ',
         'subject' => 'Interview scheduled',
         'jobOffer' => 'Job offer letter',
@@ -327,8 +327,8 @@ return array(
         'hasBeenSchedule' => 'has been scheduled',
         'atDate' => 'Date and Time is',
         'jobCreated' => 'Job Created',
-    ),
-    'footerlinks' => array(
+    ],
+    'footerlinks' => [
         'addfooterlinks' => 'Add Footer Link',
         'linkdetail' => 'Link Details',
         'linktitle' => 'Title',
@@ -337,8 +337,8 @@ return array(
         'title' => 'Title',
         'status' => 'Status',
         'footerdetail' => 'Footer Details',
-    ),
-    'front' => array(
+    ],
+    'front' => [
         'apply' => 'Apply',
         'fullName' => 'Full Name',
         'email' => 'Email',
@@ -365,9 +365,9 @@ return array(
         'additionalDetails' => 'Additional Details',
         'shareOnWhatsapp' => 'Share on Whatsapp',
         'copyLink' => 'Copy link',
-        'shareLink' => 'Share link'
-    ),
-    'joboffer' => array(
+        'shareLink' => 'Share link',
+    ],
+    'joboffer' => [
         'addjoboffer' => 'Add Offer Letter',
         'job' => 'Job',
         'OfferExp' => 'Offer Expire On',
@@ -406,9 +406,9 @@ return array(
         'totalDeductions' => 'Total Deductions',
         'netSalary' => 'Net Salary',
         'ctc' => 'Cost To Company',
-        'modelActionMsg' => 'To create offer letter with salary structure using payroll module'
-    ),
-    'setting' => array(
+        'modelActionMsg' => 'To create offer letter with salary structure using payroll module',
+    ],
+    'setting' => [
         'legalNote' => 'Legal Term Text',
         'mailSettings' => 'Mail Settings',
         'Backgroundimage' => 'Background Image',
@@ -447,84 +447,84 @@ return array(
         'enterNumberHere' => 'enter digit here',
         'selectDateHere' => 'select date from here',
         'recaptcha' => '<p>ReCAPTCHA is a service that protects your website from spam and abuse.</p><p>After enabling this one will require to pass reCaptcha verfication while applying for the job.</p>',
-        'statusSettings' => 'Job Applicaton Status'
-    ),
-    'newJobApplication' => array(
+        'statusSettings' => 'Job Applicaton Status',
+    ],
+    'newJobApplication' => [
         'subject' => 'New job application received',
         'text' => 'applied for job',
 
-    ),
-    'updateJobApplication' => array(
+    ],
+    'updateJobApplication' => [
         'subject' => 'Job application updated',
         'text' => 'Job application has been updated of',
         'text2' => 'for job',
-    ),
-    'recruiterJobApplicationStatusChange' => array(
+    ],
+    'recruiterJobApplicationStatusChange' => [
         'subject' => 'Job application status changed',
-        'text' => 'Job application has been changed to'
-    ),
-    'offerAccept' => array(
+        'text' => 'Job application has been changed to',
+    ],
+    'offerAccept' => [
         'subject' => 'Job offer accept',
         'text' => 'You have accepted offer letter for the job',
-    ),
-    'offerReject' => array(
+    ],
+    'offerReject' => [
         'subject' => 'Job offer reject',
         'text' => 'You have rejected offer letter for the job',
-    ),
+    ],
 
-    'newJob' => array(
+    'newJob' => [
         'subject' => 'New job opening',
         'text' => 'Now you are a recruiter for job',
         'alertMsg' => 'There is an new job openings for',
-        'lastDate' => 'last date to apply'
-    ),
+        'lastDate' => 'last date to apply',
+    ],
 
-    'updateJob' => array(
+    'updateJob' => [
         'subject' => 'Removed from Job',
         'subject2' => 'Job Updated',
         'text' => 'You have been removed from Job',
         'text2' => 'Job has been updated',
-    ),
+    ],
 
-    'offerLetter' => array(
+    'offerLetter' => [
         'subject' => 'Offer letter created',
         'text' => 'offer letter has been created for job',
         'reminderSubject' => 'Offer Letter reminder',
         'reminderText' => 'This mail is to inform you that your offer letter is expiring on date',
-        'reminderTextline' => 'Please respond accordingly.'
-    ),
+        'reminderTextline' => 'Please respond accordingly.',
+    ],
 
-    'updateOffer' => array(
+    'updateOffer' => [
         'subject' => 'Offer letter updated',
-        'text' => 'offer letter has been  updated for job'
-    ),
+        'text' => 'offer letter has been  updated for job',
+    ],
 
-    'emailNotification' => array(
+    'emailNotification' => [
         'notificationSetting' => 'Notification',
         'new-jobadded-by-admin' => 'New Job (Added by Admin)',
         'new-job-applicationadded-by-admin' => 'New Job Application (Added by Admin)',
         'new-interview-scheduleadded-by-admin' => 'New Interview Schedule (Added by Admin)',
         'new-offer-letteradded-by-admin' => 'New Offer Letter (Added by Admin)',
         'notification-to-recruiter' => 'Notifications to Recruiter',
-    ),
+    ],
 
-    'adminMail' => array(
+    'adminMail' => [
         'newJobSubject' => 'New Job Created',
         'newJobText' => 'New Job has been created',
         'newJobApplicationSubject' => 'New Job Application Created',
         'updateInterviewSubject' => 'Interview Schedule Updated',
         'updateInterviewText' => 'Interview Schedule Updated for job',
         'rescheduleSubject' => 'Interview Reschedule',
-    ),
+    ],
 
-    'followUpReminder' => array(
+    'followUpReminder' => [
         'subject' => 'Urgent: Candidate Follow-up Reminder',
-    ),
-    'sourceSetting' => array(
+    ],
+    'sourceSetting' => [
         'addSource' => 'Add Source',
         'source' => 'Source',
         'editSource' => 'Edit Source',
 
-    ),
+    ],
 
-);
+];

@@ -6,14 +6,13 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class BiolinkPasswordRequest extends FormRequest
 {
-
     /**
      * Get the validation rules that apply to the request.
      */
     public function rules(): array
     {
         return [
-            'password' => 'required|string'
+            'password' => 'required|string',
         ];
     }
 
@@ -24,5 +23,4 @@ class BiolinkPasswordRequest extends FormRequest
     {
         return true;
     }
-
 }

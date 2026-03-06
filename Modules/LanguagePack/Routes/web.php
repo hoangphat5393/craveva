@@ -14,7 +14,6 @@ use Modules\LanguagePack\Http\Controllers\LanguagePackController;
 |
 */
 
-
 // Admin routes
 Route::group(['middleware' => 'auth', 'prefix' => 'account'], function () {
 

@@ -9,7 +9,6 @@ class StoreRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      */
-
     public function rules(): array
     {
         $rules = [
@@ -23,7 +22,7 @@ class StoreRequest extends FormRequest
             'description' => 'required|string',
         ];
 
-        if (!$this->user_id) {
+        if (! $this->user_id) {
             $rules['employeeName'] = 'required|string';
         }
 
@@ -37,5 +36,4 @@ class StoreRequest extends FormRequest
     {
         return true;
     }
-
 }

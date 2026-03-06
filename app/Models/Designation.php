@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\EmployeeDetails[] $members
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Designation[] $childs
  * @property-read int|null $members_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Designation newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Designation newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Designation query()
@@ -28,16 +29,18 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder|Designation whereLastUpdatedBy($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Designation whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Designation whereUpdatedAt($value)
+ *
  * @property int|null $company_id
  * @property-read int|null $childs_count
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Designation whereCompanyId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Designation whereParentId($value)
+ *
  * @mixin \Eloquent
  */
 class Designation extends BaseModel
 {
-
     use HasCompany;
 
     public function members(): HasMany
@@ -58,5 +61,4 @@ class Designation extends BaseModel
     {
         return $this->hasMany(Designation::class, 'parent_id')->with('childs');
     }
-
 }

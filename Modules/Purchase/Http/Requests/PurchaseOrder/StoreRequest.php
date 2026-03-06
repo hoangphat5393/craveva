@@ -7,7 +7,6 @@ use Illuminate\Validation\Rule;
 
 class StoreRequest extends FormRequest
 {
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -20,13 +19,14 @@ class StoreRequest extends FormRequest
         $rules = [
             'purchase_order_number' => [
                 'required',
-                Rule::unique('purchase_orders')->where('company_id', company()->id)
+                Rule::unique('purchase_orders')->where('company_id', company()->id),
             ],
             'vendor_id' => 'required',
-            'purchase_date' => 'required|date_format:"' . $setting->date_format . '"|before_or_equal:expected_date',
-            'expected_date' => 'required|date_format:"' . $setting->date_format . '"|after_or_equal:purchase_date',
+            'purchase_date' => 'required|date_format:"'.$setting->date_format.'"|before_or_equal:expected_date',
+            'expected_date' => 'required|date_format:"'.$setting->date_format.'"|after_or_equal:purchase_date',
             'exchange_rate' => 'required',
         ];
+
         return $rules;
     }
 
@@ -39,5 +39,4 @@ class StoreRequest extends FormRequest
     {
         return true;
     }
-
 }

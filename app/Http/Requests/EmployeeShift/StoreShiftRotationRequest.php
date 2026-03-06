@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreShiftRotationRequest extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -27,7 +26,7 @@ class StoreShiftRotationRequest extends FormRequest
         return [
             'rotation_name' => [
                 'required',
-                'unique:employee_shift_rotations,rotation_name,' . $rotationId . ',id,company_id,' . company()->id,
+                'unique:employee_shift_rotations,rotation_name,'.$rotationId.',id,company_id,'.company()->id,
             ],
             'rotation_frequency' => 'required',
             'schedule_on' => 'required_if:rotation_frequency,weekly,bi-weekly',
@@ -35,5 +34,4 @@ class StoreShiftRotationRequest extends FormRequest
             'color_code' => 'required',
         ];
     }
-
 }

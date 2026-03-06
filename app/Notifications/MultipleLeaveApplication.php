@@ -7,15 +7,15 @@ use App\Models\Leave;
 
 class MultipleLeaveApplication extends BaseNotification
 {
-
-
     /**
      * Create a new notification instance.
      *
      * @return void
      */
     private $leave;
+
     private $multiDates;
+
     private $emailSetting;
 
     public function __construct(Leave $leave, $multiDates)
@@ -29,7 +29,7 @@ class MultipleLeaveApplication extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -46,7 +46,7 @@ class MultipleLeaveApplication extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
@@ -54,16 +54,16 @@ class MultipleLeaveApplication extends BaseNotification
         $build = parent::build($notifiable);
         $url = route('leaves.show', $this->leave->unique_id);
         $url = getDomainSpecificUrl($url, $this->company);
-        $dates = str_replace(',', ' to ', $this->multiDates);;
+        $dates = str_replace(',', ' to ', $this->multiDates);
 
-        $emailDate = __('app.leaveDate') . '<br>';
+        $emailDate = __('app.leaveDate').'<br>';
 
-        $emailDate .= $dates .' ( '. __('app.status') . ': ' . $this->leave->status.' )'.'<br>';
-        $emailDate .= __('modules.leaves.reason') . ': ' . $this->leave->reason . '<br>';
+        $emailDate .= $dates.' ( '.__('app.status').': '.$this->leave->status.' )'.'<br>';
+        $emailDate .= __('modules.leaves.reason').': '.$this->leave->reason.'<br>';
 
         $build
-            ->subject(__('email.leave.applied') . ' - ' . config('app.name'))
-            ->greeting(__('email.hello') . ' ' . $notifiable->name . ',')
+            ->subject(__('email.leave.applied').' - '.config('app.name'))
+            ->greeting(__('email.hello').' '.$notifiable->name.',')
             ->markdown('mail.leaves.multiple', [
                 'url' => $url,
                 'content' => $emailDate,
@@ -79,13 +79,12 @@ class MultipleLeaveApplication extends BaseNotification
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
-    //phpcs:ignore
+    // phpcs:ignore
     public function toArray($notifiable)
     {
         return $this->leave->toArray();
     }
-
 }

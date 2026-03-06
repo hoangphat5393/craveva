@@ -7,13 +7,18 @@ use Illuminate\View\Component;
 
 class Notification extends Component
 {
-
     public $link;
+
     public $image;
+
     public $title;
+
     public $text;
+
     public $time;
+
     public $notification;
+
     public $type;
 
     /**
@@ -41,5 +46,4 @@ class Notification extends Component
     {
         return view('components.cards.notification');
     }
-
 }

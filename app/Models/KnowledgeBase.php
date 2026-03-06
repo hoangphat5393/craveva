@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\KnowledgeBaseCategory|null $knowledgebasecategory
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|KnowledgeBase newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|KnowledgeBase newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|KnowledgeBase query()
@@ -31,17 +32,19 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder|KnowledgeBase whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|KnowledgeBase whereTo($value)
  * @method static \Illuminate\Database\Eloquent\Builder|KnowledgeBase whereUpdatedAt($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\KnowledgeBaseFile[] $files
  * @property-read int|null $files_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|KnowledgeBase whereCompanyId($value)
+ *
  * @mixin \Eloquent
  */
 class KnowledgeBase extends BaseModel
 {
-
-    use HasFactory, HasCompany;
+    use HasCompany, HasFactory;
 
     const FILE_PATH = 'knowledgebase';
 
@@ -54,5 +57,4 @@ class KnowledgeBase extends BaseModel
     {
         return $this->hasMany(KnowledgeBaseFile::class, 'knowledge_base_id')->orderByDesc('id');
     }
-
 }

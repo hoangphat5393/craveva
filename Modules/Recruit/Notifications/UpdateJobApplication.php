@@ -3,14 +3,13 @@
 namespace Modules\Recruit\Notifications;
 
 use App\Notifications\BaseNotification;
-use Illuminate\Notifications\Messages\MailMessage;
 use Modules\Recruit\Entities\RecruitEmailNotificationSetting;
 use Modules\Recruit\Entities\RecruitJobApplication;
 
 class UpdateJobApplication extends BaseNotification
 {
-
     private $jobApplication;
+
     private $emailSetting;
 
     /**
@@ -18,7 +17,6 @@ class UpdateJobApplication extends BaseNotification
      *
      * @return void
      */
-
     public function __construct(RecruitJobApplication $jobApplication)
     {
         $this->jobApplication = $jobApplication;
@@ -29,7 +27,7 @@ class UpdateJobApplication extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -46,7 +44,7 @@ class UpdateJobApplication extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
@@ -54,23 +52,23 @@ class UpdateJobApplication extends BaseNotification
         $url = route('job-applications.show', $this->jobApplication->id);
         $url = getDomainSpecificUrl($url, $this->company);
 
-        $content = __('recruit::modules.updateJobApplication.text') . ' ' . __($this->jobApplication->full_name) . ' - ' . ($this->jobApplication->email ?? '') . ' - ' . __('app.status') . ' - ' . $this->jobApplication->applicationStatus->status . ' - ' . __('recruit::modules.updateJobApplication.text2') . ' - ' . ucwords($this->jobApplication->job->title);
+        $content = __('recruit::modules.updateJobApplication.text').' '.__($this->jobApplication->full_name).' - '.($this->jobApplication->email ?? '').' - '.__('app.status').' - '.$this->jobApplication->applicationStatus->status.' - '.__('recruit::modules.updateJobApplication.text2').' - '.ucwords($this->jobApplication->job->title);
 
         return parent::build()
-            ->subject(__('recruit::modules.updateJobApplication.subject') . ' - ' . __($this->jobApplication->full_name))
+            ->subject(__('recruit::modules.updateJobApplication.subject').' - '.__($this->jobApplication->full_name))
             ->markdown('mail.email', [
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
-                'actionText' => __('app.view') . ' ' . __('recruit::modules.jobApplication.jobApplication'),
-                'notifiableName' => $notifiable->name
+                'actionText' => __('app.view').' '.__('recruit::modules.jobApplication.jobApplication'),
+                'notifiableName' => $notifiable->name,
             ]);
     }
 
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function toArray($notifiable)
@@ -78,8 +76,7 @@ class UpdateJobApplication extends BaseNotification
         return [
             'user_id' => $notifiable->id,
             'jobApp_id' => $this->jobApplication->id,
-            'heading' => $this->jobApplication->full_name
+            'heading' => $this->jobApplication->full_name,
         ];
     }
-
 }

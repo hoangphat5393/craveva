@@ -35,6 +35,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ProposalItem[] $items
  * @property-read int|null $items_count
  * @property-read \App\Models\ProposalSign|null $signature
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Proposal newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Proposal newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Proposal query()
@@ -55,27 +56,37 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @method static \Illuminate\Database\Eloquent\Builder|Proposal whereTotal($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Proposal whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Proposal whereValidTill($value)
+ *
  * @property string|null $hash
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Proposal whereHash($value)
+ *
  * @property string|null $description
  * @property string $calculate_tax
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Proposal whereCalculateTax($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Proposal whereDescription($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Proposal whereCompanyId($value)
+ *
  * @property-read \App\Models\UnitType|null $unit
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Proposal whereIpAddress($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Proposal whereLastViewed($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Proposal whereUnitId($value)
+ *
  * @property int $send_status
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Proposal whereSendStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Proposal whereDealId($value)
+ *
  * @mixin \Eloquent
  */
 class Proposal extends BaseModel
 {
-
     use HasCompany;
 
     protected $table = 'proposals';
@@ -123,5 +134,4 @@ class Proposal extends BaseModel
 
         return $lastProposal ? $lastProposal->original_proposal_number : '0';
     }
-
 }

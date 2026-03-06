@@ -9,14 +9,11 @@ use Illuminate\Support\Facades\Notification;
 
 class DiscussionMentionListener
 {
-
     /**
      * Handle the event.
      *
-     * @param DiscussionMentionEvent $event
      * @return void
      */
-
     public function handle(DiscussionMentionEvent $event)
     {
 
@@ -25,5 +22,4 @@ class DiscussionMentionListener
 
         Notification::send($mentionUser, new NewDiscussionMention($event->discussion));
     }
-
 }

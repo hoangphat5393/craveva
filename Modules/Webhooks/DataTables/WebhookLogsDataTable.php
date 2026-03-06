@@ -2,14 +2,13 @@
 
 namespace Modules\Webhooks\DataTables;
 
-use Carbon\Carbon;
 use App\DataTables\BaseDataTable;
-use Yajra\DataTables\Html\Column;
+use Carbon\Carbon;
 use Modules\Webhooks\Entities\WebhooksLog;
+use Yajra\DataTables\Html\Column;
 
 class WebhookLogsDataTable extends BaseDataTable
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -18,7 +17,7 @@ class WebhookLogsDataTable extends BaseDataTable
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
@@ -26,7 +25,7 @@ class WebhookLogsDataTable extends BaseDataTable
         $datatables = datatables()->eloquent($query);
 
         $datatables->addColumn('name', function ($row) {
-            return $row->webhookSettings ? '<a href="' . route('webhooks-log.show', [$row->id]) . '" class="text-darkest-grey">' . $row->webhookSettings->name . '</a>' : '--';
+            return $row->webhookSettings ? '<a href="'.route('webhooks-log.show', [$row->id]).'" class="text-darkest-grey">'.$row->webhookSettings->name.'</a>' : '--';
         });
 
         $datatables->addColumn('response_code', function ($row) {
@@ -40,10 +39,10 @@ class WebhookLogsDataTable extends BaseDataTable
             if (isset($responseCodes[$row->response_code])) {
                 $badge = $responseCodes[$row->response_code];
 
-                return '<span class="badge ' . $badge['class'] . '">' . $row->response_code . '</span>';
+                return '<span class="badge '.$badge['class'].'">'.$row->response_code.'</span>';
             }
 
-            return '<span class="badge badge-secondary">' . $row->response_code . '</span>'; // Default badge for unknown response codes
+            return '<span class="badge badge-secondary">'.$row->response_code.'</span>'; // Default badge for unknown response codes
         });
 
         $datatables->editColumn('created_at', function ($row) {
@@ -51,13 +50,13 @@ class WebhookLogsDataTable extends BaseDataTable
         });
 
         $datatables->addColumn('action', function ($row) {
-            return $row->webhookSettings ? '<div class="task_view"> <a href="' . route('webhooks-log.show', [$row->id]) . '" class="task_view_more d-flex align-items-center justify-content-center edit-custom-field" href="javascript:;" data-id="{{ $row->id }}" >' . __('app.view') . '</a> </div>' : '--';
+            return $row->webhookSettings ? '<div class="task_view"> <a href="'.route('webhooks-log.show', [$row->id]).'" class="task_view_more d-flex align-items-center justify-content-center edit-custom-field" href="javascript:;" data-id="{{ $row->id }}" >'.__('app.view').'</a> </div>' : '--';
         });
 
         $datatables->addIndexColumn();
         $datatables->smart(false);
 
-        $datatables->setRowId(fn($row) => 'row-' . $row->id);
+        $datatables->setRowId(fn ($row) => 'row-'.$row->id);
 
         $datatables->rawColumns(['name', 'action', 'response_code', 'created_at']);
 
@@ -65,20 +64,18 @@ class WebhookLogsDataTable extends BaseDataTable
     }
 
     /**
-     * @param WebhooksLog $model
      * @return \Illuminate\Database\Query\Builder
      */
     public function query(WebhooksLog $model)
     {
         $request = $this->request();
 
-
-        $model = $model->select('*','webhooks_logs.id as id')->join('webhooks_settings', 'webhooks_settings.id', '=', 'webhooks_logs.webhooks_setting_id');
+        $model = $model->select('*', 'webhooks_logs.id as id')->join('webhooks_settings', 'webhooks_settings.id', '=', 'webhooks_logs.webhooks_setting_id');
 
         if ($request->searchText != '') {
             $model->where(function ($query) {
-                $query->where('webhooks_settings.name', 'like', '%' . request('searchText') . '%')
-                    ->orWhere('webhooks_logs.response_code', 'like', '%' . request('searchText') . '%');
+                $query->where('webhooks_settings.name', 'like', '%'.request('searchText').'%')
+                    ->orWhere('webhooks_logs.response_code', 'like', '%'.request('searchText').'%');
             });
         }
 
@@ -118,7 +115,7 @@ class WebhookLogsDataTable extends BaseDataTable
 
             __('app.id') => ['data' => 'id', 'name' => 'id', 'title' => __('app.id'), 'visible' => false],
 
-            __('webhooks::app.webhookName') => ['data' => 'name', 'name' => 'name', 'title' => __('webhooks::app.webhookName'), 'exportable' => false,],
+            __('webhooks::app.webhookName') => ['data' => 'name', 'name' => 'name', 'title' => __('webhooks::app.webhookName'), 'exportable' => false],
 
             __('webhooks::app.responseCode') => ['data' => 'response_code', 'name' => 'response_code', 'title' => __('webhooks::app.responseCode')],
 
@@ -130,10 +127,9 @@ class WebhookLogsDataTable extends BaseDataTable
                 ->exportable(false)
                 ->printable(false)
                 ->orderable(false)
-                ->addClass('text-right pr-20')
+                ->addClass('text-right pr-20'),
         ];
 
         return array_merge($data, $action);
     }
-
 }

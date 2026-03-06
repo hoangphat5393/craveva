@@ -2,25 +2,24 @@
 
 namespace App\Http\Middleware;
 
-use Closure;
-use App\Models\User;
 use App\Models\Company;
+use App\Models\User;
+use Closure;
+use Illuminate\Auth\Middleware\Authenticate as Middleware;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Auth\Middleware\Authenticate as Middleware;
 
 class Authenticate extends Middleware
 {
-
     /**
      * Get the path the user should be redirected to when they are not authenticated.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @return string|null
      */
     protected function redirectTo($request)
     {
-        if (!$request->expectsJson()) {
+        if (! $request->expectsJson()) {
             return route('login');
         }
     }
@@ -28,9 +27,8 @@ class Authenticate extends Middleware
     /**
      * Handle an incoming request.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param \Closure $next
-     * @param string[] ...$guards
+     * @param  \Illuminate\Http\Request  $request
+     * @param  string[]  ...$guards
      * @return mixed
      *
      * @throws \Illuminate\Auth\AuthenticationException
@@ -44,7 +42,7 @@ class Authenticate extends Middleware
             'url' => $request->fullUrl(),
             'user_id' => user() ? user()->id : 'null',
             'session_id' => session()->getId(),
-            'route' => $routeName
+            'route' => $routeName,
         ]);
 
         if ($routeName === 'settings.qr-login') {
@@ -61,7 +59,7 @@ class Authenticate extends Middleware
         }
 
         if (user()) {
-            $isActive = cache()->rememberForever('user_is_active_' . user()->id, function () {
+            $isActive = cache()->rememberForever('user_is_active_'.user()->id, function () {
                 return User::where('id', user()->id)
                     ->where('status', 'active')
                     ->exists();
@@ -69,10 +67,10 @@ class Authenticate extends Middleware
 
             \Illuminate\Support\Facades\Log::info('Authenticate Middleware isActive Check', [
                 'user_id' => user()->id,
-                'isActive' => $isActive
+                'isActive' => $isActive,
             ]);
 
-            if (!$isActive) {
+            if (! $isActive) {
                 \Illuminate\Support\Facades\Log::info('Authenticate Middleware: User inactive, logging out');
                 auth()->logout();
                 session()->flush();
@@ -91,5 +89,4 @@ class Authenticate extends Middleware
 
         return $next($request);
     }
-
 }

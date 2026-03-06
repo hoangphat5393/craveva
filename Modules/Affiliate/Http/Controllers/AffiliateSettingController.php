@@ -3,18 +3,18 @@
 namespace Modules\Affiliate\Http\Controllers;
 
 use App\Helper\Reply;
-use Illuminate\Http\Request;
-use Illuminate\Contracts\Support\Renderable;
 use App\Http\Controllers\AccountBaseController;
 use App\Models\GlobalSetting;
+use Illuminate\Contracts\Support\Renderable;
+use Illuminate\Http\Request;
 use Modules\Affiliate\Entities\AffiliateSetting;
 use Modules\Affiliate\Http\Requests\CreateSettingsRequest;
 
 class AffiliateSettingController extends AccountBaseController
 {
-
     /**
      * Display a listing of the resource.
+     *
      * @return Renderable
      */
     public function __construct()
@@ -23,36 +23,40 @@ class AffiliateSettingController extends AccountBaseController
         $this->pageTitle = 'affiliate::app.menu.affiliateSettings';
         $this->activeSettingMenu = 'affiliate_settings';
 
-        $this->middleware(function ($request, $next){
+        $this->middleware(function ($request, $next) {
             abort_403(GlobalSetting::validateSuperAdmin());
+
             return $next($request);
         });
     }
 
     /**
      * Display a listing of the resource.
+     *
      * @return Renderable
      */
     public function index()
     {
         $this->viewPermission = user()->permission('manage_affiliate_settings');
-        abort_403(!($this->viewPermission == 'all'));
+        abort_403(! ($this->viewPermission == 'all'));
 
         $this->settings = AffiliateSetting::first();
+
         return view('affiliate::affiliate-settings.index', $this->data);
     }
 
     /**
      * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
+     *
+     * @param  Request  $request
+     * @param  int  $id
      * @return Renderable
      */
     public function update(CreateSettingsRequest $request, $id)
     {
         abort_403(user()->permission('manage_affiliate_settings') != 'all');
 
-        if  ($request->payout_type == 'on signup' && $request->commission_type == 'percent') {
+        if ($request->payout_type == 'on signup' && $request->commission_type == 'percent') {
             return Reply::error(__('affiliate::messages.commissionTypeError'));
         }
 
@@ -67,5 +71,4 @@ class AffiliateSettingController extends AccountBaseController
 
         return Reply::success(__('messages.updateSuccess'));
     }
-
 }

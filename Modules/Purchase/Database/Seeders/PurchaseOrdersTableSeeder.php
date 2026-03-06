@@ -15,7 +15,6 @@ use Modules\Purchase\Entities\PurchaseVendor;
 
 class PurchaseOrdersTableSeeder extends Seeder
 {
-
     /**
      * Run the database seeds.
      *
@@ -30,7 +29,7 @@ class PurchaseOrdersTableSeeder extends Seeder
         $setting = Company::find($companyId);
         $unit = UnitType::select('id')->where('company_id', $companyId)->first();
 
-        foreach(range(0, 15) as $item){
+        foreach (range(0, 15) as $item) {
             $product = Product::all()->random();
             $purchaseOrder = $item + 1;
             $order = [
@@ -81,5 +80,4 @@ class PurchaseOrdersTableSeeder extends Seeder
 
         PurchaseItem::create($item);
     }
-
 }

@@ -15,7 +15,9 @@ class OnboardingNotificationEvent
      * Create a new event instance.
      */
     public $user;
+
     public $password;
+
     public $notice_period_start_date;
 
     public function __construct(User $user, $password, $notice_period_start_date)
@@ -25,5 +27,4 @@ class OnboardingNotificationEvent
         $this->notice_period_start_date = $notice_period_start_date; // Set the notice period start date
 
     }
-
 }

@@ -1,15 +1,15 @@
 <?php
 
-use App\Models\User;
 use App\Models\Company;
+use App\Models\User;
 use App\Models\UserAuth;
 use App\Scopes\CompanyScope;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 
-require __DIR__ . '/../vendor/autoload.php';
-$app = require __DIR__ . '/../bootstrap/app.php';
+require __DIR__.'/../vendor/autoload.php';
+$app = require __DIR__.'/../bootstrap/app.php';
 $app->make(\Illuminate\Contracts\Console\Kernel::class)->bootstrap();
 
 echo "\n--- START DEBUGGING LOCAL LOGIN ---\n";
@@ -18,17 +18,17 @@ echo "\n--- START DEBUGGING LOCAL LOGIN ---\n";
 $email = 'superadmin@example.com';
 $userAuth = UserAuth::where('email', $email)->first();
 
-if (!$userAuth) {
-    die("ERROR: UserAuth not found for email: $email\n");
+if (! $userAuth) {
+    exit("ERROR: UserAuth not found for email: $email\n");
 }
 echo "1. UserAuth Found: ID {$userAuth->id}, Email {$userAuth->email}\n";
 
 // 2. Simulate Login
 Auth::loginUsingId($userAuth->id);
 if (auth()->check()) {
-    echo "2. Auth::login() successful. Auth ID: " . auth()->id() . "\n";
+    echo '2. Auth::login() successful. Auth ID: '.auth()->id()."\n";
 } else {
-    die("ERROR: Auth::login() failed.\n");
+    exit("ERROR: Auth::login() failed.\n");
 }
 
 // 3. Check Helper user() Logic (BEFORE Session Company Set)
@@ -85,13 +85,13 @@ if ($userHelperAfter) {
     echo "      DEBUGGING HELPER LOGIC:\n";
     $authId = auth()->id();
     echo "      - Auth ID: $authId\n";
-    echo "      - Session Company: " . (session()->has('company') ? 'Yes' : 'No') . "\n";
+    echo '      - Session Company: '.(session()->has('company') ? 'Yes' : 'No')."\n";
 
     $queryLog = DB::getQueryLog();
     // Enable query log for next query
     DB::enableQueryLog();
     $retryUser = User::where('user_auth_id', $authId)->where('status', 'active')->first();
-    echo "      - Standard Query Result: " . ($retryUser ? 'Found' : 'Not Found') . "\n";
+    echo '      - Standard Query Result: '.($retryUser ? 'Found' : 'Not Found')."\n";
     // print_r(DB::getQueryLog());
 }
 

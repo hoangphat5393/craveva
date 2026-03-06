@@ -15,12 +15,11 @@ enum Size: string
     public function label(): string
     {
         return match ($this) {
-            self::SMALL => __('biolinks::app.' . $this->value),
-            self::MEDIUM => __('biolinks::app.' . $this->value),
-            self::LARGE => __('biolinks::app.' . $this->value),
-            self::EXTRA_LARGE => __('biolinks::app.' . $this->value),
+            self::SMALL => __('biolinks::app.'.$this->value),
+            self::MEDIUM => __('biolinks::app.'.$this->value),
+            self::LARGE => __('biolinks::app.'.$this->value),
+            self::EXTRA_LARGE => __('biolinks::app.'.$this->value),
             default => $this->value,
         };
     }
-
 }

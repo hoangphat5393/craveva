@@ -10,7 +10,6 @@ use Modules\Zoom\Events\MeetingReminderEvent;
 
 class SendMeetingReminder extends Command
 {
-
     /**
      * The console command name.
      *
@@ -39,6 +38,7 @@ class SendMeetingReminder extends Command
 
         if ($companies->count() == 0) {
             $this->error('No Company with api key set found');
+
             return true;
         }
 
@@ -46,7 +46,7 @@ class SendMeetingReminder extends Command
 
             $companyId = $company->id;
 
-            $this->info('Running for company id.' . $companyId);
+            $this->info('Running for company id.'.$companyId);
 
             $events = ZoomMeeting::select('id', 'meeting_name', 'label_color', 'description', 'start_date_time', 'end_date_time', 'repeat', 'send_reminder', 'remind_time', 'remind_type')
                 ->where('start_date_time', '>=', now($company->timezone))
@@ -72,18 +72,17 @@ class SendMeetingReminder extends Command
         $reminderDateTime = '';
 
         switch ($type) {
-        case 'day':
-            $reminderDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $event->start_date_time, $company->timezone)->subDays($time);
-            break;
-        case 'hour':
-            $reminderDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $event->start_date_time, $company->timezone)->subHours($time);
-            break;
-        case 'minute':
-            $reminderDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $event->start_date_time, $company->timezone)->subMinutes($time);
-            break;
+            case 'day':
+                $reminderDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $event->start_date_time, $company->timezone)->subDays($time);
+                break;
+            case 'hour':
+                $reminderDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $event->start_date_time, $company->timezone)->subHours($time);
+                break;
+            case 'minute':
+                $reminderDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $event->start_date_time, $company->timezone)->subMinutes($time);
+                break;
         }
 
         return $reminderDateTime;
     }
-
 }

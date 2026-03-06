@@ -8,7 +8,6 @@ use Illuminate\Queue\SerializesModels;
 
 class BirthdayReminderEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     /**
@@ -16,8 +15,8 @@ class BirthdayReminderEvent
      *
      * @return void
      */
-
     public $upcomingBirthdays;
+
     public $company;
 
     public function __construct($company, $upcomingBirthdays)
@@ -25,5 +24,4 @@ class BirthdayReminderEvent
         $this->upcomingBirthdays = $upcomingBirthdays;
         $this->company = $company;
     }
-
 }

@@ -2,22 +2,26 @@
 
 namespace App\DataTables;
 
+use App\Helper\Common;
 use App\Models\GlobalSetting;
 use App\Models\Proposal;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
-use App\Helper\Common;
 
 class ProposalDataTable extends BaseDataTable
 {
-
     private $editProposalPermission;
+
     private $addInvoicePermission;
+
     private $deleteProposalPermission;
+
     private $viewProposalPermission;
+
     private $leadFilterFalse;
+
     private $addProposalPermission;
 
     public function __construct($leadFilterFalse = false)
@@ -34,7 +38,7 @@ class ProposalDataTable extends BaseDataTable
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
@@ -47,61 +51,61 @@ class ProposalDataTable extends BaseDataTable
 
                     <div class="dropdown">
                         <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" type="link"
-                            id="dropdownMenuLink-' . $row->id . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            id="dropdownMenuLink-'.$row->id.'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="icon-options-vertical icons"></i>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-' . $row->id . '" tabindex="0">';
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-'.$row->id.'" tabindex="0">';
 
-                $action .= '<a href="' . route('proposals.show', [$row->id]) . '" class="dropdown-item"><i class="fa fa-eye mr-2"></i>' . __('app.view') . '</a>';
+                $action .= '<a href="'.route('proposals.show', [$row->id]).'" class="dropdown-item"><i class="fa fa-eye mr-2"></i>'.__('app.view').'</a>';
 
                 if ($row->send_status) {
-                    $action .= '<a target="_blank" class="dropdown-item" href="' . url()->temporarySignedRoute('front.proposal', now()->addDays(GlobalSetting::SIGNED_ROUTE_EXPIRY), $row->hash) . '">
+                    $action .= '<a target="_blank" class="dropdown-item" href="'.url()->temporarySignedRoute('front.proposal', now()->addDays(GlobalSetting::SIGNED_ROUTE_EXPIRY), $row->hash).'">
                                     <i class="fa fa-link mr-2"></i>
-                                    ' . __('modules.proposal.publicLink') . '
+                                    '.__('modules.proposal.publicLink').'
                                 </a>';
                 }
 
-                $action .= '<a class="dropdown-item" href="' . route('proposals.download', [$row->id]) . '">
+                $action .= '<a class="dropdown-item" href="'.route('proposals.download', [$row->id]).'">
                                 <i class="fa fa-download mr-2"></i>
-                                ' . trans('app.download') . '
+                                '.trans('app.download').'
                             </a>';
 
-                if (!$row->signature && $this->editProposalPermission == 'all' || ($this->editProposalPermission == 'added' && user()->id == $row->added_by)) {
-                    $action .= '<a class="dropdown-item" href="' . route('proposals.edit', [$row->id]) . '">
+                if (! $row->signature && $this->editProposalPermission == 'all' || ($this->editProposalPermission == 'added' && user()->id == $row->added_by)) {
+                    $action .= '<a class="dropdown-item" href="'.route('proposals.edit', [$row->id]).'">
                                 <i class="fa fa-edit mr-2"></i>
-                                ' . trans('app.edit') . '
+                                '.trans('app.edit').'
                             </a>';
                 }
 
                 if ($row->status != 'declined') {
-                    $action .= '<a class="dropdown-item sendButton" href="javascript:;" data-toggle="tooltip"  data-proposal-id="' . $row->id . '">
+                    $action .= '<a class="dropdown-item sendButton" href="javascript:;" data-toggle="tooltip"  data-proposal-id="'.$row->id.'">
                             <i class="fa fa-paper-plane mr-2"></i>
-                            ' . trans('app.send') . '
+                            '.trans('app.send').'
                         </a>';
                 }
 
                 if ($row->status != 'declined' && $row->send_status == 0) {
-                    $action .= '<a class="dropdown-item sendButton d-flex justify-content-between align-items-center" data-type="mark_as_send" href="javascript:;"  data-proposal-id="' . $row->id . '">
+                    $action .= '<a class="dropdown-item sendButton d-flex justify-content-between align-items-center" data-type="mark_as_send" href="javascript:;"  data-proposal-id="'.$row->id.'">
                                     <div><i class="fa fa-check-double mr-2"></i>
-                                    ' . trans('app.markSent') . '
+                                    '.trans('app.markSent').'
                                     </div>
-                                    <i class="fa fa-question-circle" data-toggle="tooltip" data-original-title="' . __('messages.markSentInfo') . '"></i>
+                                    <i class="fa fa-question-circle" data-toggle="tooltip" data-original-title="'.__('messages.markSentInfo').'"></i>
                                 </a>';
                 }
 
                 if (($this->addInvoicePermission == 'all' || ($this->addInvoicePermission == 'added' && user()->id == $row->added_by))) {
-                    $action .= '<a class="dropdown-item" href="' . route('invoices.create') . '?proposal=' . $row->id . '" ><i class="fa fa-plus mr-2"></i> ' . __('app.create') . ' ' . __('app.invoice') . '</a>';
+                    $action .= '<a class="dropdown-item" href="'.route('invoices.create').'?proposal='.$row->id.'" ><i class="fa fa-plus mr-2"></i> '.__('app.create').' '.__('app.invoice').'</a>';
                 }
 
-                if (!$row->signature && $this->deleteProposalPermission == 'all' || ($this->deleteProposalPermission == 'added' && user()->id == $row->added_by)) {
-                    $action .= '<a class="dropdown-item delete-proposal-table-row" href="javascript:;" data-proposal-id="' . $row->id . '">
+                if (! $row->signature && $this->deleteProposalPermission == 'all' || ($this->deleteProposalPermission == 'added' && user()->id == $row->added_by)) {
+                    $action .= '<a class="dropdown-item delete-proposal-table-row" href="javascript:;" data-proposal-id="'.$row->id.'">
                                 <i class="fa fa-trash mr-2"></i>
-                                ' . trans('app.delete') . '
+                                '.trans('app.delete').'
                             </a>';
                 }
 
                 if ($this->addProposalPermission == 'all' || $this->addProposalPermission == 'added') {
-                    $action .= '<a href="' . route('proposals.create') . '?proposal=' . $row->id . '" class="dropdown-item"><i class="fa fa-copy mr-2"></i> ' . __('app.create') . ' ' . __('app.duplicate') . '</a>';
+                    $action .= '<a href="'.route('proposals.create').'?proposal='.$row->id.'" class="dropdown-item"><i class="fa fa-copy mr-2"></i> '.__('app.create').' '.__('app.duplicate').'</a>';
                 }
 
                 $action .= '</div>
@@ -111,31 +115,31 @@ class ProposalDataTable extends BaseDataTable
                 return $action;
             })
             ->editColumn('client_name', function ($row) {
-                return '<a href="' . route('deals.show', $row->deal_id) . '" class="text-darkest-grey">' . $row->deal_name . '</a>';
+                return '<a href="'.route('deals.show', $row->deal_id).'" class="text-darkest-grey">'.$row->deal_name.'</a>';
             })
             ->addColumn('proposal_number', function ($row) {
-                return '<a href="' . route('proposals.show', $row->id) . '" class="text-darkest-grey">' . $row->proposal_number . '</a>';
+                return '<a href="'.route('proposals.show', $row->id).'" class="text-darkest-grey">'.$row->proposal_number.'</a>';
             })
             ->addColumn('contact', function ($row) {
-                return '<a href="' . route('lead-contact.show', $row->leadId) . '" class="text-darkest-grey">' . ucwords($row->salutation . ' ') . $row->contact_name . '</a>';
+                return '<a href="'.route('lead-contact.show', $row->leadId).'" class="text-darkest-grey">'.ucwords($row->salutation.' ').$row->contact_name.'</a>';
             })
             ->editColumn('status', function ($row) {
                 $status = '';
 
                 if ($row->status == 'waiting') {
-                    $status = ' <i class="fa fa-circle mr-1 text-yellow f-10"></i>' . __('modules.proposal.' . $row->status);
+                    $status = ' <i class="fa fa-circle mr-1 text-yellow f-10"></i>'.__('modules.proposal.'.$row->status);
                 }
 
                 if ($row->status == 'declined') {
-                    $status = ' <i class="fa fa-circle mr-1 text-red f-10"></i>' . __('modules.proposal.' . $row->status);
+                    $status = ' <i class="fa fa-circle mr-1 text-red f-10"></i>'.__('modules.proposal.'.$row->status);
                 }
 
                 if ($row->status == 'accepted') {
-                    $status = ' <i class="fa fa-circle mr-1 text-dark-green f-10"></i>' . __('modules.proposal.' . $row->status);
+                    $status = ' <i class="fa fa-circle mr-1 text-dark-green f-10"></i>'.__('modules.proposal.'.$row->status);
                 }
 
-                if (!$row->send_status) {
-                    $status .= ' <span class="badge badge-secondary">' . __('modules.invoices.notSent') . '</span>';
+                if (! $row->send_status) {
+                    $status .= ' <span class="badge badge-secondary">'.__('modules.invoices.notSent').'</span>';
                 }
 
                 return $status;
@@ -190,7 +194,6 @@ class ProposalDataTable extends BaseDataTable
             ->join('deals', 'deals.id', '=', 'proposals.deal_id')
             ->leftJoin('leads', 'leads.id', '=', 'deals.lead_id');
 
-
         if ($request->startDate !== null && $request->startDate != 'null' && $request->startDate != '') {
             $startDate = companyToDateString($request->startDate);
             $model = $model->where(DB::raw('DATE(proposals.`created_at`)'), '>=', $startDate);
@@ -201,9 +204,8 @@ class ProposalDataTable extends BaseDataTable
             $model = $model->where(DB::raw('DATE(proposals.`created_at`)'), '<=', $endDate);
         }
 
-
         // disable this filter when proposals are retrived from the deal tab
-        if (!$this->leadFilterFalse && $request->leadId !== null && $request->leadId != 'null' && $request->leadId != '' && $request->leadId != 'all') {
+        if (! $this->leadFilterFalse && $request->leadId !== null && $request->leadId != 'null' && $request->leadId != '' && $request->leadId != 'all') {
             $model = $model->where('deals.lead_id', $request->leadId);
         }
 
@@ -212,7 +214,7 @@ class ProposalDataTable extends BaseDataTable
             $model = $model->where('proposals.deal_id', $request->leadId);
         }
 
-        if ($request->status != 'all' && !is_null($request->status)) {
+        if ($request->status != 'all' && ! is_null($request->status)) {
             $model = $model->where('proposals.status', '=', $request->status);
         }
 
@@ -223,15 +225,16 @@ class ProposalDataTable extends BaseDataTable
         if ($request->searchText != '') {
             $safeTerm = Common::safeString(request('searchText'));
             $model->where(function ($query) use ($safeTerm) {
-                $query->where('leads.client_name', 'like', '%' . $safeTerm . '%')
-                    ->orWhere('deals.name', 'like', '%' . $safeTerm . '%')
-                    ->orWhere('proposals.id', 'like', '%' . $safeTerm . '%')
-                    ->orWhere('total', 'like', '%' . $safeTerm . '%')
+                $query->where('leads.client_name', 'like', '%'.$safeTerm.'%')
+                    ->orWhere('deals.name', 'like', '%'.$safeTerm.'%')
+                    ->orWhere('proposals.id', 'like', '%'.$safeTerm.'%')
+                    ->orWhere('total', 'like', '%'.$safeTerm.'%')
                     ->orWhere(function ($query) use ($safeTerm) {
-                        $query->where('proposals.status', 'like', '%' . $safeTerm . '%');
+                        $query->where('proposals.status', 'like', '%'.$safeTerm.'%');
                     });
             });
         }
+
         return $model;
     }
 
@@ -256,7 +259,7 @@ class ProposalDataTable extends BaseDataTable
             ]);
 
         if (canDataTableExport()) {
-            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
+            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
         }
 
         return $dataTable;
@@ -284,7 +287,7 @@ class ProposalDataTable extends BaseDataTable
                 ->printable(false)
                 ->orderable(false)
                 ->searchable(false)
-                ->addClass('text-right pr-20')
+                ->addClass('text-right pr-20'),
         ];
     }
 }

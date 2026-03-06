@@ -2,19 +2,18 @@
 
 namespace Modules\Purchase\Http\Requests\VendorCredits;
 
-use App\Http\Requests\CoreRequest;
 use App\Traits\CustomFieldsRequestTrait;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreVendorCreditRequest extends FormRequest
 {
     use CustomFieldsRequestTrait;
+
     /**
      * Get the validation rules that apply to the request.
      *
      * @return array
      */
-
     public function rules()
     {
         $rules = [
@@ -39,10 +38,8 @@ class StoreVendorCreditRequest extends FormRequest
      *
      * @return bool
      */
-
     public function authorize()
     {
         return true;
     }
-
 }

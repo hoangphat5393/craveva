@@ -35,6 +35,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read mixed $extras
  * @property-read mixed $icon
  * @property-read \App\Models\User $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ClientDetails newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ClientDetails newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ClientDetails query()
@@ -60,24 +61,30 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|ClientDetails whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ClientDetails whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ClientDetails whereWebsite($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\User|null $addedBy
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ClientDetails whereCompanyId($value)
+ *
  * @property string|null $company_logo
  * @property int|null $quickbooks_client_id
  * @property-read mixed $image_url
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ClientDetails whereCompanyLogo($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ClientDetails whereQuickbooksClientId($value)
+ *
  * @property string|null $electronic_address
  * @property string|null $electronic_address_scheme
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ClientDetails whereElectronicAddress($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ClientDetails whereElectronicAddressScheme($value)
+ *
  * @mixin \Eloquent
  */
 class ClientDetails extends BaseModel
 {
-
     use CustomFieldsTrait, HasCompany;
 
     protected $fillable = ['company_name', 'user_id', 'address', 'postal_code', 'state', 'city', 'office', 'cell', 'website', 'note', 'skype', 'facebook', 'twitter', 'linkedin', 'tax_name', 'gst_number', 'shipping_address', 'category_id', 'sub_category_id', 'company_logo', 'electronic_address', 'electronic_address_scheme', 'client_code', 'pricing_tier_id'];
@@ -87,7 +94,6 @@ class ClientDetails extends BaseModel
     protected $table = 'client_details';
 
     protected $appends = ['image_url'];
-
 
     const CUSTOM_FIELD_MODEL = 'App\Models\ClientDetails';
 
@@ -104,7 +110,7 @@ class ClientDetails extends BaseModel
     public function getImageUrlAttribute()
     {
         try {
-            return ($this->company_logo) ? asset_url_local_s3('client-logo/' . $this->company_logo) : $this->company->logo_url;
+            return ($this->company_logo) ? asset_url_local_s3('client-logo/'.$this->company_logo) : $this->company->logo_url;
         } catch (\Exception $e) {
             return '';
         }

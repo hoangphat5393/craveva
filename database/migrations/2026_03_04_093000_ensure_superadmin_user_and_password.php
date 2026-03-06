@@ -31,7 +31,7 @@ return new class extends Migration
                 'updated_at' => now(),
             ]);
 
-            $userAuth = (object)['id' => $userAuthId, 'email' => 'superadmin@example.com'];
+            $userAuth = (object) ['id' => $userAuthId, 'email' => 'superadmin@example.com'];
         }
 
         // Ensure users table has a superadmin linked to user_auth

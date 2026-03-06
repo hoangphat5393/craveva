@@ -15,6 +15,7 @@ use App\Traits\HasCompany;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read mixed $icon
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ModuleSetting newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ModuleSetting newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ModuleSetting query()
@@ -24,14 +25,16 @@ use App\Traits\HasCompany;
  * @method static \Illuminate\Database\Eloquent\Builder|ModuleSetting whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ModuleSetting whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ModuleSetting whereUpdatedAt($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ModuleSetting whereCompanyId($value)
+ *
  * @mixin \Eloquent
  */
 class ModuleSetting extends BaseModel
 {
-
     use HasCompany;
 
     const CLIENT_MODULES = [
@@ -62,7 +65,7 @@ class ModuleSetting extends BaseModel
         'reports',
         'settings',
         'bankaccount',
-        'pricing'
+        'pricing',
     ];
 
     protected $guarded = ['id'];
@@ -84,7 +87,7 @@ class ModuleSetting extends BaseModel
 
         $module = $module->first();
 
-        return (bool)$module;
+        return (bool) $module;
     }
 
     public static function addCompanyIdToNullModule($company, $module)
@@ -102,7 +105,6 @@ class ModuleSetting extends BaseModel
     {
         self::addCompanyIdToNullModule($company, $module);
 
-
         $moduleInPackage = collect(json_decode($company->package->module_in_package));
 
         foreach ($roles as $role) {
@@ -112,7 +114,7 @@ class ModuleSetting extends BaseModel
                 ->where('company_id', $company->id)
                 ->first();
 
-            if (!$data) {
+            if (! $data) {
                 ModuleSetting::create([
                     'module_name' => $module,
                     'type' => $role,
@@ -123,6 +125,12 @@ class ModuleSetting extends BaseModel
             }
         }
 
-        PermissionRole::insertModuleRolePermission($module, $company->id);
+        $moduleExists = \App\Models\Module::withoutGlobalScopes()
+            ->where('module_name', $module)
+            ->exists();
+
+        if ($moduleExists) {
+            PermissionRole::insertModuleRolePermission($module, $company->id);
+        }
     }
 }

@@ -2,8 +2,8 @@
 
 namespace App\Models\SuperAdmin;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\BaseModel;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * App\Models\StripeSetting
@@ -41,6 +41,7 @@ use App\Models\BaseModel;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read mixed $show_pay
+ *
  * @method static Builder|StripeSetting newModelQuery()
  * @method static Builder|StripeSetting newQuery()
  * @method static Builder|StripeSetting query()
@@ -76,13 +77,12 @@ use App\Models\BaseModel;
  * @method static Builder|StripeSetting whereStripeStatus($value)
  * @method static Builder|StripeSetting whereUpdatedAt($value)
  * @method static Builder|StripeSetting whereWebhookKey($value)
+ *
  * @mixin Eloquent
  */
 class GlobalPaymentGatewayCredentials extends BaseModel
 {
-
     use HasFactory;
 
     protected $table = 'global_payment_gateway_credentials';
-
 }

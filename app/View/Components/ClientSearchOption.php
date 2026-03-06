@@ -7,7 +7,6 @@ use Illuminate\View\Component;
 
 class ClientSearchOption extends Component
 {
-
     public $user;
 
     /**
@@ -29,5 +28,4 @@ class ClientSearchOption extends Component
     {
         return view('components.client-search-option');
     }
-
 }

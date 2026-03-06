@@ -4,7 +4,6 @@ namespace Modules\Biolinks\Enums;
 
 enum BlockHoverAnimation: string
 {
-
     // phpcs:disable
     case NONE = 'none';
     case SMOOTH = 'smooth';
@@ -15,9 +14,8 @@ enum BlockHoverAnimation: string
     public function label(): string
     {
         return match ($this) {
-            self::NONE, self::SMOOTH, self::INSTANT => __('biolinks::app.' . $this->value),
+            self::NONE, self::SMOOTH, self::INSTANT => __('biolinks::app.'.$this->value),
             default => $this->value,
         };
     }
-
 }

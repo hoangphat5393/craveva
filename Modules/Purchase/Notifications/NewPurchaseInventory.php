@@ -2,18 +2,16 @@
 
 namespace Modules\Purchase\Notifications;
 
-use App\Models\Company;
 use App\Notifications\BaseNotification;
 use Illuminate\Notifications\Notification;
-use Illuminate\Notifications\Messages\MailMessage;
 use Modules\Purchase\Entities\PurchaseNotificationSetting;
 use Modules\Purchase\Entities\PurchaseProduct;
 use Modules\Purchase\Entities\PurchaseStockAdjustment;
 
 class NewPurchaseInventory extends BaseNotification
 {
-
     private $event;
+
     private $emailSetting;
 
     /**
@@ -30,7 +28,7 @@ class NewPurchaseInventory extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -47,7 +45,7 @@ class NewPurchaseInventory extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
@@ -70,11 +68,10 @@ class NewPurchaseInventory extends BaseNotification
                 $inventoryId = $stock->inventory_id;
             }
 
-            if($stock->type == 'quantity') {
-                $quantity[] = $stock->net_quantity . '(quantity)';
-            }
-            else {
-                $quantity[] = $stock->changed_value . '(value)';
+            if ($stock->type == 'quantity') {
+                $quantity[] = $stock->net_quantity.'(quantity)';
+            } else {
+                $quantity[] = $stock->changed_value.'(value)';
             }
         }
 
@@ -103,13 +100,12 @@ class NewPurchaseInventory extends BaseNotification
         $newInventory->subject(__('purchase::email.purchaseInventory.subject'))
             ->markdown('mail.email', [
                 'url' => $url,
-                'content' => $content . '<br>' .$values,
+                'content' => $content.'<br>'.$values,
                 'themeColor' => $notifiable->company->header_color,
                 'actionText' => __('purchase::email.purchaseInventory.viewInventory'),
-                'notifiableName' => $notifiable->name
+                'notifiableName' => $notifiable->name,
             ]);
 
         return $newInventory;
     }
-
 }

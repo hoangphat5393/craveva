@@ -14,15 +14,15 @@ use App\Http\Requests\Lead\UpdateRequest;
 use App\Imports\LeadImport;
 use App\Jobs\ImportLeadJob;
 use App\Models\Deal;
+use App\Models\Lead;
 use App\Models\LeadAgent;
 use App\Models\LeadCategory;
-use App\Models\Lead;
 use App\Models\LeadCustomForm;
 use App\Models\LeadPipeline;
 use App\Models\LeadProduct;
 use App\Models\LeadSource;
-use App\Models\PipelineStage;
 use App\Models\LeadStatus;
+use App\Models\PipelineStage;
 use App\Models\Product;
 use App\Models\User;
 use App\Traits\ImportExcel;
@@ -31,7 +31,6 @@ use Illuminate\Support\Facades\Session;
 
 class LeadContactController extends AccountBaseController
 {
-
     use ImportExcel;
 
     public function __construct()
@@ -39,7 +38,7 @@ class LeadContactController extends AccountBaseController
         parent::__construct();
         $this->pageTitle = 'modules.leadContact.leadContacts';
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('leads', $this->user->modules));
+            abort_403(! in_array('leads', $this->user->modules));
 
             return $next($request);
         });
@@ -50,9 +49,9 @@ class LeadContactController extends AccountBaseController
         $this->destroySession();
         $this->viewLeadPermission = $viewPermission = user()->permission('view_lead');
 
-        abort_403(!in_array($viewPermission, ['all','added','owned','both']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'owned', 'both']));
 
-        if (!request()->ajax()) {
+        if (! request()->ajax()) {
             $this->categories = LeadCategory::get();
             $this->sources = LeadSource::get();
             $this->employees = User::allEmployees(null, 'active');
@@ -68,7 +67,7 @@ class LeadContactController extends AccountBaseController
 
         $this->viewPermission = user()->permission('view_lead');
 
-        abort_403(!in_array($this->viewPermission, ['all','added','owned','both']));
+        abort_403(! in_array($this->viewPermission, ['all', 'added', 'owned', 'both']));
 
         $this->pageTitle = $this->leadContact->client_name_salutation;
 
@@ -89,13 +88,13 @@ class LeadContactController extends AccountBaseController
         $tab = request('tab');
 
         switch ($tab) {
-        case 'deal':
-            return $this->deals();
-        case 'notes':
-            return $this->notes();
-        default:
-            $this->view = 'lead-contact.ajax.profile';
-            break;
+            case 'deal':
+                return $this->deals();
+            case 'notes':
+                return $this->notes();
+            default:
+                $this->view = 'lead-contact.ajax.profile';
+                break;
         }
 
         if (request()->ajax()) {
@@ -110,10 +109,10 @@ class LeadContactController extends AccountBaseController
 
     public function notes()
     {
-        $dataTable = new LeadNotesDataTable();
+        $dataTable = new LeadNotesDataTable;
         $viewPermission = user()->permission('view_deals');
 
-        abort_403(!($viewPermission == 'all' || $viewPermission == 'added' || $viewPermission == 'both'));
+        abort_403(! ($viewPermission == 'all' || $viewPermission == 'added' || $viewPermission == 'both'));
 
         $tab = request('tab');
         $this->activeTab = $tab ?: 'profile';
@@ -127,7 +126,7 @@ class LeadContactController extends AccountBaseController
     {
         $viewPermission = user()->permission('view_deals');
 
-        abort_403(!in_array($viewPermission, ['all', 'added', 'both', 'owned']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'both', 'owned']));
 
         $tab = request('tab');
         $this->pipelines = LeadPipeline::all();
@@ -140,7 +139,7 @@ class LeadContactController extends AccountBaseController
 
         $this->activeTab = $tab ?: 'profile';
         $this->view = 'lead-contact.ajax.deal';
-        $dataTable = new DealsDataTable();
+        $dataTable = new DealsDataTable;
 
         return $dataTable->render('lead-contact.show', $this->data);
     }
@@ -155,7 +154,7 @@ class LeadContactController extends AccountBaseController
         $this->pageTitle = __('modules.leadContact.createTitle');
 
         $this->addPermission = user()->permission('add_lead');
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
 
         $this->employees = User::allEmployees(null, true);
 
@@ -168,14 +167,13 @@ class LeadContactController extends AccountBaseController
 
         $this->leadAgentArray = $this->leadAgents->pluck('user_id')->toArray();
 
-
         if ((in_array(user()->id, $this->leadAgentArray))) {
             $this->myAgentId = $this->leadAgents->filter(function ($value, $key) {
                 return $value->user_id == user()->id;
             })->first()->id;
         }
 
-        $leadContact = new Lead();
+        $leadContact = new Lead;
 
         $getCustomField = $leadContact->getCustomFieldGroupsWithFields();
 
@@ -195,7 +193,6 @@ class LeadContactController extends AccountBaseController
         $this->leadAgentArray = $this->leadAgents->pluck('user_id')->toArray();
         $this->products = Product::all();
 
-
         $this->view = 'lead-contact.ajax.create';
 
         if (request()->ajax()) {
@@ -207,15 +204,15 @@ class LeadContactController extends AccountBaseController
     }
 
     /**
-     * @param StoreRequest $request
      * @return array|void
+     *
      * @throws \Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException
      */
     public function store(StoreRequest $request)
     {
         $this->addPermission = user()->permission('add_lead');
 
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
 
         $existingUser = User::select('id')
             ->whereHas('roles', function ($q) {
@@ -225,7 +222,7 @@ class LeadContactController extends AccountBaseController
             ->whereNotNull('email')
             ->first();
 
-        $leadContact = new Lead();
+        $leadContact = new Lead;
         $leadContact->company_id = company()->id;
         $leadContact->salutation = $request->salutation;
         $leadContact->client_name = $request->client_name;
@@ -287,7 +284,7 @@ class LeadContactController extends AccountBaseController
     /**
      * Show the form for editing the specified resource.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -297,7 +294,7 @@ class LeadContactController extends AccountBaseController
 
         $this->editPermission = user()->permission('edit_lead');
 
-        abort_403(!($this->editPermission == 'all'
+        abort_403(! ($this->editPermission == 'all'
             || ($this->editPermission == 'added' && $this->leadContact->added_by == user()->id)
             || ($this->editPermission == 'owned' && $this->leadContact->lead_owner == user()->id)
             || ($this->editPermission == 'both' && $this->leadContact->added_by == user()->id) || user()->id == $this->leadContact->lead_owner)
@@ -346,9 +343,9 @@ class LeadContactController extends AccountBaseController
     }
 
     /**
-     * @param UpdateRequest $request
-     * @param int $id
+     * @param  int  $id
      * @return array|void
+     *
      * @throws \Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException
      */
     public function update(UpdateRequest $request, $id)
@@ -356,7 +353,7 @@ class LeadContactController extends AccountBaseController
         $leadContact = Lead::findOrFail($id);
         $this->editPermission = user()->permission('edit_lead');
 
-        abort_403(!($this->editPermission == 'all'
+        abort_403(! ($this->editPermission == 'all'
             || ($this->editPermission == 'added' && $leadContact->added_by == user()->id)
             || ($this->editPermission == 'owned' && $leadContact->lead_owner == user()->id)
             || ($this->editPermission == 'both' && $leadContact->added_by == user()->id) || user()->id == $leadContact->lead_owner)
@@ -381,7 +378,7 @@ class LeadContactController extends AccountBaseController
         $leadContact->mobile = $request->mobile;
         $leadContact->save();
 
-        $clientCreated = $request->create_client == "on" ? '1' : '0';
+        $clientCreated = $request->create_client == 'on' ? '1' : '0';
         Deal::where('lead_id', $leadContact->id)->update(['create_client' => $clientCreated]);
 
         // To add custom fields data
@@ -396,7 +393,7 @@ class LeadContactController extends AccountBaseController
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
@@ -404,7 +401,7 @@ class LeadContactController extends AccountBaseController
         $leadContact = Lead::findOrFail($id);
         $this->deletePermission = user()->permission('delete_lead');
 
-        abort_403(!($this->deletePermission == 'all'
+        abort_403(! ($this->deletePermission == 'all'
             || ($this->deletePermission == 'added' && $leadContact->added_by == user()->id)
             || ($this->deletePermission == 'owned' && $leadContact->lead_owner == user()->id)
             || ($this->deletePermission == 'both' && $leadContact->added_by == user()->id) || user()->id == $leadContact->lead_owner)
@@ -425,10 +422,10 @@ class LeadContactController extends AccountBaseController
 
     public function importLead()
     {
-        $this->pageTitle = __('app.importExcel') . ' ' . __('app.menu.lead');
+        $this->pageTitle = __('app.importExcel').' '.__('app.menu.lead');
 
         $this->addPermission = user()->permission('add_lead');
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
 
         if (request()->ajax()) {
             $html = view('leads.ajax.import', $this->data)->render();
@@ -445,7 +442,7 @@ class LeadContactController extends AccountBaseController
     {
         $rvalue = $this->importFileProcess($request, LeadImport::class);
 
-        if($rvalue == 'abort'){
+        if ($rvalue == 'abort') {
             return Reply::error(__('messages.abortAction'));
         }
 
@@ -461,7 +458,8 @@ class LeadContactController extends AccountBaseController
         return Reply::successWithData(__('messages.importProcessStart'), ['batch' => $batch]);
     }
 
-    public function destroySession(){
+    public function destroySession()
+    {
 
         if (session()->has('is_imported')) {
             session()->forget('is_imported');
@@ -475,19 +473,19 @@ class LeadContactController extends AccountBaseController
             session()->forget('leads_count');
         }
 
-        if(session()->has('total_leads')) {
+        if (session()->has('total_leads')) {
             session()->forget('total_leads');
         }
 
-        if(session()->has('create_deal_with_lead')) {
+        if (session()->has('create_deal_with_lead')) {
             session()->forget('create_deal_with_lead');
         }
 
-        if(session()->has('deal_name')) {
+        if (session()->has('deal_name')) {
             session()->forget('deal_name');
         }
 
-        if(session()->has('duplicate_leads')) {
+        if (session()->has('duplicate_leads')) {
             session()->forget('duplicate_leads');
         }
     }
@@ -495,15 +493,15 @@ class LeadContactController extends AccountBaseController
     public function storeDeal($request, $leadContact)
     {
         $this->addPermission = user()->permission('add_deals');
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
         $agentId = null;
 
-        if (!is_null($request->agent_id)) {
+        if (! is_null($request->agent_id)) {
             $leadAgent = LeadAgent::where('user_id', $request->agent_id)->where('lead_category_id', $request->category_id)->first();
             $agentId = isset($leadAgent) ? $leadAgent->id : null;
         }
 
-        $deal = new Deal();
+        $deal = new Deal;
         $deal->name = $request->name;
         $deal->lead_id = $leadContact->id;
         $deal->next_follow_up = 'yes';
@@ -511,24 +509,23 @@ class LeadContactController extends AccountBaseController
         $deal->deal_watcher = $request->deal_watcher;
         $deal->lead_pipeline_id = $request->pipeline;
         $deal->pipeline_stage_id = $request->stage_id;
-        $deal->create_client = $request->create_client == "on" ? '1' : '0';
+        $deal->create_client = $request->create_client == 'on' ? '1' : '0';
         $deal->agent_id = $agentId;
         $deal->close_date = companyToYmd($request->close_date);
         $deal->value = ($request->value) ?: 0;
         $deal->currency_id = $this->company->currency_id;
         $deal->save();
 
-        if (!is_null($request->product_id)) {
+        if (! is_null($request->product_id)) {
 
             $products = $request->product_id;
 
             foreach ($products as $product) {
-                $leadProduct = new LeadProduct();
+                $leadProduct = new LeadProduct;
                 $leadProduct->deal_id = $deal->id;
                 $leadProduct->product_id = $product;
                 $leadProduct->save();
             }
         }
     }
-
 }

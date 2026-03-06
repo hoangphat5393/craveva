@@ -4,7 +4,6 @@ namespace Modules\Biolinks\Enums;
 
 enum SettingTab: string
 {
-
     // phpcs:disable
     case BACKGROUND = 'Background';
     case VERIFIED_BADGE = 'Verified badge';
@@ -18,14 +17,13 @@ enum SettingTab: string
     public function label(): string
     {
         return match ($this) {
-            self::BACKGROUND => __('biolinks::app.' . $this->value),
-            self::VERIFIED_BADGE => __('biolinks::app.' . $this->value),
-            self::BRANDING => __('biolinks::app.' . $this->value),
-            self::PROTECTION => __('biolinks::app.' . $this->value),
-            self::SEO => __('biolinks::app.' . $this->value),
+            self::BACKGROUND => __('biolinks::app.'.$this->value),
+            self::VERIFIED_BADGE => __('biolinks::app.'.$this->value),
+            self::BRANDING => __('biolinks::app.'.$this->value),
+            self::PROTECTION => __('biolinks::app.'.$this->value),
+            self::SEO => __('biolinks::app.'.$this->value),
             // self::ADVANCED => __('biolinks::app.' . $this->value),
             default => $this->value,
         };
     }
-
 }

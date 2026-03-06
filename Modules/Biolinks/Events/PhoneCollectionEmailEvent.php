@@ -7,11 +7,12 @@ use Modules\Biolinks\Entities\BiolinkBlocks;
 
 class PhoneCollectionEmailEvent
 {
-
     use SerializesModels;
 
     public $biolinkBlock;
+
     public $name;
+
     public $phone;
 
     /**
@@ -23,5 +24,4 @@ class PhoneCollectionEmailEvent
         $this->name = $name;
         $this->phone = $phone;
     }
-
 }

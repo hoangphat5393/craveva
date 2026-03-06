@@ -6,7 +6,6 @@ use App\Models\BaseModel;
 
 class SubdomainSetting extends BaseModel
 {
-
     protected $table = 'sub_domain_module_settings';
 
     protected $default = ['id'];
@@ -15,8 +14,7 @@ class SubdomainSetting extends BaseModel
     {
         if (isset($value)) {
             $this->attributes['banned_subdomain'] = json_encode($value);
-        }
-        else {
+        } else {
             $this->attributes['banned_subdomain'] = null;
         }
     }
@@ -35,8 +33,7 @@ class SubdomainSetting extends BaseModel
         $companyName = array_first(explode(' ', strtolower($company->app_name)));
         $companyName = str_replace(',', '', $companyName);
         $serverName = getDomain();
-        $company->sub_domain = $companyName . '.' . $serverName;
+        $company->sub_domain = $companyName.'.'.$serverName;
         $company->saveQuietly();
     }
-
 }

@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class StoreRequest extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -29,13 +28,11 @@ class StoreRequest extends CoreRequest
         ];
 
         if (company()) {
-            $rules['name'] = 'required|unique:offline_payment_methods,name,null,id,company_id,' . company()->id;
-        }
-        else{
+            $rules['name'] = 'required|unique:offline_payment_methods,name,null,id,company_id,'.company()->id;
+        } else {
             $rules['name'] = 'required|unique:offline_payment_methods,name,null,id,company_id,null';
         }
 
         return $rules;
     }
-
 }

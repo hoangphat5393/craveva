@@ -23,6 +23,7 @@ use Symfony\Component\Mailer\Transport\Smtp\EsmtpTransport;
  * @property int $email_verified
  * @property-read mixed $icon
  * @property-read mixed $set_smtp_message
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|SmtpSetting newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|SmtpSetting newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|SmtpSetting query()
@@ -38,19 +39,22 @@ use Symfony\Component\Mailer\Transport\Smtp\EsmtpTransport;
  * @method static \Illuminate\Database\Eloquent\Builder|SmtpSetting whereMailUsername($value)
  * @method static \Illuminate\Database\Eloquent\Builder|SmtpSetting whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|SmtpSetting whereVerified($value)
+ *
  * @property string $mail_connection
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|SmtpSetting whereMailConnection($value)
  * @method static \Illuminate\Database\Eloquent\Builder|SmtpSetting whereEmailVerified($value)
+ *
  * @mixin \Eloquent
  */
 class SmtpSetting extends BaseModel
 {
-
     protected $guarded = ['id'];
+
     protected $appends = ['set_smtp_message'];
 
     protected $casts = [
-        'mail_password' => 'encrypted'
+        'mail_password' => 'encrypted',
     ];
 
     public function verifySmtp()
@@ -59,7 +63,7 @@ class SmtpSetting extends BaseModel
         if ($this->mail_driver !== 'smtp') {
             return [
                 'success' => true,
-                'message' => __('messages.smtpSuccess')
+                'message' => __('messages.smtpSuccess'),
             ];
         }
 
@@ -77,15 +81,15 @@ class SmtpSetting extends BaseModel
 
             return [
                 'success' => true,
-                'message' => __('messages.smtpSuccess')
+                'message' => __('messages.smtpSuccess'),
             ];
-        } catch (TransportException | \Exception $e) {
+        } catch (TransportException|\Exception $e) {
             $this->verified = 0;
             $this->save();
 
             return [
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ];
         }
     }
@@ -95,7 +99,7 @@ class SmtpSetting extends BaseModel
         if ($this->verified === 0 && $this->mail_driver == 'smtp') {
             return '
             <div class="alert alert-danger">
-                ' . __('messages.smtpNotSet') . '
+                '.__('messages.smtpNotSet').'
                 <a href="" class="btn btn-info btn-small">Visit SMTP Settings <i class="fa fa-arrow-right"></i></a>
             </div>';
         }
@@ -106,6 +110,7 @@ class SmtpSetting extends BaseModel
     public static function isVerified()
     {
         $data = self::first();
+
         return $data->verified;
     }
 }

@@ -2,15 +2,15 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-use App\Models\User;
+use App\Models\Company;
 use App\Models\Module;
+use App\Models\ModuleSetting;
 use App\Models\Permission;
 use App\Models\PermissionRole;
 use App\Models\Role;
-use App\Models\ModuleSetting;
+use App\Models\User;
 use App\Models\UserPermission;
-use App\Models\Company;
+use Illuminate\Console\Command;
 
 class FixPricingModule extends Command
 {
@@ -39,7 +39,7 @@ class FixPricingModule extends Command
         $module = Module::firstOrCreate(['module_name' => 'pricing']);
         $module->description = 'Pricing Module';
         $module->save();
-        $this->info("Module 'pricing' ensured. ID: " . $module->id);
+        $this->info("Module 'pricing' ensured. ID: ".$module->id);
 
         // 2. Define permissions
         $permissions = [
@@ -52,7 +52,7 @@ class FixPricingModule extends Command
             'add_client_pricing',
             'edit_client_pricing',
             'delete_client_pricing',
-            'view_client_tiers'
+            'view_client_tiers',
         ];
 
         $createdPermissions = [];
@@ -62,37 +62,39 @@ class FixPricingModule extends Command
                 [
                     'display_name' => ucwords(str_replace('_', ' ', $permName)),
                     'is_custom' => 1,
-                    'allowed_permissions' => Permission::ALL_4_ADDED_1_OWNED_2_BOTH_3_NONE_5
+                    'allowed_permissions' => Permission::ALL_4_ADDED_1_OWNED_2_BOTH_3_NONE_5,
                 ]
             );
             $createdPermissions[] = $perm;
         }
-        $this->info("Permissions ensured.");
+        $this->info('Permissions ensured.');
 
         // 3. Fix for specific user/company
         $targetEmail = 'hoangphat5393@gmail.com';
         $user = User::where('email', $targetEmail)->first();
 
-        if (!$user) {
+        if (! $user) {
             $this->error("User $targetEmail not found.");
+
             return;
         }
 
         $companyId = $user->company_id;
-        if (!$companyId) {
+        if (! $companyId) {
             $employeeDetail = \App\Models\EmployeeDetails::where('user_id', $user->id)->first();
             if ($employeeDetail) {
                 $companyId = $employeeDetail->company_id;
             }
         }
-        
-        if (!$companyId) {
-             // Fallback to first company if still not found, assuming single tenant or main company
-             $companyId = Company::first()->id ?? null;
+
+        if (! $companyId) {
+            // Fallback to first company if still not found, assuming single tenant or main company
+            $companyId = Company::first()->id ?? null;
         }
 
-        if (!$companyId) {
-            $this->error("Company ID could not be determined.");
+        if (! $companyId) {
+            $this->error('Company ID could not be determined.');
+
             return;
         }
 
@@ -106,8 +108,8 @@ class FixPricingModule extends Command
                 ->where('module_name', 'pricing')
                 ->first();
 
-            if (!$setting) {
-                $setting = new ModuleSetting();
+            if (! $setting) {
+                $setting = new ModuleSetting;
                 $setting->company_id = $companyId;
                 $setting->module_name = 'pricing';
                 $setting->type = $type;
@@ -133,12 +135,12 @@ class FixPricingModule extends Command
                 PermissionRole::firstOrCreate([
                     'permission_id' => $perm->id,
                     'role_id' => $adminRole->id,
-                    'permission_type_id' => 4 // 4 usually means 'All' or similar high privilege
+                    'permission_type_id' => 4, // 4 usually means 'All' or similar high privilege
                 ]);
             }
-            $this->info("Assigned permissions to Admin role.");
+            $this->info('Assigned permissions to Admin role.');
         } else {
-            $this->warn("Admin role not found for company.");
+            $this->warn('Admin role not found for company.');
         }
 
         // 6. Assign permissions to the user specifically (UserPermission) if needed
@@ -147,14 +149,14 @@ class FixPricingModule extends Command
             UserPermission::firstOrCreate([
                 'user_id' => $user->id,
                 'permission_id' => $perm->id,
-                'permission_type_id' => 4
+                'permission_type_id' => 4,
             ]);
         }
-        $this->info("Assigned permissions to User directly.");
+        $this->info('Assigned permissions to User directly.');
 
         // 7. Clear cache
-        cache()->forget('user_modules_' . $user->id);
-        $this->info("Cache cleared.");
+        cache()->forget('user_modules_'.$user->id);
+        $this->info('Cache cleared.');
 
         $this->info('Fix complete.');
     }

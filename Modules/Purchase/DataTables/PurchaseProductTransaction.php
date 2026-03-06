@@ -2,8 +2,8 @@
 
 namespace Modules\Purchase\DataTables;
 
-use App\Models\LeadFollowup;
 use App\DataTables\BaseDataTable;
+use App\Models\LeadFollowup;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
 
@@ -12,10 +12,9 @@ class PurchaseProductTransaction extends BaseDataTable
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
-
     public function dataTable($query)
     {
         return datatables()
@@ -30,7 +29,7 @@ class PurchaseProductTransaction extends BaseDataTable
                 return '--';
             })
             ->smart(false)
-            ->setRowId(fn($row) => 'row-' . $row->id)
+            ->setRowId(fn ($row) => 'row-'.$row->id)
 
             ->rawColumns(['action', 'status']);
     }
@@ -38,10 +37,8 @@ class PurchaseProductTransaction extends BaseDataTable
     /**
      * Get query source of dataTable.
      *
-     * @param \App\Models\LeadFollowup $model
      * @return \Illuminate\Database\Eloquent\Builder
      */
-
     public function query(LeadFollowup $model)
     {
         $lead = $model->newQuery();
@@ -62,18 +59,18 @@ class PurchaseProductTransaction extends BaseDataTable
     {
         return $this->setBuilder('transactions-table')
             ->parameters([
-            'initComplete' => 'function () {
+                'initComplete' => 'function () {
                 window.LaravelDataTables["transactions-table"].buttons().container()
                 .appendTo("#table-actions")
             }',
-            'fnDrawCallback' => 'function( oSettings ) {
+                'fnDrawCallback' => 'function( oSettings ) {
                 $("body").tooltip({
                     selector: \'[data-toggle="tooltip"]\'
                 });
                 $(".statusChange").selectpicker();
             }',
             ])
-            ->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
+            ->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
 
     }
 
@@ -92,9 +89,8 @@ class PurchaseProductTransaction extends BaseDataTable
                 ->printable(false)
                 ->orderable(false)
                 ->searchable(false)
-                ->addClass('text-right pr-20')
+                ->addClass('text-right pr-20'),
         ];
 
     }
-
 }

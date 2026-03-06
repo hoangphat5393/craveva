@@ -8,8 +8,6 @@ use Illuminate\View\Component;
 
 class CronMessage extends Component
 {
-
-
     /**
      * @var false|mixed
      */
@@ -33,5 +31,4 @@ class CronMessage extends Component
 
         return view('components.cron-message', compact('globalSetting', 'modal'));
     }
-
 }

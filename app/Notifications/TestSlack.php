@@ -4,12 +4,10 @@ namespace App\Notifications;
 
 class TestSlack extends BaseNotification
 {
-
-
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     // phpcs:ignore
@@ -21,7 +19,7 @@ class TestSlack extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     // phpcs:ignore
@@ -36,7 +34,7 @@ class TestSlack extends BaseNotification
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
-                'actionText' => __('email.notificationAction')
+                'actionText' => __('email.notificationAction'),
             ]);
 
         parent::resetLocale();
@@ -47,10 +45,10 @@ class TestSlack extends BaseNotification
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
-//phpcs:ignore
+    // phpcs:ignore
     public function toArray($notifiable)
     {
         return [
@@ -61,7 +59,6 @@ class TestSlack extends BaseNotification
     public function toSlack($notifiable)
     {
 
-
         if ($this->slackUserNameCheck($notifiable)) {
 
             return $this->slackBuild($notifiable)
@@ -70,5 +67,4 @@ class TestSlack extends BaseNotification
 
         return $this->slackRedirectMessage('email.test.slack', $notifiable);
     }
-
 }

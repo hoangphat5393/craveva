@@ -2,17 +2,17 @@
 
 namespace App\Events\SuperAdmin;
 
-use Illuminate\Queue\SerializesModels;
 use App\Models\SuperAdmin\OfflinePlanChange;
-use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Queue\SerializesModels;
 
 class OfflinePackageChangeRequestEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $offlinePlanChange;
+
     public $company;
 
     /**
@@ -25,5 +25,4 @@ class OfflinePackageChangeRequestEvent
         $this->offlinePlanChange = $offlinePlanChange;
         $this->company = $company;
     }
-
 }

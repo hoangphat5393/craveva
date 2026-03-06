@@ -7,8 +7,8 @@ use Illuminate\View\Component;
 
 class LeadCard extends Component
 {
-
     public $lead;
+
     public $draggable;
 
     /**
@@ -16,7 +16,6 @@ class LeadCard extends Component
      *
      * @return void
      */
-
     public function __construct($lead, $draggable = 'true')
     {
         $this->lead = $lead;
@@ -33,5 +32,4 @@ class LeadCard extends Component
     {
         return view('components.cards.lead-card');
     }
-
 }

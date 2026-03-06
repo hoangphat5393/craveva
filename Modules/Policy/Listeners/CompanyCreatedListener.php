@@ -3,19 +3,24 @@
 namespace Modules\Policy\Listeners;
 
 use App\Models\ModuleSetting;
-use App\Models\Role;
 use App\Models\Permission;
 use App\Models\PermissionRole;
 use App\Models\PermissionType;
+use App\Models\Role;
 use App\Scopes\CompanyScope;
 
 class CompanyCreatedListener
 {
-
     public function handle($event)
     {
         $company = $event->company;
         $roles = ['employee', 'admin'];
+        $policyModule = \App\Models\Module::where('module_name', 'policy')->first();
+
+        if (! $policyModule) {
+            return;
+        }
+
         ModuleSetting::createRoleSettingEntry('policy', $roles, $company);
 
         // Add view_policy permission to employee role after module permissions are set
@@ -50,5 +55,4 @@ class CompanyCreatedListener
             }
         }
     }
-
 }

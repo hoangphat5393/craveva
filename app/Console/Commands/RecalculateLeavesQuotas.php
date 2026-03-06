@@ -5,7 +5,6 @@ namespace App\Console\Commands;
 use App\Models\Company;
 use App\Models\EmployeeLeaveQuota;
 use App\Models\Leave;
-use App\Models\LeaveType;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
@@ -39,12 +38,12 @@ class RecalculateLeavesQuotas extends Command
         $companies = Company::active()
             ->select('id', 'company_name', 'timezone', 'leaves_start_from', 'year_starts_from')
             ->with(['leaveTypes' => function ($query) use ($leaveTypeID) {
-            if ($leaveTypeID != '') {
-                return $query->where('id', $leaveTypeID);
-            }
+                if ($leaveTypeID != '') {
+                    return $query->where('id', $leaveTypeID);
+                }
 
-            return $query;
-        }]);
+                return $query;
+            }]);
 
         if ($companyID != '') {
             $companies = $companies->where('id', $companyID);
@@ -75,16 +74,16 @@ class RecalculateLeavesQuotas extends Command
                 foreach ($users as $user) {
 
                     if ($settings && $settings->leaves_start_from == 'joining_date') {
-                        $currentYearJoiningDate = Carbon::parse($user->employeeDetail->joining_date->format((now($settings->timezone)->year) . '-m-d'));
+                        $currentYearJoiningDate = Carbon::parse($user->employeeDetail->joining_date->format((now($settings->timezone)->year).'-m-d'));
                         $startingDate = $currentYearJoiningDate->startOfMonth();
 
                         if ($startingDate->lt($user->employeeDetail->joining_date)) {
                             $startingDate = $user->employeeDetail->joining_date->startOfMonth();
                         }
-            
+
                     } else {
                         // yearly setting year_start
-            
+
                         $yearFrom = $settings && $settings->year_starts_from ? $settings->year_starts_from : 1;
                         $startingDate = Carbon::create(now()->year, $yearFrom)->startOfMonth();
 
@@ -105,7 +104,7 @@ class RecalculateLeavesQuotas extends Command
                         if (is_null($user->employeeDetail->joining_date)) {
                             continue;
                         }
-                        
+
                         if (($leaveQuota && $leaveQuota->leave_type_impact == 1)) {
                             $noOfLeavesAlloted = $leaveQuota->no_of_leaves;
 
@@ -123,7 +122,6 @@ class RecalculateLeavesQuotas extends Command
 
                         $noOfLeavesTaken = $this->calculateNoOfLeavesTaken($settings, $joiningDate, $user, $value);
 
-
                         $noOfOverutilisedLeaves = $leaveQuota->overutilised_leaves ?? 0;
 
                         if ($noOfLeavesAlloted - $noOfLeavesTaken > 0) {
@@ -136,17 +134,14 @@ class RecalculateLeavesQuotas extends Command
                                 $noOfOverutilisedLeaves = $noOfOverutilisedLeaves + abs($noOfRemainingLeaves);
                                 $noOfRemainingLeaves = 0;
                             }
-    
-    
+
                             // $this->info($noOfOverutilisedLeaves .' '.($noOfLeavesTaken - $noOfOverutilisedLeaves));
-    
+
                             if (($noOfOverutilisedLeaves > 0) && (($noOfLeavesTaken - $noOfOverutilisedLeaves) < $noOfLeavesAlloted)) {
                                 $noOfRemainingLeaves = $noOfLeavesAlloted - ($noOfLeavesTaken - $noOfOverutilisedLeaves);
                             }
                         }
 
-                        
-                
                         $noOfLeavesUnused = $leaveQuota->unused_leaves ?? 0;
 
                         if ($value->leavetype == 'monthly' && $value->unused_leave != 'carry forward') {
@@ -180,7 +175,7 @@ class RecalculateLeavesQuotas extends Command
                                 if ($fraction > 0 && $fraction <= 0.5) {
                                     $noOfRemainingLeaves = $whole + 0.5;
 
-                                } else if ($fraction > 0.5 && $fraction <= 0.99) {
+                                } elseif ($fraction > 0.5 && $fraction <= 0.99) {
                                     $noOfRemainingLeaves = $whole + 1;
                                 }
                             }
@@ -193,38 +188,38 @@ class RecalculateLeavesQuotas extends Command
                         // $this->info('Leaves Unused :: '. $user->name.' ' .$value->type_name.' '. $noOfLeavesUnused);
 
                         $employeeLeaveQuota = EmployeeLeaveQuota::where('user_id', $user->id)
-                        ->where('leave_type_id', $value->id)
-                        ->first();
+                            ->where('leave_type_id', $value->id)
+                            ->first();
 
-                        if (!$employeeLeaveQuota) {
+                        if (! $employeeLeaveQuota) {
                             EmployeeLeaveQuota::create([
-                            'user_id' => $user->id,
-                            'leave_type_id' => $value->id,
-                            'no_of_leaves' => $noOfLeavesAlloted,
-                            'leaves_used' => $noOfLeavesTaken,
-                            'leaves_remaining' => $noOfRemainingLeaves,
-                            'overutilised_leaves' => $noOfOverutilisedLeaves,
-                            'unused_leaves' => $noOfLeavesUnused,
-                            'carry_forward_applied' => isset($carryForwardApplied) ? $carryForwardApplied : 0,
+                                'user_id' => $user->id,
+                                'leave_type_id' => $value->id,
+                                'no_of_leaves' => $noOfLeavesAlloted,
+                                'leaves_used' => $noOfLeavesTaken,
+                                'leaves_remaining' => $noOfRemainingLeaves,
+                                'overutilised_leaves' => $noOfOverutilisedLeaves,
+                                'unused_leaves' => $noOfLeavesUnused,
+                                'carry_forward_applied' => isset($carryForwardApplied) ? $carryForwardApplied : 0,
                             ]);
 
                         } else {
                             EmployeeLeaveQuota::where('user_id', $user->id)
-                            ->where('leave_type_id', $value->id)
-                            ->update(
-                                [
-                                    'no_of_leaves' => $noOfLeavesAlloted,
-                                    'leaves_used' => $noOfLeavesTaken,
-                                    'leaves_remaining' => $noOfRemainingLeaves,
-                                    'overutilised_leaves' => $noOfOverutilisedLeaves,
-                                    'unused_leaves' => $noOfLeavesUnused,
-                                    'carry_forward_applied' => isset($carryForwardApplied) ? $carryForwardApplied : 0,
-                                ]
-                            );
+                                ->where('leave_type_id', $value->id)
+                                ->update(
+                                    [
+                                        'no_of_leaves' => $noOfLeavesAlloted,
+                                        'leaves_used' => $noOfLeavesTaken,
+                                        'leaves_remaining' => $noOfRemainingLeaves,
+                                        'overutilised_leaves' => $noOfOverutilisedLeaves,
+                                        'unused_leaves' => $noOfLeavesUnused,
+                                        'carry_forward_applied' => isset($carryForwardApplied) ? $carryForwardApplied : 0,
+                                    ]
+                                );
                         }
                     }
 
-                // $this->info('Calculating Leaves Quota :: CompanyID = '.$user->company_id. ' , User = ' . $user->name . "\n");
+                    // $this->info('Calculating Leaves Quota :: CompanyID = '.$user->company_id. ' , User = ' . $user->name . "\n");
                 }
 
                 $companyCount++;
@@ -240,7 +235,7 @@ class RecalculateLeavesQuotas extends Command
         $leaveToSubtract = 0;
 
         if ($settings && $settings->leaves_start_from == 'joining_date') {
-            $currentYearJoiningDate = Carbon::parse($user->employeeDetail->joining_date->format((now($settings->timezone)->year) . '-m-d'));;
+            $currentYearJoiningDate = Carbon::parse($user->employeeDetail->joining_date->format((now($settings->timezone)->year).'-m-d'));
 
             if (now()->gt($currentYearJoiningDate)) {
                 $differenceMonth = now()->startOfMonth()->diffInMonths($currentYearJoiningDate->copy()->startOfMonth());
@@ -251,13 +246,11 @@ class RecalculateLeavesQuotas extends Command
 
             $differenceMonth = $differenceMonth + 1; // Include current month also
 
-
             $countOfMonthsAllowed = $differenceMonth > 12 ? $differenceMonth - 12 : $differenceMonth;
 
             if ($user->employeeDetail->joining_date->year == now()->year && $value->leavetype == 'yearly') {            // Calculate remaining days after full months
                 $remainingDays = now()->diffInDays($currentYearJoiningDate->copy()->subMonths($differenceMonth));
                 $remainingDays += 2; // adding 2 for becaus same day and next day is not counting as diff
-
 
                 if ($remainingDays >= 16) {
                     $countOfMonthsAllowed++;
@@ -278,12 +271,12 @@ class RecalculateLeavesQuotas extends Command
             $countOfMonthsAllowed = $differenceMonth > 12 ? $differenceMonth - 12 : $differenceMonth;
 
             $remainingDays = 0;
-            $currentYearJoiningDate = Carbon::parse($user->employeeDetail->joining_date->format((now($settings->timezone)->year) . '-m-d'));;
+            $currentYearJoiningDate = Carbon::parse($user->employeeDetail->joining_date->format((now($settings->timezone)->year).'-m-d'));
 
             if ($user->employeeDetail->joining_date->year == now()->year && $value->leavetype == 'yearly') {
                 $remainingDays = now()->diffInDays($currentYearJoiningDate->copy()->subMonths($differenceMonth));
                 $remainingDays += 2; // adding 2 for becaus same day and next day is not counting as diff
-    
+
                 if ($remainingDays >= 16) {
                     $countOfMonthsAllowed++;
                     $remainingDays = 0;
@@ -327,7 +320,7 @@ class RecalculateLeavesQuotas extends Command
             if ($value->leavetype == 'yearly') {
                 $monthlyLeaves = ($value->no_of_leaves / 12);
                 $leaveToSubtract = ($monthlyLeaves / 2);
-                
+
             } else {
                 $leaveToSubtract = ($value->no_of_leaves / 2);
             }
@@ -336,13 +329,13 @@ class RecalculateLeavesQuotas extends Command
 
         if ($value->leavetype == 'yearly') {
             $leaves = $value->no_of_leaves - $leaveToSubtract;
-        
-        } else if ($value->leavetype == 'monthly') {
+
+        } elseif ($value->leavetype == 'monthly') {
             $leaves = ($value->no_of_leaves * $countOfMonthsAllowed) - $leaveToSubtract;
 
         }
 
-        $noOfLeavesAlloted = number_format((float)$leaves, 2, '.', '');
+        $noOfLeavesAlloted = number_format((float) $leaves, 2, '.', '');
 
         // Round off the fraction value for clear calculation and usage.
         // If fraction is between 0 to 0.5 then consider it as 0.5
@@ -354,10 +347,9 @@ class RecalculateLeavesQuotas extends Command
         if ($fraction > 0 && $fraction <= 0.5) {
             $noOfLeavesAlloted = $whole + 0.5;
 
-        } else if ($fraction > 0.5 && $fraction <= 0.99) {
+        } elseif ($fraction > 0.5 && $fraction <= 0.99) {
             $noOfLeavesAlloted = $whole + 1;
         }
-
 
         // $this->info('Leaves Alloted :: '. $user->name.' ' .$value->type_name.' '. $noOfLeavesAlloted);
 
@@ -366,7 +358,7 @@ class RecalculateLeavesQuotas extends Command
 
     public function calculateNoOfLeavesTaken($settings, $joiningDate, $user, $value)
     {
-        $currentYearJoiningDate = Carbon::parse($joiningDate->format((now($settings->timezone)->year) . '-m-d'));
+        $currentYearJoiningDate = Carbon::parse($joiningDate->format((now($settings->timezone)->year).'-m-d'));
 
         if ($currentYearJoiningDate->isFuture()) {
             $currentYearJoiningDate->subYear();
@@ -376,7 +368,7 @@ class RecalculateLeavesQuotas extends Command
         $leaveTo = $currentYearJoiningDate->copy()->addYear()->toDateString();
 
         if ($settings->leaves_start_from !== 'joining_date') {
-            $leaveStartYear = Carbon::parse(now()->format((now($settings->timezone)->year) . '-' . $settings->year_starts_from . '-01'));
+            $leaveStartYear = Carbon::parse(now()->format((now($settings->timezone)->year).'-'.$settings->year_starts_from.'-01'));
 
             if ($leaveStartYear->isFuture()) {
                 $leaveStartYear = $leaveStartYear->subYear();
@@ -433,5 +425,4 @@ class RecalculateLeavesQuotas extends Command
 
         return $noOfLeavesTaken;
     }
-
 }

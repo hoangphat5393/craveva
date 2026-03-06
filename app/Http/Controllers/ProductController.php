@@ -2,26 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Tax;
+use App\DataTables\ProductsDataTable;
 use App\Helper\Files;
 use App\Helper\Reply;
-use App\Models\Order;
-use App\Models\Product;
-use App\Models\UnitType;
-use App\Models\OrderCart;
-use App\Models\ProductFiles;
-use Illuminate\Http\Request;
+use App\Http\Requests\Admin\Employee\ImportProcessRequest;
+use App\Http\Requests\Admin\Employee\ImportRequest;
+use App\Http\Requests\Product\StoreProductRequest;
+use App\Http\Requests\Product\UpdateProductRequest;
 use App\Imports\ProductImport;
 use App\Jobs\ImportProductJob;
+use App\Models\Order;
+use App\Models\OrderCart;
+use App\Models\Product;
 use App\Models\ProductCategory;
+use App\Models\ProductFiles;
 use App\Models\ProductSubCategory;
-use App\DataTables\ProductsDataTable;
-use App\Http\Controllers\AccountBaseController;
-use App\Http\Requests\Product\StoreProductRequest;
-use App\Http\Requests\Admin\Employee\ImportRequest;
-use App\Http\Requests\Product\UpdateProductRequest;
-use App\Http\Requests\Admin\Employee\ImportProcessRequest;
+use App\Models\Tax;
+use App\Models\UnitType;
 use App\Traits\ImportExcel;
+use Illuminate\Http\Request;
 
 class ProductController extends AccountBaseController
 {
@@ -33,7 +32,7 @@ class ProductController extends AccountBaseController
         $this->pageTitle = 'app.menu.products';
         $this->middleware(
             function ($request, $next) {
-                in_array('client', user_roles()) ? abort_403(!(in_array('orders', $this->user->modules) && user()->permission('add_order') == 'all')) : abort_403(!in_array('products', $this->user->modules));
+                in_array('client', user_roles()) ? abort_403(! (in_array('orders', $this->user->modules) && user()->permission('add_order') == 'all')) : abort_403(! in_array('products', $this->user->modules));
 
                 return $next($request);
             }
@@ -41,13 +40,12 @@ class ProductController extends AccountBaseController
     }
 
     /**
-     * @param  ProductsDataTable $dataTable
      * @return mixed|void
      */
     public function index(ProductsDataTable $dataTable)
     {
         $viewPermission = user()->permission('view_product');
-        abort_403(!in_array($viewPermission, ['all', 'added']));
+        abort_403(! in_array($viewPermission, ['all', 'added']));
 
         $productDetails = [];
         $productDetails = OrderCart::all();
@@ -73,11 +71,11 @@ class ProductController extends AccountBaseController
         $this->pageTitle = __('app.menu.addProducts');
 
         $this->addPermission = user()->permission('add_product');
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
         $this->taxes = Tax::all();
         $this->categories = ProductCategory::all();
 
-        $product = new Product();
+        $product = new Product;
 
         $this->unit_types = UnitType::all();
 
@@ -96,16 +94,14 @@ class ProductController extends AccountBaseController
     }
 
     /**
-     *
-     * @param  StoreProductRequest $request
      * @return void
      */
     public function store(StoreProductRequest $request)
     {
         $this->addPermission = user()->permission('add_product');
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
 
-        $product = new Product();
+        $product = new Product;
         $product->name = $request->name;
         $product->price = $request->price;
         $product->wholesale_price = $request->wholesale_price;
@@ -133,7 +129,6 @@ class ProductController extends AccountBaseController
             $product->updateCustomFieldData($request->custom_fields_data);
         }
 
-
         $redirectUrl = urldecode($request->redirect_url);
 
         if ($redirectUrl == '') {
@@ -152,14 +147,14 @@ class ProductController extends AccountBaseController
     /**
      * Display the specified resource.
      *
-     * @param  int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
         $this->product = Product::with('category', 'subCategory')->findOrFail($id)->withCustomFields();
         $this->viewPermission = user()->permission('view_product');
-        abort_403(!($this->viewPermission == 'all' || ($this->viewPermission == 'added' && $this->product->added_by == user()->id)));
+        abort_403(! ($this->viewPermission == 'all' || ($this->viewPermission == 'added' && $this->product->added_by == user()->id)));
 
         $this->taxes = Tax::withTrashed()->get();
         $this->pageTitle = $this->product->name;
@@ -169,7 +164,7 @@ class ProductController extends AccountBaseController
 
         foreach ($this->taxes as $tax) {
             if ($this->product && isset($this->product->taxes) && array_search($tax->id, json_decode($this->product->taxes)) !== false) {
-                $taxes[] = $tax->tax_name . ' : ' . $tax->rate_percent . '%';
+                $taxes[] = $tax->tax_name.' : '.$tax->rate_percent.'%';
             }
         }
 
@@ -193,7 +188,7 @@ class ProductController extends AccountBaseController
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -201,14 +196,13 @@ class ProductController extends AccountBaseController
         $this->product = Product::findOrFail($id)->withCustomFields();
 
         $this->editPermission = user()->permission('edit_product');
-        abort_403(!($this->editPermission == 'all' || ($this->editPermission == 'added' && $this->product->added_by == user()->id)));
+        abort_403(! ($this->editPermission == 'all' || ($this->editPermission == 'added' && $this->product->added_by == user()->id)));
 
         $this->taxes = Tax::all();
         $this->categories = ProductCategory::all();
         $this->unit_types = UnitType::all();
-        $this->subCategories = !is_null($this->product->sub_category_id) ? ProductSubCategory::where('category_id', $this->product->category_id)->get() : [];
-        $this->pageTitle = __('app.update') . ' ' . __('app.menu.products');
-
+        $this->subCategories = ! is_null($this->product->sub_category_id) ? ProductSubCategory::where('category_id', $this->product->category_id)->get() : [];
+        $this->pageTitle = __('app.update').' '.__('app.menu.products');
 
         $images = [];
 
@@ -241,9 +235,9 @@ class ProductController extends AccountBaseController
     }
 
     /**
-     * @param  UpdateProductRequest $request
-     * @param  int                  $id
+     * @param  int  $id
      * @return array|void
+     *
      * @throws \Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException
      */
     public function update(UpdateProductRequest $request, $id)
@@ -251,7 +245,7 @@ class ProductController extends AccountBaseController
         $product = Product::findOrFail($id)->withCustomFields();
         $this->editPermission = user()->permission('edit_product');
 
-        abort_403(!($this->editPermission == 'all' || ($this->editPermission == 'added' && $product->added_by == user()->id)));
+        abort_403(! ($this->editPermission == 'all' || ($this->editPermission == 'added' && $product->added_by == user()->id)));
 
         $product->name = $request->name;
         $product->price = $request->price;
@@ -276,7 +270,7 @@ class ProductController extends AccountBaseController
         }
 
         // change default image
-        if (!request()->hasFile('file')) {
+        if (! request()->hasFile('file')) {
             $product->default_image = request()->default_image;
         }
 
@@ -293,14 +287,14 @@ class ProductController extends AccountBaseController
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
         $products = Product::findOrFail($id);
         $this->deletePermission = user()->permission('delete_product');
-        abort_403(!($this->deletePermission == 'all' || ($this->deletePermission == 'added' && $products->added_by == user()->id)));
+        abort_403(! ($this->deletePermission == 'all' || ($this->deletePermission == 'added' && $products->added_by == user()->id)));
 
         $products->delete();
 
@@ -358,7 +352,7 @@ class ProductController extends AccountBaseController
 
             if (in_array('client', user_roles()) && class_exists(\Modules\Pricing\Services\PricingService::class)) {
                 try {
-                    $pricingService = new \Modules\Pricing\Services\PricingService();
+                    $pricingService = new \Modules\Pricing\Services\PricingService;
                     $calculated = $pricingService->calculate($newItem, user()->id, $quantity);
 
                     if (isset($calculated['price'])) {
@@ -383,7 +377,7 @@ class ProductController extends AccountBaseController
         } else {
             $productDetails = Product::where('id', $newItem)->first();
 
-            if (!$productDetails) {
+            if (! $productDetails) {
                 return response(Reply::error(__('messages.productNotFound')));
             }
 
@@ -391,7 +385,7 @@ class ProductController extends AccountBaseController
 
             if (in_array('client', user_roles()) && class_exists(\Modules\Pricing\Services\PricingService::class)) {
                 try {
-                    $pricingService = new \Modules\Pricing\Services\PricingService();
+                    $pricingService = new \Modules\Pricing\Services\PricingService;
                     $calculated = $pricingService->calculate($productDetails->id, user()->id, $quantity);
 
                     if (isset($calculated['price'])) {
@@ -404,7 +398,7 @@ class ProductController extends AccountBaseController
                 }
             }
 
-            $product = new OrderCart();
+            $product = new OrderCart;
             $product->product_id = $productDetails->id;
             $product->client_id = user()->id;
             $product->item_name = $productDetails->name;
@@ -439,7 +433,6 @@ class ProductController extends AccountBaseController
             $productDetails = OrderCart::where('id', $id)->where('client_id', user()->id)->get();
         }
 
-
         return response(Reply::successWithData(__('messages.deleteSuccess'), ['status' => 'success', 'productItems' => $productDetails]))->cookie('productDetails', json_encode($productDetails));
     }
 
@@ -457,7 +450,7 @@ class ProductController extends AccountBaseController
 
     public function cart(Request $request)
     {
-        abort_403(!in_array('client', user_roles()));
+        abort_403(! in_array('client', user_roles()));
 
         $this->lastOrder = Order::lastOrderNumber() + 1;
         $this->invoiceSetting = invoice_setting();
@@ -481,7 +474,7 @@ class ProductController extends AccountBaseController
         $option = '';
 
         foreach ($products as $item) {
-            $option .= '<option data-content="' . $item->name . '" value="' . $item->id . '"> ' . $item->name . '</option>';
+            $option .= '<option data-content="'.$item->name.'" value="'.$item->id.'"> '.$item->name.'</option>';
         }
 
         return Reply::dataOnly(['products' => $option]);
@@ -489,10 +482,10 @@ class ProductController extends AccountBaseController
 
     public function importProduct()
     {
-        $this->pageTitle = __('app.importExcel') . ' ' . __('app.menu.product');
+        $this->pageTitle = __('app.importExcel').' '.__('app.menu.product');
 
         $this->addPermission = user()->permission('add_product');
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
 
         $this->view = 'products.ajax.import';
 

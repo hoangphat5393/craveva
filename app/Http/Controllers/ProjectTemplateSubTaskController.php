@@ -10,7 +10,6 @@ use Illuminate\Http\Request;
 
 class ProjectTemplateSubTaskController extends AccountBaseController
 {
-
     use ProjectProgress;
 
     public function __construct()
@@ -33,7 +32,6 @@ class ProjectTemplateSubTaskController extends AccountBaseController
     }
 
     /**
-     * @param SubTaskStoreRequest $request
      * @return array
      */
     public function store(SubTaskStoreRequest $request)
@@ -42,6 +40,7 @@ class ProjectTemplateSubTaskController extends AccountBaseController
             'title' => $request->title,
             'project_template_task_id' => $request->task_id,
         ]);
+
         return Reply::success(__('messages.recordSaved'));
     }
 
@@ -54,7 +53,7 @@ class ProjectTemplateSubTaskController extends AccountBaseController
     public function destroy($id)
     {
         ProjectTemplateSubTask::destroy($id);
+
         return Reply::success(__('messages.deleteSuccess'));
     }
-
 }

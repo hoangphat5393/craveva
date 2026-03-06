@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class ImportRequest extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -28,5 +27,4 @@ class ImportRequest extends CoreRequest
             'import_file' => 'required|file|mimes:xls,xlsx,csv,txt',
         ];
     }
-
 }

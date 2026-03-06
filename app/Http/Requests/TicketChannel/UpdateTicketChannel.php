@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class UpdateTicketChannel extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -25,8 +24,7 @@ class UpdateTicketChannel extends CoreRequest
     public function rules()
     {
         return [
-            'channel_name' => 'required|unique:ticket_channels,channel_name,'.$this->route('ticketChannel').',id,company_id,' . company()->id
+            'channel_name' => 'required|unique:ticket_channels,channel_name,'.$this->route('ticketChannel').',id,company_id,'.company()->id,
         ];
     }
-
 }

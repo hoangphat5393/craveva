@@ -7,15 +7,22 @@ use Illuminate\View\Component;
 
 class Datepicker extends Component
 {
-
     public $fieldLabel;
+
     public $fieldRequired;
+
     public $fieldPlaceholder;
+
     public $fieldValue;
+
     public $fieldName;
+
     public $fieldId;
+
     public $fieldHelp;
+
     public $custom;
+
     public $popover;
 
     /**
@@ -45,5 +52,4 @@ class Datepicker extends Component
     {
         return view('components.forms.datepicker');
     }
-
 }

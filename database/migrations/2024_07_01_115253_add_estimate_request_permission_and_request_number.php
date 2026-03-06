@@ -1,18 +1,17 @@
 <?php
 
-use App\Models\Role;
-use App\Models\User;
-use App\Models\Module;
 use App\Models\Company;
-use App\Models\EstimateRequest;
+use App\Models\Module;
 use App\Models\Permission;
 use App\Models\PermissionRole;
+use App\Models\Role;
+use App\Models\User;
 use App\Models\UserPermission;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
@@ -24,31 +23,31 @@ return new class extends Migration {
                 'module_id' => $module->id,
                 'name' => 'add_estimate_request',
                 'allowed_permissions' => Permission::ALL_NONE,
-                'is_custom' => 1
+                'is_custom' => 1,
             ],
             [
                 'module_id' => $module->id,
                 'name' => 'view_estimate_request',
                 'allowed_permissions' => Permission::ALL_4_ADDED_1_OWNED_2_BOTH_3_NONE_5,
-                'is_custom' => 1
+                'is_custom' => 1,
             ],
             [
                 'module_id' => $module->id,
                 'name' => 'edit_estimate_request',
                 'allowed_permissions' => Permission::ALL_4_ADDED_1_OWNED_2_BOTH_3_NONE_5,
-                'is_custom' => 1
+                'is_custom' => 1,
             ],
             [
                 'module_id' => $module->id,
                 'name' => 'delete_estimate_request',
                 'allowed_permissions' => Permission::ALL_4_ADDED_1_OWNED_2_BOTH_3_NONE_5,
-                'is_custom' => 1
+                'is_custom' => 1,
             ],
             [
                 'module_id' => $module->id,
                 'name' => 'reject_estimate_request',
                 'allowed_permissions' => Permission::ALL_NONE,
-                'is_custom' => 1
+                'is_custom' => 1,
             ],
         ];
 
@@ -76,7 +75,7 @@ return new class extends Migration {
                         ->where('role_id', $role->id)
                         ->first();
 
-                    $permissionRole = $permissionRole ?: new PermissionRole();
+                    $permissionRole = $permissionRole ?: new PermissionRole;
                     $permissionRole->permission_id = $permission->id;
                     $permissionRole->role_id = $role->id;
                     $permissionRole->permission_type_id = 4; // All
@@ -88,7 +87,7 @@ return new class extends Migration {
             $adminUsers = User::allAdmins();
 
             foreach ($adminUsers as $adminUser) {
-                $userPermission = UserPermission::where('user_id', $adminUser->id)->where('permission_id', $permission->id)->first() ?: new UserPermission();
+                $userPermission = UserPermission::where('user_id', $adminUser->id)->where('permission_id', $permission->id)->first() ?: new UserPermission;
                 $userPermission->user_id = $adminUser->id;
                 $userPermission->permission_id = $permission->id;
                 $userPermission->permission_type_id = 4; // All
@@ -96,26 +95,26 @@ return new class extends Migration {
             }
         }
 
-        if (!Schema::hasColumn('estimate_requests', 'estimate_request_number')) {
+        if (! Schema::hasColumn('estimate_requests', 'estimate_request_number')) {
             Schema::table('estimate_requests', function ($table) {
                 $table->string('estimate_request_number')->nullable()->after('id');
             });
         }
 
-        if (!Schema::hasColumn('estimate_requests', 'original_request_number')) {
+        if (! Schema::hasColumn('estimate_requests', 'original_request_number')) {
             Schema::table('estimate_requests', function ($table) {
                 $table->string('original_request_number')->nullable()->after('id');
             });
         }
 
-        if (!Schema::hasColumn('estimate_requests', 'added_by')) {
+        if (! Schema::hasColumn('estimate_requests', 'added_by')) {
             Schema::table('estimate_requests', function ($table) {
                 $table->unsignedInteger('added_by')->nullable();
                 $table->foreign('added_by')->references('id')->on('users')->onUpdate('CASCADE')->onDelete('SET NULL');
             });
         }
 
-        if (!Schema::hasColumn('estimates', 'estimate_request_id')) {
+        if (! Schema::hasColumn('estimates', 'estimate_request_id')) {
             Schema::table('estimates', function ($table) {
                 $table->bigInteger('estimate_request_id')->unsigned()->nullable();
                 $table->foreign('estimate_request_id')->references('id')->on('estimate_requests')->onDelete('cascade')->onUpdate('cascade');
@@ -131,5 +130,4 @@ return new class extends Migration {
     {
         //
     }
-
 };

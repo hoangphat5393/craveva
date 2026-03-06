@@ -11,13 +11,12 @@ use App\Models\User;
 
 class EmployeeDocController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'app.menu.employeeDocs';
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('employees', $this->user->modules));
+            abort_403(! in_array('employees', $this->user->modules));
 
             return $next($request);
         });
@@ -27,7 +26,7 @@ class EmployeeDocController extends AccountBaseController
     {
         $addPermission = user()->permission('add_documents');
 
-        abort_403(!($addPermission == 'all'));
+        abort_403(! ($addPermission == 'all'));
 
         $this->user = User::findOrFail(user()->id);
 
@@ -39,15 +38,15 @@ class EmployeeDocController extends AccountBaseController
         $fileFormats = explode(',', global_setting()->allowed_file_types);
 
         foreach ($request->file as $fFormat) {
-            if (!in_array($fFormat->getClientMimeType(), $fileFormats)) {
+            if (! in_array($fFormat->getClientMimeType(), $fileFormats)) {
                 return Reply::error(__('messages.employeeDocsAllowedFormat'));
             }
         }
 
-        $file = new EmployeeDocument();
+        $file = new EmployeeDocument;
 
         $file->name = $request->name;
-        $filename = Files::uploadLocalOrS3($request->file, EmployeeDocument::FILE_PATH . '/' . $request->user_id);
+        $filename = Files::uploadLocalOrS3($request->file, EmployeeDocument::FILE_PATH.'/'.$request->user_id);
 
         $file->user_id = $request->user_id;
         $file->filename = $request->file->getClientOriginalName();
@@ -66,7 +65,7 @@ class EmployeeDocController extends AccountBaseController
         $this->file = EmployeeDocument::findOrFail($id);
         $editPermission = user()->permission('edit_documents');
 
-        abort_403(!($editPermission == 'all'
+        abort_403(! ($editPermission == 'all'
             || ($editPermission == 'added' && $this->file->added_by == user()->id)
             || ($editPermission == 'owned' && ($this->file->user_id == user()->id && $this->file->added_by != user()->id))
             || ($editPermission == 'both' && ($this->file->added_by == user()->id || $this->file->user_id == user()->id))));
@@ -81,7 +80,7 @@ class EmployeeDocController extends AccountBaseController
         $file->name = $request->name;
 
         if ($request->file) {
-            $filename = Files::uploadLocalOrS3($request->file, EmployeeDocument::FILE_PATH . '/' . $file->user_id);
+            $filename = Files::uploadLocalOrS3($request->file, EmployeeDocument::FILE_PATH.'/'.$file->user_id);
             $file->filename = $request->file->getClientOriginalName();
             $file->hashname = $filename;
             $file->size = $request->file->getSize();
@@ -97,13 +96,12 @@ class EmployeeDocController extends AccountBaseController
         $file = EmployeeDocument::findOrFail($id);
         $deleteDocumentPermission = user()->permission('delete_documents');
 
-        abort_403(!($deleteDocumentPermission == 'all'
+        abort_403(! ($deleteDocumentPermission == 'all'
             || ($deleteDocumentPermission == 'added' && $file->added_by == user()->id)
             || ($deleteDocumentPermission == 'owned' && ($file->user_id == user()->id && $file->added_by != user()->id))
             || ($deleteDocumentPermission == 'both' && ($file->added_by == user()->id || $file->user_id == user()->id))));
 
-
-        Files::deleteFile($file->hashname, EmployeeDocument::FILE_PATH . '/' . $file->user_id);
+        Files::deleteFile($file->hashname, EmployeeDocument::FILE_PATH.'/'.$file->user_id);
 
         EmployeeDocument::destroy($id);
 
@@ -120,13 +118,12 @@ class EmployeeDocController extends AccountBaseController
         $this->file = EmployeeDocument::whereRaw('md5(id) = ?', $id)->firstOrFail();
         $viewPermission = user()->permission('view_documents');
 
-        abort_403(!($viewPermission == 'all'
+        abort_403(! ($viewPermission == 'all'
             || ($viewPermission == 'added' && $this->file->added_by == user()->id)
             || ($viewPermission == 'owned' && ($this->file->user_id == user()->id && $this->file->added_by != user()->id))
             || ($viewPermission == 'both' && ($this->file->added_by == user()->id || $this->file->user_id == user()->id))));
 
-        return download_local_s3($this->file, EmployeeDocument::FILE_PATH . '/' . $this->file->user_id . '/' . $this->file->hashname);
+        return download_local_s3($this->file, EmployeeDocument::FILE_PATH.'/'.$this->file->user_id.'/'.$this->file->hashname);
 
     }
-
 }

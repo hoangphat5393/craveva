@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class SignUpSettingRequest extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -37,5 +36,4 @@ class SignUpSettingRequest extends CoreRequest
             'terms_link.required_if' => __('messages.signUpUrlRequired'),
         ];
     }
-
 }

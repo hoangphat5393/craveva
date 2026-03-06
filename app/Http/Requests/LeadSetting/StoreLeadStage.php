@@ -7,7 +7,6 @@ use Illuminate\Validation\Rule;
 
 class StoreLeadStage extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -27,11 +26,10 @@ class StoreLeadStage extends CoreRequest
     {
         $rule = [
             'pipeline' => 'required',
-            'label_color' => 'required'
+            'label_color' => 'required',
         ];
 
-        if($this->pipeline)
-        {
+        if ($this->pipeline) {
             $rule['name'] = [
                 'required',
                 Rule::unique('pipeline_stages', 'name')->where('company_id', company()->id)->whereIn('lead_pipeline_id', $this->pipeline),
@@ -40,5 +38,4 @@ class StoreLeadStage extends CoreRequest
 
         return $rule;
     }
-
 }

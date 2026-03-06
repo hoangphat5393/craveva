@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
-use App\Traits\HasCompany;
 use App\Traits\CustomFieldsTrait;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Traits\HasCompany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Modules\Purchase\Entities\PurchaseStockAdjustment;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Modules\Purchase\Entities\PurchaseStockAdjustment;
 
 /**
  * App\Models\Product
@@ -31,6 +31,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property-read mixed $icon
  * @property-read mixed $total_amount
  * @property-read \App\Models\Tax $tax
+ *
  * @method static \Database\Factories\ProductFactory factory(...$parameters)
  * @method static \Illuminate\Database\Eloquent\Builder|Product newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Product newQuery()
@@ -48,10 +49,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereSubCategoryId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereTaxes($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereUpdatedAt($value)
+ *
  * @property-read \App\Models\ProductCategory|null $category
  * @property string|null $image
  * @property-read mixed $image_url
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereImage($value)
+ *
  * @property int $downloadable
  * @property string|null $downloadable_file
  * @property string|null $default_image
@@ -60,17 +64,23 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property-read mixed $download_file_url
  * @property-read mixed $extras
  * @property-read \App\Models\ProductSubCategory|null $subCategory
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereDefaultImage($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereDownloadable($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereDownloadableFile($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
  * @property-read mixed $tax_list
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereCompanyId($value)
+ *
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Lead> $leads
  * @property-read int|null $leads_count
  * @property-read \App\Models\UnitType|null $unit
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereUnitId($value)
+ *
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\OrderItems> $orderItem
  * @property-read int|null $order_item_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Lead> $leads
@@ -87,6 +97,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property string $status
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Lead> $leads
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\OrderItems> $orderItem
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereOpeningStock($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Product wherePurchaseDescription($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Product wherePurchaseInformation($value)
@@ -97,17 +108,19 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereTrackInventory($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereType($value)
+ *
  * @property-read \Illuminate\Database\Eloquent\Collection<int, PurchaseStockAdjustment> $inventory
  * @property-read int|null $inventory_count
+ *
  * @mixin \Eloquent
  */
 class Product extends BaseModel
 {
-
+    use CustomFieldsTrait, HasFactory;
     use HasCompany;
-    use HasFactory, CustomFieldsTrait;
 
     protected $table = 'products';
+
     const FILE_PATH = 'products';
 
     protected $fillable = [
@@ -136,7 +149,7 @@ class Product extends BaseModel
         'purchase_description',
         'opening_stock',
         'status',
-        'type'
+        'type',
     ];
 
     protected $appends = ['total_amount', 'image_url', 'download_file_url', 'image'];
@@ -147,17 +160,17 @@ class Product extends BaseModel
 
     public function getImageUrlAttribute()
     {
-        if (app()->environment(['development','demo']) && str_contains($this->default_image, 'http')) {
+        if (app()->environment(['development', 'demo']) && str_contains($this->default_image, 'http')) {
             return $this->default_image;
         }
 
-        return ($this->default_image) ? asset_url_local_s3(Product::FILE_PATH . '/' . $this->default_image) : '';
+        return ($this->default_image) ? asset_url_local_s3(Product::FILE_PATH.'/'.$this->default_image) : '';
     }
 
     public function getImageAttribute()
     {
-        if($this->default_image){
-            return str($this->default_image)->contains('http') ? $this->default_image : (Product::FILE_PATH . '/' . $this->default_image);
+        if ($this->default_image) {
+            return str($this->default_image)->contains('http') ? $this->default_image : (Product::FILE_PATH.'/'.$this->default_image);
         }
 
         return $this->default_image;
@@ -165,7 +178,7 @@ class Product extends BaseModel
 
     public function getDownloadFileUrlAttribute()
     {
-        return ($this->downloadable_file) ? asset_url_local_s3(Product::FILE_PATH . '/' . $this->downloadable_file) : null;
+        return ($this->downloadable_file) ? asset_url_local_s3(Product::FILE_PATH.'/'.$this->downloadable_file) : null;
     }
 
     public function tax(): BelongsTo
@@ -201,8 +214,8 @@ class Product extends BaseModel
     public function getTotalAmountAttribute()
     {
 
-        if (!is_null($this->price) && !is_null($this->tax)) {
-            return (int)$this->price + ((int)$this->price * ((int)$this->tax->rate_percent / 100));
+        if (! is_null($this->price) && ! is_null($this->tax)) {
+            return (int) $this->price + ((int) $this->price * ((int) $this->tax->rate_percent / 100));
         }
 
         return '';
@@ -221,12 +234,12 @@ class Product extends BaseModel
         if ($productItem && $productItem->taxes) {
             $numItems = count(json_decode($productItem->taxes));
 
-            if (!is_null($productItem->taxes)) {
+            if (! is_null($productItem->taxes)) {
                 foreach (json_decode($productItem->taxes) as $index => $tax) {
                     $tax = $this->taxbyid($tax)->first();
-                    $taxes .= $tax->tax_name . ': ' . $tax->rate_percent . '%';
+                    $taxes .= $tax->tax_name.': '.$tax->rate_percent.'%';
 
-                    $taxes = ($index + 1 != $numItems) ? $taxes . ', ' : $taxes;
+                    $taxes = ($index + 1 != $numItems) ? $taxes.', ' : $taxes;
                 }
             }
         }
@@ -245,5 +258,4 @@ class Product extends BaseModel
         /** @phpstan-ignore-next-line */
         return $this->hasMany(PurchaseStockAdjustment::class, 'product_id');
     }
-
 }

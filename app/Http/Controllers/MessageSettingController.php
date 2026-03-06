@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 
 class MessageSettingController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -15,7 +14,7 @@ class MessageSettingController extends AccountBaseController
         $this->activeSettingMenu = 'message_settings';
 
         $this->middleware(function ($request, $next) {
-            abort_403(!(user()->permission('manage_message_setting') == 'all' && in_array('messages', user_modules())));
+            abort_403(! (user()->permission('manage_message_setting') == 'all' && in_array('messages', user_modules())));
 
             return $next($request);
         });
@@ -24,6 +23,7 @@ class MessageSettingController extends AccountBaseController
     public function index()
     {
         $this->messageSettings = message_setting();
+
         return view('message-settings.index', $this->data);
     }
 
@@ -34,15 +34,13 @@ class MessageSettingController extends AccountBaseController
 
         if ($request->allow_client_admin) {
             $setting->allow_client_admin = 'yes';
-        }
-        else {
+        } else {
             $setting->allow_client_admin = 'no';
         }
 
         if ($request->allow_client_employee) {
             $setting->allow_client_employee = 'yes';
-        }
-        else {
+        } else {
             $setting->allow_client_employee = 'no';
         }
 
@@ -51,7 +49,7 @@ class MessageSettingController extends AccountBaseController
         $setting->save();
 
         session()->forget('message_setting');
+
         return Reply::success(__('messages.updateSuccess'));
     }
-
 }

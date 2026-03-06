@@ -55,7 +55,7 @@ class VolumeDiscountService
 
             $rule = $query->first();
 
-            if (!$rule) {
+            if (! $rule) {
                 continue;
             }
 

@@ -2,21 +2,22 @@
 
 namespace App\DataTables;
 
+use App\Helper\Common;
+use App\Helper\UserService;
+use App\Models\CustomField;
+use App\Models\CustomFieldGroup;
 use App\Models\Event;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
-use App\Models\CustomField;
-use App\Models\CustomFieldGroup;
-use App\Helper\UserService;
-use App\Helper\Common;
+
 class RecurringEventDataTable extends BaseDataTable
 {
-
     private $editPermission;
+
     private $deletePermission;
+
     private $viewPermission;
 
     public function __construct()
@@ -30,14 +31,14 @@ class RecurringEventDataTable extends BaseDataTable
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
     {
         $datatables = datatables()->eloquent($query);
         $datatables->addIndexColumn()
-            ->addColumn('check', fn($row) => $this->checkBox($row))
+            ->addColumn('check', fn ($row) => $this->checkBox($row))
             ->editColumn('start_date', function ($row) {
 
                 return Carbon::parse($row->start_date_time)->translatedFormat($this->company->date_format);
@@ -74,16 +75,16 @@ class RecurringEventDataTable extends BaseDataTable
                     $user = $attendee->user;
 
                     if ($user && $count < 4) {
-                        $img = '<img data-toggle="tooltip" data-original-title="' . e($user->name) . '" src="' . e($user->image_url) . '">';
+                        $img = '<img data-toggle="tooltip" data-original-title="'.e($user->name).'" src="'.e($user->image_url).'">';
                         $position = $count > 0 ? 'position-absolute' : '';
 
-                        $members .= '<div class="taskEmployeeImg rounded-circle ' . $position . '" style="left: ' . ($count * 13) . 'px"><a href="' . route('employees.show', $user->id) . '">' . $img . '</a></div> ';
+                        $members .= '<div class="taskEmployeeImg rounded-circle '.$position.'" style="left: '.($count * 13).'px"><a href="'.route('employees.show', $user->id).'">'.$img.'</a></div> ';
                         $count++;
                     }
                 }
 
                 if ($attendees->count() > 4) {
-                    $members .= '<div class="taskEmployeeImg more-user-count text-center rounded-circle bg-amt-grey position-absolute" style="left: 52px"><a href="' . route('tasks.show', [$row->id]) . '" class="text-dark f-10">+' . ($attendees->count() - 4) . '</a></div>';
+                    $members .= '<div class="taskEmployeeImg more-user-count text-center rounded-circle bg-amt-grey position-absolute" style="left: 52px"><a href="'.route('tasks.show', [$row->id]).'" class="text-dark f-10">+'.($attendees->count() - 4).'</a></div>';
                 }
 
                 $members .= '</div>';
@@ -107,7 +108,8 @@ class RecurringEventDataTable extends BaseDataTable
                     'cancelled' => 'text-red',
                     'completed' => 'text-dark-green',
                 };
-                return '<i class="fa fa-circle mr-1 ' . $statusClass . ' f-10"></i>' . __('app.' . $row->status);
+
+                return '<i class="fa fa-circle mr-1 '.$statusClass.' f-10"></i>'.__('app.'.$row->status);
             })
             ->addColumn('action', function ($row) {
 
@@ -119,20 +121,20 @@ class RecurringEventDataTable extends BaseDataTable
                         </a>
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-41" tabindex="0" x-placement="bottom-end" style="position: absolute; transform: translate3d(-137px, 26px, 0px); top: 0px; left: 0px; will-change: transform;">';
 
-                $actions .= '<a href="' . route('recurring-event.show', [$row->id]) . '" class="dropdown-item"><i class="mr-2 fa fa-eye"></i>' . __('app.view') . '</a>';
+                $actions .= '<a href="'.route('recurring-event.show', [$row->id]).'" class="dropdown-item"><i class="mr-2 fa fa-eye"></i>'.__('app.view').'</a>';
 
                 if ($this->editPermission == 'all' || ($this->editPermission == 'added' && user()->id == $row->added_by)) {
-                    $actions .= '<a class="dropdown-item openRightModal" href="' . route('recurring-event.edit', [$row->id]) . '">
+                    $actions .= '<a class="dropdown-item openRightModal" href="'.route('recurring-event.edit', [$row->id]).'">
                                     <i class="mr-2 fa fa-edit"></i>
-                                    ' . __('app.edit') . '
+                                    '.__('app.edit').'
                             </a>';
                 }
 
                 if ($this->deletePermission == 'all' || ($this->deletePermission == 'added' && user()->id == $row->added_by)) {
-                    $actions .= '<a data-event-id=' . $row->id . '
+                    $actions .= '<a data-event-id='.$row->id.'
                             class="dropdown-item delete-table-row" href="javascript:;">
                                <i class="mr-2 fa fa-trash"></i>
-                                ' . __('app.delete') . '
+                                '.__('app.delete').'
                         </a>';
                 }
 
@@ -141,7 +143,7 @@ class RecurringEventDataTable extends BaseDataTable
                 return $actions;
             })
             ->smart(false)
-            ->setRowId(fn($row) => 'row-' . $row->id)
+            ->setRowId(fn ($row) => 'row-'.$row->id)
             ->orderColumn('start_date', 'start_date_time $1')
             ->orderColumn('end_date', 'end_date_time $1')
             ->orderColumn('start_time', 'start_date_time $1')
@@ -150,14 +152,13 @@ class RecurringEventDataTable extends BaseDataTable
             ->orderColumn('place', 'where')
             ->rawColumns(['attendees_names']);
 
-            $customFieldColumns = CustomField::customFieldData($datatables, Event::CUSTOM_FIELD_MODEL);
-            $datatables->rawColumns(['check', 'attendees', 'action', 'status'], $customFieldColumns);
+        $customFieldColumns = CustomField::customFieldData($datatables, Event::CUSTOM_FIELD_MODEL);
+        $datatables->rawColumns(['check', 'attendees', 'action', 'status'], $customFieldColumns);
 
-            return $datatables;
+        return $datatables;
     }
 
     /**
-     * @param Event $model
      * @return \Illuminate\Database\Query\Builder
      */
     public function query(Event $model)
@@ -166,7 +167,7 @@ class RecurringEventDataTable extends BaseDataTable
         $events = $model->with('attendee', 'attendee.user')->newQuery();
         $events->where('repeat', 'yes')->where('parent_id', null);
 
-        if (!is_null(request()->year)) {
+        if (! is_null(request()->year)) {
             $events->where(DB::raw('Year(events.start_date_time)'), request()->year);
         }
 
@@ -189,13 +190,13 @@ class RecurringEventDataTable extends BaseDataTable
             });
         }
 
-        if (!is_null(request()->month)) {
+        if (! is_null(request()->month)) {
             $events->where(DB::raw('Month(events.start_date_time)'), request()->month);
         }
 
         if (request()->searchText != '') {
             $safeTerm = Common::safeString(request('searchText'));
-            $events->where('events.event_name', 'like', '%' . $safeTerm . '%');
+            $events->where('events.event_name', 'like', '%'.$safeTerm.'%');
         }
 
         if ($this->viewPermission == 'added') {
@@ -224,6 +225,7 @@ class RecurringEventDataTable extends BaseDataTable
         }
 
         $events->orderBy('id', 'desc');
+
         return $events;
     }
 
@@ -249,7 +251,7 @@ class RecurringEventDataTable extends BaseDataTable
             ]);
 
         if (canDataTableExport()) {
-            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
+            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
         }
 
         return $dataTable;
@@ -267,7 +269,7 @@ class RecurringEventDataTable extends BaseDataTable
                 'title' => '<input type="checkbox" name="select_all_table" id="select-all-table" onclick="selectAllTable(this)">',
                 'exportable' => false,
                 'orderable' => false,
-                'searchable' => false
+                'searchable' => false,
             ],
             '#' => ['data' => 'DT_RowIndex', 'orderable' => false, 'searchable' => false, 'visible' => false, 'title' => '#'],
             __('modules.events.eventName') => ['data' => 'event', 'name' => 'event_name', 'title' => __('modules.events.eventName')],
@@ -276,7 +278,7 @@ class RecurringEventDataTable extends BaseDataTable
             __('modules.employees.startTime') => ['data' => 'start_time', 'name' => 'start_time', 'title' => __('modules.employees.startTime')],
             __('app.endDate') => ['data' => 'end_date', 'name' => 'end_date', 'title' => __('app.endDate')],
             __('modules.employees.endTime') => ['data' => 'end_time', 'name' => 'end_time', 'title' => __('modules.employees.endTime')],
-            __('modules.events.attendees') => ['data' => 'attendees', 'name' => 'attendees', 'exportable' => false,'title' => __('modules.events.attendees')],
+            __('modules.events.attendees') => ['data' => 'attendees', 'name' => 'attendees', 'exportable' => false, 'title' => __('modules.events.attendees')],
             'attendees_names' => ['data' => 'attendees_name', 'name' => 'attendees_name', 'visible' => false, 'title' => __('modules.events.attendees')],
             __('modules.status') => ['data' => 'status', 'name' => 'status', 'title' => __('app.status')],
         ];
@@ -287,10 +289,9 @@ class RecurringEventDataTable extends BaseDataTable
                 ->printable(false)
                 ->orderable(false)
                 ->searchable(false)
-                ->addClass('text-right pr-20')
+                ->addClass('text-right pr-20'),
         ];
 
-        return array_merge($data, CustomFieldGroup::customFieldsDataMerge(new Event()), $action);
+        return array_merge($data, CustomFieldGroup::customFieldsDataMerge(new Event), $action);
     }
-
 }

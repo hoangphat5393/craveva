@@ -1,15 +1,15 @@
 <?php
 
-use App\Models\Role;
-use App\Models\User;
-use App\Models\Module;
 use App\Models\Company;
+use App\Models\Module;
 use App\Models\Permission;
 use App\Models\PermissionRole;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Migrations\Migration;
+use App\Models\Role;
+use App\Models\User;
 use App\Models\UserPermission;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -18,13 +18,12 @@ return new class extends Migration
      *
      * @return void
      */
-
     public function up()
     {
 
         $module = Module::where('module_name', 'employees')->first();
 
-        if (!is_null($module) && isNonCraveva()) {
+        if (! is_null($module) && isNonCraveva()) {
             $permissionType = [
                 [
                     'module_id' => $module->id,
@@ -33,7 +32,6 @@ return new class extends Migration
                     'is_custom' => 1,
                     'allowed_permissions' => Permission::ALL_4_OWNED_2_NONE_5,
                 ],
-
 
                 [
                     'module_id' => $module->id,
@@ -63,7 +61,7 @@ return new class extends Migration
             $companies = Company::select('id')->get();
 
             foreach ($permissionType as $key => $permissionTypes) {
-                $permission = new Permission();
+                $permission = new Permission;
                 $permission->name = $permissionTypes['name'];
                 $permission->display_name = $permissionTypes['display_name'];
                 $permission->module_id = $module->id;
@@ -75,7 +73,7 @@ return new class extends Migration
 
                     $role = Role::where('name', 'admin')->where('company_id', $company->id)->first();
 
-                    $permissionRole = new PermissionRole();
+                    $permissionRole = new PermissionRole;
                     $permissionRole->permission_id = $permission->id;
                     $permissionRole->role_id = $role->id;
                     $permissionRole->permission_type_id = 4;
@@ -84,7 +82,7 @@ return new class extends Migration
                     $admins = User::allAdmins($company->id);
 
                     foreach ($admins as $admin) {
-                        $userPermission = new UserPermission();
+                        $userPermission = new UserPermission;
                         $userPermission->user_id = $admin->id;
                         $userPermission->permission_id = $permission->id;
                         $userPermission->permission_type_id = 4;

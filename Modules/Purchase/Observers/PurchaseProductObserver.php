@@ -8,21 +8,20 @@ use Modules\Purchase\Entities\PurchaseProductHistory;
 
 class PurchaseProductObserver
 {
-
     use UnitTypeSaveTrait;
 
     public function saving(PurchaseProduct $product)
     {
         $this->unitType($product);
 
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             $product->last_updated_by = user() ? user()->id : null;
         }
     }
 
     public function creating(PurchaseProduct $product)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             $product->added_by = user() ? user()->id : null;
         }
 
@@ -33,14 +32,14 @@ class PurchaseProductObserver
 
     public function created(PurchaseProduct $product)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             $this->productHistoryActivity(company()->id, $product->id, user()->id, 'Created', 'productCreated', $product->type);
         }
     }
 
     public function updated(PurchaseProduct $product)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             $this->productHistoryActivity(company()->id, $product->id, user()->id, 'Updated', 'productUpdated', $product->type);
         }
     }
@@ -54,7 +53,7 @@ class PurchaseProductObserver
 
     public function productHistoryActivity($companyID, $productID, $userID, $label, $details, $type)
     {
-        $activities = new PurchaseProductHistory();
+        $activities = new PurchaseProductHistory;
         $activities->company_id = $companyID;
         $activities->purchase_product_id = $productID;
         $activities->user_id = $userID;

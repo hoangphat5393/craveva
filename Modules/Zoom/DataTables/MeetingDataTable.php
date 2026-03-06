@@ -24,7 +24,7 @@ class MeetingDataTable extends BaseDataTable
     /**
      * Build DataTable class.
      *
-     * @param  mixed  $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
@@ -149,20 +149,20 @@ class MeetingDataTable extends BaseDataTable
             )->editColumn(
                 'meeting_name', function ($row) {
 
-                        return '<h5 class="mb-0 f-13 text-darkest-grey"><a href="'.route('zoom-meetings.show', [$row->id]).'" class="openRightModal">'.($row->meeting_name).'</a></h5>';
+                    return '<h5 class="mb-0 f-13 text-darkest-grey"><a href="'.route('zoom-meetings.show', [$row->id]).'" class="openRightModal">'.($row->meeting_name).'</a></h5>';
 
                 }
             )->editColumn(
                 'created_by', function ($row) {
-                        return $row->host->name ?? '--';
+                    return $row->host->name ?? '--';
                 }
             )->editColumn(
                 'start_date_time', function ($row) {
-                        return $row->start_date_time->format(company()->date_format.' '.company()->time_format);
+                    return $row->start_date_time->format(company()->date_format.' '.company()->time_format);
                 }
             )->editColumn(
                 'end_date_time', function ($row) {
-                        return $row->end_date_time->format(company()->date_format.' '.company()->time_format);
+                    return $row->end_date_time->format(company()->date_format.' '.company()->time_format);
                 }
             )->editColumn(
                 'status', function ($row) {

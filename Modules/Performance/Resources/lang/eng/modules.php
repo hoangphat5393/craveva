@@ -1,6 +1,6 @@
 <?php
 
-return array(
+return [
     'viewedBy' => 'Can be viewed by',
     'managedBy' => 'Can be managed by',
     'owner' => 'Owner',
@@ -23,4 +23,4 @@ return array(
     'sendReminderMeeting' => 'Send reminder for pending meetings.',
     'sendReminderObjective' => 'Send reminder for the pending check-ins on this objective.',
     'hideCompletedObjectives' => 'Hide completed objectives',
-);
+];

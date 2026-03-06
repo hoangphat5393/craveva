@@ -3,12 +3,11 @@
 namespace Database\Seeders;
 
 use App\Models\Company;
-use Illuminate\Database\Seeder;
 use App\Models\TicketSettingForAgents;
+use Illuminate\Database\Seeder;
 
 class TicketSettingSeeder extends Seeder
 {
-
     /**
      * Run the database seeds.
      *
@@ -27,5 +26,4 @@ class TicketSettingSeeder extends Seeder
             ]);
         }
     }
-
 }

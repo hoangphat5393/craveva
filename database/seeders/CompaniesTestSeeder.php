@@ -21,17 +21,17 @@ class CompaniesTestSeeder extends Seeder
         $count = 3;
 
         foreach (range(1, $count) as $i) {
-            $company = new Company();
+            $company = new Company;
             $company->company_name = $faker->company;
             $company->status = 'active';
             $company->locale = 'en';
             $company->save();
 
-            $email = 'test.company' . $company->id . '@example.com';
+            $email = 'test.company'.$company->id.'@example.com';
 
             $userAuth = UserAuth::createUserAuthCredentials($email);
 
-            $user = new User();
+            $user = new User;
             $user->company_id = $company->id;
             $user->name = $faker->name;
             $user->email = $email;
@@ -58,13 +58,13 @@ class CompaniesTestSeeder extends Seeder
                 $user->roles()->attach($employeeRole->id);
             }
 
-            $employee = new EmployeeDetails();
+            $employee = new EmployeeDetails;
             $employee->user_id = $user->id;
             $employee->company_id = $company->id;
-            $employee->employee_id = 'EMP-' . $user->id;
+            $employee->employee_id = 'EMP-'.$user->id;
             $employee->save();
 
-            $search = new UniversalSearch();
+            $search = new UniversalSearch;
             $search->searchable_id = $user->id;
             $search->company_id = $company->id;
             $search->title = $user->name;
@@ -75,4 +75,3 @@ class CompaniesTestSeeder extends Seeder
         config(['app.seeding' => false]);
     }
 }
-

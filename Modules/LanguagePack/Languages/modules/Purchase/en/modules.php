@@ -1,7 +1,7 @@
 <?php
 
-return array(
-    'product' => array(
+return [
+    'product' => [
         'type' => 'Type',
         'goods' => 'Goods',
         'images' => 'Images',
@@ -38,8 +38,8 @@ return array(
         'newQuantityOnHand' => 'New Quantity on hand',
         'manufacturingDate' => 'Manufacturing Date',
         'expirationDate' => 'Expiration Date',
-    ),
-    'inventory' => array(
+    ],
+    'inventory' => [
         'adjustmentReason' => 'Stock Adjustment Reason',
         'reasonName' => 'Reason name',
         'addReason' => 'Add Reason',
@@ -80,8 +80,8 @@ return array(
         'closingCode' => 'Closing Code',
         'endingPackageInventory' => 'Ending Package Inventory',
         'endingInventory' => 'Ending Inventory',
-    ),
-    'vendor' => array(
+    ],
+    'vendor' => [
         'primaryContactName' => 'Primary Contact Name',
         'companyName' => 'Company Name',
         'otherDetails' => 'Other Details',
@@ -128,8 +128,8 @@ return array(
         'closingBalance' => 'Closing Balance',
         'purchaseOrders' => 'Purchase Orders',
         'payments' => 'Payments',
-    ),
-    'vendorPayment' => array(
+    ],
+    'vendorPayment' => [
         'addPayment' => 'Add Payment',
         'billAmount' => 'Bill Amount',
         'amountDue' => 'Amount Due',
@@ -180,8 +180,8 @@ return array(
         'by' => 'by',
         'sendNotification' => 'Send Email Notification to Vendor',
         'clearAppliedAmount' => 'Clear Applied Amount',
-    ),
-    'purchaseSettings' => array(
+    ],
+    'purchaseSettings' => [
         'purchaseOrderPrefix' => 'Purchase Order Prefix',
         'purchaseOrderNumberSeprator' => 'Purchase Order Number Seprator',
         'purchaseOrderDigits' => 'Purchase Order Number Digits',
@@ -195,15 +195,15 @@ return array(
         'termsAndCondition' => 'Terms And Condition',
         'billOrderDigits' => 'Bill Order Digits',
         'billOrderExample' => 'Bill Order Example',
-    ),
-    'vendorCredit' => array(
+    ],
+    'vendorCredit' => [
         'vendorCreditCreated' => 'Vendor Credit is created by',
         'vendorCreditUpdated' => 'Vendor Credit is updated by',
         'Created' => 'Vendor Credit Created',
         'Updated' => 'Vendor Credit Updated',
         'ofAmount' => 'of amount',
-    ),
-    'purchaseBill' => array(
+    ],
+    'purchaseBill' => [
         'saveAsOpen' => 'Save as Open',
         'billCreated' => 'Bill is created of amount',
         'billUpdated' => 'Bill date is updated to',
@@ -213,8 +213,8 @@ return array(
         'ofPurchaseOrder' => 'of Purchase Order',
         'partially_paid' => 'Partially Paid',
         'onDate' => 'on date',
-    ),
-    'purchaseOrder' => array(
+    ],
+    'purchaseOrder' => [
         'expectedDate' => 'Expected Date',
         'billedStatus' => 'Billed Status',
         'billed' => 'Billed',
@@ -234,8 +234,8 @@ return array(
         'delivered' => 'Delivered',
         'expectedDeliveryDate' => 'Expected Delivery Date',
         'orderDate' => 'Order Date',
-    ),
-    'reports' => array(
+    ],
+    'reports' => [
         'inventorySummary' => 'Inventory Summary',
         'itemName' => 'Item Name',
         'sku' => 'Sku',
@@ -245,11 +245,11 @@ return array(
         'stockOnHand' => 'Stock On Hand',
         'committedStock' => 'Committed Stock',
         'availableForSale' => 'Available For Sale',
-    ),
-    'deliveryOrder' => array(
+    ],
+    'deliveryOrder' => [
         'draft' => 'Draft',
         'inbound' => 'Inbound',
         'received' => 'Received',
         'quantityReceived' => 'Quantity Received',
-    )
-);
+    ],
+];

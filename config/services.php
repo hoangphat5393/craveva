@@ -44,14 +44,14 @@ return [
     ],
 
     'telegram-bot-api' => [
-        'token' => env('TELEGRAM_BOT_TOKEN', 'YOUR BOT TOKEN HERE')
+        'token' => env('TELEGRAM_BOT_TOKEN', 'YOUR BOT TOKEN HERE'),
     ],
 
     'google' => [
         'client_id' => env('GOOGLE_CLIENT_ID'),
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
         'redirect' => env('GOOGLE_REDIRECT'),
-        'redirect_uri' => (env('APP_URL') . '/account/settings/google-auth'),
+        'redirect_uri' => (env('APP_URL').'/account/settings/google-auth'),
         // Let the user know what we will be using from his Google account.
         'scopes' => [
             // Getting access to the user's email.
@@ -68,7 +68,7 @@ return [
     ],
 
     'sentry' => [
-        'enabled' => env('SENTRY_ENABLED', false)
+        'enabled' => env('SENTRY_ENABLED', false),
     ],
     'onesignal' => [
         'app_id' => 'YOUR-APP-ID-HERE',

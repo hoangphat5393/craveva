@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\DataTables\consolidatedTaskReportDataTable;
 use App\DataTables\EmployeeWiseTaskDataTable;
 use App\DataTables\TaskReportDataTable;
+use App\Helper\Common;
 use App\Helper\Reply;
 use App\Models\Project;
 use App\Models\Task;
@@ -14,11 +15,9 @@ use App\Models\TaskLabelList;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Helper\Common;
 
 class TaskReportController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -29,7 +28,7 @@ class TaskReportController extends AccountBaseController
     {
         abort_403(user()->permission('view_task_report') != 'all');
 
-        if (!request()->ajax()) {
+        if (! request()->ajax()) {
             $this->projects = Project::allProjects();
             $this->clients = User::allClients();
             $this->employees = User::allEmployees();
@@ -116,9 +115,9 @@ class TaskReportController extends AccountBaseController
             if ($request->searchText != '') {
                 $model->where(function ($query) {
                     $safeTerm = Common::safeString(request('searchText'));
-                    $query->where('tasks.heading', 'like', '%' . $safeTerm . '%')
-                        ->orWhere('member.name', 'like', '%' . $safeTerm . '%')
-                        ->orWhere('projects.project_name', 'like', '%' . $safeTerm . '%');
+                    $query->where('tasks.heading', 'like', '%'.$safeTerm.'%')
+                        ->orWhere('member.name', 'like', '%'.$safeTerm.'%')
+                        ->orWhere('projects.project_name', 'like', '%'.$safeTerm.'%');
                 });
             }
 
@@ -127,6 +126,7 @@ class TaskReportController extends AccountBaseController
 
         $this->chartData = $data;
         $html = view('reports.tasks.chart', $this->data)->render();
+
         return Reply::dataOnly(['status' => 'success', 'html' => $html, 'title' => $this->pageTitle]);
     }
 
@@ -137,7 +137,7 @@ class TaskReportController extends AccountBaseController
 
         $this->pageTitle = 'modules.tasks.employeeWiseTaskReport';
 
-        if (!request()->ajax()) {
+        if (! request()->ajax()) {
             $this->projects = Project::allProjects();
             $this->clients = User::allClients();
             $this->employees = User::allEmployees();
@@ -156,7 +156,7 @@ class TaskReportController extends AccountBaseController
 
         $this->pageTitle = 'modules.tasks.consolidatedTaskReport';
 
-        if (!request()->ajax()) {
+        if (! request()->ajax()) {
             $this->projects = Project::allProjects();
             $this->clients = User::allClients();
             $this->employees = User::allEmployees();

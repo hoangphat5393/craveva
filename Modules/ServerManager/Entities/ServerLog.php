@@ -2,10 +2,10 @@
 
 namespace Modules\ServerManager\Entities;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\Company;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ServerLog extends Model
 {
@@ -57,7 +57,7 @@ class ServerLog extends Model
      */
     protected function getEntityClass(): string
     {
-        return match($this->entity_type) {
+        return match ($this->entity_type) {
             'hosting' => ServerHosting::class,
             'domain' => ServerDomain::class,
             default => ServerHosting::class, // Fallback to a concrete class instead of abstract Model
@@ -69,7 +69,7 @@ class ServerLog extends Model
      */
     public function getActionBadgeClass(): string
     {
-        return match($this->action) {
+        return match ($this->action) {
             'created' => 'badge-success',
             'updated' => 'badge-info',
             'deleted' => 'badge-danger',

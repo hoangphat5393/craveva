@@ -7,7 +7,6 @@ use App\Notifications\BaseNotification;
 
 class EmailVerification extends BaseNotification
 {
-
     protected $user;
 
     /**
@@ -23,7 +22,8 @@ class EmailVerification extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *t('mail::layout')
-     * @param mixed $notifiable
+     *
+     * @param  mixed  $notifiable
      * @return array
      */
     // phpcs:ignore
@@ -37,15 +37,15 @@ class EmailVerification extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     // phpcs:ignore
     public function toMail($notifiable)
     {
         return parent::build()
-            ->subject(__('email.emailVerify.subject') . ' ' . config('app.name') . '!')
-            ->greeting(__('email.hello') . ' ' . $this->user->name . '!')
+            ->subject(__('email.emailVerify.subject').' '.config('app.name').'!')
+            ->greeting(__('email.hello').' '.$this->user->name.'!')
             ->line(__('email.emailVerify.text'))
             ->action('Verify', getDomainSpecificUrl(route('front.get-email-verification', $this->user->email_verification_code), $this->user->company))
             ->line(__('email.thankyouNote'));
@@ -54,12 +54,11 @@ class EmailVerification extends BaseNotification
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function toArray($notifiable)
     {
         return $notifiable->toArray();
     }
-
 }

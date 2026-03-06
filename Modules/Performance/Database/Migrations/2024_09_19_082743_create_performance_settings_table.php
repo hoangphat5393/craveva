@@ -9,13 +9,12 @@ use Modules\Performance\Entities\PerformanceSetting;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        if (!Schema::hasTable('performance_settings')) {
+        if (! Schema::hasTable('performance_settings')) {
             Schema::create('performance_settings', function (Blueprint $table) {
                 $table->id();
                 $table->integer('company_id')->unsigned()->nullable();

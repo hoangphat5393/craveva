@@ -2,13 +2,12 @@
 
 namespace Database\Seeders;
 
-use App\Models\UserChat;
 use App\Models\User;
+use App\Models\UserChat;
 use Illuminate\Database\Seeder;
 
 class MessageSeeder extends Seeder
 {
-
     /**
      * Run the database seeds.
      *
@@ -19,7 +18,7 @@ class MessageSeeder extends Seeder
 
         $count = config('app.seed_record_count');
         UserChat::factory()
-            ->count((int)$count)
+            ->count((int) $count)
             ->make()
             ->each(function (UserChat $model) use ($companyId) {
                 $uniqueUser = $this->getUniqueUsers($companyId);
@@ -51,5 +50,4 @@ class MessageSeeder extends Seeder
             'to' => $to,
         ];
     }
-
 }

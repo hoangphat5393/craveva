@@ -10,17 +10,16 @@ use Illuminate\Support\Facades\Log;
 
 class RemovalRequestLeadObserver
 {
-
     public function created(RemovalRequestLead $removalRequestLead)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             event(new RemovalRequestAdminLeadEvent($removalRequestLead));
         }
     }
 
     public function updated(RemovalRequestLead $removal)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             try {
                 if ($removal->lead) {
                     event(new RemovalRequestApprovedRejectLeadEvent($removal));
@@ -37,5 +36,4 @@ class RemovalRequestLeadObserver
             $model->company_id = company()->id;
         }
     }
-
 }

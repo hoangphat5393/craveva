@@ -1,5 +1,6 @@
-<?php 
+<?php
+
 return [
-  'previous' => '「 以前的',
-  'next' => '下一個 ”',
+    'previous' => '「 以前的',
+    'next' => '下一個 ”',
 ];

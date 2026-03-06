@@ -8,8 +8,7 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class CoreRequest extends FormRequest
 {
-
-    protected function formatErrors(Validator  $validator)
+    protected function formatErrors(Validator $validator)
     {
         return Reply::formErrors($validator);
     }

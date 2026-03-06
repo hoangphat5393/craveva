@@ -20,6 +20,7 @@ use Illuminate\Notifications\Notifiable;
  * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
  * @property-read int|null $notifications_count
  * @property-read \App\Models\Project|null $project
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Issue newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Issue newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Issue query()
@@ -30,15 +31,17 @@ use Illuminate\Notifications\Notifiable;
  * @method static \Illuminate\Database\Eloquent\Builder|Issue whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Issue whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Issue whereUserId($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Issue whereCompanyId($value)
+ *
  * @mixin \Eloquent
  */
 class Issue extends BaseModel
 {
-
-    use Notifiable, HasCompany;
+    use HasCompany, Notifiable;
 
     public function project(): BelongsTo
     {
@@ -46,8 +49,8 @@ class Issue extends BaseModel
     }
 
     /**
-     * @param int $projectId
-     * @param null $userID
+     * @param  int  $projectId
+     * @param  null  $userID
      * @return Issue[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
     public static function projectIssuesPending($projectId, $userID = null)
@@ -77,5 +80,4 @@ class Issue extends BaseModel
         return false;
 
     }
-
 }

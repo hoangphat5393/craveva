@@ -6,13 +6,13 @@ use App\Models\Company;
 use App\Models\Currency;
 use App\Models\User;
 use App\Scopes\ActiveScope;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Modules\Payroll\Entities\PayrollCycle;
 use Modules\Payroll\Entities\SalaryGroup;
 use Modules\Payroll\Entities\SalaryPaymentMethod;
 use Modules\Payroll\Entities\SalarySlip as EntitiesSalarySlip;
 use Modules\Payroll\Observers\SalarySlipObserver;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class SalarySlip extends EntitiesSalarySlip
 {
@@ -126,6 +126,7 @@ class SalarySlip extends EntitiesSalarySlip
             }
             // If employee or client show projects assigned
             $query->where('salary_slips.user_id', $user->id);
+
             return $query;
 
         }
@@ -144,7 +145,7 @@ class SalarySlip extends EntitiesSalarySlip
         return '';
     }
 
-    public function defaultCurrencyPrice() : Attribute
+    public function defaultCurrencyPrice(): Attribute
     {
         return Attribute::make(
             get: function () {
@@ -154,15 +155,15 @@ class SalarySlip extends EntitiesSalarySlip
                     return $this->amount;
                 }
 
-                if($this->exchange_rate){
-                    return ($this->amount * ((float)$this->exchange_rate));
+                if ($this->exchange_rate) {
+                    return $this->amount * ((float) $this->exchange_rate);
                 }
 
                 // Retrieve the currency associated with the payment
                 $currency = Currency::find($this->currency_id);
 
-                if($currency && $currency->exchange_rate){
-                    return ($this->amount * ((float)$currency->exchange_rate));
+                if ($currency && $currency->exchange_rate) {
+                    return $this->amount * ((float) $currency->exchange_rate);
                 }
 
                 // If exchange rate is not available or invalid, return the original amount
@@ -170,5 +171,4 @@ class SalarySlip extends EntitiesSalarySlip
             },
         );
     }
-
 }

@@ -10,14 +10,13 @@ use NotificationChannels\OneSignal\OneSignalMessage;
 
 class NewDiscussionReply extends BaseNotification
 {
-
-
     /**
      * Create a new notification instance.
      *
      * @return void
      */
     private $discussionReply;
+
     private $emailSetting;
 
     public function __construct(DiscussionReply $discussionReply)
@@ -30,7 +29,7 @@ class NewDiscussionReply extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -50,9 +49,9 @@ class NewDiscussionReply extends BaseNotification
         }
 
         if ($this->emailSetting->send_push == 'yes' && push_setting()->beams_push_status == 'active') {
-            $pushNotification = new \App\Http\Controllers\DashboardController();
+            $pushNotification = new \App\Http\Controllers\DashboardController;
             $pushUsersIds = [[$notifiable->id]];
-            $pushNotification->sendPushNotifications($pushUsersIds,$this->discussionReply->user->name . ' ' . __('email.discussionReply.subject'), $this->discussionReply->discussion->title);
+            $pushNotification->sendPushNotifications($pushUsersIds, $this->discussionReply->user->name.' '.__('email.discussionReply.subject'), $this->discussionReply->discussion->title);
         }
 
         return $via;
@@ -61,7 +60,7 @@ class NewDiscussionReply extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
@@ -70,16 +69,16 @@ class NewDiscussionReply extends BaseNotification
         $url = route('discussion.show', $this->discussionReply->discussion_id);
         $url = getDomainSpecificUrl($url, $this->company);
 
-        $content = __('email.discussionReply.text') . ' ' . $this->discussionReply->discussion->title . ':-' . '<br>' . new HtmlString($this->discussionReply->body);
+        $content = __('email.discussionReply.text').' '.$this->discussionReply->discussion->title.':-'.'<br>'.new HtmlString($this->discussionReply->body);
 
         $build
-            ->subject($this->discussionReply->user->name . ' ' . __('email.discussionReply.subject') . $this->discussionReply->discussion->title . ' - ' . config('app.name') . '.')
+            ->subject($this->discussionReply->user->name.' '.__('email.discussionReply.subject').$this->discussionReply->discussion->title.' - '.config('app.name').'.')
             ->markdown('mail.email', [
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
                 'actionText' => __('email.discussionReply.action'),
-                'notifiableName' => $notifiable->name
+                'notifiableName' => $notifiable->name,
             ]);
 
         parent::resetLocale();
@@ -90,10 +89,10 @@ class NewDiscussionReply extends BaseNotification
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
-//phpcs:ignore
+    // phpcs:ignore
     public function toArray($notifiable)
     {
         return [
@@ -102,22 +101,21 @@ class NewDiscussionReply extends BaseNotification
             'discussion_id' => $this->discussionReply->discussion_id,
             'user' => $this->discussionReply->user->name,
             'body' => $this->discussionReply->body,
-            'project_id' => $this->discussionReply->discussion->project_id
+            'project_id' => $this->discussionReply->discussion->project_id,
         ];
     }
 
     /**
      * Get the Slack representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\SlackMessage
      */
     public function toSlack($notifiable)
     {
 
         return $this->slackBuild($notifiable)
-            ->content('*' . $this->discussionReply->user->name . ' ' . __('email.discussionReply.subject') . $this->discussionReply->discussion->title . '*' . "\n" . $this->discussionReply->body);
-
+            ->content('*'.$this->discussionReply->user->name.' '.__('email.discussionReply.subject').$this->discussionReply->discussion->title.'*'."\n".$this->discussionReply->body);
 
     }
 
@@ -128,5 +126,4 @@ class NewDiscussionReply extends BaseNotification
             ->setSubject(__('email.discussionReply.subject'))
             ->setBody($this->discussionReply->discussion->title);
     }
-
 }

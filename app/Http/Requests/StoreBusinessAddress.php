@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreBusinessAddress extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -26,8 +25,7 @@ class StoreBusinessAddress extends FormRequest
     {
         return [
             'location' => 'required',
-            'address' => 'required'
+            'address' => 'required',
         ];
     }
-
 }

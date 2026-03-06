@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         // Add rejected_by column if it doesn't exist
-        if (!Schema::hasColumn('onboarding_completed_task', 'rejected_by')) {
+        if (! Schema::hasColumn('onboarding_completed_task', 'rejected_by')) {
             Schema::table('onboarding_completed_task', function (Blueprint $table) {
                 $table->integer('rejected_by')->unsigned()->nullable()->after('rejection_reason');
                 $table->foreign('rejected_by')->references('id')->on('users')->onDelete('set null')->onUpdate('cascade');
@@ -20,7 +20,7 @@ return new class extends Migration
         }
 
         // Add rejected_on column if it doesn't exist
-        if (!Schema::hasColumn('onboarding_completed_task', 'rejected_on')) {
+        if (! Schema::hasColumn('onboarding_completed_task', 'rejected_on')) {
             Schema::table('onboarding_completed_task', function (Blueprint $table) {
                 $table->timestamp('rejected_on')->nullable()->after('rejected_by');
             });

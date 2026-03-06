@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      */
@@ -41,7 +40,7 @@ return new class extends Migration
         $tickets = \App\Models\Ticket::get();
 
         foreach ($tickets as $ticket) {
-            $ticketActivity = new \App\Models\TicketActivity();
+            $ticketActivity = new \App\Models\TicketActivity;
             $ticketActivity->ticket_id = $ticket->id;
             $ticketActivity->user_id = $ticket->user_id;
             $ticketActivity->assigned_to = $ticket->agent_id;
@@ -63,5 +62,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('ticket_activities');
     }
-
 };

@@ -7,9 +7,10 @@ use Illuminate\View\Component;
 
 class InputGroup extends Component
 {
-
     public $append;
+
     public $preappend;
+
     public $prepend;
 
     /**
@@ -33,5 +34,4 @@ class InputGroup extends Component
     {
         return view('components.forms.input-group');
     }
-
 }

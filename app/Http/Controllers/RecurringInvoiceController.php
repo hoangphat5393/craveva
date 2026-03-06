@@ -6,16 +6,17 @@ use App\DataTables\InvoiceRecurringDataTable;
 use App\DataTables\RecurringInvoicesDataTable;
 use App\Helper\Files;
 use App\Helper\Reply;
+use App\Helper\UserService;
 use App\Http\Requests\Invoices\StoreRecurringInvoice;
 use App\Http\Requests\Invoices\UpdateRecurringInvoice;
 use App\Models\BankAccount;
+use App\Models\ClientContact;
 use App\Models\CompanyAddress;
 use App\Models\Currency;
 use App\Models\Invoice;
 use App\Models\InvoiceItems;
 use App\Models\InvoiceSetting;
 use App\Models\Product;
-use App\Scopes\ActiveScope;
 use App\Models\Project;
 use App\Models\RecurringInvoice;
 use App\Models\RecurringInvoiceItemImage;
@@ -23,20 +24,18 @@ use App\Models\RecurringInvoiceItems;
 use App\Models\Tax;
 use App\Models\UnitType;
 use App\Models\User;
+use App\Scopes\ActiveScope;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Helper\UserService;
-use App\Models\ClientContact;
 
 class RecurringInvoiceController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'app.recurringInvoices';
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('invoices', $this->user->modules));
+            abort_403(! in_array('invoices', $this->user->modules));
 
             return $next($request);
         });
@@ -50,10 +49,10 @@ class RecurringInvoiceController extends AccountBaseController
     public function index(InvoiceRecurringDataTable $dataTable)
     {
         $viewPermission = user()->permission('view_invoices');
-        abort_403(!in_array($viewPermission, ['all', 'added']));
+        abort_403(! in_array($viewPermission, ['all', 'added']));
         $this->userId = UserService::getUserId();
 
-        if(user()->is_client_contact == 1){
+        if (user()->is_client_contact == 1) {
             $clientContact = ClientContact::where('client_id', user()->id)->first();
             $client = User::where('id', $clientContact->user_id)->first();
             $this->userName = $client->name;
@@ -61,7 +60,7 @@ class RecurringInvoiceController extends AccountBaseController
             $this->userName = user()->name;
         }
 
-        if (!request()->ajax()) {
+        if (! request()->ajax()) {
             $this->projects = Project::all();
             $this->clients = User::allClients();
         }
@@ -77,7 +76,7 @@ class RecurringInvoiceController extends AccountBaseController
     public function create()
     {
         $this->addPermission = user()->permission('add_invoices');
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
 
         $this->pageTitle = __('app.addInvoiceRecurring');
         $this->projects = Project::all();
@@ -91,7 +90,7 @@ class RecurringInvoiceController extends AccountBaseController
             $condition = $this->invoiceSetting->invoice_digit - strlen($this->lastInvoice);
 
             for ($i = 0; $i < $condition; $i++) {
-                $this->zero = '0' . $this->zero;
+                $this->zero = '0'.$this->zero;
             }
         }
 
@@ -106,7 +105,7 @@ class RecurringInvoiceController extends AccountBaseController
         $this->products = Product::select(['id', 'name as title', 'name as text'])->get();
         $this->clients = User::allClients();
 
-        $invoice = new Invoice();
+        $invoice = new Invoice;
         $getCustomFieldGroupsWithFields = $invoice->getCustomFieldGroupsWithFields();
         if ($getCustomFieldGroupsWithFields) {
             $this->fields = $getCustomFieldGroupsWithFields->fields;
@@ -117,7 +116,7 @@ class RecurringInvoiceController extends AccountBaseController
 
         $bankAccounts = BankAccount::where('status', 1)->where('currency_id', company()->currency_id);
 
-        if($this->viewBankAccountPermission == 'added'){
+        if ($this->viewBankAccountPermission == 'added') {
             $bankAccounts = $bankAccounts->where('added_by', $this->userId);
         }
 
@@ -134,7 +133,6 @@ class RecurringInvoiceController extends AccountBaseController
     }
 
     /**
-     * @param StoreRecurringInvoice $request
      * @return array
      */
     public function store(StoreRecurringInvoice $request)
@@ -145,19 +143,19 @@ class RecurringInvoiceController extends AccountBaseController
         $amount = $request->input('amount');
 
         foreach ($quantity as $qty) {
-            if (!is_numeric($qty) && (intval($qty) < 1)) {
+            if (! is_numeric($qty) && (intval($qty) < 1)) {
                 return Reply::error(__('messages.quantityNumber'));
             }
         }
 
         foreach ($cost_per_item as $rate) {
-            if (!is_numeric($rate)) {
+            if (! is_numeric($rate)) {
                 return Reply::error(__('messages.unitPriceNumber'));
             }
         }
 
         foreach ($amount as $amt) {
-            if (!is_numeric($amt)) {
+            if (! is_numeric($amt)) {
                 return Reply::error(__('messages.amountNumber'));
             }
         }
@@ -170,11 +168,11 @@ class RecurringInvoiceController extends AccountBaseController
 
         $invoiceSetting = InvoiceSetting::first();
 
-        $recurringInvoice = new RecurringInvoice();
+        $recurringInvoice = new RecurringInvoice;
         $recurringInvoice->project_id = $request->project_id ?? null;
         $recurringInvoice->client_id = $request->has('client_id') ? $request->client_id : null;
-        $recurringInvoice->issue_date = !is_null($request->issue_date) ? companyToYmd($request->issue_date) : now()->format('Y-m-d');
-        $recurringInvoice->due_date = !is_null($request->issue_date) ? Carbon::createFromFormat($this->company->date_format, $request->issue_date)->addDays($invoiceSetting->due_after)->format('Y-m-d') : now()->addDays($invoiceSetting->due_after)->format('Y-m-d');
+        $recurringInvoice->issue_date = ! is_null($request->issue_date) ? companyToYmd($request->issue_date) : now()->format('Y-m-d');
+        $recurringInvoice->due_date = ! is_null($request->issue_date) ? Carbon::createFromFormat($this->company->date_format, $request->issue_date)->addDays($invoiceSetting->due_after)->format('Y-m-d') : now()->addDays($invoiceSetting->due_after)->format('Y-m-d');
         $recurringInvoice->sub_total = $request->sub_total;
         $recurringInvoice->discount = round($request->discount_value, 2);
         $recurringInvoice->discount_type = $request->discount_type;
@@ -197,10 +195,10 @@ class RecurringInvoiceController extends AccountBaseController
         $recurringInvoice->status = 'active';
         $recurringInvoice->save();
 
-        if($request->immediate_invoice){
+        if ($request->immediate_invoice) {
             $defaultAddress = CompanyAddress::where('is_default', 1)->where('company_id', company()->id)->first();
 
-            $invoice = new Invoice();
+            $invoice = new Invoice;
             $invoice->invoice_recurring_id = $recurringInvoice->id;
             $invoice->project_id = $request->project_id ?? null;
             $invoice->client_id = $request->client_id ?: null;
@@ -226,13 +224,11 @@ class RecurringInvoiceController extends AccountBaseController
                     $client = $invoice->project->clientdetails;
                     $client->shipping_address = $invoice->project->client->clientDetails->shipping_address;
                     $client->save();
-                }
-                elseif ($invoice->client_id != null && $invoice->client_id != '') {
+                } elseif ($invoice->client_id != null && $invoice->client_id != '') {
                     $client = $invoice->clientdetails;
                     $client->shipping_address = $invoice->client->clientDetails->shipping_address;
                     $client->save();
                 }
-
 
             }
 
@@ -247,7 +243,7 @@ class RecurringInvoiceController extends AccountBaseController
     /**
      * Display the specified resource.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -257,8 +253,7 @@ class RecurringInvoiceController extends AccountBaseController
 
         $this->inv = Invoice::where('invoice_recurring_id', $id)->first();
 
-        if($this->inv)
-        {
+        if ($this->inv) {
             $this->inv = $this->inv->withCustomFields();
             $getCustomFieldGroupsWithFields = $this->inv->getCustomFieldGroupsWithFields();
 
@@ -270,15 +265,14 @@ class RecurringInvoiceController extends AccountBaseController
         if ($this->invoice->discount > 0) {
             if ($this->invoice->discount_type == 'percent') {
                 $this->discount = (($this->invoice->discount / 100) * $this->invoice->sub_total);
-            }
-            else {
+            } else {
                 $this->discount = $this->invoice->discount;
             }
         } else {
             $this->discount = 0;
         }
 
-        $taxList = array();
+        $taxList = [];
 
         $items = RecurringInvoiceItems::whereNotNull('taxes')
             ->where('invoice_recurring_id', $this->invoice->id)
@@ -289,20 +283,18 @@ class RecurringInvoiceController extends AccountBaseController
             foreach (json_decode($item->taxes) as $tax) {
                 $this->tax = InvoiceItems::taxbyid($tax)->first();
 
-                if (!isset($taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'])) {
+                if (! isset($taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'])) {
 
                     if ($this->invoice->calculate_tax == 'after_discount' && $this->discount > 0) {
-                        $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = ($item->amount - ($item->amount / $this->invoice->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
-                    }
-                    else {
-                        $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $item->amount * ($this->tax->rate_percent / 100);
+                        $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = ($item->amount - ($item->amount / $this->invoice->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
+                    } else {
+                        $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $item->amount * ($this->tax->rate_percent / 100);
                     }
                 } else {
                     if ($this->invoice->calculate_tax == 'after_discount' && $this->discount > 0) {
-                        $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + (($item->amount - ($item->amount / $this->invoice->sub_total) * $this->discount) * ($this->tax->rate_percent / 100));
-                    }
-                    else {
-                        $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + ($item->amount * ($this->tax->rate_percent / 100));
+                        $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + (($item->amount - ($item->amount / $this->invoice->sub_total) * $this->discount) * ($this->tax->rate_percent / 100));
+                    } else {
+                        $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + ($item->amount * ($this->tax->rate_percent / 100));
                     }
                 }
             }
@@ -316,9 +308,9 @@ class RecurringInvoiceController extends AccountBaseController
         $tab = request('tab');
 
         switch ($tab) {
-        case 'invoices':
+            case 'invoices':
                 return $this->invoices($id);
-        default:
+            default:
                 $this->view = 'recurring-invoices.ajax.overview';
                 break;
         }
@@ -327,14 +319,13 @@ class RecurringInvoiceController extends AccountBaseController
             return $this->returnAjax($this->view);
         }
 
-
         $this->activeTab = $tab ?: 'overview';
 
         return view('recurring-invoices.show', $this->data);
     }
 
     /**
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|void
      */
     public function edit($id)
@@ -343,7 +334,7 @@ class RecurringInvoiceController extends AccountBaseController
 
         $this->editPermission = user()->permission('edit_invoices');
         $this->userId = UserService::getUserId();
-        abort_403(!($this->editPermission == 'all' || ($this->editPermission == 'added' && ($this->invoice->added_by == user()->id || $this->invoice->added_by == $this->userId))));
+        abort_403(! ($this->editPermission == 'all' || ($this->editPermission == 'added' && ($this->invoice->added_by == user()->id || $this->invoice->added_by == $this->userId))));
 
         $this->projects = Project::all();
         $this->currencies = Currency::all();
@@ -359,8 +350,7 @@ class RecurringInvoiceController extends AccountBaseController
 
         $this->inv = Invoice::where('invoice_recurring_id', $id)->first();
 
-        if($this->inv)
-        {
+        if ($this->inv) {
             $this->inv = $this->inv->withCustomFields();
             $getCustomFieldGroupsWithFields = $this->inv->getCustomFieldGroupsWithFields();
 
@@ -371,7 +361,7 @@ class RecurringInvoiceController extends AccountBaseController
 
         $bankAccounts = BankAccount::where('status', 1)->where('currency_id', $this->invoice->currency_id);
 
-        if($this->viewBankAccountPermission == 'added'){
+        if ($this->viewBankAccountPermission == 'added') {
             $bankAccounts = $bankAccounts->where('added_by', $this->userId);
         }
 
@@ -390,17 +380,14 @@ class RecurringInvoiceController extends AccountBaseController
     /**
      * Update the specified resource in storage.
      *
-     * @param UpdateRecurringInvoice $request
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-
     public function update(UpdateRecurringInvoice $request, $id)
     {
         $invoice = RecurringInvoice::findOrFail($id);
 
-        if($request->invoice_count == 0)
-        {
+        if ($request->invoice_count == 0) {
             $items = $request->input('item_name');
             $itemsSummary = $request->input('item_summary');
             $cost_per_item = $request->input('cost_per_item');
@@ -414,19 +401,19 @@ class RecurringInvoiceController extends AccountBaseController
             $productId = $request->product_id;
 
             foreach ($quantity as $qty) {
-                if (!is_numeric($qty) && (intval($qty) < 1)) {
+                if (! is_numeric($qty) && (intval($qty) < 1)) {
                     return Reply::error(__('messages.quantityNumber'));
                 }
             }
 
             foreach ($cost_per_item as $rate) {
-                if (!is_numeric($rate)) {
+                if (! is_numeric($rate)) {
                     return Reply::error(__('messages.unitPriceNumber'));
                 }
             }
 
             foreach ($amount as $amt) {
-                if (!is_numeric($amt)) {
+                if (! is_numeric($amt)) {
                     return Reply::error(__('messages.amountNumber'));
                 }
             }
@@ -459,8 +446,7 @@ class RecurringInvoiceController extends AccountBaseController
 
             if ($request->rotation == 'weekly' || $request->rotation == 'bi-weekly') {
                 $invoice->day_of_week = $request->day_of_week;
-            }
-            elseif ($request->rotation == 'monthly' || $request->rotation == 'quarterly' || $request->rotation == 'half-yearly' || $request->rotation == 'annually') {
+            } elseif ($request->rotation == 'monthly' || $request->rotation == 'quarterly' || $request->rotation == 'half-yearly' || $request->rotation == 'annually') {
                 $invoice->day_of_month = $request->day_of_month;
             }
 
@@ -476,15 +462,14 @@ class RecurringInvoiceController extends AccountBaseController
 
             $invoice->save();
 
-            if (!empty($request->item_name) && is_array($request->item_name)) {
+            if (! empty($request->item_name) && is_array($request->item_name)) {
                 // Step1 - Delete all invoice items which are not avaialable
-                if (!empty($item_ids)) {
+                if (! empty($item_ids)) {
                     RecurringInvoiceItems::whereNotIn('id', $item_ids)->delete();
                 }
 
                 $unitId = request()->unit_id;
                 $product = request()->product_id;
-
 
                 // Step2&3 - Find old invoices items, update it and check if images are newer or older
                 foreach ($items as $key => $item) {
@@ -493,34 +478,34 @@ class RecurringInvoiceController extends AccountBaseController
                     $invoiceItem = RecurringInvoiceItems::find($invoice_item_id);
 
                     if ($invoiceItem === null) {
-                        $invoiceItem = new RecurringInvoiceItems();
+                        $invoiceItem = new RecurringInvoiceItems;
                     }
 
                     $invoiceItem->invoice_recurring_id = $invoice->id;
                     $invoiceItem->item_name = $item;
                     $invoiceItem->item_summary = $itemsSummary[$key];
                     $invoiceItem->type = 'item';
-                    $invoiceItem->product_id = (isset($productId[$key]) && !is_null($productId[$key])) ? $productId[$key] : null;
-                    $invoiceItem->hsn_sac_code = (isset($hsn_sac_code[$key]) && !is_null($hsn_sac_code[$key])) ? $hsn_sac_code[$key] : null;
+                    $invoiceItem->product_id = (isset($productId[$key]) && ! is_null($productId[$key])) ? $productId[$key] : null;
+                    $invoiceItem->hsn_sac_code = (isset($hsn_sac_code[$key]) && ! is_null($hsn_sac_code[$key])) ? $hsn_sac_code[$key] : null;
                     $invoiceItem->quantity = $quantity[$key];
-                    $invoiceItem->unit_id = (isset($unitId[$key]) && !is_null($unitId[$key])) ? $unitId[$key] : null;
-                    $invoiceItem->product_id = (isset($product[$key]) && !is_null($product[$key])) ? $product[$key] : null;
+                    $invoiceItem->unit_id = (isset($unitId[$key]) && ! is_null($unitId[$key])) ? $unitId[$key] : null;
+                    $invoiceItem->product_id = (isset($product[$key]) && ! is_null($product[$key])) ? $product[$key] : null;
                     $invoiceItem->unit_price = round($cost_per_item[$key], 2);
                     $invoiceItem->amount = round($amount[$key], 2);
                     $invoiceItem->taxes = ($tax ? (array_key_exists($key, $tax) ? json_encode($tax[$key]) : null) : null);
                     $invoiceItem->save();
 
                     /* Invoice file save here */
-                    if ((isset($invoice_item_image[$key]) && $request->hasFile('invoice_item_image.' . $key)) || isset($invoice_item_image_url[$key])) {
+                    if ((isset($invoice_item_image[$key]) && $request->hasFile('invoice_item_image.'.$key)) || isset($invoice_item_image_url[$key])) {
                         /* Delete previous uploaded file if it not a product (because product images cannot be deleted) */
-                        if (!isset($invoice_item_image_url[$key]) && $invoiceItem && $invoiceItem->recurringInvoiceItemImage) {
-                            Files::deleteFile($invoiceItem->recurringInvoiceItemImage->hashname, RecurringInvoiceItemImage::FILE_PATH . '/' . $invoiceItem->id . '/');
+                        if (! isset($invoice_item_image_url[$key]) && $invoiceItem && $invoiceItem->recurringInvoiceItemImage) {
+                            Files::deleteFile($invoiceItem->recurringInvoiceItemImage->hashname, RecurringInvoiceItemImage::FILE_PATH.'/'.$invoiceItem->id.'/');
                         }
 
                         $filename = '';
 
                         if (isset($invoice_item_image[$key])) {
-                            $filename = Files::uploadLocalOrS3($invoice_item_image[$key], RecurringInvoiceItemImage::FILE_PATH . '/' . $invoiceItem->id . '/');
+                            $filename = Files::uploadLocalOrS3($invoice_item_image[$key], RecurringInvoiceItemImage::FILE_PATH.'/'.$invoiceItem->id.'/');
                         }
 
                         RecurringInvoiceItemImage::updateOrCreate(
@@ -550,8 +535,7 @@ class RecurringInvoiceController extends AccountBaseController
 
         $this->inv = Invoice::where('invoice_recurring_id', $id)->first();
 
-        if($this->inv)
-        {
+        if ($this->inv) {
             $this->inv = $this->inv->withCustomFields();
 
             if ($request->custom_fields_data) {
@@ -565,7 +549,7 @@ class RecurringInvoiceController extends AccountBaseController
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
@@ -574,20 +558,21 @@ class RecurringInvoiceController extends AccountBaseController
 
         $recurringInvoice = RecurringInvoice::findOrFail($id);
         $userId = UserService::getUserId();
-        abort_403(!($this->deletePermission == 'all' || ($this->deletePermission == 'added' && ($recurringInvoice->added_by == user()->id || $recurringInvoice->added_by == $userId))));
+        abort_403(! ($this->deletePermission == 'all' || ($this->deletePermission == 'added' && ($recurringInvoice->added_by == user()->id || $recurringInvoice->added_by == $userId))));
 
         RecurringInvoice::destroy($id);
 
         return Reply::success(__('messages.deleteSuccess'));
     }
 
-    public function deleteInvoices($id) {
+    public function deleteInvoices($id)
+    {
 
         $invoice = Invoice::findOrFail($id);
         $this->deletePermission = user()->permission('delete_invoices');
         $userId = UserService::getUserId();
 
-        abort_403(!(
+        abort_403(! (
             $this->deletePermission == 'all'
             || ($this->deletePermission == 'added' && $invoice->added_by == $userId || $invoice->added_by == user()->id)
             || ($this->deletePermission == 'owned' && $invoice->client_id == $userId)
@@ -600,7 +585,6 @@ class RecurringInvoiceController extends AccountBaseController
     }
 
     /**
-     * @param Request $request
      * @return array
      */
     public function changeStatus(Request $request)
@@ -618,8 +602,7 @@ class RecurringInvoiceController extends AccountBaseController
     }
 
     /**
-     * @param RecurringInvoicesDataTable $dataTable
-     * @param int $id
+     * @param  int  $id
      * @return mixed
      */
     public function recurringInvoices(RecurringInvoicesDataTable $dataTable, $id)
@@ -627,16 +610,18 @@ class RecurringInvoiceController extends AccountBaseController
         $this->invoice = RecurringInvoice::findOrFail($id);
         $this->projects = Project::all();
         $this->clients = User::allClients();
+
         return $dataTable->render('recurring-invoices.recurring-invoices', $this->data);
     }
 
     public function applyQuickAction(Request $request)
     {
         switch ($request->action_type) {
-        case 'delete':
+            case 'delete':
                 $this->deleteRecords($request);
+
                 return Reply::success(__('messages.deleteSuccess'));
-        default:
+            default:
                 return Reply::error(__('messages.selectAction'));
         }
     }
@@ -656,7 +641,7 @@ class RecurringInvoiceController extends AccountBaseController
     {
         $dataTable = new RecurringInvoicesDataTable;
         $viewPermission = user()->permission('view_invoices');
-        abort_403(!in_array($viewPermission, ['all', 'added']));
+        abort_403(! in_array($viewPermission, ['all', 'added']));
 
         $this->recurringID = $recurringID;
         $tab = request('tab');
@@ -666,5 +651,4 @@ class RecurringInvoiceController extends AccountBaseController
 
         return $dataTable->render('recurring-invoices.show', $this->data);
     }
-
 }

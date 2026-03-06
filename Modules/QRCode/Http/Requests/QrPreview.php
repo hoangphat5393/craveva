@@ -8,7 +8,6 @@ use Modules\QRCode\Enums\Type;
 
 class QrPreview extends FormRequest
 {
-
     /**
      * Get the validation rules that apply to the request.
      */
@@ -23,8 +22,8 @@ class QrPreview extends FormRequest
             'size' => 'required|numeric|min:200',
             'margin' => 'required|numeric',
             'qrTitle' => 'required|string',
-            'background_color'=> 'required',
-            'foreground_color'=> 'required'
+            'background_color' => 'required',
+            'foreground_color' => 'required',
         ];
 
         $rules = match (Type::tryFrom($this->type)) {
@@ -65,6 +64,7 @@ class QrPreview extends FormRequest
     private function qrText($rules)
     {
         $rules['message'] = 'required|string';
+
         return $rules;
     }
 
@@ -73,6 +73,7 @@ class QrPreview extends FormRequest
         $rules['email'] = 'required|email';
         $rules['subject'] = 'nullable|string';
         $rules['message'] = 'nullable|string';
+
         return $rules;
     }
 
@@ -82,13 +83,14 @@ class QrPreview extends FormRequest
 
         $rules['title'] = 'required|string';
         $rules['location'] = 'nullable|string';
-        $rules['start_date'] = 'required|date_format:"' . $setting->date_format . '"';
+        $rules['start_date'] = 'required|date_format:"'.$setting->date_format.'"';
         $rules['start_time'] = 'required';
-        $rules['end_date'] = 'required|date_format:"' . $setting->date_format . '"|after_or_equal:start_date';
+        $rules['end_date'] = 'required|date_format:"'.$setting->date_format.'"|after_or_equal:start_date';
         $rules['end_time'] = 'required|after_or_equal:start_time';
         $rules['reminder'] = 'nullable';
         $rules['link'] = 'nullable|url';
         $rules['note'] = 'nullable|string';
+
         return $rules;
     }
 
@@ -96,6 +98,7 @@ class QrPreview extends FormRequest
     {
         $rules['latitude'] = 'required|numeric';
         $rules['longitude'] = 'required|numeric';
+
         return $rules;
     }
 
@@ -109,6 +112,7 @@ class QrPreview extends FormRequest
         $rules['amount'] = 'nullable|numeric';
         $rules['shipping'] = 'nullable|numeric';
         $rules['tax'] = 'nullable|numeric';
+
         return $rules;
     }
 
@@ -116,6 +120,7 @@ class QrPreview extends FormRequest
     {
         $rules['username'] = 'required|string';
         $rules['skypeContactType'] = 'required|string';
+
         return $rules;
     }
 
@@ -123,6 +128,7 @@ class QrPreview extends FormRequest
     {
         $rules = $this->qrTel($rules);
         $rules['message'] = 'nullable|string';
+
         return $rules;
     }
 
@@ -130,12 +136,14 @@ class QrPreview extends FormRequest
     {
         $rules['mobile'] = 'required|numeric';
         $rules['country_phonecode'] = 'required|numeric';
+
         return $rules;
     }
 
     private function qrUrl($rules)
     {
         $rules['url'] = 'required|url';
+
         return $rules;
     }
 
@@ -145,6 +153,7 @@ class QrPreview extends FormRequest
         $rules['upi'] = 'required|string';
         $rules['amount'] = 'nullable|numeric';
         $rules['description'] = 'nullable|string';
+
         return $rules;
     }
 
@@ -154,7 +163,7 @@ class QrPreview extends FormRequest
         $rules['password'] = 'nullable|string';
         $rules['encryption'] = 'nullable|string';
         $rules['hidden'] = 'nullable|boolean';
+
         return $rules;
     }
-
 }

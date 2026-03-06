@@ -13,6 +13,7 @@ namespace App\Models;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read mixed $icon
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ProposalSign newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ProposalSign newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ProposalSign query()
@@ -23,14 +24,13 @@ namespace App\Models;
  * @method static \Illuminate\Database\Eloquent\Builder|ProposalSign whereProposalId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProposalSign whereSignature($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProposalSign whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class ProposalSign extends BaseModel
 {
-
     public function getSignatureAttribute()
     {
-        return !is_null($this->attributes['signature']) ? asset_url_local_s3('proposal/sign/' . $this->attributes['signature']) : null;
+        return ! is_null($this->attributes['signature']) ? asset_url_local_s3('proposal/sign/'.$this->attributes['signature']) : null;
     }
-
 }

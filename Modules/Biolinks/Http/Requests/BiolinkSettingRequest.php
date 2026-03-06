@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class BiolinkSettingRequest extends FormRequest
 {
-
     /**
      * Get the validation rules that apply to the request.
      */
@@ -25,5 +24,4 @@ class BiolinkSettingRequest extends FormRequest
     {
         return true;
     }
-
 }

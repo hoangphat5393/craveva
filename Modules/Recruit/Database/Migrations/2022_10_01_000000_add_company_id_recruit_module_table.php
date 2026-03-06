@@ -19,14 +19,13 @@ return new class extends Migration
      */
     public function up()
     {
-        if (!Schema::hasColumn('application_sources', 'is_predefined')) {
+        if (! Schema::hasColumn('application_sources', 'is_predefined')) {
             Schema::table('application_sources', function (Blueprint $table) {
                 $table->boolean('is_predefined')->default(true);
                 $table->integer('company_id')->unsigned()->after('id')->nullable();
                 $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade')->onUpdate('cascade');
             });
         }
-
 
         \App\Models\Module::validateVersion(RecruitSetting::MODULE_NAME);
 
@@ -48,12 +47,10 @@ return new class extends Migration
             'recruit_job_offer_letter',
             'recruit_interview_evaluations',
             'recruit_recommendation_statuses',
-            'application_sources'
+            'application_sources',
         ];
 
         $count = Company::count();
-
-
 
         try {
 

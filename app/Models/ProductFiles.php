@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 /**
  * Class Holiday
  *
- * @package App\Models
  * @property int $id
  * @property int $user_id
  * @property string $filename
@@ -24,6 +23,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int|null $last_updated_by
  * @property-read mixed $file_url
  * @property-read mixed $icon
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ProductFiles newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ProductFiles newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ProductFiles query()
@@ -40,19 +40,25 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|ProductFiles whereSize($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProductFiles whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProductFiles whereUserId($value)
+ *
  * @property int $product_id
  * @property-read \App\Models\Product $product
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ProductFiles whereProductId($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ProductFiles whereCompanyId($value)
+ *
  * @property int $default_status
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ProductFiles whereDefaultStatus($value)
+ *
  * @mixin \Eloquent
  */
 class ProductFiles extends BaseModel
 {
-
     use HasCompany;
     use IconTrait;
 
@@ -61,6 +67,7 @@ class ProductFiles extends BaseModel
     protected $fillable = [];
 
     protected $guarded = ['id'];
+
     protected $table = 'product_files';
 
     protected $appends = ['file_url', 'icon'];
@@ -69,12 +76,11 @@ class ProductFiles extends BaseModel
 
     public function getFileUrlAttribute()
     {
-        return asset_url_local_s3(Product::FILE_PATH . '/' . $this->hashname);
+        return asset_url_local_s3(Product::FILE_PATH.'/'.$this->hashname);
     }
 
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
     }
-
 }

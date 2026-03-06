@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Artisan;
 
 class AutoDatabaseBackup extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
@@ -36,14 +35,14 @@ class AutoDatabaseBackup extends Command
         $backupSetting = DatabaseBackupSetting::first();
 
         // If there's no record or if the status is inactive, return false
-        if (!$backupSetting || $backupSetting->status == 'inactive') {
+        if (! $backupSetting || $backupSetting->status == 'inactive') {
             $this->info('Database Settings is inactive');
 
             return Command::SUCCESS;
         }
 
         // Get the backups list
-        $backups = (new DatabaseBackupSettingController())->getBackup();
+        $backups = (new DatabaseBackupSettingController)->getBackup();
 
         // Reverse the backups array to get the most recent backup
         $backups = array_reverse($backups);
@@ -70,7 +69,6 @@ class AutoDatabaseBackup extends Command
         $nowTimeWithTimeZone = now()->setTimezone(global_setting()->timezone)->format('H:i:s');
         $settingHourOfDay = Carbon::createFromFormat('H:i:s', $backupSetting->hour_of_day)->format('H:i:s');
 
-
         // If the current time is equal or greater than the hour_of_day setting, create a backup
         if ($nowTimeWithTimeZone >= $settingHourOfDay) {
             $this->info('Backup created successfully.');
@@ -81,5 +79,4 @@ class AutoDatabaseBackup extends Command
 
         return Command::SUCCESS;
     }
-
 }

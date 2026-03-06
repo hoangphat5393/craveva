@@ -3,24 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Helper\Reply;
-use App\Models\Project;
-use App\Models\ProjectSetting;
-use App\Models\ProjectCategory;
-use App\Models\ProjectStatusSetting;
-use App\Http\Requests\StoreStatusSettingRequest;
 use App\Http\Requests\Project\StoreProjectCategory;
 use App\Http\Requests\ProjectSetting\UpdateProjectSetting;
+use App\Http\Requests\StoreStatusSettingRequest;
+use App\Models\Project;
+use App\Models\ProjectCategory;
+use App\Models\ProjectSetting;
+use App\Models\ProjectStatusSetting;
 
 class ProjectSettingController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'app.menu.projectSettings';
         $this->activeSettingMenu = 'project_settings';
         $this->middleware(function ($request, $next) {
-            abort_403(!(user()->permission('manage_project_setting') == 'all' && in_array('projects', user_modules())));
+            abort_403(! (user()->permission('manage_project_setting') == 'all' && in_array('projects', user_modules())));
 
             return $next($request);
         });
@@ -32,18 +31,18 @@ class ProjectSettingController extends AccountBaseController
         $tab = request('tab');
 
         switch ($tab) {
-        case 'status':
-            $this->projectStatusSetting = ProjectStatusSetting::all();
-            $this->view = 'project-settings.ajax.status';
-            break;
-        case 'category':
-            $this->projectCategory = ProjectCategory::all();
-            $this->view = 'project-settings.ajax.category';
-            break;
-        default:
-            $this->projectSetting = ProjectSetting::first();
-            $this->view = 'project-settings.ajax.sendReminder';
-            break;
+            case 'status':
+                $this->projectStatusSetting = ProjectStatusSetting::all();
+                $this->view = 'project-settings.ajax.status';
+                break;
+            case 'category':
+                $this->projectCategory = ProjectCategory::all();
+                $this->view = 'project-settings.ajax.category';
+                break;
+            default:
+                $this->projectSetting = ProjectSetting::first();
+                $this->view = 'project-settings.ajax.sendReminder';
+                break;
         }
 
         $this->activeTab = $tab ?: 'sendReminder';
@@ -64,7 +63,7 @@ class ProjectSettingController extends AccountBaseController
 
     public function store(StoreStatusSettingRequest $request)
     {
-        $projectStatusSetting = new ProjectStatusSetting();
+        $projectStatusSetting = new ProjectStatusSetting;
         $projectStatusSetting->status_name = $request->name;
         $projectStatusSetting->color = $request->status_color;
         $projectStatusSetting->status = $request->status;
@@ -85,9 +84,9 @@ class ProjectSettingController extends AccountBaseController
     {
         $projectStatusSetting = ProjectStatusSetting::findOrFail($id);
 
-        if($projectStatusSetting->status_name == 'finished'){
+        if ($projectStatusSetting->status_name == 'finished') {
             $projectStatusSetting->alias = $request->name;
-        }else{
+        } else {
             $projectStatusSetting->status_name = $request->name;
             $projectStatusSetting->alias = $request->name;
         }
@@ -142,7 +141,6 @@ class ProjectSettingController extends AccountBaseController
             $remindTo = [ProjectSetting::REMIND_TO_ADMINS];
         }
 
-
         $projectSetting->remind_to = $remindTo;
         $projectSetting->save();
 
@@ -164,7 +162,7 @@ class ProjectSettingController extends AccountBaseController
     public function createCategory()
     {
         $this->addPermission = user()->permission('manage_project_category');
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
 
         return view('project-settings.create-project-category-settings-modal', $this->data);
     }
@@ -172,13 +170,12 @@ class ProjectSettingController extends AccountBaseController
     public function saveProjectCategory(StoreProjectCategory $request)
     {
         $this->addPermission = user()->permission('manage_project_category');
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
 
-        $category = new ProjectCategory();
+        $category = new ProjectCategory;
         $category->category_name = $request->category_name;
         $category->save();
 
         return Reply::success(__('messages.recordSaved'));
     }
-
 }

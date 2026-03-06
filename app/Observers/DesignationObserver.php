@@ -7,7 +7,6 @@ use App\Models\LeaveType;
 
 class DesignationObserver
 {
-
     public function creating(Designation $model)
     {
         if (company()) {
@@ -22,12 +21,11 @@ class DesignationObserver
 
             foreach ($leaveTypes as $leaveType) {
 
-                if (!is_null($leaveType->designation)) {
+                if (! is_null($leaveType->designation)) {
                     $designation = json_decode($leaveType->designation);
                     array_push($designation, $model->id);
-                }
-                else {
-                    $designation = array($model->id);
+                } else {
+                    $designation = [$model->id];
                 }
 
                 $leaveType->designation = json_encode($designation);
@@ -43,7 +41,7 @@ class DesignationObserver
 
             foreach ($leaveTypes as $leaveType) {
 
-                if (!is_null($leaveType->department)) {
+                if (! is_null($leaveType->department)) {
 
                     $designation = json_decode($leaveType->designation);
 
@@ -61,5 +59,4 @@ class DesignationObserver
             }
         }
     }
-
 }

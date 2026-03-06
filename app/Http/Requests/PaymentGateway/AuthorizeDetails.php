@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class AuthorizeDetails extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -31,5 +30,4 @@ class AuthorizeDetails extends FormRequest
             'cvv' => 'required|numeric|digits_between:3,4',
         ];
     }
-
 }

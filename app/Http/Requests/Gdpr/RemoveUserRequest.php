@@ -1,11 +1,11 @@
 <?php
+
 namespace App\Http\Requests\Gdpr;
 
 use App\Http\Requests\CoreRequest;
 
 /**
  * Class CreateRequest
- * @package App\Http\Requests\Admin\Employee
  */
 class RemoveUserRequest extends CoreRequest
 {
@@ -14,7 +14,6 @@ class RemoveUserRequest extends CoreRequest
      *
      * @return bool
      */
-
     public function authorize()
     {
         // If admin
@@ -29,9 +28,8 @@ class RemoveUserRequest extends CoreRequest
     public function rules()
     {
         return [
-            'description'  => 'required',
+            'description' => 'required',
         ];
 
     }
-
 }

@@ -15,7 +15,6 @@ use Illuminate\Support\Facades\DB;
 
 class FrontBaseController extends Controller
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -40,7 +39,7 @@ class FrontBaseController extends Controller
 
             App::setLocale($this->locale);
             Carbon::setLocale($this->locale);
-            setlocale(LC_TIME, $this->locale . '_' . strtoupper($this->locale));
+            setlocale(LC_TIME, $this->locale.'_'.strtoupper($this->locale));
 
             $this->enLocaleLanguage = language_setting_locale('en');
             $this->localeLanguage = $this->locale != 'en' ? language_setting_locale($this->locale) : $this->enLocaleLanguage;
@@ -68,7 +67,7 @@ class FrontBaseController extends Controller
             // ACCOUNT SETUP REDIRECT
             $userTotal = User::count();
 
-            if ($userTotal == 0 && !module_enabled('Subdomain')) {
+            if ($userTotal == 0 && ! module_enabled('Subdomain')) {
                 return redirect()->route('login');
             }
 

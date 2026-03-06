@@ -2,26 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use Carbon\Carbon;
 use App\Exports\LeaveQuotaReportExport;
-use Maatwebsite\Excel\Facades\Excel;
-use App\Models\User;
 use App\Helper\Reply;
-use App\Models\LeaveType;
-use App\Scopes\ActiveScope;
-use Illuminate\Http\Request;
 use App\Models\EmployeeLeaveQuota;
-use Illuminate\Support\Facades\Artisan;
+use App\Models\LeaveType;
+use App\Models\User;
+use App\Scopes\ActiveScope;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class LeavesQuotaController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'app.menu.leaves';
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('leaves', $this->user->modules));
+            abort_403(! in_array('leaves', $this->user->modules));
+
             return $next($request);
         });
     }
@@ -61,7 +60,7 @@ class LeavesQuotaController extends AccountBaseController
             $missingFields = [];
 
             $detail = $employee->employeeDetail;
-            if (!$detail) {
+            if (! $detail) {
                 $missingFields = ['joining_date', 'department', 'designation', 'marital_status'];
             } else {
                 if (empty($detail->joining_date)) {
@@ -86,7 +85,7 @@ class LeavesQuotaController extends AccountBaseController
                 $hasLeave = ($leavesQuota->leaveType && $leavesQuota->leaveType->deleted_at == null) ? $leavesQuota->leaveType->leaveTypeCondition($leavesQuota->leaveType, $employee) : false;
 
                 if ($hasLeave) {
-                    $options .= '<option value="' . $leavesQuota->leave_type_id . '"> ' .  $leavesQuota->leaveType->type_name . ' (' . $leavesQuota->leaves_remaining . ') </option>';
+                    $options .= '<option value="'.$leavesQuota->leave_type_id.'"> '.$leavesQuota->leaveType->type_name.' ('.$leavesQuota->leaves_remaining.') </option>';
                     /** @phpstan-ignore-line */
                     $eligible = true;
                 }
@@ -97,7 +96,7 @@ class LeavesQuotaController extends AccountBaseController
                 foreach ($leaveTypes as $leaveType) {
                     $hasLeave = ($leaveType->deleted_at == null) ? $leaveType->leaveTypeCondition($leaveType, $employee) : false;
                     if ($hasLeave) {
-                        $options .= '<option value="' . $leaveType->id . '"> ' .  $leaveType->type_name . ' (' . $leaveType->no_of_leaves . ') </option>';
+                        $options .= '<option value="'.$leaveType->id.'"> '.$leaveType->type_name.' ('.$leaveType->no_of_leaves.') </option>';
                         /** @phpstan-ignore-line */
                         $eligible = true;
                     }
@@ -127,7 +126,7 @@ class LeavesQuotaController extends AccountBaseController
             $options = '';
 
             foreach ($leaveQuotas as $leaveQuota) {
-                $options .= '<option value="' . $leaveQuota->id . '"> ' .  $leaveQuota->type_name . ' (' . $leaveQuota->no_of_leaves . ') </option>';
+                $options .= '<option value="'.$leaveQuota->id.'"> '.$leaveQuota->type_name.' ('.$leaveQuota->no_of_leaves.') </option>';
                 /** @phpstan-ignore-line */
             }
         }
@@ -137,10 +136,10 @@ class LeavesQuotaController extends AccountBaseController
             'data' => $options,
             'eligible' => isset($eligible) ? $eligible : true,
             'profile_missing' => isset($profileMissing) ? $profileMissing : false,
-            'profile_missing_fields' => isset($missingFields) ? $missingFields : []
+            'profile_missing_fields' => isset($missingFields) ? $missingFields : [],
         ];
 
-        if (!empty($message)) {
+        if (! empty($message)) {
             $resp['message'] = $message;
         }
 
@@ -149,8 +148,9 @@ class LeavesQuotaController extends AccountBaseController
 
     public function exportAllLeaveQuota($id, $year, $month)
     {
-        abort_403(!canDataTableExport());
-        $name = __('app.leaveQuotaReport') . '-' . Carbon::createFromDate($year, $month, 1)->startOfDay()->translatedFormat('F-Y');
-        return Excel::download(new LeaveQuotaReportExport($id, $year, $month), $name . '.xlsx');
+        abort_403(! canDataTableExport());
+        $name = __('app.leaveQuotaReport').'-'.Carbon::createFromDate($year, $month, 1)->startOfDay()->translatedFormat('F-Y');
+
+        return Excel::download(new LeaveQuotaReportExport($id, $year, $month), $name.'.xlsx');
     }
 }

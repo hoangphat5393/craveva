@@ -7,7 +7,6 @@ use Illuminate\Database\Seeder;
 
 class NoticesTableSeeder extends Seeder
 {
-
     /**
      * Run the database seeds.
      *
@@ -18,12 +17,11 @@ class NoticesTableSeeder extends Seeder
         $count = config('app.seed_record_count');
 
         Notice::factory()
-            ->count((int)$count)
+            ->count((int) $count)
             ->make()
             ->each(function (Notice $model) use ($companyId) {
                 $model->company_id = $companyId;
                 $model->save();
             });
     }
-
 }

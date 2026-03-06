@@ -2,19 +2,20 @@
 
 namespace Modules\ServerManager\Entities;
 
+use App\Models\ClientDetails;
+use App\Models\Company;
+use App\Models\Project;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\ServerManager\Database\factories\ServerDomainFactory;
-use App\Models\Company;
-use App\Models\User;
-use App\Models\Project;
-use App\Models\ClientDetails;
 
 class ServerDomain extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'company_id',
         'domain_name',
@@ -155,7 +156,7 @@ class ServerDomain extends Model
      */
     public function daysUntilExpiry(): int
     {
-        if (!$this->expiry_date) {
+        if (! $this->expiry_date) {
             return 0;
         }
 
@@ -173,7 +174,7 @@ class ServerDomain extends Model
      */
     public function shouldSendNotification(): bool
     {
-        if (!$this->expiry_notification || !$this->notification_days_before || !$this->expiry_date) {
+        if (! $this->expiry_notification || ! $this->notification_days_before || ! $this->expiry_date) {
             return false;
         }
 
@@ -182,7 +183,7 @@ class ServerDomain extends Model
 
         // Check if today is the notification date and notification hasn't been sent today
         return $notificationDate->equalTo($today) &&
-               (!$this->last_notification_sent || !$this->last_notification_sent->isToday());
+               (! $this->last_notification_sent || ! $this->last_notification_sent->isToday());
     }
 
     /**
@@ -225,7 +226,7 @@ class ServerDomain extends Model
      */
     public function getStatusBadgeClass(): string
     {
-        return match($this->status) {
+        return match ($this->status) {
             'active' => 'badge-success',
             'expired' => 'badge-danger',
             'suspended' => 'badge-warning',
@@ -242,10 +243,10 @@ class ServerDomain extends Model
         parent::boot();
 
         static::saving(function ($domain) {
-            if ($domain->isDirty('registrar_password') && !empty($domain->registrar_password)) {
+            if ($domain->isDirty('registrar_password') && ! empty($domain->registrar_password)) {
                 $domain->registrar_password = encrypt($domain->registrar_password);
             }
-            if ($domain->isDirty('password') && !empty($domain->password)) {
+            if ($domain->isDirty('password') && ! empty($domain->password)) {
                 $domain->password = encrypt($domain->password);
             }
         });

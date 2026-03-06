@@ -1,10 +1,10 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
 use App\Models\Country;
+use Illuminate\Database\Migrations\Migration;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
@@ -24,5 +24,4 @@ return new class extends Migration {
             ->where('iso3', 'COD')
             ->update(['phonecode' => 242]);
     }
-
 };

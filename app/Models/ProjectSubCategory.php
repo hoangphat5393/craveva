@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Traits\HasCompany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -17,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int|null $last_updated_by
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Project[] $project
  * @property-read int|null $project_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectCategory newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectCategory newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectCategory query()
@@ -26,14 +26,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectCategory whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectCategory whereLastUpdatedBy($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectCategory whereUpdatedAt($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectCategory whereCompanyId($value)
+ *
  * @mixin \Eloquent
  */
 class ProjectSubCategory extends BaseModel
 {
-
     // use HasCompany;
 
     protected $table = 'project_sub_categories';

@@ -10,7 +10,6 @@ use Illuminate\Console\Command;
 
 class SendDailyTimelogReport extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
@@ -52,5 +51,4 @@ class SendDailyTimelogReport extends Command
         return Command::SUCCESS;
 
     }
-
 }

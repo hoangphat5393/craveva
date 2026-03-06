@@ -11,7 +11,6 @@ class UploadInstallRequest extends FormRequest
      *
      * @return bool
      */
-
     public function authorize()
     {
         return true;
@@ -25,8 +24,7 @@ class UploadInstallRequest extends FormRequest
     public function rules()
     {
         return [
-            'file' => 'required'
+            'file' => 'required',
         ];
     }
-
 }

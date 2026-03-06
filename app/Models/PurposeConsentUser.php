@@ -15,6 +15,7 @@ namespace App\Models;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read mixed $icon
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|PurposeConsentUser newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|PurposeConsentUser newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|PurposeConsentUser query()
@@ -27,11 +28,10 @@ namespace App\Models;
  * @method static \Illuminate\Database\Eloquent\Builder|PurposeConsentUser whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PurposeConsentUser whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PurposeConsentUser whereUpdatedById($value)
+ *
  * @mixin \Eloquent
  */
 class PurposeConsentUser extends BaseModel
 {
-
     protected $table = 'purpose_consent_users';
-
 }

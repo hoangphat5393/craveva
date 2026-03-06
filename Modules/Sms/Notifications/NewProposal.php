@@ -8,10 +8,10 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\VonageMessage;
 use Illuminate\Notifications\Notification;
 use Modules\Sms\Entities\SmsNotificationSetting;
+use Modules\Sms\Entities\SmsTemplateId;
 use Modules\Sms\Http\Traits\WhatsappMessageTrait;
 use NotificationChannels\Telegram\TelegramMessage;
 use NotificationChannels\Twilio\TwilioChannel;
-use Modules\Sms\Entities\SmsTemplateId;
 use NotificationChannels\Twilio\TwilioSmsMessage;
 
 class NewProposal extends Notification implements ShouldQueue
@@ -93,7 +93,7 @@ class NewProposal extends Notification implements ShouldQueue
         }
     }
 
-    //phpcs:ignore
+    // phpcs:ignore
     public function toVonage($notifiable)
     {
 
@@ -103,10 +103,10 @@ class NewProposal extends Notification implements ShouldQueue
         }
     }
 
-    //phpcs:ignore
+    // phpcs:ignore
     public function toMsg91($notifiable)
     {
-        $mobile = $notifiable->country_phonecode . $notifiable->mobile;
+        $mobile = $notifiable->country_phonecode.$notifiable->mobile;
         if ($this->smsSetting->msg91_flow_id && sms_setting()->msg91_status) {
             return (new \Craftsys\Notifications\Messages\Msg91SMS)
                 ->to($mobile)

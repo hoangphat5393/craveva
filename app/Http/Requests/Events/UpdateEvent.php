@@ -8,6 +8,7 @@ use App\Traits\CustomFieldsRequestTrait;
 class UpdateEvent extends CoreRequest
 {
     use CustomFieldsRequestTrait;
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -29,7 +30,7 @@ class UpdateEvent extends CoreRequest
         $rules = [
             'event_name' => 'required',
             'start_date' => 'required',
-            'end_date' => 'required|date_format:"' . $setting->date_format . '"|after_or_equal:start_date',
+            'end_date' => 'required|date_format:"'.$setting->date_format.'"|after_or_equal:start_date',
             'start_time' => 'required',
             'end_time' => 'required',
             'all_employees' => 'sometimes',
@@ -45,6 +46,7 @@ class UpdateEvent extends CoreRequest
         }
 
         $rules = $this->customFieldRules($rules);
+
         return $rules;
     }
 
@@ -64,5 +66,4 @@ class UpdateEvent extends CoreRequest
             'end_time.after_or_equal' => __('messages.endTimeAfterOrEqual'),
         ];
     }
-
 }

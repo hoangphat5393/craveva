@@ -2,8 +2,6 @@
 
 namespace Modules\Purchase\Listeners;
 
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Modules\Purchase\Events\VendorCreditPaymentMade as EventsVendorCreditPaymentMade;
 use Modules\Purchase\Notifications\VendorCreditPaymentMade as NotificationsVendorCreditPaymentMade;
 
@@ -12,9 +10,7 @@ class VendorCreditPaymentMade
     /**
      * Create the event listener.
      */
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 
     /**
      * Handle the event.

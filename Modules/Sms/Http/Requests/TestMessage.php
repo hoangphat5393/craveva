@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class TestMessage extends FormRequest
 {
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -19,8 +18,7 @@ class TestMessage extends FormRequest
 
         if (sms_setting()->telegram_status) {
             $rules['telegram_user_id'] = 'required|integer';
-        }
-        else {
+        } else {
             $rules['mobile'] = 'required|numeric';
         }
 
@@ -34,5 +32,4 @@ class TestMessage extends FormRequest
             'telegram_user_id' => __('sms::modules.telegramUserId'),
         ];
     }
-
 }

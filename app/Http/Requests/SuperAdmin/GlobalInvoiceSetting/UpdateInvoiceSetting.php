@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class UpdateInvoiceSetting extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -26,8 +25,7 @@ class UpdateInvoiceSetting extends CoreRequest
     {
         return [
             'template' => 'required',
-            'invoice_terms' => 'required'
+            'invoice_terms' => 'required',
         ];
     }
-
 }

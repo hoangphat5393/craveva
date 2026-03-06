@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateGoogleCaptchaSetting extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -55,5 +54,4 @@ class UpdateGoogleCaptchaSetting extends FormRequest
             'google_captcha3_secret.required_if' => 'Secret key is required',
         ];
     }
-
 }

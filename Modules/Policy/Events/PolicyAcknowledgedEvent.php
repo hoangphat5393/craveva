@@ -11,7 +11,9 @@ class PolicyAcknowledgedEvent
     use Dispatchable, SerializesModels;
 
     public $policy;
+
     public $acknowledgeBy;
+
     public $notifyUsers;
 
     /**
@@ -23,5 +25,4 @@ class PolicyAcknowledgedEvent
         $this->notifyUsers = $notifyUsers;
         $this->acknowledgeBy = $acknowledgeBy;
     }
-
 }

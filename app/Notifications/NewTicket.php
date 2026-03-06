@@ -9,14 +9,13 @@ use NotificationChannels\OneSignal\OneSignalMessage;
 
 class NewTicket extends BaseNotification
 {
-
-
     /**
      * Create a new notification instance.
      *
      * @return void
      */
     private $ticket;
+
     private $emailSetting;
 
     public function __construct(Ticket $ticket)
@@ -29,7 +28,7 @@ class NewTicket extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -49,7 +48,7 @@ class NewTicket extends BaseNotification
         }
 
         if ($this->emailSetting->send_push == 'yes' && push_setting()->beams_push_status == 'active') {
-            $pushNotification = new \App\Http\Controllers\DashboardController();
+            $pushNotification = new \App\Http\Controllers\DashboardController;
             $pushUsersIds = [[$notifiable->id]];
             $pushNotification->sendPushNotifications($pushUsersIds, __('email.newTicket.subject'), $this->ticket->subject);
         }
@@ -60,7 +59,7 @@ class NewTicket extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
@@ -69,20 +68,20 @@ class NewTicket extends BaseNotification
         $url = route('tickets.show', $this->ticket->ticket_number);
         $url = getDomainSpecificUrl($url, $this->company);
 
-        $ticketDescription = '<div style="word-wrap: break-word;">' . nl2br(request()->description) . '</div>';
+        $ticketDescription = '<div style="word-wrap: break-word;">'.nl2br(request()->description).'</div>';
 
-        $content = __('email.newTicket.text') . '<br>' . $this->ticket->subject . ' # ' . $this->ticket->ticket_number .
-        '<br>' . __('modules.tickets.requesterName') . ' - ' . $this->ticket->requester->name . '<br>'
-        . __('modules.tickets.ticketDescription') . ' - ' . $ticketDescription;
+        $content = __('email.newTicket.text').'<br>'.$this->ticket->subject.' # '.$this->ticket->ticket_number.
+        '<br>'.__('modules.tickets.requesterName').' - '.$this->ticket->requester->name.'<br>'
+        .__('modules.tickets.ticketDescription').' - '.$ticketDescription;
 
         $build
-            ->subject(__('email.newTicket.subject') . ' - ' . $this->ticket->subject . ' - ' . __('modules.tickets.ticket') . ' # ' . $this->ticket->ticket_number)
+            ->subject(__('email.newTicket.subject').' - '.$this->ticket->subject.' - '.__('modules.tickets.ticket').' # '.$this->ticket->ticket_number)
             ->markdown('mail.email', [
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
                 'actionText' => __('email.newTicket.action'),
-                'notifiableName' => $notifiable->name
+                'notifiableName' => $notifiable->name,
             ]);
 
         parent::resetLocale();
@@ -93,10 +92,10 @@ class NewTicket extends BaseNotification
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
-//phpcs:ignore
+    // phpcs:ignore
     public function toArray($notifiable)
     {
         return [
@@ -106,20 +105,20 @@ class NewTicket extends BaseNotification
             'user_id' => $this->ticket->user_id,
             'status' => $this->ticket->status,
             'agent_id' => $this->ticket->agent_id,
-            'ticket_number' => $this->ticket->ticket_number
+            'ticket_number' => $this->ticket->ticket_number,
         ];
     }
 
     /**
      * Get the Slack representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\SlackMessage
      */
     public function toSlack($notifiable)
     {
         return $this->slackBuild($notifiable)
-            ->content('*' . __('email.newTicket.subject') . '*' . "\n" . $this->ticket->subject . "\n" . __('modules.tickets.requesterName') . ' - ' . $this->ticket->requester->name);
+            ->content('*'.__('email.newTicket.subject').'*'."\n".$this->ticket->subject."\n".__('modules.tickets.requesterName').' - '.$this->ticket->requester->name);
 
     }
 
@@ -130,5 +129,4 @@ class NewTicket extends BaseNotification
             ->setSubject(__('email.newTicket.subject'))
             ->setBody(__('email.newTicket.text'));
     }
-
 }

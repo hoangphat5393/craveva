@@ -7,13 +7,13 @@ use Modules\Purchase\Entities\PurchaseNotificationSetting;
 
 class AdminNewVendorPayment extends BaseNotification
 {
-
     /**
      * Create a new notification instance.
      *
      * @return void
      */
     private $payment;
+
     private $emailSetting;
 
     public function __construct($payment)
@@ -26,7 +26,7 @@ class AdminNewVendorPayment extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -43,7 +43,7 @@ class AdminNewVendorPayment extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
@@ -51,7 +51,7 @@ class AdminNewVendorPayment extends BaseNotification
         $url = route('vendor-payments.show', $this->payment->id);
         $url = getDomainSpecificUrl($url, $this->company);
 
-        $content = __('purchase::email.newPayment.text') . ' - ' . $this->payment->vendor->primary_name;
+        $content = __('purchase::email.newPayment.text').' - '.$this->payment->vendor->primary_name;
 
         return parent::build()
             ->subject(__('purchase::email.newPayment.subject'))
@@ -60,14 +60,14 @@ class AdminNewVendorPayment extends BaseNotification
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
                 'actionText' => __('purchase::email.newPayment.action'),
-                'notifiableName' => $notifiable->name
+                'notifiableName' => $notifiable->name,
             ]);
     }
 
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function toArray($notifiable)
@@ -75,8 +75,7 @@ class AdminNewVendorPayment extends BaseNotification
         return [
             'id' => $this->payment->id,
             'user_id' => $notifiable->id,
-            'vendor_name' => $this->payment->vendor->primary_name
+            'vendor_name' => $this->payment->vendor->primary_name,
         ];
     }
-
 }

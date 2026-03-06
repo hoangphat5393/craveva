@@ -9,11 +9,12 @@ use Modules\Performance\Entities\Meeting;
 
 class MeetingInviteEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $meeting;
+
     public $notifyUser;
+
     public $meetingBy;
 
     public function __construct(Meeting $meeting, $notifyUser, $meetingBy)
@@ -22,5 +23,4 @@ class MeetingInviteEvent
         $this->notifyUser = $notifyUser;
         $this->meetingBy = $meetingBy;
     }
-
 }

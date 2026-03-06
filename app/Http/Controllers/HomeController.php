@@ -2,82 +2,78 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\GlobalSetting;
-use App\Models\Order;
-use App\Models\Role;
-use App\Models\UserAuth;
-use App\Scopes\ActiveScope;
-use Artisan;
-use App\Scopes\CompanyScope;
-use Carbon\Carbon;
-use Stripe\Stripe;
-use App\Models\Deal;
-use App\Models\Lead;
-use App\Models\Task;
-use App\Models\User;
+use App\Events\NewUserEvent;
 use App\Helper\Files;
 use App\Helper\Reply;
-use App\Models\Ticket;
-use GuzzleHttp\Client;
-use App\Models\Company;
-use App\Models\Invoice;
-use App\Models\Payment;
-use App\Models\Product;
-use App\Models\Project;
-use App\Models\LeadNote;
-use App\Models\Proposal;
-use App\Models\TaskFile;
-use App\Models\LeadCategory;
-use App\Models\LeadSource;
-use App\Models\TicketType;
-use App\Models\CreditNotes;
-use App\Models\LeadProduct;
-use App\Models\TicketGroup;
-use App\Models\TicketReply;
-use App\Models\InvoiceItems;
-use App\Models\LeadPipeline;
-use App\Models\ProposalItem;
-use App\Models\ProposalSign;
-use Illuminate\Http\Request;
-use App\Models\ClientDetails;
-use App\Models\PipelineStage;
-use App\Models\LeadCustomForm;
-use App\Models\TaskboardColumn;
-use App\Models\TicketCustomForm;
-use Froiden\RestAPI\ApiResponse;
-use App\Traits\EmployeeDashboard;
-use Illuminate\Support\Facades\DB;
-use App\Models\ProjectTimeLogBreak;
-use Illuminate\Support\Facades\App;
-use Nwidart\Modules\Facades\Module;
-use App\Traits\UniversalSearchTrait;
-use Illuminate\Support\Facades\File;
-use App\Models\PaymentGatewayCredentials;
 use App\Http\Requests\Lead\StorePublicLead;
 use App\Http\Requests\ProposalAcceptRequest;
 use App\Http\Requests\Stripe\StoreStripeDetail;
 use App\Http\Requests\Tickets\StoreCustomTicket;
+use App\Models\ClientDetails;
+use App\Models\Company;
+use App\Models\CreditNotes;
+use App\Models\Deal;
 use App\Models\GanttLink;
+use App\Models\GlobalSetting;
+use App\Models\Invoice;
+use App\Models\InvoiceItems;
 use App\Models\LanguageSetting;
+use App\Models\Lead;
+use App\Models\LeadCategory;
+use App\Models\LeadCustomForm;
+use App\Models\LeadNote;
+use App\Models\LeadPipeline;
+use App\Models\LeadProduct;
+use App\Models\LeadSource;
+use App\Models\Order;
+use App\Models\Payment;
+use App\Models\PaymentGatewayCredentials;
+use App\Models\PipelineStage;
+use App\Models\Product;
+use App\Models\Project;
 use App\Models\ProjectMilestone;
-use App\Events\NewUserEvent;
+use App\Models\ProjectTimeLogBreak;
+use App\Models\Proposal;
+use App\Models\ProposalItem;
+use App\Models\ProposalSign;
+use App\Models\Role;
+use App\Models\Task;
+use App\Models\TaskboardColumn;
+use App\Models\TaskFile;
+use App\Models\Ticket;
+use App\Models\TicketCustomForm;
+use App\Models\TicketGroup;
+use App\Models\TicketReply;
+use App\Models\TicketType;
+use App\Models\User;
+use App\Models\UserAuth;
+use App\Scopes\ActiveScope;
+use App\Scopes\CompanyScope;
+use App\Traits\EmployeeDashboard;
+use App\Traits\UniversalSearchTrait;
+use Artisan;
+use Carbon\Carbon;
+use Froiden\RestAPI\ApiResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Routing\Exceptions\InvalidSignatureException;
+use Nwidart\Modules\Facades\Module;
+use Stripe\Stripe;
 
 class HomeController extends Controller
 {
-
     use EmployeeDashboard;
-
     use UniversalSearchTrait;
 
     public function __construct()
     {
         parent::__construct();
         // Middleware only applied to these methods
-        if (!request()->ajax()) {
+        if (! request()->ajax()) {
             $this->middleware('signed')->only([
-                'taskboard' // Could add bunch of more methods too
+                'taskboard', // Could add bunch of more methods too
             ]);
         }
     }
@@ -87,7 +83,6 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-
     public function index()
     {
         return view('home');
@@ -129,10 +124,10 @@ class HomeController extends Controller
                 $tax = InvoiceItems::taxbyid($taxId)->first();
 
                 if ($tax) {
-                    $taxName = $tax->tax_name . ': ' . $tax->rate_percent . '%';
+                    $taxName = $tax->tax_name.': '.$tax->rate_percent.'%';
                     $taxAmount = $this->calculateTaxAmount($item, $tax);
 
-                    if (!isset($taxList[$taxName])) {
+                    if (! isset($taxList[$taxName])) {
                         $taxList[$taxName] = $taxAmount;
                     } else {
                         $taxList[$taxName] += $taxAmount;
@@ -140,7 +135,6 @@ class HomeController extends Controller
                 }
             }
         }
-
 
         $this->taxes = $taxList;
         $this->company = $this->invoice->company;
@@ -245,13 +239,13 @@ class HomeController extends Controller
 
         $client = null;
 
-        if (!is_null($this->invoice->client_id)) {
+        if (! is_null($this->invoice->client_id)) {
             $client = $this->invoice->client;
-        } else if (!is_null($this->invoice->project_id) && !is_null($this->invoice->project->client_id)) {
+        } elseif (! is_null($this->invoice->project_id) && ! is_null($this->invoice->project->client_id)) {
             $client = $this->invoice->project->client;
         }
 
-        if (($this->credentials->test_stripe_secret || $this->credentials->live_stripe_secret) && !is_null($client)) {
+        if (($this->credentials->test_stripe_secret || $this->credentials->live_stripe_secret) && ! is_null($client)) {
 
             // Company Specific
             Stripe::setApiKey($this->credentials->stripe_mode == 'test' ? $this->credentials->test_stripe_secret : $this->credentials->live_stripe_secret);
@@ -275,8 +269,8 @@ class HomeController extends Controller
                 'customer' => $customer->id,
                 'setup_future_usage' => 'off_session',
                 'payment_method_types' => ['card'],
-                'description' => $this->invoice->invoice_number . ' Payment',
-                'metadata' => ['integration_check' => 'accept_a_payment', 'invoice_id' => $id]
+                'description' => $this->invoice->invoice_number.' Payment',
+                'metadata' => ['integration_check' => 'accept_a_payment', 'invoice_id' => $id],
             ]);
             $this->intent = $intent;
         }
@@ -305,13 +299,13 @@ class HomeController extends Controller
         // Download file uploaded
 
         if ($this->invoice->file != null && request()->has('download-uploaded')) {
-            return response()->download(storage_path('app/public/invoice-files') . '/' . $this->invoice->file);
+            return response()->download(storage_path('app/public/invoice-files').'/'.$this->invoice->file);
         }
         $pdfOption = $this->domPdfObjectForDownload($this->invoice->id);
         $pdf = $pdfOption['pdf'];
         $filename = $pdfOption['fileName'];
 
-        return $pdf->download($filename . '.pdf');
+        return $pdf->download($filename.'.pdf');
     }
 
     public function domPdfObjectForDownload($id)
@@ -340,7 +334,7 @@ class HomeController extends Controller
             $this->discount = 0;
         }
 
-        $taxList = array();
+        $taxList = [];
 
         $items = InvoiceItems::whereNotNull('taxes')
             ->where('invoice_id', $this->invoice->id)
@@ -352,18 +346,18 @@ class HomeController extends Controller
                 $this->tax = InvoiceItems::taxbyid($tax)->first();
 
                 if ($this->tax) {
-                    if (!isset($taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'])) {
+                    if (! isset($taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'])) {
 
                         if ($this->invoice->calculate_tax == 'after_discount' && $this->discount > 0) {
-                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = ($item->amount - ($item->amount / $this->invoice->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
+                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = ($item->amount - ($item->amount / $this->invoice->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
                         } else {
-                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $item->amount * ($this->tax->rate_percent / 100);
+                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $item->amount * ($this->tax->rate_percent / 100);
                         }
                     } else {
                         if ($this->invoice->calculate_tax == 'after_discount' && $this->discount > 0) {
-                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + (($item->amount - ($item->amount / $this->invoice->sub_total) * $this->discount) * ($this->tax->rate_percent / 100));
+                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + (($item->amount - ($item->amount / $this->invoice->sub_total) * $this->discount) * ($this->tax->rate_percent / 100));
                         } else {
-                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + ($item->amount * ($this->tax->rate_percent / 100));
+                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + ($item->amount * ($this->tax->rate_percent / 100));
                         }
                     }
                 }
@@ -377,12 +371,12 @@ class HomeController extends Controller
         $this->payments = Payment::with(['offlineMethod'])->where('invoice_id', $this->invoice->id)->where('status', 'complete')->orderByDesc('paid_on')->get();
 
         $pdf = app('dompdf.wrapper');
-        $pdf->loadView('invoices.pdf.' . $this->invoiceSetting->template, $this->data);
+        $pdf->loadView('invoices.pdf.'.$this->invoiceSetting->template, $this->data);
         $filename = $this->invoice->invoice_number;
 
         return [
             'pdf' => $pdf,
-            'fileName' => $filename
+            'fileName' => $filename,
         ];
     }
 
@@ -417,7 +411,7 @@ class HomeController extends Controller
             'ganttData' => $this->ganttData,
             'taskBoardStatus' => $this->taskBoardStatus,
             'dateformat' => $this->dateformat,
-            'project' => $this->project
+            'project' => $this->project,
         ]);
     }
 
@@ -436,23 +430,23 @@ class HomeController extends Controller
             $tasks = $tasks->whereIn('id', explode(',', $projectTask));
         }
 
-        $data = array();
+        $data = [];
 
         foreach ($tasks as $key => $task) {
 
             $data[] = [
-                'id' => 'task-' . $task->id,
+                'id' => 'task-'.$task->id,
                 'name' => $task->heading,
-                'start' => ((!is_null($task->start_date)) ? $task->start_date->format('Y-m-d') : ((!is_null($task->due_date)) ? $task->due_date->format('Y-m-d') : null)),
-                'end' => ((!is_null($task->due_date)) ? $task->due_date->format('Y-m-d') : $task->start_date->format('Y-m-d')),
+                'start' => ((! is_null($task->start_date)) ? $task->start_date->format('Y-m-d') : ((! is_null($task->due_date)) ? $task->due_date->format('Y-m-d') : null)),
+                'end' => ((! is_null($task->due_date)) ? $task->due_date->format('Y-m-d') : $task->start_date->format('Y-m-d')),
                 'progress' => 0,
                 'bg_color' => $task->boardColumn->label_color,
                 'taskid' => $task->hash,
-                'draggable' => true
+                'draggable' => true,
             ];
 
-            if (!is_null($task->dependent_task_id)) {
-                $data[$key]['dependencies'] = 'task-' . $task->dependent_task_id;
+            if (! is_null($task->dependent_task_id)) {
+                $data[$key]['dependencies'] = 'task-'.$task->dependent_task_id;
             }
         }
 
@@ -468,7 +462,7 @@ class HomeController extends Controller
             ->firstOrFail()
             ->withCustomFields();
 
-        $this->pageTitle = __('app.task') . ' # ' . $this->task->task_short_code;
+        $this->pageTitle = __('app.task').' # '.$this->task->task_short_code;
 
         $getCustomFieldGroupsWithFields = $this->task->getCustomFieldGroupsWithFields();
 
@@ -479,7 +473,6 @@ class HomeController extends Controller
         $this->employees = User::join('employee_details', 'users.id', '=', 'employee_details.user_id')
             ->leftJoin('project_time_logs', 'project_time_logs.user_id', '=', 'users.id')
             ->leftJoin('designations', 'employee_details.designation_id', '=', 'designations.id');
-
 
         $this->employees = $this->employees->select(
             'users.name',
@@ -521,7 +514,6 @@ class HomeController extends Controller
             return $this->returnAjax($this->view);
         }
 
-
         return view('front.tasks.show', $this->data);
     }
 
@@ -535,10 +527,9 @@ class HomeController extends Controller
     public function taskboard(Request $request, $hash)
     {
 
-
         $project = Project::where('hash', $hash)->firstOrFail();
         $this->company = $project->company;
-        $this->pageTitle = $project->project_name . ' ' . __('modules.tasks.taskBoard');
+        $this->pageTitle = $project->project_name.' '.__('modules.tasks.taskBoard');
 
         // Check if public taskboard is enabled for this project
         if ($project->public_taskboard != 'enable') {
@@ -581,7 +572,7 @@ class HomeController extends Controller
                 ->where('taskboard_columns.column_name', '<>', 'Waiting Approval')
                 ->orderBy('priority', 'asc')
                 ->get();
-            $result = array();
+            $result = [];
 
             foreach ($boardColumns as $key => $boardColumn) {
                 $result['boardColumns'][] = $boardColumn;
@@ -613,7 +604,7 @@ class HomeController extends Controller
 
             $view = view('taskboard_data', [
                 'result' => $this->result,
-                'boardEdit' => $this->boardEdit
+                'boardEdit' => $this->boardEdit,
             ])->render();
 
             return Reply::dataOnly(['view' => $view]);
@@ -622,7 +613,7 @@ class HomeController extends Controller
         return view('taskboard', [
             'pageTitle' => $this->pageTitle,
             'company' => $this->company,
-            'project' => $project
+            'project' => $project,
         ]);
     }
 
@@ -711,7 +702,7 @@ class HomeController extends Controller
             $gRecaptchaResponse = $request->{$gRecaptchaResponseInput};
             $validateRecaptcha = GlobalSetting::validateGoogleRecaptcha($gRecaptchaResponse);
 
-            if (!$validateRecaptcha) {
+            if (! $validateRecaptcha) {
                 return Reply::error(__('auth.recaptchaFailed'));
             }
         }
@@ -721,12 +712,12 @@ class HomeController extends Controller
 
         $leadContact = null;
 
-        if (request()->has('email') && !is_null($request->email)) {
+        if (request()->has('email') && ! is_null($request->email)) {
             $leadContact = Lead::where('client_email', $request->email)->first();
         }
 
         if (is_null($leadContact)) {
-            $leadContact = new Lead();
+            $leadContact = new Lead;
         }
 
         $leadContact->company_id = $company->id;
@@ -742,14 +733,14 @@ class HomeController extends Controller
         $leadContact->postal_code = (request()->has('postal_code') ? $request->postal_code : '');
         $leadContact->save();
 
-        $note = new LeadNote();
+        $note = new LeadNote;
         $note->title = 'note';
         $note->lead_id = $leadContact->id;
         $note->details = (request()->has('message') ? $request->message : '');
         $note->type = 0;
         $note->save();
 
-        $lead = new Deal();
+        $lead = new Deal;
         $lead->company_id = $company->id;
         $lead->lead_id = $leadContact->id;
         $lead->name = (request()->has('name') ? $request->name : '');
@@ -762,12 +753,12 @@ class HomeController extends Controller
         Session::put('is_deal', true);
         $lead->save();
 
-        if (!is_null($request->product)) {
+        if (! is_null($request->product)) {
 
             $products = $request->product;
 
             foreach ($products as $product) {
-                $leadProduct = new LeadProduct();
+                $leadProduct = new LeadProduct;
                 $leadProduct->deal_id = $lead->id;
                 $leadProduct->product_id = $product;
                 $leadProduct->save();
@@ -798,7 +789,7 @@ class HomeController extends Controller
         $this->locale = request()->get('lang', $this->company->locale);
         App::setLocale($this->locale);
         Carbon::setLocale($this->locale);
-        setlocale(LC_TIME, $this->locale . '_' . mb_strtoupper($this->locale));
+        setlocale(LC_TIME, $this->locale.'_'.mb_strtoupper($this->locale));
 
         $this->groups = TicketGroup::where('company_id', $this->company->id)->get();
         $this->ticketFormFields = TicketCustomForm::with('customField')
@@ -808,7 +799,6 @@ class HomeController extends Controller
             ->get();
 
         $this->types = TicketType::where('company_id', $this->company->id)->get();
-
 
         return view('ticket-form', $this->data);
     }
@@ -829,7 +819,7 @@ class HomeController extends Controller
             $gRecaptchaResponse = $request->{$gRecaptchaResponseInput};
             $validateRecaptcha = GlobalSetting::validateGoogleRecaptcha($gRecaptchaResponse);
 
-            if (!$validateRecaptcha) {
+            if (! $validateRecaptcha) {
                 return Reply::error(__('auth.recaptchaFailed'));
             }
         }
@@ -838,12 +828,12 @@ class HomeController extends Controller
         $existing_user = User::withoutGlobalScope(ActiveScope::class)->select('id', 'email')->where('email', $request->email)->first();
         $newUser = $existing_user;
 
-        if (!$existing_user) {
+        if (! $existing_user) {
             $userAuth = UserAuth::createUserAuthCredentials($request->email);
 
             $password = session('auth_pass');
             // create new user
-            $client = new User();
+            $client = new User;
             $client->company_id = $request->company_id;
             $client->name = $request->name;
             $client->email = $request->email;
@@ -862,7 +852,7 @@ class HomeController extends Controller
 
             $role ? $client->attachRole($role->id) : null;
 
-            $clientDetail = new ClientDetails();
+            $clientDetail = new ClientDetails;
             $clientDetail->company_id = $client->company_id;
             $clientDetail->user_id = $client->id;
             $clientDetail->save();
@@ -877,7 +867,7 @@ class HomeController extends Controller
         }
 
         // Create New Ticket
-        $ticket = new Ticket();
+        $ticket = new Ticket;
         $ticket->company_id = $company->id;
         $ticket->subject = (request()->has('ticket_subject') ? $request->ticket_subject : '');
         $ticket->status = 'open';
@@ -888,7 +878,7 @@ class HomeController extends Controller
         $ticket->save();
 
         // Save first message
-        $reply = new TicketReply();
+        $reply = new TicketReply;
         $reply->message = (request()->has('ticket_description') ? $request->ticket_description : '');
         $reply->ticket_id = $ticket->id;
         $reply->user_id = $newUser->id; // Current logged in user
@@ -912,7 +902,7 @@ class HomeController extends Controller
             preg_replace(
                 '/\s\s+/',
                 ' ',
-                !file_exists(File::get(public_path() . '/version.txt')) ? File::get(public_path() . '/version.txt') : '0'
+                ! file_exists(File::get(public_path().'/version.txt')) ? File::get(public_path().'/version.txt') : '0'
             )
         );
         $enableModules = [];
@@ -925,19 +915,19 @@ class HomeController extends Controller
                 preg_replace(
                     '/\s\s+/',
                     ' ',
-                    !file_exists(File::get($plugin->getPath() . '/version.txt')) ? File::get($plugin->getPath() . '/version.txt') : '0'
+                    ! file_exists(File::get($plugin->getPath().'/version.txt')) ? File::get($plugin->getPath().'/version.txt') : '0'
                 )
             );
         }
 
-        if (!in_array('RestAPI', array_keys($plugins))) {
+        if (! in_array('RestAPI', array_keys($plugins))) {
             $message = 'Rest API module is not activated';
-        } elseif (!Module::has('RestAPI')) {
+        } elseif (! Module::has('RestAPI')) {
             $message = 'Rest API module is not installed';
-        } elseif (((int)str_replace('.', '', $enableModules['RestAPI'])) < 110) {
+        } elseif (((int) str_replace('.', '', $enableModules['RestAPI'])) < 110) {
             $message = 'Please update Rest API module greater then 1.1.0 version';
-        } elseif (((int)str_replace('.', '', $enableModules['craveva'])) < 400) {
-            $message = 'Please update' . config('app.name') . ' greater then 4.0.0 version';
+        } elseif (((int) str_replace('.', '', $enableModules['craveva'])) < 400) {
+            $message = 'Please update'.config('app.name').' greater then 4.0.0 version';
         }
 
         $enableModules['message'] = $message;
@@ -971,7 +961,7 @@ class HomeController extends Controller
             ->where('proposal_id', $this->proposal->id)
             ->get();
 
-        $taxList = array();
+        $taxList = [];
 
         foreach ($items as $item) {
 
@@ -979,18 +969,18 @@ class HomeController extends Controller
                 $this->tax = ProposalItem::taxbyid($tax)->first();
 
                 if ($this->tax) {
-                    if (!isset($taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'])) {
+                    if (! isset($taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'])) {
 
                         if ($this->proposal->calculate_tax == 'after_discount' && $this->discount > 0) {
-                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = ($item->amount - ($item->amount / $this->proposal->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
+                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = ($item->amount - ($item->amount / $this->proposal->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
                         } else {
-                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $item->amount * ($this->tax->rate_percent / 100);
+                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $item->amount * ($this->tax->rate_percent / 100);
                         }
                     } else {
                         if ($this->proposal->calculate_tax == 'after_discount' && $this->discount > 0) {
-                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + (($item->amount - ($item->amount / $this->proposal->sub_total) * $this->discount) * ($this->tax->rate_percent / 100));
+                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + (($item->amount - ($item->amount / $this->proposal->sub_total) * $this->discount) * ($this->tax->rate_percent / 100));
                         } else {
-                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + ($item->amount * ($this->tax->rate_percent / 100));
+                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + ($item->amount * ($this->tax->rate_percent / 100));
                         }
                     }
                 }
@@ -1025,7 +1015,7 @@ class HomeController extends Controller
         }
 
         if ($request->type == 'accept') {
-            $sign = new ProposalSign();
+            $sign = new ProposalSign;
             $sign->full_name = $request->full_name;
             $sign->proposal_id = $this->proposal->id;
             $sign->email = $request->email;
@@ -1035,10 +1025,10 @@ class HomeController extends Controller
                 $image = $request->signature;  // your base64 encoded
                 $image = str_replace('data:image/png;base64,', '', $image);
                 $image = str_replace(' ', '+', $image);
-                $imageName = str_random(32) . '.' . 'jpg';
+                $imageName = str_random(32).'.'.'jpg';
                 Files::createDirectoryIfNotExist('proposal/sign');
 
-                File::put(public_path() . '/' . Files::UPLOAD_FOLDER . '/proposal/sign/' . $imageName, base64_decode($image));
+                File::put(public_path().'/'.Files::UPLOAD_FOLDER.'/proposal/sign/'.$imageName, base64_decode($image));
                 Files::uploadLocalFile($imageName, 'proposal/sign', $this->proposal->company_id);
             } else {
                 if ($request->hasFile('image')) {
@@ -1083,7 +1073,7 @@ class HomeController extends Controller
             ->where('proposal_id', $this->proposal->id)
             ->get();
 
-        $taxList = array();
+        $taxList = [];
 
         foreach ($items as $item) {
 
@@ -1091,18 +1081,18 @@ class HomeController extends Controller
                 $this->tax = ProposalItem::taxbyid($tax)->first();
 
                 if ($this->tax) {
-                    if (!isset($taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'])) {
+                    if (! isset($taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'])) {
 
                         if ($this->proposal->calculate_tax == 'after_discount' && $this->discount > 0) {
-                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = ($item->amount - ($item->amount / $this->proposal->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
+                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = ($item->amount - ($item->amount / $this->proposal->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
                         } else {
-                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $item->amount * ($this->tax->rate_percent / 100);
+                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $item->amount * ($this->tax->rate_percent / 100);
                         }
                     } else {
                         if ($this->proposal->calculate_tax == 'after_discount' && $this->discount > 0) {
-                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + (($item->amount - ($item->amount / $this->proposal->sub_total) * $this->discount) * ($this->tax->rate_percent / 100));
+                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + (($item->amount - ($item->amount / $this->proposal->sub_total) * $this->discount) * ($this->tax->rate_percent / 100));
                         } else {
-                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + ($item->amount * ($this->tax->rate_percent / 100));
+                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + ($item->amount * ($this->tax->rate_percent / 100));
                         }
                     }
                 }
@@ -1121,17 +1111,17 @@ class HomeController extends Controller
         $pdf->setOption('isHtml5ParserEnabled', true);
         $pdf->setOption('isRemoteEnabled', true);
 
-        $pdf->loadView('proposals.pdf.' . $this->invoiceSetting->template, $this->data);
-        $filename = 'proposal-' . $this->proposal->id;
+        $pdf->loadView('proposals.pdf.'.$this->invoiceSetting->template, $this->data);
+        $filename = 'proposal-'.$this->proposal->id;
 
         return [
             'pdf' => $pdf,
-            'fileName' => $filename
+            'fileName' => $filename,
         ];
     }
 
     /**
-     * @param int $id
+     * @param  int  $id
      * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      */
     public function downloadProposal($id)
@@ -1146,7 +1136,7 @@ class HomeController extends Controller
         $pdf = $pdfOption['pdf'];
         $filename = $pdfOption['fileName'];
 
-        return $pdf->download($filename . '.pdf');
+        return $pdf->download($filename.'.pdf');
     }
 
     public function invoicePaymentfailed($invoiceId)
@@ -1164,7 +1154,7 @@ class HomeController extends Controller
         }
 
         /* make new payment entry with status=failed and other details */
-        $payment = new Payment();
+        $payment = new Payment;
         $payment->company_id = $invoice->company->id;
         $payment->invoice_id = $invoice->id;
         $payment->currency_id = $invoice->currency_id;
@@ -1238,7 +1228,7 @@ class HomeController extends Controller
         $ganttData['links'] = [];
 
         foreach ($milestones as $key => $milestone) {
-            $parentID = 'project-' . $milestone->id;
+            $parentID = 'project-'.$milestone->id;
 
             $ganttData['data'][] = [
                 'id' => $parentID,
@@ -1253,19 +1243,18 @@ class HomeController extends Controller
                 'color' => '#cccccc',
                 'textColor' => '#09203F',
                 'linkable' => false,
-                'priority' => ($key + 1)
+                'priority' => ($key + 1),
             ];
 
-
             foreach ($milestone->tasks as $key2 => $task) {
-                $taskUsers = '<div class="d-inline-flex align-items-center ml-1 text-dark w-180" data-task-id="' . $task->id . '">';
+                $taskUsers = '<div class="d-inline-flex align-items-center ml-1 text-dark w-180" data-task-id="'.$task->id.'">';
 
                 foreach ($task->users as $item) {
-                    $taskUsers .= '<img data-toggle="tooltip" class="taskEmployeeImg rounded-circle mr-1" data-original-title="' . $item->name . '"
-                                                     src="' . $item->image_url . '">';
+                    $taskUsers .= '<img data-toggle="tooltip" class="taskEmployeeImg rounded-circle mr-1" data-original-title="'.$item->name.'"
+                                                     src="'.$item->image_url.'">';
                 }
 
-                $taskUsers .= $task->heading . ' &nbsp; &nbsp;' . view('components.status', ['style' => 'color: ' . $task->boardColumn->label_color, 'value' => $task->boardColumn->column_name, 'color' => 'red'])->render() . '</div>';
+                $taskUsers .= $task->heading.' &nbsp; &nbsp;'.view('components.status', ['style' => 'color: '.$task->boardColumn->label_color, 'value' => $task->boardColumn->column_name, 'color' => 'red'])->render().'</div>';
 
                 $ganttData['data'][] = [
                     'id' => $task->id,
@@ -1279,24 +1268,24 @@ class HomeController extends Controller
                     // 'milestone_status' => $milestone->milestone_id,
                     'task_status' => $task->board_column_id,
                     'priority' => ($key2 + 1),
-                    'color' => $task->boardColumn->label_color . '20',
+                    'color' => $task->boardColumn->label_color.'20',
                     'textColor' => '#09203F',
-                    'view' => view('components.cards.task-card', ['task' => $task, 'draggable' => false, 'company' => $company])->render()
+                    'view' => view('components.cards.task-card', ['task' => $task, 'draggable' => false, 'company' => $company])->render(),
                 ];
 
-                if (!is_null($task->dependent_task_id)) {
+                if (! is_null($task->dependent_task_id)) {
                     $ganttData['links'][] = [
                         'id' => $task->id,
                         'source' => $task->dependent_task_id,
                         'target' => $task->id,
-                        'type' => 0
+                        'type' => 0,
                     ];
                 }
             }
 
             if ($milestone->tasks->count()) {
                 $ganttData['data'][] = [
-                    'id' => 'milestone-' . $milestone->id,
+                    'id' => 'milestone-'.$milestone->id,
                     'text' => $milestone->milestone_title,
                     'type' => 'milestone',
                     'milestone_status' => $milestone->status,
@@ -1307,23 +1296,23 @@ class HomeController extends Controller
                 ];
 
                 $ganttData['links'][] = [
-                    'id' => 'milestone-' . $milestone->id,
+                    'id' => 'milestone-'.$milestone->id,
                     'source' => $task->id,
-                    'target' => 'milestone-' . $milestone->id,
-                    'type' => 0
+                    'target' => 'milestone-'.$milestone->id,
+                    'type' => 0,
                 ];
             }
         }
 
         foreach ($nonMilestoneTasks as $key2 => $task) {
-            $taskUsers = '<div class="d-inline-flex align-items-center ml-1 text-dark w-180" data-task-id="' . $task->id . '">';
+            $taskUsers = '<div class="d-inline-flex align-items-center ml-1 text-dark w-180" data-task-id="'.$task->id.'">';
 
             foreach ($task->users as $item) {
-                $taskUsers .= '<img data-toggle="tooltip" class="taskEmployeeImg rounded-circle mr-1" data-original-title="' . $item->name . '"
-                                                 src="' . $item->image_url . '">';
+                $taskUsers .= '<img data-toggle="tooltip" class="taskEmployeeImg rounded-circle mr-1" data-original-title="'.$item->name.'"
+                                                 src="'.$item->image_url.'">';
             }
 
-            $taskUsers .= $task->heading . ' &nbsp; &nbsp;' . view('components.status', ['style' => 'color: ' . $task->boardColumn->label_color, 'value' => $task->boardColumn->column_name, 'color' => 'red'])->render() . '</div>';
+            $taskUsers .= $task->heading.' &nbsp; &nbsp;'.view('components.status', ['style' => 'color: '.$task->boardColumn->label_color, 'value' => $task->boardColumn->column_name, 'color' => 'red'])->render().'</div>';
 
             $ganttData['data'][] = [
                 'id' => $task->id,
@@ -1334,17 +1323,17 @@ class HomeController extends Controller
                 'duration' => (($task->due_date) ? $task->start_date->diffInDays($task->due_date) : 1),
                 'priority' => ($key2 + 1),
                 'task_status' => $task->board_column_id,
-                'color' => $task->boardColumn->label_color . '20',
+                'color' => $task->boardColumn->label_color.'20',
                 'textColor' => '#09203F',
-                'view' => view('components.cards.task-card', ['task' => $task, 'draggable' => false, 'company' => $company])->render()
+                'view' => view('components.cards.task-card', ['task' => $task, 'draggable' => false, 'company' => $company])->render(),
             ];
 
-            if (!is_null($task->dependent_task_id)) {
+            if (! is_null($task->dependent_task_id)) {
                 $ganttData['links'][] = [
                     'id' => $task->id,
                     'source' => $task->dependent_task_id,
                     'target' => $task->id,
-                    'type' => 0
+                    'type' => 0,
                 ];
             }
         }

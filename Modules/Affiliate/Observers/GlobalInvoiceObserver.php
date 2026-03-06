@@ -2,13 +2,13 @@
 
 namespace Modules\Affiliate\Observers;
 
-use Modules\Affiliate\Enums\YesNo;
-use Modules\Affiliate\Enums\PayoutType;
 use App\Models\SuperAdmin\GlobalInvoice;
-use Modules\Affiliate\Enums\CommissionType;
 use Modules\Affiliate\Entities\AffiliateSetting;
 use Modules\Affiliate\Entities\Referral;
+use Modules\Affiliate\Enums\CommissionType;
 use Modules\Affiliate\Enums\PayoutTime;
+use Modules\Affiliate\Enums\PayoutType;
+use Modules\Affiliate\Enums\YesNo;
 
 class GlobalInvoiceObserver
 {
@@ -17,7 +17,7 @@ class GlobalInvoiceObserver
      * This observer processes commission calculations when a new invoice is created
      * for a company that was referred by an affiliate.
      *
-     * @param GlobalInvoice $invoice The newly created invoice
+     * @param  GlobalInvoice  $invoice  The newly created invoice
      * @return void
      */
     public function created(GlobalInvoice $invoice)
@@ -31,7 +31,7 @@ class GlobalInvoiceObserver
         $referral = Referral::where('company_id', $invoice->company_id)->first();
 
         // Only process if there's a referral and it's not a free package
-        if (!$referral || $invoice->package->is_free) {
+        if (! $referral || $invoice->package->is_free) {
             return;
         }
 
@@ -39,7 +39,7 @@ class GlobalInvoiceObserver
         $affiliateSettings = AffiliateSetting::first();
 
         // Verify commission settings are enabled and payout type is after signup
-        if (!$this->isCommissionEligible($affiliateSettings)) {
+        if (! $this->isCommissionEligible($affiliateSettings)) {
             return;
         }
 
@@ -88,7 +88,7 @@ class GlobalInvoiceObserver
         if ($affiliateSettings->payout_time === PayoutTime::OneTime) {
             // Only process on second invoice for one-time payouts
             $shouldProcess = GlobalInvoice::where('company_id', $invoice->company_id)->count() === 2;
-        } else if ($affiliateSettings->payout_time === PayoutTime::EveryTime) {
+        } elseif ($affiliateSettings->payout_time === PayoutTime::EveryTime) {
             $shouldProcess = true;
         }
 

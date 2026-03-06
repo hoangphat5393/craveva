@@ -7,15 +7,14 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\VonageMessage;
 use Illuminate\Notifications\Notification;
 use Modules\Sms\Entities\SmsNotificationSetting;
+use Modules\Sms\Entities\SmsTemplateId;
 use Modules\Sms\Http\Traits\WhatsappMessageTrait;
 use NotificationChannels\Telegram\TelegramMessage;
-use Modules\Sms\Entities\SmsTemplateId;
 use NotificationChannels\Twilio\TwilioChannel;
 use NotificationChannels\Twilio\TwilioSmsMessage;
 
 class TwoFactorCode extends Notification implements ShouldQueue
 {
-
     use Queueable, WhatsappMessageTrait;
 
     /**
@@ -40,7 +39,7 @@ class TwoFactorCode extends Notification implements ShouldQueue
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -50,10 +49,9 @@ class TwoFactorCode extends Notification implements ShouldQueue
         }
         $code = $notifiable->userAuth->two_factor_code;
 
-        $this->message = __('email.twoFactor.line1') . $code . "\n" . __('email.twoFactor.line2') . "\n" . __('email.twoFactor.line3');
+        $this->message = __('email.twoFactor.line1').$code."\n".__('email.twoFactor.line2')."\n".__('email.twoFactor.line3');
 
         $via = [];
-
 
         if (! is_null($notifiable->mobile) && ! is_null($notifiable->country_phonecode)) {
             if (sms_setting()->status) {
@@ -61,7 +59,6 @@ class TwoFactorCode extends Notification implements ShouldQueue
             }
 
             if (sms_setting()->nexmo_status) {
-
 
                 array_push($via, 'vonage');
             }
@@ -96,7 +93,7 @@ class TwoFactorCode extends Notification implements ShouldQueue
         }
     }
 
-    //phpcs:ignore
+    // phpcs:ignore
     public function toVonage($notifiable)
     {
         if (sms_setting()->nexmo_status) {
@@ -125,5 +122,4 @@ class TwoFactorCode extends Notification implements ShouldQueue
             // Markdown supported.
             ->content($this->message);
     }
-
 }

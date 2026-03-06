@@ -11,6 +11,7 @@ class LockoutEmailNotification extends BaseNotification
     use Queueable;
 
     public $email;
+
     public $ip;
 
     /**
@@ -25,7 +26,7 @@ class LockoutEmailNotification extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     // phpcs:ignore
@@ -37,8 +38,7 @@ class LockoutEmailNotification extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
-     * @return MailMessage
+     * @param  mixed  $notifiable
      */
     // phpcs:ignore
     public function toMail($notifiable): MailMessage
@@ -55,5 +55,4 @@ class LockoutEmailNotification extends BaseNotification
                 'content' => $content,
             ]);
     }
-
 }

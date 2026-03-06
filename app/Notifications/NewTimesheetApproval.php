@@ -2,18 +2,17 @@
 
 namespace App\Notifications;
 
+use App\Models\WeeklyTimesheet;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use App\Models\WeeklyTimesheet;
 
 class NewTimesheetApproval extends BaseNotification
 {
     use Queueable;
 
     private $weeklyTimesheet;
-   
+
     /**
      * Create a new notification instance.
      */

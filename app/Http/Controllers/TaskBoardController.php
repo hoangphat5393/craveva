@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Helper\Common;
 use App\Helper\Reply;
+use App\Helper\UserService;
 use App\Http\Requests\TaskBoard\StoreTaskBoard;
 use App\Http\Requests\TaskBoard\UpdateTaskBoard;
 use App\Models\Project;
+use App\Models\ProjectMilestone;
 use App\Models\Task;
 use App\Models\TaskboardColumn;
 use App\Models\TaskCategory;
@@ -15,13 +18,9 @@ use App\Models\UserTaskboardSetting;
 use App\Traits\pusherConfigTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Models\ProjectMilestone;
-use App\Helper\UserService;
-use App\Helper\Common;
 
 class TaskBoardController extends AccountBaseController
 {
-
     use pusherConfigTrait;
 
     public function __construct()
@@ -29,7 +28,7 @@ class TaskBoardController extends AccountBaseController
         parent::__construct();
         $this->pageTitle = 'modules.tasks.taskBoard';
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('tasks', $this->user->modules));
+            abort_403(! in_array('tasks', $this->user->modules));
             $this->viewTaskPermission = user()->permission('view_tasks');
             $this->viewUnassignedTasksPermission = user()->permission('view_unassigned_tasks');
 
@@ -70,7 +69,7 @@ class TaskBoardController extends AccountBaseController
                         ->leftJoin('users as client', 'client.id', '=', 'projects.client_id');
 
                     if (
-                        ($this->viewUnassignedTasksPermission == 'all' && !in_array('client', user_roles())
+                        ($this->viewUnassignedTasksPermission == 'all' && ! in_array('client', user_roles())
                             && ($request->assignedTo == 'unassigned' || $request->assignedTo == 'all'))
                         || ($request->has('project_admin') && $request->project_admin == 1)
                     ) {
@@ -84,7 +83,7 @@ class TaskBoardController extends AccountBaseController
                     $q->leftJoin('task_labels', 'task_labels.task_id', '=', 'tasks.id')
                         ->leftJoin('users as creator_user', 'creator_user.id', '=', 'tasks.created_by');
 
-                    if (!in_array('admin', user_roles())) {
+                    if (! in_array('admin', user_roles())) {
                         $q->where(
                             function ($q) use ($userId) {
                                 $q->where('tasks.is_private', 0);
@@ -166,13 +165,13 @@ class TaskBoardController extends AccountBaseController
                     if ($request->searchText != '') {
                         $q->where(function ($query) {
                             $safeTerm = Common::safeString(request('searchText'));
-                            $query->where('tasks.heading', 'like', '%' . $safeTerm . '%')
-                                ->orWhere('users.name', 'like', '%' . $safeTerm . '%')
-                                ->orWhere('projects.project_name', 'like', '%' . $safeTerm . '%');
+                            $query->where('tasks.heading', 'like', '%'.$safeTerm.'%')
+                                ->orWhere('users.name', 'like', '%'.$safeTerm.'%')
+                                ->orWhere('projects.project_name', 'like', '%'.$safeTerm.'%');
                         });
                     }
 
-                    if (($request->has('project_admin') && $request->project_admin != 1) || !$request->has('project_admin')) {
+                    if (($request->has('project_admin') && $request->project_admin != 1) || ! $request->has('project_admin')) {
                         if ($this->viewTaskPermission == 'owned') {
                             $q->where(function ($q1) use ($request, $userId) {
                                 $q1->where('task_users.user_id', '=', $userId);
@@ -181,7 +180,7 @@ class TaskBoardController extends AccountBaseController
                                     $q1->orWhere('projects.client_id', '=', $userId);
                                 }
 
-                                if ($this->viewUnassignedTasksPermission == 'all' && !in_array('client', user_roles()) && ($request->assignedTo == 'unassigned' || $request->assignedTo == 'all')) {
+                                if ($this->viewUnassignedTasksPermission == 'all' && ! in_array('client', user_roles()) && ($request->assignedTo == 'unassigned' || $request->assignedTo == 'all')) {
                                     $q1->orWhereDoesntHave('users');
                                 }
                             });
@@ -201,7 +200,7 @@ class TaskBoardController extends AccountBaseController
                                     $q1->orWhere('projects.client_id', '=', $userId);
                                 }
 
-                                if ($this->viewUnassignedTasksPermission == 'all' && !in_array('client', user_roles()) && ($request->assignedTo == 'unassigned' || $request->assignedTo == 'all')) {
+                                if ($this->viewUnassignedTasksPermission == 'all' && ! in_array('client', user_roles()) && ($request->assignedTo == 'unassigned' || $request->assignedTo == 'all')) {
                                     $q1->orWhereDoesntHave('users');
                                 }
                             });
@@ -209,7 +208,7 @@ class TaskBoardController extends AccountBaseController
                     }
 
                     $q->select(DB::raw('count(distinct tasks.id)'));
-                }
+                },
             ])
                 ->with(['tasks' => function ($q) use ($startDate, $endDate, $request, $userId) {
                     $q->withCount(['subtasks', 'completedSubtasks', 'comments'])
@@ -217,7 +216,7 @@ class TaskBoardController extends AccountBaseController
                         ->leftJoin('users as client', 'client.id', '=', 'projects.client_id');
 
                     if (
-                        ($this->viewUnassignedTasksPermission == 'all' && !in_array('client', user_roles()) && ($request->assignedTo == 'unassigned' || $request->assignedTo == 'all'))
+                        ($this->viewUnassignedTasksPermission == 'all' && ! in_array('client', user_roles()) && ($request->assignedTo == 'unassigned' || $request->assignedTo == 'all'))
                         || ($request->has('project_admin') && $request->project_admin == 1)
                     ) {
                         $q->leftJoin('task_users', 'task_users.task_id', '=', 'tasks.id')
@@ -231,7 +230,7 @@ class TaskBoardController extends AccountBaseController
                         ->leftJoin('users as creator_user', 'creator_user.id', '=', 'tasks.created_by')
                         ->groupBy('tasks.id');
 
-                    if (!in_array('admin', user_roles())) {
+                    if (! in_array('admin', user_roles())) {
                         $q->where(
                             function ($q) use ($userId) {
                                 $q->where('tasks.is_private', 0);
@@ -310,7 +309,7 @@ class TaskBoardController extends AccountBaseController
                         );
                     }
 
-                    if (($request->has('project_admin') && $request->project_admin != 1) || !$request->has('project_admin')) {
+                    if (($request->has('project_admin') && $request->project_admin != 1) || ! $request->has('project_admin')) {
                         if ($this->viewTaskPermission == 'owned') {
                             $q->where(function ($q1) use ($request, $userId) {
                                 $q1->where('task_users.user_id', '=', $userId);
@@ -319,7 +318,7 @@ class TaskBoardController extends AccountBaseController
                                     $q1->orWhere('projects.client_id', '=', $userId);
                                 }
 
-                                if ($this->viewUnassignedTasksPermission == 'all' && !in_array('client', user_roles()) && ($request->assignedTo == 'unassigned' || $request->assignedTo == 'all')) {
+                                if ($this->viewUnassignedTasksPermission == 'all' && ! in_array('client', user_roles()) && ($request->assignedTo == 'unassigned' || $request->assignedTo == 'all')) {
                                     $q1->orWhereDoesntHave('users');
                                 }
                             });
@@ -339,7 +338,7 @@ class TaskBoardController extends AccountBaseController
                                     $q1->orWhere('projects.client_id', '=', $userId);
                                 }
 
-                                if ($this->viewUnassignedTasksPermission == 'all' && !in_array('client', user_roles()) && ($request->assignedTo == 'unassigned' || $request->assignedTo == 'all')) {
+                                if ($this->viewUnassignedTasksPermission == 'all' && ! in_array('client', user_roles()) && ($request->assignedTo == 'unassigned' || $request->assignedTo == 'all')) {
                                     $q1->orWhereDoesntHave('users');
                                 }
                             });
@@ -349,9 +348,9 @@ class TaskBoardController extends AccountBaseController
                     if ($request->searchText != '') {
                         $q->where(function ($query) {
                             $safeTerm = Common::safeString(request('searchText'));
-                            $query->where('tasks.heading', 'like', '%' . $safeTerm . '%')
-                                ->orWhere('users.name', 'like', '%' . $safeTerm . '%')
-                                ->orWhere('projects.project_name', 'like', '%' . $safeTerm . '%');
+                            $query->where('tasks.heading', 'like', '%'.$safeTerm.'%')
+                                ->orWhere('users.name', 'like', '%'.$safeTerm.'%')
+                                ->orWhere('projects.project_name', 'like', '%'.$safeTerm.'%');
                         });
                     }
                 }])->with('userSetting')->orderBy('priority', 'asc');
@@ -362,7 +361,7 @@ class TaskBoardController extends AccountBaseController
                 return $query;
             });
 
-            $result = array();
+            $result = [];
 
             foreach ($boardColumns as $key => $boardColumn) {
                 $result['boardColumns'][] = $boardColumn;
@@ -385,7 +384,7 @@ class TaskBoardController extends AccountBaseController
 
         $this->milestones = ProjectMilestone::all();
         $taskBoardColumn = TaskboardColumn::waitingForApprovalColumn();
-        if (!in_array('admin', user_roles()) && in_array('employee', user_roles())) {
+        if (! in_array('admin', user_roles()) && in_array('employee', user_roles())) {
             $user = User::findOrFail($userId);
             $this->waitingApprovalCount = $user->tasks()->where('board_column_id', $taskBoardColumn->id)->where('company_id', $this->company->id)->count();
         } else {
@@ -397,8 +396,8 @@ class TaskBoardController extends AccountBaseController
     }
 
     /**
-     * @param StoreTaskBoard $request
      * @return array
+     *
      * @throws \Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException
      */
     public function store(StoreTaskBoard $request)
@@ -406,14 +405,15 @@ class TaskBoardController extends AccountBaseController
         $slug = str_slug($request->column_name, '_');
 
         $priority = $request->priority;
-        $board = new TaskboardColumn();
+        $board = new TaskboardColumn;
         $board->column_name = $request->column_name;
         $board->label_color = $request->label_color;
 
         $taskboard = TaskboardColumn::where('slug', $slug)->where('company_id', $this->company->id)->first();
 
         if ($taskboard) {
-            $errormessage = "A status with this name already exists which you updated with " . $taskboard->column_name . ". If you want to use this name, please update the existing status (" . $taskboard->column_name . " to " . $request->column_name . ").";
+            $errormessage = 'A status with this name already exists which you updated with '.$taskboard->column_name.'. If you want to use this name, please update the existing status ('.$taskboard->column_name.' to '.$request->column_name.').';
+
             return Reply::error($errormessage);
         } else {
             $board->slug = $slug;
@@ -457,7 +457,7 @@ class TaskBoardController extends AccountBaseController
             ->leftJoin('users as client', 'client.id', '=', 'projects.client_id');
 
         if (
-            ($this->viewUnassignedTasksPermission == 'all' && !in_array('client', user_roles()) && ($request->assignedTo == 'unassigned' || $request->assignedTo == 'all'))
+            ($this->viewUnassignedTasksPermission == 'all' && ! in_array('client', user_roles()) && ($request->assignedTo == 'unassigned' || $request->assignedTo == 'all'))
             || ($request->has('project_admin') && $request->project_admin == 1)
         ) {
             $tasks->leftJoin('task_users', 'task_users.task_id', '=', 'tasks.id')
@@ -474,7 +474,7 @@ class TaskBoardController extends AccountBaseController
             ->orderBy('column_priority')
             ->groupBy('tasks.id');
 
-        if (!in_array('admin', user_roles())) {
+        if (! in_array('admin', user_roles())) {
             $tasks->where(
                 function ($q) use ($userId) {
                     $q->where('tasks.is_private', 0);
@@ -527,7 +527,7 @@ class TaskBoardController extends AccountBaseController
             $tasks->where('task_labels.label_id', '=', $request->label_id);
         }
 
-        if (($request->has('project_admin') && $request->project_admin != 1) || !$request->has('project_admin')) {
+        if (($request->has('project_admin') && $request->project_admin != 1) || ! $request->has('project_admin')) {
             if ($this->viewTaskPermission == 'owned') {
                 $tasks->where(function ($q1) use ($request, $userId) {
                     $q1->where('task_users.user_id', '=', $userId);
@@ -536,7 +536,7 @@ class TaskBoardController extends AccountBaseController
                         $q1->orWhere('projects.client_id', '=', $userId);
                     }
 
-                    if ($this->viewUnassignedTasksPermission == 'all' && !in_array('client', user_roles()) && ($request->assignedTo == 'unassigned' || $request->assignedTo == 'all')) {
+                    if ($this->viewUnassignedTasksPermission == 'all' && ! in_array('client', user_roles()) && ($request->assignedTo == 'unassigned' || $request->assignedTo == 'all')) {
                         $q1->orWhereDoesntHave('users');
                     }
                 });
@@ -556,7 +556,7 @@ class TaskBoardController extends AccountBaseController
                         $q1->orWhere('projects.client_id', '=', $userId);
                     }
 
-                    if ($this->viewUnassignedTasksPermission == 'all' && !in_array('client', user_roles()) && ($request->assignedTo == 'unassigned' || $request->assignedTo == 'all')) {
+                    if ($this->viewUnassignedTasksPermission == 'all' && ! in_array('client', user_roles()) && ($request->assignedTo == 'unassigned' || $request->assignedTo == 'all')) {
                         $q1->orWhereDoesntHave('users');
                     }
                 });
@@ -566,9 +566,9 @@ class TaskBoardController extends AccountBaseController
         if ($request->searchText != '') {
             $tasks->where(function ($query) {
                 $safeTerm = Common::safeString(request('searchText'));
-                $query->where('tasks.heading', 'like', '%' . $safeTerm . '%')
-                    ->orWhere('users.name', 'like', '%' . $safeTerm . '%')
-                    ->orWhere('projects.project_name', 'like', '%' . $safeTerm . '%');
+                $query->where('tasks.heading', 'like', '%'.$safeTerm.'%')
+                    ->orWhere('users.name', 'like', '%'.$safeTerm.'%')
+                    ->orWhere('projects.project_name', 'like', '%'.$safeTerm.'%');
             });
         }
 
@@ -608,7 +608,7 @@ class TaskBoardController extends AccountBaseController
             }));
 
             foreach ($taskIds as $key => $taskId) {
-                if (!is_null($taskId)) {
+                if (! is_null($taskId)) {
                     $task = Task::with('labels')->findOrFail($taskId);
 
                     if ($board->slug == 'completed') {
@@ -616,14 +616,14 @@ class TaskBoardController extends AccountBaseController
                             [
                                 'board_column_id' => $boardColumnId,
                                 'completed_on' => now()->format('Y-m-d'),
-                                'column_priority' => $priorities[$key]
+                                'column_priority' => $priorities[$key],
                             ]
                         );
                     } else {
                         $task->update(
                             [
                                 'board_column_id' => $boardColumnId,
-                                'column_priority' => $priorities[$key]
+                                'column_priority' => $priorities[$key],
                             ]
                         );
                     }
@@ -648,7 +648,7 @@ class TaskBoardController extends AccountBaseController
     /**
      * Show the form for editing the specified resource.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -672,12 +672,11 @@ class TaskBoardController extends AccountBaseController
     }
 
     /**
-     * @param UpdateTaskBoard $request
-     * @param int $id
+     * @param  int  $id
      * @return array
+     *
      * @throws \Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException
      */
-
     public function update(UpdateTaskBoard $request, $id)
     {
         $board = TaskboardColumn::findOrFail($id);
@@ -717,14 +716,13 @@ class TaskBoardController extends AccountBaseController
 
         $board->save();
 
-
         return Reply::success(__('messages.recordSaved'));
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
@@ -768,7 +766,8 @@ class TaskBoardController extends AccountBaseController
         return Reply::dataOnly(['status' => 'success']);
     }
 
-    public function updatePrioritySequence($request, $id){
+    public function updatePrioritySequence($request, $id)
+    {
         $currentSequence = TaskboardColumn::findOrFail($id);
 
         if ($currentSequence->priority > $request->priority) {
@@ -776,7 +775,7 @@ class TaskBoardController extends AccountBaseController
             $increment_sequence_number = TaskboardColumn::where('priority', '<', $currentSequence->priority)->where('priority', '>=', $request->priority)->get();
 
             foreach ($increment_sequence_number as $increment_sequence_numbers) {
-                $increment_sequence_numbers->priority = ((int)$increment_sequence_numbers->priority + 1);
+                $increment_sequence_numbers->priority = ((int) $increment_sequence_numbers->priority + 1);
                 $increment_sequence_numbers->save();
             }
         } else {
@@ -784,7 +783,7 @@ class TaskBoardController extends AccountBaseController
             $decrement_sequence_number = TaskboardColumn::where('priority', '>', $currentSequence->priority)->where('priority', '<=', $request->priority)->get();
 
             foreach ($decrement_sequence_number as $decrement_sequence_numbers) {
-                $decrement_sequence_numbers->priority = ((int)$decrement_sequence_numbers->priority - 1);
+                $decrement_sequence_numbers->priority = ((int) $decrement_sequence_numbers->priority - 1);
                 $decrement_sequence_numbers->save();
             }
         }

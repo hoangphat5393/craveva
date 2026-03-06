@@ -3,16 +3,15 @@
 use App\Helper\Files;
 use App\Models\GlobalSetting;
 use App\Models\SuperAdmin\Feature;
-use App\Models\SuperAdmin\SeoDetail;
 use App\Models\SuperAdmin\FrontDetail;
-use App\Models\SuperAdmin\TrFrontDetail;
-use App\Models\SuperAdmin\OfflinePlanChange;
-use Illuminate\Database\Migrations\Migration;
 use App\Models\SuperAdmin\GlobalInvoiceSetting;
+use App\Models\SuperAdmin\OfflinePlanChange;
+use App\Models\SuperAdmin\SeoDetail;
+use App\Models\SuperAdmin\TrFrontDetail;
+use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      */
@@ -25,7 +24,7 @@ return new class extends Migration
                     [
                         'name' => 'image',
                         'path' => 'front/feature',
-                    ]
+                    ],
                 ],
             ],
             [
@@ -34,7 +33,7 @@ return new class extends Migration
                     [
                         'name' => 'image',
                         'path' => 'front',
-                    ]
+                    ],
                 ],
             ],
             [
@@ -43,7 +42,7 @@ return new class extends Migration
                     [
                         'name' => 'og_image',
                         'path' => 'front/seo-detail',
-                    ]
+                    ],
                 ],
             ],
             [
@@ -52,7 +51,7 @@ return new class extends Migration
                     [
                         'name' => 'background_image',
                         'path' => 'front/homepage-background',
-                    ]
+                    ],
                 ],
             ],
             [
@@ -119,5 +118,4 @@ return new class extends Migration
     {
         //
     }
-
 };

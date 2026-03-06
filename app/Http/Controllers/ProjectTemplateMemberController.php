@@ -7,19 +7,19 @@ use App\Http\Requests\ProjectMembers\SaveGroupMembers;
 use App\Http\Requests\ProjectMembers\StoreProjectMembers;
 use App\Models\EmployeeDetails;
 use App\Models\ProjectTemplate;
+use App\Models\ProjectTemplateMember;
 use App\Models\Team;
 use App\Models\User;
-use App\Models\ProjectTemplateMember;
 
 class ProjectTemplateMemberController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'app.menu.projects';
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('projects', $this->user->modules));
+            abort_403(! in_array('projects', $this->user->modules));
+
             return $next($request);
         });
     }
@@ -45,12 +45,13 @@ class ProjectTemplateMemberController extends AccountBaseController
             ->get();
         $this->groups = Team::all();
         $this->projectId = $id;
+
         return view('project-templates.project-member.create', $this->data);
     }
 
     /**
-     * @param StoreProjectMembers $request
      * @return array
+     *
      * @throws \Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException
      */
     public function store(StoreProjectMembers $request)
@@ -58,7 +59,7 @@ class ProjectTemplateMemberController extends AccountBaseController
         $users = $request->user_id;
 
         foreach ($users as $user) {
-            $member = new ProjectTemplateMember();
+            $member = new ProjectTemplateMember;
             $member->user_id = $user;
             $member->project_template_id = $request->project_id;
             $member->save();
@@ -70,7 +71,7 @@ class ProjectTemplateMemberController extends AccountBaseController
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
@@ -96,7 +97,7 @@ class ProjectTemplateMemberController extends AccountBaseController
                 $check = ProjectTemplateMember::where('user_id', $user->user_id)->where('project_template_id', $request->project_id)->first();
 
                 if (is_null($check)) {
-                    $member = new ProjectTemplateMember();
+                    $member = new ProjectTemplateMember;
                     $member->user_id = $user->user_id;
                     $member->project_template_id = $request->project_id;
                     $member->save();
@@ -106,5 +107,4 @@ class ProjectTemplateMemberController extends AccountBaseController
 
         return Reply::success(__('messages.recordSaved'));
     }
-
 }

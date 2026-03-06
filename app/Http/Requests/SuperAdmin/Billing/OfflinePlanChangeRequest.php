@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class OfflinePlanChangeRequest extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -30,11 +29,11 @@ class OfflinePlanChangeRequest extends FormRequest
             'id' => 'required',
             'status' => 'required',
             'remark' => 'required_if:status,rejected',
-            'pay_date' => 'required_if:status,verified|date_format:"' . $setting->date_format . '"',
+            'pay_date' => 'required_if:status,verified|date_format:"'.$setting->date_format.'"',
         ];
-        
+
         if (request()->has('next_pay_date')) {
-            $rules['next_pay_date'] = 'date_format:"' . $setting->date_format . '"|required_if:status,verified';
+            $rules['next_pay_date'] = 'date_format:"'.$setting->date_format.'"|required_if:status,verified';
         }
     }
 
@@ -55,5 +54,4 @@ class OfflinePlanChangeRequest extends FormRequest
             'next_pay_date.required_if' => __('superadmin.offlineRequestChange.nextPaymentDateRequired'),
         ];
     }
-
 }

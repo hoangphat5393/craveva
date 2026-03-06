@@ -3,14 +3,11 @@
 namespace Modules\Biometric\DataTables;
 
 use App\DataTables\BaseDataTable;
-use App\Scopes\ActiveScope;
-use App\Scopes\CompanyScope;
-use Modules\Biometric\Entities\BiometricAttendance;
 use Illuminate\Support\Facades\DB;
+use Modules\Biometric\Entities\BiometricAttendance;
 
 class BiometricAttendanceDataTable extends BaseDataTable
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -19,7 +16,7 @@ class BiometricAttendanceDataTable extends BaseDataTable
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
@@ -28,16 +25,16 @@ class BiometricAttendanceDataTable extends BaseDataTable
             ->eloquent($query)
             ->addIndexColumn()
             ->addColumn('employee_id', function ($row) {
-                if (!$row->user) {
-                    return '<span class="badge badge-secondary">' . $row->employee_id . '</span>';
+                if (! $row->user) {
+                    return '<span class="badge badge-secondary">'.$row->employee_id.'</span>';
                 }
 
                 return
                     '<div class="d-flex align-items-center">
                                 <span class="px-2 py-1 rounded mr-2">
-                                    <span>' . $row->employee_id . '</span>
+                                    <span>'.$row->employee_id.'</span>
                                 </span>
-                            ' . view('components.employee', ['user' => $row->user]) . '
+                            '.view('components.employee', ['user' => $row->user]).'
                         </div>';
             })
             ->addColumn('device_name', function ($row) {
@@ -45,18 +42,23 @@ class BiometricAttendanceDataTable extends BaseDataTable
             })
             ->addColumn('status1', function ($row) {
                 if ($row->status1 == 1) {
-                    return '<span class="badge badge-danger"><i class="fas fa-arrow-right"></i> ' . __('modules.attendance.clock_out') . '</span>';
+                    return '<span class="badge badge-danger"><i class="fas fa-arrow-right"></i> '.__('modules.attendance.clock_out').'</span>';
                 }
 
-                return '<span class="badge badge-success"><i class="fas fa-arrow-left"></i> ' . __('modules.attendance.clock_in') . '</span>';
+                return '<span class="badge badge-success"><i class="fas fa-arrow-left"></i> '.__('modules.attendance.clock_in').'</span>';
             })
             ->rawColumns(['employee_id', 'device_name', 'status1'])
             ->addColumn('status2', function ($row) {
-                if ($row->status2 == 15) return 'Face';
-                if ($row->status2 == 25) return 'Palm';
-                else return $row->status2;
+                if ($row->status2 == 15) {
+                    return 'Face';
+                }
+                if ($row->status2 == 25) {
+                    return 'Palm';
+                } else {
+                    return $row->status2;
+                }
             })
-            ->addColumn('timestamp', fn($row) => $row->timestamp->setTimezone(company()->timezone)->format(company()->date_format . ' ' . company()->time_format))
+            ->addColumn('timestamp', fn ($row) => $row->timestamp->setTimezone(company()->timezone)->format(company()->date_format.' '.company()->time_format))
             ->rawColumns(['employee_id', 'device_name', 'status1', 'status2']);
     }
 
@@ -85,11 +87,11 @@ class BiometricAttendanceDataTable extends BaseDataTable
 
         if ($searchText != '') {
             $model = $model->where(function ($query) use ($searchText) {
-                $query->where('device_name', 'like', '%' . $searchText . '%')
-                    ->orWhere('device_serial_number', 'like', '%' . $searchText . '%')
-                    ->orWhere('status1', 'like', '%' . $searchText . '%')
-                    ->orWhere('employee_id', 'like', '%' . $searchText . '%')
-                    ->orWhere('timestamp', 'like', '%' . $searchText . '%');
+                $query->where('device_name', 'like', '%'.$searchText.'%')
+                    ->orWhere('device_serial_number', 'like', '%'.$searchText.'%')
+                    ->orWhere('status1', 'like', '%'.$searchText.'%')
+                    ->orWhere('employee_id', 'like', '%'.$searchText.'%')
+                    ->orWhere('timestamp', 'like', '%'.$searchText.'%');
             });
         }
 
@@ -98,15 +100,12 @@ class BiometricAttendanceDataTable extends BaseDataTable
         }
 
         if ($month !== 'all') {
-            $model = $model->where('timestamp', 'like', '%' . $month . '%');
+            $model = $model->where('timestamp', 'like', '%'.$month.'%');
         }
 
         if ($year !== 'all') {
-            $model = $model->where('timestamp', 'like', '%' . $year . '%');
+            $model = $model->where('timestamp', 'like', '%'.$year.'%');
         }
-
-
-
 
         return $model;
     }

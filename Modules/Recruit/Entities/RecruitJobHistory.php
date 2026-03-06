@@ -16,5 +16,4 @@ class RecruitJobHistory extends BaseModel
     {
         return $this->belongsTo(User::class, 'user_id')->withoutGlobalScope(ActiveScope::class);
     }
-
 }

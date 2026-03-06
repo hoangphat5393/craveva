@@ -5,16 +5,15 @@ namespace Modules\Purchase\Entities;
 use App\Models\BaseModel;
 use App\Traits\CustomFieldsTrait;
 use App\Traits\HasCompany;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PurchaseStockAdjustmentReason extends BaseModel
 {
-
-    use HasCompany, HasFactory, CustomFieldsTrait;
+    use CustomFieldsTrait, HasCompany, HasFactory;
 
     protected $fillable = [];
+
     protected $table = 'purchase_stock_adjustment_reasons';
 
     protected static function newFactory()
@@ -26,5 +25,4 @@ class PurchaseStockAdjustmentReason extends BaseModel
     {
         return $this->hasMany(PurchaseStockAdjustment::class);
     }
-
 }

@@ -9,7 +9,6 @@ use Illuminate\Queue\SerializesModels;
 
 class EventReminderEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $event;
@@ -18,5 +17,4 @@ class EventReminderEvent
     {
         $this->event = $event;
     }
-
 }

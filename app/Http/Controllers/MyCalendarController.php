@@ -3,11 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\DealFollowUp;
-use App\Models\EmployeeDetails;
 use App\Models\Event;
-use App\Models\Holiday;
 use App\Models\Leave;
-use App\Models\MyCalendar;
 use App\Models\Task;
 use App\Models\TaskboardColumn;
 use App\Models\Ticket;
@@ -17,7 +14,6 @@ use Illuminate\Support\Facades\DB;
 
 class MyCalendarController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -37,7 +33,7 @@ class MyCalendarController extends AccountBaseController
             'events' => __('app.menu.events'),
             'tickets' => __('app.menu.tickets'),
             'leaves' => __('app.menu.leaves'),
-            'follow_ups' => __('modules.dashboard.followUps')
+            'follow_ups' => __('modules.dashboard.followUps'),
         ];
 
         $startDate = Carbon::parse(request('start'));
@@ -47,18 +43,16 @@ class MyCalendarController extends AccountBaseController
         // get calendar view current logined user
         if ($type == null || $type == 'null' || $type == 'all') {
             $calendar_type_array = ['task', 'events', 'tickets', 'leaves', 'follow_ups'];
-        }
-        else {
+        } else {
             $calendar_type_array = [$type];
         }
 
-        if (request('start') && request('end'))
-        {
-            $eventData = array();
+        if (request('start') && request('end')) {
+            $eventData = [];
 
             $viewEventPerm = user()->permission('view_events');
 
-            if (!is_null($viewEventPerm) && $viewEventPerm != 'none') {
+            if (! is_null($viewEventPerm) && $viewEventPerm != 'none') {
 
                 if (in_array('events', $calendar_type_array)) {
                     // Events
@@ -75,7 +69,6 @@ class MyCalendarController extends AccountBaseController
 
                     $events = $model->get();
 
-
                     foreach ($events as $event) {
                         $eventData[] = [
                             'id' => $event->id,
@@ -83,7 +76,7 @@ class MyCalendarController extends AccountBaseController
                             'start' => $event->start_date_time,
                             'end' => $event->end_date_time,
                             'event_type' => 'event',
-                            'extendedProps' => ['bg_color' => $event->label_color, 'color' => '#fff', 'icon' => 'fa-calendar']
+                            'extendedProps' => ['bg_color' => $event->label_color, 'color' => '#fff', 'icon' => 'fa-calendar'],
                         ];
                     }
                 }
@@ -91,7 +84,7 @@ class MyCalendarController extends AccountBaseController
 
             $viewTaskPerm = user()->permission('view_tasks');
 
-            if (!is_null($viewTaskPerm) && $viewTaskPerm != 'none') {
+            if (! is_null($viewTaskPerm) && $viewTaskPerm != 'none') {
 
                 if (in_array('task', $calendar_type_array)) {
                     // tasks
@@ -120,7 +113,7 @@ class MyCalendarController extends AccountBaseController
                             'start' => $task->start_date,
                             'end' => $task->due_date ?: $task->start_date,
                             'event_type' => 'task',
-                            'extendedProps' => ['bg_color' => $task->boardColumn->label_color, 'color' => '#fff', 'icon' => 'fa-list']
+                            'extendedProps' => ['bg_color' => $task->boardColumn->label_color, 'color' => '#fff', 'icon' => 'fa-list'],
                         ];
                     }
                 }
@@ -128,7 +121,7 @@ class MyCalendarController extends AccountBaseController
 
             $viewTicketPerm = user()->permission('view_tickets');
 
-            if (!is_null($viewTicketPerm) && $viewTicketPerm != 'none') {
+            if (! is_null($viewTicketPerm) && $viewTicketPerm != 'none') {
 
                 if (in_array('tickets', $calendar_type_array)) {
                     // tickets
@@ -148,7 +141,7 @@ class MyCalendarController extends AccountBaseController
                             'start' => $startTime?->toDateTimeString(),
                             'end' => $endTime?->toDateTimeString(),
                             'event_type' => 'ticket',
-                            'extendedProps' => ['bg_color' => '#1d82f5', 'color' => '#fff', 'icon' => 'fa-ticket-alt']
+                            'extendedProps' => ['bg_color' => '#1d82f5', 'color' => '#fff', 'icon' => 'fa-ticket-alt'],
                         ];
                     }
                 }
@@ -157,7 +150,7 @@ class MyCalendarController extends AccountBaseController
 
             $viewleavePerm = user()->permission('view_leave');
 
-            if (!is_null($viewleavePerm) && $viewleavePerm != 'none') {
+            if (! is_null($viewleavePerm) && $viewleavePerm != 'none') {
 
                 if (in_array('leaves', $calendar_type_array)) {
                     // approved leaves of all emoloyees with employee name
@@ -169,16 +162,16 @@ class MyCalendarController extends AccountBaseController
                         ->get();
 
                     foreach ($leaves as $leave) {
-                        $duration = ($leave->duration == 'half day') ? '( ' . __('app.halfday') . ' )' : '';
+                        $duration = ($leave->duration == 'half day') ? '( '.__('app.halfday').' )' : '';
 
                         $eventData[] = [
                             'id' => $leave->id,
-                            'title' => $duration . ' ' . $leave->user->name,
+                            'title' => $duration.' '.$leave->user->name,
                             'start' => $leave->leave_date->toDateString(),
                             'end' => $leave->leave_date->toDateString(),
                             'event_type' => 'leave',
                             /** @phpstan-ignore-next-line */
-                            'extendedProps' => ['name' => 'Leave : ' . $leave->user->name, 'bg_color' => $leave->color, 'color' => '#fff', 'icon' => 'fa-plane-departure']
+                            'extendedProps' => ['name' => 'Leave : '.$leave->user->name, 'bg_color' => $leave->color, 'color' => '#fff', 'icon' => 'fa-plane-departure'],
                         ];
                     }
                 }
@@ -186,16 +179,15 @@ class MyCalendarController extends AccountBaseController
 
             $viewDealPerm = user()->permission('view_deals');
 
-            if (!is_null($viewDealPerm) && $viewDealPerm != 'none') {
+            if (! is_null($viewDealPerm) && $viewDealPerm != 'none') {
 
                 if (in_array('follow_ups', $calendar_type_array)) {
                     // follow ups
                     $followUps = DealFollowUp::with('lead')->whereHas('lead.leadAgent', function ($query) {
-                            $query->where('user_id', user()->id);
+                        $query->where('user_id', user()->id);
                     })
                         ->whereBetween(DB::raw('DATE(next_follow_up_date)'), [$startDate->startOfDay()->toDateTimeString(), $endDate->endOfDay()->toDateTimeString()])
                         ->get();
-
 
                     foreach ($followUps as $followUp) {
                         $eventData[] = [
@@ -204,7 +196,7 @@ class MyCalendarController extends AccountBaseController
                             'start' => $followUp->next_follow_up_date->timezone(company()->timezone),
                             'end' => $followUp->next_follow_up_date->timezone(company()->timezone),
                             'event_type' => 'follow_up',
-                            'extendedProps' => ['bg_color' => '#1d82f5', 'color' => '#fff', 'icon' => 'fa-thumbs-up']
+                            'extendedProps' => ['bg_color' => '#1d82f5', 'color' => '#fff', 'icon' => 'fa-thumbs-up'],
                         ];
                     }
                 }
@@ -217,5 +209,4 @@ class MyCalendarController extends AccountBaseController
 
         return view('my-calendar.index', $this->data);
     }
-
 }

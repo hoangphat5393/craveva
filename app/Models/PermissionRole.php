@@ -14,18 +14,20 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $permission_type_id
  * @property-read mixed $icon
  * @property-read \App\Models\PermissionType $permissionType
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|PermissionRole newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|PermissionRole newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|PermissionRole query()
  * @method static \Illuminate\Database\Eloquent\Builder|PermissionRole wherePermissionId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PermissionRole wherePermissionTypeId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PermissionRole whereRoleId($value)
+ *
  * @property-read \App\Models\Permission $permission
+ *
  * @mixin \Eloquent
  */
 class PermissionRole extends BaseModel
 {
-
     protected $table = 'permission_role';
 
     protected $fillable = ['role_id', 'permission_id', 'permission_type_id'];
@@ -34,8 +36,6 @@ class PermissionRole extends BaseModel
 
     /**
      * XXXXXXXXXXX
-     *
-     * @return BelongsTo
      */
     public function permissionType(): BelongsTo
     {
@@ -214,13 +214,12 @@ class PermissionRole extends BaseModel
                 $query->where('module_id', $modulePermissions->id);
             })->where('role_id', $adminRole->id)->delete();
 
-
             foreach ($modulePermissions->permissionsAll as $permission) {
 
                 PermissionRole::create([
                     'permission_id' => $permission->id,
                     'role_id' => $adminRole->id,
-                    'permission_type_id' => PermissionType::ALL
+                    'permission_type_id' => PermissionType::ALL,
                 ]);
             }
 
@@ -231,7 +230,7 @@ class PermissionRole extends BaseModel
                     UserPermission::firstOrCreate([
                         'permission_id' => $permission->id,
                         'user_id' => $roleuser->user_id,
-                        'permission_type_id' => PermissionType::ALL
+                        'permission_type_id' => PermissionType::ALL,
                     ]);
 
                 }
@@ -250,11 +249,11 @@ class PermissionRole extends BaseModel
                     ->where('role_id', $role->id)
                     ->first();
 
-                if (!$permissionRole) {
+                if (! $permissionRole) {
                     PermissionRole::firstOrCreate([
                         'permission_id' => $permission->id,
                         'role_id' => $role->id,
-                        'permission_type_id' => PermissionType::NONE
+                        'permission_type_id' => PermissionType::NONE,
                     ]);
                 }
             }
@@ -267,11 +266,11 @@ class PermissionRole extends BaseModel
                         ->where('user_id', $roleuser->user_id)
                         ->first();
 
-                    if (!$userPermission) {
+                    if (! $userPermission) {
                         UserPermission::firstOrCreate([
                             'permission_id' => $permission->id,
                             'user_id' => $roleuser->user_id,
-                            'permission_type_id' => PermissionType::NONE
+                            'permission_type_id' => PermissionType::NONE,
                         ]);
                     }
 
@@ -281,5 +280,4 @@ class PermissionRole extends BaseModel
         }
 
     }
-
 }

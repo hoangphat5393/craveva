@@ -7,7 +7,6 @@ use Illuminate\View\Component;
 
 class CardHeader extends Component
 {
-
     /**
      * Create a new component instance.
      *
@@ -27,5 +26,4 @@ class CardHeader extends Component
     {
         return view('components.cards.card-header');
     }
-
 }

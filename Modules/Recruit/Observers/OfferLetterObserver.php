@@ -9,7 +9,6 @@ use Modules\Recruit\Events\UpdateOfferLetterEvent;
 
 class OfferLetterObserver
 {
-
     public function saving(RecruitJobOfferLetter $event)
     {
         if (! isRunningInConsoleOrSeeding() && user()) {
@@ -71,5 +70,4 @@ class OfferLetterObserver
         $activity->details = $text;
         $activity->save();
     }
-
 }

@@ -2,8 +2,8 @@
 
 namespace App\Models\SuperAdmin;
 
-use App\Models\LanguageSetting;
 use App\Models\BaseModel;
+use App\Models\LanguageSetting;
 
 /**
  * App\Models\SuperAdmin\TrFrontDetail
@@ -37,6 +37,7 @@ use App\Models\BaseModel;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read mixed $image_url
+ *
  * @method static Builder|TrFrontDetail newModelQuery()
  * @method static Builder|TrFrontDetail newQuery()
  * @method static Builder|TrFrontDetail query()
@@ -68,22 +69,22 @@ use App\Models\BaseModel;
  * @method static Builder|TrFrontDetail whereTestimonialDetail($value)
  * @method static Builder|TrFrontDetail whereTestimonialTitle($value)
  * @method static Builder|TrFrontDetail whereUpdatedAt($value)
+ *
  * @mixin Eloquent
+ *
  * @property-read LanguageSetting|null $language
  */
 class TrFrontDetail extends BaseModel
 {
-
     protected $guarded = ['id'];
 
     public function getImageUrlAttribute()
     {
-        return ($this->image) ? asset_url_local_s3('front/' . $this->image) : asset('saas/img/home/home-crm.png');
+        return ($this->image) ? asset_url_local_s3('front/'.$this->image) : asset('saas/img/home/home-crm.png');
     }
 
     public function language()
     {
         return $this->belongsTo(LanguageSetting::class, 'language_setting_id');
     }
-
 }

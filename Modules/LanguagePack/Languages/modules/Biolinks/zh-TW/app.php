@@ -1,6 +1,6 @@
 <?php
 
-return array(
+return [
     'biolink' => '生物連結',
     'biolinks' => '生物連結',
     'biolinkPage' => '生物連結頁面',
@@ -8,12 +8,12 @@ return array(
     'createBiolinkPage' => '新增生物連結頁面',
     'totalPageViews' => '總頁面瀏覽量',
     'createdOn' => '建立於',
-    'menu' => array(
+    'menu' => [
         'biolinks' => '生物連結',
         'settings' => '設定',
         'blocks' => '區塊',
         'block' => '區塊',
-    ),
+    ],
     'biolinkSettings' => '生物連結設定',
     'yourUrl' => '您的生物連結 URL 是',
     'chooseFont' => '選擇字體',
@@ -172,7 +172,7 @@ return array(
     'MonoChrome' => '單色',
     'Gradienta' => '漸層',
     'Custom' => '自定義',
-    'font' => array(
+    'font' => [
         'arial' => 'Arial',
         'helvetica' => 'Helvetica',
         'times-new-roman' => 'Times New Roman',
@@ -200,5 +200,5 @@ return array(
         'monospace' => 'Monospace',
         'fantasy' => 'Fantasy',
         'cursive' => 'Cursive',
-    ),
-);
+    ],
+];

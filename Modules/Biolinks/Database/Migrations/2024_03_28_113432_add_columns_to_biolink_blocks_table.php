@@ -6,8 +6,8 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Modules\Biolinks\Entities\BiolinksGlobalSetting;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
@@ -57,5 +57,4 @@ return new class extends Migration {
             $table->dropColumn('cancelled_payment_url');
         });
     }
-
 };

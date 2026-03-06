@@ -10,10 +10,9 @@ use Modules\Purchase\Events\NewPurchaseBillEvent;
 
 class PurchaseBillObserver
 {
-
     public function creating(PurchaseBill $bill)
     {
-        if (!isRunningInConsoleOrSeeding() && user()) {
+        if (! isRunningInConsoleOrSeeding() && user()) {
             $bill->added_by = user()->id;
         }
 
@@ -24,13 +23,12 @@ class PurchaseBillObserver
 
     public function created(PurchaseBill $bill)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             event(new NewPurchaseBillEvent($bill));
         }
 
-        if(request()->purchase_order_id)
-        {
-            PurchaseOrder::where('id', request()->purchase_order_id)->update([ 'billed_status' => 'billed']);
+        if (request()->purchase_order_id) {
+            PurchaseOrder::where('id', request()->purchase_order_id)->update(['billed_status' => 'billed']);
         }
 
         $vendorID = request()->vendor_id;
@@ -55,7 +53,7 @@ class PurchaseBillObserver
 
     public function logBillActivity($companyID, $vendorID, $billID, $purchaseOrderId, $purchaseOrderNo, $amount, $userID, $billDate, $text, $label)
     {
-        $activity = new PurchaseBillHistory();
+        $activity = new PurchaseBillHistory;
 
         $activity->company_id = $companyID;
         $activity->purchase_vendor_id = $vendorID;
@@ -70,5 +68,4 @@ class PurchaseBillObserver
 
         $activity->save();
     }
-
 }

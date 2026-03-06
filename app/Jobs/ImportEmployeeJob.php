@@ -5,11 +5,11 @@ namespace App\Jobs;
 use App\Models\EmployeeDetails;
 use App\Models\Role;
 use App\Models\User;
+use App\Models\UserAuth;
 use App\Traits\ExcelImportable;
 use App\Traits\UniversalSearchTrait;
 use Carbon\Exceptions\InvalidFormatException;
 use Exception;
-use App\Models\UserAuth;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -20,14 +20,15 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
-class ImportEmployeeJob implements ShouldQueue, ShouldBeUnique
+class ImportEmployeeJob implements ShouldBeUnique, ShouldQueue
 {
-
     use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, UniversalSearchTrait;
     use ExcelImportable;
 
     private $row;
+
     private $columns;
+
     private $company;
 
     /**
@@ -51,15 +52,16 @@ class ImportEmployeeJob implements ShouldQueue, ShouldBeUnique
     {
         if ($this->isColumnExists('name') && $this->isColumnExists('email') && $this->isEmailValid($this->getColumnValue('email'))) {
 
-            if (!checkCompanyCanAddMoreEmployees($this->company?->id)) {
+            if (! checkCompanyCanAddMoreEmployees($this->company?->id)) {
                 $this->job->fail(__('superadmin.updatePlanNote'));
+
                 return;
             }
 
             $user = User::where('email', $this->getColumnValue('email'))->first();
 
             if ($user) {
-                $this->failJobWithMessage(__('messages.duplicateEntryForEmail') . $this->getColumnValue('email'));
+                $this->failJobWithMessage(__('messages.duplicateEntryForEmail').$this->getColumnValue('email'));
 
                 return;
             }
@@ -67,11 +69,11 @@ class ImportEmployeeJob implements ShouldQueue, ShouldBeUnique
             $employeeDetails = EmployeeDetails::where('employee_id', $this->getColumnValue('employee_id'))->first();
 
             if ($employeeDetails) {
-                $this->failJobWithMessage(__('messages.duplicateEntryForEmployeeId') . $this->getColumnValue('employee_id'));
+                $this->failJobWithMessage(__('messages.duplicateEntryForEmployeeId').$this->getColumnValue('employee_id'));
             } else {
                 DB::beginTransaction();
                 try {
-                    $user = new User();
+                    $user = new User;
                     $user->company_id = $this->company?->id;
                     $user->name = $this->getColumnValue('name');
                     $user->email = $this->getColumnValue('email');
@@ -88,7 +90,7 @@ class ImportEmployeeJob implements ShouldQueue, ShouldBeUnique
                     $user->save();
 
                     if ($user->id) {
-                        $employee = new EmployeeDetails();
+                        $employee = new EmployeeDetails;
                         $employee->company_id = $this->company?->id;
                         $employee->user_id = $user->id;
                         $employee->address = $this->isColumnExists('address') ? $this->getColumnValue('address') : null;

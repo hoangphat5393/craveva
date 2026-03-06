@@ -222,12 +222,11 @@ enum SmsNotificationSlug: string
 
     public function translationString(): string
     {
-        return 'sms::template.' . $this->value;
+        return 'sms::template.'.$this->value;
     }
 
     public function label(): string
     {
-        return __('modules.emailNotification.' . $this->value);
+        return __('modules.emailNotification.'.$this->value);
     }
-
 }

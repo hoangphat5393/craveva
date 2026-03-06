@@ -2,7 +2,7 @@
 
 use App\Models\Company;
 
-if (!function_exists('getCompanyBySubDomain')) {
+if (! function_exists('getCompanyBySubDomain')) {
 
     function getCompanyBySubDomain()
     {

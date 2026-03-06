@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StripeValidateRequest extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -32,5 +31,4 @@ class StripeValidateRequest extends FormRequest
             'country' => 'required',
         ];
     }
-
 }

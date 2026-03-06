@@ -7,7 +7,6 @@ use Illuminate\Validation\Rule;
 
 class StoreRole extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -26,8 +25,7 @@ class StoreRole extends CoreRequest
     public function rules()
     {
         return [
-            'name' => ['required', Rule::unique('roles')->whereNull('company_id')]
+            'name' => ['required', Rule::unique('roles')->whereNull('company_id')],
         ];
     }
-
 }

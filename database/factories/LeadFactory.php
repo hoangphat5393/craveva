@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Deal;
+use App\Models\Lead;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class LeadFactory extends Factory
@@ -12,7 +13,7 @@ class LeadFactory extends Factory
      *
      * @var string
      */
-    protected $model = Deal::class;
+    protected $model = Lead::class;
 
     /**
      * Define the model's default state.
@@ -27,10 +28,7 @@ class LeadFactory extends Factory
             'client_name' => fake()->name,
             'client_email' => fake()->email,
             'mobile' => fake()->randomNumber(8),
-            'value' => fake()->randomNumber(6),
             'note' => fake()->text(),
-            'next_follow_up' => 'yes',
         ];
     }
-
 }

@@ -1,4 +1,5 @@
 <?php
+
 return [
     'saveSettings' => 'Save settings',
     'cookiePreferences' => 'Cookie preferences',
@@ -19,4 +20,3 @@ return [
     'advertisementTitle' => 'Advertisement and Targeting cookies',
     'advertisementTitleDescription' => 'These cookies collect information about how you use the website, which pages you visited and which links you clicked on. All of the data is anonymized and cannot be used to identify you',
 ];
-

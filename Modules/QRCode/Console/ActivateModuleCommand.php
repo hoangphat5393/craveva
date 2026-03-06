@@ -35,5 +35,4 @@ class ActivateModuleCommand extends Command
             QRCodeSetting::addModuleSetting($company);
         }
     }
-
 }

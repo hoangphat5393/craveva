@@ -8,11 +8,12 @@ use Illuminate\Queue\SerializesModels;
 
 class InvoiceReminderEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $notifyUser;
+
     public $invoice;
+
     public $invoice_setting;
 
     public function __construct($invoice, $notifyUser, $invoice_setting)
@@ -21,5 +22,4 @@ class InvoiceReminderEvent
         $this->notifyUser = $notifyUser;
         $this->invoice_setting = $invoice_setting;
     }
-
 }

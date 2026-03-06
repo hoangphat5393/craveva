@@ -11,7 +11,6 @@ return new class extends Migration
      *
      * @return void
      */
-
     public function up()
     {
         Schema::table('attendance_settings', function (Blueprint $table) {
@@ -30,5 +29,4 @@ return new class extends Migration
             $table->dropColumn('early_clock_in');
         });
     }
-
 };

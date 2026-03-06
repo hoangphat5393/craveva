@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreWebhookRequest extends FormRequest
 {
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -16,7 +15,7 @@ class StoreWebhookRequest extends FormRequest
     {
         $rules = [
             'name' => 'required',
-            'request_url' => 'required|url'
+            'request_url' => 'required|url',
         ];
 
         return $rules;
@@ -31,5 +30,4 @@ class StoreWebhookRequest extends FormRequest
     {
         return true;
     }
-
 }

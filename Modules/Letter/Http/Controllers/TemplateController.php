@@ -12,13 +12,12 @@ use Modules\Letter\Http\Requests\Template\UpdateRequest;
 
 class TemplateController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'letter::app.menu.template';
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array(LetterSetting::MODULE_NAME, $this->user->modules));
+            abort_403(! in_array(LetterSetting::MODULE_NAME, $this->user->modules));
 
             return $next($request);
         });
@@ -42,10 +41,12 @@ class TemplateController extends AccountBaseController
         if (request()->ajax()) {
 
             $html = view('letter::template.ajax.create', $this->data)->render();
+
             return Reply::dataOnly(['status' => 'success', 'html' => $html, 'title' => $this->pageTitle]);
         }
 
         $this->view = 'letter::template.ajax.create';
+
         return view('letter::template.create', $this->data);
 
     }
@@ -55,7 +56,7 @@ class TemplateController extends AccountBaseController
         $this->addPermission = user()->permission('add_template');
         abort_403($this->addPermission !== 'all');
 
-        $letter = new Template();
+        $letter = new Template;
         $letter->title = $request->title;
         $letter->description = $request->description;
         $letter->save();
@@ -74,10 +75,12 @@ class TemplateController extends AccountBaseController
         if (request()->ajax()) {
 
             $html = view('letter::template.ajax.edit', $this->data)->render();
+
             return Reply::dataOnly(['status' => 'success', 'html' => $html, 'title' => $this->pageTitle]);
         }
 
         $this->view = 'letter::template.ajax.edit';
+
         return view('letter::template.create', $this->data);
     }
 
@@ -90,6 +93,7 @@ class TemplateController extends AccountBaseController
         $letter->title = $request->title;
         $letter->description = $request->description;
         $letter->save();
+
         return Reply::successWithData(__('messages.updateSuccess'), ['redirectUrl' => route('letter.template.index')]);
 
     }
@@ -105,10 +109,12 @@ class TemplateController extends AccountBaseController
 
         if (request()->ajax()) {
             $html = view('letter::template.ajax.show', $this->data)->render();
+
             return Reply::dataOnly(['status' => 'success', 'html' => $html, 'title' => $this->pageTitle]);
         }
 
         $this->view = 'letter::template.ajax.show';
+
         return view('letter::template.show', $this->data);
     }
 
@@ -118,7 +124,7 @@ class TemplateController extends AccountBaseController
         abort_403($deletePermission !== 'all');
 
         Template::destroy($id);
+
         return Reply::success(__('messages.deleteSuccess'));
     }
-
 }

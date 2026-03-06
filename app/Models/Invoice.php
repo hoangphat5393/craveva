@@ -27,7 +27,7 @@ use Illuminate\Notifications\Notifiable;
  * @property float $total
  * @property int|null $currency_id
  * @property int|null $default_currency_id
- * @property double|null $exchange_rate
+ * @property float|null $exchange_rate
  * @property string $status
  * @property string $recurring
  * @property int|null $billing_cycle
@@ -68,6 +68,7 @@ use Illuminate\Notifications\Notifiable;
  * @property-read \App\Models\Project|null $project
  * @property-read \Illuminate\Database\Eloquent\Collection|Invoice[] $recurrings
  * @property-read int|null $recurrings_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Invoice newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Invoice newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Invoice pending()
@@ -103,27 +104,37 @@ use Illuminate\Notifications\Notifiable;
  * @method static \Illuminate\Database\Eloquent\Builder|Invoice whereSubTotal($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Invoice whereTotal($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Invoice whereUpdatedAt($value)
+ *
  * @property int|null $order_id
  * @property string|null $hash
  * @property-read \App\Models\Order|null $order
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Invoice whereHash($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Invoice whereOrderId($value)
+ *
  * @property string $calculate_tax
  * @property int|null $company_address_id
  * @property-read \App\Models\CompanyAddress|null $address
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Invoice whereCalculateTax($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Invoice whereCompanyAddressId($value)
+ *
  * @property string|null $event_id
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Invoice whereEventId($value)
+ *
  * @property int|null $company_id
  * @property string|null $custom_invoice_number
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Invoice whereCompanyId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Invoice whereCustomInvoiceNumber($value)
+ *
  * @property int|null $bank_account_id
  * @property \Illuminate\Support\Carbon|null $last_viewed
  * @property string|null $ip_address
  * @property-read \App\Models\UnitType|null $unit
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Invoice whereBankAccountId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Invoice whereDefaultCurrencyId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Invoice whereExchangeRate($value)
@@ -131,6 +142,7 @@ use Illuminate\Notifications\Notifiable;
  * @method static \Illuminate\Database\Eloquent\Builder|Invoice whereLastViewed($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Invoice whereQuickbooksInvoiceId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Invoice whereUnitId($value)
+ *
  * @property string $payment_status
  * @property string|null $downloadable_file
  * @property string|null $default_image
@@ -141,27 +153,32 @@ use Illuminate\Notifications\Notifiable;
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\InvoiceFiles> $files
  * @property-read int|null $files_count
  * @property-read mixed $download_file_url
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Invoice whereGateway($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Invoice whereOfflineMethodId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Invoice wherePaymentStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Invoice whereTransactionId($value)
+ *
  * @property string|null $original_invoice_number
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Invoice whereOriginalInvoiceNumber($value)
+ *
  * @mixin \Eloquent
  */
 class Invoice extends BaseModel
 {
-
-    use Notifiable;
     use CustomFieldsTrait;
     use HasCompany;
+    use Notifiable;
 
     protected $casts = [
         'issue_date' => 'datetime',
         'due_date' => 'datetime',
         'last_viewed' => 'datetime',
     ];
+
     protected $appends = ['total_amount', 'issue_on'];
+
     protected $with = ['currency'];
 
     const CUSTOM_FIELD_MODEL = 'App\Models\Invoice';
@@ -250,10 +267,10 @@ class Invoice extends BaseModel
     public static function lastInvoiceNumber($companyId = null)
     {
         if ($companyId) {
-            return (int)Invoice::where('company_id', $companyId)->orderBy('id', 'desc')->first()?->original_invoice_number ?? 0;
+            return (int) Invoice::where('company_id', $companyId)->orderBy('id', 'desc')->first()?->original_invoice_number ?? 0;
         }
 
-        return (int)Invoice::orderBy('id', 'desc')->first()?->original_invoice_number ?? 0;
+        return (int) Invoice::orderBy('id', 'desc')->first()?->original_invoice_number ?? 0;
     }
 
     public function appliedCredits()
@@ -281,8 +298,8 @@ class Invoice extends BaseModel
     public function getTotalAmountAttribute()
     {
 
-        if (!is_null($this->total) && !is_null($this->currency->currency_symbol)) {
-            return $this->currency->currency_symbol . $this->total;
+        if (! is_null($this->total) && $this->currency && ! is_null($this->currency->currency_symbol)) {
+            return $this->currency->currency_symbol.$this->total;
         }
 
         return '';
@@ -300,12 +317,13 @@ class Invoice extends BaseModel
     public function formatInvoiceNumber()
     {
         $invoiceSettings = company() ? company()->invoiceSetting : $this->company->invoiceSetting;
+
         return \App\Helper\NumberFormat::invoice($this->invoice_number, $invoiceSettings);
     }
 
     public function getDownloadFileUrlAttribute()
     {
-        return ($this->downloadable_file) ? asset_url_local_s3(InvoiceFiles::FILE_PATH . '/' . $this->downloadable_file) : null;
+        return ($this->downloadable_file) ? asset_url_local_s3(InvoiceFiles::FILE_PATH.'/'.$this->downloadable_file) : null;
     }
 
     public function files(): HasMany

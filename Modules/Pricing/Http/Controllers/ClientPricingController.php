@@ -2,13 +2,13 @@
 
 namespace Modules\Pricing\Http\Controllers;
 
-use App\Http\Controllers\AccountBaseController;
 use App\Helper\Reply;
-use App\Models\User;
+use App\Http\Controllers\AccountBaseController;
 use App\Models\Product;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Modules\Pricing\Entities\ClientProductPricing;
-use Carbon\Carbon;
 
 class ClientPricingController extends AccountBaseController
 {
@@ -18,9 +18,10 @@ class ClientPricingController extends AccountBaseController
         $this->pageTitle = __('pricing::app.menu.pricing');
         $this->middleware(function ($request, $next) {
             // Ensure strict company context
-            if (!company()) {
+            if (! company()) {
                 abort(403, 'Company context is required.');
             }
+
             return $next($request);
         });
     }
@@ -65,8 +66,8 @@ class ClientPricingController extends AccountBaseController
             'custom_price' => 'nullable|numeric',
             'discount_type' => 'nullable|in:percentage,fixed',
             'discount_value' => 'nullable|numeric',
-            'start_date' => 'required|date_format:"' . company()->date_format . '"|after_or_equal:today',
-            'end_date' => 'nullable|date_format:"' . company()->date_format . '"|after_or_equal:start_date',
+            'start_date' => 'required|date_format:"'.company()->date_format.'"|after_or_equal:today',
+            'end_date' => 'nullable|date_format:"'.company()->date_format.'"|after_or_equal:start_date',
         ], [
             'product_id.required' => __('pricing::app.productRequired'),
             'start_date.required' => __('pricing::app.startDateRequired'),
@@ -75,8 +76,8 @@ class ClientPricingController extends AccountBaseController
         ]);
 
         $startDate = Carbon::createFromFormat(company()->date_format, $request->start_date)->format('Y-m-d');
-        $endDate = $request->end_date 
-            ? Carbon::createFromFormat(company()->date_format, $request->end_date)->format('Y-m-d') 
+        $endDate = $request->end_date
+            ? Carbon::createFromFormat(company()->date_format, $request->end_date)->format('Y-m-d')
             : '2099-12-31';
 
         $overlap = ClientProductPricing::where('client_id', $request->client_id)
@@ -89,7 +90,7 @@ class ClientPricingController extends AccountBaseController
             return Reply::error(__('pricing::app.overlapError'));
         }
 
-        $pricing = new ClientProductPricing();
+        $pricing = new ClientProductPricing;
         $pricing->client_id = $request->client_id;
         $pricing->product_id = $request->product_id;
         $pricing->company_id = user()->company_id ?? null;
@@ -132,8 +133,8 @@ class ClientPricingController extends AccountBaseController
             'custom_price' => 'nullable|numeric',
             'discount_type' => 'nullable|in:percentage,fixed',
             'discount_value' => 'nullable|numeric',
-            'start_date' => 'required|date_format:"' . company()->date_format . '"',
-            'end_date' => 'nullable|date_format:"' . company()->date_format . '"|after_or_equal:start_date',
+            'start_date' => 'required|date_format:"'.company()->date_format.'"',
+            'end_date' => 'nullable|date_format:"'.company()->date_format.'"|after_or_equal:start_date',
         ], [
             'product_id.required' => __('pricing::app.productRequired'),
             'start_date.required' => __('pricing::app.startDateRequired'),
@@ -141,8 +142,8 @@ class ClientPricingController extends AccountBaseController
         ]);
 
         $startDate = Carbon::createFromFormat(company()->date_format, $request->start_date)->format('Y-m-d');
-        $endDate = $request->end_date 
-            ? Carbon::createFromFormat(company()->date_format, $request->end_date)->format('Y-m-d') 
+        $endDate = $request->end_date
+            ? Carbon::createFromFormat(company()->date_format, $request->end_date)->format('Y-m-d')
             : '2099-12-31';
 
         $overlap = ClientProductPricing::where('client_id', $request->client_id)
@@ -177,8 +178,8 @@ class ClientPricingController extends AccountBaseController
 
         $pricing = ClientProductPricing::find($request->id);
 
-        if (!$pricing) {
-            return Reply::error('Record not found for ID: ' . ($request->id ?? 'NULL'));
+        if (! $pricing) {
+            return Reply::error('Record not found for ID: '.($request->id ?? 'NULL'));
         }
 
         $pricing->is_active = ($request->status == 'active');
@@ -186,7 +187,6 @@ class ClientPricingController extends AccountBaseController
 
         return Reply::success(__('messages.updateSuccess'));
     }
-
 
     public function destroy($id)
     {
@@ -207,9 +207,11 @@ class ClientPricingController extends AccountBaseController
         switch ($request->action_type) {
             case 'delete':
                 $this->deleteRecords($request);
+
                 return Reply::success(__('messages.deleteSuccess'));
             case 'change-status':
                 $this->changeStatusBulk($request);
+
                 return Reply::success(__('messages.updateSuccess'));
             default:
                 return Reply::error(__('messages.selectAction'));

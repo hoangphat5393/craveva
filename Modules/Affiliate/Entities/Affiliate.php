@@ -9,7 +9,6 @@ use Modules\Affiliate\Enums\Status;
 
 class Affiliate extends BaseModel
 {
-
     protected $casts = [
         'created_at' => 'datetime',
         'updated_at' => 'datetime',

@@ -2,14 +2,13 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 
 class TranslateSettingConfigProvider extends ServiceProvider
 {
-
     public function register()
     {
         try {
@@ -21,7 +20,6 @@ class TranslateSettingConfigProvider extends ServiceProvider
                     Config::set('laravel_google_translate.google_translate_api_key', $translateSetting->google_key);
                 }
             }
-
 
         }
         // @codingStandardsIgnoreLine
@@ -39,5 +37,4 @@ class TranslateSettingConfigProvider extends ServiceProvider
     {
         //
     }
-
 }

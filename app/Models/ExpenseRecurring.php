@@ -45,6 +45,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Expense[] $recurrings
  * @property-read int|null $recurrings_count
  * @property-read \App\Models\User|null $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ExpenseRecurring newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ExpenseRecurring newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ExpenseRecurring query()
@@ -67,27 +68,37 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder|ExpenseRecurring whereUnlimitedRecurring($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ExpenseRecurring whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ExpenseRecurring whereUserId($value)
+ *
  * @property int|null $added_by
  * @property int|null $last_updated_by
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ExpenseRecurring whereAddedBy($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ExpenseRecurring whereLastUpdatedBy($value)
+ *
  * @property string|null $purchase_from
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ExpenseRecurring wherePurchaseFrom($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ExpenseRecurring whereCompanyId($value)
+ *
  * @property \Illuminate\Support\Carbon|null $next_expense_date
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ExpenseRecurring whereImmediateExpense($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ExpenseRecurring whereIssueDate($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ExpenseRecurring whereNextExpenseDate($value)
+ *
  * @property int|null $bank_account_id
  * @property-read \App\Models\BankAccount|null $bank
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ExpenseRecurring whereBankAccountId($value)
+ *
  * @mixin \Eloquent
  */
 class ExpenseRecurring extends BaseModel
 {
-
     use CustomFieldsTrait, HasCompany;
 
     protected $casts = [
@@ -95,6 +106,7 @@ class ExpenseRecurring extends BaseModel
         'created_at' => 'datetime',
         'next_expense_date' => 'datetime',
     ];
+
     protected $with = ['currency', 'company:id'];
 
     protected $appends = ['total_amount', 'created_on', 'bill_url'];
@@ -148,7 +160,7 @@ class ExpenseRecurring extends BaseModel
 
     public function getTotalAmountAttribute()
     {
-        if (!is_null($this->price) && !is_null($this->currency_id)) {
+        if (! is_null($this->price) && ! is_null($this->currency_id)) {
             return currency_format($this->price, $this->currency->id);
         }
 
@@ -157,7 +169,7 @@ class ExpenseRecurring extends BaseModel
 
     public function getCreatedOnAttribute()
     {
-        if (!is_null($this->created_at)) {
+        if (! is_null($this->created_at)) {
             return $this->created_at->format($this->company->date_format);
         }
 
@@ -166,7 +178,6 @@ class ExpenseRecurring extends BaseModel
 
     public function getBillUrlAttribute()
     {
-        return ($this->bill) ? asset_url_local_s3(Expense::FILE_PATH . '/' . $this->bill) : '';
+        return ($this->bill) ? asset_url_local_s3(Expense::FILE_PATH.'/'.$this->bill) : '';
     }
-
 }

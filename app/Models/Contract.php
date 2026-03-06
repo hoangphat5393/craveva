@@ -49,6 +49,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ContractRenew[] $renewHistory
  * @property-read int|null $renew_history_count
  * @property-read \App\Models\ContractSign|null $signature
+ *
  * @method static \Database\Factories\ContractFactory factory(...$parameters)
  * @method static \Illuminate\Database\Eloquent\Builder|Contract newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Contract newQuery()
@@ -78,37 +79,51 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @method static \Illuminate\Database\Eloquent\Builder|Contract whereState($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Contract whereSubject($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Contract whereUpdatedAt($value)
+ *
  * @property string|null $hash
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Contract whereHash($value)
+ *
  * @property int|null $currency_id
  * @property-read \App\Models\Currency|null $currency
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Contract whereCurrencyId($value)
+ *
  * @property string|null $event_id
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Contract whereEventId($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Contract whereCompanyId($value)
+ *
  * @property int|null $contract_number
  * @property int|null $project_id
  * @property string|null $contract_note
  * @property-read mixed $extras
  * @property-read \App\Models\Project|null $project
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Contract whereContractNote($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Contract whereContractNumber($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Contract whereProjectId($value)
+ *
  * @property string|null $company_sign
  * @property string|null $sign_date
  * @property-read mixed $company_signature
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Contract whereCompanySign($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Contract whereSignDate($value)
+ *
  * @property string|null $original_contract_number
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Contract whereOriginalContractNumber($value)
+ *
  * @mixin \Eloquent
  */
 class Contract extends BaseModel
 {
-
-    use CustomFieldsTrait, HasFactory, HasCompany;
+    use CustomFieldsTrait, HasCompany, HasFactory;
 
     protected $casts = [
         'start_date' => 'datetime',
@@ -129,7 +144,7 @@ class Contract extends BaseModel
 
     public function getImageUrlAttribute()
     {
-        return ($this->company_logo) ? asset_url_local_s3('contract-logo/' . $this->company_logo) : $this->company->logo_url;
+        return ($this->company_logo) ? asset_url_local_s3('contract-logo/'.$this->company_logo) : $this->company->logo_url;
     }
 
     public function project(): BelongsTo
@@ -174,18 +189,18 @@ class Contract extends BaseModel
 
     public static function lastContractNumber()
     {
-        return (int)Contract::orderBy('id', 'desc')->first()?->original_contract_number ?? 0;
+        return (int) Contract::orderBy('id', 'desc')->first()?->original_contract_number ?? 0;
     }
 
     public function formatContractNumber()
     {
         $invoiceSettings = company() ? company()->invoiceSetting : $this->company->invoiceSetting;
+
         return \App\Helper\NumberFormat::contract($this->contract_number, $invoiceSettings);
     }
 
     public function getCompanySignatureAttribute()
     {
-        return asset_url_local_s3('contract/sign/' . $this->company_sign);
+        return asset_url_local_s3('contract/sign/'.$this->company_sign);
     }
-
 }

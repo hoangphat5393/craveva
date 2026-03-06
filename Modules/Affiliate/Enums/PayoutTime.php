@@ -4,7 +4,6 @@ namespace Modules\Affiliate\Enums;
 
 enum PayoutTime: string
 {
-
     // phpcs:disable
     case OneTime = 'one time';
     case EveryTime = 'every time';
@@ -14,10 +13,9 @@ enum PayoutTime: string
     public function label(): string
     {
         return match ($this) {
-            self::OneTime => __('affiliate::app.oneTime' ),
+            self::OneTime => __('affiliate::app.oneTime'),
             self::EveryTime => __('affiliate::app.everyTime'),
             default => $this->value,
         };
     }
-
 }

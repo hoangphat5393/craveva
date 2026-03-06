@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int|null $last_updated_by
  * @property-read mixed $icon
  * @property-read \App\Models\User $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|LeadAgent newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|LeadAgent newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|LeadAgent query()
@@ -29,19 +30,23 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder|LeadAgent whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|LeadAgent whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|LeadAgent whereUserId($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|LeadAgent whereCompanyId($value)
+ *
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Lead> $leads
  * @property-read int|null $leads_count
+ *
  * @mixin \Eloquent
  */
 class LeadAgent extends BaseModel
 {
-
     use HasCompany;
 
     protected $table = 'lead_agents';
+
     protected $guarded = ['id'];
 
     public function user(): BelongsTo
@@ -53,5 +58,4 @@ class LeadAgent extends BaseModel
     {
         return $this->hasMany(Deal::class, 'agent_id');
     }
-
 }

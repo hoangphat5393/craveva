@@ -9,7 +9,6 @@ use Stichoza\GoogleTranslate\GoogleTranslate;
 
 class CreateTranslations extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
@@ -29,7 +28,6 @@ class CreateTranslations extends Command
      *
      * @return mixed
      */
-
     public function handle()
     {
         $from = $this->option('translateFrom');
@@ -38,12 +36,11 @@ class CreateTranslations extends Command
 
         if ($exclude !== null) {
             $translations = Translation::where('locale', $from)->whereNotIn('group', explode(',', $exclude))->get();
-        }
-        else {
+        } else {
             $translations = Translation::where('locale', $from)->get();
         }
 
-        $tr = new GoogleTranslate();
+        $tr = new GoogleTranslate;
 
         $tr->setSource($from);
         $tr->setTarget($to);
@@ -52,7 +49,7 @@ class CreateTranslations extends Command
             $data = [
                 'locale' => $to,
                 'group' => $translation->group,
-                'key' => $translation->key
+                'key' => $translation->key,
             ];
 
             $reqTranslation = Translation::where($data)->first();
@@ -65,5 +62,4 @@ class CreateTranslations extends Command
 
         return Command::SUCCESS;
     }
-
 }

@@ -9,13 +9,10 @@ use Illuminate\Notifications\Messages\MailMessage;
 
 class ForgotCompany extends BaseNotification
 {
-
     protected $company;
 
     /**
      * Create a new notification instance.
-     *
-     * @param Company $company
      */
     public function __construct(Company $company)
     {
@@ -26,7 +23,7 @@ class ForgotCompany extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -43,19 +40,17 @@ class ForgotCompany extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
+     * @param  mixed  $notifiable
      */
     public function toMail($notifiable): MailMessage
     {
         $url = route('login');
         $url = getDomainSpecificUrl($url, $this->company);
 
-
         return parent::build()
             ->subject(__('subdomain::app.email.subject'))
-            ->line(__('subdomain::app.email.line2') . $this->company->company_name)
-            ->line(__('subdomain::app.email.noteLoginUrl') . ": [**$url**]($url) ")
+            ->line(__('subdomain::app.email.line2').$this->company->company_name)
+            ->line(__('subdomain::app.email.noteLoginUrl').": [**$url**]($url) ")
             ->action(__('app.login'), $url)
             ->line(__('subdomain::app.email.thankYou'));
     }
@@ -63,8 +58,7 @@ class ForgotCompany extends BaseNotification
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
-     * @return array
+     * @param  mixed  $notifiable
      */
     public function toArray($notifiable): array
     {
@@ -72,5 +66,4 @@ class ForgotCompany extends BaseNotification
             //
         ];
     }
-
 }

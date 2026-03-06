@@ -8,7 +8,6 @@ use App\Models\TicketEmailSetting;
 
 class TicketEmailSettingController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -29,8 +28,8 @@ class TicketEmailSettingController extends AccountBaseController
         }
 
         $emailSetting->update($data);
+
         return Reply::success(__('messages.updateSuccess'));
 
     }
-
 }

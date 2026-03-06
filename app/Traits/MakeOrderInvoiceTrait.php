@@ -2,23 +2,20 @@
 
 namespace App\Traits;
 
-use App\Models\Order;
 use App\Models\Invoice;
-use App\Models\OrderItems;
 use App\Models\InvoiceItems;
+use App\Models\Order;
+use App\Models\OrderItems;
 use Illuminate\Database\Eloquent\Collection;
 
 trait MakeOrderInvoiceTrait
 {
-
     /**
      * makeOrderInvoice to generate order's invoice and return invoice.
      *
-     * @param Order|Collection $order
-     * @param string $status
+     * @param  string  $status
      * @return Invoice $invoice
      */
-
     public function makeOrderInvoice(Order|Collection $order, $status = 'completed')
     {
 
@@ -34,7 +31,7 @@ trait MakeOrderInvoiceTrait
         }
 
         /* Step2 - make an invoice related to recently paid order_id */
-        $invoice = new Invoice();
+        $invoice = new Invoice;
         $invoice->order_id = $order->id;
         $invoice->company_id = $order->company_id;
         $invoice->client_id = $order->client_id;
@@ -66,12 +63,11 @@ trait MakeOrderInvoiceTrait
                     'amount' => $item->amount,
                     'taxes' => $item->taxes,
                     'product_id' => $item->product_id,
-                    'unit_id' => $item->unit_id
+                    'unit_id' => $item->unit_id,
                 ]
             );
         }
 
         return $invoice;
     }
-
 }

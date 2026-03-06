@@ -7,7 +7,6 @@ use App\Models\Company;
 use Modules\Recruit\Entities\RecruitCustomQuestion;
 use Modules\Recruit\Entities\RecruitJob;
 use Modules\Recruit\Entities\RecruitSetting;
-use Modules\Recruit\Rules\CheckApplication;
 
 class FrontJobApplication extends CoreRequest
 {
@@ -30,10 +29,9 @@ class FrontJobApplication extends CoreRequest
             'phone' => 'required',
         ];
 
-        if(request()->term_agreement == 'off'){
+        if (request()->term_agreement == 'off') {
             $data['term_agreement'] = '';
-        }
-        else{
+        } else {
             $data['term_agreement'] = 'required';
         }
 

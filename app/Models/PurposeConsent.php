@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property-read mixed $icon
  * @property-read \App\Models\PurposeConsentLead|null $lead
  * @property-read \App\Models\PurposeConsentUser|null $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|PurposeConsent newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|PurposeConsent newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|PurposeConsent query()
@@ -23,12 +24,13 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @method static \Illuminate\Database\Eloquent\Builder|PurposeConsent whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PurposeConsent whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PurposeConsent whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class PurposeConsent extends BaseModel
 {
-
     protected $table = 'purpose_consent';
+
     protected $fillable = ['name', 'description'];
 
     public function lead(): HasOne
@@ -40,5 +42,4 @@ class PurposeConsent extends BaseModel
     {
         return $this->hasOne(PurposeConsentUser::class, 'purpose_consent_id', 'id');
     }
-
 }

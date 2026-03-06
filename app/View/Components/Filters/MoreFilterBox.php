@@ -7,7 +7,6 @@ use Illuminate\View\Component;
 
 class MoreFilterBox extends Component
 {
-
     public $extraSlot;
 
     /**
@@ -29,5 +28,4 @@ class MoreFilterBox extends Component
     {
         return view('components.filters.more-filter-box');
     }
-
 }

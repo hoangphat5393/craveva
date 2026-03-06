@@ -19,12 +19,10 @@ class TicketReplyListener
         try {
             if (! is_null($event->notifyUser)) {
                 Notification::send($event->notifyUser, new NewTicketReply($event->ticketReply));
-            }
-            else {
+            } else {
                 Notification::send(User::allAdmins($event->ticketReply->ticket->company->id), new NewTicketReply($event->ticketReply));
             }
         } catch (\Exception $e) { // @codingStandardsIgnoreLine
         }
     }
-
 }

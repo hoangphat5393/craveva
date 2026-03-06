@@ -15,7 +15,7 @@ use Illuminate\Notifications\Notifiable;
 
 class RecruitJobApplication extends BaseModel
 {
-    use Notifiable, HasCompany, SoftDeletes, CustomFieldsTrait;
+    use CustomFieldsTrait, HasCompany, Notifiable, SoftDeletes;
 
     protected $dates = ['end_date', 'start_date', 'date_of_birth', 'deleted_at'];
 
@@ -32,7 +32,7 @@ class RecruitJobApplication extends BaseModel
 
     public function getFileUrlAttribute()
     {
-        return asset_url_local_s3(RecruitJobApplication::FILE_PATH . '/' . $this->id . '/' . $this->resume);
+        return asset_url_local_s3(RecruitJobApplication::FILE_PATH.'/'.$this->id.'/'.$this->resume);
     }
 
     public function hasGravatar($email)

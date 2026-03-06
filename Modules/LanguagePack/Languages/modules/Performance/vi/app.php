@@ -1,6 +1,6 @@
 <?php
 
-return array(
+return [
     'performance' => 'Hiệu suất',
     'objective' => 'Mục tiêu',
     'objectives' => 'Các mục tiêu',
@@ -98,4 +98,4 @@ return array(
     'values' => 'Giá trị',
     'initialValue' => 'Giá trị ban đầu',
     'okrScoringReport' => 'BÁO CÁO CHẤM ĐIỂM OKR',
-);
+];

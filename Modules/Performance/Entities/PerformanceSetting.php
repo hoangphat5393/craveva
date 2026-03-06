@@ -9,7 +9,6 @@ use App\Traits\HasCompany;
 
 class PerformanceSetting extends BaseModel
 {
-
     use HasCompany;
 
     protected $guarded = ['id'];
@@ -30,9 +29,9 @@ class PerformanceSetting extends BaseModel
         $roleNames = [];
 
         if (is_array($viewByRoles) || is_object($viewByRoles)) {
-            $roleNames = array_map(function($roleId) use ($roles) {
+            $roleNames = array_map(function ($roleId) use ($roles) {
                 return $roles[$roleId]->display_name ?? '--';
-            }, (array)$viewByRoles);
+            }, (array) $viewByRoles);
         }
 
         if ($this->create_meeting_manager == 1) {
@@ -50,9 +49,9 @@ class PerformanceSetting extends BaseModel
         $roleNames = [];
 
         if (is_array($manageByRoles) || is_object($manageByRoles)) {
-            $roleNames = array_map(function($roleId) use ($roles) {
+            $roleNames = array_map(function ($roleId) use ($roles) {
                 return $roles[$roleId]->display_name ?? '--';
-            }, (array)$manageByRoles);
+            }, (array) $manageByRoles);
         }
 
         if ($this->create_meeting_manager == 1) {
@@ -65,5 +64,4 @@ class PerformanceSetting extends BaseModel
 
         return $roleNames;
     }
-
 }

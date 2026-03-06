@@ -6,7 +6,6 @@ use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      */
@@ -17,10 +16,10 @@ return new class extends Migration
 
         foreach ($companies as $company) {
             $widget = [
-            'widget_name' => 'follow_ups',
-            'status' => 1,
-            'dashboard_type' => 'private-dashboard',
-            'company_id' => $company->id
+                'widget_name' => 'follow_ups',
+                'status' => 1,
+                'dashboard_type' => 'private-dashboard',
+                'company_id' => $company->id,
             ];
 
             DashboardWidget::create($widget);
@@ -41,5 +40,4 @@ return new class extends Migration
     {
         DashboardWidget::where('widget_name', 'follow_ups')->delete();
     }
-
 };

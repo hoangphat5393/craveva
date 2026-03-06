@@ -36,7 +36,7 @@ return new class extends Migration
                 $table->foreign('performed_by')->references('id')->on('users')->onDelete('set null');
             });
         } catch (\Throwable $th) {
-            //throw $th;
+            // throw $th;
         }
     }
 

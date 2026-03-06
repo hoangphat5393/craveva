@@ -9,7 +9,6 @@ use Illuminate\Database\Seeder;
 
 class PackageTableSeeder extends Seeder
 {
-
     /**
      * Run the database seeds.
      *
@@ -30,8 +29,7 @@ class PackageTableSeeder extends Seeder
         $defaultPackage->currency_id = $currencyID;
         $defaultPackage->save();
 
-
-        $package = new Package();
+        $package = new Package;
         $package->name = 'Starter';
         $package->currency_id = $currencyID;
         $package->description = 'Quidem deserunt nobis asperiores fuga Ullamco corporis culpa';
@@ -47,7 +45,7 @@ class PackageTableSeeder extends Seeder
         $package->stripe_monthly_plan_id = 'starter_monthly';
         $package->save();
 
-        $package = new Package();
+        $package = new Package;
         $package->name = 'Medium';
         $package->currency_id = $currencyID;
         $package->description = 'Quidem deserunt nobis asperiores fuga Ullamco corporis culpa';
@@ -63,8 +61,7 @@ class PackageTableSeeder extends Seeder
         $package->stripe_monthly_plan_id = 'medium_monthly';
         $package->save();
 
-
-        $package = new Package();
+        $package = new Package;
         $package->name = 'Larger';
         $package->currency_id = $currencyID;
         $package->description = 'Quidem deserunt nobis asperiores fuga Ullamco corporis culpa';
@@ -80,7 +77,5 @@ class PackageTableSeeder extends Seeder
         $package->stripe_monthly_plan_id = 'larger_monthly';
         $package->save();
 
-
     }
-
 }

@@ -2,28 +2,26 @@
 
 namespace Database\Seeders;
 
-use App\Models\Role;
 use App\Models\Permission;
-use App\Scopes\CompanyScope;
 use App\Models\PermissionRole;
+use App\Models\Role;
+use App\Scopes\CompanyScope;
 use Illuminate\Database\Seeder;
 
 class SuperAdminRoleTableSeeder extends Seeder
 {
-
     /**
      * Run the database seeds.
      *
      * @return void
      */
-
     public function run()
     {
 
         $superadminRole = Role::withoutGlobalScopes([CompanyScope::class])->whereNull('company_id')->where('name', 'superadmin')->first();
 
         if (is_null($superadminRole)) {
-            $role = new Role();
+            $role = new Role;
             $role->name = 'superadmin';
             $role->display_name = 'Superadmin';
             $role->save();

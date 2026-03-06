@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * App\Models\EstimateTemplateItem
@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\EstimateTemplateItemImage|null $estimateTemplateItemImage
  * @property-read mixed $tax_list
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|EstimateTemplateItem newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|EstimateTemplateItem newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|EstimateTemplateItem query()
@@ -39,16 +40,18 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|EstimateTemplateItem whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|EstimateTemplateItem whereUnitPrice($value)
  * @method static \Illuminate\Database\Eloquent\Builder|EstimateTemplateItem whereUpdatedAt($value)
+ *
  * @property int|null $product_id
  * @property int|null $unit_id
  * @property-read \App\Models\UnitType|null $unit
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|EstimateTemplateItem whereProductId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|EstimateTemplateItem whereUnitId($value)
+ *
  * @mixin \Eloquent
  */
 class EstimateTemplateItem extends BaseModel
 {
-
     // protected $table = 'estimate_template_items';
 
     protected $guarded = ['id'];
@@ -73,12 +76,12 @@ class EstimateTemplateItem extends BaseModel
         if ($estimateItemTax) {
             $numItems = count(json_decode($estimateItemTax));
 
-            if (!is_null($estimateItemTax)) {
+            if (! is_null($estimateItemTax)) {
                 foreach (json_decode($estimateItemTax) as $index => $tax) {
                     $tax = $this->taxbyid($tax)->first();
-                    $taxes .= $tax->tax_name . ': ' . $tax->rate_percent . '%';
+                    $taxes .= $tax->tax_name.': '.$tax->rate_percent.'%';
 
-                    $taxes = ($index + 1 != $numItems) ? $taxes . ', ' : $taxes;
+                    $taxes = ($index + 1 != $numItems) ? $taxes.', ' : $taxes;
                 }
             }
         }
@@ -90,5 +93,4 @@ class EstimateTemplateItem extends BaseModel
     {
         return $this->belongsTo(UnitType::class, 'unit_id');
     }
-
 }

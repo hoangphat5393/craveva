@@ -15,13 +15,13 @@ use Illuminate\Http\Request;
 
 class ProjectMemberController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'app.menu.projects';
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('projects', $this->user->modules));
+            abort_403(! in_array('projects', $this->user->modules));
+
             return $next($request);
         });
     }
@@ -38,7 +38,7 @@ class ProjectMemberController extends AccountBaseController
         $addProjectMemberPermission = user()->permission('add_project_members');
         $project = Project::findOrFail($id);
 
-        abort_403(!($addProjectMemberPermission == 'all' || $addProjectMemberPermission == 'added' || $project->project_admin == user()->id));
+        abort_403(! ($addProjectMemberPermission == 'all' || $addProjectMemberPermission == 'added' || $project->project_admin == user()->id));
 
         $this->employees = User::doesntHave('member', 'and', function ($query) use ($id) {
             $query->where('project_id', $id);
@@ -52,12 +52,13 @@ class ProjectMemberController extends AccountBaseController
 
         $this->groups = Team::all();
         $this->projectId = $id;
+
         return view('projects.project-member.create', $this->data);
     }
 
     /**
-     * @param StoreProjectMembers $request
      * @return array
+     *
      * @throws \Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException
      */
     public function store(StoreProjectMembers $request)
@@ -71,7 +72,6 @@ class ProjectMemberController extends AccountBaseController
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
@@ -80,6 +80,7 @@ class ProjectMemberController extends AccountBaseController
         $member = ProjectMember::findOrFail($id);
         $member->hourly_rate = $request->hourly_rate;
         $member->save();
+
         return Reply::success(__('messages.updateSuccess'));
     }
 
@@ -122,7 +123,7 @@ class ProjectMemberController extends AccountBaseController
                 $check = ProjectMember::where('user_id', $user->user_id)->where('project_id', $request->project_id)->first();
 
                 if (is_null($check)) {
-                    $member = new ProjectMember();
+                    $member = new ProjectMember;
                     $member->user_id = $user->user_id;
                     $member->project_id = $request->project_id;
                     $member->save();
@@ -131,11 +132,10 @@ class ProjectMemberController extends AccountBaseController
 
             ProjectDepartment::create([
                 'project_id' => $project->id,
-                'team_id' => $group
+                'team_id' => $group,
             ]);
         }
 
         return Reply::success(__('messages.recordSaved'));
     }
-
 }

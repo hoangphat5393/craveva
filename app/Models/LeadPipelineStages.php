@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read mixed $icon
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Lead[] $leads
  * @property-read int|null $leads_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|LeadStatus newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|LeadStatus newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|LeadStatus query()
@@ -29,22 +30,26 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder|LeadStatus wherePriority($value)
  * @method static \Illuminate\Database\Eloquent\Builder|LeadStatus whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|LeadStatus whereUpdatedAt($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|LeadStatus whereCompanyId($value)
+ *
  * @property int|null $lead_pipeline_id
  * @property int|null $pipeline_stages_id
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Deal> $deals
  * @property-read int|null $deals_count
  * @property-read \App\Models\LeadPipeline|null $pipeline
  * @property-read \App\Models\PipelineStage $stage
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|LeadPipelineStages whereLeadPipelineId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|LeadPipelineStages wherePipelineStagesId($value)
+ *
  * @mixin \Eloquent
  */
 class LeadPipelineStages extends BaseModel
 {
-
     use HasCompany;
 
     public function deals(): HasMany
@@ -61,5 +66,4 @@ class LeadPipelineStages extends BaseModel
     {
         return $this->belongsTo(PipelineStage::class, 'pipeline_stage_id');
     }
-
 }

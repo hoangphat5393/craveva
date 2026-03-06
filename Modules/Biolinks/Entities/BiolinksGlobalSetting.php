@@ -7,7 +7,6 @@ use App\Models\ModuleSetting;
 
 class BiolinksGlobalSetting extends BaseModel
 {
-
     protected $guarded = ['id'];
 
     const MODULE_NAME = 'biolinks';
@@ -17,5 +16,4 @@ class BiolinksGlobalSetting extends BaseModel
         $roles = ['employee', 'admin'];
         ModuleSetting::createRoleSettingEntry(self::MODULE_NAME, $roles, $company);
     }
-
 }

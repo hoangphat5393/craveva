@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\Lead;
 
-use App\Models\Company;
 use App\Http\Requests\CoreRequest;
+use App\Models\Company;
 use App\Traits\CustomFieldsRequestTrait;
 
 class StorePublicLead extends CoreRequest
@@ -28,14 +28,14 @@ class StorePublicLead extends CoreRequest
     public function rules()
     {
         \Illuminate\Support\Facades\Validator::extend('check_superadmin', function ($attribute, $value, $parameters, $validator) {
-            return !\App\Models\User::withoutGlobalScopes([\App\Scopes\ActiveScope::class, \App\Scopes\CompanyScope::class])
+            return ! \App\Models\User::withoutGlobalScopes([\App\Scopes\ActiveScope::class, \App\Scopes\CompanyScope::class])
                 ->where('email', $value)
                 ->where('is_superadmin', 1)
                 ->exists();
         });
 
         $company = Company::findOrFail($this->request->get('company_id'));
-        $rules = array();
+        $rules = [];
 
         // Get lead form fields configuration
         $leadFormFields = \App\Models\LeadCustomForm::where('company_id', $company->id)->get();
@@ -55,8 +55,8 @@ class StorePublicLead extends CoreRequest
                 // Add specific validation rules based on field type
                 if ($field->field_name == 'email') {
                     $fieldRules[] = 'email:rfc,strict';
-                    $fieldRules[] = 'unique:leads,client_email,null,id,company_id,' . $company->id;
-                    $fieldRules[] = 'unique:users,email,null,id,company_id,' . $company->id;
+                    $fieldRules[] = 'unique:leads,client_email,null,id,company_id,'.$company->id;
+                    $fieldRules[] = 'unique:users,email,null,id,company_id,'.$company->id;
                 }
 
                 $rules[$field->field_name] = implode('|', $fieldRules);

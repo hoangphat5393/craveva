@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 
 class UserFactory extends Factory
 {
-
     /**
      * The name of the factory's corresponding model.
      *
@@ -24,9 +23,9 @@ class UserFactory extends Factory
     {
         $email = fake()->unique()->safeEmail;
         $email_parts = explode('@', $email);
-        $random_letter = chr(mt_rand(97, 122)) . rand(0, 100);
+        $random_letter = chr(mt_rand(97, 122)).rand(0, 100);
 
-        $new_email = $email_parts[0] . $random_letter.'@' . $email_parts[1];
+        $new_email = $email_parts[0].$random_letter.'@'.$email_parts[1];
 
         return [
             'name' => fake()->name,
@@ -34,5 +33,4 @@ class UserFactory extends Factory
             'email' => $new_email, /* @phpstan-ignore-line */
         ];
     }
-
 }

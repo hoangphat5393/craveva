@@ -26,7 +26,7 @@ class StoreTimeLog extends CoreRequest
      */
     public function rules()
     {
-        $rules = array();
+        $rules = [];
 
         $rules['start_time'] = 'required';
         $rules['end_time'] = 'required';
@@ -56,5 +56,4 @@ class StoreTimeLog extends CoreRequest
             'user_id.required' => __('messages.fieldBlank'),
         ];
     }
-
 }

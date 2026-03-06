@@ -7,10 +7,12 @@ use Illuminate\View\Component;
 
 class PieChart extends Component
 {
-
     public $labels;
+
     public $values;
+
     public $colors;
+
     public $fullscreen;
 
     /**
@@ -35,5 +37,4 @@ class PieChart extends Component
     {
         return view('components.pie-chart');
     }
-
 }

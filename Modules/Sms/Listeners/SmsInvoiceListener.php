@@ -21,5 +21,4 @@ class SmsInvoiceListener
         } catch (\Exception $e) { // @codingStandardsIgnoreLine
         }
     }
-
 }

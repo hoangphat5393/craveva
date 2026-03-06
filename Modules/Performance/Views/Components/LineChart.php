@@ -6,9 +6,10 @@ use Illuminate\View\Component;
 
 class LineChart extends Component
 {
-
     public $chartData;
+
     public $allDates;
+
     public $colors;
 
     /**
@@ -32,5 +33,4 @@ class LineChart extends Component
     {
         return view('performance::components.line-chart');
     }
-
 }

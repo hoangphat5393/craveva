@@ -2,29 +2,28 @@
 
 namespace App\Http\Controllers\SuperAdmin;
 
-use App\Http\Controllers\AppSettingController;
-use App\Models\Role;
-use App\Models\User;
+use App\DataTables\SuperAdmin\SuperAdminDataTable;
 use App\Helper\Files;
 use App\Helper\Reply;
-use App\Models\UserAuth;
-use App\Scopes\ActiveScope;
-use Illuminate\Http\Request;
 use App\Http\Controllers\AccountBaseController;
-use App\DataTables\SuperAdmin\SuperAdminDataTable;
+use App\Http\Controllers\AppSettingController;
 use App\Http\Requests\SuperAdmin\SuperAdmin\StoreRequest;
 use App\Http\Requests\SuperAdmin\SuperAdmin\UpdateRequest;
 use App\Models\Company;
+use App\Models\Role;
 use App\Models\RoleUser;
+use App\Models\User;
+use App\Models\UserAuth;
 use App\Models\UserPermission;
 use App\Providers\RouteServiceProvider;
+use App\Scopes\ActiveScope;
 use App\Scopes\CompanyScope;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class SuperAdminController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -39,7 +38,7 @@ class SuperAdminController extends AccountBaseController
     public function index(SuperAdminDataTable $dataTable)
     {
         $this->viewPermission = user()->permission('view_superadmin');
-        abort_403(!($this->viewPermission == 'all'));
+        abort_403(! ($this->viewPermission == 'all'));
 
         return $dataTable->render('super-admin.super-admin.index', $this->data);
     }
@@ -52,7 +51,7 @@ class SuperAdminController extends AccountBaseController
     public function create()
     {
         $this->addPermission = user()->permission('add_superadmin');
-        abort_403(!($this->addPermission == 'all'));
+        abort_403(! ($this->addPermission == 'all'));
 
         $this->pageTitle = __('superadmin.superadmin.create');
         $this->view = 'super-admin.super-admin.ajax.create';
@@ -73,19 +72,18 @@ class SuperAdminController extends AccountBaseController
     /**
      * Store a newly created resource in storage.
      *
-     * @param StoreRequest $request
      * @return \Illuminate\Http\Response
      */
     public function store(StoreRequest $request)
     {
         $this->addPermission = user()->permission('add_superadmin');
-        abort_403(!($this->addPermission == 'all'));
+        abort_403(! ($this->addPermission == 'all'));
 
         DB::beginTransaction();
 
         $userAuth = UserAuth::createUserAuthCredentials($request->email);
 
-        $superAdmin = new User();
+        $superAdmin = new User;
         $superAdmin->name = $request->name;
         $superAdmin->is_superadmin = true;
         $superAdmin->email = $request->email;
@@ -117,13 +115,13 @@ class SuperAdminController extends AccountBaseController
     /**
      * Show the form for editing the specified resource.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
     {
         $this->editPermission = user()->permission('edit_superadmin');
-        abort_403(!($this->editPermission == 'all'));
+        abort_403(! ($this->editPermission == 'all'));
 
         $this->superAdmin = User::withoutGlobalScope(ActiveScope::class)
             ->where('is_superadmin', 1)
@@ -154,14 +152,13 @@ class SuperAdminController extends AccountBaseController
     /**
      * Update the specified resource in storage.
      *
-     * @param UpdateRequest $request
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function update(UpdateRequest $request, $id)
     {
         $this->editPermission = user()->permission('edit_superadmin');
-        abort_403(!($this->editPermission == 'all'));
+        abort_403(! ($this->editPermission == 'all'));
 
         $superAdmin = User::withoutGlobalScope(ActiveScope::class)->where('is_superadmin', 1)->whereNull('company_id')->findOrFail($id);
 
@@ -181,7 +178,7 @@ class SuperAdminController extends AccountBaseController
         $userRole = Role::withoutGlobalScopes()->where('id', request()->role)->first();
         $superadminRole = $superAdmin->role[0];
 
-        if ($roleId != '' && $userRole->id != $superadminRole->role_id ) {
+        if ($roleId != '' && $userRole->id != $superadminRole->role_id) {
 
             $this->changeRole($superAdmin->id, $roleId);
         }
@@ -202,7 +199,7 @@ class SuperAdminController extends AccountBaseController
 
         $superAdmin->save();
 
-        cache()->forget('user_is_active_' . $superAdmin->id);
+        cache()->forget('user_is_active_'.$superAdmin->id);
 
         return Reply::redirect(route('superadmin.superadmin.index'));
     }
@@ -210,13 +207,13 @@ class SuperAdminController extends AccountBaseController
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
         $this->deletePermission = user()->permission('delete_superadmin');
-        abort_403(!($this->deletePermission == 'all'));
+        abort_403(! ($this->deletePermission == 'all'));
 
         $totalSuperadmin = User::withoutGlobalScopes([CompanyScope::class, ActiveScope::class])
             ->where('is_superadmin', 1)
@@ -311,7 +308,7 @@ class SuperAdminController extends AccountBaseController
     private function changeRole($userId, $roleId)
     {
 
-        if (!is_null($userId) && !is_null($roleId)) {
+        if (! is_null($userId) && ! is_null($roleId)) {
             $superadminRole = Role::withoutGlobalScopes()->findOrFail($roleId);
 
             $user = User::withoutGlobalScopes()->findOrFail($userId);
@@ -330,7 +327,7 @@ class SuperAdminController extends AccountBaseController
 
             $user->assignUserRolePermission($roleId);
 
-            $userSession = new AppSettingController();
+            $userSession = new AppSettingController;
             $userSession->deleteSessions([$user->id]);
         }
     }
@@ -339,5 +336,4 @@ class SuperAdminController extends AccountBaseController
     {
         return redirect()->route('superadmin.superadmin.index');
     }
-
 }

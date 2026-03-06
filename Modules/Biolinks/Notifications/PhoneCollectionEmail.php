@@ -6,8 +6,8 @@ use App\Notifications\BaseNotification;
 
 class PhoneCollectionEmail extends BaseNotification
 {
-
     private $name;
+
     private $phone;
 
     /**
@@ -36,17 +36,17 @@ class PhoneCollectionEmail extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
     {
         return parent::build()
-            ->subject(__('biolinks::messages.newContactReceived') . ' - ' . __('biolinks::app.biolink') . '.')
-            ->greeting(__('email.hello') . ' ' . $notifiable->name . ',')
+            ->subject(__('biolinks::messages.newContactReceived').' - '.__('biolinks::app.biolink').'.')
+            ->greeting(__('email.hello').' '.$notifiable->name.',')
             ->line(__('biolinks::messages.newContactReceived'))
-            ->line(__('app.name') . ' : ' . $this->name)
-            ->line(__('app.phone') . ' : ' . $this->phone);
+            ->line(__('app.name').' : '.$this->name)
+            ->line(__('app.phone').' : '.$this->phone);
     }
 
     /**
@@ -56,5 +56,4 @@ class PhoneCollectionEmail extends BaseNotification
     {
         return $notifiable->toArray();
     }
-
 }

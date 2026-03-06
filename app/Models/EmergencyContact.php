@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\User $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|EmergencyContact newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|EmergencyContact newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|EmergencyContact query()
@@ -34,19 +35,20 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|EmergencyContact whereRelation($value)
  * @method static \Illuminate\Database\Eloquent\Builder|EmergencyContact whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|EmergencyContact whereUserId($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|EmergencyContact whereCompanyId($value)
+ *
  * @mixin \Eloquent
  */
 class EmergencyContact extends BaseModel
 {
-
     use HasCompany;
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
-
 }

@@ -2,12 +2,9 @@
 
 use App\Models\Proposal;
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      */
@@ -26,18 +23,18 @@ return new class extends Migration
                     $condition = $invoiceSetting->proposal_digit - strlen($lastProposal);
 
                     for ($i = 0; $i < $condition; $i++) {
-                        $zero = '0' . $zero;
+                        $zero = '0'.$zero;
                     }
                 }
 
-                $originalNumber = $zero . $lastProposal;
-                $proposalNumber = $invoiceSetting->proposal_prefix . $invoiceSetting->proposal_number_separator . $zero . $lastProposal;
+                $originalNumber = $zero.$lastProposal;
+                $proposalNumber = $invoiceSetting->proposal_prefix.$invoiceSetting->proposal_number_separator.$zero.$lastProposal;
 
                 $proposal->update([
                     'proposal_number' => $proposalNumber,
                     'original_proposal_number' => $originalNumber,
                 ]);
-            }catch (\Exception $e){
+            } catch (\Exception $e) {
 
             }
 
@@ -51,5 +48,4 @@ return new class extends Migration
     {
         //
     }
-
 };

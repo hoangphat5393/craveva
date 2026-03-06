@@ -8,7 +8,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class EnsureTranslationToken
 {
-
     /**
      * Handle an incoming request.
      *
@@ -21,11 +20,11 @@ class EnsureTranslationToken
         }
 
         if (isCraveva()) {
-            if (!(user() instanceof \App\Models\User)) {
+            if (! (user() instanceof \App\Models\User)) {
                 session(['user' => auth()->user()->user]);
             }
 
-            abort_403(!(user()->permission('manage_superadmin_language_settings') == 'all'));
+            abort_403(! (user()->permission('manage_superadmin_language_settings') == 'all'));
         }
 
         return $next($request);

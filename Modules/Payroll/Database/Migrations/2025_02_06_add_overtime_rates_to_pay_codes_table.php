@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up()
     {
-        if (!Schema::hasColumn('pay_codes', 'regular_fixed_amount')) {
+        if (! Schema::hasColumn('pay_codes', 'regular_fixed_amount')) {
             Schema::table('pay_codes', function (Blueprint $table) {
                 // Regular rate
                 $table->decimal('regular_fixed_amount', 8, 2)->default(0);
@@ -28,7 +28,7 @@ return new class extends Migration
             });
         }
 
-        if (!Schema::hasColumn('overtime_requests', 'type')) {
+        if (! Schema::hasColumn('overtime_requests', 'type')) {
             Schema::table('overtime_requests', function (Blueprint $table) {
                 // Type
                 $table->enum('type', ['working', 'holiday', 'dayoff'])->default('working');
@@ -51,7 +51,7 @@ return new class extends Migration
                 'holiday_time_rate',
                 'day_off_type',
                 'day_off_fixed_amount',
-                'day_off_time_rate'
+                'day_off_time_rate',
             ]);
         });
     }

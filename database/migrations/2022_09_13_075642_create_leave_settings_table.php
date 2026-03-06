@@ -3,19 +3,17 @@
 use App\Models\Company;
 use App\Models\DashboardWidget;
 use App\Models\EmailNotificationSetting;
-use App\Models\LeaveSetting;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      *
      * @return void
      */
-
     public function up()
     {
         Schema::table('leaves', function (Blueprint $table) {
@@ -60,7 +58,7 @@ return new class extends Migration {
             'send_email' => 'yes',
             'send_slack' => 'yes',
             'send_push' => 'no',
-            'slug' => str_slug('Birthday notification')
+            'slug' => str_slug('Birthday notification'),
         ]);
 
         EmailNotificationSetting::firstOrCreate([
@@ -69,18 +67,17 @@ return new class extends Migration {
             'company_id' => $company->id,
             'send_slack' => 'no',
             'send_push' => 'no',
-            'slug' => 'payment-notification'
+            'slug' => 'payment-notification',
         ]);
     }
 
     private function workAnniversaryDashboardWidget($company)
     {
-        $widget = new DashboardWidget();
+        $widget = new DashboardWidget;
         $widget->company_id = $company->id;
         $widget->widget_name = 'work_anniversary';
         $widget->status = 1;
         $widget->dashboard_type = 'private-dashboard';
         $widget->save();
     }
-
 };

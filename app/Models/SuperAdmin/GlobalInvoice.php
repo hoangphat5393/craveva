@@ -2,15 +2,14 @@
 
 namespace App\Models\SuperAdmin;
 
+use App\Models\BaseModel;
 use App\Models\Company;
 use App\Models\OfflinePaymentMethod;
-use App\Models\BaseModel;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class GlobalInvoice extends BaseModel
 {
-
     protected $casts = [
         'pay_date' => 'datetime',
         'next_pay_date' => 'datetime',

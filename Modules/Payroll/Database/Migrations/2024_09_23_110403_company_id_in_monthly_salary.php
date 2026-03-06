@@ -1,11 +1,10 @@
 <?php
 
-
 use Illuminate\Database\Migrations\Migration;
 use Modules\Payroll\Entities\EmployeeMonthlySalary;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
@@ -18,13 +17,11 @@ return new class extends Migration {
 
             $user = $salary->user;
 
-            if(isset($user->company_id))
-            {
+            if (isset($user->company_id)) {
                 $salary->company_id = $user->company_id;
                 $salary->save();
             }
         }
-
 
     }
 
@@ -35,5 +32,4 @@ return new class extends Migration {
     {
         //
     }
-
 };

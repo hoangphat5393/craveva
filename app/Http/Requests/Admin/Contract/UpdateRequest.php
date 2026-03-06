@@ -32,7 +32,7 @@ class UpdateRequest extends CoreRequest
             'subject' => 'required',
             'amount' => 'required',
             'contract_type' => 'required|exists:contract_types,id',
-            'start_date' => 'required|date_format:"' . $setting->date_format . '"',
+            'start_date' => 'required|date_format:"'.$setting->date_format.'"',
         ];
 
         $rules = $this->customFieldRules($rules);
@@ -48,5 +48,4 @@ class UpdateRequest extends CoreRequest
 
         return $attributes;
     }
-
 }

@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class InviteEmailRequest extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -29,5 +28,4 @@ class InviteEmailRequest extends FormRequest
             'email.*' => 'required|email:rfc,strict',
         ];
     }
-
 }

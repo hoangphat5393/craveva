@@ -34,13 +34,14 @@ use App\Events\PaymentReminderEvent;
 use App\Events\ProjectReminderEvent;
 use App\Events\RemovalRequestAdminEvent;
 use App\Events\RemovalRequestAdminLeadEvent;
-use App\Events\RemovalRequestApproveRejectEvent;
 use App\Events\RemovalRequestApprovedRejectLeadEvent;
 use App\Events\RemovalRequestApprovedRejectUserEvent;
+use App\Events\RemovalRequestApproveRejectEvent;
 use App\Events\SubTaskCompletedEvent;
 use App\Events\TaskCommentEvent;
 use App\Events\TaskEvent;
 use App\Events\TaskNoteEvent;
+use App\Events\TaskNoteMentionEvent;
 use App\Events\TaskReminderEvent;
 use App\Events\TicketEvent;
 use App\Events\TicketReplyEvent;
@@ -92,16 +93,16 @@ use Modules\Sms\Listeners\SmsTicketListener;
 use Modules\Sms\Listeners\SubTaskCompletedListener;
 use Modules\Sms\Listeners\TaskCommentListener;
 use Modules\Sms\Listeners\TaskNoteListener;
+use Modules\Sms\Listeners\TaskNoteMentionListener;
 use Modules\Sms\Listeners\TaskReminderListener;
 use Modules\Sms\Listeners\TicketReplyListener;
 use Modules\Sms\Listeners\TicketRequesterListener;
 use Modules\Sms\Listeners\TwoFactorCodeListener;
-use App\Events\TaskNoteMentionEvent;
-use Modules\Sms\Listeners\TaskNoteMentionListener;
 
 class SmsServiceProvider extends ServiceProvider
 {
     use SmsSettingTrait;
+
     /**
      * Boot the application events.
      *
@@ -166,7 +167,7 @@ class SmsServiceProvider extends ServiceProvider
             if (Schema::hasTable('sms_settings')) {
                 $this->setConfig();
             }
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
 
         }
     }

@@ -2,9 +2,9 @@
 
 namespace Modules\Performance\Providers;
 
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Console\Scheduling\Schedule;
 use Modules\Performance\Console\ActivateModuleCommand;
 use Modules\Performance\Console\CheckInReminderCommand;
 use Modules\Performance\Console\SetObjectiveStatusCommand;
@@ -71,8 +71,7 @@ class PerformanceServiceProvider extends ServiceProvider
         if (is_dir($langPath)) {
             $this->loadTranslationsFrom($langPath, $this->moduleNameLower);
             $this->loadJsonTranslationsFrom($langPath);
-        }
-        else {
+        } else {
             $this->loadTranslationsFrom(module_path($this->moduleName, 'Resources/lang'), $this->moduleNameLower);
             $this->loadJsonTranslationsFrom(module_path($this->moduleName, 'Resources/lang'));
         }

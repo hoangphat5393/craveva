@@ -2,16 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
 use App\Helper\Reply;
 use App\Http\Requests\Admin\Client\StoreClientSubcategory;
 use App\Models\ClientCategory;
 use App\Models\ClientSubCategory;
+use Illuminate\Http\Request;
 
 class ClientSubCategoryController extends AccountBaseController
 {
-
     /**
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
@@ -25,12 +23,11 @@ class ClientSubCategoryController extends AccountBaseController
     }
 
     /**
-     * @param StoreClientSubcategory $request
      * @return array
      */
     public function store(StoreClientSubcategory $request)
     {
-        $category = new ClientSubCategory();
+        $category = new ClientSubCategory;
         $category->category_id = $request->category_id;
         $category->category_name = $request->category_name;
         $category->save();
@@ -40,8 +37,7 @@ class ClientSubCategoryController extends AccountBaseController
     }
 
     /**
-     * @param Request $request
-     * @param int $id
+     * @param  int  $id
      * @return array|void
      */
     public function update(Request $request, $id)
@@ -59,7 +55,7 @@ class ClientSubCategoryController extends AccountBaseController
     }
 
     /**
-     * @param int $id
+     * @param  int  $id
      * @return array|void
      */
     public function destroy(Request $request, $id)
@@ -80,5 +76,4 @@ class ClientSubCategoryController extends AccountBaseController
 
         return Reply::dataOnly(['status' => 'success', 'data' => $sub_categories]);
     }
-
 }

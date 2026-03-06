@@ -9,13 +9,13 @@ use Illuminate\Queue\SerializesModels;
 
 class MonthlyAttendanceEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     /**
      * Create a new event instance.
      */
     public $user;
+
     public $company;
 
     public function __construct(User $user, $company)
@@ -23,5 +23,4 @@ class MonthlyAttendanceEvent
         $this->user = $user;
         $this->company = $company;
     }
-
 }

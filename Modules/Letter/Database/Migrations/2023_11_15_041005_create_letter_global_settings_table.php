@@ -5,8 +5,8 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Modules\Letter\Entities\LetterSetting;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      *
@@ -16,7 +16,7 @@ return new class extends Migration {
     {
         \App\Models\Module::validateVersion(LetterSetting::MODULE_NAME);
 
-        if (!Schema::hasTable('letter_settings')) {
+        if (! Schema::hasTable('letter_settings')) {
             Schema::create('letter_settings', function (Blueprint $table) {
                 $table->id();
                 $table->string('purchase_code')->nullable();
@@ -40,5 +40,4 @@ return new class extends Migration {
     {
         Schema::dropIfExists('letter_settings');
     }
-
 };

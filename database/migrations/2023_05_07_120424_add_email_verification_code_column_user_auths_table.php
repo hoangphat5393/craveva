@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      */
@@ -27,5 +26,4 @@ return new class extends Migration
             $table->dropColumn(['email_verification_code', 'email_code_expires_at']);
         });
     }
-
 };

@@ -4,9 +4,9 @@ namespace Modules\Purchase\Listeners;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Notification;
-use Modules\Purchase\Notifications\VendorPayment;
 use Modules\Purchase\Events\NewVendorPaymentEvent;
 use Modules\Purchase\Notifications\AdminNewVendorPayment;
+use Modules\Purchase\Notifications\VendorPayment;
 
 class NewVendorPaymentListener
 {
@@ -15,7 +15,6 @@ class NewVendorPaymentListener
      *
      * @return void
      */
-
     public function __construct()
     {
         //
@@ -35,5 +34,4 @@ class NewVendorPaymentListener
             Notification::send($event->payment->vendor, new VendorPayment($event->payment));
         }
     }
-
 }

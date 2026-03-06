@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class StoreProject extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -28,5 +27,4 @@ class StoreProject extends CoreRequest
             'project_name' => 'required',
         ];
     }
-
 }

@@ -14,7 +14,6 @@ use Zip;
 
 class UpdateAppController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -24,6 +23,7 @@ class UpdateAppController extends AccountBaseController
 
         $this->middleware(function ($request, $next) {
             abort_403(GlobalSetting::validateSuperAdmin());
+
             return $next($request);
         });
     }
@@ -52,7 +52,7 @@ class UpdateAppController extends AccountBaseController
     {
 
         config(['filesystems.default' => 'storage']);
-        $path = storage_path('app') . '/' . $request->file->getClientOriginalName();
+        $path = storage_path('app').'/'.$request->file->getClientOriginalName();
 
         if (file_exists($path)) {
             File::delete($path);
@@ -66,7 +66,7 @@ class UpdateAppController extends AccountBaseController
         $filePath = $request->filePath;
 
         if (File::exists($filePath)) {
-            if (!File::delete($filePath)) {
+            if (! File::delete($filePath)) {
                 return Reply::error('Could not delete file. Please check permissions.');
             }
         }
@@ -76,7 +76,7 @@ class UpdateAppController extends AccountBaseController
 
     public function install(Request $request)
     {
-        File::put(public_path() . '/install-version.txt', 'complete');
+        File::put(public_path().'/install-version.txt', 'complete');
 
         $filePath = $request->filePath;
         $zip = Zip::open($filePath);
@@ -87,5 +87,4 @@ class UpdateAppController extends AccountBaseController
         Artisan::call('optimize:clear');
         Session::flush();
     }
-
 }

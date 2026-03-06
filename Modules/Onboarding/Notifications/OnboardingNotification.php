@@ -7,8 +7,8 @@ use Modules\Onboarding\Entities\OnboardingNotificationSetting;
 
 class OnboardingNotification extends BaseNotification
 {
-
     private $user;
+
     private $emailSetting;
 
     /**
@@ -26,7 +26,7 @@ class OnboardingNotification extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -43,7 +43,7 @@ class OnboardingNotification extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
@@ -59,15 +59,15 @@ class OnboardingNotification extends BaseNotification
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
-                'actionText' => __('app.view') . ' ' . __('onboarding::clan.onboardingTasks'),
-                'notifiableName' => $notifiable->name
+                'actionText' => __('app.view').' '.__('onboarding::clan.onboardingTasks'),
+                'notifiableName' => $notifiable->name,
             ]);
     }
 
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function toArray($notifiable)
@@ -77,5 +77,4 @@ class OnboardingNotification extends BaseNotification
             'heading' => __('onboarding::modules.onboardingStartMailSubject'),
         ];
     }
-
 }

@@ -9,7 +9,6 @@ use Illuminate\Queue\SerializesModels;
 
 class TaskUpdated implements ShouldBroadcast
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $task;
@@ -28,5 +27,4 @@ class TaskUpdated implements ShouldBroadcast
     {
         return 'task-updated';
     }
-
 }

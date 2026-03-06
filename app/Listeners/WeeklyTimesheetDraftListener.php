@@ -3,8 +3,6 @@
 namespace App\Listeners;
 
 use App\Events\WeeklyTimesheetDraftEvent;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
 use App\Notifications\WeeklyTimesheetRejected;
 
 class WeeklyTimesheetDraftListener

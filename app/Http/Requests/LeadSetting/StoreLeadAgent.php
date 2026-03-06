@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class StoreLeadAgent extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -26,7 +25,7 @@ class StoreLeadAgent extends CoreRequest
     {
         return [
             'agent_id' => 'required',
-            'category_id.0' => 'required'
+            'category_id.0' => 'required',
         ];
     }
 
@@ -36,5 +35,4 @@ class StoreLeadAgent extends CoreRequest
             'category_id.0.required' => __('messages.atleastOneCategory'),
         ];
     }
-
 }

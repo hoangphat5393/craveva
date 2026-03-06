@@ -4,7 +4,6 @@ namespace Modules\Affiliate\Enums;
 
 enum YesNo: string
 {
-
     // phpcs:disable
     case Yes = 'yes';
     case No = 'no';
@@ -14,8 +13,8 @@ enum YesNo: string
     public function label(): string
     {
         return match ($this) {
-            self::Yes => __('app.' . $this->value),
-            self::No => __('app.' . $this->value),
+            self::Yes => __('app.'.$this->value),
+            self::No => __('app.'.$this->value),
             default => $this->value,
         };
     }

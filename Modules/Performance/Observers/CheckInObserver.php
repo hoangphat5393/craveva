@@ -11,8 +11,7 @@ use Modules\Performance\Entities\ObjectiveProgressStatus;
 
 class CheckInObserver
 {
-
-    Use HasCompany;
+    use HasCompany;
 
     public function creating(CheckIn $model)
     {
@@ -43,8 +42,7 @@ class CheckInObserver
 
         if ($latestCheckIn) {
             $keyResult->current_value = $latestCheckIn->current_value;
-        }
-        else {
+        } else {
             $keyResult->current_value = $keyResult->original_current_value;
         }
 
@@ -56,8 +54,7 @@ class CheckInObserver
         if ($currentValue > $targetValue) {
             // Current value is greater than target value
             $percentage = $this->calculateProgressPercentage($currentValue, $originalCurrentValue, $targetValue);
-        }
-        else {
+        } else {
             // Current value is less than or equal to target value
             $percentage = $this->calculateProgressPercentage($currentValue, $originalCurrentValue, $targetValue);
         }
@@ -130,8 +127,7 @@ class CheckInObserver
                 $elapsedDays = $startDate->diffInDays($today);
                 $remainingDays = $totalDays - $elapsedDays;
                 $timeLeftPercentage = ($remainingDays / $totalDays) * 100;
-            }
-            else {
+            } else {
                 // If start and end dates are the same, no time left
                 $timeLeftPercentage = 0;
             }
@@ -141,20 +137,16 @@ class CheckInObserver
             if ($objectiveProgress >= 100) {
                 $status = 'completed';
                 $color = 'primary';
-            }
-            elseif ($objectiveProgress > 70 && $timeLeftPercentage > 50) {
+            } elseif ($objectiveProgress > 70 && $timeLeftPercentage > 50) {
                 $status = 'onTrack';
                 $color = 'success';
-            }
-            elseif ($objectiveProgress > 60 && $timeLeftPercentage <= 50) {
+            } elseif ($objectiveProgress > 60 && $timeLeftPercentage <= 50) {
                 $status = 'atRisk';
                 $color = 'warning';
-            }
-            elseif ($endDate < $today && $objectiveProgress < 100 || ($objectiveProgress >= 40 && $objectiveProgress <= 60 && $timeLeftPercentage <= 50)) {
+            } elseif ($endDate < $today && $objectiveProgress < 100 || ($objectiveProgress >= 40 && $objectiveProgress <= 60 && $timeLeftPercentage <= 50)) {
                 $status = 'offTrack';
                 $color = 'danger';
-            }
-            else {
+            } else {
                 $status = 'onTrack';
                 $color = 'success';
             }
@@ -172,5 +164,4 @@ class CheckInObserver
             );
         }
     }
-
 }

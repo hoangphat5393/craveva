@@ -13,13 +13,11 @@ use Modules\Recruit\Entities\RecruitJobApplication;
 
 class JobApplicationsTableSeeder extends Seeder
 {
-
     /**
      * Run the database seeds.
      *
      * @return void
      */
-
     public function run($companyId)
     {
         $faker = Factory::create();
@@ -50,7 +48,7 @@ class JobApplicationsTableSeeder extends Seeder
                 'expected_ctc_rate' => 'Day',
                 'notice_period' => '15',
                 'application_sources' => 'addedByUser',
-                'added_by' => $user->random()
+                'added_by' => $user->random(),
             ],
             [
                 'full_name' => $faker->name,
@@ -70,7 +68,7 @@ class JobApplicationsTableSeeder extends Seeder
                 'expected_ctc' => '7000',
                 'notice_period' => '15',
                 'application_sources' => 'addedByUser',
-                'added_by' => $user->random()
+                'added_by' => $user->random(),
             ],
             [
                 'full_name' => $faker->name,
@@ -90,7 +88,7 @@ class JobApplicationsTableSeeder extends Seeder
                 'expected_ctc_rate' => 'Year',
                 'notice_period' => '45',
                 'application_sources' => 'addedByUser',
-                'added_by' => $user->random()
+                'added_by' => $user->random(),
             ],
             [
                 'full_name' => $faker->name,
@@ -110,7 +108,7 @@ class JobApplicationsTableSeeder extends Seeder
                 'expected_ctc_rate' => 'Year',
                 'notice_period' => '15',
                 'application_sources' => 'addedByUser',
-                'added_by' => $user->random()
+                'added_by' => $user->random(),
             ],
             [
                 'full_name' => $faker->name,
@@ -130,7 +128,7 @@ class JobApplicationsTableSeeder extends Seeder
                 'expected_ctc_rate' => 'Year',
                 'notice_period' => '15',
                 'application_sources' => 'addedByUser',
-                'added_by' => $user->random()
+                'added_by' => $user->random(),
             ],
             [
                 'full_name' => $faker->name,
@@ -215,7 +213,7 @@ class JobApplicationsTableSeeder extends Seeder
                 'application_sources' => 'addedByUser',
                 'added_by' => $user->random(),
                 'deleted_at' => Carbon::today()->subDays('24'),
-            ]
+            ],
         ];
 
         foreach ($jobApps as $jobApp) {
@@ -223,5 +221,4 @@ class JobApplicationsTableSeeder extends Seeder
             RecruitJobApplication::create($jobApp);
         }
     }
-
 }

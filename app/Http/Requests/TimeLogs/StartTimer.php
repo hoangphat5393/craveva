@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class StartTimer extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -26,7 +25,7 @@ class StartTimer extends CoreRequest
     {
         return [
             'task_id' => 'required_without:create_task',
-            'memo' => 'required_without:task_id'
+            'memo' => 'required_without:task_id',
         ];
     }
 
@@ -36,5 +35,4 @@ class StartTimer extends CoreRequest
             'task_id.required_without' => __('messages.fieldBlank'),
         ];
     }
-
 }

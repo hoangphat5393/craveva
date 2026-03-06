@@ -2,8 +2,6 @@
 
 namespace Modules\Webhooks\Enums;
 
-use Modules\Webhooks\Enums\Variable;
-
 enum TaskVariable: string implements Variable
 {
     case heading = '##HEADING##';
@@ -33,5 +31,4 @@ enum TaskVariable: string implements Variable
             'board_column_id',
         ];
     }
-
 }

@@ -2,17 +2,19 @@
 
 namespace App\DataTables;
 
+use App\Helper\Common;
 use App\Models\LeadPipeline;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
-use App\Helper\Common;
 
 class LeadPipelineDataTable extends BaseDataTable
 {
-
     private $editPipelinePermission;
+
     private $addPipelinePermission;
+
     private $deletePipelinePermission;
+
     private $viewPipelinePermission;
 
     /**
@@ -32,7 +34,7 @@ class LeadPipelineDataTable extends BaseDataTable
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
@@ -46,21 +48,19 @@ class LeadPipelineDataTable extends BaseDataTable
 
                     <div class="dropdown">
                         <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" type="link"
-                            id="dropdownMenuLink-' . $row->id . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            id="dropdownMenuLink-'.$row->id.'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="icon-options-vertical icons"></i>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-' . $row->id . '" tabindex="0">';
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-'.$row->id.'" tabindex="0">';
 
-            $action .= '<a href="' . route('deal-pipelines.show', [$row->id]) . '" class="dropdown-item"><i class="fa fa-eye mr-2"></i>' . __('app.view') . '</a>';
+            $action .= '<a href="'.route('deal-pipelines.show', [$row->id]).'" class="dropdown-item"><i class="fa fa-eye mr-2"></i>'.__('app.view').'</a>';
 
             if (
                 $this->editLeadPermission == 'all'
-                || ($this->editLeadPermission == 'added' && user()->id == $row->added_by) || user()->id == $row->added_by)
-
-            {
-                $action .= '<a class="dropdown-item" href="' . route('deal-pipelines.edit', [$row->id]) . '">
+                || ($this->editLeadPermission == 'added' && user()->id == $row->added_by) || user()->id == $row->added_by) {
+                $action .= '<a class="dropdown-item" href="'.route('deal-pipelines.edit', [$row->id]).'">
                                 <i class="fa fa-edit mr-2"></i>
-                                ' . trans('app.edit') . '
+                                '.trans('app.edit').'
                             </a>';
             }
 
@@ -70,9 +70,9 @@ class LeadPipelineDataTable extends BaseDataTable
                 || ($this->deleteLeadPermission == 'owned' && user()->id == $row->added_by)
                 || ($this->deleteLeadPermission == 'both' && user()->id == $row->added_by)
             ) {
-                $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-id="' . $row->id . '">
+                $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-id="'.$row->id.'">
                         <i class="fa fa-trash mr-2"></i>
-                        ' . trans('app.delete') . '
+                        '.trans('app.delete').'
                     </a>';
             }
 
@@ -87,7 +87,7 @@ class LeadPipelineDataTable extends BaseDataTable
 
             return '
                         <div class="media-bod1y">
-                    <h5 class="mb-0 f-13 "><a href="' . route('deal-pipelines.show', [$row->id]) . '">' . $row->name . '</a></h5>
+                    <h5 class="mb-0 f-13 "><a href="'.route('deal-pipelines.show', [$row->id]).'">'.$row->name.'</a></h5>
 
 
                     </div>
@@ -99,20 +99,19 @@ class LeadPipelineDataTable extends BaseDataTable
         });
 
         $datatables->smart(false);
-        $datatables->setRowId(fn($row) => 'row-' . $row->id);
+        $datatables->setRowId(fn ($row) => 'row-'.$row->id);
         $datatables->rawColumns(['action', 'name']);
 
         return $datatables;
     }
 
     /**
-     * @param Lead $model
+     * @param  Lead  $model
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function query(LeadPipeline $model)
     {
         $leadContact = $model->select('lead_pipelines.*');
-
 
         if ($this->viewLeadPermission == 'both') {
             $leadContact = $leadContact->where(function ($query) {
@@ -122,7 +121,7 @@ class LeadPipelineDataTable extends BaseDataTable
 
         if ($this->request()->searchText != '') {
             $safeTerm = Common::safeString(request('searchText'));
-            $leadContact = $leadContact->where('lead_pipelines.name', 'like', '%' . $safeTerm . '%');
+            $leadContact = $leadContact->where('lead_pipelines.name', 'like', '%'.$safeTerm.'%');
 
         }
 
@@ -151,7 +150,7 @@ class LeadPipelineDataTable extends BaseDataTable
             ]);
 
         if (canDataTableExport()) {
-            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
+            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
         }
 
         return $dataTable;
@@ -177,13 +176,10 @@ class LeadPipelineDataTable extends BaseDataTable
                 ->printable(false)
                 ->orderable(false)
                 ->searchable(false)
-                ->addClass('text-right pr-20')
+                ->addClass('text-right pr-20'),
         ];
-
 
         return array_merge($data, $action);
 
     }
-
 }
-

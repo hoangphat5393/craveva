@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helper\UserService;
 use App\Scopes\ActiveScope;
 use App\Traits\CustomFieldsTrait;
 use App\Traits\HasCompany;
@@ -12,7 +13,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Helper\UserService;
 
 /**
  * App\Models\Project
@@ -73,6 +73,7 @@ use App\Helper\UserService;
  * @property-read int|null $tasks_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ProjectTimeLog[] $times
  * @property-read int|null $times_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Project canceled()
  * @method static \Illuminate\Database\Eloquent\Builder|Project completed()
  * @method static \Database\Factories\ProjectFactory factory(...$parameters)
@@ -112,21 +113,28 @@ use App\Helper\UserService;
  * @method static \Illuminate\Database\Eloquent\Builder|Project whereUpdatedAt($value)
  * @method static \Illuminate\Database\Query\Builder|Project withTrashed()
  * @method static \Illuminate\Database\Query\Builder|Project withoutTrashed()
+ *
  * @property string|null $hash
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Project whereHash($value)
+ *
  * @property int $public
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Project wherePublic($value)
+ *
  * @property int|null $company_id
  * @property string|null $project_short_code
  * @property int $enable_miroboard
  * @property string|null $miro_board_id
  * @property int $client_access
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Project whereClientAccess($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Project whereCompanyId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Project whereEnableMiroboard($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Project whereMiroBoardId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Project whereProjectShortCode($value)
+ *
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Contract> $contracts
  * @property-read int|null $contracts_count
  * @property-read int|null $project_members_count
@@ -140,14 +148,14 @@ use App\Helper\UserService;
  * @property-read int|null $mention_project_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $mentionUser
  * @property-read \App\Models\Project|null $due_date
+ *
  * @mixin \Eloquent
  */
 class Project extends BaseModel
 {
-
     use CustomFieldsTrait, HasFactory;
-    use SoftDeletes;
     use HasCompany;
+    use SoftDeletes;
 
     protected $casts = [
         'start_date' => 'datetime',
@@ -156,7 +164,9 @@ class Project extends BaseModel
     ];
 
     protected $guarded = ['id'];
+
     protected $with = [];
+
     protected $appends = ['isProjectAdmin'];
 
     const CUSTOM_FIELD_MODEL = 'App\Models\Project';
@@ -307,8 +317,8 @@ class Project extends BaseModel
     }
 
     /**
-     * @param boolean $notFinished
-     * Search Parameter is passed the get only search results and 20
+     * @param  bool  $notFinished
+     *                             Search Parameter is passed the get only search results and 20
      * @return \Illuminate\Support\Collection
      */
     public static function allProjects($notFinished = false)
@@ -324,8 +334,7 @@ class Project extends BaseModel
             ->select('projects.*')
             ->orderBy('project_name');
 
-
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
 
             if (user()->permission('view_projects') == 'added') {
                 $projects->where('projects.added_by', $userId)->orWhere('projects.public', 1);
@@ -376,7 +385,7 @@ class Project extends BaseModel
             ->select('projects.*')
             ->orderBy('project_name');
 
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
 
             if (user()->permission('view_projects') == 'added') {
                 $projects->where('projects.added_by', user()->id);
@@ -459,7 +468,7 @@ class Project extends BaseModel
         $userId = UserService::getUserId();
         $pin = Pinned::where('user_id', $userId)->where('project_id', $this->id)->first();
 
-        if (!is_null($pin)) {
+        if (! is_null($pin)) {
             return true;
         }
 

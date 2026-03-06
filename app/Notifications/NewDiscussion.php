@@ -9,14 +9,13 @@ use NotificationChannels\OneSignal\OneSignalMessage;
 
 class NewDiscussion extends BaseNotification
 {
-
-
     /**
      * Create a new notification instance.
      *
      * @return void
      */
     private $discussion;
+
     private $emailSetting;
 
     public function __construct(Discussion $discussion)
@@ -29,7 +28,7 @@ class NewDiscussion extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -49,7 +48,7 @@ class NewDiscussion extends BaseNotification
         }
 
         if ($this->emailSetting->send_push == 'yes' && push_setting()->beams_push_status == 'active') {
-            $pushNotification = new \App\Http\Controllers\DashboardController();
+            $pushNotification = new \App\Http\Controllers\DashboardController;
             $pushUsersIds = [[$notifiable->id]];
             $pushNotification->sendPushNotifications($pushUsersIds, __('email.discussion.subject'), $this->discussion->title);
         }
@@ -60,7 +59,7 @@ class NewDiscussion extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
@@ -68,16 +67,16 @@ class NewDiscussion extends BaseNotification
         $build = parent::build($notifiable);
         $url = route('discussion.show', $this->discussion->id);
         $url = getDomainSpecificUrl($url, $this->company);
-        $content = __('email.discussion.subject') . ' ' . $this->discussion->title . ':-';
+        $content = __('email.discussion.subject').' '.$this->discussion->title.':-';
 
         $build
-            ->subject(__('email.discussion.subject') . $this->discussion->title . ' - ' . config('app.name') . '.')
+            ->subject(__('email.discussion.subject').$this->discussion->title.' - '.config('app.name').'.')
             ->markdown('mail.email', [
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
                 'actionText' => __('email.discussion.action'),
-                'notifiableName' => $notifiable->name
+                'notifiableName' => $notifiable->name,
             ]);
 
         parent::resetLocale();
@@ -88,31 +87,31 @@ class NewDiscussion extends BaseNotification
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
-//phpcs:ignore
+    // phpcs:ignore
     public function toArray($notifiable)
     {
         return [
             'id' => $this->discussion->id,
             'title' => $this->discussion->title,
             'project_id' => $this->discussion->project_id,
-            'user' => $this->discussion->user->name
+            'user' => $this->discussion->user->name,
         ];
     }
 
     /**
      * Get the Slack representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\SlackMessage
      */
     public function toSlack($notifiable)
     {
 
         return $this->slackBuild($notifiable)
-            ->content('*' . __('email.discussion.subject') . '*' . "\n" . $this->discussion->title);
+            ->content('*'.__('email.discussion.subject').'*'."\n".$this->discussion->title);
 
     }
 
@@ -123,5 +122,4 @@ class NewDiscussion extends BaseNotification
             ->setSubject(__('email.discussion.subject'))
             ->setBody($this->discussion->title);
     }
-
 }

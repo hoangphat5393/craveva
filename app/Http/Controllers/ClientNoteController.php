@@ -15,7 +15,6 @@ use Illuminate\Support\Facades\Hash;
 
 class ClientNoteController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -36,7 +35,7 @@ class ClientNoteController extends AccountBaseController
 
     public function create()
     {
-        abort_403(!in_array(user()->permission('add_client_note'), ['all', 'added', 'both']));
+        abort_403(! in_array(user()->permission('add_client_note'), ['all', 'added', 'both']));
         $this->pageTitle = __('app.addClientNote');
         $this->clientId = request('client');
         $projectMember = [];
@@ -46,7 +45,7 @@ class ClientNoteController extends AccountBaseController
 
             $clientProject = Project::where('client_id', user()->id)->pluck('id')->toArray();
 
-            if (!empty($clientProject)) {
+            if (! empty($clientProject)) {
 
                 $member = ProjectMember::with('user')->whereIn('project_id', $clientProject)->get();
 
@@ -56,8 +55,7 @@ class ClientNoteController extends AccountBaseController
 
                 $this->employees = $projectMember;
             }
-        }
-        else {
+        } else {
 
             $this->employees = User::allEmployees();
 
@@ -88,7 +86,7 @@ class ClientNoteController extends AccountBaseController
 
         $viewClientNotePermission = user()->permission('view_client_note');
 
-        abort_403(!($viewClientNotePermission == 'all'
+        abort_403(! ($viewClientNotePermission == 'all'
             || ($viewClientNotePermission == 'added' && $this->note->added_by == user()->id)
 
             || ($viewClientNotePermission == 'owned' && in_array(user()->id, $this->noteMembers) && in_array('employee', user_roles()))
@@ -100,7 +98,7 @@ class ClientNoteController extends AccountBaseController
         )
         );
 
-        $this->pageTitle = __('app.client') . ' ' . __('app.note');
+        $this->pageTitle = __('app.client').' '.__('app.note');
 
         $this->view = 'clients.notes.show';
 
@@ -114,11 +112,11 @@ class ClientNoteController extends AccountBaseController
 
     public function store(StoreClientNote $request)
     {
-        abort_403(!in_array(user()->permission('add_client_note'), ['all', 'added', 'both']));
+        abort_403(! in_array(user()->permission('add_client_note'), ['all', 'added', 'both']));
 
         $this->employees = User::allEmployees();
 
-        $note = new ClientNote();
+        $note = new ClientNote;
         $note->title = $request->title;
         $note->client_id = $request->client_id;
         $note->details = $request->details;
@@ -126,8 +124,7 @@ class ClientNoteController extends AccountBaseController
 
         if (in_array('client', user_roles())) {
             $note->is_client_show = 1;
-        }
-        else {
+        } else {
             $note->is_client_show = $request->is_client_show ? $request->is_client_show : '';
         }
 
@@ -139,17 +136,17 @@ class ClientNoteController extends AccountBaseController
         if ($request->type == 1) {
             $users = $request->user_id;
 
-            if (!is_null($users)) {
+            if (! is_null($users)) {
                 foreach ($users as $user) {
                     ClientUserNote::firstOrCreate([
                         'user_id' => $user,
-                        'client_note_id' => $note->id
+                        'client_note_id' => $note->id,
                     ]);
                 }
             }
         }
 
-        return Reply::successWithData(__('messages.recordSaved'), ['redirectUrl' => in_array('client', user_roles()) ? route('client-notes.index') : route('clients.show', $note->client_id) . '?tab=notes']);
+        return Reply::successWithData(__('messages.recordSaved'), ['redirectUrl' => in_array('client', user_roles()) ? route('client-notes.index') : route('clients.show', $note->client_id).'?tab=notes']);
     }
 
     public function edit($id)
@@ -160,7 +157,7 @@ class ClientNoteController extends AccountBaseController
         $this->note = ClientNote::findOrFail($id);
         $editClientNotePermission = user()->permission('view_client_note');
 
-        abort_403(!($editClientNotePermission == 'all'
+        abort_403(! ($editClientNotePermission == 'all'
             || ($editClientNotePermission == 'added' && user()->id == $this->note->added_by)
             || ($editClientNotePermission == 'both' && user()->id == $this->note->added_by)));
 
@@ -171,7 +168,7 @@ class ClientNoteController extends AccountBaseController
 
             $clientProject = Project::where('client_id', user()->id)->pluck('id')->toArray();
 
-            if (!empty($clientProject)) {
+            if (! empty($clientProject)) {
 
                 $member = ProjectMember::with('user')->whereIn('project_id', $clientProject)->get();
 
@@ -181,8 +178,7 @@ class ClientNoteController extends AccountBaseController
 
                 $this->employees = $projectMember;
             }
-        }
-        else {
+        } else {
 
             $this->employees = User::allEmployees();
 
@@ -191,7 +187,6 @@ class ClientNoteController extends AccountBaseController
         /** @phpstan-ignore-next-line */
         $this->noteMembers = $this->note->members->pluck('user_id')->toArray();
         $this->clientId = $this->note->client_id;
-
 
         $this->view = 'clients.notes.edit';
 
@@ -213,8 +208,7 @@ class ClientNoteController extends AccountBaseController
 
         if (in_array('client', user_roles())) {
             $note->is_client_show = 1;
-        }
-        else {
+        } else {
             $note->is_client_show = $request->is_client_show ? $request->is_client_show : '';
         }
 
@@ -228,17 +222,17 @@ class ClientNoteController extends AccountBaseController
 
             $users = $request->user_id;
 
-            if (!is_null($users)) {
+            if (! is_null($users)) {
                 foreach ($users as $user) {
                     ClientUserNote::firstOrCreate([
                         'user_id' => $user,
-                        'client_note_id' => $note->id
+                        'client_note_id' => $note->id,
                     ]);
                 }
             }
         }
 
-        return Reply::successWithData(__('messages.updateSuccess'), ['redirectUrl' => in_array('client', user_roles()) ? route('client-notes.index') : route('clients.show', $note->client_id) . '?tab=notes']);
+        return Reply::successWithData(__('messages.updateSuccess'), ['redirectUrl' => in_array('client', user_roles()) ? route('client-notes.index') : route('clients.show', $note->client_id).'?tab=notes']);
 
     }
 
@@ -247,7 +241,7 @@ class ClientNoteController extends AccountBaseController
         $this->contact = ClientNote::findOrFail($id);
         $this->deletePermission = user()->permission('delete_client_note');
 
-        abort_403(!($this->deletePermission == 'all'
+        abort_403(! ($this->deletePermission == 'all'
                 || ($this->deletePermission == 'added' && $this->contact->added_by == user()->id))
             || ($this->deletePermission == 'both' && $this->contact->added_by == user()->id)
         );
@@ -298,5 +292,4 @@ class ClientNoteController extends AccountBaseController
     {
         return $this->show($id);
     }
-
 }

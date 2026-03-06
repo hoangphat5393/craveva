@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property-read mixed $icon
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Lead[] $leads
  * @property-read int|null $leads_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|LeadStatus newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|LeadStatus newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|LeadStatus query()
@@ -29,14 +30,16 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @method static \Illuminate\Database\Eloquent\Builder|LeadStatus wherePriority($value)
  * @method static \Illuminate\Database\Eloquent\Builder|LeadStatus whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|LeadStatus whereUpdatedAt($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|LeadStatus whereCompanyId($value)
+ *
  * @mixin \Eloquent
  */
 class LeadStatus extends BaseModel
 {
-
     use HasCompany;
 
     protected $table = 'lead_status';
@@ -50,5 +53,4 @@ class LeadStatus extends BaseModel
     {
         return $this->hasOne(UserLeadboardSetting::class, 'pipeline_stage_id')->where('user_id', user()->id);
     }
-
 }

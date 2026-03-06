@@ -9,7 +9,6 @@ use Symfony\Component\Console\Input\InputOption;
 
 class JobEndDateCheck extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
@@ -57,5 +56,4 @@ class JobEndDateCheck extends Command
             ['example', null, InputOption::VALUE_OPTIONAL, 'An example option.', null],
         ];
     }
-
 }

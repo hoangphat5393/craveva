@@ -2,28 +2,22 @@
 
 namespace App\Traits;
 
-use Exception;
-use Carbon\Carbon;
+use App\Models\DashboardWidget;
+use App\Models\Designation;
+use App\Models\EmployeeDetails;
+use App\Models\Leave;
 use App\Models\Role;
 use App\Models\Team;
 use App\Models\User;
-use App\Models\Leave;
-use App\Models\Designation;
-use App\Models\DashboardWidget;
-use App\Models\EmployeeDetails;
-use Google\Service\AnalyticsData\OrderBy;
+use Carbon\Carbon;
+use Exception;
 use Illuminate\Support\Facades\DB;
 
-/**
- *
- */
 trait HRDashboard
 {
-
     use CurrencyExchange;
 
     /**
-     *
      * @return void
      */
     public function hrDashboard()
@@ -56,13 +50,12 @@ trait HRDashboard
 
         if ($attandance->count() > 0) {
             try {
-                $this->averageAttendance = number_format(((array_sum(array_column($attandance->toArray(), 'employeeCount')) / $attandance->count()) * 100) / $this->totalEmployee, 2) . '%';
+                $this->averageAttendance = number_format(((array_sum(array_column($attandance->toArray(), 'employeeCount')) / $attandance->count()) * 100) / $this->totalEmployee, 2).'%';
             } catch (Exception $e) {
                 $this->averageAttendance = '0%';
             }
 
-        }
-        else {
+        } else {
             $this->averageAttendance = '0%';
         }
 
@@ -89,7 +82,7 @@ trait HRDashboard
             ->select('*', 'date_of_birth', DB::raw('MONTH(date_of_birth) months'))
             ->whereNotNull('date_of_birth')
             ->where(function ($query) use ($fromMonthDay, $tillMonthDay) {
-                $query->whereRaw('DATE_FORMAT(`date_of_birth`, "%m-%d") BETWEEN "' . $fromMonthDay . '" AND "' . $tillMonthDay . '"');
+                $query->whereRaw('DATE_FORMAT(`date_of_birth`, "%m-%d") BETWEEN "'.$fromMonthDay.'" AND "'.$tillMonthDay.'"');
             })
             ->orderBy('months')
             ->get();
@@ -105,8 +98,8 @@ trait HRDashboard
             ->get();
 
         $this->counts = User::select(
-            DB::raw('(select count(distinct(attendances.user_id)) from `attendances` inner join users as atd_user on atd_user.id=attendances.user_id inner join role_user on role_user.user_id=atd_user.id inner join roles on roles.id=role_user.role_id WHERE roles.name = "employee" and attendances.clock_in_time >= "' . today(company()->timezone)->setTimezone('UTC')->toDateTimeString() . '" and atd_user.status = "active" AND attendances.company_id = ' . company()->id . ') as totalTodayAttendance'),
-            DB::raw('(select count(users.id) from `users` inner join role_user on role_user.user_id=users.id inner join roles on roles.id=role_user.role_id WHERE roles.name = "employee" and users.status = "active" AND users.company_id = ' . company()->id . ') as totalEmployees')
+            DB::raw('(select count(distinct(attendances.user_id)) from `attendances` inner join users as atd_user on atd_user.id=attendances.user_id inner join role_user on role_user.user_id=atd_user.id inner join roles on roles.id=role_user.role_id WHERE roles.name = "employee" and attendances.clock_in_time >= "'.today(company()->timezone)->setTimezone('UTC')->toDateTimeString().'" and atd_user.status = "active" AND attendances.company_id = '.company()->id.') as totalTodayAttendance'),
+            DB::raw('(select count(users.id) from `users` inner join role_user on role_user.user_id=users.id inner join roles on roles.id=role_user.role_id WHERE roles.name = "employee" and users.status = "active" AND users.company_id = '.company()->id.') as totalEmployees')
         )
             ->first();
 
@@ -122,7 +115,7 @@ trait HRDashboard
         $data['labels'] = $departments->pluck('team_name')->toArray();
 
         foreach ($data['labels'] as $key => $value) {
-            $data['colors'][] = '#' . substr(md5($value), 0, 6);
+            $data['colors'][] = '#'.substr(md5($value), 0, 6);
         }
 
         $data['values'] = $departments->pluck('team_members_count')->toArray();
@@ -140,7 +133,7 @@ trait HRDashboard
         $data['labels'] = $departments->pluck('name')->toArray();
 
         foreach ($data['labels'] as $key => $value) {
-            $data['colors'][] = '#' . substr(md5($value), 0, 6);
+            $data['colors'][] = '#'.substr(md5($value), 0, 6);
         }
 
         $data['values'] = $departments->pluck('members_count')->toArray();
@@ -164,7 +157,7 @@ trait HRDashboard
         $data['labels'] = [];
 
         foreach ($labels as $key => $value) {
-            $data['labels'][] = __('app.' . $value);
+            $data['labels'][] = __('app.'.$value);
         }
 
         $data['values'] = $genderWiseEmployee->pluck('totalEmployee')->toArray();
@@ -184,12 +177,11 @@ trait HRDashboard
 
         foreach ($roleWiseChart as $key => $value) {
             if ($value->name == 'admin' || $value->name == 'employee') {
-                $data['labels'][] = __('app.' . $value->name);
-                $data['colors'][] = '#' . substr(md5($value->name), 0, 6);
-            }
-            else {
+                $data['labels'][] = __('app.'.$value->name);
+                $data['colors'][] = '#'.substr(md5($value->name), 0, 6);
+            } else {
                 $data['labels'][] = $value->display_name;
-                $data['colors'][] = '#' . substr(md5($value), 0, 6);
+                $data['colors'][] = '#'.substr(md5($value), 0, 6);
             }
         }
 
@@ -205,13 +197,12 @@ trait HRDashboard
         /** @phpstan-ignore-line */
         $endDate = $period->endDate->endOfMonth();
         /** @phpstan-ignore-line */
-
         $months = [];
 
         foreach ($period as $periodData) {
             $months[$periodData->format('m-Y')] = [
                 'y' => $periodData?->translatedFormat('F'),
-                'a' => 0
+                'a' => 0,
             ];
         }
 
@@ -252,7 +243,6 @@ trait HRDashboard
             ->get()
             ->keyBy('date');
 
-
         $graphData = [];
 
         foreach ($months as $key => $month) {
@@ -262,7 +252,7 @@ trait HRDashboard
 
             $graphData[] = [
                 'y' => $months[$key]['y'],
-                'a' => $oldEmployee
+                'a' => $oldEmployee,
             ];
         }
 
@@ -284,15 +274,13 @@ trait HRDashboard
         /** @phpstan-ignore-line */
         $endDate = $period->endDate->endOfMonth();
         /** @phpstan-ignore-line */
-
-
         $months = [];
 
         foreach ($period as $periodData) {
             $months[$periodData->format('m-Y')] = [
                 'y' => $periodData ? $periodData->translatedFormat('F') : null,
                 'a' => 0,
-                'b' => 0
+                'b' => 0,
             ];
         }
 
@@ -331,7 +319,7 @@ trait HRDashboard
             $graphData[] = [
                 'y' => $months[$key]['y'],
                 'a' => $joinings,
-                'b' => $exit
+                'b' => $exit,
             ];
 
         }
@@ -348,5 +336,4 @@ trait HRDashboard
         return $data;
 
     }
-
 }

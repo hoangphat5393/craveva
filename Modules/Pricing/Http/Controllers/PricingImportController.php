@@ -7,7 +7,6 @@ use App\Http\Controllers\AccountBaseController;
 use App\Http\Requests\Admin\Employee\ImportProcessRequest;
 use App\Http\Requests\Admin\Employee\ImportRequest;
 use App\Traits\ImportExcel;
-use Illuminate\Http\Request;
 use Modules\Pricing\Imports\ClientProductPricingImport;
 use Modules\Pricing\Imports\PricingTierItemsImport;
 use Modules\Pricing\Jobs\ImportClientProductPricingJob;
@@ -47,12 +46,12 @@ class PricingImportController extends AccountBaseController
             $addPermission = user()->permission('add_client_pricing');
             abort_403($addPermission != 'all' && $addPermission != 'added');
             $rvalue = $this->importFileProcess($request, ClientProductPricingImport::class);
-            $headingTitle = __('app.importExcel') . ' ' . __('pricing::app.contractProductPricing');
+            $headingTitle = __('app.importExcel').' '.__('pricing::app.contractProductPricing');
         } else {
             $addPermission = user()->permission('add_pricing_tiers');
             abort_403($addPermission != 'all' && $addPermission != 'added');
             $rvalue = $this->importFileProcess($request, PricingTierItemsImport::class);
-            $headingTitle = __('app.importExcel') . ' Pricing Tier Items';
+            $headingTitle = __('app.importExcel').' Pricing Tier Items';
         }
 
         if ($rvalue === 'abort') {

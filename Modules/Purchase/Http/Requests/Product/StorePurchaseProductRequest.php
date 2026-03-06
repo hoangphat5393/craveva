@@ -4,7 +4,6 @@ namespace Modules\Purchase\Http\Requests\Product;
 
 use App\Http\Requests\CoreRequest;
 use App\Traits\CustomFieldsRequestTrait;
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 class StorePurchaseProductRequest extends CoreRequest
@@ -25,7 +24,7 @@ class StorePurchaseProductRequest extends CoreRequest
                 'required',
                 Rule::unique('products')->where(function ($query) use ($companyId) {
                     return $query->where('company_id', $companyId);
-                })],   
+                })],
             'track_inventory' => 'sometimes',
             'type' => 'required|in:goods,service',
             'selling_price' => 'required|numeric',
@@ -69,5 +68,4 @@ class StorePurchaseProductRequest extends CoreRequest
     {
         return true;
     }
-
 }

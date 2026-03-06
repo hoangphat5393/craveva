@@ -7,7 +7,6 @@ use Illuminate\View\Component;
 
 class SettingSidebar extends Component
 {
-
     public $activeMenu;
 
     /**
@@ -29,5 +28,4 @@ class SettingSidebar extends Component
     {
         return view('components.setting-sidebar');
     }
-
 }

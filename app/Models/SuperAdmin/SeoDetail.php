@@ -2,8 +2,8 @@
 
 namespace App\Models\SuperAdmin;
 
-use App\Models\LanguageSetting;
 use App\Models\BaseModel;
+use App\Models\LanguageSetting;
 use App\Traits\HasMaskImage;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 
@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read mixed $og_image_url
+ *
  * @method static Builder|SeoDetail newModelQuery()
  * @method static Builder|SeoDetail newQuery()
  * @method static Builder|SeoDetail query()
@@ -32,13 +33,15 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
  * @method static Builder|SeoDetail whereSeoKeywords($value)
  * @method static Builder|SeoDetail whereSeoTitle($value)
  * @method static Builder|SeoDetail whereUpdatedAt($value)
+ *
  * @mixin Eloquent
+ *
  * @property string|null $og_image
+ *
  * @method static Builder|SeoDetail whereOgImage($value)
  */
 class SeoDetail extends BaseModel
 {
-
     use HasMaskImage;
 
     protected $guarded = ['id'];
@@ -52,18 +55,16 @@ class SeoDetail extends BaseModel
 
     public function getOgImageUrlAttribute()
     {
-        return ($this->og_image) ? asset_url_local_s3('front/seo-detail/' . $this->og_image) : asset('saas/img/home/home-crm.png');
+        return ($this->og_image) ? asset_url_local_s3('front/seo-detail/'.$this->og_image) : asset('saas/img/home/home-crm.png');
     }
 
     public function maskedOgImageUrl(): Attribute
     {
         return Attribute::make(
             get: function () {
-                return ($this->og_image) ? $this->generateMaskedImageAppUrl('front/seo-detail/' . $this->og_image) : asset('saas/img/home/home-crm.png');
+                return ($this->og_image) ? $this->generateMaskedImageAppUrl('front/seo-detail/'.$this->og_image) : asset('saas/img/home/home-crm.png');
             },
         );
 
     }
-
-
 }

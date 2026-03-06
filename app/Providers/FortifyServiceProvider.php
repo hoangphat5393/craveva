@@ -2,45 +2,40 @@
 
 namespace App\Providers;
 
-use App\Models\LanguageSetting;
-use Str;
-use Carbon\Carbon;
-use App\Models\User;
-use App\Models\Company;
-use App\Models\UserAuth;
-use Illuminate\Http\Request;
-use Laravel\Fortify\Fortify;
-use App\Models\GlobalSetting;
-use Laravel\Fortify\Features;
-use Froiden\Envato\Traits\AppBoot;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\App;
-use App\Models\SuperAdmin\FrontMenu;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use App\Models\SuperAdmin\FooterMenu;
+use App\Actions\Fortify\AttemptToAuthenticate;
 use App\Actions\Fortify\CreateNewUser;
-use App\Models\SuperAdmin\FrontDetail;
-use App\Models\SuperAdmin\FrontWidget;
-use Illuminate\Support\ServiceProvider;
+use App\Actions\Fortify\RedirectIfTwoFactorConfirmed;
 use App\Actions\Fortify\ResetUserPassword;
 use App\Actions\Fortify\UpdateUserPassword;
-use Laravel\Fortify\Contracts\LoginResponse;
-use App\Actions\Fortify\AttemptToAuthenticate;
-use App\Actions\Fortify\RedirectIfTwoFactorConfirmed;
 use App\Actions\Fortify\UpdateUserProfileInformation;
-use Laravel\Fortify\Contracts\TwoFactorLoginResponse;
+use App\Models\Company;
+use App\Models\GlobalSetting;
+use App\Models\LanguageSetting;
+use App\Models\SuperAdmin\FooterMenu;
+use App\Models\SuperAdmin\FrontDetail;
+use App\Models\SuperAdmin\FrontMenu;
+use App\Models\SuperAdmin\FrontWidget;
+use App\Models\User;
+use App\Models\UserAuth;
+use App\Scopes\CompanyScope;
+use Carbon\Carbon;
+use Froiden\Envato\Traits\AppBoot;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\ServiceProvider;
 use Laravel\Fortify\Actions\EnsureLoginIsNotThrottled;
 use Laravel\Fortify\Actions\PrepareAuthenticatedSession;
+use Laravel\Fortify\Contracts\LoginResponse;
 use Laravel\Fortify\Contracts\LogoutResponse;
-
-
-use App\Scopes\CompanyScope;
-use Illuminate\Support\Facades\Log;
+use Laravel\Fortify\Contracts\TwoFactorLoginResponse;
+use Laravel\Fortify\Features;
+use Laravel\Fortify\Fortify;
 
 class FortifyServiceProvider extends ServiceProvider
 {
-
     use AppBoot;
 
     /**
@@ -48,19 +43,18 @@ class FortifyServiceProvider extends ServiceProvider
      *
      * @return void
      */
-
     public function register()
     {
 
-        $this->app->instance(LoginResponse::class, new class implements LoginResponse {
-
+        $this->app->instance(LoginResponse::class, new class implements LoginResponse
+        {
             public function toResponse($request)
             {
                 Log::info('LoginResponse triggered', ['wantsJson' => $request->wantsJson(), 'ajax' => $request->ajax()]);
                 $authUser = auth()->user();
                 $appUser = $authUser?->userWithoutCompany ?? $authUser?->user;
 
-                if (!$appUser) {
+                if (! $appUser) {
                     Log::warning('LoginResponse: No app user found');
                     if ($request->wantsJson()) {
                         return response()->json([
@@ -69,6 +63,7 @@ class FortifyServiceProvider extends ServiceProvider
                             'url' => route('login'),
                         ]);
                     }
+
                     return redirect()->route('login');
                 }
 
@@ -110,14 +105,14 @@ class FortifyServiceProvider extends ServiceProvider
             }
         });
 
-        $this->app->instance(TwoFactorLoginResponse::class, new class implements TwoFactorLoginResponse {
-
+        $this->app->instance(TwoFactorLoginResponse::class, new class implements TwoFactorLoginResponse
+        {
             public function toResponse($request)
             {
                 $authUser = auth()->user();
                 $appUser = $authUser?->userWithoutCompany ?? $authUser?->user;
 
-                if (!$appUser) {
+                if (! $appUser) {
                     if ($request->wantsJson()) {
                         return response()->json([
                             'status' => 'success',
@@ -125,6 +120,7 @@ class FortifyServiceProvider extends ServiceProvider
                             'url' => route('login'),
                         ]);
                     }
+
                     return redirect()->route('login');
                 }
 
@@ -157,11 +153,12 @@ class FortifyServiceProvider extends ServiceProvider
             }
         });
 
-        $this->app->instance(LogoutResponse::class, new class implements LogoutResponse {
-
+        $this->app->instance(LogoutResponse::class, new class implements LogoutResponse
+        {
             public function toResponse($request)
             {
                 session()->flush();
+
                 return redirect()->route('login');
             }
         });
@@ -196,7 +193,7 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::authenticateUsing(function (Request $request) {
             Log::info('AuthenticateUsing triggered', ['email' => $request->email]);
             $rules = [
-                'email' => 'required|email:rfc,strict'
+                'email' => 'required|email:rfc,strict',
             ];
 
             $request->validate($rules);
@@ -220,12 +217,11 @@ class FortifyServiceProvider extends ServiceProvider
             Log::warning('AuthenticateUsing: Credentials failed or user not found');
         });
 
-
         Fortify::requestPasswordResetLinkView(function () {
             $globalSetting = GlobalSetting::first();
             App::setLocale($globalSetting->locale);
             Carbon::setLocale($globalSetting->locale);
-            setlocale(LC_TIME, $globalSetting->locale . '_' . mb_strtoupper($globalSetting->locale));
+            setlocale(LC_TIME, $globalSetting->locale.'_'.mb_strtoupper($globalSetting->locale));
             $frontWidgets = FrontWidget::all();
 
             return view('auth.passwords.forget', [
@@ -248,10 +244,9 @@ class FortifyServiceProvider extends ServiceProvider
             // Is craveva
             $company = Company::withCount('users')->first();
 
-
             App::setLocale($globalSetting->locale);
             Carbon::setLocale($globalSetting->locale);
-            setlocale(LC_TIME, $globalSetting->locale . '_' . mb_strtoupper($globalSetting->locale));
+            setlocale(LC_TIME, $globalSetting->locale.'_'.mb_strtoupper($globalSetting->locale));
 
             $userTotal = User::count();
 
@@ -269,7 +264,7 @@ class FortifyServiceProvider extends ServiceProvider
             $languages = language_setting();
             $frontWidgets = FrontWidget::all();
 
-            if ($globalSetting->front_design == 1 && $globalSetting->login_ui == 1 && !module_enabled('Subdomain')) {
+            if ($globalSetting->front_design == 1 && $globalSetting->login_ui == 1 && ! module_enabled('Subdomain')) {
                 $frontDetail = FrontDetail::first();
 
                 if (session()->has('language')) {
@@ -280,7 +275,7 @@ class FortifyServiceProvider extends ServiceProvider
 
                 App::setLocale($locale);
                 Carbon::setLocale($locale);
-                setlocale(LC_TIME, $locale . '_' . mb_strtoupper($locale));
+                setlocale(LC_TIME, $locale.'_'.mb_strtoupper($locale));
 
                 $localeLanguage = LanguageSetting::where('language_code', App::getLocale())->first();
 
@@ -319,8 +314,9 @@ class FortifyServiceProvider extends ServiceProvider
             $globalSetting = GlobalSetting::first();
             App::setLocale($globalSetting->locale);
             Carbon::setLocale($globalSetting->locale);
-            setlocale(LC_TIME, $globalSetting->locale . '_' . mb_strtoupper($globalSetting->locale));
+            setlocale(LC_TIME, $globalSetting->locale.'_'.mb_strtoupper($globalSetting->locale));
             $frontWidgets = FrontWidget::all();
+
             return view('auth.passwords.reset-password', [
                 'request' => $request,
                 'globalSetting' => $globalSetting,
@@ -332,7 +328,7 @@ class FortifyServiceProvider extends ServiceProvider
             $globalSetting = GlobalSetting::first();
             App::setLocale($globalSetting->locale);
             Carbon::setLocale($globalSetting->locale);
-            setlocale(LC_TIME, $globalSetting->locale . '_' . mb_strtoupper($globalSetting->locale));
+            setlocale(LC_TIME, $globalSetting->locale.'_'.mb_strtoupper($globalSetting->locale));
 
             return view('auth.password-confirm', ['request' => $request, 'globalSetting' => $globalSetting]);
         });
@@ -341,7 +337,7 @@ class FortifyServiceProvider extends ServiceProvider
             $globalSetting = GlobalSetting::first();
             App::setLocale($globalSetting->locale);
             Carbon::setLocale($globalSetting->locale);
-            setlocale(LC_TIME, $globalSetting->locale . '_' . mb_strtoupper($globalSetting->locale));
+            setlocale(LC_TIME, $globalSetting->locale.'_'.mb_strtoupper($globalSetting->locale));
             $frontWidgets = FrontWidget::all();
 
             return view('auth.two-factor-challenge', [
@@ -356,13 +352,13 @@ class FortifyServiceProvider extends ServiceProvider
             $company = Company::first();
             $globalSetting = GlobalSetting::first();
 
-            if (!$company->allow_client_signup) {
+            if (! $company->allow_client_signup) {
                 return redirect(route('login'));
             }
 
             App::setLocale($globalSetting->locale);
             Carbon::setLocale($globalSetting->locale);
-            setlocale(LC_TIME, $globalSetting->locale . '_' . mb_strtoupper($globalSetting->locale));
+            setlocale(LC_TIME, $globalSetting->locale.'_'.mb_strtoupper($globalSetting->locale));
             $frontWidgets = FrontWidget::all();
 
             return view('auth.register', [
@@ -397,7 +393,7 @@ class FortifyServiceProvider extends ServiceProvider
                 return redirect()->route('login');
             }
 
-            if ((!is_null($userAuth->email_code_expires_at) && $userAuth->email_code_expires_at->isPast()) || is_null($userAuth->email_code_expires_at)) {
+            if ((! is_null($userAuth->email_code_expires_at) && $userAuth->email_code_expires_at->isPast()) || is_null($userAuth->email_code_expires_at)) {
                 $userAuth->sendEmailVerificationNotification();
             }
 

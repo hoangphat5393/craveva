@@ -8,6 +8,7 @@ use App\Traits\CustomFieldsRequestTrait;
 class UpdateOrder extends CoreRequest
 {
     use CustomFieldsRequestTrait;
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -31,7 +32,7 @@ class UpdateOrder extends CoreRequest
             'sub_total' => 'required',
             'total' => 'required',
         ];
-        
+
         $rules = $this->customFieldRules($rules);
 
         return $rules;
@@ -45,5 +46,4 @@ class UpdateOrder extends CoreRequest
 
         return $attributes;
     }
-
 }

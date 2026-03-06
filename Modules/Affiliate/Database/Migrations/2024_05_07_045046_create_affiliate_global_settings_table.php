@@ -7,7 +7,6 @@ use Modules\Affiliate\Entities\AffiliateGlobalSetting;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      */
@@ -15,7 +14,7 @@ return new class extends Migration
     {
         \App\Models\Module::validateVersion(AffiliateGlobalSetting::MODULE_NAME);
 
-        if (!Schema::hasTable('affiliate_global_settings')) {
+        if (! Schema::hasTable('affiliate_global_settings')) {
             Schema::create('affiliate_global_settings', function (Blueprint $table) {
                 $table->id();
                 $table->string('purchase_code')->nullable();
@@ -38,5 +37,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('affiliate_global_settings');
     }
-
 };

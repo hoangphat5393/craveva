@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class UpdateRequest extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -35,5 +34,4 @@ class UpdateRequest extends CoreRequest
 
         return $rules;
     }
-
 }

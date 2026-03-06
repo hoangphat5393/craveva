@@ -2,10 +2,10 @@
 
 namespace Modules\Purchase\Entities;
 
-use App\Models\UnitType;
-use App\Models\Tax;
-use App\Models\Product;
 use App\Models\BaseModel;
+use App\Models\Product;
+use App\Models\Tax;
+use App\Models\UnitType;
 use App\Traits\HasCompany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -14,13 +14,12 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class PurchaseItem extends BaseModel
 {
-
     use HasCompany;
-
 
     protected $fillable = [];
 
     protected $appends = ['total_amount'];
+
     protected $with = [];
 
     public function product(): BelongsTo
@@ -51,8 +50,8 @@ class PurchaseItem extends BaseModel
     public function getTotalAmountAttribute()
     {
 
-        if (!is_null($this->price) && !is_null($this->tax)) {
-            return (int)$this->price + ((int)$this->price * ((int)$this->tax->rate_percent / 100));
+        if (! is_null($this->price) && ! is_null($this->tax)) {
+            return (int) $this->price + ((int) $this->price * ((int) $this->tax->rate_percent / 100));
         }
 
         return '';
@@ -73,16 +72,15 @@ class PurchaseItem extends BaseModel
         if ($purchaseItem && $purchaseItem->taxes) {
             $numItems = count(json_decode($purchaseItem->taxes));
 
-            if (!is_null($purchaseItem->taxes)) {
+            if (! is_null($purchaseItem->taxes)) {
                 foreach (json_decode($purchaseItem->taxes) as $index => $tax) {
-                    $taxes .= $tax->tax_name . ': ' . $tax->rate_percent . '%';
+                    $taxes .= $tax->tax_name.': '.$tax->rate_percent.'%';
 
-                    $taxes = ($index + 1 != $numItems) ? $taxes . ', ' : $taxes;
+                    $taxes = ($index + 1 != $numItems) ? $taxes.', ' : $taxes;
                 }
             }
         }
 
         return $taxes;
     }
-
 }

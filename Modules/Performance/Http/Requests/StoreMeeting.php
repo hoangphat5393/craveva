@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreMeeting extends FormRequest
 {
-
     public function authorize(): bool
     {
         return true;
@@ -19,7 +18,7 @@ class StoreMeeting extends FormRequest
             'start_time' => 'required',
             'end_time' => 'required|after:start_time',
             'meeting_for' => 'exists:users,id',
-            'meeting_by' => 'exists:users,id'
+            'meeting_by' => 'exists:users,id',
         ];
     }
 
@@ -29,5 +28,4 @@ class StoreMeeting extends FormRequest
             'end_time.required' => __('performance::messages.endTime'),
         ];
     }
-
 }

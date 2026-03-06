@@ -9,8 +9,8 @@ use Illuminate\Notifications\Messages\VonageMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Str;
 use Modules\Sms\Entities\SmsNotificationSetting;
-use Modules\Sms\Http\Traits\WhatsappMessageTrait;
 use Modules\Sms\Entities\SmsTemplateId;
+use Modules\Sms\Http\Traits\WhatsappMessageTrait;
 use NotificationChannels\Telegram\TelegramMessage;
 use NotificationChannels\Twilio\TwilioChannel;
 use NotificationChannels\Twilio\TwilioSmsMessage;
@@ -66,7 +66,6 @@ class TicketAgentSms extends Notification implements ShouldQueue
 
             if (sms_setting()->nexmo_status) {
 
-
                 array_push($via, 'vonage');
             }
 
@@ -97,7 +96,7 @@ class TicketAgentSms extends Notification implements ShouldQueue
         }
     }
 
-    //phpcs:ignore
+    // phpcs:ignore
     public function toVonage($notifiable)
     {
         if (sms_setting()->nexmo_status) {
@@ -106,10 +105,10 @@ class TicketAgentSms extends Notification implements ShouldQueue
         }
     }
 
-    //phpcs:ignore
+    // phpcs:ignore
     public function toMsg91($notifiable)
     {
-        $mobile = $notifiable->country_phonecode . $notifiable->mobile;
+        $mobile = $notifiable->country_phonecode.$notifiable->mobile;
         $subject = Str::limit($this->ticket->subject, 27, '...');
 
         if ($this->smsSetting->msg91_flow_id && sms_setting()->msg91_status) {

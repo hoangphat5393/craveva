@@ -4,17 +4,13 @@ namespace Modules\Recruit\Listeners;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Notification;
-use Modules\Recruit\Entities\RecruitJob;
-use Modules\Recruit\Entities\RecruitJobApplication;
 use Modules\Recruit\Events\NewJobApplicationEvent;
-use Modules\Recruit\Notifications\NewJobApplication;
-use Modules\Recruit\Notifications\SendJobApplication;
 use Modules\Recruit\Notifications\AdminNewJobApplication;
 use Modules\Recruit\Notifications\FrontJobApplyCandidate;
+use Modules\Recruit\Notifications\NewJobApplication;
 
 class NewJobApplicationListener
 {
-
     /**
      * Create the event listener.
      *
@@ -28,7 +24,7 @@ class NewJobApplicationListener
     /**
      * Handle the event.
      *
-     * @param object $event
+     * @param  object  $event
      * @return void
      */
     public function handle(NewJobApplicationEvent $event)
@@ -52,8 +48,7 @@ class NewJobApplicationListener
         }
         if ($event->jobApplication->send_email == 1) {
             // Send notification to the candidate if email exists
-            Notification::send($jobApplication, new FrontJobApplyCandidate($jobApplication,$job));
+            Notification::send($jobApplication, new FrontJobApplyCandidate($jobApplication, $job));
         }
     }
-
 }

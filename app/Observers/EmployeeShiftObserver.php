@@ -8,7 +8,6 @@ use Carbon\Carbon;
 
 class EmployeeShiftObserver
 {
-
     public function updating(EmployeeShift $employeeShift)
     {
         session()->forget('attendance_setting');
@@ -17,14 +16,13 @@ class EmployeeShiftObserver
 
         if ($existingSchedules) {
             foreach ($existingSchedules as $item) {
-                $item->shift_start_time = $item->date->toDateString() . ' ' . Carbon::parse($employeeShift->office_start_time)->toTimeString();
+                $item->shift_start_time = $item->date->toDateString().' '.Carbon::parse($employeeShift->office_start_time)->toTimeString();
 
                 if (Carbon::parse($employeeShift->office_start_time)->gt(Carbon::parse($employeeShift->office_end_time))) {
-                    $item->shift_end_time = $item->date->addDay()->toDateString() . ' ' . Carbon::parse($employeeShift->office_end_time)->toTimeString();
+                    $item->shift_end_time = $item->date->addDay()->toDateString().' '.Carbon::parse($employeeShift->office_end_time)->toTimeString();
 
-                }
-                else {
-                    $item->shift_end_time = $item->date->toDateString() . ' ' . Carbon::parse($employeeShift->office_end_time)->toTimeString();
+                } else {
+                    $item->shift_end_time = $item->date->toDateString().' '.Carbon::parse($employeeShift->office_end_time)->toTimeString();
                 }
 
                 $item->saveQuietly();
@@ -38,5 +36,4 @@ class EmployeeShiftObserver
             $model->company_id = company()->id;
         }
     }
-
 }

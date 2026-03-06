@@ -2,7 +2,6 @@
 
 namespace Modules\Recruit\Traits;
 
-use Illuminate\Support\Facades\Config;
 use Modules\Recruit\Entities\RecruitCustomQuestion;
 
 trait CustomQuestion

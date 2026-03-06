@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      */
@@ -63,12 +62,12 @@ return new class extends Migration
                             'previous_department_id' => $employee->department_id,
                             'current_department_id' => $employee->department_id,
                             'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
-                            'updated_at' => Carbon::now()->format('Y-m-d H:i:s')
+                            'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
                         ];
                     }
                 }
 
-                if (!empty($data)) {
+                if (! empty($data)) {
                     foreach (array_chunk($data, 100) as $chunk) {
                         Promotion::insert($chunk);
                     }
@@ -84,5 +83,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('promotions');
     }
-
 };

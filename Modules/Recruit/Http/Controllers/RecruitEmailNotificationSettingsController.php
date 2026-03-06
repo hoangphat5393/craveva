@@ -54,7 +54,6 @@ class RecruitEmailNotificationSettingsController extends AccountBaseController
         $settings->mail_setting = $mailSetting;
         $settings->save();
 
-
         return Reply::success(__('messages.updateSuccess'));
     }
 }

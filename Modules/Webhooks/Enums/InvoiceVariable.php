@@ -2,8 +2,6 @@
 
 namespace Modules\Webhooks\Enums;
 
-use Modules\Webhooks\Enums\Variable;
-
 enum InvoiceVariable: string implements Variable
 {
     case total = '##TOTAL##';
@@ -46,5 +44,4 @@ enum InvoiceVariable: string implements Variable
             'bank_account_id',
         ];
     }
-
 }

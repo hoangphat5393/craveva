@@ -3,13 +3,12 @@
 namespace App\Listeners;
 
 use App\Events\NewProductPurchaseEvent;
-use App\Notifications\NewProductPurchaseRequest;
 use App\Models\User;
+use App\Notifications\NewProductPurchaseRequest;
 use Illuminate\Support\Facades\Notification;
 
 class NewProductPurchaseListener
 {
-
     /**
      * NewProductPurchaseListener constructor.
      */
@@ -18,14 +17,9 @@ class NewProductPurchaseListener
         //
     }
 
-    /**
-     * @param NewProductPurchaseEvent $event
-     */
-
     public function handle(NewProductPurchaseEvent $event)
     {
         $admins = User::allAdmins($event->invoice->company->id);
         Notification::send($admins, new NewProductPurchaseRequest($event->invoice));
     }
-
 }

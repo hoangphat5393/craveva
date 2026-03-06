@@ -11,7 +11,6 @@ class StoreVisaRequest extends FormRequest
      *
      * @return bool
      */
-
     public function authorize()
     {
         return true;
@@ -25,13 +24,13 @@ class StoreVisaRequest extends FormRequest
     public function rules()
     {
         $setting = company();
+
         return [
             'visa_number' => 'required|unique:visa_details',
             'issue_date' => 'required',
-            'expiry_date' => 'required|date_format:"' . $setting->date_format . '"|after_or_equal:issue_date',
+            'expiry_date' => 'required|date_format:"'.$setting->date_format.'"|after_or_equal:issue_date',
             'country' => 'required',
-            'alert_before_months' => 'nullable|integer|min:0|max:12'
+            'alert_before_months' => 'nullable|integer|min:0|max:12',
         ];
     }
-
 }

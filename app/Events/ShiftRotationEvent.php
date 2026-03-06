@@ -2,12 +2,7 @@
 
 namespace App\Events;
 
-use App\Models\EmployeeShiftSchedule;
-use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
@@ -16,7 +11,9 @@ class ShiftRotationEvent
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $employeeData;
+
     public $dates;
+
     public $rotationFrequency;
 
     /**
@@ -30,5 +27,4 @@ class ShiftRotationEvent
         $this->dates = $dates;
         $this->rotationFrequency = $rotationFrequency;
     }
-
 }

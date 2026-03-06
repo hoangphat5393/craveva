@@ -3,25 +3,25 @@
 namespace Modules\Affiliate\Http\Controllers;
 
 use App\Helper\Reply;
-use Modules\Affiliate\Entities\Payout;
-use Modules\Affiliate\Entities\Referral;
-use Modules\Affiliate\Entities\Affiliate;
 use App\Http\Controllers\AccountBaseController;
-use Modules\Affiliate\Entities\AffiliateSetting;
 use Modules\Affiliate\DataTables\PayoutsDataTable;
 use Modules\Affiliate\DataTables\ReferralsDataTable;
+use Modules\Affiliate\Entities\Affiliate;
+use Modules\Affiliate\Entities\AffiliateSetting;
+use Modules\Affiliate\Entities\Payout;
+use Modules\Affiliate\Entities\Referral;
 use Modules\Affiliate\Http\Requests\UpdateAffiliate;
 
 class AffiliateDashboardController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'affiliate::app.menu.affiliateDashboard';
 
         $this->middleware(function ($request, $next) {
-            abort_403(!(user()->permission('view_affiliate_dashboard') == 'all' || isAffiliate()));
+            abort_403(! (user()->permission('view_affiliate_dashboard') == 'all' || isAffiliate()));
+
             return $next($request);
         });
     }
@@ -31,7 +31,7 @@ class AffiliateDashboardController extends AccountBaseController
      */
     public function index()
     {
-        abort_403(!isAffiliate());
+        abort_403(! isAffiliate());
         $this->settings = AffiliateSetting::first();
         $this->affiliate = Affiliate::with('user')->where('user_id', user()->id)->first();
         $affiliates = Affiliate::with('user')->where('user_id', user()->id)->get()->pluck('id');
@@ -42,8 +42,7 @@ class AffiliateDashboardController extends AccountBaseController
 
         if (user()->is_superadmin) {
             $currencyId = global_setting()->currency_id;
-        }
-        else {
+        } else {
             $currencyId = user()->company->currency_id;
         }
 
@@ -55,13 +54,13 @@ class AffiliateDashboardController extends AccountBaseController
         $tab = request('tab');
 
         switch ($tab) {
-        case 'payouts':
-            return $this->payouts();
-        case 'referrals':
-            return $this->referrals();
-        default:
-            $this->view = 'affiliate::affiliate-dashboard.ajax.affiliates';
-            break;
+            case 'payouts':
+                return $this->payouts();
+            case 'referrals':
+                return $this->referrals();
+            default:
+                $this->view = 'affiliate::affiliate-dashboard.ajax.affiliates';
+                break;
         }
 
         if (request()->ajax()) {
@@ -75,7 +74,7 @@ class AffiliateDashboardController extends AccountBaseController
 
     public function payouts()
     {
-        $dataTable = new PayoutsDataTable();
+        $dataTable = new PayoutsDataTable;
         $tab = request('tab');
         $this->activeTab = $tab ?: 'payouts';
 
@@ -86,7 +85,7 @@ class AffiliateDashboardController extends AccountBaseController
 
     public function referrals()
     {
-        $dataTable = new ReferralsDataTable();
+        $dataTable = new ReferralsDataTable;
         $tab = request('tab');
         $this->activeTab = $tab ?: 'referrals';
 
@@ -102,9 +101,10 @@ class AffiliateDashboardController extends AccountBaseController
     {
         $this->affiliate = Affiliate::findOrFail($id);
 
-        abort_403(!(user()->permission('edit_affiliates') == 'all'
+        abort_403(! (user()->permission('edit_affiliates') == 'all'
             || (user()->id == $this->affiliate->user_id)
         ));
+
         return view('affiliate::affiliate.ajax.edit-slug', $this->data);
     }
 
@@ -114,7 +114,7 @@ class AffiliateDashboardController extends AccountBaseController
     public function update(UpdateAffiliate $request, $id)
     {
         $affiliate = Affiliate::findOrFail($id);
-        abort_403(!(user()->permission('edit_affiliates') == 'all'
+        abort_403(! (user()->permission('edit_affiliates') == 'all'
             || (user()->id == $affiliate->user_id)
         ));
 

@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreRequest extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -25,9 +24,8 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'category_name' => 'required|unique:discussion_categories,name,null,id,company_id,' . company()->id,
-            'color' => 'required'
+            'category_name' => 'required|unique:discussion_categories,name,null,id,company_id,'.company()->id,
+            'color' => 'required',
         ];
     }
-
 }

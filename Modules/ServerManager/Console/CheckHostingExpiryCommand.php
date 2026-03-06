@@ -2,9 +2,9 @@
 
 namespace Modules\ServerManager\Console;
 
+use App\Models\Company;
 use Illuminate\Console\Command;
 use Modules\ServerManager\Jobs\CheckExpiringHostingsJob;
-use App\Models\Company;
 
 class CheckHostingExpiryCommand extends Command
 {
@@ -36,6 +36,7 @@ class CheckHostingExpiryCommand extends Command
         }
 
         $this->info('Hosting expiry check completed successfully.');
+
         return Command::SUCCESS;
     }
 }

@@ -5,8 +5,6 @@ namespace Modules\Recruit\Entities;
 use App\Models\BaseModel;
 use App\Models\User;
 use App\Scopes\ActiveScope;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Modules\Recruit\Observers\InterviewEmployeeObserver;
 
@@ -29,5 +27,4 @@ class RecruitInterviewEmployees extends BaseModel
     {
         return $this->belongsTo(User::class, 'user_id')->withoutGlobalScope(ActiveScope::class);
     }
-
 }

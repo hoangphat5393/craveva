@@ -3,14 +3,13 @@
 namespace Modules\Recruit\Observers;
 
 use Modules\Recruit\Entities\RecruitJob;
+use Modules\Recruit\Entities\RecruitJobApplication;
 use Modules\Recruit\Entities\RecruitJobHistory;
 use Modules\Recruit\Events\NewJobApplicationEvent;
-use Modules\Recruit\Entities\RecruitJobApplication;
 use Modules\Recruit\Events\UpdateJobApplicationEvent;
 
 class JobApplicationsObserver
 {
-
     public function saving(RecruitJobApplication $event)
     {
         if (! isRunningInConsoleOrSeeding() && user()) {
@@ -35,7 +34,7 @@ class JobApplicationsObserver
             if (\user()) {
                 $this->logRecruitJobsActivity($event->recruit_job_id, user()->id, 'createJobapplication', $event->id, null, $event->recruit_application_status_id);
             }
-            $job=RecruitJob::where('id', $event->recruit_job_id)->first();
+            $job = RecruitJob::where('id', $event->recruit_job_id)->first();
 
             event(new NewJobApplicationEvent($event, $job));
         }
@@ -83,14 +82,10 @@ class JobApplicationsObserver
 
         $activity->user_id = $userID;
         $activity->details = $text;
-        try
-        {
+        try {
             $activity->save();
-        }
-        catch(\Exception $e)
-        {
+        } catch (\Exception $e) {
             dd($e->getMessage());
         }
     }
-
 }

@@ -2,12 +2,11 @@
 
 namespace Modules\CyberSecurity\Http\Requests;
 
-use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreIpRequest extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -33,5 +32,4 @@ class StoreIpRequest extends FormRequest
             ],
         ];
     }
-
 }

@@ -1,6 +1,6 @@
 <?php
 
-return array(
+return [
     'noGoalTypeSettingsAdded' => '未添加目標類型設置',
     'noKeyResultsMetrics' => '未添加關鍵結果指標',
     'atleastOneValidation' => '至少選擇一項',
@@ -38,4 +38,4 @@ return array(
     'viewPastMeeting' => '會議是今年過去幾個月待處理的。',
     'viewPastMeetings' => '會議是今年過去幾個月待處理的。',
     'privateAgenda' => '私人議程',
-);
+];

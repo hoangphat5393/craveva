@@ -18,6 +18,7 @@ use App\Traits\IconTrait;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read mixed $file_url
  * @property-read mixed $icon
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|EstimateTemplateItemImage newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|EstimateTemplateItemImage newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|EstimateTemplateItemImage query()
@@ -30,7 +31,9 @@ use App\Traits\IconTrait;
  * @method static \Illuminate\Database\Eloquent\Builder|EstimateTemplateItemImage whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|EstimateTemplateItemImage whereSize($value)
  * @method static \Illuminate\Database\Eloquent\Builder|EstimateTemplateItemImage whereUpdatedAt($value)
+ *
  * @property-read mixed $file
+ *
  * @mixin \Eloquent
  */
 class EstimateTemplateItemImage extends BaseModel
@@ -40,20 +43,20 @@ class EstimateTemplateItemImage extends BaseModel
     const FILE_PATH = 'estimate-files';
 
     protected $appends = ['file_url', 'icon', 'file'];
+
     protected $fillable = ['estimate_template_item_id', 'filename', 'hashname', 'size', 'external_link'];
 
     public function getFileUrlAttribute()
     {
-        if($this->external_link){
+        if ($this->external_link) {
             return str($this->external_link)->contains('http') ? $this->external_link : asset_url_local_s3($this->external_link);
         }
 
-        return asset_url_local_s3(EstimateTemplateItemImage::FILE_PATH . '/' . $this->estimate_template_item_id . '/' . $this->hashname);
+        return asset_url_local_s3(EstimateTemplateItemImage::FILE_PATH.'/'.$this->estimate_template_item_id.'/'.$this->hashname);
     }
 
     public function getFileAttribute()
     {
-        return $this->external_link ?: (EstimateTemplateItemImage::FILE_PATH . '/' . $this->estimate_template_item_id . '/' . $this->hashname);
+        return $this->external_link ?: (EstimateTemplateItemImage::FILE_PATH.'/'.$this->estimate_template_item_id.'/'.$this->hashname);
     }
-
 }

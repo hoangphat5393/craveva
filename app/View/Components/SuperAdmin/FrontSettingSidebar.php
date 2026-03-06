@@ -6,7 +6,6 @@ use Illuminate\View\Component;
 
 class FrontSettingSidebar extends Component
 {
-
     public $activeMenu;
 
     /**
@@ -28,5 +27,4 @@ class FrontSettingSidebar extends Component
     {
         return view('components.super-admin.front-setting-sidebar');
     }
-
 }

@@ -7,12 +7,16 @@ use Illuminate\View\Component;
 
 class FileMultiple extends Component
 {
-
     public $fieldLabel;
+
     public $fieldName;
+
     public $fieldId;
+
     public $fieldHelp;
+
     public $fieldRequired;
+
     public $popover;
 
     /**
@@ -39,5 +43,4 @@ class FileMultiple extends Component
     {
         return view('components.forms.file-multiple');
     }
-
 }

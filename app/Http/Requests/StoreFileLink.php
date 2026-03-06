@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreFileLink extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -29,5 +28,4 @@ class StoreFileLink extends FormRequest
             'filename' => 'required',
         ];
     }
-
 }

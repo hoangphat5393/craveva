@@ -2,22 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Currency\UpdateCurrency;
-use App\Models\Currency;
-use App\Models\GlobalSetting;
-use Illuminate\Database\QueryException;
-use Illuminate\Http\Request;
 use App\Helper\Reply;
 use App\Http\Requests\Currency\StoreCurrency;
 use App\Http\Requests\Currency\StoreCurrencyExchangeKey;
-use App\Models\Company;
-use App\Models\CurrencyFormatSetting;
-use GuzzleHttp\Client;
+use App\Http\Requests\Currency\UpdateCurrency;
+use App\Models\Currency;
+use App\Models\GlobalSetting;
 use App\Traits\CurrencyExchange;
+use GuzzleHttp\Client;
+use Illuminate\Database\QueryException;
 
 class CurrencySettingController extends AccountBaseController
 {
-
     use CurrencyExchange;
 
     public function __construct()
@@ -68,13 +64,13 @@ class CurrencySettingController extends AccountBaseController
     }
 
     /**
-     * @param StoreCurrency $request
      * @return array|string[]
+     *
      * @throws \Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException
      */
     public function store(StoreCurrency $request)
     {
-        $currency = new Currency();
+        $currency = new Currency;
         $currency->currency_name = $request->currency_name;
         $currency->currency_symbol = $request->currency_symbol;
         $currency->currency_code = $request->currency_code;
@@ -100,7 +96,7 @@ class CurrencySettingController extends AccountBaseController
     /**
      * Show the form for editing the specified resource.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
     public function edit($id)
@@ -129,7 +125,7 @@ class CurrencySettingController extends AccountBaseController
         $currency->decimal_separator = $request->decimal_separator;
         $currency->save();
 
-        session()->forget('currency_format_setting' . $currency->id);
+        session()->forget('currency_format_setting'.$currency->id);
         session()->forget('currency_format_setting');
 
         return Reply::success(__('messages.updateSuccess'));
@@ -138,7 +134,7 @@ class CurrencySettingController extends AccountBaseController
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
+     * @param  int  $id
      * @return array
      */
     public function destroy($id)
@@ -168,11 +164,11 @@ class CurrencySettingController extends AccountBaseController
 
         try {
             // Get exchange rate
-            $client = new Client();
-            $res = $client->request('GET', 'https://' . $currencyApiKeyVersion . '.currconv.com/api/v7/convert?q=' . $currency . '_' . companyOrGlobalSetting()->currency->currency_code . '&compact=ultra&apiKey=' . $currencyApiKey);
+            $client = new Client;
+            $res = $client->request('GET', 'https://'.$currencyApiKeyVersion.'.currconv.com/api/v7/convert?q='.$currency.'_'.companyOrGlobalSetting()->currency->currency_code.'&compact=ultra&apiKey='.$currencyApiKey);
             $conversionRate = $res->getBody();
             $conversionRate = json_decode($conversionRate, true);
-            $rate = $conversionRate[mb_strtoupper($currency) . '_' . companyOrGlobalSetting()->currency->currency_code];
+            $rate = $conversionRate[mb_strtoupper($currency).'_'.companyOrGlobalSetting()->currency->currency_code];
 
             return Reply::dataOnly(['status' => 'success', 'value' => $rate]);
         } catch (\Throwable $th) {
@@ -202,11 +198,11 @@ class CurrencySettingController extends AccountBaseController
     public function currencyExchangeKey()
     {
         abort_403(GlobalSetting::validateSuperAdmin());
+
         return view('currency-settings.currency-exchange-modal', $this->data);
     }
 
     /**
-     * @param StoreCurrencyExchangeKey $request
      * @return array
      */
     public function currencyExchangeKeyStore(StoreCurrencyExchangeKey $request)
@@ -224,7 +220,6 @@ class CurrencySettingController extends AccountBaseController
 
         // remove session
         cache()->forget('global_setting');
-
 
         return Reply::success(__('messages.updateSuccess'));
     }

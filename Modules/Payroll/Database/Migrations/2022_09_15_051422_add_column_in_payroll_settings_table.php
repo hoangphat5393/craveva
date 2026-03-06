@@ -37,8 +37,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('payroll_settings', function (Blueprint $table) {
-
-        });
+        Schema::table('payroll_settings', function (Blueprint $table) {});
     }
 };

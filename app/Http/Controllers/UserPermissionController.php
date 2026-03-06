@@ -11,7 +11,6 @@ use Illuminate\Http\Request;
 
 class UserPermissionController extends AccountBaseController
 {
-
     /**
      * XXXXXXXXXXX
      *
@@ -32,7 +31,7 @@ class UserPermissionController extends AccountBaseController
             User::where('id', $id)->update(['customised_permissions' => 1]);
         }
 
-        cache()->forget('sidebar_user_perms_' . $id);
+        cache()->forget('sidebar_user_perms_'.$id);
 
         return Reply::dataOnly(['status' => 'success']);
     }
@@ -56,15 +55,13 @@ class UserPermissionController extends AccountBaseController
         $user = User::with('roles')->findOrFail($userId);
         $userRoles = $user->roles;
 
-
         if (count($userRoles) > 1) {
             $role = $userRoles->where('name', '!=', 'employee')->first();
-        }
-        else {
+        } else {
             $role = $userRoles->first();
         }
 
-        if (!$role) {
+        if (! $role) {
             return Reply::error(__('messages.roleNotFound', ['user' => $user->name]));
         }
 
@@ -72,10 +69,9 @@ class UserPermissionController extends AccountBaseController
 
         User::where('id', $userId)->update(['customised_permissions' => 0]);
 
-        cache()->forget('sidebar_user_perms_' . $userId);
+        cache()->forget('sidebar_user_perms_'.$userId);
 
         return Reply::dataOnly(['status' => 'success']);
 
     }
-
 }

@@ -21,13 +21,36 @@
                                 <div class="col-lg-12 col-md-12 ntfcn-tab-content-left w-100 p-4 ">
                                     <div class="d-flex justify-content-between align-items-center mb-3">
                                         <h4 class="f-16 font-weight-bold">Credentials</h4>
-                                        <form action="{{ route('developertools.store') }}" method="POST">
-                                            @csrf
-                                            <button type="submit" class="btn btn-primary">
-                                                <i class="fa fa-plus"></i> Generate New Credential
-                                            </button>
-                                        </form>
                                     </div>
+
+                                    <form action="{{ route('developertools.store') }}" method="POST" class="mb-4">
+                                        @csrf
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <strong>Generate New Credential</strong>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="mb-3">
+                                                    <div class="mb-2 font-weight-bold">Allowed modules (read-only)</div>
+                                                    <div class="d-flex flex-wrap">
+                                                        @foreach(($availableModules ?? []) as $moduleKey => $moduleDef)
+                                                            <div class="mr-4 mb-2">
+                                                                <label class="mb-0">
+                                                                    <input type="checkbox" name="modules[]" value="{{ $moduleKey }}"
+                                                                        @if(in_array($moduleKey, old('modules', $defaultModules ?? []))) checked @endif>
+                                                                    {{ $moduleDef['label'] ?? $moduleKey }}
+                                                                </label>
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                                    <div class="text-muted">Only tables mapped to selected modules are exposed through database views.</div>
+                                                </div>
+                                                <button type="submit" class="btn btn-primary">
+                                                    <i class="fa fa-plus"></i> Generate Credential
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
 
                                     @if (session('success'))
                                         <div class="alert alert-success">{{ session('success') }}</div>
@@ -43,6 +66,12 @@
                                             <p><strong>Database Name:</strong> {{ session('new_db_name', config('developertools.gateway_db', 'api_gateway_db')) }}</p>
                                             <p><strong>Username:</strong> {{ session('new_db_username') }}</p>
                                             <p><strong>Password:</strong> <span class="badge badge-warning" style="font-size: 1.2em">{{ session('new_db_password') }}</span></p>
+                                            @if (session('new_db_modules'))
+                                                <p><strong>Allowed Modules:</strong> {{ is_array(session('new_db_modules')) ? implode(', ', session('new_db_modules')) : session('new_db_modules') }}</p>
+                                            @endif
+                                            @if (session('new_db_views_count'))
+                                                <p><strong>Created Views:</strong> {{ session('new_db_views_count') }}</p>
+                                            @endif
                                             <p class="mb-0">The password will not be shown again.</p>
                                         </div>
                                     @endif
@@ -55,6 +84,8 @@
                                                     <th>DB Username</th>
                                                     <th>DB Name</th>
                                                     <th>Host</th>
+                                                    <th>Modules</th>
+                                                    <th>Views</th>
                                                     <th>Created At</th>
                                                     <th>Action</th>
                                                 </tr>
@@ -66,6 +97,12 @@
                                                         <td>{{ $cred->db_username }}</td>
                                                         <td>{{ $cred->db_database }}</td>
                                                         <td>{{ $cred->db_host }}</td>
+                                                        <td>
+                                                            @if (is_array($cred->allowed_modules))
+                                                                {{ implode(', ', $cred->allowed_modules) }}
+                                                            @endif
+                                                        </td>
+                                                        <td>{{ $cred->created_views_count }}</td>
                                                         <td>{{ $cred->created_at }}</td>
                                                         <td>
                                                             <form action="{{ route('developertools.destroy', $cred->id) }}" method="POST" onsubmit="return confirm('Are you sure? This will revoke access immediately.');">
@@ -77,7 +114,47 @@
                                                     </tr>
                                                 @empty
                                                     <tr>
-                                                        <td colspan="6" class="text-center">No credentials found.</td>
+                                                        <td colspan="8" class="text-center">No credentials found.</td>
+                                                    </tr>
+                                                @endforelse
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <div class="table-responsive mb-4">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <h5 class="mb-0">Access Logs</h5>
+                                        </div>
+                                        <table class="table table-bordered table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Status</th>
+                                                    <th>DB Username</th>
+                                                    <th>DB Name</th>
+                                                    <th>Modules</th>
+                                                    <th>Views</th>
+                                                    <th>Duration (ms)</th>
+                                                    <th>Created At</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @forelse(($accessLogs ?? []) as $log)
+                                                    <tr>
+                                                        <td>{{ $log->status }}</td>
+                                                        <td>{{ $log->db_username }}</td>
+                                                        <td>{{ $log->db_database }}</td>
+                                                        <td>
+                                                            @if (is_array($log->requested_modules))
+                                                                {{ implode(', ', $log->requested_modules) }}
+                                                            @endif
+                                                        </td>
+                                                        <td>{{ $log->created_views_count }}</td>
+                                                        <td>{{ $log->duration_ms }}</td>
+                                                        <td>{{ $log->created_at }}</td>
+                                                    </tr>
+                                                @empty
+                                                    <tr>
+                                                        <td colspan="7" class="text-center">No logs found.</td>
                                                     </tr>
                                                 @endforelse
                                             </tbody>
@@ -94,8 +171,8 @@
                                                 <li><strong>Driver:</strong> MySQL / MariaDB</li>
                                                 <li><strong>Host:</strong> {{ request()->getHost() }}</li>
                                                 <li><strong>Port:</strong> 3306 (Default)</li>
-                                                <li><strong>Database:</strong> 
-                                                    @if(isset($credentials) && $credentials->count() > 0)
+                                                <li><strong>Database:</strong>
+                                                    @if (isset($credentials) && $credentials->count() > 0)
                                                         {{ $credentials->first()->db_database }}
                                                     @else
                                                         {{ config('developertools.gateway_db', 'api_gateway_db') }} (Generate credential first)
@@ -105,7 +182,7 @@
                                                 <li><strong>Password:</strong> (Generated above)</li>
                                             </ul>
                                             <p class="text-muted mb-0">
-                                                <i class="fa fa-info-circle"></i> Note: This connection is restricted to <strong>READ/WRITE</strong> access only for your company's data.
+                                                <i class="fa fa-info-circle"></i> Note: This connection is restricted to <strong>READ-ONLY</strong> access only for your company's data and selected modules.
                                                 You cannot see or modify other companies' data.
                                             </p>
                                         </div>

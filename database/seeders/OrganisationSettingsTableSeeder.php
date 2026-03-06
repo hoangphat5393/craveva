@@ -2,30 +2,26 @@
 
 namespace Database\Seeders;
 
+use App\Models\Company;
 use App\Models\GlobalSetting;
 use App\Models\SuperAdmin\GlobalCurrency;
 use App\Models\SuperAdmin\Package;
 use Illuminate\Database\Seeder;
-use App\Models\Company;
-use Illuminate\Support\Facades\App;
 
 class OrganisationSettingsTableSeeder extends Seeder
 {
-
     /**
      * Run the database seeds.
      *
      * @return void
      */
-
     public function run()
     {
         $defaultDriver = config('session.driver') == 'database' ? 'database' : 'file';
 
         $appName = 'CRAVEVA';
 
-
-        $globalSetting = new GlobalSetting();
+        $globalSetting = new GlobalSetting;
         $globalSetting->global_app_name = $appName;
         $globalSetting->locale = 'en';
         $globalSetting->google_recaptcha_status = 'deactive';
@@ -51,7 +47,7 @@ class OrganisationSettingsTableSeeder extends Seeder
         $globalSetting->hash = md5(microtime());
         $globalSetting->save();
 
-        $setting = new Company();
+        $setting = new Company;
         $setting->company_name = $appName;
         $setting->app_name = $appName;
         $setting->company_email = 'company@email.com';

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\ExpenseCategoryReportDataTable;
-use Illuminate\Http\Request;
 use App\DataTables\ExpenseReportDataTable;
 use App\Helper\Reply;
 use App\Models\Currency;
@@ -11,11 +10,11 @@ use App\Models\Expense;
 use App\Models\ExpensesCategory;
 use App\Models\Project;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ExpenseReportController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -25,7 +24,7 @@ class ExpenseReportController extends AccountBaseController
 
     public function index(ExpenseReportDataTable $dataTable)
     {
-           abort_403(user()->permission('view_expense_report') != 'all');
+        abort_403(user()->permission('view_expense_report') != 'all');
         $this->fromDate = now($this->company->timezone)->startOfMonth();
         $this->toDate = now($this->company->timezone);
         $this->currencies = Currency::all();
@@ -56,15 +55,15 @@ class ExpenseReportController extends AccountBaseController
             $expenses = $expenses->where(DB::raw('DATE(`purchase_date`)'), '<=', $endDate);
         }
 
-        if ($request->categoryID != 'all' && !is_null($request->categoryID)) {
+        if ($request->categoryID != 'all' && ! is_null($request->categoryID)) {
             $expenses = $expenses->where('category_id', '=', $request->categoryID);
         }
 
-        if ($request->projectID != 'all' && !is_null($request->projectID)) {
+        if ($request->projectID != 'all' && ! is_null($request->projectID)) {
             $expenses = $expenses->where('project_id', '=', $request->projectID);
         }
 
-        if ($request->employeeID != 'all' && !is_null($request->employeeID)) {
+        if ($request->employeeID != 'all' && ! is_null($request->employeeID)) {
             $employeeID = $request->employeeID;
             $expenses = $expenses->where(function ($query) use ($employeeID) {
                 $query->where('user_id', $employeeID);
@@ -84,11 +83,10 @@ class ExpenseReportController extends AccountBaseController
                 'category_id',
             ]);
 
-
-        $prices = array();
+        $prices = [];
 
         foreach ($expenses as $expense) {
-            if (!isset($prices[$expense->date])) {
+            if (! isset($prices[$expense->date])) {
                 $prices[$expense->date] = 0;
             }
 
@@ -97,7 +95,7 @@ class ExpenseReportController extends AccountBaseController
 
         $dates = array_keys($prices);
 
-        $graphData = array();
+        $graphData = [];
 
         foreach ($dates as $date) {
             $graphData[] = [
@@ -109,6 +107,7 @@ class ExpenseReportController extends AccountBaseController
         usort($graphData, function ($a, $b) {
             $t1 = strtotime($a['date']);
             $t2 = strtotime($b['date']);
+
             return $t1 - $t2;
         });
 
@@ -135,27 +134,24 @@ class ExpenseReportController extends AccountBaseController
             $expenses = $expenseCategoryId->where(DB::raw('DATE(expenses.`purchase_date`)'), '>=', $startDate);
         }
 
-
         if ($request->endDate !== null && $request->endDate != 'null' && $request->endDate != '') {
             $endDate = companyToDateString($request->endDate);
             $expenses = $expenseCategoryId->where(DB::raw('DATE(expenses.`purchase_date`)'), '<=', $endDate);
         }
 
-
-        if ($request->employeeID != 'all' && !is_null($request->employeeID)) {
+        if ($request->employeeID != 'all' && ! is_null($request->employeeID)) {
             $expenseCategoryId = $expenseCategoryId->where('expenses.user_id', $request->employeeID);
         }
 
-        if ($request->projectID != 'all' && !is_null($request->projectID)) {
+        if ($request->projectID != 'all' && ! is_null($request->projectID)) {
             $expenseCategoryId = $expenseCategoryId->where('expenses.project_id', $request->projectID);
         }
-
 
         $expenseCategoryId = $expenseCategoryId->distinct('expenses.category_id')->selectRaw('expenses.category_id as id')->pluck('id')->toArray();
 
         $categories = ExpensesCategory::whereIn('id', $expenseCategoryId)->get();
 
-        if ($request->categoryID != 'all' && !is_null($request->categoryID)) {
+        if ($request->categoryID != 'all' && ! is_null($request->categoryID)) {
             $categories = $categories->where('id', $request->categoryID);
         }
 
@@ -170,8 +166,7 @@ class ExpenseReportController extends AccountBaseController
 
             if ($startDate && $endDate != null) {
                 $barData['values'][] = Expense::where('category_id', $category_id)->whereBetween(DB::raw('DATE(`purchase_date`)'), [$startDate, $endDate])->count();
-            }
-            else{
+            } else {
                 $barData['values'][] = Expense::where('category_id', $category_id)->count();
             }
         }
@@ -182,13 +177,13 @@ class ExpenseReportController extends AccountBaseController
         $html = view('reports.expense.chart', $this->data)->render(); /* Expense report view */
         $html2 = view('reports.expense.bar_chart', $this->data)->render(); /* Expense Category report view */
 
-        return Reply::dataOnly(['status' => 'success', 'html' => $html,'html2' => $html2, 'title' => $this->pageTitle, 'totalExpenses' => currency_format($totalExpense, company()->currency_id)]);
+        return Reply::dataOnly(['status' => 'success', 'html' => $html, 'html2' => $html2, 'title' => $this->pageTitle, 'totalExpenses' => currency_format($totalExpense, company()->currency_id)]);
     }
 
     public function expenseCategoryReport()
     {
         abort_403(user()->permission('view_expense_report') != 'all');
-        $dataTable = new ExpenseCategoryReportDataTable();
+        $dataTable = new ExpenseCategoryReportDataTable;
 
         $this->fromDate = now($this->company->timezone)->startOfMonth();
         $this->toDate = now($this->company->timezone);
@@ -196,5 +191,4 @@ class ExpenseReportController extends AccountBaseController
 
         return $dataTable->render('reports.expense.expense-category-report', $this->data);
     }
-
 }

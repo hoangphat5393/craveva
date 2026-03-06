@@ -3,17 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Helper\Reply;
+use App\Http\Requests\Admin\Employee\StorePromotionRequest;
 use App\Models\Designation;
 use App\Models\EmployeeDetails;
 use App\Models\Promotion;
 use App\Models\Team;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use App\Http\Requests\Admin\Employee\StorePromotionRequest;
 
 class PromotionController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -21,6 +20,7 @@ class PromotionController extends AccountBaseController
 
         $this->middleware(function ($request, $next) {
             abort_403(user()->permission('manage_increment_promotion') != 'all');
+
             return $next($request);
         });
     }
@@ -68,7 +68,7 @@ class PromotionController extends AccountBaseController
             'send_notification' => $request->send_notification == 'yes' ? $request->send_notification : 'no',
             'promotion' => $request->promotion == 'on' ? 1 : 0,
             'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
-            'updated_at' => Carbon::now()->format('Y-m-d H:i:s')
+            'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
         ];
         $statusMessage = $request->promotion == 'on' ? __('messages.promotionUpdatedSuccess') : __('messages.demotionUpdatedSuccess');
         Promotion::create($data);
@@ -127,5 +127,4 @@ class PromotionController extends AccountBaseController
 
         return Reply::success(__('messages.deleteSuccess'));
     }
-
 }

@@ -2,7 +2,6 @@
 
 namespace Modules\Subdomain\Listeners;
 
-use App\Models\GlobalSetting;
 use App\Models\User;
 use Illuminate\Support\Facades\Notification;
 use Modules\Subdomain\Events\CompanyUrlEvent;
@@ -10,7 +9,6 @@ use Modules\Subdomain\Notifications\CompanyUrlNotification;
 
 class ForgotCompanyListener
 {
-
     /**
      * Create the event listener.
      *
@@ -24,7 +22,7 @@ class ForgotCompanyListener
     /**
      * Handle the event.
      *
-     * @param object $event
+     * @param  object  $event
      * @return void
      */
     public function handle(CompanyUrlEvent $event)
@@ -40,5 +38,4 @@ class ForgotCompanyListener
         Notification::send($users, new CompanyUrlNotification($company));
 
     }
-
 }

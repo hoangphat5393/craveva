@@ -2,47 +2,47 @@
 
 namespace Modules\Purchase\Http\Controllers;
 
-use Carbon\Carbon;
-use App\Models\Tax;
 use App\Helper\Files;
 use App\Helper\Reply;
-use App\Models\Product;
+use App\Http\Controllers\AccountBaseController;
 use App\Models\Currency;
-use App\Models\UnitType;
-use Illuminate\Http\Request;
+use App\Models\Product;
 use App\Models\ProductCategory;
+use App\Models\Tax;
+use App\Models\UnitType;
+use Carbon\Carbon;
+use Illuminate\Contracts\Support\Renderable;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use Modules\Purchase\DataTables\VendorCreditDataTable;
 use Modules\Purchase\Entities\PurchaseBill;
 use Modules\Purchase\Entities\PurchaseItem;
-use Illuminate\Contracts\Support\Renderable;
 use Modules\Purchase\Entities\PurchaseOrder;
-use Modules\Purchase\Entities\PurchaseVendor;
+use Modules\Purchase\Entities\PurchasePaymentBill;
 use Modules\Purchase\Entities\PurchaseProduct;
 use Modules\Purchase\Entities\PurchaseSetting;
-use App\Http\Controllers\AccountBaseController;
-use Modules\Purchase\Entities\PurchaseVendorItem;
-use Modules\Purchase\Entities\PurchasePaymentBill;
+use Modules\Purchase\Entities\PurchaseVendor;
 use Modules\Purchase\Entities\PurchaseVendorCredit;
-use Modules\Purchase\Events\VendorCreditPaymentMade;
-use Modules\Purchase\DataTables\VendorCreditDataTable;
 use Modules\Purchase\Entities\PurchaseVendorCreditHistory;
 use Modules\Purchase\Entities\PurchaseVendorCreditItemImage;
+use Modules\Purchase\Entities\PurchaseVendorItem;
+use Modules\Purchase\Events\VendorCreditPaymentMade;
 use Modules\Purchase\Http\Requests\VendorCredits\UpdateVendorCreditRequest;
+
 class VendorCreditController extends AccountBaseController
 {
-
     /**
      * Display a listing of the resource.
+     *
      * @return Renderable
      */
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = __('purchase::app.menu.addVendorCredit');
 
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array(PurchaseSetting::MODULE_NAME, $this->user->modules));
+            abort_403(! in_array(PurchaseSetting::MODULE_NAME, $this->user->modules));
 
             return $next($request);
         });
@@ -58,6 +58,7 @@ class VendorCreditController extends AccountBaseController
 
     /**
      * Show the form for creating a new resource.
+     *
      * @return Renderable
      */
     public function create(Request $request)
@@ -114,7 +115,7 @@ class VendorCreditController extends AccountBaseController
 
     /**
      * Store a newly created resource in storage.
-     * @param Request $request
+     *
      * @return Renderable
      */
     public function store(Request $request)
@@ -124,36 +125,35 @@ class VendorCreditController extends AccountBaseController
         $quantity = $request->quantity;
         $amount = $request->amount;
 
-        if (!empty($items)) {
+        if (! empty($items)) {
             foreach ($items as $itm) {
                 if (is_null($itm)) {
                     return Reply::error(__('messages.itemBlank'));
                 }
             }
-        }
-        else {
+        } else {
             return Reply::error(__('messages.addItem'));
         }
 
         foreach ($quantity as $qty) {
-            if (!is_numeric($qty) && (intval($qty) < 1)) {
+            if (! is_numeric($qty) && (intval($qty) < 1)) {
                 return Reply::error(__('messages.quantityNumber'));
             }
         }
 
         foreach ($cost_per_item as $rate) {
-            if (!is_numeric($rate)) {
+            if (! is_numeric($rate)) {
                 return Reply::error(__('messages.unitPriceNumber'));
             }
         }
 
         foreach ($amount as $amt) {
-            if (!is_numeric($amt)) {
+            if (! is_numeric($amt)) {
                 return Reply::error(__('messages.amountNumber'));
             }
         }
 
-        $vendorCredit = new PurchaseVendorCredit();
+        $vendorCredit = new PurchaseVendorCredit;
         $vendorCredit->vendor_id = $request->vendor_id;
         $vendorCredit->credit_note_no = $request->credit_note_no;
         $vendorCredit->credit_date = Carbon::createFromFormat($this->company->date_format, $request->vendor_credit_date)->format('Y-m-d');
@@ -177,7 +177,8 @@ class VendorCreditController extends AccountBaseController
 
     /**
      * Show the specified resource.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function show($id)
@@ -187,16 +188,14 @@ class VendorCreditController extends AccountBaseController
         if ($this->vendorCredit->discount > 0) {
             if ($this->vendorCredit->discount_type == 'percent') {
                 $this->discount = (($this->vendorCredit->discount / 100) * $this->vendorCredit->sub_total);
-            }
-            else {
+            } else {
                 $this->discount = $this->vendorCredit->discount;
             }
-        }
-        else {
+        } else {
             $this->discount = 0;
         }
 
-        $taxList = array();
+        $taxList = [];
 
         $items = PurchaseVendorItem::whereNotNull('taxes')
             ->where('credit_id', $this->vendorCredit->id)
@@ -209,31 +208,27 @@ class VendorCreditController extends AccountBaseController
             foreach (json_decode($item->taxes) as $tax) {
                 $this->tax = PurchaseVendorItem::taxbyid($tax)->first();
 
-                if (!isset($taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'])) {
+                if (! isset($taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'])) {
 
                     if ($this->vendorCredit->calculate_tax == 'after_discount' && $this->discount > 0) {
-                        $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = ($item->amount - ($item->amount / $this->vendorCredit->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
+                        $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = ($item->amount - ($item->amount / $this->vendorCredit->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
 
-                    }
-                    else {
-                        $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $item->amount * ($this->tax->rate_percent / 100);
+                    } else {
+                        $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $item->amount * ($this->tax->rate_percent / 100);
                     }
 
-                }
-                else {
+                } else {
                     if ($this->vendorCredit->calculate_tax == 'after_discount' && $this->discount > 0) {
-                        $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + (($item->amount - ($item->amount / $this->vendorCredit->sub_total) * $this->discount) * ($this->tax->rate_percent / 100));
+                        $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + (($item->amount - ($item->amount / $this->vendorCredit->sub_total) * $this->discount) * ($this->tax->rate_percent / 100));
 
-                    }
-                    else {
-                        $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + ($item->amount * ($this->tax->rate_percent / 100));
+                    } else {
+                        $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + ($item->amount * ($this->tax->rate_percent / 100));
                     }
                 }
             }
         }
 
         $this->taxes = $taxList;
-
 
         $this->settings = company();
         $this->vendorCreditSetting = invoice_setting();
@@ -242,11 +237,11 @@ class VendorCreditController extends AccountBaseController
         $tab = request('tab');
 
         switch ($tab) {
-        case 'history':
-            return $this->history($id);
-        default:
-            $this->view = 'purchase::vendor-credits.ajax.overview';
-            break;
+            case 'history':
+                return $this->history($id);
+            default:
+                $this->view = 'purchase::vendor-credits.ajax.overview';
+                break;
         }
 
         if (request()->ajax()) {
@@ -263,7 +258,8 @@ class VendorCreditController extends AccountBaseController
 
     /**
      * Show the form for editing the specified resource.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function edit(Request $request, $id)
@@ -299,8 +295,9 @@ class VendorCreditController extends AccountBaseController
 
     /**
      * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
+     *
+     * @param  Request  $request
+     * @param  int  $id
      * @return Renderable
      */
     public function update(UpdateVendorCreditRequest $request, $id)
@@ -325,7 +322,8 @@ class VendorCreditController extends AccountBaseController
 
     /**
      * Remove the specified resource from storage.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function destroy($id)
@@ -344,23 +342,21 @@ class VendorCreditController extends AccountBaseController
 
         $exchangeRate = Currency::findOrFail($request->currencyId);
 
-        if (!is_null($exchangeRate) && !is_null($exchangeRate->exchange_rate)) {
+        if (! is_null($exchangeRate) && ! is_null($exchangeRate->exchange_rate)) {
             if ($this->items->total_amount != '') {
                 /** @phpstan-ignore-next-line */
                 $this->items->price = floor($this->items->total_amount * $exchangeRate->exchange_rate);
-            }
-            else {
+            } else {
 
                 $this->items->price = floatval($this->items->price) * floatval($exchangeRate->exchange_rate);
             }
-        }
-        else {
+        } else {
             if ($this->items->total_amount != '') {
                 $this->items->price = $this->items->total_amount;
             }
         }
 
-        $this->items->price = number_format((float)$this->items->price, 2, '.', '');
+        $this->items->price = number_format((float) $this->items->price, 2, '.', '');
         $this->taxes = Tax::all();
         $this->units = UnitType::all();
         $view = view('purchase::vendor-credits.ajax.add_item', $this->data)->render();
@@ -371,12 +367,12 @@ class VendorCreditController extends AccountBaseController
     public function applyQuickAction(Request $request)
     {
         switch ($request->action_type) {
-        case 'delete':
-            $this->deleteRecords($request);
+            case 'delete':
+                $this->deleteRecords($request);
 
-            return Reply::success(__('messages.deleteSuccess'));
-        default:
-            return Reply::error(__('messages.selectAction'));
+                return Reply::success(__('messages.deleteSuccess'));
+            default:
+                return Reply::error(__('messages.selectAction'));
         }
     }
 
@@ -395,7 +391,7 @@ class VendorCreditController extends AccountBaseController
         $pdf = $pdfOption['pdf'];
         $filename = $pdfOption['fileName'];
 
-        return $pdf->download($filename . '.pdf');
+        return $pdf->download($filename.'.pdf');
     }
 
     public function domPdfObjectForDownload($id)
@@ -408,16 +404,14 @@ class VendorCreditController extends AccountBaseController
         if ($this->proposal->discount > 0) {
             if ($this->proposal->discount_type == 'percent') {
                 $this->discount = (($this->proposal->discount / 100) * $this->proposal->sub_total);
-            }
-            else {
+            } else {
                 $this->discount = $this->proposal->discount;
             }
-        }
-        else {
+        } else {
             $this->discount = 0;
         }
 
-        $taxList = array();
+        $taxList = [];
 
         $items = PurchaseVendorItem::whereNotNull('taxes')
             ->where('credit_id', $this->proposal->id)
@@ -430,24 +424,21 @@ class VendorCreditController extends AccountBaseController
                 $this->tax = PurchaseVendorItem::taxbyid($tax)->first();
 
                 if ($this->tax) {
-                    if (!isset($taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'])) {
+                    if (! isset($taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'])) {
 
                         if ($this->proposal->calculate_tax == 'after_discount' && $this->discount > 0) {
-                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = ($item->amount - ($item->amount / $this->proposal->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
+                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = ($item->amount - ($item->amount / $this->proposal->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
 
-                        }
-                        else {
-                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $item->amount * ($this->tax->rate_percent / 100);
+                        } else {
+                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $item->amount * ($this->tax->rate_percent / 100);
                         }
 
-                    }
-                    else {
+                    } else {
                         if ($this->proposal->calculate_tax == 'after_discount' && $this->discount > 0) {
-                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + (($item->amount - ($item->amount / $this->proposal->sub_total) * $this->discount) * ($this->tax->rate_percent / 100));
+                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + (($item->amount - ($item->amount / $this->proposal->sub_total) * $this->discount) * ($this->tax->rate_percent / 100));
 
-                        }
-                        else {
-                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + ($item->amount * ($this->tax->rate_percent / 100));
+                        } else {
+                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + ($item->amount * ($this->tax->rate_percent / 100));
                         }
                     }
                 }
@@ -469,11 +460,11 @@ class VendorCreditController extends AccountBaseController
         $dom_pdf = $pdf->getDomPDF();
         $canvas = $dom_pdf->getCanvas();
         $canvas->page_text(530, 820, 'Page {PAGE_NUM} of {PAGE_COUNT}', null, 10);
-        $filename = __('purchase::app.menu.vendorCredit') . '-' . $this->proposal->id;
+        $filename = __('purchase::app.menu.vendorCredit').'-'.$this->proposal->id;
 
         return [
             'pdf' => $pdf,
-            'fileName' => $filename
+            'fileName' => $filename,
         ];
     }
 
@@ -481,8 +472,7 @@ class VendorCreditController extends AccountBaseController
     {
         if ($request->id != 'null') {
             $getBills = PurchaseBill::where('purchase_vendor_id', $request->id)->where('status', 'paid')->get();
-        }
-        else {
+        } else {
             $getBills = PurchaseBill::get();
         }
 
@@ -494,7 +484,7 @@ class VendorCreditController extends AccountBaseController
         $item = PurchaseVendorCreditItemImage::where('vendor_item_id', $request->invoice_item_id)->first();
 
         if ($item) {
-            Files::deleteFile($item->hashname, 'vendorCredit-files/' . $item->id . '/');
+            Files::deleteFile($item->hashname, 'vendorCredit-files/'.$item->id.'/');
             $item->delete();
         }
 
@@ -510,23 +500,21 @@ class VendorCreditController extends AccountBaseController
 
         $exchangeRate = Currency::findOrFail($request->currencyId);
 
-        if (!is_null($exchangeRate) && !is_null($exchangeRate->exchange_rate)) {
+        if (! is_null($exchangeRate) && ! is_null($exchangeRate->exchange_rate)) {
             if ($this->items[0]->total_amount != '') {
                 /** @phpstan-ignore-next-line */
                 $this->items->price = floor($this->items[0]->total_amount * $exchangeRate->exchange_rate);
-            }
-            else {
+            } else {
 
                 $this->items->price = floatval($this->items[0]->price) * floatval($exchangeRate->exchange_rate);
             }
-        }
-        else {
+        } else {
             if ($this->items->total_amount != '') {
                 $this->items->price = $this->items->total_amount;
             }
         }
 
-        $this->items->price = number_format((float)$this->items->price, 2, '.', '');
+        $this->items->price = number_format((float) $this->items->price, 2, '.', '');
         $this->taxes = Tax::all();
         $this->units = UnitType::all();
         $view = view('purchase::vendor-credits.ajax.add_bill_item', $this->data)->render();
@@ -583,22 +571,21 @@ class VendorCreditController extends AccountBaseController
         $creditNote = PurchaseVendorCredit::findOrFail($id);
         $creditTotalAmount = 0.00;
 
-        if ((float)$request->remainingAmount <= 0) {
+        if ((float) $request->remainingAmount <= 0) {
             $creditNote->status = 'closed';
         }
 
         foreach ($request->invoices as $invoice) {
 
-            if ($invoice['value'] !== '0' && !is_null($invoice['value'])) {
-                $creditTotalAmount += (float)$invoice['value'];
+            if ($invoice['value'] !== '0' && ! is_null($invoice['value'])) {
+                $creditTotalAmount += (float) $invoice['value'];
 
                 $reqInvoice = PurchaseBill::findOrFail($invoice['invoiceId']);
-                $this->makePayment($id, $invoice['invoiceId'], (float)$invoice['value']);
+                $this->makePayment($id, $invoice['invoiceId'], (float) $invoice['value']);
 
                 if ($reqInvoice->total > $reqInvoice->amountPaid()) {
                     $reqInvoice->status = 'partially_paid';
-                }
-                else {
+                } else {
                     $reqInvoice->status = 'paid';
                 }
 
@@ -617,7 +604,7 @@ class VendorCreditController extends AccountBaseController
     public function makePayment($creditNoteId, $invoiceId, $amount)
     {
         $creditNote = PurchaseVendorCredit::findOrFail($creditNoteId);
-        $payment = new PurchasePaymentBill();
+        $payment = new PurchasePaymentBill;
         $payment->purchase_bill_id = $invoiceId;
         $payment->purchase_vendor_credits_id = $creditNoteId;
         $payment->total_paid = $amount;
@@ -627,5 +614,4 @@ class VendorCreditController extends AccountBaseController
         $remainingAmount = $creditNote->creditAmountRemaining();
         event(new VendorCreditPaymentMade($creditNote, $amount, $remainingAmount));
     }
-
 }

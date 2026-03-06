@@ -17,5 +17,4 @@ class TicketRequesterListener
         } catch (\Exception $e) { // @codingStandardsIgnoreLine
         }
     }
-
 }

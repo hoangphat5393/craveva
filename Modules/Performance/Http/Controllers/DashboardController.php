@@ -2,21 +2,20 @@
 
 namespace Modules\Performance\Http\Controllers;
 
-use Carbon\Carbon;
 use App\Helper\Reply;
-use Illuminate\Http\Request;
+use App\Http\Controllers\AccountBaseController;
 use App\Models\EmployeeDetails;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Modules\Performance\Entities\Meeting;
 use Modules\Performance\Entities\CheckIn;
 use Modules\Performance\Entities\GoalType;
+use Modules\Performance\Entities\Meeting;
 use Modules\Performance\Entities\Objective;
-use App\Http\Controllers\AccountBaseController;
 use Modules\Performance\Entities\PerformanceSetting;
 
 class DashboardController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -24,7 +23,8 @@ class DashboardController extends AccountBaseController
         $this->objectiveProgress = 'performance::app.objectiveProgress';
 
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array(PerformanceSetting::MODULE_NAME, $this->user->modules));
+            abort_403(! in_array(PerformanceSetting::MODULE_NAME, $this->user->modules));
+
             return $next($request);
         });
     }
@@ -49,35 +49,36 @@ class DashboardController extends AccountBaseController
         $endDate = $request->endDate ? companyToDateString($request->endDate) : now($this->company->timezone)->toDateString();
 
         $objectives = Objective::with(['status', 'goalType', 'keyResults.checkIns' => function ($query) use ($startDate, $endDate) {
-                // $query->where('check_in_date', '>=', $startDate)
-                //     ->orWhere('check_in_date', '<=', $endDate)
-                    // $query->whereDate('check_in_date', '>=', $startDate)
-                    //     ->orwhereDate('check_in_date', '<=', $endDate)
+            // $query->where('check_in_date', '>=', $startDate)
+            //     ->orWhere('check_in_date', '<=', $endDate)
+            // $query->whereDate('check_in_date', '>=', $startDate)
+            //     ->orwhereDate('check_in_date', '<=', $endDate)
 
-                    $startDate = Carbon::parse($startDate)->copy()->addDays(1);
-                    $endDate = Carbon::parse($endDate)->copy()->addDays(1);
+            $startDate = Carbon::parse($startDate)->copy()->addDays(1);
+            $endDate = Carbon::parse($endDate)->copy()->addDays(1);
 
-                    $query->whereBetween('check_in_date', [$startDate, $endDate])
-                        ->select('key_result_id', 'objective_percentage', 'check_in_date');
-            }])
+            $query->whereBetween('check_in_date', [$startDate, $endDate])
+                ->select('key_result_id', 'objective_percentage', 'check_in_date');
+        }])
             ->where(function ($query) use ($startDate, $endDate) {
                 $query->whereBetween('start_date', [$startDate, $endDate])
                     ->orWhereBetween('end_date', [$startDate, $endDate]);
                 // $query->whereBetween('start_date', [$startDate, $endDate])
-                    // ->orWhereBetween('end_date', [$startDate, $endDate]);
+                // ->orWhereBetween('end_date', [$startDate, $endDate]);
             })
             ->orderBy('start_date', 'ASC')
             ->get([
                 'id', 'title', 'goal_type', 'start_date', 'end_date', 'rotation_date',
                 DB::raw('DATE_FORMAT(start_date, "%d-%M-%y") as start_date_formatted'),
                 DB::raw('YEAR(start_date) as year, MONTH(start_date) as month'),
-                DB::raw('DATE_FORMAT(end_date, "%d-%M-%y") as end_date_formatted')
+                DB::raw('DATE_FORMAT(end_date, "%d-%M-%y") as end_date_formatted'),
             ]);
 
         // Filter objectives based on user access
         $objectives = $objectives->filter(function ($objective) {
-            $objective->has_access = !$this->checkManageAccess($objective->id);
-            return !$this->checkViewAccess($objective->id);
+            $objective->has_access = ! $this->checkManageAccess($objective->id);
+
+            return ! $this->checkViewAccess($objective->id);
         });
 
         /* Objective count start */
@@ -100,7 +101,7 @@ class DashboardController extends AccountBaseController
         foreach ($objectives as $objective) {
 
             $objectiveCheckIns = $objective->keyResults->flatMap(function ($keyResult) {
-                return $keyResult->checkIns->map(fn($checkIn) => [
+                return $keyResult->checkIns->map(fn ($checkIn) => [
                     'date' => Carbon::parse($checkIn->check_in_date)->format('Y-m-d H:i'),
                     'percentage' => $checkIn->objective_percentage,
                 ]);
@@ -108,14 +109,14 @@ class DashboardController extends AccountBaseController
 
             $objectiveCheckIns = $objectiveCheckIns
                 ->groupBy('date')
-                ->map(fn($group) => $group->sortByDesc('percentage')->last())
+                ->map(fn ($group) => $group->sortByDesc('percentage')->last())
                 ->sortBy('date');
 
             $allCheckInDates->push(Carbon::parse($objective->start_date)->format('Y-m-d H:i'));
             $allCheckInDates = $allCheckInDates->merge($objectiveCheckIns->pluck('date'))->unique()->sort()->values();
 
             $dataPoints = [
-                ['x' => Carbon::parse($objective->start_date)->format('Y-m-d H:i'), 'y' => 0]
+                ['x' => Carbon::parse($objective->start_date)->format('Y-m-d H:i'), 'y' => 0],
             ];
 
             foreach ($objectiveCheckIns as $checkIn) {
@@ -155,8 +156,9 @@ class DashboardController extends AccountBaseController
 
         // Filter objectives based on user access
         $allObjectives = $allObjectives->filter(function ($objective) {
-            $objective->has_access = !$this->checkManageAccess($objective->id);
-            return !$this->checkViewAccess($objective->id);
+            $objective->has_access = ! $this->checkManageAccess($objective->id);
+
+            return ! $this->checkViewAccess($objective->id);
         });
 
         $currentDate = Carbon::now();
@@ -223,13 +225,11 @@ class DashboardController extends AccountBaseController
 
                         if ($checkInDate->isToday() || $checkInDate->lt(Carbon::today())) {
                             $pendingCheckIns++;
-                        }
-                        else {
+                        } else {
                             $upcomingCheckIns++;
                         }
                     }
-                }
-                else {
+                } else {
                     // Removing existing check-ins from the generated check-in dates
                     // $checkInDates = array_diff($checkInDates, $existingCheckIns);
 
@@ -280,13 +280,13 @@ class DashboardController extends AccountBaseController
                 'upcoming' => $totalUpcomingCheckIns,
             ];
         }
-         /* Check-in data end */
+        /* Check-in data end */
 
         /* Meeting data start */
         $query = Meeting::with(['meetingBy', 'meetingFor', 'agendas', 'actions'])
-        ->whereHas('meetingBy', function ($query) {
-            $query->where('status', 'active');
-        })->select('performance_meetings.*');
+            ->whereHas('meetingBy', function ($query) {
+                $query->where('status', 'active');
+            })->select('performance_meetings.*');
 
         if (request()->startDate != 'all' && request()->endDate != '') {
             $startDate = Carbon::createFromFormat($this->company->date_format, request()->startDate)->format('Y-m-d');
@@ -302,8 +302,9 @@ class DashboardController extends AccountBaseController
 
         // Filter objectives based on user access
         $meetings = $allEvents->filter(function ($meeting) {
-            $meeting->has_access = !$this->checkMeetingManageAccess($meeting->id);
-            return !$this->checkMeetingViewAccess($meeting->id);
+            $meeting->has_access = ! $this->checkMeetingManageAccess($meeting->id);
+
+            return ! $this->checkMeetingViewAccess($meeting->id);
         })->groupBy(function ($meeting) {
             return $meeting->meetingBy->name;
         });
@@ -334,7 +335,7 @@ class DashboardController extends AccountBaseController
                 'onTime' => $onTimeMeetings,
                 'delayed' => $delayedMeetings,
                 'pending' => $pendingMeetings,
-                'pendingIds' => $pendingMeetingIds
+                'pendingIds' => $pendingMeetingIds,
             ];
         }
 
@@ -357,7 +358,7 @@ class DashboardController extends AccountBaseController
         $meeting = Meeting::with(['meetingBy', 'meetingFor'])->findOrFail($id);
 
         $ownerId = $meeting->added_by;
-        $participantIds = array($meeting->meeting_for, $meeting->meeting_by);
+        $participantIds = [$meeting->meeting_for, $meeting->meeting_by];
 
         $managerIds = EmployeeDetails::whereNotNull('reporting_to')
             ->whereIn('user_id', $participantIds)
@@ -367,10 +368,10 @@ class DashboardController extends AccountBaseController
         $currentUserRoleIds = user()->roles()->pluck('id')->toArray();
         $viewByRoles = json_decode($meetingSetting->view_meeting_roles, true) ?? [];
 
-        return !(user()->hasRole('admin') || $ownerId == user()->id ||
+        return ! (user()->hasRole('admin') || $ownerId == user()->id ||
             ($canViewManager == 1 && in_array(user()->id, $managerIds)) ||
             ($canViewParticipant == 1 && in_array(user()->id, $participantIds)) ||
-            (!empty($viewByRoles) && array_intersect($currentUserRoleIds, $viewByRoles)));
+            (! empty($viewByRoles) && array_intersect($currentUserRoleIds, $viewByRoles)));
     }
 
     protected function checkMeetingManageAccess($id)
@@ -382,7 +383,7 @@ class DashboardController extends AccountBaseController
         $meeting = Meeting::with(['meetingBy', 'meetingFor'])->findOrFail($id);
 
         $ownerId = $meeting->added_by;
-        $participantIds = array($meeting->meeting_for, $meeting->meeting_by);
+        $participantIds = [$meeting->meeting_for, $meeting->meeting_by];
 
         $managerIds = EmployeeDetails::whereNotNull('reporting_to')
             ->whereIn('user_id', $participantIds)
@@ -392,10 +393,10 @@ class DashboardController extends AccountBaseController
         $currentUserRoleIds = user()->roles()->pluck('id')->toArray();
         $manageByRoles = json_decode($meetingSetting->create_meeting_roles, true) ?? [];
 
-        return !(user()->hasRole('admin') || $ownerId == user()->id ||
+        return ! (user()->hasRole('admin') || $ownerId == user()->id ||
             ($canManageManager == 1 && in_array(user()->id, $managerIds)) ||
             ($canManageParticipant == 1 && in_array(user()->id, $participantIds)) ||
-            (!empty($manageByRoles) && array_intersect($currentUserRoleIds, $manageByRoles)));
+            (! empty($manageByRoles) && array_intersect($currentUserRoleIds, $manageByRoles)));
     }
 
     protected function checkViewAccess($id)
@@ -412,9 +413,9 @@ class DashboardController extends AccountBaseController
         $currentUserRoleIds = user()->roles()->pluck('id')->toArray();
         $viewByRoles = json_decode($goal->view_by_roles, true) ?? [];
 
-        return !(($goal && $goal->view_by_owner == 1 && in_array(user()->id, $ownerIds)) ||
+        return ! (($goal && $goal->view_by_owner == 1 && in_array(user()->id, $ownerIds)) ||
             ($goal && $goal->view_by_manager == 1 && in_array(user()->id, $managerIds)) ||
-            (!empty($viewByRoles) && array_intersect($currentUserRoleIds, $viewByRoles)) ||
+            (! empty($viewByRoles) && array_intersect($currentUserRoleIds, $viewByRoles)) ||
             user()->hasRole('admin') || $objective->created_by == user()->id);
     }
 
@@ -432,11 +433,11 @@ class DashboardController extends AccountBaseController
         $currentUserRoleIds = user()->roles()->pluck('id')->toArray();
         $manageByRoles = json_decode($goal->manage_by_roles, true) ?? [];
 
-        return !(user()->hasRole('admin') ||
+        return ! (user()->hasRole('admin') ||
             $objective->created_by == user()->id ||
             ($goal && $goal->manage_by_owner == 1 && in_array(user()->id, $ownerIds)) ||
             ($goal && $goal->manage_by_manager == 1 && in_array(user()->id, $managerIds)) ||
-            (!empty($manageByRoles) && array_intersect($currentUserRoleIds, $manageByRoles)));
+            (! empty($manageByRoles) && array_intersect($currentUserRoleIds, $manageByRoles)));
     }
 
     protected function generateRandomColors($count)
@@ -457,8 +458,7 @@ class DashboardController extends AccountBaseController
 
             if ($s == 0) {
                 $r = $g = $b = $l;
-            }
-            else {
+            } else {
                 $q = $l < 0.5 ? $l * (1 + $s) : $l + $s - $l * $s;
                 $p = 2 * $l - $q;
 
@@ -468,7 +468,7 @@ class DashboardController extends AccountBaseController
             }
 
             // Convert RGB to hex
-            $hex = sprintf("#%02x%02x%02x",
+            $hex = sprintf('#%02x%02x%02x',
                 round($r * 255),
                 round($g * 255),
                 round($b * 255)
@@ -499,7 +499,7 @@ class DashboardController extends AccountBaseController
         }
 
         if ($t < 2 / 3) {
-            return $p + ($q - $p) * (2/3 - $t) * 6;
+            return $p + ($q - $p) * (2 / 3 - $t) * 6;
         }
 
         return $p;
@@ -605,8 +605,7 @@ class DashboardController extends AccountBaseController
                 // Then set to the rotation date (or last day if rotation date exceeds month length)
                 $currentDate->day(min($rotationDate, $currentDate->daysInMonth));
             }
-        }
-        else {
+        } else {
             // Skip the first date and start with the next quarter
             $currentDate->addMonthsNoOverflow(3);
             $currentDate->day(1);
@@ -644,5 +643,4 @@ class DashboardController extends AccountBaseController
 
         return $daysOfWeek[$dayName] ?? Carbon::MONDAY;
     }
-
 }

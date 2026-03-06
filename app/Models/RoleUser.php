@@ -13,16 +13,17 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read mixed $icon
  * @property-read \App\Models\Role $role
  * @property-read \App\Models\User $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|RoleUser newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|RoleUser newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|RoleUser query()
  * @method static \Illuminate\Database\Eloquent\Builder|RoleUser whereRoleId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|RoleUser whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class RoleUser extends BaseModel
 {
-
     protected $table = 'role_user';
 
     public function user(): BelongsTo
@@ -36,5 +37,4 @@ class RoleUser extends BaseModel
     }
 
     public $timestamps = false;
-
 }

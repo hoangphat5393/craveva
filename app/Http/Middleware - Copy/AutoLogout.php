@@ -8,7 +8,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class AutoLogout
 {
-
     /**
      * Handle an incoming request.
      *
@@ -21,11 +20,11 @@ class AutoLogout
             if (checkActiveCompany(user()->company_id)) {
                 auth()->logout();
                 session()->flush();
+
                 return redirect()->route('login');
             }
         }
 
         return $next($request);
     }
-
 }

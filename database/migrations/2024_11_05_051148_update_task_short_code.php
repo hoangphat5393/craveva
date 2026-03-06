@@ -1,9 +1,7 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use App\Models\Task;
+use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
@@ -17,11 +15,12 @@ return new class extends Migration
 
         foreach ($tasks as $task) {
 
-            try{
+            try {
                 $project = $task->project;
-                $task->task_short_code = $project->project_short_code . '-' . $task->id;
+                $task->task_short_code = $project->project_short_code.'-'.$task->id;
                 $task->saveQuietly();
-            }catch(\Exception $e){}
+            } catch (\Exception $e) {
+            }
         }
     }
 

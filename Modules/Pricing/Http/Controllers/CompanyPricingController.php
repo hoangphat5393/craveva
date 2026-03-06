@@ -2,12 +2,12 @@
 
 namespace Modules\Pricing\Http\Controllers;
 
-use App\Http\Controllers\AccountBaseController;
 use App\Helper\Reply;
+use App\Http\Controllers\AccountBaseController;
 use App\Models\User;
-use Modules\Pricing\Entities\PricingTier;
-use Modules\Pricing\Entities\CompanyCustomerPricing;
 use Illuminate\Http\Request;
+use Modules\Pricing\Entities\CompanyCustomerPricing;
+use Modules\Pricing\Entities\PricingTier;
 
 class CompanyPricingController extends AccountBaseController
 {
@@ -17,9 +17,10 @@ class CompanyPricingController extends AccountBaseController
         $this->pageTitle = __('pricing::app.menu.pricing');
         $this->middleware(function ($request, $next) {
             // Ensure strict company context
-            if (!company()) {
+            if (! company()) {
                 abort(403, 'Company context is required.');
             }
+
             return $next($request);
         });
     }
@@ -44,13 +45,13 @@ class CompanyPricingController extends AccountBaseController
 
         // Get all clients
         $this->clients = User::allClients();
-        
+
         // Get active pricing tiers
         $this->tiers = PricingTier::where('company_id', user()->company_id)
             ->where('is_active', true)
             ->orderBy('name')
             ->get();
-            
+
         $this->view = 'pricing::company_pricing.ajax.create';
 
         if (request()->ajax()) {
@@ -92,9 +93,9 @@ class CompanyPricingController extends AccountBaseController
         abort_403($editPermission == 'none');
 
         $this->pricing = CompanyCustomerPricing::findOrFail($id);
-        
+
         $this->clients = User::allClients();
-        
+
         $this->tiers = PricingTier::where('company_id', user()->company_id)
             ->where('is_active', true)
             ->orderBy('name')
@@ -139,8 +140,8 @@ class CompanyPricingController extends AccountBaseController
 
         $pricing = CompanyCustomerPricing::find($request->id);
 
-        if (!$pricing) {
-            return Reply::error('Record not found for ID: ' . $request->id);
+        if (! $pricing) {
+            return Reply::error('Record not found for ID: '.$request->id);
         }
 
         $pricing->is_active = ($request->status == 'active');
@@ -168,9 +169,11 @@ class CompanyPricingController extends AccountBaseController
         switch ($request->action_type) {
             case 'delete':
                 $this->deleteRecords($request);
+
                 return Reply::success(__('messages.deleteSuccess'));
             case 'change-status':
                 $this->changeStatusBulk($request);
+
                 return Reply::success(__('messages.updateSuccess'));
             default:
                 return Reply::error(__('messages.selectAction'));

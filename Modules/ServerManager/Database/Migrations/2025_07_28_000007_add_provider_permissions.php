@@ -1,15 +1,8 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
-use App\Models\Company;
 use App\Models\Module;
 use App\Models\Permission;
-use App\Models\PermissionRole;
-use App\Models\Role;
-use App\Models\User;
-use App\Models\UserPermission;
+use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
@@ -21,7 +14,7 @@ return new class extends Migration
         // Get the Server Manager module
         $module = Module::where('module_name', 'servermanager')->first();
 
-        if (!$module) {
+        if (! $module) {
             return;
         }
 
@@ -84,7 +77,7 @@ return new class extends Migration
         // Get the Server Manager module
         $module = Module::where('module_name', 'servermanager')->first();
 
-        if (!$module) {
+        if (! $module) {
             return;
         }
 

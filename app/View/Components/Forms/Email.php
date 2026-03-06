@@ -7,15 +7,22 @@ use Illuminate\View\Component;
 
 class Email extends Component
 {
-
     public $fieldLabel;
+
     public $fieldRequired;
+
     public $fieldPlaceholder;
+
     public $fieldValue;
+
     public $fieldName;
+
     public $fieldId;
+
     public $popover;
+
     public $fieldReadOnly;
+
     public $fieldHelp;
 
     /**
@@ -45,5 +52,4 @@ class Email extends Component
     {
         return view('components.forms.email');
     }
-
 }

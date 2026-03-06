@@ -37,7 +37,6 @@ use Illuminate\Support\Facades\DB;
 
 class CompanyController extends AccountBaseController
 {
-
     use CurrencyExchange;
 
     public function __construct()
@@ -60,9 +59,9 @@ class CompanyController extends AccountBaseController
     public function index(CompanyDataTable $dataTable)
     {
         $this->viewPermission = user()->permission('view_companies');
-        abort_403(!($this->viewPermission == 'all'));
+        abort_403(! ($this->viewPermission == 'all'));
 
-        if (!request()->ajax()) {
+        if (! request()->ajax()) {
             $this->packages = Package::all();
         }
 
@@ -79,7 +78,7 @@ class CompanyController extends AccountBaseController
     public function create()
     {
         $this->addPermission = user()->permission('add_companies');
-        abort_403(!($this->addPermission == 'all'));
+        abort_403(! ($this->addPermission == 'all'));
 
         $this->pageTitle = __('superadmin.addCompany');
 
@@ -90,9 +89,9 @@ class CompanyController extends AccountBaseController
 
         $this->fields = [];
 
-        $company = new Company();
+        $company = new Company;
 
-        if (!empty($company->getCustomFieldGroupsWithFields())) {
+        if (! empty($company->getCustomFieldGroupsWithFields())) {
             $this->fields = $company->getCustomFieldGroupsWithFields()->fields;
         }
 
@@ -101,7 +100,6 @@ class CompanyController extends AccountBaseController
         if (request()->ajax()) {
             return $this->returnAjax($this->view);
         }
-
 
         return view('super-admin.companies.create', $this->data);
     }
@@ -114,11 +112,11 @@ class CompanyController extends AccountBaseController
     public function store(StoreRequest $request)
     {
         $this->addPermission = user()->permission('add_companies');
-        abort_403(!($this->addPermission == 'all'));
+        abort_403(! ($this->addPermission == 'all'));
 
         DB::beginTransaction();
 
-        $company = $this->storeAndUpdate(new Company(), $request);
+        $company = $this->storeAndUpdate(new Company, $request);
 
         $globalCurrency = GlobalCurrency::findOrFail($request->currency_id);
 
@@ -147,7 +145,7 @@ class CompanyController extends AccountBaseController
 
     private function newCurrency($globalCurrency, $company)
     {
-        $currency = new Currency();
+        $currency = new Currency;
         $currency->currency_name = $globalCurrency->currency_name;
         $currency->currency_symbol = $globalCurrency->currency_symbol;
         $currency->currency_code = $globalCurrency->currency_code;
@@ -183,7 +181,7 @@ class CompanyController extends AccountBaseController
         $company->last_updated_by = $this->user->id;
 
         if (module_enabled('Subdomain')) {
-            $company->sub_domain = strtolower($request->sub_domain . $request->domain);
+            $company->sub_domain = strtolower($request->sub_domain.$request->domain);
         }
 
         $company->save();
@@ -196,9 +194,9 @@ class CompanyController extends AccountBaseController
     public function edit($id)
     {
         $this->editPermission = user()->permission('edit_companies');
-        abort_403(!($this->editPermission == 'all'));
+        abort_403(! ($this->editPermission == 'all'));
 
-        $this->pageTitle = __('app.update') . ' ' . __('superadmin.company');
+        $this->pageTitle = __('app.update').' '.__('superadmin.company');
         $this->company = Company::with('defaultAddress')->findOrFail($id)->withCustomFields();
         $this->company->user = Company::firstActiveAdmin($this->company);
         $this->timezones = \DateTimeZone::listIdentifiers();
@@ -206,7 +204,7 @@ class CompanyController extends AccountBaseController
 
         $this->fields = [];
 
-        if (!empty($this->company->getCustomFieldGroupsWithFields())) {
+        if (! empty($this->company->getCustomFieldGroupsWithFields())) {
             $this->fields = $this->company->getCustomFieldGroupsWithFields()->fields;
         }
 
@@ -225,7 +223,7 @@ class CompanyController extends AccountBaseController
     public function update(UpdateRequest $request, $id)
     {
         $this->editPermission = user()->permission('edit_companies');
-        abort_403(!($this->editPermission == 'all'));
+        abort_403(! ($this->editPermission == 'all'));
 
         $company = Company::findOrFail($id);
 
@@ -252,17 +250,17 @@ class CompanyController extends AccountBaseController
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
+     * @param  int  $id
      * @return array
      */
     public function destroy($id)
     {
         $this->deletePermission = user()->permission('delete_companies');
-        abort_403(!($this->deletePermission == 'all'));
+        abort_403(! ($this->deletePermission == 'all'));
 
         $company = Company::withoutGlobalScope(CompanyScope::class)->find($id);
 
-        if (!$company) {
+        if (! $company) {
             return Reply::error(__('messages.dataNotFound'));
         }
 
@@ -273,6 +271,7 @@ class CompanyController extends AccountBaseController
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
+
             return Reply::error($e->getMessage());
         }
 
@@ -282,55 +281,55 @@ class CompanyController extends AccountBaseController
     /**
      * Display the specified resource.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
     public function show($id)
     {
         $this->viewPermission = user()->permission('view_companies');
-        abort_403(!($this->viewPermission == 'all'));
-
+        abort_403(! ($this->viewPermission == 'all'));
 
         $tab = request('tab');
 
         switch ($tab) {
-        case 'billing':
-            $this->company = Company::with(['currency' => function ($query) {
-                $query->withoutGlobalScope(CompanyScope::class);
-            }], 'package', 'approvalBy')
-                ->withCount(['employees', 'fileStorage', 'clients', 'invoices', 'estimates', 'contracts', 'projects', 'tasks', 'leads', 'tickets', 'orders'])
-                ->withSum('fileStorage', 'size')
-                ->with(['companyAddress' => function ($query) {
-                    return $query->where('is_default', 1);
-                }])
-                ->findOrFail($id);
-            return $this->billing();
-        case 'headers':
-            $this->company = Company::select(['id', 'headers', 'register_ip', 'location_details'])->findOrFail($id);
-            $this->view = 'super-admin.companies.ajax.headers';
-            break;
-        default:
-            $this->company = Company::with(['currency' => function ($query) {
-                $query->withoutGlobalScope(CompanyScope::class);
-            }], 'package', 'approvalBy')
-                ->withCount(['employees', 'fileStorage', 'clients', 'invoices', 'estimates', 'contracts', 'projects', 'tasks', 'leads', 'tickets', 'orders'])
-                ->withSum('fileStorage', 'size')
-                ->with(['companyAddress' => function ($query) {
-                    return $query->where('is_default', 1);
-                }])
-                ->findOrFail($id);
-            $this->company->user = Company::firstActiveAdmin($this->company);
+            case 'billing':
+                $this->company = Company::with(['currency' => function ($query) {
+                    $query->withoutGlobalScope(CompanyScope::class);
+                }], 'package', 'approvalBy')
+                    ->withCount(['employees', 'fileStorage', 'clients', 'invoices', 'estimates', 'contracts', 'projects', 'tasks', 'leads', 'tickets', 'orders'])
+                    ->withSum('fileStorage', 'size')
+                    ->with(['companyAddress' => function ($query) {
+                        return $query->where('is_default', 1);
+                    }])
+                    ->findOrFail($id);
 
-            $this->pageTitle = $this->company->company_name;
+                return $this->billing();
+            case 'headers':
+                $this->company = Company::select(['id', 'headers', 'register_ip', 'location_details'])->findOrFail($id);
+                $this->view = 'super-admin.companies.ajax.headers';
+                break;
+            default:
+                $this->company = Company::with(['currency' => function ($query) {
+                    $query->withoutGlobalScope(CompanyScope::class);
+                }], 'package', 'approvalBy')
+                    ->withCount(['employees', 'fileStorage', 'clients', 'invoices', 'estimates', 'contracts', 'projects', 'tasks', 'leads', 'tickets', 'orders'])
+                    ->withSum('fileStorage', 'size')
+                    ->with(['companyAddress' => function ($query) {
+                        return $query->where('is_default', 1);
+                    }])
+                    ->findOrFail($id);
+                $this->company->user = Company::firstActiveAdmin($this->company);
 
-            $this->latestInvoice = GlobalInvoice::where('company_id', $this->company->id)
-                ->whereNotNull('pay_date')
-                ->latest()
-                ->first();
+                $this->pageTitle = $this->company->company_name;
 
-            $this->currency = $this->latestInvoice ? GlobalCurrency::where('id', $this->latestInvoice->currency_id)->withTrashed()->first() : global_setting()->currency;
-            $this->view = 'super-admin.companies.ajax.show';
-            break;
+                $this->latestInvoice = GlobalInvoice::where('company_id', $this->company->id)
+                    ->whereNotNull('pay_date')
+                    ->latest()
+                    ->first();
+
+                $this->currency = $this->latestInvoice ? GlobalCurrency::where('id', $this->latestInvoice->currency_id)->withTrashed()->first() : global_setting()->currency;
+                $this->view = 'super-admin.companies.ajax.show';
+                break;
         }
 
         if (request()->ajax()) {
@@ -344,7 +343,7 @@ class CompanyController extends AccountBaseController
 
     public function editPackage($id)
     {
-        $this->pageTitle = __('app.update') . ' ' . __('superadmin.package');
+        $this->pageTitle = __('app.update').' '.__('superadmin.package');
 
         $this->company = Company::with('package')->findOrFail($id);
         $this->packageSetting = PackageSetting::first();
@@ -359,13 +358,12 @@ class CompanyController extends AccountBaseController
             $packageInfo[$package->id] = [
                 'monthly' => $package->monthly_price,
                 'annual' => $package->annual_price,
-                'lifetime' => $package->price
+                'lifetime' => $package->price,
             ];
 
             if ($package->default !== 'no' && $package->default !== 'lifetime') {
                 $this->allPackages->push($this->getSeparatePackage($package));
-            }
-            else {
+            } else {
 
                 if ($package->monthly_status) {
                     $this->allPackages->push($this->getSeparatePackage($package, 'monthly'));
@@ -374,7 +372,7 @@ class CompanyController extends AccountBaseController
                 if ($package->annual_status) {
                     $this->allPackages->push($this->getSeparatePackage($package));
                 }
-                if($package->package == 'lifetime') {
+                if ($package->package == 'lifetime') {
                     $this->allPackages->push($this->getSeparatePackage($package, 'lifetime'));
                 }
             }
@@ -430,10 +428,9 @@ class CompanyController extends AccountBaseController
 
             if ($request->trial_expire_on) {
                 $company->licence_expire_on = Carbon::createFromFormat($this->global->date_format, $request->trial_expire_on)->format('Y-m-d');
-            } elseif($package->package == 'lifetime') {
+            } elseif ($package->package == 'lifetime') {
                 $company->licence_expire_on = null;
-            }
-            else {
+            } else {
                 $company->licence_expire_on = $request->licence_expire_on ? Carbon::createFromFormat($this->global->date_format, $request->licence_expire_on)->format('Y-m-d') : $payDate->copy()->addDays('7')->format('Y-m-d');
             }
 
@@ -444,7 +441,7 @@ class CompanyController extends AccountBaseController
                 ->where('subscription_status', 'active')
                 ->update(['subscription_status' => 'inactive']);
 
-            $subscription = new GlobalSubscription();
+            $subscription = new GlobalSubscription;
             $subscription->company_id = $company->id;
             $subscription->package_id = $package->id;
             $subscription->currency_id = $currencyId;
@@ -457,13 +454,13 @@ class CompanyController extends AccountBaseController
             $subscription->transaction_id = str(str()->random(15))->upper();
             $subscription->save();
 
-            $offlineInvoice = new GlobalInvoice();
+            $offlineInvoice = new GlobalInvoice;
             $offlineInvoice->global_subscription_id = $subscription->id;
             $offlineInvoice->company_id = $company->id;
             $offlineInvoice->currency_id = $currencyId;
             $offlineInvoice->package_id = $company->package_id;
             $offlineInvoice->package_type = $request->package_type;
-            $offlineInvoice->total = ($request->amount ?: $package->{$request->package_type . '_price'}) ?: 0.00;
+            $offlineInvoice->total = ($request->amount ?: $package->{$request->package_type.'_price'}) ?: 0.00;
             $offlineInvoice->gateway_name = 'offline';
             $offlineInvoice->transaction_id = $subscription->transaction_id;
 
@@ -477,8 +474,7 @@ class CompanyController extends AccountBaseController
 
             if ($request->request_from == 'index') {
                 return Reply::redirect(route('superadmin.companies.index'), __('messages.packageChanged'));
-            }
-            else {
+            } else {
                 return Reply::redirect(route('superadmin.companies.show', [$company->id]), __('messages.packageChanged'));
             }
 
@@ -490,13 +486,13 @@ class CompanyController extends AccountBaseController
 
     private function addEmployeeDetails($user, $employeeRole, $companyId)
     {
-        $employee = new EmployeeDetails();
+        $employee = new EmployeeDetails;
         $employee->user_id = $user->id;
         $employee->company_id = $companyId;
-        $employee->employee_id = 'EMP-' . $user->id;
+        $employee->employee_id = 'EMP-'.$user->id;
         $employee->save();
 
-        $search = new UniversalSearch();
+        $search = new UniversalSearch;
         $search->searchable_id = $user->id;
         $search->company_id = $companyId;
         $search->title = $user->name;
@@ -514,7 +510,7 @@ class CompanyController extends AccountBaseController
         $user = User::withoutGlobalScopes([CompanyScope::class, ActiveScope::class])->where('company_id', $company->id)->where('email', $request->email)->first();
 
         if (is_null($user)) {
-            $user = new User();
+            $user = new User;
         }
 
         $userAuth = UserAuth::createUserAuthCredentials($request->email);
@@ -532,7 +528,7 @@ class CompanyController extends AccountBaseController
             UserAuth::where('id', $user->user_auth_id)->update(['password' => bcrypt($request->password)]);
         }
 
-        if (!$user->hasRole('admin')) {
+        if (! $user->hasRole('admin')) {
 
             // Attach Admin Role
             $adminRole = Role::withoutGlobalScope(CompanyScope::class)->where('name', 'admin')->where('company_id', $company->id)->first();
@@ -542,14 +538,13 @@ class CompanyController extends AccountBaseController
             $user->roles()->attach($adminRole->id);
             $this->addEmployeeDetails($user, $employeeRole, $company->id);
 
-
             $allPermissions = Permission::orderBy('id')->get()->pluck('id')->toArray();
             $permissionType = PermissionType::where('name', 'all')->first();
 
             foreach ($allPermissions as $permission) {
                 $user->permissionTypes()->attach([
                     $permission => [
-                        'permission_type_id' => $permissionType->id ?? PermissionType::ALL
+                        'permission_type_id' => $permissionType->id ?? PermissionType::ALL,
                     ]]);
             }
         }
@@ -560,7 +555,7 @@ class CompanyController extends AccountBaseController
         $company = Company::findOrFail($companyId);
         $admin = Company::firstActiveAdmin($company);
 
-        if (!$admin) {
+        if (! $admin) {
             return Reply::error('Impersonating this company is not possible as there is no administrator.');
         }
 
@@ -581,13 +576,14 @@ class CompanyController extends AccountBaseController
     public function billing()
     {
         $this->managePermission = user()->permission('manage_billing');
-        abort_403(!($this->managePermission == 'all'));
+        abort_403(! ($this->managePermission == 'all'));
 
-        $dataTable = new InvoiceDataTable();
+        $dataTable = new InvoiceDataTable;
         $tab = request('tab');
         $this->activeTab = $tab ?: 'company';
 
         $this->view = 'super-admin.companies.ajax.billing';
+
         // dd($this->company);
         return $dataTable->render('super-admin.companies.show', $this->data);
     }
@@ -601,20 +597,20 @@ class CompanyController extends AccountBaseController
         if ($search) {
             $companies = Company::orderby('company_name')
                 ->select('id', 'company_name', 'logo', 'light_logo')
-                ->where('company_name', 'like', '%' . $search . '%')
+                ->where('company_name', 'like', '%'.$search.'%')
                 ->take(20)
                 ->get();
         }
 
-        $response = array();
+        $response = [];
 
         foreach ($companies as $company) {
 
-            $response[] = array(
+            $response[] = [
                 'id' => $company->id,
                 'text' => $company->company_name,
                 'logo_url' => $company->logo_url,
-            );
+            ];
 
         }
 
@@ -637,5 +633,4 @@ class CompanyController extends AccountBaseController
         return Reply::success(__('superadmin.companyApprovedSuccess'));
 
     }
-
 }

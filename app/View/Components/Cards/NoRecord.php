@@ -7,8 +7,8 @@ use Illuminate\View\Component;
 
 class NoRecord extends Component
 {
-
     public $icon;
+
     public $message;
 
     /**
@@ -31,5 +31,4 @@ class NoRecord extends Component
     {
         return view('components.cards.no-record');
     }
-
 }

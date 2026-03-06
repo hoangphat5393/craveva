@@ -2,8 +2,8 @@
 
 namespace App\Models\SuperAdmin;
 
-use App\Models\LanguageSetting;
 use App\Models\BaseModel;
+use App\Models\LanguageSetting;
 
 /**
  * App\Models\SuperAdmin\FrontFaq
@@ -15,6 +15,7 @@ use App\Models\BaseModel;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read LanguageSetting|null $language
+ *
  * @method static Builder|FrontFaq newModelQuery()
  * @method static Builder|FrontFaq newQuery()
  * @method static Builder|FrontFaq query()
@@ -24,16 +25,15 @@ use App\Models\BaseModel;
  * @method static Builder|FrontFaq whereLanguageSettingId($value)
  * @method static Builder|FrontFaq whereQuestion($value)
  * @method static Builder|FrontFaq whereUpdatedAt($value)
+ *
  * @mixin Eloquent
  */
 class FrontFaq extends BaseModel
 {
-
     protected $guarded = ['id'];
 
     public function language()
     {
         return $this->belongsTo(LanguageSetting::class, 'language_setting_id');
     }
-
 }

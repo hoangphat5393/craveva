@@ -7,13 +7,18 @@ use Illuminate\View\Component;
 
 class Password extends Component
 {
-
     public $fieldLabel;
+
     public $fieldRequired;
+
     public $fieldPlaceholder;
+
     public $fieldValue;
+
     public $fieldName;
+
     public $fieldId;
+
     public $fieldHelp;
 
     /**
@@ -41,5 +46,4 @@ class Password extends Component
     {
         return view('components.forms.password');
     }
-
 }

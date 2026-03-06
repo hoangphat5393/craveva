@@ -2,37 +2,37 @@
 
 namespace Modules\Pricing\Tests\Unit;
 
-use Tests\TestCase;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
-use App\Models\User;
-use App\Models\Product;
 use App\Models\Company;
-use Modules\Pricing\Entities\ClientProductPricing;
-use Carbon\Carbon;
-
+use App\Models\Product;
+use App\Models\User;
 use App\Models\UserAuth;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Modules\Pricing\Entities\ClientProductPricing;
+use Tests\TestCase;
 
 class ContractPricingTest extends TestCase
 {
     use DatabaseTransactions;
 
     protected $company;
+
     protected $client;
+
     protected $product;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Create Company
-        $this->company = new Company();
+        $this->company = new Company;
         $this->company->company_name = 'Test Company';
         $this->company->company_email = 'test@example.com';
         $this->company->date_format = 'Y-m-d';
         $this->company->save();
-        
+
         // Create Client
-        $clientEmail = 'client_' . uniqid() . '@example.com';
+        $clientEmail = 'client_'.uniqid().'@example.com';
         $clientAuth = UserAuth::create([
             'email' => $clientEmail,
             'password' => bcrypt('123456'),
@@ -42,17 +42,17 @@ class ContractPricingTest extends TestCase
         $this->client = User::factory()->create([
             'company_id' => $this->company->id,
             'user_auth_id' => $clientAuth->id,
-            'email' => $clientEmail
+            'email' => $clientEmail,
         ]);
-        
+
         // Create Product
         $this->product = Product::factory()->create([
             'company_id' => $this->company->id,
-            'price' => 100
+            'price' => 100,
         ]);
 
         // Login as admin
-        $adminEmail = 'admin_' . uniqid() . '@example.com';
+        $adminEmail = 'admin_'.uniqid().'@example.com';
         $adminAuth = UserAuth::create([
             'email' => $adminEmail,
             'password' => bcrypt('123456'),
@@ -62,14 +62,14 @@ class ContractPricingTest extends TestCase
         $admin = User::factory()->create([
             'company_id' => $this->company->id,
             'user_auth_id' => $adminAuth->id,
-            'email' => $adminEmail
+            'email' => $adminEmail,
         ]);
 
         // Mock permission
         // Since we can't easily set up full RBAC in unit test without seeding roles,
         // we might need to mock the permission check or ensure the user has the 'admin' role which usually has all permissions.
         // For now, let's try actingAs and see if we hit 403.
-        
+
         $this->actingAs($adminAuth);
     }
 
@@ -136,7 +136,7 @@ class ContractPricingTest extends TestCase
         // Create first pricing: Next month 1st to 30th
         $start = now()->addMonth()->startOfMonth();
         $end = now()->addMonth()->endOfMonth();
-        
+
         ClientProductPricing::create([
             'company_id' => $this->company->id,
             'client_id' => $this->client->id,

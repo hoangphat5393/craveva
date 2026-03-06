@@ -9,7 +9,6 @@ use Illuminate\View\Component;
 
 class Auth extends Component
 {
-
     /**
      * Create a new component instance.
      *

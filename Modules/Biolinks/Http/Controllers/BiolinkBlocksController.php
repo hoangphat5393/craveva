@@ -4,23 +4,22 @@ namespace Modules\Biolinks\Http\Controllers;
 
 use App\Helper\Files;
 use App\Helper\Reply;
+use App\Http\Controllers\AccountBaseController;
 use Illuminate\Http\Request;
 use Modules\Biolinks\Entities\BiolinkBlocks;
-use App\Http\Controllers\AccountBaseController;
 use Modules\Biolinks\Entities\BiolinksGlobalSetting;
 use Modules\Biolinks\Http\Requests\StoreBiolinkBlocks;
 use Modules\Biolinks\Http\Requests\UpdateBiolinkBlocks;
 
 class BiolinkBlocksController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'biolinks::app.biolinkSettings';
 
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array(BiolinksGlobalSetting::MODULE_NAME, $this->user->modules));
+            abort_403(! in_array(BiolinksGlobalSetting::MODULE_NAME, $this->user->modules));
 
             return $next($request);
         });
@@ -48,54 +47,54 @@ class BiolinkBlocksController extends AccountBaseController
         $this->block = $blockId;
 
         switch ($this->block) {
-        case 'link':
-            $this->view = 'biolinks::biolink-blocks.ajax.link-block';
-            break;
-        case 'heading':
-            $this->view = 'biolinks::biolink-blocks.ajax.heading-block';
-            break;
-        case 'paragraph':
-            $this->view = 'biolinks::biolink-blocks.ajax.paragraph-block';
-            break;
-        case 'avatar':
-            $this->view = 'biolinks::biolink-blocks.ajax.avatar-block';
-            break;
-        case 'image':
-            $this->view = 'biolinks::biolink-blocks.ajax.image-block';
-            break;
-        case 'socials':
-            $this->view = 'biolinks::biolink-blocks.ajax.socials-block';
-            break;
-        case 'email-collector':
-            $this->view = 'biolinks::biolink-blocks.ajax.email-collector-block';
-            break;
-        case 'phone-collector':
-            $this->view = 'biolinks::biolink-blocks.ajax.phone-collector-block';
-            break;
-        case 'paypal':
-            $this->view = 'biolinks::biolink-blocks.ajax.paypal-block';
-            break;
-        case 'sound-cloud':
-            $this->view = 'biolinks::biolink-blocks.ajax.sound-cloud-block';
-            break;
-        case 'spotify':
-            $this->view = 'biolinks::biolink-blocks.ajax.spotify-block';
-            break;
-        case 'youtube':
-            $this->view = 'biolinks::biolink-blocks.ajax.youtube-block';
-            break;
-        case 'threads':
-            $this->view = 'biolinks::biolink-blocks.ajax.threads-block';
-            break;
-        case 'tiktok':
-            $this->view = 'biolinks::biolink-blocks.ajax.tiktok-block';
-            break;
-        case 'twitch':
-            $this->view = 'biolinks::biolink-blocks.ajax.twitch-block';
-            break;
-        default:
-            $this->view = 'biolinks::biolink-blocks.ajax.link-block';
-            break;
+            case 'link':
+                $this->view = 'biolinks::biolink-blocks.ajax.link-block';
+                break;
+            case 'heading':
+                $this->view = 'biolinks::biolink-blocks.ajax.heading-block';
+                break;
+            case 'paragraph':
+                $this->view = 'biolinks::biolink-blocks.ajax.paragraph-block';
+                break;
+            case 'avatar':
+                $this->view = 'biolinks::biolink-blocks.ajax.avatar-block';
+                break;
+            case 'image':
+                $this->view = 'biolinks::biolink-blocks.ajax.image-block';
+                break;
+            case 'socials':
+                $this->view = 'biolinks::biolink-blocks.ajax.socials-block';
+                break;
+            case 'email-collector':
+                $this->view = 'biolinks::biolink-blocks.ajax.email-collector-block';
+                break;
+            case 'phone-collector':
+                $this->view = 'biolinks::biolink-blocks.ajax.phone-collector-block';
+                break;
+            case 'paypal':
+                $this->view = 'biolinks::biolink-blocks.ajax.paypal-block';
+                break;
+            case 'sound-cloud':
+                $this->view = 'biolinks::biolink-blocks.ajax.sound-cloud-block';
+                break;
+            case 'spotify':
+                $this->view = 'biolinks::biolink-blocks.ajax.spotify-block';
+                break;
+            case 'youtube':
+                $this->view = 'biolinks::biolink-blocks.ajax.youtube-block';
+                break;
+            case 'threads':
+                $this->view = 'biolinks::biolink-blocks.ajax.threads-block';
+                break;
+            case 'tiktok':
+                $this->view = 'biolinks::biolink-blocks.ajax.tiktok-block';
+                break;
+            case 'twitch':
+                $this->view = 'biolinks::biolink-blocks.ajax.twitch-block';
+                break;
+            default:
+                $this->view = 'biolinks::biolink-blocks.ajax.link-block';
+                break;
         }
 
         return view($this->view, $this->data);
@@ -131,7 +130,7 @@ class BiolinkBlocksController extends AccountBaseController
             $block->save();
         }
 
-        $redirectUrl = route('biolinks.edit', $request->biolink_id) . '?tab=blocks';
+        $redirectUrl = route('biolinks.edit', $request->biolink_id).'?tab=blocks';
 
         return Reply::successWithData(__('messages.recordSaved'), ['redirectUrl' => $redirectUrl]);
     }
@@ -142,34 +141,34 @@ class BiolinkBlocksController extends AccountBaseController
     public function update(UpdateBiolinkBlocks $request, $id)
     {
         switch ($request->type) {
-        case 'link':
-            $this->updateLink($request, $id);
-            break;
-        case 'heading':
-            $this->updateHeading($request, $id);
-            break;
-        case 'paragraph':
-            $this->updateParagraph($request, $id);
-            break;
-        case 'avatar':
-            $this->updateAvatar($request, $id);
-            break;
-        case 'image':
-            $this->updateImage($request, $id);
-            break;
-        case 'socials':
-            $this->updateSocials($request, $id);
-            break;
-        case 'email-collector':
-        case 'phone-collector':
-            $this->updateCollector($request, $id);
-            break;
-        case 'paypal':
-            $this->updatePaypal($request, $id);
-            break;
-        case 'embeds':
-            $this->updateEmbeds($request, $id);
-            break;
+            case 'link':
+                $this->updateLink($request, $id);
+                break;
+            case 'heading':
+                $this->updateHeading($request, $id);
+                break;
+            case 'paragraph':
+                $this->updateParagraph($request, $id);
+                break;
+            case 'avatar':
+                $this->updateAvatar($request, $id);
+                break;
+            case 'image':
+                $this->updateImage($request, $id);
+                break;
+            case 'socials':
+                $this->updateSocials($request, $id);
+                break;
+            case 'email-collector':
+            case 'phone-collector':
+                $this->updateCollector($request, $id);
+                break;
+            case 'paypal':
+                $this->updatePaypal($request, $id);
+                break;
+            case 'embeds':
+                $this->updateEmbeds($request, $id);
+                break;
         }
 
         return Reply::success(__('messages.updateSuccess'));
@@ -325,8 +324,7 @@ class BiolinkBlocksController extends AccountBaseController
             $block->placeholder = $request->email_placeholder;
             $block->api_key = $request->api_key;
             $block->mailchimp_list = $request->mailchimp_list;
-        }
-        else {
+        } else {
             $block->placeholder = $request->phone_placeholder;
         }
 
@@ -439,5 +437,4 @@ class BiolinkBlocksController extends AccountBaseController
 
         return Reply::success(__('messages.recordSaved'));
     }
-
 }

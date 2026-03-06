@@ -2,8 +2,8 @@
 
 namespace App\Models\SuperAdmin;
 
-use App\Models\Company;
 use App\Models\BaseModel;
+use App\Models\Company;
 
 /**
  * App\Models\SuperAdmin\MollieInvoice
@@ -20,6 +20,7 @@ use App\Models\BaseModel;
  * @property Carbon|null $updated_at
  * @property-read Company $company
  * @property-read Package $package
+ *
  * @method static Builder|MollieInvoice newModelQuery()
  * @method static Builder|MollieInvoice newQuery()
  * @method static Builder|MollieInvoice query()
@@ -33,11 +34,11 @@ use App\Models\BaseModel;
  * @method static Builder|MollieInvoice wherePayDate($value)
  * @method static Builder|MollieInvoice whereTransactionId($value)
  * @method static Builder|MollieInvoice whereUpdatedAt($value)
+ *
  * @mixin Eloquent
  */
 class MollieInvoice extends BaseModel
 {
-
     protected $dates = [
         'pay_date',
         'next_pay_date',
@@ -57,5 +58,4 @@ class MollieInvoice extends BaseModel
     {
         return $this->belongsTo(Package::class);
     }
-
 }

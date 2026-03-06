@@ -12,12 +12,12 @@ use Illuminate\Http\Request;
 
 class LeadAgentSettingController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('leads', $this->user->modules));
+            abort_403(! in_array('leads', $this->user->modules));
+
             return $next($request);
         });
     }
@@ -31,7 +31,7 @@ class LeadAgentSettingController extends AccountBaseController
     {
         $this->addPermission = user()->permission('add_lead_agent');
 
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
 
         $this->employees = User::join('role_user', 'role_user.user_id', '=', 'users.id')
             ->join('roles', 'roles.id', '=', 'role_user.role_id')
@@ -47,12 +47,12 @@ class LeadAgentSettingController extends AccountBaseController
     public function store(StoreLeadAgent $request)
     {
         $this->addPermission = user()->permission('add_lead_agent');
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
 
         $categoryIds = $request->category_id;
 
         foreach ($categoryIds as $categoryId) {
-            $agentCategory = new LeadAgent();
+            $agentCategory = new LeadAgent;
             $agentCategory->company_id = company()->id;
             $agentCategory->user_id = $request->agent_id;
             $agentCategory->lead_category_id = $categoryId;
@@ -66,18 +66,19 @@ class LeadAgentSettingController extends AccountBaseController
             $option = '';
 
             foreach ($data->pluck('user') as $item) {
-                $option .= '<option data-content="' . $item->name . '" value="' . $item->id . '"> ' . $item->name . '</option>';
+                $option .= '<option data-content="'.$item->name.'" value="'.$item->id.'"> '.$item->name.'</option>';
             }
 
             return Reply::successWithData(__('messages.recordSaved'), ['data' => $option]);
         }
+
         return Reply::success(__('messages.recordSaved'));
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
@@ -85,7 +86,7 @@ class LeadAgentSettingController extends AccountBaseController
         $leadAgent = LeadAgent::where('user_id', $id)->first();
         $this->deletePermission = user()->permission('delete_lead_agent');
 
-        abort_403(!($this->deletePermission == 'all' || ($this->editPermission == 'added' && $leadAgent->added_by == user()->id)));
+        abort_403(! ($this->deletePermission == 'all' || ($this->editPermission == 'added' && $leadAgent->added_by == user()->id)));
 
         LeadAgent::where('user_id', $id)->delete();
 
@@ -101,7 +102,7 @@ class LeadAgentSettingController extends AccountBaseController
                 'user_id' => $id,
                 'lead_category_id' => $categoryId,
                 'last_updated_by' => user()->id,
-                'company_id' => company()->id
+                'company_id' => company()->id,
             ]);
         }
 
@@ -119,7 +120,7 @@ class LeadAgentSettingController extends AccountBaseController
     {
         $leadAgentCategory = LeadAgent::where('user_id', request()->agent_id)->pluck('lead_category_id')->toArray();
 
-        if (!empty($leadAgentCategory)) {
+        if (! empty($leadAgentCategory)) {
 
             $leadCategory = LeadCategory::whereNotIn('id', $leadAgentCategory)->get();
 

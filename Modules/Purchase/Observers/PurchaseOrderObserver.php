@@ -2,24 +2,22 @@
 
 namespace Modules\Purchase\Observers;
 
-use Exception;
 use App\Helper\Files;
+use Exception;
 use Modules\Purchase\Entities\PurchaseItem;
-use Modules\Purchase\Entities\PurchaseOrder;
-use Modules\Purchase\Entities\PurchaseItemTax;
 use Modules\Purchase\Entities\PurchaseItemImage;
-use Modules\Purchase\Events\NewPurchaseOrderEvent;
+use Modules\Purchase\Entities\PurchaseItemTax;
+use Modules\Purchase\Entities\PurchaseOrder;
 use Modules\Purchase\Entities\PurchaseOrderHistory;
 use Modules\Purchase\Entities\PurchaseStockAdjustment;
+use Modules\Purchase\Events\NewPurchaseOrderEvent;
 use Modules\Warehouse\Entities\WarehouseProductStock;
-use App\Models\Company;
 
 class PurchaseOrderObserver
 {
-
     public function saving(PurchaseOrder $order)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
 
             if (user()) {
                 $order->last_updated_by = user()->id;
@@ -34,7 +32,7 @@ class PurchaseOrderObserver
     public function creating(PurchaseOrder $order)
     {
 
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
 
             if ((request()->type && request()->type == 'send') || request()->type == 'mark_as_send') {
                 $order->send_status = 1;
@@ -58,13 +56,13 @@ class PurchaseOrderObserver
 
     public function created(PurchaseOrder $order)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
 
             if ($order->vendor && request()->type && request()->type == 'send') {
                 event(new NewPurchaseOrderEvent($order, $order->vendor));
             }
 
-            if (!empty(request()->item_name) && is_array(request()->item_name)) {
+            if (! empty(request()->item_name) && is_array(request()->item_name)) {
 
                 $itemsSummary = request()->item_summary;
                 $cost_per_item = request()->cost_per_item;
@@ -78,17 +76,17 @@ class PurchaseOrderObserver
                 $order_item_image_url = request()->order_item_image_url;
                 $orderOldImage = request()->image_id;
 
-                foreach (request()->item_name as $key => $item) :
-                    if (!is_null($item)) {
+                foreach (request()->item_name as $key => $item) {
+                    if (! is_null($item)) {
                         $orderItem = PurchaseItem::create(
                             [
                                 'purchase_order_id' => $order->id,
                                 'item_name' => $item,
                                 'item_summary' => $itemsSummary[$key] ?: '',
                                 'type' => 'item',
-                                'unit_id' => (isset($unitId[$key]) && !is_null($unitId[$key])) ? $unitId[$key] : null,
-                                'product_id' => (isset($product[$key]) && !is_null($product[$key])) ? $product[$key] : null,
-                                'hsn_sac_code' => (isset($hsn_sac_code[$key]) && !is_null($hsn_sac_code[$key])) ? $hsn_sac_code[$key] : null,
+                                'unit_id' => (isset($unitId[$key]) && ! is_null($unitId[$key])) ? $unitId[$key] : null,
+                                'product_id' => (isset($product[$key]) && ! is_null($product[$key])) ? $product[$key] : null,
+                                'hsn_sac_code' => (isset($hsn_sac_code[$key]) && ! is_null($hsn_sac_code[$key])) ? $hsn_sac_code[$key] : null,
                                 'quantity' => $quantity[$key],
                                 'unit_price' => round($cost_per_item[$key], 2),
                                 'amount' => round($amount[$key], 2),
@@ -99,8 +97,8 @@ class PurchaseOrderObserver
                             $inventory = PurchaseStockAdjustment::where('product_id', $product[$key])->first();
 
                             // If $inventory is null, initialize a new PurchaseStockAdjustment object
-                            if (!$inventory) {
-                                $inventory = new PurchaseStockAdjustment();
+                            if (! $inventory) {
+                                $inventory = new PurchaseStockAdjustment;
                                 $inventory->product_id = $product[$key];
                                 $inventory->net_quantity = 0; // Set the initial net quantity to 0
                             }
@@ -127,21 +125,21 @@ class PurchaseOrderObserver
                         $filename = '';
 
                         if (isset($order_item_image[$key])) {
-                            $filename = Files::uploadLocalOrS3($order_item_image[$key], PurchaseItemImage::FILE_PATH . '/' . $orderItem->id . '/');
+                            $filename = Files::uploadLocalOrS3($order_item_image[$key], PurchaseItemImage::FILE_PATH.'/'.$orderItem->id.'/');
                         }
 
                         $var = PurchaseItemImage::create(
                             [
                                 'purchase_item_id' => $orderItem->id,
-                                'filename' => !isset($order_item_image_url[$key]) ? $order_item_image[$key]->getClientOriginalName() : '',
-                                'hashname' => !isset($order_item_image_url[$key]) ? $filename : '',
-                                'size' => !isset($order_item_image_url[$key]) ? $order_item_image[$key]->getSize() : '',
-                                'external_link' => isset($order_item_image_url[$key]) ? $order_item_image_url[$key] : ''
+                                'filename' => ! isset($order_item_image_url[$key]) ? $order_item_image[$key]->getClientOriginalName() : '',
+                                'hashname' => ! isset($order_item_image_url[$key]) ? $filename : '',
+                                'size' => ! isset($order_item_image_url[$key]) ? $order_item_image[$key]->getSize() : '',
+                                'external_link' => isset($order_item_image_url[$key]) ? $order_item_image_url[$key] : '',
                             ]
                         );
                     }
 
-                endforeach;
+                }
             }
 
             $this->logOrderActivity(company()->id, $order->id, $order->vendor_id, user()->id, 'purchaseOrderCreated', 'Created');
@@ -150,7 +148,7 @@ class PurchaseOrderObserver
 
     public function updating(PurchaseOrder $order)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             if (request()->type && request()->type == 'send' || request()->type == 'mark_as_send') {
                 $order->send_status = 1;
             }
@@ -162,16 +160,14 @@ class PurchaseOrderObserver
 
         foreach ($order->items as $item) {
 
-
-
             if ($order->isDirty('delivery_status') && $order->delivery_status === 'delivered') {
                 $inventory = PurchaseStockAdjustment::where('product_id', $item->product_id)
                     ->where('warehouse_id', $order->warehouse_id)
                     ->first();
 
                 // If $inventory is null, initialize a new PurchaseStockAdjustment object
-                if (!$inventory) {
-                    $inventory = new PurchaseStockAdjustment();
+                if (! $inventory) {
+                    $inventory = new PurchaseStockAdjustment;
                     $inventory->product_id = $item->product_id;
                     $inventory->warehouse_id = $order->warehouse_id;
                     $inventory->net_quantity = 0; // Set the initial net quantity to 0
@@ -192,7 +188,7 @@ class PurchaseOrderObserver
                 }
             }
         }
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             /*
                 Step1 - Delete all orders items which are not available
                 Step2 - Find old orders items, update it and check if images are newer or older
@@ -213,9 +209,9 @@ class PurchaseOrderObserver
             $order_item_image_url = $request->order_item_image_url;
             $item_ids = $request->item_ids;
 
-            if (!empty($request->item_name) && is_array($request->item_name)) {
+            if (! empty($request->item_name) && is_array($request->item_name)) {
                 // Step1 - Delete all order items which are not avaialable
-                if (!empty($item_ids)) {
+                if (! empty($item_ids)) {
                     PurchaseItem::where('purchase_order_id', $order->id)->delete();
                 }
 
@@ -226,16 +222,16 @@ class PurchaseOrderObserver
                     try {
                         $orderItem = PurchaseItem::findOrFail($invoice_item_id);
                     } catch (Exception) {
-                        $orderItem = new PurchaseItem();
+                        $orderItem = new PurchaseItem;
                     }
 
                     $orderItem->purchase_order_id = $order->id;
                     $orderItem->item_name = $item;
                     $orderItem->item_summary = $itemsSummary[$key];
                     $orderItem->type = 'item';
-                    $orderItem->unit_id = (isset($unitId[$key]) && !is_null($unitId[$key])) ? $unitId[$key] : null;
-                    $orderItem->product_id = (isset($product[$key]) && !is_null($product[$key])) ? $product[$key] : null;
-                    $orderItem->hsn_sac_code = (isset($hsn_sac_code[$key]) && !is_null($hsn_sac_code[$key])) ? $hsn_sac_code[$key] : null;
+                    $orderItem->unit_id = (isset($unitId[$key]) && ! is_null($unitId[$key])) ? $unitId[$key] : null;
+                    $orderItem->product_id = (isset($product[$key]) && ! is_null($product[$key])) ? $product[$key] : null;
+                    $orderItem->hsn_sac_code = (isset($hsn_sac_code[$key]) && ! is_null($hsn_sac_code[$key])) ? $hsn_sac_code[$key] : null;
                     $orderItem->quantity = $quantity[$key];
                     $orderItem->unit_price = round($cost_per_item[$key], 2);
                     $orderItem->amount = round($amount[$key], 2);
@@ -247,10 +243,10 @@ class PurchaseOrderObserver
                             $exitingTax = PurchaseItemTax::where([
                                 ['tax_id', '=', $tax],
                                 ['purchase_order_id', '=',  $order->id],
-                                ['purchase_item_id', '=', $orderItem->id]
+                                ['purchase_item_id', '=', $orderItem->id],
                             ])->exists();
 
-                            if (!$exitingTax) {
+                            if (! $exitingTax) {
                                 $item = PurchaseItemTax::create([
                                     'purchase_order_id' => $order->id,
                                     'purchase_item_id' => $orderItem->id,
@@ -261,17 +257,17 @@ class PurchaseOrderObserver
                     }
 
                     /* order file save here */
-                    if ((isset($order_item_image[$key]) && $request->hasFile('order_item_image.' . $key)) || isset($order_item_image_url[$key])) {
+                    if ((isset($order_item_image[$key]) && $request->hasFile('order_item_image.'.$key)) || isset($order_item_image_url[$key])) {
 
                         /* Delete previous uploaded file if it not a product (because product images cannot be deleted) */
-                        if (!isset($order_item_image_url[$key]) && $orderItem && $orderItem->purchaseItemImage) {
-                            Files::deleteFile($orderItem->purchaseItemImage->hashname, PurchaseItemImage::FILE_PATH . '/' . $orderItem->id . '/');
+                        if (! isset($order_item_image_url[$key]) && $orderItem && $orderItem->purchaseItemImage) {
+                            Files::deleteFile($orderItem->purchaseItemImage->hashname, PurchaseItemImage::FILE_PATH.'/'.$orderItem->id.'/');
                         }
 
                         $filename = '';
 
                         if (isset($order_item_image[$key])) {
-                            $filename = Files::uploadLocalOrS3($order_item_image[$key], PurchaseItemImage::FILE_PATH . '/' . $orderItem->id . '/');
+                            $filename = Files::uploadLocalOrS3($order_item_image[$key], PurchaseItemImage::FILE_PATH.'/'.$orderItem->id.'/');
                         }
 
                         PurchaseItemImage::updateOrCreate(
@@ -279,10 +275,10 @@ class PurchaseOrderObserver
                                 'purchase_item_id' => $orderItem->id,
                             ],
                             [
-                                'filename' => !isset($order_item_image_url[$key]) ? $order_item_image[$key]->getClientOriginalName() : '',
-                                'hashname' => !isset($order_item_image_url[$key]) ? $filename : '',
-                                'size' => !isset($order_item_image_url[$key]) ? $order_item_image[$key]->getSize() : '',
-                                'external_link' => isset($order_item_image_url[$key]) ? $order_item_image_url[$key] : ''
+                                'filename' => ! isset($order_item_image_url[$key]) ? $order_item_image[$key]->getClientOriginalName() : '',
+                                'hashname' => ! isset($order_item_image_url[$key]) ? $filename : '',
+                                'size' => ! isset($order_item_image_url[$key]) ? $order_item_image[$key]->getSize() : '',
+                                'external_link' => isset($order_item_image_url[$key]) ? $order_item_image_url[$key] : '',
                             ]
                         );
                     }
@@ -302,14 +298,14 @@ class PurchaseOrderObserver
 
         if ($orderItems) {
             foreach ($orderItems as $orderItem) {
-                Files::deleteDirectory(PurchaseItemImage::FILE_PATH . '/' . $orderItem->id);
+                Files::deleteDirectory(PurchaseItemImage::FILE_PATH.'/'.$orderItem->id);
             }
         }
     }
 
     public function logOrderActivity($companyID, $orderID, $vendorID, $userID, $text, $label)
     {
-        $activiy = new PurchaseOrderHistory();
+        $activiy = new PurchaseOrderHistory;
 
         $activiy->company_id = $companyID;
         $activiy->purchase_order_id = $orderID;

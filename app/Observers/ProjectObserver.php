@@ -2,14 +2,14 @@
 
 namespace App\Observers;
 
-use App\Models\User;
-use App\Models\Project;
-use App\Models\Notification;
 use App\Events\NewProjectEvent;
 use App\Models\MentionUser;
+use App\Models\Notification;
+use App\Models\Project;
 use App\Models\UniversalSearch;
-use Illuminate\Support\Facades\DB;
+use App\Models\User;
 use App\Traits\EmployeeActivityTrait;
+use Illuminate\Support\Facades\DB;
 
 class ProjectObserver
 {
@@ -18,7 +18,7 @@ class ProjectObserver
     public function saving(Project $project)
     {
 
-        if (!isRunningInConsoleOrSeeding() && user()) {
+        if (! isRunningInConsoleOrSeeding() && user()) {
             $project->last_updated_by = user()->id;
         }
 
@@ -31,7 +31,7 @@ class ProjectObserver
     {
         $project->hash = md5(microtime());
 
-        if (!isRunningInConsoleOrSeeding() && user()) {
+        if (! isRunningInConsoleOrSeeding() && user()) {
             $project->added_by = user()->id;
         }
 
@@ -42,11 +42,11 @@ class ProjectObserver
 
     public function created(Project $project)
     {
-        if (!$project->public && !empty(request()->user_id)) {
+        if (! $project->public && ! empty(request()->user_id)) {
             $project->projectMembers()->attach(request()->user_id);
         }
 
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             if (user()) {
                 self::createEmployeeActivity(user()->id, 'project-created', $project->id, 'proj');
             }
@@ -83,7 +83,7 @@ class ProjectObserver
             }
 
             // Send notification to client
-            if (!empty(request()->client_id)) {
+            if (! empty(request()->client_id)) {
                 event(new NewProjectEvent($project, null, $project->client, 'NewProjectClient'));
             }
         }
@@ -91,7 +91,7 @@ class ProjectObserver
 
     public function updating(Project $project)
     {
-        if (request()->public && !empty(request()->member_id)) {
+        if (request()->public && ! empty(request()->member_id)) {
             $project->projectMembers()->detach(request()->member_id);
         }
 
@@ -99,7 +99,7 @@ class ProjectObserver
         $requestMentionIds = explode(',', request()->mention_user_ids);
         $newMention = [];
 
-        if (!request()->has('task_project_id')) {
+        if (! request()->has('task_project_id')) {
             $project->mentionUser()->sync(request()->mention_user_ids);
 
         }
@@ -110,13 +110,12 @@ class ProjectObserver
 
                 if (($mentionedUser) != null) {
 
-                    if (!in_array($value, json_decode($mentionedUser))) {
+                    if (! in_array($value, json_decode($mentionedUser))) {
 
                         $newMention[] = $value;
                     }
 
-                }
-                else {
+                } else {
 
                     $newMention[] = $value;
 
@@ -126,7 +125,7 @@ class ProjectObserver
 
             $newMentionMembers = User::whereIn('id', $newMention)->get();
 
-            if (!empty($newMention)) {
+            if (! empty($newMention)) {
                 event(new NewProjectEvent($project, $newMentionMembers, 'ProjectMention'));
 
             }
@@ -136,11 +135,11 @@ class ProjectObserver
     public function updated(Project $project)
     {
 
-        if (request()->private && !empty(request()->user_id)) {
+        if (request()->private && ! empty(request()->user_id)) {
             $project->projectMembers()->attach(request()->user_id);
         }
 
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             if (user()) {
                 self::createEmployeeActivity(user()->id, 'project-updated', $project->id, 'proj');
             }
@@ -153,10 +152,10 @@ class ProjectObserver
 
             if ($project->isDirty('project_short_code')) {
                 // phpcs:ignore
-                if($project->project_short_code){
-                    DB::statement("UPDATE tasks SET task_short_code = CONCAT( '$project->project_short_code', '-', id ) WHERE project_id = '" . $project->id . "'; ");
-                }else{
-                    DB::statement("UPDATE tasks SET task_short_code = CONCAT( id ) WHERE project_id = '" . $project->id . "'; ");
+                if ($project->project_short_code) {
+                    DB::statement("UPDATE tasks SET task_short_code = CONCAT( '$project->project_short_code', '-', id ) WHERE project_id = '".$project->id."'; ");
+                } else {
+                    DB::statement("UPDATE tasks SET task_short_code = CONCAT( id ) WHERE project_id = '".$project->id."'; ");
                 }
 
             }
@@ -183,8 +182,8 @@ class ProjectObserver
                 ->whereNull('read_at')
                 ->where(
                     function ($q) use ($task) {
-                        $q->where('data', 'like', '{"id":' . $task->id . ',%');
-                        $q->orWhere('data', 'like', '%,"task_id":' . $task->id . ',%');
+                        $q->where('data', 'like', '{"id":'.$task->id.',%');
+                        $q->orWhere('data', 'like', '%,"task_id":'.$task->id.',%');
                     }
                 )->delete();
         }
@@ -196,8 +195,8 @@ class ProjectObserver
                 ->whereNull('read_at')
                 ->where(
                     function ($q) use ($project) {
-                        $q->where('data', 'like', '{"id":' . $project->id . ',%');
-                        $q->orWhere('data', 'like', '%"project_id":' . $project->id . ',%');
+                        $q->where('data', 'like', '{"id":'.$project->id.',%');
+                        $q->orWhere('data', 'like', '%"project_id":'.$project->id.',%');
                     }
                 )->delete();
         }
@@ -207,8 +206,8 @@ class ProjectObserver
     {
         $project->tasks()->delete();
 
-        if(user()){
-            self::createEmployeeActivity(user()->id, 'project-deleted', );
+        if (user()) {
+            self::createEmployeeActivity(user()->id, 'project-deleted');
 
         }
     }
@@ -217,5 +216,4 @@ class ProjectObserver
     {
         $project->tasks()->restore();
     }
-
 }

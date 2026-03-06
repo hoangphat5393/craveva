@@ -6,21 +6,18 @@ use Closure;
 
 class SuperAdmin
 {
-
     /**
      * Handle an incoming request.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param \Closure $next
+     * @param  \Illuminate\Http\Request  $request
      * @return mixed
      */
     public function handle($request, Closure $next)
     {
 
         $user = user();
-        abort_403(!$user->is_superadmin);
+        abort_403(! $user->is_superadmin);
 
         return $next($request);
     }
-
 }

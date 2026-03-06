@@ -2,18 +2,19 @@
 
 namespace App\DataTables;
 
+use App\Helper\Common;
 use App\Models\Appreciation;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
-use App\Helper\Common;
 
 class AppreciationsDataTable extends BaseDataTable
 {
-
     private $editAppreciationPermission;
+
     private $deleteAppreciationPermission;
+
     private $viewAppreciationPermission;
 
     public function __construct()
@@ -27,26 +28,26 @@ class AppreciationsDataTable extends BaseDataTable
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
     {
         return datatables()
             ->eloquent($query)
-            ->addColumn('check', fn($row) => $this->checkBox($row))
+            ->addColumn('check', fn ($row) => $this->checkBox($row))
             ->addColumn('action', function ($row) {
 
                 $action = '<div class="task_view">
-                    <a href="' . route('appreciations.show', [$row->id]) . '" class="taskView text-darkest-grey f-w-500 openRightModal">' . __('app.view') . '</a>';
+                    <a href="'.route('appreciations.show', [$row->id]).'" class="taskView text-darkest-grey f-w-500 openRightModal">'.__('app.view').'</a>';
 
                 if (($this->editAppreciationPermission == 'all' || ($this->editAppreciationPermission == 'added' && user()->id == $row->added_by) || ($this->editAppreciationPermission == 'owned' && user()->id == $row->award_to) || ($this->editAppreciationPermission == 'both' && ($row->added_by == user()->id || user()->id == $row->award_to))) || ($this->deleteAppreciationPermission == 'all' || ($this->deleteAppreciationPermission == 'added' && user()->id == $row->added_by) || ($this->deleteAppreciationPermission == 'owned' && user()->id == $row->award_to) || ($this->deleteAppreciationPermission == 'both' && ($row->added_by == user()->id || user()->id == $row->award_to)))) {
                     $action .= '<div class="dropdown">
                     <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" type="link"
-                        id="dropdownMenuLink-' . $row->id . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        id="dropdownMenuLink-'.$row->id.'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="icon-options-vertical icons"></i>
                     </a>
-                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-' . $row->id . '" tabindex="0">';
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-'.$row->id.'" tabindex="0">';
                 }
 
                 if (
@@ -55,13 +56,13 @@ class AppreciationsDataTable extends BaseDataTable
                     ($this->editAppreciationPermission == 'owned' && user()->id == $row->award_to) ||
                     ($this->editAppreciationPermission == 'both' && ($row->added_by == user()->id || user()->id == $row->award_to))
                 ) {
-                    $action .= '<a class="dropdown-item openRightModal" href="' . route('appreciations.edit', [$row->id]) . '"> <i class="fa fa-edit mr-2"></i>' . trans('app.edit') . '</a>';
+                    $action .= '<a class="dropdown-item openRightModal" href="'.route('appreciations.edit', [$row->id]).'"> <i class="fa fa-edit mr-2"></i>'.trans('app.edit').'</a>';
                 }
 
                 if ($this->deleteAppreciationPermission == 'all' || ($this->deleteAppreciationPermission == 'added' && user()->id == $row->added_by) || ($this->deleteAppreciationPermission == 'owned' && user()->id == $row->award_to) || ($this->deleteAppreciationPermission == 'both' && ($row->added_by == user()->id || user()->id == $row->award_to))) {
-                    $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-user-id="' . $row->id . '">
+                    $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-user-id="'.$row->id.'">
                                 <i class="fa fa-trash mr-2"></i>
-                                ' . trans('app.delete') . '
+                                '.trans('app.delete').'
                             </a>';
                 }
 
@@ -71,14 +72,14 @@ class AppreciationsDataTable extends BaseDataTable
 
                 return $action;
             })
-            ->editColumn('award_id', fn($row) => isset($row->award?->awardIcon) ? view('components.award-icon', ['award' => $row->award]) . ' <span class="align-self-center ml-2">' . $row->award->title . '</span>' : '-')
-            ->addColumn('appreciation_type', fn($row) => $row->award ? $row->award->title : '-')
-            ->addColumn('award_date', fn($row) => $row->award_date->translatedFormat($this->company->date_format))
-            ->addColumn('award_to', fn($row) => view('components.employee', ['user' => $row->awardTo]))
-            ->addColumn('award_employee', fn($row) => $row->awardTo->name)
+            ->editColumn('award_id', fn ($row) => isset($row->award?->awardIcon) ? view('components.award-icon', ['award' => $row->award]).' <span class="align-self-center ml-2">'.$row->award->title.'</span>' : '-')
+            ->addColumn('appreciation_type', fn ($row) => $row->award ? $row->award->title : '-')
+            ->addColumn('award_date', fn ($row) => $row->award_date->translatedFormat($this->company->date_format))
+            ->addColumn('award_to', fn ($row) => view('components.employee', ['user' => $row->awardTo]))
+            ->addColumn('award_employee', fn ($row) => $row->awardTo->name)
             ->addIndexColumn()
             ->smart(false)
-            ->setRowId(fn($row) => 'row-' . $row->id)
+            ->setRowId(fn ($row) => 'row-'.$row->id)
             ->rawColumns(['check', 'action', 'award_id', 'award_to']);
     }
 
@@ -131,7 +132,7 @@ class AppreciationsDataTable extends BaseDataTable
         if ($request->searchText != '') {
             $model->where(function ($query) {
                 $safeTerm = Common::safeString(request('searchText'));
-                $query->where('awards.title', 'like', '%' . $safeTerm . '%');
+                $query->where('awards.title', 'like', '%'.$safeTerm.'%');
             });
         }
 
@@ -173,7 +174,7 @@ class AppreciationsDataTable extends BaseDataTable
             ]);
 
         if (canDataTableExport()) {
-            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
+            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
         }
 
         return $dataTable;
@@ -191,7 +192,7 @@ class AppreciationsDataTable extends BaseDataTable
                 'title' => '<input type="checkbox" name="select_all_table" id="select-all-table" onclick="selectAllTable(this)">',
                 'exportable' => false,
                 'orderable' => false,
-                'searchable' => false
+                'searchable' => false,
             ],
             '#' => ['data' => 'DT_RowIndex', 'orderable' => false, 'searchable' => false, 'visible' => false, 'title' => '#'],
             __('modules.appreciations.awardToEmployee') => ['data' => 'award_to', 'exportable' => false, 'name' => 'award_to', 'title' => __('modules.appreciations.awardToEmployee')],
@@ -204,7 +205,7 @@ class AppreciationsDataTable extends BaseDataTable
                 ->printable(false)
                 ->orderable(false)
                 ->searchable(false)
-                ->addClass('text-right pr-20')
+                ->addClass('text-right pr-20'),
         ];
     }
 }

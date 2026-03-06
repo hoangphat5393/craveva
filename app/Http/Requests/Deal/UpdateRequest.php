@@ -26,7 +26,7 @@ class UpdateRequest extends CoreRequest
      */
     public function rules()
     {
-        $rules = array();
+        $rules = [];
 
         $rules['name'] = 'required';
         $rules['pipeline'] = 'required';
@@ -49,5 +49,4 @@ class UpdateRequest extends CoreRequest
 
         return $attributes;
     }
-
 }

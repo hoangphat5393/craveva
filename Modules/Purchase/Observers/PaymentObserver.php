@@ -7,12 +7,11 @@ use Modules\Purchase\Entities\PurchaseStockAdjustment;
 
 class PaymentObserver
 {
-
     public function created(Payment $payment)
     {
         $invoice = $payment->invoice;
 
-        if (!$invoice) {
+        if (! $invoice) {
             return;
         }
 
@@ -24,7 +23,7 @@ class PaymentObserver
 
         $invoice = $payment->invoice;
 
-        if (!$invoice) {
+        if (! $invoice) {
             return;
         }
 

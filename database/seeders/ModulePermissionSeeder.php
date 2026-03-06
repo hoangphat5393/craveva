@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\DB;
 
 class ModulePermissionSeeder extends Seeder
 {
-
     /**
      * Run the database seeds.
      *
@@ -26,7 +25,7 @@ class ModulePermissionSeeder extends Seeder
         DB::statement("UPDATE modules SET module_name=REPLACE( module_name, 'Zoom', 'zoom' );");
 
         foreach ($modules as $module) {
-            $moduleData = Module::withoutGlobalScopes()->where('module_name', $module['module_name'])->first() ?: new Module();
+            $moduleData = Module::withoutGlobalScopes()->where('module_name', $module['module_name'])->first() ?: new Module;
 
             $moduleData->module_name = $module['module_name'];
             $moduleData->description = ($module['description'] ?? null);
@@ -54,8 +53,7 @@ class ModulePermissionSeeder extends Seeder
             ['name' => 'owned'],
             ['name' => 'both'],
             ['name' => 'all'],
-            ['name' => 'none']
+            ['name' => 'none'],
         ]);
     }
-
 }

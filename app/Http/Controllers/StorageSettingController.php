@@ -2,20 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Helper\Files;
 use App\Helper\Reply;
 use App\Http\Requests\Admin\Storage\StoreRequest;
-use App\Models\FileStorage;
-use App\Models\StorageSetting;
-use App\Helper\Files;
 use App\Http\Requests\Settings\StorageAwsFileUpload;
+use App\Models\FileStorage;
 use App\Models\GlobalSetting;
-use Illuminate\Filesystem\Filesystem;
+use App\Models\StorageSetting;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
 class StorageSettingController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -41,19 +39,19 @@ class StorageSettingController extends AccountBaseController
         $this->minioCredentials = StorageSetting::where('filesystem', 'minio')->first();
         $this->localCredentials = StorageSetting::where('filesystem', 'local')->first();
 
-        if (!is_null($this->awsCredentials)) {
+        if (! is_null($this->awsCredentials)) {
             $this->awsKeys = json_decode($this->awsCredentials->auth_keys);
         }
 
-        if (!is_null($this->digitalOceanCredentials)) {
+        if (! is_null($this->digitalOceanCredentials)) {
             $this->digitaloceanKeys = json_decode($this->digitalOceanCredentials->auth_keys);
         }
 
-        if (!is_null($this->wasabiCredentials)) {
+        if (! is_null($this->wasabiCredentials)) {
             $this->wasabiKeys = json_decode($this->wasabiCredentials->auth_keys);
         }
 
-        if (!is_null($this->minioCredentials)) {
+        if (! is_null($this->minioCredentials)) {
             $this->minioKeys = json_decode($this->minioCredentials->auth_keys);
         }
 
@@ -63,8 +61,8 @@ class StorageSettingController extends AccountBaseController
     }
 
     /**
-     * @param StoreRequest $request
      * @return array
+     *
      * @throws \Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException
      */
     public function store(StoreRequest $request)
@@ -75,51 +73,51 @@ class StorageSettingController extends AccountBaseController
         $storage = StorageSetting::firstorNew(['filesystem' => $request->storage]);
 
         switch ($request->storage) {
-        case 'digitalocean':
+            case 'digitalocean':
 
-            $arrayResponse = [
-                'driver' => 's3',
-                'key' => $request->digitalocean_key,
-                'secret' => $request->digitalocean_secret,
-                'region' => $request->digitalocean_region,
-                'bucket' => $request->digitalocean_bucket,
-            ];
-            $storage->auth_keys = json_encode($arrayResponse);
-            break;
-        case 'wasabi':
+                $arrayResponse = [
+                    'driver' => 's3',
+                    'key' => $request->digitalocean_key,
+                    'secret' => $request->digitalocean_secret,
+                    'region' => $request->digitalocean_region,
+                    'bucket' => $request->digitalocean_bucket,
+                ];
+                $storage->auth_keys = json_encode($arrayResponse);
+                break;
+            case 'wasabi':
 
-            $arrayResponse = [
-                'driver' => 's3',
-                'key' => $request->wasabi_key,
-                'secret' => $request->wasabi_secret,
-                'region' => $request->wasabi_region,
-                'bucket' => $request->wasabi_bucket,
-            ];
-            $storage->auth_keys = json_encode($arrayResponse);
-            break;
+                $arrayResponse = [
+                    'driver' => 's3',
+                    'key' => $request->wasabi_key,
+                    'secret' => $request->wasabi_secret,
+                    'region' => $request->wasabi_region,
+                    'bucket' => $request->wasabi_bucket,
+                ];
+                $storage->auth_keys = json_encode($arrayResponse);
+                break;
 
-        case 'aws_s3':
-            $arrayResponse = [
-                'driver' => 's3',
-                'key' => $request->aws_key,
-                'secret' => $request->aws_secret,
-                'region' => $request->aws_region,
-                'bucket' => $request->aws_bucket,
-            ];
-            $storage->auth_keys = json_encode($arrayResponse);
-            break;
+            case 'aws_s3':
+                $arrayResponse = [
+                    'driver' => 's3',
+                    'key' => $request->aws_key,
+                    'secret' => $request->aws_secret,
+                    'region' => $request->aws_region,
+                    'bucket' => $request->aws_bucket,
+                ];
+                $storage->auth_keys = json_encode($arrayResponse);
+                break;
 
-        case 'minio':
-            $arrayResponse = [
-                'driver' => 's3',
-                'key' => $request->minio_key,
-                'secret' => $request->minio_secret,
-                'region' => $request->minio_region,
-                'bucket' => $request->minio_bucket,
-                'endpoint' => $request->minio_endpoint,
-            ];
-            $storage->auth_keys = json_encode($arrayResponse);
-            break;
+            case 'minio':
+                $arrayResponse = [
+                    'driver' => 's3',
+                    'key' => $request->minio_key,
+                    'secret' => $request->minio_secret,
+                    'region' => $request->minio_region,
+                    'bucket' => $request->minio_bucket,
+                    'endpoint' => $request->minio_endpoint,
+                ];
+                $storage->auth_keys = json_encode($arrayResponse);
+                break;
         }
 
         $storage->filesystem = $request->storage;
@@ -173,15 +171,16 @@ class StorageSettingController extends AccountBaseController
         $files = FileStorage::where('storage_location', 'local')->get();
 
         foreach ($files as $file) {
-            $filePath = public_path(Files::UPLOAD_FOLDER . '/' . $file->path . '/' . $file->filename);
+            $filePath = public_path(Files::UPLOAD_FOLDER.'/'.$file->path.'/'.$file->filename);
 
-            if (!File::exists($filePath)) {
+            if (! File::exists($filePath)) {
                 $file->delete();
+
                 continue;
             }
 
             $contents = File::get($filePath);
-            $uploaded = Storage::disk(config('filesystems.default'))->put($file->path . '/' . $file->filename, $contents);
+            $uploaded = Storage::disk(config('filesystems.default'))->put($file->path.'/'.$file->filename, $contents);
 
             if ($uploaded) {
                 $file->storage_location = config('filesystems.default') === 's3' ? 'aws_s3' : config('filesystems.default');
@@ -203,5 +202,4 @@ class StorageSettingController extends AccountBaseController
             }
         }
     }
-
 }

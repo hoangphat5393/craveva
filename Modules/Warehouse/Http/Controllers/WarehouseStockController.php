@@ -7,7 +7,6 @@ use App\Models\Product;
 use App\Models\StockMovement;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Modules\Warehouse\Entities\Warehouse;
@@ -31,8 +30,8 @@ class WarehouseStockController extends Controller
             })
             ->when($search, function ($query) use ($search) {
                 return $query->whereHas('product', function ($q) use ($search) {
-                    $q->where('name', 'like', '%' . $search . '%')
-                        ->orWhere('sku', 'like', '%' . $search . '%');
+                    $q->where('name', 'like', '%'.$search.'%')
+                        ->orWhere('sku', 'like', '%'.$search.'%');
                 });
             })
             ->paginate(20);
@@ -158,8 +157,9 @@ class WarehouseStockController extends Controller
             return redirect()->route('warehouse.stock.index')->with('success', 'Stock updated successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Stock Adjustment Error: ' . $e->getMessage());
-            return back()->with('error', 'Something went wrong! ' . $e->getMessage());
+            Log::error('Stock Adjustment Error: '.$e->getMessage());
+
+            return back()->with('error', 'Something went wrong! '.$e->getMessage());
         }
     }
 

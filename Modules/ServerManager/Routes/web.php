@@ -1,10 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Modules\ServerManager\Http\Controllers\ServerManagerController;
-use Modules\ServerManager\Http\Controllers\HostingController;
 use Modules\ServerManager\Http\Controllers\DomainController;
+use Modules\ServerManager\Http\Controllers\HostingController;
 use Modules\ServerManager\Http\Controllers\ProviderController;
+use Modules\ServerManager\Http\Controllers\ServerManagerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -69,4 +69,3 @@ Route::group(['middleware' => 'auth', 'prefix' => 'account'], function () {
         }
     );
 });
-

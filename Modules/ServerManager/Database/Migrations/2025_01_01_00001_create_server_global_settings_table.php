@@ -16,7 +16,7 @@ return new class extends Migration
     {
         \App\Models\Module::validateVersion(ServerManagerGlobalSetting::MODULE_NAME);
 
-        if (!Schema::hasTable('server_manager_global_settings')) {
+        if (! Schema::hasTable('server_manager_global_settings')) {
             Schema::create('server_manager_global_settings', function (Blueprint $table) {
                 $table->id();
                 $table->string('purchase_code')->nullable();

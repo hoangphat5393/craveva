@@ -6,13 +6,9 @@ use App\Models\ProjectCategory;
 
 class ProjectCategoryObserver
 {
-
-    /**
-     * @param ProjectCategory $item
-     */
     public function saving(ProjectCategory $item)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             $item->last_updated_by = user()->id;
         }
 
@@ -23,9 +19,8 @@ class ProjectCategoryObserver
 
     public function creating(ProjectCategory $item)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             $item->added_by = user()->id;
         }
     }
-
 }

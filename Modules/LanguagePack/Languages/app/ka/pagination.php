@@ -1,5 +1,6 @@
-<?php 
+<?php
+
 return [
-  'previous' => '« წინა',
-  'next' => 'შემდეგი »',
+    'previous' => '« წინა',
+    'next' => 'შემდეგი »',
 ];

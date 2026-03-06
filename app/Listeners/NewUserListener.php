@@ -4,8 +4,8 @@ namespace App\Listeners;
 
 use App\Events\NewUserEvent;
 use App\Notifications\NewUser;
-use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 
 class NewUserListener
 {

@@ -6,7 +6,6 @@ use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      */
@@ -16,8 +15,9 @@ return new class extends Migration
 
         foreach ($users as $user) {
 
-            if(!$user->email && !$user->user_auth_id && !$user->clientDetails) {
+            if (! $user->email && ! $user->user_auth_id && ! $user->clientDetails) {
                 $user->delete();
+
                 continue;
             }
 
@@ -32,7 +32,6 @@ return new class extends Migration
 
         }
 
-
         UserAuth::doesntHave('users')->delete();
     }
 
@@ -43,5 +42,4 @@ return new class extends Migration
     {
         //
     }
-
 };

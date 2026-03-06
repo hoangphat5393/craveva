@@ -3,23 +3,20 @@
 namespace App\Listeners;
 
 use App\Events\TicketEvent;
+use App\Models\TicketGroup;
+use App\Models\User;
+use App\Notifications\MentionTicketAgent;
 use App\Notifications\NewTicket;
 use App\Notifications\TicketAgent;
-use App\Models\User;
-use App\Models\TicketGroup;
-use App\Notifications\MentionTicketAgent;
 use Illuminate\Support\Facades\Notification;
 
 class TicketListener
 {
-
     /**
      * Handle the event.
      *
-     * @param TicketEvent $event
      * @return void
      */
-
     public function handle(TicketEvent $event)
     {
 

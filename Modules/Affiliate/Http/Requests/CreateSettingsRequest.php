@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class CreateSettingsRequest extends FormRequest
 {
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -20,7 +19,7 @@ class CreateSettingsRequest extends FormRequest
             'payout_time' => 'required_if:payout_type,after signup',
             'commission_type' => 'required|string|in:fixed,percent',
             'commission_cap' => 'required|numeric',
-            'minimum_payout' => 'required|numeric'
+            'minimum_payout' => 'required|numeric',
         ];
     }
 
@@ -33,5 +32,4 @@ class CreateSettingsRequest extends FormRequest
     {
         return true;
     }
-
 }

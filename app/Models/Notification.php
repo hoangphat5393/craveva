@@ -14,6 +14,7 @@ namespace App\Models;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read mixed $icon
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Notification newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Notification newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Notification query()
@@ -25,17 +26,16 @@ namespace App\Models;
  * @method static \Illuminate\Database\Eloquent\Builder|Notification whereReadAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Notification whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Notification whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class Notification extends BaseModel
 {
-
     public static function deleteNotification($notifyData, $id)
     {
         Notification::whereIn('type', $notifyData)
             ->whereNull('read_at')
-            ->where('data', 'like', '{"id":' . $id . ',%')
+            ->where('data', 'like', '{"id":'.$id.',%')
             ->delete();
     }
-
 }

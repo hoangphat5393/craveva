@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class StoreProjectMembers extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -33,8 +32,7 @@ class StoreProjectMembers extends CoreRequest
     public function messages()
     {
         return [
-            'user_id.0.required' => __('messages.atleastOneValidation')
+            'user_id.0.required' => __('messages.atleastOneValidation'),
         ];
     }
-
 }

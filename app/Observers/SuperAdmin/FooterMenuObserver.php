@@ -6,7 +6,6 @@ use App\Models\SuperAdmin\FooterMenu;
 
 class FooterMenuObserver
 {
-
     public function created(FooterMenu $footerMenu)
     {
         $this->createDuplicateForOtherLanguage($footerMenu);
@@ -16,7 +15,7 @@ class FooterMenuObserver
     {
         foreach (language_setting() as $language) {
             if ($language->id != $footerMenu->language_setting_id) {
-                if (!FooterMenu::where('language_setting_id', $language->id)->where('slug', $footerMenu->slug)->exists()) {
+                if (! FooterMenu::where('language_setting_id', $language->id)->where('slug', $footerMenu->slug)->exists()) {
                     $this->createFooterMenu($footerMenu, $language->id);
                 }
             }
@@ -25,7 +24,7 @@ class FooterMenuObserver
 
     public function createFooterMenu(FooterMenu $footerMenu, $languageId)
     {
-        $newMenu = new FooterMenu();
+        $newMenu = new FooterMenu;
         $newMenu->name = $footerMenu->name;
         $newMenu->slug = $footerMenu->slug;
         $newMenu->description = $footerMenu->description;
@@ -45,5 +44,4 @@ class FooterMenuObserver
     {
         FooterMenu::where('slug', $footerMenu->slug)->delete();
     }
-
 }

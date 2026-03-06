@@ -12,7 +12,6 @@ use Illuminate\Http\Request;
 
 class AwardController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -23,7 +22,7 @@ class AwardController extends AccountBaseController
     {
         $viewPermission = user()->permission('view_appreciation');
 
-        abort_403(!in_array($viewPermission, ['all', 'added', 'owned', 'both']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'owned', 'both']));
 
         return $dataTable->render('awards.index', $this->data);
 
@@ -32,12 +31,11 @@ class AwardController extends AccountBaseController
     public function create()
     {
         $this->manageAppreciationPermission = user()->permission('manage_award');
-        abort_403(!($this->manageAppreciationPermission == 'all'));
+        abort_403(! ($this->manageAppreciationPermission == 'all'));
 
         $this->icons = AwardIcon::all();
 
         $this->pageTitle = __('modules.appreciations.addAppreciationType');
-
 
         $this->view = 'awards.ajax.create';
 
@@ -51,7 +49,7 @@ class AwardController extends AccountBaseController
     public function quickCreate()
     {
         $this->manageAppreciationPermission = user()->permission('manage_award');
-        abort_403(!($this->manageAppreciationPermission == 'all'));
+        abort_403(! ($this->manageAppreciationPermission == 'all'));
 
         $this->icons = AwardIcon::all();
 
@@ -63,9 +61,9 @@ class AwardController extends AccountBaseController
     public function quickStore(StoreRequest $request)
     {
         $this->manageAppreciationPermission = user()->permission('manage_award');
-        abort_403(!($this->manageAppreciationPermission == 'all'));
+        abort_403(! ($this->manageAppreciationPermission == 'all'));
 
-        $award = new Award();
+        $award = new Award;
         $award->title = $request->title;
         $award->award_icon_id = $request->icon;
         $award->color_code = $request->color_code;
@@ -87,11 +85,11 @@ class AwardController extends AccountBaseController
 
             $name = $item->title;
 
-            $selected = (!is_null($group) && ($item->id == $group->id)) ? 'selected' : '';
-            $icon = "<i class='bi bi-" . $item->awardIcon->icon . "' style='color:" . $item->color_code . "'></i>     ";
+            $selected = (! is_null($group) && ($item->id == $group->id)) ? 'selected' : '';
+            $icon = "<i class='bi bi-".$item->awardIcon->icon."' style='color:".$item->color_code."'></i>     ";
 
-            $options .= '<option ' . $selected . '  data-content="' . $icon . ' ' . $name . '" value="' . $item->id . '">
-                                                ' . $name . '
+            $options .= '<option '.$selected.'  data-content="'.$icon.' '.$name.'" value="'.$item->id.'">
+                                                '.$name.'
                                             </option>';
         }
 
@@ -101,9 +99,9 @@ class AwardController extends AccountBaseController
     public function store(StoreRequest $request)
     {
         $this->manageAppreciationPermission = user()->permission('manage_award');
-        abort_403(!($this->manageAppreciationPermission == 'all'));
+        abort_403(! ($this->manageAppreciationPermission == 'all'));
 
-        $appreciation = new Award();
+        $appreciation = new Award;
         $appreciation->title = $request->title;
         $appreciation->award_icon_id = $request->icon;
         $appreciation->color_code = $request->color_code;
@@ -119,10 +117,9 @@ class AwardController extends AccountBaseController
         $this->appreciationType = Award::findOrFail($id);
 
         $this->manageAppreciationPermission = user()->permission('view_appreciation');
-        abort_403(!($this->manageAppreciationPermission != 'none'));
+        abort_403(! ($this->manageAppreciationPermission != 'none'));
 
         $this->pageTitle = $this->appreciationType->title;
-
 
         $this->view = 'awards.ajax.show';
 
@@ -137,7 +134,7 @@ class AwardController extends AccountBaseController
     public function edit($id)
     {
         $this->manageAppreciationPermission = user()->permission('manage_award');
-        abort_403(!($this->manageAppreciationPermission == 'all'));
+        abort_403(! ($this->manageAppreciationPermission == 'all'));
 
         $this->appreciationType = Award::findOrFail($id);
 
@@ -157,7 +154,7 @@ class AwardController extends AccountBaseController
     public function update(UpdateRequest $request, $id)
     {
         $this->manageAppreciationPermission = user()->permission('manage_award');
-        abort_403(!($this->manageAppreciationPermission == 'all'));
+        abort_403(! ($this->manageAppreciationPermission == 'all'));
 
         $appreciation = Award::findOrFail($id);
         $appreciation->title = $request->title;
@@ -174,7 +171,7 @@ class AwardController extends AccountBaseController
     public function destroy($id)
     {
         $this->manageAppreciationPermission = user()->permission('manage_award');
-        abort_403(!($this->manageAppreciationPermission == 'all'));
+        abort_403(! ($this->manageAppreciationPermission == 'all'));
         Award::destroy($id);
 
         return Reply::successWithData(__('messages.deleteSuccess'), ['redirectUrl' => route('awards.index')]);
@@ -197,16 +194,16 @@ class AwardController extends AccountBaseController
     public function applyQuickAction(Request $request)
     {
         switch ($request->action_type) {
-        case 'delete':
-            $this->deleteRecords($request);
+            case 'delete':
+                $this->deleteRecords($request);
 
-            return Reply::success(__('messages.deleteSuccess'));
-        case 'change-leave-status':
-            $this->changeBulkStatus($request);
+                return Reply::success(__('messages.deleteSuccess'));
+            case 'change-leave-status':
+                $this->changeBulkStatus($request);
 
-            return Reply::success(__('messages.updateSuccess'));
-        default:
-            return Reply::error(__('messages.selectAction'));
+                return Reply::success(__('messages.updateSuccess'));
+            default:
+                return Reply::error(__('messages.selectAction'));
         }
     }
 
@@ -233,5 +230,4 @@ class AwardController extends AccountBaseController
 
         Award::whereIn('id', $item)->update(['status' => $request->status]);
     }
-
 }

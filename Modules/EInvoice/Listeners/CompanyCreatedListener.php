@@ -6,7 +6,6 @@ use Modules\EInvoice\Entities\EInvoiceSetting;
 
 class CompanyCreatedListener
 {
-
     /**
      * Handle the event.
      *
@@ -18,5 +17,4 @@ class CompanyCreatedListener
         $company = $event->company;
         EInvoiceSetting::addModuleSetting($company);
     }
-
 }

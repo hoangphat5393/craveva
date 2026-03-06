@@ -1,4 +1,5 @@
 <?php
+
 return [
     'dealWatcher' => 'Tehingu jälgija',
     'pendingTimelog' => 'Ootel ajaloogid',

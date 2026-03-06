@@ -3,11 +3,9 @@
 namespace Modules\Subdomain\Http\Requests\Auth;
 
 use App\Http\Requests\CoreRequest;
-use Illuminate\Foundation\Http\FormRequest;
 
 class CheckSubdomainRequest extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -26,8 +24,7 @@ class CheckSubdomainRequest extends CoreRequest
     public function rules()
     {
         return [
-            'sub_domain' => 'required'
+            'sub_domain' => 'required',
         ];
     }
-
 }

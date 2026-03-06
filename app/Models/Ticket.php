@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helper\UserService;
 use App\Scopes\ActiveScope;
 use App\Traits\CustomFieldsTrait;
 use App\Traits\HasCompany;
@@ -11,7 +12,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Helper\UserService;
 
 /**
  * App\Models\Ticket
@@ -40,6 +40,7 @@ use App\Helper\UserService;
  * @property-read int|null $tags_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\TicketTagList[] $ticketTags
  * @property-read int|null $ticket_tags_count
+ *
  * @method static \Database\Factories\TicketFactory factory(...$parameters)
  * @method static \Illuminate\Database\Eloquent\Builder|Ticket newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Ticket newQuery()
@@ -60,21 +61,32 @@ use App\Helper\UserService;
  * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereUserId($value)
  * @method static \Illuminate\Database\Query\Builder|Ticket withTrashed()
  * @method static \Illuminate\Database\Query\Builder|Ticket withoutTrashed()
+ *
  * @property string|null $mobile
  * @property int|null $country_id
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereCountryId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereMobile($value)
+ *
  * @property string|null $close_date
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereCloseDate($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
  * @property-read mixed $extras
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereCompanyId($value)
+ *
  * @property int|null $ticket_number
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereTicketNumber($value)
+ *
  * @property int|null $group_id
  * @property-read \App\Models\TicketReply|null $latestReply
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereGroupId($value)
+ *
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $mentionUser
  * @property-read int|null $mention_user_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MentionUser> $ticketMention
@@ -83,13 +95,14 @@ use App\Helper\UserService;
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\TicketActivity> $activities
  * @property-read int|null $activities_count
  * @property-read \App\Models\Project|null $project
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereProjectId($value)
+ *
  * @mixin \Eloquent
  */
 class Ticket extends BaseModel
 {
-
-    use HasCompany, SoftDeletes, HasFactory, CustomFieldsTrait;
+    use CustomFieldsTrait, HasCompany, HasFactory, SoftDeletes;
 
     const CUSTOM_FIELD_MODEL = 'App\Models\Ticket';
 
@@ -158,10 +171,10 @@ class Ticket extends BaseModel
         $selfReplyCount = $this->reply()->where('user_id', $latestReplyUser?->id)->count();
 
         if ($totalReply > 1 && ($totalReply !== $selfReplyCount) && $latestReplyUser && $latestReplyUser->id !== user()->id) {
-            return '<' . $tag . ' class="mb-0"><span class="badge badge-secondary mr-1 bg-info">' . __('app.newResponse') . '</span></' . $tag . '>';
+            return '<'.$tag.' class="mb-0"><span class="badge badge-secondary mr-1 bg-info">'.__('app.newResponse').'</span></'.$tag.'>';
         }
 
-        return $totalReply == 1 || ($totalReply == $selfReplyCount) ? '<' . $tag . ' class="mb-0"><span class="badge badge-secondary mr-1 bg-dark-green">' . __('app.new') . '</span></' . $tag . '>' : '';
+        return $totalReply == 1 || ($totalReply == $selfReplyCount) ? '<'.$tag.' class="mb-0"><span class="badge badge-secondary mr-1 bg-dark-green">'.__('app.new').'</span></'.$tag.'>' : '';
     }
 
     public function mentionUser(): BelongsToMany
@@ -203,12 +216,14 @@ class Ticket extends BaseModel
                 $id = $clientContact->user_id;
             }
         }
+
         return $permission == 'added' && ($userid == $this->added_by || user()->id == $this->added_by || $id == $this->added_by);
     }
 
     public function hasOwnedPermission($permission): bool
     {
         $userid = UserService::getUserId();
+
         return $permission == 'owned' && ((user()->id == $this->agent_id || $userid == $this->agent_id) || (user()->id == $this->user_id || $userid == $this->user_id));
     }
 

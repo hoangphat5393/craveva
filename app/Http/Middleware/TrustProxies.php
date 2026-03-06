@@ -6,12 +6,10 @@ use Illuminate\Http\Middleware\TrustProxies as Middleware;
 
 class TrustProxies extends Middleware
 {
-
     /**
      * The trusted proxies for this application.
      *
      * @var array
      */
     protected $proxies = '*';
-
 }

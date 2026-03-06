@@ -34,6 +34,7 @@ class KeyResultsMetrics extends BaseModel
             ],
         ];
     }
+
     public function keyResults()
     {
         return $this->hasMany(KeyResults::class, 'metrics_id');

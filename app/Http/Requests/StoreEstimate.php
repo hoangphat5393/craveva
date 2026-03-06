@@ -44,13 +44,13 @@ class StoreEstimate extends FormRequest
                     ->when($this->route('estimate'), function ($q) {
                         /** @phpstan-ignore-next-line */
                         $q->where('id', '<>', $this->route('estimate'));
-                    })
+                    }),
             ],
             'client_id' => 'required',
             'valid_till' => 'required',
             'sub_total' => 'required',
             'total' => 'required',
-            'currency_id' => 'required'
+            'currency_id' => 'required',
         ];
 
         $rules = $this->customFieldRules($rules);
@@ -70,8 +70,7 @@ class StoreEstimate extends FormRequest
     public function messages()
     {
         return [
-            'client_id.required' => __('modules.projects.selectClient')
+            'client_id.required' => __('modules.projects.selectClient'),
         ];
     }
-
 }

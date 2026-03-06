@@ -2,36 +2,36 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\TaskSetting;
-use Carbon\Carbon;
-use App\Models\Task;
-use App\Models\User;
-use App\Helper\Reply;
-use App\Models\Project;
-use Carbon\CarbonInterval;
-use Illuminate\Http\Request;
-use App\Models\ProjectTimeLog;
+use App\DataTables\TimeLogsDataTable;
 use App\Exports\EmployeeTimelogs;
 use App\Exports\ProjectTimeLogsExport;
-use Illuminate\Support\Facades\DB;
-use App\Models\ProjectTimeLogBreak;
-use Maatwebsite\Excel\Facades\Excel;
-use App\DataTables\TimeLogsDataTable;
+use App\Helper\Reply;
+use App\Helper\UserService;
 use App\Http\Requests\TimeLogs\StartTimer;
 use App\Http\Requests\TimeLogs\StopTimer;
 use App\Http\Requests\TimeLogs\StoreTimeLog;
-use App\Http\Requests\TimeLogs\UpdateTimeLog;
-use App\Models\Team;
 use App\Http\Requests\TimeLogs\UpdateProjectTimeLog;
-use DateTime;
-use App\Models\LogTimeFor;
-use App\Helper\UserService;
+use App\Http\Requests\TimeLogs\UpdateTimeLog;
 use App\Models\EmployeeDetails;
-use App\Notifications\ProjectTimelogNotification;
+use App\Models\LogTimeFor;
+use App\Models\Project;
+use App\Models\ProjectTimeLog;
+use App\Models\ProjectTimeLogBreak;
+use App\Models\Task;
+use App\Models\TaskSetting;
+use App\Models\Team;
+use App\Models\User;
 use App\Notifications\ProjectTimelogApproveNotification;
-use App\Traits\ProjectProgress;
-use App\Notifications\ProjectTimelogCreateNotification;
 use App\Notifications\ProjectTimelogCreatedNotification;
+use App\Notifications\ProjectTimelogCreateNotification;
+use App\Notifications\ProjectTimelogNotification;
+use App\Traits\ProjectProgress;
+use Carbon\Carbon;
+use Carbon\CarbonInterval;
+use DateTime;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class TimelogController extends AccountBaseController
 {
@@ -42,7 +42,7 @@ class TimelogController extends AccountBaseController
         parent::__construct();
         $this->pageTitle = 'app.menu.timeLogs';
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('timelogs', $this->user->modules));
+            abort_403(! in_array('timelogs', $this->user->modules));
 
             return $next($request);
         });
@@ -51,9 +51,9 @@ class TimelogController extends AccountBaseController
     public function index(TimeLogsDataTable $dataTable)
     {
         $viewPermission = $this->viewTimelogPermission;
-        abort_403(!in_array($viewPermission, ['all', 'added', 'owned', 'both']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'owned', 'both']));
 
-        if (!request()->ajax()) {
+        if (! request()->ajax()) {
             $this->employees = User::allEmployees(null, true, ($viewPermission == 'all' ? 'all' : null));
             $this->projects = Project::allProjects();
             $this->departments = Team::all();
@@ -76,17 +76,17 @@ class TimelogController extends AccountBaseController
         $dateFormat = company()->date_format;
         $timeFormat = company()->time_format;
 
-        $startDateTimeString = $startDate . ' ' . $startTime;
-        $endDateTimeString = $endDate . ' ' . $endTime;
+        $startDateTimeString = $startDate.' '.$startTime;
+        $endDateTimeString = $endDate.' '.$endTime;
 
-        $startDateTime = Carbon::createFromFormat($dateFormat . ' ' . $timeFormat, $startDateTimeString);
-        $endDateTime = Carbon::createFromFormat($dateFormat . ' ' . $timeFormat, $endDateTimeString);
+        $startDateTime = Carbon::createFromFormat($dateFormat.' '.$timeFormat, $startDateTimeString);
+        $endDateTime = Carbon::createFromFormat($dateFormat.' '.$timeFormat, $endDateTimeString);
 
         // Check if both DateTime objects are valid
-        if (!$startDateTime || !$endDateTime) {
+        if (! $startDateTime || ! $endDateTime) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Invalid date or time format.'
+                'message' => 'Invalid date or time format.',
             ]);
         }
 
@@ -101,7 +101,7 @@ class TimelogController extends AccountBaseController
         if ($hours < 0 || $minutes < 0) {
             return response()->json([
                 'status' => 'error',
-                'message' => __('messages.totalTimeZero')
+                'message' => __('messages.totalTimeZero'),
             ]);
         }
 
@@ -109,23 +109,23 @@ class TimelogController extends AccountBaseController
         return response()->json([
             'status' => 'success',
             'hours' => $hours,
-            'minutes' => $minutes
+            'minutes' => $minutes,
         ]);
     }
 
     public function applyQuickAction(Request $request)
     {
         switch ($request->action_type) {
-        case 'delete':
-            $this->deleteRecords($request);
+            case 'delete':
+                $this->deleteRecords($request);
 
-            return Reply::success(__('messages.deleteSuccess'));
-        case 'change-status':
-            $this->changeStatus($request);
+                return Reply::success(__('messages.deleteSuccess'));
+            case 'change-status':
+                $this->changeStatus($request);
 
-            return Reply::success(__('messages.updateSuccess'));
-        default:
-            return Reply::error(__('messages.selectAction'));
+                return Reply::success(__('messages.updateSuccess'));
+            default:
+                return Reply::error(__('messages.selectAction'));
         }
     }
 
@@ -141,7 +141,7 @@ class TimelogController extends AccountBaseController
         ProjectTimeLog::whereIn('id', explode(',', $request->row_ids))->update(
             [
                 'approved' => $request->status,
-                'approved_by' => (($request->status == 1) ? user()->id : null)
+                'approved_by' => (($request->status == 1) ? user()->id : null),
             ]
         );
     }
@@ -151,7 +151,7 @@ class TimelogController extends AccountBaseController
         $this->pageTitle = __('modules.timeLogs.logTime');
         $this->addTimelogPermission = user()->permission('add_timelogs');
         session(['add_timelogs_permission' => $this->addTimelogPermission]);
-        abort_403(!in_array($this->addTimelogPermission, ['all', 'added']));
+        abort_403(! in_array($this->addTimelogPermission, ['all', 'added']));
 
         if (request()->has('default_assign') && request('default_assign') != '') {
             $assignId = request('default_assign');
@@ -161,19 +161,17 @@ class TimelogController extends AccountBaseController
                 ->where('status', '!=', 'finished')
                 ->orWhere('projects.public', 1)
                 ->orderBy('project_name', 'asc')->get();
-        }
-        elseif (request()->has('default_project') && request('default_project') != '') {
+        } elseif (request()->has('default_project') && request('default_project') != '') {
             $defaultProject = request('default_project');
             $this->projects = $projects = Project::where('id', $defaultProject)->where('status', '!=', 'finished')
                 ->get();
-        }
-        else {
+        } else {
             $this->projects = Project::allProjects(true);
         }
 
         $this->tasks = Task::timelogTasks(request('default_project'));
 
-        $timeLog = new ProjectTimeLog();
+        $timeLog = new ProjectTimeLog;
 
         $getCustomFieldGroupsWithFields = $timeLog->getCustomFieldGroupsWithFields();
 
@@ -194,13 +192,13 @@ class TimelogController extends AccountBaseController
     public function store(StoreTimeLog $request)
     {
 
-        $startDateTime = Carbon::createFromFormat($this->company->date_format, $request->start_date, $this->company->timezone)->format('Y-m-d') . ' ' . Carbon::createFromFormat($this->company->time_format, $request->start_time)->format('H:i:s');
+        $startDateTime = Carbon::createFromFormat($this->company->date_format, $request->start_date, $this->company->timezone)->format('Y-m-d').' '.Carbon::createFromFormat($this->company->time_format, $request->start_time)->format('H:i:s');
         $startDateTime = Carbon::parse($startDateTime, $this->company->timezone)->setTimezone('UTC');
 
-        $endDateTime = Carbon::createFromFormat($this->company->date_format, $request->end_date, $this->company->timezone)->format('Y-m-d') . ' ' . Carbon::createFromFormat($this->company->time_format, $request->end_time)->format('H:i:s');
+        $endDateTime = Carbon::createFromFormat($this->company->date_format, $request->end_date, $this->company->timezone)->format('Y-m-d').' '.Carbon::createFromFormat($this->company->time_format, $request->end_time)->format('H:i:s');
         $endDateTime = Carbon::parse($endDateTime, $this->company->timezone)->setTimezone('UTC');
 
-        if(($endDateTime->diffInMinutes($startDateTime)) < 1){
+        if (($endDateTime->diffInMinutes($startDateTime)) < 1) {
             return Reply::error(__('messages.enterAtLeastOneHour'));
         }
 
@@ -210,19 +208,20 @@ class TimelogController extends AccountBaseController
             if ($project->calculate_task_progress == 'project_total_time') {
                 $remainingTime = $this->getProjectRemainingTime($project->id);
                 $requestedTime = $endDateTime->diffInMinutes($startDateTime);
-                
+
                 if ($remainingTime !== false && $requestedTime > $remainingTime) {
                     $remainingHours = floor($remainingTime / 60);
                     $remainingMinutes = $remainingTime % 60;
                     $message = __('messages.projectTimeLimitExceeded', [
-                        'remaining' => $remainingHours . 'h ' . $remainingMinutes . 'm'
+                        'remaining' => $remainingHours.'h '.$remainingMinutes.'m',
                     ]);
+
                     return Reply::error($message);
                 }
             }
         }
 
-        $timeLog = new ProjectTimeLog();
+        $timeLog = new ProjectTimeLog;
 
         if ($request->has('project_id')) {
             $timeLog->project_id = $request->project_id;
@@ -257,8 +256,8 @@ class TimelogController extends AccountBaseController
             $timeLog->total_hours = $endDateTime->diffInHours($startDateTime);
             $timeLog->total_minutes = $endDateTime->diffInMinutes($startDateTime);
 
-//            $timeLog->total_hours = $timeLog->end_time->diffInHours($timeLog->start_time);
-//            $timeLog->total_minutes = $timeLog->end_time->diffInMinutes($timeLog->start_time);
+            //            $timeLog->total_hours = $timeLog->end_time->diffInHours($timeLog->start_time);
+            //            $timeLog->total_minutes = $timeLog->end_time->diffInMinutes($timeLog->start_time);
             $timeLog->hourly_rate = 0;
             $timeLog->memo = $request->memo;
             $timeLog->edited_by_user = user()->id;
@@ -268,13 +267,13 @@ class TimelogController extends AccountBaseController
 
             if ($timeLogSetting->approval_required) {
 
-                if($timeLog->user_id == user()->id) {
+                if ($timeLog->user_id == user()->id) {
                     $managerId = user()->employeeDetail->reporting_to;
-                    if($managerId) {
+                    if ($managerId) {
                         $reportingUser = User::findOrFail($managerId);
                         $reportingUser?->notify(new ProjectTimelogCreateNotification($timeLog));
                     }
-                }else{
+                } else {
                     $timeLog->user->notify(new ProjectTimelogCreatedNotification($timeLog));
                 }
 
@@ -294,7 +293,7 @@ class TimelogController extends AccountBaseController
     {
         $timelog = ProjectTimeLog::with('project')->findOrFail($id);
         $deleteTimelogPermission = user()->permission('delete_timelogs');
-        abort_403(!($deleteTimelogPermission == 'all'
+        abort_403(! ($deleteTimelogPermission == 'all'
             || ($deleteTimelogPermission == 'added' && $timelog->added_by == user()->id)
             || ($timelog->project && ($timelog->project->project_admin == user()->id))
         ));
@@ -309,7 +308,7 @@ class TimelogController extends AccountBaseController
         $this->pageTitle = __('modules.timeLogs.logTime');
         $editTimelogPermission = $this->editTimelogPermission = user()->permission('edit_timelogs');
         $timeLog = $this->timeLog = ProjectTimeLog::with('user', 'project', 'task')->findOrFail($id)->withCustomFields();
-        abort_403(!(
+        abort_403(! (
             $editTimelogPermission == 'all'
             || ($editTimelogPermission == 'added' && $timeLog->added_by == user()->id)
             || ($this->timeLog->project && ($this->timeLog->project->project_admin == user()->id))
@@ -319,15 +318,13 @@ class TimelogController extends AccountBaseController
             || ($editTimelogPermission == 'both' && (($timeLog->project && $timeLog->project->client_id == user()->id) || $timeLog->user_id == user()->id || $timeLog->added_by == user()->id))
         ));
 
-        if (!is_null($this->timeLog->task_id) && !is_null($this->timeLog->project_id)) {
+        if (! is_null($this->timeLog->task_id) && ! is_null($this->timeLog->project_id)) {
             $this->tasks = Task::timelogTasks($this->timeLog->project_id);
             $this->employees = $this->timeLog->task->users;
-        }
-        else if (!is_null($this->timeLog->project_id)) {
+        } elseif (! is_null($this->timeLog->project_id)) {
             $this->tasks = Task::timelogTasks($this->timeLog->project_id);
             $this->employees = $this->timeLog->project->projectMembers;
-        }
-        else {
+        } else {
             $this->tasks = Task::timelogTasks();
             $this->employees = $this->timeLog->task->users;
         }
@@ -339,7 +336,6 @@ class TimelogController extends AccountBaseController
         if ($getCustomFieldGroupsWithFields) {
             $this->fields = $getCustomFieldGroupsWithFields->fields;
         }
-
 
         $this->view = 'timelogs.ajax.edit';
 
@@ -355,14 +351,13 @@ class TimelogController extends AccountBaseController
     {
         $timeLog = ProjectTimeLog::findOrFail($id);
 
-        $startDateTime = Carbon::createFromFormat($this->company->date_format, $request->start_date, $this->company->timezone)->format('Y-m-d') . ' ' . Carbon::createFromFormat($this->company->time_format, $request->start_time)->format('H:i:s');
+        $startDateTime = Carbon::createFromFormat($this->company->date_format, $request->start_date, $this->company->timezone)->format('Y-m-d').' '.Carbon::createFromFormat($this->company->time_format, $request->start_time)->format('H:i:s');
         $startDateTime = Carbon::parse($startDateTime, $this->company->timezone)->setTimezone('UTC');
 
-        $endDateTime = Carbon::createFromFormat($this->company->date_format, $request->end_date, $this->company->timezone)->format('Y-m-d') . ' ' . Carbon::createFromFormat($this->company->time_format, $request->end_time)->format('H:i:s');
+        $endDateTime = Carbon::createFromFormat($this->company->date_format, $request->end_date, $this->company->timezone)->format('Y-m-d').' '.Carbon::createFromFormat($this->company->time_format, $request->end_time)->format('H:i:s');
         $endDateTime = Carbon::parse($endDateTime, $this->company->timezone)->setTimezone('UTC');
 
-
-        if(($endDateTime->diffInMinutes($startDateTime)) < 1){
+        if (($endDateTime->diffInMinutes($startDateTime)) < 1) {
             return Reply::error(__('messages.enterAtLeastOneHour'));
         }
 
@@ -374,8 +369,7 @@ class TimelogController extends AccountBaseController
 
         if ($request->has('user_id')) {
             $userID = $request->user_id;
-        }
-        else {
+        } else {
             $userID = $timeLog->user_id;
         }
 
@@ -412,7 +406,7 @@ class TimelogController extends AccountBaseController
             $timeLog->user_id = $userID;
             $timeLog->edited_by_user = user()->id;
 
-            if($timeLog->approved == 0 && $timeLog->rejected == 1){
+            if ($timeLog->approved == 0 && $timeLog->rejected == 1) {
                 $timeLog->rejected = 0;
             }
             $timeLog->save();
@@ -441,7 +435,7 @@ class TimelogController extends AccountBaseController
         $this->viewTimelogEarningPermission = user()->permission('view_timelog_earnings');
         $this->timeLog = ProjectTimeLog::with('user', 'user.employeeDetail', 'project', 'task', 'breaks', 'activeBreak')->findOrFail($id)->withCustomFields();
 
-        abort_403(!(
+        abort_403(! (
             $this->viewTimelogPermission == 'all'
             || ($this->viewTimelogPermission == 'added' && $this->timeLog->added_by == $userId)
             || ($this->viewTimelogPermission == 'owned'
@@ -474,7 +468,7 @@ class TimelogController extends AccountBaseController
     public function showTimer()
     {
         $this->addTimelogPermission = user()->permission('add_timelogs');
-        abort_403(!in_array($this->addTimelogPermission, ['all', 'added', 'owned', 'both']));
+        abort_403(! in_array($this->addTimelogPermission, ['all', 'added', 'owned', 'both']));
 
         $activeTimer = ProjectTimeLog::with('user')
             ->whereNull('end_time')
@@ -493,8 +487,7 @@ class TimelogController extends AccountBaseController
 
             return view('timelogs.ajax.timer', $this->data);
 
-        }
-        else {
+        } else {
             return $this->showActiveTimer();
         }
     }
@@ -506,14 +499,14 @@ class TimelogController extends AccountBaseController
      */
     public function startTimer(StartTimer $request)
     {
-        $timeLog = new ProjectTimeLog();
+        $timeLog = new ProjectTimeLog;
         $activeTimer = ProjectTimeLog::selfActiveTimer();
 
-        if (is_null($activeTimer) || (!is_null($activeTimer->activeBreak))) {
+        if (is_null($activeTimer) || (! is_null($activeTimer->activeBreak))) {
             $taskId = $request->task_id;
 
             if ($request->has('create_task')) {
-                $task = new Task();
+                $task = new Task;
                 $task->heading = $request->memo;
                 $task->board_column_id = $this->company->default_task_status;
                 $task->is_private = $request->has('is_private') && $request->is_private == 'true' ? 1 : 0;
@@ -529,7 +522,7 @@ class TimelogController extends AccountBaseController
 
                 if (isset($project)) {
                     $projectLastTaskCount = Task::projectTaskCount($project->id);
-                    $task->task_short_code = ($project) ? $project->project_short_code . '-' . ((int)$projectLastTaskCount + 1) : null;
+                    $task->task_short_code = ($project) ? $project->project_short_code.'-'.((int) $projectLastTaskCount + 1) : null;
                 }
 
                 $task->saveQuietly();
@@ -539,11 +532,11 @@ class TimelogController extends AccountBaseController
 
             if ($request->project_id != '') {
                 $timeLog->project_id = $request->project_id;
-                
+
                 // Check if project has remaining time for time-based projects
                 $project = Project::findOrFail($request->project_id);
                 if ($project->calculate_task_progress == 'project_total_time') {
-                    if (!$this->hasProjectRemainingTime($project->id)) {
+                    if (! $this->hasProjectRemainingTime($project->id)) {
                         return Reply::error(__('messages.projectTimeExceeded'));
                     }
                 }
@@ -560,8 +553,7 @@ class TimelogController extends AccountBaseController
             if ($request->project_id != '') {
                 $this->logProjectActivity($request->project_id, 'modules.tasks.timerStartedBy');
                 $this->logUserActivity($this->user->id, 'modules.tasks.timerStartedProject');
-            }
-            else {
+            } else {
                 $this->logUserActivity($this->user->id, 'modules.tasks.timerStartedTask');
             }
 
@@ -601,7 +593,7 @@ class TimelogController extends AccountBaseController
 
         $activeTimelogPermission = user()->permission('manage_active_timelogs');
 
-        abort_403(!(in_array('admin', user_roles()) ||
+        abort_403(! (in_array('admin', user_roles()) ||
             (($timeLog->project && $timeLog->project->client_id == user()->id)
                 || $timeLog->user_id == user()->id || $timeLog->added_by == user()->id)
             || ($timeLog->project && ($timeLog->project->project_admin == user()->id))
@@ -619,7 +611,7 @@ class TimelogController extends AccountBaseController
 
         // Stop breaktime if active
         /** @phpstan-ignore-next-line */
-        if (!is_null($timeLog->activeBreak)) {
+        if (! is_null($timeLog->activeBreak)) {
             /** @phpstan-ignore-next-line */
             $activeBreak = $timeLog->activeBreak;
             $activeBreak->end_time = $timeLog->end_time;
@@ -628,31 +620,31 @@ class TimelogController extends AccountBaseController
             $activeBreak->save();
         }
 
-        if (!is_null($timeLog->project_id)) {
+        if (! is_null($timeLog->project_id)) {
             $this->logProjectActivity($timeLog->project_id, 'modules.tasks.timerStoppedBy');
         }
 
-        if (!is_null($timeLog->task_id)) {
+        if (! is_null($timeLog->task_id)) {
             $this->logTaskActivity($timeLog->task_id, user()->id, 'timerStoppedBy');
         }
 
         // Update project progress if project uses time-based calculation
         if ($timeLog->project_id && $timeLog->project && $timeLog->project->calculate_task_progress == 'project_total_time') {
             $this->calculateProjectProgressByTime($timeLog->project_id);
-            
+
             // Check if project time limit is reached and show warning
             $remainingTime = $this->getProjectRemainingTime($timeLog->project_id);
             if ($remainingTime !== false && $remainingTime <= 0) {
                 $message = __('messages.projectTimeReached');
                 $this->logUserActivity($this->user->id, 'modules.tasks.timerStoppedBy');
-                
+
                 /** @phpstan-ignore-line */
                 $html = $this->showActiveTimer()->render();
-                
+
                 return Reply::successWithData($message, [
                     'timeLimitReached' => true,
                     'message' => $message,
-                    'clockHtml' => $html
+                    'clockHtml' => $html,
                 ]);
             }
         }
@@ -731,7 +723,7 @@ class TimelogController extends AccountBaseController
     public function byEmployee()
     {
         $viewPermission = $this->viewTimelogPermission;
-        abort_403(!in_array($viewPermission, ['all', 'added', 'owned', 'both']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'owned', 'both']));
 
         $this->employees = User::allEmployees(null, true);
         $this->projects = Project::allProjects();
@@ -798,26 +790,24 @@ class TimelogController extends AccountBaseController
                     });
             });
 
-        if (!is_null($employee) && $employee !== 'all') {
+        if (! is_null($employee) && $employee !== 'all') {
             $query->where('project_time_logs.user_id', $employee);
         }
 
-        if (in_array('client', user_roles()) && in_array($this->viewTimelogPermission,['both','owned','added'])) {
+        if (in_array('client', user_roles()) && in_array($this->viewTimelogPermission, ['both', 'owned', 'added'])) {
             // $query->where('projects.client_id', '=', user()->id);
             if ($this->viewTimelogPermission == 'added') {
                 $query->where('added_by', '=', user()->id)->orWhere('projects.client_id', '=', user()->id);
-            }else{
+            } else {
                 $query->where('projects.client_id', '=', user()->id);
             }
-        }else{
- 
+        } else {
+
             if ($this->viewTimelogPermission == 'owned') {
                 $query->where('project_time_logs.user_id', user()->id);
-            }
-            else if ($this->viewTimelogPermission == 'added') {
+            } elseif ($this->viewTimelogPermission == 'added') {
                 $query->where('project_time_logs.added_by', user()->id);
-            }
-            else if ($this->viewTimelogPermission == 'both') {
+            } elseif ($this->viewTimelogPermission == 'both') {
                 $query->where(function ($q) {
                     $q->where('project_time_logs.added_by', user()->id)
                         ->orWhere('project_time_logs.user_id', '=', user()->id);
@@ -828,7 +818,7 @@ class TimelogController extends AccountBaseController
         if ($request->startDate !== null && $request->startDate != 'null' && $request->startDate != '') {
             $startDate = companyToDateString($request->startDate);
 
-            if (!is_null($startDate)) {
+            if (! is_null($startDate)) {
                 $query->where(DB::raw('DATE(project_time_logs.`start_time`)'), '>=', $startDate);
             }
         }
@@ -836,7 +826,7 @@ class TimelogController extends AccountBaseController
         if ($request->endDate !== null && $request->endDate != 'null' && $request->endDate != '') {
             $endDate = companyToDateString($request->endDate);
 
-            if (!is_null($endDate)) {
+            if (! is_null($endDate)) {
                 $query->where(function ($query) use ($endDate) {
                     $query->where(DB::raw('DATE(project_time_logs.`end_time`)'), '<=', $endDate);
                 });
@@ -846,7 +836,6 @@ class TimelogController extends AccountBaseController
         $this->employees = $query->groupBy('project_time_logs.user_id')
             ->orderBy('users.name')
             ->get();
-
 
         $html = view('timelogs.ajax.member-list', $this->data)->render();
 
@@ -863,27 +852,27 @@ class TimelogController extends AccountBaseController
             $query->whereNull('deleted_at');
         })->where('user_id', $employee);
 
-        if (!empty($request->startDate) && !empty($request->endDate)) {
+        if (! empty($request->startDate) && ! empty($request->endDate)) {
 
             $startDate = Carbon::createFromFormat($this->company->date_format, $request->startDate)->startOfDay()->toDateTimeString();
             $endDate = Carbon::createFromFormat($this->company->date_format, $request->endDate)->endOfDay()->toDateTimeString();
 
             // Apply date filter
             $query->whereBetween('start_time', [$startDate, $endDate])
-                  ->whereNotNull('end_time');
+                ->whereNotNull('end_time');
         }
 
         if ($projectId != 'all') {
             $query->where('project_id', $projectId);
         }
 
-        if (in_array('client', user_roles()) && in_array($this->viewTimelogPermission,['both','owned','added'])) {
+        if (in_array('client', user_roles()) && in_array($this->viewTimelogPermission, ['both', 'owned', 'added'])) {
             // condition for added then added_by or client_id , client_id from project relation
             if ($this->viewTimelogPermission == 'added') {
                 $query->where('added_by', '=', user()->id)->orWhereHas('project', function ($query) {
                     $query->where('client_id', '=', user()->id);
                 });
-            }else{
+            } else {
                 $query->whereHas('project', function ($query) {
                     $query->where('client_id', '=', user()->id);
                 });
@@ -912,10 +901,10 @@ class TimelogController extends AccountBaseController
     public function revertTimelogToPending(Request $request)
     {
         $timelog = ProjectTimeLog::findOrFail($request->id);
-        
+
         // Check if user has permission to approve timelogs
         abort_403(user()->permission('approve_timelogs') !== 'all');
-        
+
         // Reset approval status to pending
         $timelog->approved = 0;
         $timelog->approved_by = null;
@@ -933,7 +922,7 @@ class TimelogController extends AccountBaseController
         $this->reportingTo = EmployeeDetails::where('reporting_to', user()->id)->first();
         $this->logTimeFor = LogTimeFor::where('company_id', company()->id)->first();
 
-        abort_403(!($this->reportingTo) && !($this->logTimeFor->approval_required == 1) && (user()->permission('approve_timelogs') == 'none'));
+        abort_403(! ($this->reportingTo) && ! ($this->logTimeFor->approval_required == 1) && (user()->permission('approve_timelogs') == 'none'));
 
         $this->timelogID = $request->timelog_id;
 
@@ -958,7 +947,7 @@ class TimelogController extends AccountBaseController
 
     public function export()
     {
-        abort_403(!canDataTableExport());
+        abort_403(! canDataTableExport());
 
         return Excel::download(new EmployeeTimelogs, 'timelogs.xlsx');
     }
@@ -973,23 +962,23 @@ class TimelogController extends AccountBaseController
 
         $reload = ($request->currentUrl == $taskUrl || $request->currentUrl == $dashboardUrl) ? 'yes' : 'no';
 
-        abort_403(!(
+        abort_403(! (
             (($timeLog->project && $timeLog->project->client_id == user()->id)
                 || $timeLog->user_id == user()->id || $timeLog->added_by == user()->id)
             || ($timeLog->project && ($timeLog->project->project_admin == user()->id))
         ));
 
-        $timeLogBreak = ProjectTimeLogBreak::where('project_time_log_id', $timeLog->id)->whereNull('end_time')->first() ?: new ProjectTimeLogBreak();
+        $timeLogBreak = ProjectTimeLogBreak::where('project_time_log_id', $timeLog->id)->whereNull('end_time')->first() ?: new ProjectTimeLogBreak;
         $timeLogBreak->project_time_log_id = $timeLog->id;
         $timeLogBreak->start_time = now();
         $timeLogBreak->total_minutes = 0;
         $timeLogBreak->save();
 
-        if (!is_null($timeLog->project_id)) {
+        if (! is_null($timeLog->project_id)) {
             $this->logProjectActivity($timeLog->project_id, 'modules.tasks.timerPausedBy');
         }
 
-        if (!is_null($timeLog->task_id)) {
+        if (! is_null($timeLog->task_id)) {
             $this->logTaskActivity($timeLog->task_id, user()->id, 'timerPausedBy');
         }
 
@@ -1016,7 +1005,7 @@ class TimelogController extends AccountBaseController
 
         $reload = ($request->currentUrl == $taskUrl || $request->currentUrl == $dashboardUrl) ? 'yes' : 'no';
 
-        abort_403(!(
+        abort_403(! (
             (($timeLog->project && $timeLog->project->client_id == user()->id)
                 || $timeLog->user_id == user()->id || $timeLog->added_by == user()->id)
             || ($timeLog->project && ($timeLog->project->project_admin == user()->id))
@@ -1032,13 +1021,12 @@ class TimelogController extends AccountBaseController
                 $activeBreak += $break->activeBreak ? 1 : 0;
             }
 
-            if ($activeBreak != count($totalActiveTimer))
-            {
+            if ($activeBreak != count($totalActiveTimer)) {
                 return Reply::error(__('messages.timerAlreadyRunning'));
             }
         }
 
-        if (is_null($activeTimer) || (!is_null($activeTimer) && !is_null($activeTimer->activeBreak))) {
+        if (is_null($activeTimer) || (! is_null($activeTimer) && ! is_null($activeTimer->activeBreak))) {
 
             $endTime = now();
             $timeLogBreak->end_time = $endTime;
@@ -1048,7 +1036,7 @@ class TimelogController extends AccountBaseController
             $timeLogBreak->total_minutes = $endTime->diffInMinutes($timeLogBreak->start_time);
             $timeLogBreak->save();
 
-            if (!is_null($timeLog->task_id)) {
+            if (! is_null($timeLog->task_id)) {
                 $this->logTaskActivity($timeLog->task_id, user()->id, 'timerResumedBy');
             }
 
@@ -1084,8 +1072,7 @@ class TimelogController extends AccountBaseController
         if (is_null($timeLogg->end_time)) {
 
             $totalMinutes = (($timeLogg->activeBreak) ? $timeLogg->activeBreak->start_time->diffInMinutes($timeLogg->start_time) : now()->diffInMinutes($timeLogg->start_time)) - $timeLogg->breaks->sum('total_minutes');
-        }
-        else {
+        } else {
             $totalMinutes = $timeLogg->total_minutes - $timeLogg->breaks->sum('total_minutes');
         }
 
@@ -1111,75 +1098,74 @@ class TimelogController extends AccountBaseController
             $endDate = Carbon::now()->endOfMonth()->toDateString();
         }
 
-
         return Excel::download(new ProjectTimeLogsExport($startDate, $endDate, $employee), 'timelogs.xlsx');
     }
 
     /**
      * Check if project time limit is reached
-     * 
-     * @param int $projectId
+     *
+     * @param  int  $projectId
      * @return \Illuminate\Http\Response
      */
     public function checkProjectTimeLimit($projectId)
     {
         $project = Project::findOrFail($projectId);
-        
+
         if ($project->calculate_task_progress == 'project_total_time') {
             $remainingTime = $this->getProjectRemainingTime($projectId);
             info('remainingTime');
             info($remainingTime);
             info('------------remainingTime');
-            
+
             if ($remainingTime !== false && $remainingTime <= 0) {
                 // Stop all active timers for this project
                 $this->stopProjectTimersOnTimeLimit($projectId);
-                
+
                 return Reply::successWithData(__('messages.projectTimeReached'), [
                     'timeLimitReached' => true,
-                    'message' => __('messages.projectTimeReached')
+                    'message' => __('messages.projectTimeReached'),
                 ]);
             }
         }
-        
+
         return Reply::dataOnly(['timeLimitReached' => false]);
     }
 
     /**
      * Stop all active timers for a project when time limit is reached
-     * 
-     * @param int $projectId
+     *
+     * @param  int  $projectId
      * @return void
      */
     public function stopProjectTimersOnTimeLimit($projectId)
     {
         $project = Project::findOrFail($projectId);
-        
+
         if ($project->calculate_task_progress == 'project_total_time') {
             $remainingTime = $this->getProjectRemainingTime($projectId);
-            
+
             if ($remainingTime !== false && $remainingTime <= 0) {
                 // Get all active timers for this project
                 $activeTimers = ProjectTimeLog::where('project_id', $projectId)
                     ->whereNull('end_time')
                     ->get();
-                
+
                 foreach ($activeTimers as $timer) {
                     // Stop the timer
                     $timer->end_time = now();
                     $timer->total_hours = $timer->end_time->diffInHours($timer->start_time);
                     $timer->total_minutes = $timer->end_time->diffInMinutes($timer->start_time);
                     $timer->save();
-                    
+
                     // Stop any active breaks
-                    if (!is_null($timer->activeBreak)) {
+                    if (! is_null($timer->activeBreak)) {
                         $activeBreak = $timer->activeBreak;
                         $activeBreak->end_time = $timer->end_time;
                         $activeBreak->total_minutes = $timer->end_time->diffInMinutes($activeBreak->start_time);
                         $activeBreak->total_hours = $timer->end_time->diffInHours($activeBreak->start_time);
                         $activeBreak->save();
                     }
-                    
+
                     // Log the activity
                     $this->logProjectActivity($projectId, 'modules.tasks.timerStoppedBy');
                     $this->logUserActivity($timer->user_id, 'modules.tasks.timerStoppedBy');
@@ -1187,5 +1173,4 @@ class TimelogController extends AccountBaseController
             }
         }
     }
-
 }

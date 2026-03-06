@@ -5,25 +5,24 @@ namespace App\Actions\Fortify;
 use App\Helper\Reply;
 use App\Models\Attendance;
 use App\Models\AttendanceSetting;
+use App\Models\Company;
+use App\Models\CompanyAddress;
 use App\Models\EmployeeShiftSchedule;
 use App\Models\GlobalSetting;
 use App\Models\Holiday;
 use App\Models\Leave;
-use App\Models\CompanyAddress;
-use App\Models\Company;
 use App\Models\User;
 use App\Scopes\ActiveScope;
 use Carbon\Carbon;
 use Illuminate\Auth\Events\Failed;
 use Illuminate\Contracts\Auth\StatefulGuard;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Laravel\Fortify\Fortify;
 use Laravel\Fortify\LoginRateLimiter;
-use Illuminate\Support\Facades\DB;
 
 class AttemptToAuthenticate
 {
-
     /**
      * The guard implementation.
      *
@@ -41,8 +40,6 @@ class AttemptToAuthenticate
     /**
      * Create a new controller instance.
      *
-     * @param \Illuminate\Contracts\Auth\StatefulGuard $guard
-     * @param \Laravel\Fortify\LoginRateLimiter $limiter
      * @return void
      */
     public function __construct(StatefulGuard $guard, LoginRateLimiter $limiter)
@@ -54,11 +51,10 @@ class AttemptToAuthenticate
     /**
      * Handle the incoming request.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param callable $next
+     * @param  \Illuminate\Http\Request  $request
+     * @param  callable  $next
      * @return mixed
      */
-
     public function handle($request, $next)
     {
         $globalSetting = GlobalSetting::first();
@@ -79,7 +75,6 @@ class AttemptToAuthenticate
         if ($company && $company->id !== $authUser->company_id) {
             $this->checkCompany();
         }
-
 
         if ($authUser->company) {
             $attendanceSetting = $authUser->company->attendanceSetting;
@@ -104,7 +99,7 @@ class AttemptToAuthenticate
 
             $validateRecaptcha = GlobalSetting::validateGoogleRecaptcha($gRecaptchaResponse);
 
-            if (!$validateRecaptcha) {
+            if (! $validateRecaptcha) {
                 return $this->googleRecaptchaMessage();
             }
         }
@@ -168,8 +163,8 @@ class AttemptToAuthenticate
 
         $attendanceSettings = $this->attendanceShift($showClockIn, $authUser->id, $authUser->company);
 
-        $startTimestamp = now()->format('Y-m-d') . ' ' . $attendanceSettings->office_start_time;
-        $endTimestamp = now()->format('Y-m-d') . ' ' . $attendanceSettings->office_end_time;
+        $startTimestamp = now()->format('Y-m-d').' '.$attendanceSettings->office_start_time;
+        $endTimestamp = now()->format('Y-m-d').' '.$attendanceSettings->office_end_time;
         $officeStartTime = Carbon::createFromFormat('Y-m-d H:i:s', $startTimestamp, $globalSetting->timezone);
         $officeEndTime = Carbon::createFromFormat('Y-m-d H:i:s', $endTimestamp, $globalSetting->timezone);
         $officeStartTime = $officeStartTime->setTimezone('UTC');
@@ -181,7 +176,7 @@ class AttemptToAuthenticate
 
         $cannotLogin = false;
 
-        if (is_null($attendanceSettings->early_clock_in) && !now()->between($officeStartTime, $officeEndTime) && $attendanceSettings->shift_type == 'strict') {
+        if (is_null($attendanceSettings->early_clock_in) && ! now()->between($officeStartTime, $officeEndTime) && $attendanceSettings->shift_type == 'strict') {
             $cannotLogin = true;
         } elseif ($attendanceSettings->shift_type == 'strict') {
             $earlyClockIn = now($globalSetting->timezone)->addMinutes($attendanceSettings->early_clock_in);
@@ -204,7 +199,6 @@ class AttemptToAuthenticate
             ->where('user_id', $authUser->id)
             ->first();
 
-
         $currentDate = now($globalSetting->timezone)->format('Y-m-d');
 
         $checkTodayLeave = Leave::where('status', 'approved')
@@ -220,7 +214,7 @@ class AttemptToAuthenticate
         // Check Holiday by date
         $checkTodayHoliday = Holiday::where('date', $currentDate)->first();
 
-        if (!$cannotLogin && $currentClockIn == null && $checkTodayLeave == null && is_null($checkTodayHoliday)) {
+        if (! $cannotLogin && $currentClockIn == null && $checkTodayLeave == null && is_null($checkTodayHoliday)) {
             return true;
         }
 
@@ -241,8 +235,8 @@ class AttemptToAuthenticate
         $attendanceSettings = $this->attendanceShift($showClockIn, $authUser, $authUserCompany->company);
         $attendanceUser = User::find($authUser);
 
-        $startTimestamp = now()->format('Y-m-d') . ' ' . $attendanceSettings->office_start_time;
-        $endTimestamp = now()->format('Y-m-d') . ' ' . $attendanceSettings->office_end_time;
+        $startTimestamp = now()->format('Y-m-d').' '.$attendanceSettings->office_start_time;
+        $endTimestamp = now()->format('Y-m-d').' '.$attendanceSettings->office_end_time;
         $officeStartTime = Carbon::createFromFormat('Y-m-d H:i:s', $startTimestamp, $globalSetting->timezone);
         $officeEndTime = Carbon::createFromFormat('Y-m-d H:i:s', $endTimestamp, $globalSetting->timezone);
         $officeStartTime = $officeStartTime->setTimezone('UTC');
@@ -255,7 +249,7 @@ class AttemptToAuthenticate
         $cannotLogin = false;
         $clockInCount = Attendance::getTotalUserClockInWithTime($officeStartTime, $officeEndTime, $authUser);
 
-        if (is_null($attendanceSettings->early_clock_in) && !now()->between($officeStartTime, $officeEndTime) && $showClockIn->show_clock_in_button == 'no' && $attendanceSettings->shift_type == 'strict') {
+        if (is_null($attendanceSettings->early_clock_in) && ! now()->between($officeStartTime, $officeEndTime) && $showClockIn->show_clock_in_button == 'no' && $attendanceSettings->shift_type == 'strict') {
             $cannotLogin = true;
         } elseif ($attendanceSettings->shift_type == 'strict') {
             $earlyClockIn = now($globalSetting->timezone)->addMinutes($attendanceSettings->early_clock_in);
@@ -285,43 +279,40 @@ class AttemptToAuthenticate
 
         // Check user by ip
         if (attendance_setting()->ip_check == 'yes') {
-            $ips = (array)json_decode(attendance_setting()->ip_address);
+            $ips = (array) json_decode(attendance_setting()->ip_address);
 
-            if (!in_array($request->ip(), $ips)) {
+            if (! in_array($request->ip(), $ips)) {
                 return Reply::error(__('messages.notAnAuthorisedDevice'));
             }
         }
 
         // Check maximum attendance in a day
-        if ($clockInCount < $attendanceSettings->clockin_in_day && !$cannotLogin) {
+        if ($clockInCount < $attendanceSettings->clockin_in_day && ! $cannotLogin) {
 
             // Set TimeZone And Convert into timestamp
             $currentTimestamp = $now->setTimezone('UTC');
-            $currentTimestamp = $currentTimestamp->timestamp;;
+            $currentTimestamp = $currentTimestamp->timestamp;
 
             // Set TimeZone And Convert into timestamp in halfday time
             if ($attendanceSettings->halfday_mark_time) {
-                $halfDayTimestamp = $now->format('Y-m-d') . ' ' . $attendanceSettings->halfday_mark_time;
+                $halfDayTimestamp = $now->format('Y-m-d').' '.$attendanceSettings->halfday_mark_time;
                 $halfDayTimestamp = Carbon::createFromFormat('Y-m-d H:i:s', $halfDayTimestamp, $globalSetting->timezone);
                 $halfDayTimestamp = $halfDayTimestamp->setTimezone('UTC');
                 $halfDayTimestamp = $halfDayTimestamp->timestamp;
             }
 
-
-            $timestamp = $now->format('Y-m-d') . ' ' . $attendanceSettings->office_start_time;
+            $timestamp = $now->format('Y-m-d').' '.$attendanceSettings->office_start_time;
             $officeStartTime = Carbon::createFromFormat('Y-m-d H:i:s', $timestamp, $globalSetting->timezone);
             $officeStartTime = $officeStartTime->setTimezone('UTC');
-
 
             $lateTime = $officeStartTime->addMinutes($attendanceSettings->late_mark_duration);
 
             $checkTodayAttendance = Attendance::where('user_id', $authUser)
                 ->where(DB::raw('DATE(attendances.clock_in_time)'), '=', $now->format('Y-m-d'))->first();
 
-
             $defaultAddress = CompanyAddress::where('is_default', 1)->where('company_id', $attendanceUser->company_id)->first();
 
-            $attendance = new Attendance();
+            $attendance = new Attendance;
             $attendance->user_id = $authUser;
             $attendance->clock_in_time = $now;
             $attendance->clock_in_ip = request()->ip();
@@ -338,7 +329,7 @@ class AttemptToAuthenticate
 
             // Check day's first record and half day time
             if (
-                !is_null($attendanceSettings->halfday_mark_time)
+                ! is_null($attendanceSettings->halfday_mark_time)
                 && is_null($checkTodayAttendance)
                 && isset($halfDayTimestamp)
                 && ($currentTimestamp > $halfDayTimestamp)
@@ -358,12 +349,12 @@ class AttemptToAuthenticate
 
             $attendance->employee_shift_id = $attendanceSettings->id;
 
-            $attendance->shift_start_time = $attendance->clock_in_time->toDateString() . ' ' . $attendanceSettings->office_start_time;
+            $attendance->shift_start_time = $attendance->clock_in_time->toDateString().' '.$attendanceSettings->office_start_time;
 
             if (Carbon::parse($attendanceSettings->office_start_time)->gt(Carbon::parse($attendanceSettings->office_end_time))) {
-                $attendance->shift_end_time = $attendance->clock_in_time->addDay()->toDateString() . ' ' . $attendanceSettings->office_end_time;
+                $attendance->shift_end_time = $attendance->clock_in_time->addDay()->toDateString().' '.$attendanceSettings->office_end_time;
             } else {
-                $attendance->shift_end_time = $attendance->clock_in_time->toDateString() . ' ' . $attendanceSettings->office_end_time;
+                $attendance->shift_end_time = $attendance->clock_in_time->toDateString().' '.$attendanceSettings->office_end_time;
             }
 
             $attendance->company_id = $attendanceUser->company_id;
@@ -371,8 +362,8 @@ class AttemptToAuthenticate
             // condition from Link ATA
             // if outside is not allowed and shift is ended then avoid the attendence saving
             if (
-                (!$showClockIn || $showClockIn->show_clock_in_button === 'no') &&
-                !now($globalSetting->timezone)->greaterThan($officeEndTime) ||
+                (! $showClockIn || $showClockIn->show_clock_in_button === 'no') &&
+                ! now($globalSetting->timezone)->greaterThan($officeEndTime) ||
                 ($showClockIn && $showClockIn->show_clock_in_button === 'yes')
             ) {
                 $attendance->save();
@@ -396,9 +387,9 @@ class AttemptToAuthenticate
             ->where('date', now($company->timezone)->toDateString())
             ->first();
 
-        $backDayFromDefault = Carbon::parse(now($company->timezone)->subDay()->format('Y-m-d') . ' ' . $defaultAttendanceSettings->office_start_time);
+        $backDayFromDefault = Carbon::parse(now($company->timezone)->subDay()->format('Y-m-d').' '.$defaultAttendanceSettings->office_start_time);
 
-        $backDayToDefault = Carbon::parse(now($company->timezone)->subDay()->format('Y-m-d') . ' ' . $defaultAttendanceSettings->office_end_time);
+        $backDayToDefault = Carbon::parse(now($company->timezone)->subDay()->format('Y-m-d').' '.$defaultAttendanceSettings->office_end_time);
 
         if ($backDayFromDefault->gt($backDayToDefault)) {
             $backDayToDefault->addDay();
@@ -408,16 +399,16 @@ class AttemptToAuthenticate
 
         if ($checkPreviousDayShift && $nowTime->betweenIncluded($checkPreviousDayShift->shift_start_time, $checkPreviousDayShift->shift_end_time)) {
             $attendanceSettings = $checkPreviousDayShift;
-        } else if ($nowTime->betweenIncluded($backDayFromDefault, $backDayToDefault)) {
+        } elseif ($nowTime->betweenIncluded($backDayFromDefault, $backDayToDefault)) {
             $attendanceSettings = $defaultAttendanceSettings;
-        } else if (
+        } elseif (
             $checkTodayShift &&
             ($nowTime->betweenIncluded($checkTodayShift->shift_start_time, $checkTodayShift->shift_end_time) || $nowTime->gt($checkTodayShift->shift_end_time))
         ) {
             $attendanceSettings = $checkTodayShift;
-        } else if ($checkTodayShift && !is_null($checkTodayShift->shift->early_clock_in)) {
+        } elseif ($checkTodayShift && ! is_null($checkTodayShift->shift->early_clock_in)) {
             $attendanceSettings = $checkTodayShift;
-        } else if ($checkTodayShift && $checkTodayShift->shift->shift_type == 'flexible') {
+        } elseif ($checkTodayShift && $checkTodayShift->shift->shift_type == 'flexible') {
             $attendanceSettings = $checkTodayShift;
         } else {
 
@@ -434,16 +425,17 @@ class AttemptToAuthenticate
     /**
      * Attempt to authenticate using a custom callback.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param callable $next
+     * @param  \Illuminate\Http\Request  $request
+     * @param  callable  $next
      * @return mixed
      */
     protected function handleUsingCustomCallback($request, $next)
     {
         $user = call_user_func(Fortify::$authenticateUsingCallback, $request);
 
-        if (!$user) {
+        if (! $user) {
             $this->fireFailedEvent($request);
+
             /** @phpstan-ignore-next-line */
             return $this->throwFailedAuthenticationException($request);
         }
@@ -452,13 +444,14 @@ class AttemptToAuthenticate
         \session()->forget('isRtl');
 
         event(new \App\Events\UserLoginEvent($user, $request->ip()));
+
         return $next($request);
     }
 
     /**
      * Throw a failed authentication validation exception.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @return void
      *
      * @throws \Illuminate\Validation\ValidationException
@@ -475,7 +468,7 @@ class AttemptToAuthenticate
     /**
      * Fire the failed authentication attempt event with the given arguments.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @return void
      */
     protected function fireFailedEvent($request)

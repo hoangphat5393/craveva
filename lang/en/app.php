@@ -1,6 +1,6 @@
 <?php
 
-return array(
+return [
     'dealWatcher' => 'Deal Watcher',
     'pendingTimelog' => 'Pending Timelogs',
     'showContact' => 'Contact Details',
@@ -140,7 +140,7 @@ return array(
     'quantityExceed' => 'Quantity Exceed',
     'SorryTheQuantityExceedsFor' => 'Sorry, the quantity exceeds for',
     'doItLater' => 'Do It Later',
-    'months' => array(
+    'months' => [
         'January' => 'January',
         'February' => 'February',
         'March' => 'March',
@@ -153,8 +153,8 @@ return array(
         'October' => 'October',
         'November' => 'November',
         'December' => 'December',
-    ),
-    'menu' => array(
+    ],
+    'menu' => [
         'units' => 'Units',
         'prefixSettings' => 'Prefix Settings',
         'parent_id' => 'Parent',
@@ -280,26 +280,26 @@ return array(
         'invoicePaymentDetails' => 'Invoice Payment Details',
         'projectCalendar' => 'Project Calendar',
         'customLink' => 'Custom Link',
-        'pusher' => array(
+        'pusher' => [
             'appId' => 'App Id',
             'appKey' => 'App Key',
             'appSecret' => 'App Secret',
             'appCluster' => 'App Cluster',
             'forceTLS' => 'Force TLS',
-        ),
+        ],
         'content' => 'Content',
         'decline' => 'Decline',
         'signed' => 'Signed',
         'download' => 'Download',
         'applyToInvoice' => 'Pay Invoice using Credit Note',
-        'credit-notes' => array(
+        'credit-notes' => [
             'invoiceDate' => 'Invoice Date',
             'invoiceAmount' => 'Invoice Amount',
             'invoiceBalanceDue' => 'Invoice Balance Due',
             'amountToCredit' => 'Amount To Credit',
             'remainingAmount' => 'Remaining Amount',
             'amountCredited' => 'Amount Credited',
-        ),
+        ],
         'creditedInvoices' => 'Invoices Credited',
         'appliedCredits' => 'Applied Credits',
         'ticketFiles' => 'Ticket Files',
@@ -351,7 +351,7 @@ return array(
         'receipt' => 'Receipt',
         'callback' => 'Callback',
         'addSubTask' => 'Add Sub Task',
-        'socialAuthSettings' => array(
+        'socialAuthSettings' => [
             'google' => 'Google',
             'facebook' => 'Facebook',
             'linkedin' => 'Linkedin',
@@ -364,7 +364,7 @@ return array(
             'facebookSecret' => 'Facebook Secret',
             'twitterSecret' => 'Twitter Secret',
             'linkedinSecret' => 'Linkedin Secret',
-        ),
+        ],
         'saveSend' => 'Save & Send',
         'saveDraft' => 'Save as Draft',
         'send' => 'Send',
@@ -469,7 +469,7 @@ return array(
         'adminIt' => 'Admin & IT',
         'lettersTemplates' => 'Letters Templates',
         'helpSupport' => 'Help & Support',
-    ),
+    ],
     'parentId' => 'Parent',
     'childId' => 'Child',
     'language' => 'Language',
@@ -640,59 +640,59 @@ return array(
     'bankaccount' => 'Bank Account',
     'bankaccounts' => 'Bank Accounts',
     'Changestatus' => 'Lead Status',
-    'pusher' => array(
+    'pusher' => [
         'appId' => 'App Id',
         'appKey' => 'App Key',
         'appSecret' => 'App Secret',
         'appCluster' => 'App Cluster',
         'forceTLS' => 'Force TLS',
-    ),
+    ],
     'content' => 'Content',
     'decline' => 'Decline',
     'signed' => 'Signed',
     'download' => 'Download',
     'applyToInvoice' => 'Pay Invoice using Credit Note',
-    'credit-notes' => array(
+    'credit-notes' => [
         'invoiceDate' => 'Invoice Date',
         'invoiceAmount' => 'Invoice Amount',
         'invoiceBalanceDue' => 'Invoice Balance Due',
         'amountToCredit' => 'Amount To Credit',
         'remainingAmount' => 'Remaining Amount',
         'amountCredited' => 'Amount Credited',
-    ),
-    'onesignal' => array(
+    ],
+    'onesignal' => [
         'actionMessage' => 'We\'d like to show you notifications for the latest news and updates.',
         'acceptButtonText' => 'ALLOW',
         'cancelButtonText' => 'NO THANKS',
-        'tip' => array(
-            'state' => array(
+        'tip' => [
+            'state' => [
                 'unsubscribed' => 'Subscribe to notifications',
                 'subscribed' => 'You\'re subscribed to notifications',
                 'blocked' => 'You\'ve blocked notifications',
-            ),
-        ),
-        'message' => array(
+            ],
+        ],
+        'message' => [
             'prenotify' => 'Click to subscribe to notifications',
-            'action' => array(
+            'action' => [
                 'subscribed' => 'Thanks for subscribing!',
                 'resubscribed' => 'You\'re subscribed to notifications',
                 'unsubscribed' => 'You won\'t receive notifications again',
-            ),
-        ),
-        'dialog' => array(
-            'main' => array(
+            ],
+        ],
+        'dialog' => [
+            'main' => [
                 'title' => 'Manage Site Notifications',
-                'button' => array(
+                'button' => [
                     'subscribe' => 'SUBSCRIBE',
                     'unsubscribe' => 'UNSUBSCRIBE',
-                ),
-            ),
-            'blocked' => array(
+                ],
+            ],
+            'blocked' => [
                 'title' => 'Unblock Notifications',
                 'message' => 'Follow these instructions to allow notifications:',
-            ),
-        ),
-    ),
+            ],
+        ],
+    ],
     'creditedInvoices' => 'Invoices Credited',
     'appliedCredits' => 'Applied Credits',
     'ticketFiles' => 'Ticket Files',
@@ -748,7 +748,7 @@ return array(
     'mins' => 'mins',
     'receipt' => 'Receipt',
     'callback' => 'Callback',
-    'socialAuthSettings' => array(
+    'socialAuthSettings' => [
         'google' => 'Google',
         'facebook' => 'Facebook',
         'linkedin' => 'Linkedin',
@@ -761,7 +761,7 @@ return array(
         'facebookSecret' => 'Facebook Secret',
         'twitterSecret' => 'Twitter Secret',
         'linkedinSecret' => 'Linkedin Secret',
-    ),
+    ],
     'saveSend' => 'Save & Send',
     'saveMark' => 'Save & Mark as Send',
     'markSent' => 'Mark as Sent',
@@ -909,7 +909,7 @@ return array(
     'stripeSecret' => 'Stripe Secret',
     'stripeWebhookSecret' => 'Stripe Webhook Signing Secret',
     'razorpayWebhookSecret' => 'Razorpay Webhook Signing Secret',
-    'storageSetting' => array(
+    'storageSetting' => [
         'selectStorage' => 'Select Storage',
         'local' => 'Local (Default)',
         'aws_s3' => 'AWS S3 Storage (Amazon Web Services S3)',
@@ -946,7 +946,7 @@ return array(
         'storageSuggestion' => '<b>Suggestion:</b> Consider using DigitalOcean Spaces, <a href="https://aws.amazon.com/s3" target="_blank">AWS S3</a>, <a href="https://wasabi.com" target="_blank">Wasabi</a> or <a href="https://min.io/" target="_blank">Minio</a> Storage for an additional layer of security',
         'localStorageNote' => 'means that the files you upload will be stored on your own server within the <b>public/user-uploads</b> directory.',
         'testMinioSetting' => 'Test Minio Storage Settings',
-    ),
+    ],
     'message' => 'Message',
     'verify' => 'Verify',
     'itemSelected' => 'items selected',
@@ -1148,13 +1148,13 @@ return array(
     'moduleSwitchMessage' => 'Activate or deactivate :name module',
     'updateModule' => 'Update Module',
     'eventMonthlyOn' => 'Monthly on the :week :day',
-    'eventDay' => array(
+    'eventDay' => [
         1 => 'first',
         2 => 'second',
         3 => 'third',
         4 => 'fourth',
         5 => 'last',
-    ),
+    ],
     'thisEvent' => 'This event',
     'allEvent' => 'All events',
     'totalDays' => 'Total Days',
@@ -1283,7 +1283,7 @@ return array(
     'moduleNotifySwitchMessage' => 'This will hide/show new update message on dashboard for :name module',
     'leadContact' => 'Lead Contact',
     'deal' => 'Deals',
-    'maritalStatus' => array(
+    'maritalStatus' => [
         'single' => 'Single',
         'married' => 'Married',
         'widower' => 'Widower',
@@ -1291,8 +1291,8 @@ return array(
         'separate' => 'Separate',
         'divorced' => 'Divorced',
         'engaged' => 'Engaged',
-        'unmarried' => 'Unmarried'
-    ),
+        'unmarried' => 'Unmarried',
+    ],
     'sku' => 'SKU',
     'host' => 'Host',
     'cancelled' => 'Cancelled',
@@ -1364,4 +1364,4 @@ return array(
     'qrCode' => 'QR Code',
     'recruit' => 'Recruit',
     'restApi' => 'Rest API',
-);
+];

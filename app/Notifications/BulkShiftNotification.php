@@ -3,11 +3,9 @@
 namespace App\Notifications;
 
 use App\Models\EmployeeShiftSchedule;
-use App\Models\GlobalSetting;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Support\Facades\App;
 
 class BulkShiftNotification extends BaseNotification
 {
@@ -17,8 +15,11 @@ class BulkShiftNotification extends BaseNotification
      * Create a new notification instance.
      */
     private $userData;
+
     private $dateRange;
+
     private $emailSetting;
+
     private $userId;
 
     public function __construct(User $userData, $dateRange, $userId)
@@ -43,7 +44,7 @@ class BulkShiftNotification extends BaseNotification
     /**
      * Get the mail representation of the notification.
      */
-    public function toMail($notifiable):MailMessage
+    public function toMail($notifiable): MailMessage
     {
         $build = parent::build($notifiable);
         $employeeShifts = EmployeeShiftSchedule::with('shift')
@@ -72,5 +73,4 @@ class BulkShiftNotification extends BaseNotification
     {
         // return $this->userData->toArray();
     }
-
 }

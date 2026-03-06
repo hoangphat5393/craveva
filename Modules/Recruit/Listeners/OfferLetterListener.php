@@ -11,7 +11,6 @@ use Modules\Recruit\Notifications\SendOfferLetter;
 
 class OfferLetterListener
 {
-
     /**
      * Create the event listener.
      *
@@ -25,7 +24,7 @@ class OfferLetterListener
     /**
      * Handle the event.
      *
-     * @param object $event
+     * @param  object  $event
      * @return void
      */
     public function handle(OfferLetterEvent $jobOffer)
@@ -36,7 +35,7 @@ class OfferLetterListener
         $companyAdmins = User::allAdmins($companyId);
         $adminNotification = new AdminNewOfferLetter($jobOffer->jobOffer);
 
-        if ($jobOffer->type == "save" || $jobOffer->type == "saveSend") {
+        if ($jobOffer->type == 'save' || $jobOffer->type == 'saveSend') {
 
             // Send notification to all company admins
             Notification::send($companyAdmins, $adminNotification);
@@ -45,15 +44,13 @@ class OfferLetterListener
             Notification::send($jobOffer->jobOffer->jobApplication->job->recruiter, new RecruiterOfferLetter($jobOffer->jobOffer));
         }
 
-
         $applicant = $jobOffer->jobOffer->jobApplication;
 
         if ($applicant->email) {
             // Send notification to the candidate
-            if ($jobOffer->type == "send" || $jobOffer->type == "saveSend") {
+            if ($jobOffer->type == 'send' || $jobOffer->type == 'saveSend') {
                 Notification::send($applicant, new SendOfferLetter($jobOffer->jobOffer));
             }
         }
     }
-
 }

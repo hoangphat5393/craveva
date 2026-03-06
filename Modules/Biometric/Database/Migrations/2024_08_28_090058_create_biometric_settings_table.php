@@ -7,15 +7,15 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Modules\Biometric\Entities\BiometricSetting;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
     public function up(): void
     {
 
-        if (!Schema::hasTable('biometric_settings')) {
+        if (! Schema::hasTable('biometric_settings')) {
             Schema::create('biometric_settings', function (Blueprint $table) {
                 $table->id();
                 $table->integer('company_id')->unsigned()->nullable();
@@ -28,7 +28,7 @@ return new class extends Migration {
             $companies = Company::withoutGlobalScopes([ActiveScope::class])->get();
 
             foreach ($companies as $company) {
-                $bio = new BiometricSetting();
+                $bio = new BiometricSetting;
                 $bio->company_id = $company->id;
                 $bio->save();
             }

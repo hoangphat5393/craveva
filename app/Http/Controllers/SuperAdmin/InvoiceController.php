@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers\SuperAdmin;
 
+use App\DataTables\SuperAdmin\InvoiceDataTable;
+use App\Http\Controllers\AccountBaseController;
 use App\Models\Company;
 use App\Models\GlobalSetting;
 use App\Models\SuperAdmin\GlobalInvoice;
 use App\Scopes\ActiveScope;
-use App\DataTables\SuperAdmin\InvoiceDataTable;
-use App\Http\Controllers\AccountBaseController;
 
 class InvoiceController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -25,7 +24,7 @@ class InvoiceController extends AccountBaseController
      */
     public function index(InvoiceDataTable $dataTable)
     {
-        if (!request()->ajax()) {
+        if (! request()->ajax()) {
             $this->companies = Company::withoutGlobalScope(ActiveScope::class)->orderBy('id', 'desc')->get(['id', 'company_name']);
         }
 
@@ -42,11 +41,10 @@ class InvoiceController extends AccountBaseController
         $pdf->setOption('enable_php', true);
         $pdf->setOptions(['isHtml5ParserEnabled' => true, 'isRemoteEnabled' => true]);
 
-        $pdf->loadView('super-admin.invoices.pdf.' . $this->globalInvoiceSetting->template, $this->data);
+        $pdf->loadView('super-admin.invoices.pdf.'.$this->globalInvoiceSetting->template, $this->data);
 
-        $this->filename = $this->invoice->pay_date?->format('dS M Y') . '-' . $this->invoice->next_pay_date?->format('dS M Y');
+        $this->filename = $this->invoice->pay_date?->format('dS M Y').'-'.$this->invoice->next_pay_date?->format('dS M Y');
 
-        return $pdf->download($this->filename . '.pdf');
+        return $pdf->download($this->filename.'.pdf');
     }
-
 }

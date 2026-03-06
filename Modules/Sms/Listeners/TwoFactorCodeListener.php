@@ -7,7 +7,6 @@ use Modules\Sms\Notifications\TwoFactorCode;
 
 class TwoFactorCodeListener
 {
-
     /**
      * Handle the event.
      *
@@ -20,5 +19,4 @@ class TwoFactorCodeListener
         } catch (\Exception $e) { // @codingStandardsIgnoreLine
         }
     }
-
 }

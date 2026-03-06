@@ -4,8 +4,8 @@ use App\Models\AwardIcon;
 use App\Models\Task;
 use Illuminate\Database\Migrations\Migration;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      *
@@ -16,7 +16,7 @@ return new class extends Migration {
         $tasks = Task::whereNull('hash')->get();
 
         foreach ($tasks as $task) {
-            $task->hash = md5(microtime() . rand(1, 99999999));
+            $task->hash = md5(microtime().rand(1, 99999999));
             $task->save();
         }
 
@@ -24,7 +24,6 @@ return new class extends Migration {
 
         // phpcs:ignore
         AwardIcon::where('icon', 'LIKE', '%-fill%')->update([$column => DB::raw("REPLACE($column,'-fill','')")]);
-
 
         \App\Models\Country::where('iso3', 'RUS')->update(['phonecode' => 7]);
 
@@ -41,5 +40,4 @@ return new class extends Migration {
     {
         //
     }
-
 };

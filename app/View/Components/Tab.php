@@ -7,9 +7,10 @@ use Illuminate\View\Component;
 
 class Tab extends Component
 {
-
     public $href;
+
     public $text;
+
     public $ajax;
 
     /**
@@ -33,5 +34,4 @@ class Tab extends Component
     {
         return view('components.tab');
     }
-
 }

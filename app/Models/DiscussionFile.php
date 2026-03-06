@@ -26,6 +26,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read \App\Models\Discussion|null $discussion
  * @property-read mixed $file_url
  * @property-read mixed $icon
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|DiscussionFile newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|DiscussionFile newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|DiscussionFile query()
@@ -42,16 +43,19 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|DiscussionFile whereSize($value)
  * @method static \Illuminate\Database\Eloquent\Builder|DiscussionFile whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|DiscussionFile whereUserId($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|DiscussionFile whereCompanyId($value)
+ *
  * @property-read mixed $file
+ *
  * @mixin \Eloquent
  */
 class DiscussionFile extends BaseModel
 {
-
-    use IconTrait, HasCompany;
+    use HasCompany, IconTrait;
 
     const FILE_PATH = 'discussion-files';
 
@@ -59,21 +63,20 @@ class DiscussionFile extends BaseModel
 
     public function getFileUrlAttribute()
     {
-        if($this->external_link){
+        if ($this->external_link) {
             return str($this->external_link)->contains('http') ? $this->external_link : asset_url_local_s3($this->external_link);
         }
 
-        return asset_url_local_s3(DiscussionFile::FILE_PATH . '/' . $this->hashname);
+        return asset_url_local_s3(DiscussionFile::FILE_PATH.'/'.$this->hashname);
     }
 
     public function getFileAttribute()
     {
-        return $this->external_link ?: (DiscussionFile::FILE_PATH . '/' . $this->hashname);
+        return $this->external_link ?: (DiscussionFile::FILE_PATH.'/'.$this->hashname);
     }
 
     public function discussion(): BelongsTo
     {
         return $this->belongsTo(Discussion::class, 'discussion_id');
     }
-
 }

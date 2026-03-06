@@ -4,17 +4,14 @@ namespace Modules\Policy\Http\Controllers;
 
 use App\Helper\Files;
 use App\Helper\Reply;
+use App\Http\Controllers\Controller;
 use App\Traits\IconTrait;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use App\Http\Controllers\Controller;
-use Illuminate\Http\RedirectResponse;
 use Modules\Policy\Entities\Policy;
 use Modules\Policy\Entities\PolicyFile;
 
 class PolicyFileController extends Controller
 {
-
     use IconTrait;
 
     /**
@@ -27,10 +24,10 @@ class PolicyFileController extends Controller
         if ($request->hasFile('file')) {
 
             foreach ($request->file as $fileData) {
-                $file = new PolicyFile();
+                $file = new PolicyFile;
                 $file->policy_id = $policyId;
 
-                $filename = Files::uploadLocalOrS3($fileData, PolicyFile::FILE_PATH.'/' . $policyId);
+                $filename = Files::uploadLocalOrS3($fileData, PolicyFile::FILE_PATH.'/'.$policyId);
 
                 $file->filename = $fileData->getClientOriginalName();
                 $file->hashname = $filename;
@@ -50,7 +47,7 @@ class PolicyFileController extends Controller
     {
         $file = PolicyFile::findOrFail($id);
         $this->policy = Policy::findorFail($file->policy_id);
-        Files::deleteFile($file->hashname, PolicyFile::FILE_PATH . '/' . $file->policy_id);
+        Files::deleteFile($file->hashname, PolicyFile::FILE_PATH.'/'.$file->policy_id);
 
         PolicyFile::destroy($id);
 
@@ -66,12 +63,13 @@ class PolicyFileController extends Controller
         if (request()->type == 'only-file') {
 
             $file = Policy::withTrashed()->whereRaw('md5(id) = ?', $id)->firstOrFail();
-            return download_local_s3($file, Policy::FILE_PATH . '/' . $file->filename);
+
+            return download_local_s3($file, Policy::FILE_PATH.'/'.$file->filename);
         }
 
         $file = PolicyFile::whereRaw('md5(id) = ?', $id)->firstOrFail();
-        return download_local_s3($file, 'policy-files/' . $file->policy_id . '/' . $file->hashname);
+
+        return download_local_s3($file, 'policy-files/'.$file->policy_id.'/'.$file->hashname);
 
     }
-
 }

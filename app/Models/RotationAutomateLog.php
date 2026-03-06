@@ -9,5 +9,4 @@ class RotationAutomateLog extends BaseModel
     use HasCompany;
 
     protected $table = 'rotation_automate_log';
-
 }

@@ -58,6 +58,7 @@ use Illuminate\Notifications\Notifiable;
  * @property-read \App\Models\LeadStatus|null $leadStatus
  * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
  * @property-read int|null $notifications_count
+ *
  * @method static \Database\Factories\LeadFactory factory(...$parameters)
  * @method static \Illuminate\Database\Eloquent\Builder|Lead newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Lead newQuery()
@@ -90,24 +91,29 @@ use Illuminate\Notifications\Notifiable;
  * @method static \Illuminate\Database\Eloquent\Builder|Lead whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Lead whereValue($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Lead whereWebsite($value)
+ *
  * @property string|null $hash
  * @property-read \App\Models\LeadCategory|null $category
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Lead whereHash($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Lead whereCompanyId($value)
+ *
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Product> $products
  * @property-read int|null $products_count
  * @property-read int|null $follow_up_date_next
  * @property-read int|null $follow_up_date_past
+ *
  * @mixin \Eloquent
  */
 class Lead extends BaseModel
 {
-
-    use Notifiable, HasFactory;
     use CustomFieldsTrait;
     use HasCompany;
+    use HasFactory, Notifiable;
 
     const CUSTOM_FIELD_MODEL = 'App\Models\Lead';
 
@@ -119,22 +125,22 @@ class Lead extends BaseModel
 
     public function getImageUrlAttribute()
     {
-        $gravatarHash = !is_null($this->email) ? md5(strtolower(trim($this->email))) : '';
+        $gravatarHash = ! is_null($this->email) ? md5(strtolower(trim($this->email))) : '';
 
-        return 'https://www.gravatar.com/avatar/' . $gravatarHash . '.png?s=200&d=mp';
+        return 'https://www.gravatar.com/avatar/'.$gravatarHash.'.png?s=200&d=mp';
     }
 
     public function clientNameSalutation(): Attribute
     {
         return Attribute::make(
-            get: fn($value) => ($this->salutation ? $this->salutation->label() . ' ' : '') . $this->client_name
+            get: fn ($value) => ($this->salutation ? $this->salutation->label().' ' : '').$this->client_name
         );
     }
 
     /**
      * Route notifications for the mail channel.
      *
-     * @param \Illuminate\Notifications\Notification $notification
+     * @param  \Illuminate\Notifications\Notification  $notification
      * @return string
      */
     // phpcs:ignore
@@ -197,7 +203,7 @@ class Lead extends BaseModel
         if ($viewLeadPermission == 'both') {
             $leadsQuery = $leadsQuery->where(function ($query) {
                 $query->where('lead_owner', user()->id)
-                      ->orWhere('added_by', user()->id);
+                    ->orWhere('added_by', user()->id);
             });
         }
 
@@ -209,5 +215,4 @@ class Lead extends BaseModel
         // Retrieve leads
         return $leadsQuery->get();
     }
-
 }

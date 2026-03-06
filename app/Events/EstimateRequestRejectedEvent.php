@@ -20,5 +20,4 @@ class EstimateRequestRejectedEvent
     {
         $this->estimateRequest = $estimateRequest;
     }
-
 }

@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $status
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|TicketCustomForm newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TicketCustomForm newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TicketCustomForm query()
@@ -28,20 +29,24 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|TicketCustomForm whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TicketCustomForm whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TicketCustomForm whereUpdatedAt($value)
+ *
  * @property int $required
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|TicketCustomForm whereRequired($value)
+ *
  * @property int|null $company_id
  * @property int|null $custom_fields_id
  * @property-read \App\Models\Company|null $company
  * @property-read \App\Models\CustomField|null $customField
  * @property-read mixed $extras
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|TicketCustomForm whereCompanyId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TicketCustomForm whereCustomFieldsId($value)
+ *
  * @mixin \Eloquent
  */
 class TicketCustomForm extends BaseModel
 {
-
     use CustomFieldsTrait;
     use HasCompany;
 
@@ -51,5 +56,4 @@ class TicketCustomForm extends BaseModel
     {
         return $this->belongsTo(CustomField::class, 'custom_fields_id');
     }
-
 }

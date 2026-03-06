@@ -2,8 +2,8 @@
 
 namespace App\Models\SuperAdmin;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\BaseModel;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * App\Models\PackageSetting
@@ -17,6 +17,7 @@ use App\Models\BaseModel;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read mixed $all_packages
+ *
  * @method static Builder|PackageSetting newModelQuery()
  * @method static Builder|PackageSetting newQuery()
  * @method static Builder|PackageSetting query()
@@ -28,11 +29,11 @@ use App\Models\BaseModel;
  * @method static Builder|PackageSetting whereStatus($value)
  * @method static Builder|PackageSetting whereTrialMessage($value)
  * @method static Builder|PackageSetting whereUpdatedAt($value)
+ *
  * @mixin Eloquent
  */
 class PackageSetting extends BaseModel
 {
-
     use HasFactory;
 
     protected $appends = ['all_packages'];
@@ -41,5 +42,4 @@ class PackageSetting extends BaseModel
     {
         return count(json_decode($this->modules, true)) >= 20;
     }
-
 }

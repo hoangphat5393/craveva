@@ -11,7 +11,6 @@ use Modules\QRCode\Enums\Type;
 
 class QrCodeData extends BaseModel
 {
-
     use HasCompany, HasFactory;
 
     const LOGO_PATH = 'qrcode-logo';
@@ -42,12 +41,11 @@ class QrCodeData extends BaseModel
         return Attribute::make(
             get: function () {
                 if ($this->logo) {
-                    return str($this->logo)->contains('http') ? $this->logo : asset_url_local_s3(self::LOGO_PATH . '/' . $this->logo);
+                    return str($this->logo)->contains('http') ? $this->logo : asset_url_local_s3(self::LOGO_PATH.'/'.$this->logo);
                 }
 
                 return null;
             },
         );
     }
-
 }

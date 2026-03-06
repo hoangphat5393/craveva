@@ -19,9 +19,8 @@ use Webklex\PHPIMAP\Message;
 
 class FetchTicketEmails extends Command
 {
-
-
     protected $company;
+
     /**
      * The name and signature of the console command.
      *
@@ -44,7 +43,6 @@ class FetchTicketEmails extends Command
     public function handle()
     {
 
-
         $smtpSetting = SmtpSetting::first();
 
         Company::active()
@@ -57,7 +55,7 @@ class FetchTicketEmails extends Command
 
                     $this->company = $company;
 
-                    if (!in_array(config('app.env'), ['demo', 'development'])) {
+                    if (! in_array(config('app.env'), ['demo', 'development'])) {
 
                         $driver = ($smtpSetting->mail_driver != 'mail') ? $smtpSetting->mail_driver : 'sendmail';
 
@@ -100,7 +98,7 @@ class FetchTicketEmails extends Command
                             'text' => $message->getHTMLBody() != '' ? $message->getHTMLBody() : $message->getRawBody(),
                             'imap_message_id' => $message->getMessageId(),
                             'imap_message_uid' => $message->getUid(),
-                            'imap_in_reply_to' => !is_null($message->getInReplyTo()) ? str_replace(array('<', '>'), '', $message->getInReplyTo()) : null,
+                            'imap_in_reply_to' => ! is_null($message->getInReplyTo()) ? str_replace(['<', '>'], '', $message->getInReplyTo()) : null,
                         ];
 
                         $checkTicket = TicketReply::with(['ticket' => function ($q) use ($company) {
@@ -109,7 +107,7 @@ class FetchTicketEmails extends Command
                             ->withTrashed()
                             ->first();
 
-                        if (is_null($checkTicket) && !is_null($data['imap_in_reply_to'])) {
+                        if (is_null($checkTicket) && ! is_null($data['imap_in_reply_to'])) {
                             $checkReplyTo = TicketReply::with(['ticket' => function ($q) use ($company) {
                                 $q->where('company_id', $company->id);
                             }])->where('imap_message_id', $data['imap_in_reply_to'])->withTrashed()->first();
@@ -118,8 +116,7 @@ class FetchTicketEmails extends Command
                         if (is_null($checkTicket)) {
                             if (isset($checkReplyTo)) {
                                 $this->createTicketReply($checkReplyTo->ticket, $data, $company->id);
-                            }
-                            else {
+                            } else {
                                 $this->createTicket($data, $company->id);
                             }
                         }
@@ -138,9 +135,9 @@ class FetchTicketEmails extends Command
         $existing_user = User::withoutGlobalScope(ActiveScope::class)->select('id', 'email')->where('company_id', $companyId)->where('email', $data['email'])->first();
         $newUser = $existing_user;
 
-        if (!$existing_user) {
+        if (! $existing_user) {
             // create new user
-            $client = new User();
+            $client = new User;
             $client->company_id = $companyId;
             $client->name = $data['name'];
             $client->email = $data['email'];
@@ -150,7 +147,7 @@ class FetchTicketEmails extends Command
             $role = Role::where('company_id', $companyId)->where('name', 'client')->select('id')->first();
             $client->attachRole($role->id);
 
-            $clientDetail = new ClientDetails();
+            $clientDetail = new ClientDetails;
             $clientDetail->company_id = $companyId;
             $clientDetail->user_id = $client->id;
             $clientDetail->save();
@@ -161,7 +158,7 @@ class FetchTicketEmails extends Command
         }
 
         // Create New Ticket
-        $ticket = new Ticket();
+        $ticket = new Ticket;
         $ticket->company_id = $companyId;
         $ticket->subject = $data['subject'];
         $ticket->status = 'open';
@@ -170,7 +167,7 @@ class FetchTicketEmails extends Command
         $ticket->save();
 
         // Save first message
-        $reply = new TicketReply();
+        $reply = new TicketReply;
         $reply->message = $data['text'];
         $reply->ticket_id = $ticket->id;
         $reply->user_id = $newUser->id; // Current logged in user
@@ -188,9 +185,9 @@ class FetchTicketEmails extends Command
         $existing_user = User::withoutGlobalScope(ActiveScope::class)->select('id', 'email')->where('company_id', $companyId)->where('email', $data['email'])->first();
         $newUser = $existing_user;
 
-        if (!$existing_user) {
+        if (! $existing_user) {
             // create new user
-            $client = new User();
+            $client = new User;
             $client->company_id = $companyId;
             $client->name = $data['name'];
             $client->email = $data['email'];
@@ -200,7 +197,7 @@ class FetchTicketEmails extends Command
             $role = Role::where('name', 'client')->select('id')->first();
             $client->attachRole($role->id);
 
-            $clientDetail = new ClientDetails();
+            $clientDetail = new ClientDetails;
             $clientDetail->company_id = $companyId;
             $clientDetail->user_id = $client->id;
             $clientDetail->save();
@@ -210,7 +207,7 @@ class FetchTicketEmails extends Command
             $newUser = $client;
         }
 
-        $reply = new TicketReply();
+        $reply = new TicketReply;
         $reply->message = $data['text'];
         $reply->ticket_id = $ticket->id;
         $reply->user_id = $newUser->id; // Current logged in user
@@ -227,27 +224,23 @@ class FetchTicketEmails extends Command
         $ticketReply->ticket->touch();
         $ticketEmailSetting = $this->company;
 
-        if (!is_null($ticketReply->ticket->agent) && $ticketReply->user_id != $ticketReply->ticket->agent_id) {
+        if (! is_null($ticketReply->ticket->agent) && $ticketReply->user_id != $ticketReply->ticket->agent_id) {
             event(new TicketReplyEvent($ticketReply, $ticketReply->ticket->agent));
-        }
-        else if (is_null($ticketReply->ticket->agent)) {
+        } elseif (is_null($ticketReply->ticket->agent)) {
             event(new TicketReplyEvent($ticketReply, null));
-        }
-        else {
+        } else {
             event(new TicketReplyEvent($ticketReply, $ticketReply->ticket->client));
         }
 
-        if (!is_null($ticketReply->ticket->agent_id)) {
+        if (! is_null($ticketReply->ticket->agent_id)) {
             if ($ticketReply->ticket->agent_id == $ticketReply->user_id) {
                 $toEmail = $ticketReply->ticket->client->email;
 
-            }
-            else {
+            } else {
                 $toEmail = $ticketReply->ticket->agent->email;
             }
 
             event(new MailTicketReplyEvent($ticketReply, $ticketEmailSetting));
         }
     }
-
 }

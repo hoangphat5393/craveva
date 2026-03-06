@@ -7,7 +7,6 @@ use Modules\Letter\Entities\LetterSetting;
 
 return new class extends Migration
 {
-
     public function up()
     {
 
@@ -29,5 +28,4 @@ return new class extends Migration
         }
 
     }
-
 };

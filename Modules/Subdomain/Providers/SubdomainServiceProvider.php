@@ -15,11 +15,9 @@ use Modules\Subdomain\Listeners\ForgotCompanyListener;
 
 class SubdomainServiceProvider extends ServiceProvider
 {
-
     /**
      * Boot the application events.
      *
-     * @param Router $router
      * @return void
      */
     public function boot(Router $router)
@@ -43,7 +41,7 @@ class SubdomainServiceProvider extends ServiceProvider
 
             $setting = SubdomainSetting::first();
 
-            $value = explode('.' . getDomain(), $value)[0];
+            $value = explode('.'.getDomain(), $value)[0];
             $main = config('app.main_application_subdomain');
 
             if ($main == $value.'.'.getDomain()) {
@@ -54,11 +52,9 @@ class SubdomainServiceProvider extends ServiceProvider
                 return true;
             }
 
-
             $value = strtolower($value);
 
             return $this->isSubdomainAllowed($value, $setting);
-
 
         }, __('subdomain::app.messages.notAllowedToUseThisSubdomain'));
 
@@ -76,8 +72,7 @@ class SubdomainServiceProvider extends ServiceProvider
         // Check each pattern
         foreach ($bannedSubdomains as $pattern) {
             // Convert SQL wildcards to regex
-            $regexPattern = '/^' . str_replace(['%', '_'], ['.*', '.'], preg_quote($pattern, '/')) . '$/';
-
+            $regexPattern = '/^'.str_replace(['%', '_'], ['.*', '.'], preg_quote($pattern, '/')).'$/';
 
             if (preg_match($regexPattern, $subdomain)) {
                 return false; // Return false if any pattern matches
@@ -111,7 +106,6 @@ class SubdomainServiceProvider extends ServiceProvider
             module_path('Subdomain', 'Config/config.php'), 'subdomain'
         );
 
-
         $this->mergeConfigFrom(
             module_path('subdomain', 'Config/xss_ignore.php'),
             'subdomain::xss_ignore'
@@ -130,11 +124,11 @@ class SubdomainServiceProvider extends ServiceProvider
         $sourcePath = module_path('Subdomain', 'Resources/views');
 
         $this->publishes([
-            $sourcePath => $viewPath
+            $sourcePath => $viewPath,
         ], 'views');
 
         $this->loadViewsFrom(array_merge(array_map(function ($path) {
-            return $path . '/modules/subdomain';
+            return $path.'/modules/subdomain';
         }, \Config::get('view.paths')), [$sourcePath]), 'subdomain');
     }
 
@@ -149,8 +143,7 @@ class SubdomainServiceProvider extends ServiceProvider
 
         if (is_dir($langPath)) {
             $this->loadTranslationsFrom($langPath, 'subdomain');
-        }
-        else {
+        } else {
             $this->loadTranslationsFrom(module_path('Subdomain', 'Resources/lang'), 'subdomain');
         }
     }
@@ -173,5 +166,4 @@ class SubdomainServiceProvider extends ServiceProvider
             ]
         );
     }
-
 }

@@ -17,7 +17,7 @@ class OvertimeRequest extends BaseModel
         'end_date' => 'datetime',
         'created_at' => 'datetime',
         'allow_roles' => 'array',
-        'date' => 'datetime'
+        'date' => 'datetime',
     ];
 
     protected $guarded = ['id'];
@@ -41,5 +41,4 @@ class OvertimeRequest extends BaseModel
     {
         return $this->belongsTo(Company::class, 'company_id');
     }
-
 }

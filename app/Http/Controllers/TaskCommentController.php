@@ -3,30 +3,30 @@
 namespace App\Http\Controllers;
 
 use App\Helper\Reply;
+use App\Helper\UserService;
 use App\Http\Requests\Tasks\StoreTaskComment;
-use App\Models\TaskCommentEmoji;
+use App\Models\ClientContact;
 use App\Models\Task;
 use App\Models\TaskComment;
+use App\Models\TaskCommentEmoji;
 use Illuminate\Http\Request;
-use App\Helper\UserService;
-use App\Models\ClientContact;
 
 class TaskCommentController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'app.menu.tasks';
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('tasks', $this->user->modules));
+            abort_403(! in_array('tasks', $this->user->modules));
+
             return $next($request);
         });
     }
 
     /**
-     * @param StoreTaskComment $request
      * @return mixed
+     *
      * @throws \Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException
      */
     public function store(StoreTaskComment $request)
@@ -37,13 +37,13 @@ class TaskCommentController extends AccountBaseController
         $taskUsers = $task->users->pluck('id')->toArray();
         $userId = UserService::getUserId();
 
-        abort_403(!(
+        abort_403(! (
             $this->addPermission == 'all'
             || ($this->addPermission == 'added' && ($task->added_by == user()->id || $task->added_by == $userId))
             || ($this->addPermission == 'owned' && in_array(user()->id, $taskUsers))
             || ($this->addPermission == 'added' && (in_array(user()->id, $taskUsers) || $task->added_by == user()->id || $task->added_by == $userId))
         ));
-        $comment = new TaskComment();
+        $comment = new TaskComment;
         $comment->comment = $request->comment;
         $comment->task_id = $request->taskId;
         $comment->user_id = $userId;
@@ -60,7 +60,7 @@ class TaskCommentController extends AccountBaseController
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
@@ -70,7 +70,7 @@ class TaskCommentController extends AccountBaseController
         $this->userId = UserService::getUserId();
         $this->clientIds = ClientContact::where('user_id', $this->userId)->pluck('client_id')->toArray();
 
-        abort_403(!($this->deletePermission == 'all' || ($this->deletePermission == 'added') && ($comment->added_by == user()->id || $comment->added_by == $this->userId || in_array($comment->added_by, $this->clientIds))));
+        abort_403(! ($this->deletePermission == 'all' || ($this->deletePermission == 'added') && ($comment->added_by == user()->id || $comment->added_by == $this->userId || in_array($comment->added_by, $this->clientIds))));
 
         $comment_task_id = $comment->task_id;
         $comment->delete();
@@ -106,7 +106,7 @@ class TaskCommentController extends AccountBaseController
 
         $this->editPermission = user()->permission('edit_task_comments');
 
-        abort_403(!($this->editPermission == 'all' || ($this->editPermission == 'added' && ($this->comment->added_by == user()->id || $this->comment->added_by == $userId || in_array($this->comment->added_by, $this->clientIds)))));
+        abort_403(! ($this->editPermission == 'all' || ($this->editPermission == 'added' && ($this->comment->added_by == user()->id || $this->comment->added_by == $userId || in_array($this->comment->added_by, $this->clientIds)))));
 
         return view('tasks.comments.edit', $this->data);
 
@@ -118,7 +118,7 @@ class TaskCommentController extends AccountBaseController
         $this->editPermission = user()->permission('edit_task_comments');
         $this->userId = UserService::getUserId();
         $this->clientIds = ClientContact::where('user_id', $this->userId)->pluck('client_id')->toArray();
-        abort_403(!($this->editPermission == 'all' || ($this->editPermission == 'added' && ($comment->added_by == user()->id || $comment->added_by == $this->userId || in_array($comment->added_by, $this->clientIds)))));
+        abort_403(! ($this->editPermission == 'all' || ($this->editPermission == 'added' && ($comment->added_by == user()->id || $comment->added_by == $this->userId || in_array($comment->added_by, $this->clientIds)))));
 
         $comment->comment = $request->comment;
         $comment->save();
@@ -134,13 +134,11 @@ class TaskCommentController extends AccountBaseController
     {
         $currentEmoji = TaskCommentEmoji::where('comment_id', $request->commentId)->where('user_id', user()->id)->first();
 
-        if(!is_null($currentEmoji)){
-            if($currentEmoji->emoji_name != $request->emojiName)
-            {
+        if (! is_null($currentEmoji)) {
+            if ($currentEmoji->emoji_name != $request->emojiName) {
                 $currentEmoji->delete();
                 $this->emoji($request);
-            }
-            else {
+            } else {
                 $currentEmoji->delete();
             }
         } else {
@@ -152,11 +150,10 @@ class TaskCommentController extends AccountBaseController
         $likeUsers = $this->comment->likeUsers->pluck('name')->toArray();
         $likeUserList = '';
 
-        if($likeUsers)
-        {
-            if(in_array(user()->name, $likeUsers)){
+        if ($likeUsers) {
+            if (in_array(user()->name, $likeUsers)) {
                 $key = array_search(user()->name, $likeUsers);
-                array_splice( $likeUsers, 0, 0, __('modules.tasks.you') );
+                array_splice($likeUsers, 0, 0, __('modules.tasks.you'));
                 unset($likeUsers[$key + 1]);
             }
 
@@ -167,11 +164,10 @@ class TaskCommentController extends AccountBaseController
         $dislikeUsers = $this->comment->dislikeUsers->pluck('name')->toArray();
         $dislikeUserList = '';
 
-        if($dislikeUsers)
-        {
-            if(in_array(user()->name, $dislikeUsers)){
-                $key = array_search (user()->name, $dislikeUsers);
-                array_splice( $dislikeUsers, 0, 0, __('modules.tasks.you') );
+        if ($dislikeUsers) {
+            if (in_array(user()->name, $dislikeUsers)) {
+                $key = array_search(user()->name, $dislikeUsers);
+                array_splice($dislikeUsers, 0, 0, __('modules.tasks.you'));
                 unset($dislikeUsers[$key + 1]);
             }
 
@@ -181,16 +177,16 @@ class TaskCommentController extends AccountBaseController
         }
 
         $view = view('tasks.comments.comment-emoji', $this->data)->render();
+
         return Reply::dataOnly(['status' => 'success', 'view' => $view]);
     }
 
     public function emoji($request)
     {
-        $newEmoji = new TaskCommentEmoji();
+        $newEmoji = new TaskCommentEmoji;
         $newEmoji->user_id = user()->id;
         $newEmoji->comment_id = $request->commentId;
         $newEmoji->emoji_name = $request->emojiName;
         $newEmoji->save();
     }
-
 }

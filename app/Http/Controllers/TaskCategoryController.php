@@ -9,22 +9,22 @@ use App\Models\TaskCategory;
 
 class TaskCategoryController extends AccountBaseController
 {
-
     public function create()
     {
         $this->addPermission = user()->permission('add_task_category');
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
 
         $this->categories = TaskCategory::allCategories();
+
         return view('tasks.create_category', $this->data);
     }
 
     public function store(StoreTaskCategory $request)
     {
         $this->addPermission = user()->permission('add_task_category');
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
 
-        $category = new TaskCategory();
+        $category = new TaskCategory;
         $category->category_name = $request->category_name;
         $category->save();
 
@@ -55,5 +55,4 @@ class TaskCategoryController extends AccountBaseController
 
         return Reply::successWithData(__('messages.deleteSuccess'), ['data' => $options]);
     }
-
 }

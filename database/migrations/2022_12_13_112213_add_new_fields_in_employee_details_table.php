@@ -2,18 +2,17 @@
 
 use App\Models\Company;
 use App\Models\DashboardWidget;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      *
      * @return void
      */
-
     public function up()
     {
         Schema::table('employee_details', function (Blueprint $table) {
@@ -31,32 +30,31 @@ return new class extends Migration {
 
         $companies = Company::select('id')->get();
 
-
         foreach ($companies as $company) {
             $widget = [
                 [
                     'widget_name' => 'notice_period_duration',
                     'status' => 1,
                     'company_id' => $company->id,
-                    'dashboard_type' => 'private-dashboard'
+                    'dashboard_type' => 'private-dashboard',
                 ],
                 [
                     'widget_name' => 'probation_date',
                     'status' => 1,
                     'company_id' => $company->id,
-                    'dashboard_type' => 'private-dashboard'
+                    'dashboard_type' => 'private-dashboard',
                 ], [
                     'widget_name' => 'contract_date',
                     'status' => 1,
                     'company_id' => $company->id,
-                    'dashboard_type' => 'private-dashboard'
+                    'dashboard_type' => 'private-dashboard',
                 ],
                 [
                     'widget_name' => 'internship_date',
                     'status' => 1,
                     'company_id' => $company->id,
-                    'dashboard_type' => 'private-dashboard'
-                ]
+                    'dashboard_type' => 'private-dashboard',
+                ],
             ];
 
             DashboardWidget::insert($widget);
@@ -102,5 +100,4 @@ return new class extends Migration {
             $table->dropColumn('unique_id');
         });
     }
-
 };

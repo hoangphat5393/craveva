@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property int $collapsed
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|UserTaskboardSetting newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|UserTaskboardSetting newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|UserTaskboardSetting query()
@@ -23,16 +24,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @method static \Illuminate\Database\Eloquent\Builder|UserTaskboardSetting whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UserTaskboardSetting whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UserTaskboardSetting whereUserId($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|UserTaskboardSetting whereCompanyId($value)
+ *
  * @mixin \Eloquent
  */
 class UserTaskboardSetting extends BaseModel
 {
-
-    use HasFactory, HasCompany;
+    use HasCompany, HasFactory;
 
     protected $guarded = ['id'];
-
 }

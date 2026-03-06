@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\ProposalTemplateItemImage|null $proposalTemplateItemImage
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ProposalTemplateItem newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ProposalTemplateItem newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ProposalTemplateItem query()
@@ -38,16 +39,18 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @method static \Illuminate\Database\Eloquent\Builder|ProposalTemplateItem whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProposalTemplateItem whereUnitPrice($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProposalTemplateItem whereUpdatedAt($value)
+ *
  * @property int|null $product_id
  * @property int|null $unit_id
  * @property-read \App\Models\UnitType|null $unit
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ProposalTemplateItem whereProductId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProposalTemplateItem whereUnitId($value)
+ *
  * @mixin \Eloquent
  */
 class ProposalTemplateItem extends BaseModel
 {
-
     protected $guarded = ['id'];
 
     protected $with = ['proposalTemplateItemImage'];
@@ -66,5 +69,4 @@ class ProposalTemplateItem extends BaseModel
     {
         return $this->belongsTo(UnitType::class, 'unit_id');
     }
-    
 }

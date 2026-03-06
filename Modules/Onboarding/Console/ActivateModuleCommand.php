@@ -5,11 +5,9 @@ namespace Modules\Onboarding\Console;
 use App\Models\Company;
 use Illuminate\Console\Command;
 use Modules\Onboarding\Entities\OnboardingSetting;
-use Modules\Purchase\Entities\PurchaseSetting;
 
 class ActivateModuleCommand extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
@@ -37,5 +35,4 @@ class ActivateModuleCommand extends Command
             OnboardingSetting::addModuleSetting($company);
         }
     }
-
 }

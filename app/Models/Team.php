@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\EmployeeDetails[] $teamMembers
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Team[] $childs
  * @property-read int|null $team_members_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Team newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Team newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Team query()
@@ -28,18 +29,20 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder|Team whereLastUpdatedBy($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Team whereTeamName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Team whereUpdatedAt($value)
+ *
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\EmployeeTeam[] $members
  * @property int|null $company_id
  * @property int|null $parent_id
  * @property-read int|null $childs_count
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Team whereCompanyId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Team whereParentId($value)
+ *
  * @mixin \Eloquent
  */
 class Team extends BaseModel
 {
-
     use HasCompany;
 
     protected $fillable = ['team_name'];
@@ -67,5 +70,4 @@ class Team extends BaseModel
     {
         return $this->hasMany(Team::class, 'parent_id');
     }
-
 }

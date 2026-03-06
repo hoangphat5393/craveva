@@ -2,22 +2,13 @@
 
 namespace Modules\Recruit\Http\Controllers;
 
-use Carbon\Carbon;
 use App\Helper\Reply;
-use Illuminate\Http\Request;
-use App\Models\CompanyAddress;
-use Illuminate\Support\Str;
-use Modules\Recruit\Entities\RecruitJob;
-use Modules\Recruit\Entities\RecruitSetting;
 use App\Http\Controllers\AccountBaseController;
+use App\Models\CompanyAddress;
 use App\Models\User;
-use Modules\Zoom\Entities\ZoomMeeting;
-use Modules\Zoom\Entities\ZoomSetting;
-use Zoom;
-use Modules\Recruit\Traits\ZoomSettings;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Modules\Recruit\Entities\RecruitJobApplication;
-use Modules\Recruit\Entities\RecruitJobboardSetting;
 use Modules\Recruit\Entities\RecruitApplicationSkill;
 use Modules\Recruit\Entities\RecruitApplicationStatus;
 use Modules\Recruit\Entities\RecruitApplicationStatusCategory;
@@ -25,7 +16,11 @@ use Modules\Recruit\Entities\RecruitInterviewComments;
 use Modules\Recruit\Entities\RecruitInterviewEmployees;
 use Modules\Recruit\Entities\RecruitInterviewSchedule;
 use Modules\Recruit\Entities\RecruitInterviewStage;
+use Modules\Recruit\Entities\RecruitJob;
+use Modules\Recruit\Entities\RecruitJobApplication;
+use Modules\Recruit\Entities\RecruitJobboardSetting;
 use Modules\Recruit\Entities\RecruitJobOfferLetter;
+use Modules\Recruit\Entities\RecruitSetting;
 use Modules\Recruit\Events\CandidateInterviewScheduleEvent;
 use Modules\Recruit\Events\HostInterviewEvent;
 use Modules\Recruit\Events\InterviewScheduleEvent;
@@ -35,6 +30,9 @@ use Modules\Recruit\Http\Requests\ApplicationStatus\StoreApplicationStatus;
 use Modules\Recruit\Http\Requests\OfferLetter\StoreJobLetter;
 use Modules\Recruit\Http\Requests\StoreRemark;
 use Modules\Recruit\Http\Requests\ZoomMeeting\StoreInterview;
+use Modules\Recruit\Traits\ZoomSettings;
+use Modules\Zoom\Entities\ZoomMeeting;
+use Zoom;
 
 class JobApplicationBoardController extends AccountBaseController
 {
@@ -45,7 +43,7 @@ class JobApplicationBoardController extends AccountBaseController
         parent::__construct();
         $this->pageTitle = __('recruit::app.menu.jobApplication');
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array(RecruitSetting::MODULE_NAME, $this->user->modules));
+            abort_403(! in_array(RecruitSetting::MODULE_NAME, $this->user->modules));
 
             return $next($request);
         });
@@ -56,7 +54,7 @@ class JobApplicationBoardController extends AccountBaseController
     {
 
         $viewPermission = user()->permission('view_job_application');
-        abort_403(!in_array($viewPermission, ['all', 'added', 'owned', 'both']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'owned', 'both']));
 
         $this->startDate = now()->subDays(15)->format($this->company->date_format);
         $this->endDate = now()->addDays(15)->format($this->company->date_format);
@@ -128,8 +126,8 @@ class JobApplicationBoardController extends AccountBaseController
 
                     if ($request->searchText != '') {
                         $q->where(function ($query) {
-                            $query->where('recruit_job_applications.full_name', 'like', '%' . request('searchText') . '%')
-                                ->orWhere('recruit_jobs.title', 'like', '%' . request('searchText') . '%');
+                            $query->where('recruit_job_applications.full_name', 'like', '%'.request('searchText').'%')
+                                ->orWhere('recruit_jobs.title', 'like', '%'.request('searchText').'%');
                         });
                     }
                 }])
@@ -187,8 +185,8 @@ class JobApplicationBoardController extends AccountBaseController
 
                     if ($request->searchText != '') {
                         $q->where(function ($query) {
-                            $query->where('recruit_job_applications.full_name', 'like', '%' . request('searchText') . '%')
-                                ->orWhere('recruit_jobs.title', 'like', '%' . request('searchText') . '%');
+                            $query->where('recruit_job_applications.full_name', 'like', '%'.request('searchText').'%')
+                                ->orWhere('recruit_jobs.title', 'like', '%'.request('searchText').'%');
                         });
                     }
                 },
@@ -198,10 +196,11 @@ class JobApplicationBoardController extends AccountBaseController
 
             $boardColumns = $boardColumns->get()->map(function ($query) {
                 $query->setRelation('applications', $query->applications->take($this->taskBoardColumnLength));
+
                 return $query;
             });
 
-            $result = array();
+            $result = [];
 
             foreach ($boardColumns as $key => $boardColumn) {
                 $result['boardColumns'][] = $boardColumn;
@@ -256,8 +255,8 @@ class JobApplicationBoardController extends AccountBaseController
 
         if ($request->searchText != '') {
             $tasks = $tasks->where(function ($query) {
-                $query->where('recruit_job_applications.full_name', 'like', '%' . request('searchText') . '%')
-                    ->orWhere('recruit_jobs.title', 'like', '%' . request('searchText') . '%');
+                $query->where('recruit_job_applications.full_name', 'like', '%'.request('searchText').'%')
+                    ->orWhere('recruit_jobs.title', 'like', '%'.request('searchText').'%');
             });
         }
 
@@ -269,8 +268,7 @@ class JobApplicationBoardController extends AccountBaseController
 
         if ($totalTasks <= ($skip + $this->taskBoardColumnLength)) {
             $loadStatus = 'hide';
-        }
-        else {
+        } else {
             $loadStatus = 'show';
         }
 
@@ -290,11 +288,9 @@ class JobApplicationBoardController extends AccountBaseController
         $this->firstStatus = $this->statuses->filter(function ($stat) use ($firstPosition) {
             if ($stat->position == 0) {
                 return $stat->position == 0;
-            }
-            elseif ($stat->position == 1) {
+            } elseif ($stat->position == 1) {
                 return $stat->position == 1;
-            }
-            else {
+            } else {
                 return $stat->position == $firstPosition->position;
             }
         })->first();
@@ -314,7 +310,6 @@ class JobApplicationBoardController extends AccountBaseController
             return $stat->position !== $status->position && $stat->position !== $status->position - 1;
         });
 
-
         $statuses = $statuses->filter(function ($stat) use ($status) {
             return $stat->position !== $status->position;
         });
@@ -322,8 +317,7 @@ class JobApplicationBoardController extends AccountBaseController
         $firstStatus = $allStatuses->filter(function ($stat) {
             if ($stat->position === 0) {
                 return $stat->position === 0;
-            }
-            else {
+            } else {
                 return $stat->position === 1;
             }
         })->first();
@@ -346,8 +340,7 @@ class JobApplicationBoardController extends AccountBaseController
                 }
 
                 $status->position = 1;
-            }
-            else {
+            } else {
                 if ($status->position - $request->position > 1) {
                     $statuses = RecruitApplicationStatus::select('id', 'position')->where('position', '>', $request->position)->where('position', '<=', $status->position)->get();
 
@@ -398,11 +391,11 @@ class JobApplicationBoardController extends AccountBaseController
 
     public function addSkill(Request $request)
     {
-        if (!empty($request->skill_id)) {
+        if (! empty($request->skill_id)) {
             RecruitApplicationSkill::where('recruit_job_application_id', $request->application_id)->delete();
 
             foreach ($request->skill_id as $tag) {
-                $jobSkill = new RecruitApplicationSkill();
+                $jobSkill = new RecruitApplicationSkill;
                 $jobSkill->recruit_job_application_id = $request->application_id;
                 $jobSkill->recruit_skill_id = $tag;
                 $jobSkill->save();
@@ -433,7 +426,7 @@ class JobApplicationBoardController extends AccountBaseController
             $status->save();
         }
 
-        $status = new RecruitApplicationStatus();
+        $status = new RecruitApplicationStatus;
         $status->recruit_application_status_category_id = $request->category_id;
         $status->status = $request->status;
         $status->slug = str_slug($request->status, '_');
@@ -462,7 +455,7 @@ class JobApplicationBoardController extends AccountBaseController
 
         if ($request->has('applicationIds')) {
             foreach ($applicationIds as $key => $taskId) {
-                if (!is_null($taskId)) {
+                if (! is_null($taskId)) {
                     $task = RecruitJobApplication::findOrFail($taskId);
                     $task->column_priority = $priorities[$key];
                     $task->recruit_application_status_id = $boardColumnId;
@@ -504,7 +497,7 @@ class JobApplicationBoardController extends AccountBaseController
     public function destroy($id)
     {
         $this->deletePermission = user()->permission('delete_application_status');
-        abort_403(!($this->deletePermission == 'all'));
+        abort_403(! ($this->deletePermission == 'all'));
         $status = RecruitApplicationStatus::findOrFail($id);
         $statuses = RecruitApplicationStatus::select('id', 'position')->where('position', '>', $status->position)->get();
 
@@ -532,7 +525,6 @@ class JobApplicationBoardController extends AccountBaseController
         $recruitSetting->mail_setting = $mail;
         $recruitSetting->save();
 
-
         return Reply::successWithData(__('recruit::modules.message.deleteSuccess'), ['redirectUrl' => route('job-applications.index')]);
     }
 
@@ -551,13 +543,13 @@ class JobApplicationBoardController extends AccountBaseController
         $remark->remark = $request->remark;
         $remark->save();
 
-        return Reply::successWithData(__('recruit::messages.remarkAdded'), ['board' => (int)$request->board]);
+        return Reply::successWithData(__('recruit::messages.remarkAdded'), ['board' => (int) $request->board]);
     }
 
     public function interview($id, $board = null)
     {
         $this->addPermission = user()->permission('add_interview_schedule');
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
 
         $this->applicationID = $id;
         $this->board = $board;
@@ -571,29 +563,28 @@ class JobApplicationBoardController extends AccountBaseController
     public function interviewStore(StoreInterview $request)
     {
         $this->addPermission = user()->permission('add_interview_schedule');
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
 
-        $interview = new RecruitInterviewSchedule();
+        $interview = new RecruitInterviewSchedule;
 
         $date = Carbon::createFromFormat(company()->date_format, $request->start_date)->format('Y-m-d');
-        $start = Carbon::createFromFormat('Y-m-d ' . $this->company->time_format, $date . ' ' . $request->start_time, $this->company->timezone)->setTimezone('UTC');
+        $start = Carbon::createFromFormat('Y-m-d '.$this->company->time_format, $date.' '.$request->start_time, $this->company->timezone)->setTimezone('UTC');
 
         if (isset($request->video_type) && $request->video_type == 'zoom') {
             $this->setZoomConfigs();
 
             $data = $request->all();
-            $meeting = new ZoomMeeting();
+            $meeting = new ZoomMeeting;
             $data['meeting_name'] = $request->meeting_title;
 
-            $end = Carbon::createFromFormat(company()->date_format.' '.company()->time_format, $request->end_date . ' ' . $request->end_time)->setTimezone('UTC');
+            $end = Carbon::createFromFormat(company()->date_format.' '.company()->time_format, $request->end_date.' '.$request->end_time)->setTimezone('UTC');
             $data['start_date_time'] = $start->toDateTimeString();
             $data['end_date_time'] = $end->toDateTimeString();
             $meeting = $meeting->create($data);
             $host = User::findOrFail($request->created_by);
             $user = Zoom::user()->find('me');
             $meetings = $this->createMeeting($user, $meeting, null, $host);
-        }
-        else {
+        } else {
             $meetings = '';
         }
 
@@ -603,7 +594,7 @@ class JobApplicationBoardController extends AccountBaseController
         $interview->interview_type = $request->interview_type;
         $interview->video_type = ($request->has('video_type')) ? $request->video_type : 'other';
         $interview->meeting_id = ($meetings != '') ? $meetings->id : null;
-        $interview->schedule_date = Carbon::createFromFormat('Y-m-d ' . $this->company->time_format, $date . ' ' . $request->start_time, $this->company->timezone)->setTimezone('UTC');
+        $interview->schedule_date = Carbon::createFromFormat('Y-m-d '.$this->company->time_format, $date.' '.$request->start_time, $this->company->timezone)->setTimezone('UTC');
         $interview->phone = $request->phone;
         $interview->other_link = $request->other_link;
         $interview->send_reminder_all = $request->send_reminder_all ? $request->send_reminder_all : '0';
@@ -616,10 +607,10 @@ class JobApplicationBoardController extends AccountBaseController
 
         $employees = $request->employee_id;
 
-        if (!is_null($employees)) {
-            if (!empty($request->employee_id)) {
+        if (! is_null($employees)) {
+            if (! empty($request->employee_id)) {
                 foreach ($employees as $employee) {
-                    $interviewEmployee = new RecruitInterviewEmployees();
+                    $interviewEmployee = new RecruitInterviewEmployees;
                     $interviewEmployee->recruit_interview_schedule_id = $interview->id;
                     $interviewEmployee->user_id = $employee;
                     $interviewEmployee->save();
@@ -643,7 +634,7 @@ class JobApplicationBoardController extends AccountBaseController
                 'interview_schedule_id' => $interview->id,
                 'user_id' => $this->user->id,
                 'comment' => $request->comment ?? null,
-                'candidate_comment' => $request->candidate_comment ?? null
+                'candidate_comment' => $request->candidate_comment ?? null,
             ];
 
             $interview->comments()->create($scheduleComment);
@@ -660,7 +651,7 @@ class JobApplicationBoardController extends AccountBaseController
             event(new HostInterviewEvent($interview));
         }
 
-        return Reply::successWithData(__('recruit::messages.interviewScheduleAdded'), ['board' => (int)$request->board]);
+        return Reply::successWithData(__('recruit::messages.interviewScheduleAdded'), ['board' => (int) $request->board]);
     }
 
     public function createMeeting($user, ZoomMeeting $meeting, $id, $host = null)
@@ -678,7 +669,7 @@ class JobApplicationBoardController extends AccountBaseController
             'settings' => [
                 'host_video' => $meeting->host_video == 1,
                 'participant_video' => $meeting->participant_video == 1,
-            ]
+            ],
         ];
 
         if ($host) {
@@ -695,8 +686,7 @@ class JobApplicationBoardController extends AccountBaseController
             $meeting->password = $savedMeeting->password;
 
             $meeting->save();
-        }
-        else {
+        } else {
             $user->meetings()->find($meeting->meeting_id)->update($commonSettings);
         }
 
@@ -706,7 +696,7 @@ class JobApplicationBoardController extends AccountBaseController
     public function offerLetter($id, $board = null)
     {
         $addPermission = user()->permission('add_offer_letter');
-        abort_403(!in_array($addPermission, ['all', 'added']));
+        abort_403(! in_array($addPermission, ['all', 'added']));
 
         $this->applicationId = $id;
         $this->board = $board;
@@ -722,9 +712,9 @@ class JobApplicationBoardController extends AccountBaseController
     public function offerLetterStore(StoreJobLetter $request)
     {
         $addPermission = user()->permission('add_offer_letter');
-        abort_403(!in_array($addPermission, ['all', 'added']));
+        abort_403(! in_array($addPermission, ['all', 'added']));
 
-        $jobOffer = new RecruitJobOfferLetter();
+        $jobOffer = new RecruitJobOfferLetter;
 
         $jobOffer->recruit_job_application_id = $request->jobApplicant;
         $jobOffer->recruit_job_id = $request->jobId;
@@ -739,8 +729,7 @@ class JobApplicationBoardController extends AccountBaseController
 
         if ($request->sendEmail == 'on' || $request->sendEmail == 'off') {
             $jobOffer->status = 'pending';
-        }
-        else {
+        } else {
             $jobOffer->status = 'draft';
         }
 
@@ -752,7 +741,7 @@ class JobApplicationBoardController extends AccountBaseController
             event(new OfferLetterEvent($jobOffer, 'send'));
         }
 
-        return Reply::successWithData(__('recruit::messages.offerAdded'), ['board' => (int)$request->board]);
+        return Reply::successWithData(__('recruit::messages.offerAdded'), ['board' => (int) $request->board]);
     }
 
     public function rejectedRemark($id, $board = null)
@@ -770,36 +759,30 @@ class JobApplicationBoardController extends AccountBaseController
         $remark->rejection_remark = $request->remark;
         $remark->saveQuietly();
 
-        return Reply::successWithData(__('recruit::messages.remarkAdded'), ['board' => (int)$request->board]);
+        return Reply::successWithData(__('recruit::messages.remarkAdded'), ['board' => (int) $request->board]);
     }
 
     public function fetchStatusModel(Request $request)
     {
         $categories = RecruitApplicationStatusCategory::where('company_id', '=', company()->id)->findOrFail($request->category_id);
 
-
-        if($categories->name == 'applied' || $categories->name == 'others'){
+        if ($categories->name == 'applied' || $categories->name == 'others') {
             $data = '';
-        }
-        else{
+        } else {
             $data = '<div class="form-check"><input class="form-check-input" type="checkbox" name="action" id="action">
                 <label
                     class="form-check-label form_custom_label text-dark-grey pl-2 mr-3 justify-content-start cursor-pointer checkmark-20 pt-1 text-wrap"
                     for="action">';
 
-            if($categories->name == 'shortlist'){
+            if ($categories->name == 'shortlist') {
                 $data .= __('recruit::messages.shortlistLabel');
-            }
-            elseif($categories->name == 'interview'){
+            } elseif ($categories->name == 'interview') {
                 $data .= __('recruit::messages.interviewLabel');
-            }
-            elseif($categories->name == 'hired'){
+            } elseif ($categories->name == 'hired') {
                 $data .= __('recruit::messages.hiredLabel');
-            }
-            elseif($categories->name == 'rejected'){
+            } elseif ($categories->name == 'rejected') {
                 $data .= __('recruit::messages.rejectLabel');
-            }
-            else{
+            } else {
                 $data .= __('recruit::modules.jobApplication.action');
             }
 
@@ -808,5 +791,4 @@ class JobApplicationBoardController extends AccountBaseController
 
         return Reply::dataOnly(['status' => 'success', 'data' => $data]);
     }
-
 }

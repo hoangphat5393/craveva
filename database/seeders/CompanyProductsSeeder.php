@@ -27,4 +27,3 @@ class CompanyProductsSeeder extends Seeder
         config(['app.seeding' => false]);
     }
 }
-

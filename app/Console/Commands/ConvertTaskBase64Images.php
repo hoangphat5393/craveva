@@ -7,8 +7,8 @@ use App\Helper\Files;
 use App\Models\Task;
 use App\Models\TaskComment;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 class ConvertTaskBase64Images extends Command
 {
@@ -114,10 +114,6 @@ class ConvertTaskBase64Images extends Command
 
     /**
      * Process a single task
-     *
-     * @param Task $task
-     * @param bool $dryRun
-     * @return bool
      */
     protected function processTask(Task $task, bool $dryRun): bool
     {
@@ -150,27 +146,28 @@ class ConvertTaskBase64Images extends Command
 
             $this->line("  Found base64 image (type: {$imageType}) in task ID: {$task->id}");
 
-            if (!$dryRun) {
+            if (! $dryRun) {
                 // Decode base64 data
                 $imageData = base64_decode($base64Data, true);
 
                 if ($imageData === false) {
                     $this->warn("  Failed to decode base64 data for task ID: {$task->id}");
+
                     continue;
                 }
 
                 // Generate filename
                 $extension = $imageType === 'jpeg' ? 'jpg' : $imageType;
-                $tempFilename = "temp_image_" . uniqid() . ".{$extension}";
+                $tempFilename = 'temp_image_'.uniqid().".{$extension}";
 
                 // Create temp directory if it doesn't exist
-                $tempDir = public_path(Files::UPLOAD_FOLDER . '/temp');
-                if (!file_exists($tempDir)) {
+                $tempDir = public_path(Files::UPLOAD_FOLDER.'/temp');
+                if (! file_exists($tempDir)) {
                     mkdir($tempDir, 0775, true);
                 }
 
                 // Save to temp file
-                $tempPath = $tempDir . '/' . $tempFilename;
+                $tempPath = $tempDir.'/'.$tempFilename;
                 file_put_contents($tempPath, $imageData);
 
                 // Create UploadedFile instance to match ImageController pattern
@@ -206,7 +203,7 @@ class ConvertTaskBase64Images extends Command
                 // Replace the full img tag's src attribute
                 $newImgTag = preg_replace(
                     '/src=["\']data:image\/\w+;base64,[^"\']+["\']/i',
-                    'src="' . $newUrl . '"',
+                    'src="'.$newUrl.'"',
                     $fullMatch
                 );
 
@@ -215,14 +212,14 @@ class ConvertTaskBase64Images extends Command
 
                 $this->line("  Uploaded image: {$filename}");
             } else {
-                $this->line("  [DRY-RUN] Would upload base64 image");
+                $this->line('  [DRY-RUN] Would upload base64 image');
             }
 
             $updated = true;
         }
 
         // Update task description if changes were made
-        if ($updated && !$dryRun && $modifiedDescription !== $description) {
+        if ($updated && ! $dryRun && $modifiedDescription !== $description) {
             $task->description = $modifiedDescription;
             $task->save();
         }
@@ -232,10 +229,6 @@ class ConvertTaskBase64Images extends Command
 
     /**
      * Process a single task comment
-     *
-     * @param TaskComment $comment
-     * @param bool $dryRun
-     * @return bool
      */
     protected function processTaskComment(TaskComment $comment, bool $dryRun): bool
     {
@@ -270,27 +263,28 @@ class ConvertTaskBase64Images extends Command
 
             $this->line("  Found base64 image (type: {$imageType}) in comment ID: {$comment->id}");
 
-            if (!$dryRun) {
+            if (! $dryRun) {
                 // Decode base64 data
                 $imageData = base64_decode($base64Data, true);
 
                 if ($imageData === false) {
                     $this->warn("  Failed to decode base64 data for comment ID: {$comment->id}");
+
                     continue;
                 }
 
                 // Generate filename
                 $extension = $imageType === 'jpeg' ? 'jpg' : $imageType;
-                $tempFilename = "temp_image_" . uniqid() . ".{$extension}";
+                $tempFilename = 'temp_image_'.uniqid().".{$extension}";
 
                 // Create temp directory if it doesn't exist
-                $tempDir = public_path(Files::UPLOAD_FOLDER . '/temp');
-                if (!file_exists($tempDir)) {
+                $tempDir = public_path(Files::UPLOAD_FOLDER.'/temp');
+                if (! file_exists($tempDir)) {
                     mkdir($tempDir, 0775, true);
                 }
 
                 // Save to temp file
-                $tempPath = $tempDir . '/' . $tempFilename;
+                $tempPath = $tempDir.'/'.$tempFilename;
                 file_put_contents($tempPath, $imageData);
 
                 // Create UploadedFile instance to match ImageController pattern
@@ -326,7 +320,7 @@ class ConvertTaskBase64Images extends Command
                 // Replace the full img tag's src attribute
                 $newImgTag = preg_replace(
                     '/src=["\']data:image\/\w+;base64,[^"\']+["\']/i',
-                    'src="' . $newUrl . '"',
+                    'src="'.$newUrl.'"',
                     $fullMatch
                 );
 
@@ -335,14 +329,14 @@ class ConvertTaskBase64Images extends Command
 
                 $this->line("  Uploaded image: {$filename}");
             } else {
-                $this->line("  [DRY-RUN] Would upload base64 image");
+                $this->line('  [DRY-RUN] Would upload base64 image');
             }
 
             $updated = true;
         }
 
         // Update comment if changes were made
-        if ($updated && !$dryRun && $modifiedComment !== $commentText) {
+        if ($updated && ! $dryRun && $modifiedComment !== $commentText) {
             $comment->comment = $modifiedComment;
             $comment->save();
         }

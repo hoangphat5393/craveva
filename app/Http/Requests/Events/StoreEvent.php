@@ -7,8 +7,8 @@ use App\Traits\CustomFieldsRequestTrait;
 
 class StoreEvent extends CoreRequest
 {
-
     use CustomFieldsRequestTrait;
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -30,14 +30,14 @@ class StoreEvent extends CoreRequest
         $rules = [
             'event_name' => 'required',
             'start_date' => 'required',
-            'end_date' => 'required|date_format:"' . $setting->date_format . '"|after_or_equal:start_date',
+            'end_date' => 'required|date_format:"'.$setting->date_format.'"|after_or_equal:start_date',
             'start_time' => 'required',
             'end_time' => 'required',
             'all_employees' => 'sometimes',
             'user_id.0' => 'required_unless:all_employees,true',
             'where' => 'required',
             'description' => 'required',
-            'event_link' => 'nullable|url'
+            'event_link' => 'nullable|url',
         ];
 
         if ($this->repeat == 'yes') {
@@ -50,6 +50,7 @@ class StoreEvent extends CoreRequest
         }
 
         $rules = $this->customFieldRules($rules);
+
         return $rules;
     }
 
@@ -61,7 +62,7 @@ class StoreEvent extends CoreRequest
 
         return $attributes;
     }
-    
+
     public function messages()
     {
         return [
@@ -71,5 +72,4 @@ class StoreEvent extends CoreRequest
             'repeat_count.required' => __('messages.repeatCyclesValidation'),
         ];
     }
-
 }

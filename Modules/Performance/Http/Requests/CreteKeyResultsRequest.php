@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class CreteKeyResultsRequest extends FormRequest
 {
-
     /**
      * Get the validation rules that apply to the request.
      */
@@ -17,7 +16,7 @@ class CreteKeyResultsRequest extends FormRequest
         return [
             'name' => [
                 'required',
-                'unique:key_results_metrics,name,'.$id.',id,company_id,' . company()->id,
+                'unique:key_results_metrics,name,'.$id.',id,company_id,'.company()->id,
             ],
         ];
     }
@@ -29,5 +28,4 @@ class CreteKeyResultsRequest extends FormRequest
     {
         return true;
     }
-
 }

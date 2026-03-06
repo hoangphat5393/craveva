@@ -1,13 +1,12 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 use Modules\CyberSecurity\Entities\CyberSecurity;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      *
@@ -15,7 +14,7 @@ return new class extends Migration
      */
     public function up()
     {
-        if (!Schema::hasTable('cyber_securities')) {
+        if (! Schema::hasTable('cyber_securities')) {
             Schema::create('cyber_securities', function (Blueprint $table) {
                 $table->id();
                 $table->integer('max_retries')->default(3);
@@ -45,5 +44,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('cyber_securities');
     }
-
 };

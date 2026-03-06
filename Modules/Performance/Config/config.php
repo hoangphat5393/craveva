@@ -1,8 +1,7 @@
 <?php
 
-
 $addOnOf = 'craveva';
-$product = $addOnOf . '-performance-module';
+$product = $addOnOf.'-performance-module';
 
 return [
     'name' => 'Performance',

@@ -9,7 +9,6 @@ use Illuminate\Queue\SerializesModels;
 
 class NewEstimateEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $estimate;
@@ -18,5 +17,4 @@ class NewEstimateEvent
     {
         $this->estimate = $estimate;
     }
-
 }

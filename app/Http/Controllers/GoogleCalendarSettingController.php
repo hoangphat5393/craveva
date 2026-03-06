@@ -4,11 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Helper\Reply;
 use App\Http\Requests\GoogleCalenderSetting\StoreGoogleCalender;
+use App\Models\Company;
 use App\Models\GlobalSetting;
 use App\Models\GoogleCalendarModule;
 use App\Traits\GoogleOAuth;
 use Illuminate\Support\Facades\Artisan;
-use App\Models\Company;
 
 class GoogleCalendarSettingController extends AccountBaseController
 {
@@ -22,6 +22,7 @@ class GoogleCalendarSettingController extends AccountBaseController
         $this->activeSettingMenu = 'google_calendar_settings';
         $this->middleware(function ($request, $next) {
             abort_403(GlobalSetting::validateSuperAdmin('manage_superadmin_calendar_settings') && (user()->permission('manage_google_calendar_setting') != 'all'));
+
             return $next($request);
         });
     }
@@ -30,7 +31,7 @@ class GoogleCalendarSettingController extends AccountBaseController
     {
         $this->globalSetting = global_setting();
 
-        abort_403(!user()->is_superadmin && $this->globalSetting->google_calendar_status == 'inactive');
+        abort_403(! user()->is_superadmin && $this->globalSetting->google_calendar_status == 'inactive');
         $this->companyOrGlobalSetting = companyOrGlobalSetting();
         $this->setting = company();
         $this->module = GoogleCalendarModule::first();
@@ -48,17 +49,15 @@ class GoogleCalendarSettingController extends AccountBaseController
             $google_calendar_setting->google_client_secret = $request->google_client_secret;
             $google_calendar_setting->save();
 
-            if (!$request->status) {
-                Company::query()->update(['google_calendar_status' => 'inactive',]);
+            if (! $request->status) {
+                Company::query()->update(['google_calendar_status' => 'inactive']);
                 GoogleCalendarModule::query()->update(
                     array_fill_keys([
-                        'lead_status', 'leave_status', 'invoice_status', 'contract_status', 'task_status', 'event_status', 'holiday_status'
+                        'lead_status', 'leave_status', 'invoice_status', 'contract_status', 'task_status', 'event_status', 'holiday_status',
                     ], 0)
                 );
             }
-        }
-        else
-        {
+        } else {
             $googleCalendarSetting = company();
             $googleCalendarSetting->google_calendar_status = $request->status ? 'active' : 'inactive';
             $googleCalendarSetting->save();
@@ -83,8 +82,7 @@ class GoogleCalendarSettingController extends AccountBaseController
         if ($request->cache) {
             Artisan::call('optimize');
             Artisan::call('route:clear');
-        }
-        else {
+        } else {
             Artisan::call('config:clear');
             Artisan::call('route:clear');
             Artisan::call('view:clear');
@@ -93,5 +91,4 @@ class GoogleCalendarSettingController extends AccountBaseController
 
         return Reply::success(__('messages.updateSuccess'));
     }
-
 }

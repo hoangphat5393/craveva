@@ -47,9 +47,8 @@ class SalaryStatusEmail extends BaseNotification
         $url = route('payroll.show', [$this->salary->id]);
         $url = getDomainSpecificUrl($url, $this->company);
 
-        if($this->salary->status == 'paid')
-        {
-            $payrollController = new PayrollController();
+        if ($this->salary->status == 'paid') {
+            $payrollController = new PayrollController;
 
             if ($pdfOption = $payrollController->domPdfObjectForDownload($this->salary->id)) {
 
@@ -65,22 +64,20 @@ class SalaryStatusEmail extends BaseNotification
                     ->action(__('app.view').' '.__('payroll::modules.payroll.salarySlip'), $url)
                     ->line(__('email.thankyouNote'));
 
-                    $payrollPaid->attachData($pdf->output(), $filename . '.pdf');
+                $payrollPaid->attachData($pdf->output(), $filename.'.pdf');
 
-                    return $payrollPaid;
+                return $payrollPaid;
             }
-        }
-        else{
+        } else {
             return $payrollPaid->subject(__('payroll::modules.payroll.salarySlip').' '.__('payroll::modules.payroll.'.$this->salary->status).' '.Carbon::parse($this->salary->year.'-'.$this->salary->month.'-01')->format('F Y'))
-                    ->greeting(__('email.hello').' '.$notifiable->name.'!')
+                ->greeting(__('email.hello').' '.$notifiable->name.'!')
                     // phpcs:ignore
-                    ->line(__('payroll::email.salaryStatus.text').' '.__('payroll::modules.payroll.'.$this->salary->status))
+                ->line(__('payroll::email.salaryStatus.text').' '.__('payroll::modules.payroll.'.$this->salary->status))
                     // phpcs:ignore
-                    ->line(__('app.month').' - '.Carbon::parse($this->salary->year.'-'.$this->salary->month.'-01')->format('F Y'))
-                    ->action(__('app.view').' '.__('payroll::modules.payroll.salarySlip'), $url)
-                    ->line(__('email.thankyouNote'));
+                ->line(__('app.month').' - '.Carbon::parse($this->salary->year.'-'.$this->salary->month.'-01')->format('F Y'))
+                ->action(__('app.view').' '.__('payroll::modules.payroll.salarySlip'), $url)
+                ->line(__('email.thankyouNote'));
         }
-
 
     }
 

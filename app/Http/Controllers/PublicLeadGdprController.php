@@ -3,22 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Helper\Reply;
-use App\Models\Deal;
-use Illuminate\Http\Request;
 use App\Http\Requests\Gdpr\RemoveLeadRequest;
 use App\Http\Requests\GdprLead\UpdateRequest;
+use App\Models\Deal;
 use App\Models\PurposeConsent;
 use App\Models\PurposeConsentLead;
 use App\Models\RemovalRequestLead;
+use Illuminate\Http\Request;
 
 class PublicLeadGdprController extends AccountBaseController
 {
-
     public function updateLead(UpdateRequest $request, $id)
     {
         $gdprSetting = gdpr_setting();
 
-        if(!$gdprSetting->public_lead_edit) {
+        if (! $gdprSetting->public_lead_edit) {
             return Reply::error('messages.unAuthorisedUser');
         }
 
@@ -43,10 +42,10 @@ class PublicLeadGdprController extends AccountBaseController
         $this->pageTitle = 'modules.gdpr.consent';
         $this->gdprSetting = gdpr_setting();
 
-        abort_if(!$this->gdprSetting->consent_leads, 404);
+        abort_if(! $this->gdprSetting->consent_leads, 404);
 
         $lead = Deal::where('hash', $hash)->firstOrFail();
-        $this->consents = PurposeConsent::with(['lead' => function($query) use($lead) {
+        $this->consents = PurposeConsent::with(['lead' => function ($query) use ($lead) {
             $query->where('lead_id', $lead->id)
                 ->orderByDesc('created_at');
         }])->get();
@@ -62,9 +61,8 @@ class PublicLeadGdprController extends AccountBaseController
 
         $allConsents = $request->has('consent_customer') ? $request->consent_customer : [];
 
-        foreach ($allConsents as $allConsentId => $allConsentStatus)
-        {
-            $newConsentLead = new PurposeConsentLead();
+        foreach ($allConsents as $allConsentId => $allConsentStatus) {
+            $newConsentLead = new PurposeConsentLead;
             $newConsentLead->lead_id = $lead->id;
             $newConsentLead->purpose_consent_id = $allConsentId;
             $newConsentLead->status = $allConsentStatus;
@@ -79,13 +77,13 @@ class PublicLeadGdprController extends AccountBaseController
     {
         $gdprSetting = gdpr_setting();
 
-        if(!$gdprSetting->lead_removal_public_form) {
+        if (! $gdprSetting->lead_removal_public_form) {
             return Reply::error('messages.unAuthorisedUser');
         }
 
         $lead = Deal::findOrFail($request->lead_id);
 
-        $removal = new RemovalRequestLead();
+        $removal = new RemovalRequestLead;
         $removal->lead_id = $request->lead_id;
         $removal->name = $lead->company_name;
         $removal->description = trim_editor($request->description);
@@ -93,5 +91,4 @@ class PublicLeadGdprController extends AccountBaseController
 
         return Reply::success('modules.gdpr.removalRequestSuccess');
     }
-
 }

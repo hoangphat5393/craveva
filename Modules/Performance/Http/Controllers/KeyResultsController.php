@@ -14,18 +14,17 @@ use Modules\Performance\Entities\ObjectiveOwner;
 use Modules\Performance\Entities\PerformanceSetting;
 use Modules\Performance\Events\CheckInReminderEvent;
 use Modules\Performance\Http\Requests\CreateKeyResultsRequest;
-use Modules\Performance\Notifications\CheckInReminderNotification;
 
 class KeyResultsController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'performance::app.keyResults';
 
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array(PerformanceSetting::MODULE_NAME, $this->user->modules));
+            abort_403(! in_array(PerformanceSetting::MODULE_NAME, $this->user->modules));
+
             return $next($request);
         });
     }
@@ -45,7 +44,7 @@ class KeyResultsController extends AccountBaseController
     {
         $this->pageTitle = __('performance::app.addKeyResults');
         $objectiveId = request()->objectiveId;
-        $this->objectiveId  = [];
+        $this->objectiveId = [];
 
         if ($objectiveId) {
             $this->objectiveId = Objective::findOrFail($objectiveId);
@@ -57,11 +56,12 @@ class KeyResultsController extends AccountBaseController
         $this->meetingId = request()->meetingId;
 
         $this->currentUrl = ($this->meetingId && $this->meetingId != 'null' && $this->meetingId != null)
-            ? route('meetings.show', ['meeting' => $this->meetingId]) . '?view=action'
+            ? route('meetings.show', ['meeting' => $this->meetingId]).'?view=action'
             : (request()->currentUrl ?: route('objectives.index'));
 
         if (request()->ajax()) {
             $html = view('performance::key-results.ajax.create', $this->data)->render();
+
             return Reply::dataOnly(['status' => 'success', 'html' => $html, 'title' => $this->pageTitle]);
         }
 
@@ -75,7 +75,7 @@ class KeyResultsController extends AccountBaseController
      */
     public function store(CreateKeyResultsRequest $request)
     {
-        $keyResult = new KeyResults();
+        $keyResult = new KeyResults;
         $keyResult->objective_id = $request->objective_id;
         $keyResult->title = $request->title;
         $keyResult->description = $request->description;
@@ -88,8 +88,7 @@ class KeyResultsController extends AccountBaseController
             $percentage = round(($request->current_value / $request->target_value) * 100, 2);
             $keyResult->key_percentage = $percentage;
 
-        }
-        else {
+        } else {
             $keyResult->key_percentage = 0.00;
         }
 
@@ -133,11 +132,11 @@ class KeyResultsController extends AccountBaseController
         $currentUserRoleIds = user()->roles()->pluck('id')->toArray();
         $manageByRoles = json_decode($goal->manage_by_roles, true) ?? [];
 
-        return (user()->hasRole('admin') ||
+        return user()->hasRole('admin') ||
             $objective->created_by == user()->id ||
             ($goal && $goal->manage_by_owner == 1 && in_array(user()->id, $ownerIds)) ||
             ($goal && $goal->manage_by_manager == 1 && in_array(user()->id, $managerIds)) ||
-            (!empty($manageByRoles) && array_intersect($currentUserRoleIds, $manageByRoles)));
+            (! empty($manageByRoles) && array_intersect($currentUserRoleIds, $manageByRoles));
     }
 
     /**
@@ -154,6 +153,7 @@ class KeyResultsController extends AccountBaseController
 
         if (request()->ajax()) {
             $html = view('performance::key-results.ajax.edit', $this->data)->render();
+
             return Reply::dataOnly(['status' => 'success', 'html' => $html, 'title' => $this->pageTitle]);
         }
 
@@ -178,8 +178,7 @@ class KeyResultsController extends AccountBaseController
 
         if ($latestCheckIn) {
             $keyResult->current_value = $latestCheckIn->current_value;
-        }
-        else {
+        } else {
             $keyResult->current_value = $request->current_value;
         }
 
@@ -209,6 +208,7 @@ class KeyResultsController extends AccountBaseController
     public function showDescription($id)
     {
         $this->objective = KeyResults::findOrFail($id);
+
         return view('performance::objectives.ajax.show-description', $this->data);
     }
 
@@ -225,12 +225,10 @@ class KeyResultsController extends AccountBaseController
                 }
 
                 return Reply::successWithData(__('performance::messages.reminderSent'), ['status' => 'success']);
-            }
-            else {
+            } else {
                 return Reply::error(__('messages.keyResultNotFound'));
             }
-        }
-        else {
+        } else {
             $keyResult = KeyResults::findOrFail($id);
 
             if ($keyResult) {
@@ -242,8 +240,7 @@ class KeyResultsController extends AccountBaseController
                 }
 
                 return Reply::successWithData(__('performance::messages.reminderSent'), ['status' => 'success']);
-            }
-            else {
+            } else {
                 return Reply::error(__('messages.keyResultNotFound'));
             }
         }
@@ -256,8 +253,7 @@ class KeyResultsController extends AccountBaseController
 
         if ($frequency == 'monthly' || $frequency == 'quarterly') {
             $schedule = $objective->rotation_date;
-        }
-        else {
+        } else {
             $schedule = $objective->schedule_on;
         }
 
@@ -299,9 +295,8 @@ class KeyResultsController extends AccountBaseController
     /**
      * Helper function to get the next weekday (e.g., Monday, Tuesday, etc.)
      *
-     * @param Carbon $startDate
-     * @param string $schedule (Day of the week, e.g., "Monday")
-     * @param int $interval Interval to add in case of bi-weekly (default 1)
+     * @param  string  $schedule  (Day of the week, e.g., "Monday")
+     * @param  int  $interval  Interval to add in case of bi-weekly (default 1)
      * @return Carbon
      */
     private function getNextWeekDay(Carbon $startDate, $schedule, $interval = 1)
@@ -332,8 +327,7 @@ class KeyResultsController extends AccountBaseController
     /**
      * Helper function to get the next day for monthly frequency
      *
-     * @param Carbon $startDate
-     * @param string $schedule
+     * @param  string  $schedule
      * @return Carbon
      */
     private function getNextMonthDay(Carbon $startDate, $schedule)
@@ -346,8 +340,7 @@ class KeyResultsController extends AccountBaseController
             // Check for February
             if ($nextDate->month == 2) {
                 $daysInMonth = $nextDate->isLeapYear() ? 29 : 28;
-            }
-            else {
+            } else {
                 $daysInMonth = $nextDate->daysInMonth;
             }
 
@@ -367,8 +360,7 @@ class KeyResultsController extends AccountBaseController
     /**
      * Helper function to get the next quarterly date
      *
-     * @param Carbon $startDate
-     * @param string $schedule
+     * @param  string  $schedule
      * @return Carbon
      */
     private function getNextQuarterDay(Carbon $startDate, $schedule)
@@ -401,5 +393,4 @@ class KeyResultsController extends AccountBaseController
 
         return $nextDate;
     }
-
 }

@@ -6,13 +6,12 @@ use App\Models\Company;
 use Illuminate\Database\Seeder;
 use Modules\Performance\Entities\CheckIn;
 use Modules\Performance\Entities\GoalType;
-use Modules\Performance\Entities\Objective;
 use Modules\Performance\Entities\KeyResults;
 use Modules\Performance\Entities\KeyResultsMetrics;
+use Modules\Performance\Entities\Objective;
 
 class ObjectiveDataSeeder extends Seeder
 {
-
     /**
      * Run the database seeds.
      *
@@ -62,7 +61,7 @@ class ObjectiveDataSeeder extends Seeder
                 'next_check_in' => now()->addWeek(),
                 'created_at' => now(),
                 'updated_at' => now(),
-            ]
+            ],
         ];
 
         KeyResults::insert($keyResultsData);
@@ -138,7 +137,7 @@ class ObjectiveDataSeeder extends Seeder
                 'next_check_in' => now()->addWeeks(2),
                 'created_at' => now(),
                 'updated_at' => now(),
-            ]
+            ],
         ];
 
         KeyResults::insert($keyResultsData2);
@@ -214,7 +213,7 @@ class ObjectiveDataSeeder extends Seeder
                 'next_check_in' => now()->month(1),
                 'created_at' => now(),
                 'updated_at' => now(),
-            ]
+            ],
         ];
 
         KeyResults::insert($keyResultsData3);
@@ -245,8 +244,7 @@ class ObjectiveDataSeeder extends Seeder
 
             if ($checkInCurrentValue3 >= $keyResult3->original_current_value && $checkInCurrentValue3 <= $keyResult3->target_value) {
                 $keyResult3->key_percentage = round(($checkInCurrentValue3 / $keyResult3->target_value) * 100, 2);
-            }
-            else {
+            } else {
                 $keyResult3->key_percentage = 0.00;
             }
 
@@ -254,5 +252,4 @@ class ObjectiveDataSeeder extends Seeder
             $keyResult3->save();
         }
     }
-
 }

@@ -11,16 +11,14 @@ use App\Models\ProjectMilestone;
 use Carbon\CarbonInterval;
 use Illuminate\Http\Request;
 
-
 class ProjectMilestoneController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'app.menu.projects';
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('projects', $this->user->modules));
+            abort_403(! in_array('projects', $this->user->modules));
 
             return $next($request);
         });
@@ -39,19 +37,19 @@ class ProjectMilestoneController extends AccountBaseController
         $addProjectMilestonePermission = user()->permission('add_project_milestones');
         $project = Project::findOrFail($id);
 
-        abort_403(!($addProjectMilestonePermission == 'all' || $project->project_admin == user()->id));
+        abort_403(! ($addProjectMilestonePermission == 'all' || $project->project_admin == user()->id));
 
         return view('projects.milestone.create', $this->data);
     }
 
     /**
-     * @param StoreMilestone $request
      * @return array
+     *
      * @throws \Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException
      */
     public function store(StoreMilestone $request)
     {
-        $milestone = new ProjectMilestone();
+        $milestone = new ProjectMilestone;
         $milestone->project_id = $request->project_id;
         $milestone->milestone_title = $request->milestone_title;
         $milestone->summary = $request->summary;
@@ -66,7 +64,7 @@ class ProjectMilestoneController extends AccountBaseController
         $project = Project::findOrFail($request->project_id);
 
         if ($request->add_to_budget == 'yes') {
-            $project->project_budget = (!is_null($project->project_budget) ? ($project->project_budget + $milestone->cost) : $milestone->cost);
+            $project->project_budget = (! is_null($project->project_budget) ? ($project->project_budget + $milestone->cost) : $milestone->cost);
             $project->currency_id = $request->currency_id;
             $project->save();
         }
@@ -79,7 +77,7 @@ class ProjectMilestoneController extends AccountBaseController
     /**
      * Show the form for editing the specified resource.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -91,9 +89,9 @@ class ProjectMilestoneController extends AccountBaseController
     }
 
     /**
-     * @param StoreMilestone $request
-     * @param int $id
+     * @param  int  $id
      * @return array
+     *
      * @throws \Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException
      */
     public function update(StoreMilestone $request, $id)
@@ -135,7 +133,7 @@ class ProjectMilestoneController extends AccountBaseController
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
@@ -165,7 +163,7 @@ class ProjectMilestoneController extends AccountBaseController
 
         $project = Project::withTrashed()->findOrFail($this->milestone->project_id);
 
-        abort_403(!(
+        abort_403(! (
             $viewMilestonePermission == 'all'
             || ($viewMilestonePermission == 'added' && $this->milestone->added_by == user()->id)
             || ($viewMilestonePermission == 'owned' && $this->milestone->project->client_id == user()->id && in_array('client', user_roles()))
@@ -192,8 +190,7 @@ class ProjectMilestoneController extends AccountBaseController
     {
         if ($id == 0) {
             $options = '<option value="">--</option>';
-        }
-        else {
+        } else {
             $projects = ProjectMilestone::where('project_id', $id)->whereNot('status', 'complete')->get();
             $options = BaseModel::options($projects, null, 'milestone_title');
         }
@@ -207,7 +204,6 @@ class ProjectMilestoneController extends AccountBaseController
         $milestone->status = $request->input('status');
         $milestone->save();
 
-        return response()->json(['status' => 'success', 'message' =>  __('messages.updateSuccess')]);
+        return response()->json(['status' => 'success', 'message' => __('messages.updateSuccess')]);
     }
-
 }

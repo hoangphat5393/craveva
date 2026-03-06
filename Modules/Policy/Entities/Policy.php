@@ -2,15 +2,15 @@
 
 namespace Modules\Policy\Entities;
 
-use App\Models\Team;
 use App\Models\BaseModel;
-use App\Traits\HasCompany;
 use App\Models\Designation;
+use App\Models\Team;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Scopes\ActiveScope;
+use App\Traits\HasCompany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Policy extends BaseModel
 {
@@ -31,11 +31,11 @@ class Policy extends BaseModel
 
     public function getFileUrlAttribute()
     {
-        if($this->external_link){
+        if ($this->external_link) {
             return str($this->external_link)->contains('http') ? $this->external_link : asset_url_local_s3($this->external_link);
         }
 
-        return asset_url_local_s3(Policy::FILE_PATH . '/' . $this->filename);
+        return asset_url_local_s3(Policy::FILE_PATH.'/'.$this->filename);
     }
 
     public function employeeAcknowledge(): HasMany
@@ -79,5 +79,4 @@ class Policy extends BaseModel
     {
         return $this->belongsTo(User::class, 'updated_by')->withoutGlobalScope(ActiveScope::class);
     }
-
 }

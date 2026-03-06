@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\ProductCategory $category
  * @property-read mixed $icon
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ProductSubCategory newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ProductSubCategory newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ProductSubCategory query()
@@ -23,14 +24,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|ProductSubCategory whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProductSubCategory whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProductSubCategory whereUpdatedAt($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ProductSubCategory whereCompanyId($value)
+ *
  * @mixin \Eloquent
  */
 class ProductSubCategory extends BaseModel
 {
-
     use HasCompany;
 
     protected $table = 'product_sub_category';
@@ -39,5 +42,4 @@ class ProductSubCategory extends BaseModel
     {
         return $this->belongsTo(ProductCategory::class, 'category_id');
     }
-
 }

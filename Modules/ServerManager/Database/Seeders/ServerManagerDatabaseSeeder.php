@@ -2,11 +2,7 @@
 
 namespace Modules\ServerManager\Database\Seeders;
 
-use App\Models\Company;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\App;
-use Modules\ServerManager\Database\Seeders\ServerHostingSeeder;
-use Modules\ServerManager\Database\Seeders\ServerDomainSeeder;
 
 class ServerManagerDatabaseSeeder extends Seeder
 {
@@ -18,8 +14,6 @@ class ServerManagerDatabaseSeeder extends Seeder
     public function run()
     {
         config(['app.seeding' => true]);
-
-
 
         config(['app.seeding' => false]);
     }

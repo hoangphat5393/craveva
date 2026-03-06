@@ -2,14 +2,14 @@
 
 namespace Modules\Performance\Http\Controllers;
 
-use Carbon\Carbon;
-use App\Models\User;
 use App\Helper\Reply;
-use Illuminate\Http\Request;
+use App\Http\Controllers\AccountBaseController;
 use App\Models\EmployeeDetails;
+use App\Models\User;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Modules\Performance\Entities\Meeting;
-use App\Http\Controllers\AccountBaseController;
 use Modules\Performance\Entities\PerformanceSetting;
 use Modules\Performance\Events\MeetingInviteEvent;
 use Modules\Performance\Events\MeetingReminderEvent;
@@ -17,7 +17,6 @@ use Modules\Performance\Http\Requests\StoreMeeting;
 
 class MeetingController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -26,8 +25,8 @@ class MeetingController extends AccountBaseController
 
     public function index(Request $request)
     {
-        $this->hasAccess = !$this->hasManageAccess();
-        $this->hasCreateAccess = !$this->hasCreateAccess();
+        $this->hasAccess = ! $this->hasManageAccess();
+        $this->hasCreateAccess = ! $this->hasCreateAccess();
         $this->employees = User::allEmployees(null, true);
         $this->activeTab = $request->status ?? 'upcoming';
         $this->tab = $request->tab ?? 'list';
@@ -89,57 +88,57 @@ class MeetingController extends AccountBaseController
         if (request()->searchText && request()->searchText != 'all') {
             $upcomingQuery->where(function ($meeting) {
                 $meeting->orWhereHas('agendas', function ($q) {
-                    $q->where('discussion_point', 'like', '%' . request('searchText') . '%');
+                    $q->where('discussion_point', 'like', '%'.request('searchText').'%');
                 })
                     ->orWhereHas('meetingFor', function ($q) {
-                        $q->where('name', 'like', '%' . request('searchText') . '%');
+                        $q->where('name', 'like', '%'.request('searchText').'%');
                     })
                     ->orWhereHas('meetingBy', function ($q) {
-                        $q->where('name', 'like', '%' . request('searchText') . '%');
+                        $q->where('name', 'like', '%'.request('searchText').'%');
                     });
             });
             $pendingQuery->where(function ($meeting) {
                 $meeting->orWhereHas('agendas', function ($q) {
-                    $q->where('discussion_point', 'like', '%' . request('searchText') . '%');
+                    $q->where('discussion_point', 'like', '%'.request('searchText').'%');
                 })
                     ->orWhereHas('meetingFor', function ($q) {
-                        $q->where('name', 'like', '%' . request('searchText') . '%');
+                        $q->where('name', 'like', '%'.request('searchText').'%');
                     })
                     ->orWhereHas('meetingBy', function ($q) {
-                        $q->where('name', 'like', '%' . request('searchText') . '%');
+                        $q->where('name', 'like', '%'.request('searchText').'%');
                     });
             });
             $recurringQuery->where(function ($meeting) {
                 $meeting->orWhereHas('agendas', function ($q) {
-                    $q->where('discussion_point', 'like', '%' . request('searchText') . '%');
+                    $q->where('discussion_point', 'like', '%'.request('searchText').'%');
                 })
                     ->orWhereHas('meetingFor', function ($q) {
-                        $q->where('name', 'like', '%' . request('searchText') . '%');
+                        $q->where('name', 'like', '%'.request('searchText').'%');
                     })
                     ->orWhereHas('meetingBy', function ($q) {
-                        $q->where('name', 'like', '%' . request('searchText') . '%');
+                        $q->where('name', 'like', '%'.request('searchText').'%');
                     });
             });
             $pastQuery->where(function ($meeting) {
                 $meeting->orWhereHas('agendas', function ($q) {
-                    $q->where('discussion_point', 'like', '%' . request('searchText') . '%');
+                    $q->where('discussion_point', 'like', '%'.request('searchText').'%');
                 })
                     ->orWhereHas('meetingFor', function ($q) {
-                        $q->where('name', 'like', '%' . request('searchText') . '%');
+                        $q->where('name', 'like', '%'.request('searchText').'%');
                     })
                     ->orWhereHas('meetingBy', function ($q) {
-                        $q->where('name', 'like', '%' . request('searchText') . '%');
+                        $q->where('name', 'like', '%'.request('searchText').'%');
                     });
             });
             $cancelledQuery->where(function ($meeting) {
                 $meeting->orWhereHas('agendas', function ($q) {
-                    $q->where('discussion_point', 'like', '%' . request('searchText') . '%');
+                    $q->where('discussion_point', 'like', '%'.request('searchText').'%');
                 })
                     ->orWhereHas('meetingFor', function ($q) {
-                        $q->where('name', 'like', '%' . request('searchText') . '%');
+                        $q->where('name', 'like', '%'.request('searchText').'%');
                     })
                     ->orWhereHas('meetingBy', function ($q) {
-                        $q->where('name', 'like', '%' . request('searchText') . '%');
+                        $q->where('name', 'like', '%'.request('searchText').'%');
                     });
             });
         }
@@ -152,7 +151,7 @@ class MeetingController extends AccountBaseController
 
         // Set pagination limit
         $this->meetingsPerPage = 10; // Configurable limit
-        $skip = (int)($request->skip ?? 0);
+        $skip = (int) ($request->skip ?? 0);
 
         $query = Meeting::with(['meetingBy', 'meetingFor', 'agendas', 'actions'])
             ->select('performance_meetings.*');
@@ -201,20 +200,20 @@ class MeetingController extends AccountBaseController
         if (request()->searchText && request()->searchText != 'all') {
             $query->where(function ($meeting) {
                 $meeting->orWhereHas('agendas', function ($q) {
-                    $q->where('discussion_point', 'like', '%' . request('searchText') . '%');
+                    $q->where('discussion_point', 'like', '%'.request('searchText').'%');
                 })
                     ->orWhereHas('meetingFor', function ($q) {
-                        $q->where('name', 'like', '%' . request('searchText') . '%');
+                        $q->where('name', 'like', '%'.request('searchText').'%');
                     })
                     ->orWhereHas('meetingBy', function ($q) {
-                        $q->where('name', 'like', '%' . request('searchText') . '%');
+                        $q->where('name', 'like', '%'.request('searchText').'%');
                     });
             });
         }
 
         // Get total count for pagination
         $totalMeetings = $query->count();
-        
+
         // Apply pagination
         $allEvents = $query->orderBy('start_date_time', 'asc')
             ->skip($skip)
@@ -239,13 +238,13 @@ class MeetingController extends AccountBaseController
         if (request()->searchText && request()->searchText != 'all') {
             $pastMonthMeetingsCount->where(function ($meeting) {
                 $meeting->orWhereHas('agendas', function ($q) {
-                    $q->where('discussion_point', 'like', '%' . request('searchText') . '%');
+                    $q->where('discussion_point', 'like', '%'.request('searchText').'%');
                 })
                     ->orWhereHas('meetingFor', function ($q) {
-                        $q->where('name', 'like', '%' . request('searchText') . '%');
+                        $q->where('name', 'like', '%'.request('searchText').'%');
                     })
                     ->orWhereHas('meetingBy', function ($q) {
-                        $q->where('name', 'like', '%' . request('searchText') . '%');
+                        $q->where('name', 'like', '%'.request('searchText').'%');
                     });
             });
         }
@@ -254,14 +253,14 @@ class MeetingController extends AccountBaseController
 
         // Filter objectives based on user access
         $this->pastMonthMeetingsCount = $pastMonthMeetingsCount->filter(function ($meeting) {
-            return !$this->checkViewAccess($meeting->id);
+            return ! $this->checkViewAccess($meeting->id);
         })->groupBy(function ($meeting) {
             return Carbon::parse($meeting->start_date_time)->format('Y-m-d');
         })->count();
 
         // Filter objectives based on user access
         $this->meetings = $allEvents->filter(function ($meeting) {
-            return !$this->checkViewAccess($meeting->id);
+            return ! $this->checkViewAccess($meeting->id);
         })->groupBy(function ($meeting) {
             return Carbon::parse($meeting->start_date_time)->format('Y-m-d');
         });
@@ -270,24 +269,24 @@ class MeetingController extends AccountBaseController
         $this->totalMeetings = $totalMeetings;
         $this->currentSkip = $skip;
         $this->hasMoreMeetings = ($skip + $this->meetingsPerPage) < $totalMeetings;
-        
+
         $this->employeeId = $request->employee;
-        
+
         $this->view = 'performance::meetings.ajax.meetings-list';
 
         if (request()->ajax()) {
             $html = view($this->view, $this->data)->render();
 
             return Reply::dataOnly([
-                'tab' => $this->tab, 
-                'status' => 'success', 
-                'activeTab' => $this->activeTab, 
-                'html' => $html, 
+                'tab' => $this->tab,
+                'status' => 'success',
+                'activeTab' => $this->activeTab,
+                'html' => $html,
                 'title' => $this->pageTitle,
                 'hasMoreMeetings' => $this->hasMoreMeetings,
                 'totalMeetings' => $this->totalMeetings,
                 'currentSkip' => $this->currentSkip,
-                'pastMonthMeetingsCount' => $this->pastMonthMeetingsCount
+                'pastMonthMeetingsCount' => $this->pastMonthMeetingsCount,
             ]);
         }
 
@@ -296,8 +295,8 @@ class MeetingController extends AccountBaseController
 
     public function loadMore(Request $request)
     {
-        $this->hasAccess = !$this->hasManageAccess();
-        $this->hasCreateAccess = !$this->hasCreateAccess();
+        $this->hasAccess = ! $this->hasManageAccess();
+        $this->hasCreateAccess = ! $this->hasCreateAccess();
         $this->employees = User::allEmployees(null, true);
         $this->activeTab = $request->status ?? 'upcoming';
         $this->tab = $request->tab ?? 'list';
@@ -308,7 +307,7 @@ class MeetingController extends AccountBaseController
 
         // Set pagination limit
         $this->meetingsPerPage = 10; // Configurable limit
-        $skip = (int)($request->skip ?? 0);
+        $skip = (int) ($request->skip ?? 0);
 
         $query = Meeting::with(['meetingBy', 'meetingFor', 'agendas', 'actions'])
             ->select('performance_meetings.*');
@@ -357,20 +356,20 @@ class MeetingController extends AccountBaseController
         if (request()->searchText && request()->searchText != 'all') {
             $query->where(function ($meeting) {
                 $meeting->orWhereHas('agendas', function ($q) {
-                    $q->where('discussion_point', 'like', '%' . request('searchText') . '%');
+                    $q->where('discussion_point', 'like', '%'.request('searchText').'%');
                 })
                     ->orWhereHas('meetingFor', function ($q) {
-                        $q->where('name', 'like', '%' . request('searchText') . '%');
+                        $q->where('name', 'like', '%'.request('searchText').'%');
                     })
                     ->orWhereHas('meetingBy', function ($q) {
-                        $q->where('name', 'like', '%' . request('searchText') . '%');
+                        $q->where('name', 'like', '%'.request('searchText').'%');
                     });
             });
         }
 
         // Get total count for pagination
         $totalMeetings = $query->count();
-        
+
         // Apply pagination
         $allEvents = $query->orderBy('start_date_time', 'asc')
             ->skip($skip)
@@ -379,8 +378,9 @@ class MeetingController extends AccountBaseController
 
         // Filter objectives based on user access - DON'T group by date for load more
         $this->meetings = $allEvents->filter(function ($meeting) {
-            $meeting->has_access = !$this->checkManageAccess($meeting->id);
-            return !$this->checkViewAccess($meeting->id);
+            $meeting->has_access = ! $this->checkManageAccess($meeting->id);
+
+            return ! $this->checkViewAccess($meeting->id);
         });
 
         // Add pagination data
@@ -393,18 +393,18 @@ class MeetingController extends AccountBaseController
         $html = view($this->view, $this->data)->render();
 
         return Reply::dataOnly([
-            'status' => 'success', 
-            'html' => $html, 
+            'status' => 'success',
+            'html' => $html,
             'hasMoreMeetings' => $this->hasMoreMeetings,
             'totalMeetings' => $this->totalMeetings,
-            'currentSkip' => $this->currentSkip
+            'currentSkip' => $this->currentSkip,
         ]);
     }
 
     public function calendarView()
     {
-        $this->hasAccess = !$this->hasManageAccess();
-        $this->hasCreateAccess = !$this->hasCreateAccess();
+        $this->hasAccess = ! $this->hasManageAccess();
+        $this->hasCreateAccess = ! $this->hasCreateAccess();
         $this->employees = User::allEmployees(null, true);
 
         if (request('start') && request('end')) {
@@ -421,13 +421,13 @@ class MeetingController extends AccountBaseController
             if (request()->searchText && request()->searchText != 'all') {
                 $model->where(function ($query) {
                     $query->orWhereHas('agendas', function ($q) {
-                        $q->where('discussion_point', 'like', '%' . request('searchText') . '%');
+                        $q->where('discussion_point', 'like', '%'.request('searchText').'%');
                     })
                         ->orWhereHas('meetingFor', function ($q) {
-                            $q->where('name', 'like', '%' . request('searchText') . '%');
+                            $q->where('name', 'like', '%'.request('searchText').'%');
                         })
                         ->orWhereHas('meetingBy', function ($q) {
-                            $q->where('name', 'like', '%' . request('searchText') . '%');
+                            $q->where('name', 'like', '%'.request('searchText').'%');
                         });
                 });
             }
@@ -436,18 +436,17 @@ class MeetingController extends AccountBaseController
 
             // Filter objectives based on user access
             $meetings = $allEvents->filter(function ($meeting) {
-                return !$this->checkViewAccess($meeting->id);
+                return ! $this->checkViewAccess($meeting->id);
             });
 
-            $eventData = array();
+            $eventData = [];
 
             foreach ($meetings as $key => $event) {
 
                 if (company()->time_format == 'h:i a') {
-                    $title = $event->meetingFor ? '- '. $event->meetingFor->name . ' ('. __('performance::app.till') .' '. $event->end_date_time->format('h:i A') . ')' : '--';
-                }
-                else {
-                    $title = $event->meetingFor ? '- '. $event->meetingFor->name . ' ('. __('performance::app.till') .' '. $event->end_date_time->format(company()->time_format) . ')' : '--';
+                    $title = $event->meetingFor ? '- '.$event->meetingFor->name.' ('.__('performance::app.till').' '.$event->end_date_time->format('h:i A').')' : '--';
+                } else {
+                    $title = $event->meetingFor ? '- '.$event->meetingFor->name.' ('.__('performance::app.till').' '.$event->end_date_time->format(company()->time_format).')' : '--';
                 }
 
                 $eventData[] = [
@@ -486,11 +485,11 @@ class MeetingController extends AccountBaseController
     {
         DB::beginTransaction();
 
-        $meeting = new Meeting();
+        $meeting = new Meeting;
         $meeting->company_id = company()->id;
-        $start_date_time = Carbon::createFromFormat($this->company->date_format, $request->meeting_date, $this->company->timezone)->format('Y-m-d') . ' ' . Carbon::createFromFormat($this->company->time_format, $request->start_time)->format('H:i:s');
+        $start_date_time = Carbon::createFromFormat($this->company->date_format, $request->meeting_date, $this->company->timezone)->format('Y-m-d').' '.Carbon::createFromFormat($this->company->time_format, $request->start_time)->format('H:i:s');
         $meeting->start_date_time = Carbon::parse($start_date_time)->setTimezone('UTC');
-        $end_date_time = Carbon::createFromFormat($this->company->date_format, $request->meeting_date, $this->company->timezone)->format('Y-m-d') . ' ' . Carbon::createFromFormat($this->company->time_format, $request->end_time)->format('H:i:s');
+        $end_date_time = Carbon::createFromFormat($this->company->date_format, $request->meeting_date, $this->company->timezone)->format('Y-m-d').' '.Carbon::createFromFormat($this->company->time_format, $request->end_time)->format('H:i:s');
         $meeting->end_date_time = Carbon::parse($end_date_time)->setTimezone('UTC');
         $meeting->repeat = $request->repeat ? $request->repeat : 'no';
         $meeting->repeat_every = $request->repeat_count;
@@ -581,11 +580,11 @@ class MeetingController extends AccountBaseController
 
     private function addRepeatEvent($parentEvent, $request, $startDate, $dueDate)
     {
-        $meeting = new Meeting();
+        $meeting = new Meeting;
         $meeting->company_id = company()->id;
         $meeting->parent_id = $parentEvent->id;
-        $meeting->start_date_time = $startDate->format('Y-m-d') . '' . Carbon::parse($request->start_time)->format('H:i:s');
-        $meeting->end_date_time = $dueDate->format('Y-m-d') . ' ' . Carbon::parse($request->end_time)->format('H:i:s');
+        $meeting->start_date_time = $startDate->format('Y-m-d').''.Carbon::parse($request->start_time)->format('H:i:s');
+        $meeting->end_date_time = $dueDate->format('Y-m-d').' '.Carbon::parse($request->end_time)->format('H:i:s');
         $meeting->repeat = $request->repeat ? $request->repeat : 'no';
         $meeting->repeat_every = $request->repeat_count;
         $meeting->repeat_cycles = $request->repeat_cycles;
@@ -599,9 +598,9 @@ class MeetingController extends AccountBaseController
     public function show($id)
     {
         abort_403($this->checkViewAccess($id));
-        $this->hasAccess = !$this->checkManageAccess($id);
+        $this->hasAccess = ! $this->checkManageAccess($id);
 
-        $this->pageTitle = __('performance::app.meeting') . ' ' . __('app.details');
+        $this->pageTitle = __('performance::app.meeting').' '.__('app.details');
 
         $this->meeting = Meeting::with(['meetingBy', 'meetingFor', 'agendas', 'agendas.addedBy', 'actions', 'actions.addedBy'])->select('performance_meetings.*')->where('id', $id)->first();
         $this->indexView = request('tab');
@@ -610,17 +609,16 @@ class MeetingController extends AccountBaseController
         $this->activeTab = $tab ?: 'detail';
 
         switch ($tab) {
-        case 'discussion':
-            $this->tab = 'performance::meetings.ajax.discussion';
-            break;
-        case 'action':
-            $this->tab = 'performance::meetings.ajax.action';
-            break;
-        default:
-            $this->tab = 'performance::meetings.ajax.meeting-detail';
-            break;
+            case 'discussion':
+                $this->tab = 'performance::meetings.ajax.discussion';
+                break;
+            case 'action':
+                $this->tab = 'performance::meetings.ajax.action';
+                break;
+            default:
+                $this->tab = 'performance::meetings.ajax.meeting-detail';
+                break;
         }
-
 
         if (request()->ajax()) {
             $view = request('json') ? $this->tab : 'performance::meetings.ajax.show';
@@ -645,6 +643,7 @@ class MeetingController extends AccountBaseController
 
         if (request()->ajax()) {
             $html = view('performance::meetings.ajax.edit', $this->data)->render();
+
             return Reply::dataOnly(['status' => 'success', 'html' => $html, 'title' => $this->pageTitle]);
         }
 
@@ -658,9 +657,9 @@ class MeetingController extends AccountBaseController
         abort_403($this->checkManageAccess($id));
 
         $meeting = Meeting::findOrFail($id);
-        $start_date_time = Carbon::createFromFormat($this->company->date_format, $request->meeting_date, $this->company->timezone)->format('Y-m-d') . ' ' . Carbon::createFromFormat($this->company->time_format, $request->start_time)->format('H:i:s');
+        $start_date_time = Carbon::createFromFormat($this->company->date_format, $request->meeting_date, $this->company->timezone)->format('Y-m-d').' '.Carbon::createFromFormat($this->company->time_format, $request->start_time)->format('H:i:s');
         $meeting->start_date_time = Carbon::parse($start_date_time)->setTimezone('UTC');
-        $end_date_time = Carbon::createFromFormat($this->company->date_format, $request->meeting_date, $this->company->timezone)->format('Y-m-d') . ' ' . Carbon::createFromFormat($this->company->time_format, $request->end_time)->format('H:i:s');
+        $end_date_time = Carbon::createFromFormat($this->company->date_format, $request->meeting_date, $this->company->timezone)->format('Y-m-d').' '.Carbon::createFromFormat($this->company->time_format, $request->end_time)->format('H:i:s');
         $meeting->end_date_time = Carbon::parse($end_date_time)->setTimezone('UTC');
         $meeting->repeat = $request->repeat ? $request->repeat : 'no';
         $meeting->repeat_every = $request->repeat_count;
@@ -694,7 +693,7 @@ class MeetingController extends AccountBaseController
     {
         $date = Carbon::createFromFormat($this->company->date_format, $request->date);
 
-        $week = __('app.eventDay.' . $date->weekOfMonth);
+        $week = __('app.eventDay.'.$date->weekOfMonth);
         $day = $date->translatedFormat('l');
 
         return Reply::dataOnly(['message' => __('app.eventMonthlyOn', ['week' => $week, 'day' => $day])]);
@@ -713,7 +712,7 @@ class MeetingController extends AccountBaseController
         $view = 'performance::meetings.ajax.meeting-detail';
         $html = view($view, $this->data)->render();
 
-        $completedDate = __('app.completedOn'). ': ' .$completedOn->translatedFormat($this->company->date_format);
+        $completedDate = __('app.completedOn').': '.$completedOn->translatedFormat($this->company->date_format);
 
         return Reply::successWithData(__('messages.recordSaved'), ['status' => 'success', 'activeTab' => 'detail', 'html' => $html, 'completedOn' => $completedDate, 'title' => $this->pageTitle]);
     }
@@ -736,7 +735,7 @@ class MeetingController extends AccountBaseController
     {
         $meetingIds = explode(',', request()->meetingIds);
         DB::beginTransaction();
-        
+
         try {
             if ($id) {
                 $meeting = Meeting::findOrFail($id);
@@ -756,7 +755,8 @@ class MeetingController extends AccountBaseController
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-            return Reply::error(__('messages.errorOccured') . ': ' . $e->getMessage());
+
+            return Reply::error(__('messages.errorOccured').': '.$e->getMessage());
         }
 
         return Reply::successWithData(__('performance::messages.reminderSent'), ['status' => 'success']);
@@ -767,7 +767,7 @@ class MeetingController extends AccountBaseController
         dd($request->all());
         // Set pagination limit for past meetings
         $pastMeetingsPerPage = 10;
-        $skip = (int)($request->skip ?? 0);
+        $skip = (int) ($request->skip ?? 0);
 
         $query = Meeting::with(['meetingBy', 'meetingFor'])
             ->where('status', $request->status);
@@ -788,20 +788,20 @@ class MeetingController extends AccountBaseController
         if (request()->searchText && request()->searchText != 'all') {
             $query->where(function ($meeting) {
                 $meeting->orWhereHas('agendas', function ($q) {
-                    $q->where('discussion_point', 'like', '%' . request('searchText') . '%');
+                    $q->where('discussion_point', 'like', '%'.request('searchText').'%');
                 })
                     ->orWhereHas('meetingFor', function ($q) {
-                        $q->where('name', 'like', '%' . request('searchText') . '%');
+                        $q->where('name', 'like', '%'.request('searchText').'%');
                     })
                     ->orWhereHas('meetingBy', function ($q) {
-                        $q->where('name', 'like', '%' . request('searchText') . '%');
+                        $q->where('name', 'like', '%'.request('searchText').'%');
                     });
             });
         }
 
         // Get total count for pagination
         $totalPastMeetings = $query->count();
-        
+
         // Apply pagination
         $pastMeetings = $query->orderBy('start_date_time', 'desc')
             ->skip($skip)
@@ -810,8 +810,9 @@ class MeetingController extends AccountBaseController
 
         // Filter objectives based on user access
         $this->meetings = $pastMeetings->filter(function ($meeting) {
-            $meeting->has_access = !$this->checkManageAccess($meeting->id);
-            return !$this->checkViewAccess($meeting->id);
+            $meeting->has_access = ! $this->checkManageAccess($meeting->id);
+
+            return ! $this->checkViewAccess($meeting->id);
         })->groupBy(function ($meeting) {
             return Carbon::parse($meeting->start_date_time)->format('Y-m-d');
         });
@@ -828,7 +829,7 @@ class MeetingController extends AccountBaseController
     {
         // Set pagination limit for past meetings
         $pastMeetingsPerPage = 10;
-        $skip = (int)($request->skip ?? 0);
+        $skip = (int) ($request->skip ?? 0);
 
         $query = Meeting::with(['meetingBy', 'meetingFor'])
             ->where('status', $request->status);
@@ -849,20 +850,20 @@ class MeetingController extends AccountBaseController
         if (request()->searchText && request()->searchText != 'all') {
             $query->where(function ($meeting) {
                 $meeting->orWhereHas('agendas', function ($q) {
-                    $q->where('discussion_point', 'like', '%' . request('searchText') . '%');
+                    $q->where('discussion_point', 'like', '%'.request('searchText').'%');
                 })
                     ->orWhereHas('meetingFor', function ($q) {
-                        $q->where('name', 'like', '%' . request('searchText') . '%');
+                        $q->where('name', 'like', '%'.request('searchText').'%');
                     })
                     ->orWhereHas('meetingBy', function ($q) {
-                        $q->where('name', 'like', '%' . request('searchText') . '%');
+                        $q->where('name', 'like', '%'.request('searchText').'%');
                     });
             });
         }
 
         // Get total count for pagination
         $totalPastMeetings = $query->count();
-        
+
         // Apply pagination
         $pastMeetings = $query->orderBy('start_date_time', 'desc')
             ->skip($skip)
@@ -871,8 +872,9 @@ class MeetingController extends AccountBaseController
 
         // Filter objectives based on user access - DON'T group by date for load more
         $this->meetings = $pastMeetings->filter(function ($meeting) {
-            $meeting->has_access = !$this->checkManageAccess($meeting->id);
-            return !$this->checkViewAccess($meeting->id);
+            $meeting->has_access = ! $this->checkManageAccess($meeting->id);
+
+            return ! $this->checkViewAccess($meeting->id);
         });
 
         // Add pagination data
@@ -885,11 +887,11 @@ class MeetingController extends AccountBaseController
         $html = view($this->view, $this->data)->render();
 
         return Reply::dataOnly([
-            'status' => 'success', 
-            'html' => $html, 
+            'status' => 'success',
+            'html' => $html,
             'hasMorePastMeetings' => $this->hasMorePastMeetings,
             'totalPastMeetings' => $this->totalPastMeetings,
-            'currentSkip' => $this->currentSkip
+            'currentSkip' => $this->currentSkip,
         ]);
     }
 
@@ -902,7 +904,7 @@ class MeetingController extends AccountBaseController
         $meeting = Meeting::with(['meetingBy', 'meetingFor'])->findOrFail($id);
 
         $ownerId = $meeting->added_by;
-        $participantIds = array($meeting->meeting_for, $meeting->meeting_by);
+        $participantIds = [$meeting->meeting_for, $meeting->meeting_by];
 
         $managerIds = EmployeeDetails::whereNotNull('reporting_to')
             ->whereIn('user_id', $participantIds)
@@ -912,10 +914,10 @@ class MeetingController extends AccountBaseController
         $currentUserRoleIds = user()->roles()->pluck('id')->toArray();
         $viewByRoles = json_decode($meetingSetting->view_meeting_roles, true) ?? [];
 
-        return !(user()->hasRole('admin') || $ownerId == user()->id ||
+        return ! (user()->hasRole('admin') || $ownerId == user()->id ||
             ($canViewManager == 1 && in_array(user()->id, $managerIds)) ||
             ($canViewParticipant == 1 && in_array(user()->id, $participantIds)) ||
-            (!empty($viewByRoles) && array_intersect($currentUserRoleIds, $viewByRoles)));
+            (! empty($viewByRoles) && array_intersect($currentUserRoleIds, $viewByRoles)));
     }
 
     protected function checkManageAccess($id)
@@ -927,7 +929,7 @@ class MeetingController extends AccountBaseController
         $meeting = Meeting::with(['meetingBy', 'meetingFor'])->findOrFail($id);
 
         $ownerId = $meeting->added_by;
-        $participantIds = array($meeting->meeting_for, $meeting->meeting_by);
+        $participantIds = [$meeting->meeting_for, $meeting->meeting_by];
 
         $managerIds = EmployeeDetails::whereNotNull('reporting_to')
             ->whereIn('user_id', $participantIds)
@@ -937,10 +939,10 @@ class MeetingController extends AccountBaseController
         $currentUserRoleIds = user()->roles()->pluck('id')->toArray();
         $manageByRoles = json_decode($meetingSetting->create_meeting_roles, true) ?? [];
 
-        return !(user()->hasRole('admin') || $ownerId == user()->id ||
+        return ! (user()->hasRole('admin') || $ownerId == user()->id ||
             ($canManageManager == 1 && in_array(user()->id, $managerIds)) ||
             ($canManageParticipant == 1 && in_array(user()->id, $participantIds)) ||
-            (!empty($manageByRoles) && array_intersect($currentUserRoleIds, $manageByRoles)));
+            (! empty($manageByRoles) && array_intersect($currentUserRoleIds, $manageByRoles)));
     }
 
     protected function hasManageAccess()
@@ -958,9 +960,9 @@ class MeetingController extends AccountBaseController
         $currentUserRoleIds = user()->roles()->pluck('id')->toArray();
         $manageByRoles = json_decode($meetingSetting->create_meeting_roles, true) ?? [];
 
-        return !(user()->hasRole('admin') || $canManageParticipant ||
+        return ! (user()->hasRole('admin') || $canManageParticipant ||
             ($canManageManager == 1 && in_array(user()->id, $managerIds)) ||
-            (!empty($manageByRoles) && array_intersect($currentUserRoleIds, $manageByRoles)));
+            (! empty($manageByRoles) && array_intersect($currentUserRoleIds, $manageByRoles)));
     }
 
     protected function hasCreateAccess()
@@ -977,9 +979,8 @@ class MeetingController extends AccountBaseController
         $currentUserRoleIds = user()->roles()->pluck('id')->toArray();
         $manageByRoles = json_decode($meetingSetting->create_meeting_roles, true) ?? [];
 
-        return !(user()->hasRole('admin') ||
+        return ! (user()->hasRole('admin') ||
             ($canManageManager == 1 && in_array(user()->id, $managerIds)) ||
-            (!empty($manageByRoles) && array_intersect($currentUserRoleIds, $manageByRoles)));
+            (! empty($manageByRoles) && array_intersect($currentUserRoleIds, $manageByRoles)));
     }
-
 }

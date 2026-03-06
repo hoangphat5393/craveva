@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read \App\Models\Contract $contract
  * @property-read mixed $icon
  * @property-read \App\Models\User $renewedBy
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ContractRenew newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ContractRenew newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ContractRenew query()
@@ -35,14 +36,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|ContractRenew whereRenewedBy($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ContractRenew whereStartDate($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ContractRenew whereUpdatedAt($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ContractRenew whereCompanyId($value)
+ *
  * @mixin \Eloquent
  */
 class ContractRenew extends BaseModel
 {
-
     use HasCompany;
 
     protected $casts = [
@@ -59,5 +62,4 @@ class ContractRenew extends BaseModel
     {
         return $this->belongsTo(User::class, 'renewed_by')->withoutGlobalScope(ActiveScope::class);
     }
-
 }

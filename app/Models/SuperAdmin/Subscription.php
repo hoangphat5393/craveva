@@ -2,12 +2,11 @@
 
 namespace App\Models\SuperAdmin;
 
-use App\Models\Company;
 use App\Models\BaseModel;
+use App\Models\Company;
 
 class Subscription extends BaseModel
 {
-
     protected $dates = ['created_at'];
 
     protected $casts = ['created_at'];
@@ -16,5 +15,4 @@ class Subscription extends BaseModel
     {
         return $this->belongsTo(Company::class);
     }
-
 }

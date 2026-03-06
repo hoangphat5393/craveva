@@ -2,30 +2,29 @@
 
 namespace App\Http\Controllers;
 
+use App\Helper\Common;
+use App\Helper\Reply;
 use App\Models\Deal;
 use App\Models\Lead;
-use App\Models\User;
-use App\Helper\Reply;
 use App\Models\LeadAgent;
-use App\Models\LeadSource;
 use App\Models\LeadCategory;
 use App\Models\LeadPipeline;
-use Illuminate\Http\Request;
+use App\Models\LeadSource;
 use App\Models\PipelineStage;
 use App\Models\Product;
-use Illuminate\Support\Facades\DB;
+use App\Models\User;
 use App\Models\UserLeadboardSetting;
-use App\Helper\Common;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class LeadBoardController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'app.deal';
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('leads', $this->user->modules));
+            abort_403(! in_array('leads', $this->user->modules));
 
             return $next($request);
         });
@@ -43,7 +42,7 @@ class LeadBoardController extends AccountBaseController
         $this->viewEmployeePermission = user()->permission('view_employees');
         $this->viewDealLeadPermission = user()->permission('view_lead');
         $this->products = Product::all();
-        abort_403(!in_array($viewPermission, ['all', 'added', 'both', 'owned']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'both', 'owned']));
 
         $this->categories = LeadCategory::get();
         $this->sources = LeadSource::get();
@@ -124,11 +123,11 @@ class LeadBoardController extends AccountBaseController
                     $q->leftJoin('leads', 'leads.id', 'deals.lead_id');
                     $q->where(function ($query) {
                         $safeTerm = Common::safeString(request('searchText'));
-                        $query->where('leads.client_name', 'like', '%' . $safeTerm . '%')
-                            ->orWhere('leads.client_name', 'like', '%' . $safeTerm . '%')
-                            ->orWhere('leads.client_email', 'like', '%' . $safeTerm . '%')
-                            ->orWhere('leads.company_name', 'like', '%' . $safeTerm . '%')
-                            ->orWhere('leads.mobile', 'like', '%' . $safeTerm . '%');
+                        $query->where('leads.client_name', 'like', '%'.$safeTerm.'%')
+                            ->orWhere('leads.client_name', 'like', '%'.$safeTerm.'%')
+                            ->orWhere('leads.client_email', 'like', '%'.$safeTerm.'%')
+                            ->orWhere('leads.company_name', 'like', '%'.$safeTerm.'%')
+                            ->orWhere('leads.mobile', 'like', '%'.$safeTerm.'%');
                     });
                 }
 
@@ -149,7 +148,7 @@ class LeadBoardController extends AccountBaseController
 
                 if ($this->viewLeadPermission == 'owned') {
                     $q->where(function ($query) {
-                        if (!empty($this->myAgentId)) {
+                        if (! empty($this->myAgentId)) {
                             $query->whereIn('agent_id', $this->myAgentId);
                         }
                     });
@@ -159,7 +158,7 @@ class LeadBoardController extends AccountBaseController
 
                 if ($this->viewLeadPermission == 'both') {
                     $q->where(function ($query) {
-                        if (!empty($this->myAgentId)) {
+                        if (! empty($this->myAgentId)) {
                             $query->whereIn('agent_id', $this->myAgentId);
                         }
 
@@ -191,7 +190,7 @@ class LeadBoardController extends AccountBaseController
 
                     if ($this->viewLeadPermission == 'owned') {
                         $q->where(function ($query) {
-                            if (!empty($this->myAgentId)) {
+                            if (! empty($this->myAgentId)) {
                                 $query->whereIn('agent_id', $this->myAgentId);
                             }
                             $query->orWhere('deals.deal_watcher', user()->id);
@@ -200,7 +199,7 @@ class LeadBoardController extends AccountBaseController
 
                     if ($this->viewLeadPermission == 'both') {
                         $q->where(function ($query) {
-                            if (!empty($this->myAgentId)) {
+                            if (! empty($this->myAgentId)) {
                                 $query->whereIn('agent_id', $this->myAgentId);
                             }
 
@@ -211,7 +210,7 @@ class LeadBoardController extends AccountBaseController
 
                     $this->dateFilter($q, $startDate, $endDate, $request);
 
-                    if ($request->min == 'undefined' && $request->max == 'undefined' && (!is_null($request->min) || !is_null($request->max))) {
+                    if ($request->min == 'undefined' && $request->max == 'undefined' && (! is_null($request->min) || ! is_null($request->max))) {
                         $q->whereBetween('deals.value', [$request->min, $request->max]);
                     }
 
@@ -239,11 +238,11 @@ class LeadBoardController extends AccountBaseController
                     if ($request->searchText != '') {
                         $q->where(function ($query) {
                             $safeTerm = Common::safeString(request('searchText'));
-                            $query->where('leads.client_name', 'like', '%' . $safeTerm . '%')
-                                ->orWhere('leads.client_name', 'like', '%' . $safeTerm . '%')
-                                ->orWhere('leads.client_email', 'like', '%' . $safeTerm . '%')
-                                ->orWhere('leads.company_name', 'like', '%' . $safeTerm . '%')
-                                ->orWhere('leads.mobile', 'like', '%' . $safeTerm . '%');
+                            $query->where('leads.client_name', 'like', '%'.$safeTerm.'%')
+                                ->orWhere('leads.client_name', 'like', '%'.$safeTerm.'%')
+                                ->orWhere('leads.client_email', 'like', '%'.$safeTerm.'%')
+                                ->orWhere('leads.company_name', 'like', '%'.$safeTerm.'%')
+                                ->orWhere('leads.mobile', 'like', '%'.$safeTerm.'%');
                         });
                     }
                 }])->where(function ($query) use ($request) {
@@ -258,7 +257,7 @@ class LeadBoardController extends AccountBaseController
 
             $boardColumns = $boardColumns->with('userSetting')->orderBy('priority', 'asc')->get();
 
-            $result = array();
+            $result = [];
 
             foreach ($boardColumns as $key => $boardColumn) {
                 $result['boardColumns'][] = $boardColumn;
@@ -270,16 +269,14 @@ class LeadBoardController extends AccountBaseController
                     ->orderBy('deals.column_priority', 'asc')
                     ->groupBy('deals.id');
 
-
                 $this->dateFilter($leads, $startDate, $endDate, $request);
 
-
-                if (!is_null($request->min) || !is_null($request->max)) {
+                if (! is_null($request->min) || ! is_null($request->max)) {
                     $min = $request->min;
                     $leads = $leads->where('value', '>=', $min);
                 }
 
-                if (!is_null($request->max)) {
+                if (! is_null($request->max)) {
                     $max = $request->max;
                     $leads = $leads->where('value', '<=', $max);
                 }
@@ -303,7 +300,6 @@ class LeadBoardController extends AccountBaseController
                         ->where('lead_products.product_id', $request->product);
                 }
 
-
                 if ($request->deal_watcher_id !== null && $request->deal_watcher_id != 'all' && $request->deal_watcher_id != '') {
                     $leads->where('deals.deal_watcher', $request->deal_watcher_id);
                 }
@@ -320,11 +316,11 @@ class LeadBoardController extends AccountBaseController
 
                     $leads->where(function ($query) {
                         $safeTerm = Common::safeString(request('searchText'));
-                        $query->where('leads.client_name', 'like', '%' . $safeTerm . '%')
-                            ->orWhere('leads.client_name', 'like', '%' . $safeTerm . '%')
-                            ->orWhere('leads.client_email', 'like', '%' . $safeTerm . '%')
-                            ->orWhere('leads.company_name', 'like', '%' . $safeTerm . '%')
-                            ->orWhere('leads.mobile', 'like', '%' . $safeTerm . '%');
+                        $query->where('leads.client_name', 'like', '%'.$safeTerm.'%')
+                            ->orWhere('leads.client_name', 'like', '%'.$safeTerm.'%')
+                            ->orWhere('leads.client_email', 'like', '%'.$safeTerm.'%')
+                            ->orWhere('leads.company_name', 'like', '%'.$safeTerm.'%')
+                            ->orWhere('leads.mobile', 'like', '%'.$safeTerm.'%');
                     });
                 }
 
@@ -345,7 +341,7 @@ class LeadBoardController extends AccountBaseController
 
                 if ($this->viewLeadPermission == 'owned') {
                     $leads->where(function ($query) {
-                        if (!empty($this->myAgentId)) {
+                        if (! empty($this->myAgentId)) {
                             $query->whereIn('agent_id', $this->myAgentId);
                         }
 
@@ -355,7 +351,7 @@ class LeadBoardController extends AccountBaseController
 
                 if ($this->viewLeadPermission == 'both') {
                     $leads->where(function ($query) {
-                        if (!empty($this->myAgentId)) {
+                        if (! empty($this->myAgentId)) {
                             $query->whereIn('agent_id', $this->myAgentId);
                         }
 
@@ -370,7 +366,7 @@ class LeadBoardController extends AccountBaseController
 
                 $result['boardColumns'][$key]['total_value'] = 0;
 
-                if (!empty($dealIds)) {
+                if (! empty($dealIds)) {
                     $statusTotalValue = Deal::whereIn('id', $dealIds)->sum('value');
                     $result['boardColumns'][$key]['total_value'] = $statusTotalValue;
                 }
@@ -430,7 +426,7 @@ class LeadBoardController extends AccountBaseController
             });
         }
 
-        if (!is_null($request->min) || !is_null($request->max)) {
+        if (! is_null($request->min) || ! is_null($request->max)) {
             $leads = $leads->whereBetween('value', [$request->min, $request->max]);
         }
 
@@ -448,10 +444,10 @@ class LeadBoardController extends AccountBaseController
             $leads->leftJoin('leads', 'leads.id', 'deals.lead_id');
             $leads->where(function ($query) {
                 $safeTerm = Common::safeString(request('searchText'));
-                $query->where('leads.client_name', 'like', '%' . $safeTerm . '%')
-                    ->orWhere('leads.client_email', 'like', '%' . $safeTerm . '%')
-                    ->orWhere('leads.company_name', 'like', '%' . $safeTerm . '%')
-                    ->orWhere('leads.mobile', 'like', '%' . $safeTerm . '%');
+                $query->where('leads.client_name', 'like', '%'.$safeTerm.'%')
+                    ->orWhere('leads.client_email', 'like', '%'.$safeTerm.'%')
+                    ->orWhere('leads.company_name', 'like', '%'.$safeTerm.'%')
+                    ->orWhere('leads.mobile', 'like', '%'.$safeTerm.'%');
             });
         }
 
@@ -485,12 +481,12 @@ class LeadBoardController extends AccountBaseController
             }));
 
             foreach ($taskIds as $key => $taskId) {
-                if (!is_null($taskId)) {
+                if (! is_null($taskId)) {
                     $task = Deal::findOrFail($taskId);
                     $task->update(
                         [
                             'pipeline_stage_id' => $boardColumnId,
-                            'column_priority' => $priorities[$key]
+                            'column_priority' => $priorities[$key],
                         ]
                     );
                 }
@@ -515,6 +511,7 @@ class LeadBoardController extends AccountBaseController
     public function getStageSlug(Request $request)
     {
         $stage = PipelineStage::find($request->statusID);
+
         return response()->json(['slug' => $stage->slug]);
     }
 }

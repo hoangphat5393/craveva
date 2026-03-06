@@ -1,6 +1,6 @@
 <?php
 
-return array(
+return [
 
     /*
     |--------------------------------------------------------------------------
@@ -20,7 +20,7 @@ return array(
      */
     'convert_entities' => true,
 
-    'options' => array(
+    'options' => [
         /**
          * The location of the DOMPDF font directory
          *
@@ -93,7 +93,7 @@ return array(
         'allowed_protocols' => [
             'file://' => ['rules' => []],
             'http://' => ['rules' => []],
-            'https://' => ['rules' => []]
+            'https://' => ['rules' => []],
         ],
 
         /**
@@ -111,8 +111,7 @@ return array(
          *
          * Valid settings are 'PDFLib', 'CPDF' (the bundled R&OS PDF class), 'GD' and
          * 'auto'. 'auto' will look for PDFLib and use it if found, or if not it will
-         * fall back on CPDF. 'GD' renders PDFs to graphic files. {@link
-         * Canvas_Factory} ultimately determines which rendering class to instantiate
+         * fall back on CPDF. 'GD' renders PDFs to graphic files. {@link * Canvas_Factory} ultimately determines which rendering class to instantiate
          * based on this setting.
          *
          * Both PDFLib & CPDF rendering backends provide sufficient rendering
@@ -183,6 +182,7 @@ return array(
          * The default font family
          *
          * Used if no suitable fonts can be found. This must exist in the font folder.
+         *
          * @var string
          */
         'default_font' => 'serif',
@@ -274,10 +274,10 @@ return array(
          * Use the HTML5 Lib parser
          *
          * @deprecated This feature is now always on in dompdf 2.x
+         *
          * @var bool
          */
         'enable_html5_parser' => true,
-    ),
+    ],
 
-
-);
+];

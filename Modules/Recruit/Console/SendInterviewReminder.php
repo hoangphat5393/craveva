@@ -12,7 +12,6 @@ use Symfony\Component\Console\Input\InputOption;
 
 class SendInterviewReminder extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
@@ -41,7 +40,7 @@ class SendInterviewReminder extends Command
 
         foreach ($events as $interview) {
             $company = $interview->company;
-            
+
             $reminderDateTime = $this->calculateReminderDateTime($interview, $company)->shiftTimezone('UTC')->setTimezone($company->timezone);
 
             if ($reminderDateTime->equalTo(now()->timezone($company->timezone)->startOfMinute())) {
@@ -59,15 +58,15 @@ class SendInterviewReminder extends Command
         $reminderDateTime = '';
 
         switch ($type) {
-        case 'day':
-            $reminderDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $interview->schedule_date, $company->timezone)->subDays($time);
-            break;
-        case 'hour':
-            $reminderDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $interview->schedule_date, $company->timezone)->subHours($time);
-            break;
-        case 'minute':
-            $reminderDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $interview->schedule_date, $company->timezone)->subMinutes($time);
-            break;
+            case 'day':
+                $reminderDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $interview->schedule_date, $company->timezone)->subDays($time);
+                break;
+            case 'hour':
+                $reminderDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $interview->schedule_date, $company->timezone)->subHours($time);
+                break;
+            case 'minute':
+                $reminderDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $interview->schedule_date, $company->timezone)->subMinutes($time);
+                break;
         }
 
         return $reminderDateTime;
@@ -96,5 +95,4 @@ class SendInterviewReminder extends Command
             ['example', null, InputOption::VALUE_OPTIONAL, 'An example option.', null],
         ];
     }
-
 }

@@ -3,22 +3,21 @@
 namespace Modules\CyberSecurity\Http\Controllers;
 
 use App\Helper\Reply;
+use App\Http\Controllers\AccountBaseController;
+use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Modules\CyberSecurity\Entities\BlacklistIp;
-use Illuminate\Contracts\Support\Renderable;
-use App\Http\Controllers\AccountBaseController;
 use Modules\CyberSecurity\Http\Requests\StoreIpRequest;
 
 class BlacklistIpController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'cybersecurity::app.menu.cybersecurity';
         $this->activeSettingMenu = 'cybersecurity';
         $this->middleware(function ($request, $next) {
-            abort_403(!user()->is_superadmin);
+            abort_403(! user()->is_superadmin);
 
             return $next($request);
         });
@@ -26,6 +25,7 @@ class BlacklistIpController extends AccountBaseController
 
     /**
      * @return View|Factory
+     *
      * @throws BindingResolutionException
      */
     public function create()
@@ -35,7 +35,8 @@ class BlacklistIpController extends AccountBaseController
 
     /**
      * Store a newly created resource in storage.
-     * @param Request $request
+     *
+     * @param  Request  $request
      * @return Renderable
      */
     public function store(StoreIpRequest $request)
@@ -47,7 +48,8 @@ class BlacklistIpController extends AccountBaseController
 
     /**
      * Show the form for editing the specified resource.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function edit($id)
@@ -59,8 +61,9 @@ class BlacklistIpController extends AccountBaseController
 
     /**
      * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
+     *
+     * @param  Request  $request
+     * @param  int  $id
      * @return Renderable
      */
     public function update(StoreIpRequest $request, $id)
@@ -74,13 +77,14 @@ class BlacklistIpController extends AccountBaseController
 
     /**
      * Remove the specified resource from storage.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function destroy($id)
     {
         BlacklistIp::destroy($id);
+
         return Reply::success(__('messages.deleteSuccess'));
     }
-
 }

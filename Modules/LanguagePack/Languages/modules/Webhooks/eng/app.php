@@ -1,6 +1,6 @@
 <?php
 
-return array(
+return [
     'webhooks' => 'Webhooks',
     'log' => 'Log',
     'addWebhook' => 'Add Webhook',
@@ -20,4 +20,4 @@ return array(
     'runDebug' => 'Run in debug mode',
     'requestDetails' => 'Request Details',
     'response' => 'Response',
-);
+];

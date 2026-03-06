@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateRequest extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -26,13 +25,12 @@ class UpdateRequest extends FormRequest
     {
         $rules = [];
 
-        if(!$this->has('frontend_disable')) {
+        if (! $this->has('frontend_disable')) {
             $rules = [
-                'custom_homepage_url' => 'nullable|required_if:setup_homepage,custom|url'
+                'custom_homepage_url' => 'nullable|required_if:setup_homepage,custom|url',
             ];
         }
 
         return $rules;
     }
-
 }

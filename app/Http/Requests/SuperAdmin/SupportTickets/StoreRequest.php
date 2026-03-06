@@ -3,7 +3,6 @@
 namespace App\Http\Requests\SuperAdmin\SupportTickets;
 
 use App\Traits\CustomFieldsRequestTrait;
-
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreRequest extends FormRequest
@@ -31,12 +30,12 @@ class StoreRequest extends FormRequest
         $rules['description'] = [
             'required',
             function ($attribute, $value, $fail) {
-                $comment = trim_editor($value);;
+                $comment = trim_editor($value);
 
                 if ($comment == '') {
                     $fail(__('validation.required'));
                 }
-            }
+            },
         ];
         $rules['priority'] = 'sometimes|required';
         $rules['requested_for'] = 'required';
@@ -58,8 +57,7 @@ class StoreRequest extends FormRequest
     public function messages()
     {
         return [
-            'requested_for.required' => __('modules.tickets.requesterName').' '.__('app.required')
+            'requested_for.required' => __('modules.tickets.requesterName').' '.__('app.required'),
         ];
     }
-
 }

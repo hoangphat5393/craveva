@@ -2,26 +2,24 @@
 
 namespace App\DataTables;
 
-use App\Models\Expense;
 use App\Models\Company;
+use App\Models\Expense;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Html\Button;
 
 class ExpenseReportDataTable extends BaseDataTable
 {
-
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
-
     public function dataTable($query)
     {
         return datatables()
             ->eloquent($query)
-            ->addColumn('check', fn($row) => $this->checkBox($row))
+            ->addColumn('check', fn ($row) => $this->checkBox($row))
             ->editColumn('price', function ($row) {
                 return $row->total_amount;
             })
@@ -30,11 +28,11 @@ class ExpenseReportDataTable extends BaseDataTable
             })
             ->editColumn('item_name', function ($row) {
                 if (is_null($row->expenses_recurring_id)) {
-                    return '<a href="' . route('expenses.show', $row->id) . '" class="openRightModal text-darkest-grey">' . $row->item_name . '</a>';
+                    return '<a href="'.route('expenses.show', $row->id).'" class="openRightModal text-darkest-grey">'.$row->item_name.'</a>';
                 }
 
-                return '<a href="' . route('expenses.show', $row->id) . '" class="openRightModal text-darkest-grey">' . $row->item_name . '</a>
-                <p class="mb-0"><span class="badge badge-primary"> ' . __('app.recurring') . ' </span></p>';
+                return '<a href="'.route('expenses.show', $row->id).'" class="openRightModal text-darkest-grey">'.$row->item_name.'</a>
+                <p class="mb-0"><span class="badge badge-primary"> '.__('app.recurring').' </span></p>';
             })
             ->addColumn('export_item_name', function ($row) {
                 return $row->item_name;
@@ -49,29 +47,29 @@ class ExpenseReportDataTable extends BaseDataTable
             ->addColumn('bank_name', function ($row) {
                 $bankAccount = $row->bankAccount;
                 if ($bankAccount) {
-                    return $bankAccount->bank_name . ' | ' . $bankAccount->account_name;
+                    return $bankAccount->bank_name.' | '.$bankAccount->account_name;
                 } else {
                     return '--'; // or any default value you prefer
                 }
             })
             ->editColumn('user_id', function ($row) {
                 return view('components.employee', [
-                    'user' => $row->user
+                    'user' => $row->user,
                 ]);
             })
-            ->addColumn('export_bill', function($row){
-                return !is_null($row->bill) ? $row->bill_url : '';
+            ->addColumn('export_bill', function ($row) {
+                return ! is_null($row->bill) ? $row->bill_url : '';
             })
-            ->addColumn('bill', function($row){
-                return !is_null($row->bill) ? $row->bill : '--';
+            ->addColumn('bill', function ($row) {
+                return ! is_null($row->bill) ? $row->bill : '--';
             })
             ->addColumn('status', function ($row) {
-                return '<i class="fa fa-circle mr-1 text-dark-green f-10"></i>' . __('app.' . $row->status);
+                return '<i class="fa fa-circle mr-1 text-dark-green f-10"></i>'.__('app.'.$row->status);
             })
             ->editColumn(
                 'purchase_date',
                 function ($row) {
-                    if (!is_null($row->purchase_date)) {
+                    if (! is_null($row->purchase_date)) {
 
                         return $row->purchase_date->translatedFormat($this->company->date_format);
                     }
@@ -80,11 +78,11 @@ class ExpenseReportDataTable extends BaseDataTable
             ->editColumn(
                 'purchase_from',
                 function ($row) {
-                    return !is_null($row->purchase_from) ? $row->purchase_from : '--';
+                    return ! is_null($row->purchase_from) ? $row->purchase_from : '--';
                 }
             )
             ->smart(false)
-            ->setRowId(fn($row) => 'row-' . $row->id)
+            ->setRowId(fn ($row) => 'row-'.$row->id)
             ->addIndexColumn()
             ->rawColumns(['action', 'status', 'user_id', 'item_name', 'check', 'bank_account'])
             ->removeColumn('currency_id')
@@ -97,7 +95,6 @@ class ExpenseReportDataTable extends BaseDataTable
     /**
      * Get query source of dataTable.
      *
-     * @param Expense $model
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function query(Expense $model)
@@ -114,15 +111,15 @@ class ExpenseReportDataTable extends BaseDataTable
             $model = $model->where(DB::raw('DATE(`purchase_date`)'), '<=', $endDate);
         }
 
-        if ($request->categoryID != 'all' && !is_null($request->categoryID)) {
+        if ($request->categoryID != 'all' && ! is_null($request->categoryID)) {
             $model = $model->where('category_id', '=', $request->categoryID);
         }
 
-        if ($request->projectID != 'all' && !is_null($request->projectID)) {
+        if ($request->projectID != 'all' && ! is_null($request->projectID)) {
             $model = $model->where('project_id', '=', $request->projectID);
         }
 
-        if ($request->employeeID != 'all' && !is_null($request->employeeID)) {
+        if ($request->employeeID != 'all' && ! is_null($request->employeeID)) {
             $employeeID = $request->employeeID;
             $model = $model->where(function ($query) use ($employeeID) {
                 $query->where('user_id', $employeeID);
@@ -153,7 +150,7 @@ class ExpenseReportDataTable extends BaseDataTable
             ]);
 
         if (canDataTableExport()) {
-            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
+            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
         }
 
         return $dataTable;
@@ -167,12 +164,13 @@ class ExpenseReportDataTable extends BaseDataTable
     protected function getColumns()
     {
         $defaultCurrency = Company::with('currency')->find(company()->id);
+
         return [
             '#' => ['data' => 'DT_RowIndex', 'orderable' => false, 'searchable' => false, 'visible' => false, 'title' => '#'],
             __('modules.expenses.itemName') => ['data' => 'item_name', 'name' => 'item_name', 'exportable' => false, 'title' => __('modules.expenses.itemName')],
             __('app.menu.itemName') => ['data' => 'export_item_name', 'name' => 'export_item_name', 'visible' => false, 'title' => __('modules.expenses.itemName')],
             __('app.price') => ['data' => 'price', 'name' => 'price', 'title' => __('app.price')],
-            __('app.price') . $defaultCurrency->currency->currency_code => ['data' => 'default_currency_price', 'name' => 'default_currency_price',  'orderable' => false, 'title' => __('app.price') . ' ( ' . $defaultCurrency->currency->currency_code . ' )'],
+            __('app.price').$defaultCurrency->currency->currency_code => ['data' => 'default_currency_price', 'name' => 'default_currency_price',  'orderable' => false, 'title' => __('app.price').' ( '.$defaultCurrency->currency->currency_code.' )'],
             __('app.menu.employees') => ['data' => 'user_id', 'name' => 'user_id', 'exportable' => false, 'title' => __('app.menu.employees')],
             __('app.employee') => ['data' => 'employee_name', 'name' => 'user_id', 'visible' => false, 'title' => __('app.employee')],
             __('modules.expenses.purchaseFrom') => ['data' => 'purchase_from', 'name' => 'purchase_from', 'title' => __('modules.expenses.purchaseFrom')],
@@ -182,8 +180,7 @@ class ExpenseReportDataTable extends BaseDataTable
             __('modules.expenses.expenseBill') => ['data' => 'export_bill', 'name' => 'export_bill', 'visible' => false, 'title' => __('modules.expenses.expenseBill')],
             __('app.bill') => ['data' => 'bill', 'name' => 'bill', 'exportable' => false, 'title' => __('app.bill')],
             __('app.status') => ['data' => 'status', 'name' => 'status', 'exportable' => false, 'title' => __('app.status')],
-            __('app.status') . ' ' . __('app.status') => ['data' => 'status', 'name' => 'status', 'visible' => false, 'title' => __('app.status')]
+            __('app.status').' '.__('app.status') => ['data' => 'status', 'name' => 'status', 'visible' => false, 'title' => __('app.status')],
         ];
     }
-
 }

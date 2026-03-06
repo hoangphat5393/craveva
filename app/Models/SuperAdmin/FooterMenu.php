@@ -24,6 +24,7 @@ use App\Models\LanguageSetting;
  * @property Carbon|null $updated_at
  * @property-read mixed $video_url
  * @property-read LanguageSetting|null $language
+ *
  * @method static Builder|FooterMenu newModelQuery()
  * @method static Builder|FooterMenu newQuery()
  * @method static Builder|FooterMenu query()
@@ -41,11 +42,11 @@ use App\Models\LanguageSetting;
  * @method static Builder|FooterMenu whereUpdatedAt($value)
  * @method static Builder|FooterMenu whereVideoEmbed($value)
  * @method static Builder|FooterMenu whereVideoLink($value)
+ *
  * @mixin Eloquent
  */
 class FooterMenu extends BaseModel
 {
-
     protected $table = 'footer_menu';
 
     public function language()
@@ -55,7 +56,6 @@ class FooterMenu extends BaseModel
 
     public function getVideoUrlAttribute()
     {
-        return ($this->file_name) ? asset_url('footer-files/' . $this->file_name) : '';
+        return ($this->file_name) ? asset_url('footer-files/'.$this->file_name) : '';
     }
-
 }

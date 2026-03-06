@@ -2,16 +2,16 @@
 
 namespace App\Observers;
 
-use App\Models\Ticket;
 use App\Events\TicketEvent;
-use App\Models\Notification;
-use App\Models\UniversalSearch;
-use App\Models\TicketAgentGroups;
 use App\Events\TicketRequesterEvent;
+use App\Models\LeadSetting;
+use App\Models\Notification;
+use App\Models\Ticket;
 use App\Models\TicketActivity;
+use App\Models\TicketAgentGroups;
+use App\Models\UniversalSearch;
 use App\Models\User;
 use App\Traits\EmployeeActivityTrait;
-use App\Models\LeadSetting;
 
 class TicketObserver
 {
@@ -19,8 +19,8 @@ class TicketObserver
 
     public function saving(Ticket $ticket)
     {
-        if (!isRunningInConsoleOrSeeding()) {
-            $userID = (!is_null(user())) ? user()->id : $ticket->user_id;
+        if (! isRunningInConsoleOrSeeding()) {
+            $userID = (! is_null(user())) ? user()->id : $ticket->user_id;
             $ticket->last_updated_by = $userID;
         }
     }
@@ -32,8 +32,8 @@ class TicketObserver
             $model->company_id = company()->id;
         }
 
-        if (!isRunningInConsoleOrSeeding()) {
-            $userID = (!is_null(user())) ? user()->id : $model->user_id;
+        if (! isRunningInConsoleOrSeeding()) {
+            $userID = (! is_null(user())) ? user()->id : $model->user_id;
             $model->added_by = $userID;
 
             if ($model->isDirty('status') && $model->status == 'closed') {
@@ -63,27 +63,25 @@ class TicketObserver
                 $diffAgent = array_diff($agentGroupData, $ticketData);
 
                 if (is_null(request()->agent_id)) {
-                    if (!empty($diffAgent)) {
+                    if (! empty($diffAgent)) {
                         $model->agent_id = current($diffAgent);
-                    }
-                    else {
+                    } else {
                         $agentDuplicateCount = array_count_values($ticketData);
 
-                        if (!empty($agentDuplicateCount)) {
+                        if (! empty($agentDuplicateCount)) {
                             $minVal = min($agentDuplicateCount);
                             $agent_id = array_search($minVal, $agentDuplicateCount);
                             $model->agent_id = $agent_id;
                         }
                     }
-                }
-                else {
+                } else {
                     $model->agent_id = request()->agent_id;
                 }
             }
             // Round Robin End
         }
 
-        $model->ticket_number = (int)Ticket::max('ticket_number') + 1;
+        $model->ticket_number = (int) Ticket::max('ticket_number') + 1;
 
     }
 
@@ -91,7 +89,7 @@ class TicketObserver
     {
         $this->createActivity($model, 'create');
 
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             if (user()) {
                 self::createEmployeeActivity(user()->id, 'ticket-created', $model->id, 'ticket');
             }
@@ -100,7 +98,7 @@ class TicketObserver
             if (request()->mention_user_ids != '' || request()->mention_user_ids != null) {
                 $model->mentionUser()->sync(request()->mention_user_ids);
                 $mentionArray = explode(',', request()->mention_user_ids);
-                $mentionUserIds = array_intersect($mentionArray, array(request()->agent_id));
+                $mentionUserIds = array_intersect($mentionArray, [request()->agent_id]);
                 $unmentionIds = array_diff([request()->agent_id], $mentionArray);
                 $mentionUserIds = $mentionUserIds ?: $mentionArray;
                 $userDetails = User::whereIn('id', $mentionArray)->get();
@@ -112,8 +110,7 @@ class TicketObserver
 
                 }
 
-            }
-            else {
+            } else {
                 event(new TicketEvent($model, null, 'NewTicket'));
             }
 
@@ -127,7 +124,7 @@ class TicketObserver
 
     public function updating(Ticket $ticket)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             if ($ticket->isDirty('status') && $ticket->status == 'closed') {
                 $ticket->close_date = now(company()->timezone)->format('Y-m-d');
             }
@@ -137,7 +134,7 @@ class TicketObserver
 
     public function updated(Ticket $ticket)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             if (user()) {
                 self::createEmployeeActivity(user()->id, 'ticket-updated', $ticket->id, 'ticket');
             }
@@ -204,7 +201,7 @@ class TicketObserver
 
     public function createActivity($ticket, $type = 'create')
     {
-        $ticketActivity = new TicketActivity();
+        $ticketActivity = new TicketActivity;
         $ticketActivity->ticket_id = $ticket->id;
         $ticketActivity->user_id = user()->id ?? $ticket->user_id;
         $ticketActivity->assigned_to = $ticket->agent_id;
@@ -216,5 +213,4 @@ class TicketObserver
         $ticketActivity->type = $type;
         $ticketActivity->save();
     }
-
 }

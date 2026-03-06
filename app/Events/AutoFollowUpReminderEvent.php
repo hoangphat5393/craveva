@@ -9,10 +9,10 @@ use Illuminate\Queue\SerializesModels;
 
 class AutoFollowUpReminderEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $followup;
+
     public $subject;
 
     public function __construct(DealFollowUp $followup, $subject)
@@ -20,5 +20,4 @@ class AutoFollowUpReminderEvent
         $this->followup = $followup;
         $this->subject = $subject;
     }
-
 }

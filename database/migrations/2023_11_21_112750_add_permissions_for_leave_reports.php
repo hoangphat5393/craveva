@@ -11,7 +11,6 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-
     public function up()
     {
         Schema::table('project_time_logs', function (Blueprint $table) {
@@ -22,7 +21,7 @@ return new class extends Migration
 
         $module = Module::where('module_name', 'reports')->first();
 
-        if (!is_null($module)) {
+        if (! is_null($module)) {
             $permissionName = 'view_leave_report';
 
             $permission = Permission::where('name', $permissionName)->update([
@@ -30,7 +29,7 @@ return new class extends Migration
                 'display_name' => ucwords(str_replace('_', ' ', $permissionName)),
                 'is_custom' => 1,
                 'module_id' => $module->id,
-                'allowed_permissions' => Permission::ALL_4_ADDED_1_OWNED_2_BOTH_3_NONE_5
+                'allowed_permissions' => Permission::ALL_4_ADDED_1_OWNED_2_BOTH_3_NONE_5,
             ]);
 
         }
@@ -39,9 +38,5 @@ return new class extends Migration
     /**
      * Reverse the migrations.
      */
-    public function down(): void
-    {
-
-    }
-
+    public function down(): void {}
 };

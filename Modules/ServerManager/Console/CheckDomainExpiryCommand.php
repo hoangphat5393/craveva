@@ -2,9 +2,9 @@
 
 namespace Modules\ServerManager\Console;
 
+use App\Models\Company;
 use Illuminate\Console\Command;
 use Modules\ServerManager\Jobs\CheckExpiringDomainsJob;
-use App\Models\Company;
 
 class CheckDomainExpiryCommand extends Command
 {
@@ -36,6 +36,7 @@ class CheckDomainExpiryCommand extends Command
         }
 
         $this->info('Domain expiry check completed successfully.');
+
         return Command::SUCCESS;
     }
 }

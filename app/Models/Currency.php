@@ -17,6 +17,7 @@ use App\Traits\HasCompany;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read mixed $icon
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Currency newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Currency newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Currency query()
@@ -29,29 +30,34 @@ use App\Traits\HasCompany;
  * @method static \Illuminate\Database\Eloquent\Builder|Currency whereIsCryptocurrency($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Currency whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Currency whereUsdPrice($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Currency whereCompanyId($value)
+ *
  * @property string $currency_position
  * @property int $no_of_decimal
  * @property string|null $thousand_separator
  * @property string|null $decimal_separator
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Invoice> $invoices
  * @property-read int|null $invoices_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Currency whereCurrencyPosition($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Currency whereDecimalSeparator($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Currency whereNoOfDecimal($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Currency whereThousandSeparator($value)
+ *
  * @mixin \Eloquent
  */
 class Currency extends BaseModel
 {
     use HasCompany;
 
-    protected $guarded =['id'];
+    protected $guarded = ['id'];
+
     public function invoices()
     {
         return $this->hasMany(Invoice::class);
     }
-
 }

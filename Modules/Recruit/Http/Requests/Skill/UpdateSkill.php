@@ -2,7 +2,6 @@
 
 namespace Modules\Recruit\Http\Requests\Skill;
 
-use Illuminate\Validation\Rule;
 use App\Http\Requests\CoreRequest;
 
 class UpdateSkill extends CoreRequest
@@ -16,7 +15,7 @@ class UpdateSkill extends CoreRequest
     {
 
         return [
-            'name' => 'required|unique:recruit_skills,name,' . $this->route('job_skill').',id,company_id,' . company()->id,
+            'name' => 'required|unique:recruit_skills,name,'.$this->route('job_skill').',id,company_id,'.company()->id,
         ];
     }
 

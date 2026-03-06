@@ -27,14 +27,14 @@ class StoreCustomTicket extends CoreRequest
     public function rules()
     {
         \Illuminate\Support\Facades\Validator::extend('check_superadmin', function ($attribute, $value, $parameters, $validator) {
-            return !\App\Models\User::withoutGlobalScopes([\App\Scopes\ActiveScope::class, \App\Scopes\CompanyScope::class])
+            return ! \App\Models\User::withoutGlobalScopes([\App\Scopes\ActiveScope::class, \App\Scopes\CompanyScope::class])
                 ->where('email', $value)
                 ->where('is_superadmin', 1)
                 ->exists();
         });
 
         $setting = \global_setting();
-        $rules = array();
+        $rules = [];
         $rules['name'] = 'required';
         $rules['email'] = 'required|email:rfc,strict|check_superadmin';
         $rules['ticket_subject'] = 'required';
@@ -44,7 +44,7 @@ class StoreCustomTicket extends CoreRequest
 
         $rules = $this->customFieldRules($rules);
 
-        if($setting->google_recaptcha_status == 'active' && $setting->ticket_form_google_captcha == 1 && ($setting->google_recaptcha_v2_status == 'active')){
+        if ($setting->google_recaptcha_status == 'active' && $setting->ticket_form_google_captcha == 1 && ($setting->google_recaptcha_v2_status == 'active')) {
             $rules['g-recaptcha-response'] = 'required';
         }
 
@@ -66,5 +66,4 @@ class StoreCustomTicket extends CoreRequest
             'email.check_superadmin' => __('superadmin.emailCantUse'),
         ];
     }
-
 }

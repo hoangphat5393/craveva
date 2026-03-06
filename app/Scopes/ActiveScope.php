@@ -8,17 +8,13 @@ use Illuminate\Database\Eloquent\Scope;
 
 class ActiveScope implements Scope
 {
-
     /**
      * Apply the scope to a given Eloquent query builder.
      *
-     * @param Builder $builder
-     * @param Model $model
      * @return void
      */
     public function apply(Builder $builder, Model $model)
     {
-        $builder->where($model->getTable() . '.status', '=', 'active');
+        $builder->where($model->getTable().'.status', '=', 'active');
     }
-
 }

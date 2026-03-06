@@ -10,11 +10,10 @@ use Yajra\DataTables\Html\Column;
 
 class LeadDataRemovalDataTable extends BaseDataTable
 {
-
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
@@ -26,16 +25,16 @@ class LeadDataRemovalDataTable extends BaseDataTable
             ->addIndexColumn()
             ->addColumn('action', function ($row) {
                 $action = '<div class="task_view mr-1">
-                        <a href="javascript:;" data-consent-id="' . $row->id . '" data-type="approved"
+                        <a href="javascript:;" data-consent-id="'.$row->id.'" data-type="approved"
                             class="table-action task_view_more d-flex align-items-center justify-content-center">
-                            <i class="fa fa-check icons mr-2"></i> ' . __('app.approve') . '
+                            <i class="fa fa-check icons mr-2"></i> '.__('app.approve').'
                         </a>
                     </div>';
 
                 $action .= '<div class="task_view">
-                        <a href="javascript:;" data-consent-id="' . $row->id . '" data-type="rejected"
+                        <a href="javascript:;" data-consent-id="'.$row->id.'" data-type="rejected"
                             class="table-action task_view_more d-flex align-items-center justify-content-center">
-                            <i class="fa fa-times icons mr-2"></i> ' . __('app.reject') . '
+                            <i class="fa fa-times icons mr-2"></i> '.__('app.reject').'
                         </a>
                     </div>';
 
@@ -44,13 +43,11 @@ class LeadDataRemovalDataTable extends BaseDataTable
             ->addColumn('status', function ($row) use ($status) {
 
                 if ($row->status == 'pending') {
-                    $status = '<label class="label label-info">' . __('app.pending') . '</label>';
-                }
-                else if ($row->status == 'approved') {
-                    $status = '<label class="label label-success">' . __('app.approved') . '</label>';
-                }
-                else if ($row->status == 'rejected') {
-                    $status = '<label class="label label-danger">' . __('app.rejected') . '</label>';
+                    $status = '<label class="label label-info">'.__('app.pending').'</label>';
+                } elseif ($row->status == 'approved') {
+                    $status = '<label class="label label-success">'.__('app.approved').'</label>';
+                } elseif ($row->status == 'rejected') {
+                    $status = '<label class="label label-danger">'.__('app.rejected').'</label>';
                 }
 
                 return $status;
@@ -65,7 +62,6 @@ class LeadDataRemovalDataTable extends BaseDataTable
     }
 
     /**
-     * @param RemovalRequestLead $model
      * @return \Illuminate\Database\Query\Builder
      */
     public function query(RemovalRequestLead $model)
@@ -95,7 +91,7 @@ class LeadDataRemovalDataTable extends BaseDataTable
             ]);
 
         if (canDataTableExport()) {
-            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
+            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
         }
 
         return $dataTable;
@@ -121,8 +117,7 @@ class LeadDataRemovalDataTable extends BaseDataTable
                 ->orderable(false)
                 ->searchable(false)
                 ->width(200)
-                ->addClass('text-right pr-20')
+                ->addClass('text-right pr-20'),
         ];
     }
-
 }

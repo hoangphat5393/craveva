@@ -6,7 +6,6 @@ use App\Models\BaseModel;
 use App\Models\EmployeeDetails;
 use App\Models\User;
 use App\Traits\HasCompany;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -15,8 +14,7 @@ use Modules\Zoom\Entities\ZoomMeeting;
 
 class RecruitInterviewSchedule extends BaseModel
 {
-
-    use Notifiable, HasCompany;
+    use HasCompany, Notifiable;
 
     protected $dates = ['end_date', 'start_date', 'schedule_date'];
 
@@ -84,5 +82,4 @@ class RecruitInterviewSchedule extends BaseModel
     {
         return $this->hasMany(RecruitInterviewEvaluation::class, 'recruit_interview_schedule_id');
     }
-
 }

@@ -21,10 +21,10 @@ if (! function_exists('languagePackPath')) {
     {
 
         if ($module) {
-            return module_path('LanguagePack', 'Languages/modules/' . $module . '/' . $languageCode);
+            return module_path('LanguagePack', 'Languages/modules/'.$module.'/'.$languageCode);
         }
 
-        return module_path('LanguagePack', 'Languages/app/' . $languageCode);
+        return module_path('LanguagePack', 'Languages/app/'.$languageCode);
     }
 }
 
@@ -34,6 +34,7 @@ if (! function_exists('isLanguagePackAvailable')) {
     {
 
         $path = languagePackPath($languageCode);
+
         return File::isDirectory($path);
     }
 }
@@ -43,6 +44,7 @@ if (! function_exists('isModuleLanguagePackAvailable')) {
     function isModuleLanguagePackAvailable($module, $languageCode)
     {
         $path = languagePackPath($languageCode, $module);
+
         return File::isDirectory($path);
     }
 }
@@ -53,12 +55,12 @@ if (! function_exists('isLanguagePublished')) {
     {
         $path = lang_path($languageCode);
 
-        $isPublished = !File::isDirectory($path);
+        $isPublished = ! File::isDirectory($path);
 
         if (File::isDirectory($path)) {
             $isPublished = File::isEmptyDirectory($path);
         }
 
-        return !$isPublished;
+        return ! $isPublished;
     }
 }

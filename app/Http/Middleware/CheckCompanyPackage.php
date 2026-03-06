@@ -8,7 +8,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CheckCompanyPackage
 {
-
     /**
      * Handle an incoming request.
      *
@@ -28,13 +27,12 @@ class CheckCompanyPackage
             'profile.dark_theme',
         ];
 
-        if (user() && user()->company_id && !$request->routeIs($allowedRoutes)) {
+        if (user() && user()->company_id && ! $request->routeIs($allowedRoutes)) {
 
             $isAllowedInCurrentPackage = checkCompanyPackageIsValid(user()->company_id);
 
-
-            if (!$isAllowedInCurrentPackage) {
-                if(in_array('admin', user_roles())) {
+            if (! $isAllowedInCurrentPackage) {
+                if (in_array('admin', user_roles())) {
                     return redirect()->route('billing.index');
                 }
 
@@ -52,10 +50,9 @@ class CheckCompanyPackage
         ];
 
         if (user() && user()->company_id && $request->routeIs($notAllowedRoutes)) {
-            abort_403(!checkCompanyCanAddMoreEmployees(user()->company_id));
+            abort_403(! checkCompanyCanAddMoreEmployees(user()->company_id));
         }
 
         return $next($request);
     }
-
 }

@@ -24,7 +24,7 @@ class SmtpConfigProvider extends ServiceProvider
 
             if ($smtpSetting && $settings) {
 
-                if (!in_array(config('app.env'), ['demo', 'development'])) {
+                if (! in_array(config('app.env'), ['demo', 'development'])) {
 
                     $driver = ($smtpSetting->mail_driver != 'mail') ? $smtpSetting->mail_driver : 'sendmail';
 
@@ -50,7 +50,7 @@ class SmtpConfigProvider extends ServiceProvider
                 if (is_null($settings->light_logo)) {
                     Config::set('app.logo', asset('img/craveva-logo.png'));
                 } else {
-                    Config::set('app.logo', $this->generateMaskedImageAppUrl('app-logo/' . $settings->light_logo));
+                    Config::set('app.logo', $this->generateMaskedImageAppUrl('app-logo/'.$settings->light_logo));
                 }
 
                 $pushSetting = DB::table('push_notification_settings')->first();

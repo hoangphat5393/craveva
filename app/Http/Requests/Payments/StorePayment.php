@@ -2,12 +2,11 @@
 
 namespace App\Http\Requests\Payments;
 
-use App\Models\Invoice;
 use App\Http\Requests\CoreRequest;
+use App\Models\Invoice;
 
 class StorePayment extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -44,7 +43,6 @@ class StorePayment extends CoreRequest
             $rules['amount'] = 'required|numeric|min:1';
         }
 
-
         if ($this->transaction_id) {
 
             // It need to be unique for all the company
@@ -56,7 +54,6 @@ class StorePayment extends CoreRequest
             $rules['project_id'] = 'required_without:invoice_id';
         }
 
-
         return $rules;
     }
 
@@ -67,5 +64,4 @@ class StorePayment extends CoreRequest
             'project_id' => __('app.project'),
         ];
     }
-
 }

@@ -6,7 +6,7 @@ return [
         'devices' => 'Devices',
         'attendance' => 'Attendance Logs',
         'deviceEmployees' => 'Employees Mapping',
-        'commands' => 'Commands'
+        'commands' => 'Commands',
     ],
     'deviceName' => 'Device Name',
     'serialNumber' => 'Serial Number',

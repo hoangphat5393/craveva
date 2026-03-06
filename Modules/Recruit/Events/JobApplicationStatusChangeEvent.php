@@ -12,8 +12,8 @@ class JobApplicationStatusChangeEvent
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $jobApplication;
-    public $status;
 
+    public $status;
 
     /**
      * Create a new event instance.

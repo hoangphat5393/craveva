@@ -21,5 +21,4 @@ class SmsEventInviteListener
         } catch (\Exception $e) { // @codingStandardsIgnoreLine
         }
     }
-
 }

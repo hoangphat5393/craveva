@@ -4,7 +4,6 @@ namespace Modules\Webhooks\Enums;
 
 enum LeadVariable: string implements Variable
 {
-
     case name = '##NAME##';
     case email = '##EMAIL##';
     case company_name = '##COMPANY_NAME##';
@@ -40,8 +39,7 @@ enum LeadVariable: string implements Variable
             'last_updated_by',
             'added_by',
             'image_url',
-            'company'
+            'company',
         ];
     }
-
 }

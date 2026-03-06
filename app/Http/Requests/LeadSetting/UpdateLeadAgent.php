@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateLeadAgent extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -27,5 +26,4 @@ class UpdateLeadAgent extends FormRequest
             'categoryId.0' => 'required',
         ];
     }
-
 }

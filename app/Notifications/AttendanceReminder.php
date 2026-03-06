@@ -2,13 +2,10 @@
 
 namespace App\Notifications;
 
-use App\Models\GlobalSetting;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Support\Facades\App;
 
 class AttendanceReminder extends BaseNotification
 {
-
     /**
      * Get the notification's delivery channels.
      *
@@ -28,8 +25,7 @@ class AttendanceReminder extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
+     * @param  mixed  $notifiable
      */
     public function toMail($notifiable): MailMessage
     {
@@ -47,7 +43,7 @@ class AttendanceReminder extends BaseNotification
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
-                'actionText' => __('email.AttendanceReminder.action'), 'notifiableName' => $notifiable->name
+                'actionText' => __('email.AttendanceReminder.action'), 'notifiableName' => $notifiable->name,
             ]);
 
         parent::resetLocale();
@@ -58,12 +54,10 @@ class AttendanceReminder extends BaseNotification
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
-     * @return array
+     * @param  mixed  $notifiable
      */
     public function toArray($notifiable): array
     {
         return $notifiable->toArray();
     }
-
 }

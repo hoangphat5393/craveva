@@ -8,8 +8,8 @@ use Modules\Recruit\Entities\RecruitJobApplication;
 
 class RecruiterJobApplicationStatusChanged extends BaseNotification
 {
-
     public $jobApplication;
+
     public $emailSetting;
 
     /**
@@ -27,7 +27,7 @@ class RecruiterJobApplicationStatusChanged extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -44,7 +44,7 @@ class RecruiterJobApplicationStatusChanged extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
@@ -52,7 +52,7 @@ class RecruiterJobApplicationStatusChanged extends BaseNotification
         $url = route('job-applications.show', $this->jobApplication->id);
         $url = getDomainSpecificUrl($url, $this->company);
 
-        $content = __($this->jobApplication->full_name) . ' (' . $this->jobApplication->email ? $this->jobApplication->email : '' . ') - ' . __('recruit::modules.recruiterJobApplicationStatusChange.text') . ' ' . $this->jobApplication->applicationStatus->status;
+        $content = __($this->jobApplication->full_name).' ('.$this->jobApplication->email ? $this->jobApplication->email : ''.') - '.__('recruit::modules.recruiterJobApplicationStatusChange.text').' '.$this->jobApplication->applicationStatus->status;
 
         return parent::build()
             ->subject(__('recruit::modules.recruiterJobApplicationStatusChange.subject'))
@@ -60,15 +60,15 @@ class RecruiterJobApplicationStatusChanged extends BaseNotification
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
-                'actionText' => __('app.view') . ' ' . __('recruit::modules.jobApplication.jobApplication'),
-                'notifiableName' => $notifiable->name
+                'actionText' => __('app.view').' '.__('recruit::modules.jobApplication.jobApplication'),
+                'notifiableName' => $notifiable->name,
             ]);
     }
 
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function toArray($notifiable)
@@ -76,8 +76,7 @@ class RecruiterJobApplicationStatusChanged extends BaseNotification
         return [
             'user_id' => $notifiable->id,
             'job_id' => $this->jobApplication->id,
-            'heading' => $this->jobApplication->full_name
+            'heading' => $this->jobApplication->full_name,
         ];
     }
-
 }

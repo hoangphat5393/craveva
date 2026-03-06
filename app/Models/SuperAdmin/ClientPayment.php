@@ -2,13 +2,12 @@
 
 namespace App\Models\SuperAdmin;
 
+use App\Models\BaseModel;
 use App\Models\Invoice;
 use App\Observers\SuperAdmin\InvoicePaymentReceivedObserver;
-use App\Models\BaseModel;
 
 class ClientPayment extends BaseModel
 {
-
     protected $table = 'payments';
 
     protected $dates = ['paid_on'];
@@ -27,5 +26,4 @@ class ClientPayment extends BaseModel
     {
         return $this->belongsTo(Invoice::class, 'invoice_id');
     }
-
 }

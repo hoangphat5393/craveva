@@ -8,7 +8,6 @@ use App\Models\TaskLabelList;
 
 class TaskLabelListObserver
 {
-
     public function creating(TaskLabelList $model)
     {
         if (company()) {
@@ -28,7 +27,7 @@ class TaskLabelListObserver
 
                 $taskLabelsArray = explode(',', $task->task_labels);
 
-                $updatedTaskLabels = array_filter($taskLabelsArray, function($labelId) use ($validLabelIds) {
+                $updatedTaskLabels = array_filter($taskLabelsArray, function ($labelId) use ($validLabelIds) {
                     return in_array($labelId, $validLabelIds);
                 });
 
@@ -47,7 +46,8 @@ class TaskLabelListObserver
         }
     }
 
-    public function deleted(){
+    public function deleted()
+    {
 
         $validLabelIds = TaskLabelList::whereNull('project_id')->pluck('id')->toArray();
 
@@ -57,7 +57,7 @@ class TaskLabelListObserver
 
             $taskLabelsArray = explode(',', $task->task_labels);
 
-            $updatedTaskLabels = array_filter($taskLabelsArray, function($labelId) use ($validLabelIds) {
+            $updatedTaskLabels = array_filter($taskLabelsArray, function ($labelId) use ($validLabelIds) {
                 return in_array($labelId, $validLabelIds);
             });
 
@@ -67,7 +67,4 @@ class TaskLabelListObserver
             }
         }
     }
-
 }
-
-

@@ -2,21 +2,20 @@
 
 namespace App\Http\Controllers\SuperAdmin;
 
-use stdClass;
-use Carbon\Carbon;
 use App\Models\Company;
+use App\Models\SuperAdmin\GlobalInvoice;
+use App\Models\SuperAdmin\GlobalPaymentGatewayCredentials;
+use App\Models\SuperAdmin\GlobalSubscription;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use App\Models\SuperAdmin\GlobalInvoice;
-use App\Models\SuperAdmin\GlobalSubscription;
-use App\Models\SuperAdmin\GlobalPaymentGatewayCredentials;
+use stdClass;
 
 class PayFastWebhookController extends Controller
 {
-
     public function saveInvoice(Request $request)
     {
-        $credential = new stdClass();
+        $credential = new stdClass;
 
         $globalCredential = GlobalPaymentGatewayCredentials::first();
 
@@ -25,8 +24,7 @@ class PayFastWebhookController extends Controller
             $credential->payfast_key = $globalCredential->test_payfast_merchant_id;
             $credential->payfast_secret = $globalCredential->test_payfast_merchant_key;
             $pfHost = 'sandbox.payfast.co.za';
-        }
-        else {
+        } else {
             $credential->payfast_salt_passphrase = $globalCredential->payfast_passphrase;
             $credential->payfast_key = $globalCredential->payfast_merchant_id;
             $credential->payfast_secret = $globalCredential->payfast_merchant_key;
@@ -37,7 +35,6 @@ class PayFastWebhookController extends Controller
         // Tell PayFast that this page is reachable by triggering a header 200
         header('HTTP/1.0 200 OK');
         flush();
-
 
         // Posted variables from ITN
         // phpcs:ignore
@@ -51,9 +48,8 @@ class PayFastWebhookController extends Controller
         foreach ($pfData as $key => $val) {
 
             if ($key !== 'signature') {
-                $pfParamString .= $key . '=' . urlencode($val) . '&';
-            }
-            else {
+                $pfParamString .= $key.'='.urlencode($val).'&';
+            } else {
                 break;
             }
 
@@ -66,8 +62,7 @@ class PayFastWebhookController extends Controller
 
         if ($request->custom_str1 == 'monthly') {
             $newDate = Carbon::createFromDate($paydate)->addMonth()->format('Y-m-d');
-        }
-        else {
+        } else {
             $newDate = Carbon::createFromDate($paydate)->addYear()->format('Y-m-d');
         }
 
@@ -78,7 +73,7 @@ class PayFastWebhookController extends Controller
         if ($check1 && $check2 && $check4) {
             $subscription = GlobalSubscription::where('gateway_name', 'payfast')->latest()->first();
 
-            if (!$subscription) {
+            if (! $subscription) {
                 return true;
             }
 
@@ -87,7 +82,7 @@ class PayFastWebhookController extends Controller
             $subscription->transaction_id = $request->token;
             $subscription->save();
             $invoice = GlobalInvoice::where('global_subscription_id', $subscription->id)->whereNull('transaction_id')->orWhere('transaction_id', $request->token)->first();
-            $invoice = new GlobalInvoice();
+            $invoice = new GlobalInvoice;
             $invoice->company_id = $request->custom_int1;
             $invoice->package_id = $request->custom_int2;
             $invoice->currency_id = $subscription->currency_id;
@@ -123,26 +118,25 @@ class PayFastWebhookController extends Controller
         if ($passphrase === null) {
             $tempParamString = $pfParamString;
 
-        }
-        else {
-            $tempParamString = $pfParamString . '&passphrase=' . urlencode($passphrase);
+        } else {
+            $tempParamString = $pfParamString.'&passphrase='.urlencode($passphrase);
         }
 
         $signature = md5($tempParamString);
 
-        return ($pfData['signature'] === $signature);
+        return $pfData['signature'] === $signature;
     }
 
     // phpcs:ignore
     public function pfValidIP()
     {
         // Variable initialization
-        $validHosts = array(
+        $validHosts = [
             'www.payfast.co.za',
             'sandbox.payfast.co.za',
             'w1w.payfast.co.za',
             'w2w.payfast.co.za',
-        );
+        ];
 
         $validIps = [];
 
@@ -173,7 +167,7 @@ class PayFastWebhookController extends Controller
 
         if (in_array('curl', get_loaded_extensions(), true)) {
             // Variable initialization
-            $url = 'https://' . $pfHost . '/eng/query/validate';
+            $url = 'https://'.$pfHost.'/eng/query/validate';
 
             // Create default cURL object
             $ch = curl_init();
@@ -191,7 +185,7 @@ class PayFastWebhookController extends Controller
             curl_setopt($ch, CURLOPT_POST, true);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $pfParamString);
 
-            if (!empty($pfProxy)) {
+            if (! empty($pfProxy)) {
                 curl_setopt($ch, CURLOPT_PROXY, $pfProxy);
             }
 
@@ -208,5 +202,4 @@ class PayFastWebhookController extends Controller
         return false;
 
     }
-
 }

@@ -2,19 +2,20 @@
 
 namespace Modules\ServerManager\Entities;
 
+use App\Models\ClientDetails;
+use App\Models\Company;
+use App\Models\Project;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\ServerManager\Database\factories\ServerHostingFactory;
-use App\Models\Company;
-use App\Models\User;
-use App\Models\Project;
-use App\Models\ClientDetails;
 
 class ServerHosting extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'company_id',
         'name',
@@ -183,7 +184,7 @@ class ServerHosting extends Model
      */
     public function daysUntilExpiry(): int
     {
-        if (!$this->renewal_date) {
+        if (! $this->renewal_date) {
             return 0;
         }
 
@@ -201,7 +202,7 @@ class ServerHosting extends Model
      */
     public function shouldSendNotification(): bool
     {
-        if (!$this->expiry_notification || !$this->notification_days_before || !$this->renewal_date) {
+        if (! $this->expiry_notification || ! $this->notification_days_before || ! $this->renewal_date) {
             return false;
         }
 
@@ -210,7 +211,7 @@ class ServerHosting extends Model
 
         // Check if today is the notification date and notification hasn't been sent today
         return $notificationDate->equalTo($today) &&
-               (!$this->last_notification_sent || !$this->last_notification_sent->isToday());
+               (! $this->last_notification_sent || ! $this->last_notification_sent->isToday());
     }
 
     /**
@@ -253,7 +254,7 @@ class ServerHosting extends Model
      */
     public function getStatusBadgeClass(): string
     {
-        switch($this->status) {
+        switch ($this->status) {
             case 'active':
                 return 'badge-success';
             case 'suspended':
@@ -276,13 +277,13 @@ class ServerHosting extends Model
 
         static::saving(function ($hosting) {
             // Only encrypt if the field is dirty (changed) and not empty
-            if ($hosting->isDirty('password') && !empty($hosting->password)) {
+            if ($hosting->isDirty('password') && ! empty($hosting->password)) {
                 $hosting->password = encrypt($hosting->password);
             }
-            if ($hosting->isDirty('ftp_password') && !empty($hosting->ftp_password)) {
+            if ($hosting->isDirty('ftp_password') && ! empty($hosting->ftp_password)) {
                 $hosting->ftp_password = encrypt($hosting->ftp_password);
             }
-            if ($hosting->isDirty('database_password') && !empty($hosting->database_password)) {
+            if ($hosting->isDirty('database_password') && ! empty($hosting->database_password)) {
                 $hosting->database_password = encrypt($hosting->database_password);
             }
         });

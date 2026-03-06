@@ -8,14 +8,13 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      */
     public function up(): void
     {
         Leave::join('leave_types', 'leave_types.id', 'leaves.leave_type_id')
-            ->update(['leaves.paid' => DB::raw('leave_types.paid')]);;
+            ->update(['leaves.paid' => DB::raw('leave_types.paid')]);
     }
 
     /**
@@ -27,5 +26,4 @@ return new class extends Migration
             //
         });
     }
-
 };

@@ -2,8 +2,6 @@
 
 namespace Modules\Webhooks\Enums;
 
-use Modules\Webhooks\Enums\Variable;
-
 enum ProposalVariable: string implements Variable
 {
     case sub_total = '##SUB_TOTAL##';
@@ -33,5 +31,4 @@ enum ProposalVariable: string implements Variable
             'currency_id',
         ];
     }
-
 }

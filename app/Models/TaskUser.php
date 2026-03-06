@@ -17,6 +17,7 @@ use Illuminate\Notifications\Notifiable;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Task $task
  * @property-read \App\Models\User $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|TaskUser newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TaskUser newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TaskUser query()
@@ -25,16 +26,18 @@ use Illuminate\Notifications\Notifiable;
  * @method static \Illuminate\Database\Eloquent\Builder|TaskUser whereTaskId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TaskUser whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TaskUser whereUserId($value)
+ *
  * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
  * @property-read int|null $notifications_count
+ *
  * @mixin \Eloquent
  */
 class TaskUser extends Pivot
 {
-
     use Notifiable;
 
     protected $guarded = ['id'];
+
     protected $table = 'task_users';
 
     public function user(): BelongsTo
@@ -46,5 +49,4 @@ class TaskUser extends Pivot
     {
         return $this->belongsTo(Task::class, 'task_id');
     }
-
 }

@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Helper\Reply;
-use App\Traits\IconTrait;
-use Illuminate\Http\Request;
 use App\Helper\Files;
+use App\Helper\Reply;
 use App\Models\Product;
 use App\Models\ProductFiles;
-use Illuminate\Support\Facades\File;
+use App\Traits\IconTrait;
+use Illuminate\Http\Request;
 
 class ProductFileController extends AccountBaseController
 {
@@ -22,8 +21,8 @@ class ProductFileController extends AccountBaseController
     }
 
     /**
-     * @param Request $request
      * @return array
+     *
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Throwable
      */
@@ -34,7 +33,7 @@ class ProductFileController extends AccountBaseController
             $defaultImage = null;
 
             foreach ($request->file as $fileData) {
-                $file = new ProductFiles();
+                $file = new ProductFiles;
                 $file->product_id = $request->product_id;
 
                 $filename = Files::uploadLocalOrS3($fileData, ProductFiles::FILE_PATH);
@@ -65,7 +64,7 @@ class ProductFileController extends AccountBaseController
 
         if ($request->hasFile('file')) {
             foreach ($request->file as $file) {
-                $productFile = new ProductFiles();
+                $productFile = new ProductFiles;
                 $productFile->product_id = $request->product_id;
                 $filename = Files::uploadLocalOrS3($file, 'products');
                 $productFile->filename = $file->getClientOriginalName();
@@ -88,8 +87,7 @@ class ProductFileController extends AccountBaseController
     }
 
     /**
-     * @param Request $request
-     * @param int $id
+     * @param  int  $id
      * @return array|void
      */
     public function destroy(Request $request, $id)
@@ -103,7 +101,6 @@ class ProductFileController extends AccountBaseController
     {
         $file = ProductFiles::findOrFail($id);
 
-        return download_local_s3($file, ProductFiles::FILE_PATH . '/' . $file->hashname);
+        return download_local_s3($file, ProductFiles::FILE_PATH.'/'.$file->hashname);
     }
-
 }

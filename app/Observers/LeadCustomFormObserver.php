@@ -6,7 +6,6 @@ use App\Models\LeadCustomForm;
 
 class LeadCustomFormObserver
 {
-
     public function saving(LeadCustomForm $leadCustomForm)
     {
         if (user()) {
@@ -24,5 +23,4 @@ class LeadCustomFormObserver
             $leadCustomForm->company_id = company()->id;
         }
     }
-
 }

@@ -1,12 +1,10 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
+use App\Models\ClientContact;
 use App\Models\Company;
 use App\Models\User;
-use App\Models\ClientContact;
 use App\Scopes\ActiveScope;
+use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
@@ -35,7 +33,7 @@ return new class extends Migration
                 }
             }
 
-            if (!empty($clientIds)) {
+            if (! empty($clientIds)) {
                 User::withoutGlobalScope(ActiveScope::class)->whereIn('id', $clientIds)->where('status', 'active')->update(['status' => 'deactive']);
             }
         }

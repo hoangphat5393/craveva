@@ -7,10 +7,10 @@ use App\Notifications\BaseNotification;
 
 class NewCompanyRegister extends BaseNotification
 {
-
     private $forCompany;
 
     public $ipAddress;
+
     public $userAgent;
 
     /**
@@ -18,7 +18,6 @@ class NewCompanyRegister extends BaseNotification
      *
      * @return void
      */
-
     public function __construct(Company $company, $ipAddress, $userAgent)
     {
         $this->forCompany = $company;
@@ -30,7 +29,8 @@ class NewCompanyRegister extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *t('mail::layout')
-     * @param mixed $notifiable
+     *
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -47,7 +47,7 @@ class NewCompanyRegister extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
@@ -56,23 +56,23 @@ class NewCompanyRegister extends BaseNotification
         $location = null;
         if (file_exists(database_path('maxmind/GeoLite2-City.mmdb'))) {
             if ($position = \Stevebauman\Location\Facades\Location::get($this->ipAddress)) {
-                $location = $position->cityName . ', ' . $position->regionName . ', ' . $position->countryName;
+                $location = $position->cityName.', '.$position->regionName.', '.$position->countryName;
             }
         }
 
         $mail = parent::build()
-            ->subject(__('superadmin.newCompany.subject') . ' - ' . $this->forCompany->company_name . '!')
-            ->greeting(__('email.hello') . ' ' . $notifiable->name . '!')
+            ->subject(__('superadmin.newCompany.subject').' - '.$this->forCompany->company_name.'!')
+            ->greeting(__('email.hello').' '.$notifiable->name.'!')
             ->line(__('superadmin.newCompany.text'))
-            ->line(__('modules.client.companyName') . ': **' . $this->forCompany->company_name . '**')
-            ->line(__('modules.attendance.ipAddress') . ': **' . $this->ipAddress . '**');
+            ->line(__('modules.client.companyName').': **'.$this->forCompany->company_name.'**')
+            ->line(__('modules.attendance.ipAddress').': **'.$this->ipAddress.'**');
 
         // Add line conditionally
-        $mail->when(!is_null($location), function ($mail) use ($location) {
-            $mail->line(__('app.location') . ': **' . $location . '**');
+        $mail->when(! is_null($location), function ($mail) use ($location) {
+            $mail->line(__('app.location').': **'.$location.'**');
         });
 
-        $mail->line(__('superadmin.userAgent') . ': **' . $this->userAgent . '**')
+        $mail->line(__('superadmin.userAgent').': **'.$this->userAgent.'**')
             ->action(__('email.loginDashboard'), getDomainSpecificUrl(route('superadmin.companies.show', [$this->forCompany->id])))
             ->line(__('email.thankyouNote'));
 
@@ -82,7 +82,7 @@ class NewCompanyRegister extends BaseNotification
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function toArray($notifiable)

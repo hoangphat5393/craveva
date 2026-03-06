@@ -8,13 +8,13 @@ use Illuminate\Notifications\Messages\MailMessage;
 
 class LeaveApplication extends BaseNotification
 {
-
     /**
      * Create a new notification instance.
      *
      * @return void
      */
     private $leave;
+
     private $emailSetting;
 
     public function __construct(Leave $leave)
@@ -27,7 +27,7 @@ class LeaveApplication extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -44,8 +44,7 @@ class LeaveApplication extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
-     * @return MailMessage
+     * @param  mixed  $notifiable
      */
     public function toMail($notifiable): MailMessage
     {
@@ -53,17 +52,17 @@ class LeaveApplication extends BaseNotification
         $url = route('leaves.show', $this->leave->id);
         $url = getDomainSpecificUrl($url, $this->company);
 
-        $content = __('email.leave.applied') . ':- ' . '<br>' . __('app.date') . ': ' . $this->leave->leave_date->toDayDateTimeString() . '<br>' . __('app.status') . ': ' . $this->leave->status;
-        $content .= '<br>' . __('modules.leaves.reason') . ': ' . $this->leave->reason;
+        $content = __('email.leave.applied').':- '.'<br>'.__('app.date').': '.$this->leave->leave_date->toDayDateTimeString().'<br>'.__('app.status').': '.$this->leave->status;
+        $content .= '<br>'.__('modules.leaves.reason').': '.$this->leave->reason;
 
         $build
-            ->subject(__('email.leave.applied') . ' - ' . config('app.name'))
+            ->subject(__('email.leave.applied').' - '.config('app.name'))
             ->markdown('mail.email', [
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
                 'actionText' => __('email.leaves.action'),
-                'notifiableName' => $notifiable->name
+                'notifiableName' => $notifiable->name,
             ]);
 
         parent::resetLocale();
@@ -74,13 +73,12 @@ class LeaveApplication extends BaseNotification
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
-    //phpcs:ignore
+    // phpcs:ignore
     public function toArray($notifiable)
     {
         return $this->leave->toArray();
     }
-
 }

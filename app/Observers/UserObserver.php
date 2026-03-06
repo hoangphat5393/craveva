@@ -7,24 +7,23 @@ use App\Models\Company;
 use App\Models\Notification;
 use App\Models\TicketAgentGroups;
 use App\Models\User;
-use App\Traits\StoreHeaders;
 use App\Models\UserAuth;
 use App\Scopes\ActiveScope;
 use App\Scopes\CompanyScope;
+use App\Traits\StoreHeaders;
 
 class UserObserver
 {
-
     use StoreHeaders;
 
     public function saving(User $user)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             if ($user->isDirty('status') && $user->status == 'deactive') {
                 // Remove as ticket agent
                 TicketAgentGroups::whereAgentId($user->id)->delete();
             }
-            
+
             // Check if activating user would exceed package limit
             if ($user->isDirty('status') && $user->status == 'active' && $user->getOriginal('status') != 'active') {
                 $company = Company::find($user->company_id);
@@ -33,7 +32,7 @@ class UserObserver
                         ->where('status', 'active')
                         ->whereHas('employeeDetail')
                         ->count();
-                        
+
                     if ($currentActiveCount >= $company->package->max_employees) {
                         throw new \Exception(__('superadmin.maxEmployeesLimitReached'));
                     }
@@ -47,7 +46,7 @@ class UserObserver
 
     public function created(User $user)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             $sendMail = true;
 
             if (request()->has('sendMail') && request()->sendMail == 'no') {
@@ -64,7 +63,7 @@ class UserObserver
 
     public function creating(User $model)
     {
-        if (company() && !$model->company_id) {
+        if (company() && ! $model->company_id) {
             $model->company_id = company()->id;
         }
 
@@ -77,7 +76,7 @@ class UserObserver
         Notification::where('type', 'App\Notifications\NewUser')
             ->whereNull('read_at')
             ->where(function ($q) use ($user) {
-                $q->where('data', 'like', '{"id":' . $user->id . ',%');
+                $q->where('data', 'like', '{"id":'.$user->id.',%');
             })->delete();
     }
 
@@ -92,5 +91,4 @@ class UserObserver
 
         clearCompanyValidPackageCache($user->company_id);
     }
-
 }

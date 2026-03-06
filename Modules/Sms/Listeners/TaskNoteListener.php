@@ -14,12 +14,10 @@ class TaskNoteListener
         try {
             if ($event->client == 'client') {
                 Notification::send($event->notifyUser, new TaskNoteClient($event->task, $event->created_at));
-            }
-            else {
+            } else {
                 Notification::send($event->notifyUser, new TaskNote($event->task, $event->created_at));
             }
         } catch (\Exception $e) { // @codingStandardsIgnoreLine
         }
     }
-
 }

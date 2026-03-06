@@ -3,12 +3,8 @@
 namespace App\Listeners;
 
 use App\Events\ShiftRotationEvent;
-use App\Models\ShiftRotation;
 use App\Notifications\ShiftRotationNotification;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Notification;
-
 
 class ShiftRotationListener
 {

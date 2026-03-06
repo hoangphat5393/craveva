@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class StoreTeam extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -25,15 +24,14 @@ class StoreTeam extends CoreRequest
     public function rules()
     {
         return [
-            'team_name' => 'required'
+            'team_name' => 'required',
         ];
     }
 
     public function messages()
     {
         return [
-            'team_name.required' => __('app.team').' '.__('app.required')
+            'team_name.required' => __('app.team').' '.__('app.required'),
         ];
     }
-
 }

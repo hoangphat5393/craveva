@@ -6,7 +6,6 @@ use Illuminate\Database\Seeder;
 
 class PolicyCentreDatabaseSeeder extends Seeder
 {
-
     /**
      * Run the database seeds.
      */
@@ -14,5 +13,4 @@ class PolicyCentreDatabaseSeeder extends Seeder
     {
         //
     }
-
 }

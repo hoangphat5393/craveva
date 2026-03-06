@@ -36,7 +36,7 @@ class InterviewFileController extends AccountBaseController
 
         if ($request->hasFile('file')) {
             RecruitInterviewSchedule::findOrFail($request->interview_id);
-            
+
             foreach ($request->file as $fileData) {
                 $file = new RecruitInterviewFile;
                 $file->user_id = $this->user->id;

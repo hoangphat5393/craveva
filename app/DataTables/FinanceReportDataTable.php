@@ -2,16 +2,16 @@
 
 namespace App\DataTables;
 
-use App\Models\Payment;
+use App\Helper\Common;
 use App\Models\Company;
+use App\Models\Payment;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Html\Button;
-use App\Helper\Common;
 
 class FinanceReportDataTable extends BaseDataTable
 {
-
     private $editPaymentPermission;
+
     private $deletePaymentPermission;
 
     public function __construct()
@@ -24,40 +24,36 @@ class FinanceReportDataTable extends BaseDataTable
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
-
     public function dataTable($query)
     {
         return datatables()
             ->eloquent($query)
             ->editColumn('project_id', function ($row) {
-                if (!is_null($row->project)) {
-                    return '<a class="text-darkest-grey" href="' . route('projects.show', $row->project_id) . '">' . $row->project->project_name . '</a>';
-                }
-                else {
+                if (! is_null($row->project)) {
+                    return '<a class="text-darkest-grey" href="'.route('projects.show', $row->project_id).'">'.$row->project->project_name.'</a>';
+                } else {
                     return '--';
                 }
             })
             ->editColumn('invoice_number', function ($row) {
                 if ($row->invoice_id != null) {
-                    return '<a class="text-darkest-grey" href="' . route('invoices.show', $row->invoice_id) . '">' . $row->invoice->invoice_number . '</a>';
-                }
-                else {
+                    return '<a class="text-darkest-grey" href="'.route('invoices.show', $row->invoice_id).'">'.$row->invoice->invoice_number.'</a>';
+                } else {
                     return '--';
                 }
             })
             ->editColumn('status', function ($row) {
                 if ($row->status == 'pending') {
-                    return '<i class="fa fa-circle mr-1 text-yellow f-10"></i>' . __('app.' . $row->status);
-                }
-                else {
-                    return '<i class="fa fa-circle mr-1 text-dark-green f-10"></i>' . __('app.' . $row->status);
+                    return '<i class="fa fa-circle mr-1 text-yellow f-10"></i>'.__('app.'.$row->status);
+                } else {
+                    return '<i class="fa fa-circle mr-1 text-dark-green f-10"></i>'.__('app.'.$row->status);
                 }
             })
             ->editColumn('amount', function ($row) {
-                $currencyId = (!is_null($row->currency)) ? $row->currency->id : '';
+                $currencyId = (! is_null($row->currency)) ? $row->currency->id : '';
 
                 return currency_format($row->amount, $currencyId);
             })
@@ -67,14 +63,14 @@ class FinanceReportDataTable extends BaseDataTable
             ->editColumn(
                 'paid_on',
                 function ($row) {
-                    if (!is_null($row->paid_on)) {
+                    if (! is_null($row->paid_on)) {
                         return $row->paid_on->translatedFormat($this->company->date_format);
                     }
                 }
             )
             ->addIndexColumn()
             ->smart(false)
-            ->setRowId(fn($row) => 'row-' . $row->id)
+            ->setRowId(fn ($row) => 'row-'.$row->id)
             ->rawColumns(['invoice', 'status', 'project_id', 'invoice_number'])
             ->removeColumn('invoice_id')
             ->removeColumn('currency_symbol')
@@ -104,11 +100,11 @@ class FinanceReportDataTable extends BaseDataTable
             $model = $model->where(DB::raw('DATE(payments.`paid_on`)'), '<=', $endDate);
         }
 
-        if ($request->projectID != 'all' && !is_null($request->projectID)) {
+        if ($request->projectID != 'all' && ! is_null($request->projectID)) {
             $model = $model->where('payments.project_id', '=', $request->projectID);
         }
 
-        if ($request->clientID != 'all' && !is_null($request->clientID)) {
+        if ($request->clientID != 'all' && ! is_null($request->clientID)) {
             $clientId = $request->clientID;
             $model = $model->where(function ($query) use ($clientId) {
                 $query->where('projects.client_id', $clientId)
@@ -119,9 +115,9 @@ class FinanceReportDataTable extends BaseDataTable
         if ($request->searchText != '') {
             $model = $model->where(function ($query) {
                 $safeTerm = Common::safeString(request('searchText'));
-                $query->where('projects.project_name', 'like', '%' . $safeTerm . '%')
-                    ->orWhere('payments.amount', 'like', '%' . $safeTerm . '%')
-                    ->orWhere('invoices.id', 'like', '%' . $safeTerm . '%');
+                $query->where('projects.project_name', 'like', '%'.$safeTerm.'%')
+                    ->orWhere('payments.amount', 'like', '%'.$safeTerm.'%')
+                    ->orWhere('invoices.id', 'like', '%'.$safeTerm.'%');
             });
         }
 
@@ -150,7 +146,7 @@ class FinanceReportDataTable extends BaseDataTable
             ]);
 
         if (canDataTableExport()) {
-            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
+            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
         }
 
         return $dataTable;
@@ -164,15 +160,15 @@ class FinanceReportDataTable extends BaseDataTable
     protected function getColumns()
     {
         $defaultCurrency = Company::with('currency')->find(company()->id);
+
         return [
             '#' => ['data' => 'DT_RowIndex', 'searchable' => false, 'visible' => false, 'title' => '#'],
             __('app.project') => ['data' => 'project_id', 'name' => 'project_id', 'title' => __('app.project')],
-            __('app.invoice') . '#' => ['data' => 'invoice_number', 'name' => 'invoice.invoice_number', 'title' => __('app.invoice')],
+            __('app.invoice').'#' => ['data' => 'invoice_number', 'name' => 'invoice.invoice_number', 'title' => __('app.invoice')],
             __('modules.invoices.amount') => ['data' => 'amount', 'name' => 'amount', 'title' => __('modules.invoices.amount')],
-            __('modules.invoices.amount') . $defaultCurrency->currency->currency_code => ['data' => 'default_currency_price', 'name' => 'default_currency_price',  'orderable' => false, 'title' => __('modules.invoices.amount') . ' ( ' . $defaultCurrency->currency->currency_code . ' )'],
+            __('modules.invoices.amount').$defaultCurrency->currency->currency_code => ['data' => 'default_currency_price', 'name' => 'default_currency_price',  'orderable' => false, 'title' => __('modules.invoices.amount').' ( '.$defaultCurrency->currency->currency_code.' )'],
             __('modules.payments.paidOn') => ['data' => 'paid_on', 'name' => 'paid_on', 'title' => __('modules.payments.paidOn')],
-            __('app.status') => ['data' => 'status', 'name' => 'status', 'title' => __('app.status')]
+            __('app.status') => ['data' => 'status', 'name' => 'status', 'title' => __('app.status')],
         ];
     }
-
 }

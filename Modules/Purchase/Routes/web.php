@@ -1,25 +1,24 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Modules\Purchase\Http\Controllers\VendorNotesController;
-use Modules\Purchase\Http\Controllers\VendorCreditController;
-use Modules\Purchase\Http\Controllers\PurchaseOrderReportController;
-use Modules\Purchase\Http\Controllers\ReportsController;
+use Modules\Purchase\Http\Controllers\DeliveryOrderController;
+use Modules\Purchase\Http\Controllers\PurchaseBillController;
+use Modules\Purchase\Http\Controllers\PurchaseContactController;
 use Modules\Purchase\Http\Controllers\PurchaseInventoryController;
 use Modules\Purchase\Http\Controllers\PurchaseInventoryFileController;
-use Modules\Purchase\Http\Controllers\PurchaseBillController;
 use Modules\Purchase\Http\Controllers\PurchaseOrderController;
-use Modules\Purchase\Http\Controllers\PurchaseVendorController;
-use Modules\Purchase\Http\Controllers\PurchaseVendorCategoryController;
-use Modules\Purchase\Http\Controllers\PurchaseContactController;
+use Modules\Purchase\Http\Controllers\PurchaseOrderFileController;
+use Modules\Purchase\Http\Controllers\PurchaseOrderReportController;
 use Modules\Purchase\Http\Controllers\PurchaseProductController;
 use Modules\Purchase\Http\Controllers\PurchaseSettingController;
-use Modules\Purchase\Http\Controllers\PurchaseOrderFileController;
-use Modules\Purchase\Http\Controllers\DeliveryOrderController;
 use Modules\Purchase\Http\Controllers\PurchaseSmtpSettingController;
+use Modules\Purchase\Http\Controllers\PurchaseVendorCategoryController;
+use Modules\Purchase\Http\Controllers\PurchaseVendorController;
 use Modules\Purchase\Http\Controllers\PurchaseVendorPaymentController;
+use Modules\Purchase\Http\Controllers\ReportsController;
 use Modules\Purchase\Http\Controllers\StockAdjustmentReasonController;
-use Modules\Purchase\Observers\PurchaseVendorPaymentObserver;
+use Modules\Purchase\Http\Controllers\VendorCreditController;
+use Modules\Purchase\Http\Controllers\VendorNotesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -71,7 +70,7 @@ Route::group(['middleware' => 'auth', 'prefix' => 'account'], function () {
     Route::resource('purchase-contacts', PurchaseContactController::class);
     Route::post('purchase-contacts/apply-quick-action', [PurchaseContactController::class, 'applyQuickAction'])->name('purchase-contacts.apply_quick_action');
 
-    /*Vendor Credits */
+    /* Vendor Credits */
     Route::get('vendor-credits/add-item', [VendorCreditController::class, 'addItem'])->name('vendor-credits.add_item');
     Route::post('vendor-credits/apply-quick-action', [VendorCreditController::class, 'applyQuickAction'])->name('vendor-credits.apply_quick_action');
     Route::get('vendor-credits/download/{id}', [VendorCreditController::class, 'download'])->name('vendor-credits.download');

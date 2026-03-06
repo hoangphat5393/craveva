@@ -4,12 +4,8 @@ namespace App\Helper;
 
 class Common
 {
-
     /** Return success response
-     * @param $date
-     * @return string
      */
-
     public static function dateColor($date, $past = true): string
     {
         if (is_null($date)) {
@@ -20,24 +16,24 @@ class Common
         $todayText = __('app.today');
 
         if ($date->setTimezone(company()->timezone)->isToday()) {
-            return '<span class="text-success">' . $todayText . '</span>';
+            return '<span class="text-success">'.$todayText.'</span>';
         }
 
         if ($date->endOfDay()->isPast() && $past) {
-            return '<span class="text-danger">' . $formattedDate . '</span>';
+            return '<span class="text-danger">'.$formattedDate.'</span>';
         }
 
-        return '<span>' . $formattedDate . '</span>';
+        return '<span>'.$formattedDate.'</span>';
     }
 
     public static function active(): string
     {
-        return '<i class="fa fa-circle mr-1 text-light-green f-10"></i>' . __('app.active');
+        return '<i class="fa fa-circle mr-1 text-light-green f-10"></i>'.__('app.active');
     }
 
     public static function inactive(): string
     {
-        return '<i class="fa fa-circle mr-1 text-red f-10"></i>' . __('app.inactive');
+        return '<i class="fa fa-circle mr-1 text-red f-10"></i>'.__('app.inactive');
     }
 
     public static function encryptDecrypt($string, $action = 'encrypt')
@@ -70,9 +66,10 @@ class Common
             return '';
         }
 
-        if (!is_string($string) || strlen($string) > 255) {
+        if (! is_string($string) || strlen($string) > 255) {
             abort(400, 'Invalid search term.');
         }
+
         return $string;
     }
 }

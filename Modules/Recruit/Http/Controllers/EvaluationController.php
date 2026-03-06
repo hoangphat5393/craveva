@@ -91,7 +91,7 @@ class EvaluationController extends AccountBaseController
         $evaluation->submitted_by = $request->user()->id;
         $evaluation->save();
 
-        return Reply::successWithData(__('messages.evaluationsAdded'), ['redirectUrl' => route('interview-schedule.show', $request->interview_schedule_id) . '?view=evaluations']);
+        return Reply::successWithData(__('messages.evaluationsAdded'), ['redirectUrl' => route('interview-schedule.show', $request->interview_schedule_id).'?view=evaluations']);
 
     }
 
@@ -141,7 +141,7 @@ class EvaluationController extends AccountBaseController
         $evaluation->details = $request->details;
         $evaluation->save();
 
-        return Reply::successWithData(__('messages.updateSuccess'), ['redirectUrl' => route('interview-schedule.show', $evaluation->recruit_interview_schedule_id) . '?view=evaluations']);
+        return Reply::successWithData(__('messages.updateSuccess'), ['redirectUrl' => route('interview-schedule.show', $evaluation->recruit_interview_schedule_id).'?view=evaluations']);
     }
 
     /**
@@ -156,6 +156,6 @@ class EvaluationController extends AccountBaseController
         abort_403(! ($evaluation->submitted_by == user()->id));
         RecruitInterviewEvaluation::destroy($id);
 
-        return Reply::successWithData(__('messages.deleteSuccess'), ['redirectUrl' => route('interview-schedule.show', $evaluation->recruit_interview_schedule_id) . '?view=evaluations']);
+        return Reply::successWithData(__('messages.deleteSuccess'), ['redirectUrl' => route('interview-schedule.show', $evaluation->recruit_interview_schedule_id).'?view=evaluations']);
     }
 }

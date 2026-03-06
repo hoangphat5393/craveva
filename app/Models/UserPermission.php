@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Permission $permission
  * @property-read \App\Models\PermissionType $type
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|UserPermission newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|UserPermission newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|UserPermission query()
@@ -27,12 +28,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|UserPermission wherePermissionTypeId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UserPermission whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UserPermission whereUserId($value)
+ *
  * @property-read \App\Models\User $user
+ *
  * @mixin \Eloquent
  */
 class UserPermission extends BaseModel
 {
-
     use HasFactory;
 
     //    // Set primary key column
@@ -46,7 +48,6 @@ class UserPermission extends BaseModel
     //
     //    // If you don't have a primary key at all
     //    protected $keyType = 'string';
-
 
     protected $fillable = ['user_id', 'permission_id', 'permission_type_id'];
 
@@ -64,5 +65,4 @@ class UserPermission extends BaseModel
     {
         return $this->belongsTo(User::class, 'user_id');
     }
-
 }

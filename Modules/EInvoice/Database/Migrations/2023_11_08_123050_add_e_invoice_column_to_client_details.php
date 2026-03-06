@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Schema;
 // This file copy from main application to add new column in client_details table if not exist
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      */
@@ -30,5 +29,4 @@ return new class extends Migration
             $table->dropColumn('electronic_address_scheme');
         });
     }
-
 };

@@ -12,13 +12,12 @@ use Illuminate\Support\Facades\Log;
 
 class EmployeePermissionSeeder extends Seeder
 {
-
     protected array $permissionTypes = [
         'added' => 1,
         'owned' => 2,
         'both' => 3,
         'all' => 4,
-        'none' => 5
+        'none' => 5,
     ];
 
     /**
@@ -68,7 +67,7 @@ class EmployeePermissionSeeder extends Seeder
             try {
                 $roleuser->user->assignUserRolePermission($adminRole->id);
             } catch (\Exception $e) {
-                echo($e->getMessage());
+                echo $e->getMessage();
             }
         }
 
@@ -112,8 +111,7 @@ class EmployeePermissionSeeder extends Seeder
         if ($type === 'client') {
             $permissionArray = PermissionRole::clientRolePermissions();
 
-        }
-        elseif ($type === 'employee') {
+        } elseif ($type === 'employee') {
             $permissionArray = PermissionRole::employeeRolePermissions();
 
         }
@@ -127,7 +125,7 @@ class EmployeePermissionSeeder extends Seeder
             PermissionRole::where('permission_id', $ep->id)
                 ->where('role_id', $role->id)
                 ->update([
-                    'permission_type_id' => $permissionArray[$ep->name]
+                    'permission_type_id' => $permissionArray[$ep->name],
                 ]);
         }
 
@@ -137,5 +135,4 @@ class EmployeePermissionSeeder extends Seeder
             }
         }
     }
-
 }

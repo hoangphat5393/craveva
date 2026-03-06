@@ -1,4 +1,6 @@
-<?php namespace App\Models;
+<?php
+
+namespace App\Models;
 
 use App\Traits\HasCompany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -16,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read \App\Models\Project|null $project
  * @property-read \App\Models\Task|null $task
  * @property-read \App\Models\User $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Pinned newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Pinned newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Pinned query()
@@ -25,17 +28,20 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|Pinned whereTaskId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Pinned whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Pinned whereUserId($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Pinned whereCompanyId($value)
+ *
  * @mixin \Eloquent
  */
 class Pinned extends BaseModel
 {
-
     use HasCompany;
 
     protected $table = 'pinned';
+
     protected $guarded = ['id'];
 
     public function user(): BelongsTo
@@ -52,5 +58,4 @@ class Pinned extends BaseModel
     {
         return $this->belongsTo(Task::class, 'task_id');
     }
-
 }

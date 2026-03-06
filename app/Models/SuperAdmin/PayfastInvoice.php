@@ -2,8 +2,8 @@
 
 namespace App\Models\SuperAdmin;
 
-use App\Models\Company;
 use App\Models\BaseModel;
+use App\Models\Company;
 
 /**
  * App\Models\SuperAdmin\PayfastInvoice
@@ -24,6 +24,7 @@ use App\Models\BaseModel;
  * @property Carbon|null $updated_at
  * @property-read Company|null $company
  * @property-read Package|null $package
+ *
  * @method static Builder|PayfastInvoice newModelQuery()
  * @method static Builder|PayfastInvoice newQuery()
  * @method static Builder|PayfastInvoice query()
@@ -41,11 +42,11 @@ use App\Models\BaseModel;
  * @method static Builder|PayfastInvoice whereStatus($value)
  * @method static Builder|PayfastInvoice whereToken($value)
  * @method static Builder|PayfastInvoice whereUpdatedAt($value)
+ *
  * @mixin Eloquent
  */
 class PayfastInvoice extends BaseModel
 {
-
     protected $dates = [
         'pay_date',
         'next_pay_date',
@@ -65,5 +66,4 @@ class PayfastInvoice extends BaseModel
     {
         return $this->belongsTo(Package::class);
     }
-
 }

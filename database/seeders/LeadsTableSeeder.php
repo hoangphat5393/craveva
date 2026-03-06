@@ -3,17 +3,16 @@
 namespace Database\Seeders;
 
 use App\Models\Deal;
-use App\Models\LeadAgent;
 use App\Models\Lead;
+use App\Models\LeadAgent;
 use App\Models\LeadPipeline;
-use App\Models\PipelineStage;
 use App\Models\LeadStatus;
-use Illuminate\Database\Seeder;
+use App\Models\PipelineStage;
 use App\Traits\UniversalSearchTrait;
+use Illuminate\Database\Seeder;
 
 class LeadsTableSeeder extends Seeder
 {
-
     use UniversalSearchTrait;
 
     /**
@@ -30,9 +29,8 @@ class LeadsTableSeeder extends Seeder
         $getLeadStage = $this->getLeadStage($companyId);
         $getLeadContact = $this->getContact($companyId);
 
-
         Deal::factory()
-            ->count((int)$count)
+            ->count((int) $count)
             ->make()
             ->each(function (Deal $deal) use ($companyId, $faker, $leadAgents, $getPipeline, $getLeadStage, $getLeadContact) {
                 $deal->company_id = $companyId;
@@ -43,7 +41,7 @@ class LeadsTableSeeder extends Seeder
                 $deal->lead_id = $faker->randomElement($getLeadContact);
                 $deal->save();
 
-                $deal->name = $deal->contact->client_name . '-' . $deal->id;
+                $deal->name = $deal->contact->client_name.'-'.$deal->id;
                 $deal->save();
             });
     }
@@ -74,5 +72,4 @@ class LeadsTableSeeder extends Seeder
     {
         return Lead::where('company_id', $companyId)->pluck('id')->toArray();
     }
-
 }

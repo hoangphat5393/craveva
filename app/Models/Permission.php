@@ -19,6 +19,7 @@ use Trebol\Entrust\EntrustPermission;
  * @property-read \App\Models\Module $module
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Role[] $roles
  * @property-read int|null $roles_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Permission newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Permission newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Permission query()
@@ -30,13 +31,15 @@ use Trebol\Entrust\EntrustPermission;
  * @method static \Illuminate\Database\Eloquent\Builder|Permission whereModuleId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Permission whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Permission whereUpdatedAt($value)
+ *
  * @property string|null $allowed_permissions
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Permission whereAllowedPermissions($value)
+ *
  * @mixin \Eloquent
  */
 class Permission extends EntrustPermission
 {
-
     const ALL_NONE = '{"all":4, "none":5}';
 
     const ALL_ADDED_NONE = '{"all":4, "added":1, "none":5}';
@@ -55,5 +58,4 @@ class Permission extends EntrustPermission
     {
         return $this->belongsTo(Module::class, 'module_id');
     }
-
 }

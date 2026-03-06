@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreBulkPayments extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -40,8 +39,7 @@ class StoreBulkPayments extends FormRequest
                 $rules['payment_date.'.$index.''] = 'required';
                 $rules['offline_methods.'.$index.''] = 'required';
                 $rules['amount.'.$index.''] = 'required';
-            }
-            elseif ($gateway != 'all' && $gateway != 'Offline') {
+            } elseif ($gateway != 'all' && $gateway != 'Offline') {
                 $rules['payment_date.'.$index.''] = 'required';
                 $rules['amount.'.$index.''] = 'required';
             }
@@ -50,7 +48,7 @@ class StoreBulkPayments extends FormRequest
                 $rules['amount.'.$index.''] = 'required';
             }
 
-            if ($gateway == 'all' && (!is_null($amount) || $amount != null)) {
+            if ($gateway == 'all' && (! is_null($amount) || $amount != null)) {
                 $rules['gateway.'.$index.''] = 'required';
             }
 
@@ -77,13 +75,11 @@ class StoreBulkPayments extends FormRequest
             $offline_method_id = request()->offline_method_id[$index];
             $payment_date = request()->payment_date[$index];
 
-            if ($gateway != 'all' && $gateway == 'Offline' && $offline_method_id == null)
-            {
+            if ($gateway != 'all' && $gateway == 'Offline' && $offline_method_id == null) {
                 $message['payment_date.'.$index.''] = __('messages.invoiceDateError');
                 $message['offline_methods.'.$index.''] = __('messages.selectOfflineMethod');
                 $message['amount.'.$index.''] = __('messages.invoicePaymentError');
-            }
-            elseif ($gateway != 'all' && $gateway != 'Offline') {
+            } elseif ($gateway != 'all' && $gateway != 'Offline') {
                 $message['payment_date.'.$index.''] = __('messages.invoiceDateError');
                 $message['amount.'.$index.''] = __('messages.invoicePaymentError');
             }
@@ -92,7 +88,7 @@ class StoreBulkPayments extends FormRequest
                 $message['amount.'.$index.''] = __('messages.invoicePaymentError');
             }
 
-            if ($gateway == 'all' && (!is_null($amount) || $amount != null)) {
+            if ($gateway == 'all' && (! is_null($amount) || $amount != null)) {
                 $message['gateway.'.$index.''] = __('messages.selectGateway');
             }
 
@@ -103,5 +99,4 @@ class StoreBulkPayments extends FormRequest
 
         return $message;
     }
-
 }

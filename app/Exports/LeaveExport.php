@@ -2,29 +2,32 @@
 
 namespace App\Exports;
 
+use App\Helper\Common;
 use App\Models\Leave;
-use App\Models\EmployeeDetails;
+use App\Models\LeaveSetting;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
-use App\Models\LeaveSetting;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Events\AfterSheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
-use App\Helper\Common;
 
-class LeaveExport implements FromCollection, WithHeadings, WithEvents
+class LeaveExport implements FromCollection, WithEvents, WithHeadings
 {
-
     /**
      * @return Collection
      */
     public static $sum;
+
     public $startdate;
+
     public $exportAll;
+
     public $enddate;
+
     private $viewLeavePermission;
+
     private $reportingPermission;
 
     public function __construct($startdate, $enddate, $exportAll)
@@ -52,17 +55,17 @@ class LeaveExport implements FromCollection, WithHeadings, WithEvents
         foreach ($emp_status as $index => $leave) {
 
             if (isset($leave['leave_date']['comments'])) {
-                $data =  $leave['leave_date']['data'];
+                $data = $leave['leave_date']['data'];
                 $comments = implode(', ', $leave['leave_date']['comments']);
-                $cell = 'D' . $rowIndex;
+                $cell = 'D'.$rowIndex;
                 $event->sheet->getDelegate()->setCellValue($cell, $data);
                 $event->sheet->getDelegate()->getComment($cell)->getText()->createTextRun($comments);
             }
 
             if (isset($leave['status']['comments']['status'])) {
-                $data =  $leave['status']['data'];
+                $data = $leave['status']['data'];
                 $statusComments = $leave['status']['comments']['status'];
-                $statusCell = 'F' . $rowIndex;
+                $statusCell = 'F'.$rowIndex;
                 $event->sheet->getDelegate()->setCellValue($statusCell, $data);
                 $event->sheet->getDelegate()->getComment($statusCell)->getText()->createTextRun($statusComments);
             }
@@ -77,7 +80,7 @@ class LeaveExport implements FromCollection, WithHeadings, WithEvents
 
     public function headings(): array
     {
-        $arr = array();
+        $arr = [];
 
         $arr[] = [
             '#',
@@ -87,7 +90,7 @@ class LeaveExport implements FromCollection, WithHeadings, WithEvents
             __('app.duration'),
             __('app.leaveStatus'),
             __('app.leaveType'),
-            __('app.paid')
+            __('app.paid'),
         ];
 
         return $arr;
@@ -105,18 +108,18 @@ class LeaveExport implements FromCollection, WithHeadings, WithEvents
             ->groupByRaw('ifnull(leaves.unique_id, leaves.id)');
 
         if ($this->exportAll == false) {
-            if (!is_null($this->startdate)) {
+            if (! is_null($this->startdate)) {
                 $leavesList->whereRaw('Date(leaves.leave_date) >= ?', [$this->startdate]);
             }
 
-            if (!is_null($this->enddate)) {
+            if (! is_null($this->enddate)) {
                 $leavesList->whereRaw('Date(leaves.leave_date) <= ?', [$this->enddate]);
             }
         }
 
         if (request()->searchText != '') {
             $safeTerm = Common::safeString(request('searchText'));
-            $leavesList->where('users.name', 'like', '%' . $safeTerm . '%');
+            $leavesList->where('users.name', 'like', '%'.$safeTerm.'%');
         }
 
         if ($this->viewLeavePermission == 'owned') {
@@ -147,7 +150,7 @@ class LeaveExport implements FromCollection, WithHeadings, WithEvents
         }
 
         $leaveLists = $leavesList->get();
-        $leavedata = array();
+        $leavedata = [];
         $emp_leave = 1;
         $employee_index = 0;
 
@@ -164,34 +167,34 @@ class LeaveExport implements FromCollection, WithHeadings, WithEvents
                 $leaveDatesComments = [];
                 $leaveStatusComments = [];
                 foreach ($leaves as $leave) {
-                    $leaveDatesComments[] = $leave->leave_date->format('d-m-Y') . ' (' . Carbon::parse($leave->leave_date)->translatedFormat('l') . ')';
-                    $leaveStatusComments[] = $leave->leave_date->format('d-m-Y') . ' : ' . ucfirst($leave->status);
+                    $leaveDatesComments[] = $leave->leave_date->format('d-m-Y').' ('.Carbon::parse($leave->leave_date)->translatedFormat('l').')';
+                    $leaveStatusComments[] = $leave->leave_date->format('d-m-Y').' : '.ucfirst($leave->status);
                 }
                 $leaveDatesString = implode(', ', $leaveDatesComments);
                 $leaveStatusString = implode(', ', $leaveStatusComments);
 
                 $leavedata[$employee_index]['leave_date'] = [
-                    'data' => $leavesList->leave_date->format('d-m-Y') . ' (' . Carbon::parse($leave->leave_date)->translatedFormat('l') . ')',
+                    'data' => $leavesList->leave_date->format('d-m-Y').' ('.Carbon::parse($leave->leave_date)->translatedFormat('l').')',
                     'comments' => [
-                        $leaveDatesString
-                    ]
+                        $leaveDatesString,
+                    ],
                 ];
 
                 if ($leavesList->count_multiple_leaves != 0) {
-                    $data = ' ' . $leavesList->count_multiple_leaves . ' ' . __('app.leave');
-                    $leavedata[$employee_index]['duration'] = ucfirst($leavesList->duration) . $data;
+                    $data = ' '.$leavesList->count_multiple_leaves.' '.__('app.leave');
+                    $leavedata[$employee_index]['duration'] = ucfirst($leavesList->duration).$data;
                 }
                 $leavedata[$employee_index]['status'] = [
                     'data' => 'View Status',
                     'comments' => [
                         'status' => $leaveStatusString,
-                    ]
+                    ],
 
                 ];
                 $leavedata[$employee_index]['leave_type'] = $leavesList->type->type_name;
             } else {
 
-                $leavedata[$employee_index]['leave_date'] = $leavesList->leave_date->format('d-m-Y') . ' (' . Carbon::parse($leavesList->leave_date)->translatedFormat('l') . ')';
+                $leavedata[$employee_index]['leave_date'] = $leavesList->leave_date->format('d-m-Y').' ('.Carbon::parse($leavesList->leave_date)->translatedFormat('l').')';
                 $leavedata[$employee_index]['duration'] = ucfirst($leavesList->duration);
                 $leavedata[$employee_index]['leave_status'] = ucfirst($leavesList->status);
                 $leavedata[$employee_index]['leave_type'] = $leavesList->type->type_name;
@@ -211,8 +214,9 @@ class LeaveExport implements FromCollection, WithHeadings, WithEvents
 
     public function map($leavedata): array
     {
-        $data = array();
+        $data = [];
         $data[] = $leavedata['employee_name'];
+
         return $data;
     }
 }

@@ -25,6 +25,7 @@ use Trebol\Entrust\EntrustRole;
  * @property-read int|null $roleuser_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User[] $users
  * @property-read int|null $users_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Role newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Role newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Role query()
@@ -34,31 +35,31 @@ use Trebol\Entrust\EntrustRole;
  * @method static \Illuminate\Database\Eloquent\Builder|Role whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Role whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Role whereUpdatedAt($value)
+ *
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Permission[] $rolePermissions
  * @property-read int|null $role_permissions_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User[] $unsyncedUsers
  * @property-read int|null $unsynced_users_count
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Role whereCompanyId($value)
+ *
  * @mixin \Eloquent
  */
 class Role extends EntrustRole
 {
-
     use HasCompany;
 
     protected $fillable = ['name', 'display_name', 'description'];
 
     /**
      * Interact with the name of role to slug and lowercase
-     *
-     * @return \Illuminate\Database\Eloquent\Casts\Attribute
      */
     protected function name(): Attribute
     {
         return Attribute::make(
-            set: fn($value) => str_slug($value),
+            set: fn ($value) => str_slug($value),
         );
     }
 
@@ -97,5 +98,4 @@ class Role extends EntrustRole
     {
         return $this->belongsToMany(User::class, 'role_user')->where('users.permission_sync', 0);
     }
-
 }

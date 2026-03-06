@@ -9,13 +9,12 @@ use App\Models\SuperAdmin\GlobalSubscription;
 use App\Models\SuperAdmin\Package;
 use App\Scopes\ActiveScope;
 use App\Traits\CurrencyExchange;
+use Carbon\Carbon;
 use Froiden\Envato\Traits\AppBoot;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 
 class DashboardController extends AccountBaseController
 {
-
     use AppBoot, CurrencyExchange;
 
     public function __construct()
@@ -27,14 +26,11 @@ class DashboardController extends AccountBaseController
     public function index()
     {
 
-
-
         return $this->superAdminDashboard();
     }
 
     public function checklist()
     {
-
 
         return view('super-admin.dashboard.checklist', $this->data);
     }
@@ -79,8 +75,6 @@ class DashboardController extends AccountBaseController
         $this->activeCompanies = $companyStats->activeCompanies;
         $this->inactiveCompanies = $companyStats->inactiveCompanies;
         $this->expiredCompanies = $companyStats->expiredCompanies;
-
-
 
         $this->packageCompanyCount = Package::where('default', '!=', 'trial')->withCount(['companies'])->orderBy('companies_count', 'desc')->limit(10)->get();
         $this->totalPackages = Package::where('default', '!=', 'trial')->count();
@@ -130,7 +124,7 @@ class DashboardController extends AccountBaseController
             ->orderBy('year')
             ->orderBy('month')
             ->get()
-            ->mapWithKeys(fn($row) => [$row->year . '-' . $row->month => (float)$row->total]);
+            ->mapWithKeys(fn ($row) => [$row->year.'-'.$row->month => (float) $row->total]);
 
         $maxMonthlyEarning = $monthlyInvoiceTotals->max() ?? 0;
 
@@ -143,7 +137,7 @@ class DashboardController extends AccountBaseController
         }
 
         $this->monthlyEarningsReport = $months->map(function (Carbon $date) use ($monthlyInvoiceTotals, $maxMonthlyEarning) {
-            $key = $date->year . '-' . $date->month;
+            $key = $date->year.'-'.$date->month;
             $total = round($monthlyInvoiceTotals[$key] ?? 0, 2);
 
             return [
@@ -169,12 +163,12 @@ class DashboardController extends AccountBaseController
             ->orderBy('year')
             ->orderBy('month')
             ->get()
-            ->mapWithKeys(fn($row) => [$row->year . '-' . $row->month => (int)$row->total]);
+            ->mapWithKeys(fn ($row) => [$row->year.'-'.$row->month => (int) $row->total]);
 
         $maxMonthlySubscriptions = $monthlySubscriptionTotals->max() ?? 0;
 
         $this->monthlySubscriptionReport = $months->map(function (Carbon $date) use ($monthlySubscriptionTotals, $maxMonthlySubscriptions) {
-            $key = $date->year . '-' . $date->month;
+            $key = $date->year.'-'.$date->month;
             $total = $monthlySubscriptionTotals[$key] ?? 0;
 
             return [
@@ -204,7 +198,7 @@ class DashboardController extends AccountBaseController
         $this->topPayingCompanies = $topCompanies->map(function ($row) {
             return (object) [
                 'company' => $row->company,
-                'total' => (float)$row->total,
+                'total' => (float) $row->total,
             ];
         });
 
@@ -217,7 +211,7 @@ class DashboardController extends AccountBaseController
         $this->gatewayBreakdown = $gatewayTotals->map(function ($row) {
             return [
                 'gateway' => $row->gateway_name ?: __('app.na'),
-                'total' => (float)$row->total,
+                'total' => (float) $row->total,
             ];
         });
 
@@ -260,7 +254,7 @@ class DashboardController extends AccountBaseController
         $companies = $companies->groupBy('year', 'month')
             ->get([
                 DB::raw('YEAR(created_at) year, MONTHNAME(created_at) month,MONTH(created_at) month_number'),
-                DB::raw('count(id) as total')
+                DB::raw('count(id) as total'),
             ]);
 
         $data['labels'] = $this->convertMonthToName($companies->pluck('month_number')->toArray());

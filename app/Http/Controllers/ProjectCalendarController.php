@@ -2,24 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use Carbon\Carbon;
+use App\Models\Project;
+use App\Models\ProjectCategory;
+use App\Models\ProjectStatusSetting;
 use App\Models\Team;
 use App\Models\User;
-use App\Models\Project;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Models\ProjectCategory;
 use Illuminate\Support\Facades\DB;
-use App\Models\ProjectStatusSetting;
 
 class ProjectCalendarController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'app.menu.projectCalendar';
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('projects', $this->user->modules));
+            abort_403(! in_array('projects', $this->user->modules));
 
             return $next($request);
         });
@@ -30,15 +29,13 @@ class ProjectCalendarController extends AccountBaseController
      *
      * @return \Illuminate\Http\Response
      */
-
     public function index(Request $request)
     {
         $viewPermission = user()->permission('view_projects');
 
         if (in_array('client', user_roles())) {
             $this->clients = User::client();
-        }
-        else {
+        } else {
             $this->clients = User::allClients();
             $this->allEmployees = User::allEmployees(null, true, ($viewPermission == 'all' ? 'all' : null));
         }
@@ -51,20 +48,20 @@ class ProjectCalendarController extends AccountBaseController
             $startDate = Carbon::parse($request->start)->format('Y-m-d');
             $endDate = Carbon::parse($request->end)->format('Y-m-d');
 
-
             if ($startDate !== null && $endDate !== null) {
                 $model = Project::where(function ($q) use ($startDate, $endDate) {
-                        $q->whereBetween(DB::raw('DATE(projects.`deadline`)'), [$startDate, $endDate]);
-                        $q->orWhereBetween(DB::raw('DATE(projects.`start_date`)'), [$startDate, $endDate]);
-                        $q->orWhere(function ($q1) use ($startDate, $endDate) {
-                            $q1->where('projects.start_date', '<=', $startDate)
-                                ->where('projects.deadline', '>=', $endDate);
-                            return $q1;
-                        });
+                    $q->whereBetween(DB::raw('DATE(projects.`deadline`)'), [$startDate, $endDate]);
+                    $q->orWhereBetween(DB::raw('DATE(projects.`start_date`)'), [$startDate, $endDate]);
+                    $q->orWhere(function ($q1) use ($startDate, $endDate) {
+                        $q1->where('projects.start_date', '<=', $startDate)
+                            ->where('projects.deadline', '>=', $endDate);
+
+                        return $q1;
+                    });
                 });
             }
 
-            if (!is_null($request->categoryId) && $request->categoryId != 'all') {
+            if (! is_null($request->categoryId) && $request->categoryId != 'all') {
                 $model->where('category_id', $request->categoryId);
             }
 
@@ -73,7 +70,7 @@ class ProjectCalendarController extends AccountBaseController
                 $model->where('pinned.user_id', user()->id);
             }
 
-            if (!is_null($request->employeeId) && $request->employeeId != 'all') {
+            if (! is_null($request->employeeId) && $request->employeeId != 'all') {
                 $model->leftJoin('project_members', 'project_members.project_id', 'projects.id')
                     ->selectRaw('projects.id, projects.project_short_code, projects.hash, projects.added_by,
                     projects.project_name, projects.start_date, projects.deadline, projects.client_id,
@@ -82,15 +79,15 @@ class ProjectCalendarController extends AccountBaseController
                 $model->where('project_members.user_id', $request->employeeId);
             }
 
-            if (!is_null($request->teamId) && $request->teamId != 'all') {
+            if (! is_null($request->teamId) && $request->teamId != 'all') {
                 $model->where('team_id', $request->teamId);
             }
 
-            if (!is_null($request->clientID) && $request->clientID != 'all') {
+            if (! is_null($request->clientID) && $request->clientID != 'all') {
                 $model->where('projects.client_id', $request->clientID);
             }
 
-            if (!is_null($request->status) && $request->status != 'all') {
+            if (! is_null($request->status) && $request->status != 'all') {
 
                 if ($request->status == 'overdue') {
                     $model->where('projects.completion_percent', '!=', 100);
@@ -98,8 +95,7 @@ class ProjectCalendarController extends AccountBaseController
                     if ($request->deadLineStartDate == '' && $request->deadLineEndDate == '') {
                         $model->whereDate('projects.deadline', '<', now(company()->timezone)->toDateString());
                     }
-                }
-                else {
+                } else {
                     $model->where('projects.status', $request->status);
                 }
             }
@@ -115,9 +111,9 @@ class ProjectCalendarController extends AccountBaseController
             }
 
             if ($request->searchText != '') {
-                $model->where(function ($query) use($request) {
-                    $query->where('projects.project_name', 'like', '%' . $request->searchText . '%')
-                        ->orWhere('projects.project_short_code', 'like', '%' . $request->searchText . '%'); // project short code
+                $model->where(function ($query) use ($request) {
+                    $query->where('projects.project_name', 'like', '%'.$request->searchText.'%')
+                        ->orWhere('projects.project_short_code', 'like', '%'.$request->searchText.'%'); // project short code
                 });
             }
 
@@ -130,8 +126,8 @@ class ProjectCalendarController extends AccountBaseController
                     'id' => $value->id,
                     'title' => $value->project_name,
                     'start' => $value->start_date->format('Y-m-d'),
-                    'end' => (!is_null($value->deadline) ? $value->deadline->format('Y-m-d') : $value->start_date->format('Y-m-d')),
-                    'color' => isset($projectStatus->color) ? $projectStatus->color : '#00b5ff'
+                    'end' => (! is_null($value->deadline) ? $value->deadline->format('Y-m-d') : $value->start_date->format('Y-m-d')),
+                    'color' => isset($projectStatus->color) ? $projectStatus->color : '#00b5ff',
                 ];
             }
 
@@ -140,5 +136,4 @@ class ProjectCalendarController extends AccountBaseController
 
         return view('projects.calendar', $this->data);
     }
-
 }

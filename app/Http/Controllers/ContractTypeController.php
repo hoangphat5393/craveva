@@ -3,21 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Helper\Reply;
-use App\Models\BaseModel;
-use App\Models\ContractType;
 use App\Http\Requests\Admin\ContractType\StoreRequest;
 use App\Http\Requests\Admin\ContractType\UpdateRequest;
+use App\Models\BaseModel;
+use App\Models\ContractType;
 
 class ContractTypeController extends AccountBaseController
 {
-
     public function create()
     {
         $this->addPermission = user()->permission('manage_contract_type');
 
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
 
         $this->categories = ContractType::all();
+
         return view('contracts.types.create', $this->data);
 
     }
@@ -25,12 +25,11 @@ class ContractTypeController extends AccountBaseController
     public function store(StoreRequest $request)
     {
         $this->addPermission = user()->permission('manage_contract_type');
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
 
-        $contract = new ContractType();
+        $contract = new ContractType;
         $contract->name = $request->name;
         $contract->save();
-
 
         $categories = ContractType::all();
         $options = BaseModel::options($categories, $contract);
@@ -63,5 +62,4 @@ class ContractTypeController extends AccountBaseController
         return Reply::successWithData(__('messages.deleteSuccess'), ['data' => $options]);
 
     }
-
 }

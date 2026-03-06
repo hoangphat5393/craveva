@@ -10,8 +10,8 @@ use Illuminate\Support\HtmlString;
 
 class VerifyEmail extends BaseNotification
 {
-
     private $verificationUrl;
+
     /**
      * The callback that should be used to create the verify email URL.
      *
@@ -29,14 +29,14 @@ class VerifyEmail extends BaseNotification
     /**
      * Get the notification's channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array|string
      */
     public function via($notifiable)
     {
         $this->company = $notifiable->company;
 
-        if (!$this->company) {
+        if (! $this->company) {
             $user = User::where('email', $notifiable->email)->latest()->first();
             $this->company = $user->company;
         }
@@ -50,12 +50,11 @@ class VerifyEmail extends BaseNotification
     /**
      * Build the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
     {
-
 
         $url = 'email/verify';
         $url = route('verification.notice');
@@ -66,29 +65,29 @@ class VerifyEmail extends BaseNotification
 
         $user = User::where('user_auth_id', $notifiable->id)->first();
 
-        $emailVerifyCode = '<p style="color:#1d82f5"><strong>' . $notifiable->email_verification_code . '</strong></p>';
+        $emailVerifyCode = '<p style="color:#1d82f5"><strong>'.$notifiable->email_verification_code.'</strong></p>';
 
-        $content = __('superadmin.emailVerificationCode.text') . '<br><br>' . __('superadmin.emailVerificationCode.line1') . '<br>' . new HtmlString($emailVerifyCode) . '<br>' . __('superadmin.emailVerificationCode.line2');
+        $content = __('superadmin.emailVerificationCode.text').'<br><br>'.__('superadmin.emailVerificationCode.line1').'<br>'.new HtmlString($emailVerifyCode).'<br>'.__('superadmin.emailVerificationCode.line2');
 
         $this->company = null;
 
         $build = parent::build();
 
         return $build
-            ->subject(Lang::get('Email verification code') . ' ' . config('app.name'))
+            ->subject(Lang::get('Email verification code').' '.config('app.name'))
             ->markdown('mail.email', [
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company ? $this->company->header_color : null,
                 'actionText' => __('superadmin.emailVerificationCode.action'),
-                'notifiableName' => $user->name
+                'notifiableName' => $user->name,
             ]);
     }
 
     /**
      * Get the verify email notification mail message for the given URL.
      *
-     * @param string $url
+     * @param  string  $url
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     protected function buildMailMessage($url)
@@ -104,7 +103,7 @@ class VerifyEmail extends BaseNotification
     /**
      * Get the verification URL for the given notifiable.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return string
      */
     protected function verificationUrl($notifiable)
@@ -128,7 +127,7 @@ class VerifyEmail extends BaseNotification
     /**
      * Set a callback that should be used when creating the email verification URL.
      *
-     * @param \Closure $callback
+     * @param  \Closure  $callback
      * @return void
      */
     public static function createUrlUsing($callback)
@@ -139,7 +138,7 @@ class VerifyEmail extends BaseNotification
     /**
      * Set a callback that should be used when building the notification mail message.
      *
-     * @param \Closure $callback
+     * @param  \Closure  $callback
      * @return void
      */
     public static function toMailUsing($callback)

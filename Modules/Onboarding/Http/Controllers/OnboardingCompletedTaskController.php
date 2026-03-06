@@ -7,32 +7,31 @@ use App\Helper\Reply;
 use App\Http\Controllers\AccountBaseController;
 use App\Models\EmployeeDetails;
 use App\Models\User;
+use App\Scopes\ActiveScope;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
-use Illuminate\Support\Facades\Log;
 use Modules\Onboarding\Entities\OnboardingCompletedTask;
-use Modules\Onboarding\Notifications\TaskApprovalNotification;
-use Modules\Onboarding\Notifications\TaskSubmissionNotification;
 use Modules\Onboarding\Entities\OnboardingTask;
 use Modules\Onboarding\Http\Requests\CreateOnboardingDashboardRequest;
 use Modules\Onboarding\Notifications\OffboardingNotification;
 use Modules\Onboarding\Notifications\OnboardingNotification;
-use App\Scopes\ActiveScope;
+use Modules\Onboarding\Notifications\TaskApprovalNotification;
+use Modules\Onboarding\Notifications\TaskSubmissionNotification;
 
 class OnboardingCompletedTaskController extends AccountBaseController
 {
     /**
      * Display a listing of the resource.
      */
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'onboarding::clan.onboarding';
 
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('onboarding', $this->user->modules));
+            abort_403(! in_array('onboarding', $this->user->modules));
+
             return $next($request);
         });
     }
@@ -91,10 +90,9 @@ class OnboardingCompletedTaskController extends AccountBaseController
             }
 
             $task->save();
-        }
-        else {
+        } else {
             // Create a new instance of OnboardingCompletedTask
-            $task = new OnboardingCompletedTask();
+            $task = new OnboardingCompletedTask;
             $task->onboarding_task_id = $request->onboarding_task_id;
             $task->employee_id = $user->id;
             $task->user_id = user()->id;
@@ -114,9 +112,9 @@ class OnboardingCompletedTaskController extends AccountBaseController
             $task->update([
                 'submission_status' => 'submitted',
                 'submitted_on' => now(),
-                'completed_on' => $completedOn
+                'completed_on' => $completedOn,
             ]);
-            
+
             // Send notification to admins and users with manage permission
             $this->notifyTaskSubmission($task);
         }
@@ -127,7 +125,7 @@ class OnboardingCompletedTaskController extends AccountBaseController
                 'submission_status' => 'approved',
                 'approved_by' => user()->id,
                 'approved_on' => now(),
-                'completed_on' => $completedOn
+                'completed_on' => $completedOn,
             ]);
         }
 
@@ -145,8 +143,8 @@ class OnboardingCompletedTaskController extends AccountBaseController
     private function updateEmployeeOnboardingStatus(User $user)
     {
         $employeeDetail = $user->employeeDetail;
-        
-        if (!$employeeDetail) {
+
+        if (! $employeeDetail) {
             return;
         }
 
@@ -173,7 +171,7 @@ class OnboardingCompletedTaskController extends AccountBaseController
 
         $employeeDetail->update([
             'onboard_completed' => $onboardCompleted,
-            'offboard_completed' => $offboardCompleted
+            'offboard_completed' => $offboardCompleted,
         ]);
     }
 
@@ -185,6 +183,7 @@ class OnboardingCompletedTaskController extends AccountBaseController
         // New employee logic: Has pending onboarding tasks
         if ($totalOnboardTasks > 0 && $completedOnboardTasks < $totalOnboardTasks) {
             $employeeDetail->onboarding_status = 'new';
+
             return;
         }
 
@@ -195,6 +194,7 @@ class OnboardingCompletedTaskController extends AccountBaseController
             } else {
                 $employeeDetail->onboarding_status = 'offboarding';
             }
+
             return;
         }
 
@@ -207,7 +207,7 @@ class OnboardingCompletedTaskController extends AccountBaseController
         $userId = $request->id;
         $employeeDetail = EmployeeDetails::where('user_id', $userId)->first();
 
-        if (!$employeeDetail) {
+        if (! $employeeDetail) {
             return Reply::error(__('onboarding::messages.employeeNotFound'));
         }
 
@@ -227,7 +227,7 @@ class OnboardingCompletedTaskController extends AccountBaseController
                 ->where('type', 'onboard')
                 ->where('employee_id', $userId)
                 ->firstOrNew();
-                
+
             $completedTask->onboarding_task_id = $task->id;
             $completedTask->type = $task->type;
             $completedTask->employee_id = $userId;
@@ -238,7 +238,7 @@ class OnboardingCompletedTaskController extends AccountBaseController
         // Update employee status
         $employeeDetail->update([
             'onboarding_status' => 'new',
-            'onboard_completed' => 0
+            'onboard_completed' => 0,
         ]);
 
         // Onboarding start Notification to the user
@@ -252,7 +252,7 @@ class OnboardingCompletedTaskController extends AccountBaseController
         $employeeId = $request->employee_id;
         $employeeDetail = EmployeeDetails::where('user_id', $employeeId)->first();
 
-        if (!$employeeDetail) {
+        if (! $employeeDetail) {
             return Reply::error(__('onboarding::messages.employeeNotFound'));
         }
 
@@ -277,7 +277,7 @@ class OnboardingCompletedTaskController extends AccountBaseController
                 ->where('type', 'offboard')
                 ->where('employee_id', $employeeId)
                 ->firstOrNew();
-                
+
             $completedTask->onboarding_task_id = $task->id;
             $completedTask->type = $task->type;
             $completedTask->employee_id = $employeeId;
@@ -288,7 +288,7 @@ class OnboardingCompletedTaskController extends AccountBaseController
         // Update employee status
         $employeeDetail->update([
             'onboarding_status' => 'offboarding',
-            'offboard_completed' => 0
+            'offboard_completed' => 0,
         ]);
 
         Notification::send($employeeDetail->user, new OffboardingNotification($employeeDetail->user));
@@ -320,7 +320,7 @@ class OnboardingCompletedTaskController extends AccountBaseController
 
     public function viewFile($file)
     {
-        $filePath = public_path('user-uploads/onboarding-files/' . $file);
+        $filePath = public_path('user-uploads/onboarding-files/'.$file);
 
         // Check if the file exists
         if (file_exists($filePath)) {
@@ -339,7 +339,7 @@ class OnboardingCompletedTaskController extends AccountBaseController
     {
         $employeeId = $request->empId;
         $type = $request->type;
-        
+
         // Get all tasks with files before deleting
         $tasksToDelete = OnboardingCompletedTask::where('type', $type)
             ->where('employee_id', $employeeId)
@@ -358,8 +358,8 @@ class OnboardingCompletedTaskController extends AccountBaseController
             ->delete();
 
         $employeeDetail = EmployeeDetails::where('user_id', $employeeId)->first();
-        
-        if (!$employeeDetail) {
+
+        if (! $employeeDetail) {
             return Reply::error(__('onboarding::messages.employeeNotFound'));
         }
 
@@ -367,7 +367,7 @@ class OnboardingCompletedTaskController extends AccountBaseController
             // Reset onboarding status
             $employeeDetail->onboard_completed = 0;
             $employeeDetail->onboarding_status = 'old';
-            
+
             // If offboarding was completed, also reset it since onboarding is being restarted
             if ($employeeDetail->offboard_completed == 1) {
                 $employeeDetail->offboard_completed = 0;
@@ -387,7 +387,7 @@ class OnboardingCompletedTaskController extends AccountBaseController
     {
         $employeeId = $request->empId;
         $type = $request->type;
-        
+
         // Build query for tasks to complete
         $taskQuery = OnboardingCompletedTask::where('type', $type)
             ->where('employee_id', $employeeId);
@@ -401,27 +401,27 @@ class OnboardingCompletedTaskController extends AccountBaseController
             // Get only the IDs of employee tasks
             $employeeTaskIds = OnboardingCompletedTask::where('type', $type)
                 ->where('employee_id', $employeeId)
-                ->whereHas('onboardingTask', function($query) {
+                ->whereHas('onboardingTask', function ($query) {
                     $query->where('task_for', 'employee');
                 })
                 ->pluck('id');
-            
+
             // Filter the query to only include employee tasks
             $taskQuery->whereIn('id', $employeeTaskIds);
         }
-        
+
         // Complete the filtered tasks
         $taskQuery->update([
-            'status' => 'completed', 
-            'completed_on' => now(), 
-            'user_id' => user()->id
+            'status' => 'completed',
+            'completed_on' => now(),
+            'user_id' => user()->id,
         ]);
 
         // Check if ALL tasks of this type are now completed
         $totalTasks = OnboardingCompletedTask::where('type', $type)
             ->where('employee_id', $employeeId)
             ->count();
-            
+
         $completedTasks = OnboardingCompletedTask::where('type', $type)
             ->where('employee_id', $employeeId)
             ->where('status', 'completed')
@@ -429,14 +429,14 @@ class OnboardingCompletedTaskController extends AccountBaseController
 
         // Update employee status only if ALL tasks are completed
         $employeeDetail = EmployeeDetails::where('user_id', $employeeId)->first();
-        
+
         if ($employeeDetail && $totalTasks > 0 && $completedTasks == $totalTasks) {
             if ($type == 'onboard') {
                 $employeeDetail->onboard_completed = 1;
             } else {
                 $employeeDetail->offboard_completed = 1;
             }
-            
+
             // Get task counts for proper status determination
             $onboardTasks = OnboardingCompletedTask::where('type', 'onboard')
                 ->where('employee_id', $employeeId);
@@ -447,7 +447,7 @@ class OnboardingCompletedTaskController extends AccountBaseController
                 ->where('employee_id', $employeeId);
             $totalOffboardTasks = OnboardingTask::where('type', 'offboard')->count();
             $completedOffboardTasks = $offboardTasks->where('status', 'completed')->count();
-            
+
             // Determine the correct onboarding status based on actual task completion
             $this->determineEmployeeOnboardingStatus($employeeDetail, $totalOnboardTasks, $completedOnboardTasks, $totalOffboardTasks, $completedOffboardTasks);
             $employeeDetail->save();
@@ -467,34 +467,34 @@ class OnboardingCompletedTaskController extends AccountBaseController
 
         // Apply role-based filtering
         if (in_array('admin', user_roles())) {
-        $employeeTaskIds = OnboardingCompletedTask::where('type', $type)
+            $employeeTaskIds = OnboardingCompletedTask::where('type', $type)
                 ->where('employee_id', $employeeId);
         } else {
             // Employees can only complete employee tasks
             // Get only the IDs of employee tasks
             $employeeTaskIds = OnboardingCompletedTask::where('type', $type)
                 ->where('employee_id', $employeeId)
-                ->whereHas('onboardingTask', function($query) {
+                ->whereHas('onboardingTask', function ($query) {
                     $query->where('task_for', 'employee');
                 })
                 ->pluck('id');
-            
+
             // Filter the query to only include employee tasks
             $taskQuery->whereIn('id', $employeeTaskIds);
         }
 
         // Complete the filtered tasks
         $taskQuery->update([
-            'status' => 'completed', 
-            'completed_on' => now(), 
-            'user_id' => user()->id
+            'status' => 'completed',
+            'completed_on' => now(),
+            'user_id' => user()->id,
         ]);
 
         // Check if ALL tasks of this type are now completed
         $totalTasks = OnboardingCompletedTask::where('type', $type)
             ->where('employee_id', $employeeId)
             ->count();
-            
+
         $completedTasks = OnboardingCompletedTask::where('type', $type)
             ->where('employee_id', $employeeId)
             ->where('status', 'completed')
@@ -502,10 +502,10 @@ class OnboardingCompletedTaskController extends AccountBaseController
 
         // Update employee status only if ALL tasks are completed
         $employeeDetail = EmployeeDetails::where('user_id', $employeeId)->first();
-        
+
         if ($employeeDetail && $totalTasks > 0 && $completedTasks == $totalTasks) {
             $employeeDetail->offboard_completed = 1;
-            
+
             // Get task counts for proper status determination
             $onboardTasks = OnboardingCompletedTask::where('type', 'onboard')
                 ->where('employee_id', $employeeId);
@@ -516,7 +516,7 @@ class OnboardingCompletedTaskController extends AccountBaseController
                 ->where('employee_id', $employeeId);
             $totalOffboardTasks = OnboardingTask::where('type', 'offboard')->count();
             $completedOffboardTasks = $offboardTasks->where('status', 'completed')->count();
-            
+
             // Determine the correct onboarding status based on actual task completion
             $this->determineEmployeeOnboardingStatus($employeeDetail, $totalOnboardTasks, $completedOnboardTasks, $totalOffboardTasks, $completedOffboardTasks);
             $employeeDetail->save();
@@ -534,14 +534,14 @@ class OnboardingCompletedTaskController extends AccountBaseController
         $task = OnboardingCompletedTask::findOrFail($taskId);
 
         // Check if user has permission to submit this task
-        if ($task->employee_id != user()->id && !in_array('admin', user_roles())) {
+        if ($task->employee_id != user()->id && ! in_array('admin', user_roles())) {
             return Reply::error(__('messages.permissionDenied'));
         }
 
         // Update task to submitted status
         $task->update([
             'submission_status' => 'submitted',
-            'submitted_on' => now()
+            'submitted_on' => now(),
         ]);
 
         // Send notification to admins and users with manage permission
@@ -560,7 +560,7 @@ class OnboardingCompletedTaskController extends AccountBaseController
 
         // Check if user has permission to approve
         $permission = $task->type == 'onboard' ? 'manage_employee_onboarding' : 'manage_employee_offboarding';
-        if (user()->permission($permission) !== 'all' && !in_array('admin', user_roles())) {
+        if (user()->permission($permission) !== 'all' && ! in_array('admin', user_roles())) {
             return Reply::error(__('messages.permissionDenied'));
         }
 
@@ -592,7 +592,7 @@ class OnboardingCompletedTaskController extends AccountBaseController
 
         // Check if user has permission to reject
         $permission = $task->type == 'onboard' ? 'manage_employee_onboarding' : 'manage_employee_offboarding';
-        if (user()->permission($permission) !== 'all' && !in_array('admin', user_roles())) {
+        if (user()->permission($permission) !== 'all' && ! in_array('admin', user_roles())) {
             return Reply::error(__('messages.permissionDenied'));
         }
 
@@ -602,7 +602,7 @@ class OnboardingCompletedTaskController extends AccountBaseController
             'status' => 'pending',
             'rejected_by' => user()->id,
             'rejected_on' => now(),
-            'rejection_reason' => $rejectionReason
+            'rejection_reason' => $rejectionReason,
         ]);
 
         // Send notification to employee
@@ -621,7 +621,7 @@ class OnboardingCompletedTaskController extends AccountBaseController
 
         // Check if user has permission to cancel
         $permission = $task->type == 'onboard' ? 'manage_employee_onboarding' : 'manage_employee_offboarding';
-        if (user()->permission($permission) !== 'all' && !in_array('admin', user_roles())) {
+        if (user()->permission($permission) !== 'all' && ! in_array('admin', user_roles())) {
             return Reply::error(__('messages.permissionDenied'));
         }
 
@@ -642,7 +642,7 @@ class OnboardingCompletedTaskController extends AccountBaseController
             'approved_on' => null,
             'rejection_reason' => null,
             'rejected_by' => null,
-            'rejected_on' => null
+            'rejected_on' => null,
         ]);
 
         // Update employee onboarding status
@@ -658,10 +658,10 @@ class OnboardingCompletedTaskController extends AccountBaseController
     {
         // Get users with manage permission
         $permission = $task->type == 'onboard' ? 'manage_employee_onboarding' : 'manage_employee_offboarding';
-        
-        $usersToNotify = User::whereHas('roles.permissions', function($query) use ($permission) {
+
+        $usersToNotify = User::whereHas('roles.permissions', function ($query) use ($permission) {
             $query->where('name', $permission)->where('permission_type_id', 1);
-        })->orWhereHas('roles', function($query) {
+        })->orWhereHas('roles', function ($query) {
             $query->where('name', 'admin');
         })->get();
 
@@ -680,7 +680,7 @@ class OnboardingCompletedTaskController extends AccountBaseController
     {
         $employee = $task->employee;
         $company = $employee->company;
-        
+
         // Send notification to the employee
         $employee->notify(new TaskApprovalNotification($task, $status, user(), $rejectionReason, $company));
     }
@@ -691,7 +691,7 @@ class OnboardingCompletedTaskController extends AccountBaseController
     private function hasManagePermission($type)
     {
         $permission = $type == 'onboard' ? 'manage_employee_onboarding' : 'manage_employee_offboarding';
+
         return user()->permission($permission) === 'all';
     }
 }
-

@@ -6,26 +6,26 @@ use Maatwebsite\Excel\Concerns\ToArray;
 
 class EmployeeImport implements ToArray
 {
-
     protected array $processedData = [];
 
     public static function fields(): array
     {
-        return array(
-            array('id' => 'name', 'name' => __('modules.employees.employeeName'), 'required' => 'Yes',),
-            array('id' => 'email', 'name' => __('modules.employees.employeeEmail'), 'required' => 'Yes',),
-            array('id' => 'mobile', 'name' => __('app.mobile'), 'required' => 'No',),
-            array('id' => 'gender', 'name' => __('modules.employees.gender'), 'required' => 'No',),
-            array('id' => 'employee_id', 'name' => __('modules.employees.employeeId'), 'required' => 'Yes'),
-            array('id' => 'joining_date', 'name' => __('modules.employees.joiningDate'), 'required' => 'Yes'),
-            array('id' => 'address', 'name' => __('app.address'), 'required' => 'No'),
-            array('id' => 'hourly_rate', 'name' => __('modules.employees.hourlyRate'), 'required' => 'No'),
-        );
+        return [
+            ['id' => 'name', 'name' => __('modules.employees.employeeName'), 'required' => 'Yes'],
+            ['id' => 'email', 'name' => __('modules.employees.employeeEmail'), 'required' => 'Yes'],
+            ['id' => 'mobile', 'name' => __('app.mobile'), 'required' => 'No'],
+            ['id' => 'gender', 'name' => __('modules.employees.gender'), 'required' => 'No'],
+            ['id' => 'employee_id', 'name' => __('modules.employees.employeeId'), 'required' => 'Yes'],
+            ['id' => 'joining_date', 'name' => __('modules.employees.joiningDate'), 'required' => 'Yes'],
+            ['id' => 'address', 'name' => __('app.address'), 'required' => 'No'],
+            ['id' => 'hourly_rate', 'name' => __('modules.employees.hourlyRate'), 'required' => 'No'],
+        ];
     }
 
     public function array(array $array): array
     {
         $this->processedData = $array;
+
         return $array;
     }
 
@@ -33,5 +33,4 @@ class EmployeeImport implements ToArray
     {
         return $this->processedData;
     }
-
 }

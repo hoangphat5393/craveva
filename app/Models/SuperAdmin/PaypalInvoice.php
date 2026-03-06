@@ -2,8 +2,8 @@
 
 namespace App\Models\SuperAdmin;
 
-use App\Models\Company;
 use App\Models\BaseModel;
+use App\Models\Company;
 
 /**
  * App\Models\SuperAdmin\PaypalInvoice
@@ -29,6 +29,7 @@ use App\Models\BaseModel;
  * @property Carbon|null $updated_at
  * @property-read Company|null $company
  * @property-read Package|null $package
+ *
  * @method static Builder|PaypalInvoice newModelQuery()
  * @method static Builder|PaypalInvoice newQuery()
  * @method static Builder|PaypalInvoice query()
@@ -51,12 +52,13 @@ use App\Models\BaseModel;
  * @method static Builder|PaypalInvoice whereTotal($value)
  * @method static Builder|PaypalInvoice whereTransactionId($value)
  * @method static Builder|PaypalInvoice whereUpdatedAt($value)
+ *
  * @mixin Eloquent
+ *
  * @property Carbon|null $paid_on
  */
 class PaypalInvoice extends BaseModel
 {
-
     protected $dates = ['paid_on', 'next_pay_date'];
 
     protected $casts = [
@@ -78,5 +80,4 @@ class PaypalInvoice extends BaseModel
     {
         return $this->belongsTo(Package::class);
     }
-
 }

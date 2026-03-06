@@ -7,7 +7,6 @@ use Modules\Policy\Entities\PolicySetting;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      */
@@ -15,7 +14,7 @@ return new class extends Migration
     {
         \App\Models\Module::validateVersion(PolicySetting::MODULE_NAME);
 
-        if (!Schema::hasTable('policy_settings')) {
+        if (! Schema::hasTable('policy_settings')) {
             Schema::create('policy_settings', function (Blueprint $table) {
                 $table->id();
                 $table->string('purchase_code')->nullable();

@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Helper\Files;
 use App\Helper\Reply;
+use App\Models\InvoiceFiles;
 use App\Traits\IconTrait;
 use Illuminate\Http\Request;
-use App\Models\InvoiceFiles;
 
 class InvoiceFilesController extends AccountBaseController
 {
@@ -29,7 +29,7 @@ class InvoiceFilesController extends AccountBaseController
             $defaultImage = null;
 
             foreach ($request->file as $fileData) {
-                $file = new InvoiceFiles();
+                $file = new InvoiceFiles;
                 $file->invoice_id = $request->invoice_id;
 
                 $filename = Files::uploadLocalOrS3($fileData, InvoiceFiles::FILE_PATH);
@@ -52,9 +52,9 @@ class InvoiceFilesController extends AccountBaseController
     {
         $file = InvoiceFiles::findOrFail($id);
         $this->deletePermission = user()->permission('delete_invoices');
-        abort_403(!($this->deletePermission == 'all' || ($this->deletePermission == 'added' && $file->added_by == user()->id)));
+        abort_403(! ($this->deletePermission == 'all' || ($this->deletePermission == 'added' && $file->added_by == user()->id)));
 
-        Files::deleteFile($file->hashname, 'invoices/' . $file->invoice_id);
+        Files::deleteFile($file->hashname, 'invoices/'.$file->invoice_id);
 
         InvoiceFiles::destroy($id);
 
@@ -69,9 +69,8 @@ class InvoiceFilesController extends AccountBaseController
         $file = InvoiceFiles::whereRaw('md5(id) = ?', $id)->firstOrFail();
 
         $this->viewPermission = user()->permission('view_invoices');
-        abort_403(!($this->viewPermission == 'all' || ($this->viewPermission == 'added' && $file->added_by == user()->id)));
+        abort_403(! ($this->viewPermission == 'all' || ($this->viewPermission == 'added' && $file->added_by == user()->id)));
 
-        return download_local_s3($file, 'invoices/' . $file->hashname);
+        return download_local_s3($file, 'invoices/'.$file->hashname);
     }
-
 }

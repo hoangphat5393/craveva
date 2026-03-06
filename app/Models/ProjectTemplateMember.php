@@ -19,6 +19,7 @@ use Illuminate\Notifications\Notifiable;
  * @property-read int|null $notifications_count
  * @property-read \App\Models\ProjectTemplate $projectTemplate
  * @property-read \App\Models\User $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectTemplateMember newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectTemplateMember newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectTemplateMember query()
@@ -27,11 +28,11 @@ use Illuminate\Notifications\Notifiable;
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectTemplateMember whereProjectTemplateId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectTemplateMember whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectTemplateMember whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class ProjectTemplateMember extends BaseModel
 {
-
     use Notifiable;
 
     protected $with = ['user'];
@@ -64,5 +65,4 @@ class ProjectTemplateMember extends BaseModel
         return ProjectTemplateMember::where('project_template_id', $projectId)
             ->where('user_id', $userId)->first();
     }
-
 }

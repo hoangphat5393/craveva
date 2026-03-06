@@ -15,13 +15,11 @@ use Laravel\Fortify\Contracts\CreatesNewUsers;
 
 class CreateNewUser implements CreatesNewUsers
 {
-
     use PasswordValidationRules;
 
     /**
      * Validate and create a newly registered user.
      *
-     * @param  array  $input
      * @return \App\Models\UserAuth
      */
     public function create(array $input)
@@ -29,7 +27,7 @@ class CreateNewUser implements CreatesNewUsers
 
         $company = Company::first();
 
-        if ((!$company->allow_client_signup) || isCraveva()) {
+        if ((! $company->allow_client_signup) || isCraveva()) {
             return abort(403, __('messages.clientSignUpDisabledByAdmin'));
         }
 
@@ -57,7 +55,7 @@ class CreateNewUser implements CreatesNewUsers
             $gRecaptchaResponse = $input[$gRecaptchaResponseInput];
             $validateRecaptcha = GlobalSetting::validateGoogleRecaptcha($gRecaptchaResponse);
 
-            if (!$validateRecaptcha) {
+            if (! $validateRecaptcha) {
                 abort(403, __('auth.recaptchaFailed'));
             }
         }
@@ -66,7 +64,7 @@ class CreateNewUser implements CreatesNewUsers
             'company_id' => $company->id,
             'name' => $input['name'],
             'email' => $input['email'],
-            'admin_approval' => !$company->admin_client_signup_approval,
+            'admin_approval' => ! $company->admin_client_signup_approval,
         ]);
 
         $userAuth = $user->userAuth()->create(['email' => $input['email'], 'password' => bcrypt($input['password'])]);
@@ -80,16 +78,16 @@ class CreateNewUser implements CreatesNewUsers
 
         $user->assignUserRolePermission($role->id);
 
-        $log = new AccountBaseController();
+        $log = new AccountBaseController;
 
         // Log search
         $log->logSearchEntry($user->id, $user->name, 'clients.show', 'client');
 
-        if (!is_null($user->email)) {
+        if (! is_null($user->email)) {
             $log->logSearchEntry($user->id, $user->email, 'clients.show', 'client');
         }
 
-        if (!is_null($user->clientDetails->company_name)) {
+        if (! is_null($user->clientDetails->company_name)) {
             $log->logSearchEntry($user->id, $user->clientDetails->company_name, 'clients.show', 'client');
         }
 

@@ -2,21 +2,28 @@
 
 namespace Modules\Onboarding\Views\Components;
 
-use Illuminate\View\Component;
 use App\Models\EmployeeDetails;
+use Illuminate\View\Component;
 use Modules\Onboarding\Entities\OnboardingCompletedTask;
 
 class StartOnboarding extends Component
 {
-
     public $employee;
+
     public $onboard;
+
     public $onBoardCompleteTasks;
+
     public $offBoardCompleteTasks;
+
     public $totalOnboardTasks;
+
     public $totalOffboardTasks;
+
     public $viewonboardingPermission;
+
     public $viewoffboardingPermission;
+
     /**
      * Create a new component instance.
      *
@@ -71,5 +78,4 @@ class StartOnboarding extends Component
     {
         return view('onboarding::components.start-onboarding', get_object_vars($this));
     }
-
 }

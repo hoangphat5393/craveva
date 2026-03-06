@@ -8,14 +8,12 @@ use Modules\CyberSecurity\Notifications\LockoutEmailNotification;
 
 class LockoutEmailListener
 {
-
     public function handle($event): void
     {
         $cyberSecurity = CyberSecurity::first();
 
-        if($cyberSecurity->email){
+        if ($cyberSecurity->email) {
             Notification::route('mail', $cyberSecurity->email)->notify(new LockoutEmailNotification($event));
         }
     }
-
 }

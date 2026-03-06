@@ -11,12 +11,12 @@ use App\Models\UserLeadboardSetting;
 
 class LeadStageSettingController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('leads', $this->user->modules));
+            abort_403(! in_array('leads', $this->user->modules));
+
             return $next($request);
         });
     }
@@ -27,12 +27,14 @@ class LeadStageSettingController extends AccountBaseController
     public function create()
     {
         $this->pipelines = LeadPipeline::all();
+
         return view('lead-settings.create-stage-modal', $this->data);
     }
 
     /**
-     * @param StoreLeadStatus $request
+     * @param  StoreLeadStatus  $request
      * @return array
+     *
      * @throws \Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException
      */
     public function store(StoreLeadStage $request)
@@ -41,20 +43,18 @@ class LeadStageSettingController extends AccountBaseController
 
         $pipelines = $request->pipeline;
 
-        foreach($pipelines as $pipeline)
-        {
-            $maxPriority = $stages->filter(function ($value, $key) use($pipeline) {
+        foreach ($pipelines as $pipeline) {
+            $maxPriority = $stages->filter(function ($value, $key) use ($pipeline) {
                 return $value->lead_pipeline_id == $pipeline;
             })->max('priority');
 
-            $stage = new PipelineStage();
+            $stage = new PipelineStage;
             $stage->name = $request->name;
             $stage->lead_pipeline_id = $pipeline;
             $stage->label_color = $request->label_color;
             $stage->priority = ($maxPriority + 1);
             $stage->save();
         }
-
 
         return Reply::success(__('messages.recordSaved'));
     }
@@ -87,9 +87,10 @@ class LeadStageSettingController extends AccountBaseController
     }
 
     /**
-     * @param UpdateLeadStatus $request
-     * @param int $id
+     * @param  UpdateLeadStatus  $request
+     * @param  int  $id
      * @return array
+     *
      * @throws \Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException
      */
     public function update(UpdateLeadStage $request, $id)
@@ -99,26 +100,21 @@ class LeadStageSettingController extends AccountBaseController
         $oldPosition = $stage->priority;
         $newPosition = $request->priority;
 
-        if($request->has('before'))
-        {
+        if ($request->has('before')) {
             PipelineStage::where('priority', '<', $oldPosition)
                 ->where('priority', '>=', $newPosition)
                 ->orderBy('priority', 'asc')
                 ->increment('priority');
 
             $stage->priority = $request->priority;
-        }
-        elseif($oldPosition > $newPosition)
-        {
+        } elseif ($oldPosition > $newPosition) {
             PipelineStage::where('priority', '<', $oldPosition)
                 ->where('priority', '>', $newPosition)
                 ->orderBy('priority', 'asc')
                 ->increment('priority');
 
             $stage->priority = $request->priority + 1;
-        }
-        else
-        {
+        } else {
             PipelineStage::where('priority', '>', $oldPosition)
                 ->where('priority', '<=', $newPosition)
                 ->orderBy('priority', 'asc')
@@ -139,11 +135,10 @@ class LeadStageSettingController extends AccountBaseController
         $stage = PipelineStage::find($id);
         $allPipelineStage = PipelineStage::select('id', 'default')->where('lead_pipeline_id', $stage->lead_pipeline_id)->get();
 
-        foreach($allPipelineStage as $leadStage){
-            if($leadStage->id == $id ){
+        foreach ($allPipelineStage as $leadStage) {
+            if ($leadStage->id == $id) {
                 $leadStage->default = '1';
-            }
-            else{
+            } else {
                 $leadStage->default = '0';
             }
 
@@ -178,5 +173,4 @@ class LeadStageSettingController extends AccountBaseController
 
         return Reply::success(__('messages.deleteSuccess'));
     }
-
 }

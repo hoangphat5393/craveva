@@ -3,15 +3,14 @@
 namespace Modules\Affiliate\Entities;
 
 use App\Models\BaseModel;
-use Modules\Affiliate\Enums\YesNo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\Affiliate\Enums\CommissionType;
 use Modules\Affiliate\Enums\PayoutTime;
 use Modules\Affiliate\Enums\PayoutType;
-use Modules\Affiliate\Enums\CommissionType;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\Affiliate\Enums\YesNo;
 
 class AffiliateSetting extends BaseModel
 {
-
     use HasFactory;
 
     protected $guarded = ['id'];

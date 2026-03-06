@@ -1,4 +1,5 @@
 <?php
+
 // SAAS
 return [
     'superAdminDashboard' => '超級管理員儀表板',
@@ -342,7 +343,7 @@ return [
         'offlineDescriptionPlaceholder' => '提供您的線下付款詳情',
     ],
     'accountSettings' => [
-        'enableRegister' => '顯示註冊按鈕'
+        'enableRegister' => '顯示註冊按鈕',
     ],
     'emailInfoCompany' => '這些登錄詳細信息將由公司管理員用於登錄其公司',
     'loginInfo' => '您將從超級管理員帳戶註銷。點擊登錄以繼續。',
@@ -366,15 +367,15 @@ return [
     'showSignUpPopover' => '在前台頁面顯示註冊按鈕',
     'showGetStartedPopover' => '在前台頁面顯示開始按鈕',
     'goToWebsite' => '轉到主頁',
-    'newCompany' => array(
+    'newCompany' => [
         'subject' => '新公司註冊',
         'text' => '好消息！一家新公司已在我們的系統中成功註冊。現在可以開始使用我們的服務了。',
-    ),
-    'themeSettings' => array(
+    ],
+    'themeSettings' => [
         'adminPanelTheme' => '超級管理員面板主題',
         'setThisCustomerTheme' => '為所有客戶設置此主題',
         'setThisCustomerThemeInfo' => '客戶將無法從管理面板更改主題',
-    ),
+    ],
     'frontDisableInfo' => '啟用它將禁用前台網站，並在打開前台網站的任何 url 時重定向到登錄頁面',
     'featureImageSizeMessage' => '上傳圖片大小應為 400x352。',
     'headerImageSizeMessage' => '上傳圖片大小應為 688x504。',
@@ -388,8 +389,8 @@ return [
         'approvedChangedBy' => '批准狀態更改者',
         'companyNeedApproval' => '公司批准待定',
     ],
-    'companyApproved' => array(
+    'companyApproved' => [
         'subject' => '您的公司帳戶已批准。',
         'text' => '我們很高興地通知您，您的公司帳戶已成功獲得批准，現在可以使用了。您現在可以登錄以開始訪問我們的服務。',
-    ),
+    ],
 ];

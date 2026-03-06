@@ -8,14 +8,11 @@ use Illuminate\Support\Facades\Notification;
 
 class NewInvoiceListener
 {
-
     /**
      * Handle the event.
      *
-     * @param NewInvoiceEvent $event
      * @return void
      */
-
     public function handle(NewInvoiceEvent $event)
     {
         if ($event->notifyUser->email != null) {
@@ -23,5 +20,4 @@ class NewInvoiceListener
         }
 
     }
-
 }

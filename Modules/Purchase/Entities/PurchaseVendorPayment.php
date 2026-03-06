@@ -2,18 +2,15 @@
 
 namespace Modules\Purchase\Entities;
 
-use App\Models\User;
-use App\Models\BaseModel;
-use App\Traits\HasCompany;
 use App\Models\BankAccount;
-use Modules\Purchase\Entities\PurchaseVendor;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use App\Models\BaseModel;
+use App\Models\User;
+use App\Traits\HasCompany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class PurchaseVendorPayment extends BaseModel
 {
-
     use HasCompany;
 
     protected $fillable = [];
@@ -26,8 +23,6 @@ class PurchaseVendorPayment extends BaseModel
 
     /**
      * Get all of the comments for the PurchaseVendorPayment
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function vendor(): HasOne
     {
@@ -43,5 +38,4 @@ class PurchaseVendorPayment extends BaseModel
     {
         return $this->belongsTo(User::class, 'added_by');
     }
-
 }

@@ -54,9 +54,9 @@ class JobApplicationStatusChange extends BaseNotification
             ->subject(__('recruit::messages.statusSubject'))
             ->greeting(__('email.hello').' '.$notifiable->full_name.'!')
             ->line(__('recruit::messages.greetingMessage'))
-            ->line(__('recruit::messages.applicationStatus',[
+            ->line(__('recruit::messages.applicationStatus', [
                 'status' => $recruitStatus->status,
-                'job' => $this->jobApplication->job->title
+                'job' => $this->jobApplication->job->title,
             ]));
         if ($recruitStatus->recruit_application_status_category_id == $category->id) {
             $emailContent->line(__('recruit::messages.rejectedMessage'))
@@ -78,5 +78,4 @@ class JobApplicationStatusChange extends BaseNotification
             'data' => $this->jobApplication->toArray(),
         ];
     }
-
 }

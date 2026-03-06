@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateFrontMenu extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -34,5 +33,4 @@ class UpdateFrontMenu extends FormRequest
             'contact_submit' => 'required',
         ];
     }
-
 }

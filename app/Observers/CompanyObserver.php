@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Enums\MaritalStatus;
 use App\Events\NewCompanyCreatedEvent;
+use App\Helper\Files;
 use App\Http\Controllers\AppSettingController;
 use App\Http\Controllers\CurrencySettingController;
 use App\Http\Controllers\RolePermissionController;
@@ -19,6 +20,7 @@ use App\Models\GlobalSetting;
 use App\Models\GoogleCalendarModule;
 use App\Models\InvoiceSetting;
 use App\Models\LeadCustomForm;
+use App\Models\LeadPipeline;
 use App\Models\LeadSource;
 use App\Models\LeadStatus;
 use App\Models\LeaveType;
@@ -30,6 +32,7 @@ use App\Models\Notification;
 use App\Models\PackageUpdateNotify;
 use App\Models\Permission;
 use App\Models\PermissionRole;
+use App\Models\PipelineStage;
 use App\Models\ProjectSetting;
 use App\Models\ProjectStatusSetting;
 use App\Models\QuickBooksSetting;
@@ -42,24 +45,20 @@ use App\Models\SuperAdmin\Package;
 use App\Models\SuperAdmin\PackageSetting;
 use App\Models\TaskboardColumn;
 use App\Models\ThemeSetting;
-use App\Models\TicketEmailSetting;
-use App\Models\TicketType;
-use App\Models\TicketSettingForAgents;
-use App\Models\User;
-use App\Models\LeadPipeline;
-use App\Models\PipelineStage;
 use App\Models\TicketChannel;
 use App\Models\TicketCustomForm;
+use App\Models\TicketEmailSetting;
+use App\Models\TicketSettingForAgents;
+use App\Models\TicketType;
 use App\Models\UnitType;
-use App\Traits\StoreHeaders;
-use App\Helper\Files;
+use App\Models\User;
 use App\Models\UserAuth;
 use App\Scopes\ActiveScope;
 use App\Scopes\CompanyScope;
+use App\Traits\StoreHeaders;
 
 class CompanyObserver
 {
-
     use StoreHeaders;
 
     public function creating(Company $company)
@@ -70,11 +69,9 @@ class CompanyObserver
 
         $company->leaves_start_from = 'year_start';
 
-
-
         $this->packageInsert($company);
 
-        if (global_setting()->company_need_approval && !user()?->is_superadmin) {
+        if (global_setting()->company_need_approval && ! user()?->is_superadmin) {
             $company->approved = 0;
         }
     }
@@ -94,7 +91,7 @@ class CompanyObserver
         $company->datatable_row_limit = $globalSetting->datatable_row_limit;
 
         // When company is added from superadmin panel
-        if (!user()) {
+        if (! user()) {
             $company->timezone = $globalSetting->timezone;
             $company->locale = $globalSetting->locale;
             $company->logo = $globalSetting->logo;
@@ -114,7 +111,6 @@ class CompanyObserver
             $company->last_updated_by = $user->id;
         }
 
-
         if ($company->isDirty('approved')) {
             $company->approved_by = $user->id;
         }
@@ -124,20 +120,20 @@ class CompanyObserver
         }
 
         if ($company->isDirty('currency_id')) {
-            (new CurrencySettingController())->updateExchangeRates();
+            (new CurrencySettingController)->updateExchangeRates();
         }
 
-        if (!isRunningInConsoleOrSeeding() && $company->isDirty('currency_id') && !is_null(user())) {
+        if (! isRunningInConsoleOrSeeding() && $company->isDirty('currency_id') && ! is_null(user())) {
             $allClients = User::allClients();
             $clientsArray = $allClients->pluck('id')->toArray();
 
-            $appSettings = new AppSettingController();
+            $appSettings = new AppSettingController;
             $appSettings->deleteSessions($clientsArray);
         }
 
         // IsRunningInConsoleOrSeeding is added to prevent running seeder
         // for the case of running company migration before having global_settings table
-        if ($company->id === 1 && isNonCraveva() && !isRunningInConsoleOrSeeding()) {
+        if ($company->id === 1 && isNonCraveva() && ! isRunningInConsoleOrSeeding()) {
             $global = GlobalSetting::first();
             $global->email = $company->company_email;
             $global->global_app_name = $company->app_name;
@@ -155,15 +151,14 @@ class CompanyObserver
             $global->saveQuietly();
         }
 
-
         $this->saasSaving($company);
-        cache()->forget('user_' . $company->id . '_is_active');
+        cache()->forget('user_'.$company->id.'_is_active');
 
         session()->forget(['company', 'company.*', 'company.currency', 'company.paymentGatewayCredentials']);
         cache()->forget('global_setting');
     }
 
-    //phpcs:ignore
+    // phpcs:ignore
     public function created(Company $company)
     {
         $this->currencies($company);
@@ -201,7 +196,6 @@ class CompanyObserver
         $this->unitType($company);
         $this->leadStages($company);
 
-
         $this->updateSubscription($company, $company->package);
 
         // Will be used in various module
@@ -224,11 +218,10 @@ class CompanyObserver
         Notification::whereIn('type', ['App\Notifications\SuperAdmin\NewCompanyRegister', 'App\Notifications\NewUser'])
             ->whereNull('read_at')
             ->where(function ($q) use ($company) {
-                $q->where('data', 'like', '{"id":' . $company->id . '%');
-                $q->orWhere('data', 'like', '%"company_id":' . $company->id . '%');
+                $q->where('data', 'like', '{"id":'.$company->id.'%');
+                $q->orWhere('data', 'like', '%"company_id":'.$company->id.'%');
             })->delete();
     }
-
 
     public function deleted()
     {
@@ -245,7 +238,7 @@ class CompanyObserver
             return true;
         }
 
-        $currency = new Currency();
+        $currency = new Currency;
         $currency->currency_name = 'Dollars';
         $currency->currency_symbol = '$';
         $currency->currency_code = 'USD';
@@ -261,8 +254,7 @@ class CompanyObserver
         $company->currency_id = $currency->id;
         $company->saveQuietly();
 
-
-        $currency = new Currency();
+        $currency = new Currency;
         $currency->currency_name = 'Pounds';
         $currency->currency_symbol = '£';
         $currency->currency_code = 'GBP';
@@ -274,7 +266,7 @@ class CompanyObserver
         $currency->company()->associate($company);
         $currency->saveQuietly();
 
-        $currency = new Currency();
+        $currency = new Currency;
         $currency->currency_name = 'Euros';
         $currency->currency_symbol = '€';
         $currency->currency_code = 'EUR';
@@ -286,7 +278,7 @@ class CompanyObserver
         $currency->company()->associate($company);
         $currency->saveQuietly();
 
-        $currency = new Currency();
+        $currency = new Currency;
         $currency->currency_name = 'Rupee';
         $currency->currency_symbol = '₹';
         $currency->currency_code = 'INR';
@@ -302,7 +294,7 @@ class CompanyObserver
     public function employeeShift($company)
     {
 
-        $employeeShift = new EmployeeShift();
+        $employeeShift = new EmployeeShift;
         $employeeShift->shift_name = 'Day Off';
         $employeeShift->company_id = $company->id;
         $employeeShift->shift_short_code = 'DO';
@@ -315,7 +307,7 @@ class CompanyObserver
         $employeeShift->office_open_days = '';
         $employeeShift->saveQuietly();
 
-        $employeeShift = new EmployeeShift();
+        $employeeShift = new EmployeeShift;
         $employeeShift->shift_name = 'General Shift';
         $employeeShift->company_id = $company->id;
         $employeeShift->shift_short_code = 'GS';
@@ -331,7 +323,7 @@ class CompanyObserver
 
     public function attendanceSetting($company)
     {
-        $setting = new AttendanceSetting();
+        $setting = new AttendanceSetting;
         $setting->company_id = $company->id;
         $setting->office_start_time = '09:00:00';
         $setting->halfday_mark_time = '13:00:00';
@@ -371,7 +363,7 @@ class CompanyObserver
         DiscussionCategory::create([
             'name' => 'General',
             'color' => '#3498DB',
-            'company_id' => $company->id
+            'company_id' => $company->id,
         ]);
     }
 
@@ -442,7 +434,7 @@ class CompanyObserver
             ['type' => __('app.facebook'), 'company_id' => $company->id],
             ['type' => __('app.friend'), 'company_id' => $company->id],
             ['type' => __('app.direct'), 'company_id' => $company->id],
-            ['type' => __('app.tv'), 'company_id' => $company->id]
+            ['type' => __('app.tv'), 'company_id' => $company->id],
         ];
 
         LeadSource::insert($sources);
@@ -450,7 +442,7 @@ class CompanyObserver
         $status = [
             ['type' => 'pending', 'priority' => 1, 'default' => 1, 'label_color' => '#FFE700', 'company_id' => $company->id],
             ['type' => 'in process', 'priority' => 2, 'default' => 0, 'label_color' => '#009EFF', 'company_id' => $company->id],
-            ['type' => 'done', 'priority' => 3, 'default' => 0, 'label_color' => '#1FAE07', 'company_id' => $company->id]
+            ['type' => 'done', 'priority' => 3, 'default' => 0, 'label_color' => '#1FAE07', 'company_id' => $company->id],
         ];
 
         LeadStatus::insert($status);
@@ -458,7 +450,7 @@ class CompanyObserver
 
     public function leadStages($company)
     {
-        $pipeline = new LeadPipeline();
+        $pipeline = new LeadPipeline;
         $pipeline->name = 'Sales Pipeline';
         $pipeline->company_id = $company->id;
         $pipeline->label_color = '#009EFF';
@@ -473,7 +465,7 @@ class CompanyObserver
             ['name' => 'Schedule Appointment', 'slug' => 'schedule-appointment', 'lead_pipeline_id' => $pipeline->id, 'priority' => 4, 'default' => 0, 'label_color' => '#32CD32', 'company_id' => $company->id],
             ['name' => 'Proposal Sent', 'slug' => 'proposal-sent', 'lead_pipeline_id' => $pipeline->id, 'priority' => 5, 'default' => 0, 'label_color' => '#FFA07A', 'company_id' => $company->id],
             ['name' => 'Win', 'slug' => 'win', 'lead_pipeline_id' => $pipeline->id, 'priority' => 6, 'default' => 0, 'label_color' => '#1FAE07', 'company_id' => $company->id],
-            ['name' => 'Lost', 'slug' => 'lost', 'lead_pipeline_id' => $pipeline->id, 'priority' => 7, 'default' => 0, 'label_color' => '#DB1313', 'company_id' => $company->id]
+            ['name' => 'Lost', 'slug' => 'lost', 'lead_pipeline_id' => $pipeline->id, 'priority' => 7, 'default' => 0, 'label_color' => '#DB1313', 'company_id' => $company->id],
         ];
 
         PipelineStage::insert($pipelineStages);
@@ -529,7 +521,7 @@ class CompanyObserver
 
     public function logTimeFor($company)
     {
-        $logTimeFor = new LogTimeFor();
+        $logTimeFor = new LogTimeFor;
         $logTimeFor->company_id = $company->id;
         $logTimeFor->log_time_for = 'project';
         $logTimeFor->saveQuietly();
@@ -537,7 +529,7 @@ class CompanyObserver
 
     public function messageSetting($company)
     {
-        $setting = new MessageSetting();
+        $setting = new MessageSetting;
         $setting->company_id = $company->id;
         $setting->allow_client_admin = 'no';
         $setting->allow_client_employee = 'no';
@@ -546,7 +538,7 @@ class CompanyObserver
 
     public function projectSetting($company)
     {
-        $project_setting = new ProjectSetting();
+        $project_setting = new ProjectSetting;
         $project_setting->company_id = $company->id;
         $project_setting->send_reminder = 'no';
         $project_setting->remind_time = 5;
@@ -556,7 +548,7 @@ class CompanyObserver
 
     public function slackSetting($company)
     {
-        $slack = new SlackSetting();
+        $slack = new SlackSetting;
         $slack->company_id = $company->id;
         $slack->slack_webhook = null;
         $slack->slack_logo = null;
@@ -569,7 +561,7 @@ class CompanyObserver
             ['channel_name' => 'Email', 'company_id' => $company->id],
             ['channel_name' => 'Phone', 'company_id' => $company->id],
             ['channel_name' => 'Twitter', 'company_id' => $company->id],
-            ['channel_name' => 'Facebook', 'company_id' => $company->id]
+            ['channel_name' => 'Facebook', 'company_id' => $company->id],
         ];
 
         TicketChannel::insert($channels);
@@ -641,21 +633,21 @@ class CompanyObserver
 
     public function roles($company): void
     {
-        $adminRole = new Role();
+        $adminRole = new Role;
         $adminRole->name = 'admin';
         $adminRole->company_id = $company->id;
         $adminRole->display_name = 'App Administrator'; // optional
         $adminRole->description = 'Admin is allowed to manage everything of the app.'; // optional
         $adminRole->saveQuietly();
 
-        $employeeRole = new Role();
+        $employeeRole = new Role;
         $employeeRole->name = 'employee';
         $employeeRole->company_id = $company->id;
         $employeeRole->display_name = 'Employee'; // optional
         $employeeRole->description = 'Employee can see tasks and projects assigned to him.'; // optional
         $employeeRole->saveQuietly();
 
-        $clientRole = new Role();
+        $clientRole = new Role;
         $clientRole->name = 'client';
         $clientRole->company_id = $company->id;
         $clientRole->display_name = 'Client'; // optional
@@ -669,7 +661,7 @@ class CompanyObserver
         // DELETE ALL PERMISSION ROLE OF ABOVE ROLES IF ANY
         PermissionRole::whereIn('role_id', [$adminRole->id, $employeeRole->id, $clientRole->id])->delete();
 
-        $rolePermissionController = new RolePermissionController();
+        $rolePermissionController = new RolePermissionController;
         $rolePermissionController->permissionRole($allPermissions, 'employee', $company->id);
         $rolePermissionController->rolePermissionInsert($allPermissions, $adminRole->id, 'all');
         $rolePermissionController->permissionRole($allPermissions, 'client', $company->id);
@@ -784,15 +776,15 @@ class CompanyObserver
         $data = [
             'admin' => [
                 ...ModuleSetting::CLIENT_MODULES,
-                ...ModuleSetting::OTHER_MODULES
+                ...ModuleSetting::OTHER_MODULES,
             ],
             'employee' => [
                 ...ModuleSetting::CLIENT_MODULES,
-                ...ModuleSetting::OTHER_MODULES
+                ...ModuleSetting::OTHER_MODULES,
             ],
             'client' => [
-                ...ModuleSetting::CLIENT_MODULES
-            ]
+                ...ModuleSetting::CLIENT_MODULES,
+            ],
         ];
 
         $moduleSettings = [];
@@ -804,7 +796,7 @@ class CompanyObserver
 
                 if ($existingModuleSetting) {
                     $existingModuleSetting->update([
-                        'status' => 'active'
+                        'status' => 'active',
                     ]);
 
                     continue;
@@ -851,14 +843,14 @@ class CompanyObserver
 
     public function ticketEmailSetting($company): void
     {
-        $setting = new TicketEmailSetting();
+        $setting = new TicketEmailSetting;
         $setting->company_id = $company->id;
         $setting->saveQuietly();
     }
 
     public function googleCalendar($company): void
     {
-        $module = new GoogleCalendarModule();
+        $module = new GoogleCalendarModule;
         $module->company_id = $company->id;
         $module->lead_status = 0;
         $module->leave_status = 0;
@@ -876,7 +868,6 @@ class CompanyObserver
 
         UnitType::create($unitTypes);
     }
-
 
     private function packageInsert($company)
     {
@@ -900,15 +891,15 @@ class CompanyObserver
         })->first();
 
         // if trial package is active set package to company
-        if ($packageSetting && !is_null($trialPackage)) {
+        if ($packageSetting && ! is_null($trialPackage)) {
             $company->package_id = $trialPackage->id;
             // set company license expire date
-            $noOfDays = (!is_null($packageSetting->no_of_days) && $packageSetting->no_of_days != 0) ? $packageSetting->no_of_days : 30;
+            $noOfDays = (! is_null($packageSetting->no_of_days) && $packageSetting->no_of_days != 0) ? $packageSetting->no_of_days : 30;
             $company->licence_expire_on = now()->addDays($noOfDays)->format('Y-m-d');
         }
 
         // if trial package is not active set default package to company
-        elseif (!is_null($defaultPackage)) {
+        elseif (! is_null($defaultPackage)) {
             $company->package_id = $defaultPackage->id;
         } else {
             $company->package_id = $otherPackage->id;
@@ -951,28 +942,28 @@ class CompanyObserver
     {
         User::withoutGlobalScopes([ActiveScope::class, CompanyScope::class])
             ->where('company_id', $company->id)->each(function ($user) {
-                cache()->forget('user_modules_' . $user->id);
+                cache()->forget('user_modules_'.$user->id);
             });
     }
 
     public function createModuleSettings($company): void
     {
         $package = Package::where('id', $company->package_id)->first();
-        if (!is_null($package)) {
+        if (! is_null($package)) {
             $moduleInPackage = collect(json_decode($package->module_in_package));
 
             $data = [
                 'admin' => [
                     ...ModuleSetting::CLIENT_MODULES,
-                    ...ModuleSetting::OTHER_MODULES
+                    ...ModuleSetting::OTHER_MODULES,
                 ],
                 'employee' => [
                     ...ModuleSetting::CLIENT_MODULES,
-                    ...ModuleSetting::OTHER_MODULES
+                    ...ModuleSetting::OTHER_MODULES,
                 ],
                 'client' => [
-                    ...ModuleSetting::CLIENT_MODULES
-                ]
+                    ...ModuleSetting::CLIENT_MODULES,
+                ],
             ];
 
             $moduleSettings = [];
@@ -1067,7 +1058,7 @@ class CompanyObserver
         foreach ($widgets as $widget) {
             foreach ($widget as $key => $widgetValue) {
                 if (in_array($key, $missingModules)) {
-                    if (!is_array($widgetValue)) {
+                    if (! is_array($widgetValue)) {
                         $widgetValue = [$widgetValue];
                     }
 
@@ -1076,7 +1067,7 @@ class CompanyObserver
                         ->where('dashboard_type', 'private-dashboard')
                         ->update(['active' => 0]);
                 } elseif (in_array($key, $commonModules)) {
-                    if (!is_array($widgetValue)) {
+                    if (! is_array($widgetValue)) {
                         $widgetValue = [$widgetValue];
                     }
 
@@ -1095,7 +1086,7 @@ class CompanyObserver
         $currencyId = $package->currency_id ?: global_setting()->currency_id;
         $planExpireDate = $company->licence_expire_on;
 
-        if (!$planExpireDate) {
+        if (! $planExpireDate) {
             $planExpireDate = $packageType == 'annual' ? now()->addYear() : now()->addMonth();
         }
 
@@ -1103,7 +1094,7 @@ class CompanyObserver
             ->where('subscription_status', 'active')
             ->update(['subscription_status' => 'inactive']);
 
-        $subscription = new GlobalSubscription();
+        $subscription = new GlobalSubscription;
         $subscription->company_id = $company->id;
         $subscription->package_id = $package->id;
         $subscription->currency_id = $currencyId;
@@ -1116,7 +1107,7 @@ class CompanyObserver
         $subscription->transaction_id = str(str()->random(15))->upper();
         $subscription->save();
 
-        $offlineInvoice = new GlobalInvoice();
+        $offlineInvoice = new GlobalInvoice;
         $offlineInvoice->global_subscription_id = $subscription->id;
         $offlineInvoice->company_id = $company->id;
         $offlineInvoice->currency_id = $currencyId;

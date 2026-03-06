@@ -11,7 +11,7 @@ class AssetHistoryObserver
 {
     public function creating(AssetHistory $assetHistory)
     {
-        //region Field conditions
+        // region Field conditions
 
         $asset = $assetHistory->asset;
 
@@ -29,7 +29,7 @@ class AssetHistoryObserver
             $assetHistory->company_id = company()->id;
         }
 
-        //endregion
+        // endregion
     }
 
     public function created(AssetHistory $assetHistory)

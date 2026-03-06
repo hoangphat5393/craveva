@@ -41,13 +41,13 @@ class StoreRequest extends CoreRequest
         $rules = [
             'contract_number' => [
                 'required',
-                Rule::unique('contracts')->where('company_id', company()->id)
+                Rule::unique('contracts')->where('company_id', company()->id),
             ],
             'client_id' => 'required',
             'subject' => 'required',
             'amount' => 'required',
             'contract_type' => 'required|exists:contract_types,id',
-            'start_date' => 'required|date_format:"' . $setting->date_format . '"',
+            'start_date' => 'required|date_format:"'.$setting->date_format.'"',
         ];
 
         $rules = $this->customFieldRules($rules);
@@ -63,5 +63,4 @@ class StoreRequest extends CoreRequest
 
         return $attributes;
     }
-
 }

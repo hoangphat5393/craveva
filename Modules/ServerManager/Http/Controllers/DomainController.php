@@ -2,24 +2,21 @@
 
 namespace Modules\ServerManager\Http\Controllers;
 
+use App\Helper\Reply;
 use App\Http\Controllers\AccountBaseController;
+use App\Models\Project;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
+use Modules\ServerManager\DataTables\DomainDataTable;
 use Modules\ServerManager\Entities\ServerDomain;
 use Modules\ServerManager\Entities\ServerHosting;
 use Modules\ServerManager\Entities\ServerProvider;
 use Modules\ServerManager\Entities\ServerSetting;
-use Modules\ServerManager\DataTables\DomainDataTable;
+use Modules\ServerManager\Exports\DomainExport;
 use Modules\ServerManager\Http\Requests\Domain\StoreDomainRequest;
 use Modules\ServerManager\Http\Requests\Domain\UpdateDomainRequest;
-use App\Helper\Reply;
-use App\Models\User;
-use App\Models\Project;
-use App\Models\ClientDetails;
-use Maatwebsite\Excel\Facades\Excel;
-use Modules\ServerManager\Exports\DomainExport;
-use Carbon\Carbon;
 use Modules\ServerManager\Services\DnsLookupService;
 
 class DomainController extends AccountBaseController
@@ -31,7 +28,7 @@ class DomainController extends AccountBaseController
         parent::__construct();
         $this->pageTitle = __('servermanager::app.menu.domains');
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array(ServerSetting::MODULE_NAME, $this->user->modules));
+            abort_403(! in_array(ServerSetting::MODULE_NAME, $this->user->modules));
 
             return $next($request);
         });
@@ -40,7 +37,7 @@ class DomainController extends AccountBaseController
     public function index(DomainDataTable $dataTable)
     {
         $viewPermission = user()->permission('view_domain');
-        abort_403(!in_array($viewPermission, ['all', 'added']));
+        abort_403(! in_array($viewPermission, ['all', 'added']));
 
         $companyId = company()->id;
 
@@ -68,7 +65,7 @@ class DomainController extends AccountBaseController
     public function create()
     {
         $this->addPermission = user()->permission('add_domain');
-        abort_403(!in_array($this->addPermission, ['all']));
+        abort_403(! in_array($this->addPermission, ['all']));
 
         $viewProviderPermission = user()->permission('view_provider');
         $this->pageTitle = __('servermanager::app.domain.addDomain');
@@ -86,7 +83,7 @@ class DomainController extends AccountBaseController
             ->orderBy('project_name')
             ->get();
 
-        $this->clients = User::allClients(null, overRidePermission:($this->addPermission == 'all' ? 'all' : null));
+        $this->clients = User::allClients(null, overRidePermission: ($this->addPermission == 'all' ? 'all' : null));
 
         if ($viewProviderPermission == 'none') {
             $this->providers = collect([]);
@@ -119,7 +116,7 @@ class DomainController extends AccountBaseController
     public function store(StoreDomainRequest $request)
     {
         $addPermission = user()->permission('add_domain');
-        abort_403(!in_array($addPermission, ['all']));
+        abort_403(! in_array($addPermission, ['all']));
 
         ServerDomain::create([
             'company_id' => company()->id,
@@ -161,7 +158,7 @@ class DomainController extends AccountBaseController
     public function show($id)
     {
         $viewPermission = user()->permission('view_domain');
-        abort_403(!in_array($viewPermission, ['all', 'added']));
+        abort_403(! in_array($viewPermission, ['all', 'added']));
 
         $domain = ServerDomain::where('company_id', company()->id)
             ->with(['assignedTo', 'createdBy', 'hosting', 'project', 'client.user'])
@@ -191,7 +188,7 @@ class DomainController extends AccountBaseController
     public function edit($id)
     {
         $this->editPermission = user()->permission('edit_domain');
-        abort_403(!in_array($this->editPermission, ['all', 'added']));
+        abort_403(! in_array($this->editPermission, ['all', 'added']));
 
         $viewProviderPermission = user()->permission('view_provider');
 
@@ -212,7 +209,7 @@ class DomainController extends AccountBaseController
             ->orderBy('project_name')
             ->get();
 
-        $this->clients = User::allClients(null, overRidePermission:($this->editPermission == 'all' ? 'all' : null));
+        $this->clients = User::allClients(null, overRidePermission: ($this->editPermission == 'all' ? 'all' : null));
 
         if ($viewProviderPermission == 'none') {
             $this->providers = collect([]);
@@ -245,7 +242,7 @@ class DomainController extends AccountBaseController
     public function update(UpdateDomainRequest $request, $id)
     {
         $editPermission = user()->permission('edit_domain');
-        abort_403(!in_array($editPermission, ['all', 'added']));
+        abort_403(! in_array($editPermission, ['all', 'added']));
 
         $domain = ServerDomain::where('company_id', company()->id)->findOrFail($id);
 
@@ -281,10 +278,10 @@ class DomainController extends AccountBaseController
         ];
 
         // Only update password fields if they are provided
-        if (!empty($request->password)) {
+        if (! empty($request->password)) {
             $updateData['password'] = $request->password;
         }
-        if (!empty($request->registrar_password)) {
+        if (! empty($request->registrar_password)) {
             $updateData['registrar_password'] = $request->registrar_password;
         }
 
@@ -296,7 +293,7 @@ class DomainController extends AccountBaseController
     public function destroy($id)
     {
         $deletePermission = user()->permission('delete_domain');
-        abort_403(!in_array($deletePermission, ['all', 'added']));
+        abort_403(! in_array($deletePermission, ['all', 'added']));
 
         $domain = ServerDomain::where('company_id', company()->id)->findOrFail($id);
         $domain->delete();
@@ -307,16 +304,16 @@ class DomainController extends AccountBaseController
     public function applyQuickAction(Request $request)
     {
         switch ($request->action_type) {
-        case 'delete':
-            $this->deleteRecords($request);
+            case 'delete':
+                $this->deleteRecords($request);
 
-            return Reply::success(__('messages.deleteSuccess'));
-        case 'change-status':
-            $this->changeBulkStatus($request);
+                return Reply::success(__('messages.deleteSuccess'));
+            case 'change-status':
+                $this->changeBulkStatus($request);
 
-            return Reply::success(__('messages.updateSuccess'));
-        default:
-            return Reply::error(__('messages.selectAction'));
+                return Reply::success(__('messages.updateSuccess'));
+            default:
+                return Reply::error(__('messages.selectAction'));
         }
     }
 
@@ -342,32 +339,32 @@ class DomainController extends AccountBaseController
 
     public function exportAllDomains(Request $request)
     {
-        abort_403(!canDataTableExport());
+        abort_403(! canDataTableExport());
 
         $startDate = $request->query('startDate', 'null');
         $endDate = $request->query('endDate', 'null');
         $dateFilterOn = $request->query('dateFilterOn', 'null');
 
-        if($dateFilterOn == "null"){
+        if ($dateFilterOn == 'null') {
             $dateFilterOn = null;
         }
 
         $exportAll = false;
-        if($startDate == "null" && $endDate == "null"){
+        if ($startDate == 'null' && $endDate == 'null') {
             $exportAll = true;
         }
 
-        $startDate = $startDate !== "null" ? Carbon::createFromFormat(company()->date_format, $startDate) : now();
-        $endDate = $endDate !== "null" ? Carbon::createFromFormat(company()->date_format, $endDate) : now();
+        $startDate = $startDate !== 'null' ? Carbon::createFromFormat(company()->date_format, $startDate) : now();
+        $endDate = $endDate !== 'null' ? Carbon::createFromFormat(company()->date_format, $endDate) : now();
         $today = now();
 
         if ($startDate->isSameDay($today) && $endDate->isSameDay($today)) {
-            $dateRange = 'Today_' . $today->format('d-m-Y');
+            $dateRange = 'Today_'.$today->format('d-m-Y');
         } else {
-            $dateRange = $startDate->format('d-m-Y') . '_To_' . $endDate->format('d-m-Y');
+            $dateRange = $startDate->format('d-m-Y').'_To_'.$endDate->format('d-m-Y');
         }
 
-        return Excel::download(new DomainExport($startDate, $endDate, $exportAll, $dateFilterOn), 'Domain_From_' . $dateRange . '.xlsx');
+        return Excel::download(new DomainExport($startDate, $endDate, $exportAll, $dateFilterOn), 'Domain_From_'.$dateRange.'.xlsx');
     }
 
     /**
@@ -379,12 +376,12 @@ class DomainController extends AccountBaseController
             ->where('id', $id)
             ->firstOrFail();
 
-        $dnsService = new DnsLookupService();
+        $dnsService = new DnsLookupService;
         $dnsData = $dnsService->getFormattedDnsRecords($domain->domain_name);
 
         return Reply::dataOnly([
             'status' => 'success',
-            'data' => $dnsData
+            'data' => $dnsData,
         ]);
     }
 
@@ -397,12 +394,12 @@ class DomainController extends AccountBaseController
             ->where('id', $id)
             ->firstOrFail();
 
-        $dnsService = new DnsLookupService();
+        $dnsService = new DnsLookupService;
         $healthData = $dnsService->checkDnsHealth($domain->domain_name);
 
         return Reply::dataOnly([
             'status' => 'success',
-            'data' => $healthData
+            'data' => $healthData,
         ]);
     }
 }

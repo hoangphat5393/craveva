@@ -8,14 +8,11 @@ use Modules\Performance\Notifications\MeetingInviteNotification;
 
 class MeetingInviteListener
 {
-
     /**
      * Handle the meeting.
      *
-     * @param MeetingInviteEvent $meeting
      * @return void
      */
-
     public function handle(MeetingInviteEvent $meeting)
     {
         if ($meeting->notifyUser) {
@@ -23,5 +20,4 @@ class MeetingInviteListener
             Notification::send($meeting->meetingBy, new MeetingInviteNotification($meeting->meeting));
         }
     }
-
 }

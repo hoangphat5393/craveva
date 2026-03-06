@@ -1,6 +1,6 @@
 <?php
 
-return array(
+return [
     'performance' => 'Performance',
     'objective' => 'Objective',
     'objectives' => 'Objectives',
@@ -143,4 +143,4 @@ return array(
     'pendingCheckIns' => 'Pending Check-ins',
     'upcomingCheckIns' => 'Upcoming Check-ins',
 
-);
+];

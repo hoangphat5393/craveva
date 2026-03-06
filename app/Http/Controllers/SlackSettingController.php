@@ -12,7 +12,6 @@ use App\Notifications\TestSlack;
 
 class SlackSettingController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -40,8 +39,7 @@ class SlackSettingController extends AccountBaseController
             }
 
             $setting->slack_logo = null; // Remove image from database
-        }
-        elseif ($request->hasFile('slack_logo')) {
+        } elseif ($request->hasFile('slack_logo')) {
 
             Files::deleteFile($setting->slack_logo, 'slack-logo');
             $setting->slack_logo = Files::uploadLocalOrS3($request->slack_logo, 'slack-logo');
@@ -59,7 +57,7 @@ class SlackSettingController extends AccountBaseController
         $user = user();
 
         // Notify User
-        $user->notify(new TestSlack());
+        $user->notify(new TestSlack);
 
         return Reply::success('Test notification sent.');
     }
@@ -72,5 +70,4 @@ class SlackSettingController extends AccountBaseController
             EmailNotificationSetting::whereIn('id', $request->send_slack)->update(['send_slack' => 'yes']);
         }
     }
-
 }

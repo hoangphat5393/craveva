@@ -10,19 +10,18 @@ use Illuminate\Http\Request;
 
 class ProjectRatingController extends AccountBaseController
 {
-
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(StoreRating $request)
     {
         $addProjectRatingPermission = user()->permission('add_project_rating');
-        abort_403(!in_array($addProjectRatingPermission, ['all', 'added', 'owned', 'both']));
+        abort_403(! in_array($addProjectRatingPermission, ['all', 'added', 'owned', 'both']));
 
-        $rating = new ProjectRating();
+        $rating = new ProjectRating;
         $rating->rating = $request->rating;
         $rating->comment = $request->comment;
         $rating->user_id = $this->user->id;
@@ -42,15 +41,15 @@ class ProjectRatingController extends AccountBaseController
     /**
      * Update the specified resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param int $id
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function update(StoreRating $request, $id)
     {
 
         $addProjectRatingPermission = user()->permission('edit_project_rating');
-        abort_403(!in_array($addProjectRatingPermission, ['all', 'added', 'owned', 'both']));
+        abort_403(! in_array($addProjectRatingPermission, ['all', 'added', 'owned', 'both']));
 
         $rating = ProjectRating::findOrFail($id);
         $rating->rating = $request->rating;
@@ -68,11 +67,11 @@ class ProjectRatingController extends AccountBaseController
     public function destroy(Request $request, $id)
     {
         $deleteRatingPermission = user()->permission('delete_project_rating');
-        $rating  = ProjectRating::findOrFail($id);
+        $rating = ProjectRating::findOrFail($id);
         $memberIds = $rating->project->members->pluck('user_id')->toArray();
 
         abort_403(
-            !(is_null($rating->project->deleted_at) &&
+            ! (is_null($rating->project->deleted_at) &&
             $deleteRatingPermission == 'all'
             || ($deleteRatingPermission == 'added' && $rating->project->rating->added_by == user()->id)
             || ($deleteRatingPermission == 'owned' && (in_array(user()->id, $memberIds) || $rating->project->client_id == user()->id))
@@ -81,8 +80,8 @@ class ProjectRatingController extends AccountBaseController
         );
 
         ProjectRating::destroy($id);
-        return Reply::success(__('messages.deleteSuccess'));
-        
-    }
 
+        return Reply::success(__('messages.deleteSuccess'));
+
+    }
 }

@@ -30,6 +30,7 @@ use App\Traits\HasCompany;
  * @property-read int|null $proposaltemplate_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\RecurringInvoice> $recurringInvoice
  * @property-read int|null $recurring_invoice_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|UnitType newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|UnitType newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|UnitType query()
@@ -39,6 +40,7 @@ use App\Traits\HasCompany;
  * @method static \Illuminate\Database\Eloquent\Builder|UnitType whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UnitType whereUnitType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UnitType whereUpdatedAt($value)
+ *
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CreditNotes> $creditnoteitems
  * @property-read \Illuminate\Database\Eloquent\Collection<int, EstimateItem> $estimateitems
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\EstimateTemplate> $estimatetemplate
@@ -103,6 +105,7 @@ use App\Traits\HasCompany;
  * @property-read \Illuminate\Database\Eloquent\Collection<int, ProposalItem> $proposalitems
  * @property-read \Illuminate\Database\Eloquent\Collection<int, ProposalTemplate> $proposaltemplate
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\RecurringInvoice> $recurringInvoice
+ *
  * @mixin \Eloquent
  */
 class UnitType extends BaseModel
@@ -110,7 +113,9 @@ class UnitType extends BaseModel
     use HasCompany;
 
     protected $table = 'unit_types';
+
     protected $id = 'id';
+
     protected $fillable = ['unit_type', 'company_id', 'default'];
 
     public function invoicesItems()
@@ -152,5 +157,4 @@ class UnitType extends BaseModel
     {
         return $this->hasMany(Order::class);
     }
-
 }

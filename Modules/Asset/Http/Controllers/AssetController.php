@@ -5,7 +5,6 @@ namespace Modules\Asset\Http\Controllers;
 use App\Helper\Files;
 use App\Helper\Reply;
 use App\Http\Controllers\AccountBaseController;
-use App\Models\PermissionType;
 use App\Models\User;
 use Illuminate\Http\Response;
 use Modules\Asset\DataTables\AssetDataTable;
@@ -17,12 +16,11 @@ use Modules\Asset\Http\Requests\UpdateRequest;
 
 class AssetController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array(AssetSetting::MODULE_NAME, $this->user->modules));
+            abort_403(! in_array(AssetSetting::MODULE_NAME, $this->user->modules));
             $this->pageTitle = __('asset::app.menu.asset');
 
             return $next($request);
@@ -174,12 +172,11 @@ class AssetController extends AccountBaseController
     public function destroy($id)
     {
         $deletePermission = user()->permission('delete_asset');
-        abort_403(!in_array($deletePermission, ['all', 'added']));
+        abort_403(! in_array($deletePermission, ['all', 'added']));
 
         Asset::destroy($id);
 
         return Reply::success(__('messages.deleteSuccess'));
 
     }
-
 }

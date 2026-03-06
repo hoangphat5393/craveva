@@ -12,20 +12,20 @@ class StoreBill extends FormRequest
      *
      * @return array
      */
-
     public function rules()
     {
         $setting = company();
         $rules = [
-           'bill_number' => [
+            'bill_number' => [
                 'required',
-                Rule::unique('purchase_bills','purchase_bill_number')->where(function ($query) use ($setting) {
+                Rule::unique('purchase_bills', 'purchase_bill_number')->where(function ($query) use ($setting) {
                     return $query->where('company_id', $setting->id);
                 })],
             'vendor_id' => 'required',
             'purchase_order_id' => 'required|unique:purchase_bills',
-            'issue_date' => 'required|date_format:"'. $setting->date_format,
+            'issue_date' => 'required|date_format:"'.$setting->date_format,
         ];
+
         return $rules;
 
     }
@@ -39,5 +39,4 @@ class StoreBill extends FormRequest
     {
         return true;
     }
-
 }

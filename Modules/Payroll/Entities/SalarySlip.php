@@ -23,7 +23,7 @@ class SalarySlip extends BaseModel
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'user_id')->withoutGlobalScope(ActiveScope::class);;
+        return $this->belongsTo(User::class, 'user_id')->withoutGlobalScope(ActiveScope::class);
     }
 
     public function company(): BelongsTo
@@ -60,7 +60,7 @@ class SalarySlip extends BaseModel
         return '';
     }
 
-    public function defaultCurrencyPrice() : Attribute
+    public function defaultCurrencyPrice(): Attribute
     {
         return Attribute::make(
             get: function () {
@@ -70,15 +70,15 @@ class SalarySlip extends BaseModel
                     return $this->amount;
                 }
 
-                if($this->exchange_rate){
-                    return ($this->amount * ((float)$this->exchange_rate));
+                if ($this->exchange_rate) {
+                    return $this->amount * ((float) $this->exchange_rate);
                 }
 
                 // Retrieve the currency associated with the payment
                 $currency = Currency::find($this->currency_id);
 
-                if($currency && $currency->exchange_rate){
-                    return ($this->amount * ((float)$currency->exchange_rate));
+                if ($currency && $currency->exchange_rate) {
+                    return $this->amount * ((float) $currency->exchange_rate);
                 }
 
                 // If exchange rate is not available or invalid, return the original amount
@@ -86,5 +86,4 @@ class SalarySlip extends BaseModel
             },
         );
     }
-
 }

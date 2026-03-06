@@ -4,11 +4,11 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     public function up()
     {
-        if (!Schema::hasColumn('users', 'stripe_id')) {
+        if (! Schema::hasColumn('users', 'stripe_id')) {
             Schema::table('users', function (Blueprint $table) {
                 $table->string('stripe_id')->nullable()->index();
                 $table->string('pm_type')->nullable();
@@ -17,7 +17,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasTable('subscriptions')) {
+        if (! Schema::hasTable('subscriptions')) {
             Schema::create('subscriptions', function (Blueprint $table) {
                 $table->id();
                 $table->integer('company_id')->unsigned()->nullable();
@@ -55,7 +55,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasColumn('subscriptions', 'company_id')) {
+        if (! Schema::hasColumn('subscriptions', 'company_id')) {
 
             Schema::table('subscriptions', function (Blueprint $table) {
                 $table->string('stripe_price')->after('stripe_id');
@@ -68,19 +68,18 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasColumn('subscription_items', 'stripe_price')) {
+        if (! Schema::hasColumn('subscription_items', 'stripe_price')) {
             Schema::table('subscription_items', function (Blueprint $table) {
                 $table->string('stripe_price');
                 $table->renameColumn('stripe_plan', 'stripe_product');
             });
         }
 
-        if (!Schema::hasColumn('subscriptions', 'stripe_price')) {
+        if (! Schema::hasColumn('subscriptions', 'stripe_price')) {
             Schema::table('subscriptions', function (Blueprint $table) {
                 $table->string('stripe_price')->after('stripe_id');
             });
         }
-
 
     }
 
@@ -89,5 +88,4 @@ return new class extends Migration {
         Schema::dropIfExists('subscriptions');
         Schema::dropIfExists('subscription_items');
     }
-
 };

@@ -3,12 +3,15 @@
 namespace App\Console;
 
 use App\Console\Commands\AddMissingRolePermission;
+use App\Console\Commands\AssignEmployeeShiftRotation;
+use App\Console\Commands\AssignShiftRotation;
+use App\Console\Commands\AutoClockOut;
 use App\Console\Commands\AutoCreateRecurringExpenses;
 use App\Console\Commands\AutoCreateRecurringInvoices;
-use App\Console\Commands\CarryForwardLeaves;
 use App\Console\Commands\AutoCreateRecurringTasks;
 use App\Console\Commands\AutoStopTimer;
 use App\Console\Commands\BirthdayReminderCommand;
+use App\Console\Commands\CarryForwardLeaves;
 use App\Console\Commands\ClearLogs;
 use App\Console\Commands\ClearNullSessions;
 use App\Console\Commands\CreateEmployeeLeaveQuotaHistory;
@@ -16,38 +19,32 @@ use App\Console\Commands\CreateTranslations;
 use App\Console\Commands\DeleteSpamCompanies;
 use App\Console\Commands\FetchTicketEmails;
 use App\Console\Commands\HideCronJobMessage;
+use App\Console\Commands\InActiveEmployee;
 use App\Console\Commands\LeavesQuotaRenew;
+use App\Console\Commands\RecalculateLeavesQuotas;
 use App\Console\Commands\RemoveSeenNotification;
 use App\Console\Commands\SendAttendanceReminder;
-use App\Console\Commands\SendAutoTaskReminder;
-use App\Console\Commands\SendEventReminder;
 use App\Console\Commands\SendAutoFollowUpReminder;
+use App\Console\Commands\SendAutoTaskReminder;
 use App\Console\Commands\SendDailyTimelogReport;
-use App\Console\Commands\SendProjectReminder;
-use App\Console\Commands\UpdateExchangeRates;
+use App\Console\Commands\SendEmployeeDocumentExpiryAlert;
+use App\Console\Commands\SendEventReminder;
+use App\Console\Commands\SendImmigrationExpiryAlert;
 use App\Console\Commands\SendInvoiceReminder;
 use App\Console\Commands\SendMonthlyAttendanceReport;
-use App\Console\Commands\SyncUserPermissions;
+use App\Console\Commands\SendProjectReminder;
 use App\Console\Commands\SendTimeTracker;
-use App\Console\Commands\InActiveEmployee;
-use App\Console\Commands\AssignShiftRotation;
-use App\Console\Commands\AssignEmployeeShiftRotation;
-use App\Console\Commands\RecalculateLeavesQuotas;
-use App\Console\Commands\AutoClockOut;
+use App\Console\Commands\SuperAdmin\FreeLicenceRenew;
+use App\Console\Commands\SuperAdmin\TrialExpire;
+use App\Console\Commands\SyncUserPermissions;
+use App\Console\Commands\UpdateExchangeRates;
 use App\Console\Commands\UpdateProjectProgressByDeadline;
-use App\Console\Commands\SendEmployeeDocumentExpiryAlert;
-use App\Console\Commands\SendImmigrationExpiryAlert;
 use DateTimeZone;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
-use App\Console\Commands\SuperAdmin\FreeLicenceRenew;
-use App\Console\Commands\SuperAdmin\TrialExpire;
 
 class Kernel extends ConsoleKernel
 {
-
-
-
     /**
      * The Artisan commands provided by your application.
      *
@@ -115,7 +112,6 @@ class Kernel extends ConsoleKernel
     /**
      * Define the application's command schedule.
      *
-     * @param Schedule $schedule
      * @return void
      */
     protected function schedule(Schedule $schedule)
@@ -134,7 +130,6 @@ class Kernel extends ConsoleKernel
         // $schedule->command('fetch-ticket-emails')->everyMinute(); // phpcs:ignore
         $schedule->command('send-auto-followup-reminder')->everyMinute();
         $schedule->command('send-time-tracker')->everyMinute();
-
 
         // Daily added different time to reduce server load
         $schedule->command('projects-update-deadline-progress')->dailyAt('01:00');
@@ -186,7 +181,6 @@ class Kernel extends ConsoleKernel
      */
     protected function commands()
     {
-        $this->load(__DIR__ . '/Commands');
+        $this->load(__DIR__.'/Commands');
     }
-
 }

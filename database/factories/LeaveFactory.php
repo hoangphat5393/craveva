@@ -25,10 +25,9 @@ class LeaveFactory extends Factory
 
         return [
             'duration' => fake()->randomElement(['single']),
-            'leave_date' => Carbon::parse(fake()->numberBetween(1, now()->month) . '/' . fake()->numberBetween(1, now()->day) . '/' . now()->year)->format('Y-m-d'),
+            'leave_date' => Carbon::parse(fake()->numberBetween(1, now()->month).'/'.fake()->numberBetween(1, now()->day).'/'.now()->year)->format('Y-m-d'),
             'reason' => fake()->realText(),
             'status' => fake()->randomElement(['pending', 'approved', 'rejected']),
         ];
     }
-
 }

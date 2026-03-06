@@ -2,27 +2,22 @@
 
 namespace Modules\ServerManager\Http\Controllers;
 
+use App\Helper\Reply;
 use App\Http\Controllers\AccountBaseController;
+use App\Models\Project;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
+use Modules\ServerManager\DataTables\HostingDataTable;
 use Modules\ServerManager\Entities\ServerHosting;
-use Modules\ServerManager\Entities\ServerLog;
-use Modules\ServerManager\Entities\ServerType;
 use Modules\ServerManager\Entities\ServerProvider;
 use Modules\ServerManager\Entities\ServerSetting;
-use Modules\ServerManager\DataTables\HostingDataTable;
+use Modules\ServerManager\Entities\ServerType;
+use Modules\ServerManager\Exports\HostingExport;
 use Modules\ServerManager\Http\Requests\Hosting\StoreHostingRequest;
 use Modules\ServerManager\Http\Requests\Hosting\UpdateHostingRequest;
-use Modules\ServerManager\Services\HostingService;
 use Modules\ServerManager\Traits\HasServerManagerPermissions;
-use App\Helper\Reply;
-use App\Models\User;
-use App\Models\Project;
-use App\Models\ClientDetails;
-use Maatwebsite\Excel\Facades\Excel;
-use Modules\ServerManager\Exports\HostingExport;
-use Carbon\Carbon;
 
 class HostingController extends AccountBaseController
 {
@@ -35,7 +30,7 @@ class HostingController extends AccountBaseController
         parent::__construct();
         $this->pageTitle = __('servermanager::app.menu.hosting');
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array(ServerSetting::MODULE_NAME, $this->user->modules));
+            abort_403(! in_array(ServerSetting::MODULE_NAME, $this->user->modules));
 
             return $next($request);
         });
@@ -44,7 +39,7 @@ class HostingController extends AccountBaseController
     public function index(HostingDataTable $dataTable)
     {
         $viewPermission = user()->permission('view_hosting');
-        abort_403(!in_array($viewPermission, ['all', 'added']));
+        abort_403(! in_array($viewPermission, ['all', 'added']));
 
         $this->users = User::where('company_id', company()->id)
             ->where('status', 'active')
@@ -70,7 +65,7 @@ class HostingController extends AccountBaseController
     public function create()
     {
         $this->addPermission = user()->permission('add_hosting');
-        abort_403(!in_array($this->addPermission, ['all']));
+        abort_403(! in_array($this->addPermission, ['all']));
 
         $viewProviderPermission = user()->permission('view_provider');
 
@@ -85,7 +80,7 @@ class HostingController extends AccountBaseController
             ->orderBy('project_name')
             ->get();
 
-        $this->clients = User::allClients(null, overRidePermission:($this->addPermission == 'all' ? 'all' : null));
+        $this->clients = User::allClients(null, overRidePermission: ($this->addPermission == 'all' ? 'all' : null));
 
         if ($viewProviderPermission == 'none') {
             $this->providers = collect([]);
@@ -122,7 +117,7 @@ class HostingController extends AccountBaseController
 
     public function store(StoreHostingRequest $request)
     {
-        abort_403(!$this->canAddHosting());
+        abort_403(! $this->canAddHosting());
 
         ServerHosting::create([
             'name' => $request->name,
@@ -159,13 +154,14 @@ class HostingController extends AccountBaseController
             'created_by' => user()->id,
             'company_id' => company()->id,
         ]);
+
         return Reply::successWithData(__('messages.recordSaved'), ['redirectUrl' => route('hosting.index')]);
     }
 
     public function show($id)
     {
         $viewPermission = user()->permission('view_hosting');
-        abort_403(!in_array($viewPermission, ['all', 'added']));
+        abort_403(! in_array($viewPermission, ['all', 'added']));
 
         $hosting = ServerHosting::where('company_id', company()->id)
             ->with(['assignedTo', 'createdBy', 'domains', 'projectDetails', 'client.user', 'clientDetails'])
@@ -188,7 +184,7 @@ class HostingController extends AccountBaseController
     public function edit($id)
     {
         $this->editPermission = user()->permission('edit_hosting');
-        abort_403(!in_array($this->editPermission, ['all', 'added']));
+        abort_403(! in_array($this->editPermission, ['all', 'added']));
 
         $viewProviderPermission = user()->permission('view_provider');
 
@@ -204,7 +200,7 @@ class HostingController extends AccountBaseController
             ->orderBy('project_name')
             ->get();
 
-        $this->clients = User::allClients(null, overRidePermission:($this->editPermission == 'all' ? 'all' : null));
+        $this->clients = User::allClients(null, overRidePermission: ($this->editPermission == 'all' ? 'all' : null));
 
         if ($viewProviderPermission == 'none') {
             $this->providers = collect([]);
@@ -242,7 +238,7 @@ class HostingController extends AccountBaseController
     public function update(UpdateHostingRequest $request, $id)
     {
         $editPermission = user()->permission('edit_hosting');
-        abort_403(!in_array($editPermission, ['all', 'added']));
+        abort_403(! in_array($editPermission, ['all', 'added']));
 
         $hosting = ServerHosting::where('company_id', company()->id)->findOrFail($id);
 
@@ -280,10 +276,10 @@ class HostingController extends AccountBaseController
         ];
 
         // Only update password fields if they are provided
-        if (!empty($request->password)) {
+        if (! empty($request->password)) {
             $updateData['password'] = $request->password;
         }
-        if (!empty($request->ftp_password)) {
+        if (! empty($request->ftp_password)) {
             $updateData['ftp_password'] = $request->ftp_password;
         }
 
@@ -295,7 +291,7 @@ class HostingController extends AccountBaseController
     public function destroy($id)
     {
         $deletePermission = user()->permission('delete_hosting');
-        abort_403(!in_array($deletePermission, ['all', 'added']));
+        abort_403(! in_array($deletePermission, ['all', 'added']));
 
         $hosting = ServerHosting::where('company_id', company()->id)->findOrFail($id);
         $hosting->delete();
@@ -306,16 +302,16 @@ class HostingController extends AccountBaseController
     public function applyQuickAction(Request $request)
     {
         switch ($request->action_type) {
-        case 'delete':
-            $this->deleteRecords($request);
+            case 'delete':
+                $this->deleteRecords($request);
 
-            return Reply::success(__('messages.deleteSuccess'));
-        case 'change-status':
-            $this->changeBulkStatus($request);
+                return Reply::success(__('messages.deleteSuccess'));
+            case 'change-status':
+                $this->changeBulkStatus($request);
 
-            return Reply::success(__('messages.updateSuccess'));
-        default:
-            return Reply::error(__('messages.selectAction'));
+                return Reply::success(__('messages.updateSuccess'));
+            default:
+                return Reply::error(__('messages.selectAction'));
         }
     }
 
@@ -341,31 +337,31 @@ class HostingController extends AccountBaseController
 
     public function exportAllHostings(Request $request)
     {
-        abort_403(!canDataTableExport());
+        abort_403(! canDataTableExport());
 
         $startDate = $request->query('startDate', 'null');
         $endDate = $request->query('endDate', 'null');
         $dateFilterOn = $request->query('dateFilterOn', 'null');
 
-        if($dateFilterOn == "null"){
+        if ($dateFilterOn == 'null') {
             $dateFilterOn = null;
         }
 
         $exportAll = false;
-        if($startDate == "null" && $endDate == "null"){
+        if ($startDate == 'null' && $endDate == 'null') {
             $exportAll = true;
         }
 
-        $startDate = $startDate !== "null" ? Carbon::createFromFormat(company()->date_format, $startDate) : now();
-        $endDate = $endDate !== "null" ? Carbon::createFromFormat(company()->date_format, $endDate) : now();
+        $startDate = $startDate !== 'null' ? Carbon::createFromFormat(company()->date_format, $startDate) : now();
+        $endDate = $endDate !== 'null' ? Carbon::createFromFormat(company()->date_format, $endDate) : now();
         $today = now();
 
         if ($startDate->isSameDay($today) && $endDate->isSameDay($today)) {
-            $dateRange = 'Today_' . $today->format('d-m-Y');
+            $dateRange = 'Today_'.$today->format('d-m-Y');
         } else {
-            $dateRange = $startDate->format('d-m-Y') . '_To_' . $endDate->format('d-m-Y');
+            $dateRange = $startDate->format('d-m-Y').'_To_'.$endDate->format('d-m-Y');
         }
 
-        return Excel::download(new HostingExport($startDate, $endDate, $exportAll, $dateFilterOn), 'Hosting_From_' . $dateRange . '.xlsx');
+        return Excel::download(new HostingExport($startDate, $endDate, $exportAll, $dateFilterOn), 'Hosting_From_'.$dateRange.'.xlsx');
     }
 }

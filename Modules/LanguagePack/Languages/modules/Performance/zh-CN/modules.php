@@ -1,6 +1,6 @@
 <?php
 
-return array(
+return [
     'viewedBy' => '可查看者',
     'managedBy' => '可管理者',
     'owner' => '所有者',
@@ -23,4 +23,4 @@ return array(
     'sendReminderMeeting' => '发送待处理会议的提醒。',
     'sendReminderObjective' => '发送此目标待处理签入的提醒。',
     'hideCompletedObjectives' => '隐藏已完成的目标',
-);
+];

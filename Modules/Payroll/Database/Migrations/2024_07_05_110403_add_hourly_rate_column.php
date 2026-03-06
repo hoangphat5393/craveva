@@ -1,16 +1,17 @@
 <?php
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        if (!Schema::hasColumn('employee_details', 'overtime_hourly_rate')) {
+        if (! Schema::hasColumn('employee_details', 'overtime_hourly_rate')) {
             Schema::table('employee_details', function (Blueprint $table) {
                 $table->double('overtime_hourly_rate', 16, 2)->nullable()->comment('This field is only for overtime calculation');
             });
@@ -89,5 +90,4 @@ return new class extends Migration {
     {
         //
     }
-
 };

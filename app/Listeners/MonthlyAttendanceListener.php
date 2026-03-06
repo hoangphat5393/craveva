@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Notification;
 
 class MonthlyAttendanceListener
 {
-
     /**
      * Handle the event.
      */
@@ -16,5 +15,4 @@ class MonthlyAttendanceListener
     {
         Notification::send($event->user, new MonthlyAttendance($event->user));
     }
-
 }

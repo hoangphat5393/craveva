@@ -4,14 +4,13 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      *
      * @return void
      */
-
     public function up()
     {
         Schema::table('invoices', function (Blueprint $table) {
@@ -34,5 +33,4 @@ return new class extends Migration {
             $table->dropForeign('invoices_invoice_recurring_id_foreign');
         });
     }
-
 };

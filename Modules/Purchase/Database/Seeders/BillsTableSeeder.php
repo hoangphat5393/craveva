@@ -6,11 +6,9 @@ use Faker\Factory;
 use Illuminate\Database\Seeder;
 use Modules\Purchase\Entities\PurchaseBill;
 use Modules\Purchase\Entities\PurchaseOrder;
-use Modules\Purchase\Entities\PurchaseVendor;
 
 class BillsTableSeeder extends Seeder
 {
-
     /**
      * Run the database seeds.
      *
@@ -20,8 +18,8 @@ class BillsTableSeeder extends Seeder
     {
         $faker = Factory::create();
         $orders = PurchaseOrder::with('vendor')->where('company_id', $companyId)->get();
-        
-        foreach($orders as $order){
+
+        foreach ($orders as $order) {
             $bill = [
                 'purchase_bill_number' => $faker->randomDigit,
                 'company_id' => $companyId,
@@ -38,5 +36,4 @@ class BillsTableSeeder extends Seeder
             PurchaseBill::create($bill);
         }
     }
-
 }

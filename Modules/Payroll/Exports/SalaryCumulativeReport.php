@@ -4,21 +4,25 @@ namespace Modules\Payroll\Exports;
 
 use Carbon\Carbon;
 use Maatwebsite\Excel\Concerns\FromCollection;
-use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 use Maatwebsite\Excel\Concerns\WithEvents;
-use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Events\AfterSheet;
 use Modules\Payroll\Entities\SalarySlip;
-use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
-class SalaryCumulativeReport implements FromCollection, WithHeadings, WithColumnFormatting, WithEvents, ShouldAutoSize
+class SalaryCumulativeReport implements FromCollection, ShouldAutoSize, WithColumnFormatting, WithEvents, WithHeadings
 {
     private $startDate;
+
     private $endDate;
+
     private $departmentId;
+
     private $designationId;
+
     private $columns = [];
 
     public function __construct($startDate, $endDate, $departmentId, $designationId)
@@ -39,27 +43,27 @@ class SalaryCumulativeReport implements FromCollection, WithHeadings, WithColumn
         $end = Carbon::createFromFormat('m-Y', $this->endDate);
 
         $query = SalarySlip::select([
-                'salary_slips.id',
-                'salary_slips.salary_json',
-                'salary_slips.basic_salary',
-                'salary_slips.gross_salary',
-                'salary_slips.extra_json',
-                'salary_slips.company_id',
-                'salary_slips.month',
-                'salary_slips.year',
-                'salary_slips.net_salary',
-                'salary_slips.salary_from as pay_date',
-                'salary_slips.status',
-                'salary_slips.user_id as employee_id',
-                'salary_slips.user_id',
-                'users.id as emp_employee_id',
-                'employee_details.employee_id as empid',
-                'teams.team_name as department_name',
-                'designations.name as designation_name',
-                'salary_slips.expense_claims',
-                'salary_groups.group_name as salary_group_name',
-                'salary_groups.id as salary_group_id',
-            ])
+            'salary_slips.id',
+            'salary_slips.salary_json',
+            'salary_slips.basic_salary',
+            'salary_slips.gross_salary',
+            'salary_slips.extra_json',
+            'salary_slips.company_id',
+            'salary_slips.month',
+            'salary_slips.year',
+            'salary_slips.net_salary',
+            'salary_slips.salary_from as pay_date',
+            'salary_slips.status',
+            'salary_slips.user_id as employee_id',
+            'salary_slips.user_id',
+            'users.id as emp_employee_id',
+            'employee_details.employee_id as empid',
+            'teams.team_name as department_name',
+            'designations.name as designation_name',
+            'salary_slips.expense_claims',
+            'salary_groups.group_name as salary_group_name',
+            'salary_groups.id as salary_group_id',
+        ])
             ->with(['user', 'salary_group', 'user.employeeDetails'])
             ->join('users', 'users.id', '=', 'salary_slips.user_id')
             ->join('employee_details', 'users.id', '=', 'employee_details.user_id')
@@ -75,8 +79,8 @@ class SalaryCumulativeReport implements FromCollection, WithHeadings, WithColumn
             $query->where('employee_details.designation_id', $designation);
         }
 
-        $query->whereRaw('(`salary_slips`.`year` * 100 + `salary_slips`.`month`) >= ' . ($start->year * 100 + $start->month));
-        $query->whereRaw('(`salary_slips`.`year` * 100 + `salary_slips`.`month`) <= ' . ($end->year * 100 + $end->month));
+        $query->whereRaw('(`salary_slips`.`year` * 100 + `salary_slips`.`month`) >= '.($start->year * 100 + $start->month));
+        $query->whereRaw('(`salary_slips`.`year` * 100 + `salary_slips`.`month`) <= '.($end->year * 100 + $end->month));
 
         $query->where('salary_slips.status', 'paid');
 
@@ -89,8 +93,7 @@ class SalaryCumulativeReport implements FromCollection, WithHeadings, WithColumn
 
         $heads = $this->getDynamicHeadings($results);
 
-        foreach($heads[0] as $hd)
-        {
+        foreach ($heads[0] as $hd) {
             $columns[] = $hd;
         }
 
@@ -120,9 +123,9 @@ class SalaryCumulativeReport implements FromCollection, WithHeadings, WithColumn
             $totalEarnings += $result->expense_claim;
             $totalDeductions = 0;
 
-            if (!isset($row[$result->emp_employee_id])) {
+            if (! isset($row[$result->emp_employee_id])) {
                 $row[$result->emp_employee_id] = [
-                    $start->format('F Y') . ' - ' . $end->format('F Y'),
+                    $start->format('F Y').' - '.$end->format('F Y'),
                     $result->empid, // Employee Id
                     ($result->user->name),
                     ($result->department_name) ? $result->department_name : '-',
@@ -134,19 +137,17 @@ class SalaryCumulativeReport implements FromCollection, WithHeadings, WithColumn
 
             $row[$result->emp_employee_id]['basic_salary'] = isset($row[$result->emp_employee_id]['basic_salary']) ? round($basicSalary + $basicSalary * 1, 2) : round($basicSalary * 1, 2);
 
-             // Process salary JSON
+            // Process salary JSON
             foreach ($headsArray as $head) {
 
-                if(!isset($row[$result->emp_employee_id][$head]))
-                {
+                if (! isset($row[$result->emp_employee_id][$head])) {
                     $row[$result->emp_employee_id][$head] = 0;
                 }
 
                 if (isset($salaryJson['earnings'][$head])) {
                     $totalEarnings += $salaryJson['earnings'][$head];
                     $row[$result->emp_employee_id][$head] = isset($row[$result->emp_employee_id][$head]) ? round($row[$result->emp_employee_id][$head] + $salaryJson['earnings'][$head], 2) : round($salaryJson['earnings'][$head], 2);
-                }
-                elseif (isset($salaryJson['deductions'][$head])) {
+                } elseif (isset($salaryJson['deductions'][$head])) {
                     $totalDeductions += $salaryJson['deductions'][$head];
                     $row[$result->emp_employee_id][$head] = isset($row[$result->emp_employee_id][$head]) ? round($row[$result->emp_employee_id][$head] + $salaryJson['deductions'][$head], 2) : round($salaryJson['earnings'][$head], 2);
                 }
@@ -201,16 +202,16 @@ class SalaryCumulativeReport implements FromCollection, WithHeadings, WithColumn
         $earnings = [];
         $deductions = [];
 
-        foreach($salarySlips as $salary){
+        foreach ($salarySlips as $salary) {
             $headings = json_decode($salary->salary_json);
 
-            if(isset($headings->earnings)){
-                $earnings = array_keys((array)$headings->earnings);
+            if (isset($headings->earnings)) {
+                $earnings = array_keys((array) $headings->earnings);
                 $dynamicHeading = array_merge($dynamicHeading, $earnings);
             }
 
-            if(isset($headings->deductions)){
-                $deductions = array_keys((array)$headings->deductions);
+            if (isset($headings->deductions)) {
+                $deductions = array_keys((array) $headings->deductions);
                 $dynamicHeading = array_merge($dynamicHeading, $deductions);
             }
 
@@ -226,7 +227,7 @@ class SalaryCumulativeReport implements FromCollection, WithHeadings, WithColumn
         $endMonth = Carbon::createFromFormat('m-Y', $this->endDate);
 
         return [
-            [company()->company_name . ' - '.__('payroll::modules.payroll.salaryReport')],
+            [company()->company_name.' - '.__('payroll::modules.payroll.salaryReport')],
             [],
             ['Start:', $startMonth->format('F Y'), '', 'End:', $endMonth->format('F Y'), '', 'Generated On:', Carbon::now()->timezone(company()->timezone)->format('jS F, Y, g:i a')],
         ];
@@ -240,7 +241,7 @@ class SalaryCumulativeReport implements FromCollection, WithHeadings, WithColumn
             'C' => NumberFormat::FORMAT_TEXT,
             'D' => NumberFormat::FORMAT_TEXT,
             'E' => NumberFormat::FORMAT_TEXT,
-            'F' => NumberFormat::FORMAT_TEXT
+            'F' => NumberFormat::FORMAT_TEXT,
         ];
     }
 
@@ -248,7 +249,6 @@ class SalaryCumulativeReport implements FromCollection, WithHeadings, WithColumn
     {
         return [
             AfterSheet::class => function (AfterSheet $event) {
-
 
                 $sheet = $event->sheet->getDelegate();
                 $sheet->mergeCells('A1:C1');
@@ -260,30 +260,29 @@ class SalaryCumulativeReport implements FromCollection, WithHeadings, WithColumn
                 $sheet->getStyle('A3')->getFont()->setBold(true);
                 $sheet->getStyle('D3')->getFont()->setBold(true);
                 $sheet->getStyle('G3')->getFont()->setBold(true);
-                $sheet->getStyle('A5:' . $sheet->getHighestColumn() . '5')->getFont()->setBold(true);
+                $sheet->getStyle('A5:'.$sheet->getHighestColumn().'5')->getFont()->setBold(true);
 
-                $sheet->getStyle('A5:' . $sheet->getHighestColumn() . '5')
+                $sheet->getStyle('A5:'.$sheet->getHighestColumn().'5')
                     ->getFill()
                     ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                     ->getStartColor()
                     ->setARGB('00d8ff');
 
-
                 // total rows of the sheet
                 $totalRow = $sheet->getHighestRow();
 
                 // Set the label 'Totals:'
-                $sheet->setCellValue('F' . ($totalRow + 1), 'Totals:');
-                $sheet->getStyle('F' . ($totalRow + 1))->getFont()->setSize(12)->setBold(true);
+                $sheet->setCellValue('F'.($totalRow + 1), 'Totals:');
+                $sheet->getStyle('F'.($totalRow + 1))->getFont()->setSize(12)->setBold(true);
 
                 // Getting total og the columns
                 for ($i = 7; $i <= $this->columns; $i++) {
                     $col = Coordinate::stringFromColumnIndex($i);
-                    $sheet->setCellValue($col . ($totalRow + 1), '=SUM(' . $col . '6:' . $col . $totalRow . ')');
-                    $sheet->getStyle($col . ($totalRow + 1))->getFont()->setSize(12)->setBold(true);
+                    $sheet->setCellValue($col.($totalRow + 1), '=SUM('.$col.'6:'.$col.$totalRow.')');
+                    $sheet->getStyle($col.($totalRow + 1))->getFont()->setSize(12)->setBold(true);
                 }
 
-            }
+            },
         ];
     }
 
@@ -297,5 +296,4 @@ class SalaryCumulativeReport implements FromCollection, WithHeadings, WithColumn
             'company' => user()->name,
         ];
     }
-
 }

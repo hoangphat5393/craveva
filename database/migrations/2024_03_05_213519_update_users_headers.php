@@ -2,8 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
@@ -12,5 +12,4 @@ return new class extends Migration {
         DB::table('companies')->whereNotNull('headers')->update(['headers' => null]);
         DB::table('users')->whereNotNull('headers')->update(['headers' => null]);
     }
-
 };

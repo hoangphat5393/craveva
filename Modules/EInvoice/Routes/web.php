@@ -14,7 +14,6 @@ use Modules\EInvoice\Http\Controllers\EInvoiceController;
 |
 */
 
-
 // Admin routes
 Route::group(['middleware' => 'auth', 'prefix' => 'account'], function () {
     Route::group(

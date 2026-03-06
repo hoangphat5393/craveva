@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class CreateReferralsRequest extends FormRequest
 {
-
     /**
      * Get the validation rules that apply to the request.
      */
@@ -14,7 +13,7 @@ class CreateReferralsRequest extends FormRequest
     {
         return [
             'company_id' => 'required|numeric',
-            'affiliate_id' => 'required|numeric'
+            'affiliate_id' => 'required|numeric',
         ];
     }
 
@@ -32,5 +31,4 @@ class CreateReferralsRequest extends FormRequest
             'company_id' => __('affiliate::app.customer'),
         ];
     }
-
 }

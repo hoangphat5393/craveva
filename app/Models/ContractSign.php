@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Contract $contract
  * @property-read mixed $icon
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ContractSign newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ContractSign newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ContractSign query()
@@ -27,18 +28,22 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|ContractSign whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ContractSign whereSignature($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ContractSign whereUpdatedAt($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ContractSign whereCompanyId($value)
+ *
  * @property string|null $place
  * @property string|null $date
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ContractSign whereDate($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ContractSign wherePlace($value)
+ *
  * @mixin \Eloquent
  */
 class ContractSign extends BaseModel
 {
-
     use HasCompany;
 
     protected $casts = [
@@ -47,18 +52,14 @@ class ContractSign extends BaseModel
 
     public function getSignatureAttribute()
     {
-        return asset_url_local_s3('contract/sign/' . $this->attributes['signature']);
+        return asset_url_local_s3('contract/sign/'.$this->attributes['signature']);
     }
 
     /**
      * XXXXXXXXXXX
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-
     public function contract(): BelongsTo
     {
         return $this->belongsTo(Contract::class, 'contract_id');
     }
-
 }

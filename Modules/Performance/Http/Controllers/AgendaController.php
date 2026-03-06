@@ -3,18 +3,17 @@
 namespace Modules\Performance\Http\Controllers;
 
 use App\Helper\Reply;
-use Modules\Performance\Entities\Agenda;
 use App\Http\Controllers\AccountBaseController;
 use App\Models\EmployeeDetails;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Modules\Performance\Entities\Agenda;
 use Modules\Performance\Entities\Meeting;
 use Modules\Performance\Entities\PerformanceSetting;
 use Modules\Performance\Http\Requests\AgendaRequest;
 
 class AgendaController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -33,7 +32,7 @@ class AgendaController extends AccountBaseController
     {
         $meetingId = request()->meetingId;
         abort_403($this->checkManageAccess($meetingId));
-        $this->hasAccess = !$this->checkManageAccess($meetingId);
+        $this->hasAccess = ! $this->checkManageAccess($meetingId);
 
         $this->pageTitle = __('performance::app.addAgenda');
         $this->meeting = Meeting::findOrFail($meetingId);
@@ -46,6 +45,7 @@ class AgendaController extends AccountBaseController
 
         if (request()->ajax()) {
             $html = view('performance::meetings.agenda.create', $this->data)->render();
+
             return Reply::dataOnly(['status' => 'success', 'html' => $html, 'title' => $this->pageTitle]);
         }
 
@@ -60,18 +60,18 @@ class AgendaController extends AccountBaseController
     public function store(AgendaRequest $request)
     {
         abort_403($this->checkManageAccess($request->meeting_id));
-        $this->hasAccess = !$this->checkManageAccess($request->meeting_id);
+        $this->hasAccess = ! $this->checkManageAccess($request->meeting_id);
 
         DB::beginTransaction();
 
         $meetings = Meeting::where('id', $request->meeting_id)
-        ->orWhere('parent_id', $request->meeting_id)
-        ->get();
+            ->orWhere('parent_id', $request->meeting_id)
+            ->get();
 
         foreach ($meetings as $meeting) {
             if (isset($request->discussion_points)) {
                 foreach ($request->discussion_points as $key => $point) {
-                    $agenda = new Agenda();
+                    $agenda = new Agenda;
                     $agenda->meeting_id = $meeting->id;
                     $agenda->discussion_point = $point;
                     $agenda->added_by = user()->id;
@@ -86,7 +86,7 @@ class AgendaController extends AccountBaseController
         if ($request->send_mail == 'no') {
             $tab = $request->tab ?? 'list';
 
-            $agenda = new Agenda();
+            $agenda = new Agenda;
             $agenda->meeting_id = $meeting->id;
             $agenda->discussion_point = $request->discussion_point;
             $agenda->added_by = user()->id;
@@ -139,7 +139,7 @@ class AgendaController extends AccountBaseController
     {
         $agenda = Agenda::findOrFail($id);
         abort_403($this->checkManageAccess($agenda->meeting_id));
-        $this->hasAccess = !$this->checkManageAccess($agenda->meeting_id);
+        $this->hasAccess = ! $this->checkManageAccess($agenda->meeting_id);
 
         $agenda->discussion_point = $request->discussion_point;
         $agenda->keep_private = $request->keep_private == 'yes' ? 'yes' : 'no';
@@ -160,7 +160,7 @@ class AgendaController extends AccountBaseController
     {
         $agenda = Agenda::findOrFail($id);
         abort_403($this->checkManageAccess($agenda->meeting_id));
-        $this->hasAccess = !$this->checkManageAccess($agenda->meeting_id);
+        $this->hasAccess = ! $this->checkManageAccess($agenda->meeting_id);
 
         $meetingId = $agenda->meeting_id;
         $agenda->delete();
@@ -178,7 +178,7 @@ class AgendaController extends AccountBaseController
         $id = request()->id;
         $agenda = Agenda::findOrFail($id);
         abort_403($this->checkManageAccess($agenda->meeting_id));
-        $this->hasAccess = !$this->checkManageAccess($agenda->meeting_id);
+        $this->hasAccess = ! $this->checkManageAccess($agenda->meeting_id);
 
         $agenda->is_discussed = 'yes';
         $agenda->save();
@@ -210,10 +210,10 @@ class AgendaController extends AccountBaseController
         $currentUserRoleIds = user()->roles()->pluck('id')->toArray();
         $viewByRoles = json_decode($meetingSetting->view_meeting_roles, true) ?? [];
 
-        return !(user()->hasRole('admin') || $ownerId == user()->id ||
+        return ! (user()->hasRole('admin') || $ownerId == user()->id ||
             ($canViewManager == 1 && in_array(user()->id, $managerIds)) ||
             ($canViewParticipant == 1 && ($ownerId == user()->id || $participantId == user()->id)) ||
-            (!empty($viewByRoles) && array_intersect($currentUserRoleIds, $viewByRoles)));
+            (! empty($viewByRoles) && array_intersect($currentUserRoleIds, $viewByRoles)));
     }
 
     protected function checkManageAccess($id)
@@ -235,10 +235,9 @@ class AgendaController extends AccountBaseController
         $currentUserRoleIds = user()->roles()->pluck('id')->toArray();
         $manageByRoles = json_decode($meetingSetting->create_meeting_roles, true) ?? [];
 
-        return !(user()->hasRole('admin') || $ownerId == user()->id ||
+        return ! (user()->hasRole('admin') || $ownerId == user()->id ||
             ($canManageManager == 1 && in_array(user()->id, $managerIds)) ||
             ($canManageParticipant == 1 && ($ownerId == user()->id || $participantId == user()->id)) ||
-            (!empty($manageByRoles) && array_intersect($currentUserRoleIds, $manageByRoles)));
+            (! empty($manageByRoles) && array_intersect($currentUserRoleIds, $manageByRoles)));
     }
-
 }

@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateRequest extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -28,14 +27,12 @@ class UpdateRequest extends FormRequest
             'title' => 'required',
         ];
 
-        if($this->get('content') == 'desc'){
+        if ($this->get('content') == 'desc') {
             $rules['description'] = 'required';
-        }
-        else{
+        } else {
             $rules['external_link'] = 'required|url';
         }
 
         return $rules;
     }
-
 }

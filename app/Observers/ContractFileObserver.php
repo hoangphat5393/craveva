@@ -6,7 +6,6 @@ use App\Models\ContractFile;
 
 class ContractFileObserver
 {
-
     public function saving(ContractFile $file)
     {
         if (user()) {
@@ -22,5 +21,4 @@ class ContractFileObserver
             $file->company_id = company()->id;
         }
     }
-
 }

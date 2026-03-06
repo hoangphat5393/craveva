@@ -7,7 +7,6 @@ use Illuminate\Console\Command;
 
 class ClearNullSessions extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
@@ -27,7 +26,6 @@ class ClearNullSessions extends Command
      *
      * @return mixed
      */
-
     public function handle()
     {
         Session::whereNull('user_id')->delete();
@@ -35,5 +33,4 @@ class ClearNullSessions extends Command
 
         return Command::SUCCESS;
     }
-
 }

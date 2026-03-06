@@ -14,11 +14,10 @@ enum VerifiedBadge: string
     public function label(): string
     {
         return match ($this) {
-            self::NONE => __('biolinks::app.' . $this->value),
-            self::TOP => __('biolinks::app.' . $this->value),
-            self::BOTTOM => __('biolinks::app.' . $this->value),
+            self::NONE => __('biolinks::app.'.$this->value),
+            self::TOP => __('biolinks::app.'.$this->value),
+            self::BOTTOM => __('biolinks::app.'.$this->value),
             default => $this->value,
         };
     }
-
 }

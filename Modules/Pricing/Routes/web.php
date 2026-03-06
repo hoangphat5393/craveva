@@ -1,11 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Modules\Pricing\Http\Controllers\PricingTierController;
-use Modules\Pricing\Http\Controllers\ClientTierController;
 use Modules\Pricing\Http\Controllers\ClientPricingController;
+use Modules\Pricing\Http\Controllers\ClientTierController;
 use Modules\Pricing\Http\Controllers\CompanyPricingController;
 use Modules\Pricing\Http\Controllers\PricingImportController;
+use Modules\Pricing\Http\Controllers\PricingTierController;
 use Modules\Pricing\Http\Controllers\VolumeDiscountController;
 use Modules\Pricing\Http\Controllers\VolumeRuleController;
 

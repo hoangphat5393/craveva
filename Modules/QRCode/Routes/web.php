@@ -14,7 +14,6 @@ use Modules\QRCode\Http\Controllers\QRCodeController;
 |
 */
 
-
 // Admin routes
 Route::group(['middleware' => 'auth', 'prefix' => 'account'], function () {
     Route::group(

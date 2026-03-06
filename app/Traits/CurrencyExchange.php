@@ -16,20 +16,19 @@ use Throwable;
 
 trait CurrencyExchange
 {
-
     public function updateExchangeRates()
     {
         $setting = company();
 
-        if (!$setting) {
+        if (! $setting) {
             return true;
         }
 
         $currencies = Currency::where('id', '<>', $setting->currency_id)->get();
 
-        if($setting->currency_key_version == 'dedicated'){
+        if ($setting->currency_key_version == 'dedicated') {
             $currencyApiKeyVersion = $setting->dedicated_subdomain;
-        }else{
+        } else {
             $currencyApiKeyVersion = $setting->currency_key_version === 'premium' ? 'api' : $setting->currency_key_version;
         }
 
@@ -43,27 +42,26 @@ trait CurrencyExchange
             return false;
         }
 
-        $client = new Client();
+        $client = new Client;
 
         foreach ($currencies as $currency) {
             try {
                 $currency = Currency::findOrFail($currency->id);
 
-                $apiUrl = 'https://' . $currencyApiKeyVersion . '.currconv.com/api/v7/convert?q=';
+                $apiUrl = 'https://'.$currencyApiKeyVersion.'.currconv.com/api/v7/convert?q=';
 
                 if ($currency->is_cryptocurrency == 'no') {
                     // Get exchange rate for non-cryptocurrency
-                    $res = $client->request('GET', $apiUrl . $currency->currency_code . '_' . $baseCurrency->currency_code . '&compact=ultra&apiKey=' . $currencyApiKey);
-                }
-                else {
+                    $res = $client->request('GET', $apiUrl.$currency->currency_code.'_'.$baseCurrency->currency_code.'&compact=ultra&apiKey='.$currencyApiKey);
+                } else {
                     // Get exchange rate for cryptocurrency
-                    $res = $client->request('GET', $apiUrl . $currency->currency_code . '_USD&compact=ultra&apiKey=' . $currencyApiKey);
+                    $res = $client->request('GET', $apiUrl.$currency->currency_code.'_USD&compact=ultra&apiKey='.$currencyApiKey);
                 }
 
                 $conversionRate = json_decode($res->getBody(), true);
 
-                if (!empty($conversionRate)) {
-                    $currency->exchange_rate = $conversionRate[mb_strtoupper($currency->currency_code) . '_' . $baseCurrency->currency_code];
+                if (! empty($conversionRate)) {
+                    $currency->exchange_rate = $conversionRate[mb_strtoupper($currency->currency_code).'_'.$baseCurrency->currency_code];
                     $currency->save();
                 }
             } catch (Throwable $th) {
@@ -71,5 +69,4 @@ trait CurrencyExchange
             }
         }
     }
-
 }

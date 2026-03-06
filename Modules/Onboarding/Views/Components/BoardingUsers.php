@@ -3,13 +3,14 @@
 namespace Modules\Onboarding\Views\Components;
 
 use App\Models\User;
+use App\Scopes\ActiveScope;
 use Illuminate\View\Component;
 use Modules\Onboarding\Entities\OnboardingCompletedTask;
-use App\Scopes\ActiveScope;
+
 class BoardingUsers extends Component
 {
-
     public $onboardingCompletedUsers;
+
     public $offboardingCompletedUsers;
 
     /**
@@ -97,5 +98,4 @@ class BoardingUsers extends Component
             'offboardingCompletedUsers' => $this->offboardingCompletedUsers,
         ]);
     }
-
 }

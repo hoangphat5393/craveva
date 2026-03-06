@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use App\Helper\UserService;
 use App\Models\ContractSign;
 use App\Models\Invoice;
 use App\Models\Project;
@@ -9,14 +10,9 @@ use App\Models\ProjectMilestone;
 use App\Models\ProjectStatusSetting;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
-use App\Helper\UserService;
 
-/**
- *
- */
 trait ClientPanelDashboard
 {
-
     /**
      * XXXXXXXXXXX
      *
@@ -30,8 +26,8 @@ trait ClientPanelDashboard
 
         $this->modules = user_modules();
         $this->counts = User::select(
-            DB::raw('(select count(projects.id) from `projects` where client_id = ' . $id . ' and deleted_at IS NULL and projects.company_id = ' . company()->id . ') as totalProjects'),
-            DB::raw('(select count(tickets.id) from `tickets` where (status="open" or status="pending") and user_id = ' . $id . '  and tickets.company_id = ' . company()->id . ' and deleted_at IS NULL) as totalUnResolvedTickets')
+            DB::raw('(select count(projects.id) from `projects` where client_id = '.$id.' and deleted_at IS NULL and projects.company_id = '.company()->id.') as totalProjects'),
+            DB::raw('(select count(tickets.id) from `tickets` where (status="open" or status="pending") and user_id = '.$id.'  and tickets.company_id = '.company()->id.' and deleted_at IS NULL) as totalUnResolvedTickets')
         )
             ->first();
 
@@ -51,7 +47,6 @@ trait ClientPanelDashboard
         }
 
         $this->totalPaidInvoice = $this->totalPaidInvoice->count();
-
 
         // Total Pending invoices
         $this->totalUnPaidInvoice = Invoice::where(function ($query) {
@@ -88,7 +83,6 @@ trait ClientPanelDashboard
                 ->get();
         }
 
-
         $this->statusWiseProject = $this->projectStatusChartData();
 
         return view('dashboard.client.index', $this->data);
@@ -109,5 +103,4 @@ trait ClientPanelDashboard
 
         return $data;
     }
-
 }

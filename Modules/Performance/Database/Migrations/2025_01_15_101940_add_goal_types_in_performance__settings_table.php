@@ -6,7 +6,6 @@ use Modules\Performance\Entities\GoalType;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      */
@@ -26,7 +25,7 @@ return new class extends Migration
             $typesToInsert = ['individual', 'department', 'company'];
 
             foreach ($typesToInsert as $type) {
-                if (!in_array($type, $existingTypes)) {
+                if (! in_array($type, $existingTypes)) {
                     $data[] = [
                         'company_id' => $company->id,
                         'type' => $type,
@@ -43,7 +42,7 @@ return new class extends Migration
             }
 
             // Insert data only if there are new entries to add
-            if (!empty($data)) {
+            if (! empty($data)) {
                 GoalType::insert($data);
             }
         }
@@ -56,5 +55,4 @@ return new class extends Migration
     {
         // No action needed for rollback in this case
     }
-
 };

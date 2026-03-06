@@ -2,28 +2,28 @@
 
 namespace App\Models;
 
+use App\Notifications\ResetPassword;
 use App\Notifications\VerifyEmail;
 use App\Scopes\ActiveScope;
 use App\Scopes\CompanyScope;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Auth\MustVerifyEmail as AuthMustVerifyEmail;
 use Illuminate\Auth\Passwords\CanResetPassword;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Foundation\Auth\Access\Authorizable;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\ValidationException;
-use IvanoMatteo\LaravelDeviceTracking\Traits\UseDevices;
-use Laravel\Fortify\TwoFactorAuthenticatable;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
+use IvanoMatteo\LaravelDeviceTracking\Traits\UseDevices;
+use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Fortify\TwoFactorAuthenticationProvider;
-use App\Notifications\ResetPassword;
 
 /**
  * App\Models\UserAuth
@@ -36,7 +36,9 @@ use App\Notifications\ResetPassword;
  * @property string|null $remember_token
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ *
  * @mixin \Eloquent
+ *
  * @property int $two_factor_confirmed
  * @property int $two_factor_email_confirmed
  * @property string|null $salutation
@@ -47,18 +49,20 @@ use App\Notifications\ResetPassword;
  * @property-read \App\Models\User|null $userWithoutCompany
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User[] $users
  * @property-read int|null $users_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|UserAuth newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|UserAuth newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|UserAuth query()
  */
 class UserAuth extends BaseModel implements AuthenticatableContract, AuthorizableContract, CanResetPasswordContract, MustVerifyEmail
 {
-
-    use Authenticatable, Authorizable, CanResetPassword, HasFactory, TwoFactorAuthenticatable, AuthMustVerifyEmail, Notifiable;
+    use Authenticatable, AuthMustVerifyEmail, Authorizable, CanResetPassword, HasFactory, Notifiable, TwoFactorAuthenticatable;
     use UseDevices;
 
     protected $fillable = ['email', 'password', 'remember_token', 'email_verification_code', 'email_verified_at', 'email_code_expires_at'];
+
     protected $hidden = ['password'];
+
     public $dates = ['two_factor_expires_at', 'email_code_expires_at'];
 
     public function users(): HasMany
@@ -117,8 +121,9 @@ class UserAuth extends BaseModel implements AuthenticatableContract, Authorizabl
                 $password = substr(str_shuffle($string), 0, 8);
             }
 
-            if (!is_null($oldEmail)) {
+            if (! is_null($oldEmail)) {
                 UserAuth::where('email', $oldEmail)->update(['email' => $email]);
+
                 return $checkAuth;
             }
 
@@ -139,16 +144,16 @@ class UserAuth extends BaseModel implements AuthenticatableContract, Authorizabl
         self::restrictUserLoginFromOtherSubdomain($userAuth);
 
         $globalSetting = GlobalSetting::first();
-        $userCompanies = DB::select('Select count(companies.id) as company_count from companies left join users on users.company_id = companies.id where users.email = "' . $userAuth->email . '"');
-        $userInactiveCompanies = DB::select('Select count(companies.id) as company_count from companies left join users on users.company_id = companies.id where users.email = "' . $userAuth->email . '" and companies.status = "inactive"');
+        $userCompanies = DB::select('Select count(companies.id) as company_count from companies left join users on users.company_id = companies.id where users.email = "'.$userAuth->email.'"');
+        $userInactiveCompanies = DB::select('Select count(companies.id) as company_count from companies left join users on users.company_id = companies.id where users.email = "'.$userAuth->email.'" and companies.status = "inactive"');
 
         if ($globalSetting->company_need_approval) {
-            $userUnapprovedCompanies = DB::select('Select count(companies.id) as company_count from companies left join users on users.company_id = companies.id where users.email = "' . $userAuth->email . '" and companies.approved = 0');
+            $userUnapprovedCompanies = DB::select('Select count(companies.id) as company_count from companies left join users on users.company_id = companies.id where users.email = "'.$userAuth->email.'" and companies.approved = 0');
 
             // Check count of all user companies and match with total unapproved companies
             if ($userCompanies[0]->company_count > 0 && $userCompanies[0]->company_count == $userUnapprovedCompanies[0]->company_count) {
                 throw ValidationException::withMessages([
-                    'email' => __('auth.failedCompanyUnapproved')
+                    'email' => __('auth.failedCompanyUnapproved'),
                 ]);
             }
         }
@@ -156,22 +161,21 @@ class UserAuth extends BaseModel implements AuthenticatableContract, Authorizabl
         // Check count of all user companies and match with total inactive companies
         if ($userCompanies[0]->company_count > 0 && $userCompanies[0]->company_count == $userInactiveCompanies[0]->company_count) {
             throw ValidationException::withMessages([
-                'email' => __('auth.companyAccountDisabled')
+                'email' => __('auth.companyAccountDisabled'),
             ]);
         }
-
 
         // Check count of all user status and match with total user
         if ($userAuth->users->where('status', 'deactive')->count() == $userAuth->users->count()) {
             throw ValidationException::withMessages([
-                'email' => __('auth.failedBlocked')
+                'email' => __('auth.failedBlocked'),
             ]);
         }
 
         // Check count of all user login and match with total user
         if ($userAuth->users->where('login', 'disable')->count() == $userAuth->users->count()) {
             throw ValidationException::withMessages([
-                'email' => __('auth.failedLoginDisabled')
+                'email' => __('auth.failedLoginDisabled'),
             ]);
         }
     }
@@ -184,29 +188,29 @@ class UserAuth extends BaseModel implements AuthenticatableContract, Authorizabl
             ->update([
                 'email_verification_code' => random_int(100000, 999999),
                 'email_code_expires_at' => now()->addMinutes(30),
-                'email_verified_at' => null
+                'email_verified_at' => null,
             ]);
-        $this->notify(new VerifyEmail()); // my notification
+        $this->notify(new VerifyEmail); // my notification
     }
 
     private static function restrictUserLoginFromOtherSubdomain($userAuth)
     {
-        if (!module_enabled('Subdomain')) {
+        if (! module_enabled('Subdomain')) {
             return true;
         }
 
         $company = getCompanyBySubDomain();
 
         // Check if superadmin is trying to login. Make sure the database do not have main domain as subdomain
-        if (!$company) {
+        if (! $company) {
             $userCount = $userAuth->users->whereNull('company_id')->count();
         } else {
             $userCount = $userAuth->users->where('company_id', $company->id)->count();
         }
 
-        if (!$userCount) {
+        if (! $userCount) {
             throw ValidationException::withMessages([
-                'email' => __('auth.failed')
+                'email' => __('auth.failed'),
             ]);
         }
 

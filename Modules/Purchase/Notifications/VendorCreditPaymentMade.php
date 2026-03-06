@@ -4,15 +4,15 @@ namespace Modules\Purchase\Notifications;
 
 use App\Models\Currency;
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
 class VendorCreditPaymentMade extends Notification
 {
     use Queueable;
 
     protected $totalPaid;
+
     protected $remainingAmount;
 
     /**
@@ -41,9 +41,9 @@ class VendorCreditPaymentMade extends Notification
 
         return (new MailMessage)
             ->subject(__('purchase::messages.paymentConfirmation'))
-            ->greeting( $notifiable->primary_name . ' !')
-            ->line(__('purchase::messages.messagePayment') . $currency->currency_symbol . $this->totalPaid)
-            ->line(__('purchase::messages.remainingCreditAmount') . '' . $currency->currency_symbol . $this->remainingAmount)
+            ->greeting($notifiable->primary_name.' !')
+            ->line(__('purchase::messages.messagePayment').$currency->currency_symbol.$this->totalPaid)
+            ->line(__('purchase::messages.remainingCreditAmount').''.$currency->currency_symbol.$this->remainingAmount)
             ->line(__('purchase::messages.thankYou'));
     }
 

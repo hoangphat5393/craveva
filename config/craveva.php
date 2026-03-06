@@ -17,5 +17,5 @@ return [
     /*
     * Temp folder to store update before to install it.
     */
-    'tmp_path' => storage_path() . '/app',
+    'tmp_path' => storage_path().'/app',
 ];

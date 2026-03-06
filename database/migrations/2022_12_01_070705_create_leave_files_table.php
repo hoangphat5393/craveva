@@ -11,7 +11,6 @@ return new class extends Migration
      *
      * @return void
      */
-
     public function up()
     {
         Schema::create('leave_files', function (Blueprint $table) {
@@ -51,5 +50,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('leave_files');
     }
-
 };

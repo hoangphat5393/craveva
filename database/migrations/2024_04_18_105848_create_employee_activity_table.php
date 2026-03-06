@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      */
@@ -35,8 +34,6 @@ return new class extends Migration
             $table->unsignedBigInteger('order_id')->nullable();
             $table->unsignedBigInteger('contract_id')->nullable();
 
-
-
             $table->timestamps();
 
             $table->foreign('deal_id')->references('id')->on('deals')->onDelete('cascade');
@@ -50,5 +47,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('employee_activity');
     }
-
 };

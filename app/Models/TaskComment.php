@@ -4,9 +4,9 @@ namespace App\Models;
 
 use App\Scopes\ActiveScope;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * App\Models\TaskComment
@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property-read mixed $icon
  * @property-read \App\Models\Task $task
  * @property-read \App\Models\User $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|TaskComment newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TaskComment newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TaskComment query()
@@ -33,6 +34,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @method static \Illuminate\Database\Eloquent\Builder|TaskComment whereTaskId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TaskComment whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TaskComment whereUserId($value)
+ *
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\TaskCommentEmoji> $commentEmoji
  * @property-read int|null $comment_emoji_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\TaskCommentEmoji> $dislike
@@ -74,7 +76,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $dislikeUsers
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\TaskCommentEmoji> $like
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $likeUsers
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|TaskComment whereMentionUserId($value)
+ *
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\TaskCommentEmoji> $commentEmoji
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\TaskCommentEmoji> $dislike
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $dislikeUsers
@@ -91,11 +95,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $likeUsers
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MentionUser> $mentionComment
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $mentionUser
+ *
  * @mixin \Eloquent
  */
 class TaskComment extends BaseModel
 {
-
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id')->withoutGlobalScope(ActiveScope::class);
@@ -120,7 +124,7 @@ class TaskComment extends BaseModel
     {
         return $this->hasMany(MentionUser::class, 'task_comment_id');
     }
-    
+
     public function like(): HasMany
     {
         return $this->hasMany(TaskCommentEmoji::class, 'comment_id')->where('emoji_name', 'thumbs-up');
@@ -154,5 +158,4 @@ class TaskComment extends BaseModel
             'user_id' // Local key on the task comment emoji table...
         )->where('task_comment_emoji.emoji_name', 'thumbs-down');
     }
-
 }

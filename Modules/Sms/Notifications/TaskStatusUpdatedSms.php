@@ -10,10 +10,10 @@ use Illuminate\Notifications\Messages\VonageMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Str;
 use Modules\Sms\Entities\SmsNotificationSetting;
+use Modules\Sms\Entities\SmsTemplateId;
 use Modules\Sms\Http\Traits\WhatsappMessageTrait;
 use NotificationChannels\Telegram\TelegramMessage;
 use NotificationChannels\Twilio\TwilioChannel;
-use Modules\Sms\Entities\SmsTemplateId;
 use NotificationChannels\Twilio\TwilioSmsMessage;
 
 class TaskStatusUpdatedSms extends Notification implements ShouldQueue
@@ -58,8 +58,8 @@ class TaskStatusUpdatedSms extends Notification implements ShouldQueue
 
         $updatedBy = User::where('id', $this->task->last_updated_by)->first();
 
-        $this->message = __('email.taskUpdate.statusUpdated') . "\n" . __('modules.sticky.lastUpdated') . " " . __('app.taskStatus') . ": " . $this->task->boardColumn->column_name . "\n" . __('email.taskUpdate.updatedBy') . ': ' . $updatedBy->name . "\n" .
-            $this->task->heading . "\n" . __('app.task') . ' #' . $this->task->task_short_code . "\n" . ($this->task->project ? __('app.project') . ' - ' . $this->task->project->project_name : '');
+        $this->message = __('email.taskUpdate.statusUpdated')."\n".__('modules.sticky.lastUpdated').' '.__('app.taskStatus').': '.$this->task->boardColumn->column_name."\n".__('email.taskUpdate.updatedBy').': '.$updatedBy->name."\n".
+            $this->task->heading."\n".__('app.task').' #'.$this->task->task_short_code."\n".($this->task->project ? __('app.project').' - '.$this->task->project->project_name : '');
 
         $via = [];
 
@@ -100,7 +100,7 @@ class TaskStatusUpdatedSms extends Notification implements ShouldQueue
         }
     }
 
-    //phpcs:ignore
+    // phpcs:ignore
     public function toVonage($notifiable)
     {
         if (sms_setting()->nexmo_status) {
@@ -109,10 +109,10 @@ class TaskStatusUpdatedSms extends Notification implements ShouldQueue
         }
     }
 
-    //phpcs:ignore
+    // phpcs:ignore
     public function toMsg91($notifiable)
     {
-        $mobile = $notifiable->country_phonecode . $notifiable->mobile;
+        $mobile = $notifiable->country_phonecode.$notifiable->mobile;
         if ($this->smsSetting->msg91_flow_id && sms_setting()->msg91_status) {
             return (new \Craftsys\Notifications\Messages\Msg91SMS)
                 ->to($mobile)

@@ -7,7 +7,6 @@ use App\Models\ModuleSetting;
 
 class QRCodeSetting extends BaseModel
 {
-
     protected $table = 'qr_code_settings';
 
     protected $guarded = ['id'];
@@ -19,5 +18,4 @@ class QRCodeSetting extends BaseModel
         $roles = ['employee', 'admin'];
         ModuleSetting::createRoleSettingEntry(self::MODULE_NAME, $roles, $company);
     }
-
 }

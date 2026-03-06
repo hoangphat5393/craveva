@@ -46,5 +46,4 @@ class Meeting extends BaseModel
     {
         return $this->belongsTo(Objective::class, 'objective_id');
     }
-
 }

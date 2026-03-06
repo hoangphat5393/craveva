@@ -2,25 +2,23 @@
 
 namespace App\DataTables;
 
-use App\Helper\Common;
-use App\Models\EmployeeDetails;
-use App\Scopes\ActiveScope;
-use Carbon\Carbon;
 use App\Models\Role;
 use App\Models\User;
-use App\Models\CustomField;
-use App\Models\CustomFieldGroup;
-use Yajra\DataTables\Html\Button;
-use Yajra\DataTables\Html\Column;
+use App\Scopes\ActiveScope;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Yajra\DataTables\Html\Button;
 
 class TimeLogWeeklyApprovalReportDataTable extends BaseDataTable
 {
-
     private $editEmployeePermission;
+
     private $deleteEmployeePermission;
+
     private $viewEmployeePermission;
+
     private $changeEmployeeRolePermission;
+
     private $startDate = null;
 
     public function __construct()
@@ -35,7 +33,7 @@ class TimeLogWeeklyApprovalReportDataTable extends BaseDataTable
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
@@ -48,21 +46,21 @@ class TimeLogWeeklyApprovalReportDataTable extends BaseDataTable
             $employmentTypeBadge = '';
             $employeeDetail = $row->employeeDetail;
 
-            if($row->status == 'active'){
+            if ($row->status == 'active') {
                 if ($employeeDetail?->probation_end_date > now()->toDateString()) {
-                    $employmentTypeBadge .= '<span class="badge badge-info">' . __('app.onProbation') . '</span> ';
+                    $employmentTypeBadge .= '<span class="badge badge-info">'.__('app.onProbation').'</span> ';
                 }
                 if ($employeeDetail?->employment_type == 'internship' || $employeeDetail?->internship_end_date > now()->toDateString()) {
-                    $employmentTypeBadge .= '<span class="badge badge-info">' . __('app.onInternship') . '</span> ';
+                    $employmentTypeBadge .= '<span class="badge badge-info">'.__('app.onInternship').'</span> ';
                 }
                 if ($employeeDetail?->notice_period_end_date > now()->toDateString()) {
-                    $employmentTypeBadge .= '<span class="badge badge-info">' . __('app.onNoticePeriod') . '</span> ';
+                    $employmentTypeBadge .= '<span class="badge badge-info">'.__('app.onNoticePeriod').'</span> ';
                 }
                 if ($employeeDetail?->joining_date >= now()->subDays(30)->toDateString() && $employeeDetail?->joining_date <= now()->addDay()->toDateString()) {
-                    $employmentTypeBadge .= '<span class="badge badge-info">' . __('app.newHires') . '</span> ';
+                    $employmentTypeBadge .= '<span class="badge badge-info">'.__('app.newHires').'</span> ';
                 }
                 if ($employeeDetail?->joining_date <= now()->subYears(2)->toDateString()) {
-                    $employmentTypeBadge .= '<span class="badge badge-info">' . __('app.longStanding') . '</span> ';
+                    $employmentTypeBadge .= '<span class="badge badge-info">'.__('app.longStanding').'</span> ';
                 }
 
             }
@@ -88,37 +86,35 @@ class TimeLogWeeklyApprovalReportDataTable extends BaseDataTable
             $startFormatted = $startOfWeek->format('d M');
             $endFormatted = $endOfWeek->format('d M');
 
-            return $startFormatted . ' - ' . $endFormatted;
+            return $startFormatted.' - '.$endFormatted;
         });
         $datatables->editColumn('status', function ($row) {
-            
-            $count =  $this->getPendingWeekCount($row->id, $this->startDate);
 
-            if($count == 'approved'){
-                $status = '<span class="badge p-2 f-12 badge-">'.__('app.approved') .' </span>';
-            }elseif($count == 'pending'){
-                $status = '<span class="badge p-2 f-12 badge-warning">'.__('app.pending') .' </span>';
-            }else{
-                $status = '<span class="badge p-2 f-12 badge-secondary">'.__('app.draft') .' </span>';
+            $count = $this->getPendingWeekCount($row->id, $this->startDate);
+
+            if ($count == 'approved') {
+                $status = '<span class="badge p-2 f-12 badge-">'.__('app.approved').' </span>';
+            } elseif ($count == 'pending') {
+                $status = '<span class="badge p-2 f-12 badge-warning">'.__('app.pending').' </span>';
+            } else {
+                $status = '<span class="badge p-2 f-12 badge-secondary">'.__('app.draft').' </span>';
             }
 
             return $status;
         });
 
         $datatables->addIndexColumn();
-        $datatables->setRowId(fn($row) => 'row-' . $row->id);
+        $datatables->setRowId(fn ($row) => 'row-'.$row->id);
         $datatables->removeColumn('roleId');
         $datatables->removeColumn('roleName');
         $datatables->removeColumn('current_role');
 
-
-        $datatables->rawColumns(array_merge(['name','user_name','status','week_range']));
+        $datatables->rawColumns(array_merge(['name', 'user_name', 'status', 'week_range']));
 
         return $datatables;
     }
 
     /**
-     * @param User $model
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function query(User $model)
@@ -133,12 +129,12 @@ class TimeLogWeeklyApprovalReportDataTable extends BaseDataTable
             'roles:name,display_name',
             'roles.roleuser',
             'employeeDetail' => function ($query) {
-                $query->select('notice_period_end_date','internship_end_date','employment_type','probation_end_date','user_id', 'added_by', 'designation_id', 'employee_id', 'joining_date', 'reporting_to')
+                $query->select('notice_period_end_date', 'internship_end_date', 'employment_type', 'probation_end_date', 'user_id', 'added_by', 'designation_id', 'employee_id', 'joining_date', 'reporting_to')
                     ->with('reportingTo:id,name,image');
             },
             'session',
-        'employeeDetail.designation:id,name',
-        'employeeDetail.department:id,team_name',
+            'employeeDetail.designation:id,name',
+            'employeeDetail.department:id,team_name',
         ])
             ->withoutGlobalScope(ActiveScope::class)
             ->leftJoin('employee_details', 'employee_details.user_id', '=', 'users.id')
@@ -169,19 +165,16 @@ class TimeLogWeeklyApprovalReportDataTable extends BaseDataTable
                     WHEN users.inactive_date IS NULL THEN "active"
                     WHEN users.inactive_date <= CURDATE() THEN "inactive"
                     ELSE "active"
-                    END as status')
+                    END as status'),
             ])
             ->groupBy('users.id')->whereHas('roles', function ($query) {
                 $query->where('name', 'employee');
             });
 
-       
-
         if ($request->employee != 'all' && $request->employee != '') {
             $users = $users->where('users.id', $request->employee);
         }
 
-    
         if ($this->viewEmployeePermission == 'added') {
             $users = $users->where('employee_details.added_by', user()->id);
         }
@@ -198,6 +191,7 @@ class TimeLogWeeklyApprovalReportDataTable extends BaseDataTable
         }
 
         $empids = $users->pluck('id')->toArray();
+
         return $users->groupBy('users.id');
     }
 
@@ -231,7 +225,7 @@ class TimeLogWeeklyApprovalReportDataTable extends BaseDataTable
             ]);
 
         if (canDataTableExport()) {
-            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
+            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
         }
 
         return $dataTable;
@@ -247,18 +241,16 @@ class TimeLogWeeklyApprovalReportDataTable extends BaseDataTable
 
         $data = [
             '#' => ['data' => 'DT_RowIndex', 'orderable' => false, 'searchable' => false, 'visible' => false, 'title' => '#'],
-            
-            __('app.name') => ['data' => 'name', 'name' => 'name','visible' => true, 'exportable' => false, 'title' => __('app.name')],
-            __('modules.employees.employeeName') => ['data' => 'user_name','name' => 'user_name','exportable' => true, 'visible' => false, 'title' => __('modules.employees.employeeName')],
+
+            __('app.name') => ['data' => 'name', 'name' => 'name', 'visible' => true, 'exportable' => false, 'title' => __('app.name')],
+            __('modules.employees.employeeName') => ['data' => 'user_name', 'name' => 'user_name', 'exportable' => true, 'visible' => false, 'title' => __('modules.employees.employeeName')],
             __('modules.employees.reportingTo') => ['data' => 'reporting_to', 'exportable' => true, 'name' => 'reporting_to', 'title' => __('modules.employees.reportingTo')],
             __('modules.employees.WeekRange') => ['data' => 'week_range', 'name' => 'week_range', 'exportable' => true, 'title' => __('Week')],
             __('app.status') => ['data' => 'status', 'name' => 'status', 'exportable' => true, 'title' => __('app.status')],
 
         ];
 
-
         return $data;
 
     }
-
 }

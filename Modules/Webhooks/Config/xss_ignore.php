@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'description'
+    'description',
 ];

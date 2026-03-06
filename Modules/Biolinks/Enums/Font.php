@@ -38,33 +38,33 @@ enum Font: string
     public function label(): string
     {
         return match ($this) {
-            self::ARIAL => __('biolinks::app.font.' . $this->value),
-            self::HELVETICA => __('biolinks::app.font.' . $this->value),
-            self::TIMES_NEW_ROMAN => __('biolinks::app.font.' . $this->value),
-            self::TIMES => __('biolinks::app.font.' . $this->value),
-            self::COURIER_NEW => __('biolinks::app.font.' . $this->value),
-            self::COURIER => __('biolinks::app.font.' . $this->value),
-            self::VERDANA => __('biolinks::app.font.' . $this->value),
-            self::GEORGIA => __('biolinks::app.font.' . $this->value),
-            self::PALATINO => __('biolinks::app.font.' . $this->value),
-            self::GARAMOND => __('biolinks::app.font.' . $this->value),
-            self::BOOKMAN => __('biolinks::app.font.' . $this->value),
-            self::COMIC_SANS_MS => __('biolinks::app.font.' . $this->value),
-            self::TREBUCHET_MS => __('biolinks::app.font.' . $this->value),
-            self::ARIAL_BLACK => __('biolinks::app.font.' . $this->value),
-            self::IMPACT => __('biolinks::app.font.' . $this->value),
-            self::TAHOMA => __('biolinks::app.font.' . $this->value),
-            self::GENEVA => __('biolinks::app.font.' . $this->value),
-            self::CENTURY_GOTHIC => __('biolinks::app.font.' . $this->value),
-            self::LUCIDA_GRANDE => __('biolinks::app.font.' . $this->value),
-            self::OPTIMA => __('biolinks::app.font.' . $this->value),
-            self::AVANT_GARDE => __('biolinks::app.font.' . $this->value),
-            self::ARIAL_NARROW => __('biolinks::app.font.' . $this->value),
-            self::SANS_SERIF => __('biolinks::app.font.' . $this->value),
-            self::SERIF => __('biolinks::app.font.' . $this->value),
-            self::MONOSPACE => __('biolinks::app.font.' . $this->value),
-            self::FANTASY => __('biolinks::app.font.' . $this->value),
-            self::CURSIVE => __('biolinks::app.font.' . $this->value),
+            self::ARIAL => __('biolinks::app.font.'.$this->value),
+            self::HELVETICA => __('biolinks::app.font.'.$this->value),
+            self::TIMES_NEW_ROMAN => __('biolinks::app.font.'.$this->value),
+            self::TIMES => __('biolinks::app.font.'.$this->value),
+            self::COURIER_NEW => __('biolinks::app.font.'.$this->value),
+            self::COURIER => __('biolinks::app.font.'.$this->value),
+            self::VERDANA => __('biolinks::app.font.'.$this->value),
+            self::GEORGIA => __('biolinks::app.font.'.$this->value),
+            self::PALATINO => __('biolinks::app.font.'.$this->value),
+            self::GARAMOND => __('biolinks::app.font.'.$this->value),
+            self::BOOKMAN => __('biolinks::app.font.'.$this->value),
+            self::COMIC_SANS_MS => __('biolinks::app.font.'.$this->value),
+            self::TREBUCHET_MS => __('biolinks::app.font.'.$this->value),
+            self::ARIAL_BLACK => __('biolinks::app.font.'.$this->value),
+            self::IMPACT => __('biolinks::app.font.'.$this->value),
+            self::TAHOMA => __('biolinks::app.font.'.$this->value),
+            self::GENEVA => __('biolinks::app.font.'.$this->value),
+            self::CENTURY_GOTHIC => __('biolinks::app.font.'.$this->value),
+            self::LUCIDA_GRANDE => __('biolinks::app.font.'.$this->value),
+            self::OPTIMA => __('biolinks::app.font.'.$this->value),
+            self::AVANT_GARDE => __('biolinks::app.font.'.$this->value),
+            self::ARIAL_NARROW => __('biolinks::app.font.'.$this->value),
+            self::SANS_SERIF => __('biolinks::app.font.'.$this->value),
+            self::SERIF => __('biolinks::app.font.'.$this->value),
+            self::MONOSPACE => __('biolinks::app.font.'.$this->value),
+            self::FANTASY => __('biolinks::app.font.'.$this->value),
+            self::CURSIVE => __('biolinks::app.font.'.$this->value),
             default => $this->value,
         };
     }
@@ -98,12 +98,12 @@ enum Font: string
         };
     }
 
-    public function familyValue():string
+    public function familyValue(): string
     {
-        return $this->realName() . ($this->family() ? ', ' . $this->family() : '');
+        return $this->realName().($this->family() ? ', '.$this->family() : '');
     }
 
-    public function realName():string
+    public function realName(): string
     {
         return match ($this) {
             self::ARIAL => 'Arial',
@@ -136,5 +136,4 @@ enum Font: string
             default => $this->value,
         };
     }
-
 }

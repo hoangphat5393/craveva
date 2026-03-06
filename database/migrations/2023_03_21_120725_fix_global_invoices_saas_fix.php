@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      *
@@ -16,7 +15,7 @@ return new class extends Migration
      */
     public function up()
     {
-        if (!isCraveva()) {
+        if (! isCraveva()) {
             return true;
         }
 
@@ -30,7 +29,6 @@ return new class extends Migration
             $table->string('background_color')->nullable()->default('#CDDCDC');
             $table->string('background_image')->nullable();
         });
-
 
         Schema::table('packages', function (Blueprint $table) {
             $table->double('annual_price')->nullable()->change();

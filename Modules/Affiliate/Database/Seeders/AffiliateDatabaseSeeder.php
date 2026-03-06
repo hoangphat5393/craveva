@@ -6,7 +6,6 @@ use Illuminate\Database\Seeder;
 
 class AffiliateDatabaseSeeder extends Seeder
 {
-
     /**
      * Run the database seeds.
      */
@@ -14,5 +13,4 @@ class AffiliateDatabaseSeeder extends Seeder
     {
         // Seed the affiliates
     }
-
 }

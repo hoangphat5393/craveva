@@ -2,22 +2,22 @@
 
 namespace App\DataTables;
 
-use App\Models\Ticket;
+use App\Helper\Common;
+use App\Helper\UserService;
 use App\Models\CustomField;
 use App\Models\CustomFieldGroup;
+use App\Models\Ticket;
+use App\Models\TicketGroup;
+use App\Models\TicketSettingForAgents;
+use App\Models\TicketTagList;
+use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
-use Illuminate\Support\Facades\DB;
-use App\Models\TicketSettingForAgents;
-use App\Models\TicketGroup;
-use App\Models\TicketTagList;
-use App\Helper\UserService;
-use App\Helper\Common;
 
-class   TicketDataTable extends BaseDataTable
+class TicketDataTable extends BaseDataTable
 {
-
     private $viewTicketPermission;
+
     private $ignoreTrashed;
 
     public function __construct($ignoreTrashed = false)
@@ -30,13 +30,13 @@ class   TicketDataTable extends BaseDataTable
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
     {
         $datatables = datatables()->eloquent($query);
-        $datatables->addColumn('check', fn($row) => $this->checkBox($row));
+        $datatables->addColumn('check', fn ($row) => $this->checkBox($row));
         $datatables->addIndexColumn();
         $datatables->addColumn('action', function ($row) {
 
@@ -65,19 +65,19 @@ class   TicketDataTable extends BaseDataTable
 
             $action .= '<div class="dropdown">
                     <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" type="link"
-                        id="dropdownMenuLink-' . $row->ticket_number . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        id="dropdownMenuLink-'.$row->ticket_number.'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="icon-options-vertical icons"></i>
                     </a>
-                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-' . $row->ticket_number . '" tabindex="0">';
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-'.$row->ticket_number.'" tabindex="0">';
 
             if ($row->canViewTicket() || $row->agent_id == null || $isView) {
-                $action .= '<a href="' . route('tickets.show', [$row->ticket_number]) . '" class="dropdown-item"><i class="fa fa-eye mr-2"></i>' . __('app.view') . '</a>';
+                $action .= '<a href="'.route('tickets.show', [$row->ticket_number]).'" class="dropdown-item"><i class="fa fa-eye mr-2"></i>'.__('app.view').'</a>';
             }
 
             if ($row->canDeleteTicket()) {
-                $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-ticket-id="' . $row->id . '">
+                $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-ticket-id="'.$row->id.'">
                 <i class="fa fa-trash mr-2"></i>
-                ' . trans('app.delete') . '
+                '.trans('app.delete').'
             </a>';
             }
 
@@ -90,11 +90,11 @@ class   TicketDataTable extends BaseDataTable
         $datatables->addColumn('others', function ($row) {
             $others = '';
 
-            if (!is_null($row->agent)) {
-                $others .= '<div class="mb-2">' . __('modules.tickets.agent') . ': ' . (is_null($row->agent_id) ? '-' : $row->agent->name) . '</div> ';
+            if (! is_null($row->agent)) {
+                $others .= '<div class="mb-2">'.__('modules.tickets.agent').': '.(is_null($row->agent_id) ? '-' : $row->agent->name).'</div> ';
             }
 
-            $others .= '<div>' . __('modules.tasks.priority') . ': ' . __('app.' . $row->priority) . '</div> ';
+            $others .= '<div>'.__('modules.tasks.priority').': '.__('app.'.$row->priority).'</div> ';
 
             return $others;
         });
@@ -124,35 +124,35 @@ class   TicketDataTable extends BaseDataTable
 
             if ($row->canEditTicket($row) || $isEdit) {
 
-                $status = '<select class="form-control select-picker change-status" data-ticket-id="' . $row->id . '">';
+                $status = '<select class="form-control select-picker change-status" data-ticket-id="'.$row->id.'">';
                 $status .= '<option ';
 
                 if ($row->status == 'open') {
                     $status .= 'selected';
                 }
 
-                $status .= '  data-content="<i class=\'fa fa-circle mr-2 text-red\'></i> ' . __('app.open') . '" value="open">' . __('app.open') . '</option>';
+                $status .= '  data-content="<i class=\'fa fa-circle mr-2 text-red\'></i> '.__('app.open').'" value="open">'.__('app.open').'</option>';
                 $status .= '<option ';
 
                 if ($row->status == 'pending') {
                     $status .= 'selected';
                 }
 
-                $status .= '  data-content="<i class=\'fa fa-circle mr-2 text-yellow\'></i> ' . __('app.pending') . '" value="pending">' . __('app.pending') . '</option>';
+                $status .= '  data-content="<i class=\'fa fa-circle mr-2 text-yellow\'></i> '.__('app.pending').'" value="pending">'.__('app.pending').'</option>';
                 $status .= '<option ';
 
                 if ($row->status == 'resolved') {
                     $status .= 'selected';
                 }
 
-                $status .= '  data-content="<i class=\'fa fa-circle mr-2 text-dark-green\'></i> ' . __('app.resolved') . '" value="resolved">' . __('app.resolved') . '</option>';
+                $status .= '  data-content="<i class=\'fa fa-circle mr-2 text-dark-green\'></i> '.__('app.resolved').'" value="resolved">'.__('app.resolved').'</option>';
                 $status .= '<option ';
 
                 if ($row->status == 'closed') {
                     $status .= 'selected';
                 }
 
-                $status .= '  data-content="<i class=\'fa fa-circle mr-2 text-blue\'></i> ' . __('app.closed') . '" value="closed">' . __('app.closed') . '</option>';
+                $status .= '  data-content="<i class=\'fa fa-circle mr-2 text-blue\'></i> '.__('app.closed').'" value="closed">'.__('app.closed').'</option>';
 
                 $status .= '</select>';
 
@@ -168,11 +168,11 @@ class   TicketDataTable extends BaseDataTable
 
             $status = $statuses[$row->status] ?? $statuses['closed'];
 
-            return '<i class="fa fa-circle mr-2 text-' . $status[0] . '"></i>' . $status[1];
+            return '<i class="fa fa-circle mr-2 text-'.$status[0].'"></i>'.$status[1];
         });
-        $datatables->editColumn('ticket_status', fn($row) => $row->status);
-        $datatables->editColumn('subject', fn($row) => '<a href="' . route('tickets.show', $row->ticket_number) . '" class="text-darkest-grey">' . $row->subject . '</a>' . $row->badge());
-        $datatables->addColumn('name', fn($row) => $row->requester ? $row->requester->name : $row->ticket_number);
+        $datatables->editColumn('ticket_status', fn ($row) => $row->status);
+        $datatables->editColumn('subject', fn ($row) => '<a href="'.route('tickets.show', $row->ticket_number).'" class="text-darkest-grey">'.$row->subject.'</a>'.$row->badge());
+        $datatables->addColumn('name', fn ($row) => $row->requester ? $row->requester->name : $row->ticket_number);
         $datatables->editColumn('user_id', function ($row) {
             if (is_null($row->requester)) {
                 return '';
@@ -183,8 +183,8 @@ class   TicketDataTable extends BaseDataTable
             return view($viewComponent, ['user' => $row->requester]);
         });
 
-        $datatables->editColumn('updated_at', fn($row) => $row->created_at?->timezone($this->company->timezone)->translatedFormat($this->company->date_format . ' ' . $this->company->time_format));
-        $datatables->setRowId(fn($row) => 'row-' . $row->id);
+        $datatables->editColumn('updated_at', fn ($row) => $row->created_at?->timezone($this->company->timezone)->translatedFormat($this->company->date_format.' '.$this->company->time_format));
+        $datatables->setRowId(fn ($row) => 'row-'.$row->id);
         $datatables->orderColumn('user_id', 'name $1');
         $datatables->orderColumn('status', 'id $1');
         $datatables->removeColumn('agent_id');
@@ -201,7 +201,6 @@ class   TicketDataTable extends BaseDataTable
     }
 
     /**
-     * @param Ticket $model
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function query(Ticket $model)
@@ -216,7 +215,7 @@ class   TicketDataTable extends BaseDataTable
             ->join('users', 'users.id', '=', 'tickets.user_id');
 
         // filter where project is soft deleted
-        if (!$this->ignoreTrashed) {
+        if (! $this->ignoreTrashed) {
             $model->where(function ($query) {
                 $query->whereNotNull('tickets.project_id')
                     ->whereHas('project', function ($q) {
@@ -225,33 +224,33 @@ class   TicketDataTable extends BaseDataTable
             });
         }
 
-        if (!is_null($request->startDate) && $request->startDate != '') {
+        if (! is_null($request->startDate) && $request->startDate != '') {
             $startDate = companyToDateString($request->startDate);
             $model->where(DB::raw('DATE(tickets.created_at)'), '>=', $startDate);
         }
 
-        if (!is_null($request->endDate) && $request->endDate != '') {
+        if (! is_null($request->endDate) && $request->endDate != '') {
             $endDate = companyToDateString($request->endDate);
             $model->where(DB::raw('DATE(tickets.created_at)'), '<=', $endDate);
         }
 
-        if (!is_null($request->agentId) && $request->agentId != 'all' && $request->ticketFilterStatus != 'unassigned') {
+        if (! is_null($request->agentId) && $request->agentId != 'all' && $request->ticketFilterStatus != 'unassigned') {
             $model->where('tickets.agent_id', '=', $request->agentId);
         }
 
-        if (!is_null($request->groupId) && $request->groupId != 'all') {
+        if (! is_null($request->groupId) && $request->groupId != 'all') {
             $model->where('tickets.group_id', '=', $request->groupId);
         }
 
-        if (!is_null($request->client_id) && $request->client_id != 'all') {
+        if (! is_null($request->client_id) && $request->client_id != 'all') {
             $model->where('tickets.user_id', $request->client_id);
         }
 
-        if (!is_null($request->employee_id) && $request->employee_id != 'all') {
+        if (! is_null($request->employee_id) && $request->employee_id != 'all') {
             $model->where('tickets.user_id', $request->employee_id);
         }
 
-        if (!is_null($request->ticketStatus) && $request->ticketStatus != 'all' && $request->ticketFilterStatus == '') {
+        if (! is_null($request->ticketStatus) && $request->ticketStatus != 'all' && $request->ticketFilterStatus == '') {
             $request->ticketStatus == 'unassigned' ? $model->whereNull('agent_id') : $model->where('tickets.status', '=', $request->ticketStatus);
         }
 
@@ -269,16 +268,16 @@ class   TicketDataTable extends BaseDataTable
             }
         }
 
-        if (!is_null($request->priority) && $request->priority != 'all') {
+        if (! is_null($request->priority) && $request->priority != 'all') {
             $model->where('tickets.priority', '=', $request->priority);
         }
 
-        if (!is_null($request->channelId) && $request->channelId != 'all') {
+        if (! is_null($request->channelId) && $request->channelId != 'all') {
 
             $model->where('tickets.channel_id', '=', $request->channelId);
         }
 
-        if (!is_null($request->typeId) && $request->typeId != 'all') {
+        if (! is_null($request->typeId) && $request->typeId != 'all') {
             $model->where('tickets.type_id', '=', $request->typeId);
         }
 
@@ -308,14 +307,14 @@ class   TicketDataTable extends BaseDataTable
             });
         }
 
-        if (!is_null($request->projectID) && $request->projectID != 'all') {
+        if (! is_null($request->projectID) && $request->projectID != 'all') {
             $model->whereHas('project', function ($q) use ($request) {
                 $q->withTrashed()->where('tickets.project_id', $request->projectID);
             });
         }
 
         $userAssignedInGroup = false;
-        if (in_array('employee', user_roles()) && !in_array('admin', user_roles()) && !in_array('client', user_roles())) {
+        if (in_array('employee', user_roles()) && ! in_array('admin', user_roles()) && ! in_array('client', user_roles())) {
             $userAssignedInGroup = TicketGroup::whereHas('enabledAgents', function ($query) use ($userid) {
                 $query->where('agent_id', $userid)->orWhereNull('agent_id');
             })->exists();
@@ -403,11 +402,11 @@ class   TicketDataTable extends BaseDataTable
         if ($request->searchText != '') {
             $model->where(function ($query) {
                 $safeTerm = Common::safeString(request('searchText'));
-                $query->where('tickets.subject', 'like', '%' . $safeTerm . '%')
-                    ->orWhere('tickets.ticket_number', 'like', '%' . $safeTerm . '%')
-                    ->orWhere('tickets.status', 'like', '%' . $safeTerm . '%')
-                    ->orWhere('users.name', 'like', '%' . $safeTerm . '%')
-                    ->orWhere('tickets.priority', 'like', '%' . $safeTerm . '%');
+                $query->where('tickets.subject', 'like', '%'.$safeTerm.'%')
+                    ->orWhere('tickets.ticket_number', 'like', '%'.$safeTerm.'%')
+                    ->orWhere('tickets.status', 'like', '%'.$safeTerm.'%')
+                    ->orWhere('users.name', 'like', '%'.$safeTerm.'%')
+                    ->orWhere('tickets.priority', 'like', '%'.$safeTerm.'%');
             });
         }
 
@@ -437,7 +436,7 @@ class   TicketDataTable extends BaseDataTable
             ]);
 
         if (canDataTableExport()) {
-            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
+            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
         }
 
         return $dataTable;
@@ -457,16 +456,16 @@ class   TicketDataTable extends BaseDataTable
                 'exportable' => false,
                 'orderable' => false,
                 'searchable' => false,
-                'visible' => !in_array('client', user_roles())
+                'visible' => ! in_array('client', user_roles()),
             ],
-            __('modules.tickets.ticket') . ' #' => ['data' => 'ticket_number', 'name' => 'ticket_number', 'title' => __('modules.tickets.ticket') . ' #'],
+            __('modules.tickets.ticket').' #' => ['data' => 'ticket_number', 'name' => 'ticket_number', 'title' => __('modules.tickets.ticket').' #'],
             __('modules.tickets.ticketSubject') => ['data' => 'subject', 'name' => 'subject', 'title' => __('modules.tickets.ticketSubject'), 'width' => '20%'],
             __('app.name') => ['data' => 'name', 'name' => 'user_id', 'visible' => false, 'title' => __('app.name')],
-            __('modules.tickets.requesterName') => ['data' => 'user_id', 'name' => 'user_id', 'visible' => !in_array('client', user_roles()), 'exportable' => false, 'title' => __('modules.tickets.requesterName'), 'width' => '20%'],
+            __('modules.tickets.requesterName') => ['data' => 'user_id', 'name' => 'user_id', 'visible' => ! in_array('client', user_roles()), 'exportable' => false, 'title' => __('modules.tickets.requesterName'), 'width' => '20%'],
             __('modules.tickets.requestedOn') => ['data' => 'updated_at', 'name' => 'updated_at', 'title' => __('modules.tickets.requestedOn')],
             __('app.others') => ['data' => 'others', 'name' => 'others', 'sortable' => false, 'title' => __('app.others')],
             __('app.status') => ['data' => 'status', 'name' => 'status', 'exportable' => false, 'title' => __('app.status')],
-            __('modules.ticketStatus') => ['data' => 'ticket_status', 'name' => 'ticket_status', 'visible' => false, 'title' => __('modules.ticketStatus')]
+            __('modules.ticketStatus') => ['data' => 'ticket_status', 'name' => 'ticket_status', 'visible' => false, 'title' => __('modules.ticketStatus')],
         ];
 
         $action = [
@@ -475,9 +474,9 @@ class   TicketDataTable extends BaseDataTable
                 ->printable(false)
                 ->orderable(false)
                 ->searchable(false)
-                ->addClass('text-right pr-20')
+                ->addClass('text-right pr-20'),
         ];
 
-        return array_merge($data, CustomFieldGroup::customFieldsDataMerge(new Ticket()), $action);
+        return array_merge($data, CustomFieldGroup::customFieldsDataMerge(new Ticket), $action);
     }
 }

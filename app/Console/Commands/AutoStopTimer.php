@@ -13,7 +13,6 @@ use Illuminate\Console\Command;
 
 class AutoStopTimer extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
@@ -33,10 +32,8 @@ class AutoStopTimer extends Command
      *
      * @return mixed
      */
-
     public function handle()
     {
-
 
         Company::active()->select(['companies.id as id', 'timezone'])
             ->join('log_time_for', 'log_time_for.company_id', '=', 'companies.id')
@@ -57,12 +54,12 @@ class AutoStopTimer extends Command
                     foreach ($activeTimers as $activeTimer) {
                         $attendanceShift = EmployeeShiftSchedule::with('shift')->where('user_id', $activeTimer->user_id)->where('date', $activeTimer->start_time->format('Y-m-d'))->first()?->shift;
 
-                        if (!$attendanceShift) {
+                        if (! $attendanceShift) {
                             $attendanceShift = $defaultShift;
                         }
 
                         $startTime = $activeTimer->start_time->tz($company->timezone);
-                        $endDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $activeTimer->start_time->format('Y-m-d') . ' ' . $attendanceShift->office_end_time, $company->timezone);
+                        $endDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $activeTimer->start_time->format('Y-m-d').' '.$attendanceShift->office_end_time, $company->timezone);
 
                         if ($startTime->gt($endDateTime)) {
                             $endDateTime = $endDateTime->addDay();
@@ -74,13 +71,13 @@ class AutoStopTimer extends Command
                             $activeTimer->edited_by_user = $admin->id;
                             $activeTimer->save();
 
-                            $activeTimer->total_hours = ((int)$activeTimer->end_time->diff($activeTimer->start_time)->format('%d') * 24) + ((int)$activeTimer->end_time->diff($activeTimer->start_time)->format('%H'));
+                            $activeTimer->total_hours = ((int) $activeTimer->end_time->diff($activeTimer->start_time)->format('%d') * 24) + ((int) $activeTimer->end_time->diff($activeTimer->start_time)->format('%H'));
 
                             if ($activeTimer->total_hours == 0) {
-                                $activeTimer->total_hours = (int)$activeTimer->end_time->diff($activeTimer->start_time)->format('%d') * 24 + (int)$activeTimer->end_time->diff($activeTimer->start_time)->format('%H');
+                                $activeTimer->total_hours = (int) $activeTimer->end_time->diff($activeTimer->start_time)->format('%d') * 24 + (int) $activeTimer->end_time->diff($activeTimer->start_time)->format('%H');
                             }
 
-                            $activeTimer->total_minutes = ((int)$activeTimer->total_hours * 60) + (int)($activeTimer->end_time->diff($activeTimer->start_time)->format('%i'));
+                            $activeTimer->total_minutes = ((int) $activeTimer->total_hours * 60) + (int) ($activeTimer->end_time->diff($activeTimer->start_time)->format('%i'));
 
                             $activeTimer->saveQuietly();
 
@@ -88,7 +85,7 @@ class AutoStopTimer extends Command
 
                             // Stop breaktime if active
                             /** @phpstan-ignore-next-line */
-                            if (!is_null($activeTimer->activeBreak)) {
+                            if (! is_null($activeTimer->activeBreak)) {
                                 /** @phpstan-ignore-next-line */
                                 $activeBreak = $activeTimer->activeBreak;
                                 $activeBreak->end_time = $activeTimer->end_time;
@@ -103,5 +100,4 @@ class AutoStopTimer extends Command
         return Command::SUCCESS;
 
     }
-
 }

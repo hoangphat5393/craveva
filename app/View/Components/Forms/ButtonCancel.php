@@ -7,7 +7,6 @@ use Illuminate\View\Component;
 
 class ButtonCancel extends Component
 {
-
     public $link;
 
     /**
@@ -29,5 +28,4 @@ class ButtonCancel extends Component
     {
         return view('components.forms.button-cancel');
     }
-
 }

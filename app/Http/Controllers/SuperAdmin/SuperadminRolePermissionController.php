@@ -19,13 +19,12 @@ use Illuminate\Http\Request;
 
 class SuperadminRolePermissionController extends AccountBaseController
 {
-
     protected array $permissionTypes = [
         'added' => 1,
         'owned' => 2,
         'both' => 3,
         'all' => 4,
-        'none' => 5
+        'none' => 5,
     ];
 
     public function __construct()
@@ -62,7 +61,6 @@ class SuperadminRolePermissionController extends AccountBaseController
      *
      * @return \Illuminate\Http\Response
      */
-
     public function create()
     {
         abort_403(user()->permission('manage_superadmin_permission_settings') != 'all');
@@ -99,9 +97,8 @@ class SuperadminRolePermissionController extends AccountBaseController
                 ->where('role_id', $roleId)
                 ->update(['permission_type_id' => $permissionType]);
 
-        }
-        else {
-            $permissionRole = new PermissionRole();
+        } else {
+            $permissionRole = new PermissionRole;
             $permissionRole->permission_id = $permissionId;
             $permissionRole->role_id = $roleId;
             $permissionRole->permission_type_id = $permissionType;
@@ -169,7 +166,7 @@ class SuperadminRolePermissionController extends AccountBaseController
     {
         abort_403(user()->permission('manage_superadmin_permission_settings') != 'all');
 
-        $role = new Role();
+        $role = new Role;
         $role->name = $request->name;
         $role->display_name = $request->name;
         $role->save();
@@ -183,12 +180,11 @@ class SuperadminRolePermissionController extends AccountBaseController
 
             foreach ($importRolePermissions as $perm) {
                 $perm->replicate()->fill([
-                    'role_id' => $role->id
+                    'role_id' => $role->id,
                 ])->save();
             }
 
-        }
-        else {
+        } else {
             $allPermissions = Permission::select('permissions.*')->join('modules', 'modules.id', 'permissions.module_id')->where('modules.is_superadmin', 1)->get();
             $role->perms()->sync([]);
             $role->attachPermissions($allPermissions);
@@ -231,7 +227,7 @@ class SuperadminRolePermissionController extends AccountBaseController
     {
         $role = Role::where('id', '<>', $id)->whereNull('company_id')->where('name', $request->role_name)->first();
 
-        if (!is_null($role)) {
+        if (! is_null($role)) {
             return Reply::error(__('superadmin.roleAlreadyExist'));
         }
 
@@ -288,7 +284,7 @@ class SuperadminRolePermissionController extends AccountBaseController
         foreach ($users as $user) {
             $userRole = $user->roles->pluck('name')->toArray();
 
-            if (!in_array('superadmin', $userRole)) {
+            if (! in_array('superadmin', $userRole)) {
                 $user->assignUserRolePermission($roleId);
             }
         }
@@ -341,5 +337,4 @@ class SuperadminRolePermissionController extends AccountBaseController
 
         PermissionRole::insert($updatePermissionArray);
     }
-
 }

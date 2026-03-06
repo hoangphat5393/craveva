@@ -10,6 +10,7 @@ trait HasServerManagerPermissions
     public function hasHostingPermission(string $permission): bool
     {
         $userPermission = user()->permission($permission);
+
         return in_array($userPermission, ['all', 'added', 'owned', 'both']);
     }
 
@@ -19,6 +20,7 @@ trait HasServerManagerPermissions
     public function hasDomainPermission(string $permission): bool
     {
         $userPermission = user()->permission($permission);
+
         return in_array($userPermission, ['all', 'added', 'owned', 'both']);
     }
 

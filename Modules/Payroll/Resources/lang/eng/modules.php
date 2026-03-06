@@ -1,7 +1,7 @@
 <?php
 
-return array(
-    'payroll' => array(
+return [
+    'payroll' => [
         'salaryGroup' => 'Salary Group',
         'salaryGroupComponents' => 'Salary Group Components',
         'salaryComponents' => 'Salary Components',
@@ -192,5 +192,5 @@ return array(
         'dayoff' => 'Day Off',
         'holiday' => 'Holiday',
         'overtimeType' => 'Overtime Type',
-    )
-);
+    ],
+];

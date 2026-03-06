@@ -11,7 +11,6 @@ class StoreCustomLink extends FormRequest
      *
      * @return bool
      */
-
     public function authorize()
     {
         return true;
@@ -27,15 +26,14 @@ class StoreCustomLink extends FormRequest
         return [
             'link_title' => 'required',
             'url' => 'required|url',
-            'can_be_viewed_by' => 'required'
+            'can_be_viewed_by' => 'required',
         ];
     }
 
     public function messages()
     {
         return [
-            'can_be_viewed_by.required' => __('messages.atleastOneRole')
+            'can_be_viewed_by.required' => __('messages.atleastOneRole'),
         ];
     }
-    
 }

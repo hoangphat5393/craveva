@@ -3,9 +3,9 @@
 namespace App\Models;
 
 use App\Scopes\ActiveScope;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * App\Models\ProjectNote
@@ -26,6 +26,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property-read \App\Models\Project $project
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ProjectUserNote[] $noteUsers
  * @property-read int|null $members_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectNote newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectNote newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectNote query()
@@ -41,6 +42,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectNote whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectNote whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectNote whereUpdatedAt($value)
+ *
  * @property-read int|null $note_users_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MentionUser> $mentionNote
  * @property-read int|null $mention_note_count
@@ -48,11 +50,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property-read int|null $mention_user_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MentionUser> $mentionNote
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $mentionUser
+ *
  * @mixin \Eloquent
  */
 class ProjectNote extends BaseModel
 {
-
     public function members(): HasMany
     {
         return $this->hasMany(ProjectUserNote::class, 'project_note_id');
@@ -77,5 +79,4 @@ class ProjectNote extends BaseModel
     {
         return $this->hasMany(MentionUser::class, 'project_note_id');
     }
-
 }

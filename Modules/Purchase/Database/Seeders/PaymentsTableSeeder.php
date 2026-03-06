@@ -2,16 +2,13 @@
 
 namespace Modules\Purchase\Database\Seeders;
 
-use Faker\Factory;
 use Illuminate\Database\Seeder;
 use Modules\Purchase\Entities\PurchaseBill;
 use Modules\Purchase\Entities\PurchasePaymentBill;
-use Modules\Purchase\Entities\PurchaseVendor;
 use Modules\Purchase\Entities\PurchaseVendorPayment;
 
 class PaymentsTableSeeder extends Seeder
 {
-
     /**
      * Run the database seeds.
      *
@@ -21,7 +18,7 @@ class PaymentsTableSeeder extends Seeder
     {
         $bills = PurchaseBill::with('vendor')->where('company_id', $companyId)->get();
 
-        foreach($bills as $bill){
+        foreach ($bills as $bill) {
 
             $payment = [
                 'company_id' => $companyId,
@@ -39,12 +36,11 @@ class PaymentsTableSeeder extends Seeder
                 'purchase_vendor_payment_id' => $paymentID->random(),
                 'purchase_vendor_id' => $bill->vendor->id,
                 'purchase_bill_id' => $bill->id,
-                'total_paid' => $bill->total
+                'total_paid' => $bill->total,
             ];
 
             PurchasePaymentBill::create($paymentBill);
 
         }
     }
-
 }

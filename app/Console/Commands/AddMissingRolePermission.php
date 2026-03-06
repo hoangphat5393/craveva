@@ -8,7 +8,6 @@ use Illuminate\Console\Command;
 
 class AddMissingRolePermission extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
@@ -31,19 +30,17 @@ class AddMissingRolePermission extends Command
     public function handle()
     {
 
-        $rolePerm = new RolePermissionController();
+        $rolePerm = new RolePermissionController;
 
         Company::active()->select('id')->chunk(50, function ($companies) use ($rolePerm) {
 
             foreach ($companies as $company) {
-                $this->info('Running for company:' . $company->id);
+                $this->info('Running for company:'.$company->id);
                 $rolePerm->addMissingAdminPermission($company->id);
                 $rolePerm->addMissingEmployeePermission($company->id);
             }
         });
 
-
         return Command::SUCCESS;
     }
-
 }

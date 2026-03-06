@@ -4,16 +4,14 @@ namespace Modules\Purchase\Observers;
 
 use App\Helper\Files;
 use Modules\Purchase\Entities\PurchaseBill;
-use Modules\Purchase\Events\VendorCreditEvent;
-use Modules\Purchase\Entities\PurchaseVendorItem;
 use Modules\Purchase\Entities\PurchaseVendorCredit;
 use Modules\Purchase\Entities\PurchaseVendorCreditHistory;
-use Modules\Purchase\Entities\PurchaseVendorHistory;
 use Modules\Purchase\Entities\PurchaseVendorCreditItemImage;
+use Modules\Purchase\Entities\PurchaseVendorItem;
+use Modules\Purchase\Events\VendorCreditEvent;
 
 class PurchaseVendorCreditObserver
 {
-
     public function saving(PurchaseVendorCredit $vendorCredit)
     {
 
@@ -26,8 +24,7 @@ class PurchaseVendorCreditObserver
     {
         $vendorCredit->hash = md5(microtime());
 
-
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             if (user()) {
                 $vendorCredit->added_by = user()->id;
             }
@@ -39,21 +36,20 @@ class PurchaseVendorCreditObserver
 
         if ((request()->type && request()->type == 'send' || request()->type == 'mark_as_send')) {
             $vendorCredit->send_status = 1;
-        }
-        else {
+        } else {
             $vendorCredit->send_status = 0;
         }
     }
 
     public function created(PurchaseVendorCredit $vendorCredit)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
 
-            if($vendorCredit->isDirty('vendor_id')){
-                event(new VendorCreditEvent($vendorCredit, $vendorCredit->vendors ));
+            if ($vendorCredit->isDirty('vendor_id')) {
+                event(new VendorCreditEvent($vendorCredit, $vendorCredit->vendors));
             }
 
-            if (!empty(request()->item_name)){
+            if (! empty(request()->item_name)) {
                 $itemSummary = request()->item_summary;
                 $cost_per_item = request()->cost_per_item;
                 $hsn_sac_code = request()->hsn_sac_code;
@@ -66,21 +62,21 @@ class PurchaseVendorCreditObserver
                 $invoice_item_image_url = request()->invoice_item_image_url;
                 $invoiceOldImage = request()->image_id;
 
-                foreach (request()->item_name as $key => $item) :
-                    if (!is_null($item)) {
+                foreach (request()->item_name as $key => $item) {
+                    if (! is_null($item)) {
                         $vendorCreditItem = PurchaseVendorItem::create(
                             [
                                 'credit_id' => $vendorCredit->id,
                                 'item_name' => $item,
                                 'item_summary' => $itemSummary[$key],
                                 'type' => 'item',
-                                'unit_id' => (isset($unitId[$key]) && !is_null($unitId[$key])) ? $unitId[$key] : null,
-                                'product_id' => (isset($product[$key]) && !is_null($product[$key])) ? $product[$key] : null,
-                                'hsn_sac_code' => (isset($hsn_sac_code[$key]) && !is_null($hsn_sac_code[$key])) ? $hsn_sac_code[$key] : null,
+                                'unit_id' => (isset($unitId[$key]) && ! is_null($unitId[$key])) ? $unitId[$key] : null,
+                                'product_id' => (isset($product[$key]) && ! is_null($product[$key])) ? $product[$key] : null,
+                                'hsn_sac_code' => (isset($hsn_sac_code[$key]) && ! is_null($hsn_sac_code[$key])) ? $hsn_sac_code[$key] : null,
                                 'quantity' => $quantity[$key],
                                 'unit_price' => round($cost_per_item[$key], 2),
                                 'amount' => round($amount[$key], 2),
-                                'taxes' => ($tax ? (array_key_exists($key, $tax) ? json_encode($tax[$key]) : null) : null)
+                                'taxes' => ($tax ? (array_key_exists($key, $tax) ? json_encode($tax[$key]) : null) : null),
                             ]
                         );
                     }
@@ -90,29 +86,27 @@ class PurchaseVendorCreditObserver
                         $filename = '';
 
                         if (isset($invoice_item_image[$key])) {
-                            $filename = Files::uploadLocalOrS3($invoice_item_image[$key], PurchaseVendorCreditItemImage::FILE_PATH . '/' . $vendorCreditItem->id . '/');
+                            $filename = Files::uploadLocalOrS3($invoice_item_image[$key], PurchaseVendorCreditItemImage::FILE_PATH.'/'.$vendorCreditItem->id.'/');
                         }
 
                         PurchaseVendorCreditItemImage::create(
                             [
                                 'vendor_item_id' => $vendorCreditItem->id,
-                                'filename' => !isset($invoice_item_image_url[$key]) ? $invoice_item_image[$key]->getClientOriginalName() : '',
-                                'hashname' => !isset($invoice_item_image_url[$key]) ? $filename : '',
-                                'size' => !isset($invoice_item_image_url[$key]) ? $invoice_item_image[$key]->getSize() : '',
-                                'external_link' => isset($invoice_item_image_url[$key]) ? $invoice_item_image_url[$key] : ''
+                                'filename' => ! isset($invoice_item_image_url[$key]) ? $invoice_item_image[$key]->getClientOriginalName() : '',
+                                'hashname' => ! isset($invoice_item_image_url[$key]) ? $filename : '',
+                                'size' => ! isset($invoice_item_image_url[$key]) ? $invoice_item_image[$key]->getSize() : '',
+                                'external_link' => isset($invoice_item_image_url[$key]) ? $invoice_item_image_url[$key] : '',
                             ]
                         );
                     }
 
                     $image = true;
 
-                    if(isset($invoice_item_image_delete[$key]))
-                    {
+                    if (isset($invoice_item_image_delete[$key])) {
                         $image = false;
                     }
 
-                    if($image && (isset(request()->image_id[$key]) && $invoiceOldImage[$key] != ''))
-                    {
+                    if ($image && (isset(request()->image_id[$key]) && $invoiceOldImage[$key] != '')) {
                         $estimateOldImg = PurchaseVendorCreditItemImage::where('id', request()->image_id[$key])->first();
 
                         if (isset($vendorCreditItem)) {
@@ -120,12 +114,11 @@ class PurchaseVendorCreditObserver
                         }
                     }
 
-                endforeach;
+                }
 
             }
 
-            if (request()->billId)
-            {
+            if (request()->billId) {
 
                 $billId = PurchaseBill::find(request()->billId);
 
@@ -144,7 +137,7 @@ class PurchaseVendorCreditObserver
 
     public function updating(PurchaseVendorCredit $vendorCredit)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             if (request()->type && request()->type == 'send' || request()->type == 'mark_as_send') {
                 $vendorCredit->send_status = 1;
             }
@@ -153,10 +146,10 @@ class PurchaseVendorCreditObserver
 
     public function updated(PurchaseVendorCredit $vendorCredit)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             if (request()->bill_id) {
 
-                event(new VendorCreditEvent($vendorCredit, $vendorCredit->vendors ));
+                event(new VendorCreditEvent($vendorCredit, $vendorCredit->vendors));
 
                 $request = request();
 
@@ -173,9 +166,9 @@ class PurchaseVendorCreditObserver
                 $proposal_item_image_url = $request->invoice_item_image_url;
                 $item_ids = $request->item_ids;
 
-                if (!empty($request->item_name) && is_array($request->item_name)) {
+                if (! empty($request->item_name) && is_array($request->item_name)) {
                     // Step1 - Delete all invoice items which are not avaialable
-                    if (!empty($item_ids)) {
+                    if (! empty($item_ids)) {
                         PurchaseVendorItem::whereNotIn('id', $item_ids)->where('credit_id', $vendorCredit->id)->delete();
                     }
 
@@ -186,40 +179,39 @@ class PurchaseVendorCreditObserver
                         $vendorCreditItem = PurchaseVendorItem::find($invoice_item_id);
 
                         if ($vendorCreditItem === null) {
-                            $vendorCreditItem = new PurchaseVendorItem();
+                            $vendorCreditItem = new PurchaseVendorItem;
                         }
 
                         $vendorCreditItem->credit_id = $vendorCredit->id;
                         $vendorCreditItem->item_name = $item;
                         $vendorCreditItem->item_summary = $itemsSummary[$key];
                         $vendorCreditItem->type = 'item';
-                        $vendorCreditItem->unit_id = (isset($unitId[$key]) && !is_null($unitId[$key])) ? $unitId[$key] : null;
-                        $vendorCreditItem->product_id = (isset($productId[$key]) && !is_null($productId[$key])) ? $productId[$key] : null;
-                        $vendorCreditItem->hsn_sac_code = (isset($hsn_sac_code[$key]) && !is_null($hsn_sac_code[$key])) ? $hsn_sac_code[$key] : null;
+                        $vendorCreditItem->unit_id = (isset($unitId[$key]) && ! is_null($unitId[$key])) ? $unitId[$key] : null;
+                        $vendorCreditItem->product_id = (isset($productId[$key]) && ! is_null($productId[$key])) ? $productId[$key] : null;
+                        $vendorCreditItem->hsn_sac_code = (isset($hsn_sac_code[$key]) && ! is_null($hsn_sac_code[$key])) ? $hsn_sac_code[$key] : null;
                         $vendorCreditItem->quantity = $quantity[$key];
                         $vendorCreditItem->unit_price = round($cost_per_item[$key], 2);
                         $vendorCreditItem->amount = round($amount[$key], 2);
                         $vendorCreditItem->taxes = ($tax ? (array_key_exists($key, $tax) ? json_encode($tax[$key]) : null) : null);
                         $vendorCreditItem->save();
 
-
                         /* Invoice file save here */
                         // phpcs:ignore
-                        if ((isset($proposal_item_image[$key]) && $request->hasFile('invoice_item_image.' . $key)) || isset($proposal_item_image_url[$key])) {
+                        if ((isset($proposal_item_image[$key]) && $request->hasFile('invoice_item_image.'.$key)) || isset($proposal_item_image_url[$key])) {
 
                             $filename = '';
                             $proposalFileSize = null;
 
                             /* Delete previous uploaded file if it not a product (because product images cannot be deleted) */
-                            if (!isset($proposal_item_image_url[$key]) && $vendorCreditItem && $vendorCreditItem->purchaseVendorCreditItemImage) {
-                                Files::deleteFile($vendorCreditItem->purchaseVendorCreditItemImage->hashname, PurchaseVendorCreditItemImage::FILE_PATH . '/' . $vendorCreditItem->id . '/');
+                            if (! isset($proposal_item_image_url[$key]) && $vendorCreditItem && $vendorCreditItem->purchaseVendorCreditItemImage) {
+                                Files::deleteFile($vendorCreditItem->purchaseVendorCreditItemImage->hashname, PurchaseVendorCreditItemImage::FILE_PATH.'/'.$vendorCreditItem->id.'/');
 
-                                $filename = Files::uploadLocalOrS3($proposal_item_image[$key], PurchaseVendorCreditItemImage::FILE_PATH . '/' . $vendorCreditItem->id . '/');
+                                $filename = Files::uploadLocalOrS3($proposal_item_image[$key], PurchaseVendorCreditItemImage::FILE_PATH.'/'.$vendorCreditItem->id.'/');
                                 $proposalFileSize = $proposal_item_image[$key]->getSize();
                             }
 
                             if ($filename == '') {
-                                $filename = Files::uploadLocalOrS3($proposal_item_image[$key], PurchaseVendorCreditItemImage::FILE_PATH . '/' . $vendorCreditItem->id . '/');
+                                $filename = Files::uploadLocalOrS3($proposal_item_image[$key], PurchaseVendorCreditItemImage::FILE_PATH.'/'.$vendorCreditItem->id.'/');
                             }
 
                             PurchaseVendorCreditItemImage::updateOrCreate(
@@ -227,10 +219,10 @@ class PurchaseVendorCreditObserver
                                     'vendor_item_id' => $vendorCreditItem->id,
                                 ],
                                 [
-                                    'filename' => !isset($proposal_item_image_url[$key]) ? $proposal_item_image[$key]->getClientOriginalName() : '',
-                                    'hashname' => !isset($proposal_item_image_url[$key]) ? $filename : '',
-                                    'size' => !isset($proposal_item_image_url[$key]) ? $proposalFileSize : '',
-                                    'external_link' => $proposal_item_image_url[$key] ?? ''
+                                    'filename' => ! isset($proposal_item_image_url[$key]) ? $proposal_item_image[$key]->getClientOriginalName() : '',
+                                    'hashname' => ! isset($proposal_item_image_url[$key]) ? $filename : '',
+                                    'size' => ! isset($proposal_item_image_url[$key]) ? $proposalFileSize : '',
+                                    'external_link' => $proposal_item_image_url[$key] ?? '',
                                 ]
                             );
                         }
@@ -247,15 +239,15 @@ class PurchaseVendorCreditObserver
 
     public function duplicateImageStore($estimateOldImg, $vendorCreditItem)
     {
-        if(!is_null($estimateOldImg)) {
+        if (! is_null($estimateOldImg)) {
 
-            $file = new PurchaseVendorItem();
+            $file = new PurchaseVendorItem;
 
             $file->vendor_item_id = $vendorCreditItem->id;
 
             $fileName = Files::generateNewFileName($estimateOldImg->filename);
 
-            Files::copy(PurchaseVendorCreditItemImage::FILE_PATH . '/' . $estimateOldImg->id . '/' . $estimateOldImg->hashname, PurchaseVendorItem::FILE_PATH . '/' . $vendorCreditItem->id . '/' . $fileName);
+            Files::copy(PurchaseVendorCreditItemImage::FILE_PATH.'/'.$estimateOldImg->id.'/'.$estimateOldImg->hashname, PurchaseVendorItem::FILE_PATH.'/'.$vendorCreditItem->id.'/'.$fileName);
 
             $file->filename = $estimateOldImg->filename;
             $file->hashname = $fileName;
@@ -267,7 +259,7 @@ class PurchaseVendorCreditObserver
 
     public function logVendorActivity($companyID, $vendorID, $creditID, $amount, $userID, $text, $label)
     {
-        $activiy = new PurchaseVendorCreditHistory();
+        $activiy = new PurchaseVendorCreditHistory;
 
         $activiy->company_id = $companyID;
         $activiy->purchase_vendor_id = $vendorID;
@@ -279,5 +271,4 @@ class PurchaseVendorCreditObserver
 
         $activiy->save();
     }
-
 }

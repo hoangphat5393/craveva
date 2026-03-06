@@ -11,7 +11,6 @@ use App\Scopes\CompanyScope;
 
 class ThemeSettingController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -36,25 +35,21 @@ class ThemeSettingController extends AccountBaseController
         $this->employeeTheme = $themes['employee'][0];
         $this->clientTheme = $themes['client'][0];
 
-
-
         $this->superAdminThemeSetting = ThemeSetting::withoutGlobalScope(CompanyScope::class)->where('panel', 'superadmin')->first();
 
         return view('theme-settings.index', $this->data);
     }
 
     /**
-     * @param UpdateThemeSetting $request
      * @return array
      */
     public function store(UpdateThemeSetting $request)
     {
         $setting = $this->company;
 
-
         $superAdminThemeSetting = ThemeSetting::withoutGlobalScope(CompanyScope::class)->where('panel', 'superadmin')->first();
 
-        if (!$superAdminThemeSetting->restrict_admin_theme_change) {
+        if (! $superAdminThemeSetting->restrict_admin_theme_change) {
             $adminTheme = ThemeSetting::where('panel', 'admin')->first();
             $this->themeUpdate($adminTheme, $request->theme_settings[1], $request->primary_color[0]);
 
@@ -81,7 +76,6 @@ class ThemeSettingController extends AccountBaseController
             $setting->logo = Files::uploadLocalOrS3($request->logo, GlobalSetting::APP_LOGO_PATH, width: 400);
         }
 
-
         if ($request->light_logo_delete == 'yes') {
             Files::deleteFile($setting->light_logo, GlobalSetting::APP_LOGO_PATH);
             $setting->light_logo = null;
@@ -102,7 +96,6 @@ class ThemeSettingController extends AccountBaseController
             Files::deleteFile($setting->login_background, 'login-background');
             $setting->login_background = Files::uploadLocalOrS3($request->login_background, 'login-background');
         }
-
 
         if ($request->favicon_delete == 'yes') {
             Files::deleteFile($setting->favicon, 'favicon');

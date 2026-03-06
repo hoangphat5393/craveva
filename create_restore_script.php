@@ -3,13 +3,13 @@
 $inputFile = 'hub_db_backup.sql';
 $outputFile = 'restore_user_56.sql';
 
-$input = fopen($inputFile, "r");
-$output = fopen($outputFile, "w");
+$input = fopen($inputFile, 'r');
+$output = fopen($outputFile, 'w');
 
 if ($input && $output) {
-    fwrite($output, "INSERT INTO `user_auths` VALUES ");
+    fwrite($output, 'INSERT INTO `user_auths` VALUES ');
     $userAuthFound = false;
-    
+
     // Scan for UserAuth
     while (($line = fgets($input)) !== false) {
         if (strpos($line, "(55,'toroyabe@gmail.com'") !== false) {
@@ -28,17 +28,17 @@ if ($input && $output) {
             }
         }
     }
-    
-    if (!$userAuthFound) {
+
+    if (! $userAuthFound) {
         echo "UserAuth 55 not found!\n";
     }
 
     // Rewind file to search for User
     rewind($input);
-    
-    fwrite($output, "INSERT INTO `users` VALUES ");
+
+    fwrite($output, 'INSERT INTO `users` VALUES ');
     $userFound = false;
-    
+
     while (($line = fgets($input)) !== false) {
         if (strpos($line, "(56,28,55,0,'Yadah Wang'") !== false) {
             // Extract the value group
@@ -58,18 +58,17 @@ if ($input && $output) {
             }
         }
     }
-    
-    if (!$userFound) {
+
+    if (! $userFound) {
         echo "User 56 not found!\n";
     }
-    
+
     // Add role_user insert manually since it's simple
     fwrite($output, "INSERT INTO `role_user` (`user_id`, `role_id`) VALUES (56, 85);\n");
-    
+
     fclose($input);
     fclose($output);
     echo "Script generated: $outputFile\n";
-    
 } else {
     echo "Error opening files.\n";
 }

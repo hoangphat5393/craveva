@@ -7,9 +7,10 @@ use Illuminate\View\Component;
 
 class Status extends Component
 {
-
     public $style;
+
     public $color;
+
     public $value;
 
     /**
@@ -33,5 +34,4 @@ class Status extends Component
     {
         return view('components.status');
     }
-
 }

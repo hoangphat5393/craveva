@@ -7,7 +7,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class ProposalAcceptRequest extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -35,10 +34,9 @@ class ProposalAcceptRequest extends FormRequest
             $proposal = Proposal::findOrFail(request('id'));
 
             if ($proposal && $proposal->signature_approval == 1) {
-                if(request('signature_type') == 'upload'){
+                if (request('signature_type') == 'upload') {
                     $rules['image'] = 'required';
-                }
-                else {
+                } else {
                     $rules['signature'] = 'required';
                 }
             }
@@ -47,5 +45,4 @@ class ProposalAcceptRequest extends FormRequest
 
         return $rules;
     }
-
 }

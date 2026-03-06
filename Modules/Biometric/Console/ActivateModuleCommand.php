@@ -10,7 +10,6 @@ use Modules\Biometric\Entities\BiometricSetting;
 
 class ActivateModuleCommand extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
@@ -37,7 +36,7 @@ class ActivateModuleCommand extends Command
 
         foreach ($companies as $company) {
 
-            $bio = new BiometricSetting();
+            $bio = new BiometricSetting;
             $bio->company_id = $company->id;
             $bio->save();
 

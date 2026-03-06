@@ -2,25 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use Carbon\Carbon;
+use App\DataTables\LeadContactDataTable;
+use App\DataTables\LeadReportDataTable;
+use App\Exports\DealReportExport;
+use App\Helper\Reply;
 use App\Models\Deal;
 use App\Models\Lead;
-use App\Models\User;
-use App\Helper\Reply;
-use App\Models\Company;
-use Carbon\CarbonPeriod;
 use App\Models\LeadAgent;
-use App\Models\LeadSource;
 use App\Models\LeadCategory;
 use App\Models\LeadPipeline;
-use Illuminate\Http\Request;
-use Maatwebsite\Excel\Excel;
+use App\Models\LeadSource;
 use App\Models\PipelineStage;
-use App\Exports\DealReportExport;
+use App\Models\User;
+use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\DB;
-use App\DataTables\DealReportDataTable;
-use App\DataTables\LeadReportDataTable;
-use App\DataTables\LeadContactDataTable;
+use Maatwebsite\Excel\Excel;
 
 class LeadReportController extends AccountBaseController
 {
@@ -31,7 +28,6 @@ class LeadReportController extends AccountBaseController
         $this->excel = $excel;
         parent::__construct();
 
-
     }
 
     /**
@@ -39,7 +35,6 @@ class LeadReportController extends AccountBaseController
      *
      * @return \Illuminate\Http\Response
      */
-
     public function index()
     {
 
@@ -50,14 +45,14 @@ class LeadReportController extends AccountBaseController
         $this->view = 'reports.lead.profile';
 
         switch ($tab) {
-        case 'lead':
-            return $this->leadContact();
-        case 'chart':
-            return $this->averageDealSizeReport();
-            break;
-        default:
-            return $this->profile();
-            break;
+            case 'lead':
+                return $this->leadContact();
+            case 'chart':
+                return $this->averageDealSizeReport();
+                break;
+            default:
+                return $this->profile();
+                break;
         }
 
         if (request()->ajax()) {
@@ -73,12 +68,12 @@ class LeadReportController extends AccountBaseController
     {
         $this->pageTitle = 'modules.lead.profile';
 
-        if (!request()->ajax()) {
-              $this->fromDate = now($this->company->timezone)->startOfMonth();
-              $this->toDate = now($this->company->timezone);
+        if (! request()->ajax()) {
+            $this->fromDate = now($this->company->timezone)->startOfMonth();
+            $this->toDate = now($this->company->timezone);
 
-              $this->agents = LeadAgent::with('user')
-                  ->join('users', 'users.id', 'lead_agents.user_id')->get();
+            $this->agents = LeadAgent::with('user')
+                ->join('users', 'users.id', 'lead_agents.user_id')->get();
         }
 
         $tab = request('tab');
@@ -86,21 +81,21 @@ class LeadReportController extends AccountBaseController
 
         $this->view = 'reports.lead.profile';
 
-        $dataTable = new LeadReportDataTable();
+        $dataTable = new LeadReportDataTable;
 
         return $dataTable->render('reports.lead.index', $this->data);
     }
 
-    public function leadContact( )
+    public function leadContact()
     {
         $this->employees = User::allEmployees();
         $this->pageTitle = 'modules.leadContact.title';
 
         $this->viewLeadPermission = $viewPermission = user()->permission('view_lead');
 
-        abort_403(!in_array($viewPermission, ['all', 'added', 'both', 'owned']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'both', 'owned']));
 
-        if (!request()->ajax()) {
+        if (! request()->ajax()) {
             $this->categories = LeadCategory::get();
             $this->sources = LeadSource::get();
 
@@ -108,7 +103,7 @@ class LeadReportController extends AccountBaseController
 
         $getTotal = 'withDatatable';
 
-        $dataTable = new LeadContactDataTable();
+        $dataTable = new LeadContactDataTable;
         $tab = request('tab');
         $this->activeTab = $tab ?: 'lead';
 
@@ -146,7 +141,6 @@ class LeadReportController extends AccountBaseController
             return $value->default == 1;
         })->first()->id;
 
-
         $selectedYear = $request->year ? $request->year : now()->format('Y');
         $pipelineId = $request->pipeline ? $request->pipeline : $defaultPipelineId;
         $categoryId = $request->category ? $request->category : null;
@@ -164,14 +158,14 @@ class LeadReportController extends AccountBaseController
             ->whereBetween('deals.close_date', [$startDate, $endDate])
             ->get();
 
-            $dealsByStageAndMonth = $deals->groupBy(function ($deal) {
-                return Carbon::parse($deal->close_date)->format('m');
-            });
+        $dealsByStageAndMonth = $deals->groupBy(function ($deal) {
+            return Carbon::parse($deal->close_date)->format('m');
+        });
 
-            $pipelineStages = PipelineStage::where('lead_pipeline_id', $pipelineId)->get();
+        $pipelineStages = PipelineStage::where('lead_pipeline_id', $pipelineId)->get();
 
-            $monthlyTotals = [];
-            $stageColors = [];
+        $monthlyTotals = [];
+        $stageColors = [];
 
         // Fetch stage colors from the database
         foreach ($pipelineStages as $stage) {
@@ -187,7 +181,6 @@ class LeadReportController extends AccountBaseController
 
             }
 
-
             if (isset($dealsByStageAndMonth[$monthKey])) {
                 foreach ($dealsByStageAndMonth[$monthKey] as $deal) {
                     $monthlyTotals[$monthKey][$deal->stage_name] += $deal->value;
@@ -199,7 +192,7 @@ class LeadReportController extends AccountBaseController
 
         $this->years = range(Carbon::now()->year, $lastYear);
 
-        $dealsByMonth = $deals->groupBy(function($deal) {
+        $dealsByMonth = $deals->groupBy(function ($deal) {
             return $deal->close_date->format('m');
         });
 
@@ -216,7 +209,7 @@ class LeadReportController extends AccountBaseController
             $formattedMonth = Carbon::parse($month)->format('M');
             $numMonth = Carbon::parse($month)->format('m');
 
-            $totalValue = $deals->filter(function ($value) use($numMonth, $selectedYear) {
+            $totalValue = $deals->filter(function ($value) use ($numMonth, $selectedYear) {
                 return $value->close_date->format('m') == $numMonth && $value->close_date->format('Y') == $selectedYear;
             })->sum('value');
             $count = $monthlyDealCounts[$numMonth] ?? 0;
@@ -245,15 +238,13 @@ class LeadReportController extends AccountBaseController
                 'name' => $stage->name,
                 'chartType' => 'bar',
                 'values' => [],
-                'color' => $stageColors[$stage->name] ?? '#d4f542'
+                'color' => $stageColors[$stage->name] ?? '#d4f542',
             ];
-
 
             for ($month = 1; $month <= 12; $month++) {
                 $monthKey = str_pad($month, 2, '0', STR_PAD_LEFT);
                 $dataset['values'][] = $monthlyTotals[$monthKey][$stage->name] ?? 0;
             }
-
 
             $datasets[] = $dataset;
         }
@@ -332,20 +323,20 @@ class LeadReportController extends AccountBaseController
             ->groupBy(DB::raw('MONTH(close_date)'))
             ->get();
 
-
         $this->dealDatas = collect(range(1, 12))->map(function ($month) use ($dealReports) {
             $deal = $dealReports->firstWhere('month', $month);
+
             return [
-            'month' => Carbon::createFromDate(null, $month, 1)->format('F'),
-            'deals_closed' => $deal && $deal->deals_closed ? $deal->deals_closed : 0,
-            'total_deal_amount' => $deal && $deal->total_deal_amount ? round($deal->total_deal_amount, 2) : 0,
-            'average_deal_amount' => $deal && $deal->average_deal_amount ? round($deal->average_deal_amount, 2) : 0,
-            'won_deals' => $deal && $deal->won_deals ? $deal->won_deals : 0,
-            'deals_won_amount' => $deal && $deal->deals_won_amount ? round($deal->deals_won_amount, 2) : 0,
-            'lost_deals' => $deal && $deal->lost_deals ? $deal->lost_deals : 0,
-            'deals_lost_amount' => $deal && $deal->deals_lost_amount ? round($deal->deals_lost_amount, 2) : 0,
-            'other_stages' => $deal && $deal->deals_other_stages ? $deal->deals_other_stages : 0,
-            'other_stages_value' => $deal && $deal->deals_other_stages_value ? round($deal->deals_other_stages_value, 2) : 0,
+                'month' => Carbon::createFromDate(null, $month, 1)->format('F'),
+                'deals_closed' => $deal && $deal->deals_closed ? $deal->deals_closed : 0,
+                'total_deal_amount' => $deal && $deal->total_deal_amount ? round($deal->total_deal_amount, 2) : 0,
+                'average_deal_amount' => $deal && $deal->average_deal_amount ? round($deal->average_deal_amount, 2) : 0,
+                'won_deals' => $deal && $deal->won_deals ? $deal->won_deals : 0,
+                'deals_won_amount' => $deal && $deal->deals_won_amount ? round($deal->deals_won_amount, 2) : 0,
+                'lost_deals' => $deal && $deal->lost_deals ? $deal->lost_deals : 0,
+                'deals_lost_amount' => $deal && $deal->deals_lost_amount ? round($deal->deals_lost_amount, 2) : 0,
+                'other_stages' => $deal && $deal->deals_other_stages ? $deal->deals_other_stages : 0,
+                'other_stages_value' => $deal && $deal->deals_other_stages_value ? round($deal->deals_other_stages_value, 2) : 0,
             ];
         });
 
@@ -354,6 +345,7 @@ class LeadReportController extends AccountBaseController
 
         if ($request->ajax()) {
             $html = view('reports.lead.deal-report', ['dealDatas' => $this->dealDatas])->render();
+
             return response()->json(['datasets' => $datasets, 'html' => $html]);
 
         } else {
@@ -361,16 +353,16 @@ class LeadReportController extends AccountBaseController
         }
     }
 
-
     public function exportDealReport($year, $pipelineId, $categoryId = null)
     {
         $pipeline = LeadPipeline::find($pipelineId);
         $category = $categoryId ? LeadCategory::find($categoryId) : null;
-        abort_403(!canDataTableExport());
+        abort_403(! canDataTableExport());
         $exportedData = new DealReportExport($year, $pipelineId, $categoryId);
         $pipelineName = strtolower(str_replace(' ', '-', $pipeline->name));
         $categoryName = $category ? strtolower(str_replace(' ', '-', $category->category_name)) : 'all-categories';
-        $fileName = 'deal-report-' . $pipelineName . '-' . $categoryName . '-' . $year . '.xlsx';
+        $fileName = 'deal-report-'.$pipelineName.'-'.$categoryName.'-'.$year.'.xlsx';
+
         // Return the Excel file download response
         return $this->excel->download($exportedData, $fileName);
     }

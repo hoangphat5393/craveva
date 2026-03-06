@@ -2,22 +2,20 @@
 
 namespace App\Console\Commands;
 
-use Carbon\Carbon;
-use App\Models\User;
-use App\Models\Company;
-use App\Models\Holiday;
+use App\Events\ShiftRotationEvent;
 use App\Models\AutomateShift;
+use App\Models\Company;
 use App\Models\EmployeeShift;
-use Illuminate\Console\Command;
+use App\Models\EmployeeShiftSchedule;
+use App\Models\Holiday;
 use App\Models\RotationAutomateLog;
 use App\Models\ShiftRotationSequence;
-use App\Models\EmployeeShiftSchedule;
-use App\Events\ShiftRotationEvent;
-
+use App\Models\User;
+use Carbon\Carbon;
+use Illuminate\Console\Command;
 
 class AssignShiftRotation extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
@@ -88,8 +86,7 @@ class AssignShiftRotation extends Command
                             $sequence = $sequences->where('sequence', '>', $currentSequence)->first();
 
                             $nextShiftSequence = $sequence ? $sequence : $sequences->first();
-                        }
-                        else {
+                        } else {
                             $nextShiftSequence = $sequences->first();
                         }
 
@@ -132,7 +129,7 @@ class AssignShiftRotation extends Command
                             if ($isBiWeekly && $isCorrectDayOfWeek) {
                                 $shouldGetDates = true;
 
-                                if (!is_null($log) && Carbon::parse($log->cron_run_date)->diffInDays() < 14) {
+                                if (! is_null($log) && Carbon::parse($log->cron_run_date)->diffInDays() < 14) {
                                     $shouldGetDates = false;
                                 }
 
@@ -150,10 +147,9 @@ class AssignShiftRotation extends Command
                             $carbonDate = Carbon::parse($rotationDate);
                             $lastDateOfMonth = $carbonDate->endOfMonth();
 
-                            if($carbonDate->month === 2 && $lastDateOfMonth->format('d') < $automateShift->rotation->rotation_date && $currentDate->format('Y-m-d') == $rotationDate){
+                            if ($carbonDate->month === 2 && $lastDateOfMonth->format('d') < $automateShift->rotation->rotation_date && $currentDate->format('Y-m-d') == $rotationDate) {
                                 $isCorrectDayOfMonth = true;
-                            }
-                            else if($carbonDate->month !== 2 ) {
+                            } elseif ($carbonDate->month !== 2) {
                                 $isCorrectDayOfMonth = $rotationDate == $currentDate->format('Y-m-d');
                             }
 
@@ -163,35 +159,35 @@ class AssignShiftRotation extends Command
                                 $weekOffDays = $this->getWeekendDays($reqFrom, $dayOfWeekMap, $officeOpenDays, $rotationDate);
                             }
 
-                            if ((!empty($currentDates) && (($bothWeekly && $isCorrectDayOfWeek) || ($isMonthly && $isCorrectDayOfMonth))) && ($automateShift->user && $employeeData)) {
+                            if ((! empty($currentDates) && (($bothWeekly && $isCorrectDayOfWeek) || ($isMonthly && $isCorrectDayOfMonth))) && ($automateShift->user && $employeeData)) {
                                 foreach ($currentDates as $date) {
                                     $date = Carbon::parse($date);
 
                                     if ($employeeData && $date->greaterThanOrEqualTo($employeeData->employeeDetail->joining_date) && (is_null($officeOpenDays) || (is_array($officeOpenDays) && in_array($date->dayOfWeek, $officeOpenDays)))) {
 
                                         $shift = EmployeeShiftSchedule::where('date', $date->format('Y-m-d'))->where('user_id', $automateShift->user->id)->first();
-                                        if (!$shift) {
-                                            $shift = new EmployeeShiftSchedule();
+                                        if (! $shift) {
+                                            $shift = new EmployeeShiftSchedule;
                                             $shift->user_id = $automateShift->user->id;
                                             $shift->date = $date->format('Y-m-d');
                                             $shift->employee_shift_id = $nextShiftSequence->employee_shift_id;
                                             $shift->added_by = null;
                                             $shift->last_updated_by = null;
-                                            $shift->shift_start_time = $date->format('Y-m-d') .' '.$employeeShift->office_start_time;
-                                            $shift->shift_end_time = $date->format('Y-m-d') .' '.$employeeShift->office_end_time;
+                                            $shift->shift_start_time = $date->format('Y-m-d').' '.$employeeShift->office_start_time;
+                                            $shift->shift_end_time = $date->format('Y-m-d').' '.$employeeShift->office_end_time;
                                             $shift->remarks = 'Automate shift rotation assigned';
                                             $shift->save();
 
                                         }
 
-                                        if($shift && $automateShift->rotation->override_shift == 'yes') {
+                                        if ($shift && $automateShift->rotation->override_shift == 'yes') {
                                             $shift->user_id = $automateShift->user->id;
                                             $shift->date = $date->format('Y-m-d');
                                             $shift->employee_shift_id = $nextShiftSequence->employee_shift_id;
                                             $shift->added_by = null;
                                             $shift->last_updated_by = null;
-                                            $shift->shift_start_time = $date->format('Y-m-d') .' '.$employeeShift->office_start_time;
-                                            $shift->shift_end_time = $date->format('Y-m-d') .' '.$employeeShift->office_end_time;
+                                            $shift->shift_start_time = $date->format('Y-m-d').' '.$employeeShift->office_start_time;
+                                            $shift->shift_end_time = $date->format('Y-m-d').' '.$employeeShift->office_end_time;
                                             $shift->remarks = 'Automate shift rotation assigned';
                                             $shift->save();
                                         }
@@ -204,41 +200,39 @@ class AssignShiftRotation extends Command
 
                                     $weekEndShift = EmployeeShiftSchedule::where('user_id', $automateShift->user->id)->where('date', $weekOffDay->format('Y-m-d'))->first();
 
-                                    if (!$weekEndShift) {
+                                    if (! $weekEndShift) {
                                         EmployeeShiftSchedule::create([
                                             'user_id' => $automateShift->user->id,
                                             'date' => $weekOffDay->format('Y-m-d'),
                                             'employee_shift_id' => $dayOff->id,
                                             'added_by' => null,
                                             'last_updated_by' => null,
-                                            'shift_start_time' => $weekOffDay->format('Y-m-d') .' '.$dayOff->office_start_time,
-                                            'shift_end_time' => $weekOffDay->format('Y-m-d') .' '.$dayOff->office_end_time,
+                                            'shift_start_time' => $weekOffDay->format('Y-m-d').' '.$dayOff->office_start_time,
+                                            'shift_end_time' => $weekOffDay->format('Y-m-d').' '.$dayOff->office_end_time,
                                             'remarks' => 'Automate shift rotation assigned',
                                         ]);
-                                    }
-                                    elseif ($weekEndShift && $automateShift->rotation->override_shift == 'yes') {
+                                    } elseif ($weekEndShift && $automateShift->rotation->override_shift == 'yes') {
                                         $weekEndShift->user_id = $automateShift->user->id;
                                         $weekEndShift->date = $weekOffDay->format('Y-m-d');
                                         $weekEndShift->employee_shift_id = $dayOff->id;
                                         $weekEndShift->added_by = null;
                                         $weekEndShift->last_updated_by = null;
-                                        $weekEndShift->shift_start_time = $weekOffDay->format('Y-m-d') .' '.$dayOff->office_start_time;
-                                        $weekEndShift->shift_end_time = $weekOffDay->format('Y-m-d') .' '.$dayOff->office_end_time;
+                                        $weekEndShift->shift_start_time = $weekOffDay->format('Y-m-d').' '.$dayOff->office_start_time;
+                                        $weekEndShift->shift_end_time = $weekOffDay->format('Y-m-d').' '.$dayOff->office_end_time;
                                         $weekEndShift->remarks = 'Automate shift rotation assigned';
                                         $weekEndShift->save();
                                     }
                                 }
 
-                                if (!$log) {
-                                    $log = new RotationAutomateLog();
+                                if (! $log) {
+                                    $log = new RotationAutomateLog;
                                     $log->company_id = $company->id;
                                     $log->user_id = $automateShift->user->id;
                                     $log->employee_shift_rotation_id = $nextShiftSequence->employee_shift_rotation_id;
                                     $log->employee_shift_id = $nextShiftSequence->employee_shift_id;
                                     $log->sequence = $nextShiftSequence->sequence;
                                     $log->cron_run_date = $currentDate->format('Y-m-d');
-                                }
-                                else {
+                                } else {
                                     $log->employee_shift_id = $nextShiftSequence->employee_shift_id;
                                     $log->sequence = $nextShiftSequence->sequence;
                                     $log->cron_run_date = $currentDate->format('Y-m-d');
@@ -246,7 +240,7 @@ class AssignShiftRotation extends Command
 
                                 $log->save();
 
-                                if($automateShift->rotation->send_mail == 'yes') {
+                                if ($automateShift->rotation->send_mail == 'yes') {
                                     event(new ShiftRotationEvent($employeeData, $currentDates, $rotationFrequency));
                                 }
                             }
@@ -272,12 +266,11 @@ class AssignShiftRotation extends Command
 
     private function getUserHolidays($holidaysForUser)
     {
-        if (!empty($holidaysForUser)) {
+        if (! empty($holidaysForUser)) {
             return array_map(function ($holiday) {
                 return Carbon::parse($holiday)->format('Y-m-d');
             }, $holidaysForUser);
-        }
-        else {
+        } else {
             return $holidaysForUser;
         }
     }
@@ -306,27 +299,22 @@ class AssignShiftRotation extends Command
                 // End date is a day before the last date of next month (in feb.)
                 if ($daysInNextMonth == 28) {
                     $endDate = $date->copy()->endOfMonth()->subDay();
-                }
-                else {
+                } else {
                     $endDate = $currentDate->copy()->addDays($daysInNextMonth);
                 }
-            }
-            else if($currentDate->daysInMonth < 30 && $daysInNextMonth >= 30){
+            } elseif ($currentDate->daysInMonth < 30 && $daysInNextMonth >= 30) {
                 // End date is a day before the last date of next month (in march)
                 if ($currentDate->daysInMonth == 29) {
                     $subDays = (31 - $currentDate->daysInMonth);
                     $endDate = $currentDate->copy()->addDays($daysInNextMonth)->subDays($subDays);
-                }
-                elseif ($currentDate->daysInMonth == 28) {
+                } elseif ($currentDate->daysInMonth == 28) {
                     $subDays = (29 - $currentDate->daysInMonth);
                     $endDate = $currentDate->copy()->addDays($daysInNextMonth)->subDays($subDays);
-                }
-                else {
+                } else {
                     $subDays = (30 - $currentDate->daysInMonth);
                     $endDate = $currentDate->copy()->addDays($daysInNextMonth)->subDays($subDays);
                 }
-            }
-            else {
+            } else {
                 $endDate = $currentDate->copy()->addMonth()->subDay(); // End date is a day before the same date of next month
             }
         }
@@ -342,7 +330,7 @@ class AssignShiftRotation extends Command
         }
 
         for ($date = $startDate->copy(); $date->lte($endDate); $date->addDay()) {
-            if (!in_array($date->dayOfWeek, $officeOpenDays)) {
+            if (! in_array($date->dayOfWeek, $officeOpenDays)) {
                 $weekendDates[] = $date->format('Y-m-d');
             }
         }
@@ -360,8 +348,7 @@ class AssignShiftRotation extends Command
 
         if ($reqFrom === 'bi-weekly') {
             $endDate = $today->copy()->addDays(13); // End date after 14 days from today
-        }
-        elseif ($reqFrom === 'monthly') {
+        } elseif ($reqFrom === 'monthly') {
             $currentDate = $rotationDate ? Carbon::parse($rotationDate) : $today;
 
             $nextMonth = $today->copy()->addMonthNoOverflow();
@@ -373,29 +360,25 @@ class AssignShiftRotation extends Command
             if ($daysInNextMonth < 30) {
                 // End date is a day before the last date of next month (feb.)
                 $endDate = $currentDate->copy()->addDays($daysInNextMonth);
-            }
-            else if($currentDate->daysInMonth < 30 && $daysInNextMonth >= 30){
+            } elseif ($currentDate->daysInMonth < 30 && $daysInNextMonth >= 30) {
                 if ($currentDate->daysInMonth == 29) {
                     $subDays = (31 - $currentDate->daysInMonth);
                     $endDate = $currentDate->copy()->addDays($daysInNextMonth)->subDays($subDays);
-                }
-                else {
+                } else {
                     $subDays = (30 - $currentDate->daysInMonth);
                     $endDate = $currentDate->copy()->addDays($daysInNextMonth)->subDays($subDays);
                 }
-            }
-            else {
+            } else {
                 $endDate = $currentDate->copy()->addMonth()->subDay(); // End date is a day before the same date of next month
             }
-        }
-        else {
+        } else {
             $endDate = $today->copy()->addDays(6); // End date after 7 days from today
         }
 
         foreach ($officeOpenDays as $dayOfWeek) {
             if (isset($dayOfWeekMap[$dayOfWeek])) {
                 for ($date = ($reqFrom === 'monthly' ? $currentDate : $today)->copy(); $date->lte($endDate); $date->addDay()) {
-                    if ($date->dayOfWeek == $dayOfWeekMap[$dayOfWeek] && !in_array($date->format('Y-m-d'), $holidayDates)) {
+                    if ($date->dayOfWeek == $dayOfWeekMap[$dayOfWeek] && ! in_array($date->format('Y-m-d'), $holidayDates)) {
                         $currentDates[] = $date->format('Y-m-d');
                     }
                 }
@@ -412,15 +395,15 @@ class AssignShiftRotation extends Command
         return Holiday::where(function ($query) use ($employeeData) {
             $query->where(function ($subquery) use ($employeeData) {
                 $subquery->where(function ($q) use ($employeeData) {
-                    $q->where('department_id_json', 'like', '%"' . $employeeData->employeeDetail->department_id . '"%')
+                    $q->where('department_id_json', 'like', '%"'.$employeeData->employeeDetail->department_id.'"%')
                         ->orWhereNull('department_id_json');
                 });
                 $subquery->where(function ($q) use ($employeeData) {
-                    $q->where('designation_id_json', 'like', '%"' . $employeeData->employeeDetail->designation_id . '"%')
+                    $q->where('designation_id_json', 'like', '%"'.$employeeData->employeeDetail->designation_id.'"%')
                         ->orWhereNull('designation_id_json');
                 });
                 $subquery->where(function ($q) use ($employeeData) {
-                    $q->where('employment_type_json', 'like', '%"' . $employeeData->employeeDetail->employment_type . '"%')
+                    $q->where('employment_type_json', 'like', '%"'.$employeeData->employeeDetail->employment_type.'"%')
                         ->orWhereNull('employment_type_json');
                 });
             });
@@ -428,5 +411,4 @@ class AssignShiftRotation extends Command
             return $date->format('Y-m-d');
         })->toArray();
     }
-
 }

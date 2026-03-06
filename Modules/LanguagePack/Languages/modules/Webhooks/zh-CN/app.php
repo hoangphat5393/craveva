@@ -1,6 +1,6 @@
 <?php
 
-return array(
+return [
     'webhooks' => 'Webhooks',
     'log' => '日志',
     'addWebhook' => '添加 Webhook',
@@ -20,4 +20,4 @@ return array(
     'runDebug' => '以调试模式运行',
     'requestDetails' => '请求详情',
     'response' => '响应',
-);
+];

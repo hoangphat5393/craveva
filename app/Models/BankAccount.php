@@ -31,6 +31,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read mixed $file_url
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\BankTransaction[] $transaction
  * @property-read int|null $transaction_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|BankAccount newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|BankAccount newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|BankAccount query()
@@ -51,6 +52,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder|BankAccount whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|BankAccount whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|BankAccount whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class BankAccount extends BaseModel
@@ -60,6 +62,7 @@ class BankAccount extends BaseModel
     use HasCompany;
 
     protected $with = ['currency'];
+
     protected $appends = ['file_url'];
 
     public function currency(): BelongsTo
@@ -75,12 +78,12 @@ class BankAccount extends BaseModel
     public function getFileUrlAttribute()
     {
         if ($this->bank_logo != '') {
-            return asset_url_local_s3(BankAccount::FILE_PATH.'/' . $this->bank_logo);
+            return asset_url_local_s3(BankAccount::FILE_PATH.'/'.$this->bank_logo);
 
-        } elseif ($this->type == 'bank'){
+        } elseif ($this->type == 'bank') {
             return '<i class="bi bi-bank"></i>';
 
-        } elseif ($this->type == 'cash'){
+        } elseif ($this->type == 'cash') {
             return '<i class="bi bi-cash-coin"></i>';
         }
     }
@@ -89,5 +92,4 @@ class BankAccount extends BaseModel
     {
         return $this->hasMany(Expense::class);
     }
-
 }

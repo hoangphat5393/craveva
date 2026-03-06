@@ -2,25 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use Carbon\Carbon;
-use App\Models\User;
-use App\Helper\Reply;
-use Illuminate\Http\Request;
-use App\Models\EmployeeShift;
-use App\Models\EmployeeShiftSchedule;
-use App\Models\EmployeeShiftChangeRequest;
 use App\DataTables\ShiftChangeRequestDataTable;
+use App\Helper\Reply;
 use App\Http\Requests\EmployeeShiftChange\UpdateRequest;
+use App\Models\EmployeeShift;
+use App\Models\EmployeeShiftChangeRequest;
+use App\Models\EmployeeShiftSchedule;
+use App\Models\User;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class EmployeeShiftChangeRequestController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'app.menu.shiftRoster';
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('attendance', $this->user->modules));
+            abort_403(! in_array('attendance', $this->user->modules));
 
             return $next($request);
         });
@@ -30,9 +29,9 @@ class EmployeeShiftChangeRequestController extends AccountBaseController
     {
         $this->manageEmployeeShifts = user()->permission('manage_employee_shifts');
 
-        abort_403(!(in_array($this->manageEmployeeShifts, ['all'])));
+        abort_403(! (in_array($this->manageEmployeeShifts, ['all'])));
 
-        if (!request()->ajax()) {
+        if (! request()->ajax()) {
             $this->employees = User::allEmployees(null, true, 'all');
             $this->employeeShifts = EmployeeShift::where('shift_name', '<>', 'Day Off')->get();
         }
@@ -46,7 +45,7 @@ class EmployeeShiftChangeRequestController extends AccountBaseController
         $this->day = Carbon::parse($request->date)->dayOfWeek;
         $this->shift = EmployeeShiftSchedule::with('requestChange', 'requestChange.shift')->findOrFail($id);
         $this->employeeShifts = EmployeeShift::where('shift_name', '<>', 'Day Off')
-            ->where('id', '!=', $shiftId )
+            ->where('id', '!=', $shiftId)
             ->where('office_open_days', 'like', '%"'.$this->day.'"%')
             ->get();
 
@@ -57,7 +56,7 @@ class EmployeeShiftChangeRequestController extends AccountBaseController
     {
         $requestChange = EmployeeShiftChangeRequest::firstOrNew([
             'shift_schedule_id' => $id,
-            'status' => 'waiting'
+            'status' => 'waiting',
         ]);
 
         $requestChange->employee_shift_id = $request->employee_shift_id;
@@ -95,12 +94,12 @@ class EmployeeShiftChangeRequestController extends AccountBaseController
     public function applyQuickAction(Request $request)
     {
         switch ($request->action_type) {
-        case 'change-status':
-            $this->changeBulkStatus($request);
+            case 'change-status':
+                $this->changeBulkStatus($request);
 
-            return Reply::success(__('messages.updateSuccess'));
-        default:
-            return Reply::error(__('messages.selectAction'));
+                return Reply::success(__('messages.updateSuccess'));
+            default:
+                return Reply::error(__('messages.selectAction'));
         }
     }
 
@@ -113,5 +112,4 @@ class EmployeeShiftChangeRequestController extends AccountBaseController
             $changeRequest->save();
         }
     }
-
 }

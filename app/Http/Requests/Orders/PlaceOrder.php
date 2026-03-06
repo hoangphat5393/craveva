@@ -10,6 +10,7 @@ use Illuminate\Validation\Rule;
 class PlaceOrder extends FormRequest
 {
     use CustomFieldsRequestTrait;
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -42,7 +43,7 @@ class PlaceOrder extends FormRequest
 
         $rules['order_number'] = [
             'required',
-            Rule::unique('orders')->where('company_id', company()->id)
+            Rule::unique('orders')->where('company_id', company()->id),
         ];
 
         if (request()->has('client_id')) {
@@ -66,8 +67,7 @@ class PlaceOrder extends FormRequest
     public function messages()
     {
         return [
-            'client_id.required' => __('modules.projects.selectClient')
+            'client_id.required' => __('modules.projects.selectClient'),
         ];
     }
-
 }

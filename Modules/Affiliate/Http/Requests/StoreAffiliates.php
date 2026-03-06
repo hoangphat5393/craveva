@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreAffiliates extends FormRequest
 {
-
     /**
      * Get the validation rules that apply to the request.
      */
@@ -34,5 +33,4 @@ class StoreAffiliates extends FormRequest
             'user_id' => __('affiliate::app.affiliateName'),
         ];
     }
-
 }

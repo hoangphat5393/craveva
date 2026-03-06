@@ -2,13 +2,10 @@
 
 namespace Tests\Unit;
 
-use Tests\TestCase;
-use Modules\Pricing\Services\PricingService;
-use Modules\Pricing\Services\VolumeDiscountService;
-use Mockery;
 use App\Models\Product;
 use App\Models\User;
-use Modules\Pricing\Entities\ClientProductPricing;
+use Modules\Pricing\Services\PricingService;
+use Tests\TestCase;
 
 class PricingServiceTest extends TestCase
 {
@@ -18,7 +15,7 @@ class PricingServiceTest extends TestCase
 
     public function test_pricing_service_instantiation()
     {
-        $service = new PricingService();
+        $service = new PricingService;
         $this->assertInstanceOf(PricingService::class, $service);
     }
 }

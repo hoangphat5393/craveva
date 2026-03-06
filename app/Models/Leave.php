@@ -32,6 +32,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read mixed $leaves_taken_count
  * @property-read \App\Models\LeaveType $type
  * @property-read \App\Models\User $user
+ *
  * @method static \Database\Factories\LeaveFactory factory(...$parameters)
  * @method static \Illuminate\Database\Eloquent\Builder|Leave newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Leave newQuery()
@@ -49,40 +50,50 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder|Leave whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Leave whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Leave whereUserId($value)
+ *
  * @property string|null $event_id
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Leave whereEventId($value)
+ *
  * @property int|null $company_id
  * @property int|null $approved_by
  * @property \Illuminate\Support\Carbon|null $approved_at
  * @property string|null $half_day_type
  * @property-read \App\Models\User|null $approvedBy
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Leave whereApprovedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Leave whereApprovedBy($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Leave whereCompanyId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Leave whereHalfDayType($value)
+ *
  * @property string|null $manager_status_permission
  * @property string|null $approve_reason
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Leave whereApproveReason($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Leave whereManagerStatusPermission($value)
+ *
  * @property string|null $unique_id
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\LeaveFile> $files
  * @property-read int|null $files_count
  * @property-read \App\Models\Leave|null $ldate
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Leave whereUniqueId($value)
+ *
  * @mixin \Eloquent
  */
 class Leave extends BaseModel
 {
-
-    use HasFactory;
     use HasCompany;
+    use HasFactory;
 
     protected $casts = [
         'leave_date' => 'datetime',
         'approved_at' => 'datetime',
     ];
+
     protected $guarded = ['id'];
+
     protected $appends = ['date']; // Being used in attendance
 
     public function getDateAttribute()
@@ -110,7 +121,7 @@ class Leave extends BaseModel
         $userId = $this->user_id;
         $setting = company();
         $user = User::withoutGlobalScope(ActiveScope::class)->withOut('clientDetails', 'role')->findOrFail($userId);
-        $currentYearJoiningDate = Carbon::parse($user->employee[0]->joining_date->format((now(company()->timezone)->year) . '-m-d'));
+        $currentYearJoiningDate = Carbon::parse($user->employee[0]->joining_date->format((now(company()->timezone)->year).'-m-d'));
 
         if ($currentYearJoiningDate->isFuture()) {
             $currentYearJoiningDate->subYear();
@@ -120,7 +131,7 @@ class Leave extends BaseModel
         $leaveTo = $currentYearJoiningDate->copy()->addYear()->toDateString();
 
         if ($setting->leaves_start_from !== 'joining_date') {
-            $leaveStartYear = Carbon::parse(now()->format((now(company()->timezone)->year) . '-' . company()->year_starts_from . '-01'));
+            $leaveStartYear = Carbon::parse(now()->format((now(company()->timezone)->year).'-'.company()->year_starts_from.'-01'));
 
             if ($leaveStartYear->isFuture()) {
                 $leaveStartYear = $leaveStartYear->subYear();
@@ -142,7 +153,7 @@ class Leave extends BaseModel
             ->where('duration', 'half day')
             ->count();
 
-        return ($fullDay + ($halfDay / 2));
+        return $fullDay + ($halfDay / 2);
 
     }
 
@@ -150,7 +161,7 @@ class Leave extends BaseModel
     {
         $setting = company();
 
-        if (!$user instanceof User) {
+        if (! $user instanceof User) {
             $user = User::withoutGlobalScope(ActiveScope::class)->withOut('clientDetails', 'role')->findOrFail($user);
         }
 
@@ -158,7 +169,7 @@ class Leave extends BaseModel
         $leaveTo = Carbon::parse($leaveFrom)->addYear()->subDay()->toDateString();
 
         if ($setting->leaves_start_from == 'joining_date' && isset($user->employee[0])) {
-            $currentYearJoiningDate = Carbon::parse($user->employee[0]->joining_date->format((now(company()->timezone)->year) . '-m-d'));
+            $currentYearJoiningDate = Carbon::parse($user->employee[0]->joining_date->format((now(company()->timezone)->year).'-m-d'));
 
             if ($currentYearJoiningDate->isFuture()) {
                 $currentYearJoiningDate->subYear();
@@ -180,12 +191,11 @@ class Leave extends BaseModel
             ->where('duration', 'half day')
             ->get();
 
-        return (count($fullDay) + (count($halfDay) / 2));
+        return count($fullDay) + (count($halfDay) / 2);
     }
 
     public function files(): HasMany
     {
         return $this->hasMany(LeaveFile::class, 'leave_id')->orderByDesc('id');
     }
-
 }

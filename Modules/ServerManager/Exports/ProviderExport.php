@@ -3,19 +3,21 @@
 namespace Modules\ServerManager\Exports;
 
 use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
-use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithStyles;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Modules\ServerManager\Entities\ServerProvider;
-use Carbon\Carbon;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class ProviderExport implements FromCollection, WithHeadings, WithMapping, ShouldAutoSize, WithStyles
+class ProviderExport implements FromCollection, ShouldAutoSize, WithHeadings, WithMapping, WithStyles
 {
     protected $providers;
+
     protected $startDate;
+
     protected $endDate;
+
     protected $exportAll;
 
     public function __construct($startDate = null, $endDate = null, $exportAll = false)
@@ -27,7 +29,7 @@ class ProviderExport implements FromCollection, WithHeadings, WithMapping, Shoul
         $query = ServerProvider::where('company_id', company()->id)
             ->with(['createdBy', 'updatedBy']);
 
-        if (!$this->exportAll && $this->startDate && $this->endDate) {
+        if (! $this->exportAll && $this->startDate && $this->endDate) {
             $query->whereBetween('created_at', [$this->startDate->startOfDay(), $this->endDate->endOfDay()]);
         }
 

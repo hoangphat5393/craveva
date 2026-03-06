@@ -16,7 +16,6 @@ use Illuminate\Database\Seeder;
 
 class CoreSuperAdminDatabaseSeeder extends Seeder
 {
-
     /**
      * Run the database seeds.
      *
@@ -44,7 +43,7 @@ class CoreSuperAdminDatabaseSeeder extends Seeder
                 'currency_position' => 'left',
                 'no_of_decimal' => 2,
                 'thousand_separator' => ',',
-                'decimal_separator' => '.'
+                'decimal_separator' => '.',
             ],
             [
                 'currency_name' => 'Pounds',
@@ -54,7 +53,7 @@ class CoreSuperAdminDatabaseSeeder extends Seeder
                 'currency_position' => 'left',
                 'no_of_decimal' => 2,
                 'thousand_separator' => ',',
-                'decimal_separator' => '.'
+                'decimal_separator' => '.',
             ],
             [
                 'currency_name' => 'Euros',
@@ -64,7 +63,7 @@ class CoreSuperAdminDatabaseSeeder extends Seeder
                 'currency_position' => 'left',
                 'no_of_decimal' => 2,
                 'thousand_separator' => ',',
-                'decimal_separator' => '.'
+                'decimal_separator' => '.',
             ],
             [
                 'currency_name' => 'Rupee',
@@ -74,7 +73,7 @@ class CoreSuperAdminDatabaseSeeder extends Seeder
                 'currency_position' => 'left',
                 'no_of_decimal' => 2,
                 'thousand_separator' => ',',
-                'decimal_separator' => '.'
+                'decimal_separator' => '.',
             ],
         ];
 
@@ -90,7 +89,7 @@ class CoreSuperAdminDatabaseSeeder extends Seeder
             ->pluck('module_name')
             ->toJson();
 
-        $packages = new Package();
+        $packages = new Package;
         $packages->name = 'Default';
         $packages->description = 'Its a default package and cannot be deleted';
         $packages->annual_price = 0;
@@ -112,7 +111,7 @@ class CoreSuperAdminDatabaseSeeder extends Seeder
             ->pluck('module_name')
             ->toJson();
 
-        $packageSetting = new PackageSetting();
+        $packageSetting = new PackageSetting;
         $packageSetting->status = 'inactive';
         $packageSetting->trial_message = 'Start 30 days free trial';
         $packageSetting->no_of_days = 30;
@@ -121,7 +120,7 @@ class CoreSuperAdminDatabaseSeeder extends Seeder
 
         $global = GlobalSetting::with('currency')->first();
 
-        $packages = new Package();
+        $packages = new Package;
         $packages->name = 'Trial';
 
         if ($global) {
@@ -142,7 +141,7 @@ class CoreSuperAdminDatabaseSeeder extends Seeder
 
     private function stripeSetting()
     {
-        $stripe = new StripeSetting();
+        $stripe = new StripeSetting;
         $stripe->api_key = null;
         $stripe->save();
     }
@@ -162,8 +161,8 @@ class CoreSuperAdminDatabaseSeeder extends Seeder
     {
         $superadminTheme = ThemeSetting::where('panel', 'superadmin')->first();
 
-        if (!$superadminTheme) {
-            $superadminTheme = new ThemeSetting();
+        if (! $superadminTheme) {
+            $superadminTheme = new ThemeSetting;
             $superadminTheme->panel = 'superadmin';
             $superadminTheme->header_color = '#ed4040';
             $superadminTheme->sidebar_color = '#292929';
@@ -180,14 +179,11 @@ class CoreSuperAdminDatabaseSeeder extends Seeder
         if ($customFieldGroup) {
             $customFieldGroup->model = 'App\Models\Company';
             $customFieldGroup->save();
-        }
-        else {
-            $customFieldGroup = new CustomFieldGroup();
+        } else {
+            $customFieldGroup = new CustomFieldGroup;
             $customFieldGroup->name = 'Company';
             $customFieldGroup->model = 'App\Models\Company';
             $customFieldGroup->save();
         }
     }
-
 }
-

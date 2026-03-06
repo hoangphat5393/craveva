@@ -1,6 +1,6 @@
 <?php
 
-return array(
+return [
     'webhookName' => 'Webhook action name',
     'create' => 'Create',
     'delete' => 'Delete',
@@ -11,4 +11,4 @@ return array(
     'key' => 'Key',
     'name' => 'Name',
     'value' => 'Value',
-);
+];

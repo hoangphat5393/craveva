@@ -3,17 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Helper\Reply;
+use App\Helper\UserService;
 use App\Http\Requests\Discussion\StoreRequest;
 use App\Models\Discussion;
 use App\Models\DiscussionCategory;
 use App\Models\DiscussionReply;
 use App\Models\Project;
 use Illuminate\Http\Request;
-use App\Helper\UserService;
 
 class DiscussionController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -39,7 +38,7 @@ class DiscussionController extends AccountBaseController
         }
 
         $this->userData = $userData;
-        abort_403(!(in_array($this->addPermission, ['all', 'added']) || $project->project_admin == $userId));
+        abort_403(! (in_array($this->addPermission, ['all', 'added']) || $project->project_admin == $userId));
 
         $this->categories = DiscussionCategory::orderBy('order', 'asc')->get();
         $this->redirectUrl = request('redirectUrl');
@@ -48,12 +47,11 @@ class DiscussionController extends AccountBaseController
     }
 
     /**
-     * @param StoreRequest $request
      * @return array
      */
     public function store(StoreRequest $request)
     {
-        $discussion = new Discussion();
+        $discussion = new Discussion;
         $discussion->title = $request->title;
         $discussion->discussion_category_id = $request->discussion_category;
         $userId = UserService::getUserId();
@@ -71,7 +69,7 @@ class DiscussionController extends AccountBaseController
                 'body' => $request->description,
                 'user_id' => $userId,
                 'discussion_id' => $discussion->id,
-                'added_by' => user()->id
+                'added_by' => user()->id,
             ]
         );
 
@@ -85,7 +83,7 @@ class DiscussionController extends AccountBaseController
     }
 
     /**
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector|mixed
      */
     public function show($id)
@@ -93,7 +91,7 @@ class DiscussionController extends AccountBaseController
         $this->discussion = Discussion::with('category', 'replies', 'replies.user', 'replies.files')->findOrFail($id);
         $viewPermission = user()->permission('view_project_discussions');
         $this->userId = UserService::getUserId();
-        abort_403(!($viewPermission == 'all' || ($viewPermission == 'added' && $this->discussion->added_by == $this->userId)));
+        abort_403(! ($viewPermission == 'all' || ($viewPermission == 'added' && $this->discussion->added_by == $this->userId)));
 
         $project = Project::findOrFail($this->discussion->project_id);
 
@@ -115,7 +113,7 @@ class DiscussionController extends AccountBaseController
             return $this->returnAjax($this->view);
         }
 
-        return redirect(route('projects.show', $this->discussion->project_id) . '?tab=discussion');
+        return redirect(route('projects.show', $this->discussion->project_id).'?tab=discussion');
     }
 
     public function destroy($id)
@@ -123,9 +121,10 @@ class DiscussionController extends AccountBaseController
         $this->discussion = Discussion::with('category', 'replies', 'replies.user', 'replies.files')->findOrFail($id);
         $deletePermission = user()->permission('delete_project_discussions');
         $userId = UserService::getUserId();
-        abort_403(!($deletePermission == 'all' || ($deletePermission == 'added' && $this->discussion->added_by == $userId)));
+        abort_403(! ($deletePermission == 'all' || ($deletePermission == 'added' && $this->discussion->added_by == $userId)));
 
         Discussion::destroy($id);
+
         return Reply::success(__('messages.deleteSuccess'));
     }
 
@@ -134,13 +133,12 @@ class DiscussionController extends AccountBaseController
         $this->userId = UserService::getUserId();
         $reply = DiscussionReply::findOrFail($request->replyId);
         $editPermission = user()->permission('edit_project_discussions');
-        abort_403(!($editPermission == 'all' || ($editPermission == 'added' && $reply->discussion->added_by == $this->userId)));
+        abort_403(! ($editPermission == 'all' || ($editPermission == 'added' && $reply->discussion->added_by == $this->userId)));
 
         $replyId = ($request->type == 'set') ? $request->replyId : null;
         Discussion::where('id', $reply->discussion_id)
             ->update(['best_answer_id' => $replyId]);
         $this->discussion = Discussion::with('category', 'replies', 'replies.user', 'replies.files')->findOrFail($reply->discussion_id);
-
 
         $userData = [];
         $usersData = $reply->discussion->project->projectMembers;
@@ -154,8 +152,8 @@ class DiscussionController extends AccountBaseController
 
         $this->userData = $userData;
         $this->userRoles = user()->roles->pluck('name')->toArray();
+
         return $this->returnAjax('discussions.replies.show');
 
     }
-
 }

@@ -1,12 +1,12 @@
 <?php
 
-return array(
+return [
     'affiliate' => 'Cộng tác viên',
     'yes' => 'Có',
     'no' => 'Không',
     'fixed' => 'Cố định',
     'percent' => 'Phần trăm',
-    'menu' => array(
+    'menu' => [
         'affiliate' => 'Cộng tác viên',
         'affiliates' => 'Danh sách cộng tác viên',
         'affiliateSettings' => 'Cài đặt Affiliate',
@@ -15,7 +15,7 @@ return array(
         'referrals' => 'Giới thiệu',
         'affiliateDashboard' => 'Bảng điều khiển Affiliate',
         'dashboard' => 'Bảng điều khiển',
-    ),
+    ],
     'addNewAffiliate' => 'Thêm cộng tác viên mới',
     'createAffiliate' => 'Tạo cộng tác viên',
     'affiliateName' => 'Tên cộng tác viên',
@@ -64,4 +64,4 @@ return array(
     'everyTime' => 'Mỗi lần',
     'referralCode' => 'Mã giới thiệu',
     'referred' => 'Được giới thiệu',
-);
+];

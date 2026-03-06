@@ -6,11 +6,9 @@ use App\Http\Requests\CoreRequest;
 
 /**
  * Class StoreStickyNote
- * @package App\Http\Requests\Sticky
  */
 class StoreStickyNote extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -29,8 +27,7 @@ class StoreStickyNote extends CoreRequest
     public function rules()
     {
         return [
-            'notetext' => 'required'
+            'notetext' => 'required',
         ];
     }
-
 }

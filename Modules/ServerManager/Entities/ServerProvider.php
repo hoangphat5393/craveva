@@ -2,12 +2,12 @@
 
 namespace Modules\ServerManager\Entities;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\Company;
 use App\Models\User;
 use App\Traits\HasCompany;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ServerProvider extends Model
 {
@@ -125,5 +125,4 @@ class ServerProvider extends Model
     {
         return $query->where('type', $type);
     }
-
 }

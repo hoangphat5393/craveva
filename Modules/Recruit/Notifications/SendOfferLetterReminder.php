@@ -26,7 +26,7 @@ class SendOfferLetterReminder extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -43,7 +43,7 @@ class SendOfferLetterReminder extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
@@ -52,22 +52,21 @@ class SendOfferLetterReminder extends BaseNotification
 
         return parent::build()
             ->subject(__('recruit::modules.offerLetter.reminderSubject'))
-            ->greeting(__('email.hello') . ' ' . $notifiable->full_name . '!')
-            ->line(__('recruit::modules.offerLetter.reminderText') . ' ' . $expiryDate . '. ' . __('recruit::modules.offerLetter.reminderTextline'))
+            ->greeting(__('email.hello').' '.$notifiable->full_name.'!')
+            ->line(__('recruit::modules.offerLetter.reminderText').' '.$expiryDate.'. '.__('recruit::modules.offerLetter.reminderTextline'))
             ->line(__('recruit::modules.email.thankyouNote'));
     }
 
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function toArray()
     {
         return [
-            'data' => $this->event->toArray()
+            'data' => $this->event->toArray(),
         ];
     }
-
 }

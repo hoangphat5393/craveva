@@ -10,7 +10,6 @@ use Illuminate\Database\Seeder;
 
 class AppreciationSeeder extends Seeder
 {
-
     /**
      * Run the database seeds.
      *
@@ -37,7 +36,7 @@ class AppreciationSeeder extends Seeder
             'Best Quality Control',
             'Best Technical Writer',
             'Most Valuable Employee',
-            'Star Performer Award'
+            'Star Performer Award',
         ];
 
         $awardInsert = [];
@@ -73,5 +72,4 @@ class AppreciationSeeder extends Seeder
 
         Appreciation::insert($appreciations);
     }
-
 }

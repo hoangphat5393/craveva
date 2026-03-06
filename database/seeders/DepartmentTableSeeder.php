@@ -9,7 +9,6 @@ use Illuminate\Database\Seeder;
 
 class DepartmentTableSeeder extends Seeder
 {
-
     /**
      * Run the database seeds.
      *
@@ -47,5 +46,4 @@ class DepartmentTableSeeder extends Seeder
         ]);
 
     }
-
 }

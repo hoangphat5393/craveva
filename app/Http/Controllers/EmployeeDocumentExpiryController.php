@@ -17,7 +17,7 @@ class EmployeeDocumentExpiryController extends AccountBaseController
         parent::__construct();
         $this->pageTitle = 'app.menu.employeeDocumentExpiry';
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('employees', $this->user->modules));
+            abort_403(! in_array('employees', $this->user->modules));
 
             return $next($request);
         });
@@ -27,7 +27,7 @@ class EmployeeDocumentExpiryController extends AccountBaseController
     {
         $addPermission = user()->permission('add_documents');
 
-        abort_403(!($addPermission == 'all'));
+        abort_403(! ($addPermission == 'all'));
 
         // Get the employee ID from the route parameter
         $employeeId = request()->user_id;
@@ -45,7 +45,7 @@ class EmployeeDocumentExpiryController extends AccountBaseController
             //     return Reply::error(__('messages.employeeDocsAllowedFormat'));
             // }
         }
-        
+
         try {
             $doc_issue_date = Carbon::createFromFormat(company()->date_format, $request->issue_date)->format('Y-m-d');
             $doc_expiry_date = Carbon::createFromFormat(company()->date_format, $request->expiry_date)->format('Y-m-d');
@@ -54,10 +54,10 @@ class EmployeeDocumentExpiryController extends AccountBaseController
             $doc_issue_date = Carbon::parse($request->issue_date)->format('Y-m-d');
             $doc_expiry_date = Carbon::parse($request->expiry_date)->format('Y-m-d');
         }
-            
+
         // info([$doc_issue_date, $doc_expiry_date]);
 
-        $document = new EmployeeDocumentExpiry();
+        $document = new EmployeeDocumentExpiry;
         $document->user_id = $request->user_id;
         $document->company_id = company()->id;
         $document->document_name = $request->document_name;
@@ -69,7 +69,7 @@ class EmployeeDocumentExpiryController extends AccountBaseController
         $document->added_by = user()->id;
 
         if ($request->hasFile('file')) {
-            $filename = Files::uploadLocalOrS3($request->file, EmployeeDocumentExpiry::FILE_PATH . '/' . $request->user_id);
+            $filename = Files::uploadLocalOrS3($request->file, EmployeeDocumentExpiry::FILE_PATH.'/'.$request->user_id);
             $document->filename = $request->file->getClientOriginalName();
             $document->hashname = $filename;
             $document->size = $request->file->getSize();
@@ -91,7 +91,7 @@ class EmployeeDocumentExpiryController extends AccountBaseController
         $this->document = EmployeeDocumentExpiry::findOrFail($id);
         $editPermission = user()->permission('edit_documents');
 
-        abort_403(!($editPermission == 'all'
+        abort_403(! ($editPermission == 'all'
             || ($editPermission == 'added' && $this->document->added_by == user()->id)
             || ($editPermission == 'owned' && ($this->document->user_id == user()->id && $this->document->added_by != user()->id))
             || ($editPermission == 'both' && ($this->document->added_by == user()->id || $this->document->user_id == user()->id))));
@@ -113,7 +113,7 @@ class EmployeeDocumentExpiryController extends AccountBaseController
 
         $document->document_name = $request->document_name;
         $document->document_number = $request->document_number;
-        
+
         // Parse dates with proper format handling
         try {
             $document->issue_date = Carbon::createFromFormat(company()->date_format, $request->issue_date)->format('Y-m-d');
@@ -130,10 +130,10 @@ class EmployeeDocumentExpiryController extends AccountBaseController
         if ($request->hasFile('file')) {
             // Delete old file if exists
             if ($document->hashname) {
-                Files::deleteFile($document->hashname, EmployeeDocumentExpiry::FILE_PATH . '/' . $document->user_id);
+                Files::deleteFile($document->hashname, EmployeeDocumentExpiry::FILE_PATH.'/'.$document->user_id);
             }
 
-            $filename = Files::uploadLocalOrS3($request->file, EmployeeDocumentExpiry::FILE_PATH . '/' . $document->user_id);
+            $filename = Files::uploadLocalOrS3($request->file, EmployeeDocumentExpiry::FILE_PATH.'/'.$document->user_id);
             $document->filename = $request->file->getClientOriginalName();
             $document->hashname = $filename;
             $document->size = $request->file->getSize();
@@ -142,10 +142,9 @@ class EmployeeDocumentExpiryController extends AccountBaseController
         $document->save();
 
         $this->documents = EmployeeDocumentExpiry::where('user_id', $document->user_id)
-        ->orderByDesc('id')
-        ->get();
+            ->orderByDesc('id')
+            ->get();
 
-        
         $view = view('employees.ajax.document-expiry.show', $this->data)->render();
 
         return Reply::successWithData(__('messages.updateSuccess'), ['view' => $view]);
@@ -156,13 +155,13 @@ class EmployeeDocumentExpiryController extends AccountBaseController
         $document = EmployeeDocumentExpiry::findOrFail($id);
         $deleteDocumentPermission = user()->permission('delete_documents');
 
-        abort_403(!($deleteDocumentPermission == 'all'
+        abort_403(! ($deleteDocumentPermission == 'all'
             || ($deleteDocumentPermission == 'added' && $document->added_by == user()->id)
             || ($deleteDocumentPermission == 'owned' && ($document->user_id == user()->id && $document->added_by != user()->id))
             || ($deleteDocumentPermission == 'both' && ($document->added_by == user()->id || $document->user_id == user()->id))));
 
         if ($document->hashname) {
-            Files::deleteFile($document->hashname, EmployeeDocumentExpiry::FILE_PATH . '/' . $document->user_id);
+            Files::deleteFile($document->hashname, EmployeeDocumentExpiry::FILE_PATH.'/'.$document->user_id);
         }
 
         EmployeeDocumentExpiry::destroy($id);
@@ -181,15 +180,15 @@ class EmployeeDocumentExpiryController extends AccountBaseController
         $this->document = EmployeeDocumentExpiry::whereRaw('md5(id) = ?', $id)->firstOrFail();
         $viewPermission = user()->permission('view_documents');
 
-        abort_403(!($viewPermission == 'all'
+        abort_403(! ($viewPermission == 'all'
             || ($viewPermission == 'added' && $this->document->added_by == user()->id)
             || ($viewPermission == 'owned' && ($this->document->user_id == user()->id && $this->document->added_by != user()->id))
             || ($viewPermission == 'both' && ($this->document->added_by == user()->id || $this->document->user_id == user()->id))));
 
-        if (!$this->document->hashname) {
+        if (! $this->document->hashname) {
             return Reply::error(__('messages.fileNotFound'));
         }
 
-        return download_local_s3($this->document, EmployeeDocumentExpiry::FILE_PATH . '/' . $this->document->user_id . '/' . $this->document->hashname);
+        return download_local_s3($this->document, EmployeeDocumentExpiry::FILE_PATH.'/'.$this->document->user_id.'/'.$this->document->hashname);
     }
 }

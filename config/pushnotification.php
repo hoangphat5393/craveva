@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @see https://github.com/Edujugon/PushNotification
  */
@@ -15,9 +16,9 @@ return [
         'apiKey' => env('FCM_KEY'),
     ],
     'apn' => [
-        'certificate' => base_path() .'/'. env('APN_PEM', 'aps.pem'),
+        'certificate' => base_path().'/'.env('APN_PEM', 'aps.pem'),
         'passPhrase' => 'secret',
-        'passFile' => __DIR__ . '/iosCertificates/yourKey.pem',
+        'passFile' => __DIR__.'/iosCertificates/yourKey.pem',
         'dry_run' => true,
     ],
 ];

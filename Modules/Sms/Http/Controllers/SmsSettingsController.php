@@ -4,18 +4,17 @@ namespace Modules\Sms\Http\Controllers;
 
 use App\Helper\Reply;
 use App\Http\Controllers\AccountBaseController;
-use App\Models\Country;
 use App\Models\User;
+use App\Scopes\CompanyScope;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Notification;
 use Modules\Sms\Entities\SmsNotificationSetting;
 use Modules\Sms\Entities\SmsSetting;
+use Modules\Sms\Entities\SmsTemplateId;
 use Modules\Sms\Http\Requests\StoreSmsSetting;
 use Modules\Sms\Notifications\TestMessage;
-use Modules\Sms\Entities\SmsTemplateId;
-use App\Scopes\CompanyScope;
 
 class SmsSettingsController extends AccountBaseController
 {
@@ -25,7 +24,7 @@ class SmsSettingsController extends AccountBaseController
         $this->pageTitle = 'SMS '.__('app.menu.settings');
         $this->activeSettingMenu = 'sms_setting';
         $this->middleware(function ($request, $next) {
-            abort_403(!(user()->is_superadmin || in_array('admin',user_roles())) && !in_array(SmsSetting::MODULE_NAME, $this->user->modules));
+            abort_403(! (user()->is_superadmin || in_array('admin', user_roles())) && ! in_array(SmsSetting::MODULE_NAME, $this->user->modules));
 
             return $next($request);
         });
@@ -64,10 +63,10 @@ class SmsSettingsController extends AccountBaseController
      * @param  int  $id
      * @return Response
      */
-    //phpcs:ignore
+    // phpcs:ignore
     public function update(StoreSmsSetting $request, $id)
     {
-        if(user()->is_superadmin) {
+        if (user()->is_superadmin) {
             $smsSetting = SmsSetting::first();
 
             $smsSetting->status = 0;
@@ -102,18 +101,18 @@ class SmsSettingsController extends AccountBaseController
                 $smsSetting->msg91_from = $request->msg91_from;
                 $smsSetting->msg91_status = 1;
 
-            if ($request->msg91_flow_id) {
-                foreach ($request->msg91_flow_id as $key => $templateSid) {
-                    SmsTemplateId::where('sms_setting_slug', $key)->update(['msg91_flow_id' => $templateSid]);
+                if ($request->msg91_flow_id) {
+                    foreach ($request->msg91_flow_id as $key => $templateSid) {
+                        SmsTemplateId::where('sms_setting_slug', $key)->update(['msg91_flow_id' => $templateSid]);
+                    }
                 }
             }
-        }
 
-        if ($request->active_gateway == 'telegram') {
-            $smsSetting->telegram_status = 1;
-            $smsSetting->telegram_bot_token = $request->telegram_bot_token;
-            $smsSetting->telegram_bot_name = str($request->telegram_bot_name)->replace('@', '');
-        }
+            if ($request->active_gateway == 'telegram') {
+                $smsSetting->telegram_status = 1;
+                $smsSetting->telegram_bot_token = $request->telegram_bot_token;
+                $smsSetting->telegram_bot_name = str($request->telegram_bot_name)->replace('@', '');
+            }
 
             $smsSetting->save();
             session(['sms_setting' => SmsSetting::first()]);
@@ -128,7 +127,7 @@ class SmsSettingsController extends AccountBaseController
                 $setting = SmsNotificationSetting::when(user()->is_superadmin, function ($query) {
                     return $query->withoutGlobalScope(CompanyScope::class);
                 })->findOrFail($smsSetting);
-                
+
                 $setting->send_sms = 'yes';
                 $setting->save();
             }
@@ -161,8 +160,8 @@ class SmsSettingsController extends AccountBaseController
         Config::set('twilio-notification-channel.auth_token', $this->smsSettings->auth_token);
         Config::set('twilio-notification-channel.account_sid', $this->smsSettings->account_sid);
         $fromNumber = $this->smsSettings->from_number;
-        if (!str_starts_with($fromNumber, '+')) {
-            $fromNumber = '+' . $fromNumber;
+        if (! str_starts_with($fromNumber, '+')) {
+            $fromNumber = '+'.$fromNumber;
         }
         Config::set('twilio-notification-channel.from', $fromNumber);
 
@@ -186,21 +185,21 @@ class SmsSettingsController extends AccountBaseController
             if ($smsTemplateId && $smsTemplateId->whatsapp_template_sid) {
                 try {
                     $mobile = ltrim($request->mobile, '0');
-                    $toNumber = $request->phone_code . $mobile;
-                    if (!str_starts_with($toNumber, '+')) {
-                        $toNumber = '+' . $toNumber;
+                    $toNumber = $request->phone_code.$mobile;
+                    if (! str_starts_with($toNumber, '+')) {
+                        $toNumber = '+'.$toNumber;
                     }
 
                     $whatappFromNumber = $this->smsSettings->whatapp_from_number;
-                    if (!str_starts_with($whatappFromNumber, '+')) {
-                        $whatappFromNumber = '+' . $whatappFromNumber;
+                    if (! str_starts_with($whatappFromNumber, '+')) {
+                        $whatappFromNumber = '+'.$whatappFromNumber;
                     }
 
                     $twilio = new \Twilio\Rest\Client($this->smsSettings->account_sid, $this->smsSettings->auth_token);
                     $twilio->messages->create(
-                        'whatsapp:' . $toNumber,
+                        'whatsapp:'.$toNumber,
                         [
-                            'from' => 'whatsapp:' . $whatappFromNumber,
+                            'from' => 'whatsapp:'.$whatappFromNumber,
                             'body' => __($smsSetting->slug->translationString(), ['gateway' => 'whatsapp']),
                             'contentSid' => $smsTemplateId->whatsapp_template_sid,
                         ]
@@ -213,7 +212,7 @@ class SmsSettingsController extends AccountBaseController
 
         if ($this->smsSettings->status) {
             // Check if from_number is the WhatsApp Sandbox number to prevent SMS errors
-            if (!str_contains($this->smsSettings->from_number, '14155238886')) {
+            if (! str_contains($this->smsSettings->from_number, '14155238886')) {
                 Notification::route('twilio', $number)->notify(new TestMessage($request->toArray()));
             }
         }
@@ -243,5 +242,4 @@ class SmsSettingsController extends AccountBaseController
 
         return $twilio->lookups->v1->phoneNumbers($number)->fetch();
     }
-
 }

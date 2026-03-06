@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|LeaveSetting newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|LeaveSetting newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|LeaveSetting query()
@@ -22,10 +23,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @method static \Illuminate\Database\Eloquent\Builder|LeaveSetting whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|LeaveSetting whereManagerPermission($value)
  * @method static \Illuminate\Database\Eloquent\Builder|LeaveSetting whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class LeaveSetting extends BaseModel
 {
-
-    use HasFactory, HasCompany;
+    use HasCompany, HasFactory;
 }

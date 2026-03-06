@@ -9,19 +9,12 @@ use Illuminate\Support\Facades\Notification;
 
 class TaskNoteListener
 {
-
-    /**
-     * @param TaskNoteEvent $event
-     */
-
     public function handle(TaskNoteEvent $event)
     {
         if ($event->client == 'client') {
             Notification::send($event->notifyUser, new TaskNoteClient($event->task, $event->created_at));
-        }
-        else {
+        } else {
             Notification::send($event->notifyUser, new TaskNote($event->task, $event->created_at));
         }
     }
-
 }

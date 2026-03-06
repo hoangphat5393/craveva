@@ -9,11 +9,12 @@ use Illuminate\Queue\SerializesModels;
 
 class NewUserEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $user;
+
     public $password;
+
     public $clientSignup;
 
     public function __construct(User $user, $password, $clientSignup = false)
@@ -22,5 +23,4 @@ class NewUserEvent
         $this->password = $password;
         $this->clientSignup = $clientSignup;
     }
-
 }

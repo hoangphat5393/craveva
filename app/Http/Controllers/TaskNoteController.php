@@ -3,28 +3,26 @@
 namespace App\Http\Controllers;
 
 use App\Helper\Reply;
+use App\Helper\UserService;
 use App\Http\Requests\Tasks\StoreTaskNote;
+use App\Models\ClientContact;
 use App\Models\Task;
 use App\Models\TaskNote;
-use App\Helper\UserService;
-use App\Models\ClientContact;
 
 class TaskNoteController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'app.menu.tasks';
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('tasks', $this->user->modules));
+            abort_403(! in_array('tasks', $this->user->modules));
+
             return $next($request);
         });
     }
 
     /**
-     *
-     * @param StoreTaskNote $request
      * @return void
      */
     public function store(StoreTaskNote $request)
@@ -35,14 +33,14 @@ class TaskNoteController extends AccountBaseController
         $this->userId = UserService::getUserId();
         $this->clientIds = ClientContact::where('user_id', $this->userId)->pluck('client_id')->toArray();
 
-        abort_403(!(
+        abort_403(! (
             $this->addPermission == 'all'
             || ($this->addPermission == 'added' && ($task->added_by == user()->id || $task->added_by == $this->userId || in_array($task->added_by, $this->clientIds)))
             || ($this->addPermission == 'owned' && in_array(user()->id, $taskUsers))
             || ($this->addPermission == 'added' && (in_array(user()->id, $taskUsers) || $task->added_by == user()->id || $task->added_by == $this->userId || in_array($task->added_by, $this->clientIds)))
         ));
 
-        $note = new TaskNote();
+        $note = new TaskNote;
         $note->note = trim_editor($request->note);
         $note->task_id = $request->taskId;
         $note->user_id = $this->userId;
@@ -57,7 +55,7 @@ class TaskNoteController extends AccountBaseController
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
@@ -66,7 +64,7 @@ class TaskNoteController extends AccountBaseController
         $this->deleteTaskNotePermission = user()->permission('delete_task_notes');
         $this->userId = UserService::getUserId();
         $this->clientIds = ClientContact::where('user_id', $this->userId)->pluck('client_id')->toArray();
-        abort_403(!($this->deleteTaskNotePermission == 'all' || ($this->deleteTaskNotePermission == 'added' && ($note->added_by == user()->id || $note->added_by == $this->userId || in_array($note->added_by, $this->clientIds)))));
+        abort_403(! ($this->deleteTaskNotePermission == 'all' || ($this->deleteTaskNotePermission == 'added' && ($note->added_by == user()->id || $note->added_by == $this->userId || in_array($note->added_by, $this->clientIds)))));
 
         $note_task_id = $note->task_id;
         $note->delete();
@@ -87,7 +85,7 @@ class TaskNoteController extends AccountBaseController
         $this->editTaskNotePermission = user()->permission('edit_task_notes');
         $userId = UserService::getUserId();
         $this->clientIds = ClientContact::where('user_id', $userId)->pluck('client_id')->toArray();
-        abort_403(!($this->editTaskNotePermission == 'all' || ($this->editTaskNotePermission == 'added' && ($this->note->added_by == user()->id || $this->note->added_by == $userId || in_array($this->note->added_by, $this->clientIds)))));
+        abort_403(! ($this->editTaskNotePermission == 'all' || ($this->editTaskNotePermission == 'added' && ($this->note->added_by == user()->id || $this->note->added_by == $userId || in_array($this->note->added_by, $this->clientIds)))));
 
         $taskuserData = [];
         $usersData = $this->note->task->users;
@@ -101,7 +99,6 @@ class TaskNoteController extends AccountBaseController
 
         $this->taskuserData = $taskuserData;
 
-
         return view('tasks.notes.edit', $this->data);
 
     }
@@ -113,7 +110,7 @@ class TaskNoteController extends AccountBaseController
         $this->userId = UserService::getUserId();
         $this->clientIds = ClientContact::where('user_id', $this->userId)->pluck('client_id')->toArray();
 
-        abort_403(!($this->editTaskNotePermission == 'all' || ($this->editTaskNotePermission == 'added' && ($note->added_by == user()->id || $note->added_by == $this->userId || in_array($note->added_by, $this->clientIds)))));
+        abort_403(! ($this->editTaskNotePermission == 'all' || ($this->editTaskNotePermission == 'added' && ($note->added_by == user()->id || $note->added_by == $this->userId || in_array($note->added_by, $this->clientIds)))));
 
         $note->note = trim_editor($request->note);
         $note->save();
@@ -124,5 +121,4 @@ class TaskNoteController extends AccountBaseController
         return Reply::dataOnly(['status' => 'success', 'view' => $view]);
 
     }
-
 }

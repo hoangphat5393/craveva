@@ -2,19 +2,18 @@
 
 namespace Modules\Recruit\Notifications;
 
-use App\Models\User;
-use Illuminate\Bus\Queueable;
 use App\Notifications\BaseNotification;
-use Illuminate\Notifications\Notification;
-use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
-use Modules\Recruit\Entities\RecruitEmailNotificationSetting;
+use Illuminate\Notifications\Notification;
 use Modules\Recruit\Entities\RecruitJobApplication;
 
 class SendJobApplication extends BaseNotification
 {
     use Queueable;
+
     private $applicant;
+
     // private $user;
     private $emailSetting;
 
@@ -39,7 +38,6 @@ class SendJobApplication extends BaseNotification
         }
 
         return $via;
-       
 
     }
 
@@ -48,18 +46,18 @@ class SendJobApplication extends BaseNotification
      */
     public function toMail($notifiable): MailMessage
     {
-        
+
         $url = route('job-applications.show', $this->applicant->id);
         $url = getDomainSpecificUrl($url, $this->company);
-       
+
         $email = $this->applicant->email ?? __('recruit::modules.front.email');
 
-         $content = __(':full_name (:email) :text - :job_title', [
-        'full_name' => $this->applicant->full_name,
-        'email' => $email,
-        'text' => __('recruit::modules.newJobApplication.text'),
-        'job_title' => $this->applicant->job->title,
-          ]);
+        $content = __(':full_name (:email) :text - :job_title', [
+            'full_name' => $this->applicant->full_name,
+            'email' => $email,
+            'text' => __('recruit::modules.newJobApplication.text'),
+            'job_title' => $this->applicant->job->title,
+        ]);
 
         return parent::build()
             ->subject(__('recruit::modules.newJobApplication.subject'))
@@ -67,8 +65,8 @@ class SendJobApplication extends BaseNotification
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
-                'actionText' => __('app.view') . ' ' . __('recruit::modules.jobApplication.jobApplication'),
-                'notifiableName' => $notifiable->name
+                'actionText' => __('app.view').' '.__('recruit::modules.jobApplication.jobApplication'),
+                'notifiableName' => $notifiable->name,
             ]);
     }
 
@@ -80,8 +78,7 @@ class SendJobApplication extends BaseNotification
         return [
             'user_id' => $this->applicant->job->recruiter_id,
             'jobApp_id' => $this->applicant->id,
-            'heading' => $this->applicant->full_name
+            'heading' => $this->applicant->full_name,
         ];
     }
-
 }

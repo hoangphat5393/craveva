@@ -2,24 +2,26 @@
 
 namespace App\DataTables;
 
+use App\Helper\Common;
 use App\Models\ProjectTimeLog;
 use Carbon\CarbonInterval;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Html\Button;
-use App\Helper\Common;
 
 class TimeLogConsolidatedReportDataTable extends BaseDataTable
 {
-
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     protected $timeLogFor;
+
     protected $isTask;
+
     private $editTimelogPermission;
+
     private $deleteTimelogPermission;
 
     public function __construct()
@@ -41,17 +43,17 @@ class TimeLogConsolidatedReportDataTable extends BaseDataTable
             })
             ->editColumn('name', function ($row) {
                 return view('components.employee', [
-                    'user' => $row->user
+                    'user' => $row->user,
                 ]);
             })
             ->editColumn('start_time', function ($row) {
-                return $row->start_time->timezone($this->company->timezone)->translatedFormat($this->company->date_format . ' ' . $this->company->time_format);
+                return $row->start_time->timezone($this->company->timezone)->translatedFormat($this->company->date_format.' '.$this->company->time_format);
             })
             ->editColumn('end_time', function ($row) {
-                if (!is_null($row->end_time)) {
-                    return $row->end_time->timezone($this->company->timezone)->translatedFormat($this->company->date_format . ' ' . $this->company->time_format);
+                if (! is_null($row->end_time)) {
+                    return $row->end_time->timezone($this->company->timezone)->translatedFormat($this->company->date_format.' '.$this->company->time_format);
                 } else {
-                    return "<span class='badge badge-primary'>" . __('app.active') . '</span>';
+                    return "<span class='badge badge-primary'>".__('app.active').'</span>';
                 }
             })
             ->editColumn('total_hours', function ($row) {
@@ -67,16 +69,16 @@ class TimeLogConsolidatedReportDataTable extends BaseDataTable
 
                 // Format output based on hours and minutes
                 $formattedTime = $hours > 0
-                    ? $hours . 'h' . ($minutes > 0 ? ' ' . sprintf('%02dm', $minutes) : '')
+                    ? $hours.'h'.($minutes > 0 ? ' '.sprintf('%02dm', $minutes) : '')
                     : ($minutes > 0 ? sprintf('%dm', $minutes) : '0s');
 
-                $timeLog = '<span data-trigger="hover"  data-toggle="popover" data-content="' . $row->memo . '">' . $formattedTime . '</span>';
+                $timeLog = '<span data-trigger="hover"  data-toggle="popover" data-content="'.$row->memo.'">'.$formattedTime.'</span>';
 
                 if (is_null($row->end_time)) {
-                    $timeLog .= ' <i data-toggle="tooltip" data-original-title="' . __('app.active') . '" class="fa fa-hourglass-start" ></i>';
+                    $timeLog .= ' <i data-toggle="tooltip" data-original-title="'.__('app.active').'" class="fa fa-hourglass-start" ></i>';
                 } else {
                     if ($row->approved) {
-                        $timeLog .= ' <i data-toggle="tooltip" data-original-title="' . __('app.approved') . '" class="fa fa-check-circle text-primary"></i>';
+                        $timeLog .= ' <i data-toggle="tooltip" data-original-title="'.__('app.approved').'" class="fa fa-check-circle text-primary"></i>';
                     }
                 }
 
@@ -98,8 +100,8 @@ class TimeLogConsolidatedReportDataTable extends BaseDataTable
             ->editColumn('project', function ($row) {
                 $project = '';
 
-                if (!is_null($row->project_id)) {
-                    $project .= '<a href="' . route('projects.show', [$row->project_id]) . '" class="text-darkest-grey ">' . $row->project->project_name . '</a>';
+                if (! is_null($row->project_id)) {
+                    $project .= '<a href="'.route('projects.show', [$row->project_id]).'" class="text-darkest-grey ">'.$row->project->project_name.'</a>';
                 }
 
                 return $project;
@@ -111,8 +113,8 @@ class TimeLogConsolidatedReportDataTable extends BaseDataTable
 
                 $task = '';
 
-                if (!is_null($row->task_id)) {
-                    $task .= '<a href="' . route('tasks.show', [$row->task_id]) . '" class="text-darkest-grey openRightModal">' . $row->task->heading . '</a>';
+                if (! is_null($row->task_id)) {
+                    $task .= '<a href="'.route('tasks.show', [$row->task_id]).'" class="text-darkest-grey openRightModal">'.$row->task->heading.'</a>';
                 }
 
                 return $task;
@@ -120,25 +122,25 @@ class TimeLogConsolidatedReportDataTable extends BaseDataTable
             ->editColumn('task_project', function ($row) {
                 $name = '';
 
-                if (!is_null($row->project_id) && !is_null($row->task_id)) {
-                    $name .= '<h5 class="f-13 text-darkest-grey"><a href="' . route('tasks.show', [$row->task_id]) . '" class="openRightModal">' . $row->task->heading . '</a></h5><div class="text-muted">' . $row->project->project_name . '</div>';
-                } else if (!is_null($row->project_id)) {
-                    $name .= '<a href="' . route('projects.show', [$row->project_id]) . '" class="text-darkest-grey ">' . $row->project->project_name . '</a>';
-                } else if (!is_null($row->task_id)) {
-                    $name .= '<a href="' . route('tasks.show', [$row->task_id]) . '" class="text-darkest-grey openRightModal">' . $row->task->heading . '</a>';
+                if (! is_null($row->project_id) && ! is_null($row->task_id)) {
+                    $name .= '<h5 class="f-13 text-darkest-grey"><a href="'.route('tasks.show', [$row->task_id]).'" class="openRightModal">'.$row->task->heading.'</a></h5><div class="text-muted">'.$row->project->project_name.'</div>';
+                } elseif (! is_null($row->project_id)) {
+                    $name .= '<a href="'.route('projects.show', [$row->project_id]).'" class="text-darkest-grey ">'.$row->project->project_name.'</a>';
+                } elseif (! is_null($row->task_id)) {
+                    $name .= '<a href="'.route('tasks.show', [$row->task_id]).'" class="text-darkest-grey openRightModal">'.$row->task->heading.'</a>';
                 }
 
                 return $name;
             })
             ->addIndexColumn()
-            ->setRowId(fn($row) => 'row-' . $row->id)
+            ->setRowId(fn ($row) => 'row-'.$row->id)
             ->editColumn('short_code', function ($row) {
 
                 if (is_null($row->task_short_code)) {
                     return ' -- ';
                 }
 
-                return '<a href="' . route('tasks.show', [$row->task_id]) . '" class="text-darkest-grey openRightModal">' . $row->task_short_code . '</a>';
+                return '<a href="'.route('tasks.show', [$row->task_id]).'" class="text-darkest-grey openRightModal">'.$row->task_short_code.'</a>';
             })
             ->rawColumns(['end_time', 'action', 'project', 'task', 'task_project', 'name', 'total_hours', 'total_minutes', 'check', 'short_code'])
             ->removeColumn('project_id')
@@ -146,7 +148,6 @@ class TimeLogConsolidatedReportDataTable extends BaseDataTable
     }
 
     /**
-     * @param ProjectTimeLog $model
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function query(ProjectTimeLog $model)
@@ -160,7 +161,6 @@ class TimeLogConsolidatedReportDataTable extends BaseDataTable
         $approved = $request->approved;
         $invoice = $request->invoice;
 
-
         $model = $model->with('user', 'project', 'task', 'breaks', 'activeBreak');
 
         $model = $model->join('users', 'users.id', '=', 'project_time_logs.user_id')
@@ -171,11 +171,10 @@ class TimeLogConsolidatedReportDataTable extends BaseDataTable
 
         $model = $model->select('project_time_logs.id', 'project_time_logs.start_time', 'project_time_logs.end_time', 'project_time_logs.total_hours', 'project_time_logs.total_minutes', 'project_time_logs.memo', 'project_time_logs.user_id', 'project_time_logs.project_id', 'project_time_logs.task_id', 'users.name', 'users.image', 'project_time_logs.hourly_rate', 'project_time_logs.earnings', 'project_time_logs.approved', 'tasks.heading', 'projects.project_name', 'projects.client_id', 'designations.name as designation_name', 'tasks.task_short_code');
 
-
         if ($request->startDate !== null && $request->startDate != 'null' && $request->startDate != '') {
             $startDate = companyToDateString($request->startDate);
 
-            if (!is_null($startDate)) {
+            if (! is_null($startDate)) {
                 $model = $model->where(DB::raw('DATE(project_time_logs.`start_time`)'), '>=', $startDate);
             }
         }
@@ -183,30 +182,30 @@ class TimeLogConsolidatedReportDataTable extends BaseDataTable
         if ($request->endDate !== null && $request->endDate != 'null' && $request->endDate != '') {
             $endDate = companyToDateString($request->endDate);
 
-            if (!is_null($endDate)) {
+            if (! is_null($endDate)) {
                 $model = $model->where(function ($query) use ($endDate) {
                     $query->where(DB::raw('DATE(project_time_logs.`end_time`)'), '<=', $endDate);
                 });
             }
         }
 
-        if (!is_null($employee) && $employee !== 'all') {
+        if (! is_null($employee) && $employee !== 'all') {
             $model->where('project_time_logs.user_id', $employee);
         }
 
-        if (!is_null($client) && $client !== 'all') {
+        if (! is_null($client) && $client !== 'all') {
             $model->where('projects.client_id', $client);
         }
 
-        if (!is_null($projectId) && $projectId !== 'all') {
+        if (! is_null($projectId) && $projectId !== 'all') {
             $model->where('project_time_logs.project_id', '=', $projectId);
         }
 
-        if (!is_null($taskId) && $taskId !== 'all') {
+        if (! is_null($taskId) && $taskId !== 'all') {
             $model->where('project_time_logs.task_id', '=', $taskId);
         }
 
-        if (!is_null($approved) && $approved !== 'all') {
+        if (! is_null($approved) && $approved !== 'all') {
             if ($approved == 2) {
                 $model->whereNull('project_time_logs.end_time');
             } else {
@@ -214,10 +213,10 @@ class TimeLogConsolidatedReportDataTable extends BaseDataTable
             }
         }
 
-        if (!is_null($invoice) && $invoice !== 'all') {
+        if (! is_null($invoice) && $invoice !== 'all') {
             if ($invoice == 0) {
                 $model->where('project_time_logs.invoice_id', '=', null);
-            } else if ($invoice == 1) {
+            } elseif ($invoice == 1) {
                 $model->where('project_time_logs.invoice_id', '!=', null);
             }
         }
@@ -225,10 +224,10 @@ class TimeLogConsolidatedReportDataTable extends BaseDataTable
         if ($request->searchText != '') {
             $safeTerm = Common::safeString(request('searchText'));
             $model->where(function ($query) use ($safeTerm) {
-                $query->where('tasks.heading', 'like', '%' . $safeTerm . '%')
-                    ->orWhere('project_time_logs.memo', 'like', '%' . $safeTerm . '%')
-                    ->orWhere('projects.project_name', 'like', '%' . $safeTerm . '%')
-                    ->orWhere('tasks.task_short_code', 'like', '%' . $safeTerm . '%');
+                $query->where('tasks.heading', 'like', '%'.$safeTerm.'%')
+                    ->orWhere('project_time_logs.memo', 'like', '%'.$safeTerm.'%')
+                    ->orWhere('projects.project_name', 'like', '%'.$safeTerm.'%')
+                    ->orWhere('tasks.task_short_code', 'like', '%'.$safeTerm.'%');
             });
         }
 
@@ -257,7 +256,7 @@ class TimeLogConsolidatedReportDataTable extends BaseDataTable
             ]);
 
         if (canDataTableExport()) {
-            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
+            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
         }
 
         return $dataTable;
@@ -283,7 +282,7 @@ class TimeLogConsolidatedReportDataTable extends BaseDataTable
             __('modules.timeLogs.breakDuration') => ['data' => 'break_duration', 'name' => 'break_duration', 'title' => __('modules.timeLogs.breakDuration')],
             __('modules.employees.memo') => ['data' => 'memo', 'visible' => false, 'title' => __('modules.employees.memo')],
             __('app.client') => ['data' => 'client', 'visible' => false, 'title' => __('app.client')],
-            __('app.earnings') => ['data' => 'earnings', 'name' => 'earnings', 'title' => __('app.earnings')]
+            __('app.earnings') => ['data' => 'earnings', 'name' => 'earnings', 'title' => __('app.earnings')],
         ];
     }
 }

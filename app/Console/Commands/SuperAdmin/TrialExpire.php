@@ -13,7 +13,6 @@ use Illuminate\Console\Command;
 
 class TrialExpire extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
@@ -39,8 +38,7 @@ class TrialExpire extends Command
 
         if ($defaultPackage->annual_status) {
             $expireDate = now()->addYear()->format('Y-m-d');
-        }
-        else {
+        } else {
             $expireDate = now()->addMonth()->format('Y-m-d');
         }
 
@@ -79,7 +77,7 @@ class TrialExpire extends Command
             ->where('subscription_status', 'active')
             ->update(['subscription_status' => 'inactive']);
 
-        $subscription = new GlobalSubscription();
+        $subscription = new GlobalSubscription;
         $subscription->company_id = $company->id;
         $subscription->package_id = $package->id;
         $subscription->currency_id = $currencyId;
@@ -92,7 +90,7 @@ class TrialExpire extends Command
         $subscription->transaction_id = str(str()->random(15))->upper();
         $subscription->save();
 
-        $offlineInvoice = new GlobalInvoice();
+        $offlineInvoice = new GlobalInvoice;
         $offlineInvoice->global_subscription_id = $subscription->id;
         $offlineInvoice->company_id = $company->id;
         $offlineInvoice->currency_id = $currencyId;
@@ -125,5 +123,4 @@ class TrialExpire extends Command
             }
         }
     }
-
 }

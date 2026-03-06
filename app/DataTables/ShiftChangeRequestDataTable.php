@@ -10,29 +10,28 @@ use Yajra\DataTables\Html\Column;
 
 class ShiftChangeRequestDataTable extends BaseDataTable
 {
-
     /**
-     * @param mixed $query
+     * @param  mixed  $query
      * @return \Yajra\DataTables\DataTableAbstract|\Yajra\DataTables\EloquentDataTable
      */
     public function dataTable($query)
     {
         return (new EloquentDataTable($query))
             ->addIndexColumn()
-            ->addColumn('check', fn($row) => $this->checkBox($row))
+            ->addColumn('check', fn ($row) => $this->checkBox($row))
             ->addColumn('action', function ($row) {
                 $action = '<div class="task_view">
 
                     <div class="dropdown">
                         <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" type="link"
-                            id="dropdownMenuLink-' . $row->id . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            id="dropdownMenuLink-'.$row->id.'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="icon-options-vertical icons"></i>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-' . $row->id . '" tabindex="0">';
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-'.$row->id.'" tabindex="0">';
 
-                $action .= '<a href="javascript:;" class="dropdown-item approve-request" data-request-id="' . $row->id . '"><i class="fa fa-check mr-2"></i>' . __('app.approve') . '</a>';
+                $action .= '<a href="javascript:;" class="dropdown-item approve-request" data-request-id="'.$row->id.'"><i class="fa fa-check mr-2"></i>'.__('app.approve').'</a>';
 
-                $action .= '<a href="javascript:;" class="dropdown-item decline-request" data-request-id="' . $row->id . '"><i class="fa fa-times mr-2"></i>' . __('app.decline') . '</a>';
+                $action .= '<a href="javascript:;" class="dropdown-item decline-request" data-request-id="'.$row->id.'"><i class="fa fa-times mr-2"></i>'.__('app.decline').'</a>';
 
                 $action .= '</div>
                     </div>
@@ -45,14 +44,14 @@ class ShiftChangeRequestDataTable extends BaseDataTable
             })
             ->editColumn('name', function ($row) {
                 return view('components.employee', [
-                    'user' => $row->shiftSchedule->user
+                    'user' => $row->shiftSchedule->user,
                 ]);
             })
             ->editColumn('shift_name', function ($row) {
-                return $row->shiftSchedule->shift->shift_name . ' ' . __('app.to') . ' ' . $row->shift->shift_name;
+                return $row->shiftSchedule->shift->shift_name.' '.__('app.to').' '.$row->shift->shift_name;
             })
             ->editColumn('shift', function ($row) {
-                return '<span class="badge badge-info" style="background-color: ' . $row->shiftSchedule->shift->color . '">' . $row->shiftSchedule->shift->shift_name . '</span> ' . __('app.to') . ' <span class="badge badge-info" style="background-color: ' . $row->shift->color . '">' . $row->shift->shift_name . '</span>';
+                return '<span class="badge badge-info" style="background-color: '.$row->shiftSchedule->shift->color.'">'.$row->shiftSchedule->shift->shift_name.'</span> '.__('app.to').' <span class="badge badge-info" style="background-color: '.$row->shift->color.'">'.$row->shift->shift_name.'</span>';
             })
             ->editColumn('date', function ($row) {
                 return $row->shiftSchedule->date->translatedFormat(company()->date_format);
@@ -61,12 +60,11 @@ class ShiftChangeRequestDataTable extends BaseDataTable
                 return $row->status;
             })
             ->addIndexColumn()
-            ->setRowId(fn($row) => 'row-' . $row->id)
+            ->setRowId(fn ($row) => 'row-'.$row->id)
             ->rawColumns(['action', 'name', 'check', 'shift']);
     }
 
     /**
-     * @param EmployeeShiftChangeRequest $model
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function query(EmployeeShiftChangeRequest $model)
@@ -84,7 +82,7 @@ class ShiftChangeRequestDataTable extends BaseDataTable
         if ($request->startDate !== null && $request->startDate != 'null' && $request->startDate != '') {
             $startDate = companyToDateString($request->startDate);
 
-            if (!is_null($startDate)) {
+            if (! is_null($startDate)) {
                 $model->where(DB::raw('DATE(employee_shift_change_requests.`created_at`)'), '>=', $startDate);
             }
         }
@@ -92,18 +90,18 @@ class ShiftChangeRequestDataTable extends BaseDataTable
         if ($request->endDate !== null && $request->endDate != 'null' && $request->endDate != '') {
             $endDate = companyToDateString($request->endDate);
 
-            if (!is_null($endDate)) {
+            if (! is_null($endDate)) {
                 $model->where(function ($query) use ($endDate) {
                     $query->where(DB::raw('DATE(employee_shift_change_requests.`created_at`)'), '<=', $endDate);
                 });
             }
         }
 
-        if (!is_null($employee) && $employee !== 'all') {
+        if (! is_null($employee) && $employee !== 'all') {
             $model->where('employee_shift_schedules.user_id', $employee);
         }
 
-        if (!is_null($shift) && $shift !== 'all') {
+        if (! is_null($shift) && $shift !== 'all') {
             $model->where('employee_shift_change_requests.employee_shift_id', '=', $shift);
         }
 
@@ -134,7 +132,7 @@ class ShiftChangeRequestDataTable extends BaseDataTable
             ]);
 
         if (canDataTableExport()) {
-            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
+            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
         }
 
         return $dataTable;
@@ -152,9 +150,9 @@ class ShiftChangeRequestDataTable extends BaseDataTable
                 'title' => '<input type="checkbox" name="select_all_table" id="select-all-table" onclick="selectAllTable(this)">',
                 'exportable' => false,
                 'orderable' => false,
-                'searchable' => false
+                'searchable' => false,
             ],
-            '#' => ['data' => 'DT_RowIndex', 'orderable' => false, 'searchable' => false, 'visible' => !showId()],
+            '#' => ['data' => 'DT_RowIndex', 'orderable' => false, 'searchable' => false, 'visible' => ! showId()],
             __('app.id') => ['data' => 'id', 'name' => 'id', 'title' => __('#'), 'visible' => showId()],
             __('app.employee') => ['data' => 'name', 'name' => 'users.name', 'exportable' => false, 'title' => __('app.employee')],
             __('app.name') => ['data' => 'employee_name', 'name' => 'name', 'visible' => false, 'title' => __('app.name')],
@@ -168,8 +166,7 @@ class ShiftChangeRequestDataTable extends BaseDataTable
                 ->printable(false)
                 ->orderable(false)
                 ->searchable(false)
-                ->addClass('text-right pr-20')
+                ->addClass('text-right pr-20'),
         ];
     }
-
 }

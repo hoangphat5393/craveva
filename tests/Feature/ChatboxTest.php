@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
 use App\Models\User;
 use App\Models\UserAuth;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class ChatboxTest extends TestCase
 {
@@ -39,7 +39,7 @@ class ChatboxTest extends TestCase
             ->where('is_superadmin', 0)
             ->whereNotNull('user_auth_id')
             ->first();
-        
+
         if ($user && $user->userAuth) {
             return $user->userAuth;
         }
@@ -49,7 +49,7 @@ class ChatboxTest extends TestCase
             ->where('is_superadmin', 1)
             ->whereNotNull('user_auth_id')
             ->first();
-        
+
         if ($user && $user->userAuth) {
             return $user->userAuth;
         }
@@ -73,7 +73,7 @@ class ChatboxTest extends TestCase
         // 1. Get an authenticatable user (UserAuth)
         $userAuth = $this->getAuthenticatableUser();
 
-        if (!$userAuth) {
+        if (! $userAuth) {
             $this->markTestSkipped('No valid UserAuth found in database to test with.');
         }
 
@@ -105,7 +105,7 @@ class ChatboxTest extends TestCase
     {
         $userAuth = $this->getAuthenticatableUser();
 
-        if (!$userAuth) {
+        if (! $userAuth) {
             $this->markTestSkipped('No valid UserAuth found in database to test with.');
         }
 

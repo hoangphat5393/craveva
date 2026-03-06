@@ -7,17 +7,26 @@ use Illuminate\View\Component;
 
 class Number extends Component
 {
-
     public $fieldLabel;
+
     public $fieldRequired;
+
     public $fieldPlaceholder;
+
     public $fieldValue;
+
     public $fieldName;
+
     public $fieldId;
+
     public $fieldHelp;
+
     public $minValue;
+
     public $maxValue;
+
     public $popover;
+
     public $fieldReadOnly;
 
     /**
@@ -49,5 +58,4 @@ class Number extends Component
     {
         return view('components.forms.number');
     }
-
 }

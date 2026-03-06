@@ -13,7 +13,6 @@ use Yajra\DataTables\Facades\DataTables;
 
 class CustomFieldController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -21,6 +20,7 @@ class CustomFieldController extends AccountBaseController
         $this->activeSettingMenu = 'custom_fields';
         $this->middleware(function ($request, $next) {
             abort_403(GlobalSetting::validateSuperAdmin('manage_superadmin_custom_field_settings'));
+
             return $next($request);
         });
     }
@@ -49,7 +49,7 @@ class CustomFieldController extends AccountBaseController
                             $ul = '<ul class="value-list">';
 
                             foreach (json_decode($row->values) as $key => $value) {
-                                $ul .= '<li>' . $value . '</li>';
+                                $ul .= '<li>'.$value.'</li>';
                             }
 
                             $ul .= '</ul>';
@@ -66,12 +66,12 @@ class CustomFieldController extends AccountBaseController
                         $class = 'badge badge-danger disabled color-palette';
 
                         if ($row->required === 'yes') {
-                            $string = '<span class="' . $class . '">' . __('app.' . $row->required) . '</span>';
+                            $string = '<span class="'.$class.'">'.__('app.'.$row->required).'</span>';
                         }
 
                         if ($row->required === 'no') {
                             $class = 'badge badge-secondary disabled color-palette';
-                            $string = '<span class="' . $class . '">' . __('app.' . $row->required) . '</span>';
+                            $string = '<span class="'.$class.'">'.__('app.'.$row->required).'</span>';
                         }
 
                         return $string;
@@ -81,9 +81,9 @@ class CustomFieldController extends AccountBaseController
                     'action',
                     function ($row) {
 
-                        return '<div class="task_view"> <a data-user-id="' . $row->id . '" class="task_view_more d-flex align-items-center justify-content-center edit-custom-field" href="javascript:;" data-id="{{ $permission->id }}" > <i class="fa fa-edit icons mr-2"></i>' . __('app.edit') . '</a> </div>
-                    <div class="task_view"> <a data-user-id="' . $row->id . '" class="task_view_more d-flex align-items-center justify-content-center sa-params" href="javascript:;" data-id="{{ $permission->id }}"  >
-                            <i class="fa fa-trash icons mr-2"></i> ' . __('app.delete') . ' </a> </div>';
+                        return '<div class="task_view"> <a data-user-id="'.$row->id.'" class="task_view_more d-flex align-items-center justify-content-center edit-custom-field" href="javascript:;" data-id="{{ $permission->id }}" > <i class="fa fa-edit icons mr-2"></i>'.__('app.edit').'</a> </div>
+                    <div class="task_view"> <a data-user-id="'.$row->id.'" class="task_view_more d-flex align-items-center justify-content-center sa-params" href="javascript:;" data-id="{{ $permission->id }}"  >
+                            <i class="fa fa-trash icons mr-2"></i> '.__('app.delete').' </a> </div>';
                     }
                 )
                 ->rawColumns(['values', 'action', 'required'])
@@ -104,11 +104,11 @@ class CustomFieldController extends AccountBaseController
     {
         $this->customFieldGroups = CustomFieldGroup::whereNull('company_id')->get();
         $this->types = ['text', 'number', 'password', 'textarea', 'select', 'radio', 'date', 'checkbox', 'file'];
+
         return view('super-admin.custom-fields.create-custom-field-modal', $this->data);
     }
 
     /**
-     * @param StoreCustomField $request
      * @return array
      */
     public function store(StoreCustomField $request)
@@ -124,7 +124,7 @@ class CustomFieldController extends AccountBaseController
                     'required' => $request->get('required'),
                     'values' => $request->get('value'),
                     'export' => $request->get('export'),
-                ]
+                ],
             ],
 
         ];
@@ -137,7 +137,7 @@ class CustomFieldController extends AccountBaseController
     /**
      * Show the form for editing the specified resource.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -151,8 +151,7 @@ class CustomFieldController extends AccountBaseController
     /**
      * Update the specified resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -172,7 +171,7 @@ class CustomFieldController extends AccountBaseController
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
@@ -191,14 +190,13 @@ class CustomFieldController extends AccountBaseController
                 'label' => $field['label'],
                 'name' => $field['name'],
                 'type' => $field['type'],
-                'export' => $field['export']
+                'export' => $field['export'],
             ];
 
             if (isset($field['required']) && (in_array($field['required'], ['yes', 'on', 1]))) {
                 $insertData['required'] = 'yes';
 
-            }
-            else {
+            } else {
                 $insertData['required'] = 'no';
             }
 
@@ -207,8 +205,7 @@ class CustomFieldController extends AccountBaseController
                 if (is_array($field['values'])) {
                     $insertData['values'] = \GuzzleHttp\json_encode($field['values']);
 
-                }
-                else {
+                } else {
                     $insertData['values'] = $field['values'];
                 }
             }
@@ -217,5 +214,4 @@ class CustomFieldController extends AccountBaseController
 
         }
     }
-
 }

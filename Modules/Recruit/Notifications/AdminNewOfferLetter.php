@@ -8,8 +8,8 @@ use Modules\Recruit\Entities\RecruitJobOfferLetter;
 
 class AdminNewOfferLetter extends BaseNotification
 {
-
     private $offer;
+
     private $emailSetting;
 
     /**
@@ -27,14 +27,14 @@ class AdminNewOfferLetter extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
     {
         $via = ['database'];
 
-        if ($this->emailSetting->send_email == 'yes'  && $notifiable->email_notifications && $notifiable->email != null) {
+        if ($this->emailSetting->send_email == 'yes' && $notifiable->email_notifications && $notifiable->email != null) {
             array_push($via, 'mail');
         }
 
@@ -44,7 +44,7 @@ class AdminNewOfferLetter extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
@@ -52,7 +52,7 @@ class AdminNewOfferLetter extends BaseNotification
         $url = route('job-offer-letter.show', $this->offer->id);
         $url = getDomainSpecificUrl($url, $this->company);
 
-        $content = __($this->offer->jobApplication->full_name) . ' (' . ($this->offer->jobApplication->email ? $this->offer->jobApplication->email : '') . ') - ' . __('recruit::modules.offerLetter.text') . ' ' . ucwords($this->offer->job->title);
+        $content = __($this->offer->jobApplication->full_name).' ('.($this->offer->jobApplication->email ? $this->offer->jobApplication->email : '').') - '.__('recruit::modules.offerLetter.text').' '.ucwords($this->offer->job->title);
 
         return parent::build()
             ->subject(__('recruit::modules.offerLetter.subject'))
@@ -60,15 +60,15 @@ class AdminNewOfferLetter extends BaseNotification
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
-                'actionText' => __('app.view') . ' ' . __('recruit::modules.job.offerletter'),
-                'notifiableName' => $notifiable->name
+                'actionText' => __('app.view').' '.__('recruit::modules.job.offerletter'),
+                'notifiableName' => $notifiable->name,
             ]);
     }
 
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function toArray($notifiable)
@@ -83,5 +83,4 @@ class AdminNewOfferLetter extends BaseNotification
             'heading' => $this->offer->jobApplication->full_name,
         ];
     }
-
 }

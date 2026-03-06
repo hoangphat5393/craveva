@@ -7,10 +7,10 @@ use Modules\Performance\Entities\Objective;
 
 class ObjectiveCreatedEvent
 {
-
     use SerializesModels;
 
     public $objective;
+
     public $owners;
 
     /**
@@ -21,5 +21,4 @@ class ObjectiveCreatedEvent
         $this->objective = $objective;
         $this->owners = $users;
     }
-
 }

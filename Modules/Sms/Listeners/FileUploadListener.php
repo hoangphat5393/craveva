@@ -33,5 +33,4 @@ class FileUploadListener
         } catch (\Exception $e) { // @codingStandardsIgnoreLine
         }
     }
-
 }

@@ -9,7 +9,6 @@ use Illuminate\Queue\SerializesModels;
 
 class TaskReminderEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $task;
@@ -18,5 +17,4 @@ class TaskReminderEvent
     {
         $this->task = $task;
     }
-
 }

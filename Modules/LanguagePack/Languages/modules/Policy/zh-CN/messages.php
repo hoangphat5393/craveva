@@ -1,6 +1,6 @@
 <?php
 
-return array(
+return [
     'unArchiveMessage' => '您确定要恢复此政策吗？',
     'archiveMessage' => '您确定要归档此政策吗？',
     'policyRevertSuccessfully' => '政策已成功恢复。',
@@ -9,4 +9,4 @@ return array(
     'reminderSuccess' => '提醒发送成功。',
     'archiveSuccess' => '政策归档成功。',
     'processing' => '处理中...',
-);
+];

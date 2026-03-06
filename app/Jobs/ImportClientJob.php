@@ -2,30 +2,31 @@
 
 namespace App\Jobs;
 
+use App\Models\ClientDetails;
+use App\Models\Country;
 use App\Models\Role;
 use App\Models\User;
-use App\Models\ClientDetails;
 use App\Models\UserAuth;
-use App\Models\Country;
+use App\Traits\ExcelImportable;
+use App\Traits\UniversalSearchTrait;
 use Exception;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
-use App\Traits\ExcelImportable;
-use Illuminate\Support\Facades\DB;
-use App\Traits\UniversalSearchTrait;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
 
 class ImportClientJob implements ShouldQueue
 {
-
     use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, UniversalSearchTrait;
     use ExcelImportable;
 
     private $row;
+
     private $columns;
+
     private $company;
 
     /**
@@ -56,15 +57,14 @@ class ImportClientJob implements ShouldQueue
             }
 
             if ($user) {
-                $this->failJobWithMessage(__('messages.duplicateEntryForEmail') . $this->getColumnValue('email'));
-            }
-            else {
+                $this->failJobWithMessage(__('messages.duplicateEntryForEmail').$this->getColumnValue('email'));
+            } else {
                 DB::beginTransaction();
                 try {
 
                     $countryID = $this->isColumnExists('country_id') ? Country::where('name', $this->getColumnValue('country_id'))->first()->id : null;
 
-                    $user = new User();
+                    $user = new User;
                     $user->company_id = $this->company?->id;
                     $user->name = $this->getColumnValue('name');
                     $user->email = $this->isColumnExists('email') && $this->isEmailValid($this->getColumnValue('email')) ? $this->getColumnValue('email') : null;
@@ -72,7 +72,7 @@ class ImportClientJob implements ShouldQueue
                     $user->gender = $this->isColumnExists('gender') ? strtolower($this->getColumnValue('gender')) : null;
                     $user->country_id = $countryID;
 
-                    if(!empty(array_keys($this->columns, 'email')) && filter_var($this->row[array_keys($this->columns, 'email')[0]], FILTER_VALIDATE_EMAIL)){
+                    if (! empty(array_keys($this->columns, 'email')) && filter_var($this->row[array_keys($this->columns, 'email')[0]], FILTER_VALIDATE_EMAIL)) {
                         $userAuth = UserAuth::createUserAuthCredentials(array_keys($this->columns, 'email')[0]);
                         $user->user_auth_id = $userAuth->id;
                     }
@@ -80,7 +80,7 @@ class ImportClientJob implements ShouldQueue
                     $user->save();
 
                     if ($user->id) {
-                        $clientDetails = new ClientDetails();
+                        $clientDetails = new ClientDetails;
                         $clientDetails->company_id = $this->company?->id;
                         $clientDetails->user_id = $user->id;
                         $clientDetails->company_name = $this->isColumnExists('company_name') ? $this->getColumnValue('company_name') : null;
@@ -99,11 +99,11 @@ class ImportClientJob implements ShouldQueue
 
                     $user->assignUserRolePermission($role->id);
 
-                    if (!is_null($user->email)) {
+                    if (! is_null($user->email)) {
                         $this->logSearchEntry($user->id, $user->email, 'clients.show', 'client', $user->company_id);
                     }
 
-                    if (!is_null($user->clientDetails->company_name)) {
+                    if (! is_null($user->clientDetails->company_name)) {
                         $this->logSearchEntry($user->id, $user->clientDetails->company_name, 'clients.show', 'client', $user->company_id);
                     }
 
@@ -113,10 +113,8 @@ class ImportClientJob implements ShouldQueue
                     $this->failJobWithMessage($e->getMessage());
                 }
             }
-        }
-        else {
+        } else {
             $this->failJob(__('messages.invalidData'));
         }
     }
-
 }

@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class ImportPayment extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -25,8 +24,7 @@ class ImportPayment extends CoreRequest
     public function rules()
     {
         return [
-            'import_file'      => 'required|mimes:csv,txt'
+            'import_file' => 'required|mimes:csv,txt',
         ];
     }
-
 }

@@ -6,17 +6,16 @@ use App\Models\LeadSource;
 
 class LeadSourceObserver
 {
-
     public function saving(LeadSource $leadSource)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             $leadSource->last_updated_by = user()->id;
         }
     }
 
     public function creating(LeadSource $leadSource)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             $leadSource->added_by = user()->id;
         }
 
@@ -24,5 +23,4 @@ class LeadSourceObserver
             $leadSource->company_id = company()->id;
         }
     }
-
 }

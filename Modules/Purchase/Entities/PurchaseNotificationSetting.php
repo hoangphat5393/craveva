@@ -7,9 +7,7 @@ use App\Traits\HasCompany;
 
 class PurchaseNotificationSetting extends BaseModel
 {
-
     use HasCompany;
 
     protected $guarded = ['id'];
-
 }

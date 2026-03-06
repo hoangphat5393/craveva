@@ -27,7 +27,7 @@ class JobsTableSeeder extends Seeder
     /**
      * Run the database seeds.
      *
-     * @param int $companyId
+     * @param  int  $companyId
      * @return void
      */
     public function run($companyId)
@@ -91,8 +91,8 @@ class JobsTableSeeder extends Seeder
                 $recruiter->added_by = $emp->random();
                 $recruiter->save();
             } catch (\Exception $e) {
-                Log::error("Failed to create recruiter: " . $e->getMessage());
-                throw new \Exception("Failed to create recruiter: " . $e->getMessage());
+                Log::error('Failed to create recruiter: '.$e->getMessage());
+                throw new \Exception('Failed to create recruiter: '.$e->getMessage());
             }
 
             // Create job category
@@ -102,8 +102,8 @@ class JobsTableSeeder extends Seeder
                 $jobCategory->category_name = 'Developer';
                 $jobCategory->save();
             } catch (\Exception $e) {
-                Log::error("Failed to create job category: " . $e->getMessage());
-                throw new \Exception("Failed to create job category: " . $e->getMessage());
+                Log::error('Failed to create job category: '.$e->getMessage());
+                throw new \Exception('Failed to create job category: '.$e->getMessage());
             }
 
             // Create job sub-category
@@ -114,8 +114,8 @@ class JobsTableSeeder extends Seeder
                 $jobSubCategory->sub_category_name = 'Laravel Developer';
                 $jobSubCategory->save();
             } catch (\Exception $e) {
-                Log::error("Failed to create job sub-category: " . $e->getMessage());
-                throw new \Exception("Failed to create job sub-category: " . $e->getMessage());
+                Log::error('Failed to create job sub-category: '.$e->getMessage());
+                throw new \Exception('Failed to create job sub-category: '.$e->getMessage());
             }
 
             // Get recruiter IDs (fixed variable naming conflict)
@@ -252,7 +252,7 @@ class JobsTableSeeder extends Seeder
                         $skill->recruit_skill_id = $skills->random();
                         $skill->save();
                     } catch (\Exception $e) {
-                        Log::error("Failed to create job skill for job {$data->id}: " . $e->getMessage());
+                        Log::error("Failed to create job skill for job {$data->id}: ".$e->getMessage());
                         // Continue with other operations
                     }
 
@@ -263,7 +263,7 @@ class JobsTableSeeder extends Seeder
                         $address->company_address_id = $addressID->random();
                         $address->save();
                     } catch (\Exception $e) {
-                        Log::error("Failed to create job address for job {$data->id}: " . $e->getMessage());
+                        Log::error("Failed to create job address for job {$data->id}: ".$e->getMessage());
                         // Continue with other operations
                     }
 
@@ -274,17 +274,18 @@ class JobsTableSeeder extends Seeder
                         $stage->recruit_interview_stage_id = $stages->random();
                         $stage->save();
                     } catch (\Exception $e) {
-                        Log::error("Failed to create job interview stage for job {$data->id}: " . $e->getMessage());
+                        Log::error("Failed to create job interview stage for job {$data->id}: ".$e->getMessage());
                         // Continue with other operations
                     }
                 } catch (\Exception $e) {
-                    Log::error("Failed to create job at index {$index}: " . $e->getMessage());
+                    Log::error("Failed to create job at index {$index}: ".$e->getMessage());
+
                     // Continue with next job
                     continue;
                 }
             }
         } catch (\Exception $e) {
-            Log::error("JobsTableSeeder failed for company ID {$companyId}: " . $e->getMessage());
+            Log::error("JobsTableSeeder failed for company ID {$companyId}: ".$e->getMessage());
             throw $e;
         }
     }

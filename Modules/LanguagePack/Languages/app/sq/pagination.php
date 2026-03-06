@@ -1,5 +1,6 @@
-<?php 
+<?php
+
 return [
-  'previous' => '« E mëparshme',
-  'next' => 'Tjetra »',
+    'previous' => '« E mëparshme',
+    'next' => 'Tjetra »',
 ];

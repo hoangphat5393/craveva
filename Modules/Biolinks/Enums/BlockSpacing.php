@@ -14,9 +14,8 @@ enum BlockSpacing: string
     public function label(): string
     {
         return match ($this) {
-            self::SMALL, self::MEDIUM, self::LARGE => __('biolinks::app.' . $this->value),
+            self::SMALL, self::MEDIUM, self::LARGE => __('biolinks::app.'.$this->value),
             default => $this->value,
         };
     }
-
 }

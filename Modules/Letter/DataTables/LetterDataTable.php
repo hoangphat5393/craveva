@@ -2,15 +2,17 @@
 
 namespace Modules\Letter\DataTables;
 
-use Illuminate\Support\Carbon;
 use App\DataTables\BaseDataTable;
-use Yajra\DataTables\Html\Column;
+use Illuminate\Support\Carbon;
 use Modules\Letter\Entities\Letter;
+use Yajra\DataTables\Html\Column;
 
 class LetterDataTable extends BaseDataTable
 {
     private $addPermission;
+
     private $editPermission;
+
     private $deletePermission;
 
     public function __construct()
@@ -33,23 +35,23 @@ class LetterDataTable extends BaseDataTable
 
                     <div class="dropdown">
                         <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" type="link"
-                            id="dropdownMenuLink-' . $row->id . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            id="dropdownMenuLink-'.$row->id.'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="icon-options-vertical icons"></i>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-' . $row->id . '" tabindex="0">';
-            $action .= '<a href="' . route('letter.generate.show', [$row->id]) . '" class="dropdown-item openRightModal"><i class="fa fa-eye mr-2"></i>' . __('app.view') . '</a>';
-            $action .= '<a href="' . route('letter.download', $row->id) . '" class="dropdown-item"><i class="fa fa-download mr-2"></i>' . __('app.download') . '</a>';
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-'.$row->id.'" tabindex="0">';
+            $action .= '<a href="'.route('letter.generate.show', [$row->id]).'" class="dropdown-item openRightModal"><i class="fa fa-eye mr-2"></i>'.__('app.view').'</a>';
+            $action .= '<a href="'.route('letter.download', $row->id).'" class="dropdown-item"><i class="fa fa-download mr-2"></i>'.__('app.download').'</a>';
 
             if ($this->addPermission != 'none') {
-                $action .= '<a href="' . route('letter.generate.create') . '?letterId=' . $row->id . '" class="dropdown-item openRightModal"><i class="fa fa-clone mr-2"></i>' . __('app.duplicate') . '</a>';
+                $action .= '<a href="'.route('letter.generate.create').'?letterId='.$row->id.'" class="dropdown-item openRightModal"><i class="fa fa-clone mr-2"></i>'.__('app.duplicate').'</a>';
             }
 
             if ($this->editPermission != 'none') {
-                $action .= '<a href="' . route('letter.generate.edit', [$row->id]) . '" class="dropdown-item openRightModal"><i class="fa fa-edit mr-2"></i>' . __('app.edit') . '</a>';
+                $action .= '<a href="'.route('letter.generate.edit', [$row->id]).'" class="dropdown-item openRightModal"><i class="fa fa-edit mr-2"></i>'.__('app.edit').'</a>';
             }
 
             if ($this->deletePermission != 'none') {
-                $action .= '<a href="javascript:;" data-letter-id="' . $row->id . '" class="dropdown-item delete-table-row"><i class="fa fa-trash mr-2"></i>' . __('app.delete') . '</a>';
+                $action .= '<a href="javascript:;" data-letter-id="'.$row->id.'" class="dropdown-item delete-table-row"><i class="fa fa-trash mr-2"></i>'.__('app.delete').'</a>';
             }
 
             $action .= '</div>
@@ -58,17 +60,17 @@ class LetterDataTable extends BaseDataTable
 
             return $action;
         })
-        ->editColumn('template_id', function($row){
-            return '<a href="' . route('letter.generate.show', [$row->id]) . '" class="text-darkest-grey openRightModal">' . $row->template->title . '</a>';
-        })
-        ->editColumn('user_id', function($row){
-            return '<a href="' . route('letter.generate.show', [$row->id]) . '" class="text-darkest-grey openRightModal">' . $row->employee_name . '</a>';
-        });
+            ->editColumn('template_id', function ($row) {
+                return '<a href="'.route('letter.generate.show', [$row->id]).'" class="text-darkest-grey openRightModal">'.$row->template->title.'</a>';
+            })
+            ->editColumn('user_id', function ($row) {
+                return '<a href="'.route('letter.generate.show', [$row->id]).'" class="text-darkest-grey openRightModal">'.$row->employee_name.'</a>';
+            });
 
         $datatables->addIndexColumn();
         $datatables->smart(false);
 
-        $datatables->setRowId(fn($row) => 'row-' . $row->id);
+        $datatables->setRowId(fn ($row) => 'row-'.$row->id);
 
         $datatables->rawColumns(['name', 'action', 'created_at', 'user_id', 'template_id']);
 
@@ -86,12 +88,12 @@ class LetterDataTable extends BaseDataTable
             $model = $model->where(
                 function ($query) {
                     $query->whereHas('user', function ($q) {
-                        $q->where('name', 'like', '%' . request()->searchText . '%');
+                        $q->where('name', 'like', '%'.request()->searchText.'%');
                     })
-                    ->orWhereHas('template', function ($q) {
-                            $q->where('title', 'like', '%' . request()->searchText . '%');
-                    })
-                    ->orWhere('description', 'like', '%' . request()->searchText . '%');
+                        ->orWhereHas('template', function ($q) {
+                            $q->where('title', 'like', '%'.request()->searchText.'%');
+                        })
+                        ->orWhere('description', 'like', '%'.request()->searchText.'%');
                 }
             );
         }
@@ -140,7 +142,7 @@ class LetterDataTable extends BaseDataTable
                 ->printable(false)
                 ->orderable(false)
                 ->searchable(false)
-                ->addClass('text-right pr-20')
+                ->addClass('text-right pr-20'),
         ];
 
         return array_merge($data, $action);
@@ -151,7 +153,6 @@ class LetterDataTable extends BaseDataTable
      */
     protected function filename(): string
     {
-        return 'LetterGenerates_' . date('YmdHis');
+        return 'LetterGenerates_'.date('YmdHis');
     }
-
 }

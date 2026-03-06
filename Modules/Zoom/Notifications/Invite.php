@@ -71,16 +71,16 @@ class Invite extends BaseNotification
         $url = route('login');
         $url = getDomainSpecificUrl($url, $this->company);
 
-            $emailContent = parent::build()
+        $emailContent = parent::build()
 
-                ->subject(__('zoom::email.newMeeting.subject').' - '.config('app.name'))
+            ->subject(__('zoom::email.newMeeting.subject').' - '.config('app.name'))
 
-                ->greeting(__('email.hello').' '.$notifiable->name.'!')
-                ->line(__('zoom::email.newMeeting.text'))
-                ->line(__('zoom::modules.zoommeeting.meetingName').': '.$this->meeting->meeting_name)
-                ->line(__('zoom::modules.zoommeeting.startOn').': '.$this->meeting->start_date_time->format($this->company->date_format.' - '.$this->company->time_format))
-                ->line(__('zoom::modules.zoommeeting.endOn').': '.$this->meeting->end_date_time->format($this->company->date_format.' - '.$this->company->time_format))
-                ->line(__('zoom::modules.meetings.meetingId').': '.$this->meeting->meeting_id);
+            ->greeting(__('email.hello').' '.$notifiable->name.'!')
+            ->line(__('zoom::email.newMeeting.text'))
+            ->line(__('zoom::modules.zoommeeting.meetingName').': '.$this->meeting->meeting_name)
+            ->line(__('zoom::modules.zoommeeting.startOn').': '.$this->meeting->start_date_time->format($this->company->date_format.' - '.$this->company->time_format))
+            ->line(__('zoom::modules.zoommeeting.endOn').': '.$this->meeting->end_date_time->format($this->company->date_format.' - '.$this->company->time_format))
+            ->line(__('zoom::modules.meetings.meetingId').': '.$this->meeting->meeting_id);
 
         if ($notifiable->id == $this->meeting->created_by) {
 

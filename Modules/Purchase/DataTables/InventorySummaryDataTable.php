@@ -2,43 +2,35 @@
 
 namespace Modules\Purchase\DataTables;
 
-use Carbon\Carbon;
-use App\Models\InventorySummary;
 use App\DataTables\BaseDataTable;
-use Yajra\DataTables\Html\Button;
-use Yajra\DataTables\Html\Column;
-use Illuminate\Support\Facades\DB;
-use Yajra\DataTables\EloquentDataTable;
-use Yajra\DataTables\Html\Editor\Editor;
-use Yajra\DataTables\Html\Editor\Fields;
-use Yajra\DataTables\Services\DataTable;
-use Modules\Purchase\Entities\PurchaseItem;
-use Modules\Purchase\Entities\PurchaseOrder;
-use Yajra\DataTables\Html\Builder as HtmlBuilder;
-use Modules\Purchase\Entities\PurchaseStockAdjustment;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
+use Illuminate\Support\Facades\DB;
+use Modules\Purchase\Entities\PurchaseStockAdjustment;
+use Yajra\DataTables\EloquentDataTable;
+use Yajra\DataTables\Html\Builder as HtmlBuilder;
+use Yajra\DataTables\Html\Button;
+use Yajra\DataTables\Services\DataTable;
 
 class InventorySummaryDataTable extends BaseDataTable
 {
-
     /**
      * Build the DataTable class.
      *
-     * @param QueryBuilder $query Results from query() method.
+     * @param  QueryBuilder  $query  Results from query() method.
      */
-
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return datatables()
             ->eloquent($query)
-            ->addColumn('item_name', fn($row) => $row->product->name)
-            ->addColumn('sku', fn($row) => $row->product->sku)
-            ->addColumn('quantity_ordered', fn($row) => $row->product->count_purchase_order)
-            ->addColumn('quantity_in', fn($row) => $row->product->opening_stock)
-            ->addColumn('quantity_out', fn($row) => $row->product->count_quantity_out)
-            ->addColumn('stock_on_hand', fn($row) => $row->net_quantity)
-            ->addColumn('committed_stock', fn($row) => $row->product->invoiceItem->sum('quantity'))
-            ->addColumn('available_for_sale', fn($row) => $row->net_quantity - $row->product->invoiceItem->sum('quantity'));
+            ->addColumn('item_name', fn ($row) => $row->product->name)
+            ->addColumn('sku', fn ($row) => $row->product->sku)
+            ->addColumn('quantity_ordered', fn ($row) => $row->product->count_purchase_order)
+            ->addColumn('quantity_in', fn ($row) => $row->product->opening_stock)
+            ->addColumn('quantity_out', fn ($row) => $row->product->count_quantity_out)
+            ->addColumn('stock_on_hand', fn ($row) => $row->net_quantity)
+            ->addColumn('committed_stock', fn ($row) => $row->product->invoiceItem->sum('quantity'))
+            ->addColumn('available_for_sale', fn ($row) => $row->net_quantity - $row->product->invoiceItem->sum('quantity'));
 
     }
 
@@ -66,13 +58,12 @@ class InventorySummaryDataTable extends BaseDataTable
                         $purchaseOrderQuery->where('delivery_status', 'delivered');
                     });
                 }]);
-            },'product.tax']);
-
+            }, 'product.tax']);
 
         if ($request->startDate !== null && $request->startDate != 'null' && $request->startDate != '') {
             $startDate = Carbon::createFromFormat($this->company->date_format, $request->startDate)->toDateString();
 
-            if (!is_null($startDate)) {
+            if (! is_null($startDate)) {
                 $model = $model->where(DB::raw('DATE(purchase_stock_adjustments.`created_at`)'), '>=', $startDate);
             }
         }
@@ -80,7 +71,7 @@ class InventorySummaryDataTable extends BaseDataTable
         if ($request->endDate !== null && $request->endDate != 'null' && $request->endDate != '') {
             $endDate = Carbon::createFromFormat($this->company->date_format, $request->endDate)->toDateString();
 
-            if (!is_null($endDate)) {
+            if (! is_null($endDate)) {
                 $model = $model->where(function ($query) use ($endDate) {
                     $query->where(DB::raw('DATE(purchase_stock_adjustments.`created_at`)'), '<=', $endDate);
                 });
@@ -105,7 +96,7 @@ class InventorySummaryDataTable extends BaseDataTable
                     $("#inventorysummary-table .select-picker").selectpicker();
                 }',
             ])
-            ->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
+            ->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
     }
 
     /**
@@ -131,7 +122,6 @@ class InventorySummaryDataTable extends BaseDataTable
      */
     protected function filename(): string
     {
-        return 'InventorySummary_' . date('YmdHis');
+        return 'InventorySummary_'.date('YmdHis');
     }
-
 }

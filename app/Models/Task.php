@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helper\UserService;
 use App\Scopes\ActiveScope;
 use App\Traits\CustomFieldsTrait;
 use App\Traits\HasCompany;
@@ -11,7 +12,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
-use App\Helper\UserService;
 
 /**
  * App\Models\Task
@@ -83,6 +83,7 @@ use App\Helper\UserService;
  * @property-read int|null $time_logged_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User[] $users
  * @property-read int|null $users_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Task newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Task newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Task pending()
@@ -111,8 +112,11 @@ use App\Helper\UserService;
  * @method static \Illuminate\Database\Eloquent\Builder|Task whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Task whereTaskCategoryId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Task whereUpdatedAt($value)
+ *
  * @property string|null $hash
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Task whereHash($value)
+ *
  * @property int $repeat
  * @property int $repeat_complete
  * @property int|null $repeat_count
@@ -121,47 +125,56 @@ use App\Helper\UserService;
  * @property-read \App\Models\ProjectTimeLog|null $activeTimer
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User[] $activeUsers
  * @property-read int|null $active_users_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Task whereRepeat($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Task whereRepeatComplete($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Task whereRepeatCount($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Task whereRepeatCycles($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Task whereRepeatType($value)
+ *
  * @property string|null $event_id
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Task whereEventId($value)
+ *
  * @property int|null $company_id
  * @property string|null $task_short_code
  * @property \Illuminate\Support\Carbon|null $deleted_at
  * @property-read \App\Models\Project|null $activeProject
  * @property-read \App\Models\Company|null $company
  * @property-read int|null $task_users_count
+ *
  * @method static \Illuminate\Database\Query\Builder|Task onlyTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder|Task whereCompanyId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Task whereDeletedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Task whereTaskShortCode($value)
  * @method static \Illuminate\Database\Query\Builder|Task withTrashed()
  * @method static \Illuminate\Database\Query\Builder|Task withoutTrashed()
+ *
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MentionUser> $mentionTask
  * @property-read int|null $mention_task_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $mentionUser
  * @property-read int|null $mention_user_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MentionUser> $mentionTask
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $mentionUser
+ *
  * @mixin \Eloquent
  */
 class Task extends BaseModel
 {
-
-    use Notifiable, SoftDeletes;
     use CustomFieldsTrait;
     use HasCompany;
+    use Notifiable, SoftDeletes;
 
     protected $casts = [
         'due_date' => 'datetime',
         'completed_on' => 'datetime',
         'start_date' => 'datetime',
     ];
+
     protected $appends = ['due_on', 'create_on'];
+
     protected $guarded = ['id'];
+
     protected $with = ['company:id,date_format', 'project:id,project_name,need_approval_by_admin,project_short_code', 'users:id,name,image'];
 
     const CUSTOM_FIELD_MODEL = 'App\Models\Task';
@@ -355,8 +368,8 @@ class Task extends BaseModel
     }
 
     /**
-     * @param int $projectId
-     * @param null $userID
+     * @param  int  $projectId
+     * @param  null  $userID
      * @return \Illuminate\Support\Collection
      */
     public static function projectOpenTasks($projectId, $userID = null)
@@ -479,7 +492,7 @@ class Task extends BaseModel
         $userId = UserService::getUserId();
         $pin = Pinned::where('user_id', $userId)->where('task_id', $this->id)->first();
 
-        if (!is_null($pin)) {
+        if (! is_null($pin)) {
             return true;
         }
 
@@ -495,7 +508,7 @@ class Task extends BaseModel
             $tasks = Task::select('tasks.id', 'tasks.heading')
                 ->join('task_users', 'task_users.task_id', '=', 'tasks.id');
 
-            if (!is_null($projectId)) {
+            if (! is_null($projectId)) {
                 $tasks->where('tasks.project_id', '=', $projectId);
             }
 
@@ -544,7 +557,7 @@ class Task extends BaseModel
             $taskID = explode('-', $task->task_short_code);
             $taskCode = array_pop($taskID);
 
-            return (int)$taskCode;
+            return (int) $taskCode;
         }
 
         return 0;
@@ -570,6 +583,7 @@ class Task extends BaseModel
                 $id = $clientContact->user_id;
             }
         }
+
         return $permission == 'added' && ($id == $this->added_by || $userId == $this->added_by);
     }
 
@@ -577,6 +591,7 @@ class Task extends BaseModel
     {
         $taskUsers = $this->users->pluck('id')->toArray();
         $userId = UserService::getUserId();
+
         return $permission == 'owned' && (in_array(user()->id, $taskUsers) || in_array($userId, $taskUsers) || in_array('client', user_roles()));
     }
 
@@ -624,5 +639,4 @@ class Task extends BaseModel
             $this->hasBothPermission($permission) ||
             $this->projectAdmin();
     }
-
 }

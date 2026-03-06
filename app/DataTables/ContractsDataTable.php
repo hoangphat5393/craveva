@@ -2,22 +2,24 @@
 
 namespace App\DataTables;
 
+use App\Helper\Common;
+use App\Helper\UserService;
 use App\Models\Contract;
 use App\Models\CustomField;
 use App\Models\CustomFieldGroup;
 use App\Models\GlobalSetting;
+use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
-use Illuminate\Support\Facades\DB;
-use App\Helper\UserService;
-use App\Helper\Common;
 
 class ContractsDataTable extends BaseDataTable
 {
-
     private $editContractPermission;
+
     private $deleteContractPermission;
+
     private $addContractPermission;
+
     private $viewContractPermission;
 
     public function __construct()
@@ -32,7 +34,7 @@ class ContractsDataTable extends BaseDataTable
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
@@ -44,35 +46,35 @@ class ContractsDataTable extends BaseDataTable
         $customFieldColumns = CustomField::customFieldData($datatables, Contract::CUSTOM_FIELD_MODEL);
 
         return $datatables
-            ->addColumn('check', fn($row) => $this->checkBox($row))
+            ->addColumn('check', fn ($row) => $this->checkBox($row))
             ->addColumn('action', function ($row) use ($userId) {
 
                 $action = '<div class="task_view">
 
                 <div class="dropdown">
                     <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" type="link"
-                        id="dropdownMenuLink-' . $row->id . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        id="dropdownMenuLink-'.$row->id.'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="icon-options-vertical icons"></i>
                     </a>
-                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-' . $row->id . '" tabindex="0">';
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-'.$row->id.'" tabindex="0">';
 
-                $action .= ' <a href="' . route('contracts.show', [$row->id]) . '" class="dropdown-item"><i class="fa fa-eye mr-2"></i>' . __('app.view') . '</a>';
+                $action .= ' <a href="'.route('contracts.show', [$row->id]).'" class="dropdown-item"><i class="fa fa-eye mr-2"></i>'.__('app.view').'</a>';
 
-                if (!in_array('client', user_roles()) && !$row->company_sign && user()->company_id == $row->company_id) {
-                    $action .= '<a class="dropdown-item sign-modal" href="javascript:;" data-contract-id="' . $row->id . '">
+                if (! in_array('client', user_roles()) && ! $row->company_sign && user()->company_id == $row->company_id) {
+                    $action .= '<a class="dropdown-item sign-modal" href="javascript:;" data-contract-id="'.$row->id.'">
                     <i class="fa fa-check mr-2"></i>
-                    ' . trans('modules.estimates.companysignature') . '
+                    '.trans('modules.estimates.companysignature').'
                     </a>';
                 }
 
-                if (!$row->signature) {
-                    $action .= '<a class="dropdown-item" href="' . url()->temporarySignedRoute('front.contract.show', now()->addDays(GlobalSetting::SIGNED_ROUTE_EXPIRY), [$row->hash]) . '" target="_blank"><i class="fa fa-link mr-2"></i>' . __('modules.proposal.publicLink') . '</a>';
+                if (! $row->signature) {
+                    $action .= '<a class="dropdown-item" href="'.url()->temporarySignedRoute('front.contract.show', now()->addDays(GlobalSetting::SIGNED_ROUTE_EXPIRY), [$row->hash]).'" target="_blank"><i class="fa fa-link mr-2"></i>'.__('modules.proposal.publicLink').'</a>';
                 }
 
                 if (in_array('clients', user_modules()) && ($this->addContractPermission == 'all' || $this->addContractPermission == 'added')) {
-                    $action .= '<a class="dropdown-item openRightModal" href="' . route('contracts.create') . '?id=' . $row->id . '">
+                    $action .= '<a class="dropdown-item openRightModal" href="'.route('contracts.create').'?id='.$row->id.'">
                             <i class="fa fa-copy mr-2"></i>
-                            ' . __('app.copy') . ' ' . __('app.menu.contract') . '
+                            '.__('app.copy').' '.__('app.menu.contract').'
                         </a>';
                 }
 
@@ -83,9 +85,9 @@ class ContractsDataTable extends BaseDataTable
                         || ($this->editContractPermission == 'owned' && $userId == $row->client_id)
                         || ($this->editContractPermission == 'both' && ($userId == $row->client_id || $userId == $row->added_by)))
                 ) {
-                    $action .= '<a class="dropdown-item openRightModal" href="' . route('contracts.edit', [$row->id]) . '">
+                    $action .= '<a class="dropdown-item openRightModal" href="'.route('contracts.edit', [$row->id]).'">
                             <i class="fa fa-edit mr-2"></i>
-                            ' . trans('app.edit') . '
+                            '.trans('app.edit').'
                         </a>';
                 }
 
@@ -95,17 +97,16 @@ class ContractsDataTable extends BaseDataTable
                     || ($this->deleteContractPermission == 'owned' && $userId == $row->client_id)
                     || ($this->deleteContractPermission == 'both' && ($userId == $row->client_id || $userId == $row->added_by))
                 ) {
-                    $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-contract-id="' . $row->id . '">
+                    $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-contract-id="'.$row->id.'">
                             <i class="fa fa-trash mr-2"></i>
-                            ' . trans('app.delete') . '
+                            '.trans('app.delete').'
                         </a>';
                 }
 
-                $action .= '<a class="dropdown-item" href="' . route('contracts.download', $row->id) . '">
+                $action .= '<a class="dropdown-item" href="'.route('contracts.download', $row->id).'">
                                 <i class="fa fa-download mr-2"></i>
-                                ' . trans('app.download') . '
+                                '.trans('app.download').'
                             </a>';
-
 
                 $action .= '</div>
                 </div>
@@ -115,7 +116,7 @@ class ContractsDataTable extends BaseDataTable
             })
             ->editColumn('project_name', function ($row) {
                 if ($row->project_id != null) {
-                    return '<a href="' . route('projects.show', $row->project_id) . '" class="text-darkest-grey">' . str($row->project->project_name)->limit(30) . '</a>';
+                    return '<a href="'.route('projects.show', $row->project_id).'" class="text-darkest-grey">'.str($row->project->project_name)->limit(30).'</a>';
                 }
 
                 return '--';
@@ -127,13 +128,13 @@ class ContractsDataTable extends BaseDataTable
                 $signed = '';
 
                 if ($row->signature) {
-                    $signed = '<span class="badge badge-secondary"><i class="fa fa-signature"></i> ' . __('app.signed') . '</span>';
+                    $signed = '<span class="badge badge-secondary"><i class="fa fa-signature"></i> '.__('app.signed').'</span>';
                 }
 
                 return '<div class="media align-items-center">
                         <div class="media-body">
-                    <h5 class="mb-0 f-13 text-darkest-grey"><a href="' . route('contracts.show', [$row->id]) . '">' . str($row->subject)->limit(40) . '</a></h5>
-                    <p class="mb-0">' . $signed . '</p>
+                    <h5 class="mb-0 f-13 text-darkest-grey"><a href="'.route('contracts.show', [$row->id]).'">'.str($row->subject)->limit(40).'</a></h5>
+                    <p class="mb-0">'.$signed.'</p>
                     </div>
                   </div>';
             })
@@ -155,7 +156,7 @@ class ContractsDataTable extends BaseDataTable
                     $client = $row->client;
 
                     return view('components.client', [
-                        'user' => $client
+                        'user' => $client,
                     ]);
                 }
 
@@ -163,11 +164,11 @@ class ContractsDataTable extends BaseDataTable
             })
             ->editColumn('client.name', function ($row) {
                 return '<div class="media align-items-center">
-                    <a href="' . route('clients.show', [$row->client_id]) . '">
-                    <img src="' . $row->client->image_url . '" class="mr-2 taskEmployeeImg rounded-circle" alt="' . $row->client->name . '" title="' . $row->client->name . '"></a>
+                    <a href="'.route('clients.show', [$row->client_id]).'">
+                    <img src="'.$row->client->image_url.'" class="mr-2 taskEmployeeImg rounded-circle" alt="'.$row->client->name.'" title="'.$row->client->name.'"></a>
                     <div class="media-body">
-                    <h5 class="mb-0 f-13 text-darkest-grey"><a href="' . route('clients.show', [$row->client_id]) . '">' . $row->client->name_salutation . '</a></h5>
-                    <p class="mb-0 f-13 text-dark-grey">' . $row->client->clientDetails->company_name . '</p>
+                    <h5 class="mb-0 f-13 text-darkest-grey"><a href="'.route('clients.show', [$row->client_id]).'">'.$row->client->name_salutation.'</a></h5>
+                    <p class="mb-0 f-13 text-dark-grey">'.$row->client->clientDetails->company_name.'</p>
                     </div>
                   </div>';
             })
@@ -177,17 +178,17 @@ class ContractsDataTable extends BaseDataTable
                 }
             })
             ->editColumn('contract_number', function ($row) {
-                return '<a href="' . route('contracts.show', [$row->id]) . '" class="text-darkest-grey">' . $row->contract_number . '</a>';
+                return '<a href="'.route('contracts.show', [$row->id]).'" class="text-darkest-grey">'.$row->contract_number.'</a>';
             })
             ->addIndexColumn()
             ->smart(false)
-            ->setRowId(fn($row) => 'row-' . $row->id)
+            ->setRowId(fn ($row) => 'row-'.$row->id)
             ->rawColumns(array_merge(['project_name', 'action', 'client.name', 'check', 'subject', 'contract_number'], $customFieldColumns));
     }
 
     /**
-     * @param Contract $model
      * @return \Illuminate\Database\Eloquent\Builder
+     *
      * @property-read \App\Models\Award $title
      */
     public function query(Contract $model)
@@ -217,7 +218,7 @@ class ContractsDataTable extends BaseDataTable
                 'project.client',
                 'project.client.clientDetails.company',
                 'client',
-                'project.clientdetails'
+                'project.clientdetails',
             ]
         )->with('contractType', 'client', 'signature', 'client.clientDetails')
             ->join('users', 'users.id', '=', 'contracts.client_id')
@@ -232,11 +233,11 @@ class ContractsDataTable extends BaseDataTable
             });
         }
 
-        if ($request->client != 'all' && !is_null($request->client)) {
+        if ($request->client != 'all' && ! is_null($request->client)) {
             $model = $model->where('contracts.client_id', '=', $request->client);
         }
 
-        if ($request->contract_type != 'all' && !is_null($request->contract_type)) {
+        if ($request->contract_type != 'all' && ! is_null($request->contract_type)) {
             $model = $model->where('contracts.contract_type_id', '=', $request->contract_type);
         }
 
@@ -248,15 +249,15 @@ class ContractsDataTable extends BaseDataTable
 
             $model = $model->where(function ($query) {
                 $safeTerm = Common::safeString(request('searchText'));
-                $query->where('contracts.subject', 'like', '%' . $safeTerm . '%')
-                    ->orWhere('contracts.amount', 'like', '%' . $safeTerm . '%')
-                    ->orWhere('client_details.company_name', 'like', '%' . $safeTerm . '%');
+                $query->where('contracts.subject', 'like', '%'.$safeTerm.'%')
+                    ->orWhere('contracts.amount', 'like', '%'.$safeTerm.'%')
+                    ->orWhere('client_details.company_name', 'like', '%'.$safeTerm.'%');
             })
                 ->orWhere(function ($query) {
                     $query->whereHas('project', function ($q) {
                         $safeTerm = Common::safeString(request('searchText'));
-                        $q->where('project_name', 'like', '%' . $safeTerm . '%')
-                            ->orWhere('project_short_code', 'like', '%' . $safeTerm . '%'); // project short code
+                        $q->where('project_name', 'like', '%'.$safeTerm.'%')
+                            ->orWhere('project_short_code', 'like', '%'.$safeTerm.'%'); // project short code
                     });
                 });
         }
@@ -283,6 +284,7 @@ class ContractsDataTable extends BaseDataTable
      * Optional method if you want to use html builder.
      *
      * @return \Yajra\DataTables\Html\Builder
+     *
      * @property-read \App\Models\Award $title
      */
     public function html()
@@ -300,7 +302,7 @@ class ContractsDataTable extends BaseDataTable
             ]);
 
         if (canDataTableExport()) {
-            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
+            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
         }
 
         return $dataTable;
@@ -319,18 +321,18 @@ class ContractsDataTable extends BaseDataTable
                 'exportable' => false,
                 'orderable' => false,
                 'searchable' => false,
-                'visible' => !in_array('client', user_roles())
+                'visible' => ! in_array('client', user_roles()),
             ],
             __('modules.contracts.contractNumber') => ['data' => 'contract_number', 'name' => 'contract_number', 'title' => '#'],
             __('app.subject') => ['data' => 'subject', 'name' => 'subject', 'exportable' => false, 'title' => __('app.subject')],
-            __('app.menu.contract') . ' ' . __('app.subject') => ['data' => 'contract_subject', 'name' => 'subject', 'visible' => false, 'title' => __('app.menu.contract')],
-            __('app.client') => ['data' => 'client.name', 'name' => 'client.name', 'exportable' => false, 'title' => __('app.client'), 'visible' => !in_array('client', user_roles())],
+            __('app.menu.contract').' '.__('app.subject') => ['data' => 'contract_subject', 'name' => 'subject', 'visible' => false, 'title' => __('app.menu.contract')],
+            __('app.client') => ['data' => 'client.name', 'name' => 'client.name', 'exportable' => false, 'title' => __('app.client'), 'visible' => ! in_array('client', user_roles())],
             __('app.customers') => ['data' => 'client_name', 'name' => 'client.name', 'visible' => false, 'title' => __('app.customers')],
             __('app.project') => ['data' => 'project_name', 'name' => 'project.project_name', 'title' => __('app.project')],
             __('app.amount') => ['data' => 'amount', 'name' => 'amount', 'title' => __('app.amount')],
             __('app.startDate') => ['data' => 'start_date', 'name' => 'start_date', 'title' => __('app.startDate')],
             __('app.endDate') => ['data' => 'end_date', 'name' => 'end_date', 'title' => __('app.endDate')],
-            __('app.signature') => ['data' => 'signature', 'name' => 'signature', 'visible' => false, 'title' => __('app.signature')]
+            __('app.signature') => ['data' => 'signature', 'name' => 'signature', 'visible' => false, 'title' => __('app.signature')],
         ];
 
         $action = [
@@ -339,9 +341,9 @@ class ContractsDataTable extends BaseDataTable
                 ->printable(false)
                 ->orderable(false)
                 ->searchable(false)
-                ->addClass('text-right pr-20')
+                ->addClass('text-right pr-20'),
         ];
 
-        return array_merge($data, CustomFieldGroup::customFieldsDataMerge(new Contract()), $action);
+        return array_merge($data, CustomFieldGroup::customFieldsDataMerge(new Contract), $action);
     }
 }

@@ -32,6 +32,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read mixed $extras
  * @property-read mixed $icon
  * @property-read \App\Models\User $user
+ *
  * @method static Builder|EmployeeDetails newModelQuery()
  * @method static Builder|EmployeeDetails newQuery()
  * @method static Builder|EmployeeDetails query()
@@ -49,10 +50,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static Builder|EmployeeDetails whereSlackUsername($value)
  * @method static Builder|EmployeeDetails whereUpdatedAt($value)
  * @method static Builder|EmployeeDetails whereUserId($value)
+ *
  * @property string|null $attendance_reminder
+ *
  * @method static Builder|EmployeeDetails whereAttendanceReminder($value)
+ *
  * @property \Illuminate\Support\Carbon|null $date_of_birth
+ *
  * @method static Builder|EmployeeDetails whereDateOfBirth($value)
+ *
  * @property int|null $company_id
  * @property string|null $calendar_view
  * @property string|null $about_me
@@ -60,10 +66,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read \App\Models\Company|null $company
  * @property-read mixed $upcoming_birthday
  * @property-read \App\Models\User|null $reportingTo
+ *
  * @method static Builder|EmployeeDetails whereAboutMe($value)
  * @method static Builder|EmployeeDetails whereCalendarView($value)
  * @method static Builder|EmployeeDetails whereCompanyId($value)
  * @method static Builder|EmployeeDetails whereReportingTo($value)
+ *
  * @property string|null $contract_end_date
  * @property string|null $internship_end_date
  * @property string|null $employment_type
@@ -74,6 +82,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string|null $probation_end_date
  * @property string|null $name
  * @property string|null $occassion
+ *
  * @method static Builder|EmployeeDetails whereContractEndDate($value)
  * @method static Builder|EmployeeDetails whereEmploymentType($value)
  * @method static Builder|EmployeeDetails whereInternshipEndDate($value)
@@ -82,11 +91,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static Builder|EmployeeDetails whereNoticePeriodEndDate($value)
  * @method static Builder|EmployeeDetails whereNoticePeriodStartDate($value)
  * @method static Builder|EmployeeDetails whereProbationEndDate($value)
+ *
  * @mixin \Eloquent
  */
 class EmployeeDetails extends BaseModel
 {
-
     use CustomFieldsTrait, HasCompany;
 
     protected $table = 'employee_details';
@@ -111,7 +120,7 @@ class EmployeeDetails extends BaseModel
             return null;
         }
 
-        $dob = Carbon::parse(now($this->company->timezone)->year . '-' . $this->date_of_birth->month . '-' . $this->date_of_birth->day);
+        $dob = Carbon::parse(now($this->company->timezone)->year.'-'.$this->date_of_birth->month.'-'.$this->date_of_birth->day);
 
         if ($dob->isPast()) {
             $dob->addYear();
@@ -139,5 +148,4 @@ class EmployeeDetails extends BaseModel
     {
         return $this->belongsTo(Team::class, 'department_id');
     }
-
 }

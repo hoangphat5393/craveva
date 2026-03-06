@@ -2,17 +2,17 @@
 
 namespace App\Notifications;
 
+use App\Models\ProjectTimeLog;
 use App\Models\User;
 use Illuminate\Notifications\Messages\MailMessage;
-use App\Models\ProjectTimeLog;
 
 class ProjectTimelogNotification extends BaseNotification
 {
-
     /**
      * @var User
      */
     private $invite;
+
     public ProjectTimeLog $timelog;
 
     /**
@@ -29,7 +29,7 @@ class ProjectTimelogNotification extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     // phpcs:ignore
@@ -41,8 +41,7 @@ class ProjectTimelogNotification extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
-     * @return MailMessage
+     * @param  mixed  $notifiable
      */
     // phpcs:ignore
     public function toMail($notifiable): MailMessage
@@ -50,8 +49,8 @@ class ProjectTimelogNotification extends BaseNotification
         $build = parent::build($notifiable);
         $build
             ->subject(__('email.projectTimeLog.subject'))
-            ->greeting(__('email.hello') . ' ' . $notifiable->name . '!')
-            ->line(__('email.projectTimeLog.text') . user()->name . '.')
+            ->greeting(__('email.hello').' '.$notifiable->name.'!')
+            ->line(__('email.projectTimeLog.text').user()->name.'.')
             ->line(__('email.projectTimeLog.text2', ['reason' => $this->timelog->reject_reason]))
             ->action(__('email.projectTimeLog.action'), route('timelogs.edit', $this->timelog->id));
 
@@ -61,16 +60,15 @@ class ProjectTimelogNotification extends BaseNotification
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
-    //phpcs:ignore
+    // phpcs:ignore
     public function toArray($notifiable)
     {
         return [
-            'timelog_id'  => $this->timelog->id,
+            'timelog_id' => $this->timelog->id,
             'rejected_by' => $this->timelog->rejected_by,
         ];
     }
-
 }

@@ -1,109 +1,111 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\GdprController;
-use App\Http\Controllers\DealController;
-use App\Http\Controllers\TaskController;
-use App\Http\Controllers\AwardController;
-use App\Http\Controllers\ImageController;
-use App\Http\Controllers\LeaveController;
-use App\Http\Controllers\OrderController;
-use App\Http\Controllers\ClientController;
-use App\Http\Controllers\ImportController;
-use App\Http\Controllers\NoticeController;
-use App\Http\Controllers\SearchController;
-use App\Http\Controllers\TicketController;
-use App\Http\Controllers\ExpenseController;
-use App\Http\Controllers\HolidayController;
-use App\Http\Controllers\InvoiceController;
-use App\Http\Controllers\MessageController;
-use App\Http\Controllers\PaymentController;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\ProjectController;
-use App\Http\Controllers\SubTaskController;
-use App\Http\Controllers\TimelogController;
-use App\Http\Controllers\ContractController;
-use App\Http\Controllers\EmployeeController;
-use App\Http\Controllers\EstimateController;
-use App\Http\Controllers\LeadFileController;
-use App\Http\Controllers\LeadNoteController;
-use App\Http\Controllers\PassportController;
-use App\Http\Controllers\ProposalController;
-use App\Http\Controllers\SettingsController;
-use App\Http\Controllers\TaskFileController;
-use App\Http\Controllers\TaskNoteController;
-use App\Http\Controllers\ClientDocController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\EventFileController;
-use App\Http\Controllers\LeadBoardController;
-use App\Http\Controllers\LeaveFileController;
-use App\Http\Controllers\QuickbookController;
-use App\Http\Controllers\TaskBoardController;
-use App\Http\Controllers\TaskLabelController;
-use App\Http\Controllers\ProjectLabelController;
-use App\Http\Controllers\AttendanceController;
-use App\Http\Controllers\ClientNoteController;
-use App\Http\Controllers\CreditNoteController;
-use App\Http\Controllers\DepartmentController;
-use App\Http\Controllers\DiscussionController;
-use App\Http\Controllers\LeadReportController;
-use App\Http\Controllers\StickyNoteController;
-use App\Http\Controllers\TaskReportController;
-use App\Http\Controllers\TicketFileController;
-use App\Http\Controllers\BankAccountController;
-use App\Http\Controllers\DesignationController;
-use App\Http\Controllers\EmployeeDocController;
-use App\Http\Controllers\EmployeeDocumentExpiryController;
-use App\Http\Controllers\LeadCategoryController;
-use App\Http\Controllers\LeaveReportController;
-use App\Http\Controllers\LeavesQuotaController;
-use App\Http\Controllers\MessageFileController;
-use App\Http\Controllers\ProductFileController;
-use App\Http\Controllers\ProjectFileController;
-use App\Http\Controllers\ProjectNoteController;
-use App\Http\Controllers\SalesReportController;
-use App\Http\Controllers\SubTaskFileController;
-use App\Http\Controllers\TaskCommentController;
-use App\Http\Controllers\TicketReplyController;
 use App\Http\Controllers\AppreciationController;
+use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\AttendanceReportController;
+use App\Http\Controllers\AwardController;
+use App\Http\Controllers\BankAccountController;
+use App\Http\Controllers\ClientCategoryController;
+use App\Http\Controllers\ClientContactController;
+use App\Http\Controllers\ClientController;
+use App\Http\Controllers\ClientDocController;
+use App\Http\Controllers\ClientNoteController;
+use App\Http\Controllers\ContractController;
 use App\Http\Controllers\ContractFileController;
+use App\Http\Controllers\ContractRenewController;
 use App\Http\Controllers\ContractTemplateController;
 use App\Http\Controllers\ContractTypeController;
-use App\Http\Controllers\EmployeeVisaController;
-use App\Http\Controllers\GdprSettingsController;
-use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\TaskCalendarController;
-use App\Http\Controllers\TaskCategoryController;
-use App\Http\Controllers\InvoiceFilesController;
-use App\Http\Controllers\ClientContactController;
-use App\Http\Controllers\ContractRenewController;
-use App\Http\Controllers\EventCalendarController;
-use App\Http\Controllers\ExpenseReportController;
-use App\Http\Controllers\FinanceReportController;
-use App\Http\Controllers\KnowledgeBaseController;
-use App\Http\Controllers\ProjectMemberController;
-use App\Http\Controllers\ProjectRatingController;
-use App\Http\Controllers\TimelogReportController;
-use App\Http\Controllers\ClientCategoryController;
-use App\Http\Controllers\LeadCustomFormController;
-use App\Http\Controllers\UserPermissionController;
+use App\Http\Controllers\CreditNoteController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DealController;
+use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\DesignationController;
+use App\Http\Controllers\DiscussionController;
 use App\Http\Controllers\DiscussionFilesController;
 use App\Http\Controllers\DiscussionReplyController;
+use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\EmployeeDocController;
+use App\Http\Controllers\EmployeeDocumentExpiryController;
+use App\Http\Controllers\EmployeeVisaController;
+use App\Http\Controllers\EstimateController;
+use App\Http\Controllers\EventCalendarController;
+use App\Http\Controllers\EventFileController;
 use App\Http\Controllers\ExpenseCategoryController;
+use App\Http\Controllers\ExpenseController;
+use App\Http\Controllers\ExpenseReportController;
+use App\Http\Controllers\FinanceReportController;
+use App\Http\Controllers\GdprController;
+use App\Http\Controllers\GdprSettingsController;
+use App\Http\Controllers\HolidayController;
+use App\Http\Controllers\ImageController;
+use App\Http\Controllers\ImportController;
+use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\InvoiceFilesController;
+use App\Http\Controllers\KnowledgeBaseController;
+use App\Http\Controllers\LeadBoardController;
+use App\Http\Controllers\LeadCategoryController;
+use App\Http\Controllers\LeadCustomFormController;
+use App\Http\Controllers\LeadFileController;
+use App\Http\Controllers\LeadNoteController;
+use App\Http\Controllers\LeadReportController;
+use App\Http\Controllers\LeaveController;
+use App\Http\Controllers\LeaveFileController;
+use App\Http\Controllers\LeaveReportController;
+use App\Http\Controllers\LeavesQuotaController;
+use App\Http\Controllers\MessageController;
+use App\Http\Controllers\MessageFileController;
+use App\Http\Controllers\NoticeController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PassportController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductCategoryController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductFileController;
 use App\Http\Controllers\ProjectCalendarController;
 use App\Http\Controllers\ProjectCategoryController;
+use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\ProjectFileController;
+use App\Http\Controllers\ProjectLabelController;
+use App\Http\Controllers\ProjectMemberController;
+use App\Http\Controllers\ProjectNoteController;
+use App\Http\Controllers\ProjectRatingController;
 use App\Http\Controllers\ProjectTemplateController;
-use App\Http\Controllers\TimelogCalendarController;
-use App\Http\Controllers\AttendanceReportController;
+use App\Http\Controllers\ProposalController;
+use App\Http\Controllers\QuickbookController;
 use App\Http\Controllers\RecurringEventController;
 use App\Http\Controllers\RecurringTaskController;
+use App\Http\Controllers\SalesReportController;
+use App\Http\Controllers\SearchController;
+use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\StickyNoteController;
+use App\Http\Controllers\SubTaskController;
+use App\Http\Controllers\SubTaskFileController;
+use App\Http\Controllers\TaskBoardController;
+use App\Http\Controllers\TaskCalendarController;
+use App\Http\Controllers\TaskCategoryController;
+use App\Http\Controllers\TaskCommentController;
+use App\Http\Controllers\TaskController;
+use App\Http\Controllers\TaskFileController;
+use App\Http\Controllers\TaskLabelController;
+use App\Http\Controllers\TaskNoteController;
+use App\Http\Controllers\TaskReportController;
+use App\Http\Controllers\TicketController;
+use App\Http\Controllers\TicketFileController;
+use App\Http\Controllers\TicketReplyController;
+use App\Http\Controllers\TimelogCalendarController;
+use App\Http\Controllers\TimelogController;
+use App\Http\Controllers\TimelogReportController;
+use App\Http\Controllers\UserPermissionController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('debug-final-check', function () {
     $user = \App\Models\User::whereHas('roles', function ($q) {
         $q->where('name', 'client');
     })->first();
-    if (!$user) return 'No client user found';
+    if (! $user) {
+        return 'No client user found';
+    }
 
     auth()->login($user);
 
@@ -124,47 +126,45 @@ Route::get('debug-final-check', function () {
         'conditions' => [
             'module_enabled' => in_array('purchase', user_modules()),
             'permission_ok' => (user()->permission('view_vendor') != 'none' || user()->permission('view_purchase_order') != 'none'),
-        ]
+        ],
     ];
 });
 
+use App\Http\Controllers\ClientSubCategoryController;
+use App\Http\Controllers\ContractDiscussionController;
+use App\Http\Controllers\DealNoteController;
+use App\Http\Controllers\DiscussionCategoryController;
 use App\Http\Controllers\EmergencyContactController;
+use App\Http\Controllers\EmployeeShiftChangeRequestController;
+use App\Http\Controllers\EmployeeShiftScheduleController;
+use App\Http\Controllers\EstimateRequestController;
 use App\Http\Controllers\EstimateTemplateController;
+use App\Http\Controllers\GanttLinkController;
+use App\Http\Controllers\IncomeVsExpenseReportController;
+use App\Http\Controllers\InvoicePaymentDetailController;
+use App\Http\Controllers\KnowledgeBaseCategoryController;
+use App\Http\Controllers\KnowledgeBaseFileController;
+use App\Http\Controllers\LeadContactController;
+use App\Http\Controllers\MyCalendarController;
+use App\Http\Controllers\NoticeFileController;
+use App\Http\Controllers\ProductSubCategoryController;
 use App\Http\Controllers\ProjectMilestoneController;
+use App\Http\Controllers\ProjectSubCategoryController;
+use App\Http\Controllers\ProjectTemplateMemberController;
+use App\Http\Controllers\ProjectTemplateMilestoneController;
+use App\Http\Controllers\ProjectTemplateSubTaskController;
+use App\Http\Controllers\ProjectTemplateTaskController;
+use App\Http\Controllers\ProjectTimelogBreakController;
+use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\ProposalTemplateController;
 use App\Http\Controllers\RecurringExpenseController;
 use App\Http\Controllers\RecurringInvoiceController;
 use App\Http\Controllers\TicketCustomFormController;
-use App\Http\Controllers\ClientSubCategoryController;
-use App\Http\Controllers\KnowledgeBaseFileController;
-use App\Http\Controllers\ContractDiscussionController;
-use App\Http\Controllers\DealNoteController;
-use App\Http\Controllers\DiscussionCategoryController;
-use App\Http\Controllers\ProductSubCategoryController;
-use App\Http\Controllers\ProjectTemplateTaskController;
-use App\Http\Controllers\ProjectTimelogBreakController;
-use App\Http\Controllers\EmployeeShiftScheduleController;
-use App\Http\Controllers\IncomeVsExpenseReportController;
-use App\Http\Controllers\KnowledgeBaseCategoryController;
-use App\Http\Controllers\ProjectTemplateMemberController;
-use App\Http\Controllers\ProjectTemplateSubTaskController;
-use App\Http\Controllers\EmployeeShiftChangeRequestController;
-use App\Http\Controllers\EstimateRequestController;
-use App\Http\Controllers\GanttLinkController;
-use App\Http\Controllers\LeadContactController;
-use App\Http\Controllers\NoticeFileController;
-use App\Http\Controllers\InvoicePaymentDetailController;
-use App\Http\Controllers\MyCalendarController;
-use App\Http\Controllers\ProjectSubCategoryController;
-use App\Http\Controllers\ProjectTemplateMilestoneController;
-use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\TimelogWeeklyApprovalController;
 use App\Http\Controllers\WeeklyTimesheetController;
 
-
 Route::group(['middleware' => ['auth', 'multi-company-select', 'email_verified'], 'prefix' => 'account'], function () {
     Route::post('image/upload', [ImageController::class, 'store'])->name('image.store');
-
 
     Route::get('account-unverified', [DashboardController::class, 'accountUnverified'])->name('account_unverified');
     Route::get('checklist', [DashboardController::class, 'checklist'])->name('checklist');
@@ -183,7 +183,6 @@ Route::group(['middleware' => ['auth', 'multi-company-select', 'email_verified']
 
     Route::get('settings/change-language', [SettingsController::class, 'changeLanguage'])->name('settings.change_language');
     Route::resource('settings', SettingsController::class)->only(['edit', 'update', 'index', 'change_language']);
-
 
     Route::post('approve/{id}', [ClientController::class, 'approve'])->name('clients.approve');
     Route::post('save-consent-purpose-data/{client}', [ClientController::class, 'saveConsentLeadData'])->name('clients.save_consent_purpose_data');
@@ -274,7 +273,6 @@ Route::group(['middleware' => ['auth', 'multi-company-select', 'email_verified']
     Route::resource('ProjectSubCategory', ProjectSubCategoryController::class);
     Route::get('get_project_sub_category/{id}', [ProjectSubCategoryController::class, 'getSubCategories'])->name('project.get_project_sub_category');
 
-
     Route::group(
         ['prefix' => 'projects'],
         function () {
@@ -312,7 +310,6 @@ Route::group(['middleware' => ['auth', 'multi-company-select', 'email_verified']
             Route::get('milestones/byProject/{id}', [ProjectMilestoneController::class, 'byProject'])->name('milestones.by_project');
             Route::post('/milestones/{id}/update-status', [ProjectMilestoneController::class, 'updateStatus'])->name('milestones.updateStatus');
             Route::resource('milestones', ProjectMilestoneController::class);
-
 
             // Discussion category routes
             Route::resource('discussion-category', DiscussionCategoryController::class);
@@ -358,7 +355,6 @@ Route::group(['middleware' => ['auth', 'multi-company-select', 'email_verified']
     Route::post('products/remove-cart-item/{id}', [ProductController::class, 'removeCartItem'])->name('products.remove_cart_item');
     Route::get('products/options', [ProductController::class, 'allProductOption'])->name('products.options');
 
-
     Route::post('products/add-cart-item', [ProductController::class, 'addCartItem'])->name('products.add_cart_item');
     Route::get('products/cart', [ProductController::class, 'cart'])->name('products.cart');
     Route::get('products/empty-cart', [ProductController::class, 'emptyCart'])->name('products.empty_cart');
@@ -388,7 +384,6 @@ Route::group(['middleware' => ['auth', 'multi-company-select', 'email_verified']
     Route::get('invoice-files/download/{id}', [InvoiceFilesController::class, 'download'])->name('invoice-files.download');
     Route::resource('invoice-files', InvoiceFilesController::class);
 
-
     /* Payments */
     Route::get('orders/offline-payment-modal', [OrderController::class, 'offlinePaymentModal'])->name('orders.offline_payment_modal');
     Route::get('orders/add-item', [OrderController::class, 'addItem'])->name('orders.add_item');
@@ -402,10 +397,8 @@ Route::group(['middleware' => ['auth', 'multi-company-select', 'email_verified']
     Route::get('orders/download/{id}', [OrderController::class, 'download'])->name('orders.download');
     Route::post('orders/store-quantity/', [OrderController::class, 'storeQuantity'])->name('orders.store_quantity');
 
-
     /* Orders */
     Route::resource('orders', OrderController::class);
-
 
     /* NOTICE */
     Route::post('notices/apply-quick-action', [NoticeController::class, 'applyQuickAction'])->name('notices.apply_quick_action');
@@ -441,7 +434,6 @@ Route::group(['middleware' => ['auth', 'multi-company-select', 'email_verified']
     /* KnowledgeBase category */
     Route::resource('knowledgebasecategory', KnowledgeBaseCategoryController::class);
 
-
     Route::group(['prefix' => 'events'], function () {
         Route::post('recurring-event/event-monthly-on', [RecurringEventController::class, 'monthlyOn'])->name('recurring-event.monthly_on');
         Route::post('recurring-event/apply-quick-action', [RecurringEventController::class, 'applyQuickAction'])->name('recurring-event.apply_quick_action');
@@ -460,7 +452,6 @@ Route::group(['middleware' => ['auth', 'multi-company-select', 'email_verified']
 
     /* My Calendar */
     Route::get('my-calendar', [MyCalendarController::class, 'index'])->name('my-calendar.index');
-
 
     /* Event Files */
     Route::get('event-files/download/{id}', [EventFileController::class, 'download'])->name('event-files.download');
@@ -676,7 +667,6 @@ Route::group(['middleware' => ['auth', 'multi-company-select', 'email_verified']
     Route::get('estimates/add-item', [EstimateController::class, 'addItem'])->name('estimates.add_item');
     Route::resource('estimates', EstimateController::class);
 
-
     // Proposals
     Route::get('proposals/delete-image', [ProposalController::class, 'deleteProposalItemImage'])->name('proposals.delete_image');
     Route::get('proposals/download/{id}', [ProposalController::class, 'download'])->name('proposals.download');
@@ -786,7 +776,6 @@ Route::group(['middleware' => ['auth', 'multi-company-select', 'email_verified']
     Route::post('contracts/project-detail/{id}', [ContractController::class, 'projectDetail'])->name('contracts.project_detail');
     Route::get('contracts/company-sig/{id}', [ContractController::class, 'companySig'])->name('contracts.company_sig');
 
-
     Route::group(['prefix' => 'contracts'], function () {
         Route::resource('contractDiscussions', ContractDiscussionController::class);
         Route::get('contractFiles/download/{id}', [ContractFileController::class, 'download'])->name('contractFiles.download');
@@ -819,7 +808,6 @@ Route::group(['middleware' => ['auth', 'multi-company-select', 'email_verified']
     Route::post('attendances/check-half-day', [AttendanceController::class, 'checkHalfDay'])->name('attendances.check_half_day');
     Route::get('check-qr-login/{hash}', [AttendanceController::class, 'qrClockInOut'])->name('settings.qr-login');
     Route::post('change-qr-code-status', [AttendanceController::class, 'qrCodeStatus'])->name('settings.change-qr-code-status');
-
 
     Route::get('shifts/mark/{id}/{day}/{month}/{year}', [EmployeeShiftScheduleController::class, 'mark'])->name('shifts.mark');
     Route::get('shifts/export-all/{year}/{month}/{id}/{department}/{startDate}/{viewType}', [EmployeeShiftScheduleController::class, 'exportAllShift'])->name('shifts.export_all');
@@ -895,15 +883,12 @@ Route::group(['middleware' => ['auth', 'multi-company-select', 'email_verified']
     Route::get('deal-report/profile', [LeadReportController::class, 'profile'])->name('lead-report.profile');
     Route::get('deal-report/export/{year}/{pipeline}/{category}', [LeadReportController::class, 'exportDealReport'])->name('deal-report.export');
 
-
-
     Route::resource('lead-report', LeadReportController::class);
     Route::resource('sales-report', SalesReportController::class);
 
     Route::resource('sticky-notes', StickyNoteController::class);
 
     Route::post('show-notifications', [NotificationController::class, 'showNotifications'])->name('show_notifications');
-
 
     Route::get('gdpr/lead/approve-reject/{id}/{type}', [GdprSettingsController::class, 'approveRejectLead'])->name('gdpr.lead.approve_reject');
     Route::get('gdpr/customer/approve-reject/{id}/{type}', [GdprSettingsController::class, 'approveRejectClient'])->name('gdpr.customer.approve_reject');
@@ -959,10 +944,11 @@ Route::group(['middleware' => ['auth', 'multi-company-select', 'email_verified']
 // Test broadcasting
 Route::get('/test-broadcast', function () {
     try {
-        event(new \App\Events\TestPusherEvent());
+        event(new \App\Events\TestPusherEvent);
+
         return response()->json(['success' => true, 'message' => 'Event broadcasted successfully']);
     } catch (\Throwable $e) {
-        return response()->json(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+        return response()->json(['success' => false, 'message' => 'Error: '.$e->getMessage()]);
     }
 })->name('test-broadcast');
 
@@ -973,6 +959,6 @@ Route::get('/debug-broadcast', function () {
         'pusher_key' => config('broadcasting.connections.pusher.key'),
         'pusher_cluster' => config('broadcasting.connections.pusher.options.host'),
         'app_env' => config('app.env'),
-        'queue_connection' => config('queue.default')
+        'queue_connection' => config('queue.default'),
     ]);
 })->name('debug-broadcast');

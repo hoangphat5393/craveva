@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class StoreAgentGroup extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -26,7 +25,7 @@ class StoreAgentGroup extends CoreRequest
     {
         return [
             'user_id' => 'required',
-            'group_id' => 'required'
+            'group_id' => 'required',
         ];
     }
 
@@ -34,8 +33,7 @@ class StoreAgentGroup extends CoreRequest
     {
         return [
             'user_id.required' => __('messages.atleastOneValidation').' '.__('modules.tickets.agent'),
-            'group_id.required' => __('modules.tickets.groupName').' '.__('app.required')
+            'group_id.required' => __('modules.tickets.groupName').' '.__('app.required'),
         ];
     }
-
 }

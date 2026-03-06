@@ -7,8 +7,8 @@ use Illuminate\View\Component;
 
 class DateBadge extends Component
 {
-
     public $month;
+
     public $date;
 
     /**
@@ -31,5 +31,4 @@ class DateBadge extends Component
     {
         return view('components.date-badge');
     }
-
 }

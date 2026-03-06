@@ -61,7 +61,7 @@ return [
         'assignedTo' => 'Assigned To',
         'actions' => 'Actions',
         'noHostingsFound' => 'No hostings found',
-        'getStartedMessage' => 'Get started by adding your first hosting service.','title' => 'Hosting Management',
+        'getStartedMessage' => 'Get started by adding your first hosting service.', 'title' => 'Hosting Management',
         'addHosting' => 'Add Hosting',
         'editHosting' => 'Edit Hosting',
         'hostingName' => 'Hosting Name',
@@ -163,7 +163,7 @@ return [
         'datesAndBilling' => 'Dates & Billing',
         'dnsInfo' => 'DNS Information',
         'noDomainsFound' => 'No domains found',
-        'getStartedMessage' => 'Get started by adding your first domain.','title' => 'Domain Management',
+        'getStartedMessage' => 'Get started by adding your first domain.', 'title' => 'Domain Management',
         'addDomain' => 'Add Domain',
         'editDomain' => 'Edit Domain',
         'domainDetails' => 'Domain Details',
@@ -449,5 +449,3 @@ return [
     'monthly' => 'Monthly',
     'selectHosting' => 'Select Hosting',
 ];
-
-

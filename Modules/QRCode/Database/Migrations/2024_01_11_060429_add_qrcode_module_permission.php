@@ -8,7 +8,6 @@ use Modules\QRCode\Entities\QRCodeSetting;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      */
@@ -33,5 +32,4 @@ return new class extends Migration
             QRCodeSetting::addModuleSetting($company);
         }
     }
-
 };

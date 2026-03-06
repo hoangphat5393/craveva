@@ -4,8 +4,8 @@ namespace App\Console\Commands;
 
 use App\Models\Company;
 use App\Models\Passport;
-use App\Models\VisaDetail;
 use App\Models\User;
+use App\Models\VisaDetail;
 use App\Notifications\ImmigrationExpiryAlert;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
@@ -41,22 +41,22 @@ class SendImmigrationExpiryAlert extends Command
         });
 
         $this->info('Immigration expiry alert process completed.');
+
         return Command::SUCCESS;
     }
 
     /**
      * Process immigration documents for a specific company
      *
-     * @param Company $company
      * @return void
      */
     private function processCompanyImmigrationDocuments(Company $company)
     {
         $now = now($company->timezone);
-        
+
         // Process Passports
         $this->processPassports($company, $now);
-        
+
         // Process Visas
         $this->processVisas($company, $now);
     }
@@ -64,8 +64,6 @@ class SendImmigrationExpiryAlert extends Command
     /**
      * Process passport expiry alerts
      *
-     * @param Company $company
-     * @param Carbon $now
      * @return void
      */
     private function processPassports(Company $company, Carbon $now)
@@ -76,8 +74,8 @@ class SendImmigrationExpiryAlert extends Command
             ->where('expiry_date', '>=', $now->toDateString())
             ->with(['user'])
             ->get();
-            foreach ($expiringPassports as $passport) {
-            
+        foreach ($expiringPassports as $passport) {
+
             $this->checkAndSendPassportAlert($passport, $now);
         }
     }
@@ -85,8 +83,6 @@ class SendImmigrationExpiryAlert extends Command
     /**
      * Process visa expiry alerts
      *
-     * @param Company $company
-     * @param Carbon $now
      * @return void
      */
     private function processVisas(Company $company, Carbon $now)
@@ -106,8 +102,6 @@ class SendImmigrationExpiryAlert extends Command
     /**
      * Check if passport should trigger an alert and send notification
      *
-     * @param Passport $passport
-     * @param Carbon $now
      * @return void
      */
     private function checkAndSendPassportAlert(Passport $passport, Carbon $now)
@@ -124,8 +118,6 @@ class SendImmigrationExpiryAlert extends Command
     /**
      * Check if visa should trigger an alert and send notification
      *
-     * @param VisaDetail $visa
-     * @param Carbon $now
      * @return void
      */
     private function checkAndSendVisaAlert(VisaDetail $visa, Carbon $now)
@@ -143,7 +135,6 @@ class SendImmigrationExpiryAlert extends Command
     /**
      * Send passport notification to relevant users
      *
-     * @param Passport $passport
      * @return void
      */
     private function sendPassportNotification(Passport $passport)
@@ -151,22 +142,21 @@ class SendImmigrationExpiryAlert extends Command
         try {
             // Notify the passport owner
             $passport->user->notify(new ImmigrationExpiryAlert($passport, 'expiring_soon', 'passport'));
-            
+
             // Notify HR/Admin users
             $hrUsers = User::allAdmins($passport->company_id);
             foreach ($hrUsers as $hrUser) {
                 $hrUser->notify(new ImmigrationExpiryAlert($passport, 'expiring_soon_hr', 'passport'));
             }
-            
+
         } catch (\Exception $e) {
-            $this->error("Failed to send passport alert for ID {$passport->id}: " . $e->getMessage());
+            $this->error("Failed to send passport alert for ID {$passport->id}: ".$e->getMessage());
         }
     }
 
     /**
      * Send visa notification to relevant users
      *
-     * @param VisaDetail $visa
      * @return void
      */
     private function sendVisaNotification(VisaDetail $visa)
@@ -174,15 +164,15 @@ class SendImmigrationExpiryAlert extends Command
         try {
             // Notify the visa owner
             $visa->user->notify(new ImmigrationExpiryAlert($visa, 'expiring_soon', 'visa'));
-            
+
             // Notify HR/Admin users
             $hrUsers = User::allAdmins($visa->company_id);
             foreach ($hrUsers as $hrUser) {
                 $hrUser->notify(new ImmigrationExpiryAlert($visa, 'expiring_soon_hr', 'visa'));
             }
-            
+
         } catch (\Exception $e) {
-            $this->error("Failed to send visa alert for ID {$visa->id}: " . $e->getMessage());
+            $this->error("Failed to send visa alert for ID {$visa->id}: ".$e->getMessage());
         }
     }
 }

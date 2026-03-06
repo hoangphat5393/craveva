@@ -3,11 +3,9 @@
 namespace Modules\Recruit\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Modules\Recruit\Entities\ApplicationSource;
 
 class StoreSourceRequest extends FormRequest
 {
-
     /**
      * Get the validation rules that apply to the request.
      */
@@ -18,7 +16,7 @@ class StoreSourceRequest extends FormRequest
         return [
             'source' => [
                 'required',
-                'unique:application_sources,application_source,NULL,id,company_id,' . $companyId,
+                'unique:application_sources,application_source,NULL,id,company_id,'.$companyId,
             ],
         ];
     }

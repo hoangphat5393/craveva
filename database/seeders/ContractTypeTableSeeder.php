@@ -6,7 +6,6 @@ use Illuminate\Database\Seeder;
 
 class ContractTypeTableSeeder extends Seeder
 {
-
     /**
      * Run the database seeds.
      *
@@ -54,18 +53,17 @@ class ContractTypeTableSeeder extends Seeder
             'Statement of work',
             'Memorandum of understanding',
             'Letter of intent',
-            'Memorandum of agreement'
+            'Memorandum of agreement',
         ];
 
         \App\Models\ContractType::insert(
             array_map(function ($value) use ($companyId) {
                 return [
                     'company_id' => $companyId,
-                    'name' => $value
+                    'name' => $value,
                 ];
             }, $contracts)
         );
 
     }
-
 }

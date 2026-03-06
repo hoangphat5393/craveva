@@ -8,7 +8,6 @@ use App\Models\UserTaskboardSetting;
 
 class TaskBoardColumnObserver
 {
-
     public function created(TaskboardColumn $taskboardColumn)
     {
         if (user()) {
@@ -17,7 +16,7 @@ class TaskBoardColumnObserver
             foreach ($employees as $item) {
                 UserTaskboardSetting::create([
                     'user_id' => $item->id,
-                    'board_column_id' => $taskboardColumn->id
+                    'board_column_id' => $taskboardColumn->id,
                 ]);
             }
         }
@@ -29,5 +28,4 @@ class TaskBoardColumnObserver
             $model->company_id = company()->id;
         }
     }
-
 }

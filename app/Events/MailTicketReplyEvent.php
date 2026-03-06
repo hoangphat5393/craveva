@@ -8,10 +8,10 @@ use Illuminate\Queue\SerializesModels;
 
 class MailTicketReplyEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $ticketReply;
+
     public $ticketEmailSetting;
 
     public function __construct($ticketReply, $ticketEmailSetting)
@@ -19,5 +19,4 @@ class MailTicketReplyEvent
         $this->ticketReply = $ticketReply;
         $this->ticketEmailSetting = $ticketEmailSetting;
     }
-
 }

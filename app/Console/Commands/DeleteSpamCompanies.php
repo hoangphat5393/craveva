@@ -7,7 +7,6 @@ use Illuminate\Console\Command;
 
 class DeleteSpamCompanies extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
@@ -49,7 +48,7 @@ class DeleteSpamCompanies extends Command
             if ($spamCompanies) {
 
                 foreach ($spamCompanies as $company) {
-                    $this->info('Deleting spam company **' . $company->company_name . '** with company id = ' . $company->id);
+                    $this->info('Deleting spam company **'.$company->company_name.'** with company id = '.$company->id);
                     Company::where('id', $company->id)->update(['default_task_status' => null]);
                     Company::destroy($company->id);
                 }
@@ -61,5 +60,4 @@ class DeleteSpamCompanies extends Command
         return Command::SUCCESS;
 
     }
-
 }

@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class UpdateRequest extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -29,13 +28,11 @@ class UpdateRequest extends CoreRequest
         ];
 
         if (company()) {
-            $rules['name'] = 'required|unique:offline_payment_methods,name,'.$this->route('offline_payment_setting').',id,company_id,' . company()->id;
-        }
-        else{
+            $rules['name'] = 'required|unique:offline_payment_methods,name,'.$this->route('offline_payment_setting').',id,company_id,'.company()->id;
+        } else {
             $rules['name'] = 'required|unique:offline_payment_methods,name,'.$this->route('global_offline_payment_setting').',id,company_id,null';
         }
 
         return $rules;
     }
-
 }

@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|CustomLinkSetting newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|CustomLinkSetting newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|CustomLinkSetting query()
@@ -28,10 +29,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @method static \Illuminate\Database\Eloquent\Builder|CustomLinkSetting whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|CustomLinkSetting whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|CustomLinkSetting whereUrl($value)
+ *
  * @mixin \Eloquent
  */
 class CustomLinkSetting extends BaseModel
 {
-
-    use HasFactory, HasCompany;
+    use HasCompany, HasFactory;
 }

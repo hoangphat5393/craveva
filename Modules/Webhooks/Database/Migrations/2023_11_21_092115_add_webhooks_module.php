@@ -1,14 +1,13 @@
 <?php
 
 use App\Models\Company;
-use Illuminate\Database\Migrations\Migration;
 use App\Models\Module;
 use App\Models\Permission;
+use Illuminate\Database\Migrations\Migration;
 use Modules\Webhooks\Entities\WebhooksGlobalSetting;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      */
@@ -45,5 +44,4 @@ return new class extends Migration
     {
         //
     }
-
 };

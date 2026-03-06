@@ -2,6 +2,8 @@
 
 namespace App\DataTables;
 
+use App\Helper\Common;
+use App\Helper\UserService;
 use App\Models\GlobalSetting;
 use App\Models\Invoice;
 use App\Models\InvoiceSetting;
@@ -9,16 +11,17 @@ use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
-use App\Helper\UserService;
-use App\Helper\Common;
 
 class RecurringInvoicesDataTable extends BaseDataTable
 {
-
     protected $firstInvoice;
+
     protected $invoiceSettings;
+
     private $editInvoicePermission;
+
     private $deleteInvoicePermission;
+
     private $viewInvoicePermission;
 
     public function __construct($ignoreInvoicesWithTrashed = false)
@@ -38,7 +41,7 @@ class RecurringInvoicesDataTable extends BaseDataTable
         return (new EloquentDataTable($query))
             ->addIndexColumn()
             ->filterColumn('invoice_number', function ($query, $keyword) use ($invoiceSettings) {
-                $string = ltrim(str_replace($invoiceSettings->invoice_prefix . $invoiceSettings->invoice_number_separator, '', $keyword), '0');
+                $string = ltrim(str_replace($invoiceSettings->invoice_prefix.$invoiceSettings->invoice_number_separator, '', $keyword), '0');
                 $sql = 'invoices.invoice_number  like ?';
                 $query->whereRaw($sql, ['%{$string}%']);
             })
@@ -48,38 +51,38 @@ class RecurringInvoicesDataTable extends BaseDataTable
 
                 <div class="dropdown">
                     <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" type="link"
-                        id="dropdownMenuLink-' . $row->id . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        id="dropdownMenuLink-'.$row->id.'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="icon-options-vertical icons"></i>
                     </a>
-                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-' . $row->id . '" tabindex="0">';
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-'.$row->id.'" tabindex="0">';
 
-                $action .= '<a href="' . route('invoices.show', [$row->id]) . '" class="dropdown-item"><i class="fa fa-eye mr-2"></i>' . __('app.view') . '</a>';
+                $action .= '<a href="'.route('invoices.show', [$row->id]).'" class="dropdown-item"><i class="fa fa-eye mr-2"></i>'.__('app.view').'</a>';
 
                 if ($this->viewInvoicePermission == 'all' || ($this->viewInvoicePermission == 'added' && (user()->id == $row->added_by || $userId == $row->added_by))) {
-                    $action .= '<a class="dropdown-item" href="' . route('invoices.download', [$row->id]) . '">
+                    $action .= '<a class="dropdown-item" href="'.route('invoices.download', [$row->id]).'">
                                     <i class="fa fa-download mr-2"></i>
-                                    ' . trans('app.download') . '
+                                    '.trans('app.download').'
                                 </a>';
                 }
 
-                if ($row->status != 'canceled' && $row->credit_note == 0 && !in_array('client', user_roles())) {
-                    $action .= '<a class="dropdown-item sendButton" href="javascript:;" data-toggle="tooltip"  data-invoice-id="' . $row->id . '">
+                if ($row->status != 'canceled' && $row->credit_note == 0 && ! in_array('client', user_roles())) {
+                    $action .= '<a class="dropdown-item sendButton" href="javascript:;" data-toggle="tooltip"  data-invoice-id="'.$row->id.'">
                                     <i class="fa fa-paper-plane mr-2"></i>
-                                    ' . trans('app.send') . '
+                                    '.trans('app.send').'
                                 </a>';
                 }
 
-                $edit = (!is_null($row->project) && is_null($row->project->deleted_at)) ? '<a class="dropdown-item" href="' . route('invoices.edit', $row->id) . '" >
+                $edit = (! is_null($row->project) && is_null($row->project->deleted_at)) ? '<a class="dropdown-item" href="'.route('invoices.edit', $row->id).'" >
                         <i class="fa fa-edit mr-2"></i>
-                        ' . trans('app.edit') . '
-                    </a>' : ((is_null($row->project_id)) ? '<a class="dropdown-item" href="' . route('invoices.edit', $row->id) . '" >
+                        '.trans('app.edit').'
+                    </a>' : ((is_null($row->project_id)) ? '<a class="dropdown-item" href="'.route('invoices.edit', $row->id).'" >
                         <i class="fa fa-edit mr-2"></i>
-                        ' . trans('app.edit') . '
+                        '.trans('app.edit').'
                     </a>' : '');
 
-                if ($row->status == 'paid' && $row->credit_note == 0 && !in_array('client', user_roles())) {
-                    $action .= '<a class="dropdown-item invoice-upload" href="javascript:;" data-toggle="tooltip"  data-invoice-id="' . $row->id . '"><i class="fa fa-upload mr-2"></i>
-                                    ' . trans('app.upload') . '
+                if ($row->status == 'paid' && $row->credit_note == 0 && ! in_array('client', user_roles())) {
+                    $action .= '<a class="dropdown-item invoice-upload" href="javascript:;" data-toggle="tooltip"  data-invoice-id="'.$row->id.'"><i class="fa fa-upload mr-2"></i>
+                                    '.trans('app.upload').'
                                 </a>';
 
                     if ($row->amountPaid() == 0 && $row->amountDue() > 0) {
@@ -100,22 +103,22 @@ class RecurringInvoicesDataTable extends BaseDataTable
                     }
                 }
 
-                if ($row->status != 'paid' && $row->status != 'canceled' && in_array('payments', $this->user->modules) && !in_array('client', user_roles()) && $row->credit_note == 0 && $row->status != 'draft') {
-                    $action .= '<a class="dropdown-item openRightModal" href="' . route('payments.create') . '?invoice_id=' . $row->id . '" >
+                if ($row->status != 'paid' && $row->status != 'canceled' && in_array('payments', $this->user->modules) && ! in_array('client', user_roles()) && $row->credit_note == 0 && $row->status != 'draft') {
+                    $action .= '<a class="dropdown-item openRightModal" href="'.route('payments.create').'?invoice_id='.$row->id.'" >
                                     <i class="fa fa-plus mr-2"></i>
-                                    ' . trans('modules.payments.addPayment') . '
+                                    '.trans('modules.payments.addPayment').'
                                 </a>';
                 }
 
                 /* Starts here */
 
-                if ($row->status != 'canceled' && isset($row->client) && isset($row->client->clientDetails) && !is_null($row->client->clientDetails->shipping_address)) {
+                if ($row->status != 'canceled' && isset($row->client) && isset($row->client->clientDetails) && ! is_null($row->client->clientDetails->shipping_address)) {
                     if (isset($row->show_shipping_address) && $row->show_shipping_address === 'yes') {
                         /** @phpstan-ignore-next-line */
-                        $action .= '<a class="dropdown-item" href="javascript:toggleShippingAddress(' . $row->id . ');"><i class="fa fa-eye-slash"></i> ' . __('app.hideShippingAddress') . '</a>';
+                        $action .= '<a class="dropdown-item" href="javascript:toggleShippingAddress('.$row->id.');"><i class="fa fa-eye-slash"></i> '.__('app.hideShippingAddress').'</a>';
                     } else {
                         /** @phpstan-ignore-next-line */
-                        $action .= '<a class="dropdown-item" href="javascript:toggleShippingAddress(' . $row->id . ');"><i class="fa fa-eye"></i> ' . __('app.showShippingAddress') . '</a>';
+                        $action .= '<a class="dropdown-item" href="javascript:toggleShippingAddress('.$row->id.');"><i class="fa fa-eye"></i> '.__('app.showShippingAddress').'</a>';
                     }
                 }
 
@@ -126,9 +129,9 @@ class RecurringInvoicesDataTable extends BaseDataTable
                     || ($this->deleteInvoicePermission == 'both' && ($row->client_id == $userId || $row->added_by == $userId || $row->added_by == user()->id))
                 ) {
                     if ($row->status != 'paid' && $row->status != 'partial') {
-                        $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-toggle="tooltip"  data-invoice-id="' . $row->id . '">
+                        $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-toggle="tooltip"  data-invoice-id="'.$row->id.'">
                             <i class="fa fa-trash mr-2"></i>
-                            ' . trans('app.delete') . '
+                            '.trans('app.delete').'
                         </a>';
                     }
                 }
@@ -137,48 +140,48 @@ class RecurringInvoicesDataTable extends BaseDataTable
 
                 if ($row->status != 'canceled' && isset($row->client) && isset($row->client->clientDetails) && is_null($row->client->clientDetails->shipping_address) && $creditNote == 0) {
                     /** @phpstan-ignore-next-line */
-                    $action .= '<a class="dropdown-item" href="javascript:addShippingAddress(' . $row->id . ');"><i class="fa fa-plus"></i> ' . __('app.addShippingAddress') . '</a>';
+                    $action .= '<a class="dropdown-item" href="javascript:addShippingAddress('.$row->id.');"><i class="fa fa-plus"></i> '.__('app.addShippingAddress').'</a>';
                 }
 
-                if ($row->status != 'canceled' && isset($row->client) && !$row->client->clientDetails && isset($row->project) && isset($row->project->clientDetails) && !is_null($row->project->clientDetails->shipping_address)) {
+                if ($row->status != 'canceled' && isset($row->client) && ! $row->client->clientDetails && isset($row->project) && isset($row->project->clientDetails) && ! is_null($row->project->clientDetails->shipping_address)) {
                     if (isset($row->show_shipping_address) && $row->show_shipping_address === 'yes') {
                         /** @phpstan-ignore-next-line */
-                        $action .= '<a class="dropdown-item" href="javascript:toggleShippingAddress(' . $row->id . ');"><i class="fa fa-eye-slash"></i> ' . __('app.hideShippingAddress') . '</a>';
+                        $action .= '<a class="dropdown-item" href="javascript:toggleShippingAddress('.$row->id.');"><i class="fa fa-eye-slash"></i> '.__('app.hideShippingAddress').'</a>';
                     } else {
                         /** @phpstan-ignore-next-line */
-                        $action .= '<a class="dropdown-item" href="javascript:toggleShippingAddress(' . $row->id . ');"><i class="fa fa-eye"></i> ' . __('app.showShippingAddress') . '</a>';
+                        $action .= '<a class="dropdown-item" href="javascript:toggleShippingAddress('.$row->id.');"><i class="fa fa-eye"></i> '.__('app.showShippingAddress').'</a>';
                     }
                 }
 
-                if ($row->status != 'canceled' && isset($row->client) && !$row->client->clientDetails && isset($row->project) && isset($row->project->clientDetails) && is_null($row->project->clientDetails->shipping_address)) {
+                if ($row->status != 'canceled' && isset($row->client) && ! $row->client->clientDetails && isset($row->project) && isset($row->project->clientDetails) && is_null($row->project->clientDetails->shipping_address)) {
                     /** @phpstan-ignore-next-line */
-                    $action .= '<a class="dropdown-item" href="javascript:addShippingAddress(' . $row->id . ');"><i class="fa fa-plus"></i> ' . __('app.addShippingAddress') . '</a>';
+                    $action .= '<a class="dropdown-item" href="javascript:addShippingAddress('.$row->id.');"><i class="fa fa-plus"></i> '.__('app.addShippingAddress').'</a>';
                 }
 
                 /* Ends here */
 
-                if ($firstInvoice->id != $row->id && !in_array('client', user_roles()) && ($row->status == 'unpaid' || $row->status == 'draft')) {
-                    $action .= '<a class="dropdown-item cancel-invoice" href="javascript:;" data-toggle="tooltip"  data-invoice-id="' . $row->id . '"><i class="fa fa-times mr-2"></i>' . trans('modules.invoices.markCancel') . '</a>';
+                if ($firstInvoice->id != $row->id && ! in_array('client', user_roles()) && ($row->status == 'unpaid' || $row->status == 'draft')) {
+                    $action .= '<a class="dropdown-item cancel-invoice" href="javascript:;" data-toggle="tooltip"  data-invoice-id="'.$row->id.'"><i class="fa fa-times mr-2"></i>'.trans('modules.invoices.markCancel').'</a>';
                 }
 
                 if ($row->status != 'paid' && $row->credit_note == 0 && $row->status != 'draft' && $row->status != 'canceled') {
-                    $action .= '<a class="dropdown-item" href="' . url()->temporarySignedRoute('front.invoice', now()->addDays(GlobalSetting::SIGNED_ROUTE_EXPIRY), $row->hash) . '" target="_blank"><i class="fa fa-external-link-alt mr-2"></i>' . trans('modules.payments.paymentLink') . '</a>';
+                    $action .= '<a class="dropdown-item" href="'.url()->temporarySignedRoute('front.invoice', now()->addDays(GlobalSetting::SIGNED_ROUTE_EXPIRY), $row->hash).'" target="_blank"><i class="fa fa-external-link-alt mr-2"></i>'.trans('modules.payments.paymentLink').'</a>';
                 }
 
-                if ($row->credit_note == 0 && $row->status == 'paid' && !in_array('client', user_roles())) {
-                    $action .= '<a class="dropdown-item" href="' . route('creditnotes.create') . '?invoice=' . $row->id . '"><i class="fa fa-plus mr-2"></i>' . trans('modules.credit-notes.addCreditNote') . '</a>';
+                if ($row->credit_note == 0 && $row->status == 'paid' && ! in_array('client', user_roles())) {
+                    $action .= '<a class="dropdown-item" href="'.route('creditnotes.create').'?invoice='.$row->id.'"><i class="fa fa-plus mr-2"></i>'.trans('modules.credit-notes.addCreditNote').'</a>';
                 }
 
                 if ($row->credit_note == 0 && $row->status != 'draft' && $row->status != 'canceled' && $row->status != 'paid' && $row->status != 'unpaid') {
-                    $action .= '<a class="dropdown-item unpaidAndPartialPaidCreditNote" data-toggle="tooltip"  data-invoice-id="' . $row->id . '" href="javascript:;"><i class="fa fa-plus mr-2"></i>' . trans('modules.credit-notes.addCreditNote') . '</a>';
+                    $action .= '<a class="dropdown-item unpaidAndPartialPaidCreditNote" data-toggle="tooltip"  data-invoice-id="'.$row->id.'" href="javascript:;"><i class="fa fa-plus mr-2"></i>'.trans('modules.credit-notes.addCreditNote').'</a>';
                 }
 
-                if ($row->status != 'paid' && $row->status != 'draft' && $row->status != 'canceled' && $row->credit_note == 0 && !in_array('client', user_roles()) && $row->send_status) {
-                    $action .= '<a class="dropdown-item reminderButton" data-toggle="tooltip"  data-invoice-id="' . $row->id . '" href="javascript:;"><i class="fa fa-bell mr-2"></i>' . trans('app.paymentReminder') . '</a>';
+                if ($row->status != 'paid' && $row->status != 'draft' && $row->status != 'canceled' && $row->credit_note == 0 && ! in_array('client', user_roles()) && $row->send_status) {
+                    $action .= '<a class="dropdown-item reminderButton" data-toggle="tooltip"  data-invoice-id="'.$row->id.'" href="javascript:;"><i class="fa fa-bell mr-2"></i>'.trans('app.paymentReminder').'</a>';
                 }
 
                 if ($row->status == 'review') {
-                    $action .= '<a class="dropdown-item verify" href="javascript:;" data-toggle="tooltip"  data-invoice-id="' . $row->id . '"><i class="fa fa-trash mr-2"></i>' . trans('app.verify') . '
+                    $action .= '<a class="dropdown-item verify" href="javascript:;" data-toggle="tooltip"  data-invoice-id="'.$row->id.'"><i class="fa fa-trash mr-2"></i>'.trans('app.verify').'
                     </a>';
                 }
 
@@ -190,7 +193,7 @@ class RecurringInvoicesDataTable extends BaseDataTable
             })
             ->editColumn('project_name', function ($row) {
                 if ($row->project_id != null) {
-                    return '<a href="' . route('projects.show', $row->project_id) . '" class="text-darkest-grey">' . $row->project->project_name . '</a>';
+                    return '<a href="'.route('projects.show', $row->project_id).'" class="text-darkest-grey">'.$row->project->project_name.'</a>';
                 }
 
                 return '--';
@@ -198,9 +201,9 @@ class RecurringInvoicesDataTable extends BaseDataTable
             ->addColumn('client_name', function ($row) {
                 if ($row->project && $row->project->client) {
                     return $row->project->client->name;
-                } else if ($row->client_id != '') {
+                } elseif ($row->client_id != '') {
                     return $row->client->name;
-                } else if ($row->estimate && $row->estimate->client) {
+                } elseif ($row->estimate && $row->estimate->client) {
                     return $row->estimate->client->name;
                 } else {
                     return '--';
@@ -209,16 +212,16 @@ class RecurringInvoicesDataTable extends BaseDataTable
             ->editColumn('name', function ($row) {
                 if ($row->project && $row->project->client) {
                     $client = $row->project->client;
-                } else if ($row->client_id != '') {
+                } elseif ($row->client_id != '') {
                     $client = $row->client;
-                } else if ($row->estimate && $row->estimate->client) {
+                } elseif ($row->estimate && $row->estimate->client) {
                     $client = $row->estimate->client;
                 } else {
                     return '--';
                 }
 
                 return view('components.client', [
-                    'user' => $client
+                    'user' => $client,
                 ]);
             })
             ->editColumn('invoices', function ($row) {
@@ -228,14 +231,14 @@ class RecurringInvoicesDataTable extends BaseDataTable
             ->editColumn('invoice_number', function ($row) {
                 $recurring = '';
 
-                if (!is_null($row->invoice_recurring_id)) {
-                    $recurring = '<span class="badge badge-primary"> ' . __('app.recurring') . ' </span>';
+                if (! is_null($row->invoice_recurring_id)) {
+                    $recurring = '<span class="badge badge-primary"> '.__('app.recurring').' </span>';
                 }
 
                 return '<div class="media align-items-center">
                         <div class="media-body">
-                    <h5 class="mb-0 f-13 text-darkest-grey"><a href="' . route('invoices.show', [$row->id]) . '">' . $row->invoice_number . '</a></h5>
-                    <p class="mb-0">' . $recurring . '</p>
+                    <h5 class="mb-0 f-13 text-darkest-grey"><a href="'.route('invoices.show', [$row->id]).'">'.$row->invoice_number.'</a></h5>
+                    <p class="mb-0">'.$recurring.'</p>
                     </div>
                   </div>';
             })
@@ -243,23 +246,23 @@ class RecurringInvoicesDataTable extends BaseDataTable
                 $status = '';
 
                 if ($row->credit_note) {
-                    $status .= ' <i class="fa fa-circle mr-1 text-yellow f-10"></i>' . __('app.credit-note');
+                    $status .= ' <i class="fa fa-circle mr-1 text-yellow f-10"></i>'.__('app.credit-note');
                 } else {
                     if ($row->status == 'unpaid') {
-                        $status .= ' <i class="fa fa-circle mr-1 text-red f-10"></i>' . __('app.' . $row->status);
+                        $status .= ' <i class="fa fa-circle mr-1 text-red f-10"></i>'.__('app.'.$row->status);
                     } elseif ($row->status == 'paid') {
-                        $status .= ' <i class="fa fa-circle mr-1 text-dark-green f-10"></i>' . __('app.' . $row->status);
+                        $status .= ' <i class="fa fa-circle mr-1 text-dark-green f-10"></i>'.__('app.'.$row->status);
                     } elseif ($row->status == 'draft') {
-                        $status .= ' <i class="fa fa-circle mr-1 text-blue f-10"></i>' . __('app.' . $row->status);
+                        $status .= ' <i class="fa fa-circle mr-1 text-blue f-10"></i>'.__('app.'.$row->status);
                     } elseif ($row->status == 'canceled') {
-                        $status .= ' <i class="fa fa-circle mr-1 text-red f-10"></i>' . __('app.' . $row->status);
+                        $status .= ' <i class="fa fa-circle mr-1 text-red f-10"></i>'.__('app.'.$row->status);
                     } else {
-                        $status .= ' <i class="fa fa-circle mr-1 text-blue f-10"></i>' . __('modules.invoices.partial');
+                        $status .= ' <i class="fa fa-circle mr-1 text-blue f-10"></i>'.__('modules.invoices.partial');
                     }
                 }
 
-                if (!$row->send_status && $row->status != 'draft') {
-                    $status .= '<br><br><span class="badge badge-secondary">' . __('modules.invoices.notSent') . '</span>';
+                if (! $row->send_status && $row->status != 'draft') {
+                    $status .= '<br><br><span class="badge badge-secondary">'.__('modules.invoices.notSent').'</span>';
                 }
 
                 return $status;
@@ -267,7 +270,7 @@ class RecurringInvoicesDataTable extends BaseDataTable
             ->editColumn('total', function ($row) {
                 $currencyId = $row->currency->id;
 
-                return '<div class="text-right">' . __('app.total') . ': ' . currency_format($row->total, $currencyId) . '<br><span class="text-success">' . __('app.paid') . ':</span> ' . currency_format($row->amountPaid(), $currencyId) . '<br><span class="text-danger">' . __('app.unpaid') . ':</span> ' . currency_format($row->amountDue(), $currencyId) . '</div>';
+                return '<div class="text-right">'.__('app.total').': '.currency_format($row->total, $currencyId).'<br><span class="text-success">'.__('app.paid').':</span> '.currency_format($row->amountPaid(), $currencyId).'<br><span class="text-danger">'.__('app.unpaid').':</span> '.currency_format($row->amountDue(), $currencyId).'</div>';
             })
             ->editColumn(
                 'issue_date',
@@ -282,7 +285,6 @@ class RecurringInvoicesDataTable extends BaseDataTable
     }
 
     /**
-     * @param Invoice $model
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function query(Invoice $model)
@@ -309,24 +311,24 @@ class RecurringInvoicesDataTable extends BaseDataTable
             $model = $model->where(DB::raw('DATE(invoices.`issue_date`)'), '<=', $endDate);
         }
 
-        if ($request->status != 'all' && !is_null($request->status)) {
+        if ($request->status != 'all' && ! is_null($request->status)) {
             $model = $model->where('invoices.status', '=', $request->status);
         }
 
-        if ($request->projectID != 'all' && !is_null($request->projectID)) {
+        if ($request->projectID != 'all' && ! is_null($request->projectID)) {
             $model = $model->where('invoices.project_id', '=', $request->projectID);
         }
 
-        if ($request->clientID != 'all' && !is_null($request->clientID)) {
+        if ($request->clientID != 'all' && ! is_null($request->clientID)) {
             $model = $model->where('client_id', '=', $request->clientID);
         }
 
         if ($request->searchText != '') {
             $safeTerm = Common::safeString(request('searchText'));
             $model = $model->where(function ($query) use ($safeTerm) {
-                $query->where('invoices.invoice_number', 'like', '%' . $safeTerm . '%')
-                    ->orWhere('invoices.id', 'like', '%' . $safeTerm . '%')
-                    ->orWhere('invoices.total', 'like', '%' . $safeTerm . '%');
+                $query->where('invoices.invoice_number', 'like', '%'.$safeTerm.'%')
+                    ->orWhere('invoices.id', 'like', '%'.$safeTerm.'%')
+                    ->orWhere('invoices.total', 'like', '%'.$safeTerm.'%');
             });
         }
 
@@ -360,7 +362,7 @@ class RecurringInvoicesDataTable extends BaseDataTable
             ]);
 
         if (canDataTableExport()) {
-            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
+            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
         }
 
         return $dataTable;
@@ -378,8 +380,8 @@ class RecurringInvoicesDataTable extends BaseDataTable
         $dsData = [
             '#' => ['data' => 'DT_RowIndex', 'orderable' => false, 'searchable' => false, 'visible' => false, 'title' => '#'],
             __('app.id') => ['data' => 'id', 'name' => 'id', 'visible' => false, 'title' => __('app.id')],
-            __('app.invoice') . '#' => ['data' => 'invoice_number', 'name' => 'invoice_number', 'exportable' => false, 'title' => __('app.invoice')],
-            __('modules.invoices.total') . '#' => ['data' => 'invoices', 'name' => 'invoice_number', 'visible' => false, 'title' => __('modules.invoiceExport')],
+            __('app.invoice').'#' => ['data' => 'invoice_number', 'name' => 'invoice_number', 'exportable' => false, 'title' => __('app.invoice')],
+            __('modules.invoices.total').'#' => ['data' => 'invoices', 'name' => 'invoice_number', 'visible' => false, 'title' => __('modules.invoiceExport')],
             __('app.client') => ['data' => 'name', 'name' => 'project.client.name', 'exportable' => false, 'title' => __('app.client')],
             __('app.customers') => ['data' => 'client_name', 'name' => 'project.client.name', 'visible' => false, 'title' => __('app.customers')],
             __('modules.invoices.total') => ['data' => 'total', 'name' => 'total', 'title' => __('modules.invoices.total')],
@@ -391,7 +393,7 @@ class RecurringInvoicesDataTable extends BaseDataTable
                 ->orderable(false)
                 ->searchable(false)
                 ->width(150)
-                ->addClass('text-right pr-20')
+                ->addClass('text-right pr-20'),
         ];
 
         if (in_array('projects', $modules)) {

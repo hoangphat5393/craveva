@@ -2,20 +2,18 @@
 
 namespace Modules\Performance\Http\Controllers;
 
-use App\Models\User;
 use App\Helper\Reply;
+use App\Http\Controllers\AccountBaseController;
 use App\Models\EmployeeDetails;
 use Illuminate\Support\Facades\DB;
 use Modules\Performance\Entities\Action;
 use Modules\Performance\Entities\Meeting;
-use App\Http\Controllers\AccountBaseController;
-use Modules\Performance\Events\MeetingInviteEvent;
 use Modules\Performance\Entities\PerformanceSetting;
+use Modules\Performance\Events\MeetingInviteEvent;
 use Modules\Performance\Http\Requests\ActionRequest;
 
 class ActionController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -48,13 +46,13 @@ class ActionController extends AccountBaseController
     {
         $meeting = Meeting::findOrFail($request->meeting_id);
         abort_403($this->checkManageAccess($meeting->id));
-        $this->hasAccess = !$this->checkManageAccess($meeting->id);
+        $this->hasAccess = ! $this->checkManageAccess($meeting->id);
 
         DB::beginTransaction();
 
         if (isset($request->action_points)) {
             foreach ($request->action_points as $key => $point) {
-                $action = new Action();
+                $action = new Action;
                 $action->meeting_id = $meeting->id;
                 $action->action_point = $point;
                 $action->added_by = user()->id;
@@ -65,7 +63,7 @@ class ActionController extends AccountBaseController
         if ($request->send_mail == 'no') {
             $tab = $request->tab ?? 'list';
 
-            $action = new Action();
+            $action = new Action;
             $action->meeting_id = $meeting->id;
             $action->action_point = $request->action_point;
             $action->added_by = user()->id;
@@ -121,7 +119,7 @@ class ActionController extends AccountBaseController
     {
         $action = Action::findOrFail($id);
         abort_403($this->checkManageAccess($action->meeting_id));
-        $this->hasAccess = !$this->checkManageAccess($action->meeting_id);
+        $this->hasAccess = ! $this->checkManageAccess($action->meeting_id);
 
         $action->action_point = $request->action_point;
         $action->save();
@@ -141,7 +139,7 @@ class ActionController extends AccountBaseController
     {
         $action = Action::findOrFail($id);
         abort_403($this->checkManageAccess($action->meeting_id));
-        $this->hasAccess = !$this->checkManageAccess($action->meeting_id);
+        $this->hasAccess = ! $this->checkManageAccess($action->meeting_id);
 
         $meetingId = $action->meeting_id;
         $action->delete();
@@ -159,7 +157,7 @@ class ActionController extends AccountBaseController
         $id = request()->id;
         $action = Action::findOrFail($id);
         abort_403($this->checkManageAccess($action->meeting_id));
-        $this->hasAccess = !$this->checkManageAccess($action->meeting_id);
+        $this->hasAccess = ! $this->checkManageAccess($action->meeting_id);
 
         $action->is_actioned = 'yes';
         $action->save();
@@ -191,10 +189,10 @@ class ActionController extends AccountBaseController
         $currentUserRoleIds = user()->roles()->pluck('id')->toArray();
         $viewByRoles = json_decode($meetingSetting->view_meeting_roles, true) ?? [];
 
-        return !(user()->hasRole('admin') || $ownerId == user()->id ||
+        return ! (user()->hasRole('admin') || $ownerId == user()->id ||
             ($canViewManager == 1 && in_array(user()->id, $managerIds)) ||
             ($canViewParticipant == 1 && ($ownerId == user()->id || $participantId == user()->id)) ||
-            (!empty($viewByRoles) && array_intersect($currentUserRoleIds, $viewByRoles)));
+            (! empty($viewByRoles) && array_intersect($currentUserRoleIds, $viewByRoles)));
     }
 
     protected function checkManageAccess($id)
@@ -216,10 +214,9 @@ class ActionController extends AccountBaseController
         $currentUserRoleIds = user()->roles()->pluck('id')->toArray();
         $manageByRoles = json_decode($meetingSetting->create_meeting_roles, true) ?? [];
 
-        return !(user()->hasRole('admin') || $ownerId == user()->id ||
+        return ! (user()->hasRole('admin') || $ownerId == user()->id ||
             ($canManageManager == 1 && in_array(user()->id, $managerIds)) ||
             ($canManageParticipant == 1 && ($ownerId == user()->id || $participantId == user()->id)) ||
-            (!empty($manageByRoles) && array_intersect($currentUserRoleIds, $manageByRoles)));
+            (! empty($manageByRoles) && array_intersect($currentUserRoleIds, $manageByRoles)));
     }
-
 }

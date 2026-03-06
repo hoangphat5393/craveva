@@ -4,7 +4,6 @@ namespace Modules\Biolinks\Enums;
 
 enum BorderRadius: string
 {
-
     // phpcs:disable
     case STRAIGHT = 'straight';
     case ROUND = 'round';
@@ -15,9 +14,8 @@ enum BorderRadius: string
     public function label(): string
     {
         return match ($this) {
-            self::STRAIGHT, self::ROUND, self::ROUNDED => __('biolinks::app.' . $this->value),
+            self::STRAIGHT, self::ROUND, self::ROUNDED => __('biolinks::app.'.$this->value),
             default => $this->value,
         };
     }
-
 }

@@ -2,11 +2,11 @@
 
 namespace App\Models\SuperAdmin;
 
-use App\Models\Company;
-use App\Scopes\CompanyScope;
-use App\Models\OfflinePaymentMethod;
 use App\Models\BaseModel;
+use App\Models\Company;
+use App\Models\OfflinePaymentMethod;
 use App\Observers\SuperAdmin\OfflineInvoiceObserver;
+use App\Scopes\CompanyScope;
 
 /**
  * App\Models\SuperAdmin\OfflineInvoice
@@ -27,6 +27,7 @@ use App\Observers\SuperAdmin\OfflineInvoiceObserver;
  * @property-read OfflinePaymentMethod|null $offlinePaymentMethod
  * @property-read OfflinePlanChange|null $offlinePlanChangeRequest
  * @property-read Package $package
+ *
  * @method static Builder|OfflineInvoice newModelQuery()
  * @method static Builder|OfflineInvoice newQuery()
  * @method static Builder|OfflineInvoice query()
@@ -42,16 +43,16 @@ use App\Observers\SuperAdmin\OfflineInvoiceObserver;
  * @method static Builder|OfflineInvoice whereStatus($value)
  * @method static Builder|OfflineInvoice whereTransactionId($value)
  * @method static Builder|OfflineInvoice whereUpdatedAt($value)
+ *
  * @mixin Eloquent
  */
 class OfflineInvoice extends BaseModel
 {
-
     const FILE_PATH = 'offline-invoice';
 
     protected $dates = [
         'pay_date',
-        'next_pay_date'
+        'next_pay_date',
     ];
 
     protected $casts = [
@@ -87,5 +88,4 @@ class OfflineInvoice extends BaseModel
     {
         return $this->hasOne(OfflinePlanChange::class, 'invoice_id');
     }
-
 }

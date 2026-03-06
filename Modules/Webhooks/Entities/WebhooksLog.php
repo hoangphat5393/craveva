@@ -16,6 +16,4 @@ class WebhooksLog extends BaseModel
     {
         return $this->belongsTo(WebhooksSetting::class, 'webhooks_setting_id');
     }
-
 }
-

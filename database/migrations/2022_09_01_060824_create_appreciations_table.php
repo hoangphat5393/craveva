@@ -1,21 +1,21 @@
 <?php
 
+use App\Models\AwardIcon;
+use App\Models\Company;
+use App\Models\DashboardWidget;
+use App\Models\EmailNotificationSetting;
+use App\Models\Module;
+use App\Models\Permission;
+use App\Models\PermissionRole;
+use App\Models\Role;
+use App\Models\User;
+use App\Models\UserPermission;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use App\Models\Permission;
-use App\Models\Role;
-use App\Models\PermissionRole;
-use App\Models\User;
-use App\Models\UserPermission;
-use App\Models\DashboardWidget;
-use App\Models\Module;
-use App\Models\AwardIcon;
-use App\Models\Company;
-use App\Models\EmailNotificationSetting;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      *
@@ -23,7 +23,7 @@ return new class extends Migration {
      */
     public function up()
     {
-        if (!Schema::hasTable('award_icons')) {
+        if (! Schema::hasTable('award_icons')) {
             Schema::create('award_icons', function (Blueprint $table) {
                 $table->id();
                 $table->string('title');
@@ -72,36 +72,35 @@ return new class extends Migration {
 
         $module = Module::where('module_name', 'employees')->first();
 
-        if (!is_null($module)) {
+        if (! is_null($module)) {
 
             $permissions = [
                 [
                     'name' => 'add_appreciation',
                     'display' => 'Add Appreciation',
-                    'allowed_permission' => Permission::ALL_NONE
+                    'allowed_permission' => Permission::ALL_NONE,
                 ],
                 [
                     'name' => 'view_appreciation',
                     'display' => 'View Appreciation',
-                    'allowed_permission' => Permission::ALL_4_ADDED_1_OWNED_2_BOTH_3_NONE_5
+                    'allowed_permission' => Permission::ALL_4_ADDED_1_OWNED_2_BOTH_3_NONE_5,
                 ],
                 [
                     'name' => 'edit_appreciation',
                     'display' => 'Edit Appreciation',
-                    'allowed_permission' => Permission::ALL_4_ADDED_1_OWNED_2_BOTH_3_NONE_5
+                    'allowed_permission' => Permission::ALL_4_ADDED_1_OWNED_2_BOTH_3_NONE_5,
                 ],
                 [
                     'name' => 'delete_appreciation',
                     'display' => 'Delete Appreciation',
-                    'allowed_permission' => Permission::ALL_4_ADDED_1_OWNED_2_BOTH_3_NONE_5
+                    'allowed_permission' => Permission::ALL_4_ADDED_1_OWNED_2_BOTH_3_NONE_5,
                 ],
                 [
                     'name' => 'manage_award',
                     'display' => 'Manage Award',
-                    'allowed_permission' => Permission::ALL_NONE
-                ]
+                    'allowed_permission' => Permission::ALL_NONE,
+                ],
             ];
-
 
             $companies = Company::select('id', 'company_name')->get();
 
@@ -111,10 +110,9 @@ return new class extends Migration {
                     [
                         'display_name' => $permissionData['display'],
                         'is_custom' => 1,
-                        'allowed_permissions' => $permissionData['allowed_permission']
+                        'allowed_permissions' => $permissionData['allowed_permission'],
                     ]
                 );
-
 
                 foreach ($companies as $company) {
                     $role = Role::where('name', 'admin')->where('company_id', $company->id)->first();
@@ -128,7 +126,7 @@ return new class extends Migration {
                     $adminUser = User::withOut('clientDetails')->withRole('admin')->where('users.company_id', $company->id)->get();
 
                     foreach ($adminUser as $adminUsers) {
-                        $userPermission = new UserPermission();
+                        $userPermission = new UserPermission;
                         $userPermission->user_id = $adminUsers->id;
                         $userPermission->permission_id = $permission->id;
                         $userPermission->permission_type_id = 4;
@@ -145,7 +143,7 @@ return new class extends Migration {
                             ->get();
 
                         foreach ($employeeUsers as $employeeUser) {
-                            $userPermission = new UserPermission();
+                            $userPermission = new UserPermission;
                             $userPermission->user_id = $employeeUser->id;
                             $userPermission->permission_id = $permission->id;
                             $userPermission->permission_type_id = 2;
@@ -157,7 +155,7 @@ return new class extends Migration {
                         'widget_name' => 'appreciation',
                         'status' => 1,
                         'dashboard_type' => 'private-dashboard',
-                        'company_id' => $company->id
+                        'company_id' => $company->id,
                     ];
 
                     DashboardWidget::firstOrCreate($widget);
@@ -212,5 +210,4 @@ return new class extends Migration {
         EmailNotificationSetting::where('slug', 'appreciation-notification')->delete();
         Schema::dropIfExists('appreciation_icons');
     }
-
 };

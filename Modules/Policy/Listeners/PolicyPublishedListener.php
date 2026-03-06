@@ -9,7 +9,6 @@ use Modules\Policy\Notifications\PolicyPublishedNotification;
 
 class PolicyPublishedListener
 {
-
     use InteractsWithQueue;
 
     /**
@@ -19,5 +18,4 @@ class PolicyPublishedListener
     {
         Notification::send($event->notifyUsers, new PolicyPublishedNotification($event->policy));
     }
-
 }

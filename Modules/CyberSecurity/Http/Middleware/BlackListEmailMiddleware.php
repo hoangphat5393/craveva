@@ -8,7 +8,6 @@ use Modules\CyberSecurity\Entities\BlacklistEmail;
 
 class BlackListEmailMiddleware
 {
-
     /**
      * Handle an incoming request.
      */
@@ -17,7 +16,7 @@ class BlackListEmailMiddleware
 
         $email = $request->email;
 
-        if (!$email && auth()->check()) {
+        if (! $email && auth()->check()) {
             $email = auth()->user()->email;
         }
 
@@ -30,7 +29,6 @@ class BlackListEmailMiddleware
 
     private function geyEmailDomain($email)
     {
-        return '@'. str($email)->after('@')->__toString();
+        return '@'.str($email)->after('@')->__toString();
     }
-
 }

@@ -8,20 +8,19 @@ use Modules\Purchase\Entities\PurchaseInventoryHistory;
 
 class PurchaseInventoryFileObserver
 {
-
     /**
-     * @param PurchaseInventoryFile $item
+     * @param  PurchaseInventoryFile  $item
      */
     public function saving(PurchaseInventoryFile $inventoryFiles)
     {
-        if (!isRunningInConsoleOrSeeding() && user()) {
+        if (! isRunningInConsoleOrSeeding() && user()) {
             $inventoryFiles->last_updated_by = user()->id;
         }
     }
 
     public function creating(PurchaseInventoryFile $inventoryFiles)
     {
-        if (!isRunningInConsoleOrSeeding() && user()) {
+        if (! isRunningInConsoleOrSeeding() && user()) {
             $inventoryFiles->added_by = user()->id;
         }
 
@@ -32,7 +31,7 @@ class PurchaseInventoryFileObserver
 
     public function created(PurchaseInventoryFile $event)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             if (\user()) {
                 $this->logInventoryActivity(company()->id, $event->inventory_id, user()->id, null, null, null, null, null, 'inventoryFileCreated', 'fileCreated', $event->id);
             }
@@ -43,7 +42,7 @@ class PurchaseInventoryFileObserver
     {
         $inventoryFiles->load('product');
 
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             if (isset($inventoryFiles->product) && $inventoryFiles->product->default_image == $inventoryFiles->hashname) {
                 $inventoryFiles->product->default_image = null;
                 $inventoryFiles->product->save();
@@ -55,7 +54,7 @@ class PurchaseInventoryFileObserver
 
     public function logInventoryActivity($companyID, $inventoryID, $userID, $productName, $netQuantity, $quantityAdjustment, $changedValue, $adjustedValue, $text, $label, $inventoryFilesID = null)
     {
-        $activity = new PurchaseInventoryHistory();
+        $activity = new PurchaseInventoryHistory;
 
         $activity->company_id = $companyID;
         $activity->inventory_id = $inventoryID;
@@ -68,12 +67,10 @@ class PurchaseInventoryFileObserver
         $activity->details = $text;
         $activity->label = $label;
 
-        if (!is_null($inventoryFilesID))
-        {
+        if (! is_null($inventoryFilesID)) {
             $activity->purchase_inventory_files_id = $inventoryFilesID;
         }
 
         $activity->save();
     }
-
 }

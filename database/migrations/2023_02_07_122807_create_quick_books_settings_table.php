@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      *
@@ -36,7 +35,6 @@ return new class extends Migration
             $table->boolean('status');
             $table->timestamps();
         });
-
 
         Schema::table('invoices', function (Blueprint $table) {
             $table->integer('quickbooks_invoice_id')->nullable();
@@ -91,5 +89,4 @@ return new class extends Migration
             $table->dropColumn('datatable_row_limit');
         });
     }
-
 };

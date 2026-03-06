@@ -4,14 +4,13 @@ namespace App\Observers;
 
 use App\Models\Attendance;
 use App\Models\AttendanceSetting;
+use App\Models\EmployeeShiftSchedule;
 use App\Models\Leave;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use App\Models\EmployeeShiftSchedule;
 
 class AttendanceObserver
 {
-
     public function saving(Attendance $attendance)
     {
         if (user()) {
@@ -29,14 +28,12 @@ class AttendanceObserver
             $attendance->working_from = $attendance->work_from_type;
         }
 
-
         $attendance->company_id = $attendance->user->company_id;
 
         // Get company, user, and request from context
         $company = $attendance->user->company;
         $user = $attendance->user;
         $request = request();
-
 
         $now = now($company->timezone);
 
@@ -45,8 +42,8 @@ class AttendanceObserver
         // Get attendance settings for the user's shift
         $attendanceSettings = $this->attendanceShift($showClockIn, $company, $user);
 
-        $startTimestamp = now($company->timezone)->format('Y-m-d') . ' ' . $attendanceSettings->office_start_time;
-        $endTimestamp = now($company->timezone)->format('Y-m-d') . ' ' . $attendanceSettings->office_end_time;
+        $startTimestamp = now($company->timezone)->format('Y-m-d').' '.$attendanceSettings->office_start_time;
+        $endTimestamp = now($company->timezone)->format('Y-m-d').' '.$attendanceSettings->office_end_time;
         $officeStartTime = Carbon::createFromFormat('Y-m-d H:i:s', $startTimestamp, $company->timezone);
         $officeEndTime = Carbon::createFromFormat('Y-m-d H:i:s', $endTimestamp, $company->timezone);
 
@@ -57,7 +54,7 @@ class AttendanceObserver
         // check if user has clocked in on time or not
         $lateCheckData = Attendance::whereBetween('clock_in_time', [
             $officeStartTime->copy()->timezone(config('app.timezone')),
-            $officeEndTime->copy()->timezone(config('app.timezone'))
+            $officeEndTime->copy()->timezone(config('app.timezone')),
         ])
             ->where('user_id', $user->id)
             ->orderBy('clock_in_time', 'asc')
@@ -85,12 +82,11 @@ class AttendanceObserver
                 ->count();
         }
 
-
         if ($attendanceSettings->halfday_mark_time) {
-            $halfDayTimes = Carbon::createFromFormat('Y-m-d H:i:s', $now->format('Y-m-d') . ' ' . $attendanceSettings->halfday_mark_time, $company->timezone);
+            $halfDayTimes = Carbon::createFromFormat('Y-m-d H:i:s', $now->format('Y-m-d').' '.$attendanceSettings->halfday_mark_time, $company->timezone);
         }
 
-        $officeStartTime = Carbon::createFromFormat('Y-m-d H:i:s', $now->format('Y-m-d') . ' ' . $attendanceSettings->office_start_time, $company->timezone);
+        $officeStartTime = Carbon::createFromFormat('Y-m-d H:i:s', $now->format('Y-m-d').' '.$attendanceSettings->office_start_time, $company->timezone);
 
         $lateTime = $officeStartTime->copy()->addMinutes($attendanceSettings->late_mark_duration);
 
@@ -98,10 +94,9 @@ class AttendanceObserver
             ->where(DB::raw('DATE(attendances.clock_in_time)'), '=', $now->format('Y-m-d'))->first();
 
         // Don't create new attendance, modify the existing one being created
-        if (!isset($attendance->clock_in_time)) {
+        if (! isset($attendance->clock_in_time)) {
             $attendance->clock_in_time = $now->copy()->timezone(config('app.timezone'));
         }
-
 
         if ($now->gt($lateTime) && $isLate === 'yes') {
             $attendance->late = 'yes';
@@ -111,14 +106,14 @@ class AttendanceObserver
             ->where('status', 'approved')
             ->where('user_id', $user->id)->first();
 
-        if (isset($leave) && !is_null($leave->half_day_type) && $attendanceSettings->shift_type == 'strict') {
+        if (isset($leave) && ! is_null($leave->half_day_type) && $attendanceSettings->shift_type == 'strict') {
             $attendance->half_day = 'yes';
         } else {
             $attendance->half_day = 'no';
         }
 
-        $startTimestamp = now($company->timezone)->format('Y-m-d') . ' ' . $attendanceSettings->office_start_time;
-        $endTimestamp = now($company->timezone)->format('Y-m-d') . ' ' . $attendanceSettings->office_end_time;
+        $startTimestamp = now($company->timezone)->format('Y-m-d').' '.$attendanceSettings->office_start_time;
+        $endTimestamp = now($company->timezone)->format('Y-m-d').' '.$attendanceSettings->office_end_time;
 
         $officeStartTime = Carbon::createFromFormat('Y-m-d H:i:s', $startTimestamp, $company->timezone);
         $officeEndTime = Carbon::createFromFormat('Y-m-d H:i:s', $endTimestamp, $company->timezone);
@@ -166,10 +161,10 @@ class AttendanceObserver
                 if ($startTimePeriod === 'PM' && $halfdayPeriod === 'AM') {
                     // Half day exists in the first half of the next day
                     $timeFlag = ($officeEndTime->isSameDay(now($company->timezone)) && $isNowAfterHalfDayTimes);
-                } else if ($startTimePeriod === 'AM' && $halfdayPeriod === 'PM') {
+                } elseif ($startTimePeriod === 'AM' && $halfdayPeriod === 'PM') {
                     // Half day exists in the second half of the same day
                     $timeFlag = ($isSameDay && $isNowAfterHalfDayTimes);
-                } else if (($startTimePeriod === 'PM' && $halfdayPeriod === 'PM') || ($startTimePeriod === 'AM' && $halfdayPeriod === 'AM')) {
+                } elseif (($startTimePeriod === 'PM' && $halfdayPeriod === 'PM') || ($startTimePeriod === 'AM' && $halfdayPeriod === 'AM')) {
                     // Same day or next day depending on the start time
                     if ($officeStartTime->gt($halfDayTimes)) {
                         // Next day scenario
@@ -182,12 +177,11 @@ class AttendanceObserver
             }
         }
 
-
         // Check day's first record and half day time
         if (
             isset($halfDayTimes) &&
             now($company->timezone)->gt($halfDayTimes) &&
-            !is_null($attendanceSettings->halfday_mark_time)
+            ! is_null($attendanceSettings->halfday_mark_time)
             && is_null($checkTodayAttendance)
             && $timeFlag
             // && ($now->gt($halfDayTimes))
@@ -199,12 +193,12 @@ class AttendanceObserver
 
         $attendance->employee_shift_id = $attendanceSettings->id;
 
-        $attendance->shift_start_time = $attendance->clock_in_time->format('Y-m-d') . ' ' . $attendanceSettings->office_start_time;
+        $attendance->shift_start_time = $attendance->clock_in_time->format('Y-m-d').' '.$attendanceSettings->office_start_time;
 
         if (Carbon::parse($attendanceSettings->office_start_time, $company->timezone)->gt(Carbon::parse($attendanceSettings->office_end_time, $company->timezone))) {
-            $attendance->shift_end_time = $attendance->clock_in_time->copy()->addDay()->format('Y-m-d') . ' ' . $attendanceSettings->office_end_time;
+            $attendance->shift_end_time = $attendance->clock_in_time->copy()->addDay()->format('Y-m-d').' '.$attendanceSettings->office_end_time;
         } else {
-            $attendance->shift_end_time = $attendance->clock_in_time->format('Y-m-d') . ' ' . $attendanceSettings->office_end_time;
+            $attendance->shift_end_time = $attendance->clock_in_time->format('Y-m-d').' '.$attendanceSettings->office_end_time;
         }
     }
 
@@ -221,9 +215,9 @@ class AttendanceObserver
             ->where('date', now($company->timezone)->toDateString())
             ->first();
 
-        $backDayFromDefault = Carbon::parse(now($company->timezone)->subDay()->format('Y-m-d') . ' ' . $defaultAttendanceSettings->office_start_time, $company->timezone);
+        $backDayFromDefault = Carbon::parse(now($company->timezone)->subDay()->format('Y-m-d').' '.$defaultAttendanceSettings->office_start_time, $company->timezone);
 
-        $backDayToDefault = Carbon::parse(now($company->timezone)->subDay()->format('Y-m-d') . ' ' . $defaultAttendanceSettings->office_end_time, $company->timezone);
+        $backDayToDefault = Carbon::parse(now($company->timezone)->subDay()->format('Y-m-d').' '.$defaultAttendanceSettings->office_end_time, $company->timezone);
 
         if ($backDayFromDefault->gt($backDayToDefault)) {
             $backDayToDefault->addDay();
@@ -233,21 +227,20 @@ class AttendanceObserver
 
         if ($checkPreviousDayShift && $nowTime->betweenIncluded($checkPreviousDayShift->shift_start_time, $checkPreviousDayShift->shift_end_time)) {
             $attendanceSettings = $checkPreviousDayShift;
-        } else if ($nowTime->betweenIncluded($backDayFromDefault, $backDayToDefault)) {
+        } elseif ($nowTime->betweenIncluded($backDayFromDefault, $backDayToDefault)) {
             $attendanceSettings = $defaultAttendanceSettings;
-        } else if (
+        } elseif (
             $checkTodayShift &&
             ($nowTime->betweenIncluded($checkTodayShift->shift_start_time, $checkTodayShift->shift_end_time)
                 || $nowTime->gt($checkTodayShift->shift_end_time)
-                || (!$nowTime->betweenIncluded($checkTodayShift->shift_start_time, $checkTodayShift->shift_end_time) && $defaultAttendanceSettings->show_clock_in_button == 'no'))
+                || (! $nowTime->betweenIncluded($checkTodayShift->shift_start_time, $checkTodayShift->shift_end_time) && $defaultAttendanceSettings->show_clock_in_button == 'no'))
         ) {
             $attendanceSettings = $checkTodayShift;
-        } else if ($checkTodayShift && !is_null($checkTodayShift->shift->early_clock_in)) {
+        } elseif ($checkTodayShift && ! is_null($checkTodayShift->shift->early_clock_in)) {
             $attendanceSettings = $checkTodayShift;
         } else {
             $attendanceSettings = $defaultAttendanceSettings;
         }
-
 
         if (isset($attendanceSettings->shift)) {
             return $attendanceSettings->shift;

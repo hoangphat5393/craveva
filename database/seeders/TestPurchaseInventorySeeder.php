@@ -2,13 +2,13 @@
 
 namespace Database\Seeders;
 
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Modules\Purchase\Entities\PurchaseInventory;
+use Modules\Purchase\Entities\PurchaseProduct;
 use Modules\Purchase\Entities\PurchaseStockAdjustment;
 use Modules\Purchase\Entities\PurchaseStockAdjustmentReason;
-use Modules\Purchase\Entities\PurchaseProduct;
 use Modules\Warehouse\Entities\Warehouse;
-use Carbon\Carbon;
 
 class TestPurchaseInventorySeeder extends Seeder
 {
@@ -19,30 +19,30 @@ class TestPurchaseInventorySeeder extends Seeder
     {
         // 1. Ensure we have prerequisites: Reason, Product, Warehouse
         $reason = PurchaseStockAdjustmentReason::first();
-        if (!$reason) {
+        if (! $reason) {
             $reason = PurchaseStockAdjustmentReason::create([
                 'name' => 'Stock Correction',
-                'company_id' => 1
+                'company_id' => 1,
             ]);
         }
 
         $product = PurchaseProduct::first();
-        if (!$product) {
+        if (! $product) {
             $product = PurchaseProduct::create([
                 'name' => 'Test Product',
                 'price' => 100,
                 'type' => 'goods',
-                'company_id' => 1
+                'company_id' => 1,
             ]);
         }
 
         $warehouse = Warehouse::first();
-        if (!$warehouse) {
+        if (! $warehouse) {
             $warehouse = Warehouse::create([
                 'name' => 'Main Warehouse',
                 'code' => 'WH001',
                 'company_id' => 1,
-                'status' => 'active'
+                'status' => 'active',
             ]);
         }
 
@@ -53,7 +53,7 @@ class TestPurchaseInventorySeeder extends Seeder
                 'name' => "Test Product $i",
                 'price' => 100 * $i,
                 'type' => 'goods',
-                'company_id' => 1
+                'company_id' => 1,
             ]);
 
             $inventory = PurchaseInventory::create([
@@ -72,7 +72,7 @@ class TestPurchaseInventorySeeder extends Seeder
                 'reason_id' => $reason->id,
                 'type' => 'quantity',
                 'date' => Carbon::now()->subDays($i),
-                'reference_number' => 'REF-' . $inventory->id,
+                'reference_number' => 'REF-'.$inventory->id,
                 'net_quantity' => 10,
                 'quantity_adjustment' => 5,
                 'description' => "Adjustment for item $i",

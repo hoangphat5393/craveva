@@ -2,33 +2,32 @@
 
 namespace Modules\Purchase\Http\Controllers;
 
-use App\Models\User;
 use App\Helper\Reply;
+use App\Http\Controllers\AccountBaseController;
+use App\Models\User;
+use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Contracts\Support\Renderable;
-use App\Http\Controllers\AccountBaseController;
+use Modules\Purchase\DataTables\VendorNotesDataTable;
 use Modules\Purchase\Entities\PurchaseSetting;
 use Modules\Purchase\Entities\PurchaseVendorNote;
-use Modules\Purchase\Http\Requests\Vendor\StoreVendorNote;
-use Modules\Purchase\DataTables\VendorNotesDataTable;
 use Modules\Purchase\Entities\PurchaseVendorUserNotes;
+use Modules\Purchase\Http\Requests\Vendor\StoreVendorNote;
 
 class VendorNotesController extends AccountBaseController
 {
-
     /**
      * Display a listing of the resource.
+     *
      * @return Renderable
      */
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'app.menu.notes';
 
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array(PurchaseSetting::MODULE_NAME, $this->user->modules));
+            abort_403(! in_array(PurchaseSetting::MODULE_NAME, $this->user->modules));
 
             return $next($request);
         });
@@ -43,9 +42,9 @@ class VendorNotesController extends AccountBaseController
 
     /**
      * Show the form for creating a new resource.
+     *
      * @return Renderable
      */
-
     public function create()
     {
         $this->pageTitle = __('purchase::app.addVendorNote');
@@ -66,15 +65,15 @@ class VendorNotesController extends AccountBaseController
 
     /**
      * Store a newly created resource in storage.
-     * @param Request $request
+     *
+     * @param  Request  $request
      * @return Renderable
      */
-
     public function store(StoreVendorNote $request)
     {
         $this->employees = User::allEmployees();
 
-        $note = new PurchaseVendorNote();
+        $note = new PurchaseVendorNote;
         $note->note_title = $request->title;
         $note->purchase_vendor_id = $request->vendor_id;
         $note->note_details = ($request->details == '<p><br></p>') ? null : $request->details;
@@ -88,22 +87,23 @@ class VendorNotesController extends AccountBaseController
         if ($request->type == 1) {
             $users = $request->user_id;
 
-            if (!is_null($users)) {
+            if (! is_null($users)) {
                 foreach ($users as $user) {
                     PurchaseVendorUserNotes::firstOrCreate([
                         'user_id' => $user,
-                        'vendor_note_id' => $note->id
+                        'vendor_note_id' => $note->id,
                     ]);
                 }
             }
         }
 
-        return Reply::successWithData(__('messages.recordSaved'), ['redirectUrl' => route('vendors.show', $note->purchase_vendor_id) . '?tab=notes']);
+        return Reply::successWithData(__('messages.recordSaved'), ['redirectUrl' => route('vendors.show', $note->purchase_vendor_id).'?tab=notes']);
     }
 
     /**
      * Show the specified resource.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function show($id)
@@ -114,7 +114,7 @@ class VendorNotesController extends AccountBaseController
         $this->noteMembers = $this->note->members->pluck('user_id')->toArray();
         $this->employees = User::whereIn('id', $this->noteMembers)->get();
 
-        $this->pageTitle = __('purchase::app.vendor') . ' ' . __('app.note');
+        $this->pageTitle = __('purchase::app.vendor').' '.__('app.note');
 
         if (request()->ajax()) {
             $html = view('purchase::vendors.notes.show', $this->data)->render();
@@ -130,7 +130,8 @@ class VendorNotesController extends AccountBaseController
 
     /**
      * Show the form for editing the specified resource.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function edit($id)
@@ -157,8 +158,9 @@ class VendorNotesController extends AccountBaseController
 
     /**
      * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
+     *
+     * @param  Request  $request
+     * @param  int  $id
      * @return Renderable
      */
     public function update(StoreVendorNote $request, $id)
@@ -178,22 +180,23 @@ class VendorNotesController extends AccountBaseController
 
             $users = $request->user_id;
 
-            if (!is_null($users)) {
+            if (! is_null($users)) {
                 foreach ($users as $user) {
                     PurchaseVendorUserNotes::firstOrCreate([
                         'user_id' => $user,
-                        'vendor_note_id' => $note->id
+                        'vendor_note_id' => $note->id,
                     ]);
                 }
             }
         }
 
-        return Reply::successWithData(__('messages.updateSuccess'), ['redirectUrl' => route('vendors.show', $note->purchase_vendor_id) . '?tab=notes']);
+        return Reply::successWithData(__('messages.updateSuccess'), ['redirectUrl' => route('vendors.show', $note->purchase_vendor_id).'?tab=notes']);
     }
 
     /**
      * Remove the specified resource from storage.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function destroy($id)
@@ -246,5 +249,4 @@ class VendorNotesController extends AccountBaseController
     {
         return $this->show($id);
     }
-
 }

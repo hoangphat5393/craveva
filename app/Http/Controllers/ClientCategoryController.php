@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Helper\Reply;
 use App\Http\Requests\Admin\Client\StoreClientCategory;
 use App\Models\ClientCategory;
+use Illuminate\Http\Request;
 
 class ClientCategoryController extends AccountBaseController
 {
-
     /**
      * Show the form for creating a new resource.
+     *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
     public function create()
@@ -24,12 +24,12 @@ class ClientCategoryController extends AccountBaseController
 
     /**
      * Store a newly created resource in storage.
-     * @param StoreClientCategory $request
+     *
      * @return array
      */
     public function store(StoreClientCategory $request)
     {
-        $category = new ClientCategory();
+        $category = new ClientCategory;
         $category->category_name = strip_tags($request->category_name);
         $category->save();
         $categoryData = ClientCategory::all();
@@ -39,8 +39,8 @@ class ClientCategoryController extends AccountBaseController
 
     /**
      * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
+     *
+     * @param  int  $id
      * @return array|void
      */
     public function update(Request $request, $id)
@@ -60,7 +60,7 @@ class ClientCategoryController extends AccountBaseController
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
+     * @param  int  $id
      * @return mixed
      */
     public function destroy($id)
@@ -74,5 +74,4 @@ class ClientCategoryController extends AccountBaseController
 
         return Reply::successWithData(__('messages.deleteSuccess'), ['data' => $categoryData]);
     }
-
 }

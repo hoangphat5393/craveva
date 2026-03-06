@@ -28,6 +28,6 @@ class PublishTranslationCommand extends Command
      */
     public function handle()
     {
-        (new LanguagePackController())->publishAll();
+        (new LanguagePackController)->publishAll();
     }
 }

@@ -2,8 +2,8 @@
 
 namespace Modules\ServerManager\Services;
 
-use Modules\ServerManager\Entities\ServerDomain;
 use Illuminate\Support\Collection;
+use Modules\ServerManager\Entities\ServerDomain;
 
 class DomainService
 {

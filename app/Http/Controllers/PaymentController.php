@@ -16,14 +16,13 @@ use App\Models\Payment;
 use App\Models\PaymentGatewayCredentials;
 use App\Models\Project;
 use App\Models\User;
+use App\Traits\EmployeeActivityTrait;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Traits\EmployeeActivityTrait;
 
 class PaymentController extends AccountBaseController
 {
-
     use EmployeeActivityTrait;
 
     public function __construct()
@@ -31,7 +30,7 @@ class PaymentController extends AccountBaseController
         parent::__construct();
         $this->pageTitle = 'app.menu.payments';
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('payments', $this->user->modules));
+            abort_403(! in_array('payments', $this->user->modules));
 
             return $next($request);
         });
@@ -41,15 +40,14 @@ class PaymentController extends AccountBaseController
     {
 
         $viewPermission = user()->permission('view_payments');
-        abort_403(!in_array($viewPermission, ['all', 'added', 'owned', 'both']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'owned', 'both']));
 
-        if (!request()->ajax()) {
+        if (! request()->ajax()) {
             $this->projects = Project::allProjects();
 
             if (in_array('client', user_roles())) {
                 $this->clients = User::client();
-            }
-            else {
+            } else {
                 $this->clients = User::allClients();
             }
         }
@@ -65,16 +63,16 @@ class PaymentController extends AccountBaseController
     public function applyQuickAction(Request $request)
     {
         switch ($request->action_type) {
-        case 'delete':
-            $this->deleteRecords($request);
+            case 'delete':
+                $this->deleteRecords($request);
 
-            return Reply::success(__('messages.deleteSuccess'));
-        case 'change-status':
-            $this->changeStatus($request);
+                return Reply::success(__('messages.deleteSuccess'));
+            case 'change-status':
+                $this->changeStatus($request);
 
-            return Reply::success(__('messages.updateSuccess'));
-        default:
-            return Reply::error(__('messages.selectAction'));
+                return Reply::success(__('messages.updateSuccess'));
+            default:
+                return Reply::error(__('messages.selectAction'));
         }
     }
 
@@ -104,7 +102,7 @@ class PaymentController extends AccountBaseController
     public function create()
     {
         $this->addPermission = user()->permission('add_payments');
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
 
         $this->pageTitle = __('modules.payments.addPayment');
         $this->viewBankAccountPermission = user()->permission('view_bankaccount');
@@ -112,8 +110,7 @@ class PaymentController extends AccountBaseController
         if (request()->has('default_client') && request('default_client') != '') {
             $this->defaultClient = request('default_client');
             $this->projects = Project::with('currency')->where('client_id', request('default_client'))->get();
-        }
-        else {
+        } else {
             $this->projects = Project::with('currency')->whereNotNull('client_id')->get();
         }
 
@@ -140,14 +137,12 @@ class PaymentController extends AccountBaseController
             $this->currencyCode = $this->invoice->currency->currency_code;
             $this->exchangeRate = $this->invoice->currency->exchange_rate;
 
-
             if ($this->invoice->project_id) {
                 $this->project = Project::findOrFail($this->invoice->project_id);
             }
 
             $bankAccountQuery = $bankAccountQuery->where('status', 1)->where('currency_id', $this->invoice->currency_id);
-        }
-        elseif (request()->has('default_client') && request('default_client') != '') {
+        } elseif (request()->has('default_client') && request('default_client') != '') {
             $this->invoices = Invoice::with('payment', 'currency')
                 ->where('client_id', request('default_client'))
                 ->where('send_status', 1)
@@ -155,8 +150,7 @@ class PaymentController extends AccountBaseController
                     $q->where('status', 'unpaid')
                         ->orWhere('status', 'partial');
                 })->get();
-        }
-        elseif (request()->has('project')) {
+        } elseif (request()->has('project')) {
             $this->invoices = Invoice::with('payment')
                 ->where('project_id', request('project'))
                 ->where('send_status', 1)
@@ -164,8 +158,7 @@ class PaymentController extends AccountBaseController
                     $q->where('status', 'unpaid')
                         ->orWhere('status', 'partial');
                 })->get();
-        }
-        else {
+        } else {
             $this->invoices = Invoice::with('payment')->where(function ($q) {
                 $q->where('status', 'unpaid')
                     ->orWhere('status', 'partial');
@@ -175,7 +168,6 @@ class PaymentController extends AccountBaseController
 
             $bankAccountQuery = $bankAccountQuery->where('status', 1)->where('currency_id', company()->currency_id);
         }
-
 
         if ($this->viewBankAccountPermission == 'added') {
             $bankAccountQuery = $bankAccountQuery->where('added_by', user()->id);
@@ -203,12 +195,11 @@ class PaymentController extends AccountBaseController
 
     public function store(StorePayment $request)
     {
-        $payment = new Payment();
+        $payment = new Payment;
 
-        if (!is_null($request->currency_id)) {
+        if (! is_null($request->currency_id)) {
             $payment->currency_id = $request->currency_id;
-        }
-        else {
+        } else {
             $payment->currency_id = $this->company->currency_id;
         }
 
@@ -268,7 +259,7 @@ class PaymentController extends AccountBaseController
         $payment = Payment::with('invoice')->findOrFail($id);
         $this->deletePermission = user()->permission('delete_payments');
 
-        abort_403(!($this->deletePermission == 'all'
+        abort_403(! ($this->deletePermission == 'all'
             || ($this->deletePermission == 'added' && $payment->added_by == user()->id)
             || ($this->deletePermission == 'owned' && user()->id == $payment->invoice->client_id)
             || ($this->deletePermission == 'both' && (user()->id == $payment->invoice->client_id && user()->id == $payment->added_by))
@@ -287,7 +278,7 @@ class PaymentController extends AccountBaseController
         $this->editPermission = user()->permission('edit_payments');
         $this->methods = OfflinePaymentMethod::all();
 
-        abort_403(!($this->editPermission == 'all'
+        abort_403(! ($this->editPermission == 'all'
             || ($this->editPermission == 'added' && $this->payment->added_by == user()->id)
             || ($this->editPermission == 'owned' && $this->payment->invoice && $this->payment->invoice->client_id == user()->id)
             || ($this->editPermission == 'both' && (($this->payment->invoice && $this->payment->invoice->client_id == user()->id) || $this->payment->added_by == user()->id) || ($this->payment->gateway == null || $this->payment == 'Offline'))
@@ -313,8 +304,7 @@ class PaymentController extends AccountBaseController
         $this->invoices = Invoice::where(function ($query) {
             if (in_array('client', user_roles())) {
                 $query->where('invoices.client_id', user()->id);
-            }
-            else {
+            } else {
                 $query->where('invoices.project_id', $this->payment->project_id)
                     ->whereNotNull('invoices.project_id');
             }
@@ -338,8 +328,7 @@ class PaymentController extends AccountBaseController
 
         if ($request->project_id != '' && $request->project_id != '0') {
             $payment->project_id = $request->project_id;
-        }
-        else {
+        } else {
             $payment->project_id = null;
         }
 
@@ -353,8 +342,7 @@ class PaymentController extends AccountBaseController
 
         if ($request->paid_on != '') {
             $payment->paid_on = companyToYmd($request->paid_on);
-        }
-        else {
+        } else {
             $payment->paid_on = null;
         }
 
@@ -375,8 +363,7 @@ class PaymentController extends AccountBaseController
             $payment->project_id = $invoice->project_id;
             $payment->invoice_id = $invoice->id;
             $payment->currency_id = $invoice->currency->id;
-        }
-        else {
+        } else {
             $payment->invoice_id = null;
         }
 
@@ -388,11 +375,9 @@ class PaymentController extends AccountBaseController
         if ($payment->invoice) {
             if ($payment->invoice->amountDue() <= 0) {
                 $payment->invoice->status = 'paid';
-            }
-            else if ($payment->invoice->amountDue() >= $payment->invoice->total) {
+            } elseif ($payment->invoice->amountDue() >= $payment->invoice->total) {
                 $payment->invoice->status = 'unpaid';
-            }
-            else {
+            } else {
                 $payment->invoice->status = 'partial';
             }
 
@@ -410,12 +395,12 @@ class PaymentController extends AccountBaseController
 
         $this->viewPermission = user()->permission('view_payments');
 
-        abort_403(!($this->viewPermission == 'all'
+        abort_403(! ($this->viewPermission == 'all'
             || ($this->viewPermission == 'added' && $this->payment->added_by == user()->id)
-            || ($this->viewPermission == 'owned' && !is_null($this->payment->project_id) && $this->payment->project->client_id == user()->id)
-            || ($this->viewPermission == 'owned' && !is_null($this->payment->invoice_id) && $this->payment->invoice->client_id == user()->id)
-            || ($this->viewPermission == 'owned' && !is_null($this->payment->order_id) && $this->payment->order->client_id == user()->id)
-            || ($this->viewPermission == 'both' && ($this->payment->added_by == user()->id || (!is_null($this->payment->project_id) && $this->payment->project->client_id == user()->id) || (!is_null($this->payment->invoice_id) && $this->payment->invoice->client_id == user()->id) || (!is_null($this->payment->order_id) && $this->payment->order->client_id == user()->id)))
+            || ($this->viewPermission == 'owned' && ! is_null($this->payment->project_id) && $this->payment->project->client_id == user()->id)
+            || ($this->viewPermission == 'owned' && ! is_null($this->payment->invoice_id) && $this->payment->invoice->client_id == user()->id)
+            || ($this->viewPermission == 'owned' && ! is_null($this->payment->order_id) && $this->payment->order->client_id == user()->id)
+            || ($this->viewPermission == 'both' && ($this->payment->added_by == user()->id || (! is_null($this->payment->project_id) && $this->payment->project->client_id == user()->id) || (! is_null($this->payment->invoice_id) && $this->payment->invoice->client_id == user()->id) || (! is_null($this->payment->order_id) && $this->payment->order->client_id == user()->id)))
         ));
 
         $this->pageTitle = __('modules.payments.paymentDetails');
@@ -435,18 +420,18 @@ class PaymentController extends AccountBaseController
         $this->payment = Payment::with('invoice', 'project', 'currency')->findOrFail($id);
         $this->viewPermission = user()->permission('view_payments');
 
-        abort_403(!($this->viewPermission == 'all'
+        abort_403(! ($this->viewPermission == 'all'
             || ($this->viewPermission == 'added' && $this->payment->added_by == user()->id)
-            || ($this->viewPermission == 'owned' && !is_null($this->payment->project_id) && $this->payment->project->client_id == user()->id)
-            || ($this->viewPermission == 'owned' && !is_null($this->payment->invoice_id) && $this->payment->invoice->client_id == user()->id)
-            || ($this->viewPermission == 'owned' && !is_null($this->payment->order_id) && $this->payment->order->client_id == user()->id)
+            || ($this->viewPermission == 'owned' && ! is_null($this->payment->project_id) && $this->payment->project->client_id == user()->id)
+            || ($this->viewPermission == 'owned' && ! is_null($this->payment->invoice_id) && $this->payment->invoice->client_id == user()->id)
+            || ($this->viewPermission == 'owned' && ! is_null($this->payment->order_id) && $this->payment->order->client_id == user()->id)
         ));
 
         $pdfOption = $this->domPdfObjectForDownload($id);
         $pdf = $pdfOption['pdf'];
         $filename = $pdfOption['fileName'];
 
-        return $pdf->download($filename . '.pdf');
+        return $pdf->download($filename.'.pdf');
     }
 
     public function domPdfObjectForDownload($id)
@@ -460,11 +445,11 @@ class PaymentController extends AccountBaseController
 
         $pdf = app('dompdf.wrapper');
         $pdf->loadView('payments.ajax.pdf', $this->data);
-        $filename = $this->payment->invoice->invoice_number  . '-' . __('app.menu.payment');
+        $filename = $this->payment->invoice->invoice_number.'-'.__('app.menu.payment');
 
         return [
             'pdf' => $pdf,
-            'fileName' => $filename
+            'fileName' => $filename,
         ];
     }
 
@@ -487,15 +472,15 @@ class PaymentController extends AccountBaseController
             $bankName = '';
 
             if ($bankAccount->type == 'bank') {
-                $bankName = $bankAccount->bank_name . ' |';
+                $bankName = $bankAccount->bank_name.' |';
             }
 
-            $options .= '<option value="' . $bankAccount->id . '"> ' . $bankName . ' ' . $bankAccount->account_name . ' </option>';
+            $options .= '<option value="'.$bankAccount->id.'"> '.$bankName.' '.$bankAccount->account_name.' </option>';
         }
 
-        if($request->paymentInvoiceId){
+        if ($request->paymentInvoiceId) {
             $exchangeRate = Invoice::where('id', $request->paymentInvoiceId)->pluck('exchange_rate')->toArray();
-        }else{
+        } else {
             $exchangeRate = Currency::where('id', $request->curId)->pluck('exchange_rate')->toArray();
         }
 
@@ -512,7 +497,7 @@ class PaymentController extends AccountBaseController
     public function addBulkPayments()
     {
         $this->addPermission = user()->permission('add_payments');
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
 
         $this->pageTitle = __('modules.payments.addBulkPayment');
         $this->viewBankAccountPermission = user()->permission('view_bankaccount');
@@ -527,8 +512,7 @@ class PaymentController extends AccountBaseController
 
         if ($clientId != 'all' && $clientId != null) {
             $this->pendingPayments = $this->pendingPayments->where('client_id', $clientId)->get();
-        }
-        else {
+        } else {
             $this->pendingPayments = $this->pendingPayments->get();
         }
 
@@ -549,8 +533,7 @@ class PaymentController extends AccountBaseController
         if (in_array('client', user_roles())) {
 
             $this->clients = User::client();
-        }
-        else {
+        } else {
             $this->clients = User::allClients();
         }
 
@@ -612,7 +595,7 @@ class PaymentController extends AccountBaseController
                 $offline_method_id = $request->offline_method_id[$index];
                 $payment_date = $request->payment_date[$index] ? Carbon::createFromFormat($this->company->date_format, $request->payment_date[$index])->format('Y-m-d') : null;
 
-                $payment = new Payment();
+                $payment = new Payment;
 
                 $payment->gateway = $gateway;
                 $payment->status = 'complete';
@@ -629,11 +612,10 @@ class PaymentController extends AccountBaseController
 
                 $payment->save();
 
-                if ((float)($paidAmount + $amount) >= (float)$invoice->total) {
+                if ((float) ($paidAmount + $amount) >= (float) $invoice->total) {
                     $invoice->status = 'paid';
                     $invoice->payment_status = '1';
-                }
-                else {
+                } else {
                     $invoice->status = 'partial';
                 }
 
@@ -651,5 +633,4 @@ class PaymentController extends AccountBaseController
 
         return Reply::successWithData(__('messages.recordSaved'), ['redirectUrl' => $redirectUrl]);
     }
-
 }

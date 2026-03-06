@@ -25,7 +25,7 @@ return [
         'action' => '操作',
         'onboardingUsers' => '入职用户',
         'offboardingUsers' => '离职用户',
-        'notificationSetting' => '通知设置'
+        'notificationSetting' => '通知设置',
     ],
     'startOnboarding' => '开始入职',
     'startOffboarding' => '开始离职',

@@ -31,11 +31,9 @@ use Froiden\Envato\Traits\AppBoot;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-
 class DashboardController extends AccountBaseController
 {
-
-    use AppBoot, CurrencyExchange, OverviewDashboard, EmployeeDashboard, ProjectDashboard, ClientDashboard, HRDashboard, TicketDashboard, FinanceDashboard, ClientPanelDashboard;
+    use AppBoot, ClientDashboard, ClientPanelDashboard, CurrencyExchange, EmployeeDashboard, FinanceDashboard, HRDashboard, OverviewDashboard, ProjectDashboard, TicketDashboard;
 
     public function __construct()
     {
@@ -57,7 +55,6 @@ class DashboardController extends AccountBaseController
      */
     public function index()
     {
-
 
         session()->forget(['qr_clock_in']);
 
@@ -92,7 +89,7 @@ class DashboardController extends AccountBaseController
             ->update(['status' => 0]);
 
         // Step 2: Update the status to 1 for widgets present in the request
-        if (!empty($data)) {
+        if (! empty($data)) {
             DashboardWidget::where('dashboard_type', $dashboardType)
                 ->whereIn('widget_name', array_keys($data))
                 ->update(['status' => 1]);
@@ -114,7 +111,7 @@ class DashboardController extends AccountBaseController
      */
     public function memberDashboard()
     {
-        abort_403(!in_array('employee', user_roles()));
+        abort_403(! in_array('employee', user_roles()));
 
         return $this->employeeDashboard();
     }
@@ -232,7 +229,7 @@ class DashboardController extends AccountBaseController
                     } elseif ($this->sidebarUserPermissions['view_finance_dashboard'] == 4) {
                         $this->activeTab = $tab ?: 'finance';
                         $this->ticketDashboard();
-                    } else if ($this->sidebarUserPermissions['view_ticket_dashboard'] == 4) {
+                    } elseif ($this->sidebarUserPermissions['view_ticket_dashboard'] == 4) {
                         $this->activeTab = $tab ?: 'finance';
                         $this->financeDashboard();
                     }
@@ -244,7 +241,7 @@ class DashboardController extends AccountBaseController
                 return $this->returnAjax($this->view);
             }
 
-            if (!isset($this->activeTab)) {
+            if (! isset($this->activeTab)) {
                 $this->activeTab = $tab ?: 'overview';
             }
 
@@ -290,7 +287,7 @@ class DashboardController extends AccountBaseController
         $minutes = $totalMinutes % 60;
 
         return $hours > 0
-            ? $hours . 'h' . ($minutes > 0 ? ' ' . sprintf('%02dm', $minutes) : '')
+            ? $hours.'h'.($minutes > 0 ? ' '.sprintf('%02dm', $minutes) : '')
             : ($minutes > 0 ? sprintf('%dm', $minutes) : '0s');
     }
 
@@ -309,11 +306,11 @@ class DashboardController extends AccountBaseController
         // get calendar view current logined user
         $calendar_filter_array = explode(',', user()->employeeDetail->calendar_view);
 
-        $eventData = array();
+        $eventData = [];
 
         $viewEventPerm = user()->permission('view_events');
 
-        if (!is_null($viewEventPerm) && $viewEventPerm != 'none') {
+        if (! is_null($viewEventPerm) && $viewEventPerm != 'none') {
 
             if (in_array('events', $calendar_filter_array)) {
                 // Events
@@ -337,7 +334,7 @@ class DashboardController extends AccountBaseController
                         'start' => $event->start_date_time,
                         'end' => $event->end_date_time,
                         'event_type' => 'event',
-                        'extendedProps' => ['bg_color' => $event->label_color, 'color' => '#fff', 'icon' => 'fa-calendar']
+                        'extendedProps' => ['bg_color' => $event->label_color, 'color' => '#fff', 'icon' => 'fa-calendar'],
                     ];
                 }
             }
@@ -345,22 +342,22 @@ class DashboardController extends AccountBaseController
         $user = user();
         $viewHolidayPerm = user()->permission('view_holiday');
 
-        if (!is_null($viewHolidayPerm) && $viewHolidayPerm != 'none') {
+        if (! is_null($viewHolidayPerm) && $viewHolidayPerm != 'none') {
             if (in_array('holiday', $calendar_filter_array)) {
                 // holiday
                 $holidays = Holiday::whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()])
                     ->where(function ($query) use ($user) {
                         $query->where(function ($subquery) use ($user) {
                             $subquery->where(function ($q) use ($user) {
-                                $q->where('department_id_json', 'like', '%"' . $user->employeeDetail->department_id . '"%')
+                                $q->where('department_id_json', 'like', '%"'.$user->employeeDetail->department_id.'"%')
                                     ->orWhereNull('department_id_json');
                             });
                             $subquery->where(function ($q) use ($user) {
-                                $q->where('designation_id_json', 'like', '%"' . $user->employeeDetail->designation_id . '"%')
+                                $q->where('designation_id_json', 'like', '%"'.$user->employeeDetail->designation_id.'"%')
                                     ->orWhereNull('designation_id_json');
                             });
                             $subquery->where(function ($q) use ($user) {
-                                $q->where('employment_type_json', 'like', '%"' . $user->employeeDetail->employment_type . '"%')
+                                $q->where('employment_type_json', 'like', '%"'.$user->employeeDetail->employment_type.'"%')
                                     ->orWhereNull('employment_type_json');
                             });
                         });
@@ -374,7 +371,7 @@ class DashboardController extends AccountBaseController
                         'start' => $holiday->date,
                         'end' => $holiday->date,
                         'event_type' => 'holiday',
-                        'extendedProps' => ['bg_color' => '#1d82f5', 'color' => '#fff', 'icon' => 'fa-star']
+                        'extendedProps' => ['bg_color' => '#1d82f5', 'color' => '#fff', 'icon' => 'fa-star'],
                     ];
                 }
             }
@@ -382,7 +379,7 @@ class DashboardController extends AccountBaseController
 
         $viewTaskPerm = user()->permission('view_tasks');
 
-        if (!is_null($viewTaskPerm) && $viewTaskPerm != 'none') {
+        if (! is_null($viewTaskPerm) && $viewTaskPerm != 'none') {
 
             if (in_array('task', $calendar_filter_array)) {
                 // tasks
@@ -406,7 +403,7 @@ class DashboardController extends AccountBaseController
                         'start' => $task->start_date,
                         'end' => $task->due_date ?: $task->start_date,
                         'event_type' => 'task',
-                        'extendedProps' => ['bg_color' => $task->boardColumn->label_color, 'color' => '#fff', 'icon' => 'fa-list']
+                        'extendedProps' => ['bg_color' => $task->boardColumn->label_color, 'color' => '#fff', 'icon' => 'fa-list'],
                     ];
                 }
             }
@@ -414,7 +411,7 @@ class DashboardController extends AccountBaseController
 
         $viewTicketPerm = user()->permission('view_tickets');
 
-        if (!is_null($viewTicketPerm) && $viewTicketPerm != 'none') {
+        if (! is_null($viewTicketPerm) && $viewTicketPerm != 'none') {
 
             if (in_array('tickets', $calendar_filter_array)) {
                 $userid = user()->id;
@@ -434,7 +431,7 @@ class DashboardController extends AccountBaseController
                         'start' => $startTime?->toDateTimeString(),
                         'end' => $endTime?->toDateTimeString(),
                         'event_type' => 'ticket',
-                        'extendedProps' => ['bg_color' => '#1d82f5', 'color' => '#fff', 'icon' => 'fa-ticket-alt']
+                        'extendedProps' => ['bg_color' => '#1d82f5', 'color' => '#fff', 'icon' => 'fa-ticket-alt'],
                     ];
                 }
             }
@@ -442,7 +439,7 @@ class DashboardController extends AccountBaseController
 
         $viewleavePerm = user()->permission('view_leave');
 
-        if (!is_null($viewleavePerm) && $viewleavePerm != 'none') {
+        if (! is_null($viewleavePerm) && $viewleavePerm != 'none') {
 
             if (in_array('leaves', $calendar_filter_array)) {
                 // approved leaves of all emoloyees with employee name
@@ -454,16 +451,16 @@ class DashboardController extends AccountBaseController
                     ->get();
 
                 foreach ($leaves as $leave) {
-                    $duration = ($leave->duration == 'half day') ? '( ' . __('app.halfday') . ' )' : '';
+                    $duration = ($leave->duration == 'half day') ? '( '.__('app.halfday').' )' : '';
 
                     $eventData[] = [
                         'id' => $leave->id,
-                        'title' => $duration . ' ' . $leave->user->name,
+                        'title' => $duration.' '.$leave->user->name,
                         'start' => $leave->leave_date->toDateString(),
                         'end' => $leave->leave_date->toDateString(),
                         'event_type' => 'leave',
                         /** @phpstan-ignore-next-line */
-                        'extendedProps' => ['name' => 'Leave : ' . $leave->user->name, 'bg_color' => $leave->color, 'color' => '#fff', 'icon' => 'fa-plane-departure']
+                        'extendedProps' => ['name' => 'Leave : '.$leave->user->name, 'bg_color' => $leave->color, 'color' => '#fff', 'icon' => 'fa-plane-departure'],
                     ];
                 }
             }
@@ -471,7 +468,7 @@ class DashboardController extends AccountBaseController
 
         $viewDealPerm = user()->permission('view_deals');
 
-        if (!is_null($viewDealPerm) && $viewDealPerm != 'none') {
+        if (! is_null($viewDealPerm) && $viewDealPerm != 'none') {
 
             if (in_array('follow_ups', $calendar_filter_array)) {
                 // follow ups
@@ -488,7 +485,7 @@ class DashboardController extends AccountBaseController
                         'start' => $followUp->next_follow_up_date->timezone(company()->timezone),
                         'end' => $followUp->next_follow_up_date->timezone(company()->timezone),
                         'event_type' => 'follow_up',
-                        'extendedProps' => ['bg_color' => '#1d82f5', 'color' => '#fff', 'icon' => 'fa-thumbs-up']
+                        'extendedProps' => ['bg_color' => '#1d82f5', 'color' => '#fff', 'icon' => 'fa-thumbs-up'],
                     ];
                 }
             }
@@ -513,7 +510,7 @@ class DashboardController extends AccountBaseController
 
     public function beamAuth()
     {
-        $userID = 'wrkst-' . user()->id;
+        $userID = 'wrkst-'.user()->id;
         $userIDInQueryParam = request()->user_id;
 
         if ($userID != $userIDInQueryParam) {
@@ -525,6 +522,7 @@ class DashboardController extends AccountBaseController
             ]);
 
             $beamsToken = $beamsClient->generateToken($userID);
+
             return response()->json($beamsToken);
         }
     }
@@ -534,28 +532,27 @@ class DashboardController extends AccountBaseController
         $setting = PushNotificationSetting::first();
         if ($setting->beams_push_status && count($usersIDs) > 0) {
             $beamsClient = new \Pusher\PushNotifications\PushNotifications([
-                'instanceId' =>  $setting->instance_id,
-                'secretKey' =>  $setting->beam_secret,
+                'instanceId' => $setting->instance_id,
+                'secretKey' => $setting->beam_secret,
             ]);
-
 
             $pushIDs = [];
 
             foreach ($usersIDs[0] as $key => $uid) {
-                $pushIDs[] = 'wrkst-' . $uid;
+                $pushIDs[] = 'wrkst-'.$uid;
             }
 
             $publishResponse = $beamsClient->publishToUsers(
                 $pushIDs,
-                array(
-                    'web' => array(
-                        'notification' => array(
+                [
+                    'web' => [
+                        'notification' => [
                             'title' => $title,
                             'body' => $body,
-                            'icon' => companyOrGlobalSetting()->logo_url
-                        )
-                    )
-                )
+                            'icon' => companyOrGlobalSetting()->logo_url,
+                        ],
+                    ],
+                ]
             );
         }
 

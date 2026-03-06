@@ -8,7 +8,6 @@ use Modules\Recruit\Events\CandidateFollowUpReminderEvent;
 
 class CandidateFollowupReminderCommand extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
@@ -42,11 +41,9 @@ class CandidateFollowupReminderCommand extends Command
 
             if ($followup->remind_type == 'day') {
                 $reminderDate = $followup->next_follow_up_date->subDays($remindTime);
-            }
-            elseif ($followup->remind_type == 'hour') {
+            } elseif ($followup->remind_type == 'hour') {
                 $reminderDate = $followup->next_follow_up_date->subHours($remindTime);
-            }
-            else {
+            } else {
                 $reminderDate = $followup->next_follow_up_date->subMinutes($remindTime);
             }
 
@@ -57,5 +54,4 @@ class CandidateFollowupReminderCommand extends Command
         }
 
     }
-
 }

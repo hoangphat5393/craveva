@@ -27,5 +27,4 @@ class Client extends Component
     {
         return view('einvoice::components.form.client');
     }
-
 }

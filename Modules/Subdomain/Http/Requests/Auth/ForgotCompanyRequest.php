@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class ForgotCompanyRequest extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -25,8 +24,7 @@ class ForgotCompanyRequest extends CoreRequest
     public function rules()
     {
         return [
-            'email' => 'required|email'
+            'email' => 'required|email',
         ];
     }
-
 }

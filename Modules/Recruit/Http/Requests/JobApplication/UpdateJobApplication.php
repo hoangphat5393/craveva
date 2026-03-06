@@ -4,13 +4,14 @@ namespace Modules\Recruit\Http\Requests\JobApplication;
 
 use App\Http\Requests\CoreRequest;
 use Modules\Recruit\Entities\RecruitJob;
-use Modules\Recruit\Rules\CheckApplication;
 use Modules\Recruit\Entities\RecruitJobQuestion;
+use Modules\Recruit\Rules\CheckApplication;
 use Modules\Recruit\Traits\CustomQuestion;
 
 class UpdateJobApplication extends CoreRequest
 {
     use CustomQuestion;
+
     /**
      * Get the validation rules that apply to the request.
      *

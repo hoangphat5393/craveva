@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\File;
  * @property-read mixed $icon
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Permission[] $permissions
  * @property-read int|null $permissions_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Module newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Module newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Module query()
@@ -27,19 +28,20 @@ use Illuminate\Support\Facades\File;
  * @method static \Illuminate\Database\Eloquent\Builder|Module whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Module whereModuleName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Module whereUpdatedAt($value)
+ *
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Permission> $permissionsAll
  * @property-read int|null $permissions_all_count
+ *
  * @mixin \Eloquent
  */
 class Module extends BaseModel
 {
-
     protected $guarded = ['id'];
 
     public static function boot()
     {
         parent::boot();
-        static::addGlobalScope(new ScopesSuperAdminModuleScope());
+        static::addGlobalScope(new ScopesSuperAdminModuleScope);
     }
 
     const MODULE_LIST = [
@@ -140,7 +142,7 @@ class Module extends BaseModel
                     'is_custom' => 1,
                     'name' => 'delete_client_document',
                 ],
-            ]
+            ],
         ],
         [
             'module_name' => 'employees',
@@ -320,7 +322,7 @@ class Module extends BaseModel
                     'is_custom' => 1,
                     'name' => 'manage_increment_promotion',
                 ],
-            ]
+            ],
         ],
         [
             'module_name' => 'projects',
@@ -547,7 +549,7 @@ class Module extends BaseModel
                     'is_custom' => 1,
                     'name' => 'project_labels',
                 ],
-            ]
+            ],
 
         ],
         [
@@ -584,7 +586,7 @@ class Module extends BaseModel
                     'is_custom' => 0,
                     'name' => 'delete_attendance',
                 ],
-            ]
+            ],
 
         ],
         [
@@ -741,7 +743,7 @@ class Module extends BaseModel
                     'is_custom' => 1,
                     'name' => 'manage_recurring_task',
                 ],
-            ]
+            ],
         ],
         [
             'module_name' => 'estimates',
@@ -766,7 +768,7 @@ class Module extends BaseModel
                     'is_custom' => 0,
                     'name' => 'delete_estimates',
                 ],
-            ]
+            ],
 
         ],
         [
@@ -807,7 +809,7 @@ class Module extends BaseModel
                     'is_custom' => 1,
                     'name' => 'manage_recurring_invoice',
                 ],
-            ]
+            ],
         ],
         [
             'module_name' => 'payments',
@@ -836,8 +838,8 @@ class Module extends BaseModel
                     'allowed_permissions' => Permission::ALL_NONE,
                     'is_custom' => 1,
                     'name' => 'link_payment_bank_account',
-                ]
-            ]
+                ],
+            ],
         ],
         [
             'module_name' => 'timelogs',
@@ -877,7 +879,7 @@ class Module extends BaseModel
                     'is_custom' => 1,
                     'name' => 'view_timelog_earnings',
                 ],
-            ]
+            ],
 
         ],
         [
@@ -930,7 +932,7 @@ class Module extends BaseModel
                     'name' => 'manage_ticket_groups',
                 ],
 
-            ]
+            ],
 
         ],
         [
@@ -962,7 +964,7 @@ class Module extends BaseModel
                     'is_custom' => 1,
                     'name' => 'manage_recurring_event',
                 ],
-            ]
+            ],
 
         ],
         [
@@ -988,7 +990,7 @@ class Module extends BaseModel
                     'is_custom' => 0,
                     'name' => 'delete_notice',
                 ],
-            ]
+            ],
 
         ],
         [
@@ -1025,7 +1027,7 @@ class Module extends BaseModel
                     'is_custom' => 1,
                     'name' => 'delete_approve_leaves',
                 ],
-            ]
+            ],
         ],
         [
             'module_name' => 'leads',
@@ -1268,7 +1270,7 @@ class Module extends BaseModel
                     'is_custom' => 1,
                     'name' => 'delete_deal_note',
                 ],
-            ]
+            ],
         ],
         [
             'module_name' => 'holidays',
@@ -1293,7 +1295,7 @@ class Module extends BaseModel
                     'is_custom' => 0,
                     'name' => 'delete_holiday',
                 ],
-            ]
+            ],
         ],
         [
             'module_name' => 'products',
@@ -1328,7 +1330,7 @@ class Module extends BaseModel
                     'is_custom' => 1,
                     'name' => 'manage_product_sub_category',
                 ],
-            ]
+            ],
         ],
         [
             'module_name' => 'expenses',
@@ -1373,8 +1375,8 @@ class Module extends BaseModel
                     'allowed_permissions' => Permission::ALL_NONE,
                     'is_custom' => 1,
                     'name' => 'link_expense_bank_account',
-                ]
-            ]
+                ],
+            ],
         ],
         [
             'module_name' => 'contracts',
@@ -1450,7 +1452,7 @@ class Module extends BaseModel
                     'is_custom' => 1,
                     'name' => 'manage_contract_template',
                 ],
-            ]
+            ],
         ],
         [
             'module_name' => 'reports',
@@ -1502,8 +1504,8 @@ class Module extends BaseModel
                     'allowed_permissions' => Permission::ALL_NONE,
                     'is_custom' => 1,
                     'name' => 'view_sales_report',
-                ]
-            ]
+                ],
+            ],
         ],
         [
             'module_name' => 'settings',
@@ -1639,7 +1641,7 @@ class Module extends BaseModel
                     'is_custom' => 1,
                     'name' => 'manage_custom_link_setting',
                 ],
-            ]
+            ],
         ],
         [
             'module_name' => 'dashboards',
@@ -1674,7 +1676,7 @@ class Module extends BaseModel
                     'is_custom' => 1,
                     'name' => 'view_finance_dashboard',
                 ],
-            ]
+            ],
         ],
         [
             'module_name' => 'orders',
@@ -1704,7 +1706,7 @@ class Module extends BaseModel
                     'is_custom' => 1,
                     'name' => 'view_project_orders',
                 ],
-            ]
+            ],
         ],
         [
             'module_name' => 'knowledgebase',
@@ -1730,7 +1732,7 @@ class Module extends BaseModel
                     'name' => 'delete_knowledgebase',
                 ],
 
-            ]
+            ],
         ],
         [
             'module_name' => 'bankaccount',
@@ -1770,11 +1772,11 @@ class Module extends BaseModel
                     'is_custom' => 1,
                     'name' => 'add_bank_withdraw',
                 ],
-            ]
+            ],
         ],
         [
             'module_name' => 'messages',
-            'permissions' => []
+            'permissions' => [],
         ],
         [
             'module_name' => 'pricing',
@@ -1820,9 +1822,9 @@ class Module extends BaseModel
                     'is_custom' => 0,
                     'name' => 'view_client_tiers',
                 ],
-            ]
+            ],
         ],
-        ...self::SUPERADMIN_MODULE_LIST
+        ...self::SUPERADMIN_MODULE_LIST,
     ];
 
     // Will be used for roles and permission in saas
@@ -1851,7 +1853,7 @@ class Module extends BaseModel
                     'is_custom' => 0,
                     'name' => 'delete_packages',
                 ],
-            ]
+            ],
         ],
         [
             'module_name' => 'companies',
@@ -1887,7 +1889,7 @@ class Module extends BaseModel
                     'is_custom' => 1,
                     'name' => 'manage_company_impersonate',
                 ],
-            ]
+            ],
         ],
         [
             'module_name' => 'billing',
@@ -1899,7 +1901,7 @@ class Module extends BaseModel
                     'name' => 'manage_billing',
                 ],
 
-            ]
+            ],
         ],
         [
             'module_name' => 'offlinerequest',
@@ -1916,7 +1918,7 @@ class Module extends BaseModel
                     'name' => 'accept_reject_request',
                 ],
 
-            ]
+            ],
         ],
         [
             'module_name' => 'admin_faq',
@@ -1947,7 +1949,7 @@ class Module extends BaseModel
                     'is_custom' => 1,
                     'name' => 'manage_faq_category',
                 ],
-            ]
+            ],
         ],
         [
             'module_name' => 'superadmin',
@@ -1977,8 +1979,8 @@ class Module extends BaseModel
                     'allowed_permissions' => Permission::ALL_NONE,
                     'is_custom' => 1,
                     'name' => 'change_superadmin_role',
-                ]
-            ]
+                ],
+            ],
         ],
         [
             'module_name' => 'superadmin_ticket',
@@ -2003,8 +2005,8 @@ class Module extends BaseModel
                     'allowed_permissions' => Permission::ALL_4_ADDED_1_OWNED_2_BOTH_3_NONE_5,
                     'is_custom' => 0,
                     'name' => 'delete_superadmin_ticket',
-                ]
-            ]
+                ],
+            ],
         ],
         [
             'module_name' => 'superadmin_settings', // Superadmin Setting Permissions
@@ -2121,7 +2123,7 @@ class Module extends BaseModel
             return true;
         }
 
-        $parentMinVersion = config(strtolower($module) . '.parent_min_version');
+        $parentMinVersion = config(strtolower($module).'.parent_min_version');
 
         if ($parentMinVersion >= File::get('version.txt')) {
 
@@ -2129,7 +2131,7 @@ class Module extends BaseModel
             /* @phpstan-ignore-line */
             $module->disable();
 
-            $message = 'To activate <strong>' . $module . '</strong> module, minimum version of <b>craveva application</b> must be greater than equal to <b>' . $parentMinVersion . '</b> But your application version is <b>' . File::get('version.txt') . '</b>. Please upgrade the application to latest version';
+            $message = 'To activate <strong>'.$module.'</strong> module, minimum version of <b>craveva application</b> must be greater than equal to <b>'.$parentMinVersion.'</b> But your application version is <b>'.File::get('version.txt').'</b>. Please upgrade the application to latest version';
             throw new \Exception($message);
         }
     }
@@ -2147,7 +2149,6 @@ class Module extends BaseModel
             }
             $moduleInactive[strtolower($key)] = strtolower($module);
         }
-
 
         return array_keys($moduleInactive);
     }

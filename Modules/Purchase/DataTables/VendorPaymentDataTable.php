@@ -2,18 +2,20 @@
 
 namespace Modules\Purchase\DataTables;
 
-use App\Models\User;
 use App\DataTables\BaseDataTable;
+use App\Models\User;
 use Carbon\Carbon;
 use Modules\Purchase\Entities\PurchaseVendorPayment;
 use Yajra\DataTables\Html\Column;
 
 class VendorPaymentDataTable extends BaseDataTable
 {
-
     private $editPermission;
+
     private $deletePermission;
+
     private $viewPermission;
+
     protected $firstPayment;
 
     public function __construct()
@@ -27,46 +29,47 @@ class VendorPaymentDataTable extends BaseDataTable
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
     {
         $firstPayment = $this->firstPayment;
+
         return datatables()
             ->eloquent($query)
             ->addColumn('check', function ($row) {
-                return '<input type="checkbox" class="select-table-row" id="datatable-row-' . $row->id . '"  name="datatable_ids[]" value="' . $row->id . '" onclick="dataTableRowCheck(' . $row->id . ')">';
+                return '<input type="checkbox" class="select-table-row" id="datatable-row-'.$row->id.'"  name="datatable_ids[]" value="'.$row->id.'" onclick="dataTableRowCheck('.$row->id.')">';
             })
-            ->addColumn('action', function ($row) use ($firstPayment) {
+            ->addColumn('action', function ($row) {
                 $action = '<div class="task_view">
 
                     <div class="dropdown">
                         <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" type="link"
-                            id="dropdownMenuLink-' . $row->id . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            id="dropdownMenuLink-'.$row->id.'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="icon-options-vertical icons"></i>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-' . $row->id . '" tabindex="0">';
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-'.$row->id.'" tabindex="0">';
 
                 if ($this->viewPermission == 'all' ||
                 ($this->viewPermission == 'added' && $row->added_by == user()->id)) {
-                    $action .= '<a class="dropdown-item" href="' . route('vendor-payments.show', [$row->id]) . '">
+                    $action .= '<a class="dropdown-item" href="'.route('vendor-payments.show', [$row->id]).'">
                                 <i class="fa fa-eye mr-2"></i>
-                                ' . trans('app.view') . '
+                                '.trans('app.view').'
                             </a>';
                 }
 
                 if (($this->deletePermission == 'all' ||
                 ($this->deletePermission == 'added' && $row->added_by == user()->id)) && $row->status != 'complete') {
-                        $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-vendor-payment-id="' . $row->id . '">
+                    $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-vendor-payment-id="'.$row->id.'">
                                     <i class="fa fa-trash mr-2"></i>
-                                    ' . trans('app.delete') . '
+                                    '.trans('app.delete').'
                                 </a>';
                 }
 
-                $action .= '<a class="dropdown-item" href="' . route('vendor-payments.download', [$row->id]) . '">
+                $action .= '<a class="dropdown-item" href="'.route('vendor-payments.download', [$row->id]).'">
                                     <i class="fa fa-download mr-2"></i>
-                                    ' . trans('app.download') . '
+                                    '.trans('app.download').'
                             </a>';
 
                 $action .= '</div>
@@ -76,7 +79,7 @@ class VendorPaymentDataTable extends BaseDataTable
                 return $action;
             })
             ->editColumn('primary_name', function ($row) {
-                return '<a href="' . route('vendors.show', [$row->purchase_vendor_id]) . '" style="color:black;">' . $row->primary_name . '</a>';
+                return '<a href="'.route('vendors.show', [$row->purchase_vendor_id]).'" style="color:black;">'.$row->primary_name.'</a>';
             })
             ->editColumn('payment_date', function ($row) {
                 return $row->payment_date->format($this->company->date_format);
@@ -87,12 +90,12 @@ class VendorPaymentDataTable extends BaseDataTable
                 return currency_format($row->received_payment, $currencyId);
             })
             ->addIndexColumn()
-            ->setRowId(fn($row) => 'row-' . $row->id)
+            ->setRowId(fn ($row) => 'row-'.$row->id)
             ->rawColumns(['primary_name', 'payment_date', 'received_payment', 'action', 'check']);
     }
 
     /**
-     * @param User $model
+     * @param  User  $model
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function query(PurchaseVendorPayment $model)
@@ -117,8 +120,8 @@ class VendorPaymentDataTable extends BaseDataTable
 
         if ($request->searchText != '') {
             $model = $model->where(function ($query) {
-                $query->where('purchase_vendors.primary_name', 'like', '%' . request('searchText') . '%')
-                    ->orWhere('purchase_vendor_payments.received_payment', 'like', '%' . request('searchText') . '%');
+                $query->where('purchase_vendors.primary_name', 'like', '%'.request('searchText').'%')
+                    ->orWhere('purchase_vendor_payments.received_payment', 'like', '%'.request('searchText').'%');
             });
         }
 
@@ -134,7 +137,7 @@ class VendorPaymentDataTable extends BaseDataTable
             $model = $model->where('purchase_vendor_payments.added_by', user()->id);
         }
 
-        if ($request->vendor_id != 'all' && !is_null($request->vendor_id)) {
+        if ($request->vendor_id != 'all' && ! is_null($request->vendor_id)) {
             $model = $model->where('purchase_vendor_payments.purchase_vendor_id', '=', $request->vendor_id);
         }
 
@@ -180,8 +183,7 @@ class VendorPaymentDataTable extends BaseDataTable
                 ->orderable(false)
                 ->searchable(false)
                 ->width(150)
-                ->addClass('text-right pr-20')
+                ->addClass('text-right pr-20'),
         ];
     }
-
 }

@@ -4,8 +4,8 @@ use App\Models\Company;
 use App\Models\CustomFieldGroup;
 use Illuminate\Database\Migrations\Migration;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     public function up(): void
     {
         Company::all()->each(function (Company $company) {
@@ -31,8 +31,5 @@ return new class extends Migration {
         );
     }
 
-    public function down(): void
-    {
-    }
+    public function down(): void {}
 };
-

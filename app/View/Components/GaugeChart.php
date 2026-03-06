@@ -7,8 +7,8 @@ use Illuminate\View\Component;
 
 class GaugeChart extends Component
 {
-
     public $value;
+
     public $width;
 
     /**
@@ -31,5 +31,4 @@ class GaugeChart extends Component
     {
         return view('components.gauge-chart');
     }
-
 }

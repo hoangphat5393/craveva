@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class UpdateTimeLog extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -26,12 +25,10 @@ class UpdateTimeLog extends CoreRequest
     {
         $data = [];
 
-        if($this->has('timelog_report') && $this->timelog_report == 1)
-        {
+        if ($this->has('timelog_report') && $this->timelog_report == 1) {
             $data['daily_report_roles'] = 'required';
         }
 
         return $data;
     }
-
 }

@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class CreateObjectiveRequest extends FormRequest
 {
-
     /**
      * Get the validation rules that apply to the request.
      */
@@ -17,13 +16,13 @@ class CreateObjectiveRequest extends FormRequest
         return [
             'title' => [
                 'required',
-                'unique:objectives,title,'.$id.',id,company_id,' . company()->id,
+                'unique:objectives,title,'.$id.',id,company_id,'.company()->id,
             ],
             'description' => 'required',
             'goal_type' => 'required|integer|exists:goal_types,id',
             'department_id' => 'nullable|integer|exists:teams,id',
-            'start_date' => 'required|date_format:"' . company()->date_format . '"',
-            'end_date' => 'required|date_format:"' . company()->date_format . '"|after_or_equal:start_date',
+            'start_date' => 'required|date_format:"'.company()->date_format.'"',
+            'end_date' => 'required|date_format:"'.company()->date_format.'"|after_or_equal:start_date',
             'priority' => 'required|in:low,medium,high',
             'check_in_frequency' => 'required|in:daily,weekly,bi-weekly,monthly,quarterly',
             'schedule_on' => 'required_if:check_in_frequency,weekly,bi-weekly',
@@ -43,8 +42,7 @@ class CreateObjectiveRequest extends FormRequest
     public function messages()
     {
         return [
-            'owner_id.0.required' => __('performance::messages.atleastOneValidation')
+            'owner_id.0.required' => __('performance::messages.atleastOneValidation'),
         ];
     }
-
 }

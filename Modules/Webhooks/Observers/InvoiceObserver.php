@@ -4,28 +4,26 @@ namespace Modules\Webhooks\Observers;
 
 use App\Models\GlobalSetting;
 use App\Models\Invoice;
-use Illuminate\Support\Facades\Log;
 use Modules\Webhooks\Jobs\SendWebhook;
 
 class InvoiceObserver
 {
-
     public function created(Invoice $invoice)
     {
 
-//        $this->sendQueue($invoice);
+        //        $this->sendQueue($invoice);
 
     }
 
-//    public function updated(Invoice $invoice)
-//    {
-//        logger($invoice->toArray());
-//        // Check if the 'status' attribute has been changed during the update
-//        if ($invoice->isDirty('status')) {
-//            // Call the sendQueue method to handle further processing if the status was modified
-//            $this->sendQueue($invoice);
-//        }
-//    }
+    //    public function updated(Invoice $invoice)
+    //    {
+    //        logger($invoice->toArray());
+    //        // Check if the 'status' attribute has been changed during the update
+    //        if ($invoice->isDirty('status')) {
+    //            // Call the sendQueue method to handle further processing if the status was modified
+    //            $this->sendQueue($invoice);
+    //        }
+    //    }
 
     public function saved(Invoice $invoice)
     {
@@ -34,7 +32,6 @@ class InvoiceObserver
             $this->sendQueue($invoice);
         }
     }
-
 
     public function sendQueue($invoice)
     {
@@ -77,5 +74,4 @@ class InvoiceObserver
             ->delay(5)
             ->onQueue('default');
     }
-
 }

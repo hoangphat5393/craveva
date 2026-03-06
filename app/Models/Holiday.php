@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\DB;
 /**
  * Class Holiday
  *
- * @package App\Models
  * @property int $id
  * @property \Illuminate\Support\Carbon $date
  * @property string|null $occassion
@@ -20,6 +19,7 @@ use Illuminate\Support\Facades\DB;
  * @property int|null $last_updated_by
  * @property-read \App\Models\User|null $addedBy
  * @property-read mixed $icon
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Holiday newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Holiday newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Holiday query()
@@ -30,18 +30,23 @@ use Illuminate\Support\Facades\DB;
  * @method static \Illuminate\Database\Eloquent\Builder|Holiday whereLastUpdatedBy($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Holiday whereOccassion($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Holiday whereUpdatedAt($value)
+ *
  * @property string|null $event_id
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Holiday whereEventId($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Holiday whereCompanyId($value)
+ *
  * @property-read \App\Models\Holiday|null $hdate
  * @property-read \App\Models\Leave|null $ldate
+ *
  * @mixin \Eloquent
  */
 class Holiday extends BaseModel
 {
-
     use HasCompany;
 
     const SUNDAY = 0;
@@ -62,6 +67,7 @@ class Holiday extends BaseModel
     protected $fillable = ['date', 'occassion'];
 
     protected $guarded = ['id'];
+
     protected $casts = [
         'date' => 'datetime',
     ];
@@ -83,15 +89,15 @@ class Holiday extends BaseModel
             $holiday = $holiday->where(function ($query) use ($user) {
                 $query->where(function ($subquery) use ($user) {
                     $subquery->where(function ($q) use ($user) {
-                        $q->where('department_id_json', 'like', '%"' . $user->employeeDetail->department_id . '"%')
+                        $q->where('department_id_json', 'like', '%"'.$user->employeeDetail->department_id.'"%')
                             ->orWhereNull('department_id_json');
                     });
                     $subquery->where(function ($q) use ($user) {
-                        $q->where('designation_id_json', 'like', '%"' . $user->employeeDetail->designation_id . '"%')
+                        $q->where('designation_id_json', 'like', '%"'.$user->employeeDetail->designation_id.'"%')
                             ->orWhereNull('designation_id_json');
                     });
                     $subquery->where(function ($q) use ($user) {
-                        $q->where('employment_type_json', 'like', '%"' . $user->employeeDetail->employment_type . '"%')
+                        $q->where('employment_type_json', 'like', '%"'.$user->employeeDetail->employment_type.'"%')
                             ->orWhereNull('employment_type_json');
                     });
                 });
@@ -155,5 +161,4 @@ class Holiday extends BaseModel
     {
         return $this->hasOne(EmployeeDetails::class, 'user_id');
     }
-
 }

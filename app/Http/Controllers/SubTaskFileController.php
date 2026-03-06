@@ -11,7 +11,6 @@ use Illuminate\Http\Request;
 
 class SubTaskFileController extends AccountBaseController
 {
-
     /**
      * ManageLeadFilesController constructor.
      */
@@ -23,25 +22,25 @@ class SubTaskFileController extends AccountBaseController
     }
 
     /**
-     * @param Request $request
      * @return array
+     *
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Throwable
      */
     public function store(Request $request)
     {
         $this->addPermission = user()->permission('add_sub_tasks');
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
 
         $subTask = SubTask::with(['files'])->findOrFail($request->sub_task_id);
 
         if ($request->hasFile('file')) {
 
             foreach ($request->file as $fileData) {
-                $file = new SubTaskFile();
+                $file = new SubTaskFile;
                 $file->sub_task_id = $request->sub_task_id;
 
-                $filename = Files::uploadLocalOrS3($fileData, SubTaskFile::FILE_PATH . '/' . $request->sub_task_id);
+                $filename = Files::uploadLocalOrS3($fileData, SubTaskFile::FILE_PATH.'/'.$request->sub_task_id);
 
                 $file->user_id = $this->user->id;
                 $file->filename = $fileData->getClientOriginalName();
@@ -63,9 +62,9 @@ class SubTaskFileController extends AccountBaseController
     {
         $file = SubTaskFile::findOrFail($id);
         $this->deletePermission = user()->permission('delete_sub_tasks');
-        abort_403(!($this->deletePermission == 'all' || ($this->deletePermission == 'added' && $file->added_by == user()->id)));
+        abort_403(! ($this->deletePermission == 'all' || ($this->deletePermission == 'added' && $file->added_by == user()->id)));
 
-        Files::deleteFile($file->hashname, SubTaskFile::FILE_PATH . '/' . $file->sub_task_id);
+        Files::deleteFile($file->hashname, SubTaskFile::FILE_PATH.'/'.$file->sub_task_id);
 
         SubTaskFile::destroy($id);
 
@@ -79,9 +78,8 @@ class SubTaskFileController extends AccountBaseController
     {
         $file = SubTaskFile::whereRaw('md5(id) = ?', $id)->firstOrFail();
         $this->viewPermission = user()->permission('view_sub_tasks');
-        abort_403(!($this->viewPermission == 'all' || ($this->viewPermission == 'added' && $file->added_by == user()->id)));
+        abort_403(! ($this->viewPermission == 'all' || ($this->viewPermission == 'added' && $file->added_by == user()->id)));
 
-        return download_local_s3($file, SubTaskFile::FILE_PATH . '/' . $file->sub_task_id . '/' . $file->hashname);
+        return download_local_s3($file, SubTaskFile::FILE_PATH.'/'.$file->sub_task_id.'/'.$file->hashname);
     }
-
 }

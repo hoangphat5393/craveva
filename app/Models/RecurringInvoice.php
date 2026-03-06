@@ -58,6 +58,7 @@ use Illuminate\Notifications\Notifiable;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Invoice[] $recurrings
  * @property-read int|null $recurrings_count
  * @property-read \App\Models\User|null $withoutGlobalScopeCompanyClient
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|RecurringInvoice newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|RecurringInvoice newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|RecurringInvoice query()
@@ -91,32 +92,43 @@ use Illuminate\Notifications\Notifiable;
  * @method static \Illuminate\Database\Eloquent\Builder|RecurringInvoice whereUnlimitedRecurring($value)
  * @method static \Illuminate\Database\Eloquent\Builder|RecurringInvoice whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|RecurringInvoice whereUserId($value)
+ *
  * @property string $calculate_tax
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|RecurringInvoice whereCalculateTax($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|RecurringInvoice whereCompanyId($value)
+ *
  * @property int $immediate_invoice
  * @property-read \App\Models\UnitType|null $units
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|RecurringInvoice whereImmediateInvoice($value)
  * @method static \Illuminate\Database\Eloquent\Builder|RecurringInvoice whereNextInvoiceDate($value)
  * @method static \Illuminate\Database\Eloquent\Builder|RecurringInvoice whereUnitId($value)
+ *
  * @property int|null $bank_account_id
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|RecurringInvoice whereBankAccountId($value)
+ *
  * @mixin \Eloquent
  */
 class RecurringInvoice extends BaseModel
 {
-
-    use Notifiable, HasCompany;
+    use HasCompany, Notifiable;
 
     protected $table = 'invoice_recurring';
+
     protected $casts = [
         'issue_date' => 'datetime',
         'due_date' => 'datetime',
         'next_invoice_date' => 'datetime',
     ];
+
     protected $appends = ['total_amount', 'issue_on'];
+
     protected $with = ['client'];
 
     const ROTATION_COLOR = [
@@ -162,8 +174,8 @@ class RecurringInvoice extends BaseModel
     public function getTotalAmountAttribute()
     {
 
-        if (!is_null($this->total) && !is_null($this->currency->currency_symbol)) {
-            return $this->currency->currency_symbol . $this->total;
+        if (! is_null($this->total) && ! is_null($this->currency->currency_symbol)) {
+            return $this->currency->currency_symbol.$this->total;
         }
 
         return '';
@@ -183,5 +195,4 @@ class RecurringInvoice extends BaseModel
     {
         return $this->belongsTo(UnitType::class, 'unit_id');
     }
-
 }

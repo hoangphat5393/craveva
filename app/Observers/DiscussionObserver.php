@@ -10,17 +10,16 @@ use App\Models\User;
 
 class DiscussionObserver
 {
-
     public function saving(Discussion $discussion)
     {
-        if (!isRunningInConsoleOrSeeding() && user()) {
+        if (! isRunningInConsoleOrSeeding() && user()) {
             $discussion->last_updated_by = user()->id;
         }
     }
 
     public function creating(Discussion $discussion)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             if (user()) {
                 $discussion->last_updated_by = user()->id;
                 $discussion->added_by = user()->id;
@@ -49,8 +48,7 @@ class DiscussionObserver
 
             event(new DiscussionMentionEvent($discussion, $mentionUserId));
 
-        }
-        else {
+        } else {
 
             $unmentionIds = array_diff($projectUsers, $mentionIds);
 
@@ -59,9 +57,8 @@ class DiscussionObserver
                 $projectMember = User::whereIn('id', $unmentionIds)->get();
                 event(new DiscussionEvent($discussion, $projectMember));
 
-            }
-            else {
-                if (!isRunningInConsoleOrSeeding()) {
+            } else {
+                if (! isRunningInConsoleOrSeeding()) {
                     event(new DiscussionEvent($discussion, null));
                 }
             }
@@ -75,5 +72,4 @@ class DiscussionObserver
         Notification::deleteNotification($notifyData, $discussion->id);
 
     }
-
 }

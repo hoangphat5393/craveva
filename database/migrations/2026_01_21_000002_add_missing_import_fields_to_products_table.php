@@ -12,16 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('products', function (Blueprint $table) {
-            if (!Schema::hasColumn('products', 'inventory_type')) {
+            if (! Schema::hasColumn('products', 'inventory_type')) {
                 $table->string('inventory_type')->nullable()->after('status');
             }
-            if (!Schema::hasColumn('products', 'wholesale_price')) {
+            if (! Schema::hasColumn('products', 'wholesale_price')) {
                 $table->decimal('wholesale_price', 16, 2)->default(0)->after('price');
             }
-            if (!Schema::hasColumn('products', 'price_per_box')) {
+            if (! Schema::hasColumn('products', 'price_per_box')) {
                 $table->decimal('price_per_box', 16, 2)->default(0)->after('wholesale_price');
             }
-            if (!Schema::hasColumn('products', 'employee_price')) {
+            if (! Schema::hasColumn('products', 'employee_price')) {
                 $table->decimal('employee_price', 16, 2)->default(0)->after('price_per_box');
             }
         });

@@ -3,18 +3,17 @@
 namespace App\Http\Controllers\SuperAdmin\FrontSetting;
 
 use App\Helper\Reply;
-use Illuminate\Http\Request;
-use App\Models\LanguageSetting;
-use App\Models\SuperAdmin\FrontFaq;
-use App\Models\SuperAdmin\TrFrontDetail;
 use App\Http\Controllers\AccountBaseController;
 use App\Http\Requests\SuperAdmin\FaqSettings\StoreRequest;
 use App\Http\Requests\SuperAdmin\FaqSettings\UpdateRequest;
 use App\Models\GlobalSetting;
+use App\Models\LanguageSetting;
+use App\Models\SuperAdmin\FrontFaq;
+use App\Models\SuperAdmin\TrFrontDetail;
+use Illuminate\Http\Request;
 
 class FaqSettingController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -72,12 +71,11 @@ class FaqSettingController extends AccountBaseController
     /**
      * Store a newly created resource in storage.
      *
-     * @param StoreRequest $request
      * @return \Illuminate\Http\Response
      */
     public function store(StoreRequest $request)
     {
-        $frontFaq = new FrontFaq();
+        $frontFaq = new FrontFaq;
 
         $frontFaq->language_setting_id = $request->current_language_id;
         $frontFaq->question = $request->question;
@@ -94,7 +92,7 @@ class FaqSettingController extends AccountBaseController
     /**
      * Show the form for editing the specified resource.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function edit(Request $request, $id)
@@ -109,8 +107,7 @@ class FaqSettingController extends AccountBaseController
     /**
      * Update the specified resource in storage.
      *
-     * @param UpdateRequest $request
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function update(UpdateRequest $request, $id)
@@ -132,7 +129,7 @@ class FaqSettingController extends AccountBaseController
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy(Request $request, $id)
@@ -155,17 +152,15 @@ class FaqSettingController extends AccountBaseController
             'language_setting_id' => $request->language_setting_id,
         ];
 
-        if (!is_null($row)) {
+        if (! is_null($row)) {
             $row->update($data);
-        }
-        else {
+        } else {
             $row = TrFrontDetail::create($data);
         }
 
         return Reply::successWithData(__('messages.updateSuccess'), [
             'data' => $request->title,
-            'lang' => $row->language->language_code
+            'lang' => $row->language->language_code,
         ]);
     }
-
 }

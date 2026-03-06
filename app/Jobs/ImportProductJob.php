@@ -3,30 +3,28 @@
 namespace App\Jobs;
 
 use App\Models\Product;
-use App\Models\User;
-use App\Models\Project;
+use App\Traits\EmployeeActivityTrait;
+use App\Traits\ExcelImportable;
+use App\Traits\UniversalSearchTrait;
 use Carbon\Exceptions\InvalidFormatException;
 use Exception;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
-use App\Traits\UniversalSearchTrait;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use App\Models\ProjectActivity;
-use App\Traits\EmployeeActivityTrait;
-use App\Traits\ExcelImportable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
 
 class ImportProductJob implements ShouldQueue
 {
-    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, UniversalSearchTrait, EmployeeActivityTrait;
+    use Batchable, Dispatchable, EmployeeActivityTrait, InteractsWithQueue, Queueable, SerializesModels, UniversalSearchTrait;
     use ExcelImportable;
 
     private $row;
+
     private $columns;
+
     private $company;
 
     /**
@@ -56,14 +54,15 @@ class ImportProductJob implements ShouldQueue
 
             $cleanedPrice = preg_replace('/[^\d.]/', '', $this->getColumnValue('price'));
 
-            if (!is_numeric($cleanedPrice)) {
+            if (! is_numeric($cleanedPrice)) {
                 $this->failJob(__('messages.invalidData'));
+
                 return;
             }
 
             DB::beginTransaction();
             try {
-                $product = new Product();
+                $product = new Product;
                 $product->company_id = $this->company?->id;
                 $product->name = $this->getColumnValue('product_name');
 

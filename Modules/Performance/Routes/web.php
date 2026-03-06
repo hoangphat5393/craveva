@@ -6,12 +6,12 @@ use Modules\Performance\Http\Controllers\AgendaController;
 use Modules\Performance\Http\Controllers\CheckInController;
 use Modules\Performance\Http\Controllers\DashboardController;
 use Modules\Performance\Http\Controllers\GoalTypeController;
-use Modules\Performance\Http\Controllers\ObjectiveController;
 use Modules\Performance\Http\Controllers\KeyResultsController;
 use Modules\Performance\Http\Controllers\KeyResultsMetricsController;
+use Modules\Performance\Http\Controllers\MeetingController;
+use Modules\Performance\Http\Controllers\ObjectiveController;
 use Modules\Performance\Http\Controllers\OkrScoringController;
 use Modules\Performance\Http\Controllers\PerformanceSettingController;
-use Modules\Performance\Http\Controllers\MeetingController;
 
 /*
 |--------------------------------------------------------------------------

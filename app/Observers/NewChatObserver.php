@@ -12,10 +12,9 @@ use Illuminate\Support\Facades\Config;
 
 class NewChatObserver
 {
-
     public function created(UserChat $userChat)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
 
             if ((request()->user_id == request()->mention_user_id) && request()->mention_user_id != null && request()->mention_user_id != '') {
                 $userChat->mentionUser()->sync(request()->mention_user_id);
@@ -23,8 +22,7 @@ class NewChatObserver
                 $mentionUser = User::whereIn('id', $mentionUserIds)->get();
                 event(new NewMentionChatEvent($userChat, $mentionUser));
 
-            }
-            else {
+            } else {
                 event(new NewChatEvent($userChat));
 
             }
@@ -50,5 +48,4 @@ class NewChatObserver
         Notification::deleteNotification($notifyData, $userChat->id);
 
     }
-
 }

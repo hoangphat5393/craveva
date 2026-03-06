@@ -1,4 +1,5 @@
 <?php
+
 // Updates folder
 $product = 'worksuite';
 
@@ -33,20 +34,20 @@ return [
     /*
     * Temp folder to store update before to install it.
     */
-    'tmp_path' => storage_path() . '/app',
+    'tmp_path' => storage_path().'/app',
     /*
     * URL where your updates are stored ( e.g. for a folder named 'updates', under http://site.com/yourapp ).
     */
-    'update_baseurl' => $updatesDomain . '/' . $product,
+    'update_baseurl' => $updatesDomain.'/'.$product,
     /*
     * URL to verify your purchase code
     */
-    'verify_url' => $verifyDomain . '/verify-purchase',
+    'verify_url' => $verifyDomain.'/verify-purchase',
 
     /*
      *
      */
-    'updater_file_path' => $updatesDomain . '/' . $product . '/laraupdater.json',
+    'updater_file_path' => $updatesDomain.'/'.$product.'/laraupdater.json',
 
     /*
     * Set a middleware for the route: updater.update
@@ -61,12 +62,11 @@ return [
     */
 
     'allow_users_id' => false,
-    
-    
+
     /*
    * Set which where you want to use the script tag
    * Make sure you prevent in demo or do not expose to normal user
    */
 
-    'xss_ignore_index' => ['widget_code']
+    'xss_ignore_index' => ['widget_code'],
 ];

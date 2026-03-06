@@ -8,13 +8,11 @@ use Illuminate\Support\Facades\Notification;
 
 class HolidayListener
 {
-
     /**
      * Create the event listener.
      *
      * @return void
      */
-
     public function __construct()
     {
         //
@@ -23,12 +21,10 @@ class HolidayListener
     /**
      * Handle the event.
      *
-     * @param HolidayEvent $event
      * @return void
      */
     public function handle(HolidayEvent $event)
     {
         Notification::send($event->notifyUser, new NewHoliday($event->holiday));
     }
-
 }

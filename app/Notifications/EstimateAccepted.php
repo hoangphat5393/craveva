@@ -2,18 +2,18 @@
 
 namespace App\Notifications;
 
-use App\Models\Estimate;
 use App\Models\EmailNotificationSetting;
+use App\Models\Estimate;
 
 class EstimateAccepted extends BaseNotification
 {
-
     /**
      * Create a new notification instance.
      *
      * @return void
      */
     private $estimate;
+
     private $emailSetting;
 
     public function __construct(Estimate $estimate)
@@ -42,8 +42,7 @@ class EstimateAccepted extends BaseNotification
     public function toSlack($notifiable)
     {
         return $this->slackBuild($notifiable)
-            ->content(__('email.hello') . ' ' . $notifiable->name . $this->estimate->estimate_number . ' ' . __('email.estimateAccepted.subject'));
+            ->content(__('email.hello').' '.$notifiable->name.$this->estimate->estimate_number.' '.__('email.estimateAccepted.subject'));
 
     }
-
 }

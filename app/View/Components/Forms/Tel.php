@@ -7,12 +7,16 @@ use Illuminate\View\Component;
 
 class Tel extends Component
 {
-
     public $fieldLabel;
+
     public $fieldRequired;
+
     public $fieldPlaceholder;
+
     public $fieldValue;
+
     public $fieldName;
+
     public $fieldId;
 
     /**
@@ -39,5 +43,4 @@ class Tel extends Component
     {
         return view('components.forms.tel');
     }
-
 }

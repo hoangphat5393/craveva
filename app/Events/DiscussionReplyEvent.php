@@ -9,11 +9,12 @@ use Illuminate\Queue\SerializesModels;
 
 class DiscussionReplyEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $discussionReply;
+
     public $notifyUser;
+
     public $notificationName;
 
     public function __construct(DiscussionReply $discussionReply, $notifyUser)
@@ -21,5 +22,4 @@ class DiscussionReplyEvent
         $this->discussionReply = $discussionReply;
         $this->notifyUser = $notifyUser;
     }
-
 }

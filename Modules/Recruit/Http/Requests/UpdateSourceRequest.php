@@ -9,7 +9,6 @@ class UpdateSourceRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      */
-    
     public function rules(): array
     {
         $companyId = auth()->user()->company_id;
@@ -17,7 +16,7 @@ class UpdateSourceRequest extends FormRequest
         return [
             'source' => [
                 'required',
-                'unique:application_sources,application_source,NULL,id,company_id,' . $companyId,
+                'unique:application_sources,application_source,NULL,id,company_id,'.$companyId,
             ],
         ];
     }

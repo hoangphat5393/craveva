@@ -3,14 +3,11 @@
 namespace Modules\Recruit\Http\Controllers;
 
 use App\Helper\Reply;
-use Illuminate\Http\Request;
-use Illuminate\Contracts\Support\Renderable;
 use App\Http\Controllers\AccountBaseController;
 use App\Models\User;
 use Carbon\Carbon;
-use Modules\Recruit\Entities\RecruitSetting;
-use Modules\Recruit\Traits\ZoomSettings;
-use Modules\Recruit\Entities\RecruitInterviewSchedule;
+use Illuminate\Contracts\Support\Renderable;
+use Illuminate\Http\Request;
 use Modules\Recruit\DataTables\InterviewScheduleDataTable;
 use Modules\Recruit\Entities\JobInterviewStage;
 use Modules\Recruit\Entities\RecruitApplicationStatus;
@@ -19,9 +16,11 @@ use Modules\Recruit\Entities\RecruitInterviewComments;
 use Modules\Recruit\Entities\RecruitInterviewEmployees;
 use Modules\Recruit\Entities\RecruitInterviewEvaluation;
 use Modules\Recruit\Entities\RecruitInterviewHistory;
+use Modules\Recruit\Entities\RecruitInterviewSchedule;
 use Modules\Recruit\Entities\RecruitInterviewStage;
 use Modules\Recruit\Entities\RecruitJob;
 use Modules\Recruit\Entities\RecruitJobApplication;
+use Modules\Recruit\Entities\RecruitSetting;
 use Modules\Recruit\Events\CandidateInterviewRescheduleEvent;
 use Modules\Recruit\Events\CandidateInterviewScheduleEvent;
 use Modules\Recruit\Events\HostInterviewEvent;
@@ -29,18 +28,19 @@ use Modules\Recruit\Events\InterviewRescheduleEvent;
 use Modules\Recruit\Events\InterviewScheduleEvent;
 use Modules\Recruit\Events\UpdateInterviewScheduleEvent;
 use Modules\Recruit\Http\Requests\ZoomMeeting\StoreMeeting;
-use Modules\Zoom\Entities\ZoomMeeting;
-use Modules\Zoom\Entities\ZoomSetting;
-use Zoom;
 use Modules\Recruit\Http\Requests\ZoomMeeting\UpdateMeeting;
 use Modules\Recruit\Notifications\EmployeeResponse;
+use Modules\Recruit\Traits\ZoomSettings;
+use Modules\Zoom\Entities\ZoomMeeting;
+use Modules\Zoom\Entities\ZoomSetting;
 use Notification;
+use Zoom;
 
 class InterviewScheduleController extends AccountBaseController
 {
-
     /**
      * Display a listing of the resource.
+     *
      * @return Renderable
      */
     use ZoomSettings;
@@ -50,7 +50,7 @@ class InterviewScheduleController extends AccountBaseController
         parent::__construct();
         $this->pageTitle = __('recruit::app.menu.interviewSchedule');
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array(RecruitSetting::MODULE_NAME, $this->user->modules));
+            abort_403(! in_array(RecruitSetting::MODULE_NAME, $this->user->modules));
 
             return $next($request);
         });
@@ -59,7 +59,7 @@ class InterviewScheduleController extends AccountBaseController
     public function tableView(InterviewScheduleDataTable $dataTable)
     {
         $viewPermission = user()->permission('view_interview_schedule');
-        abort_403(!in_array($viewPermission, ['all', 'added', 'owned', 'both']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'owned', 'both']));
         $this->employees = User::allEmployees();
 
         if ($viewPermission == 'all' || $viewPermission == 'added' || $viewPermission == 'owned' || $viewPermission == 'both') {
@@ -72,7 +72,7 @@ class InterviewScheduleController extends AccountBaseController
     public function index(Request $request)
     {
         $viewPermission = user()->permission('view_interview_schedule');
-        abort_403(!in_array($viewPermission, ['all', 'added', 'owned', 'both']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'owned', 'both']));
         $this->loggedEmployee = user();
         $currentDate = now()->format('Y-m-d');
         $this->employees = User::allEmployees();
@@ -83,8 +83,6 @@ class InterviewScheduleController extends AccountBaseController
             ->join('recruiters', 'recruiters.id', 'recruit_interview_employees.user_id')
             ->join('users', 'users.id', 'recruiters.user_id')
             ->where('recruiters.user_id', user()->id)->get();
-
-
 
         $model = RecruitInterviewSchedule::select('recruit_interview_schedules.id', 'recruit_interview_schedules.added_by', 'recruit_interview_schedules.recruit_job_application_id', 'recruit_interview_schedules.schedule_date', 'recruit_interview_schedules.status', 'recruit_interview_schedules.parent_id')
             ->with(['employees', 'employeesData', 'employeesData.user', 'jobApplication:id,recruit_job_id,full_name', 'jobApplication.job:id,title'])
@@ -102,7 +100,7 @@ class InterviewScheduleController extends AccountBaseController
         }
 
         if ($request->searchText != '') {
-            $model = $model->where('recruit_job_applications.full_name', 'like', '%' . request('searchText') . '%');
+            $model = $model->where('recruit_job_applications.full_name', 'like', '%'.request('searchText').'%');
         }
 
         if ($viewPermission == 'added') {
@@ -144,7 +142,7 @@ class InterviewScheduleController extends AccountBaseController
         }
 
         if (request('start') && request('end')) {
-            $eventData = array();
+            $eventData = [];
 
             foreach ($this->events as $key => $event) {
                 $eventData[] = [
@@ -152,7 +150,7 @@ class InterviewScheduleController extends AccountBaseController
                     'title' => $event->jobApplication->full_name,
                     'start' => $event->schedule_date,
                     'end' => $event->schedule_date,
-                    'extendedProps' => ['bg_color' => '#3788d8', 'color' => '#fff']
+                    'extendedProps' => ['bg_color' => '#3788d8', 'color' => '#fff'],
                 ];
             }
 
@@ -161,6 +159,7 @@ class InterviewScheduleController extends AccountBaseController
 
         if ($request->ajax()) {
             $html = view('recruit::interview-schedule.ajax.activity-detail', $this->data)->render();
+
             return response()->json(['html' => $html]);
         } else {
             return view('recruit::interview-schedule.index', $this->data);
@@ -169,12 +168,13 @@ class InterviewScheduleController extends AccountBaseController
 
     /**
      * Show the form for creating a new resource.
+     *
      * @return Renderable
      */
     public function create()
     {
         $this->addPermission = user()->permission('add_interview_schedule');
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
 
         $this->pageTitle = __('recruit::modules.interviewSchedule.addInterviewSchedule');
         $this->jobId = request()->id;
@@ -198,23 +198,24 @@ class InterviewScheduleController extends AccountBaseController
 
     /**
      * Store a newly created resource in storage.
-     * @param Request $request
+     *
+     * @param  Request  $request
      * @return array
      */
     public function store(StoreMeeting $request)
     {
         $this->addPermission = user()->permission('add_interview_schedule');
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
 
         $storeInterview = RecruitInterviewSchedule::where('recruit_job_application_id', $request->candidate_id)->first();
 
         $date = Carbon::createFromFormat(company()->date_format, $request->start_date)->format('Y-m-d');
-        $start = Carbon::createFromFormat('Y-m-d ' . $this->company->time_format, $date . ' ' . $request->start_time, $this->company->timezone)->setTimezone('UTC');
+        $start = Carbon::createFromFormat('Y-m-d '.$this->company->time_format, $date.' '.$request->start_time, $this->company->timezone)->setTimezone('UTC');
 
         $existInterviewSchedule = RecruitInterviewSchedule::where('recruit_job_application_id', $request->candidate_id)->where('schedule_date', $start)->first();
 
-        if (!$existInterviewSchedule) {
-            $interview = new RecruitInterviewSchedule();
+        if (! $existInterviewSchedule) {
+            $interview = new RecruitInterviewSchedule;
         } else {
             return Reply::error(__('recruit::messages.interviewScheduleExist'));
         }
@@ -223,10 +224,10 @@ class InterviewScheduleController extends AccountBaseController
             $this->setZoomConfigs();
 
             $data = $request->all();
-            $meeting = new ZoomMeeting();
+            $meeting = new ZoomMeeting;
             $data['meeting_name'] = $request->meeting_title;
 
-            $end = Carbon::createFromFormat(company()->date_format . ' ' . company()->time_format, $request->end_date . ' ' . $request->end_time)->setTimezone('UTC');
+            $end = Carbon::createFromFormat(company()->date_format.' '.company()->time_format, $request->end_date.' '.$request->end_time)->setTimezone('UTC');
 
             $data['start_date_time'] = $start->toDateTimeString();
             $data['end_date_time'] = $end->toDateTimeString();
@@ -253,7 +254,7 @@ class InterviewScheduleController extends AccountBaseController
         $interview->interview_type = $request->interview_type;
         $interview->video_type = ($request->has('video_type')) ? $request->video_type : 'other';
         $interview->meeting_id = ($meetings != '') ? $meetings->id : null;
-        $interview->schedule_date = Carbon::createFromFormat('Y-m-d ' . $this->company->time_format, $date . ' ' . $request->start_time, $this->company->timezone)->setTimezone('UTC');
+        $interview->schedule_date = Carbon::createFromFormat('Y-m-d '.$this->company->time_format, $date.' '.$request->start_time, $this->company->timezone)->setTimezone('UTC');
         $interview->phone = $request->phone;
         $interview->other_link = $request->other_link;
         $interview->send_reminder_all = $request->send_reminder_all ? $request->send_reminder_all : '0';
@@ -271,11 +272,11 @@ class InterviewScheduleController extends AccountBaseController
         $jobApplication->save();
         $employees = $request->employee_id;
 
-        if (!is_null($employees)) {
+        if (! is_null($employees)) {
 
-            if (!empty($request->employee_id)) {
+            if (! empty($request->employee_id)) {
                 foreach ($employees as $employee) {
-                    $interviewEmployee = new RecruitInterviewEmployees();
+                    $interviewEmployee = new RecruitInterviewEmployees;
                     $interviewEmployee->recruit_interview_schedule_id = $interview->id;
                     $interviewEmployee->user_id = $employee;
                     $interviewEmployee->save();
@@ -300,7 +301,7 @@ class InterviewScheduleController extends AccountBaseController
                 'interview_schedule_id' => $interview->id,
                 'user_id' => $this->user->id,
                 'comment' => $request->comment ?? null,
-                'candidate_comment' => $request->candidate_comment ?? null
+                'candidate_comment' => $request->candidate_comment ?? null,
             ];
 
             $interview->comments()->create($scheduleComment);
@@ -348,7 +349,7 @@ class InterviewScheduleController extends AccountBaseController
             'settings' => [
                 'host_video' => $meeting->host_video == 1,
                 'participant_video' => $meeting->participant_video == 1,
-            ]
+            ],
         ];
 
         if ($host) {
@@ -374,7 +375,8 @@ class InterviewScheduleController extends AccountBaseController
 
     /**
      * Show the specified resource.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function show($id)
@@ -399,7 +401,7 @@ class InterviewScheduleController extends AccountBaseController
             $this->childInterviews = RecruitInterviewSchedule::with('stage', 'employeesData.user.employeeDetail.designation:id,name')->where('parent_id', $parentId)->get();
         }
 
-        abort_403(!(
+        abort_403(! (
             $this->viewPermission == 'all'
             || ($this->viewPermission == 'added' && $this->interview->added_by == user()->id)
             || ($this->viewPermission == 'owned' && in_array(user()->id, $this->selected_employees))
@@ -450,7 +452,8 @@ class InterviewScheduleController extends AccountBaseController
 
     /**
      * Show the form for editing the specified resource.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function edit($id)
@@ -461,7 +464,7 @@ class InterviewScheduleController extends AccountBaseController
         $this->recruit_employees = RecruitInterviewEmployees::where('recruit_interview_schedule_id', $id)->get();
         $this->selected_employees = $this->recruit_employees->pluck('user_id')->toArray();
 
-        abort_403(!(
+        abort_403(! (
             $this->editPermission == 'all'
             || ($this->editPermission == 'added' && $this->interview->added_by == user()->id)
             || ($this->editPermission == 'owned' && in_array(user()->id, $this->selected_employees))
@@ -493,8 +496,9 @@ class InterviewScheduleController extends AccountBaseController
 
     /**
      * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
+     *
+     * @param  Request  $request
+     * @param  int  $id
      * @return Renderable
      */
     public function update(UpdateMeeting $request, $id)
@@ -505,7 +509,7 @@ class InterviewScheduleController extends AccountBaseController
         $this->recruit_employees = RecruitInterviewEmployees::where('recruit_interview_schedule_id', $interviewid)->get();
         $this->selected_employees = $this->recruit_employees->pluck('user_id')->toArray();
 
-        abort_403(!(
+        abort_403(! (
             $this->editPermission == 'all'
             || ($this->editPermission == 'added' && $this->interview->added_by == user()->id)
             || ($this->editPermission == 'owned' && in_array(user()->id, $this->selected_employees))
@@ -524,7 +528,7 @@ class InterviewScheduleController extends AccountBaseController
                     'jobApplication:id,full_name,email,recruit_job_id,recruit_application_status_id',
                     'employees',
                     'comments',
-                    'meeting'
+                    'meeting',
                 ])
                 ->where('id', $interviewid)->first();
         } else {
@@ -537,7 +541,7 @@ class InterviewScheduleController extends AccountBaseController
                 ->where('id', $interviewid)->first();
         }
 
-        $interviewSchedule->schedule_date = Carbon::createFromFormat($this->company->date_format . ' ' . $this->company->time_format, $request->scheduleDate . ' ' . $request->scheduleTime, $this->company->timezone)->setTimezone('UTC');
+        $interviewSchedule->schedule_date = Carbon::createFromFormat($this->company->date_format.' '.$this->company->time_format, $request->scheduleDate.' '.$request->scheduleTime, $this->company->timezone)->setTimezone('UTC');
 
         if ($request->interview_type == 'in person') {
             $interviewSchedule->interview_type = $request->interview_type;
@@ -601,12 +605,12 @@ class InterviewScheduleController extends AccountBaseController
         if ($request->comment || $request->candidate_comment) {
             $scheduleComment = [
                 'comment' => $request->comment ?? null,
-                'candidate_comment' => $request->candidate_comment ?? null
+                'candidate_comment' => $request->candidate_comment ?? null,
             ];
 
             $interviewSchedule->comments()->updateOrCreate([
                 'recruit_interview_schedule_id' => $interviewSchedule->id,
-                'user_id' => $this->user->id
+                'user_id' => $this->user->id,
             ], $scheduleComment);
         }
 
@@ -619,11 +623,11 @@ class InterviewScheduleController extends AccountBaseController
             if ($request->video_type == 'zoom') {
                 $user = Zoom::user()->find('me');
 
-                $meeting = is_null($interviewSchedule->meeting_id) ? new ZoomMeeting() : ZoomMeeting::findOrFail($interviewSchedule->meeting_id);
+                $meeting = is_null($interviewSchedule->meeting_id) ? new ZoomMeeting : ZoomMeeting::findOrFail($interviewSchedule->meeting_id);
                 $data = $request->all();
                 $data['meeting_name'] = $request->meeting_title;
-                $start = Carbon::createFromFormat(company()->date_format . ' ' . company()->time_format, $request->scheduleDate . ' ' . $request->scheduleTime)->setTimezone('UTC');
-                $end = Carbon::createFromFormat(company()->date_format . ' ' . company()->time_format, $request->end_date . ' ' . $request->end_time)->setTimezone('UTC');
+                $start = Carbon::createFromFormat(company()->date_format.' '.company()->time_format, $request->scheduleDate.' '.$request->scheduleTime)->setTimezone('UTC');
+                $end = Carbon::createFromFormat(company()->date_format.' '.company()->time_format, $request->end_date.' '.$request->end_time)->setTimezone('UTC');
                 $data['start_date_time'] = $start->toDateTimeString();
                 $data['end_date_time'] = $end->toDateTimeString();
                 $data['status'] = 'waiting';
@@ -640,8 +644,8 @@ class InterviewScheduleController extends AccountBaseController
             }
         }
 
-        if (!is_null($employees)) {
-            if (!empty($request->employee_id)) {
+        if (! is_null($employees)) {
+            if (! empty($request->employee_id)) {
                 $oldEmp = RecruitInterviewEmployees::where('recruit_interview_schedule_id', $interviewSchedule->id)->pluck('user_id')->toArray();
                 $selectedEmp = array_map('intval', $request->employee_id);
                 $toRemove = array_diff($oldEmp, $selectedEmp);
@@ -652,7 +656,7 @@ class InterviewScheduleController extends AccountBaseController
                 }
 
                 foreach ($toAdd as $item) {
-                    $interviewEmployee = new RecruitInterviewEmployees();
+                    $interviewEmployee = new RecruitInterviewEmployees;
                     $interviewEmployee->recruit_interview_schedule_id = $interviewSchedule->id;
                     $interviewEmployee->user_id = $item;
                     $interviewEmployee->save();
@@ -682,7 +686,7 @@ class InterviewScheduleController extends AccountBaseController
             event(new HostInterviewEvent($interviewSchedule));
         }
 
-        return Reply::successWithData(__('recruit::modules.message.updateSuccess'), ['redirectUrl' => route('interview-schedule.show', $interviewSchedule->id) . '?tab=details']);
+        return Reply::successWithData(__('recruit::modules.message.updateSuccess'), ['redirectUrl' => route('interview-schedule.show', $interviewSchedule->id).'?tab=details']);
     }
 
     public function reschedule()
@@ -695,7 +699,7 @@ class InterviewScheduleController extends AccountBaseController
         $this->comment = RecruitInterviewComments::where('recruit_interview_schedule_id', $this->interview->id)
             ->where('user_id', $this->user->id)->first();
 
-        abort_403(!($reschedulePermission == 'all' ||
+        abort_403(! ($reschedulePermission == 'all' ||
             ($reschedulePermission == 'added' && $this->interview->added_by == user()->id) ||
             ($reschedulePermission == 'owned' && in_array(user()->id, $this->selected_employees)) ||
             ($reschedulePermission == 'both' && (in_array(user()->id, $this->selected_employees) ||
@@ -712,13 +716,11 @@ class InterviewScheduleController extends AccountBaseController
         $this->selected_employees = $this->recruit_employees->pluck('user_id')->toArray();
         $interview = RecruitInterviewSchedule::findOrFail($id);
 
-        abort_403(!($reschedulePermission == 'all' ||
+        abort_403(! ($reschedulePermission == 'all' ||
             ($reschedulePermission == 'added' && $this->interview->added_by == user()->id) ||
             ($reschedulePermission == 'owned' && in_array(user()->id, $this->selected_employees)) ||
             ($reschedulePermission == 'both' && (in_array(user()->id, $this->selected_employees) ||
                 $this->interview->added_by == user()->id))));
-
-
 
         if ($interview->meeting_id != '') {
             $interview = RecruitInterviewSchedule::select('id', 'meeting_id', 'recruit_job_application_id', 'interview_type', 'video_type', 'phone', 'other_link', 'schedule_date', 'status')
@@ -726,7 +728,7 @@ class InterviewScheduleController extends AccountBaseController
                     'jobApplication:id,full_name,email,recruit_job_id,recruit_application_status_id',
                     'employees',
                     'comments',
-                    'meeting'
+                    'meeting',
                 ])
                 ->where('id', $id)->first();
         } else {
@@ -740,7 +742,7 @@ class InterviewScheduleController extends AccountBaseController
         }
 
         $date = Carbon::createFromFormat(company()->date_format, $request->scheduleDate)->format('Y-m-d');
-        $interview->schedule_date = Carbon::createFromFormat('Y-m-d ' . $this->company->time_format, $date . ' ' . $request->scheduleTime, $this->company->timezone)->setTimezone('UTC');
+        $interview->schedule_date = Carbon::createFromFormat('Y-m-d '.$this->company->time_format, $date.' '.$request->scheduleTime, $this->company->timezone)->setTimezone('UTC');
 
         $interview->notify_c = ($request->has('notify_c')) ? $request->notify_c : '0';
         $interview->save();
@@ -750,12 +752,12 @@ class InterviewScheduleController extends AccountBaseController
 
             // zoom meeting update
             if ($interview->video_type == 'zoom' && $request->end_date) {
-                $meeting = is_null($interview->meeting->id) ? new ZoomMeeting() : ZoomMeeting::findOrFail($interview->meeting->id);
+                $meeting = is_null($interview->meeting->id) ? new ZoomMeeting : ZoomMeeting::findOrFail($interview->meeting->id);
                 $host = User::find($interview->meeting->create_by);
                 $user = Zoom::user()->find('me');
                 $data = $request->all();
-                $start = Carbon::createFromFormat(company()->date_format . ' ' . company()->time_format, $request->scheduleDate . ' ' . $request->scheduleTime)->setTimezone('UTC');
-                $end = Carbon::createFromFormat(company()->date_format . ' ' . company()->time_format, $request->end_date . ' ' . $request->end_time)->setTimezone('UTC');
+                $start = Carbon::createFromFormat(company()->date_format.' '.company()->time_format, $request->scheduleDate.' '.$request->scheduleTime)->setTimezone('UTC');
+                $end = Carbon::createFromFormat(company()->date_format.' '.company()->time_format, $request->end_date.' '.$request->end_time)->setTimezone('UTC');
 
                 $data['meeting_name'] = $meeting->meeting_name;
                 $data['start_date_time'] = $start->toDateTimeString();
@@ -777,12 +779,12 @@ class InterviewScheduleController extends AccountBaseController
 
         if ($request->candidate_comment) {
             $scheduleComment = [
-                'candidate_comment' => $request->candidate_comment ?? null
+                'candidate_comment' => $request->candidate_comment ?? null,
             ];
 
             $interview->comments()->updateOrCreate([
                 'recruit_interview_schedule_id' => $interview->id,
-                'user_id' => $this->user->id
+                'user_id' => $this->user->id,
             ], $scheduleComment);
         }
 
@@ -793,7 +795,7 @@ class InterviewScheduleController extends AccountBaseController
             event(new CandidateInterviewRescheduleEvent($interview, $interview->jobApplication, $candidateComment));
         }
 
-        if (!empty($request->employee_id)) {
+        if (! empty($request->employee_id)) {
             $interview->employees()->sync($request->employee_id);
             // Mail to employee for inform interview schedule
             event(new InterviewRescheduleEvent($interview, $interview->employees));
@@ -809,9 +811,9 @@ class InterviewScheduleController extends AccountBaseController
 
     public function historyTrack($userID, $text, $interviewID)
     {
-        $activity = new RecruitInterviewHistory();
+        $activity = new RecruitInterviewHistory;
 
-        if (!is_null($interviewID)) {
+        if (! is_null($interviewID)) {
             $activity->recruit_interview_schedule_id = $interviewID;
         }
 
@@ -822,7 +824,8 @@ class InterviewScheduleController extends AccountBaseController
 
     /**
      * Remove the specified resource from storage.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function destroy($id)
@@ -847,7 +850,7 @@ class InterviewScheduleController extends AccountBaseController
 
         $employees = RecruitInterviewEmployees::where('recruit_interview_schedule_id', $interview->id)->pluck('user_id')->toArray();
         $this->deletePermission = user()->permission('delete_interview_schedule');
-        abort_403(!(
+        abort_403(! (
             $this->deletePermission == 'all'
             || ($this->deletePermission == 'added' && $interview->added_by == user()->id)
             || ($this->deletePermission == 'owned' && in_array(user()->id, $employees))

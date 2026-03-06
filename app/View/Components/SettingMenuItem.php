@@ -7,10 +7,12 @@ use Illuminate\View\Component;
 
 class SettingMenuItem extends Component
 {
-
     public $href;
+
     public $text;
+
     public $active;
+
     public $menu;
 
     /**
@@ -45,5 +47,4 @@ class SettingMenuItem extends Component
     {
         return $option === $this->active;
     }
-
 }

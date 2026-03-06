@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (!Schema::hasTable('warehouse_product_stock')) {
+        if (! Schema::hasTable('warehouse_product_stock')) {
             Schema::create('warehouse_product_stock', function (Blueprint $table) {
                 $table->id();
                 $table->unsignedBigInteger('warehouse_id');
@@ -21,7 +21,7 @@ return new class extends Migration
 
                 $table->foreign('warehouse_id')->references('id')->on('warehouses')->onDelete('cascade');
                 $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
-                
+
                 $table->unique(['warehouse_id', 'product_id']);
             });
         }

@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Config;
 
 trait PaymentGatewayTrait
 {
-
     private function paystackSet($companyHash)
     {
 
@@ -21,8 +20,7 @@ trait PaymentGatewayTrait
             $key = ($paymentGateway->test_paystack_key) ?: env('PAYSTACK_PUBLIC_KEY');
             $apiSecret = ($paymentGateway->test_paystack_secret) ?: env('PAYSTACK_SECRET_KEY');
             $email = ($paymentGateway->test_paystack_merchant_email) ?: env('MERCHANT_EMAIL');
-        }
-        else {
+        } else {
             $key = ($paymentGateway->paystack_key) ?: env('PAYSTACK_PUBLIC_KEY');
             $apiSecret = ($paymentGateway->paystack_secret) ?: env('PAYSTACK_SECRET_KEY');
             $email = ($paymentGateway->paystack_merchant_email) ?: env('MERCHANT_EMAIL');
@@ -52,8 +50,7 @@ trait PaymentGatewayTrait
             $payfast_merchant_id = ($paymentGateway->test_payfast_merchant_id) ?: env('PF_MERCHANT_ID');
             $payfast_merchant_key = ($paymentGateway->test_payfast_merchant_key) ?: env('PF_MERCHANT_KEY');
             $payfast_passphrase = ($paymentGateway->test_payfast_passphrase) ?: env('PAYFAST_PASSPHRASE');
-        }
-        else {
+        } else {
             $payfast_merchant_id = ($paymentGateway->payfast_merchant_id) ?: env('PF_MERCHANT_ID');
             $payfast_merchant_key = ($paymentGateway->payfast_merchant_key) ?: env('PF_MERCHANT_KEY');
             $payfast_passphrase = ($paymentGateway->payfast_passphrase) ?: env('PAYFAST_PASSPHRASE');
@@ -78,13 +75,11 @@ trait PaymentGatewayTrait
             $flutterwave_key = ($paymentGateway->test_flutterwave_key) ?: env('FLW_PUBLIC_KEY');
             $flutterwave_secret = ($paymentGateway->test_flutterwave_secret) ?: env('FLW_SECRET_KEY');
             $flutterwave_hash = ($paymentGateway->test_flutterwave_hash) ?: env('FLW_SECRET_HASH');
-        }
-        else {
+        } else {
             $flutterwave_key = ($paymentGateway->live_flutterwave_key) ?: env('FLW_PUBLIC_KEY');
             $flutterwave_secret = ($paymentGateway->live_flutterwave_secret) ?: env('FLW_SECRET_KEY');
             $flutterwave_hash = ($paymentGateway->live_flutterwave_hash) ?: env('FLW_SECRET_HASH');
         }
-
 
         Config::set('flutterwave.publicKey', $flutterwave_key);
         Config::set('flutterwave.secretKey', $flutterwave_secret);
@@ -102,7 +97,6 @@ trait PaymentGatewayTrait
         Config::set('services.authorize.login', $authorize_api_login_id);
         Config::set('services.authorize.transaction', $authorize_transaction_key);
         Config::set('services.authorize.sandbox', $authorize_environment);
-
 
     }
 
@@ -127,12 +121,11 @@ trait PaymentGatewayTrait
 
         $company = Company::where('hash', $companyHash)->first();
 
-        if (!$company) {
+        if (! $company) {
             throw new ApiException('Please enter the correct webhook url. You have entered wrong webhook url', null, 200);
         }
 
         // This needs to be set according to company id
         return $company->paymentGatewayCredentials;
     }
-
 }

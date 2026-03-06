@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class StoreRequest extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -25,8 +24,7 @@ class StoreRequest extends CoreRequest
     public function rules()
     {
         return [
-            'name' => 'required|unique:designations,name,null,id,company_id,' . company()->id
+            'name' => 'required|unique:designations,name,null,id,company_id,'.company()->id,
         ];
     }
-
 }

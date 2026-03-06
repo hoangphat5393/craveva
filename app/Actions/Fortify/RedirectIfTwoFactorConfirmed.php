@@ -7,11 +7,9 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 
 class RedirectIfTwoFactorConfirmed extends RedirectIfTwoFactorAuthenticatable
 {
-
     public function handle($request, $next)
     {
         $user = $this->validateCredentials($request);
-
 
         if (optional($user)->two_factor_confirmed && ($user->two_fa_verify_via == 'both' || $user->two_fa_verify_via == 'google_authenticator') &&
             in_array(TwoFactorAuthenticatable::class, class_uses_recursive($user))) {
@@ -23,10 +21,10 @@ class RedirectIfTwoFactorConfirmed extends RedirectIfTwoFactorAuthenticatable
             // Send otp to user from here
             $user->generateTwoFactorCode();
             event(new TwoFactorCodeEvent($user->user));
+
             return $this->twoFactorChallengeResponse($request, $user);
         }
 
         return $next($request);
     }
-
 }

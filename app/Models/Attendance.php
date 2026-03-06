@@ -30,6 +30,7 @@ use Illuminate\Support\Facades\DB;
  * @property-read mixed $clock_in_date
  * @property-read mixed $icon
  * @property-read \App\Models\User $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Attendance newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Attendance newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Attendance query()
@@ -46,10 +47,13 @@ use Illuminate\Support\Facades\DB;
  * @method static \Illuminate\Database\Eloquent\Builder|Attendance whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Attendance whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Attendance whereWorkingFrom($value)
+ *
  * @property string|null $latitude
  * @property string|null $longitude
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Attendance whereLatitude($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Attendance whereLongitude($value)
+ *
  * @property int|null $company_id
  * @property int|null $location_id
  * @property \Illuminate\Support\Carbon|null $shift_start_time
@@ -60,23 +64,26 @@ use Illuminate\Support\Facades\DB;
  * @property-read \App\Models\Company|null $company
  * @property-read \App\Models\CompanyAddress|null $location
  * @property-read \App\Models\EmployeeShift|null $shift
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Attendance whereCompanyId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Attendance whereEmployeeShiftId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Attendance whereLocationId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Attendance whereShiftEndTime($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Attendance whereShiftStartTime($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Attendance whereWorkFromType($value)
+ *
  * @property string $overwrite_attendance
  * @property string $status
  * @property string $occassion
  * @property string $date
  * @property string $status
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Attendance whereOverwriteAttendance($value)
+ *
  * @mixin \Eloquent
  */
 class Attendance extends BaseModel
 {
-
     use HasCompany;
 
     protected $casts = [
@@ -86,8 +93,11 @@ class Attendance extends BaseModel
         'shift_start_time' => 'datetime',
         'date' => 'datetime',
     ];
+
     protected $appends = ['clock_in_date'];
+
     protected $guarded = ['id'];
+
     protected $with = ['company:id'];
 
     public function user(): BelongsTo
@@ -112,7 +122,7 @@ class Attendance extends BaseModel
 
     public static function attendanceByDate($date)
     {
-        DB::statement('SET @attendance_date = ' . $date);
+        DB::statement('SET @attendance_date = '.$date);
 
         return User::withoutGlobalScope(ActiveScope::class)
             ->leftJoin(
@@ -129,8 +139,8 @@ class Attendance extends BaseModel
             ->leftJoin('designations', 'designations.id', '=', 'employee_details.designation_id')
             ->onlyEmployee()
             ->select(
-                DB::raw("( select count('atd.id') from attendances as atd where atd.user_id = users.id and DATE(atd.clock_in_time)  =  '" . $date . "' and DATE(atd.clock_out_time)  =  '" . $date . "' ) as total_clock_in"),
-                DB::raw("( select count('atdn.id') from attendances as atdn where atdn.user_id = users.id and DATE(atdn.clock_in_time)  =  '" . $date . "' ) as clock_in"),
+                DB::raw("( select count('atd.id') from attendances as atd where atd.user_id = users.id and DATE(atd.clock_in_time)  =  '".$date."' and DATE(atd.clock_out_time)  =  '".$date."' ) as total_clock_in"),
+                DB::raw("( select count('atdn.id') from attendances as atdn where atdn.user_id = users.id and DATE(atdn.clock_in_time)  =  '".$date."' ) as clock_in"),
                 'users.id',
                 'users.name',
                 'attendances.clock_in_ip',
@@ -150,7 +160,7 @@ class Attendance extends BaseModel
 
     public static function attendanceByUserDate($userid, $date)
     {
-        DB::statement('SET @attendance_date = ' . $date);
+        DB::statement('SET @attendance_date = '.$date);
 
         return User::withoutGlobalScope(ActiveScope::class)
             ->leftJoin(
@@ -166,8 +176,8 @@ class Attendance extends BaseModel
             ->leftJoin('designations', 'designations.id', '=', 'employee_details.designation_id')
             ->onlyEmployee()
             ->select(
-                DB::raw("( select count('atd.id') from attendances as atd where atd.user_id = users.id and DATE(atd.clock_in_time)  =  '" . $date . "' and DATE(atd.clock_out_time)  =  '" . $date . "' ) as total_clock_in"),
-                DB::raw("( select count('atdn.id') from attendances as atdn where atdn.user_id = users.id and DATE(atdn.clock_in_time)  =  '" . $date . "' ) as clock_in"),
+                DB::raw("( select count('atd.id') from attendances as atd where atd.user_id = users.id and DATE(atd.clock_in_time)  =  '".$date."' and DATE(atd.clock_out_time)  =  '".$date."' ) as total_clock_in"),
+                DB::raw("( select count('atdn.id') from attendances as atdn where atdn.user_id = users.id and DATE(atdn.clock_in_time)  =  '".$date."' ) as clock_in"),
                 'users.id',
                 'users.name',
                 'attendances.clock_in_ip',
@@ -272,7 +282,7 @@ class Attendance extends BaseModel
 
     public static function countDaysPresentByUser($startDate, $endDate, $userId)
     {
-        $totalPresent = DB::select('SELECT count(DISTINCT DATE(attendances.clock_in_time) ) as presentCount from attendances where DATE(attendances.clock_in_time) >= "' . $startDate . '" and DATE(attendances.clock_in_time) <= "' . $endDate . '" and user_id="' . $userId . '" ');
+        $totalPresent = DB::select('SELECT count(DISTINCT DATE(attendances.clock_in_time) ) as presentCount from attendances where DATE(attendances.clock_in_time) >= "'.$startDate.'" and DATE(attendances.clock_in_time) <= "'.$endDate.'" and user_id="'.$userId.'" ');
 
         return $totalPresent[0]->presentCount;
     }
@@ -356,23 +366,21 @@ class Attendance extends BaseModel
 
             $lastClockOut = $activity;
 
-            if (!is_null($lastClockOut->clock_out_time)) {
+            if (! is_null($lastClockOut->clock_out_time)) {
                 $endTime = Carbon::parse($lastClockOut->clock_out_time)->timezone(company()->timezone);
 
-            }
-            elseif (
+            } elseif (
                 ($lastClockOut->clock_in_time->timezone(company()->timezone)->format('Y-m-d') != now()->timezone(company()->timezone)->format('Y-m-d'))
                 && is_null($lastClockOut->clock_out_time)
                 && isset($startTime)
             ) {
-                $endTime = Carbon::parse($startTime->format('Y-m-d') . ' ' . attendance_setting()->shift->office_end_time, company()->timezone);
+                $endTime = Carbon::parse($startTime->format('Y-m-d').' '.attendance_setting()->shift->office_end_time, company()->timezone);
 
                 if ($startTime->gt($endTime)) {
                     $endTime->addDay();
                 }
 
-            }
-            else {
+            } else {
                 $endTime = $defaultEndTime;
             }
 
@@ -380,7 +388,7 @@ class Attendance extends BaseModel
         }
 
         if ($format == 'H:i') {
-            return intdiv($totalTime, 60) . ':' . ($totalTime % 60);
+            return intdiv($totalTime, 60).':'.($totalTime % 60);
         }
 
         if ($format == 'm') {
@@ -390,5 +398,4 @@ class Attendance extends BaseModel
         /** @phpstan-ignore-next-line */
         return CarbonInterval::formatHuman($totalTime);
     }
-
 }

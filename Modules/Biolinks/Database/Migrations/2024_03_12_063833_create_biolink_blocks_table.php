@@ -9,8 +9,8 @@ use Modules\Biolinks\Enums\BorderStyle;
 use Modules\Biolinks\Enums\ObjectFit;
 use Modules\Biolinks\Enums\Status;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
@@ -79,5 +79,4 @@ return new class extends Migration {
     {
         Schema::dropIfExists('biolink_blocks');
     }
-
 };

@@ -7,12 +7,16 @@ use Illuminate\View\Component;
 
 class UserOption extends Component
 {
-
     public $user;
+
     public $selected;
+
     public $pill;
+
     public $agent;
+
     public $userID;
+
     public $additionalText;
 
     /**
@@ -39,5 +43,4 @@ class UserOption extends Component
     {
         return view('components.user-option');
     }
-
 }

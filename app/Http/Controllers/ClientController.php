@@ -2,67 +2,66 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ProjectStatusSetting;
-use App\Models\Role;
-use App\Models\User;
-use App\Helper\Files;
-use App\Helper\Reply;
-use App\Models\Invoice;
-use App\Models\Payment;
-use App\Models\Project;
-use App\Models\BaseModel;
-use App\Models\ClientNote;
-use App\Scopes\ActiveScope;
-use App\Traits\ImportExcel;
-use App\Models\Notification;
-use App\Models\ContractType;
-use App\Models\UserAuth;
-use Illuminate\Http\Request;
-use App\Imports\ClientImport;
-use App\Jobs\ImportClientJob;
-use App\Models\ClientDetails;
-use App\Models\ClientCategory;
-use App\Models\PurposeConsent;
-use App\Models\LanguageSetting;
-use App\Models\UniversalSearch;
-use App\Models\ClientSubCategory;
-use App\Models\PurposeConsentUser;
-use Illuminate\Support\Facades\DB;
-use App\DataTables\TicketDataTable;
-use App\DataTables\ClientsDataTable;
-use App\DataTables\InvoicesDataTable;
-use App\DataTables\PaymentsDataTable;
-use App\DataTables\ProjectsDataTable;
-use App\DataTables\EstimatesDataTable;
+use App\DataTables\ClientContactsDataTable;
 use App\DataTables\ClientGDPRDataTable;
 use App\DataTables\ClientNotesDataTable;
+use App\DataTables\ClientsDataTable;
 use App\DataTables\CreditNotesDataTable;
-use App\DataTables\ClientContactsDataTable;
+use App\DataTables\EstimatesDataTable;
+use App\DataTables\InvoicesDataTable;
 use App\DataTables\OrdersDataTable;
+use App\DataTables\PaymentsDataTable;
+use App\DataTables\ProjectsDataTable;
+use App\DataTables\TicketDataTable;
 use App\Enums\Salutation;
 use App\Events\NewUserEvent;
-use App\Http\Requests\Admin\Employee\ImportRequest;
+use App\Helper\Files;
+use App\Helper\Reply;
 use App\Http\Requests\Admin\Client\StoreClientRequest;
-use App\Http\Requests\Gdpr\SaveConsentUserDataRequest;
 use App\Http\Requests\Admin\Client\UpdateClientRequest;
 use App\Http\Requests\Admin\Employee\ImportProcessRequest;
+use App\Http\Requests\Admin\Employee\ImportRequest;
+use App\Http\Requests\Gdpr\SaveConsentUserDataRequest;
+use App\Imports\ClientImport;
+use App\Jobs\ImportClientJob;
+use App\Models\BaseModel;
+use App\Models\ClientCategory;
 use App\Models\ClientContact;
+use App\Models\ClientDetails;
+use App\Models\ClientNote;
+use App\Models\ClientSubCategory;
+use App\Models\ContractType;
+use App\Models\Invoice;
+use App\Models\LanguageSetting;
 use App\Models\Lead;
+use App\Models\Notification;
+use App\Models\Payment;
+use App\Models\Project;
+use App\Models\ProjectStatusSetting;
+use App\Models\PurposeConsent;
+use App\Models\PurposeConsentUser;
+use App\Models\Role;
+use App\Models\UniversalSearch;
+use App\Models\User;
+use App\Models\UserAuth;
+use App\Scopes\ActiveScope;
 use App\Scopes\CompanyScope;
 use App\Traits\EmployeeActivityTrait;
+use App\Traits\ImportExcel;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ClientController extends AccountBaseController
 {
-
-    use ImportExcel;
     use EmployeeActivityTrait;
+    use ImportExcel;
 
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'app.menu.clients';
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('clients', $this->user->modules));
+            abort_403(! in_array('clients', $this->user->modules));
 
             return $next($request);
         });
@@ -78,9 +77,9 @@ class ClientController extends AccountBaseController
         $viewPermission = user()->permission('view_clients');
         $this->addClientPermission = user()->permission('add_clients');
 
-        abort_403(!in_array($viewPermission, ['all', 'added', 'both']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'both']));
 
-        if (!request()->ajax()) {
+        if (! request()->ajax()) {
             $this->clients = User::allClients(active: false);
             $this->subcategories = ClientSubCategory::all();
             $this->categories = ClientCategory::all();
@@ -102,7 +101,7 @@ class ClientController extends AccountBaseController
     {
         $this->addPermission = user()->permission('add_clients');
 
-        abort_403(!in_array($this->addPermission, User::ALL_ADDED_BOTH));
+        abort_403(! in_array($this->addPermission, User::ALL_ADDED_BOTH));
 
         if ($leadID) {
             $this->leadDetail = Lead::findOrFail($leadID);
@@ -124,7 +123,7 @@ class ClientController extends AccountBaseController
         $this->salutations = Salutation::cases();
         $this->languages = LanguageSetting::where('status', 'enabled')->get();
 
-        $client = new ClientDetails();
+        $client = new ClientDetails;
         $getCustomFieldGroupsWithFields = $client->getCustomFieldGroupsWithFields();
 
         if ($getCustomFieldGroupsWithFields) {
@@ -140,7 +139,6 @@ class ClientController extends AccountBaseController
 
             return $this->returnAjax($this->view);
         }
-
 
         return view('clients.create', $this->data);
     }
@@ -197,7 +195,7 @@ class ClientController extends AccountBaseController
         $client_id = $user->id;
 
         if ($request->has('is_client_contact')) {
-            $clientContact = new ClientContact();
+            $clientContact = new ClientContact;
             $clientContact->user_id = $request->is_client_contact;
             $clientContact->contact_name = $request->name;
             $clientContact->phone = $request->mobile;
@@ -215,7 +213,7 @@ class ClientController extends AccountBaseController
             $user->update();
         }
 
-        $client_note = new ClientNote();
+        $client_note = new ClientNote;
         $note = trim_editor($request->note);
 
         if ($note != '') {
@@ -239,11 +237,11 @@ class ClientController extends AccountBaseController
         // Log search
         $this->logSearchEntry($user->id, $user->name, 'clients.show', 'client');
 
-        if (!is_null($user->email)) {
+        if (! is_null($user->email)) {
             $this->logSearchEntry($user->id, $user->email, 'clients.show', 'client');
         }
 
-        if (!is_null($user->clientDetails->company_name)) {
+        if (! is_null($user->clientDetails->company_name)) {
             $this->logSearchEntry($user->id, $user->clientDetails->company_name, 'clients.show', 'client');
         }
 
@@ -262,7 +260,7 @@ class ClientController extends AccountBaseController
         }
 
         if ($request->has('is_client_contact')) {
-            $redirectUrl = route('clients.show', $request->is_client_contact) . '?tab=contacts';
+            $redirectUrl = route('clients.show', $request->is_client_contact).'?tab=contacts';
         }
 
         if ($request->add_more == 'true') {
@@ -281,20 +279,20 @@ class ClientController extends AccountBaseController
             foreach ($teams as $team) {
                 $selected = ($team->id == $user->id) ? 'selected' : '';
 
-                $teamData .= '<option ' . $selected . ' data-content="';
+                $teamData .= '<option '.$selected.' data-content="';
 
                 $teamData .= '<div class=\'media align-items-center mw-250\'>';
 
-                $teamData .= '<div class=\'position-relative\'><img src=' . $team->image_url . ' class=\'mr-2 taskEmployeeImg rounded-circle\'></div>';
+                $teamData .= '<div class=\'position-relative\'><img src='.$team->image_url.' class=\'mr-2 taskEmployeeImg rounded-circle\'></div>';
                 $teamData .= '<div class=\'media-body\'>';
-                $teamData .= '<h5 class=\'mb-0 f-13\'>' . $team->name . '</h5>';
-                $teamData .= '<p class=\'my-0 f-11 text-dark-grey\'>' . $team->email . '</p>';
+                $teamData .= '<h5 class=\'mb-0 f-13\'>'.$team->name.'</h5>';
+                $teamData .= '<p class=\'my-0 f-11 text-dark-grey\'>'.$team->email.'</p>';
 
-                $teamData .= (!is_null($team->clientDetails->company_name)) ? '<p class=\'my-0 f-11 text-dark-grey\'>' . $team->clientDetails->company_name . '</p>' : '';
+                $teamData .= (! is_null($team->clientDetails->company_name)) ? '<p class=\'my-0 f-11 text-dark-grey\'>'.$team->clientDetails->company_name.'</p>' : '';
                 $teamData .= '</div>';
                 $teamData .= '</div>"';
 
-                $teamData .= 'value="' . $team->id . '"> ' . $team->name . '';
+                $teamData .= 'value="'.$team->id.'"> '.$team->name.'';
 
                 $teamData .= '</option>';
             }
@@ -320,7 +318,7 @@ class ClientController extends AccountBaseController
 
         $this->editPermission = user()->permission('edit_clients');
 
-        abort_403(!($this->editPermission == 'all' || ($this->editPermission == 'added' && $this->client->clientDetails->added_by == user()->id) || ($this->editPermission == 'both' && $this->client->clientDetails->added_by == user()->id)));
+        abort_403(! ($this->editPermission == 'all' || ($this->editPermission == 'added' && $this->client->clientDetails->added_by == user()->id) || ($this->editPermission == 'both' && $this->client->clientDetails->added_by == user()->id)));
 
         $this->countries = countries();
         $this->categories = ClientCategory::all();
@@ -329,11 +327,11 @@ class ClientController extends AccountBaseController
             $this->employees = User::allEmployees();
         }
 
-        $this->pageTitle = __('app.update') . ' ' . __('app.client');
+        $this->pageTitle = __('app.update').' '.__('app.client');
         $this->salutations = Salutation::cases();
         $this->languages = LanguageSetting::where('status', 'enabled')->get();
 
-        if (!is_null($this->client->clientDetails)) {
+        if (! is_null($this->client->clientDetails)) {
             $this->clientDetail = $this->client->clientDetails->withCustomFields();
 
             $getCustomFieldGroupsWithFields = $this->clientDetail->getCustomFieldGroupsWithFields();
@@ -395,7 +393,6 @@ class ClientController extends AccountBaseController
             $data['telegram_user_id'] = $request->telegram_user_id;
         }
 
-
         if ($request->image_delete == 'yes') {
             Files::deleteFile($user->image, 'avatar');
             $data['image'] = null;
@@ -451,7 +448,6 @@ class ClientController extends AccountBaseController
 
         $this->createEmployeeActivity(auth()->user()->id, 'client-updated', $id, 'client');
 
-
         $redirectUrl = urldecode($request->redirect_url);
 
         if ($redirectUrl == '') {
@@ -459,7 +455,7 @@ class ClientController extends AccountBaseController
         }
 
         if ($request->has('is_client_contact')) {
-            $redirectUrl = route('clients.show', $request->is_client_contact) . '?tab=contacts';
+            $redirectUrl = route('clients.show', $request->is_client_contact).'?tab=contacts';
         }
 
         return Reply::successWithData(__('messages.updateSuccess'), ['redirectUrl' => $redirectUrl]);
@@ -468,7 +464,7 @@ class ClientController extends AccountBaseController
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
@@ -477,7 +473,7 @@ class ClientController extends AccountBaseController
         $this->deletePermission = user()->permission('delete_clients');
 
         abort_403(
-            !($this->deletePermission == 'all'
+            ! ($this->deletePermission == 'all'
                 || ($this->deletePermission == 'added' && $this->client->clientDetails->added_by == user()->id)
                 || ($this->deletePermission == 'both' && $this->client->clientDetails->added_by == user()->id)
             )
@@ -498,13 +494,12 @@ class ClientController extends AccountBaseController
             }
         }
 
-
         Notification::whereNull('read_at')
             ->where(function ($q) use ($user) {
-                $q->where('data', 'like', '{"id":' . $user->id . ',%');
-                $q->orWhere('data', 'like', '%,"name":' . $user->name . ',%');
-                $q->orWhere('data', 'like', '%,"user_one":' . $user->id . ',%');
-                $q->orWhere('data', 'like', '%,"client_id":' . $user->id . '%');
+                $q->where('data', 'like', '{"id":'.$user->id.',%');
+                $q->orWhere('data', 'like', '%,"name":'.$user->name.',%');
+                $q->orWhere('data', 'like', '%,"user_one":'.$user->id.',%');
+                $q->orWhere('data', 'like', '%,"client_id":'.$user->id.'%');
             })->delete();
 
         $user->delete();
@@ -562,7 +557,7 @@ class ClientController extends AccountBaseController
     /**
      * Display the specified resource.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -572,11 +567,11 @@ class ClientController extends AccountBaseController
         $this->viewPermission = user()->permission('view_clients');
         $this->viewDocumentPermission = user()->permission('view_client_document');
 
-        if (!$this->client->hasRole('client')) {
+        if (! $this->client->hasRole('client')) {
             abort(404);
         }
 
-        abort_403(!($this->viewPermission == 'all'
+        abort_403(! ($this->viewPermission == 'all'
             || ($this->viewPermission == 'added' && $this->client->clientDetails->added_by == user()->id)
             || ($this->viewPermission == 'both' && $this->client->clientDetails->added_by == user()->id)));
 
@@ -613,7 +608,7 @@ class ClientController extends AccountBaseController
             case 'orders':
                 return $this->orders();
             case 'documents':
-                abort_403(!($this->viewDocumentPermission == 'all'
+                abort_403(! ($this->viewDocumentPermission == 'all'
                     || ($this->viewDocumentPermission == 'added' && $this->client->clientDetails->added_by == user()->id)
                     || ($this->viewDocumentPermission == 'owned' && $this->client->clientDetails->user_id == user()->id)
                     || ($this->viewDocumentPermission == 'both' && ($this->client->clientDetails->added_by == user()->id || $this->client->clientDetails->user_id == user()->id))));
@@ -635,7 +630,7 @@ class ClientController extends AccountBaseController
             default:
                 $this->clientDetail = ClientDetails::where('user_id', '=', $this->client->id)->first();
 
-                if (!is_null($this->clientDetail)) {
+                if (! is_null($this->clientDetail)) {
                     $this->clientDetail = $this->clientDetail->withCustomFields();
 
                     $getCustomFieldGroupsWithFields = $this->clientDetail->getCustomFieldGroupsWithFields();
@@ -662,11 +657,11 @@ class ClientController extends AccountBaseController
     {
         return DB::table('users')
             ->select(
-                DB::raw('(select count(projects.id) from `projects` WHERE projects.client_id = ' . $id . ' and deleted_at IS NULL) as totalProjects'),
-                DB::raw('(select count(invoices.id) from `invoices` left join projects on projects.id=invoices.project_id WHERE invoices.status != "paid" and invoices.status != "canceled" and (projects.client_id = ' . $id . ' or invoices.client_id = ' . $id . ')) as totalUnpaidInvoices'),
-                DB::raw('(select sum(payments.amount) from `payments` left join projects on projects.id=payments.project_id WHERE payments.status = "complete" and projects.client_id = ' . $id . ') as projectPayments'),
-                DB::raw('(select sum(payments.amount) from `payments` inner join invoices on invoices.id=payments.invoice_id  WHERE payments.status = "complete" and invoices.client_id = ' . $id . ') as invoicePayments'),
-                DB::raw('(select count(contracts.id) from `contracts` WHERE contracts.client_id = ' . $id . ') as totalContracts')
+                DB::raw('(select count(projects.id) from `projects` WHERE projects.client_id = '.$id.' and deleted_at IS NULL) as totalProjects'),
+                DB::raw('(select count(invoices.id) from `invoices` left join projects on projects.id=invoices.project_id WHERE invoices.status != "paid" and invoices.status != "canceled" and (projects.client_id = '.$id.' or invoices.client_id = '.$id.')) as totalUnpaidInvoices'),
+                DB::raw('(select sum(payments.amount) from `payments` left join projects on projects.id=payments.project_id WHERE payments.status = "complete" and projects.client_id = '.$id.') as projectPayments'),
+                DB::raw('(select sum(payments.amount) from `payments` inner join invoices on invoices.id=payments.invoice_id  WHERE payments.status = "complete" and invoices.client_id = '.$id.') as invoicePayments'),
+                DB::raw('(select count(contracts.id) from `contracts` WHERE contracts.client_id = '.$id.') as totalContracts')
             )
             ->first();
     }
@@ -685,7 +680,7 @@ class ClientController extends AccountBaseController
         $data = [
             'labels' => $statusSettings->pluck('status_name')->toArray(),
             'colors' => $statusSettings->pluck('color')->toArray(),
-            'values' => []
+            'values' => [],
         ];
 
         // Construct the query to count projects for each status
@@ -730,7 +725,7 @@ class ClientController extends AccountBaseController
         $data = [
             'labels' => $translations,
             'colors' => $colors,
-            'values' => []
+            'values' => [],
         ];
 
         // Populate the values array with counts for each status
@@ -777,7 +772,7 @@ class ClientController extends AccountBaseController
 
         foreach ($clientProjects as $project) {
 
-            $options .= '<option value="' . $project->id . '"> ' . $project->project_name . ' </option>';
+            $options .= '<option value="'.$project->id.'"> '.$project->project_name.' </option>';
         }
 
         $data = $client ?: null;
@@ -790,23 +785,23 @@ class ClientController extends AccountBaseController
 
         $viewPermission = user()->permission('view_projects');
 
-        abort_403(!($viewPermission == 'all' || $viewPermission == 'added'));
+        abort_403(! ($viewPermission == 'all' || $viewPermission == 'added'));
         $tab = request('tab');
         $this->activeTab = $tab ?: 'profile';
 
         $this->view = 'clients.ajax.projects';
 
-        $dataTable = new ProjectsDataTable();
+        $dataTable = new ProjectsDataTable;
 
         return $dataTable->render('clients.show', $this->data);
     }
 
     public function invoices()
     {
-        $dataTable = new InvoicesDataTable();
+        $dataTable = new InvoicesDataTable;
         $viewPermission = user()->permission('view_invoices');
 
-        abort_403(!in_array($viewPermission, ['all', 'added', 'owned', 'both']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'owned', 'both']));
         $tab = request('tab');
 
         $this->activeTab = $tab ?: 'profile';
@@ -818,10 +813,10 @@ class ClientController extends AccountBaseController
 
     public function payments()
     {
-        $dataTable = new PaymentsDataTable();
+        $dataTable = new PaymentsDataTable;
         $viewPermission = user()->permission('view_payments');
 
-        abort_403(!($viewPermission == 'all' || $viewPermission == 'added'));
+        abort_403(! ($viewPermission == 'all' || $viewPermission == 'added'));
         $tab = request('tab');
         $this->activeTab = $tab ?: 'profile';
 
@@ -832,10 +827,10 @@ class ClientController extends AccountBaseController
 
     public function estimates()
     {
-        $dataTable = new EstimatesDataTable();
+        $dataTable = new EstimatesDataTable;
         $viewPermission = user()->permission('view_estimates');
 
-        abort_403(!in_array($viewPermission, ['all', 'added', 'owned', 'both']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'owned', 'both']));
 
         $tab = request('tab');
         $this->activeTab = $tab ?: 'profile';
@@ -846,7 +841,7 @@ class ClientController extends AccountBaseController
 
     public function creditnotes()
     {
-        $dataTable = new CreditNotesDataTable();
+        $dataTable = new CreditNotesDataTable;
         $viewPermission = user()->permission('view_invoices');
 
         abort_403($viewPermission == 'none');
@@ -859,7 +854,7 @@ class ClientController extends AccountBaseController
 
     public function contacts()
     {
-        $dataTable = new ClientContactsDataTable();
+        $dataTable = new ClientContactsDataTable;
         $tab = request('tab');
         $this->activeTab = $tab ?: 'profile';
 
@@ -870,7 +865,7 @@ class ClientController extends AccountBaseController
 
     public function notes()
     {
-        $dataTable = new ClientNotesDataTable();
+        $dataTable = new ClientNotesDataTable;
         $viewPermission = user()->permission('view_client_note');
 
         abort_403(($viewPermission == 'none'));
@@ -883,10 +878,10 @@ class ClientController extends AccountBaseController
 
     public function tickets()
     {
-        $dataTable = new TicketDataTable();
+        $dataTable = new TicketDataTable;
         $viewPermission = user()->permission('view_clients');
 
-        abort_403(!($viewPermission == 'all' || $viewPermission == 'added' || $viewPermission == 'both'));
+        abort_403(! ($viewPermission == 'all' || $viewPermission == 'added' || $viewPermission == 'both'));
         $tab = request('tab');
         $this->activeTab = $tab ?: 'profile';
 
@@ -897,7 +892,7 @@ class ClientController extends AccountBaseController
 
     public function gdpr()
     {
-        $dataTable = new ClientGDPRDataTable();
+        $dataTable = new ClientGDPRDataTable;
         $tab = request('tab');
         $this->activeTab = $tab ?: 'gdpr';
 
@@ -933,7 +928,7 @@ class ClientController extends AccountBaseController
         }
 
         // Saving Consent Data
-        $newConsentLead = new PurposeConsentUser();
+        $newConsentLead = new PurposeConsentUser;
         $newConsentLead->client_id = $user->id;
         $newConsentLead->purpose_consent_id = $consent->id;
         $newConsentLead->status = trim($request->status);
@@ -947,13 +942,13 @@ class ClientController extends AccountBaseController
 
     public function approve($id)
     {
-        abort_403(!in_array('admin', user_roles()));
+        abort_403(! in_array('admin', user_roles()));
 
         User::where('id', $id)->update(
             ['admin_approval' => 1]
         );
 
-        $userSession = new AppSettingController();
+        $userSession = new AppSettingController;
         $userSession->deleteSessions([$id]);
 
         $password = session('auth_pass');
@@ -966,10 +961,10 @@ class ClientController extends AccountBaseController
 
     public function importClient()
     {
-        $this->pageTitle = __('app.importExcel') . ' ' . __('app.client');
+        $this->pageTitle = __('app.importExcel').' '.__('app.client');
 
         $addPermission = user()->permission('add_clients');
-        abort_403(!in_array($addPermission, ['all', 'added', 'both']));
+        abort_403(! in_array($addPermission, ['all', 'added', 'both']));
 
         $this->view = 'clients.ajax.import';
 
@@ -1038,16 +1033,16 @@ class ClientController extends AccountBaseController
 
                 $teamData .= '<div class=\'media align-items-center mw-250\'>';
 
-                $teamData .= '<div class=\'position-relative\'><img src=' . $client->image_url . ' class=\'mr-2 taskEmployeeImg rounded-circle\'></div>';
+                $teamData .= '<div class=\'position-relative\'><img src='.$client->image_url.' class=\'mr-2 taskEmployeeImg rounded-circle\'></div>';
                 $teamData .= '<div class=\'media-body\'>';
-                $teamData .= '<h5 class=\'mb-0 f-13\'>' . $client->name . '</h5>';
-                $teamData .= '<p class=\'my-0 f-11 text-dark-grey\'>' . $client->email . '</p>';
+                $teamData .= '<h5 class=\'mb-0 f-13\'>'.$client->name.'</h5>';
+                $teamData .= '<p class=\'my-0 f-11 text-dark-grey\'>'.$client->email.'</p>';
 
-                $teamData .= (!is_null($client->clientDetails->company_name)) ? '<p class=\'my-0 f-11 text-dark-grey\'>' . $client->clientDetails->company_name . '</p>' : '';
+                $teamData .= (! is_null($client->clientDetails->company_name)) ? '<p class=\'my-0 f-11 text-dark-grey\'>'.$client->clientDetails->company_name.'</p>' : '';
                 $teamData .= '</div>';
                 $teamData .= '</div>"';
 
-                $teamData .= 'value="' . $client->id . '"> ' . $client->name . '';
+                $teamData .= 'value="'.$client->id.'"> '.$client->name.'';
 
                 $teamData .= '</option>';
             }
@@ -1061,16 +1056,16 @@ class ClientController extends AccountBaseController
 
                 $teamData .= '<div class=\'media align-items-center mw-250\'>';
 
-                $teamData .= '<div class=\'position-relative\'><img src=' . $project->client->image_url . ' class=\'mr-2 taskEmployeeImg rounded-circle\'></div>';
+                $teamData .= '<div class=\'position-relative\'><img src='.$project->client->image_url.' class=\'mr-2 taskEmployeeImg rounded-circle\'></div>';
                 $teamData .= '<div class=\'media-body\'>';
-                $teamData .= '<h5 class=\'mb-0 f-13\'>' . $project->client->name . '</h5>';
-                $teamData .= '<p class=\'my-0 f-11 text-dark-grey\'>' . $project->client->email . '</p>';
+                $teamData .= '<h5 class=\'mb-0 f-13\'>'.$project->client->name.'</h5>';
+                $teamData .= '<p class=\'my-0 f-11 text-dark-grey\'>'.$project->client->email.'</p>';
 
-                $teamData .= (!is_null($project->client->company->company_name)) ? '<p class=\'my-0 f-11 text-dark-grey\'>' . $project->client->company->company_name . '</p>' : '';
+                $teamData .= (! is_null($project->client->company->company_name)) ? '<p class=\'my-0 f-11 text-dark-grey\'>'.$project->client->company->company_name.'</p>' : '';
                 $teamData .= '</div>';
                 $teamData .= '</div>"';
 
-                $teamData .= 'value="' . $project->client->id . '"> ' . $project->client->name . '';
+                $teamData .= 'value="'.$project->client->id.'"> '.$project->client->name.'';
 
                 $teamData .= '</option>';
             }
@@ -1081,9 +1076,9 @@ class ClientController extends AccountBaseController
 
     public function orders()
     {
-        $dataTable = new OrdersDataTable();
+        $dataTable = new OrdersDataTable;
         $viewPermission = user()->permission('view_order');
-        abort_403(!in_array($viewPermission, ['all', 'added', 'owned', 'both']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'owned', 'both']));
 
         $tab = request('tab');
 

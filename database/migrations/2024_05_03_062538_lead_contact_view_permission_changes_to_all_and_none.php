@@ -5,8 +5,8 @@ use App\Models\PermissionRole;
 use App\Models\UserPermission;
 use Illuminate\Database\Migrations\Migration;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
@@ -30,7 +30,6 @@ return new class extends Migration {
                 ->update(['permission_type_id' => 4]);
         }
 
-
     }
 
     /**
@@ -44,5 +43,4 @@ return new class extends Migration {
             $permission->save();
         }
     }
-
 };

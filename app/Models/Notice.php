@@ -28,6 +28,7 @@ use Illuminate\Notifications\Notifiable;
  * @property-read int|null $member_count
  * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
  * @property-read int|null $notifications_count
+ *
  * @method static \Database\Factories\NoticeFactory factory(...$parameters)
  * @method static \Illuminate\Database\Eloquent\Builder|Notice newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Notice newQuery()
@@ -41,16 +42,18 @@ use Illuminate\Notifications\Notifiable;
  * @method static \Illuminate\Database\Eloquent\Builder|Notice whereLastUpdatedBy($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Notice whereTo($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Notice whereUpdatedAt($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Notice whereCompanyId($value)
+ *
  * @mixin \Eloquent
  */
 class Notice extends BaseModel
 {
-
-    use Notifiable, HasFactory;
     use HasCompany;
+    use HasFactory, Notifiable;
 
     protected $appends = ['notice_date'];
 
@@ -71,7 +74,7 @@ class Notice extends BaseModel
 
     public function getNoticeDateAttribute()
     {
-        if (!is_null($this->created_at)) {
+        if (! is_null($this->created_at)) {
             return Carbon::parse($this->created_at)->format('d F, Y');
         }
 
@@ -87,5 +90,4 @@ class Notice extends BaseModel
     {
         return $this->hasMany(NoticeFile::class, 'notice_id')->orderByDesc('id');
     }
-
 }

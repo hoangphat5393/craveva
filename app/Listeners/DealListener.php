@@ -11,14 +11,11 @@ use Illuminate\Support\Facades\Notification;
 
 class DealListener
 {
-
     /**
      * Handle the event.
      *
-     * @param DealEvent $event
      * @return void
      */
-
     public function handle(DealEvent $event)
     {
         $lead = Deal::with('leadAgent', 'leadAgent.user', 'contact')->findOrFail($event->deal->id);
@@ -71,5 +68,4 @@ class DealListener
             }
         }
     }
-
 }

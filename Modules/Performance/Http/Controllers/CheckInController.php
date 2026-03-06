@@ -15,14 +15,14 @@ use Modules\Performance\Http\Requests\CreateCheckInRequest;
 
 class CheckInController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'performance::app.checkIns';
 
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array(PerformanceSetting::MODULE_NAME, $this->user->modules));
+            abort_403(! in_array(PerformanceSetting::MODULE_NAME, $this->user->modules));
+
             return $next($request);
         });
     }
@@ -44,7 +44,7 @@ class CheckInController extends AccountBaseController
         $this->confidenceLevels = ['low' => __('app.low'), 'medium' => __('app.medium'), 'high' => __('app.high')];
         $keyResultId = request()->keyResultId;
         $this->keyResults = KeyResults::all();
-        $this->keyResultId  = [];
+        $this->keyResultId = [];
 
         if ($keyResultId) {
             $this->keyResultId = KeyResults::findOrFail($keyResultId);
@@ -90,7 +90,7 @@ class CheckInController extends AccountBaseController
      */
     public function store(CreateCheckInRequest $request)
     {
-        $checkIn = new CheckIn();
+        $checkIn = new CheckIn;
         $checkIn->key_result_id = $request->key_result_id;
         $checkIn->progress_update = trim_editor($request->progress_update);
         $checkIn->current_value = $request->current_value;
@@ -112,8 +112,7 @@ class CheckInController extends AccountBaseController
         $keyResult->next_check_in = $nextCheckIn->format('Y-m-d');
         $keyResult->save();
 
-        if ($keyResult->objective_id)
-        {
+        if ($keyResult->objective_id) {
             $keyResults = $keyResult::where('objective_id', $keyResult->objective_id);
             $totalKeyPercent = $keyResults->sum('key_percentage');
             $totalKeyResult = $keyResults->count();
@@ -156,7 +155,7 @@ class CheckInController extends AccountBaseController
         $checkIn->confidence_level = $request->confidence_level;
         $checkIn->progress_update = trim_editor($request->progress_update);
         $checkIn->barriers = $request->barriers ? trim_editor($request->barriers) : null;
-        $date_time = Carbon::createFromFormat(company()->date_format, $request->check_in_date)->format('Y-m-d') . ' ' . Carbon::createFromFormat($this->company->time_format, $request->time)->format('H:i:s');
+        $date_time = Carbon::createFromFormat(company()->date_format, $request->check_in_date)->format('Y-m-d').' '.Carbon::createFromFormat($this->company->time_format, $request->time)->format('H:i:s');
         $checkIn->check_in_date = $date_time;
 
         $keyResult = KeyResults::findOrFail($request->key_result_id);
@@ -169,8 +168,7 @@ class CheckInController extends AccountBaseController
 
         $checkIn->current_value = $request->current_value;
 
-        if ($keyResult->objective_id)
-        {
+        if ($keyResult->objective_id) {
             $keyResults = $keyResult::where('objective_id', $keyResult->objective_id);
             $totalKeyPercent = $keyResults->sum('key_percentage');
             $totalKeyResult = $keyResults->count();
@@ -202,21 +200,21 @@ class CheckInController extends AccountBaseController
             \App\Models\Notification::deleteNotification($notifyData, $checkIn->id);
 
             $checkIn->delete();
+
             return Reply::success(__('messages.deleteSuccess'));
         }
 
         return Reply::error(__('performance::messages.checkInsNotFound'));
     }
 
-    private function checkFrequency($checkInDate = null, $objective)
+    private function checkFrequency($checkInDate, $objective)
     {
         $startDate = $checkInDate ? Carbon::parse($checkInDate) : Carbon::parse($objective->start_date);
         $frequency = $objective->check_in_frequency;
 
         if ($frequency == 'monthly' || $frequency == 'quarterly') {
             $schedule = $objective->rotation_date;
-        }
-        else {
+        } else {
             $schedule = $objective->schedule_on;
         }
 
@@ -258,9 +256,8 @@ class CheckInController extends AccountBaseController
     /**
      * Helper function to get the next weekday (e.g., Monday, Tuesday, etc.)
      *
-     * @param Carbon $startDate
-     * @param string $schedule (Day of the week, e.g., "Monday")
-     * @param int $interval Interval to add in case of bi-weekly (default 1)
+     * @param  string  $schedule  (Day of the week, e.g., "Monday")
+     * @param  int  $interval  Interval to add in case of bi-weekly (default 1)
      * @return Carbon
      */
     private function getNextWeekDay(Carbon $startDate, $schedule, $interval = 1)
@@ -291,8 +288,7 @@ class CheckInController extends AccountBaseController
     /**
      * Helper function to get the next day for monthly frequency
      *
-     * @param Carbon $startDate
-     * @param string $schedule
+     * @param  string  $schedule
      * @return Carbon
      */
     private function getNextMonthDay(Carbon $startDate, $schedule)
@@ -305,8 +301,7 @@ class CheckInController extends AccountBaseController
             // Check for February
             if ($nextDate->month == 2) {
                 $daysInMonth = $nextDate->isLeapYear() ? 29 : 28;
-            }
-            else {
+            } else {
                 $daysInMonth = $nextDate->daysInMonth;
             }
 
@@ -326,8 +321,7 @@ class CheckInController extends AccountBaseController
     /**
      * Helper function to get the next quarterly date
      *
-     * @param Carbon $startDate
-     * @param string $schedule
+     * @param  string  $schedule
      * @return Carbon
      */
     private function getNextQuarterDay(Carbon $startDate, $schedule)
@@ -349,5 +343,4 @@ class CheckInController extends AccountBaseController
 
         return $nextDate;
     }
-
 }

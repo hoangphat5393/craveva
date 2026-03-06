@@ -7,7 +7,6 @@ use App\Models\User;
 
 class NewUserSlack extends BaseNotification
 {
-
     /**
      * Create a new notification instance.
      *
@@ -29,7 +28,8 @@ class NewUserSlack extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *t('mail::layout')
-     * @param mixed $notifiable
+     *
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -46,10 +46,10 @@ class NewUserSlack extends BaseNotification
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
-    //phpcs:ignore
+    // phpcs:ignore
     public function toArray($notifiable)
     {
         return $notifiable->toArray();
@@ -58,7 +58,7 @@ class NewUserSlack extends BaseNotification
     /**
      * Get the Slack representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\SlackMessage
      */
     public function toSlack($notifiable)
@@ -69,15 +69,14 @@ class NewUserSlack extends BaseNotification
             $url = route('login');
             $url = getDomainSpecificUrl($url, $this->company);
 
-            $content = '*' . __('email.newUser.subject') . ' ' . config('app.name') . '!*' . "\n" . __('email.newUser.text');
-            $url = "\n" . '<' . $url . '|' . __('email.newUser.action') . '>';
+            $content = '*'.__('email.newUser.subject').' '.config('app.name').'!*'."\n".__('email.newUser.text');
+            $url = "\n".'<'.$url.'|'.__('email.newUser.action').'>';
 
-            return $this->slackBuild($notifiable)->content($content . $url);
+            return $this->slackBuild($notifiable)->content($content.$url);
 
         } catch (\Exception $e) {
             return $this->slackRedirectMessage('email.newUser.subject', $notifiable);
         }
 
     }
-
 }

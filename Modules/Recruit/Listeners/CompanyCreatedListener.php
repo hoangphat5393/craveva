@@ -6,7 +6,6 @@ use Modules\Recruit\Entities\RecruitSetting;
 
 class CompanyCreatedListener
 {
-
     public function handle($event)
     {
         $company = $event->company;

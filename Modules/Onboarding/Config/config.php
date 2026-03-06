@@ -1,7 +1,7 @@
 <?php
 
 $addOnOf = 'worksuite-saas-new';
-$product = $addOnOf . '-onboarding-module';
+$product = $addOnOf.'-onboarding-module';
 
 return [
     'name' => 'Onboarding',

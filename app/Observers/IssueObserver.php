@@ -8,10 +8,9 @@ use App\Models\Notification;
 
 class IssueObserver
 {
-
     public function created(Issue $issue)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             event(new NewIssueEvent($issue));
         }
     }
@@ -29,5 +28,4 @@ class IssueObserver
             $issue->company_id = company()->id;
         }
     }
-
 }

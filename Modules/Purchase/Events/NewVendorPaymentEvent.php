@@ -2,9 +2,9 @@
 
 namespace Modules\Purchase\Events;
 
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\SerializesModels;
 use Modules\Purchase\Entities\PurchaseVendorPayment;
 
 class NewVendorPaymentEvent
@@ -32,5 +32,4 @@ class NewVendorPaymentEvent
     {
         return [];
     }
-
 }

@@ -5,12 +5,9 @@ namespace App\Http\Controllers;
 use App\Helper\Reply;
 use App\Http\Requests\StoreBusinessAddress;
 use App\Models\CompanyAddress;
-use App\Models\EmployeeDetails;
-use App\View\Components\Employee;
 
 class BusinessAddressController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -46,7 +43,7 @@ class BusinessAddressController extends AccountBaseController
             'tax_number' => $request->tax_number,
             'tax_name' => $request->tax_name,
             'latitude' => $request->latitude,
-            'longitude' => $request->longitude
+            'longitude' => $request->longitude,
         ]);
 
         return Reply::success(__('messages.recordSaved'));
@@ -94,5 +91,4 @@ class BusinessAddressController extends AccountBaseController
 
         return Reply::success(__('messages.deleteSuccess'));
     }
-
 }

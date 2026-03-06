@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Artisan;
 
 class LeaveSettingController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -20,7 +19,8 @@ class LeaveSettingController extends AccountBaseController
         $this->activeSettingMenu = 'leave_settings';
 
         $this->middleware(function ($request, $next) {
-            abort_403(!(user()->permission('manage_leave_setting') == 'all' && in_array('leaves', user_modules())));
+            abort_403(! (user()->permission('manage_leave_setting') == 'all' && in_array('leaves', user_modules())));
+
             return $next($request);
         });
     }
@@ -28,25 +28,24 @@ class LeaveSettingController extends AccountBaseController
     public function index()
     {
         $this->leaveTypes = LeaveType::withCount('leaves')->get();
-    
 
         $tab = request('tab');
 
         switch ($tab) {
-        case 'general':
-            $this->leavePermission = LeaveSetting::first();
-            $this->view = 'leave-settings.ajax.general';
+            case 'general':
+                $this->leavePermission = LeaveSetting::first();
+                $this->view = 'leave-settings.ajax.general';
                 break;
-        case 'archive':
-            $this->archiveleaveTypes = LeaveType::onlyTrashed()->get();
-            $this->departments = Team::all();
-            $this->designations = Designation::all();
-            $this->view = 'leave-settings.ajax.archive';
+            case 'archive':
+                $this->archiveleaveTypes = LeaveType::onlyTrashed()->get();
+                $this->departments = Team::all();
+                $this->designations = Designation::all();
+                $this->view = 'leave-settings.ajax.archive';
                 break;
-        default:
-            $this->departments = Team::all();
-            $this->designations = Designation::all();
-            $this->view = 'leave-settings.ajax.type';
+            default:
+                $this->departments = Team::all();
+                $this->designations = Designation::all();
+                $this->view = 'leave-settings.ajax.type';
                 break;
         }
 
@@ -54,6 +53,7 @@ class LeaveSettingController extends AccountBaseController
 
         if (request()->ajax()) {
             $html = view($this->view, $this->data)->render();
+
             return Reply::dataOnly(['status' => 'success', 'html' => $html, 'title' => $this->pageTitle, 'activeTab' => $this->activeTab]);
         }
 
@@ -67,8 +67,7 @@ class LeaveSettingController extends AccountBaseController
         $setting->year_starts_from = $request->yearStartFrom;
         $setting->save();
 
-        Artisan::call('app:recalculate-leaves-quotas ' . $setting->id);
-
+        Artisan::call('app:recalculate-leaves-quotas '.$setting->id);
 
         return Reply::success(__('messages.updateSuccess'));
     }
@@ -81,5 +80,4 @@ class LeaveSettingController extends AccountBaseController
 
         return Reply::success(__('messages.updateSuccess'));
     }
-
 }

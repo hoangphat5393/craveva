@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\LeaveType $leaveType
  * @property-read \App\Models\User $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|EmployeeLeaveQuota newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|EmployeeLeaveQuota newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|EmployeeLeaveQuota query()
@@ -24,14 +25,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|EmployeeLeaveQuota whereNoOfLeaves($value)
  * @method static \Illuminate\Database\Eloquent\Builder|EmployeeLeaveQuota whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|EmployeeLeaveQuota whereUserId($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|EmployeeLeaveQuota whereCompanyId($value)
+ *
  * @mixin \Eloquent
  */
 class EmployeeLeaveQuota extends BaseModel
 {
-
     protected $casts = [
         'carry_forward_status' => 'array',
     ];
@@ -47,5 +50,4 @@ class EmployeeLeaveQuota extends BaseModel
     {
         return $this->belongsTo(LeaveType::class, 'leave_type_id')->withTrashed();
     }
-
 }

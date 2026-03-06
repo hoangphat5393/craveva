@@ -5,16 +5,15 @@ namespace App\Http\Controllers\SuperAdmin;
 use App\Models\Company;
 use App\Models\Notification;
 use App\Models\SuperAdmin\GlobalInvoice;
-use App\Notifications\SuperAdmin\CompanyPurchasedPlan;
-use App\Notifications\SuperAdmin\CompanyUpdatedPlan;
 use App\Models\SuperAdmin\PaypalInvoice;
 use App\Models\User;
+use App\Notifications\SuperAdmin\CompanyPurchasedPlan;
+use App\Notifications\SuperAdmin\CompanyUpdatedPlan;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 
 class PaypalIPNController extends Controller
 {
-
     // phpcs:ignore
     public function verifyBillingIPN(Request $request)
     {
@@ -34,11 +33,11 @@ class PaypalIPNController extends Controller
 
                 if ($payment->package_type == 'annual') {
                     $nextPaymentDate = $today->addYear();
-                } else if (company()->package_type == 'monthly') {
+                } elseif (company()->package_type == 'monthly') {
                     $nextPaymentDate = $today->addMonth();
                 }
 
-                $paypalInvoice = new GlobalInvoice();
+                $paypalInvoice = new GlobalInvoice;
                 $paypalInvoice->transaction_id = $recurringPaymentId;
                 $paypalInvoice->company_id = $payment->company_id;
                 $paypalInvoice->currency_id = $payment->currency_id;

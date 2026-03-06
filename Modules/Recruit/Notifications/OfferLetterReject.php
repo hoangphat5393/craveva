@@ -4,13 +4,12 @@ namespace Modules\Recruit\Notifications;
 
 use App\Notifications\BaseNotification;
 use Modules\Recruit\Entities\RecruitJob;
-
 use Modules\Recruit\Entities\RecruitJobApplication;
 
 class OfferLetterReject extends BaseNotification
 {
-
     private $jobApplication;
+
     private $job;
 
     /**
@@ -18,7 +17,6 @@ class OfferLetterReject extends BaseNotification
      *
      * @return void
      */
-
     public function __construct(RecruitJob $job, RecruitJobApplication $jobApplication)
     {
         $this->job = $job;
@@ -30,7 +28,7 @@ class OfferLetterReject extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -47,29 +45,28 @@ class OfferLetterReject extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
     {
         return parent::build()
             ->subject(__('recruit::modules.offerReject.subject'))
-            ->greeting(__('email.hello') . ' ' . $notifiable->full_name . '!')
-            ->line(__('recruit::modules.offerReject.text') . ' - ' . $this->job->title)
+            ->greeting(__('email.hello').' '.$notifiable->full_name.'!')
+            ->line(__('recruit::modules.offerReject.text').' - '.$this->job->title)
             ->line(__('recruit::modules.email.thankyouNote'));
     }
 
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function toArray()
     {
         return [
-            'data' => $this->jobApplication->toArray()
+            'data' => $this->jobApplication->toArray(),
         ];
     }
-
 }

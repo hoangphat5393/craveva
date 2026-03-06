@@ -4,11 +4,7 @@ namespace Modules\Pricing\DataTables;
 
 use App\DataTables\BaseDataTable;
 use App\Models\User;
-use App\Models\ClientDetails;
-use Modules\Pricing\Entities\PricingTier;
-use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
-use Illuminate\Support\Facades\DB;
 
 class ClientTiersDataTable extends BaseDataTable
 {
@@ -22,20 +18,20 @@ class ClientTiersDataTable extends BaseDataTable
         return datatables()
             ->eloquent($query)
             ->addColumn('check', function ($row) {
-                return '<input type="checkbox" class="select-table-row" id="datatable-row-' . $row->id . '"  name="datatable_ids[]" value="' . $row->id . '" onclick="dataTableRowCheck(' . $row->id . ')">';
+                return '<input type="checkbox" class="select-table-row" id="datatable-row-'.$row->id.'"  name="datatable_ids[]" value="'.$row->id.'" onclick="dataTableRowCheck('.$row->id.')">';
             })
             ->addColumn('action', function ($row) {
                 $action = '<div class="task_view">
                     <div class="dropdown">
                         <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" type="link"
-                            id="dropdownMenuLink-' . $row->id . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            id="dropdownMenuLink-'.$row->id.'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="icon-options-vertical icons"></i>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-' . $row->id . '" tabindex="0">';
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-'.$row->id.'" tabindex="0">';
 
-                $action .= '<a class="dropdown-item openRightModal" href="' . route('pricing.client_tiers.edit', $row->id) . '">
+                $action .= '<a class="dropdown-item openRightModal" href="'.route('pricing.client_tiers.edit', $row->id).'">
                                 <i class="fa fa-edit mr-2"></i>
-                                ' . trans('app.edit') . '
+                                '.trans('app.edit').'
                             </a>';
 
                 $action .= '</div>
@@ -46,22 +42,23 @@ class ClientTiersDataTable extends BaseDataTable
             })
             ->addColumn('client_name', function ($row) {
                 $client = view('components.client', ['user' => $row]);
-                
+
                 $details = '<div class="d-flex flex-column ml-2">';
                 if ($row->company_name) {
-                    $details .= '<span class="f-12 text-dark-grey">' . $row->company_name . '</span>';
+                    $details .= '<span class="f-12 text-dark-grey">'.$row->company_name.'</span>';
                 }
                 if ($row->client_code) {
-                    $details .= '<span class="f-11 text-light-grey">' . __('pricing::app.customerCode') . ': ' . $row->client_code . '</span>';
+                    $details .= '<span class="f-11 text-light-grey">'.__('pricing::app.customerCode').': '.$row->client_code.'</span>';
                 }
                 $details .= '</div>';
 
-                return '<div class="d-flex align-items-center">' . $client . $details . '</div>';
+                return '<div class="d-flex align-items-center">'.$client.$details.'</div>';
             })
             ->addColumn('tier_name', function ($row) {
                 if ($row->pricing_tier_name) {
-                    return '<span class="badge badge-success" style="background-color: #28a745 !important;">' . $row->pricing_tier_name . '</span>';
+                    return '<span class="badge badge-success" style="background-color: #28a745 !important;">'.$row->pricing_tier_name.'</span>';
                 }
+
                 return '--';
             })
             ->rawColumns(['action', 'check', 'client_name', 'tier_name'])
@@ -81,16 +78,16 @@ class ClientTiersDataTable extends BaseDataTable
 
         if ($request->searchText != '') {
             $users->where(function ($query) use ($request) {
-                $query->where('users.name', 'like', '%' . $request->searchText . '%')
-                    ->orWhere('users.email', 'like', '%' . $request->searchText . '%')
-                    ->orWhere('client_details.company_name', 'like', '%' . $request->searchText . '%')
-                    ->orWhere('client_details.client_code', 'like', '%' . $request->searchText . '%');
+                $query->where('users.name', 'like', '%'.$request->searchText.'%')
+                    ->orWhere('users.email', 'like', '%'.$request->searchText.'%')
+                    ->orWhere('client_details.company_name', 'like', '%'.$request->searchText.'%')
+                    ->orWhere('client_details.client_code', 'like', '%'.$request->searchText.'%');
             });
         }
 
         if ($request->tier_id != 'all' && $request->tier_id != '') {
             if ($request->tier_id == 'none') {
-                 $users->whereNull('client_details.pricing_tier_id');
+                $users->whereNull('client_details.pricing_tier_id');
             } else {
                 $users->where('client_details.pricing_tier_id', $request->tier_id);
             }
@@ -133,7 +130,7 @@ class ClientTiersDataTable extends BaseDataTable
                 'exportable' => false,
                 'orderable' => false,
                 'searchable' => false,
-                'width' => '5%'
+                'width' => '5%',
             ],
             '#' => ['data' => 'DT_RowIndex', 'orderable' => false, 'searchable' => false, 'visible' => false],
             __('app.client') => ['data' => 'client_name', 'name' => 'users.name', 'title' => __('app.client')],
@@ -143,7 +140,7 @@ class ClientTiersDataTable extends BaseDataTable
                 ->printable(false)
                 ->orderable(false)
                 ->searchable(false)
-                ->addClass('text-right pr-20')
+                ->addClass('text-right pr-20'),
         ];
     }
 }

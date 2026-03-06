@@ -27,6 +27,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read \App\Models\Ticket $ticket
  * @property-read \App\Models\TicketType|null $ticketType
  * @property-read \App\Models\User $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|TicketActivity newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TicketActivity newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TicketActivity query()
@@ -43,12 +44,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|TicketActivity whereTypeId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TicketActivity whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TicketActivity whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class TicketActivity extends BaseModel
 {
-
     protected $with = ['assignedTo', 'channel', 'group', 'ticketType'];
+
     protected $appends = ['details'];
 
     public function user(): BelongsTo
@@ -85,7 +87,7 @@ class TicketActivity extends BaseModel
     {
         return Attribute::make(
             get: function () {
-                return match($this->type) {
+                return match ($this->type) {
                     'create' => __('modules.tickets.activity.create'),
                     'reply' => __('modules.tickets.activity.reply', ['userName' => $this->user?->name]),
                     'note' => __('modules.tickets.activity.note', ['userName' => $this->user?->name]),
@@ -100,5 +102,4 @@ class TicketActivity extends BaseModel
             }
         );
     }
-
 }

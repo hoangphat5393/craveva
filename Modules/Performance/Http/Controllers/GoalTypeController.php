@@ -3,22 +3,22 @@
 namespace Modules\Performance\Http\Controllers;
 
 use App\Helper\Reply;
+use App\Http\Controllers\AccountBaseController;
 use App\Models\Role;
 use Modules\Performance\Entities\GoalType;
-use App\Http\Controllers\AccountBaseController;
 use Modules\Performance\Entities\PerformanceSetting;
 use Modules\Performance\Http\Requests\CreateGoalTypeRequest;
 
 class GoalTypeController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->activeSettingMenu = 'performance_settings';
 
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array(PerformanceSetting::MODULE_NAME, $this->user->modules) && user()->permission('manage_performance_setting') != 'all');
+            abort_403(! in_array(PerformanceSetting::MODULE_NAME, $this->user->modules) && user()->permission('manage_performance_setting') != 'all');
+
             return $next($request);
         });
     }
@@ -64,6 +64,7 @@ class GoalTypeController extends AccountBaseController
 
         if ($goalType) {
             $goalType->delete();
+
             return Reply::success(__('messages.deleteSuccess'));
         }
 

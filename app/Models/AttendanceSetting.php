@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read mixed $icon
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|AttendanceSetting newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|AttendanceSetting newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|AttendanceSetting query()
@@ -40,12 +41,17 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|AttendanceSetting whereRadius($value)
  * @method static \Illuminate\Database\Eloquent\Builder|AttendanceSetting whereRadiusCheck($value)
  * @method static \Illuminate\Database\Eloquent\Builder|AttendanceSetting whereUpdatedAt($value)
+ *
  * @property int|null $alert_after
  * @property int $alert_after_status
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|AttendanceSetting whereAlertAfter($value)
  * @method static \Illuminate\Database\Eloquent\Builder|AttendanceSetting whereAlertAfterStatus($value)
+ *
  * @property int $save_current_location
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|AttendanceSetting whereSaveCurrentLocation($value)
+ *
  * @property int|null $company_id
  * @property string $auto_clock_in
  * @property int|null $default_employee_shift
@@ -54,33 +60,40 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $show_clock_in_button
  * @property-read \App\Models\Company|null $company
  * @property-read \App\Models\EmployeeShift|null $shift
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|AttendanceSetting whereAllowShiftChange($value)
  * @method static \Illuminate\Database\Eloquent\Builder|AttendanceSetting whereAutoClockIn($value)
  * @method static \Illuminate\Database\Eloquent\Builder|AttendanceSetting whereCompanyId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|AttendanceSetting whereDefaultEmployeeShift($value)
  * @method static \Illuminate\Database\Eloquent\Builder|AttendanceSetting whereShowClockInButton($value)
  * @method static \Illuminate\Database\Eloquent\Builder|AttendanceSetting whereWeekStartFrom($value)
+ *
  * @property string $restrict_clockin
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|AttendanceSetting whereRestrictClockin($value)
+ *
  * @property string $auto_clock_in_location
  * @property int $monthly_report
  * @property string|null $monthly_report_roles
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|AttendanceSetting whereAutoClockInLocation($value)
  * @method static \Illuminate\Database\Eloquent\Builder|AttendanceSetting whereMonthlyReport($value)
  * @method static \Illuminate\Database\Eloquent\Builder|AttendanceSetting whereMonthlyReportRoles($value)
+ *
  * @property string|null $early_clock_in
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|AttendanceSetting whereEarlyClockIn($value)
+ *
  * @mixin \Eloquent
  */
 class AttendanceSetting extends BaseModel
 {
-
     use HasCompany;
+
     protected $fillable = ['qr_enable', 'default_employee_shift'];
 
     public function shift(): BelongsTo
     {
         return $this->belongsTo(EmployeeShift::class, 'default_employee_shift');
     }
-
 }

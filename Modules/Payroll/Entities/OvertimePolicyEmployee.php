@@ -28,5 +28,4 @@ class OvertimePolicyEmployee extends BaseModel
     {
         return $this->belongsTo(Company::class, 'company_id');
     }
-
 }

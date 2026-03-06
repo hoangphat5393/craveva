@@ -6,13 +6,12 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        if (!Schema::hasTable('estimate_requests')) {
+        if (! Schema::hasTable('estimate_requests')) {
             Schema::create('estimate_requests', function (Blueprint $table) {
                 $table->id();
                 $table->unsignedInteger('client_id');
@@ -32,7 +31,7 @@ return new class extends Migration
                 $table->text('reason');
                 $table->timestamps();
             });
-        };
+        }
     }
 
     /**
@@ -42,5 +41,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('estimate_requests');
     }
-
 };

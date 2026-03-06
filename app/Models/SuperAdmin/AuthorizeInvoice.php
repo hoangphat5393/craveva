@@ -2,8 +2,8 @@
 
 namespace App\Models\SuperAdmin;
 
-use App\Models\Company;
 use App\Models\BaseModel;
+use App\Models\Company;
 
 /**
  * App\Models\SuperAdmin\AuthorizeInvoice
@@ -19,6 +19,7 @@ use App\Models\BaseModel;
  * @property Carbon|null $updated_at
  * @property-read Company $company
  * @property-read Package $package
+ *
  * @method static Builder|AuthorizeInvoice newModelQuery()
  * @method static Builder|AuthorizeInvoice newQuery()
  * @method static Builder|AuthorizeInvoice query()
@@ -31,11 +32,11 @@ use App\Models\BaseModel;
  * @method static Builder|AuthorizeInvoice wherePayDate($value)
  * @method static Builder|AuthorizeInvoice whereTransactionId($value)
  * @method static Builder|AuthorizeInvoice whereUpdatedAt($value)
+ *
  * @mixin Eloquent
  */
 class AuthorizeInvoice extends BaseModel
 {
-
     protected $dates = [
         'pay_date',
         'next_pay_date',
@@ -55,5 +56,4 @@ class AuthorizeInvoice extends BaseModel
     {
         return $this->belongsTo(Package::class);
     }
-
 }

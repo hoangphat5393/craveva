@@ -1,13 +1,13 @@
 <?php
 
+use App\Models\Company;
+use App\Models\TicketSettingForAgents;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use App\Models\Company;
-use App\Models\TicketSettingForAgents;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
@@ -33,7 +33,7 @@ return new class extends Migration {
                 ];
             }, $newCompanyIds);
 
-            if (!empty($insertData)) {
+            if (! empty($insertData)) {
                 TicketSettingForAgents::insert($insertData);
             }
         }
@@ -52,5 +52,4 @@ return new class extends Migration {
             $table->unsignedInteger('user_id')->default('None')->change();
         });
     }
-
 };

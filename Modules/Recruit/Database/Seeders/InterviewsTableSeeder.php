@@ -4,13 +4,12 @@ namespace Modules\Recruit\Database\Seeders;
 
 use App\Models\EmployeeDetails;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Modules\Recruit\Entities\RecruitInterviewEmployees;
 use Modules\Recruit\Entities\RecruitInterviewSchedule;
 use Modules\Recruit\Entities\RecruitInterviewStage;
 use Modules\Recruit\Entities\RecruitJobApplication;
-use Carbon\Carbon;
-
 
 class InterviewsTableSeeder extends Seeder
 {
@@ -76,7 +75,7 @@ class InterviewsTableSeeder extends Seeder
     {
         $randomDate = Carbon::now()->addDays(rand(0, 29));
         $randomTime = Carbon::createFromTime(rand(0, 23), rand(0, 59), rand(0, 59));
+
         return $randomDate->setTime($randomTime->hour, $randomTime->minute, $randomTime->second)->format('Y-m-d H:i:s');
     }
-    
 }

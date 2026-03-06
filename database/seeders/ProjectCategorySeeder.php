@@ -7,7 +7,6 @@ use Illuminate\Database\Seeder;
 
 class ProjectCategorySeeder extends Seeder
 {
-
     /**
      * Run the database seeds.
      *
@@ -20,11 +19,10 @@ class ProjectCategorySeeder extends Seeder
         $data = array_map(function ($item) use ($companyId) {
             return [
                 'category_name' => $item,
-                'company_id' => $companyId
+                'company_id' => $companyId,
             ];
         }, $categories);
 
         ProjectCategory::insert($data);
     }
-
 }

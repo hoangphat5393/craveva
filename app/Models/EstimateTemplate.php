@@ -11,7 +11,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  *
  * @property int|null $unit_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Estimate whereCompanyId($value)
+ *
  * @property int $id
  * @property int|null $company_id
  * @property string $name
@@ -37,6 +39,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\EstimateTemplateItem> $items
  * @property-read int|null $items_count
  * @property-read \App\Models\UnitType|null $units
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|EstimateTemplate newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|EstimateTemplate newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|EstimateTemplate query()
@@ -60,9 +63,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder|EstimateTemplate whereTotal($value)
  * @method static \Illuminate\Database\Eloquent\Builder|EstimateTemplate whereUnitId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|EstimateTemplate whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
-
 class EstimateTemplate extends BaseModel
 {
     use HasCompany;
@@ -88,5 +91,4 @@ class EstimateTemplate extends BaseModel
     {
         return $this->belongsTo(UnitType::class, 'unit_id');
     }
-
 }

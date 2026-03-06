@@ -45,7 +45,7 @@ class WarehouseTransferController extends Controller
                 ->where('product_id', $productId)
                 ->first();
 
-            if (!$sourceStock || $sourceStock->quantity < $quantity) {
+            if (! $sourceStock || $sourceStock->quantity < $quantity) {
                 return back()->with('error', 'Insufficient stock in source warehouse.');
             }
 
@@ -80,8 +80,9 @@ class WarehouseTransferController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Stock Transfer Error: ' . $e->getMessage());
-            return back()->with('error', 'Something went wrong! ' . $e->getMessage());
+            Log::error('Stock Transfer Error: '.$e->getMessage());
+
+            return back()->with('error', 'Something went wrong! '.$e->getMessage());
         }
     }
 }

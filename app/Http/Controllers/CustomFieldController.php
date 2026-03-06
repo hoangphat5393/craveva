@@ -3,16 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Helper\Reply;
-use App\Models\CustomField;
-use App\Models\CustomFieldGroup;
-use Yajra\DataTables\Facades\DataTables;
 use App\Http\Requests\CustomField\StoreCustomField;
 use App\Http\Requests\CustomField\UpdateCustomField;
+use App\Models\CustomField;
+use App\Models\CustomFieldGroup;
 use Illuminate\Http\Request;
 
 class CustomFieldController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -38,7 +36,6 @@ class CustomFieldController extends AccountBaseController
             ->get();
         $this->groupedCustomFields = $this->customFields->groupBy('module');
 
-
         return view('custom-fields.index', $this->data);
     }
 
@@ -51,11 +48,11 @@ class CustomFieldController extends AccountBaseController
     {
         $this->customFieldGroups = CustomFieldGroup::all();
         $this->types = ['text', 'number', 'password', 'textarea', 'select', 'radio', 'date', 'checkbox', 'file'];
+
         return view('custom-fields.create-custom-field-modal', $this->data);
     }
 
     /**
-     * @param StoreCustomField $request
      * @return array
      */
     public function store(StoreCustomField $request)
@@ -73,7 +70,7 @@ class CustomFieldController extends AccountBaseController
                     'values' => $request->get('value'),
                     'export' => $request->get('export'),
                     'visible' => $request->get('visible'),
-                ]
+                ],
             ],
 
         ];
@@ -86,7 +83,7 @@ class CustomFieldController extends AccountBaseController
     /**
      * Show the form for editing the specified resource.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -103,8 +100,6 @@ class CustomFieldController extends AccountBaseController
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param UpdateCustomField $request
      */
     public function update(UpdateCustomField $request, $id)
     {
@@ -125,7 +120,7 @@ class CustomFieldController extends AccountBaseController
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
@@ -140,6 +135,7 @@ class CustomFieldController extends AccountBaseController
         $updatedCount = CustomField::whereHas('fieldGroup', function ($query) use ($module) {
             $query->where('name', $module);
         })->count();
+
         return Reply::successWithData(__('messages.deleteSuccess'), ['updatedCount' => $updatedCount]);
     }
 
@@ -153,6 +149,7 @@ class CustomFieldController extends AccountBaseController
                 }
             }
         }
+
         return Reply::success(__('messages.recordSaved'));
     }
 
@@ -191,7 +188,7 @@ class CustomFieldController extends AccountBaseController
                 'name' => $field['name'],
                 'type' => $field['type'],
                 'export' => $field['export'],
-                'visible' => $field['visible']
+                'visible' => $field['visible'],
             ];
 
             if (isset($field['required']) && (in_array($field['required'], ['yes', 'on', 1]))) {

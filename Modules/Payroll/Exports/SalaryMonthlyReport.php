@@ -4,19 +4,22 @@ namespace Modules\Payroll\Exports;
 
 use Carbon\Carbon;
 use Maatwebsite\Excel\Concerns\FromCollection;
-use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 use Maatwebsite\Excel\Concerns\WithEvents;
-use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Events\AfterSheet;
 use Modules\Payroll\Entities\SalarySlip;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
-class SalaryMonthlyReport implements FromCollection, WithHeadings, WithColumnFormatting, WithEvents, ShouldAutoSize
+class SalaryMonthlyReport implements FromCollection, ShouldAutoSize, WithColumnFormatting, WithEvents, WithHeadings
 {
     private $startDate;
+
     private $endDate;
+
     private $departmentId;
+
     private $designationId;
 
     public function __construct($startDate, $endDate, $departmentId, $designationId)
@@ -37,28 +40,28 @@ class SalaryMonthlyReport implements FromCollection, WithHeadings, WithColumnFor
 
         // Getting All records of Payroll according to filter
         $query = SalarySlip::select([
-                'salary_slips.id',
-                'salary_slips.salary_json',
-                'salary_slips.basic_salary',
-                'salary_slips.gross_salary',
-                'salary_slips.status',
-                'salary_slips.extra_json',
-                'salary_slips.company_id',
-                'salary_slips.month',
-                'salary_slips.year',
-                'salary_slips.net_salary',
-                'salary_slips.salary_from as pay_date',
-                'salary_slips.status',
-                'salary_slips.user_id as employee_id',
-                'salary_slips.user_id',
-                'users.id as emp_employee_id',
-                'employee_details.employee_id as empid',
-                'teams.team_name as department_name',
-                'designations.name as designation_name',
-                'salary_slips.expense_claims',
-                'salary_groups.group_name as salary_group_name',
-                'salary_groups.id as salary_group_id',
-            ])
+            'salary_slips.id',
+            'salary_slips.salary_json',
+            'salary_slips.basic_salary',
+            'salary_slips.gross_salary',
+            'salary_slips.status',
+            'salary_slips.extra_json',
+            'salary_slips.company_id',
+            'salary_slips.month',
+            'salary_slips.year',
+            'salary_slips.net_salary',
+            'salary_slips.salary_from as pay_date',
+            'salary_slips.status',
+            'salary_slips.user_id as employee_id',
+            'salary_slips.user_id',
+            'users.id as emp_employee_id',
+            'employee_details.employee_id as empid',
+            'teams.team_name as department_name',
+            'designations.name as designation_name',
+            'salary_slips.expense_claims',
+            'salary_groups.group_name as salary_group_name',
+            'salary_groups.id as salary_group_id',
+        ])
             ->with(['user', 'salary_group', 'user.employeeDetails'])
             ->join('users', 'users.id', '=', 'salary_slips.user_id')
             ->join('employee_details', 'users.id', '=', 'employee_details.user_id')
@@ -74,8 +77,8 @@ class SalaryMonthlyReport implements FromCollection, WithHeadings, WithColumnFor
             $query->where('employee_details.designation_id', $designation);
         }
 
-        $query->whereRaw('(`salary_slips`.`year` * 100 + `salary_slips`.`month`) >= ' . ($start->year * 100 + $start->month));
-        $query->whereRaw('(`salary_slips`.`year` * 100 + `salary_slips`.`month`) <= ' . ($end->year * 100 + $end->month));
+        $query->whereRaw('(`salary_slips`.`year` * 100 + `salary_slips`.`month`) >= '.($start->year * 100 + $start->month));
+        $query->whereRaw('(`salary_slips`.`year` * 100 + `salary_slips`.`month`) <= '.($end->year * 100 + $end->month));
         $query->where('salary_slips.status', 'paid');
 
         $query->orderBy('users.name', 'asc');
@@ -89,8 +92,7 @@ class SalaryMonthlyReport implements FromCollection, WithHeadings, WithColumnFor
         // Getting Dynamic heading according to payrolls
         $heads = $this->getDynamicHeadings($results);
 
-        foreach($heads[0] as $hd)
-        {
+        foreach ($heads[0] as $hd) {
             $columns[] = $hd;
         }
 
@@ -122,7 +124,7 @@ class SalaryMonthlyReport implements FromCollection, WithHeadings, WithColumnFor
             $totalDeductions = 0;
 
             // Determine if this is the first entry for the employee
-            $isFirstEntryForEmployee = !isset($processedData[$result->emp_employee_id]);
+            $isFirstEntryForEmployee = ! isset($processedData[$result->emp_employee_id]);
 
             // Define initial row structure
             $row = [
@@ -133,7 +135,7 @@ class SalaryMonthlyReport implements FromCollection, WithHeadings, WithColumnFor
                 $isFirstEntryForEmployee ? ($result->location_name ?? '-') : '',
                 $isFirstEntryForEmployee ? $result->salary_group_name : '',
                 Carbon::now()->startOfMonth()->month($result->month)->year($result->year)->format('F Y'),
-                $basicSalary * 1
+                $basicSalary * 1,
             ];
 
             // Set all the data according to the columns
@@ -141,12 +143,10 @@ class SalaryMonthlyReport implements FromCollection, WithHeadings, WithColumnFor
                 if (isset($salaryJson['earnings'][$head])) {
                     $totalEarnings += $salaryJson['earnings'][$head];
                     $row[] = round($salaryJson['earnings'][$head], 2);
-                }
-                elseif (isset($salaryJson['deductions'][$head])) {
+                } elseif (isset($salaryJson['deductions'][$head])) {
                     $totalDeductions += $salaryJson['deductions'][$head];
                     $row[] = round($salaryJson['deductions'][$head], 2);
-                }
-                else {
+                } else {
                     $row[] = 0;
                 }
             }
@@ -176,8 +176,7 @@ class SalaryMonthlyReport implements FromCollection, WithHeadings, WithColumnFor
             if ($index == 0) {
                 // First row
                 $rows[] = $row;
-            }
-            elseif ($index == $recordCount - 1) {
+            } elseif ($index == $recordCount - 1) {
 
                 // Last row
                 if ($result->emp_employee_id != $previousEmployeeId) {
@@ -221,8 +220,8 @@ class SalaryMonthlyReport implements FromCollection, WithHeadings, WithColumnFor
     {
         foreach ($row as $k => $v) {
             if (is_numeric($v)) {
-                $totalsRowData[$k] = (isset($totalsRowData[$k]) && is_numeric($totalsRowData[$k])) ? round($totalsRowData[$k] + (float)$v, 2) : $v;
-                $finalTotals[$k] = (isset($finalTotals[$k]) && is_numeric($finalTotals[$k])) ? round($finalTotals[$k] + (float)$v, 2) : $v;
+                $totalsRowData[$k] = (isset($totalsRowData[$k]) && is_numeric($totalsRowData[$k])) ? round($totalsRowData[$k] + (float) $v, 2) : $v;
+                $finalTotals[$k] = (isset($finalTotals[$k]) && is_numeric($finalTotals[$k])) ? round($finalTotals[$k] + (float) $v, 2) : $v;
 
             }
         }
@@ -236,7 +235,7 @@ class SalaryMonthlyReport implements FromCollection, WithHeadings, WithColumnFor
     {
         $finalData = array_reduce($processedData[$employeeId], function ($carry, $item) {
             foreach ($item as $k => $v) {
-                $carry[$k] = isset($carry[$k]) && is_numeric($carry[$k]) ? round($carry[$k] + (float)$v, 2) : $v;
+                $carry[$k] = isset($carry[$k]) && is_numeric($carry[$k]) ? round($carry[$k] + (float) $v, 2) : $v;
             }
 
             return $carry;
@@ -260,16 +259,16 @@ class SalaryMonthlyReport implements FromCollection, WithHeadings, WithColumnFor
         $earnings = [];
         $deductions = [];
 
-        foreach($salarySlips as $salary){
+        foreach ($salarySlips as $salary) {
             $headings = json_decode($salary->salary_json);
 
-            if(isset($headings->earnings)){
-                $earnings = array_keys((array)$headings->earnings);
+            if (isset($headings->earnings)) {
+                $earnings = array_keys((array) $headings->earnings);
                 $dynamicHeading = array_merge($dynamicHeading, $earnings);
             }
 
-            if(isset($headings->deductions)){
-                $deductions = array_keys((array)$headings->deductions);
+            if (isset($headings->deductions)) {
+                $deductions = array_keys((array) $headings->deductions);
                 $dynamicHeading = array_merge($dynamicHeading, $deductions);
             }
 
@@ -285,7 +284,7 @@ class SalaryMonthlyReport implements FromCollection, WithHeadings, WithColumnFor
         $endMonth = Carbon::createFromFormat('m-Y', $this->endDate);
 
         return [
-            [company()->company_name . ' - '.__('payroll::modules.payroll.salaryReport')],
+            [company()->company_name.' - '.__('payroll::modules.payroll.salaryReport')],
             [],
             ['Start:', $startMonth->format('F Y'), '', 'End:', $endMonth->format('F Y'), '', 'Generated On:', Carbon::now()->timezone(company()->timezone)->format('jS F, Y, g:i a')],
         ];
@@ -299,7 +298,7 @@ class SalaryMonthlyReport implements FromCollection, WithHeadings, WithColumnFor
             'C' => NumberFormat::FORMAT_TEXT,
             'D' => NumberFormat::FORMAT_TEXT,
             'E' => NumberFormat::FORMAT_TEXT,
-            'F' => NumberFormat::FORMAT_TEXT
+            'F' => NumberFormat::FORMAT_TEXT,
         ];
     }
 
@@ -307,7 +306,6 @@ class SalaryMonthlyReport implements FromCollection, WithHeadings, WithColumnFor
     {
         return [
             AfterSheet::class => function (AfterSheet $event) {
-
 
                 $sheet = $event->sheet->getDelegate();
                 $sheet->mergeCells('A1:C1');
@@ -319,17 +317,17 @@ class SalaryMonthlyReport implements FromCollection, WithHeadings, WithColumnFor
                 $sheet->getStyle('A3')->getFont()->setBold(true);
                 $sheet->getStyle('D3')->getFont()->setBold(true);
                 $sheet->getStyle('G3')->getFont()->setBold(true);
-                $sheet->getStyle('A5:' . $sheet->getHighestColumn() . '5')->getFont()->setBold(true);
+                $sheet->getStyle('A5:'.$sheet->getHighestColumn().'5')->getFont()->setBold(true);
 
                 $totalRow = $sheet->getHighestRow();
-                $sheet->setCellValue('G' . ($totalRow), 'Totals:');
+                $sheet->setCellValue('G'.($totalRow), 'Totals:');
 
-                $sheet->getStyle('A5:' . $sheet->getHighestColumn() . '5')
+                $sheet->getStyle('A5:'.$sheet->getHighestColumn().'5')
                     ->getFill()
                     ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                     ->getStartColor()
                     ->setARGB('00d8ff');
-            }
+            },
         ];
     }
 
@@ -343,5 +341,4 @@ class SalaryMonthlyReport implements FromCollection, WithHeadings, WithColumnFor
             'company' => user()->name,
         ];
     }
-
 }

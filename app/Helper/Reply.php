@@ -4,23 +4,21 @@ namespace App\Helper;
 
 class Reply
 {
-
     /** Return success response
-     * @param string $message
+     * @param  string  $message
      * @return array
      */
-
     public static function success($message)
     {
         return [
             'status' => 'success',
-            'message' => Reply::getTranslated($message)
+            'message' => Reply::getTranslated($message),
         ];
     }
 
     /**
-     * @param string $message
-     * @param array $data
+     * @param  string  $message
+     * @param  array  $data
      * @return array
      */
     public static function successWithData($message, $data)
@@ -31,9 +29,9 @@ class Reply
     }
 
     /**
-     * @param string $message
-     * @param null $error_name
-     * @param array $errorData
+     * @param  string  $message
+     * @param  null  $error_name
+     * @param  array  $errorData
      * @return array
      */
     public static function error($message, $error_name = null, $errorData = [])
@@ -42,26 +40,27 @@ class Reply
             'status' => 'fail',
             'error_name' => $error_name,
             'data' => $errorData,
-            'message' => Reply::getTranslated($message)
+            'message' => Reply::getTranslated($message),
         ];
     }
 
     /** Return validation errors
-     * @param \Illuminate\Validation\Validator|Validator $validator
+     * @param  \Illuminate\Validation\Validator|Validator  $validator
      * @return array
      */
     public static function formErrors($validator)
     {
         return [
             'status' => 'fail',
-            'errors' => $validator->getMessageBag()->toArray()
+            'errors' => $validator->getMessageBag()->toArray(),
         ];
     }
 
     /** Response with redirect action. This is meant for ajax responses and is not meant for direct redirecting
      * to the page
-     * @param string $url
-     * @param null $message Optional message
+     *
+     * @param  string  $url
+     * @param  null  $message  Optional message
      * @return array
      */
     public static function redirect($url, $message = null)
@@ -71,14 +70,14 @@ class Reply
                 'status' => 'success',
                 'message' => Reply::getTranslated($message),
                 'action' => 'redirect',
-                'url' => $url
+                'url' => $url,
             ];
         }
 
         return [
             'status' => 'success',
             'action' => 'redirect',
-            'url' => $url
+            'url' => $url,
         ];
     }
 

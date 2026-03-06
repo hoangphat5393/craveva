@@ -3,18 +3,19 @@
 namespace Modules\ServerManager\DataTables;
 
 use App\DataTables\BaseDataTable;
-use Modules\ServerManager\Entities\ServerProvider;
-use Yajra\DataTables\Html\Button;
-use Yajra\DataTables\Html\Column;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use App\Scopes\CompanyScope;
+use Illuminate\Support\Facades\DB;
+use Modules\ServerManager\Entities\ServerProvider;
+use Yajra\DataTables\Html\Column;
 
 class ProviderDataTable extends BaseDataTable
 {
     private $addProviderPermission;
+
     private $editProviderPermission;
+
     private $deleteProviderPermission;
+
     private $viewProviderPermission;
 
     public function __construct()
@@ -29,7 +30,7 @@ class ProviderDataTable extends BaseDataTable
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
@@ -41,42 +42,43 @@ class ProviderDataTable extends BaseDataTable
         });
 
         $datatables->editColumn('name', function ($row) {
-            return '<a href="' . route('provider.show', $row->id) . '" class="text-darkest-grey">' . $row->name . '</a>';
+            return '<a href="'.route('provider.show', $row->id).'" class="text-darkest-grey">'.$row->name.'</a>';
         });
 
         $datatables->editColumn('url', function ($row) {
             if ($row->url) {
-                return '<a href="' . $row->url . '" target="_blank" class="text-darkest-grey">' . $row->url . '</a>';
+                return '<a href="'.$row->url.'" target="_blank" class="text-darkest-grey">'.$row->url.'</a>';
             }
+
             return '-';
         });
 
         $datatables->editColumn('type', function ($row) {
-            return '<span class="badge ' . $row->getTypeBadgeClass() . '">' . ucfirst($row->type) . '</span>';
+            return '<span class="badge '.$row->getTypeBadgeClass().'">'.ucfirst($row->type).'</span>';
         });
 
         $datatables->editColumn('status', function ($row) {
-            return '<span class="badge ' . $row->getStatusBadgeClass() . '">' . ucfirst($row->status) . '</span>';
+            return '<span class="badge '.$row->getStatusBadgeClass().'">'.ucfirst($row->status).'</span>';
         });
 
         $datatables->addColumn('action', function ($row) {
             $action = '<div class="task_view">
                 <div class="dropdown">
                     <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" type="link"
-                        id="dropdownMenuLink-' . $row->id . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        id="dropdownMenuLink-'.$row->id.'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="icon-options-vertical icons"></i>
                     </a>
-                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-' . $row->id . '" tabindex="0">';
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-'.$row->id.'" tabindex="0">';
 
-            $action .= '<a href="' . route('provider.show', $row->id) . '" class="openRightModal dropdown-item"><i class="mr-2 fa fa-eye"></i>' . __('app.view') . '</a>';
+            $action .= '<a href="'.route('provider.show', $row->id).'" class="openRightModal dropdown-item"><i class="mr-2 fa fa-eye"></i>'.__('app.view').'</a>';
 
             if (
                 $this->editProviderPermission == 'all'
                 || ($this->editProviderPermission == 'added' && user()->id == $row->created_by)
             ) {
-                $action .= '<a class="dropdown-item openRightModal" href="' . route('provider.edit', $row->id) . '">
+                $action .= '<a class="dropdown-item openRightModal" href="'.route('provider.edit', $row->id).'">
                         <i class="mr-2 fa fa-edit"></i>
-                        ' . trans('app.edit') . '
+                        '.trans('app.edit').'
                     </a>';
             }
 
@@ -84,9 +86,9 @@ class ProviderDataTable extends BaseDataTable
                 $this->deleteProviderPermission == 'all'
                 || ($this->deleteProviderPermission == 'added' && user()->id == $row->created_by)
             ) {
-                $action .= '<a class="dropdown-item delete-table-row delete-provider" href="javascript:;" data-provider-id="' . $row->id . '">
+                $action .= '<a class="dropdown-item delete-table-row delete-provider" href="javascript:;" data-provider-id="'.$row->id.'">
                         <i class="mr-2 fa fa-trash"></i>
-                        ' . trans('app.delete') . '
+                        '.trans('app.delete').'
                     </a>';
             }
 
@@ -98,7 +100,7 @@ class ProviderDataTable extends BaseDataTable
         });
 
         $datatables->setRowId(function ($row) {
-            return 'row-' . $row->id;
+            return 'row-'.$row->id;
         });
 
         $datatables->rawColumns(['check', 'name', 'url', 'type', 'status', 'action']);
@@ -109,7 +111,6 @@ class ProviderDataTable extends BaseDataTable
     /**
      * Get query source of dataTable.
      *
-     * @param \Modules\ServerManager\Entities\ServerProvider $model
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function query(ServerProvider $model)
@@ -133,9 +134,9 @@ class ProviderDataTable extends BaseDataTable
 
         if ($request->searchText != '' && $request->searchText !== null) {
             $providers->where(function ($query) use ($request) {
-                $query->where('name', 'like', '%' . $request->searchText . '%')
-                    ->orWhere('url', 'like', '%' . $request->searchText . '%')
-                    ->orWhere('description', 'like', '%' . $request->searchText . '%');
+                $query->where('name', 'like', '%'.$request->searchText.'%')
+                    ->orWhere('url', 'like', '%'.$request->searchText.'%')
+                    ->orWhere('description', 'like', '%'.$request->searchText.'%');
             });
         }
 
@@ -147,12 +148,12 @@ class ProviderDataTable extends BaseDataTable
             $providers->where('type', $request->type);
         }
 
-       if ($startDate !== null && $endDate !== null) {
+        if ($startDate !== null && $endDate !== null) {
             $providers->where(
                 function ($q) use ($startDate, $endDate) {
-                    if(request()->date_filter_on == 'created_at') {
+                    if (request()->date_filter_on == 'created_at') {
                         $q->whereBetween(DB::raw('DATE(`created_at`)'), [$startDate, $endDate]);
-                    } elseif(request()->date_filter_on == 'updated_at') {
+                    } elseif (request()->date_filter_on == 'updated_at') {
                         $q->whereBetween(DB::raw('DATE(`updated_at`)'), [$startDate, $endDate]);
                     } else {
                         $q->whereBetween(DB::raw('DATE(`created_at`)'), [$startDate, $endDate]);
@@ -161,7 +162,7 @@ class ProviderDataTable extends BaseDataTable
             );
         }
 
-        if($this->viewProviderPermission == 'added') {
+        if ($this->viewProviderPermission == 'added') {
             $providers->where('created_by', user()->id);
         }
 
@@ -222,7 +223,7 @@ class ProviderDataTable extends BaseDataTable
                 'name' => 'check',
                 'orderable' => false,
                 'searchable' => false,
-                'visible' => !in_array('client', user_roles())
+                'visible' => ! in_array('client', user_roles()),
             ],
             __('servermanager::app.provider.name') => ['data' => 'name', 'name' => 'name', 'title' => __('servermanager::app.provider.name'), 'width' => '20%', 'orderable' => true, 'searchable' => true],
             __('servermanager::app.provider.url') => ['data' => 'url', 'name' => 'url', 'title' => __('servermanager::app.provider.url'), 'width' => '30%', 'orderable' => true, 'searchable' => true],
@@ -236,7 +237,7 @@ class ProviderDataTable extends BaseDataTable
                 ->printable(false)
                 ->orderable(false)
                 ->searchable(false)
-                ->addClass('text-right pr-20')
+                ->addClass('text-right pr-20'),
         ];
 
         return array_merge($data, $action);
@@ -244,11 +245,9 @@ class ProviderDataTable extends BaseDataTable
 
     /**
      * Get filename for export.
-     *
-     * @return string
      */
     protected function filename(): string
     {
-        return 'providers_' . date('Y_m_d_H_i_s');
+        return 'providers_'.date('Y_m_d_H_i_s');
     }
 }

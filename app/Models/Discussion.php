@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
-use App\Traits\HasCompany;
 use App\Scopes\ActiveScope;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Traits\HasCompany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * App\Models\Discussion
@@ -33,6 +33,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\DiscussionReply[] $replies
  * @property-read int|null $replies_count
  * @property-read \App\Models\User $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Discussion newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Discussion newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Discussion query()
@@ -52,25 +53,29 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @method static \Illuminate\Database\Eloquent\Builder|Discussion whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Discussion whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Discussion whereUserId($value)
+ *
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\DiscussionFile[] $files
  * @property-read int|null $files_count
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Discussion whereCompanyId($value)
+ *
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MentionUser> $mentionDiscussion
  * @property-read int|null $mention_discussion_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $mentionUser
  * @property-read int|null $mention_user_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MentionUser> $mentionDiscussion
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $mentionUser
+ *
  * @mixin \Eloquent
  */
 class Discussion extends BaseModel
 {
-
     use HasCompany;
 
     protected $guarded = ['id'];
+
     protected $casts = [
         'last_reply_at' => 'datetime',
     ];
@@ -114,5 +119,4 @@ class Discussion extends BaseModel
     {
         return $this->hasMany(MentionUser::class, 'discussion_id');
     }
-
 }

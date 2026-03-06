@@ -11,12 +11,11 @@ class UpdateVendorContact extends FormRequest
      *
      * @return array
      */
-
     public function rules()
     {
         return [
             'contact_name' => 'required',
-            'email' => 'email:rfc|unique:purchase_vendor_contacts,email,' . $this->route('purchase_contact').',id,company_id,' . company()->id
+            'email' => 'email:rfc|unique:purchase_vendor_contacts,email,'.$this->route('purchase_contact').',id,company_id,'.company()->id,
         ];
     }
 

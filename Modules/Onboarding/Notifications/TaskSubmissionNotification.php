@@ -2,12 +2,10 @@
 
 namespace Modules\Onboarding\Notifications;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use App\Notifications\BaseNotification;
-use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Bus\Queueable;
+use Illuminate\Notifications\Messages\MailMessage;
 use Modules\Onboarding\Entities\OnboardingNotificationSetting;
 
 class TaskSubmissionNotification extends BaseNotification
@@ -15,9 +13,13 @@ class TaskSubmissionNotification extends BaseNotification
     use Queueable;
 
     protected $task;
+
     protected $employee;
+
     protected $company;
+
     protected $emailSetting;
+
     /**
      * Create a new notification instance.
      */
@@ -61,13 +63,13 @@ class TaskSubmissionNotification extends BaseNotification
         }
 
         return (new MailMessage)
-            ->subject('New Task Submission: ' . $taskName)
-            ->greeting('Hello ' . $notifiable->name . '!')
-            ->line('A new ' . $taskType . ' task has been submitted for your review.')
-            ->line('Task: "' . $taskName . '"')
-            ->line('Submitted by: ' . $employeeName)
-            ->line('Submitted on: ' . $submittedOn->format($this->company->date_format))
-            ->action('Review Task', url('/account/employees/' . $this->employee->id))
+            ->subject('New Task Submission: '.$taskName)
+            ->greeting('Hello '.$notifiable->name.'!')
+            ->line('A new '.$taskType.' task has been submitted for your review.')
+            ->line('Task: "'.$taskName.'"')
+            ->line('Submitted by: '.$employeeName)
+            ->line('Submitted on: '.$submittedOn->format($this->company->date_format))
+            ->action('Review Task', url('/account/employees/'.$this->employee->id))
             ->line('Please review and approve or reject this task.');
     }
 

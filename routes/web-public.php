@@ -1,30 +1,26 @@
 <?php
 
-use App\Http\Controllers\HomeController;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\LoginController;
-
-use App\Http\Controllers\RegisterController;
-
-use App\Http\Controllers\PublicUrlController;
-use App\Http\Controllers\Payment\MollieController;
-use App\Http\Controllers\Payment\PaypalController;
-use App\Http\Controllers\Payment\SquareController;
-use App\Http\Controllers\Payment\StripeController;
-use App\Http\Controllers\Payment\PayfastController;
-use App\Http\Controllers\Payment\PaystackController;
-use App\Http\Controllers\Payment\RazorPayController;
 use App\Http\Controllers\Payment\AuthorizeController;
 use App\Http\Controllers\Payment\FlutterwaveController;
+use App\Http\Controllers\Payment\MollieController;
+use App\Http\Controllers\Payment\PayfastController;
+use App\Http\Controllers\Payment\PaypalController;
+use App\Http\Controllers\Payment\PaystackController;
+use App\Http\Controllers\Payment\RazorPayController;
+use App\Http\Controllers\Payment\SquareController;
+use App\Http\Controllers\Payment\StripeController;
 use App\Http\Controllers\Payment\StripeWebhookController;
 use App\Http\Controllers\PublicLeadGdprController;
+use App\Http\Controllers\PublicUrlController;
+use App\Http\Controllers\RegisterController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/invitation/{code}', [RegisterController::class, 'invitation'])->name('invitation');
 Route::post('/invitation/accept-invite', [RegisterController::class, 'acceptInvite'])->name('accept_invite');
-
-
 
 Route::get('/change-lang/{locale}', [HomeController::class, 'changeLang'])->name('front.changeLang');
 Route::get('front/show-image', [HomeController::class, 'showImage'])->name('front.public.show_image');
@@ -53,19 +49,13 @@ Route::post('/estimate/decline/{id}', [PublicUrlController::class, 'estimateDecl
 Route::post('/estimate/accept/{id}', [PublicUrlController::class, 'estimateAccept'])->name('front.estimate.accept');
 Route::get('/estimate/download/{id}', [PublicUrlController::class, 'estimateDownload'])->name('front.estimate.download');
 
-
-
 Route::post('/gantt-chart-data/{id}', [HomeController::class, 'ganttData'])->name('front.gantt_data');
 Route::get('/gantt-chart/{hash}', [HomeController::class, 'gantt'])->name('front.gantt');
 
 Route::get('/task-board/load-more/{hash}', [HomeController::class, 'taskboardLoadMore'])->name('front.taskboard.load_more');
 
-
-
 Route::post('/proposal-action/{id}', [HomeController::class, 'proposalActionStore'])->name('front.proposal_action');
 Route::get('/proposal/download/{id}', [HomeController::class, 'downloadProposal'])->name('front.download_proposal');
-
-
 
 Route::get('/consent/l/{hash}', [PublicLeadGdprController::class, 'consent'])->name('front.gdpr.consent');
 Route::post('/consent/remove-lead-request', [PublicLeadGdprController::class, 'learemoveLeadRequestd'])->name('front.gdpr.remove_lead_request');

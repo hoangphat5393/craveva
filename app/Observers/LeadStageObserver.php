@@ -10,7 +10,6 @@ use Illuminate\Support\Str;
 
 class LeadStageObserver
 {
-
     public function created(PipelineStage $leadStages)
     {
         $employees = User::allEmployees();
@@ -18,7 +17,7 @@ class LeadStageObserver
         foreach ($employees as $item) {
             UserLeadboardSetting::create([
                 'user_id' => $item->id,
-                'pipeline_stage_id' => $leadStages->id
+                'pipeline_stage_id' => $leadStages->id,
             ]);
         }
     }
@@ -39,5 +38,4 @@ class LeadStageObserver
 
         $leadStages->slug = Str::slug($leadStages->name);
     }
-
 }

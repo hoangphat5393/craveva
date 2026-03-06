@@ -7,13 +7,12 @@ use Modules\Affiliate\Enums\Status;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        if (!Schema::hasTable('affiliates')) {
+        if (! Schema::hasTable('affiliates')) {
             Schema::create('affiliates', function (Blueprint $table) {
                 $table->increments('id');
                 $table->unsignedInteger('user_id');
@@ -33,5 +32,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('affiliates');
     }
-
 };

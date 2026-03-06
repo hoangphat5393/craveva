@@ -7,18 +7,26 @@ use Illuminate\View\Component;
 
 class Select2Ajax extends Component
 {
-
-
     public $multiple;
+
     public $search;
+
     public $alignRight;
+
     public $fieldLabel;
+
     public $fieldRequired;
+
     public $fieldName;
+
     public $fieldId;
+
     public $popover;
+
     public $format;
+
     public $route;
+
     public $placeholder;
 
     /**
@@ -38,8 +46,7 @@ class Select2Ajax extends Component
         $format = false,
         $route = null,
         $placeholder = null,
-    )
-    {
+    ) {
         $this->fieldName = $fieldName;
         $this->fieldLabel = $fieldLabel;
         $this->fieldId = $fieldId;
@@ -62,5 +69,4 @@ class Select2Ajax extends Component
     {
         return view('components.forms.select2-ajax');
     }
-
 }

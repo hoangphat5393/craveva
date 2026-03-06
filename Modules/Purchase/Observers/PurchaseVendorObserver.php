@@ -7,10 +7,9 @@ use Modules\Purchase\Entities\PurchaseVendorHistory;
 
 class PurchaseVendorObserver
 {
-
     public function creating(PurchaseVendor $vendor)
     {
-        if (!isRunningInConsoleOrSeeding() && user()) {
+        if (! isRunningInConsoleOrSeeding() && user()) {
             $vendor->added_by = user()->id;
         }
 
@@ -35,14 +34,14 @@ class PurchaseVendorObserver
 
     public function saving(PurchaseVendor $vendor)
     {
-        if (!isRunningInConsoleOrSeeding() && user()) {
+        if (! isRunningInConsoleOrSeeding() && user()) {
             $vendor->last_updated_by = user()->id;
         }
     }
 
-    public function logVendorActivity($companyID, $vendorID, $userID, $text, $label, $vendorNotesID = null, $vendorContactID = null )
+    public function logVendorActivity($companyID, $vendorID, $userID, $text, $label, $vendorNotesID = null, $vendorContactID = null)
     {
-        $activiy = new PurchaseVendorHistory();
+        $activiy = new PurchaseVendorHistory;
 
         $activiy->company_id = $companyID;
         $activiy->purchase_vendor_id = $vendorID;
@@ -50,17 +49,14 @@ class PurchaseVendorObserver
         $activiy->details = $text;
         $activiy->label = $label;
 
-        if (!is_null($vendorNotesID))
-        {
+        if (! is_null($vendorNotesID)) {
             $activiy->purchase_vendor_notes_id = $vendorNotesID;
         }
 
-        if (!is_null($vendorContactID))
-        {
+        if (! is_null($vendorContactID)) {
             $activiy->purchase_vendor_contact_id = $vendorContactID;
         }
 
         $activiy->save();
     }
-
 }

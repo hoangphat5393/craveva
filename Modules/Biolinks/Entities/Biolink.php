@@ -11,7 +11,6 @@ use Modules\Biolinks\Enums\Status;
 
 class Biolink extends BaseModel
 {
-
     use HasCompany, HasFactory;
 
     protected $casts = [
@@ -39,5 +38,4 @@ class Biolink extends BaseModel
     {
         return BiolinkFactory::new();
     }
-
 }

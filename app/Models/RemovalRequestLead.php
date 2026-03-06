@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read mixed $icon
  * @property-read \App\Models\Lead|null $lead
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|RemovalRequestLead newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|RemovalRequestLead newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|RemovalRequestLead query()
@@ -27,14 +28,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|RemovalRequestLead whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|RemovalRequestLead whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|RemovalRequestLead whereUpdatedAt($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|RemovalRequestLead whereCompanyId($value)
+ *
  * @mixin \Eloquent
  */
 class RemovalRequestLead extends BaseModel
 {
-
     use HasCompany;
 
     protected $table = 'removal_requests_lead';
@@ -43,5 +46,4 @@ class RemovalRequestLead extends BaseModel
     {
         return $this->belongsTo(Deal::class);
     }
-
 }

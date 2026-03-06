@@ -8,7 +8,6 @@ use Illuminate\Notifications\Messages\MailMessage;
 
 class LicenseExpire extends BaseNotification
 {
-
     private $forCompany;
 
     /**
@@ -16,7 +15,6 @@ class LicenseExpire extends BaseNotification
      *
      * @return void
      */
-
     public function __construct(Company $company)
     {
         $this->forCompany = $company;
@@ -25,7 +23,8 @@ class LicenseExpire extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *t('mail::layout')
-     * @param mixed $notifiable
+     *
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -42,14 +41,14 @@ class LicenseExpire extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return MailMessage
      */
     public function toMail($notifiable)
     {
         return (new MailMessage)
-            ->subject(__('superadmin.licenseExpire.subject') . ' ' . config('app.name'))
-            ->greeting(__('email.hello') . ' ' . $notifiable->name)
+            ->subject(__('superadmin.licenseExpire.subject').' '.config('app.name'))
+            ->greeting(__('email.hello').' '.$notifiable->name)
             ->line(__('superadmin.licenseExpire.text'))
             ->action(__('email.loginDashboard'), getDomainSpecificUrl(url('/login'), $this->forCompany))
             ->line(__('email.thankyouNote'));
@@ -58,12 +57,11 @@ class LicenseExpire extends BaseNotification
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function toArray($notifiable)
     {
         return $notifiable->toArray();
     }
-
 }

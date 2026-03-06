@@ -8,7 +8,6 @@ use Modules\CyberSecurity\Entities\LoginExpiry;
 
 class LoginExpiryMiddleware
 {
-
     /**
      * Handle an incoming request.
      */
@@ -20,11 +19,11 @@ class LoginExpiryMiddleware
 
             if ($loginExpiry && $loginExpiry->expiry_date->isPast()) {
                 auth()->logout();
+
                 return redirect()->route('login')->with('message', __('cybersecurity::messages.loginExpiry'));
             }
         }
 
         return $next($request);
     }
-
 }

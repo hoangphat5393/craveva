@@ -6,7 +6,6 @@ use Modules\Recruit\Entities\RecruitJobApplication;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      */
@@ -40,5 +39,4 @@ return new class extends Migration
     {
         //
     }
-
 };

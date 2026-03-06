@@ -27,7 +27,7 @@ class UpdateTimeLog extends CoreRequest
     public function rules()
     {
 
-        $rules = array();
+        $rules = [];
 
         $rules['start_time'] = 'required';
         $rules['end_time'] = 'required';
@@ -52,8 +52,7 @@ class UpdateTimeLog extends CoreRequest
     public function messages()
     {
         return [
-            'project_id.required' => __('messages.chooseProject')
+            'project_id.required' => __('messages.chooseProject'),
         ];
     }
-
 }

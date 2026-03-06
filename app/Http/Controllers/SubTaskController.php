@@ -3,16 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Helper\Reply;
+use App\Helper\UserService;
 use App\Http\Requests\SubTask\StoreSubTask;
+use App\Models\ClientContact;
 use App\Models\SubTask;
 use App\Models\Task;
 use Illuminate\Http\Request;
-use App\Helper\UserService;
-use App\Models\ClientContact;
 
 class SubTaskController extends AccountBaseController
 {
-
     /**
      * Show the form for creating a new resource.
      *
@@ -21,6 +20,7 @@ class SubTaskController extends AccountBaseController
     public function edit($id)
     {
         $this->subTask = SubTask::with(['files'])->findOrFail($id);
+
         return view('tasks.sub_tasks.edit', $this->data);
     }
 
@@ -32,12 +32,13 @@ class SubTaskController extends AccountBaseController
     public function show($id)
     {
         $this->subTask = SubTask::with(['files'])->findOrFail($id);
+
         return view('tasks.sub_tasks.detail', $this->data);
     }
 
     /**
-     * @param StoreSubTask $request
      * @return array
+     *
      * @throws \Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException
      */
     public function store(StoreSubTask $request)
@@ -47,14 +48,14 @@ class SubTaskController extends AccountBaseController
         $taskUsers = $task->users->pluck('id')->toArray();
         $userId = UserService::getUserId();
 
-        abort_403(!(
+        abort_403(! (
             $this->addPermission == 'all'
             || ($this->addPermission == 'added' && ($task->added_by == user()->id || $task->added_by == $userId))
             || ($this->addPermission == 'owned' && in_array(user()->id, $taskUsers))
             || ($this->addPermission == 'added' && (in_array(user()->id, $taskUsers) || $task->added_by == user()->id || $task->added_by == $userId))
         ));
 
-        $subTask = new SubTask();
+        $subTask = new SubTask;
         $subTask->title = $request->title;
         $subTask->task_id = $request->task_id;
         $subTask->description = trim_editor($request->description);
@@ -70,7 +71,8 @@ class SubTaskController extends AccountBaseController
         $this->task = Task::with(['subtasks', 'subtasks.files'])->findOrFail($subTask->task_id);
         $this->logTaskActivity($task->id, $this->user->id, 'subTaskCreateActivity', $task->board_column_id, $subTask->id);
         $view = view('tasks.sub_tasks.show', $this->data)->render();
-        return Reply::successWithData(__('messages.recordSaved'), [ 'subTaskID' => $subTask->id, 'view' => $view]);
+
+        return Reply::successWithData(__('messages.recordSaved'), ['subTaskID' => $subTask->id, 'view' => $view]);
 
     }
 
@@ -101,18 +103,17 @@ class SubTaskController extends AccountBaseController
         $subTask->save();
 
         $this->task = Task::with(['subtasks', 'subtasks.files'])->findOrFail($subTask->task_id);
-        $this->logTaskActivity($this->task->id, user()->id, 'subTaskUpdateActivity', $this->task ->board_column_id, $subTask->id);
+        $this->logTaskActivity($this->task->id, user()->id, 'subTaskUpdateActivity', $this->task->board_column_id, $subTask->id);
 
         $view = view('tasks.sub_tasks.show', $this->data)->render();
-
 
         return Reply::successWithData('messages.updateSuccess', ['view' => $view]);
     }
 
     /**
-     * @param StoreSubTask $request
-     * @param int $id
+     * @param  int  $id
      * @return array
+     *
      * @throws \Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException
      */
     public function update(StoreSubTask $request, $id)
@@ -137,5 +138,4 @@ class SubTaskController extends AccountBaseController
 
         return Reply::successWithData(__('messages.updateSuccess'), ['view' => $view]);
     }
-
 }

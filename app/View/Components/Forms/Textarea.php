@@ -7,13 +7,18 @@ use Illuminate\View\Component;
 
 class Textarea extends Component
 {
-
     public $fieldLabel;
+
     public $fieldRequired;
+
     public $fieldPlaceholder;
+
     public $fieldValue;
+
     public $fieldName;
+
     public $fieldId;
+
     public $popover;
 
     /**
@@ -41,5 +46,4 @@ class Textarea extends Component
     {
         return view('components.forms.textarea');
     }
-
 }

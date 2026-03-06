@@ -2,17 +2,17 @@
 
 namespace App\Events\SuperAdmin;
 
-use Illuminate\Queue\SerializesModels;
 use App\Models\SuperAdmin\SupportTicket;
-use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Queue\SerializesModels;
 
 class NewSupportTicketEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $ticket;
+
     public $notifyUser;
 
     public function __construct(SupportTicket $ticket, $notifyUser)
@@ -20,5 +20,4 @@ class NewSupportTicketEvent
         $this->ticket = $ticket;
         $this->notifyUser = $notifyUser;
     }
-
 }

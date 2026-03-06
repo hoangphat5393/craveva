@@ -1,4 +1,5 @@
 <?php
+
 namespace Database\Seeders;
 
 use App\Models\Leave;
@@ -8,7 +9,6 @@ use Illuminate\Database\Seeder;
 
 class LeaveSeeder extends Seeder
 {
-
     /**
      * Run the database seeds.
      *
@@ -23,12 +23,11 @@ class LeaveSeeder extends Seeder
         $leaveType = $leaveTypes[array_rand($leaveTypes)];
 
         $count = config('app.seed_record_count');
-        \App\Models\Leave::factory()->count((int)$count)->make()->each(function (Leave $leave)use($companyId, $leaveType, $employee){
+        \App\Models\Leave::factory()->count((int) $count)->make()->each(function (Leave $leave) use ($companyId, $leaveType, $employee) {
             $leave->user_id = $employee;
             $leave->leave_type_id = $leaveType;
             $leave->company_id = $companyId;
             $leave->save();
         });
     }
-
 }

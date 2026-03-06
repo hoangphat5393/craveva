@@ -3,18 +3,20 @@
 namespace Modules\ServerManager\DataTables;
 
 use App\DataTables\BaseDataTable;
+use App\Scopes\CompanyScope;
+use Illuminate\Support\Facades\DB;
 use Modules\ServerManager\Entities\ServerDomain;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use App\Scopes\CompanyScope;
 
 class DomainDataTable extends BaseDataTable
 {
     private $addDomainPermission;
+
     private $editDomainPermission;
+
     private $deleteDomainPermission;
+
     private $viewDomainPermission;
 
     public function __construct()
@@ -29,7 +31,7 @@ class DomainDataTable extends BaseDataTable
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
@@ -41,7 +43,7 @@ class DomainDataTable extends BaseDataTable
         });
 
         $datatables->editColumn('domain_name', function ($row) {
-            return '<a href="' . route('domain.show', $row->id) . '" class="text-darkest-grey">' . $row->domain_name . '</a>';
+            return '<a href="'.route('domain.show', $row->id).'" class="text-darkest-grey">'.$row->domain_name.'</a>';
         });
 
         $datatables->editColumn('domain_provider', function ($row) {
@@ -49,11 +51,11 @@ class DomainDataTable extends BaseDataTable
         });
 
         $datatables->editColumn('domain_type', function ($row) {
-            return '<span class="badge badge-info">' . strtoupper($row->domain_type) . '</span>';
+            return '<span class="badge badge-info">'.strtoupper($row->domain_type).'</span>';
         });
 
         $datatables->editColumn('status', function ($row) {
-            return '<span class="badge ' . $row->getStatusBadgeClass() . '">' . ucfirst($row->status) . '</span>';
+            return '<span class="badge '.$row->getStatusBadgeClass().'">'.ucfirst($row->status).'</span>';
         });
 
         $datatables->editColumn('registration_date', function ($row) {
@@ -77,20 +79,20 @@ class DomainDataTable extends BaseDataTable
             $action = '<div class="task_view">
                 <div class="dropdown">
                     <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" type="link"
-                        id="dropdownMenuLink-' . $row->id . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        id="dropdownMenuLink-'.$row->id.'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="icon-options-vertical icons"></i>
                     </a>
-                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-' . $row->id . '" tabindex="0">';
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-'.$row->id.'" tabindex="0">';
 
-            $action .= '<a href="' . route('domain.show', $row->id) . '" class="dropdown-item"><i class="mr-2 fa fa-eye"></i>' . __('app.view') . '</a>';
+            $action .= '<a href="'.route('domain.show', $row->id).'" class="dropdown-item"><i class="mr-2 fa fa-eye"></i>'.__('app.view').'</a>';
 
             if (
                 $this->editDomainPermission == 'all'
                 || ($this->editDomainPermission == 'added' && user()->id == $row->created_by)
             ) {
-                $action .= '<a class="dropdown-item openRightModal" href="' . route('domain.edit', $row->id) . '">
+                $action .= '<a class="dropdown-item openRightModal" href="'.route('domain.edit', $row->id).'">
                         <i class="mr-2 fa fa-edit"></i>
-                        ' . trans('app.edit') . '
+                        '.trans('app.edit').'
                     </a>';
             }
 
@@ -98,9 +100,9 @@ class DomainDataTable extends BaseDataTable
                 $this->deleteDomainPermission == 'all'
                 || ($this->deleteDomainPermission == 'added' && user()->id == $row->created_by)
             ) {
-                $action .= '<a class="dropdown-item delete-domain" href="javascript:;" data-domain-id="' . $row->id . '">
+                $action .= '<a class="dropdown-item delete-domain" href="javascript:;" data-domain-id="'.$row->id.'">
                         <i class="mr-2 fa fa-trash"></i>
-                        ' . trans('app.delete') . '
+                        '.trans('app.delete').'
                     </a>';
             }
 
@@ -112,7 +114,7 @@ class DomainDataTable extends BaseDataTable
         });
 
         $datatables->setRowId(function ($row) {
-            return 'row-' . $row->id;
+            return 'row-'.$row->id;
         });
 
         $datatables->rawColumns(['check', 'domain_name', 'domain_type', 'status', 'expiry_date', 'action']);
@@ -123,7 +125,6 @@ class DomainDataTable extends BaseDataTable
     /**
      * Get query source of dataTable.
      *
-     * @param \Modules\ServerManager\Entities\ServerDomain $model
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function query(ServerDomain $model)
@@ -147,11 +148,11 @@ class DomainDataTable extends BaseDataTable
 
         if ($request->searchText != '' && $request->searchText !== null) {
             $domains->where(function ($query) use ($request) {
-                $query->where('domain_name', 'like', '%' . $request->searchText . '%')
+                $query->where('domain_name', 'like', '%'.$request->searchText.'%')
                     ->orWhereHas('provider', function ($q) use ($request) {
-                        $q->where('name', 'like', '%' . $request->searchText . '%');
+                        $q->where('name', 'like', '%'.$request->searchText.'%');
                     })
-                    ->orWhere('domain_type', 'like', '%' . $request->searchText . '%');
+                    ->orWhere('domain_type', 'like', '%'.$request->searchText.'%');
             });
         }
 
@@ -174,7 +175,7 @@ class DomainDataTable extends BaseDataTable
         if ($startDate !== null && $endDate !== null) {
             $domains->where(
                 function ($q) use ($startDate, $endDate) {
-                    if(request()->date_filter_on == 'expiry_date') {
+                    if (request()->date_filter_on == 'expiry_date') {
                         $q->whereBetween(DB::raw('DATE(`expiry_date`)'), [$startDate, $endDate]);
                     } else {
                         $q->whereBetween(DB::raw('DATE(`created_at`)'), [$startDate, $endDate]);
@@ -183,11 +184,11 @@ class DomainDataTable extends BaseDataTable
             );
         }
 
-        if($this->viewDomainPermission == 'added') {
+        if ($this->viewDomainPermission == 'added') {
             $domains->where('created_by', user()->id);
         }
 
-        if (!request()->has('order')) {
+        if (! request()->has('order')) {
             $domains->orderBy('id', 'desc');
         }
 
@@ -253,7 +254,7 @@ class DomainDataTable extends BaseDataTable
                 'name' => 'check',
                 'orderable' => false,
                 'searchable' => false,
-                'visible' => !in_array('client', user_roles())
+                'visible' => ! in_array('client', user_roles()),
             ],
             __('servermanager::app.domain.domainName') => ['data' => 'domain_name', 'name' => 'domain_name', 'title' => __('servermanager::app.domain.domainName'), 'width' => '15%', 'orderable' => true, 'searchable' => true],
             __('servermanager::app.domain.provider') => ['data' => 'domain_provider', 'name' => 'domain_provider', 'title' => __('servermanager::app.domain.provider'), 'width' => '12%', 'orderable' => true, 'searchable' => true],
@@ -271,7 +272,7 @@ class DomainDataTable extends BaseDataTable
                 ->printable(false)
                 ->orderable(false)
                 ->searchable(false)
-                ->addClass('text-right pr-20')
+                ->addClass('text-right pr-20'),
         ];
 
         return array_merge($data, $action);

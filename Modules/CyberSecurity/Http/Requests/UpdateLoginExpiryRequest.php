@@ -2,12 +2,11 @@
 
 namespace Modules\CyberSecurity\Http\Requests;
 
-use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateLoginExpiryRequest extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -18,7 +17,7 @@ class UpdateLoginExpiryRequest extends FormRequest
         return true;
     }
 
-        /**
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array
@@ -34,5 +33,4 @@ class UpdateLoginExpiryRequest extends FormRequest
             'expiry_date' => ['required', 'date'],
         ];
     }
-
 }

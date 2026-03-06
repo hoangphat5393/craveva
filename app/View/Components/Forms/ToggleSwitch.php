@@ -7,14 +7,20 @@ use Illuminate\View\Component;
 
 class ToggleSwitch extends Component
 {
-
     public $fieldLabel;
+
     public $fieldRequired;
+
     public $fieldValue;
+
     public $fieldName;
+
     public $fieldId;
+
     public $fieldHelp;
+
     public $checked;
+
     public $popover;
 
     /**
@@ -43,5 +49,4 @@ class ToggleSwitch extends Component
     {
         return view('components.forms.toggle-switch');
     }
-
 }

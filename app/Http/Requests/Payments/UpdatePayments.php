@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class UpdatePayments extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -22,7 +21,6 @@ class UpdatePayments extends CoreRequest
      *
      * @return array
      */
-
     public function rules()
     {
         $rules = [
@@ -33,7 +31,7 @@ class UpdatePayments extends CoreRequest
 
         if ($this->transaction_id) {
             // It need to be unique for all the company
-            $rules['transaction_id'] = 'unique:payments,transaction_id,' . $this->route('payment').',id,company_id,' . company()->id;
+            $rules['transaction_id'] = 'unique:payments,transaction_id,'.$this->route('payment').',id,company_id,'.company()->id;
         }
 
         return $rules;
@@ -42,8 +40,7 @@ class UpdatePayments extends CoreRequest
     public function messages()
     {
         return [
-            'invoice_id.required' => 'Select the invoice you want to add payment for.'
+            'invoice_id.required' => 'Select the invoice you want to add payment for.',
         ];
     }
-
 }

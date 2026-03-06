@@ -3,21 +3,19 @@
 namespace Modules\Recruit\Listeners;
 
 use App\Models\User;
-use Notification;
 use Modules\Recruit\Events\InterviewScheduleEvent;
 use Modules\Recruit\Notifications\AdminNewInterviewSchedule;
-use Modules\Recruit\Notifications\ScheduleInterview;
 use Modules\Recruit\Notifications\RecruiterInterviewSchedule;
+use Modules\Recruit\Notifications\ScheduleInterview;
+use Notification;
 
 class InterviewScheduleListener
 {
-
     /**
      * Create the event listener.
      *
      * @return void
      */
-
     public function __construct()
     {
         //
@@ -26,7 +24,7 @@ class InterviewScheduleListener
     /**
      * Handle the event.
      *
-     * @param object $event
+     * @param  object  $event
      * @return void
      */
     public function handle(InterviewScheduleEvent $interview)
@@ -37,11 +35,9 @@ class InterviewScheduleListener
 
         Notification::send(User::allAdmins($companyId), new AdminNewInterviewSchedule($interview->interview));
 
-        if (!in_array($recruiterId, $companyAdmins)) {
+        if (! in_array($recruiterId, $companyAdmins)) {
             Notification::send($interview->interview->jobApplication->job->recruiter, new RecruiterInterviewSchedule($interview->interview));
         }
         Notification::send($interview->employee, new ScheduleInterview($interview->interview));
     }
-
-
 }

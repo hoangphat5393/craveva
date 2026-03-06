@@ -1,17 +1,14 @@
 <?php
 
-use App\Models\Role;
 use App\Models\Company;
 use App\Models\Permission;
 use App\Models\PermissionRole;
 use App\Models\PermissionType;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
+use App\Models\Role;
 use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      */
@@ -19,7 +16,7 @@ return new class extends Migration
     {
         $policyModule = \App\Models\Module::where('module_name', 'policy')->first();
 
-        if (!$policyModule) {
+        if (! $policyModule) {
             return;
         }
 
@@ -27,7 +24,7 @@ return new class extends Migration
             ->where('module_id', $policyModule->id)
             ->first();
 
-        if (!$permission) {
+        if (! $permission) {
             return;
         }
 
@@ -44,7 +41,7 @@ return new class extends Migration
                     ->first();
 
                 if (is_null($permissionData)) {
-                    $permissionRole = new PermissionRole();
+                    $permissionRole = new PermissionRole;
                     $permissionRole->permission_id = $permission->id;
                     $permissionRole->role_id = $role->id;
                     $permissionRole->permission_type_id = PermissionType::OWNED;
@@ -61,6 +58,4 @@ return new class extends Migration
     {
         //
     }
-
 };
-

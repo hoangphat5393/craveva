@@ -30,5 +30,4 @@ class ExpenseFactory extends Factory
             'status' => fake()->randomElement(['approved', 'pending', 'rejected']),
         ];
     }
-
 }

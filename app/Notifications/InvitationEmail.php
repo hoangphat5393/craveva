@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\App;
 
 class InvitationEmail extends BaseNotification
 {
-
     /**
      * @var UserInvitation
      */
@@ -28,7 +27,7 @@ class InvitationEmail extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     // phpcs:ignore
@@ -40,8 +39,7 @@ class InvitationEmail extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
-     * @return MailMessage
+     * @param  mixed  $notifiable
      */
     // phpcs:ignore
     public function toMail($notifiable): MailMessage
@@ -52,15 +50,15 @@ class InvitationEmail extends BaseNotification
 
         App::setLocale($notifiable->locale ?? $this->company->locale ?? 'en');
 
-        $content = $this->invite->user->name . ' ' . __('email.invitation.subject') . config('app.name') . '.'  . '<br>' . $this->invite->message;
+        $content = $this->invite->user->name.' '.__('email.invitation.subject').config('app.name').'.'.'<br>'.$this->invite->message;
 
         $build
-            ->subject($this->invite->user->name . ' ' . __('email.invitation.subject') . config('app.name'))
+            ->subject($this->invite->user->name.' '.__('email.invitation.subject').config('app.name'))
             ->markdown('mail.email', [
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
-                'actionText' => __('email.invitation.action')
+                'actionText' => __('email.invitation.action'),
             ]);
 
         parent::resetLocale();
@@ -71,15 +69,14 @@ class InvitationEmail extends BaseNotification
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
-    //phpcs:ignore
+    // phpcs:ignore
     public function toArray($notifiable)
     {
         return [
             //
         ];
     }
-
 }

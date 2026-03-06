@@ -6,6 +6,5 @@ use App\Models\BaseModel;
 
 class MollieSubscription extends BaseModel
 {
-
     //
 }

@@ -5,10 +5,9 @@ namespace Modules\Warehouse\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Modules\Warehouse\Entities\Warehouse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Modules\Warehouse\Entities\Warehouse;
 
 class WarehouseController extends Controller
 {
@@ -18,6 +17,7 @@ class WarehouseController extends Controller
     public function index()
     {
         $warehouses = Warehouse::orderBy('id', 'desc')->paginate(10);
+
         return view('warehouse::index', compact('warehouses'));
     }
 
@@ -66,8 +66,9 @@ class WarehouseController extends Controller
             return redirect()->route('warehouse.index')->with('success', 'Warehouse created successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Warehouse Create Error: ' . $e->getMessage());
-            return back()->with('error', 'Something went wrong! ' . $e->getMessage());
+            Log::error('Warehouse Create Error: '.$e->getMessage());
+
+            return back()->with('error', 'Something went wrong! '.$e->getMessage());
         }
     }
 
@@ -77,6 +78,7 @@ class WarehouseController extends Controller
     public function show($id)
     {
         $warehouse = Warehouse::findOrFail($id);
+
         return view('warehouse::show', compact('warehouse'));
     }
 
@@ -86,6 +88,7 @@ class WarehouseController extends Controller
     public function edit($id)
     {
         $warehouse = Warehouse::findOrFail($id);
+
         return view('warehouse::edit', compact('warehouse'));
     }
 
@@ -96,7 +99,7 @@ class WarehouseController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'code' => 'nullable|string|max:50|unique:warehouses,code,' . $id,
+            'code' => 'nullable|string|max:50|unique:warehouses,code,'.$id,
             'address' => 'nullable|string|max:255',
             'status' => 'required|in:active,inactive',
         ]);
@@ -127,8 +130,9 @@ class WarehouseController extends Controller
             return redirect()->route('warehouse.index')->with('success', 'Warehouse updated successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Warehouse Update Error: ' . $e->getMessage());
-            return back()->with('error', 'Something went wrong! ' . $e->getMessage());
+            Log::error('Warehouse Update Error: '.$e->getMessage());
+
+            return back()->with('error', 'Something went wrong! '.$e->getMessage());
         }
     }
 
@@ -146,10 +150,12 @@ class WarehouseController extends Controller
             }
 
             $warehouse->delete();
+
             return redirect()->route('warehouse.index')->with('success', 'Warehouse deleted successfully.');
         } catch (\Exception $e) {
-            Log::error('Warehouse Delete Error: ' . $e->getMessage());
-            return back()->with('error', 'Something went wrong! ' . $e->getMessage());
+            Log::error('Warehouse Delete Error: '.$e->getMessage());
+
+            return back()->with('error', 'Something went wrong! '.$e->getMessage());
         }
     }
 }

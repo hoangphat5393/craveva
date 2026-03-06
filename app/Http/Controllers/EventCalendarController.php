@@ -2,35 +2,35 @@
 
 namespace App\Http\Controllers;
 
-use App\Scopes\ActiveScope;
-use Carbon\Carbon;
-use App\Models\User;
-use App\Helper\Reply;
-use App\Models\Event;
-use App\Models\Team;
-use App\Models\EventAttendee;
+use App\DataTables\EventDataTable;
+use App\Events\EventCompletedEvent;
 use App\Events\EventInviteEvent;
 use App\Events\EventInviteMentionEvent;
 use App\Events\EventStatusNoteEvent;
-use App\DataTables\EventDataTable;
+use App\Helper\Common;
+use App\Helper\Reply;
+use App\Helper\UserService;
 use App\Http\Requests\Events\StoreEvent;
 use App\Http\Requests\Events\StoreEventNote;
 use App\Http\Requests\Events\UpdateEvent;
+use App\Models\Event;
+use App\Models\EventAttendee;
 use App\Models\MentionUser;
+use App\Models\Team;
+use App\Models\User;
+use App\Scopes\ActiveScope;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Helper\UserService;
-use App\Events\EventCompletedEvent;
-use App\Helper\Common;
 
 class EventCalendarController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'app.menu.events';
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('events', $this->user->modules));
+            abort_403(! in_array('events', $this->user->modules));
+
             return $next($request);
         });
     }
@@ -38,7 +38,7 @@ class EventCalendarController extends AccountBaseController
     public function index()
     {
         $viewPermission = user()->permission('view_events');
-        abort_403(!in_array($viewPermission, ['all', 'added', 'owned', 'both']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'owned', 'both']));
 
         if (in_array('client', user_roles())) {
             $this->clients = User::client();
@@ -73,7 +73,7 @@ class EventCalendarController extends AccountBaseController
 
             if (request()->searchText && request()->searchText != 'all') {
                 $safeTerm = Common::safeString(request('searchText'));
-                $model->where('event_name', 'like', '%' . $safeTerm . '%');
+                $model->where('event_name', 'like', '%'.$safeTerm.'%');
             }
 
             if ($viewPermission == 'added') {
@@ -103,7 +103,7 @@ class EventCalendarController extends AccountBaseController
 
             $events = $model->get();
 
-            $eventData = array();
+            $eventData = [];
 
             foreach ($events as $key => $event) {
                 $eventData[] = [
@@ -111,7 +111,7 @@ class EventCalendarController extends AccountBaseController
                     'title' => $event->event_name,
                     'start' => $event->start_date_time,
                     'end' => $event->end_date_time,
-                    'color' => $event->label_color
+                    'color' => $event->label_color,
                 ];
             }
 
@@ -124,7 +124,7 @@ class EventCalendarController extends AccountBaseController
     public function tableView(EventDataTable $dataTable)
     {
         $viewPermission = user()->permission('view_events');
-        abort_403(!in_array($viewPermission, ['all', 'added', 'owned', 'both']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'owned', 'both']));
 
         if (in_array('client', user_roles())) {
             $this->clients = User::client();
@@ -140,8 +140,8 @@ class EventCalendarController extends AccountBaseController
         /* year range from last 5 year to next year */
         $years = [];
 
-        $latestFifthYear = (int)now()->subYears(5)->format('Y');
-        $nextYear = (int)now()->addYear()->format('Y');
+        $latestFifthYear = (int) now()->subYears(5)->format('Y');
+        $nextYear = (int) now()->addYear()->format('Y');
 
         for ($i = $latestFifthYear; $i <= $nextYear; $i++) {
             $years[] = $i;
@@ -154,11 +154,12 @@ class EventCalendarController extends AccountBaseController
 
     public function applyQuickAction(Request $request)
     {
-        abort_403(!in_array(user()->permission('delete_events'), ['all', 'added']));
+        abort_403(! in_array(user()->permission('delete_events'), ['all', 'added']));
 
         if ($request->action_type === 'delete') {
 
             $this->deleteRecords($request);
+
             return Reply::success(__('messages.deleteSuccess'));
         } elseif ($request->action_type === 'change-status') {
             $this->changeBulkStatus($request);
@@ -190,7 +191,7 @@ class EventCalendarController extends AccountBaseController
     public function create()
     {
         $addPermission = user()->permission('add_events');
-        abort_403(!in_array($addPermission, ['all', 'added']));
+        abort_403(! in_array($addPermission, ['all', 'added']));
 
         $this->redirectUrl = request()->type == 'table-view' ? route('events.table_view') : route('events.index');
         $this->employees = User::allEmployees(null, true);
@@ -207,7 +208,7 @@ class EventCalendarController extends AccountBaseController
             $userData[] = ['id' => $user->id, 'value' => $user->name, 'image' => $user->image_url, 'link' => $url];
         }
 
-        $event = new Event();
+        $event = new Event;
         $getCustomFieldGroupsWithFields = $event->getCustomFieldGroupsWithFields();
 
         if ($getCustomFieldGroupsWithFields) {
@@ -228,17 +229,17 @@ class EventCalendarController extends AccountBaseController
     public function store(StoreEvent $request)
     {
         $addPermission = user()->permission('add_events');
-        abort_403(!in_array($addPermission, ['all', 'added']));
+        abort_403(! in_array($addPermission, ['all', 'added']));
 
-        $event = new Event();
+        $event = new Event;
         $event->event_name = $request->event_name;
         $event->where = $request->where;
         $event->description = trim_editor($request->description);
 
-        $start_date_time = Carbon::createFromFormat($this->company->date_format, $request->start_date, $this->company->timezone)->format('Y-m-d') . ' ' . Carbon::createFromFormat($this->company->time_format, $request->start_time)->format('H:i:s');
+        $start_date_time = Carbon::createFromFormat($this->company->date_format, $request->start_date, $this->company->timezone)->format('Y-m-d').' '.Carbon::createFromFormat($this->company->time_format, $request->start_time)->format('H:i:s');
         $event->start_date_time = Carbon::parse($start_date_time)->setTimezone('UTC');
 
-        $end_date_time = Carbon::createFromFormat($this->company->date_format, $request->end_date, $this->company->timezone)->format('Y-m-d') . ' ' . Carbon::createFromFormat($this->company->time_format, $request->end_time)->format('H:i:s');
+        $end_date_time = Carbon::createFromFormat($this->company->date_format, $request->end_date, $this->company->timezone)->format('Y-m-d').' '.Carbon::createFromFormat($this->company->time_format, $request->end_time)->format('H:i:s');
         $event->end_date_time = Carbon::parse($end_date_time)->setTimezone('UTC');
         $event->departments = json_encode($request->team_id);
         $event->repeat = $request->repeat ? $request->repeat : 'no';
@@ -268,7 +269,7 @@ class EventCalendarController extends AccountBaseController
                     'user_id' => $attendee->id,
                     'event_id' => $event->id,
                     'created_at' => now(),
-                    'updated_at' => now()
+                    'updated_at' => now(),
                 ];
             })->toArray();
 
@@ -375,13 +376,13 @@ class EventCalendarController extends AccountBaseController
 
     private function addRepeatEvent($parentEvent, $request, $startDate, $dueDate)
     {
-        $event = new Event();
+        $event = new Event;
         $event->parent_id = $parentEvent->id;
         $event->event_name = $request->event_name;
         $event->where = $request->where;
         $event->description = trim_editor($request->description);
-        $event->start_date_time = $startDate->format('Y-m-d') . '' . Carbon::parse($request->start_time)->format('H:i:s');
-        $event->end_date_time = $dueDate->format('Y-m-d') . ' ' . Carbon::parse($request->end_time)->format('H:i:s');
+        $event->start_date_time = $startDate->format('Y-m-d').''.Carbon::parse($request->start_time)->format('H:i:s');
+        $event->end_date_time = $dueDate->format('Y-m-d').' '.Carbon::parse($request->end_time)->format('H:i:s');
         $event->host = $request->host;
 
         if ($request->repeat) {
@@ -415,7 +416,7 @@ class EventCalendarController extends AccountBaseController
                     'user_id' => $attendee->id,
                     'event_id' => $event->id,
                     'created_at' => now(),
-                    'updated_at' => now()
+                    'updated_at' => now(),
                 ];
             })->toArray();
 
@@ -444,7 +445,7 @@ class EventCalendarController extends AccountBaseController
 
         $userId = UserService::getUserId();
 
-        abort_403(!(
+        abort_403(! (
             $this->editPermission == 'all'
             || ($this->editPermission == 'added' && ($this->event->added_by == $userId || $this->event->host == $userId))
             || ($this->editPermission == 'owned' && (in_array($userId, $attendeesIds) || $this->event->host == $userId))
@@ -511,7 +512,7 @@ class EventCalendarController extends AccountBaseController
 
         $userId = UserService::getUserId();
 
-        abort_403(!(
+        abort_403(! (
             $this->editPermission == 'all'
             || ($this->editPermission == 'added' && ($event->added_by == $userId || $event->host == $userId))
             || ($this->editPermission == 'owned' && (in_array($userId, $attendeesIds) || $event->host == $userId))
@@ -522,8 +523,8 @@ class EventCalendarController extends AccountBaseController
         $event->where = $request->where;
         $event->departments = json_encode($request->team_id);
         $event->description = trim_editor($request->description);
-        $event->start_date_time = companyToYmd($request->start_date) . ' ' . Carbon::createFromFormat($this->company->time_format, $request->start_time)->format('H:i:s');
-        $event->end_date_time = companyToYmd($request->end_date) . ' ' . Carbon::createFromFormat($this->company->time_format, $request->end_time)->format('H:i:s');
+        $event->start_date_time = companyToYmd($request->start_date).' '.Carbon::createFromFormat($this->company->time_format, $request->start_time)->format('H:i:s');
+        $event->end_date_time = companyToYmd($request->end_date).' '.Carbon::createFromFormat($this->company->time_format, $request->end_time)->format('H:i:s');
 
         if ($request->send_reminder) {
             $event->send_reminder = $request->send_reminder;
@@ -628,7 +629,7 @@ class EventCalendarController extends AccountBaseController
             foreach ($attendees as $attendee) {
                 $checkExists = EventAttendee::where('user_id', $attendee->id)->where('event_id', $event->id)->first();
 
-                if (!$checkExists) {
+                if (! $checkExists) {
                     EventAttendee::create(['user_id' => $attendee->id, 'event_id' => $event->id]);
 
                     // Send notification to user
@@ -650,7 +651,7 @@ class EventCalendarController extends AccountBaseController
 
                 $checkExists = EventAttendee::where('user_id', $userId)->where('event_id', $event->id)->first();
 
-                if (!$checkExists) {
+                if (! $checkExists) {
                     EventAttendee::create(['user_id' => $userId, 'event_id' => $event->id]);
 
                     // Send notification to user
@@ -666,11 +667,11 @@ class EventCalendarController extends AccountBaseController
         $event->mentionUser()->sync(request()->mention_user_ids);
 
         if ($requestMentionIds != null) {
-            foreach ($requestMentionIds as  $value) {
+            foreach ($requestMentionIds as $value) {
 
                 if (($mentionedUser) != null) {
 
-                    if (!in_array($value, json_decode($mentionedUser))) {
+                    if (! in_array($value, json_decode($mentionedUser))) {
 
                         $newMention[] = $value;
                     }
@@ -682,7 +683,7 @@ class EventCalendarController extends AccountBaseController
 
             $newMentionMembers = User::whereIn('id', $newMention)->get();
 
-            if (!empty($newMention)) {
+            if (! empty($newMention)) {
 
                 event(new EventInviteMentionEvent($event, $newMentionMembers));
             }
@@ -707,11 +708,11 @@ class EventCalendarController extends AccountBaseController
 
         $userId = UserService::getUserId();
 
-        abort_403(!(
+        abort_403(! (
             $this->viewPermission == 'all'
             || ($this->viewPermission == 'added' && $this->event->added_by == $userId)
             || ($this->viewPermission == 'owned' && in_array($userId, $attendeesIds) || $this->event->host == $userId)
-            || ($this->viewPermission == 'both' && (in_array($userId, $attendeesIds) || $this->event->added_by == $userId) || (!is_null(($this->event->mentionEvent))) && in_array($userId, $mentionUser) || $this->event->host == $userId)
+            || ($this->viewPermission == 'both' && (in_array($userId, $attendeesIds) || $this->event->added_by == $userId) || (! is_null(($this->event->mentionEvent))) && in_array($userId, $mentionUser) || $this->event->host == $userId)
         ));
 
         $getCustomFieldGroupsWithFields = $this->event->getCustomFieldGroupsWithFields();
@@ -720,7 +721,7 @@ class EventCalendarController extends AccountBaseController
             $this->fields = $getCustomFieldGroupsWithFields->fields;
         }
 
-        $this->pageTitle = __('app.menu.event') . ' ' . __('app.details');
+        $this->pageTitle = __('app.menu.event').' '.__('app.details');
         $this->view = 'event-calendar.ajax.show';
 
         if (request()->ajax()) {
@@ -738,7 +739,7 @@ class EventCalendarController extends AccountBaseController
 
         $userId = UserService::getUserId();
 
-        abort_403(!($this->deletePermission == 'all'
+        abort_403(! ($this->deletePermission == 'all'
             || ($this->deletePermission == 'added' && $event->added_by == $userId)
             || ($this->deletePermission == 'owned' && in_array($userId, $attendeesIds))
             || ($this->deletePermission == 'both' && (in_array($userId, $attendeesIds) || $event->added_by == $userId))
@@ -749,6 +750,7 @@ class EventCalendarController extends AccountBaseController
         }
 
         Event::destroy($id);
+
         return Reply::successWithData(__('messages.deleteSuccess'), ['redirectUrl' => route('events.index')]);
     }
 
@@ -756,7 +758,7 @@ class EventCalendarController extends AccountBaseController
     {
         $date = Carbon::createFromFormat($this->company->date_format, $request->date);
 
-        $week = __('app.eventDay.' . $date->weekOfMonth);
+        $week = __('app.eventDay.'.$date->weekOfMonth);
         $day = $date->translatedFormat('l');
 
         return Reply::dataOnly(['message' => __('app.eventMonthlyOn', ['week' => $week, 'day' => $day])]);

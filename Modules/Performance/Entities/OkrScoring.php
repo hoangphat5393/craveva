@@ -8,6 +8,4 @@ use App\Traits\HasCompany;
 class OkrScoring extends BaseModel
 {
     use HasCompany;
-
-
 }

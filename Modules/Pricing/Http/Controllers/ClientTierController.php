@@ -2,13 +2,13 @@
 
 namespace Modules\Pricing\Http\Controllers;
 
-use App\Http\Controllers\AccountBaseController;
 use App\Helper\Reply;
-use App\Models\User;
+use App\Http\Controllers\AccountBaseController;
 use App\Models\ClientDetails;
+use App\Models\User;
 use Illuminate\Http\Request;
-use Modules\Pricing\Entities\PricingTier;
 use Modules\Pricing\DataTables\ClientTiersDataTable;
+use Modules\Pricing\Entities\PricingTier;
 
 class ClientTierController extends AccountBaseController
 {
@@ -18,9 +18,10 @@ class ClientTierController extends AccountBaseController
         $this->pageTitle = __('pricing::app.menu.pricing');
         $this->middleware(function ($request, $next) {
             // Ensure strict company context
-            if (!company()) {
+            if (! company()) {
                 abort(403, 'Company context is required.');
             }
+
             return $next($request);
         });
     }
@@ -31,18 +32,19 @@ class ClientTierController extends AccountBaseController
         abort_403($viewPermission == 'none');
 
         $this->tiers = PricingTier::orderBy('name')->get();
+
         return $dataTable->render('pricing::client_tiers.index', $this->data);
     }
 
     public function edit($id)
     {
-        \Illuminate\Support\Facades\Log::info('ClientTierController@edit called for ID: ' . $id);
+        \Illuminate\Support\Facades\Log::info('ClientTierController@edit called for ID: '.$id);
         $this->client = User::with('clientDetails')->findOrFail($id);
 
-        if (!$this->client->clientDetails) {
-            $details = new ClientDetails();
+        if (! $this->client->clientDetails) {
+            $details = new ClientDetails;
             $details->user_id = $this->client->id;
-            $details->company_name = $this->client->name ?? 'Client ' . $this->client->id;
+            $details->company_name = $this->client->name ?? 'Client '.$this->client->id;
             // Ensure company_id is set if available on client
             if ($this->client->company_id) {
                 $details->company_id = $this->client->company_id;
@@ -73,8 +75,8 @@ class ClientTierController extends AccountBaseController
         $user = User::findOrFail($id);
         $details = $user->clientDetails;
 
-        if (!$details) {
-            $details = new ClientDetails();
+        if (! $details) {
+            $details = new ClientDetails;
             $details->user_id = $user->id;
             $details->company_name = $user->name;
         }

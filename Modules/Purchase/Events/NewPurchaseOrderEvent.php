@@ -9,10 +9,10 @@ use Modules\Purchase\Entities\PurchaseOrder;
 
 class NewPurchaseOrderEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $order;
+
     public $notifyUser;
 
     public function __construct(PurchaseOrder $order, $notifyUser)
@@ -20,5 +20,4 @@ class NewPurchaseOrderEvent
         $this->order = $order;
         $this->notifyUser = $notifyUser;
     }
-
 }

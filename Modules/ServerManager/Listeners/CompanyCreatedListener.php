@@ -3,18 +3,15 @@
 namespace Modules\ServerManager\Listeners;
 
 use App\Events\NewCompanyCreatedEvent;
-use Modules\ServerManager\Entities\ServerSetting;
 use Modules\ServerManager\Database\Seeders\ServerProviderSeeder;
 use Modules\ServerManager\Database\Seeders\ServerTypeSeeder;
-use Modules\ServerManager\Database\Seeders\ServerHostingSeeder;
-use Modules\ServerManager\Database\Seeders\ServerDomainSeeder;
+use Modules\ServerManager\Entities\ServerSetting;
 
 class CompanyCreatedListener
 {
     /**
      * Handle the event.
      *
-     * @param NewCompanyCreatedEvent $event
      * @return void
      */
     public function handle(NewCompanyCreatedEvent $event)
@@ -33,11 +30,11 @@ class CompanyCreatedListener
     public static function seedInitialData($company)
     {
         // Seed server providers
-        $providerSeeder = new ServerProviderSeeder();
+        $providerSeeder = new ServerProviderSeeder;
         $providerSeeder->seedProvidersForCompany($company->id);
 
         // Seed server types
-        $serverTypeSeeder = new ServerTypeSeeder();
+        $serverTypeSeeder = new ServerTypeSeeder;
         $serverTypeSeeder->seedServerTypesForCompany($company->id);
     }
 }

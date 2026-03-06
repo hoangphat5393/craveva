@@ -9,14 +9,13 @@ use NotificationChannels\OneSignal\OneSignalMessage;
 
 class OrderUpdated extends BaseNotification
 {
-
-
     /**
      * Create a new notification instance.
      *
      * @return void
      */
     private $order;
+
     private $emailSetting;
 
     public function __construct(Order $order)
@@ -29,7 +28,7 @@ class OrderUpdated extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -41,7 +40,7 @@ class OrderUpdated extends BaseNotification
         }
 
         if ($this->emailSetting->send_push == 'yes' && push_setting()->beams_push_status == 'active') {
-            $pushNotification = new \App\Http\Controllers\DashboardController();
+            $pushNotification = new \App\Http\Controllers\DashboardController;
             $pushUsersIds = [[$notifiable->id]];
             $pushNotification->sendPushNotifications($pushUsersIds, __('email.order.updateSubject'), $this->order->order_number);
         }
@@ -52,7 +51,7 @@ class OrderUpdated extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage|void
      */
     public function toMail($notifiable)
@@ -66,13 +65,13 @@ class OrderUpdated extends BaseNotification
             $content = __('email.order.updateText');
 
             $build
-                ->subject(__('email.order.updateSubject') . ' - ' . config('app.name') . '.')
+                ->subject(__('email.order.updateSubject').' - '.config('app.name').'.')
                 ->markdown('mail.email', [
                     'url' => $url,
                     'content' => $content,
                     'themeColor' => $this->company->header_color,
                     'actionText' => __('email.order.action'),
-                    'notifiableName' => $notifiable->name
+                    'notifiableName' => $notifiable->name,
                 ]);
 
             parent::resetLocale();
@@ -84,15 +83,15 @@ class OrderUpdated extends BaseNotification
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
-    //phpcs:ignore
+    // phpcs:ignore
     public function toArray($notifiable)
     {
         return [
             'id' => $this->order->id,
-            'order_number' => $this->order->order_number
+            'order_number' => $this->order->order_number,
         ];
     }
 
@@ -103,5 +102,4 @@ class OrderUpdated extends BaseNotification
             ->setSubject(__('email.order.updateSubject'))
             ->setBody(__('email.order.updateText'));
     }
-
 }

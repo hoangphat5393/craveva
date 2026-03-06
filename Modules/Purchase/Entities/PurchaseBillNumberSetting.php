@@ -7,7 +7,6 @@ use App\Traits\HasCompany;
 
 class PurchaseBillNumberSetting extends BaseModel
 {
-
     use HasCompany;
 
     protected $fillable = [];
@@ -16,5 +15,4 @@ class PurchaseBillNumberSetting extends BaseModel
     {
         return \Modules\Purchase\Database\factories\PurchaseBillNumberSettingFactory::new();
     }
-
 }

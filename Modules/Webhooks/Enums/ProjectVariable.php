@@ -2,8 +2,6 @@
 
 namespace Modules\Webhooks\Enums;
 
-use Modules\Webhooks\Enums\Variable;
-
 enum ProjectVariable: string implements Variable
 {
     case project_name = '##PROJECT_NAME##';
@@ -34,5 +32,4 @@ enum ProjectVariable: string implements Variable
             'currency_id',
         ];
     }
-
 }

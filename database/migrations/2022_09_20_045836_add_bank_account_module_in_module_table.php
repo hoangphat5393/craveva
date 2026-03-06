@@ -13,14 +13,13 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      *
      * @return void
      */
-
     public function up()
     {
         Schema::create('bank_accounts', function (Blueprint $table) {
@@ -144,7 +143,6 @@ return new class extends Migration {
                 ->onUpdate('cascade');
         });
 
-
         $count = Company::withoutGlobalScope(ActiveScope::class)->count();
 
         // If bankaccount module is created right now and not previosly
@@ -162,25 +160,25 @@ return new class extends Migration {
                         'module_id' => $module->id,
                         'name' => 'add_bankaccount',
                         'allowed_permissions' => Permission::ALL_NONE,
-                        'is_custom' => 0
+                        'is_custom' => 0,
                     ],
                     [
                         'module_id' => $module->id,
                         'name' => 'view_bankaccount',
                         'allowed_permissions' => Permission::ALL_4_ADDED_1_NONE_5,
-                        'is_custom' => 0
+                        'is_custom' => 0,
                     ],
                     [
                         'module_id' => $module->id,
                         'name' => 'edit_bankaccount',
                         'allowed_permissions' => Permission::ALL_4_ADDED_1_NONE_5,
-                        'is_custom' => 0
+                        'is_custom' => 0,
                     ],
                     [
                         'module_id' => $module->id,
                         'name' => 'delete_bankaccount',
                         'allowed_permissions' => Permission::ALL_4_ADDED_1_NONE_5,
-                        'is_custom' => 0
+                        'is_custom' => 0,
                     ],
                     [
                         'module_id' => $module->id,
@@ -204,19 +202,19 @@ return new class extends Migration {
                         'module_id' => $modulePayment->id,
                         'name' => 'link_payment_bank_account',
                         'is_custom' => 1,
-                        'allowed_permissions' => Permission::ALL_NONE
+                        'allowed_permissions' => Permission::ALL_NONE,
                     ],
                     [
                         'module_id' => $moduleExpense->id,
                         'name' => 'link_expense_bank_account',
                         'is_custom' => 1,
-                        'allowed_permissions' => Permission::ALL_NONE
+                        'allowed_permissions' => Permission::ALL_NONE,
                     ],
                     [
                         'module_id' => $moduleInvoice->id,
                         'name' => 'link_invoice_bank_account',
                         'is_custom' => 1,
-                        'allowed_permissions' => Permission::ALL_NONE
+                        'allowed_permissions' => Permission::ALL_NONE,
                     ],
                 ];
 
@@ -264,7 +262,7 @@ return new class extends Migration {
                     $admins = User::allAdmins($company->id);
 
                     foreach ($admins as $admin) {
-                        $userPermission [] = [
+                        $userPermission[] = [
                             'user_id' => $admin->id,
                             'permission_id' => $permission->id,
                             'permission_type_id' => 4,
@@ -281,7 +279,6 @@ return new class extends Migration {
                 UserPermission::insert($userPermissionChunk);
             }
 
-
         }
 
     }
@@ -291,9 +288,5 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function down()
-    {
-
-    }
-
+    public function down() {}
 };

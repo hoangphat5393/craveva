@@ -8,7 +8,6 @@ use App\Models\GlobalSetting;
 
 class SignUpSettingController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -16,6 +15,7 @@ class SignUpSettingController extends AccountBaseController
         $this->activeSettingMenu = 'sign_up_setting';
         $this->middleware(function ($request, $next) {
             abort_403(user()->permission('manage_company_setting') !== 'all');
+
             return $next($request);
         });
     }
@@ -26,6 +26,7 @@ class SignUpSettingController extends AccountBaseController
     public function index()
     {
         $this->globalSetting = GlobalSetting::first();
+
         return view('sign-up-settings.index', $this->data);
     }
 
@@ -43,5 +44,4 @@ class SignUpSettingController extends AccountBaseController
 
         return Reply::success(__('messages.updateSuccess'));
     }
-
 }

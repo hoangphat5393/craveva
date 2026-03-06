@@ -1,13 +1,13 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use App\Models\SuperAdmin\SupportTicket;
 use App\Models\SuperAdmin\GlobalCurrency;
-use Illuminate\Database\Schema\Blueprint;
+use App\Models\SuperAdmin\SupportTicket;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      *
@@ -15,7 +15,7 @@ return new class extends Migration {
      */
     public function up()
     {
-        if (!Schema::hasTable('global_currencies')) {
+        if (! Schema::hasTable('global_currencies')) {
             Schema::create('global_currencies', function (Blueprint $table) {
                 $table->id();
                 $table->string('currency_name');
@@ -31,7 +31,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasColumn('global_settings', 'company_email')) {
+        if (! Schema::hasColumn('global_settings', 'company_email')) {
             Schema::table('global_settings', function (Blueprint $table) {
                 $table->string('company_email');
                 $table->string('company_phone')->nullable();
@@ -43,7 +43,7 @@ return new class extends Migration {
                     ->on('global_currencies')
                     ->onDelete(null)
                     ->onUpdate('cascade');
-                if(!Schema::hasColumns('global_settings', ['date_format', 'time_format', 'google_map_key'])){
+                if (! Schema::hasColumns('global_settings', ['date_format', 'time_format', 'google_map_key'])) {
                     $table->string('date_format', 20)->default('d-m-Y');
                     $table->string('time_format', 20)->default('h:i a');
                     $table->string('google_map_key');
@@ -75,7 +75,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasTable('packages')) {
+        if (! Schema::hasTable('packages')) {
             Schema::create('packages', function (Blueprint $table) {
                 $table->id();
                 $table->unsignedBigInteger('currency_id')->nullable()->default(null);
@@ -132,7 +132,7 @@ return new class extends Migration {
 
         }
 
-        if (!Schema::hasTable('package_settings')) {
+        if (! Schema::hasTable('package_settings')) {
             Schema::create('package_settings', function (Blueprint $table) {
                 $table->id();
                 $table->enum('status', ['active', 'inactive'])->default('inactive');
@@ -144,7 +144,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasTable('offline_invoices')) {
+        if (! Schema::hasTable('offline_invoices')) {
             Schema::create('offline_invoices', function (Blueprint $table) {
                 $table->id();
                 $table->unsignedInteger('company_id');
@@ -173,7 +173,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasTable('offline_plan_changes')) {
+        if (! Schema::hasTable('offline_plan_changes')) {
             Schema::create('offline_plan_changes', function (Blueprint $table) {
                 $table->id();
                 $table->unsignedInteger('company_id');
@@ -212,7 +212,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasTable('stripe_invoices')) {
+        if (! Schema::hasTable('stripe_invoices')) {
             Schema::create('stripe_invoices', function (Blueprint $table) {
                 $table->id();
                 $table->unsignedInteger('company_id');
@@ -236,7 +236,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasTable('razorpay_invoices')) {
+        if (! Schema::hasTable('razorpay_invoices')) {
             Schema::create('razorpay_invoices', function (Blueprint $table) {
                 $table->id();
                 $table->unsignedInteger('company_id');
@@ -263,7 +263,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasTable('paystack_invoices')) {
+        if (! Schema::hasTable('paystack_invoices')) {
             Schema::create('paystack_invoices', function (Blueprint $table) {
                 $table->id();
                 $table->unsignedInteger('company_id');
@@ -286,7 +286,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasTable('authorize_invoices')) {
+        if (! Schema::hasTable('authorize_invoices')) {
             Schema::create('authorize_invoices', function (Blueprint $table) {
                 $table->id();
                 $table->unsignedInteger('company_id');
@@ -309,7 +309,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasTable('mollie_invoices')) {
+        if (! Schema::hasTable('mollie_invoices')) {
             Schema::create('mollie_invoices', function (Blueprint $table) {
                 $table->id();
                 $table->unsignedInteger('company_id');
@@ -333,7 +333,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasTable('paypal_invoices')) {
+        if (! Schema::hasTable('paypal_invoices')) {
             Schema::create('paypal_invoices', function (Blueprint $table) {
                 $table->id();
                 $table->unsignedInteger('company_id')->nullable();
@@ -371,7 +371,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasTable('payfast_invoices')) {
+        if (! Schema::hasTable('payfast_invoices')) {
             Schema::create('payfast_invoices', function (Blueprint $table) {
                 $table->id();
                 $table->integer('company_id')->unsigned()->nullable();
@@ -399,7 +399,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasTable('stripe_setting')) {
+        if (! Schema::hasTable('stripe_setting')) {
             Schema::create('stripe_setting', function (Blueprint $table) {
                 $table->increments('id');
                 $table->string('api_key')->nullable()->default(null);
@@ -435,7 +435,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasTable('faq_categories')) {
+        if (! Schema::hasTable('faq_categories')) {
             Schema::create('faq_categories', function (Blueprint $table) {
                 $table->id();
                 $table->string('name');
@@ -443,7 +443,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasTable('faqs')) {
+        if (! Schema::hasTable('faqs')) {
             Schema::create('faqs', function (Blueprint $table) {
                 $table->id();
                 $table->string('title');
@@ -459,7 +459,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasTable('faq_files')) {
+        if (! Schema::hasTable('faq_files')) {
             Schema::create('faq_files', function (Blueprint $table) {
                 $table->id();
                 $table->integer('user_id')->unsigned();
@@ -486,7 +486,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasTable('support_ticket_types')) {
+        if (! Schema::hasTable('support_ticket_types')) {
             Schema::create('support_ticket_types', function (Blueprint $table) {
                 $table->bigIncrements('id');
                 $table->string('type')->unique();
@@ -494,7 +494,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasTable('support_tickets')) {
+        if (! Schema::hasTable('support_tickets')) {
             Schema::create('support_tickets', function (Blueprint $table) {
                 $table->bigIncrements('id');
                 $table->unsignedInteger('company_id')->nullable();
@@ -532,7 +532,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasTable('support_ticket_replies')) {
+        if (! Schema::hasTable('support_ticket_replies')) {
             Schema::create('support_ticket_replies', function (Blueprint $table) {
                 $table->bigIncrements('id');
                 $table->bigInteger('support_ticket_id')->unsigned();
@@ -553,7 +553,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasTable('support_ticket_files')) {
+        if (! Schema::hasTable('support_ticket_files')) {
             Schema::create('support_ticket_files', function (Blueprint $table) {
                 $table->increments('id');
                 $table->integer('user_id')->unsigned();
@@ -581,16 +581,16 @@ return new class extends Migration {
         }
 
         Schema::table('theme_settings', function (Blueprint $table) {
-            if (!Schema::hasColumn('theme_settings', 'enable_rounded_theme')) {
+            if (! Schema::hasColumn('theme_settings', 'enable_rounded_theme')) {
                 $table->boolean('enable_rounded_theme')->default(0);
             }
 
-            if (!Schema::hasColumn('theme_settings', 'login_background')) {
+            if (! Schema::hasColumn('theme_settings', 'login_background')) {
                 $table->string('login_background')->nullable()->default(null);
             }
         });
 
-        if (!Schema::hasTable('front_details')) {
+        if (! Schema::hasTable('front_details')) {
             Schema::create('front_details', function (Blueprint $table) {
                 $table->increments('id');
                 $table->enum('get_started_show', ['yes', 'no'])->default('yes');
@@ -608,7 +608,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasTable('tr_front_details')) {
+        if (! Schema::hasTable('tr_front_details')) {
             Schema::create('tr_front_details', function (Blueprint $table) {
                 $table->bigIncrements('id');
                 $table->unsignedInteger('language_setting_id')->nullable();
@@ -645,7 +645,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasTable('front_features')) {
+        if (! Schema::hasTable('front_features')) {
             Schema::create('front_features', function (Blueprint $table) {
                 $table->bigIncrements('id');
                 $table->unsignedInteger('language_setting_id')->nullable();
@@ -661,7 +661,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasTable('features')) {
+        if (! Schema::hasTable('features')) {
             Schema::create('features', function (Blueprint $table) {
                 $table->increments('id');
                 $table->unsignedInteger('language_setting_id')->nullable();
@@ -685,7 +685,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasTable('footer_menu')) {
+        if (! Schema::hasTable('footer_menu')) {
             Schema::create('footer_menu', function (Blueprint $table) {
                 $table->increments('id');
                 $table->string('name');
@@ -708,7 +708,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasTable('seo_details')) {
+        if (! Schema::hasTable('seo_details')) {
             Schema::create('seo_details', function (Blueprint $table) {
                 $table->bigIncrements('id');
                 $table->string('page_name');
@@ -727,7 +727,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasTable('front_clients')) {
+        if (! Schema::hasTable('front_clients')) {
             Schema::create('front_clients', function (Blueprint $table) {
                 $table->increments('id');
                 $table->string('title')->nullable()->default(null);
@@ -742,7 +742,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasTable('testimonials')) {
+        if (! Schema::hasTable('testimonials')) {
             Schema::create('testimonials', function (Blueprint $table) {
                 $table->increments('id');
                 $table->string('name');
@@ -758,7 +758,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasTable('front_faqs')) {
+        if (! Schema::hasTable('front_faqs')) {
             Schema::create('front_faqs', function (Blueprint $table) {
                 $table->increments('id');
                 $table->string('question');
@@ -773,7 +773,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasTable('front_widgets')) {
+        if (! Schema::hasTable('front_widgets')) {
             Schema::create('front_widgets', function (Blueprint $table) {
                 $table->bigIncrements('id');
                 $table->string('name');
@@ -782,21 +782,20 @@ return new class extends Migration {
             });
         }
 
-
-        if (!Schema::hasColumn('front_widgets', 'header_script')) {
+        if (! Schema::hasColumn('front_widgets', 'header_script')) {
             Schema::table('front_widgets', function (Blueprint $table) {
                 $table->longtext('header_script')->nullable();
                 DB::statement('ALTER TABLE `front_widgets` CHANGE `widget_code` `footer_script` LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL;');
             });
         }
 
-        if (!Schema::hasColumn('footer_menu', 'private')) {
+        if (! Schema::hasColumn('footer_menu', 'private')) {
             Schema::table('footer_menu', function (Blueprint $table) {
                 $table->boolean('private')->default(0);
             });
         }
 
-        if (!Schema::hasTable('sign_up_settings')) {
+        if (! Schema::hasTable('sign_up_settings')) {
             Schema::create('sign_up_settings', function (Blueprint $table) {
                 $table->id();
                 $table->unsignedInteger('language_setting_id')->nullable();
@@ -814,7 +813,7 @@ return new class extends Migration {
             $table->string('company_phone')->nullable()->default(null)->change();
         });
 
-        if (!Schema::hasTable('front_menu_buttons')) {
+        if (! Schema::hasTable('front_menu_buttons')) {
             Schema::create('front_menu_buttons', function (Blueprint $table) {
                 $table->increments('id');
                 $table->string('home', 20)->nullable()->default('home');
@@ -878,8 +877,7 @@ return new class extends Migration {
             });
         }
 
-
-        if (!Schema::hasTable('razorpay_subscriptions')) {
+        if (! Schema::hasTable('razorpay_subscriptions')) {
             Schema::create('razorpay_subscriptions', function ($table) {
                 $table->increments('id');
                 $table->unsignedInteger('company_id');
@@ -895,13 +893,13 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasColumn('companies', 'favicon')) {
+        if (! Schema::hasColumn('companies', 'favicon')) {
             Schema::table('companies', function ($table) {
                 $table->string('favicon')->nullable()->after('logo');
             });
         }
 
-        if (!Schema::hasColumn('support_tickets', 'company_id')) {
+        if (! Schema::hasColumn('support_tickets', 'company_id')) {
             Schema::table('support_tickets', function (Blueprint $table) {
                 $table->unsignedInteger('company_id')->nullable()->after('id');
                 $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
@@ -927,5 +925,4 @@ return new class extends Migration {
     {
         Schema::dropIfExists('global_currencies');
     }
-
 };

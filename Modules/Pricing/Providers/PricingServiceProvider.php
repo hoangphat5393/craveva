@@ -13,7 +13,7 @@ class PricingServiceProvider extends ServiceProvider
         $this->registerConfig();
         $this->registerViews();
         $this->registerTranslations();
-        $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
+        $this->loadMigrationsFrom(__DIR__.'/../Database/Migrations');
     }
 
     public function register()
@@ -24,11 +24,11 @@ class PricingServiceProvider extends ServiceProvider
     protected function registerConfig()
     {
         $this->publishes([
-            __DIR__ . '/../Config/config.php' => config_path('pricing.php'),
+            __DIR__.'/../Config/config.php' => config_path('pricing.php'),
         ]);
 
         $this->mergeConfigFrom(
-            __DIR__ . '/../Config/config.php',
+            __DIR__.'/../Config/config.php',
             'pricing'
         );
     }
@@ -36,7 +36,7 @@ class PricingServiceProvider extends ServiceProvider
     protected function registerViews()
     {
         $viewPath = base_path('resources/views/modules/pricing');
-        $sourcePath = __DIR__ . '/../Resources/views';
+        $sourcePath = __DIR__.'/../Resources/views';
 
         $this->publishes([
             $sourcePath => $viewPath,
@@ -52,7 +52,7 @@ class PricingServiceProvider extends ServiceProvider
         if (is_dir($langPath)) {
             $this->loadTranslationsFrom($langPath, 'pricing');
         } else {
-            $this->loadTranslationsFrom(__DIR__ . '/../Resources/lang', 'pricing');
+            $this->loadTranslationsFrom(__DIR__.'/../Resources/lang', 'pricing');
         }
     }
 }

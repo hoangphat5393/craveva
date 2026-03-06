@@ -6,35 +6,34 @@ use App\DataTables\ContractsDataTable;
 use App\Events\ContractSignedEvent;
 use App\Helper\Files;
 use App\Helper\Reply;
+use App\Helper\UserService;
 use App\Http\Requests\Admin\Contract\StoreRequest;
 use App\Http\Requests\Admin\Contract\UpdateRequest;
 use App\Http\Requests\ClientContracts\SignRequest;
 use App\Models\BaseModel;
+use App\Models\ClientContact;
+use App\Models\Company;
 use App\Models\Contract;
 use App\Models\ContractSign;
 use App\Models\ContractTemplate;
 use App\Models\ContractType;
 use App\Models\Currency;
 use App\Models\Project;
-use App\Models\Company;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
-use App\Helper\UserService;
-use App\Models\ClientContact;
 
 class ContractController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'app.menu.contracts';
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('contracts', $this->user->modules));
+            abort_403(! in_array('contracts', $this->user->modules));
 
             return $next($request);
         });
@@ -44,13 +43,12 @@ class ContractController extends AccountBaseController
     {
         abort_403(user()->permission('view_contract') == 'none');
 
-        if (!request()->ajax()) {
+        if (! request()->ajax()) {
             $this->projects = Project::allProjects();
 
             if (in_array('client', user_roles())) {
                 $this->clients = User::client();
-            }
-            else {
+            } else {
                 $this->clients = User::allClients();
             }
 
@@ -92,7 +90,7 @@ class ContractController extends AccountBaseController
         $contract = Contract::findOrFail($id);
         $this->deletePermission = user()->permission('delete_contract');
         $userId = UserService::getUserId();
-        abort_403(!(
+        abort_403(! (
             $this->deletePermission == 'all'
             || ($this->deletePermission == 'added' && $userId == $contract->added_by)
             || ($this->deletePermission == 'owned' && $userId == $contract->client_id)
@@ -108,7 +106,7 @@ class ContractController extends AccountBaseController
     public function create()
     {
         $this->addPermission = user()->permission('add_contract');
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
 
         $this->contractId = request('id');
         $this->contract = null;
@@ -118,11 +116,10 @@ class ContractController extends AccountBaseController
         }
 
         $this->templates = ContractTemplate::all();
-        $this->clients = User::allClients(null, overRidePermission:($this->addPermission == 'all' ? 'all' : null));
+        $this->clients = User::allClients(null, overRidePermission: ($this->addPermission == 'all' ? 'all' : null));
         $this->contractTypes = ContractType::all();
         $this->currencies = Currency::all();
         $this->projects = Project::all();
-
 
         $this->lastContract = Contract::lastContractNumber() + 1;
         $this->invoiceSetting = invoice_setting();
@@ -132,16 +129,15 @@ class ContractController extends AccountBaseController
             $condition = $this->invoiceSetting->contract_digit - strlen($this->lastContract);
 
             for ($i = 0; $i < $condition; $i++) {
-                $this->zero = '0' . $this->zero;
+                $this->zero = '0'.$this->zero;
             }
         }
-
 
         if (is_null($this->contractId)) {
             $this->contractTemplate = request('template') ? ContractTemplate::findOrFail(request('template')) : null;
         }
 
-        $contract = new Contract();
+        $contract = new Contract;
         $getCustomFieldGroupsWithFields = $contract->getCustomFieldGroupsWithFields();
 
         if ($getCustomFieldGroupsWithFields) {
@@ -162,7 +158,7 @@ class ContractController extends AccountBaseController
 
     public function store(StoreRequest $request)
     {
-        $contract = new Contract();
+        $contract = new Contract;
         $this->storeUpdate($request, $contract);
 
         return Reply::redirect(route('contracts.index'), __('messages.recordSaved'));
@@ -178,19 +174,19 @@ class ContractController extends AccountBaseController
         $this->projects = Project::all();
         $userId = UserService::getUserId();
 
-        abort_403(!(
+        abort_403(! (
             $this->editPermission == 'all'
             || ($this->editPermission == 'added' && $userId == $this->contract->added_by)
             || ($this->editPermission == 'owned' && $userId == $this->contract->client_id)
             || ($this->editPermission == 'both' && ($userId == $this->contract->client_id || $userId == $this->contract->added_by)
             )));
 
-        $this->clients = User::allClients(null, overRidePermission:($this->editPermission == 'all' ? 'all' : null));
+        $this->clients = User::allClients(null, overRidePermission: ($this->editPermission == 'all' ? 'all' : null));
         $this->contractTypes = ContractType::all();
         $this->currencies = Currency::all();
         $this->pageTitle = $this->contract->contract_number;
 
-        $contract = new Contract();
+        $contract = new Contract;
 
         $getCustomFieldGroupsWithFields = $contract->getCustomFieldGroupsWithFields();
 
@@ -252,7 +248,7 @@ class ContractController extends AccountBaseController
     }
 
     /**
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|mixed|void
      */
     public function show($id)
@@ -281,14 +277,14 @@ class ContractController extends AccountBaseController
                     $q->where('contract_discussions.added_by', $this->userId);
                 }
             }, 'discussion.user'])->findOrFail($id)->withCustomFields();
-        abort_403(!(
+        abort_403(! (
             $viewPermission == 'all'
             || ($viewPermission == 'added' && $this->userId == $this->contract->added_by)
             || ($viewPermission == 'owned' && $this->userId == $this->contract->client_id)
             || ($viewPermission == 'both' && ($this->userId == $this->contract->client_id || $this->userId == $this->contract->added_by))
         ));
 
-        $contract = new contract();
+        $contract = new contract;
 
         $getCustomFieldGroupsWithFields = $contract->getCustomFieldGroupsWithFields();
 
@@ -306,7 +302,6 @@ class ContractController extends AccountBaseController
             'renew' => 'contracts.ajax.renew',
             default => 'contracts.ajax.summary',
         };
-
 
         if (request()->ajax()) {
             return $this->returnAjax($this->view);
@@ -331,13 +326,12 @@ class ContractController extends AccountBaseController
             $this->fields = $getCustomFieldGroupsWithFields->fields;
         }
 
-        abort_403(!(
+        abort_403(! (
             $viewPermission == 'all'
             || ($viewPermission == 'added' && $userId == $this->contract->added_by)
             || ($viewPermission == 'owned' && $userId == $this->contract->client_id)
             || ($viewPermission == 'both' && ($userId == $this->contract->client_id || $userId == $this->contract->added_by))
         ));
-
 
         $pdf = app('dompdf.wrapper');
 
@@ -355,10 +349,10 @@ class ContractController extends AccountBaseController
         * { text-transform: none !important; }
         </style>';
 
-        $pdf->loadHTML($customCss . view('contracts.contract-pdf', $this->data)->render());
-        $filename = $this->contract->contract_number . '-' . __('app.menu.contract');
+        $pdf->loadHTML($customCss.view('contracts.contract-pdf', $this->data)->render());
+        $filename = $this->contract->contract_number.'-'.__('app.menu.contract');
 
-        return $pdf->download($filename . '.pdf');
+        return $pdf->download($filename.'.pdf');
 
     }
 
@@ -385,11 +379,11 @@ class ContractController extends AccountBaseController
         Carbon::setLocale($this->invoiceSetting->locale ?? 'en');
         $pdf->loadView('contracts.contract-pdf', $this->data);
 
-        $filename = 'contract-' . $this->contract->id;
+        $filename = 'contract-'.$this->contract->id;
 
         return [
             'pdf' => $pdf,
-            'fileName' => $filename
+            'fileName' => $filename,
         ];
     }
 
@@ -401,8 +395,8 @@ class ContractController extends AccountBaseController
             return Reply::error(__('messages.alreadySigned'));
         }
 
-        $sign = new ContractSign();
-        $sign->full_name = $request->first_name . ' ' . $request->last_name;
+        $sign = new ContractSign;
+        $sign->full_name = $request->first_name.' '.$request->last_name;
         $sign->contract_id = $this->contract->id;
         $sign->email = $request->email;
         $sign->date = now();
@@ -413,13 +407,12 @@ class ContractController extends AccountBaseController
             $image = $request->signature;  // your base64 encoded
             $image = str_replace('data:image/png;base64,', '', $image);
             $image = str_replace(' ', '+', $image);
-            $imageName = str_random(32) . '.' . 'jpg';
+            $imageName = str_random(32).'.'.'jpg';
             Files::createDirectoryIfNotExist('contract/sign');
 
-            File::put(public_path() . '/' . Files::UPLOAD_FOLDER . '/contract/sign/' . $imageName, base64_decode($image));
+            File::put(public_path().'/'.Files::UPLOAD_FOLDER.'/contract/sign/'.$imageName, base64_decode($image));
             Files::uploadLocalFile($imageName, 'contract/sign', $this->contract->company_id);
-        }
-        else {
+        } else {
             if ($request->hasFile('image')) {
                 $imageName = Files::uploadLocalOrS3($request->image, 'contract/sign', 300);
             }
@@ -443,14 +436,13 @@ class ContractController extends AccountBaseController
             $image = $request->signature;  // your base64 encoded
             $image = str_replace('data:image/png;base64,', '', $image);
             $image = str_replace(' ', '+', $image);
-            $imageName = str_random(32) . '.' . 'jpg';
+            $imageName = str_random(32).'.'.'jpg';
 
             Files::createDirectoryIfNotExist('contract/sign');
 
-            File::put(public_path() . '/' . Files::UPLOAD_FOLDER . '/contract/sign/' . $imageName, base64_decode($image));
+            File::put(public_path().'/'.Files::UPLOAD_FOLDER.'/contract/sign/'.$imageName, base64_decode($image));
             Files::uploadLocalFile($imageName, 'contract/sign', $contract->company_id);
-        }
-        else {
+        } else {
             if ($request->hasFile('image')) {
                 $imageName = Files::uploadLocalOrS3($request->image, 'contract/sign', 300);
             }
@@ -462,7 +454,6 @@ class ContractController extends AccountBaseController
         $contract->update();
 
         return Reply::successWithData(__('messages.signatureAdded'), ['status' => 'success']);
-
 
     }
 
@@ -483,7 +474,7 @@ class ContractController extends AccountBaseController
             $this->clientDetails = User::where('id', $id)->first();
 
             $clientInfo = [
-                'mobile' => $this->clientDetails->country_phonecode .' '. $this->clientDetails->mobile,
+                'mobile' => $this->clientDetails->country_phonecode.' '.$this->clientDetails->mobile,
                 'office_mobile' => $this->clientDetails->clientDetails->office,
                 'city' => $this->clientDetails->clientDetails->city,
                 'state' => $this->clientDetails->clientDetails->state,
@@ -491,9 +482,7 @@ class ContractController extends AccountBaseController
                 'postalCode' => $this->clientDetails->clientDetails->postal_code,
             ];
 
-
-        }
-        else {
+        } else {
             $projects = Project::all();
         }
 
@@ -508,5 +497,4 @@ class ContractController extends AccountBaseController
 
         return view('contracts.companysign.sign', $this->data);
     }
-
 }

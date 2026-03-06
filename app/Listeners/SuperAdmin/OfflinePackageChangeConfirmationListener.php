@@ -9,11 +9,9 @@ use Illuminate\Support\Facades\Notification;
 
 class OfflinePackageChangeConfirmationListener
 {
-
     /**
      * Handle the event.
      *
-     * @param \App\Events\SuperAdmin\OfflinePackageChangeConfirmationEvent $event
      * @return void
      */
     public function handle(OfflinePackageChangeConfirmationEvent $event)
@@ -21,5 +19,4 @@ class OfflinePackageChangeConfirmationListener
         $notifyUser = Company::firstActiveAdmin($event->offlinePlanChange->company);
         Notification::send($notifyUser, new OfflinePackageChangeConfirmation($event->offlinePlanChange, $event->offlinePlanChange->company));
     }
-
 }

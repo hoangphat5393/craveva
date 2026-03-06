@@ -9,7 +9,6 @@ use Modules\Sms\Notifications\RemovalRequestAdminNotification;
 
 class RemovalRequestAdminListener
 {
-     */
     // phpcs:ignore
     public function handle(RemovalRequestAdminEvent $event)
     {

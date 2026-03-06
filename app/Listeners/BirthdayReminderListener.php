@@ -9,11 +9,9 @@ use Notification;
 
 class BirthdayReminderListener
 {
-
     /**
      * Handle the event.
      *
-     * @param BirthdayReminderEvent $event
      * @return void
      */
     public function handle(BirthdayReminderEvent $event)
@@ -22,5 +20,4 @@ class BirthdayReminderListener
 
         Notification::send($users, new BirthdayReminder($event));
     }
-
 }

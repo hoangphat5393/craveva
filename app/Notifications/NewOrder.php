@@ -9,14 +9,13 @@ use NotificationChannels\OneSignal\OneSignalMessage;
 
 class NewOrder extends BaseNotification
 {
-
-
     /**
      * Create a new notification instance.
      *
      * @return void
      */
     private $order;
+
     private $emailSetting;
 
     public function __construct(Order $order)
@@ -29,7 +28,7 @@ class NewOrder extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -44,9 +43,9 @@ class NewOrder extends BaseNotification
             $this->slackUserNameCheck($notifiable) ? array_push($via, 'slack') : null;
         }
 
-        $subject = (!in_array('client', user_roles()) ? __('email.orders.subject') : __('email.order.subject'));
+        $subject = (! in_array('client', user_roles()) ? __('email.orders.subject') : __('email.order.subject'));
         if ($this->emailSetting->send_push == 'yes' && push_setting()->beams_push_status == 'active') {
-            $pushNotification = new \App\Http\Controllers\DashboardController();
+            $pushNotification = new \App\Http\Controllers\DashboardController;
             $pushUsersIds = [[$notifiable->id]];
             $pushNotification->sendPushNotifications($pushUsersIds, $subject, $this->order->order_number);
         }
@@ -57,7 +56,7 @@ class NewOrder extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage|void
      */
     public function toMail($notifiable)
@@ -68,17 +67,17 @@ class NewOrder extends BaseNotification
 
             $url = route('orders.show', $this->order->id);
             $url = getDomainSpecificUrl($url, $this->company);
-            $subject = (!in_array('client', user_roles()) ? __('email.orders.subject') : __('email.order.subject'));
-            $content = __('email.order.text') . '<br>' . __('app.orderNumber') . ': ' . $this->order->order_number .'<br>';
+            $subject = (! in_array('client', user_roles()) ? __('email.orders.subject') : __('email.order.subject'));
+            $content = __('email.order.text').'<br>'.__('app.orderNumber').': '.$this->order->order_number.'<br>';
 
             $build
-                ->subject($subject . ' (' . $this->order->order_number . ') - ' . config('app.name') . '.')
+                ->subject($subject.' ('.$this->order->order_number.') - '.config('app.name').'.')
                 ->markdown('mail.email', [
                     'url' => $url,
                     'content' => $content,
                     'themeColor' => $this->company->header_color,
                     'actionText' => __('email.order.action'),
-                    'notifiableName' => $notifiable->name
+                    'notifiableName' => $notifiable->name,
                 ]);
 
             parent::resetLocale();
@@ -87,21 +86,21 @@ class NewOrder extends BaseNotification
         }
     }
 
-      // phpcs:ignore
+    // phpcs:ignore
     public function toOneSignal($notifiable)
     {
         return OneSignalMessage::create()
-            ->setSubject((!in_array('client', user_roles()) ? __('email.orders.subject') : __('email.order.subject')))
+            ->setSubject((! in_array('client', user_roles()) ? __('email.orders.subject') : __('email.order.subject')))
             ->setBody(__('email.order.text'));
     }
 
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
-    //phpcs:ignore
+    // phpcs:ignore
     public function toArray($notifiable)
     {
         return [
@@ -114,14 +113,14 @@ class NewOrder extends BaseNotification
     /**
      * Get the Slack representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\SlackMessage
      */
     public function toSlack($notifiable)
     {
 
         return $this->slackBuild($notifiable)
-            ->content('*' . __('email.orders.subject') . '!*' . "\n" . __('app.orderNumber') . ': ' . $this->order->order_number);
+            ->content('*'.__('email.orders.subject').'!*'."\n".__('app.orderNumber').': '.$this->order->order_number);
 
     }
 }

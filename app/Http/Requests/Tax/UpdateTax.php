@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class UpdateTax extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -26,26 +25,23 @@ class UpdateTax extends CoreRequest
     {
         $rules = [];
 
-        if($this->via && $this->via == 'tax-setting') {
+        if ($this->via && $this->via == 'tax-setting') {
             return $rules = [
                 'tax_name' => 'required',
                 'rate_percent' => 'required|numeric',
             ];
-        }
-        else {
+        } else {
             if ($this->type == 'tax_name') {
                 $rules = [
-                    'value' => 'required|unique:taxes,tax_name,null,id,company_id,' . company()->id,
+                    'value' => 'required|unique:taxes,tax_name,null,id,company_id,'.company()->id,
                 ];
-            }
-            else {
+            } else {
                 $rules = [
-                    'value' => 'required|numeric'
+                    'value' => 'required|numeric',
                 ];
             }
         }
 
         return $rules;
     }
-
 }

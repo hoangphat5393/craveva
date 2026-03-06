@@ -20,5 +20,4 @@ class TaskReminderListener
         } catch (\Exception $e) { // @codingStandardsIgnoreLine
         }
     }
-
 }

@@ -25,6 +25,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property-read \App\Models\EmployeeShiftChangeRequest|null $pendingRequestChange
  * @property-read \App\Models\EmployeeShiftChangeRequest|null $requestChange
  * @property-read \App\Models\User $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|EmployeeShiftSchedule newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|EmployeeShiftSchedule newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|EmployeeShiftSchedule query()
@@ -39,16 +40,18 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @method static \Illuminate\Database\Eloquent\Builder|EmployeeShiftSchedule whereShiftStartTime($value)
  * @method static \Illuminate\Database\Eloquent\Builder|EmployeeShiftSchedule whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|EmployeeShiftSchedule whereUserId($value)
+ *
  * @property string $file
  * @property-read mixed $download_file_url
  * @property-read mixed $file_url
  * @property-read \App\Models\EmployeeShiftSchedule|null $dates
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|EmployeeShiftSchedule whereFile($value)
+ *
  * @mixin \Eloquent
  */
 class EmployeeShiftSchedule extends BaseModel
 {
-
     use HasFactory;
 
     protected $casts = [
@@ -65,12 +68,12 @@ class EmployeeShiftSchedule extends BaseModel
 
     public function getFileUrlAttribute()
     {
-        return ($this->file) ? asset_url_local_s3('employee-shift-file/'. $this->id.'/' . $this->file) : '';
+        return ($this->file) ? asset_url_local_s3('employee-shift-file/'.$this->id.'/'.$this->file) : '';
     }
 
     public function getDownloadFileUrlAttribute()
     {
-        return ($this->file) ? asset_url_local_s3('employee-shift-file/'. $this->id.'/' . $this->file) : null;
+        return ($this->file) ? asset_url_local_s3('employee-shift-file/'.$this->id.'/'.$this->file) : null;
     }
 
     public function user(): BelongsTo
@@ -92,5 +95,4 @@ class EmployeeShiftSchedule extends BaseModel
     {
         return $this->hasOne(EmployeeShiftChangeRequest::class, 'shift_schedule_id')->where('status', 'waiting');
     }
-
 }

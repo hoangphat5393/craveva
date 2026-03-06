@@ -2,72 +2,33 @@
 
 namespace Modules\ProjectRoadmap\Http\Controllers;
 
-use Carbon\Carbon;
+use App\Http\Controllers\AccountBaseController;
+use App\Models\Project;
+use App\Models\ProjectCategory;
+use App\Models\ProjectMilestone;
+use App\Models\ProjectStatusSetting;
+use App\Models\ProjectTimeLog;
+use App\Models\ProjectTimeLogBreak;
 use App\Models\Task;
+use App\Models\TaskboardColumn;
 use App\Models\Team;
 use App\Models\User;
-use App\Helper\Files;
-use App\Helper\Reply;
-use App\Models\Pinned;
-use App\Models\Expense;
-use App\Models\Invoice;
-use App\Models\Payment;
-use App\Models\Project;
-use App\Models\SubTask;
-use App\Models\Currency;
-use App\Models\TaskUser;
-use App\Models\BankAccount;
-use App\Models\ProjectFile;
-use App\Models\ProjectNote;
-use App\Models\SubTaskFile;
-use App\Scopes\ActiveScope;
 use App\Traits\ImportExcel;
-use Illuminate\Http\Request;
-use App\Models\ProjectMember;
-use App\Imports\ProjectImport;
-use App\Jobs\ImportProjectJob;
-use App\Models\MessageSetting;
-use App\Models\ProjectTimeLog;
-use App\Models\ProjectActivity;
-use App\Models\ProjectCategory;
-use App\Models\ProjectTemplate;
-use App\Models\TaskboardColumn;
 use App\Traits\ProjectProgress;
-use App\Models\ProjectMilestone;
-use App\Models\DiscussionCategory;
 use Illuminate\Support\Facades\DB;
-use App\DataTables\TicketDataTable;
-use App\Models\ProjectTimeLogBreak;
-use App\Models\ProjectStatusSetting;
-use App\DataTables\ExpensesDataTable;
-use App\DataTables\InvoicesDataTable;
-use App\DataTables\PaymentsDataTable;
-use App\DataTables\ProjectsDataTable;
-use App\DataTables\TimeLogsDataTable;
-use App\DataTables\DiscussionDataTable;
-use App\DataTables\ArchiveTasksDataTable;
-use App\DataTables\ProjectNotesDataTable;
-use App\Http\Requests\Project\StoreProject;
-use App\DataTables\ArchiveProjectsDataTable;
-use App\Http\Requests\Project\UpdateProject;
-use App\Http\Controllers\AccountBaseController;
-use App\Http\Requests\Admin\Employee\ImportRequest;
-use App\Http\Requests\Admin\Employee\ImportProcessRequest;
-use Symfony\Component\Mailer\Exception\TransportException;
-use Modules\ProjectRoadmap\DataTables\ProjectTasksDataTable;
 use Modules\ProjectRoadmap\DataTables\ProjectRoadmapDataTable;
+use Modules\ProjectRoadmap\DataTables\ProjectTasksDataTable;
 
 class ProjectRoadmapController extends AccountBaseController
 {
-
-    use ProjectProgress, ImportExcel;
+    use ImportExcel, ProjectProgress;
 
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'projectroadmap::app.menu.projectRoadmap';
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('projects', $this->user->modules));
+            abort_403(! in_array('projects', $this->user->modules));
 
             return $next($request);
         });
@@ -75,20 +36,19 @@ class ProjectRoadmapController extends AccountBaseController
 
     /**
      * Display a listing of the resource.
+     *
      * @return Renderable
      */
-
     public function index(ProjectRoadmapDataTable $dataTable)
     {
         $viewPermission = user()->permission('view_projects');
-        abort_403((!in_array($viewPermission, ['all', 'added', 'owned', 'both'])));
+        abort_403((! in_array($viewPermission, ['all', 'added', 'owned', 'both'])));
 
-        if (!request()->ajax()) {
+        if (! request()->ajax()) {
 
             if (in_array('client', user_roles())) {
                 $this->clients = User::client();
-            }
-            else {
+            } else {
                 $this->clients = User::allClients();
                 $this->allEmployees = User::allEmployees(null, true, ($viewPermission == 'all' ? 'all' : null));
             }
@@ -104,10 +64,10 @@ class ProjectRoadmapController extends AccountBaseController
 
     /**
      * Show the specified resource.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
-
     public function show($id, ProjectTasksDataTable $dataTable)
     {
 
@@ -167,7 +127,7 @@ class ProjectRoadmapController extends AccountBaseController
         $this->data['lateTaskCounts'] = $lateTaskCounts;
         $this->data['totalHours'] = $totalHours;
 
-        abort_403(!(
+        abort_403(! (
             $this->viewPermission == 'all'
             || $this->project->public
             || ($this->viewPermission == 'added' && user()->id == $this->project->added_by)
@@ -175,7 +135,7 @@ class ProjectRoadmapController extends AccountBaseController
             || ($this->viewPermission == 'owned' && in_array(user()->id, $memberIds) && in_array('employee', user_roles()))
             || ($this->viewPermission == 'both' && (user()->id == $this->project->client_id || user()->id == $this->project->added_by))
             || ($this->viewPermission == 'both' && (in_array(user()->id, $memberIds) || user()->id == $this->project->added_by) && in_array('employee', user_roles()))
-            || (($this->viewPermission == 'none') && (!is_null(($this->project->mentionProject))) && in_array(user()->id, $mentionIds))
+            || (($this->viewPermission == 'none') && (! is_null(($this->project->mentionProject))) && in_array(user()->id, $mentionIds))
         ));
 
         $this->pageTitle = $this->project->project_name;
@@ -279,11 +239,10 @@ class ProjectRoadmapController extends AccountBaseController
         ];
 
         foreach ($taskPriority as $key => $value) {
-            $data['labels'][] = __('app.' . $key);
+            $data['labels'][] = __('app.'.$key);
             $data['values'][] = $value;
         }
 
         return $data;
     }
-
 }

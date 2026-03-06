@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 /**
  * Class Holiday
  *
- * @package App\Models
  * @property int $id
  * @property int $lead_id
  * @property int $user_id
@@ -25,6 +24,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read mixed $file_url
  * @property-read mixed $icon
  * @property-read \App\Models\Lead $lead
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|DealFile newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|DealFile newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|DealFile query()
@@ -41,11 +41,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|DealFile whereSize($value)
  * @method static \Illuminate\Database\Eloquent\Builder|DealFile whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|DealFile whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class DealFile extends BaseModel
 {
-
     use IconTrait;
 
     const FILE_PATH = 'lead-files';
@@ -58,12 +58,11 @@ class DealFile extends BaseModel
 
     public function getFileUrlAttribute()
     {
-        return asset_url_local_s3(DealFile::FILE_PATH . '/' . $this->deal_id . '/' . $this->hashname);
+        return asset_url_local_s3(DealFile::FILE_PATH.'/'.$this->deal_id.'/'.$this->hashname);
     }
 
     public function lead(): BelongsTo
     {
         return $this->belongsTo(Deal::class, 'deal_id');
     }
-
 }

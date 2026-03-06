@@ -2,17 +2,17 @@
 
 namespace App\DataTables;
 
+use App\Helper\Common;
 use App\Models\KnowledgeBase;
+use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
-use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Services\DataTable;
-use App\Helper\Common;
 
 class KnowledgeBaseDataTable extends BaseDataTable
 {
-
     private $editKnowledgebasePermission;
+
     private $deleteKnowledgebasePermission;
 
     public function __construct()
@@ -25,39 +25,38 @@ class KnowledgeBaseDataTable extends BaseDataTable
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
-
     public function dataTable($query)
     {
         return datatables()
             ->eloquent($query)
-            ->addColumn('check', fn($row) => $this->checkBox($row))
+            ->addColumn('check', fn ($row) => $this->checkBox($row))
             ->addColumn('action', function ($row) {
 
                 $action = '<div class="task_view">
 
                     <div class="dropdown">
                         <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" type="link"
-                            id="dropdownMenuLink-' . $row->id . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            id="dropdownMenuLink-'.$row->id.'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="icon-options-vertical icons"></i>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-' . $row->id . '" tabindex="0">';
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-'.$row->id.'" tabindex="0">';
 
-                $action .= '<a href="' . route('knowledgebase.show', $row->id) . '" class="dropdown-item openRightModal" ><i class="fa fa-eye mr-2"></i>' . __('app.view') . '</a>';
+                $action .= '<a href="'.route('knowledgebase.show', $row->id).'" class="dropdown-item openRightModal" ><i class="fa fa-eye mr-2"></i>'.__('app.view').'</a>';
 
                 if ($this->editKnowledgebasePermission == 'all' || ($this->editKnowledgebasePermission == 'added' && user()->id == $row->added_by)) {
-                    $action .= '<a class="dropdown-item openRightModal" href="' . route('knowledgebase.edit', [$row->id]) . '">
+                    $action .= '<a class="dropdown-item openRightModal" href="'.route('knowledgebase.edit', [$row->id]).'">
                                 <i class="fa fa-edit mr-2"></i>
-                                ' . trans('app.edit') . '
+                                '.trans('app.edit').'
                             </a>';
                 }
 
                 if ($this->deleteKnowledgebasePermission == 'all' || ($this->deleteKnowledgebasePermission == 'added' && user()->id == $row->added_by)) {
-                    $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-user-id="' . $row->id . '">
+                    $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-user-id="'.$row->id.'">
                                 <i class="fa fa-trash mr-2"></i>
-                                ' . trans('app.delete') . '
+                                '.trans('app.delete').'
                             </a>';
                 }
 
@@ -70,7 +69,7 @@ class KnowledgeBaseDataTable extends BaseDataTable
             ->editColumn(
                 'heading',
                 function ($row) {
-                    $heading = ' <a href="' . route('knowledgebase.show', $row->id) . '" class="openRightModal text-darkest-grey" >' . $row->heading . '</a>';
+                    $heading = ' <a href="'.route('knowledgebase.show', $row->id).'" class="openRightModal text-darkest-grey" >'.$row->heading.'</a>';
 
                     return $heading;
                 }
@@ -89,14 +88,13 @@ class KnowledgeBaseDataTable extends BaseDataTable
             )
             ->addIndexColumn()
             ->smart(false)
-            ->setRowId(fn($row) => 'row-' . $row->id)
+            ->setRowId(fn ($row) => 'row-'.$row->id)
             ->rawColumns(['action', 'check', 'heading']);
     }
 
     /**
      * Get query source of dataTable.
      *
-     * @param \App\Models\KnowledgeBase $model
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function query(KnowledgeBase $model)
@@ -117,11 +115,11 @@ class KnowledgeBaseDataTable extends BaseDataTable
         if ($request->searchText != '') {
             $model->where(function ($query) {
                 $safeTerm = Common::safeString(request('searchText'));
-                $query->where('knowledge_bases.heading', 'like', '%' . $safeTerm . '%');
+                $query->where('knowledge_bases.heading', 'like', '%'.$safeTerm.'%');
             });
         }
 
-        if (!in_array('admin', user_roles()) && !in_array('client', user_roles())) {
+        if (! in_array('admin', user_roles()) && ! in_array('client', user_roles())) {
             $model = $model->where('to', 'employee');
         }
 
@@ -157,7 +155,7 @@ class KnowledgeBaseDataTable extends BaseDataTable
             ]);
 
         if (canDataTableExport()) {
-            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
+            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
         }
 
         return $dataTable;
@@ -188,8 +186,7 @@ class KnowledgeBaseDataTable extends BaseDataTable
                 ->orderable(false)
                 ->searchable(false)
                 ->width(150)
-                ->addClass('text-right pr-20')
+                ->addClass('text-right pr-20'),
         ];
     }
-
 }

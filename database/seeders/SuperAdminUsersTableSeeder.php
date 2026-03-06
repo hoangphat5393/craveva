@@ -2,28 +2,26 @@
 
 namespace Database\Seeders;
 
+use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
 use App\Models\UserAuth;
-use App\Models\Permission;
-use App\Scopes\CompanyScope;
 use App\Models\UserPermission;
+use App\Scopes\CompanyScope;
 use Illuminate\Database\Seeder;
 
 class SuperAdminUsersTableSeeder extends Seeder
 {
-
     /**
      * Run the database seeds.
      *
      * @return void
      */
-
     public function run()
     {
         $faker = \Faker\Factory::create();
 
-        $superadmin = new User();
+        $superadmin = new User;
         $superadmin->name = $faker->name;
         $superadmin->email = 'superadmin@example.com';
         $superadmin->is_superadmin = true;

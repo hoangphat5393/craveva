@@ -8,7 +8,6 @@ use Modules\Policy\Console\ActivateModuleCommand;
 
 class PolicyServiceProvider extends ServiceProvider
 {
-
     protected string $moduleName = 'Policy';
 
     protected string $moduleNameLower = 'policy';
@@ -37,10 +36,9 @@ class PolicyServiceProvider extends ServiceProvider
     /**
      * Register commands in the format of Command::class
      */
-     /**
+    /**
      * Register artisan commands
      */
-
     private function registerCommands()
     {
         $this->commands(
@@ -121,5 +119,4 @@ class PolicyServiceProvider extends ServiceProvider
 
         return $paths;
     }
-
 }

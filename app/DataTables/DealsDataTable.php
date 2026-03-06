@@ -2,28 +2,33 @@
 
 namespace App\DataTables;
 
-use Carbon\Carbon;
-use App\Models\Deal;
 use App\Enums\Salutation;
-use App\Models\LeadAgent;
+use App\Helper\Common;
 use App\Models\CustomField;
-use App\Models\PipelineStage;
 use App\Models\CustomFieldGroup;
+use App\Models\Deal;
+use App\Models\LeadAgent;
+use App\Models\PipelineStage;
+use App\Scopes\ActiveScope;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
-use Illuminate\Support\Facades\DB;
-use App\Scopes\ActiveScope;
-use App\Helper\Common;
 
 class DealsDataTable extends BaseDataTable
 {
-
     private $editLeadPermission;
+
     private $viewLeadFollowUpPermission;
+
     private $deleteLeadPermission;
+
     private $addFollowUpPermission;
+
     private $changeLeadStatusPermission;
+
     private $viewLeadPermission;
+
     private $myAgentId;
 
     /**
@@ -46,7 +51,7 @@ class DealsDataTable extends BaseDataTable
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
@@ -61,48 +66,48 @@ class DealsDataTable extends BaseDataTable
 
         $datatables = datatables()->eloquent($query);
         $datatables->addIndexColumn();
-        $datatables->addColumn('check', fn($row) => $this->checkBox($row));
-        $datatables->addColumn('export_deal_watcher', fn($row) => $row->dealWatcher->name ?? '--');
+        $datatables->addColumn('check', fn ($row) => $this->checkBox($row));
+        $datatables->addColumn('export_deal_watcher', fn ($row) => $row->dealWatcher->name ?? '--');
         $datatables->addColumn('action', function ($row) {
             $action = '<div class="task_view">
 
                     <div class="dropdown">
                         <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" type="link"
-                            id="dropdownMenuLink-' . $row->id . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            id="dropdownMenuLink-'.$row->id.'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="icon-options-vertical icons"></i>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-' . $row->id . '" tabindex="0">';
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-'.$row->id.'" tabindex="0">';
 
-            $action .= '<a href="' . route('deals.show', [$row->id]) . '" class="dropdown-item"><i class="fa fa-eye mr-2"></i>' . __('app.view') . '</a>';
+            $action .= '<a href="'.route('deals.show', [$row->id]).'" class="dropdown-item"><i class="fa fa-eye mr-2"></i>'.__('app.view').'</a>';
 
             if (
                 $this->editLeadPermission == 'all'
                 || ($this->editLeadPermission == 'added' && user()->id == $row->added_by)
-                || ($this->editLeadPermission == 'owned' && ((!is_null($row->agent_id) && !is_null($row->leadAgent) && user()->id == $row->leadAgent->user->id) || (!is_null($row->deal_watcher) && user()->id == $row->deal_watcher)))
-                || ($this->editLeadPermission == 'both' && (((!is_null($row->agent_id) && !is_null($row->leadAgent) && user()->id == $row->leadAgent->user->id) || (!is_null($row->deal_watcher) && user()->id == $row->deal_watcher)) || user()->id == $row->added_by))
+                || ($this->editLeadPermission == 'owned' && ((! is_null($row->agent_id) && ! is_null($row->leadAgent) && user()->id == $row->leadAgent->user->id) || (! is_null($row->deal_watcher) && user()->id == $row->deal_watcher)))
+                || ($this->editLeadPermission == 'both' && (((! is_null($row->agent_id) && ! is_null($row->leadAgent) && user()->id == $row->leadAgent->user->id) || (! is_null($row->deal_watcher) && user()->id == $row->deal_watcher)) || user()->id == $row->added_by))
             ) {
-                $action .= '<a class="dropdown-item openRightModal" href="' . route('deals.edit', [$row->id]) . '">
+                $action .= '<a class="dropdown-item openRightModal" href="'.route('deals.edit', [$row->id]).'">
                                 <i class="fa fa-edit mr-2"></i>
-                                ' . trans('app.edit') . '
+                                '.trans('app.edit').'
                             </a>';
             }
 
             if (
                 $this->deleteLeadPermission == 'all'
                 || ($this->deleteLeadPermission == 'added' && user()->id == $row->added_by)
-                || ($this->deleteLeadPermission == 'owned' && ((!is_null($row->agent_id) && !is_null($row->leadAgent) && user()->id == $row->leadAgent->user->id) || (!is_null($row->deal_watcher) && user()->id == $row->deal_watcher)))
-                || ($this->deleteLeadPermission == 'both' && (((!is_null($row->agent_id) && !is_null($row->leadAgent) && user()->id == $row->leadAgent->user->id) || (!is_null($row->deal_watcher) && user()->id == $row->deal_watcher)) || user()->id == $row->added_by))
+                || ($this->deleteLeadPermission == 'owned' && ((! is_null($row->agent_id) && ! is_null($row->leadAgent) && user()->id == $row->leadAgent->user->id) || (! is_null($row->deal_watcher) && user()->id == $row->deal_watcher)))
+                || ($this->deleteLeadPermission == 'both' && (((! is_null($row->agent_id) && ! is_null($row->leadAgent) && user()->id == $row->leadAgent->user->id) || (! is_null($row->deal_watcher) && user()->id == $row->deal_watcher)) || user()->id == $row->added_by))
             ) {
-                $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-id="' . $row->id . '">
+                $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-id="'.$row->id.'">
                         <i class="fa fa-trash mr-2"></i>
-                        ' . trans('app.delete') . '
+                        '.trans('app.delete').'
                     </a>';
             }
 
-            if (($this->addFollowUpPermission == 'all' || ($this->addFollowUpPermission == 'added' && user()->id == $row->added_by)) && $row->next_follow_up == 'yes' && !in_array($row->leadStage?->slug, ['win', 'lost'])) {
-                $action .= '<a onclick="followUp(' . $row->id . ')" class="dropdown-item" href="javascript:;">
+            if (($this->addFollowUpPermission == 'all' || ($this->addFollowUpPermission == 'added' && user()->id == $row->added_by)) && $row->next_follow_up == 'yes' && ! in_array($row->leadStage?->slug, ['win', 'lost'])) {
+                $action .= '<a onclick="followUp('.$row->id.')" class="dropdown-item" href="javascript:;">
                                 <i class="fa fa-thumbs-up mr-2"></i>
-                                ' . trans('modules.lead.addFollowUp') . '
+                                '.trans('modules.lead.addFollowUp').'
                             </a>';
             }
 
@@ -112,16 +117,16 @@ class DealsDataTable extends BaseDataTable
 
             return $action;
         });
-        $datatables->addColumn('employee_name', fn($row) => $row->leadAgent->user->name ?? '--');
-        $datatables->addColumn('mobile', fn($row) => !empty($row->mobile) ? '<a href="tel:' . $row->mobile . '" class="text-darkest-grey"><u>' . $row->mobile . '</u></a>' : '--');
-        $datatables->addColumn('lead_email', fn($row) => !empty($row->client_email) ? '<a href="mailto:' . $row->client_email . '" class="text-darkest-grey"><u>' . str($row->client_email)->limit(25) . '</u></a>'
-            . '<p>' . $row->mobile . '</p>' : '--');
-        $datatables->addColumn('export_mobile', fn($row) => $row->contact->mobile ?? '--');
-        $datatables->addColumn('export_email', fn($row) => $row->client_email);
-        $datatables->addColumn('lead_value', fn($row) => currency_format($row->value, $row->currency_id));
+        $datatables->addColumn('employee_name', fn ($row) => $row->leadAgent->user->name ?? '--');
+        $datatables->addColumn('mobile', fn ($row) => ! empty($row->mobile) ? '<a href="tel:'.$row->mobile.'" class="text-darkest-grey"><u>'.$row->mobile.'</u></a>' : '--');
+        $datatables->addColumn('lead_email', fn ($row) => ! empty($row->client_email) ? '<a href="mailto:'.$row->client_email.'" class="text-darkest-grey"><u>'.str($row->client_email)->limit(25).'</u></a>'
+            .'<p>'.$row->mobile.'</p>' : '--');
+        $datatables->addColumn('export_mobile', fn ($row) => $row->contact->mobile ?? '--');
+        $datatables->addColumn('export_email', fn ($row) => $row->client_email);
+        $datatables->addColumn('lead_value', fn ($row) => currency_format($row->value, $row->currency_id));
         $datatables->addColumn('lead', 'client_name');
-        $datatables->addColumn('category_name', fn($row) => $row->contact->category->category_name ?? null);
-        $datatables->addColumn('leadStage', fn($row) => $row->leadStage->name ?? '--');
+        $datatables->addColumn('category_name', fn ($row) => $row->contact->category->category_name ?? null);
+        $datatables->addColumn('leadStage', fn ($row) => $row->leadStage->name ?? '--');
 
         $datatables->addColumn('stage', function ($row) use ($stages, $stagesData) {
             $action = '--';
@@ -137,7 +142,7 @@ class DealsDataTable extends BaseDataTable
 
             if ($this->changeLeadStatusPermission == 'all') {
 
-                $action = '<select class="form-control select-picker statusChange" data-size="4" name="statusChange" onchange="changeStage(' . $row->id . ', this)">';
+                $action = '<select class="form-control select-picker statusChange" data-size="4" name="statusChange" onchange="changeStage('.$row->id.', this)">';
 
                 foreach ($stages as $item) {
                     $action .= '<option ';
@@ -146,14 +151,14 @@ class DealsDataTable extends BaseDataTable
                         $action .= 'selected';
                     }
 
-                    $action .= '  data-content="<i class=\'fa fa-circle mr-2\' style=\'color: ' . $item->label_color . '\'></i> ' . $item->name . '" data-id="' . $item->id . '" data-slug="' . $item->slug . '" value="' . $item->id . '">' . $item->name . '</option>';
+                    $action .= '  data-content="<i class=\'fa fa-circle mr-2\' style=\'color: '.$item->label_color.'\'></i> '.$item->name.'" data-id="'.$item->id.'" data-slug="'.$item->slug.'" value="'.$item->id.'">'.$item->name.'</option>';
                 }
 
                 $action .= '</select>';
             } else {
                 foreach ($stages as $st) {
                     if ($row->pipeline_stage_id == $st->id) {
-                        $action = "<div class='media align-items-center mw-120'><i class='fa fa-circle mr-1' style='color: " . $st->label_color . " '></i> " . str($st->name)->limit(10) . '</div>';
+                        $action = "<div class='media align-items-center mw-120'><i class='fa fa-circle mr-1' style='color: ".$st->label_color." '></i> ".str($st->name)->limit(10).'</div>';
                     }
                 }
             }
@@ -167,8 +172,9 @@ class DealsDataTable extends BaseDataTable
             $client_name = $row->client_name;
             if ($row->salutation instanceof Salutation || is_string($row->salutation)) {
                 $salutationLabel = ($row->salutation instanceof Salutation) ? $row->salutation->label() : Salutation::from($row->salutation)->label();
-                $client_name = $salutationLabel . ' ' . $client_name;
+                $client_name = $salutationLabel.' '.$client_name;
             }
+
             return $client_name;
         });
         $datatables->addColumn('export_company_name', function ($row) {
@@ -180,22 +186,22 @@ class DealsDataTable extends BaseDataTable
             $label = '';
 
             if ($row->client_id != null && $row->client_id != '') {
-                $label = '<label class="badge badge-secondary">' . __('app.client') . '</label>';
+                $label = '<label class="badge badge-secondary">'.__('app.client').'</label>';
             }
 
             $client_name = $row->client_name;
 
             if ($row->salutation instanceof Salutation || is_string($row->salutation)) {
                 $salutationLabel = ($row->salutation instanceof Salutation) ? $row->salutation->label() : Salutation::from($row->salutation)->label();
-                $client_name = $salutationLabel . ' ' . $client_name;
+                $client_name = $salutationLabel.' '.$client_name;
             }
 
             return '
                         <div class="media-body">
-                    <h5 class="mb-0 f-13 text-truncate"><a href="' . route('lead-contact.show', [$row->contact_id]) . '">' . str($client_name)->limit(18) . '</a></h5>
-                    <p class="mb-0">' . $label . '</p>
+                    <h5 class="mb-0 f-13 text-truncate"><a href="'.route('lead-contact.show', [$row->contact_id]).'">'.str($client_name)->limit(18).'</a></h5>
+                    <p class="mb-0">'.$label.'</p>
                     <p class="mb-0 f-12 text-dark-grey text-truncate">
-                    ' . str($row->company_name)->limit(18) . '
+                    '.str($row->company_name)->limit(18).'
                 </p>
                     </div>
                   ';
@@ -204,28 +210,28 @@ class DealsDataTable extends BaseDataTable
         $datatables->editColumn('name', function ($row) {
             return '
                         <div class="media-body">
-                            <h5 class="mb-0 f-13 "><a href="' . route('deals.show', [$row->id]) . '">' . $row->name . '</a></h5>
+                            <h5 class="mb-0 f-13 "><a href="'.route('deals.show', [$row->id]).'">'.$row->name.'</a></h5>
                         </div>
                   ';
         });
         $datatables->editColumn('next_follow_up_date', function ($row) use ($currentDate) {
             $date = '';
             if ($row->next_follow_up_date != null && $row->next_follow_up_date != '') {
-                $date = $row->next_follow_up_date->translatedFormat($this->company->date_format) . '<br> ' . $row->next_follow_up_date->translatedFormat($this->company->time_format);
+                $date = $row->next_follow_up_date->translatedFormat($this->company->date_format).'<br> '.$row->next_follow_up_date->translatedFormat($this->company->time_format);
             }
 
             if ($row->next_follow_up_date < $currentDate && $row->next_follow_up_status == 'incomplete' && $date != '--') {
-                return $date . '<br><label class="badge badge-danger">' . __('app.pending') . '</label>';
+                return $date.'<br><label class="badge badge-danger">'.__('app.pending').'</label>';
             }
 
             return $date;
         });
-        $datatables->editColumn('close_date', fn($row) => $row->close_date ? $row->close_date->translatedFormat($this->company->date_format) : '--');
-        $datatables->editColumn('lead_pipeline_id', fn($row) => $row->lead_pipeline_id ? $row->pipeline->name : '--');
-        $datatables->editColumn('agent_name', fn($row) => $row->agent_id ? view('components.employee', ['user' => $row->leadAgent->user]) : '--');
-        $datatables->addColumn('deal_watcher_user', fn($row) => $row->dealWatcher ? view('components.employee', ['user' => $row->dealWatcher]) : '--');
+        $datatables->editColumn('close_date', fn ($row) => $row->close_date ? $row->close_date->translatedFormat($this->company->date_format) : '--');
+        $datatables->editColumn('lead_pipeline_id', fn ($row) => $row->lead_pipeline_id ? $row->pipeline->name : '--');
+        $datatables->editColumn('agent_name', fn ($row) => $row->agent_id ? view('components.employee', ['user' => $row->leadAgent->user]) : '--');
+        $datatables->addColumn('deal_watcher_user', fn ($row) => $row->dealWatcher ? view('components.employee', ['user' => $row->dealWatcher]) : '--');
         $datatables->smart(false);
-        $datatables->setRowId(fn($row) => 'row-' . $row->id);
+        $datatables->setRowId(fn ($row) => 'row-'.$row->id);
         $datatables->removeColumn('status_id');
         $datatables->removeColumn('client_id');
         $datatables->removeColumn('source');
@@ -257,7 +263,7 @@ class DealsDataTable extends BaseDataTable
             'pipeline',
             'leadStage',
             'leadAgent.user.employeeDetail.designation:id,name',
-            'leadAgent.user.employeeDetail.department:id,team_name'
+            'leadAgent.user.employeeDetail.department:id,team_name',
         ])
             ->select(
                 'deals.id',
@@ -293,7 +299,6 @@ class DealsDataTable extends BaseDataTable
             ->leftJoin('lead_products', 'lead_products.deal_id', 'deals.id')
             ->leftJoin('products', 'products.id', 'lead_products.product_id');
 
-
         if ($this->request()->followUp != 'all' && $this->request()->followUp != '') {
             $lead = $lead->leftJoin('lead_follow_up', 'lead_follow_up.deal_id', 'deals.id');
 
@@ -304,12 +309,12 @@ class DealsDataTable extends BaseDataTable
             }
         }
 
-        if (!is_null($this->request()->min) || !is_null($this->request()->max)) {
+        if (! is_null($this->request()->min) || ! is_null($this->request()->max)) {
             $min = $this->request()->min;
             $lead = $lead->where('value', '>=', $min);
         }
 
-        if (!is_null($this->request()->max)) {
+        if (! is_null($this->request()->max)) {
             $max = $this->request()->max;
             $lead = $lead->where('value', '<=', $max);
         }
@@ -383,7 +388,7 @@ class DealsDataTable extends BaseDataTable
 
         if ($this->viewLeadPermission == 'owned') {
             $lead = $lead->where(function ($query) {
-                if (!empty($this->myAgentId)) {
+                if (! empty($this->myAgentId)) {
                     $query->whereIn('agent_id', $this->myAgentId);
                 }
 
@@ -393,7 +398,7 @@ class DealsDataTable extends BaseDataTable
 
         if ($this->viewLeadPermission == 'both') {
             $lead = $lead->where(function ($query) {
-                if (!empty($this->myAgentId)) {
+                if (! empty($this->myAgentId)) {
                     $query->whereIn('agent_id', $this->myAgentId);
                 }
 
@@ -425,11 +430,11 @@ class DealsDataTable extends BaseDataTable
         if ($this->request()->searchText != '') {
             $lead = $lead->where(function ($query) {
                 $safeTerm = Common::safeString(request('searchText'));
-                $query->where('leads.client_name', 'like', '%' . $safeTerm . '%')
-                    ->orWhere('leads.client_email', 'like', '%' . $safeTerm . '%')
-                    ->orWhere('leads.company_name', 'like', '%' . $safeTerm . '%')
-                    ->orwhere('leads.mobile', 'like', '%' . $safeTerm . '%')
-                    ->orwhere('deals.name', 'like', '%' . $safeTerm . '%');
+                $query->where('leads.client_name', 'like', '%'.$safeTerm.'%')
+                    ->orWhere('leads.client_email', 'like', '%'.$safeTerm.'%')
+                    ->orWhere('leads.company_name', 'like', '%'.$safeTerm.'%')
+                    ->orwhere('leads.mobile', 'like', '%'.$safeTerm.'%')
+                    ->orwhere('deals.name', 'like', '%'.$safeTerm.'%');
             });
         }
 
@@ -455,7 +460,7 @@ class DealsDataTable extends BaseDataTable
             ]);
 
         if (canDataTableExport()) {
-            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
+            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
         }
 
         return $dataTable;
@@ -475,21 +480,21 @@ class DealsDataTable extends BaseDataTable
                 'title' => '<input type="checkbox" name="select_all_table" id="select-all-table" onclick="selectAllTable(this)">',
                 'exportable' => false,
                 'orderable' => false,
-                'searchable' => false
+                'searchable' => false,
             ],
             '#' => ['data' => 'DT_RowIndex', 'orderable' => false, 'searchable' => false, 'visible' => false, 'title' => '#'],
             __('app.id') => ['data' => 'id', 'name' => 'id', 'title' => __('app.id'), 'visible' => showId()],
             __('modules.deal.dealName') => ['data' => 'name', 'name' => 'name', 'title' => __('modules.deal.dealName')],
             // For datatable view, show the combined client_name (with company name in the cell)
-            __('modules.leadContact.leadName') => [ 'data' => 'client_name', 'name' => 'leads.client_name', 'title' => __('modules.leadContact.leadName'), 'exportable' => false],
+            __('modules.leadContact.leadName') => ['data' => 'client_name', 'name' => 'leads.client_name', 'title' => __('modules.leadContact.leadName'), 'exportable' => false],
             // For export, split into two columns: client_name and company_name
-            __('modules.leadContact.leadName') . ' (' . __('app.client') . ')' => ['data' => 'export_client_name', 'name' => 'leads.client_name', 'title' => __('modules.leadContact.leadName'), 'visible' => false, 'exportable' => true],
+            __('modules.leadContact.leadName').' ('.__('app.client').')' => ['data' => 'export_client_name', 'name' => 'leads.client_name', 'title' => __('modules.leadContact.leadName'), 'visible' => false, 'exportable' => true],
             __('modules.lead.companyName') => ['data' => 'export_company_name', 'name' => 'leads.company_name', 'title' => __('modules.lead.companyName'), 'visible' => false, 'exportable' => true],
             __('modules.lead.email') => ['data' => 'lead_email', 'name' => 'email', 'title' => __('app.contactDetails'), 'exportable' => false],
-            __('app.lead') . ' ' . __('modules.lead.email') => ['data' => 'export_email', 'name' => 'email', 'title' => __('app.lead') . ' ' . __('modules.lead.email'), 'exportable' => true, 'visible' => false],
+            __('app.lead').' '.__('modules.lead.email') => ['data' => 'export_email', 'name' => 'email', 'title' => __('app.lead').' '.__('modules.lead.email'), 'exportable' => true, 'visible' => false],
             __('modules.deal.pipeline') => ['data' => 'lead_pipeline_id', 'name' => 'lead_pipeline_id', 'exportable' => true, 'visible' => false, 'title' => __('modules.deal.pipeline')],
             //            __('modules.lead.mobile') => ['data' => 'mobile', 'name' => 'mobile', 'title' => __('modules.lead.mobile'), 'exportable' => false],
-            __('app.lead') . ' ' . __('modules.lead.mobile') => ['data' => 'export_mobile', 'name' => 'mobile', 'title' => __('app.lead') . ' ' . __('modules.lead.mobile'), 'exportable' => true, 'visible' => false],
+            __('app.lead').' '.__('modules.lead.mobile') => ['data' => 'export_mobile', 'name' => 'mobile', 'title' => __('app.lead').' '.__('modules.lead.mobile'), 'exportable' => true, 'visible' => false],
             __('modules.deal.dealValue') => ['data' => 'lead_value', 'name' => 'value', 'title' => __('app.value'), 'exportable' => true],
             __('modules.deal.closeDate') => ['data' => 'close_date', 'name' => 'close_date', 'title' => __('modules.deal.closeDate')],
             __('modules.lead.nextFollowUp') => ['data' => 'next_follow_up_date', 'name' => 'next_follow_up_date', 'searchable' => false, 'exportable' => ($this->viewLeadFollowUpPermission != 'none'), 'title' => __('modules.lead.nextFollowUp'), 'visible' => ($this->viewLeadFollowUpPermission != 'none')],
@@ -498,7 +503,7 @@ class DealsDataTable extends BaseDataTable
             __('app.addedBy') => ['data' => 'export_deal_watcher', 'name' => 'users.name', 'exportable' => true, 'visible' => false, 'title' => __('app.dealWatcher')],
             __('app.dealWatcher') => ['data' => 'deal_watcher_user', 'name' => 'users.name', 'exportable' => false, 'title' => __('app.dealWatcher')],
             __('modules.leadContact.stage') => ['data' => 'stage', 'name' => 'deals.pipeline_stage_id', 'exportable' => false, 'visible' => true, 'title' => __('modules.leadContact.stage')],
-            __('modules.leadContact.leadStage') => ['data' => 'leadStage', 'name' => 'leadStage', 'visible' => false, 'orderable' => false, 'searchable' => false, 'title' => __('modules.leadContact.leadStage')]
+            __('modules.leadContact.leadStage') => ['data' => 'leadStage', 'name' => 'leadStage', 'visible' => false, 'orderable' => false, 'searchable' => false, 'title' => __('modules.leadContact.leadStage')],
         ];
 
         $action = [
@@ -507,10 +512,9 @@ class DealsDataTable extends BaseDataTable
                 ->printable(false)
                 ->orderable(false)
                 ->searchable(false)
-                ->addClass('text-right pr-20')
+                ->addClass('text-right pr-20'),
         ];
 
-
-        return array_merge($data, CustomFieldGroup::customFieldsDataMerge(new Deal()), $action);
+        return array_merge($data, CustomFieldGroup::customFieldsDataMerge(new Deal), $action);
     }
 }

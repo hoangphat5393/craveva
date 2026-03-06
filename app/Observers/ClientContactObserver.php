@@ -6,7 +6,6 @@ use App\Models\ClientContact;
 
 class ClientContactObserver
 {
-
     public function saving(ClientContact $model)
     {
         if (user()) {
@@ -24,5 +23,4 @@ class ClientContactObserver
             $model->company_id = company()->id;
         }
     }
-
 }

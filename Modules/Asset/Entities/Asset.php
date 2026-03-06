@@ -12,14 +12,13 @@ use Modules\Asset\Database\factories\AssetFactory;
 
 class Asset extends BaseModel
 {
+    use HasCompany, HasFactory;
 
-    use HasFactory, HasCompany;
-
-    //region Properties
+    // region Properties
 
     protected $table = 'assets';
 
-    CONST STATUSES = [
+    const STATUSES = [
         'lent' => 'text-yellow',
         'available' => 'text-light-green',
         'non-functional' => 'text-red',
@@ -49,7 +48,7 @@ class Asset extends BaseModel
         'updated_at',
     ];
 
-    //endregion
+    // endregion
 
     public function history(): HasMany
     {
@@ -66,7 +65,7 @@ class Asset extends BaseModel
         return $this->belongsTo(AssetType::class, 'asset_type_id', 'id');
     }
 
-    //endregion
+    // endregion
 
     public function getImageUrlAttribute()
     {
@@ -74,10 +73,10 @@ class Asset extends BaseModel
             return $this->image;
         }
 
-        return ($this->image) ? asset_url_local_s3('assets/' . $this->image) : '';
+        return ($this->image) ? asset_url_local_s3('assets/'.$this->image) : '';
     }
 
-    //region Custom Functions
+    // region Custom Functions
 
     /**
      * Create a new factory instance for the model.
@@ -88,5 +87,4 @@ class Asset extends BaseModel
     {
         return AssetFactory::new();
     }
-
 }

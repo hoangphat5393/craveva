@@ -19,12 +19,10 @@ class RemovalRequestApprovedRejectLeadListener
         try {
             if ($event->removal->status == 'approved') {
                 Notification::send($event->removal->lead, new RemovalRequestApprovedLead($event->removal->lead));
-            }
-            else {
+            } else {
                 Notification::send($event->removal->lead, new RemovalRequestRejectLead($event->removal->lead));
             }
         } catch (\Exception $e) { // @codingStandardsIgnoreLine
         }
     }
-
 }

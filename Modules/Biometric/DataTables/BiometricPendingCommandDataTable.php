@@ -12,7 +12,7 @@ class BiometricPendingCommandDataTable extends BaseDataTable
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
@@ -26,8 +26,8 @@ class BiometricPendingCommandDataTable extends BaseDataTable
                         <i class="fa fa-ellipsis-v"></i>
                     </a>
                     <div class="dropdown-menu dropdown-menu-end">
-                        <a class="dropdown-item" href="javascript:;" onclick="deletePendingCommand(' . $row->id . ')">
-                            <i class="fa fa-trash"></i> ' . __('app.delete') . '
+                        <a class="dropdown-item" href="javascript:;" onclick="deletePendingCommand('.$row->id.')">
+                            <i class="fa fa-trash"></i> '.__('app.delete').'
                         </a>
                     </div>
                 </div>';
@@ -36,24 +36,23 @@ class BiometricPendingCommandDataTable extends BaseDataTable
                 $statusClass = [
                     'pending' => 'bg-warning',
                     'completed' => 'bg-success',
-                    'failed' => 'bg-danger'
+                    'failed' => 'bg-danger',
                 ];
 
-                return '<span class="badge ' . ($statusClass[$row->status] ?? 'bg-secondary') . '">' . ucfirst($row->status) . '</span>';
+                return '<span class="badge '.($statusClass[$row->status] ?? 'bg-secondary').'">'.ucfirst($row->status).'</span>';
             })
             ->editColumn('created_at', function ($row) {
-                return $row->created_at->format(company()->date_format . ' ' . company()->time_format);
+                return $row->created_at->format(company()->date_format.' '.company()->time_format);
             })
             ->rawColumns(['action', 'status'])
             ->setRowId(function ($row) {
-                return 'row-' . $row->id;
+                return 'row-'.$row->id;
             });
     }
 
     /**
      * Get query source of dataTable.
      *
-     * @param \Modules\Biometric\Entities\BiometricCommands $model
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function query(BiometricCommands $model)
@@ -74,12 +73,12 @@ class BiometricPendingCommandDataTable extends BaseDataTable
             ->setTableId('pending-commands-table')
             ->columns($this->getColumns())
             ->minifiedAjax()
-            ->dom("<'row'<'col-sm-12'tr>>" .
+            ->dom("<'row'<'col-sm-12'tr>>".
                 "<'row'<'col-sm-12 col-md-5'l><'col-sm-12 col-md-7'p>>")
             ->orderBy(5, 'desc')
             ->buttons(
-                Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . __('app.exportExcel')]),
-                Button::make(['extend' => 'csv', 'text' => '<i class="fa fa-file"></i> ' . __('app.exportCSV')])
+                Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.__('app.exportExcel')]),
+                Button::make(['extend' => 'csv', 'text' => '<i class="fa fa-file"></i> '.__('app.exportCSV')])
             )
             ->parameters([
                 'scrollX' => true,
@@ -87,7 +86,7 @@ class BiometricPendingCommandDataTable extends BaseDataTable
                     KTMenu.createInstances();
                 }',
                 'language' => [
-                    'url' => url('vendor/datatables/lang/' . user()->locale . '.json')
+                    'url' => url('vendor/datatables/lang/'.user()->locale.'.json'),
                 ],
             ]);
     }
@@ -127,7 +126,7 @@ class BiometricPendingCommandDataTable extends BaseDataTable
                 ->exportable(false)
                 ->printable(false)
                 ->width(20)
-                ->addClass('text-center')
+                ->addClass('text-center'),
         ];
     }
 }

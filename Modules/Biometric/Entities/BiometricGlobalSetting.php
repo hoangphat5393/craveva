@@ -7,7 +7,6 @@ use App\Models\ModuleSetting;
 
 class BiometricGlobalSetting extends BaseModel
 {
-
     protected $guarded = ['id'];
 
     const MODULE_NAME = 'biometric';

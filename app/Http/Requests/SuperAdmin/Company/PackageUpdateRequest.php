@@ -7,7 +7,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class PackageUpdateRequest extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -32,16 +31,11 @@ class PackageUpdateRequest extends FormRequest
             'package_type' => 'required|in:monthly,annual,lifetime',
         ];
 
-        if(is_null($package) || $package->default != 'trial')
-        {
+        if (is_null($package) || $package->default != 'trial') {
             $rules['pay_date'] = 'required';
         }
 
         return $rules;
 
-
-
-
     }
-
 }

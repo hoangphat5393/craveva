@@ -13,49 +13,51 @@ use Endroid\QrCode\Writer\WebPWriter;
 class QrBuilder extends Builder
 {
     private $data = '';
+
     private $extension = null;
+
     private $size = null;
 
     public function svg()
     {
         $this->extension = 'svg';
 
-        return $this->writer(new SvgWriter());
+        return $this->writer(new SvgWriter);
     }
 
     public function png()
     {
         $this->extension = 'png';
 
-        return $this->writer(new PngWriter());
+        return $this->writer(new PngWriter);
     }
 
     public function gif()
     {
         $this->extension = 'gif';
 
-        return $this->writer(new GifWriter());
+        return $this->writer(new GifWriter);
     }
 
     public function webp()
     {
         $this->extension = 'webp';
 
-        return $this->writer(new WebPWriter());
+        return $this->writer(new WebPWriter);
     }
 
     public function pdf()
     {
         $this->extension = 'pdf';
 
-        return $this->writer(new PdfWriter());
+        return $this->writer(new PdfWriter);
     }
 
     public function eps()
     {
         $this->extension = 'eps';
 
-        return $this->writer(new EpsWriter());
+        return $this->writer(new EpsWriter);
     }
 
     public function setData($data)
@@ -77,7 +79,7 @@ class QrBuilder extends Builder
 
     public function response($download = null)
     {
-        if (!$this->extension) {
+        if (! $this->extension) {
             $this->png();
         }
 
@@ -86,8 +88,8 @@ class QrBuilder extends Builder
         $response = response($qrCode->getString())->header('Content-type', $qrCode->getMimeType());
 
         if ($download) {
-            $filename = str()->random(10) . '.' .  $this->extension;
-            $response->header('Content-Disposition', 'attachment; filename="' . $download . '-' . $filename . '"');
+            $filename = str()->random(10).'.'.$this->extension;
+            $response->header('Content-Disposition', 'attachment; filename="'.$download.'-'.$filename.'"');
         }
 
         return $response;
@@ -95,7 +97,7 @@ class QrBuilder extends Builder
 
     public function save($path)
     {
-        if (!$this->extension) {
+        if (! $this->extension) {
             $this->png();
         }
 
@@ -106,7 +108,7 @@ class QrBuilder extends Builder
 
     public function html()
     {
-        if (!$this->extension) {
+        if (! $this->extension) {
             $this->png();
         }
 
@@ -116,7 +118,7 @@ class QrBuilder extends Builder
 
         $qrCode = $this->build();
 
-        return '<img src="' . $qrCode->getDataUri() . '" />';
+        return '<img src="'.$qrCode->getDataUri().'" />';
     }
 
     public function setSize($size)
@@ -130,5 +132,4 @@ class QrBuilder extends Builder
     {
         return $this->size;
     }
-
 }

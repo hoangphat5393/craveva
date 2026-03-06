@@ -1,11 +1,9 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\DB;
 use App\Models\Company;
 use App\Models\Proposal;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -25,12 +23,12 @@ return new class extends Migration
             }
 
             $duplicates = DB::table('proposal_items')
-            ->select('proposal_id', 'product_id', DB::raw('COUNT(*) as count'))
-            ->whereIn('proposal_id', $proposalIds)
-            ->whereNotNull('product_id')
-            ->groupBy('proposal_id', 'product_id')
-            ->having('count', '>', 1)
-            ->get();
+                ->select('proposal_id', 'product_id', DB::raw('COUNT(*) as count'))
+                ->whereIn('proposal_id', $proposalIds)
+                ->whereNotNull('product_id')
+                ->groupBy('proposal_id', 'product_id')
+                ->having('count', '>', 1)
+                ->get();
 
             foreach ($duplicates as $dup) {
 

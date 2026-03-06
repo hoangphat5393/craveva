@@ -7,10 +7,12 @@ use Illuminate\View\Component;
 
 class OnboardingItem extends Component
 {
-
     public $title;
+
     public $summary;
+
     public $completed;
+
     public $link;
 
     /**
@@ -35,5 +37,4 @@ class OnboardingItem extends Component
     {
         return view('components.cards.onboarding-item');
     }
-
 }

@@ -2,19 +2,20 @@
 
 namespace App\Notifications;
 
-use App\Models\EstimateRequest;
 use App\Models\EmailNotificationSetting;
+use App\Models\EstimateRequest;
 
 class EstimateRequestRejected extends BaseNotification
 {
-
     /**
      * Create a new notification instance.
      *
      * @return void
      */
     private $estimateRequest;
+
     protected $company;
+
     private $emailSetting;
 
     public function __construct(EstimateRequest $estimateRequest)
@@ -27,7 +28,7 @@ class EstimateRequestRejected extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -48,7 +49,7 @@ class EstimateRequestRejected extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
@@ -57,19 +58,18 @@ class EstimateRequestRejected extends BaseNotification
         $url = route('estimate-request.show', $this->estimateRequest->id);
         $url = getDomainSpecificUrl($url, $this->company);
 
-        $content = __('email.estimateRequestRejected.text') . '<br>' . __('modules.estimateRequest.estimateRequest') . ' ' . __('app.number') . ': ' .$this->estimateRequest->estimate_request_number;
-        $content .= '<br><br>' . __('app.reason') . ': ' . $this->estimateRequest->reason;
-
+        $content = __('email.estimateRequestRejected.text').'<br>'.__('modules.estimateRequest.estimateRequest').' '.__('app.number').': '.$this->estimateRequest->estimate_request_number;
+        $content .= '<br><br>'.__('app.reason').': '.$this->estimateRequest->reason;
 
         $build
-            ->subject(__('email.estimateRequestRejected.subject') . ' (' . $this->estimateRequest->estimate_request_number . ') - ' . config('app.name') . __('!'))
+            ->subject(__('email.estimateRequestRejected.subject').' ('.$this->estimateRequest->estimate_request_number.') - '.config('app.name').__('!'))
             ->markdown('mail.email', [
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
                 'actionText' => __('email.estimateRequestRejected.action'),
                 'notifiableName' => $notifiable->name,
-                'reason' => $this->estimateRequest->reason
+                'reason' => $this->estimateRequest->reason,
             ]);
 
         parent::resetLocale();
@@ -80,7 +80,7 @@ class EstimateRequestRejected extends BaseNotification
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
 
@@ -95,8 +95,7 @@ class EstimateRequestRejected extends BaseNotification
 
     public function toSlack($notifiable)
     {
-        return $this->slackBuild($notifiable)->content(__('email.hello') . ' ' . $notifiable->name . ' ' . __('email.estimateRequestRejected.subject'));
+        return $this->slackBuild($notifiable)->content(__('email.hello').' '.$notifiable->name.' '.__('email.estimateRequestRejected.subject'));
 
     }
-
 }

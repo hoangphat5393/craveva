@@ -3,34 +3,33 @@
 namespace App\Observers;
 
 use App\Models\Product;
-use App\Traits\UnitTypeSaveTrait;
 use App\Traits\EmployeeActivityTrait;
+use App\Traits\UnitTypeSaveTrait;
 
 class ProductObserver
 {
-
-    use UnitTypeSaveTrait;
     use EmployeeActivityTrait;
+    use UnitTypeSaveTrait;
 
     public function saving(Product $product)
     {
         $this->unitType($product);
 
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             $product->last_updated_by = user() ? user()->id : null;
         }
     }
 
     public function created(Product $product)
     {
-        if (!isRunningInConsoleOrSeeding() && user()) {
+        if (! isRunningInConsoleOrSeeding() && user()) {
             self::createEmployeeActivity(user()->id, 'product-created', $product->id, 'product');
         }
     }
 
     public function creating(Product $product)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             $product->added_by = user() ? user()->id : null;
         }
 
@@ -41,7 +40,7 @@ class ProductObserver
 
     public function updated(Product $product)
     {
-        if (!isRunningInConsoleOrSeeding() && user()) {
+        if (! isRunningInConsoleOrSeeding() && user()) {
             self::createEmployeeActivity(user()->id, 'product-updated', $product->id, 'product');
         }
     }

@@ -3,8 +3,8 @@
 use App\Models\CustomFieldGroup;
 use Illuminate\Database\Migrations\Migration;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     public function up(): void
     {
         // Đổi tên các nhóm custom field cũ từ 'app.delivery order' thành 'Delivery Order'
@@ -24,4 +24,3 @@ return new class extends Migration {
         // Không rollback để tránh ghi đè tên đã sửa
     }
 };
-

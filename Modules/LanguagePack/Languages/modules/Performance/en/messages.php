@@ -1,6 +1,6 @@
 <?php
 
-return array(
+return [
     'noGoalTypeSettingsAdded' => 'No Goal Type Settings Added',
     'noKeyResultsMetrics' => 'No Key Results Metrics Added',
     'atleastOneValidation' => 'Select at least one',
@@ -38,4 +38,4 @@ return array(
     'viewPastMeeting' => 'meeting is pending from the past months in this year.',
     'viewPastMeetings' => 'meetings are pending from the past months in this year.',
     'privateAgenda' => 'Private Agenda',
-);
+];

@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property string|null $hsn_sac_code
  * @property-read mixed $icon
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|InvoiceItems newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|InvoiceItems newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|InvoiceItems query()
@@ -36,6 +37,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|InvoiceItems whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|InvoiceItems whereUnitPrice($value)
  * @method static \Illuminate\Database\Eloquent\Builder|InvoiceItems whereUpdatedAt($value)
+ *
  * @property-read \App\Models\InvoiceItemImage|null $invoiceItemImage
  * @property-read mixed $tax_list
  * @property int|null $product_id
@@ -44,22 +46,23 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int|null $client_id
  * @property string|null $description
  * @property-read \App\Models\Product $product
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|OrderCart whereClientId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|OrderCart whereDescription($value)
  * @method static \Illuminate\Database\Eloquent\Builder|OrderCart whereProductId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|OrderCart whereUnitId($value)
+ *
  * @mixin \Eloquent
  */
 class OrderCart extends BaseModel
 {
-
     protected $guarded = ['id'];
 
     protected $with = ['product'];
 
     public function product(): BelongsTo
     {
-        
+
         return $this->belongsTo(Product::class, 'product_id');
     }
 
@@ -67,5 +70,4 @@ class OrderCart extends BaseModel
     {
         return $this->belongsTo(UnitType::class, 'unit_id');
     }
-    
 }

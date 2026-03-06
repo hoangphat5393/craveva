@@ -15,11 +15,10 @@ use Modules\Performance\Entities\PerformanceSetting;
 
 class CompanyCreatedListener
 {
-
     /**
      * Handle the event.
      *
-     * @param object $event
+     * @param  object  $event
      * @return void
      */
     public function handle($event)
@@ -34,7 +33,7 @@ class CompanyCreatedListener
     /**
      * Insert default goal types for the created company
      *
-     * @param \App\Models\Company $company
+     * @param  \App\Models\Company  $company
      * @return void
      */
     public function goalTypeData($company)
@@ -47,7 +46,7 @@ class CompanyCreatedListener
     /**
      * Insert default key result metrics for the created company
      *
-     * @param \App\Models\Company $company
+     * @param  \App\Models\Company  $company
      * @return void
      */
     public function keyResultsData($company)
@@ -60,7 +59,7 @@ class CompanyCreatedListener
     /**
      * Insert default key result metrics for the created company
      *
-     * @param \App\Models\Company $company
+     * @param  \App\Models\Company  $company
      * @return void
      */
     public function meetingSeeting($company)
@@ -85,7 +84,7 @@ class CompanyCreatedListener
                     'name' => 'view_performance_module',
                     'display_name' => 'View Performance Module',
                     'allowed_permissions' => Permission::ALL_NONE,
-                    'is_custom' => 1
+                    'is_custom' => 1,
                 ]
             );
 
@@ -98,7 +97,7 @@ class CompanyCreatedListener
                     ->where('role_id', $role->id)
                     ->first();
 
-                $permissionRole = $permissionRole ?: new PermissionRole();
+                $permissionRole = $permissionRole ?: new PermissionRole;
                 $permissionRole->permission_id = $permission->id;
                 $permissionRole->role_id = $role->id;
                 $permissionRole->permission_type_id = 4; // All
@@ -108,7 +107,7 @@ class CompanyCreatedListener
             $adminUsers = User::allAdmins($company->id);
 
             foreach ($adminUsers as $adminUser) {
-                $userPermission = UserPermission::where('user_id', $adminUser->id)->where('permission_id', $permission->id)->first() ?: new UserPermission();
+                $userPermission = UserPermission::where('user_id', $adminUser->id)->where('permission_id', $permission->id)->first() ?: new UserPermission;
                 $userPermission->user_id = $adminUser->id;
                 $userPermission->permission_id = $permission->id;
                 $userPermission->permission_type_id = 4; // All

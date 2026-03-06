@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class StoreDepartment extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -25,7 +24,7 @@ class StoreDepartment extends CoreRequest
     public function rules()
     {
         return [
-            'team_name' => 'required|unique:teams,team_name,null,id,company_id,' . company()->id
+            'team_name' => 'required|unique:teams,team_name,null,id,company_id,'.company()->id,
         ];
     }
 
@@ -36,5 +35,4 @@ class StoreDepartment extends CoreRequest
             'team_name.unique' => __('messages.departmentUniq'),
         ];
     }
-
 }

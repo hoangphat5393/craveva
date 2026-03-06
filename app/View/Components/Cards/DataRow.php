@@ -7,11 +7,14 @@ use Illuminate\View\Component;
 
 class DataRow extends Component
 {
-
     public $label;
+
     public $value;
+
     public $html;
+
     public $otherClasses;
+
     public $labelClasses;
 
     /**
@@ -37,5 +40,4 @@ class DataRow extends Component
     {
         return view('components.cards.data-row');
     }
-
 }

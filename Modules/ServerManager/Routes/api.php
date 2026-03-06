@@ -1,12 +1,12 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Modules\ServerManager\Http\Controllers\ServerManagerController;
-use Modules\ServerManager\Http\Controllers\HostingController;
 use Modules\ServerManager\Http\Controllers\DomainController;
+use Modules\ServerManager\Http\Controllers\HostingController;
+use Modules\ServerManager\Http\Controllers\ServerManagerController;
 
 Route::group(['middleware' => 'auth:sanctum', 'prefix' => 'server-manager'], function () {
-    
+
     Route::get('/statistics', [ServerManagerController::class, 'getStatistics']);
     Route::get('/activities', [ServerManagerController::class, 'getRecentActivities']);
 
@@ -25,4 +25,4 @@ Route::group(['middleware' => 'auth:sanctum', 'prefix' => 'server-manager'], fun
         Route::put('/{id}', [DomainController::class, 'update']);
         Route::delete('/{id}', [DomainController::class, 'destroy']);
     });
-}); 
+});

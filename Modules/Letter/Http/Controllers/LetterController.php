@@ -19,13 +19,12 @@ class LetterController extends AccountBaseController
     /**
      * Display a listing of the resource.
      */
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'letter::app.menu.letter';
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array(LetterSetting::MODULE_NAME, $this->user->modules));
+            abort_403(! in_array(LetterSetting::MODULE_NAME, $this->user->modules));
 
             return $next($request);
         });
@@ -37,6 +36,7 @@ class LetterController extends AccountBaseController
         abort_403($this->viewPermission !== 'all');
 
         $this->pageTitle = 'letter::app.menu.generate';
+
         return $dataTable->render('letter::letter.index', $this->data);
     }
 
@@ -58,10 +58,12 @@ class LetterController extends AccountBaseController
         if (request()->ajax()) {
 
             $html = view('letter::letter.ajax.create', $this->data)->render();
+
             return Reply::dataOnly(['status' => 'success', 'html' => $html, 'title' => $this->pageTitle]);
         }
 
         $this->view = 'letter::letter.ajax.create';
+
         return view('letter::letter.create', $this->data);
     }
 
@@ -73,7 +75,7 @@ class LetterController extends AccountBaseController
         $this->addPermission = user()->permission('add_letter');
         abort_403($this->addPermission !== 'all');
 
-        $letter = new Letter();
+        $letter = new Letter;
         $letter->template_id = $request->template_id;
         $letter->user_id = $request->user_id;
         $letter->creator_id = user()->id;
@@ -97,7 +99,7 @@ class LetterController extends AccountBaseController
         abort_403($this->viewPermission !== 'all');
 
         $this->letter = Letter::with('user', 'template')->findOrFail($id);
-        $this->pageTitle = $this->letter->employee_name . ' - ' . $this->letter->template->title;
+        $this->pageTitle = $this->letter->employee_name.' - '.$this->letter->template->title;
         $employeeLetterVariable = $this->employeeLetterVariable($this->letter);
         $description = $this->letter->description;
 
@@ -109,10 +111,12 @@ class LetterController extends AccountBaseController
 
         if (request()->ajax()) {
             $html = view('letter::letter.ajax.show', $this->data)->render();
+
             return Reply::dataOnly(['status' => 'success', 'html' => $html, 'title' => $this->pageTitle]);
         }
 
         $this->view = 'letter::letter.ajax.show';
+
         return view('letter::letter.show', $this->data);
 
     }
@@ -137,10 +141,12 @@ class LetterController extends AccountBaseController
 
         if (request()->ajax()) {
             $html = view('letter::letter.ajax.edit', $this->data)->render();
+
             return Reply::dataOnly(['status' => 'success', 'html' => $html, 'title' => $this->pageTitle]);
         }
 
         $this->view = 'letter::letter.ajax.edit';
+
         return view('letter::letter.create', $this->data);
     }
 
@@ -170,8 +176,7 @@ class LetterController extends AccountBaseController
 
         if ($letter->user_id) {
             $letterVariable = LetterVariable::getMappedValues($letter->user);
-        }
-        else {
+        } else {
             $letterVariable = [
                 '##EMPLOYEE_NAME##' => $letter->name,
             ];
@@ -186,12 +191,14 @@ class LetterController extends AccountBaseController
         abort_403($deletePermission !== 'all');
 
         Letter::destroy($id);
+
         return Reply::success(__('messages.deleteSuccess'));
     }
 
     public function letterTemplate($id)
     {
         $letter = Template::findOrFail($id);
+
         return Reply::dataOnly(['status' => 'success', 'letter' => $letter]);
     }
 
@@ -223,7 +230,7 @@ class LetterController extends AccountBaseController
         $this->viewPermission = user()->permission('view_letter');
         abort_403($this->viewPermission !== 'all');
 
-        if (!session()->has('letterPreview')) {
+        if (! session()->has('letterPreview')) {
             return abort(404);
         }
 
@@ -233,7 +240,8 @@ class LetterController extends AccountBaseController
 
         $pdf = app('dompdf.wrapper');
         $pdf->loadView('letter::letter.pdf.preview', $this->data);
-        return $pdf->download($this->pageTitle . '.pdf');
+
+        return $pdf->download($this->pageTitle.'.pdf');
     }
 
     public function downloadLetter($id)
@@ -250,11 +258,11 @@ class LetterController extends AccountBaseController
         }
 
         $this->description = $description;
-        $this->pageTitle = $this->letter->employee_name . ' - ' . $this->letter->template->title;
+        $this->pageTitle = $this->letter->employee_name.' - '.$this->letter->template->title;
 
         $pdf = app('dompdf.wrapper');
         $pdf->loadView('letter::letter.pdf.letter', $this->data);
-        return $pdf->download($this->pageTitle . '.pdf');
-    }
 
+        return $pdf->download($this->pageTitle.'.pdf');
+    }
 }

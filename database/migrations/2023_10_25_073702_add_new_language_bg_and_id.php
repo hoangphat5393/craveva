@@ -5,7 +5,6 @@ use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      */
@@ -17,7 +16,7 @@ return new class extends Migration
 
             $bgLanguage = $languages->where('language_code', 'bg')->first();
 
-            if (!$bgLanguage) {
+            if (! $bgLanguage) {
                 LanguageSetting::create([
                     'language_code' => 'bg',
                     'flag_code' => 'bg',
@@ -28,7 +27,7 @@ return new class extends Migration
 
             $idLanguage = $languages->where('language_code', 'id')->first();
 
-            if (!$idLanguage) {
+            if (! $idLanguage) {
                 LanguageSetting::create([
                     'language_code' => 'id',
                     'flag_code' => 'id',
@@ -61,5 +60,4 @@ return new class extends Migration
     {
         //
     }
-
 };

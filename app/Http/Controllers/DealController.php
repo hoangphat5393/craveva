@@ -3,38 +3,36 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\DealNotesDataTable;
+use App\DataTables\DealsDataTable;
 use App\DataTables\LeadFollowupDataTable;
 use App\DataTables\LeadGDPRDataTable;
-use App\DataTables\DealsDataTable;
 use App\DataTables\ProposalDataTable;
 use App\Enums\Salutation;
 use App\Events\AutoFollowUpReminderEvent;
-use ReflectionClass;
-use Illuminate\Support\Facades\DB;
 use App\Helper\Reply;
 use App\Http\Requests\Admin\Employee\ImportProcessRequest;
 use App\Http\Requests\Admin\Employee\ImportRequest;
 use App\Http\Requests\CommonRequest;
-use App\Http\Requests\FollowUp\StoreRequest as FollowUpStoreRequest;
+use App\Http\Requests\Deal\StageChangeRequest;
 use App\Http\Requests\Deal\StoreRequest;
 use App\Http\Requests\Deal\UpdateRequest;
-use App\Http\Requests\Deal\StageChangeRequest;
+use App\Http\Requests\FollowUp\StoreRequest as FollowUpStoreRequest;
 use App\Imports\DealImport;
 use App\Jobs\ImportDealJob;
-use App\Models\GdprSetting;
 use App\Models\Deal;
-use App\Models\LeadAgent;
-use App\Models\LeadCategory;
-use App\Models\LeadCustomForm;
 use App\Models\DealFollowUp;
 use App\Models\DealHistory;
 use App\Models\DealNote;
+use App\Models\GdprSetting;
 use App\Models\Lead;
+use App\Models\LeadAgent;
+use App\Models\LeadCategory;
+use App\Models\LeadCustomForm;
 use App\Models\LeadPipeline;
 use App\Models\LeadProduct;
 use App\Models\LeadSource;
-use App\Models\PipelineStage;
 use App\Models\LeadStatus;
+use App\Models\PipelineStage;
 use App\Models\Product;
 use App\Models\Proposal;
 use App\Models\PurposeConsent;
@@ -43,10 +41,11 @@ use App\Models\User;
 use App\Traits\ImportExcel;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use ReflectionClass;
 
 class DealController extends AccountBaseController
 {
-
     use ImportExcel;
 
     public function __construct()
@@ -55,7 +54,7 @@ class DealController extends AccountBaseController
         $this->pageTitle = 'app.menu.deal';
 
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('leads', $this->user->modules));
+            abort_403(! in_array('leads', $this->user->modules));
 
             $this->viewLeadPermission = user()->permission('view_deals');
             $this->viewEmployeePermission = user()->permission('view_employees');
@@ -70,13 +69,14 @@ class DealController extends AccountBaseController
     public function index(DealsDataTable $dataTable)
     {
         $this->destroySession();
-        abort_403(!in_array($this->viewLeadPermission, ['all', 'added', 'both', 'owned']));
+        abort_403(! in_array($this->viewLeadPermission, ['all', 'added', 'both', 'owned']));
 
-        if (!request()->ajax()) {
+        if (! request()->ajax()) {
             $this->loadDataForView();
             $this->products = Product::all();
 
         }
+
         return $dataTable->render('leads.index', $this->data);
     }
 
@@ -155,11 +155,11 @@ class DealController extends AccountBaseController
 
         $this->viewPermission = user()->permission('view_deals');
 
-        abort_403(!(
+        abort_403(! (
             $this->viewPermission == 'all'
             || ($this->viewPermission == 'added' && $this->deal->added_by == user()->id)
-            || ($this->viewPermission == 'owned' && (($this->leadAgentId == user()->id) || (!is_null($this->deal->deal_watcher) && user()->id == $this->deal->deal_watcher)))
-            || ($this->viewPermission == 'both' && ($this->deal->added_by == user()->id || $this->leadAgentId == user()->id || (!is_null($this->deal->deal_watcher) && user()->id == $this->deal->deal_watcher)))
+            || ($this->viewPermission == 'owned' && (($this->leadAgentId == user()->id) || (! is_null($this->deal->deal_watcher) && user()->id == $this->deal->deal_watcher)))
+            || ($this->viewPermission == 'both' && ($this->deal->added_by == user()->id || $this->leadAgentId == user()->id || (! is_null($this->deal->deal_watcher) && user()->id == $this->deal->deal_watcher)))
         ));
 
         $this->pageTitle = $this->deal->name;
@@ -182,60 +182,59 @@ class DealController extends AccountBaseController
         $tab = request('tab');
 
         switch ($tab) {
-        case 'files':
-            $this->tab = 'leads.ajax.files';
-            break;
-        case 'follow-up':
-            $this->dealFollowUps = DealFollowUp::where('deal_id', $id)->get();
+            case 'files':
+                $this->tab = 'leads.ajax.files';
+                break;
+            case 'follow-up':
+                $this->dealFollowUps = DealFollowUp::where('deal_id', $id)->get();
 
-            if (user()->permission('view_lead_follow_up') == 'added') {
-                $this->dealFollowUps = $this->dealFollowUps->where('added_by', user()->id);
-            }
+                if (user()->permission('view_lead_follow_up') == 'added') {
+                    $this->dealFollowUps = $this->dealFollowUps->where('added_by', user()->id);
+                }
 
-            $this->tab = 'leads.ajax.follow-up';
-            break;
-        case 'proposals':
-            abort_403(!in_array(user()->permission('view_lead_proposals'), ['all', 'added']));
+                $this->tab = 'leads.ajax.follow-up';
+                break;
+            case 'proposals':
+                abort_403(! in_array(user()->permission('view_lead_proposals'), ['all', 'added']));
 
-            $this->proposals = Proposal::where('deal_id', $id)->get();
+                $this->proposals = Proposal::where('deal_id', $id)->get();
 
-            if (user()->permission('view_lead_proposals') == 'added') {
-                $this->proposals = $this->proposals->where('added_by', user()->id);
-            }
+                if (user()->permission('view_lead_proposals') == 'added') {
+                    $this->proposals = $this->proposals->where('added_by', user()->id);
+                }
 
-            $this->tab = 'leads.ajax.proposal';
-            break;
-        case 'notes':
-            $this->notes = DealNote::where('deal_id', $id)->orderBy('created_at', 'desc')->get();
-            $viewNotesPermission = user()->permission('view_deal_note');
-            abort_403(!($viewNotesPermission == 'all' || $viewNotesPermission == 'added' || $viewNotesPermission == 'both' || $viewNotesPermission == 'owned'));
+                $this->tab = 'leads.ajax.proposal';
+                break;
+            case 'notes':
+                $this->notes = DealNote::where('deal_id', $id)->orderBy('created_at', 'desc')->get();
+                $viewNotesPermission = user()->permission('view_deal_note');
+                abort_403(! ($viewNotesPermission == 'all' || $viewNotesPermission == 'added' || $viewNotesPermission == 'both' || $viewNotesPermission == 'owned'));
 
-            if (user()->permission('view_deal_note') == 'added') {
-                $this->notes->where('added_by', user()->id);
-            }
-            elseif (user()->permission('view_deal_note') == 'owned') {
-                $this->notes->where('added_by', '!=', user()->id);
-            }
+                if (user()->permission('view_deal_note') == 'added') {
+                    $this->notes->where('added_by', user()->id);
+                } elseif (user()->permission('view_deal_note') == 'owned') {
+                    $this->notes->where('added_by', '!=', user()->id);
+                }
 
-            $this->tab = 'leads.ajax.notes';
-            break;
-        case 'gdpr':
+                $this->tab = 'leads.ajax.notes';
+                break;
+            case 'gdpr':
 
-            $this->consents = PurposeConsent::with(['lead' => function ($query) use ($id) {
-                $query->where('lead_id', $id)
-                    ->orderByDesc('created_at');
-            }])->get();
+                $this->consents = PurposeConsent::with(['lead' => function ($query) use ($id) {
+                    $query->where('lead_id', $id)
+                        ->orderByDesc('created_at');
+                }])->get();
 
-            $this->gdpr = GdprSetting::first();
+                $this->gdpr = GdprSetting::first();
 
-            return $this->gdpr();
-        case 'history':
-            $this->histories = DealHistory::where('deal_id', $id)->orderBy('created_at', 'desc')->get();
-            $this->tab = 'leads.ajax.history';
-            break;
-        default:
-            $this->tab = 'leads.ajax.files';
-            break;
+                return $this->gdpr();
+            case 'history':
+                $this->histories = DealHistory::where('deal_id', $id)->orderBy('created_at', 'desc')->get();
+                $this->tab = 'leads.ajax.history';
+                break;
+            default:
+                $this->tab = 'leads.ajax.files';
+                break;
         }
 
         if (request()->ajax()) {
@@ -258,7 +257,7 @@ class DealController extends AccountBaseController
     public function create()
     {
         $this->addPermission = user()->permission('add_deals');
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
 
         $this->employees = User::allEmployees(null, true);
 
@@ -268,8 +267,8 @@ class DealController extends AccountBaseController
             $q->where('status', 'active');
         })->get();
 
-        $this->stage = (request()->has('column_id') && !is_null(request()->column_id)) ? PipelineStage::find(request()->column_id) : null;
-        $this->contactID = (request()->has('contact_id') && !is_null(request()->contact_id)) ? request()->contact_id : null;
+        $this->stage = (request()->has('column_id') && ! is_null(request()->column_id)) ? PipelineStage::find(request()->column_id) : null;
+        $this->contactID = (request()->has('contact_id') && ! is_null(request()->contact_id)) ? request()->contact_id : null;
 
         $this->leadAgentArray = $this->leadAgents->pluck('user_id')->toArray();
 
@@ -279,7 +278,7 @@ class DealController extends AccountBaseController
             })->first()->id;
         }
 
-        $deal = new Deal();
+        $deal = new Deal;
         $getCustomFieldGroupsWithFields = $deal->getCustomFieldGroupsWithFields();
 
         if ($getCustomFieldGroupsWithFields) {
@@ -320,20 +319,20 @@ class DealController extends AccountBaseController
     }
 
     /**
-     * @param StoreRequest $request
      * @return array|void
+     *
      * @throws RelatedResourceNotFoundException
      */
     public function store(StoreRequest $request)
     {
         $this->addPermission = user()->permission('add_deals');
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
         $agentId = null;
-        if (!is_null($request->agent_id)) {
+        if (! is_null($request->agent_id)) {
             $leadAgent = LeadAgent::where('user_id', $request->agent_id)->where('lead_category_id', $request->category_id)->first();
             $agentId = isset($leadAgent) ? $leadAgent->id : null;
         }
-        $deal = new Deal();
+        $deal = new Deal;
         $deal->name = $request->name;
         $deal->lead_id = $request->lead_contact;
         $deal->next_follow_up = 'yes';
@@ -347,12 +346,12 @@ class DealController extends AccountBaseController
         $deal->currency_id = $this->company->currency_id;
         $deal->save();
 
-        if (!is_null($request->product_id)) {
+        if (! is_null($request->product_id)) {
 
             $products = $request->product_id;
 
             foreach ($products as $product) {
-                $leadProduct = new LeadProduct();
+                $leadProduct = new LeadProduct;
                 $leadProduct->deal_id = $deal->id;
                 $leadProduct->product_id = $product;
                 $leadProduct->save();
@@ -386,7 +385,7 @@ class DealController extends AccountBaseController
     /**
      * Show the form for editing the specified resource.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -399,14 +398,14 @@ class DealController extends AccountBaseController
 
         $this->employees = User::allEmployees(null, false);
 
-        abort_403(!($this->editPermission == 'all'
+        abort_403(! ($this->editPermission == 'all'
             || ($this->editPermission == 'added' && $this->deal->added_by == user()->id)
-            || ($this->editPermission == 'owned' && ((!is_null($this->deal->agent_id) && !is_null($this->deal->leadAgent) && user()->id == $this->deal->leadAgent->user->id) || (!is_null($this->deal->deal_watcher) && user()->id == $this->deal->deal_watcher)))
-            || ($this->editPermission == 'both' && (((!is_null($this->deal->agent_id) && !is_null($this->deal->leadAgent) && user()->id == $this->deal->leadAgent->user->id) || (!is_null($this->deal->deal_watcher) && user()->id == $this->deal->deal_watcher)) || user()->id == $this->deal->added_by))
+            || ($this->editPermission == 'owned' && ((! is_null($this->deal->agent_id) && ! is_null($this->deal->leadAgent) && user()->id == $this->deal->leadAgent->user->id) || (! is_null($this->deal->deal_watcher) && user()->id == $this->deal->deal_watcher)))
+            || ($this->editPermission == 'both' && (((! is_null($this->deal->agent_id) && ! is_null($this->deal->leadAgent) && user()->id == $this->deal->leadAgent->user->id) || (! is_null($this->deal->deal_watcher) && user()->id == $this->deal->deal_watcher)) || user()->id == $this->deal->added_by))
         ));
 
-        $this->tab = (!is_null(request('tab'))) ? request('tab') : null;
-         // Filter out active employees
+        $this->tab = (! is_null(request('tab'))) ? request('tab') : null;
+        // Filter out active employees
         $activeEmployees = $this->employees->filter(function ($employee) {
             return $employee->status !== 'deactive';
         });
@@ -451,7 +450,6 @@ class DealController extends AccountBaseController
         $this->pageTitle = __('modules.deal.updateDeal');
         $this->salutations = Salutation::cases();
 
-
         $this->view = 'leads.ajax.edit';
 
         if (request()->ajax()) {
@@ -463,9 +461,9 @@ class DealController extends AccountBaseController
     }
 
     /**
-     * @param UpdateRequest $request
-     * @param int $id
+     * @param  int  $id
      * @return array|void
+     *
      * @throws RelatedResourceNotFoundException
      */
     public function update(UpdateRequest $request, $id)
@@ -473,16 +471,16 @@ class DealController extends AccountBaseController
         $deal = Deal::with('leadAgent', 'leadAgent.user')->findOrFail($id);
         $this->editPermission = user()->permission('edit_deals');
 
-        abort_403(!($this->editPermission == 'all'
+        abort_403(! ($this->editPermission == 'all'
             || ($this->editPermission == 'added' && $deal->added_by == user()->id)
-            || ($this->editPermission == 'owned' && ((!is_null($deal->agent_id) && !is_null($deal->leadAgent) && user()->id == $deal->leadAgent->user->id) || (!is_null($deal->deal_watcher) && user()->id == $deal->deal_watcher)))
-            || ($this->editPermission == 'both' && (((!is_null($deal->agent_id) && !is_null($deal->leadAgent) && user()->id == $deal->leadAgent->user->id) || (!is_null($deal->deal_watcher) && user()->id == $deal->deal_watcher)) || user()->id == $deal->added_by))
+            || ($this->editPermission == 'owned' && ((! is_null($deal->agent_id) && ! is_null($deal->leadAgent) && user()->id == $deal->leadAgent->user->id) || (! is_null($deal->deal_watcher) && user()->id == $deal->deal_watcher)))
+            || ($this->editPermission == 'both' && (((! is_null($deal->agent_id) && ! is_null($deal->leadAgent) && user()->id == $deal->leadAgent->user->id) || (! is_null($deal->deal_watcher) && user()->id == $deal->deal_watcher)) || user()->id == $deal->added_by))
         ));
 
-        if (!is_null($request->agent_id)) {
+        if (! is_null($request->agent_id)) {
             $leadAgent = LeadAgent::where('user_id', $request->agent_id)->where('lead_category_id', $request->category_id)->first();
             $deal->agent_id = $leadAgent->id;
-        }else{
+        } else {
             $deal->agent_id = $request->agent_id;
         }
 
@@ -504,7 +502,7 @@ class DealController extends AccountBaseController
             $deal->updateCustomFieldData($request->custom_fields_data);
         }
 
-        $redirectTo = (!is_null(request('tab')) && request('tab') == 'overview') ? route('deals.show', [$deal->id]) : route('deals.index');
+        $redirectTo = (! is_null(request('tab')) && request('tab') == 'overview') ? route('deals.show', [$deal->id]) : route('deals.index');
 
         return Reply::successWithData(__('messages.updateSuccess'), ['redirectUrl' => $redirectTo]);
 
@@ -513,7 +511,7 @@ class DealController extends AccountBaseController
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
@@ -521,10 +519,10 @@ class DealController extends AccountBaseController
         $deal = Deal::with('leadAgent', 'leadAgent.user')->findOrFail($id);
         $this->deletePermission = user()->permission('delete_deals');
 
-        abort_403(!($this->deletePermission == 'all'
+        abort_403(! ($this->deletePermission == 'all'
             || ($this->deletePermission == 'added' && $deal->added_by == user()->id)
-            || ($this->deletePermission == 'owned' && ((!is_null($deal->agent_id) && !is_null($deal->leadAgent) && user()->id == $deal->leadAgent->user->id) || (!is_null($deal->deal_watcher) && user()->id == $deal->deal_watcher)))
-            || ($this->deletePermission == 'both' && (((!is_null($deal->agent_id) && !is_null($deal->leadAgent) && user()->id == $deal->leadAgent->user->id) || (!is_null($deal->deal_watcher) && user()->id == $deal->deal_watcher)) || user()->id == $deal->added_by))
+            || ($this->deletePermission == 'owned' && ((! is_null($deal->agent_id) && ! is_null($deal->leadAgent) && user()->id == $deal->leadAgent->user->id) || (! is_null($deal->deal_watcher) && user()->id == $deal->deal_watcher)))
+            || ($this->deletePermission == 'both' && (((! is_null($deal->agent_id) && ! is_null($deal->leadAgent) && user()->id == $deal->leadAgent->user->id) || (! is_null($deal->deal_watcher) && user()->id == $deal->deal_watcher)) || user()->id == $deal->added_by))
         ));
 
         $model = new ReflectionClass('App\Models\Deal');
@@ -541,7 +539,6 @@ class DealController extends AccountBaseController
     }
 
     /**
-     * @param CommonRequest $request
      * @return array
      */
     public function changeStatus(CommonRequest $request)
@@ -550,7 +547,7 @@ class DealController extends AccountBaseController
         $this->editPermission = user()->permission('edit_deals');
         $this->changeLeadStatusPermission = user()->permission('change_deal_stages');
 
-        abort_403(!(($this->editPermission == 'all' || ($this->editPermission == 'added' && $deal->added_by == user()->id)) || $this->changeLeadStatusPermission == 'all'));
+        abort_403(! (($this->editPermission == 'all' || ($this->editPermission == 'added' && $deal->added_by == user()->id)) || $this->changeLeadStatusPermission == 'all'));
 
         $deal->status_id = $request->statusID;
         $deal->save();
@@ -561,22 +558,22 @@ class DealController extends AccountBaseController
     public function applyQuickAction(Request $request)
     {
         switch ($request->action_type) {
-        case 'delete':
-            $this->deleteRecords($request);
+            case 'delete':
+                $this->deleteRecords($request);
 
-            return Reply::success(__('messages.deleteSuccess'));
-        case 'change-status':
-            $this->changeBulkStatus($request);
+                return Reply::success(__('messages.deleteSuccess'));
+            case 'change-status':
+                $this->changeBulkStatus($request);
 
-            return Reply::success(__('messages.updateSuccess'));
+                return Reply::success(__('messages.updateSuccess'));
 
-        case 'change-deal-agents':
-            $this->changeAgentStatus($request);
+            case 'change-deal-agents':
+                $this->changeAgentStatus($request);
 
-            return Reply::success(__('messages.updateSuccess'));
+                return Reply::success(__('messages.updateSuccess'));
 
-        default:
-            return Reply::error(__('messages.selectAction'));
+            default:
+                return Reply::error(__('messages.selectAction'));
         }
     }
 
@@ -599,15 +596,15 @@ class DealController extends AccountBaseController
         $canEditDeals = user()->permission('edit_deals') == 'all';
         $canChangeStages = user()->permission('change_deal_stages') == 'all';
 
-        abort_403(!($canEditDeals || $canChangeStages));
+        abort_403(! ($canEditDeals || $canChangeStages));
 
         $rowIds = explode(',', $request->row_ids);
         $newStatus = $request->status;
 
         $stage = PipelineStage::find($newStatus);
 
-        if($stage->slug === 'win' || $stage->slug === 'lost'){
-           Deal::whereIn('id', $rowIds)->whereNull('close_date')->update(['close_date' => now()->format('Y-m-d')]);
+        if ($stage->slug === 'win' || $stage->slug === 'lost') {
+            Deal::whereIn('id', $rowIds)->whereNull('close_date')->update(['close_date' => now()->format('Y-m-d')]);
         }
 
         Deal::whereIn('id', $rowIds)->update(['pipeline_stage_id' => $newStatus]);
@@ -623,8 +620,8 @@ class DealController extends AccountBaseController
         $leads = Deal::with('leadAgent', 'category')->whereIn('id', $rowIds)->get();
 
         foreach ($leads as $deal) {
-              // Find an agent from the list with matching category
-        $matchingAgent = $agentsWithSameUser->firstWhere('lead_category_id', $deal->category_id);
+            // Find an agent from the list with matching category
+            $matchingAgent = $agentsWithSameUser->firstWhere('lead_category_id', $deal->category_id);
 
             if ($matchingAgent) {
                 // Assign the matching agent to the deal
@@ -636,15 +633,14 @@ class DealController extends AccountBaseController
     }
 
     /**
-     *
-     * @param int $leadID
+     * @param  int  $leadID
      * @return void
      */
     public function followUpCreate($dealID)
     {
         $this->addPermission = user()->permission('add_lead_follow_up');
 
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
 
         $this->dealID = $dealID;
         $this->deal = Deal::findOrFail($dealID);
@@ -658,14 +654,14 @@ class DealController extends AccountBaseController
         $tab = request('tab');
         $this->activeTab = $tab ?: 'overview';
         $this->view = 'leads.ajax.follow-up';
-        $dataTable = new LeadFollowupDataTable();
+        $dataTable = new LeadFollowupDataTable;
 
         return $dataTable->render('leads.show', $this->data);
     }
 
     /**
-     * @param FollowUpStoreRequest $request
      * @return array|void
+     *
      * @throws RelatedResourceNotFoundException
      */
     public function followUpStore(FollowUpStoreRequest $request)
@@ -674,20 +670,18 @@ class DealController extends AccountBaseController
 
         $this->addPermission = user()->permission('add_lead_follow_up');
 
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
 
         if ($this->deal->next_follow_up != 'yes') {
             return Reply::error(__('messages.leadFollowUpRestricted'));
         }
 
-
         $next_follow_up_date = Carbon::createFromFormat(
-            $this->company->date_format . ' ' . $this->company->time_format,
-            $request->next_follow_up_date . ' ' . $request->start_time
+            $this->company->date_format.' '.$this->company->time_format,
+            $request->next_follow_up_date.' '.$request->start_time
         );
 
-
-        $followUp = new DealFollowUp();
+        $followUp = new DealFollowUp;
         $followUp->deal_id = $request->deal_id;
         $followUp->next_follow_up_date = $next_follow_up_date->format('Y-m-d H:i:s');
         $followUp->remark = $request->remark;
@@ -698,7 +692,7 @@ class DealController extends AccountBaseController
 
         $followUp->save();
 
-        event(new AutoFollowUpReminderEvent($followUp,true));
+        event(new AutoFollowUpReminderEvent($followUp, true));
 
         return Reply::success(__('messages.recordSaved'));
 
@@ -708,7 +702,7 @@ class DealController extends AccountBaseController
     {
         $this->follow = DealFollowUp::findOrFail($id);
         $this->editPermission = user()->permission('edit_lead_follow_up');
-        abort_403(!($this->editPermission == 'all' || ($this->editPermission == 'added' && $this->follow->added_by == user()->id)));
+        abort_403(! ($this->editPermission == 'all' || ($this->editPermission == 'added' && $this->follow->added_by == user()->id)));
 
         return view('leads.followup.edit', $this->data);
     }
@@ -720,7 +714,7 @@ class DealController extends AccountBaseController
         $followUp = DealFollowUp::findOrFail($request->id);
         $this->editPermission = user()->permission('edit_lead_follow_up');
 
-        abort_403(!($this->editPermission == 'all' || ($this->editPermission == 'added' && $followUp->added_by == user()->id)));
+        abort_403(! ($this->editPermission == 'all' || ($this->editPermission == 'added' && $followUp->added_by == user()->id)));
 
         if ($this->deal->next_follow_up != 'yes') {
             return Reply::error(__('messages.leadFollowUpRestricted'));
@@ -728,7 +722,7 @@ class DealController extends AccountBaseController
 
         $followUp->deal_id = $request->deal_id;
 
-        $followUp->next_follow_up_date = Carbon::createFromFormat($this->company->date_format . ' ' . $this->company->time_format, $request->next_follow_up_date . ' ' . $request->start_time)->format('Y-m-d H:i:s');
+        $followUp->next_follow_up_date = Carbon::createFromFormat($this->company->date_format.' '.$this->company->time_format, $request->next_follow_up_date.' '.$request->start_time)->format('Y-m-d H:i:s');
 
         $followUp->remark = $request->remark;
         $followUp->send_reminder = $request->send_reminder;
@@ -746,7 +740,7 @@ class DealController extends AccountBaseController
     {
         $followUp = DealFollowUp::findOrFail($id);
         $this->deletePermission = user()->permission('delete_lead_follow_up');
-        abort_403(!($this->deletePermission == 'all' || ($this->deletePermission == 'added' && $followUp->added_by == user()->id)));
+        abort_403(! ($this->deletePermission == 'all' || ($this->deletePermission == 'added' && $followUp->added_by == user()->id)));
 
         DealFollowUp::destroy($id);
 
@@ -757,7 +751,7 @@ class DealController extends AccountBaseController
     {
         $viewPermission = user()->permission('view_lead_proposals');
 
-        abort_403(!in_array($viewPermission, ['all', 'added']));
+        abort_403(! in_array($viewPermission, ['all', 'added']));
 
         $tab = request('tab');
         $this->activeTab = $tab ?: 'overview';
@@ -769,7 +763,7 @@ class DealController extends AccountBaseController
 
     public function gdpr()
     {
-        $dataTable = new LeadGDPRDataTable();
+        $dataTable = new LeadGDPRDataTable;
         $tab = request('tab');
         $this->activeTab = $tab ?: 'gdpr';
         $this->view = 'leads.ajax.gdpr';
@@ -789,7 +783,6 @@ class DealController extends AccountBaseController
             ->where('id', $request->consentId)
             ->first();
 
-
         return view('leads.gdpr.consent-form', $this->data);
     }
 
@@ -804,7 +797,7 @@ class DealController extends AccountBaseController
         }
 
         // Saving Consent Data
-        $newConsentLead = new PurposeConsentLead();
+        $newConsentLead = new PurposeConsentLead;
         $newConsentLead->deal_id = $deal->id;
         $newConsentLead->purpose_consent_id = $consent->id;
         $newConsentLead->status = trim($request->status);
@@ -818,10 +811,10 @@ class DealController extends AccountBaseController
 
     public function importLead()
     {
-        $this->pageTitle = __('app.importExcel') . ' ' . __('app.menu.deal');
+        $this->pageTitle = __('app.importExcel').' '.__('app.menu.deal');
 
         $this->addPermission = user()->permission('add_deals');
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
 
         $this->view = 'deals.ajax.import';
 
@@ -836,7 +829,7 @@ class DealController extends AccountBaseController
     {
         $rvalue = $this->importFileProcess($request, DealImport::class);
 
-        if($rvalue == 'abort'){
+        if ($rvalue == 'abort') {
             return Reply::error(__('messages.abortAction'));
         }
         $view = view('deals.ajax.import_progress', $this->data)->render();
@@ -851,7 +844,8 @@ class DealController extends AccountBaseController
         return Reply::successWithData(__('messages.importProcessStart'), ['batch' => $batch]);
     }
 
-    public function destroySession(){
+    public function destroySession()
+    {
 
         if (session()->has('is_imported')) {
             session()->forget('is_imported');
@@ -865,21 +859,21 @@ class DealController extends AccountBaseController
             session()->forget('leads_count');
         }
 
-        if(session()->has('total_leads')) {
+        if (session()->has('total_leads')) {
             session()->forget('total_leads');
         }
 
-        if(session()->has('is_deal')) {
+        if (session()->has('is_deal')) {
             session()->forget('is_deal');
         }
     }
 
     public function notes()
     {
-        $dataTable = new DealNotesDataTable();
+        $dataTable = new DealNotesDataTable;
         $viewPermission = user()->permission('view_deal_note');
 
-        abort_403(!($viewPermission == 'all' || $viewPermission == 'added' || $viewPermission == 'both' || $viewPermission == 'owned'));
+        abort_403(! ($viewPermission == 'all' || $viewPermission == 'added' || $viewPermission == 'both' || $viewPermission == 'owned'));
 
         $tab = request('tab');
         $this->activeTab = $tab ?: 'profile';
@@ -895,7 +889,7 @@ class DealController extends AccountBaseController
         $status = $request->status;
         $leadFollowUp = DealFollowUp::find($id);
 
-        if (!is_null($leadFollowUp)) {
+        if (! is_null($leadFollowUp)) {
             $leadFollowUp->status = $status;
             $leadFollowUp->save();
         }
@@ -921,7 +915,6 @@ class DealController extends AccountBaseController
     }
 
     /**
-     * @param CommonRequest $request
      * @return array
      */
     public function changeStage(CommonRequest $request)
@@ -937,7 +930,7 @@ class DealController extends AccountBaseController
         $this->editPermission = user()->permission('edit_deals');
         $this->changeLeadStatusPermission = user()->permission('change_deal_stages');
 
-        abort_403(!(($this->editPermission == 'all' || ($this->editPermission == 'added' && $deal->added_by == user()->id)) || $this->changeLeadStatusPermission == 'all'));
+        abort_403(! (($this->editPermission == 'all' || ($this->editPermission == 'added' && $deal->added_by == user()->id)) || $this->changeLeadStatusPermission == 'all'));
 
         $deal->pipeline_stage_id = $request->statusID;
         $deal->save();
@@ -976,7 +969,7 @@ class DealController extends AccountBaseController
             $selectedAgent = null;
             $data = [];
 
-            if (!is_null($deal)) {
+            if (! is_null($deal)) {
                 $selectedAgent = $leadCategory->enabledAgents->firstWhere('id', $deal->agent_id);
 
                 if ($selectedAgent && $selectedAgent->user->status === 'deactive') {
@@ -985,7 +978,7 @@ class DealController extends AccountBaseController
             }
 
             foreach ($activeAgents as $agent) {
-                $selected = !is_null($deal) && $agent->id == $deal->agent_id;
+                $selected = ! is_null($deal) && $agent->id == $deal->agent_id;
 
                 $data[] = view('components.user-option', [
                     'user' => $agent->user,
@@ -996,13 +989,11 @@ class DealController extends AccountBaseController
             }
 
             $groupData = $userData;
-        }
-        else {
+        } else {
             $data = '<option value="">--</option>';
         }
 
         return Reply::dataOnly(['data' => $data, 'groupData' => $groupData]);
-
 
     }
 
@@ -1026,15 +1017,14 @@ class DealController extends AccountBaseController
         $deal->close_date = companyToYmd($request->close_date);
         $deal->update();
 
-        if (!empty($request->description)) {
-            $dealNote = new DealNote();
+        if (! empty($request->description)) {
+            $dealNote = new DealNote;
             $dealNote->title = $request->title;
             $dealNote->deal_id = $request->dealId;
             $dealNote->details = $request->description;
             $dealNote->save();
-        };
+        }
 
         return Reply::success(__('messages.updateSuccess'));
     }
-
 }

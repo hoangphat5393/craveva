@@ -9,8 +9,8 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      *
@@ -19,7 +19,7 @@ return new class extends Migration {
     public function up()
     {
 
-        if (!Schema::hasColumn('file_storage', 'storage_location')) {
+        if (! Schema::hasColumn('file_storage', 'storage_location')) {
             Schema::table('file_storage', function (Blueprint $table) {
                 $table->enum('storage_location', ['local', 'aws_s3', 'digitalocean'])->default('local');
             });
@@ -27,15 +27,13 @@ return new class extends Migration {
 
         DB::statement("ALTER TABLE file_storage CHANGE COLUMN storage_location storage_location ENUM('local', 'aws_s3', 'digitalocean') NOT NULL DEFAULT 'local'");
 
-
-        if (!Schema::hasColumn('companies', 'show_new_webhook_alert')) {
+        if (! Schema::hasColumn('companies', 'show_new_webhook_alert')) {
             Schema::table('companies', function (Blueprint $table) {
                 $table->boolean('show_new_webhook_alert')->default(0);
             });
 
             DB::statement("UPDATE `companies` SET `show_new_webhook_alert`='1'");
         }
-
 
         $this->foreignKeyFixCompaniesTable();
         $this->languageFlags();
@@ -63,7 +61,6 @@ return new class extends Migration {
         Schema::table('contract_templates', function (Blueprint $table) {
             $table->bigInteger('contract_template_number')->after('id')->nullable();
         });
-
 
         $companies = Company::select('id')->get();
 
@@ -115,7 +112,7 @@ return new class extends Migration {
                 $table->foreign(['last_updated_by'])->references(['id'])->on('users')->onUpdate('CASCADE')->onDelete('SET NULL');
             });
 
-            //phpcs:ignore
+            // phpcs:ignore
         } catch (\Throwable $th) {
         }
         Schema::table('companies', function (Blueprint $table) {
@@ -126,5 +123,4 @@ return new class extends Migration {
         });
 
     }
-
 };

@@ -35,7 +35,7 @@ return new class extends Migration
             $table->unsignedInteger('user_id')->nullable(false)->change();
         });
 
-        DB::table('expenses')->update(['exchange_rate' => NULL]);
+        DB::table('expenses')->update(['exchange_rate' => null]);
 
         Schema::table('global_settings', function (Blueprint $table) {
             $table->dropColumn('dedicated_subdomain');

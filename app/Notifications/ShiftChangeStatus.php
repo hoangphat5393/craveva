@@ -7,8 +7,8 @@ use App\Models\EmployeeShiftChangeRequest;
 
 class ShiftChangeStatus extends BaseNotification
 {
-
     public $employeeShiftSchedule;
+
     public $emailSetting;
 
     /**
@@ -27,7 +27,7 @@ class ShiftChangeStatus extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -44,7 +44,7 @@ class ShiftChangeStatus extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
@@ -53,16 +53,16 @@ class ShiftChangeStatus extends BaseNotification
         $url = route('dashboard');
         $url = getDomainSpecificUrl($url, $this->company);
 
-        $content = __('email.shiftChangeStatus.text') . ': ' . __('app.' . $this->employeeShiftSchedule->status) . '<br>'. __('app.date') . ': ' . $this->employeeShiftSchedule->shiftSchedule->date->toFormattedDateString() . '<br>'. __('modules.attendance.shiftName') . ': ' . $this->employeeShiftSchedule->shift->shift_name;
+        $content = __('email.shiftChangeStatus.text').': '.__('app.'.$this->employeeShiftSchedule->status).'<br>'.__('app.date').': '.$this->employeeShiftSchedule->shiftSchedule->date->toFormattedDateString().'<br>'.__('modules.attendance.shiftName').': '.$this->employeeShiftSchedule->shift->shift_name;
 
         $build
-            ->subject(__('email.shiftChangeStatus.subject') . ' - ' . config('app.name') . '.')
+            ->subject(__('email.shiftChangeStatus.subject').' - '.config('app.name').'.')
             ->markdown('mail.email', [
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
                 'actionText' => __('email.loginDashboard'),
-                'notifiableName' => $notifiable->name
+                'notifiableName' => $notifiable->name,
             ]);
 
         parent::resetLocale();
@@ -81,8 +81,7 @@ class ShiftChangeStatus extends BaseNotification
             'user_id' => $this->employeeShiftSchedule->shiftSchedule->user_id,
             'status' => $this->employeeShiftSchedule->status,
             'new_shift_id' => $this->employeeShiftSchedule->employee_shift_id,
-            'date' => $this->employeeShiftSchedule->shiftSchedule->date
+            'date' => $this->employeeShiftSchedule->shiftSchedule->date,
         ];
     }
-
 }

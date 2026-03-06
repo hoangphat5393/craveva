@@ -9,7 +9,6 @@ use Illuminate\Queue\SerializesModels;
 
 class NewIssueEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $issue;
@@ -18,5 +17,4 @@ class NewIssueEvent
     {
         $this->issue = $issue;
     }
-
 }

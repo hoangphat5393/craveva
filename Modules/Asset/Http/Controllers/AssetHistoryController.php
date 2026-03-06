@@ -5,7 +5,7 @@ namespace Modules\Asset\Http\Controllers;
 use App\Helper\Reply;
 use App\Http\Controllers\AccountBaseController;
 use App\Models\User;
-use Carbon\Carbon as Carbon;
+use Carbon\Carbon;
 use Modules\Asset\Entities\Asset;
 use Modules\Asset\Entities\AssetHistory;
 use Modules\Asset\Entities\AssetSetting;
@@ -14,12 +14,11 @@ use Modules\Asset\Http\Requests\ReturnRequest;
 
 class AssetHistoryController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array(AssetSetting::MODULE_NAME, $this->user->modules));
+            abort_403(! in_array(AssetSetting::MODULE_NAME, $this->user->modules));
 
             return $next($request);
         });
@@ -42,11 +41,11 @@ class AssetHistoryController extends AccountBaseController
         $assetHistory->asset_id = $id;
         $assetHistory->user_id = $request->employee_id;
         $assetHistory->lender_id = user()->id;
-        //phpcs:ignore
+        // phpcs:ignore
         $assetHistory->date_given = Carbon::createFromFormat($this->company->date_format, $request->date_given)->format('Y-m-d H:i:s');
 
         if ($request->has('return_date') && $request->return_date != '') {
-            //phpcs:ignore
+            // phpcs:ignore
             $assetHistory->return_date = Carbon::createFromFormat($this->company->date_format, $request->return_date)->format('Y-m-d H:i:s');
         }
 
@@ -62,7 +61,7 @@ class AssetHistoryController extends AccountBaseController
         return Reply::success(__('asset::app.lendAssetMessage'));
     }
 
-    //phpcs:ignore
+    // phpcs:ignore
     public function edit($assetId, $historyId)
     {
         $this->history = AssetHistory::findOrFail($historyId);
@@ -71,7 +70,7 @@ class AssetHistoryController extends AccountBaseController
         return view('asset::asset.ajax.history-edit', $this->data);
     }
 
-    //phpcs:ignore
+    // phpcs:ignore
     public function returnAsset($assetId, $historyId)
     {
         $this->history = AssetHistory::findOrFail($historyId);
@@ -96,17 +95,17 @@ class AssetHistoryController extends AccountBaseController
         }
 
         if ($request->has('date_given')) {
-            //phpcs:ignore
+            // phpcs:ignore
             $assetHistory->date_given = Carbon::createFromFormat(company()->date_format, $request->date_given)->format('Y-m-d H:i:s');
         }
 
         if ($request->has('return_date') && $request->return_date != '') {
-            //phpcs:ignore
+            // phpcs:ignore
             $assetHistory->return_date = Carbon::createFromFormat(company()->date_format, $request->return_date)->format('Y-m-d H:i:s');
         }
 
         if ($request->has('date_of_return') && $request->date_of_return != '') {
-            //phpcs:ignore
+            // phpcs:ignore
             $assetHistory->date_of_return = Carbon::createFromFormat(company()->date_format, $request->date_of_return)->format('Y-m-d H:i:s');
 
             $asset->status = 'available';

@@ -112,7 +112,7 @@ class ProjectFactory extends Factory
             'Blockchain and cryptocurrency development service',
             'Artificial intelligence (AI) and machine learning (ML) development service',
             'Internet of Things (IoT) and sensor technology development service',
-            'Quantum computing and quantum cryptography development service'
+            'Quantum computing and quantum cryptography development service',
         ];
 
         $startDate = now()->subMonths(fake()->numberBetween(1, 6));

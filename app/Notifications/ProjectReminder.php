@@ -7,9 +7,8 @@ use Illuminate\Support\HtmlString;
 
 class ProjectReminder extends BaseNotification
 {
-
-
     private $projects;
+
     private $data;
 
     /**
@@ -31,12 +30,12 @@ class ProjectReminder extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
     {
-        $via = array();
+        $via = [];
 
         if ($notifiable->email_notifications && $notifiable->email != '') {
             array_push($via, 'mail');
@@ -48,8 +47,7 @@ class ProjectReminder extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
-     * @return MailMessage
+     * @param  mixed  $notifiable
      */
     public function toMail($notifiable): MailMessage
     {
@@ -59,16 +57,16 @@ class ProjectReminder extends BaseNotification
         $url = getDomainSpecificUrl($url, $this->company);
 
         $list = $this->projectList();
-        $content = __('email.projectReminder.text') . ' ' . now($this->data['company']->timezone)->addDays($this->data['project_setting']->remind_time)->toFormattedDateString() . '<br>' . new HtmlString($list) . '<br>' . __('email.messages.loginForMoreDetails');
+        $content = __('email.projectReminder.text').' '.now($this->data['company']->timezone)->addDays($this->data['project_setting']->remind_time)->toFormattedDateString().'<br>'.new HtmlString($list).'<br>'.__('email.messages.loginForMoreDetails');
 
         $build
-            ->subject(__('email.projectReminder.subject') . ' - ' . config('app.name'))
+            ->subject(__('email.projectReminder.subject').' - '.config('app.name'))
             ->markdown('mail.email', [
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company?->header_color,
                 'actionText' => __('email.projectReminder.action'),
-                'notifiableName' => $notifiable->name
+                'notifiableName' => $notifiable->name,
             ]);
 
         parent::resetLocale();
@@ -79,10 +77,10 @@ class ProjectReminder extends BaseNotification
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
-//phpcs:ignore
+    // phpcs:ignore
     public function toArray($notifiable)
     {
         return $this->projects->toArray();
@@ -93,12 +91,11 @@ class ProjectReminder extends BaseNotification
         $list = '<ol>';
 
         foreach ($this->projects as $project) {
-            $list .= '<li><strong>' . $project->project_short_code . '</strong> ' . $project->project_name . '</li>';
+            $list .= '<li><strong>'.$project->project_short_code.'</strong> '.$project->project_name.'</li>';
         }
 
         $list .= '</ol>';
 
         return $list;
     }
-
 }

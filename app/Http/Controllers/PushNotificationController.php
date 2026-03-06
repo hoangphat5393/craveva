@@ -11,23 +11,23 @@ use App\Notifications\TestPush;
 
 class PushNotificationController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'app.menu.pushNotifications';
         $this->activeSettingMenu = 'notification_settings';
         $this->middleware(function ($request, $next) {
-            abort_403(!(user()->permission('manage_notification_setting') == 'all') && (!user()->is_superadmin));
+            abort_403(! (user()->permission('manage_notification_setting') == 'all') && (! user()->is_superadmin));
+
             return $next($request);
         });
     }
 
-    //phpcs:ignore
+    // phpcs:ignore
     public function update(UpdateRequest $request, $id)
     {
 
-        if (!user()->is_superadmin) {
+        if (! user()->is_superadmin) {
             $this->savePushNotificationSettings($request);
         }
 
@@ -55,12 +55,11 @@ class PushNotificationController extends AccountBaseController
         $setting = PushNotificationSetting::first();
         if ($setting->beams_push_status == 'active') {
             // Notify User
-            $user->notify(new TestPush());
+            $user->notify(new TestPush);
         } else {
             // Notify User
-            $user->notify(new TestPush());
+            $user->notify(new TestPush);
         }
-
 
         return Reply::success('Test notification sent.');
     }

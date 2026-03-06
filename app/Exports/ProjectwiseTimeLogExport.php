@@ -2,24 +2,29 @@
 
 namespace App\Exports;
 
-use Carbon\CarbonInterval;
 use App\Models\ProjectTimeLog;
+use Carbon\CarbonInterval;
 use Illuminate\Support\Facades\DB;
-use Maatwebsite\Excel\Concerns\WithStyles;
-use Maatwebsite\Excel\Concerns\WithMapping;
-use Maatwebsite\Excel\Concerns\WithHeadings;
-use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use Maatwebsite\Excel\Concerns\FromCollection;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Maatwebsite\Excel\Concerns\WithCustomStartCell;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithStyles;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class ProjectwiseTimeLogExport implements FromCollection, WithMapping, WithHeadings, WithStyles, WithCustomStartCell
+class ProjectwiseTimeLogExport implements FromCollection, WithCustomStartCell, WithHeadings, WithMapping, WithStyles
 {
     private $startDate;
+
     private $endDate;
+
     private $employeeId;
+
     private $projectId;
+
     private $rowCount = 1;
+
     private $mergeCells = [];
 
     public function __construct($startDate, $endDate, $employeeId, $projectId)
@@ -74,14 +79,14 @@ class ProjectwiseTimeLogExport implements FromCollection, WithMapping, WithHeadi
 
         foreach ($timelogs as $index => $timelog) {
 
-            if (!isset($projectLogs[$timelog->project_id])) {
+            if (! isset($projectLogs[$timelog->project_id])) {
                 $projectLogs[$timelog->project_id] = [
                     'project_name' => $timelog->project?->project_name,
                     'total_minutes' => 0,
                     'break_minutes' => 0,
                     'employee_name' => $timelog->user?->name,
                     'has_active' => false,
-                    'has_unapproved' => false
+                    'has_unapproved' => false,
                 ];
             }
 
@@ -95,8 +100,7 @@ class ProjectwiseTimeLogExport implements FromCollection, WithMapping, WithHeadi
             // Track status for the project
             if ($isActive) {
                 $projectLogs[$timelog->project_id]['has_active'] = true;
-            }
-            elseif ($timelog->approved) {
+            } elseif ($timelog->approved) {
                 $projectLogs[$timelog->project_id]['has_unapproved'] = true;
             }
         }
@@ -111,14 +115,12 @@ class ProjectwiseTimeLogExport implements FromCollection, WithMapping, WithHeadi
 
             // Add status tags
             if ($projectData['has_active']) {
-                $formattedTime .= ' ('. __('app.active'). ')';
-            }
-            elseif ($projectData['has_unapproved']) {
-                $formattedTime .= ' ('. __('app.approved'). ')';
+                $formattedTime .= ' ('.__('app.active').')';
+            } elseif ($projectData['has_unapproved']) {
+                $formattedTime .= ' ('.__('app.approved').')';
             }
 
             $breakTime = CarbonInterval::formatHuman($projectData['break_minutes']);
-
 
             $employeeName = $timelogs->first()->user->name;
 
@@ -126,13 +128,13 @@ class ProjectwiseTimeLogExport implements FromCollection, WithMapping, WithHeadi
                 $employeeName,
                 $projectData['project_name'],
                 $formattedTime,
-                $breakTime
+                $breakTime,
             ];
 
             if ($this->rowCount === $startRow) {
                 $this->mergeCells[] = [
-                    'range' => "A{$startRow}:A" . ($this->rowCount + count($projectLogs) - 1),
-                    'employee_name' => $projectData['employee_name']
+                    'range' => "A{$startRow}:A".($this->rowCount + count($projectLogs) - 1),
+                    'employee_name' => $projectData['employee_name'],
                 ];
             }
 
@@ -156,6 +158,7 @@ class ProjectwiseTimeLogExport implements FromCollection, WithMapping, WithHeadi
     protected function formatBreakTime($breaks)
     {
         $totalMinutes = $breaks->sum('total_minutes');
+
         return CarbonInterval::formatHuman($totalMinutes);
     }
 
@@ -190,5 +193,4 @@ class ProjectwiseTimeLogExport implements FromCollection, WithMapping, WithHeadi
     {
         return 'A1';
     }
-
 }

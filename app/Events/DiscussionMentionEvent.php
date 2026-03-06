@@ -9,10 +9,10 @@ use Illuminate\Queue\SerializesModels;
 
 class DiscussionMentionEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $discussion;
+
     public $mentionuser;
 
     public function __construct(Discussion $discussion, $mentionuser)
@@ -22,5 +22,4 @@ class DiscussionMentionEvent
         $this->mentionuser = $mentionuser;
 
     }
-
 }

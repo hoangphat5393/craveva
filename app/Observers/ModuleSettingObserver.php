@@ -9,15 +9,13 @@ use App\Scopes\CompanyScope;
 
 class ModuleSettingObserver
 {
-
-    //phpcs:ignore
+    // phpcs:ignore
     public function updated(ModuleSetting $model)
     {
 
         User::withoutGlobalScopes([ActiveScope::class, CompanyScope::class])->get()
             ->each(function ($user) {
-                cache()->forget('user_modules_' . $user->id);
+                cache()->forget('user_modules_'.$user->id);
             });
     }
-
 }

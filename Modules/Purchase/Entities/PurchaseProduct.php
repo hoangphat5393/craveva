@@ -4,25 +4,20 @@ namespace Modules\Purchase\Entities;
 
 use App\Models\BaseModel;
 use App\Models\InvoiceItems;
-use App\Models\Tax;
 use App\Models\Lead;
-use App\Models\UnitType;
-use App\Models\OrderItems;
-use App\Traits\HasCompany;
-use App\Models\ProductFiles;
 use App\Models\ProductCategory;
-use App\Traits\CustomFieldsTrait;
+use App\Models\ProductFiles;
 use App\Models\ProductSubCategory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\Tax;
+use App\Models\UnitType;
+use App\Traits\HasCompany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PurchaseProduct extends BaseModel
 {
-
     use HasCompany, HasFactory;
 
     protected $fillable = [
@@ -45,7 +40,7 @@ class PurchaseProduct extends BaseModel
         'track_inventory',
         'inventory_type',
         'added_by',
-        'last_updated_by'
+        'last_updated_by',
     ];
 
     protected $dates = ['created_at'];
@@ -56,6 +51,7 @@ class PurchaseProduct extends BaseModel
     }
 
     protected $table = 'products';
+
     const FILE_PATH = 'products';
 
     protected $appends = ['total_amount', 'image_url', 'download_file_url'];
@@ -70,12 +66,12 @@ class PurchaseProduct extends BaseModel
             return $this->default_image;
         }
 
-        return ($this->default_image) ? asset_url_local_s3(PurchaseProduct::FILE_PATH . '/' . $this->default_image) : '';
+        return ($this->default_image) ? asset_url_local_s3(PurchaseProduct::FILE_PATH.'/'.$this->default_image) : '';
     }
 
     public function getDownloadFileUrlAttribute()
     {
-        return ($this->downloadable_file) ? asset_url_local_s3(PurchaseProduct::FILE_PATH . '/' . $this->downloadable_file) : null;
+        return ($this->downloadable_file) ? asset_url_local_s3(PurchaseProduct::FILE_PATH.'/'.$this->downloadable_file) : null;
     }
 
     public function tax(): BelongsTo
@@ -111,8 +107,8 @@ class PurchaseProduct extends BaseModel
     public function getTotalAmountAttribute()
     {
 
-        if (!is_null($this->price) && !is_null($this->tax)) {
-            return (int)$this->price + ((int)$this->price * ((int)$this->tax->rate_percent / 100));
+        if (! is_null($this->price) && ! is_null($this->tax)) {
+            return (int) $this->price + ((int) $this->price * ((int) $this->tax->rate_percent / 100));
         }
 
         return '';
@@ -131,12 +127,12 @@ class PurchaseProduct extends BaseModel
         if ($productItem && $productItem->taxes) {
             $numItems = count(json_decode($productItem->taxes));
 
-            if (!is_null($productItem->taxes)) {
+            if (! is_null($productItem->taxes)) {
                 foreach (json_decode($productItem->taxes) as $index => $tax) {
                     $tax = $this->taxbyid($tax)->first();
-                    $taxes .= $tax->tax_name . ': ' . $tax->rate_percent . '%';
+                    $taxes .= $tax->tax_name.': '.$tax->rate_percent.'%';
 
-                    $taxes = ($index + 1 != $numItems) ? $taxes . ', ' : $taxes;
+                    $taxes = ($index + 1 != $numItems) ? $taxes.', ' : $taxes;
                 }
             }
         }

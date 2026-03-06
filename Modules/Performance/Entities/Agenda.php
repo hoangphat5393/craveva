@@ -2,8 +2,8 @@
 
 namespace Modules\Performance\Entities;
 
-use App\Models\User;
 use App\Models\BaseModel;
+use App\Models\User;
 use App\Scopes\ActiveScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -23,5 +23,4 @@ class Agenda extends BaseModel
     {
         return $this->belongsTo(User::class, 'added_by')->withoutGlobalScope(ActiveScope::class);
     }
-
 }

@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class StoreLeadAgent extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -25,8 +24,7 @@ class StoreLeadAgent extends CoreRequest
     public function rules()
     {
         return [
-            'agent_name' => 'required'
+            'agent_name' => 'required',
         ];
     }
-
 }

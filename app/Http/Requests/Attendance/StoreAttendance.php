@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class StoreAttendance extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -27,19 +26,18 @@ class StoreAttendance extends CoreRequest
         $clockOutTime = $this->input('clock_out_time');
         $clockOutTimeWorkFromType = $this->input('clock_out_time_work_from_type');
 
-
         $rules = [
             'clock_in_time' => 'required',
             'clock_in_ip' => 'required|ip',
             'clock_out_ip' => 'ip',
-            'working_from'  => 'required_if:work_from_type,==,other',
+            'working_from' => 'required_if:work_from_type,==,other',
         ];
 
-        if ($clockOutTime){
+        if ($clockOutTime) {
 
             $rules['clock_out_time_work_from_type'] = 'required';
 
-            if($clockOutTimeWorkFromType == 'other') {
+            if ($clockOutTimeWorkFromType == 'other') {
 
                 $rules['clock_out_time_working_from'] = 'required';
             }
@@ -48,5 +46,4 @@ class StoreAttendance extends CoreRequest
         return $rules;
 
     }
-
 }

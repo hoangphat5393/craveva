@@ -2,12 +2,11 @@
 
 namespace Modules\Subdomain\Http\Requests\Auth\Register;
 
-use App\Models\GlobalSetting;
 use App\Http\Requests\CoreRequest;
+use App\Models\GlobalSetting;
 
 class StoreRequest extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -32,10 +31,10 @@ class StoreRequest extends CoreRequest
             'sub_domain' => 'required',
             'email' => 'required|email|unique:users',
             'password' => 'required||confirmed',
-            'password_confirmation' => 'required'
+            'password_confirmation' => 'required',
         ];
 
-        if (!is_null($global->google_recaptcha_key)) {
+        if (! is_null($global->google_recaptcha_key)) {
             $rules['g-recaptcha-response'] = 'required';
         }
 
@@ -45,8 +44,7 @@ class StoreRequest extends CoreRequest
     public function messages()
     {
         return [
-            'g-recaptcha-response.required' => 'Please select google recaptcha'
+            'g-recaptcha-response.required' => 'Please select google recaptcha',
         ];
     }
-
 }

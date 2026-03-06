@@ -4,19 +4,17 @@ namespace Modules\Recruit\Http\Controllers;
 
 use App\Helper\Reply;
 use App\Http\Controllers\AccountBaseController;
-use Modules\Asset\Entities\AssetSetting;
 use Modules\Recruit\Entities\RecruitApplicantNote;
 use Modules\Recruit\Entities\RecruitSetting;
 use Modules\Recruit\Http\Requests\ApplicantNote\StoreJobApplicant;
 
 class ApplicantNoteController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array(RecruitSetting::MODULE_NAME, $this->user->modules));
+            abort_403(! in_array(RecruitSetting::MODULE_NAME, $this->user->modules));
 
             return $next($request);
         });
@@ -25,9 +23,9 @@ class ApplicantNoteController extends AccountBaseController
     public function store(StoreJobApplicant $request)
     {
         $addPermission = user()->permission('add_notes');
-        abort_403(!in_array($addPermission, ['all', 'added']));
+        abort_403(! in_array($addPermission, ['all', 'added']));
 
-        $note = new RecruitApplicantNote();
+        $note = new RecruitApplicantNote;
         $note->note_text = $request->note;
         $note->user_id = $this->user->id;
         $note->recruit_job_application_id = $request->applicationId;
@@ -44,7 +42,7 @@ class ApplicantNoteController extends AccountBaseController
         $this->note = RecruitApplicantNote::with('jobApplication', 'user')->findOrFail($id);
 
         $this->editPermission = user()->permission('edit_notes');
-        abort_403(!($this->editPermission == 'all'
+        abort_403(! ($this->editPermission == 'all'
             || ($this->editPermission == 'added' && $this->note->user_id == user()->id)
             || ($this->editPermission == 'owned' && user()->id == $this->note->jobApplication->job->recruiter_id)
             || ($this->editPermission == 'both' && user()->id == $this->note->jobApplication->job->recruiter_id)
@@ -58,7 +56,7 @@ class ApplicantNoteController extends AccountBaseController
         $note = RecruitApplicantNote::with('jobApplication', 'jobApplication.job', 'user')->findOrFail($id);
 
         $this->editPermission = user()->permission('edit_notes');
-        abort_403(!($this->editPermission == 'all'
+        abort_403(! ($this->editPermission == 'all'
             || ($this->editPermission == 'added' && $this->note->user_id == user()->id)
             || ($this->editPermission == 'owned' && user()->id == $note->jobApplication->job->recruiter_id)
             || ($this->editPermission == 'both' && user()->id == $note->jobApplication->job->recruiter_id)
@@ -81,7 +79,7 @@ class ApplicantNoteController extends AccountBaseController
 
         $this->deletePermission = user()->permission('delete_notes');
 
-        abort_403(!($this->deletePermission == 'all'
+        abort_403(! ($this->deletePermission == 'all'
             || ($this->deletePermission == 'added' && $notes->user_id == user()->id)
             || ($this->deletePermission == 'owned' && user()->id == $notes->jobApplication->job->recruiter_id)
             || ($this->deletePermission == 'both' && user()->id == $notes->jobApplication->job->recruiter_id)
@@ -95,5 +93,4 @@ class ApplicantNoteController extends AccountBaseController
 
         return Reply::successWithData(__('recruit::messages.noteDestroy'), ['view' => $view]);
     }
-
 }

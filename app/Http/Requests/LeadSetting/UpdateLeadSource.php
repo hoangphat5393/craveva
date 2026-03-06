@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class UpdateLeadSource extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -25,8 +24,7 @@ class UpdateLeadSource extends CoreRequest
     public function rules()
     {
         return [
-            'type' => 'required|unique:lead_sources,type,'.$this->route('lead_source_setting').',id,company_id,' . company()->id,
+            'type' => 'required|unique:lead_sources,type,'.$this->route('lead_source_setting').',id,company_id,'.company()->id,
         ];
     }
-
 }

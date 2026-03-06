@@ -22,15 +22,15 @@ class UpdateRequest extends FormRequest
     public function rules(): array
     {
         $dateFormat = company()->date_format;
-        
+
         return [
             'document_name' => 'required|string|max:255',
             'document_number' => 'nullable|string|max:255',
-            'issue_date' => 'required|date_format:' . $dateFormat,
-            'expiry_date' => 'required|date_format:' . $dateFormat . '|after:issue_date',
+            'issue_date' => 'required|date_format:'.$dateFormat,
+            'expiry_date' => 'required|date_format:'.$dateFormat.'|after:issue_date',
             'alert_before_days' => 'required|integer|min:1|max:365',
             'alert_enabled' => 'required|boolean',
-            'file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,txt,rtf,png,jpg,jpeg,gif,svg|max:10240'
+            'file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,txt,rtf,png,jpg,jpeg,gif,svg|max:10240',
         ];
     }
 

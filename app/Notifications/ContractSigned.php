@@ -9,13 +9,13 @@ use Illuminate\Support\HtmlString;
 
 class ContractSigned extends BaseNotification
 {
-
     /**
      * Create a new notification instance.
      *
      * @return void
      */
     private $contract;
+
     private $contractSign;
 
     public function __construct(Contract $contract, ContractSign $contractSign)
@@ -28,7 +28,7 @@ class ContractSigned extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -45,27 +45,27 @@ class ContractSigned extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
     {
         $contract = parent::build($notifiable);
-        $publicUrlController = new ContractController();
+        $publicUrlController = new ContractController;
         $pdfOption = $publicUrlController->downloadView($this->contract->id);
         $pdf = $pdfOption['pdf'];
         $filename = $pdfOption['fileName'];
 
-        $content = new HtmlString(__('email.contractSign.text', ['contract' => '<strong>' . $this->contract->subject . '</strong>', 'client' => '<strong>' . $this->contractSign->full_name . '</strong>']));
+        $content = new HtmlString(__('email.contractSign.text', ['contract' => '<strong>'.$this->contract->subject.'</strong>', 'client' => '<strong>'.$this->contractSign->full_name.'</strong>']));
 
         $contract->subject(__('email.contractSign.subject'))
             ->markdown('mail.email', [
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
-                'notifiableName' => $notifiable->name
+                'notifiableName' => $notifiable->name,
             ]);
 
-        $contract->attachData($pdf->output(), $filename . '.pdf');
+        $contract->attachData($pdf->output(), $filename.'.pdf');
 
         return $contract;
     }
@@ -73,7 +73,7 @@ class ContractSigned extends BaseNotification
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
 
@@ -82,5 +82,4 @@ class ContractSigned extends BaseNotification
     {
         return $this->contract->toArray();
     }
-
 }

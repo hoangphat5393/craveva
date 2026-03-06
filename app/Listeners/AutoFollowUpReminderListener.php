@@ -9,14 +9,11 @@ use Illuminate\Support\Facades\Notification;
 
 class AutoFollowUpReminderListener
 {
-
     /**
      * Handle the event.
      *
-     * @param AutoFollowUpReminderEvent $event
      * @return void
      */
-
     public function handle(AutoFollowUpReminderEvent $event)
     {
 
@@ -26,7 +23,7 @@ class AutoFollowUpReminderListener
         $usersToNotify = collect($adminUsers);
 
         // Add lead agent if assigned
-        if (!is_null($event->followup->lead->leadAgent)) {
+        if (! is_null($event->followup->lead->leadAgent)) {
             $usersToNotify->push($event->followup->lead->leadAgent->user);
         }
 
@@ -46,9 +43,8 @@ class AutoFollowUpReminderListener
         $usersToNotify = $usersToNotify->unique('id');
 
         if ($usersToNotify->isNotEmpty()) {
-            Notification::send($usersToNotify, new AutoFollowUpReminder($event->followup,$event->subject));
+            Notification::send($usersToNotify, new AutoFollowUpReminder($event->followup, $event->subject));
         }
 
     }
-
 }

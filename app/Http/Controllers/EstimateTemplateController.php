@@ -2,23 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Tax;
+use App\DataTables\EstimateTemplateDataTable;
 use App\Helper\Files;
 use App\Helper\Reply;
-use App\Models\Product;
+use App\Helper\UserService;
+use App\Http\Requests\EstimateTemplate\StoreRequest;
 use App\Models\Currency;
-use App\Models\Estimate;
+use App\Models\EstimateTemplate;
+use App\Models\EstimateTemplateItem;
+use App\Models\EstimateTemplateItemImage;
+use App\Models\Product;
+use App\Models\ProductCategory;
+use App\Models\Tax;
 use App\Models\UnitType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use App\Models\ProductCategory;
-use App\Models\EstimateTemplate;
 use Illuminate\Support\Facades\App;
-use App\Models\EstimateTemplateItem;
-use App\Models\EstimateTemplateItemImage;
-use App\DataTables\EstimateTemplateDataTable;
-use App\Http\Requests\EstimateTemplate\StoreRequest;
-use App\Helper\UserService;
 
 class EstimateTemplateController extends AccountBaseController
 {
@@ -27,7 +26,6 @@ class EstimateTemplateController extends AccountBaseController
      *
      * @return \Illuminate\Http\Response
      */
-
     public function __construct()
     {
         parent::__construct();
@@ -38,6 +36,7 @@ class EstimateTemplateController extends AccountBaseController
     public function index(EstimateTemplateDataTable $dataTable)
     {
         $this->addPermission = user()->permission('add_estimates');
+
         return $dataTable->render('estimates-templates.index', $this->data);
     }
 
@@ -81,19 +80,19 @@ class EstimateTemplateController extends AccountBaseController
         }
 
         foreach ($quantity as $qty) {
-            if (!is_numeric($qty) && (intval($qty) < 1)) {
+            if (! is_numeric($qty) && (intval($qty) < 1)) {
                 return Reply::error(__('messages.quantityNumber'));
             }
         }
 
         foreach ($cost_per_item as $rate) {
-            if (!is_numeric($rate)) {
+            if (! is_numeric($rate)) {
                 return Reply::error(__('messages.unitPriceNumber'));
             }
         }
 
         foreach ($amount as $amt) {
-            if (!is_numeric($amt)) {
+            if (! is_numeric($amt)) {
                 return Reply::error(__('messages.amountNumber'));
             }
         }
@@ -104,7 +103,7 @@ class EstimateTemplateController extends AccountBaseController
             }
         }
 
-        $estimate = new EstimateTemplate();
+        $estimate = new EstimateTemplate;
         $estimate->name = $request->name;
         $estimate->sub_total = $request->sub_total;
         $estimate->total = $request->total;
@@ -116,14 +115,13 @@ class EstimateTemplateController extends AccountBaseController
         $estimate->added_by = $userId;
         $estimate->save();
 
-
         $redirectUrl = urldecode($request->redirect_url);
 
         if ($redirectUrl == '') {
             $redirectUrl = route('estimate-template.index');
         }
 
-        $this->logSearchEntry($estimate->id, 'Estimate #' . $estimate->id, 'estimates.show', 'estimate');
+        $this->logSearchEntry($estimate->id, 'Estimate #'.$estimate->id, 'estimates.show', 'estimate');
 
         return Reply::redirect($redirectUrl, __('messages.estimateTemplateCreated'));
     }
@@ -138,22 +136,19 @@ class EstimateTemplateController extends AccountBaseController
     {
         $this->invoice = EstimateTemplate::with('items', 'clients', 'items.estimateTemplateItemImage', 'units')->findOrFail($id);
 
-        $this->pageTitle = __('modules.lead.estimateTemplate') . '#' . $this->invoice->id;
+        $this->pageTitle = __('modules.lead.estimateTemplate').'#'.$this->invoice->id;
 
         if ($this->invoice->discount > 0) {
             if ($this->invoice->discount_type == 'percent') {
                 $this->discount = (($this->invoice->discount / 100) * $this->invoice->sub_total);
-            }
-            else {
+            } else {
                 $this->discount = $this->invoice->discount;
             }
-        }
-        else {
+        } else {
             $this->discount = 0;
         }
 
-        $taxList = array();
-
+        $taxList = [];
 
         $items = EstimateTemplateItem::whereNotNull('taxes')
             ->where('estimate_template_id', $this->invoice->id)
@@ -164,24 +159,23 @@ class EstimateTemplateController extends AccountBaseController
             foreach (json_decode($item->taxes) as $tax) {
                 $this->tax = EstimateTemplateItem::taxbyid($tax)->first();
 
-                if($this->tax){
-                    if (!isset($taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'])){
+                if ($this->tax) {
+                    if (! isset($taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'])) {
                         /** @phpstan-ignore-next-line */
                         if ($this->invoice->calculate_tax == 'after_discount' && $this->discount > 0) {
-                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = ($item->amount - ($item->amount / $this->invoice->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
-
-                        } else{
-                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $item->amount * ($this->tax->rate_percent / 100);
-                        }
-
-                    }
-                    else {
-                        /** @phpstan-ignore-next-line */
-                        if ($this->invoice->calculate_tax == 'after_discount' && $this->discount > 0) {
-                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + (($item->amount - ($item->amount / $this->invoice->sub_total) * $this->discount) * ($this->tax->rate_percent / 100));
+                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = ($item->amount - ($item->amount / $this->invoice->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
 
                         } else {
-                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + ($item->amount * ($this->tax->rate_percent / 100));
+                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $item->amount * ($this->tax->rate_percent / 100);
+                        }
+
+                    } else {
+                        /** @phpstan-ignore-next-line */
+                        if ($this->invoice->calculate_tax == 'after_discount' && $this->discount > 0) {
+                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + (($item->amount - ($item->amount / $this->invoice->sub_total) * $this->discount) * ($this->tax->rate_percent / 100));
+
+                        } else {
+                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + ($item->amount * ($this->tax->rate_percent / 100));
                         }
                     }
                 }
@@ -211,7 +205,7 @@ class EstimateTemplateController extends AccountBaseController
         $this->editPermission = user()->permission('edit_estimates');
         $userId = UserService::getUserId();
 
-        abort_403(!(
+        abort_403(! (
             $this->editPermission == 'all'
             || ($this->editPermission == 'added' && $this->estimate->added_by == $userId)
             || ($this->editPermission == 'owned' && $this->estimate->added_by != $userId) || $this->editPermission == 'both'
@@ -236,7 +230,6 @@ class EstimateTemplateController extends AccountBaseController
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
@@ -252,19 +245,19 @@ class EstimateTemplateController extends AccountBaseController
         }
 
         foreach ($quantity as $qty) {
-            if (!is_numeric($qty)) {
+            if (! is_numeric($qty)) {
                 return Reply::error(__('messages.quantityNumber'));
             }
         }
 
         foreach ($cost_per_item as $rate) {
-            if (!is_numeric($rate)) {
+            if (! is_numeric($rate)) {
                 return Reply::error(__('messages.unitPriceNumber'));
             }
         }
 
         foreach ($amount as $amt) {
-            if (!is_numeric($amt)) {
+            if (! is_numeric($amt)) {
                 return Reply::error(__('messages.amountNumber'));
             }
         }
@@ -301,7 +294,7 @@ class EstimateTemplateController extends AccountBaseController
         $estimate = EstimateTemplate::findOrFail($id);
         $userId = UserService::getUserId();
 
-        abort_403(!(
+        abort_403(! (
             $this->deletePermission == 'all'
             || ($this->deletePermission == 'added' && $estimate->added_by == $userId)
             || ($this->deletePermission == 'owned' && $estimate->added_by != $userId) || $this->deletePermission == 'both'
@@ -317,7 +310,7 @@ class EstimateTemplateController extends AccountBaseController
         $item = EstimateTemplateItemImage::where('estimate_template_item_id', $request->invoice_item_id)->first();
 
         if ($item) {
-            Files::deleteFile($item->hashname, 'estimate-files/' . $item->id . '/');
+            Files::deleteFile($item->hashname, 'estimate-files/'.$item->id.'/');
             $item->delete();
         }
 
@@ -335,16 +328,14 @@ class EstimateTemplateController extends AccountBaseController
         if ($this->estimateTemplate->discount > 0) {
             if ($this->estimateTemplate->discount_type == 'percent') {
                 $this->discount = (($this->estimateTemplate->discount / 100) * $this->estimateTemplate->sub_total);
-            }
-            else {
+            } else {
                 $this->discount = $this->estimateTemplate->discount;
             }
-        }
-        else {
+        } else {
             $this->discount = 0;
         }
 
-        $taxList = array();
+        $taxList = [];
 
         $items = EstimateTemplateItem::whereNotNull('taxes')
             ->where('estimate_template_id', $this->estimateTemplate->id)
@@ -357,19 +348,18 @@ class EstimateTemplateController extends AccountBaseController
                 $this->tax = EstimateTemplateItem::taxbyid($tax)->first();
 
                 if ($this->tax) {
-                    if (!isset($taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'])) {
+                    if (! isset($taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'])) {
 
                         /** @phpstan-ignore-next-line */
                         if ($this->estimateTemplate->calculate_tax == 'after_discount' && $this->discount > 0) {
-                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = ($item->amount - ($item->amount / $this->estimateTemplate->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
+                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = ($item->amount - ($item->amount / $this->estimateTemplate->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
 
-                        } else{
-                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $item->amount * ($this->tax->rate_percent / 100);
+                        } else {
+                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $item->amount * ($this->tax->rate_percent / 100);
                         }
 
-                    }
-                    else {
-                        $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + ($item->amount * ($this->tax->rate_percent / 100));
+                    } else {
+                        $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + ($item->amount * ($this->tax->rate_percent / 100));
                     }
                 }
             }
@@ -381,18 +371,16 @@ class EstimateTemplateController extends AccountBaseController
 
         $pdf = app('dompdf.wrapper');
 
-
         $pdf->setOption('enable_php', true);
         $pdf->setOptions(['isHtml5ParserEnabled' => true, 'isRemoteEnabled' => true]);
 
+        $pdf->loadView('estimates-templates.pdf.'.$this->invoiceSetting->template, $this->data);
 
-        $pdf->loadView('estimates-templates.pdf.' . $this->invoiceSetting->template, $this->data);
-
-        $filename = __('modules.estimates.estimateTemplate') . '-' . $this->estimateTemplate->id;
+        $filename = __('modules.estimates.estimateTemplate').'-'.$this->estimateTemplate->id;
 
         return [
             'pdf' => $pdf,
-            'fileName' => $filename
+            'fileName' => $filename,
         ];
     }
 
@@ -403,34 +391,31 @@ class EstimateTemplateController extends AccountBaseController
 
         $exchangeRate = Currency::findOrFail($request->currencyId);
 
-        if($exchangeRate->exchange_rate == $request->exchangeRate){
+        if ($exchangeRate->exchange_rate == $request->exchangeRate) {
             $exRate = $exchangeRate->exchange_rate;
-        }else{
+        } else {
             $exRate = floatval($request->exchangeRate ?: 1);
         }
 
-        if (!is_null($exchangeRate) && !is_null($exchangeRate->exchange_rate)) {
+        if (! is_null($exchangeRate) && ! is_null($exchangeRate->exchange_rate)) {
             if ($this->items->total_amount != '') {
                 /** @phpstan-ignore-next-line */
                 $this->items->price = floor($this->items->total_amount / $exRate);
-            }
-            else {
+            } else {
 
                 $this->items->price = floatval($this->items->price) / floatval($exRate);
             }
-        }
-        else {
+        } else {
             if ($this->items->total_amount != '') {
                 $this->items->price = $this->items->total_amount;
             }
         }
 
-        $this->items->price = number_format((float)$this->items->price, 2, '.', '');
+        $this->items->price = number_format((float) $this->items->price, 2, '.', '');
         $this->taxes = Tax::all();
         $this->units = UnitType::all();
         $view = view('invoices.ajax.add_item', $this->data)->render();
 
         return Reply::dataOnly(['status' => 'success', 'view' => $view]);
     }
-
 }

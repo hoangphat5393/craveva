@@ -1,11 +1,11 @@
 <?php
+
 namespace App\Http\Requests\Gdpr;
 
 use App\Http\Requests\CoreRequest;
 
 /**
  * Class CreateRequest
- * @package App\Http\Requests\Admin\Employee
  */
 class CreateRequest extends CoreRequest
 {
@@ -14,7 +14,6 @@ class CreateRequest extends CoreRequest
      *
      * @return bool
      */
-
     public function authorize()
     {
         // If admin
@@ -29,10 +28,9 @@ class CreateRequest extends CoreRequest
     public function rules()
     {
         return [
-            'name'  => 'required',
-            'description'  => 'required',
+            'name' => 'required',
+            'description' => 'required',
         ];
 
     }
-
 }

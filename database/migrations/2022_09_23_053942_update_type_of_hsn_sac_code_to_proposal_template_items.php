@@ -11,7 +11,6 @@ return new class extends Migration
      *
      * @return void
      */
-
     public function up()
     {
         Schema::table('proposal_template_items', function (Blueprint $table) {
@@ -30,5 +29,4 @@ return new class extends Migration
             $table->dropColumn('hsn_sac_code');
         });
     }
-
 };

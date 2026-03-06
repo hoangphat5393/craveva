@@ -37,5 +37,4 @@ class OvertimeRequestRecord extends BaseModel
     {
         return $this->belongsTo(User::class, 'action_by');
     }
-
 }

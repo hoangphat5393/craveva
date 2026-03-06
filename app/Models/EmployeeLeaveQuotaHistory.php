@@ -21,5 +21,4 @@ class EmployeeLeaveQuotaHistory extends BaseModel
     {
         return $this->belongsTo(LeaveType::class, 'leave_type_id');
     }
-
 }

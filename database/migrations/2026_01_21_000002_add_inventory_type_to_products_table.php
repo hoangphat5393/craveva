@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('products', function (Blueprint $table) {
-            if (!Schema::hasColumn('products', 'inventory_type')) {
+            if (! Schema::hasColumn('products', 'inventory_type')) {
                 $table->string('inventory_type')->nullable()->after('track_inventory');
             }
         });

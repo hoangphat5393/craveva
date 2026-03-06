@@ -6,20 +6,16 @@ use App\Models\TaskCategory;
 
 class TaskCategoryObserver
 {
-
-    /**
-     * @param TaskCategory $item
-     */
     public function saving(TaskCategory $item)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             $item->last_updated_by = user()->id;
         }
     }
 
     public function creating(TaskCategory $model)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             $model->added_by = user()->id;
         }
 
@@ -27,5 +23,4 @@ class TaskCategoryObserver
             $model->company_id = company()->id;
         }
     }
-
 }

@@ -22,5 +22,4 @@ class NewExpenseRecurringListener
         } catch (\Exception $e) { // @codingStandardsIgnoreLine
         }
     }
-
 }

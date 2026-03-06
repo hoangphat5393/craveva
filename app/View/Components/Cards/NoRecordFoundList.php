@@ -7,7 +7,6 @@ use Illuminate\View\Component;
 
 class NoRecordFoundList extends Component
 {
-
     public $colspan;
 
     /**
@@ -29,5 +28,4 @@ class NoRecordFoundList extends Component
     {
         return view('components.cards.no-record-found-list');
     }
-
 }

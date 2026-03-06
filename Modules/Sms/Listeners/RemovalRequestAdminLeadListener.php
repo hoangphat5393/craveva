@@ -23,5 +23,4 @@ class RemovalRequestAdminLeadListener
         } catch (\Exception $e) { // @codingStandardsIgnoreLine
         }
     }
-
 }

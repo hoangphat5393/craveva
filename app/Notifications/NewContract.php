@@ -8,8 +8,6 @@ use Illuminate\Notifications\Messages\MailMessage;
 
 class NewContract extends BaseNotification
 {
-
-
     /**
      * Create a new notification instance.
      *
@@ -26,7 +24,7 @@ class NewContract extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -43,8 +41,7 @@ class NewContract extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
-     * @return MailMessage
+     * @param  mixed  $notifiable
      */
     public function toMail($notifiable): MailMessage
     {
@@ -52,7 +49,7 @@ class NewContract extends BaseNotification
         $url = url()->temporarySignedRoute('front.contract.show', now()->addDays(GlobalSetting::SIGNED_ROUTE_EXPIRY), $this->contract->hash);
         $url = getDomainSpecificUrl($url, $this->company);
 
-        $content = __('email.newContract.text') . '<br>';
+        $content = __('email.newContract.text').'<br>';
 
         $build
             ->subject(__('email.newContract.subject'))
@@ -60,7 +57,7 @@ class NewContract extends BaseNotification
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
-                'actionText' => __('app.view') . ' ' . __('app.menu.contract'),
+                'actionText' => __('app.view').' '.__('app.menu.contract'),
                 'notifiableName' => $notifiable->name]);
 
         parent::resetLocale();
@@ -71,13 +68,12 @@ class NewContract extends BaseNotification
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
-//phpcs:ignore
+    // phpcs:ignore
     public function toArray($notifiable)
     {
         return $this->contract->toArray();
     }
-
 }

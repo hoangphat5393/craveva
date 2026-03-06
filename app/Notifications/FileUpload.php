@@ -9,14 +9,15 @@ use Illuminate\Notifications\Messages\MailMessage;
 
 class FileUpload extends BaseNotification
 {
-
     /**
      * Create a new notification instance.
      *
      * @return void
      */
     private $file;
+
     private $project;
+
     private $emailSetting;
 
     public function __construct(ProjectFile $file)
@@ -30,7 +31,7 @@ class FileUpload extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -47,8 +48,7 @@ class FileUpload extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
-     * @return MailMessage
+     * @param  mixed  $notifiable
      */
     public function toMail($notifiable): MailMessage
     {
@@ -56,16 +56,16 @@ class FileUpload extends BaseNotification
         $url = route('projects.show', [$this->project->id, 'tab' => 'files']);
         $url = getDomainSpecificUrl($url, $this->company);
 
-        $content = __('email.fileUpload.subject') . $this->project->project_name . '<br>' . __('modules.projects.fileName') . ' - ' . $this->file->filename . '<br>' . __('app.date') . ' - ' . $this->file->created_at->format($this->company->date_format);
+        $content = __('email.fileUpload.subject').$this->project->project_name.'<br>'.__('modules.projects.fileName').' - '.$this->file->filename.'<br>'.__('app.date').' - '.$this->file->created_at->format($this->company->date_format);
 
         $build
-            ->subject(__('email.fileUpload.subject') . ' ' . $this->project->project_name . ' - ' . config('app.name'))
+            ->subject(__('email.fileUpload.subject').' '.$this->project->project_name.' - '.config('app.name'))
             ->markdown('mail.email', [
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
                 'actionText' => __('email.fileUpload.action'),
-                'notifiableName' => $notifiable->name
+                'notifiableName' => $notifiable->name,
             ]);
 
         parent::resetLocale();
@@ -76,15 +76,14 @@ class FileUpload extends BaseNotification
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
-    //phpcs:ignore
+    // phpcs:ignore
     public function toArray($notifiable)
     {
         return [
             //
         ];
     }
-
 }

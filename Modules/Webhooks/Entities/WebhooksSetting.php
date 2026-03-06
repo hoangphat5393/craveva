@@ -15,16 +15,63 @@ class WebhooksSetting extends BaseModel
         'Employee',
         'Invoice',
         'Lead',
+        'Product',
         'Project',
         'Proposal',
         'Task',
+        'Contract',
+        'ProjectTimeLog',
+        'Event',
+        'Deal',
+        'Estimate',
+        'Order',
+        'Payment',
+        'CreditNotes',
+        'Expense',
+        'BankAccount',
+        'Leave',
+        'Attendance',
+        'Holiday',
+        'Appreciation',
+        'Ticket',
+        'PurchaseOrder',
+        'PurchaseBill',
+        'PricingTier',
+        'SalarySlip',
+        'Objective',
+        'RecruitJob',
+        'RecruitJobApplication',
+        'Letter',
+        'ZoomMeeting',
+        'BiometricAttendance',
+        'Asset',
+        'Referral',
+        'OnboardingTask',
+        'PurchaseVendor',
+        'PurchaseInventory',
+        'PurchasePaymentBill',
+        'Warehouse',
+        'BiometricDevice',
+        'Affiliate',
+        'PurchaseVendorPayment',
+        'PurchaseVendorCredit',
+        'PurchaseVendorContact',
+        'VolumeDiscountRule',
+        'ClientProductPricing',
+        'RecruitInterviewSchedule',
+        'PayrollCycle',
+        'EmployeeMonthlySalary',
+        'KeyResults',
+        'Meeting',
+        'EmployeeShift',
     ];
+
     const METHODS = [
         'GET',
         'POST',
         'PUT',
         'PATCH',
-        'DELETE'
+        'DELETE',
     ];
 
     const HEADERS = [
@@ -60,7 +107,7 @@ class WebhooksSetting extends BaseModel
         'Upgrade',
         'Via',
         'Warning',
-        'custom'
+        'custom',
     ];
 
     protected $guarded = ['id'];
@@ -84,6 +131,4 @@ class WebhooksSetting extends BaseModel
     {
         return $this->hasMany(WebhooksRequest::class, 'webhooks_setting_id')->where('request_type', 'body');
     }
-
 }
-

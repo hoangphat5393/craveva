@@ -4,7 +4,6 @@ namespace App\Traits;
 
 trait ExcelImportable
 {
-
     private function getColumnValue(string $column)
     {
         return $this->isColumnExists($column) ? $this->row[array_keys($this->columns, $column)[0]] : null;
@@ -12,7 +11,7 @@ trait ExcelImportable
 
     private function isColumnExists(string $column)
     {
-        return !empty(array_keys($this->columns, $column));
+        return ! empty(array_keys($this->columns, $column));
     }
 
     private function getRowValuesAsString(array $values)
@@ -22,7 +21,7 @@ trait ExcelImportable
 
     private function failJob(string $message)
     {
-        $this->job->fail($message . $this->getRowValuesAsString($this->row));
+        $this->job->fail($message.$this->getRowValuesAsString($this->row));
     }
 
     private function failJobWithMessage(string $message)
@@ -30,7 +29,7 @@ trait ExcelImportable
         $this->job->fail($message);
     }
 
-    private function isEmailValid(string|null $email)
+    private function isEmailValid(?string $email)
     {
         if (empty($email)) {
             return false;
@@ -38,5 +37,4 @@ trait ExcelImportable
 
         return filter_var($email, FILTER_VALIDATE_EMAIL);
     }
-
 }

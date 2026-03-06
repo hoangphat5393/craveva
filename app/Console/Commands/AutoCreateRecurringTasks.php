@@ -11,7 +11,6 @@ use Illuminate\Console\Command;
 
 class AutoCreateRecurringTasks extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
@@ -47,42 +46,37 @@ class AutoCreateRecurringTasks extends Command
                     ->where('company_id', $company->id)
                     ->get();
 
-                
-
                 $repeatedTasks->each(function ($task) use ($now, $company) {
 
                     if ($task->repeat_cycles == -1 || $task->recurrings_count < ($task->repeat_cycles - 1)) { // Subtract 1 to include original task
-                        $this->info('Running for task:' . $task->id);
+                        $this->info('Running for task:'.$task->id);
 
                         $startDate = $task->start_date->copy();
-                        $endDate = (!is_null($task->due_date)) ? $task->due_date->copy() : null;
+                        $endDate = (! is_null($task->due_date)) ? $task->due_date->copy() : null;
                         $repeatCount = $task->repeat_count + ($task->recurrings_count * $task->repeat_count);
                         $repeatStartDate = $now;
-                        $repeatDueDate = (!is_null($endDate)) ? $now->copy()->addDays($endDate->diffInDays($startDate)) : null;
+                        $repeatDueDate = (! is_null($endDate)) ? $now->copy()->addDays($endDate->diffInDays($startDate)) : null;
                         $isTaskCreate = false;
                         $subTasks = $task->subtasks;
 
                         // Adjust start date to the company's timezone for comparison
                         $adjustedStartDate = $startDate->copy()->setTimezone($company->timezone);
 
-                        if ($task->repeat_type == 'day' && ($adjustedStartDate->copy()->addDays($repeatCount)->isPast() || $adjustedStartDate->copy()->addDays($repeatCount)->isToday())){
+                        if ($task->repeat_type == 'day' && ($adjustedStartDate->copy()->addDays($repeatCount)->isPast() || $adjustedStartDate->copy()->addDays($repeatCount)->isToday())) {
                             $isTaskCreate = true;
-                        }
-                        elseif ($task->repeat_type == 'week' && ($adjustedStartDate->copy()->addWeeks($repeatCount)->isPast() || $adjustedStartDate->copy()->addWeeks($repeatCount)->isToday())){
-                            $isTaskCreate = true;
-
-                        }
-                        elseif ($task->repeat_type == 'month' && ($adjustedStartDate->copy()->addMonths($repeatCount)->isPast() || $adjustedStartDate->copy()->addMonths($repeatCount)->isToday())) {
+                        } elseif ($task->repeat_type == 'week' && ($adjustedStartDate->copy()->addWeeks($repeatCount)->isPast() || $adjustedStartDate->copy()->addWeeks($repeatCount)->isToday())) {
                             $isTaskCreate = true;
 
-                        }
-                        elseif ($task->repeat_type == 'year' && ($adjustedStartDate->copy()->addYears($repeatCount)->isPast() || $adjustedStartDate->copy()->addYears($repeatCount)->isToday())) {
+                        } elseif ($task->repeat_type == 'month' && ($adjustedStartDate->copy()->addMonths($repeatCount)->isPast() || $adjustedStartDate->copy()->addMonths($repeatCount)->isToday())) {
+                            $isTaskCreate = true;
+
+                        } elseif ($task->repeat_type == 'year' && ($adjustedStartDate->copy()->addYears($repeatCount)->isPast() || $adjustedStartDate->copy()->addYears($repeatCount)->isToday())) {
                             $isTaskCreate = true;
                         }
-                       
+
                         if ($isTaskCreate) {
                             // Check if there are active users assigned to this task
-                            
+
                             $this->createTask($task, $repeatStartDate, $repeatDueDate, $company->default_task_status, $subTasks);
 
                             // Mark repeat complete if cycles are complete
@@ -90,7 +84,7 @@ class AutoCreateRecurringTasks extends Command
                                 $task->repeat_complete = 1;
                                 $task->save();
                             }
-                            
+
                         }
 
                     }
@@ -104,12 +98,12 @@ class AutoCreateRecurringTasks extends Command
 
     protected function createTask($task, $startDate, $endDate, $taskStatus, $subTasks = null)
     {
-        $newTask = new Task();
+        $newTask = new Task;
         $newTask->heading = $task->heading;
         $newTask->company_id = $task->company_id;
         $newTask->description = $task->description;
         $newTask->start_date = $startDate->format('Y-m-d');
-        $newTask->due_date = (!is_null($endDate)) ? $endDate->format('Y-m-d') : null;
+        $newTask->due_date = (! is_null($endDate)) ? $endDate->format('Y-m-d') : null;
         $newTask->project_id = $task->project_id;
         $newTask->task_category_id = $task->category_id;
         $newTask->priority = $task->priority;
@@ -123,9 +117,9 @@ class AutoCreateRecurringTasks extends Command
 
         if ($task->project) {
             $projectLastTaskCount = Task::projectTaskCount($task->project->id);
-            if($task->project->project_short_code){
-                $newTask->task_short_code = $task->project->project_short_code . '-' . $projectLastTaskCount + 1;
-            }else{
+            if ($task->project->project_short_code) {
+                $newTask->task_short_code = $task->project->project_short_code.'-'.$projectLastTaskCount + 1;
+            } else {
                 $newTask->task_short_code = $projectLastTaskCount + 1;
             }
         }
@@ -147,7 +141,7 @@ class AutoCreateRecurringTasks extends Command
 
                         $fileName = Files::generateNewFileName($file->filename);
 
-                        Files::copy(SubTaskFile::FILE_PATH . '/' . $file->sub_task_id . '/' . $file->hashname, SubTaskFile::FILE_PATH . '/' . $newSubTask->id . '/' . $fileName);
+                        Files::copy(SubTaskFile::FILE_PATH.'/'.$file->sub_task_id.'/'.$file->hashname, SubTaskFile::FILE_PATH.'/'.$newSubTask->id.'/'.$fileName);
 
                         // Update the filename and hashname for the new record
                         $newSubTaskFile->filename = $file->filename;
@@ -161,21 +155,20 @@ class AutoCreateRecurringTasks extends Command
 
         // Only sync active users to the new task
         $activeUsers = $task->users()->where('status', 'active')->pluck('users.id')->toArray();
-        
+
         if (empty($activeUsers)) {
-            $this->warn('No active users found for recurring task ID: ' . $task->id . '. Skipping user assignment.');
-        }else{
+            $this->warn('No active users found for recurring task ID: '.$task->id.'. Skipping user assignment.');
+        } else {
             $newTask->users()->sync($activeUsers);
         }
-        
+
         $newTask->labels()->sync($task->labels->pluck('id')->toArray());
 
-        if (!empty($activeUsers)) {
+        if (! empty($activeUsers)) {
             foreach ($newTask->users as $user) {
                 event(new TaskEvent($newTask, $user, 'NewTask'));
             }
         }
 
     }
-
 }

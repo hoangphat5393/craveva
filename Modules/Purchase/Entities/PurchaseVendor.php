@@ -7,24 +7,21 @@ use App\Models\Company;
 use App\Models\Currency;
 use App\Models\User;
 use App\Traits\HasCompany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
 
 class PurchaseVendor extends BaseModel
 {
-
     use HasCompany, Notifiable;
 
     protected $fillable = [];
+
     protected $with = [];
 
     /**
      * Get the user that owns the PurchaseVendor
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class, 'company_id');
@@ -54,5 +51,4 @@ class PurchaseVendor extends BaseModel
     {
         return $this->hasMany(PurchaseOrder::class, 'vendor_id');
     }
-
 }

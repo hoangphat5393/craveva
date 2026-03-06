@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read mixed $icon
  * @property-read \App\Models\Skill $skill
  * @property-read \App\Models\User $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|EmployeeSkill newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|EmployeeSkill newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|EmployeeSkill query()
@@ -24,14 +25,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|EmployeeSkill whereSkillId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|EmployeeSkill whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|EmployeeSkill whereUserId($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|EmployeeSkill whereCompanyId($value)
+ *
  * @mixin \Eloquent
  */
 class EmployeeSkill extends BaseModel
 {
-
     use HasCompany;
 
     protected $table = 'employee_skills';
@@ -45,5 +48,4 @@ class EmployeeSkill extends BaseModel
     {
         return $this->belongsTo(User::class);
     }
-
 }

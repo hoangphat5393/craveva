@@ -9,7 +9,6 @@ use App\Models\TicketChannel;
 
 class TicketChannelController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -26,13 +25,13 @@ class TicketChannelController extends AccountBaseController
     }
 
     /**
-     * @param StoreTicketChannel $request
      * @return array
+     *
      * @throws \Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException
      */
     public function store(StoreTicketChannel $request)
     {
-        $channel = new TicketChannel();
+        $channel = new TicketChannel;
         $channel->channel_name = $request->channel_name;
         $channel->save();
 
@@ -41,26 +40,27 @@ class TicketChannelController extends AccountBaseController
         $select = '<option value="">--</option>';
 
         foreach ($allChannels as $channel) {
-            $select .= '<option value="' . $channel->id . '">' . $channel->channel_name . '</option>';
+            $select .= '<option value="'.$channel->id.'">'.$channel->channel_name.'</option>';
         }
 
         return Reply::successWithData(__('messages.recordSaved'), ['optionData' => $select]);
     }
 
     /**
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
     public function edit($id)
     {
         $this->channel = TicketChannel::findOrFail($id);
+
         return view('ticket-settings.edit-ticket-channel-modal', $this->data);
     }
 
     /**
-     * @param UpdateTicketChannel $request
-     * @param int $id
+     * @param  int  $id
      * @return array
+     *
      * @throws \Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException
      */
     public function update(UpdateTicketChannel $request, $id)
@@ -73,12 +73,13 @@ class TicketChannelController extends AccountBaseController
     }
 
     /**
-     * @param int $id
+     * @param  int  $id
      * @return array
      */
     public function destroy($id)
     {
         TicketChannel::destroy($id);
+
         return Reply::success(__('messages.deleteSuccess'));
     }
 
@@ -86,5 +87,4 @@ class TicketChannelController extends AccountBaseController
     {
         return view('ticket-settings.channels.create-modal');
     }
-
 }

@@ -16,12 +16,12 @@ return new class extends Migration
             // We use a raw check because Schema::hasIndex is not reliable for named indices in all versions
             // But we can just try to add it. If it exists, it might throw error.
             // Better to use Schema manager.
-            
+
             $sm = Schema::getConnection()->getDoctrineSchemaManager();
             $indexes = $sm->listTableIndexes('purchase_stock_adjustments');
-            
-            if (!array_key_exists('psa_product_warehouse_unique', $indexes)) {
-                 $table->unique(['product_id', 'warehouse_id'], 'psa_product_warehouse_unique');
+
+            if (! array_key_exists('psa_product_warehouse_unique', $indexes)) {
+                $table->unique(['product_id', 'warehouse_id'], 'psa_product_warehouse_unique');
             }
         });
     }

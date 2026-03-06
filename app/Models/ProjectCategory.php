@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int|null $last_updated_by
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Project[] $project
  * @property-read int|null $project_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectCategory newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectCategory newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectCategory query()
@@ -25,17 +26,20 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectCategory whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectCategory whereLastUpdatedBy($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectCategory whereUpdatedAt($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectCategory whereCompanyId($value)
+ *
  * @mixin \Eloquent
  */
 class ProjectCategory extends BaseModel
 {
-
     use HasCompany;
 
     protected $table = 'project_category';
+
     protected $default = ['id', 'category_name'];
 
     public function project(): HasMany
@@ -47,10 +51,8 @@ class ProjectCategory extends BaseModel
     {
         if (user()->permission('view_project_category') == 'all') {
             return ProjectCategory::all();
-        }
-        else {
+        } else {
             return ProjectCategory::where('added_by', user()->id)->get();
         }
     }
-
 }

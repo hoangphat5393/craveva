@@ -13,22 +13,26 @@ use Modules\Purchase\Entities\PurchaseOrder;
  * @property int $id
  * @property string $name
  * @property string|null $model
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|CustomFieldGroup newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|CustomFieldGroup newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|CustomFieldGroup query()
  * @method static \Illuminate\Database\Eloquent\Builder|CustomFieldGroup whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|CustomFieldGroup whereModel($value)
  * @method static \Illuminate\Database\Eloquent\Builder|CustomFieldGroup whereName($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|CustomFieldGroup whereCompanyId($value)
+ *
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\CustomField[] $customField
  * @property-read int|null $custom_field_count
+ *
  * @mixin \Eloquent
  */
 class CustomFieldGroup extends BaseModel
 {
-
     use HasCompany;
 
     const ALL_FIELDS = [
@@ -49,7 +53,7 @@ class CustomFieldGroup extends BaseModel
         ['name' => 'Event', 'model' => Event::CUSTOM_FIELD_MODEL],
         ['name' => 'Ticket', 'model' => Ticket::CUSTOM_FIELD_MODEL],
         ['name' => 'Time Log', 'model' => ProjectTimeLog::CUSTOM_FIELD_MODEL],
-        ['name' => 'Contract', 'model' => Contract::CUSTOM_FIELD_MODEL]
+        ['name' => 'Contract', 'model' => Contract::CUSTOM_FIELD_MODEL],
     ];
 
     // ['name' => 'Purchase Order', 'model' => PurchaseOrder::CUSTOM_FIELD_MODEL],
@@ -73,10 +77,10 @@ class CustomFieldGroup extends BaseModel
                     'data' => $customField->name,
                     'name' => $customField->name,
                     'title' => str($customField->label)->__toString(),
-                    'visible' => (!is_null($customField['visible'])) ? $customField['visible'] : false,
-                    'exportable' => (!is_null($customField['export'])) ? $customField['export'] : false,
+                    'visible' => (! is_null($customField['visible'])) ? $customField['visible'] : false,
+                    'exportable' => (! is_null($customField['export'])) ? $customField['export'] : false,
                     'orderable' => false,
-                ]
+                ],
             ];
 
             $customFieldsDataMerge = array_merge($customFieldsDataMerge, $customFieldsData);

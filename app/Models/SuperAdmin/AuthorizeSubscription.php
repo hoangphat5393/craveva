@@ -6,7 +6,5 @@ use App\Models\BaseModel;
 
 class AuthorizeSubscription extends BaseModel
 {
-
     protected $table = 'authorize_subscriptions';
-
 }

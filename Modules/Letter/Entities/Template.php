@@ -14,34 +14,32 @@ class Template extends BaseModel
     protected $table = 'letter_templates';
 
     protected $fillable = [
-        'title', 'description'
+        'title', 'description',
     ];
 
+    // endregion
 
-    //endregion
+    // endregion
 
-
-
-    //endregion
-
-    //region Custom Attributes
+    // region Custom Attributes
 
     /* ---------- */
 
     public function getEmployeeVariablesAttribute(): array
     {
-        $employee = new User();
+        $employee = new User;
+
         return $employee->getVariables();
     }
 
-    //endregion
+    // endregion
 
-    //region Relations
+    // region Relations
 
     /* ---------- */
 
-    //endregion
+    // endregion
 
-    //region Custom Functions
+    // region Custom Functions
 
 }

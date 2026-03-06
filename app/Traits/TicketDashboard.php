@@ -9,14 +9,9 @@ use App\Models\TicketType;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
-/**
- *
- */
 trait TicketDashboard
 {
-
     /**
-     *
      * @return void
      */
     public function ticketDashboard()
@@ -47,7 +42,6 @@ trait TicketDashboard
         $this->totalResolvedTickets = $ticketCounts->totalResolvedTickets;
         $this->totalUnassignedTicket = $ticketCounts->totalUnassignedTicket;
 
-
         $this->ticketTypeChart = $this->ticketTypeChart($startDate, $endDate);
         $this->ticketStatusChart = $this->ticketStatusChart($startDate, $endDate);
         $this->ticketChannelChart = $this->ticketChannelChart($startDate, $endDate);
@@ -76,10 +70,9 @@ trait TicketDashboard
 
         if ($data['labels']) {
             foreach ($data['labels'] as $key => $value) {
-                $data['colors'][] = '#' . substr(md5($value), 0, 6);
+                $data['colors'][] = '#'.substr(md5($value), 0, 6);
             }
-        }
-        else {
+        } else {
             $data['colors'] = [];
         }
 
@@ -103,7 +96,7 @@ trait TicketDashboard
         ];
 
         $data['labels'] = $statusCounts->keys()->map(function ($status) {
-            return __('app.' . $status); // Map key with translation
+            return __('app.'.$status); // Map key with translation
         })->toArray();
 
         $data['values'] = $statusCounts->pluck('totalTicket')->toArray();
@@ -120,12 +113,11 @@ trait TicketDashboard
         $data['labels'] = $tickets->pluck('channel_name')->toArray();
 
         foreach ($data['labels'] as $key => $value) {
-            $data['colors'][] = '#' . substr(md5($value), 0, 6);
+            $data['colors'][] = '#'.substr(md5($value), 0, 6);
         }
 
         $data['values'] = $tickets->pluck('tickets_count')->toArray();
 
         return $data;
     }
-
 }

@@ -1,6 +1,6 @@
 <?php
 
-return array(
+return [
     'settingupdated' => 'Setting Updated',
     'interviewScheduleExist' => 'An interview for this candidate is already scheduled at the selected time.',
     'jobAdded' => 'Job add successfully.',
@@ -74,11 +74,11 @@ return array(
     'interviewLabel' => 'Open Create interview model.',
     'hiredLabel' => 'Open Create offer letter model.',
     'rejectLabel' => 'Open Add rejection remark model.',
-    'emailAlreadyExists'  => 'Email already exist it should be unique.',
+    'emailAlreadyExists' => 'Email already exist it should be unique.',
     'fullNameRequired' => 'The Full Name field is required.',
     'selectJobField' => 'The Select Job field is required.',
     'candidateDatabaseInfo' => 'These are the archived job applications.',
     'thankyouNote' => 'Thank you for considering a career with us.',
     'greetingMessage' => 'We hope this message finds you well.',
     'predefinedSourceDelete' => 'You can\'t delete pre-defined sources.',
-);
+];

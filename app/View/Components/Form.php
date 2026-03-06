@@ -7,8 +7,8 @@ use Illuminate\View\Component;
 
 class Form extends Component
 {
-
     public $spoofMethod = false;
+
     public $method;
 
     /**
@@ -32,5 +32,4 @@ class Form extends Component
     {
         return view('components.form');
     }
-
 }

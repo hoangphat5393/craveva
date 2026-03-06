@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
 use App\Models\User;
 use App\Models\UserAuth;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Tests\TestCase;
 
 class ChatboxToggleTest extends TestCase
 {
@@ -26,12 +26,12 @@ class ChatboxToggleTest extends TestCase
             ->select('users.*')
             ->first();
 
-        if (!$user) {
+        if (! $user) {
             // Fallback to any active user
             $user = User::where('status', 'active')->where('is_superadmin', 0)->first();
         }
 
-        if (!$user) {
+        if (! $user) {
             // Fallback to superadmin if no others exist (though this might hit 403)
             $user = User::where('is_superadmin', 1)->first();
         }
@@ -81,7 +81,7 @@ class ChatboxToggleTest extends TestCase
         // checking if "if (localStorage.getItem(aiWorkspaceKey) === 'true') { showChat(); }" is NOT active
         // This is hard to test perfectly with text search, but we can check it's not present in its active form
         // or check that it IS present but commented out.
-        
+
         // Let's verify the container is hidden by default
         $response->assertSee('id="ai-chatbot-container" style="display: none;"', false);
     }

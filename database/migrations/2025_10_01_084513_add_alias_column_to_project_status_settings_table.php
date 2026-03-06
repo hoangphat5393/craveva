@@ -2,8 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -18,7 +18,7 @@ return new class extends Migration
 
         // Populate alias with status_name values for existing records
         DB::statement('UPDATE project_status_settings SET alias = status_name WHERE alias IS NULL');
-        
+
         // Make alias NOT NULL after populating
         Schema::table('project_status_settings', function (Blueprint $table) {
             $table->string('alias')->nullable(false)->change();

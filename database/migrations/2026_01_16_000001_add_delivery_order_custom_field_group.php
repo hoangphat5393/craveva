@@ -4,8 +4,8 @@ use App\Models\Company;
 use App\Models\CustomFieldGroup;
 use Illuminate\Database\Migrations\Migration;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     public function up(): void
     {
         $companies = Company::all();
@@ -16,7 +16,7 @@ return new class extends Migration {
                 ->where('model', 'App\\Models\\OrderDelivery')
                 ->exists();
 
-            if (!$exists) {
+            if (! $exists) {
                 CustomFieldGroup::create([
                     'company_id' => $company->id,
                     'name' => 'Delivery Order',

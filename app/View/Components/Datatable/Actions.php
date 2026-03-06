@@ -7,7 +7,6 @@ use Illuminate\View\Component;
 
 class Actions extends Component
 {
-
     /**
      * Create a new component instance.
      *
@@ -27,5 +26,4 @@ class Actions extends Component
     {
         return view('components.datatable.actions');
     }
-
 }

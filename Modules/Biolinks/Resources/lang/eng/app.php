@@ -1,6 +1,6 @@
 <?php
 
-return array(
+return [
     'biolink' => 'biolink',
     'biolinks' => 'Biolinks',
     'biolinkPage' => 'Biolink page',
@@ -8,12 +8,12 @@ return array(
     'createBiolinkPage' => 'Add Biolink page',
     'totalPageViews' => 'Total page views',
     'createdOn' => 'Created on',
-    'menu' => array(
+    'menu' => [
         'biolinks' => 'Biolinks',
         'settings' => 'Settings',
         'blocks' => 'Blocks',
         'block' => 'Block',
-    ),
+    ],
     'biolinkSettings' => 'Biolink settings',
     'yourUrl' => 'Your biolink url is',
     'chooseFont' => 'Choose font',
@@ -172,7 +172,7 @@ return array(
     'MonoChrome' => 'MonoChrome',
     'Gradienta' => 'Gradienta',
     'Custom' => 'Custom',
-    'font' => array(
+    'font' => [
         'arial' => 'Arial',
         'helvetica' => 'Helvetica',
         'times-new-roman' => 'Times New Roman',
@@ -200,7 +200,6 @@ return array(
         'monospace' => 'Monospace',
         'fantasy' => 'Fantasy',
         'cursive' => 'Cursive',
-    ),
+    ],
 
-
-);
+];

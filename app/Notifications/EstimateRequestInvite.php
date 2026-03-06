@@ -7,7 +7,6 @@ use Illuminate\Notifications\Messages\MailMessage;
 
 class EstimateRequestInvite extends BaseNotification
 {
-
     /**
      * @var User
      */
@@ -27,7 +26,7 @@ class EstimateRequestInvite extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     // phpcs:ignore
@@ -39,8 +38,7 @@ class EstimateRequestInvite extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
-     * @return MailMessage
+     * @param  mixed  $notifiable
      */
     // phpcs:ignore
     public function toMail($notifiable): MailMessage
@@ -55,11 +53,11 @@ class EstimateRequestInvite extends BaseNotification
         $build
             ->subject($subject)
             ->markdown('mail.email', [
-            'url' => $url,
-            'content' => $content,
-            'themeColor' => $this->company->header_color,
-            'actionText' => __('email.estimate_request_invite.action'),
-            'notifiableName' => $this->invite->name,
+                'url' => $url,
+                'content' => $content,
+                'themeColor' => $this->company->header_color,
+                'actionText' => __('email.estimate_request_invite.action'),
+                'notifiableName' => $this->invite->name,
 
             ]);
 
@@ -71,15 +69,14 @@ class EstimateRequestInvite extends BaseNotification
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
-    //phpcs:ignore
+    // phpcs:ignore
     public function toArray($notifiable)
     {
         return [
             //
         ];
     }
-
 }

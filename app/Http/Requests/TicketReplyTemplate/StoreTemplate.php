@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class StoreTemplate extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -32,9 +31,8 @@ class StoreTemplate extends CoreRequest
                     if (trim_editor($value) == '') {
                         $fail(__('validation.required'));
                     }
-                }
-            ]
+                },
+            ],
         ];
     }
-
 }

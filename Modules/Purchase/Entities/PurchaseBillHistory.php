@@ -5,14 +5,12 @@ namespace Modules\Purchase\Entities;
 use App\Models\BaseModel;
 use App\Models\User;
 use App\Traits\HasCompany;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PurchaseBillHistory extends BaseModel
 {
-
-    use HasFactory, HasCompany;
+    use HasCompany, HasFactory;
 
     protected $fillable = [];
 
@@ -25,5 +23,4 @@ class PurchaseBillHistory extends BaseModel
     {
         return $this->belongsTo(User::class, 'user_id');
     }
-
 }

@@ -9,7 +9,6 @@ use Notification;
 
 class UpdateVendorPaymentListener
 {
-
     /**
      * Create the event listener.
      *
@@ -30,5 +29,4 @@ class UpdateVendorPaymentListener
     {
         Notification::send(User::allAdmins($event->payment->vendor->company->id), new AdminUpdateVendorPayment($event->payment));
     }
-
 }

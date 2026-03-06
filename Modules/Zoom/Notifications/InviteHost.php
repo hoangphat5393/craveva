@@ -69,17 +69,17 @@ class InviteHost extends BaseNotification
 
         $url = route('login');
         $url = getDomainSpecificUrl($url, $this->company);
-            $emailContent = parent::build()
-                ->subject(__('zoom::email.newMeeting.subject').' - '.config('app.name'))
-                ->greeting(__('email.hello').' '.$notifiable->name.'!')
-                ->line(__('zoom::email.newMeeting.text'))
-                ->line(__('zoom::modules.zoommeeting.meetingName').': '.$this->meeting->meeting_name)
-                ->line(__('zoom::modules.zoommeeting.startOn').': '.$this->meeting->start_date_time->format($this->company->date_format.' - '.$this->company->time_format))
-                ->line(__('zoom::modules.zoommeeting.endOn').': '.$this->meeting->end_date_time->format($this->company->date_format.' - '.$this->company->time_format))
-                ->line(__('zoom::modules.meetings.meetingId').': '.$this->meeting->meeting_id);
+        $emailContent = parent::build()
+            ->subject(__('zoom::email.newMeeting.subject').' - '.config('app.name'))
+            ->greeting(__('email.hello').' '.$notifiable->name.'!')
+            ->line(__('zoom::email.newMeeting.text'))
+            ->line(__('zoom::modules.zoommeeting.meetingName').': '.$this->meeting->meeting_name)
+            ->line(__('zoom::modules.zoommeeting.startOn').': '.$this->meeting->start_date_time->format($this->company->date_format.' - '.$this->company->time_format))
+            ->line(__('zoom::modules.zoommeeting.endOn').': '.$this->meeting->end_date_time->format($this->company->date_format.' - '.$this->company->time_format))
+            ->line(__('zoom::modules.meetings.meetingId').': '.$this->meeting->meeting_id);
 
-                    $emailContent = $emailContent->line(__('zoom::modules.zoommeeting.meetingPassword').' - '.$this->meeting->password);
-                    $emailContent = $emailContent->action(__('zoom::modules.zoommeeting.startUrl'), url($this->meeting->start_link));
+        $emailContent = $emailContent->line(__('zoom::modules.zoommeeting.meetingPassword').' - '.$this->meeting->password);
+        $emailContent = $emailContent->action(__('zoom::modules.zoommeeting.startUrl'), url($this->meeting->start_link));
 
         return $emailContent->line(__('zoom::email.thankyouNote'));
     }

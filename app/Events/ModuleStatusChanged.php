@@ -8,10 +8,10 @@ use Illuminate\Queue\SerializesModels;
 
 class ModuleStatusChanged
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $module;
+
     public $status;
 
     /**
@@ -22,5 +22,4 @@ class ModuleStatusChanged
         $this->module = $module;
         $this->status = $status;
     }
-
 }

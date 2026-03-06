@@ -1,7 +1,7 @@
 <?php
 
 $addOnOf = 'craveva';
-$product = $addOnOf . '-biometric-module';
+$product = $addOnOf.'-biometric-module';
 
 return [
     'name' => 'Biometric',

@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreRequest extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -24,18 +23,17 @@ class StoreRequest extends FormRequest
      */
     public function rules()
     {
-       
+
         $rules = [
-            'name'    => 'required',
+            'name' => 'required',
         ];
 
-        if(is_null($this->header_script) && is_null($this->footer_script)) {
+        if (is_null($this->header_script) && is_null($this->footer_script)) {
             $rules['header_script'] = 'required';
             $rules['footer_script'] = 'required';
         }
 
         return $rules;
-        
+
     }
-    
 }

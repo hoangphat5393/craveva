@@ -10,13 +10,11 @@ use App\Http\Requests\Gdpr\CreateRequest;
 use App\Models\GdprSetting;
 use App\Models\PurposeConsent;
 use App\Models\RemovalRequest;
-use App\Models\RemovalRequestLead;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class GdprSettingsController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -24,7 +22,8 @@ class GdprSettingsController extends AccountBaseController
         $this->activeSettingMenu = 'gdpr_settings';
         $this->gdprSetting = GdprSetting::first();
         $this->middleware(function ($request, $next) {
-            abort_403(!(user()->permission('manage_gdpr_setting') == 'all' || in_array('client', user_roles())));
+            abort_403(! (user()->permission('manage_gdpr_setting') == 'all' || in_array('client', user_roles())));
+
             return $next($request);
         });
     }
@@ -36,29 +35,29 @@ class GdprSettingsController extends AccountBaseController
         $tab = request('tab');
 
         switch ($tab) {
-        case 'right-to-erasure':
-            $this->view = 'gdpr-settings.ajax.right-to-erasure';
+            case 'right-to-erasure':
+                $this->view = 'gdpr-settings.ajax.right-to-erasure';
                 break;
-        case 'right-to-data-portability':
-            $this->view = 'gdpr-settings.ajax.right-to-data-portability';
+            case 'right-to-data-portability':
+                $this->view = 'gdpr-settings.ajax.right-to-data-portability';
                 break;
-        case 'right-to-informed':
-            $this->view = 'gdpr-settings.ajax.right-to-informed';
+            case 'right-to-informed':
+                $this->view = 'gdpr-settings.ajax.right-to-informed';
                 break;
-        case 'right-to-access':
-            $this->view = 'gdpr-settings.ajax.right-to-access';
+            case 'right-to-access':
+                $this->view = 'gdpr-settings.ajax.right-to-access';
                 break;
-        case 'consent-settings':
-            $this->view = 'gdpr-settings.ajax.consent-settings';
+            case 'consent-settings':
+                $this->view = 'gdpr-settings.ajax.consent-settings';
                 break;
-        case 'consent-lists':
+            case 'consent-lists':
                 return $this->consentList();
-        case 'removal-requests':
+            case 'removal-requests':
                 return $this->removalRequest();
-        case 'removal-requests-lead':
+            case 'removal-requests-lead':
                 return $this->removalRequestLead();
-        default:
-            $this->view = 'gdpr-settings.ajax.general';
+            default:
+                $this->view = 'gdpr-settings.ajax.general';
                 break;
         }
 
@@ -66,6 +65,7 @@ class GdprSettingsController extends AccountBaseController
 
         if (request()->ajax()) {
             $html = view($this->view, $this->data)->render();
+
             return Reply::dataOnly(['status' => 'success', 'html' => $html, 'title' => $this->pageTitle, 'activeTab' => $this->activeTab]);
         }
 
@@ -76,7 +76,6 @@ class GdprSettingsController extends AccountBaseController
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function updateGeneral(Request $request)
@@ -84,15 +83,17 @@ class GdprSettingsController extends AccountBaseController
         $this->gdprSetting->update($request->all());
         session()->forget('gdpr_setting');
         cache()->forget('global-setting');
+
         return Reply::success(__('messages.gdprUpdated'));
     }
 
     public function storeConsent(CreateRequest $request)
     {
-        $consent = new PurposeConsent();
+        $consent = new PurposeConsent;
         $consent->create($request->all());
         session()->forget('gdpr_setting');
         cache()->forget('global-setting');
+
         return Reply::success(__('messages.gdprUpdated'));
     }
 
@@ -114,6 +115,7 @@ class GdprSettingsController extends AccountBaseController
     public function editConsent($id)
     {
         $this->consent = PurposeConsent::findOrFail($id);
+
         return view('gdpr-settings.edit-consent-modal', $this->data);
     }
 
@@ -121,11 +123,12 @@ class GdprSettingsController extends AccountBaseController
     {
         $this->view = 'gdpr-settings.ajax.removal-request';
 
-        $dataTable = new CustomerDataRemovalDataTable();
+        $dataTable = new CustomerDataRemovalDataTable;
         $tab = request('tab');
         $this->activeTab = $tab ?: 'removal-requests';
 
         $this->view = 'gdpr-settings.ajax.removal-request';
+
         return $dataTable->render('gdpr-settings.index', $this->data);
     }
 
@@ -133,12 +136,13 @@ class GdprSettingsController extends AccountBaseController
     {
         $this->view = 'gdpr-settings.ajax.removal-request-lead';
 
-        $dataTable = new LeadDataRemovalDataTable();
+        $dataTable = new LeadDataRemovalDataTable;
 
         $tab = request('tab');
         $this->activeTab = $tab ?: 'removal-requests-lead';
 
         $this->view = 'gdpr-settings.ajax.removal-request-lead';
+
         return $dataTable->render('gdpr-settings.index', $this->data);
     }
 
@@ -146,11 +150,12 @@ class GdprSettingsController extends AccountBaseController
     {
         $this->view = 'gdpr-settings.ajax.consent-lists';
 
-        $dataTable = new ConsentDataTable();
+        $dataTable = new ConsentDataTable;
 
         $tab = request('tab');
         $this->activeTab = $tab ?: 'consent';
         $this->view = 'gdpr-settings.ajax.consent-lists';
+
         return $dataTable->render('gdpr-settings.index', $this->data);
     }
 
@@ -162,10 +167,11 @@ class GdprSettingsController extends AccountBaseController
     public function applyQuickAction(Request $request)
     {
         switch ($request->action_type) {
-        case 'delete':
-            $this->deleteRecords($request);
+            case 'delete':
+                $this->deleteRecords($request);
+
                 return Reply::success(__('messages.deleteSuccess'));
-        default:
+            default:
                 return Reply::error(__('messages.selectAction'));
         }
     }
@@ -180,6 +186,7 @@ class GdprSettingsController extends AccountBaseController
         PurposeConsent::destroy($id);
         session()->forget('gdpr_setting');
         cache()->forget('global-setting');
+
         return Reply::success('Deleted successfully');
     }
 
@@ -198,6 +205,7 @@ class GdprSettingsController extends AccountBaseController
         }
         session()->forget('gdpr_setting');
         cache()->forget('global-setting');
+
         return Reply::success(__('messages.updateSuccess'));
     }
 
@@ -217,7 +225,7 @@ class GdprSettingsController extends AccountBaseController
         }
         session()->forget('gdpr_setting');
         cache()->forget('global-setting');
+
         return Reply::success('successfully');
     }
-
 }

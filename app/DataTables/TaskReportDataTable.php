@@ -10,7 +10,6 @@ use Yajra\DataTables\Html\Button;
 
 class TaskReportDataTable extends BaseDataTable
 {
-
     private $viewUnassignedTasksPermission;
 
     public function __construct()
@@ -22,7 +21,7 @@ class TaskReportDataTable extends BaseDataTable
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
@@ -41,9 +40,9 @@ class TaskReportDataTable extends BaseDataTable
                 $members = '';
 
                 foreach ($row->users as $member) {
-                    $img = '<img data-toggle="tooltip" data-original-title="' . $member->name . '" src="' . $member->image_url . '">';
+                    $img = '<img data-toggle="tooltip" data-original-title="'.$member->name.'" src="'.$member->image_url.'">';
 
-                    $members .= '<div class="taskEmployeeImg rounded-circle"><a href="' . route('employees.show', $member->id) . '">' . $img . '</a></div> ';
+                    $members .= '<div class="taskEmployeeImg rounded-circle"><a href="'.route('employees.show', $member->id).'">'.$img.'</a></div> ';
                 }
 
                 return $members;
@@ -67,26 +66,26 @@ class TaskReportDataTable extends BaseDataTable
                 $private = $pin = $timer = '';
 
                 if ($row->is_private) {
-                    $private = '<span class="badge badge-secondary"><i class="fa fa-lock"></i> ' . __('app.private') . '</span>';
+                    $private = '<span class="badge badge-secondary"><i class="fa fa-lock"></i> '.__('app.private').'</span>';
                 }
 
                 if (($row->pinned_task)) {
-                    $pin = '<span class="badge badge-secondary"><i class="fa fa-thumbtack"></i> ' . __('app.pinned') . '</span>';
+                    $pin = '<span class="badge badge-secondary"><i class="fa fa-thumbtack"></i> '.__('app.pinned').'</span>';
                 }
 
                 if (count($row->activeTimerAll) > 0) {
-                    $timer .= '<span class="badge badge-secondary"><i class="fa fa-clock"></i> ' . $row->activeTimer->timer . '</span>';
+                    $timer .= '<span class="badge badge-secondary"><i class="fa fa-clock"></i> '.$row->activeTimer->timer.'</span>';
                 }
 
                 return '<div class="media align-items-center">
                         <div class="media-body">
-                    <h5 class="mb-0 f-13 text-darkest-grey"><a href="' . route('tasks.show', [$row->id]) . '" class="openRightModal">' . $row->heading . '</a></h5>
-                    <p class="mb-0">' . $private . ' ' . $pin . ' ' . $timer . '</p>
+                    <h5 class="mb-0 f-13 text-darkest-grey"><a href="'.route('tasks.show', [$row->id]).'" class="openRightModal">'.$row->heading.'</a></h5>
+                    <p class="mb-0">'.$private.' '.$pin.' '.$timer.'</p>
                     </div>
                   </div>';
             })
             ->editColumn('board_column', function ($row) {
-                return '<i class="fa fa-circle mr-2" style="color: ' . $row->label_color . '"></i>' . $row->board_column;
+                return '<i class="fa fa-circle mr-2" style="color: '.$row->label_color.'"></i>'.$row->board_column;
             })
             ->addColumn('status', function ($row) {
                 return $row->board_column;
@@ -96,7 +95,7 @@ class TaskReportDataTable extends BaseDataTable
                     return '-';
                 }
 
-                return '<a href="' . route('projects.show', $row->project_id) . '" class="text-darkest-grey">' . $row->project_name . '</a>';
+                return '<a href="'.route('projects.show', $row->project_id).'" class="text-darkest-grey">'.$row->project_name.'</a>';
             })
             ->editColumn('short_code', function ($row) {
 
@@ -104,9 +103,9 @@ class TaskReportDataTable extends BaseDataTable
                     return ' -- ';
                 }
 
-                return '<a href="' . route('tasks.show', [$row->id]) . '" class="text-darkest-grey openRightModal">' . $row->task_short_code . '</a>';
+                return '<a href="'.route('tasks.show', [$row->id]).'" class="text-darkest-grey openRightModal">'.$row->task_short_code.'</a>';
             })
-            ->setRowId(fn($row) => 'row-' . $row->id)
+            ->setRowId(fn ($row) => 'row-'.$row->id)
             ->rawColumns(['board_column', 'project_name', 'clientName', 'due_date', 'users', 'heading', 'short_code'])
             ->removeColumn('project_id')
             ->removeColumn('image')
@@ -115,7 +114,6 @@ class TaskReportDataTable extends BaseDataTable
     }
 
     /**
-     * @param Task $model
      * @return mixed
      */
     public function query(Task $model)
@@ -139,7 +137,7 @@ class TaskReportDataTable extends BaseDataTable
             ->leftJoin('users as client', 'client.id', '=', 'projects.client_id')
             ->join('taskboard_columns', 'taskboard_columns.id', '=', 'tasks.board_column_id');
 
-        if ($this->viewUnassignedTasksPermission == 'all' && !in_array('client', user_roles()) && ($request->assignedTo == 'unassigned' || $request->assignedTo == 'all')) {
+        if ($this->viewUnassignedTasksPermission == 'all' && ! in_array('client', user_roles()) && ($request->assignedTo == 'unassigned' || $request->assignedTo == 'all')) {
             $model->leftJoin('task_users', 'task_users.task_id', '=', 'tasks.id')
                 ->leftJoin('users as member', 'task_users.user_id', '=', 'member.id');
         } else {
@@ -151,7 +149,7 @@ class TaskReportDataTable extends BaseDataTable
             ->leftJoin('task_labels', 'task_labels.task_id', '=', 'tasks.id')
             ->selectRaw('tasks.id, tasks.added_by, projects.project_name, projects.client_id, tasks.heading, client.name as clientName, creator_user.name as created_by, creator_user.image as created_image, tasks.board_column_id,tasks.task_short_code,
              tasks.due_date, taskboard_columns.column_name as board_column, taskboard_columns.slug as board_column_slug, taskboard_columns.label_color,
-              tasks.project_id, tasks.is_private ,( select count("id") from pinned where pinned.task_id = tasks.id and pinned.user_id = ' . user()->id . ') as pinned_task')
+              tasks.project_id, tasks.is_private ,( select count("id") from pinned where pinned.task_id = tasks.id and pinned.user_id = '.user()->id.') as pinned_task')
             ->addSelect('tasks.company_id') // Company_id is fetched so the we have fetch company relation with it)
             ->whereNull('projects.deleted_at')
             ->with('users', 'activeTimerAll', 'activeTimer')
@@ -213,10 +211,10 @@ class TaskReportDataTable extends BaseDataTable
         if ($request->searchText != '') {
             $safeTerm = Common::safeString(request('searchText'));
             $model->where(function ($query) use ($safeTerm) {
-                $query->where('tasks.heading', 'like', '%' . $safeTerm . '%')
-                    ->orWhere('member.name', 'like', '%' . $safeTerm . '%')
-                    ->orWhere('projects.project_name', 'like', '%' . $safeTerm . '%')
-                    ->orWhere('tasks.task_short_code', 'like', '%' . $safeTerm . '%');
+                $query->where('tasks.heading', 'like', '%'.$safeTerm.'%')
+                    ->orWhere('member.name', 'like', '%'.$safeTerm.'%')
+                    ->orWhere('projects.project_name', 'like', '%'.$safeTerm.'%')
+                    ->orWhere('tasks.task_short_code', 'like', '%'.$safeTerm.'%');
             });
         }
 
@@ -242,7 +240,7 @@ class TaskReportDataTable extends BaseDataTable
             ]);
 
         if (canDataTableExport()) {
-            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
+            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
         }
 
         return $dataTable;
@@ -265,8 +263,8 @@ class TaskReportDataTable extends BaseDataTable
             __('modules.tasks.assigned') => ['data' => 'name', 'name' => 'name', 'visible' => false, 'title' => __('modules.tasks.assigned')],
             __('app.dueDate') => ['data' => 'due_date', 'name' => 'due_date', 'title' => __('app.dueDate')],
             __('modules.tasks.assignTo') => ['data' => 'users', 'name' => 'member.name', 'exportable' => false, 'title' => __('modules.tasks.assignTo')],
-            __('app.task') . ' ' . __('app.status') => ['data' => 'status', 'name' => 'board_column', 'visible' => false, 'title' => __('app.task')],
-            __('app.columnStatus') => ['data' => 'board_column', 'name' => 'board_column', 'exportable' => false, 'searchable' => false, 'title' => __('app.columnStatus')]
+            __('app.task').' '.__('app.status') => ['data' => 'status', 'name' => 'board_column', 'visible' => false, 'title' => __('app.task')],
+            __('app.columnStatus') => ['data' => 'board_column', 'name' => 'board_column', 'exportable' => false, 'searchable' => false, 'title' => __('app.columnStatus')],
         ];
     }
 }

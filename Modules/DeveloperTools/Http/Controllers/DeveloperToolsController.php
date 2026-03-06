@@ -6,12 +6,14 @@ use App\Http\Controllers\AccountBaseController;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
-use Modules\DeveloperTools\Entities\DeveloperToolsCredential;
-use Modules\DeveloperTools\Entities\DbUserMapping;
-use Modules\DeveloperTools\Entities\FileRecord;
-use Modules\DeveloperTools\Services\FileScanner;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
+use Modules\DeveloperTools\Entities\DbAccessLog;
+use Modules\DeveloperTools\Entities\DbUserMapping;
+use Modules\DeveloperTools\Entities\DeveloperToolsCredential;
+use Modules\DeveloperTools\Entities\FileRecord;
+use Modules\DeveloperTools\Services\DbAccessPolicy;
+use Modules\DeveloperTools\Services\FileScanner;
 
 class DeveloperToolsController extends AccountBaseController
 {
@@ -28,17 +30,22 @@ class DeveloperToolsController extends AccountBaseController
     public function index()
     {
         $company = company();
-        if (!$company) {
+        if (! $company) {
             abort(403, 'Company context required');
         }
 
         $this->credentials = DeveloperToolsCredential::where('company_id', $company->id)->get();
+        $policy = app(DbAccessPolicy::class);
+        $this->availableModules = $policy->availableModules();
+        $this->defaultModules = $policy->defaultModules();
+        $this->accessLogs = DbAccessLog::where('company_id', $company->id)->latest()->limit(25)->get();
+
         return view('developertools::index', $this->data);
     }
 
     public function codeMap(Request $request)
     {
-        if (!user()->is_superadmin) {
+        if (! user()->is_superadmin) {
             abort(403, 'Only Super Admin can access CodeMap');
         }
 
@@ -76,7 +83,7 @@ class DeveloperToolsController extends AccountBaseController
 
     public function exportCodeMap(Request $request)
     {
-        if (!user()->is_superadmin) {
+        if (! user()->is_superadmin) {
             abort(403, 'Only Super Admin can access CodeMap');
         }
 
@@ -117,11 +124,12 @@ class DeveloperToolsController extends AccountBaseController
 
     public function scanCodeMap(Request $request)
     {
-        if (!user()->is_superadmin) {
+        if (! user()->is_superadmin) {
             abort(403);
         }
 
-        (new FileScanner())->scanAndStore();
+        (new FileScanner)->scanAndStore();
+
         return back()->with('success', 'Đã quét và lưu thông tin file thành công.');
     }
 
@@ -132,10 +140,18 @@ class DeveloperToolsController extends AccountBaseController
     {
         Log::info('DeveloperTools store method called');
         $company = company();
-        if (!$company) {
+        if (! $company) {
             Log::error('No company context found');
             abort(403, 'Company context required');
         }
+
+        $policy = app(DbAccessPolicy::class);
+        $requestedModules = $request->input('modules', []);
+        if (! is_array($requestedModules)) {
+            $requestedModules = [];
+        }
+        $requestedModules = array_values(array_filter($requestedModules, fn($m) => is_string($m) && $m !== ''));
+        $effectiveModules = $policy->normalizeRequestedModules($requestedModules);
 
         // 1. Generate Creds
 
@@ -152,6 +168,10 @@ class DeveloperToolsController extends AccountBaseController
         // Sanitize DB name just in case
         $gatewayDbSafe = preg_replace('/[^a-zA-Z0-9_]/', '', $gatewayDb);
 
+        $startedAt = microtime(true);
+        $warnings = [];
+        $createdViewsCount = 0;
+
         try {
             Log::info('Attempting to create DB user: ' . $dbUsername);
 
@@ -160,110 +180,119 @@ class DeveloperToolsController extends AccountBaseController
             Log::info('Created/Verified database: ' . $gatewayDbSafe);
 
             // 2. Create Views for Multi-tenancy (Virtual Data Layer)
+            // Resolve actual source database name reliably
             $mainDb = DB::connection()->getDatabaseName();
-            $tablesKey = "Tables_in_" . $mainDb;
+            $schemaExists = DB::table('information_schema.SCHEMATA')
+                ->where('SCHEMA_NAME', $mainDb)
+                ->exists();
 
-            // Global tables that should be exposed to AI without company_id filter
-            $globalTables = ['countries', 'currencies', 'languages', 'permissions']; // Removed 'roles' to be safe
-
-            // Optimize: Get all tables that have company_id in one query
-            $companyTables = DB::table('information_schema.COLUMNS')
-                ->where('TABLE_SCHEMA', $mainDb)
-                ->where('COLUMN_NAME', 'company_id')
-                ->pluck('TABLE_NAME')
-                ->toArray();
-
-            // Merge global tables
-            $allTables = array_unique(array_merge($companyTables, $globalTables));
-
-            // Define sensitive tables and their allowed columns to protect data (e.g. passwords)
-            $sensitiveTables = [
-                'users' => 'id, name, email, mobile, image, status, login, created_at, updated_at, company_id',
-            ];
-
-            foreach ($allTables as $tableName) {
-                // Skip internal tables
-                if (in_array($tableName, ['migrations', 'jobs', 'failed_jobs', 'sessions', 'cache', 'password_resets'])) continue;
-
-                // Drop view if exists
-                DB::statement("DROP VIEW IF EXISTS `$gatewayDbSafe`.`$tableName`");
-
-                // Determine columns to select
-                $selectColumns = '*';
-                if (array_key_exists($tableName, $sensitiveTables)) {
-                    $selectColumns = $sensitiveTables[$tableName];
-                }
-
-                if (in_array($tableName, $globalTables)) {
-                     // Create View for global tables (No filter)
-                     if (\Illuminate\Support\Facades\Schema::hasTable($tableName)) {
-                        DB::statement("
-                            CREATE VIEW `$gatewayDbSafe`.`$tableName` AS
-                            SELECT $selectColumns FROM `$mainDb`.`$tableName`
-                        ");
-                     }
-                } else {
-                    // Create View filtering by company_id
-                    // Since we got these from information_schema where column_name = company_id, we know the column exists.
-                    DB::statement("
-                        CREATE VIEW `$gatewayDbSafe`.`$tableName` AS
-                        SELECT $selectColumns FROM `$mainDb`.`$tableName`
-                        WHERE `company_id` = {$company->id}
-                    ");
+            if (! $schemaExists) {
+                $row = DB::selectOne('SELECT DATABASE() AS db');
+                if ($row && isset($row->db) && is_string($row->db) && $row->db !== '') {
+                    $mainDb = $row->db;
                 }
             }
 
-            $joinViews = [
-                'order_items' => [
-                    'select' => 'oi.*',
-                    'from' => "`$mainDb`.`order_items` oi JOIN `$mainDb`.`orders` o ON o.id = oi.order_id",
-                    'where' => "o.company_id = {$company->id}",
-                ],
-                'delivery_order_items' => [
-                    'select' => 'doi.*',
-                    'from' => "`$mainDb`.`delivery_order_items` doi JOIN `$mainDb`.`delivery_orders` d ON d.id = doi.delivery_order_id",
-                    'where' => "d.company_id = {$company->id}",
-                ],
-                'purchase_item_images' => [
-                    'select' => 'pii.*',
-                    'from' => "`$mainDb`.`purchase_item_images` pii JOIN `$mainDb`.`purchase_items` pi ON pi.id = pii.purchase_item_id",
-                    'where' => "pi.company_id = {$company->id}",
-                ],
-                'purchase_item_taxes' => [
-                    'select' => 'pit.*',
-                    'from' => "`$mainDb`.`purchase_item_taxes` pit JOIN `$mainDb`.`purchase_items` pi ON pi.id = pit.purchase_item_id",
-                    'where' => "pi.company_id = {$company->id}",
-                ],
-            ];
+            $mainDbSafe = $policy->sanitizeIdentifier($mainDb);
+            if ($mainDbSafe === '') {
+                throw new \RuntimeException('Invalid source database name');
+            }
+            $allowedTables = $policy->resolveAllowedTables($mainDb, $effectiveModules);
+            $globalTables = $policy->globalTables();
+            $joinViews = $policy->joinViews();
 
-            foreach ($joinViews as $viewName => $def) {
-                if (!\Illuminate\Support\Facades\Schema::hasTable($viewName)) {
+            $tablesWithCompanyId = [];
+            foreach (array_chunk($allowedTables, 200) as $chunk) {
+                $found = DB::table('information_schema.COLUMNS')
+                    ->where('TABLE_SCHEMA', $mainDb)
+                    ->where('COLUMN_NAME', 'company_id')
+                    ->whereIn('TABLE_NAME', $chunk)
+                    ->pluck('TABLE_NAME')
+                    ->toArray();
+
+                foreach ($found as $t) {
+                    $tablesWithCompanyId[$t] = true;
+                }
+            }
+
+            foreach ($allowedTables as $tableName) {
+                $tableNameSafe = $policy->sanitizeIdentifier($tableName);
+                if ($tableNameSafe !== $tableName || $tableNameSafe === '') {
+                    $warnings[] = "Skipped invalid table name: {$tableName}";
+
                     continue;
                 }
 
-                DB::statement("DROP VIEW IF EXISTS `$gatewayDbSafe`.`$viewName`");
-                DB::statement("
-                    CREATE VIEW `$gatewayDbSafe`.`$viewName` AS
-                    SELECT {$def['select']}
-                    FROM {$def['from']}
-                    WHERE {$def['where']}
-                ");
+                DB::statement("DROP VIEW IF EXISTS `$gatewayDbSafe`.`$tableNameSafe`");
+
+                if (array_key_exists($tableName, $joinViews)) {
+                    $def = $joinViews[$tableName];
+                    $from = str_replace('{mainDb}.', "`{$mainDbSafe}`.`", $def['from']);
+                    $from = str_replace('{mainDb}', "`{$mainDbSafe}`", $from);
+                    $where = str_replace('{companyId}', (string) ((int) $company->id), $def['where']);
+                    $select = $def['select'];
+
+                    DB::statement("
+                        CREATE VIEW `$gatewayDbSafe`.`$tableNameSafe` AS
+                        SELECT {$select}
+                        FROM {$from}
+                        WHERE {$where}
+                    ");
+                    $createdViewsCount++;
+
+                    continue;
+                }
+
+                $selectColumns = $policy->selectColumnsForTable($mainDb, $tableName);
+
+                if (in_array($tableName, $globalTables, true)) {
+                    DB::statement("
+                        CREATE VIEW `$gatewayDbSafe`.`$tableNameSafe` AS
+                        SELECT {$selectColumns} FROM `$mainDbSafe`.`$tableNameSafe`
+                    ");
+                    $createdViewsCount++;
+
+                    continue;
+                }
+
+                if (isset($tablesWithCompanyId[$tableName])) {
+                    DB::statement("
+                        CREATE VIEW `$gatewayDbSafe`.`$tableNameSafe` AS
+                        SELECT {$selectColumns} FROM `$mainDbSafe`.`$tableNameSafe`
+                        WHERE `company_id` = {$company->id}
+                    ");
+                    $createdViewsCount++;
+
+                    continue;
+                }
+
+                $warnings[] = "Skipped unscoped table (no company_id / no join rule): {$tableName}";
             }
+
             Log::info('Created Views for company: ' . $company->id);
 
             // 3. Create MySQL User (Requires privileges)
             // Note: This runs as the application's DB user.
             // If it fails, the user needs to grant CREATE USER privileges to the app user.
             // DDL statements cause implicit commit, so we cannot use DB::beginTransaction() here.
-            DB::statement("CREATE USER ?@'%' IDENTIFIED BY ?", [$dbUsername, $dbPassword]);
+            $pdo = DB::getPdo();
+            $dbUsernameSafe = $policy->sanitizeIdentifier($dbUsername);
+            if ($dbUsernameSafe === '') {
+                throw new \RuntimeException('Invalid generated DB username');
+            }
+            $dbUsername = $dbUsernameSafe;
+            $userQuoted = $pdo->quote($dbUsername);
+            $passQuoted = $pdo->quote($dbPassword);
+
+            DB::statement("CREATE USER {$userQuoted}@'%' IDENTIFIED BY {$passQuoted}");
             Log::info('Created user');
 
             // Grant permissions on the Gateway DB ONLY
             // We cannot bind parameters for GRANT statement in some drivers, so we carefully construct it.
             // Since $dbUsername and $gatewayDb are generated/config controlled, it's relatively safe.
 
-            DB::statement("GRANT SELECT, INSERT, UPDATE, DELETE ON `$gatewayDbSafe`.* TO '$dbUsername'@'%'");
-            DB::statement("FLUSH PRIVILEGES");
+            DB::statement("GRANT SELECT ON `$gatewayDbSafe`.* TO {$userQuoted}@'%'");
+            DB::statement('FLUSH PRIVILEGES');
             Log::info('Granted privileges');
 
             // 3. Map User to Company
@@ -273,20 +302,41 @@ class DeveloperToolsController extends AccountBaseController
             ]);
 
             // 4. Store Credentials for Display
-            DeveloperToolsCredential::create([
+            $durationMs = (int) round((microtime(true) - $startedAt) * 1000);
+            $credential = DeveloperToolsCredential::create([
                 'company_id' => $company->id,
                 'db_username' => $dbUsername,
                 'db_database' => $gatewayDb,
                 'db_host' => request()->getHost(), // Simple guess
+                'allowed_modules' => $effectiveModules,
+                'created_views_count' => $createdViewsCount,
+                'generation_duration_ms' => $durationMs,
+                'last_generated_at' => now(),
+                'last_generation_warnings' => empty($warnings) ? null : implode("\n", $warnings),
                 'created_by' => user() ? user()->id : null,
             ]);
 
             Log::info('Credential records created');
 
+            DbAccessLog::create([
+                'company_id' => $company->id,
+                'db_username' => $dbUsername,
+                'db_database' => $gatewayDb,
+                'requested_modules' => $requestedModules,
+                'allowed_tables_count' => count($allowedTables),
+                'created_views_count' => $createdViewsCount,
+                'duration_ms' => $durationMs,
+                'status' => 'success',
+                'warnings' => empty($warnings) ? null : implode("\n", $warnings),
+                'created_by' => user() ? user()->id : null,
+            ]);
+
             // Flash password to session (only show once)
             session()->flash('new_db_password', $dbPassword);
             session()->flash('new_db_username', $dbUsername);
             session()->flash('new_db_name', $gatewayDb);
+            session()->flash('new_db_modules', $effectiveModules);
+            session()->flash('new_db_views_count', $createdViewsCount);
 
             return back()->with('success', 'Database credential created successfully. Please save the password now.');
         } catch (\Exception $e) {
@@ -302,6 +352,24 @@ class DeveloperToolsController extends AccountBaseController
             } catch (\Exception $dropEx) {
             }
 
+            $durationMs = (int) round((microtime(true) - $startedAt) * 1000);
+            try {
+                DbAccessLog::create([
+                    'company_id' => $company->id,
+                    'db_username' => $dbUsername ?? null,
+                    'db_database' => $gatewayDb ?? null,
+                    'requested_modules' => $requestedModules ?? null,
+                    'allowed_tables_count' => null,
+                    'created_views_count' => $createdViewsCount ?? null,
+                    'duration_ms' => $durationMs,
+                    'status' => 'failed',
+                    'warnings' => empty($warnings) ? null : implode("\n", $warnings),
+                    'error_message' => $e->getMessage(),
+                    'created_by' => user() ? user()->id : null,
+                ]);
+            } catch (\Throwable $logEx) {
+            }
+
             return back()->with('error', 'Failed to create database user: ' . $e->getMessage());
         }
     }
@@ -312,7 +380,7 @@ class DeveloperToolsController extends AccountBaseController
     public function destroy($id)
     {
         $company = company();
-        if (!$company) {
+        if (! $company) {
             abort(403);
         }
 

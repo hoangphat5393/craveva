@@ -13,8 +13,7 @@ use Illuminate\Support\Facades\App;
 
 class Controller extends BaseController
 {
-
-    use AuthorizesRequests, DispatchesJobs, ValidatesRequests, AppBoot;
+    use AppBoot, AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
     /**
      * @var array
@@ -22,8 +21,8 @@ class Controller extends BaseController
     public $data = [];
 
     /**
-     * @param mixed $name
-     * @param mixed $value
+     * @param  mixed  $name
+     * @param  mixed  $value
      */
     public function __set($name, $value)
     {
@@ -31,7 +30,7 @@ class Controller extends BaseController
     }
 
     /**
-     * @param mixed $name
+     * @param  mixed  $name
      * @return mixed
      */
     public function __get($name)
@@ -40,7 +39,7 @@ class Controller extends BaseController
     }
 
     /**
-     * @param mixed $name
+     * @param  mixed  $name
      * @return bool
      */
     public function __isset($name)
@@ -55,14 +54,11 @@ class Controller extends BaseController
 
             $this->checkMigrateStatus();
 
-
             // To keep the session we need to move it to middleware
             $this->gdpr = gdpr_setting();
             $this->global = global_setting();
 
-
             $this->company = companyOrGlobalSetting();
-
 
             $this->socialAuthSettings = social_auth_setting();
 
@@ -79,7 +75,7 @@ class Controller extends BaseController
             App::setLocale($this->locale);
             Carbon::setLocale($this->locale);
 
-            setlocale(LC_TIME, $this->locale . '_' . mb_strtoupper($this->locale));
+            setlocale(LC_TIME, $this->locale.'_'.mb_strtoupper($this->locale));
 
             // config(['app.debug' => $this->global->app_debug]);
 

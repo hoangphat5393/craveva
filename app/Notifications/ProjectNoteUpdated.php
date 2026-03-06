@@ -16,7 +16,9 @@ class ProjectNoteUpdated extends BaseNotification
      * @return void
      */
     private $project;
+
     private $projectNote;
+
     private $emailSetting;
 
     public function __construct(Project $project, ProjectNote $projectNote)
@@ -30,7 +32,7 @@ class ProjectNoteUpdated extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -50,7 +52,7 @@ class ProjectNoteUpdated extends BaseNotification
         }
 
         if ($this->emailSetting->send_push == 'yes' && push_setting()->beams_push_status == 'active') {
-            $pushNotification = new \App\Http\Controllers\DashboardController();
+            $pushNotification = new \App\Http\Controllers\DashboardController;
             $pushUsersIds = [[$notifiable->id]];
             $pushNotification->sendPushNotifications($pushUsersIds, __('email.projectNote.updateSubject'), $this->project->project_name);
         }
@@ -61,25 +63,25 @@ class ProjectNoteUpdated extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
     {
         $projectNoteUpdate = parent::build($notifiable);
 
-        $url = route('projects.show', $this->project->id) . '?tab=notes';
+        $url = route('projects.show', $this->project->id).'?tab=notes';
         $url = getDomainSpecificUrl($url, $this->company);
 
-        $content = __('email.projectNote.updateContent') . '<br>';
+        $content = __('email.projectNote.updateContent').'<br>';
 
-        $projectNoteUpdate->subject(__('email.projectNote.updateSubject') . ' - ' . config('app.name'))
+        $projectNoteUpdate->subject(__('email.projectNote.updateSubject').' - '.config('app.name'))
             ->markdown('mail.email', [
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
                 'actionText' => __('email.projectNote.action'),
-                'notifiableName' => $notifiable->name
+                'notifiableName' => $notifiable->name,
             ]);
 
         return $projectNoteUpdate;
@@ -88,7 +90,7 @@ class ProjectNoteUpdated extends BaseNotification
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function toArray($notifiable)
@@ -97,20 +99,20 @@ class ProjectNoteUpdated extends BaseNotification
             'id' => $this->projectNote->id,
             'project_id' => $this->project->id,
             'project_name' => $this->project->project_name,
-            'title' => $this->projectNote->title
+            'title' => $this->projectNote->title,
         ];
     }
 
     /**
      * Get the OneSignal representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return OneSignalMessage
      */
     public function toOneSignal($notifiable)
     {
         return OneSignalMessage::create()
             ->setSubject(__('email.projectNote.updateSubject'))
-            ->setBody($this->project->project_name . ' - ' . $this->projectNote->title);
+            ->setBody($this->project->project_name.' - '.$this->projectNote->title);
     }
 }

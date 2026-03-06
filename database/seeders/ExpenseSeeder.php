@@ -9,7 +9,6 @@ use Illuminate\Database\Seeder;
 
 class ExpenseSeeder extends Seeder
 {
-
     /**
      * Run the database seeds.
      *
@@ -24,7 +23,7 @@ class ExpenseSeeder extends Seeder
         $count = config('app.seed_record_count');
 
         Expense::factory()
-            ->count((int)$count)
+            ->count((int) $count)
             ->make()
             ->each(function (Expense $expense) use ($companyId, $employeeId, $currencyId) {
                 $expense->company_id = $companyId;
@@ -34,5 +33,4 @@ class ExpenseSeeder extends Seeder
                 $expense->save();
             });
     }
-
 }

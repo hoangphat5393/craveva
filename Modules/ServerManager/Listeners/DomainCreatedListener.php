@@ -27,7 +27,7 @@ class DomainCreatedListener implements ShouldQueue
         $domain = $event->domain;
 
         // Log additional information if needed
-        Log::info('Domain created: ' . $domain->domain_name, [
+        Log::info('Domain created: '.$domain->domain_name, [
             'domain_id' => $domain->id,
             'created_by' => $domain->created_by,
             'assigned_to' => $domain->assigned_to,

@@ -3,23 +3,22 @@
 namespace Modules\Biolinks\Http\Controllers;
 
 use App\Helper\Reply;
+use App\Http\Controllers\AccountBaseController;
 use Illuminate\Http\Request;
-use Modules\Biolinks\Enums\YesNo;
-use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Hash;
-use Modules\Biolinks\Entities\Biolink;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\URL;
+use Modules\Biolinks\Entities\Biolink;
 use Modules\Biolinks\Entities\BiolinkBlocks;
 use Modules\Biolinks\Entities\BiolinkSetting;
-use App\Http\Controllers\AccountBaseController;
+use Modules\Biolinks\Enums\YesNo;
 use Modules\Biolinks\Events\PhoneCollectionEmailEvent;
+use Modules\Biolinks\Http\Requests\BiolinkPasswordRequest;
 use Modules\Biolinks\Http\Requests\EmailCollectorRequest;
 use Modules\Biolinks\Http\Requests\PhoneCollectorRequest;
-use Modules\Biolinks\Http\Requests\BiolinkPasswordRequest;
 
 class BiolinkPageController extends AccountBaseController
 {
-
     public function __construct()
     {
         $this->baseUrl = URL::to('/');
@@ -31,7 +30,7 @@ class BiolinkPageController extends AccountBaseController
     public function index($slug)
     {
         $this->biolink = Biolink::where('page_link', $slug)->active()->first();
-        abort_if(!$this->biolink, 404, __('biolinks::messages.pageNotFound'));
+        abort_if(! $this->biolink, 404, __('biolinks::messages.pageNotFound'));
 
         $this->biolinkSettings = BiolinkSetting::findOrFail($this->biolink->id);
         $this->blocks = BiolinkBlocks::where('biolink_id', $this->biolink->id)->orderBy('position')->get();
@@ -113,11 +112,11 @@ class BiolinkPageController extends AccountBaseController
             $apiKey = explode('-', $emailBlock->api_key);
             $server = $apiKey[1];
 
-            $mailchimp = new \MailchimpMarketing\ApiClient();
+            $mailchimp = new \MailchimpMarketing\ApiClient;
 
             $mailchimp->setConfig([
                 'apiKey' => $emailBlock->api_key,
-                'server' => $server
+                'server' => $server,
             ]);
 
             try {
@@ -126,7 +125,7 @@ class BiolinkPageController extends AccountBaseController
                     'status' => 'subscribed',
                     'merge_fields' => [
                         'FNAME' => $request->name,
-                    ]
+                    ],
                 ]);
 
                 return Reply::success(__('biolinks::messages.newsLetterSubscribe'));
@@ -148,5 +147,4 @@ class BiolinkPageController extends AccountBaseController
 
         return Reply::success(__('biolinks::messages.newsLetterSubscribe'));
     }
-
 }

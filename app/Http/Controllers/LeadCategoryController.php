@@ -9,7 +9,6 @@ use App\Models\LeadCategory;
 
 class LeadCategoryController extends AccountBaseController
 {
-
     /**
      * Show the form for creating a new resource.
      *
@@ -18,22 +17,22 @@ class LeadCategoryController extends AccountBaseController
     public function create()
     {
         $viewPermission = user()->permission('add_lead_category');
-        abort_403(!in_array($viewPermission, ['all', 'added']));
+        abort_403(! in_array($viewPermission, ['all', 'added']));
 
         $this->categories = LeadCategory::all();
+
         return view('lead-settings.create-category-modal', $this->data);
     }
 
     /**
-     * @param StoreLeadCategory $request
      * @return array|void
      */
     public function store(StoreLeadCategory $request)
     {
         $viewPermission = user()->permission('add_lead_category');
-        abort_403(!in_array($viewPermission, ['all', 'added']));
+        abort_403(! in_array($viewPermission, ['all', 'added']));
 
-        $category = new LeadCategory();
+        $category = new LeadCategory;
         $category->category_name = $request->category_name;
         $category->save();
 
@@ -42,7 +41,7 @@ class LeadCategoryController extends AccountBaseController
 
         foreach ($categoryData as $item) {
             $list .= '<option selected
-                value="' . $item->id . '"> ' . $item->category_name . ' </option>';
+                value="'.$item->id.'"> '.$item->category_name.' </option>';
         }
 
         return Reply::successWithData(__('messages.recordSaved'), ['data' => $list]);
@@ -52,14 +51,14 @@ class LeadCategoryController extends AccountBaseController
     /**
      * Show the form for editing the specified resource.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
     {
         $this->category = LeadCategory::findOrFail($id);
         $this->editPermission = user()->permission('edit_lead_category');
-        abort_403(!($this->editPermission == 'all' || ($this->editPermission == 'added' && $this->category->added_by == user()->id)));
+        abort_403(! ($this->editPermission == 'all' || ($this->editPermission == 'added' && $this->category->added_by == user()->id)));
 
         return view('lead-settings.edit-category-modal', $this->data);
 
@@ -68,20 +67,21 @@ class LeadCategoryController extends AccountBaseController
     /**
      * Update the specified resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param int $id
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function update(UpdateLeadCategory $request, $id)
     {
         $category = LeadCategory::findOrFail($id);
         $this->editPermission = user()->permission('edit_lead_category');
-        abort_403(!($this->editPermission == 'all' || ($this->editPermission == 'added' && $this->category->added_by == user()->id)));
+        abort_403(! ($this->editPermission == 'all' || ($this->editPermission == 'added' && $this->category->added_by == user()->id)));
 
         $category->category_name = $request->category_name;
         $category->save();
 
         $categoryData = LeadCategory::all();
+
         return Reply::successWithData(__('messages.recordSaved'), ['data' => $categoryData]);
 
     }
@@ -89,7 +89,7 @@ class LeadCategoryController extends AccountBaseController
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
+     * @param  int  $id
      * @return array
      */
     public function destroy($id)
@@ -97,10 +97,11 @@ class LeadCategoryController extends AccountBaseController
         $category = LeadCategory::findOrFail($id);
         $this->deletePermission = user()->permission('delete_lead_category');
 
-        abort_403(!($this->deletePermission == 'all' || ($this->deletePermission == 'added' && $category->added_by == user()->id)));
+        abort_403(! ($this->deletePermission == 'all' || ($this->deletePermission == 'added' && $category->added_by == user()->id)));
 
         LeadCategory::destroy($id);
         $categoryData = LeadCategory::all();
+
         return Reply::successWithData(__('messages.deleteSuccess'), ['data' => $categoryData]);
 
     }
@@ -108,12 +109,13 @@ class LeadCategoryController extends AccountBaseController
     public function updateLeadCategory()
     {
         LeadCategory::where('is_default', 1)->where('company_id', company()->id)->update(['is_default' => 0]);
-        
+
         $category = LeadCategory::findOrFail(request()->categoryId);
         $category->is_default = 1;
         $category->save();
 
         $categoryData = LeadCategory::all();
+
         return Reply::successWithData(__('messages.recordSaved'), ['data' => $categoryData]);
 
     }

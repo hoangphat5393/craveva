@@ -11,7 +11,6 @@ use Notification;
 
 class RecruitJobAlertUpdateListener
 {
-
     /**
      * Create the event listener.
      *
@@ -25,7 +24,7 @@ class RecruitJobAlertUpdateListener
     /**
      * Handle the event.
      *
-     * @param object $event
+     * @param  object  $event
      * @return void
      */
     public function handle(RecruitJobAlertUpdateEvent $event)
@@ -39,7 +38,7 @@ class RecruitJobAlertUpdateListener
         }
 
         foreach ($jobAlerts as $jobAlert) {
-            if (!is_null($jobAlert) && $jobAlert->recruit_work_experience_id == $event->job->recruit_work_experience_id && $jobAlert->recruit_job_type_id == $event->job->recruit_job_type_id && $jobAlert->recruit_job_category_id == $event->job->recruit_job_category_id) {
+            if (! is_null($jobAlert) && $jobAlert->recruit_work_experience_id == $event->job->recruit_work_experience_id && $jobAlert->recruit_job_type_id == $event->job->recruit_job_type_id && $jobAlert->recruit_job_category_id == $event->job->recruit_job_category_id) {
 
                 foreach ($jobLocations->address as $jobLocation) {
                     if ($jobLocation->id == $jobAlert->location_id) {
@@ -49,5 +48,4 @@ class RecruitJobAlertUpdateListener
             }
         }
     }
-
 }

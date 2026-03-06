@@ -4,8 +4,8 @@ use App\Models\CustomField;
 use App\Models\CustomFieldGroup;
 use Illuminate\Database\Migrations\Migration;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     public function up(): void
     {
         $this->fixDuplicateGroupsForName('Product', 'App\\Models\\Product');
@@ -42,7 +42,7 @@ return new class extends Migration {
             /** @var CustomFieldGroup|null $canonical */
             $canonical = $companyGroups->firstWhere('model', $expectedModel) ?: $companyGroups->first();
 
-            if (!$canonical) {
+            if (! $canonical) {
                 continue;
             }
 
@@ -69,4 +69,3 @@ return new class extends Migration {
         // Không rollback xoá trùng để tránh làm sai lệch dữ liệu custom field hiện tại
     }
 };
-

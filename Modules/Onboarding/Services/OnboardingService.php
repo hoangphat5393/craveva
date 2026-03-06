@@ -3,10 +3,8 @@
 namespace Modules\Onboarding\Services;
 
 use App\Models\EmployeeDetails;
-use App\Models\User;
 use Modules\Onboarding\Entities\OnboardingCompletedTask;
 use Modules\Onboarding\Entities\OnboardingTask;
-use Carbon\Carbon;
 
 class OnboardingService
 {
@@ -23,6 +21,7 @@ class OnboardingService
                     ->where('employee_id', $employeeId)
                     ->where('type', $task->type)
                     ->first();
+
                 return $task;
             });
     }
@@ -33,7 +32,7 @@ class OnboardingService
     public function getOnboardingProgress($employeeId, $type = 'onboard')
     {
         $totalTasks = OnboardingTask::where('type', $type)->count();
-        
+
         if ($totalTasks === 0) {
             return 0;
         }
@@ -52,13 +51,13 @@ class OnboardingService
     public function canStartOnboarding($employeeId)
     {
         $employeeDetail = EmployeeDetails::where('user_id', $employeeId)->first();
-        
-        if (!$employeeDetail) {
+
+        if (! $employeeDetail) {
             return false;
         }
 
-        return $employeeDetail->onboarding_status === 'old' && 
-               $employeeDetail->onboard_completed === 0 && 
+        return $employeeDetail->onboarding_status === 'old' &&
+               $employeeDetail->onboard_completed === 0 &&
                $employeeDetail->offboard_completed === 0;
     }
 
@@ -68,13 +67,13 @@ class OnboardingService
     public function canStartOffboarding($employeeId)
     {
         $employeeDetail = EmployeeDetails::where('user_id', $employeeId)->first();
-        
-        if (!$employeeDetail) {
+
+        if (! $employeeDetail) {
             return false;
         }
 
-        return $employeeDetail->onboard_completed === 1 && 
-               $employeeDetail->offboard_completed === 0 && 
+        return $employeeDetail->onboard_completed === 1 &&
+               $employeeDetail->offboard_completed === 0 &&
                $employeeDetail->onboarding_status !== 'offboarding';
     }
 
@@ -84,12 +83,12 @@ class OnboardingService
     public function startOnboarding($employeeId)
     {
         $employeeDetail = EmployeeDetails::where('user_id', $employeeId)->first();
-        
-        if (!$employeeDetail) {
+
+        if (! $employeeDetail) {
             return ['success' => false, 'message' => 'Employee not found'];
         }
 
-        if (!$this->canStartOnboarding($employeeId)) {
+        if (! $this->canStartOnboarding($employeeId)) {
             return ['success' => false, 'message' => 'Cannot start onboarding at this time'];
         }
 
@@ -104,17 +103,17 @@ class OnboardingService
                 [
                     'onboarding_task_id' => $task->id,
                     'employee_id' => $employeeId,
-                    'type' => $task->type
+                    'type' => $task->type,
                 ],
                 [
-                    'status' => 'pending'
+                    'status' => 'pending',
                 ]
             );
         }
 
         $employeeDetail->update([
             'onboarding_status' => 'new',
-            'onboard_completed' => 0
+            'onboard_completed' => 0,
         ]);
 
         return ['success' => true, 'message' => 'Onboarding started successfully'];
@@ -126,12 +125,12 @@ class OnboardingService
     public function startOffboarding($employeeId)
     {
         $employeeDetail = EmployeeDetails::where('user_id', $employeeId)->first();
-        
-        if (!$employeeDetail) {
+
+        if (! $employeeDetail) {
             return ['success' => false, 'message' => 'Employee not found'];
         }
 
-        if (!$this->canStartOffboarding($employeeId)) {
+        if (! $this->canStartOffboarding($employeeId)) {
             return ['success' => false, 'message' => 'Cannot start offboarding at this time'];
         }
 
@@ -146,17 +145,17 @@ class OnboardingService
                 [
                     'onboarding_task_id' => $task->id,
                     'employee_id' => $employeeId,
-                    'type' => $task->type
+                    'type' => $task->type,
                 ],
                 [
-                    'status' => 'pending'
+                    'status' => 'pending',
                 ]
             );
         }
 
         $employeeDetail->update([
             'onboarding_status' => 'offboarding',
-            'offboard_completed' => 0
+            'offboard_completed' => 0,
         ]);
 
         return ['success' => true, 'message' => 'Offboarding started successfully'];
@@ -168,8 +167,8 @@ class OnboardingService
     public function completeTask($taskId, $employeeId, $completedOn, $file = null, $userId = null)
     {
         $task = OnboardingTask::find($taskId);
-        
-        if (!$task) {
+
+        if (! $task) {
             return ['success' => false, 'message' => 'Task not found'];
         }
 
@@ -178,8 +177,8 @@ class OnboardingService
             ->where('type', $task->type)
             ->first();
 
-        if (!$completedTask) {
-            $completedTask = new OnboardingCompletedTask();
+        if (! $completedTask) {
+            $completedTask = new OnboardingCompletedTask;
             $completedTask->onboarding_task_id = $taskId;
             $completedTask->employee_id = $employeeId;
             $completedTask->type = $task->type;
@@ -188,7 +187,7 @@ class OnboardingService
         $completedTask->status = 'completed';
         $completedTask->completed_on = $completedOn;
         $completedTask->user_id = $userId;
-        
+
         if ($file) {
             $completedTask->file = $file;
         }
@@ -216,7 +215,7 @@ class OnboardingService
         $tasks->update([
             'status' => 'completed',
             'completed_on' => now(),
-            'user_id' => $userId
+            'user_id' => $userId,
         ]);
 
         $this->updateEmployeeStatus($employeeId);
@@ -234,18 +233,18 @@ class OnboardingService
             ->delete();
 
         $employeeDetail = EmployeeDetails::where('user_id', $employeeId)->first();
-        
+
         if ($employeeDetail) {
             if ($type === 'onboard') {
                 $employeeDetail->update([
                     'onboard_completed' => 0,
                     'offboard_completed' => 0,
-                    'onboarding_status' => 'old'
+                    'onboarding_status' => 'old',
                 ]);
             } else {
                 $employeeDetail->update([
                     'offboard_completed' => 0,
-                    'onboarding_status' => 'old'
+                    'onboarding_status' => 'old',
                 ]);
             }
         }
@@ -259,8 +258,8 @@ class OnboardingService
     private function updateEmployeeStatus($employeeId)
     {
         $employeeDetail = EmployeeDetails::where('user_id', $employeeId)->first();
-        
-        if (!$employeeDetail) {
+
+        if (! $employeeDetail) {
             return;
         }
 
@@ -285,7 +284,7 @@ class OnboardingService
         $employeeDetail->update([
             'onboard_completed' => $onboardCompleted,
             'offboard_completed' => $offboardCompleted,
-            'onboarding_status' => $onboardingStatus
+            'onboarding_status' => $onboardingStatus,
         ]);
     }
 
@@ -302,6 +301,7 @@ class OnboardingService
             if ($totalOffboardTasks == 0 || $completedOffboardTasks == $totalOffboardTasks) {
                 return 'old';
             }
+
             return 'offboarding';
         }
 
@@ -327,9 +327,9 @@ class OnboardingService
         $showOnboarding = false;
         $showOffboarding = false;
 
-        if ($m['onboardingCompleted'] && !$m['offboardingStarted'] && !$m['offboardingCompleted'] && $m['hasOffboardTasks']) {
+        if ($m['onboardingCompleted'] && ! $m['offboardingStarted'] && ! $m['offboardingCompleted'] && $m['hasOffboardTasks']) {
             $showOffboarding = true;
-        } elseif (!$m['onboardingStarted'] && !$m['offboardingStarted'] && !$m['onboardingCompleted'] && !$m['offboardingCompleted']) {
+        } elseif (! $m['onboardingStarted'] && ! $m['offboardingStarted'] && ! $m['onboardingCompleted'] && ! $m['offboardingCompleted']) {
             $showOnboarding = $m['hasOnboardTasks'];
             $showOffboarding = $m['hasOffboardTasks'];
         }
@@ -370,7 +370,7 @@ class OnboardingService
             'offboardingStarted' => $offboardingStarted,
             'onboardingCompleted' => $onboardingCompleted,
             'offboardingCompleted' => $offboardingCompleted,
-            'inProgress' => ($onboardingStarted && !$onboardingCompleted) || ($offboardingStarted && !$offboardingCompleted),
+            'inProgress' => ($onboardingStarted && ! $onboardingCompleted) || ($offboardingStarted && ! $offboardingCompleted),
         ];
     }
 
@@ -424,7 +424,7 @@ class OnboardingService
             'total' => $totalEmployees,
             'new' => $newEmployees,
             'old' => $oldEmployees,
-            'offboarding' => $offboardingEmployees
+            'offboarding' => $offboardingEmployees,
         ];
     }
 }

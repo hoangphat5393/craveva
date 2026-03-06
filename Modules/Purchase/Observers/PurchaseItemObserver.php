@@ -6,7 +6,6 @@ use Modules\Purchase\Entities\PurchaseItem;
 
 class PurchaseItemObserver
 {
-
     public function creating(PurchaseItem $item)
     {
         if (company()) {
@@ -14,5 +13,4 @@ class PurchaseItemObserver
         }
 
     }
-
 }

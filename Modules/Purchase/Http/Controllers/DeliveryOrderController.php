@@ -2,15 +2,13 @@
 
 namespace Modules\Purchase\Http\Controllers;
 
+use App\Helper\Reply;
 use App\Http\Controllers\AccountBaseController;
 use App\Models\DeliveryOrder;
-use App\Models\Company;
-use Illuminate\Contracts\Support\Renderable;
-use Modules\Purchase\Entities\PurchaseOrder;
-use Modules\Purchase\Entities\DeliveryOrderItem;
-use App\Helper\Reply;
 use Illuminate\Http\Request;
 use Modules\Purchase\DataTables\DeliveryOrderDataTable;
+use Modules\Purchase\Entities\DeliveryOrderItem;
+use Modules\Purchase\Entities\PurchaseOrder;
 
 class DeliveryOrderController extends AccountBaseController
 {
@@ -93,13 +91,12 @@ class DeliveryOrderController extends AccountBaseController
         return Reply::success(__('messages.deleteSuccess'));
     }
 
-
     public function create()
     {
-        $this->pageTitle = __('app.add') . ' ' . __('purchase::app.menu.deliveryOrders');
+        $this->pageTitle = __('app.add').' '.__('purchase::app.menu.deliveryOrders');
         $this->purchaseOrders = PurchaseOrder::where('company_id', $this->company ? $this->company->id : null)->get();
 
-        $delivery = new DeliveryOrder();
+        $delivery = new DeliveryOrder;
         $getCustomFieldGroupsWithFields = $delivery->getCustomFieldGroupsWithFields();
 
         if ($getCustomFieldGroupsWithFields) {
@@ -108,16 +105,18 @@ class DeliveryOrderController extends AccountBaseController
 
         if (request()->ajax()) {
             $html = view('purchase::delivery-order.ajax.create', $this->data)->render();
+
             return Reply::dataOnly(['status' => 'success', 'html' => $html, 'title' => $this->pageTitle]);
         }
 
         $this->view = 'purchase::delivery-order.ajax.create';
+
         return view('purchase::delivery-order.create', $this->data);
     }
 
     public function edit($id)
     {
-        $this->pageTitle = __('app.edit') . ' ' . __('purchase::app.menu.deliveryOrders');
+        $this->pageTitle = __('app.edit').' '.__('purchase::app.menu.deliveryOrders');
         $this->delivery = DeliveryOrder::with('items', 'items.purchaseItem')->findOrFail($id);
         $this->purchaseOrders = PurchaseOrder::where('company_id', $this->company ? $this->company->id : null)->get();
 
@@ -128,10 +127,12 @@ class DeliveryOrderController extends AccountBaseController
 
         if (request()->ajax()) {
             $html = view('purchase::delivery-order.ajax.edit', $this->data)->render();
+
             return Reply::dataOnly(['status' => 'success', 'html' => $html, 'title' => $this->pageTitle]);
         }
 
         $this->view = 'purchase::delivery-order.ajax.edit';
+
         return view('purchase::delivery-order.create', $this->data);
     }
 
@@ -182,7 +183,7 @@ class DeliveryOrderController extends AccountBaseController
             'status' => 'required',
         ]);
 
-        $delivery = new DeliveryOrder();
+        $delivery = new DeliveryOrder;
         $delivery->company_id = $this->company ? $this->company->id : null;
         $delivery->purchase_order_id = $request->purchase_order_id;
         $delivery->delivery_number = $request->delivery_number;
@@ -231,8 +232,8 @@ class DeliveryOrderController extends AccountBaseController
         $canvas = $dom_pdf->getCanvas();
         $canvas->page_text(530, 820, 'Page {PAGE_NUM} of {PAGE_COUNT}', null, 10);
 
-        $filename = 'delivery-order-' . $this->delivery->delivery_number;
+        $filename = 'delivery-order-'.$this->delivery->delivery_number;
 
-        return $pdf->download($filename . '.pdf');
+        return $pdf->download($filename.'.pdf');
     }
 }

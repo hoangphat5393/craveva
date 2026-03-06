@@ -7,10 +7,9 @@ use App\Models\UserInvitation;
 
 class UserInvitationObserver
 {
-
     public function created(UserInvitation $invite)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             if ($invite->invitation_type == 'email') {
                 event(new InvitationEmailEvent($invite));
             }
@@ -21,5 +20,4 @@ class UserInvitationObserver
     {
         $model->company_id = $model->user->company_id;
     }
-
 }

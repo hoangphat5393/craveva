@@ -23,6 +23,7 @@ use Illuminate\Notifications\Notifiable;
  * @property-read int|null $notifications_count
  * @property-read \App\Models\Project $project
  * @property-read \App\Models\User $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectMember newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectMember newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectMember query()
@@ -34,15 +35,17 @@ use Illuminate\Notifications\Notifiable;
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectMember whereProjectId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectMember whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectMember whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class ProjectMember extends Pivot
 {
-
     use Notifiable;
 
     protected $hidden = ['user_id', 'project_id'];
+
     protected $table = 'project_members';
+
     protected $with = ['user'];
 
     public function routeNotificationForMail()
@@ -73,5 +76,4 @@ class ProjectMember extends Pivot
         return ProjectMember::where('project_id', $projectId)
             ->where('user_id', $userId)->first();
     }
-
 }

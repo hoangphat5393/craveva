@@ -1,15 +1,15 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
 use App\Models\Company;
 use App\Models\CustomField;
 use App\Models\CustomFieldGroup;
+use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
     public function up(): void
     {
-        if (!class_exists(Company::class)) {
+        if (! class_exists(Company::class)) {
             return;
         }
 
@@ -40,8 +40,8 @@ return new class extends Migration
                     ->where('name', $f['name'])
                     ->exists();
 
-                if (!$exists) {
-                    $field = new CustomField();
+                if (! $exists) {
+                    $field = new CustomField;
                     $field->custom_field_group_id = $group->id;
                     $field->company_id = $company->id;
                     $field->label = $f['label'];
@@ -49,7 +49,7 @@ return new class extends Migration
                     $field->type = $f['type'];
                     $field->required = 'no';
                     $field->export = 1;
-                    if (!is_null($f['values'])) {
+                    if (! is_null($f['values'])) {
                         $field->values = $f['values'];
                     }
                     $field->save();
@@ -60,7 +60,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        if (!class_exists(Company::class)) {
+        if (! class_exists(Company::class)) {
             return;
         }
 

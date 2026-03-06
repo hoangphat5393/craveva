@@ -8,7 +8,6 @@ use Notification;
 
 class CandidateInterviewScheduleListener
 {
-
     /**
      * Create the event listener.
      *
@@ -22,7 +21,7 @@ class CandidateInterviewScheduleListener
     /**
      * Handle the event.
      *
-     * @param object $event
+     * @param  object  $event
      * @return void
      */
     public function handle(CandidateInterviewScheduleEvent $interview)
@@ -31,5 +30,4 @@ class CandidateInterviewScheduleListener
             Notification::send($interview->interview->jobApplication, new CandidateScheduleInterview($interview->interview, $interview->candidateComment));
         }
     }
-
 }

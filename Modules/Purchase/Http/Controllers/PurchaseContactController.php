@@ -13,7 +13,6 @@ use Modules\Purchase\Http\Requests\VendorContact\UpdateVendorContact;
 
 class PurchaseContactController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -21,7 +20,7 @@ class PurchaseContactController extends AccountBaseController
         $this->pageTitle = 'purchase::modules.vendor.contacts';
 
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array(PurchaseSetting::MODULE_NAME, $this->user->modules));
+            abort_403(! in_array(PurchaseSetting::MODULE_NAME, $this->user->modules));
 
             return $next($request);
         });
@@ -29,9 +28,9 @@ class PurchaseContactController extends AccountBaseController
 
     /**
      * Show the form for creating a new resource.
+     *
      * @return Renderable
      */
-
     public function create()
     {
         $this->pageTitle = __('app.addContact');
@@ -54,12 +53,12 @@ class PurchaseContactController extends AccountBaseController
 
     /**
      * Store a newly created resource in storage.
-     * @param StoreVendorContact $request
+     *
      * @return Renderable
      */
     public function store(StoreVendorContact $request)
     {
-        $contact = new PurchaseVendorContact();
+        $contact = new PurchaseVendorContact;
         $contact->purchase_vendor_id = $request->purchase_vendor_id;
         $contact->title = $request->title;
         $contact->contact_name = $request->contact_name;
@@ -67,12 +66,13 @@ class PurchaseContactController extends AccountBaseController
         $contact->phone = $request->phone;
         $contact->save();
 
-        return Reply::successWithData(__('messages.recordSaved'), ['redirectUrl' => route('vendors.show', $contact->purchase_vendor_id) . '?tab=contacts']);
+        return Reply::successWithData(__('messages.recordSaved'), ['redirectUrl' => route('vendors.show', $contact->purchase_vendor_id).'?tab=contacts']);
     }
 
     /**
      * Show the form for editing the specified resource.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function edit($id)
@@ -99,8 +99,8 @@ class PurchaseContactController extends AccountBaseController
 
     /**
      * Update the specified resource in storage.
-     * @param UpdateVendorContact $request
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function update(UpdateVendorContact $request, $id)
@@ -112,12 +112,13 @@ class PurchaseContactController extends AccountBaseController
         $contact->phone = $request->phone;
         $contact->save();
 
-        return Reply::successWithData(__('messages.updateSuccess'), ['redirectUrl' => route('vendors.show', $contact->purchase_vendor_id) . '?tab=contacts']);
+        return Reply::successWithData(__('messages.updateSuccess'), ['redirectUrl' => route('vendors.show', $contact->purchase_vendor_id).'?tab=contacts']);
     }
 
     /**
      * Remove the specified resource from storage.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function destroy($id)
@@ -135,12 +136,12 @@ class PurchaseContactController extends AccountBaseController
     public function applyQuickAction(Request $request)
     {
         switch ($request->action_type) {
-        case 'delete':
-            $this->deleteRecords($request);
+            case 'delete':
+                $this->deleteRecords($request);
 
-            return Reply::success(__('messages.deleteSuccess'));
-        default:
-            return Reply::error(__('messages.selectAction'));
+                return Reply::success(__('messages.deleteSuccess'));
+            default:
+                return Reply::error(__('messages.selectAction'));
         }
     }
 
@@ -151,5 +152,4 @@ class PurchaseContactController extends AccountBaseController
 
         return true;
     }
-
 }

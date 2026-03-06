@@ -2,11 +2,11 @@
 
 namespace App\Models\SuperAdmin;
 
-use App\Models\User;
-use App\Scopes\CompanyScope;
 use App\Models\BaseModel;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\User;
 use App\Observers\SuperAdmin\SupportTicketReplyObserver;
+use App\Scopes\CompanyScope;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * App\Models\SuperAdmin\SupportTicketReply
@@ -15,13 +15,16 @@ use App\Observers\SuperAdmin\SupportTicketReplyObserver;
  * @property-read int|null $files_count
  * @property-read SupportTicket|null $ticket
  * @property-read User $user
+ *
  * @method static Builder|SupportTicketReply newModelQuery()
  * @method static Builder|SupportTicketReply newQuery()
  * @method static \Illuminate\Database\Query\Builder|SupportTicketReply onlyTrashed()
  * @method static Builder|SupportTicketReply query()
  * @method static \Illuminate\Database\Query\Builder|SupportTicketReply withTrashed()
  * @method static \Illuminate\Database\Query\Builder|SupportTicketReply withoutTrashed()
+ *
  * @mixin Eloquent
+ *
  * @property int $id
  * @property int $support_ticket_id
  * @property int $user_id
@@ -29,6 +32,7 @@ use App\Observers\SuperAdmin\SupportTicketReplyObserver;
  * @property Carbon|null $deleted_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ *
  * @method static Builder|SupportTicketReply whereCreatedAt($value)
  * @method static Builder|SupportTicketReply whereDeletedAt($value)
  * @method static Builder|SupportTicketReply whereId($value)
@@ -39,7 +43,6 @@ use App\Observers\SuperAdmin\SupportTicketReplyObserver;
  */
 class SupportTicketReply extends BaseModel
 {
-
     use SoftDeletes;
 
     protected $dates = ['deleted_at'];
@@ -55,7 +58,7 @@ class SupportTicketReply extends BaseModel
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_id')->withoutGlobalScopes(['active', CompanyScope::class,]);
+        return $this->belongsTo(User::class, 'user_id')->withoutGlobalScopes(['active', CompanyScope::class]);
     }
 
     public function files()
@@ -67,5 +70,4 @@ class SupportTicketReply extends BaseModel
     {
         return $this->belongsTo(SupportTicket::class, 'support_ticket_id')->withTrashed();
     }
-
 }

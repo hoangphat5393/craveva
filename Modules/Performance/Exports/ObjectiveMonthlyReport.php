@@ -5,17 +5,18 @@ namespace Modules\Performance\Exports;
 use App\Models\EmployeeDetails;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Concerns\FromCollection;
-use Maatwebsite\Excel\Concerns\WithHeadings;
-use Maatwebsite\Excel\Concerns\WithStyles;
-use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithCustomStartCell;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithStyles;
 use Modules\Performance\Entities\GoalType;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Modules\Performance\Entities\Objective;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class ObjectiveMonthlyReport implements FromCollection, WithHeadings, WithStyles, WithMapping, WithCustomStartCell
+class ObjectiveMonthlyReport implements FromCollection, WithCustomStartCell, WithHeadings, WithMapping, WithStyles
 {
     protected $startDate;
+
     protected $endDate;
 
     public function __construct($startDate, $endDate)
@@ -51,7 +52,7 @@ class ObjectiveMonthlyReport implements FromCollection, WithHeadings, WithStyles
                     $currentDate->day,
                     $weekEndDate->format('M'),
                     $weekEndDate->day
-                )
+                ),
             ];
 
             $currentDate = $weekEndDate->copy()->addDay();
@@ -87,31 +88,31 @@ class ObjectiveMonthlyReport implements FromCollection, WithHeadings, WithStyles
                         ->where('end_date', '>=', $this->startDate);
                 })
                 // Or has check-ins within the report period
-                ->orWhereHas('keyResults.checkIns', function ($q) {
-                    $q->whereBetween('check_in_date', [$this->startDate, $this->endDate]);
-                });
+                    ->orWhereHas('keyResults.checkIns', function ($q) {
+                        $q->whereBetween('check_in_date', [$this->startDate, $this->endDate]);
+                    });
             })->get()
 
         // Filter objectives based on access and with current period check-ins
-        ->filter(function ($objective) {
-            // Check view access
-            if ($this->checkViewAccess($objective->id)) {
-                return false;
-            }
+            ->filter(function ($objective) {
+                // Check view access
+                if ($this->checkViewAccess($objective->id)) {
+                    return false;
+                }
 
-            // Ensure the objective has check-ins in the current period
-            $hasCurrentPeriodCheckIns = $objective->keyResults->some(function ($kr) {
-                return $kr->checkIns->isNotEmpty();
+                // Ensure the objective has check-ins in the current period
+                $hasCurrentPeriodCheckIns = $objective->keyResults->some(function ($kr) {
+                    return $kr->checkIns->isNotEmpty();
+                });
+
+                return $hasCurrentPeriodCheckIns;
             });
-
-            return $hasCurrentPeriodCheckIns;
-        });
     }
 
     /**
      * Prepare report data from filtered objectives
      *
-     * @param \Illuminate\Database\Eloquent\Collection $objectives
+     * @param  \Illuminate\Database\Eloquent\Collection  $objectives
      * @return \Illuminate\Support\Collection
      */
     protected function prepareReportData($objectives)
@@ -124,7 +125,7 @@ class ObjectiveMonthlyReport implements FromCollection, WithHeadings, WithStyles
         $gradingScaleRow = [
             __('performance::app.gradingScore'),
             '0 - 0.1', '0.1 - 0.2', '0.2 - 0.3', '0.3 - 0.4',
-            '0.4 - 0.5', '0.5 - 0.6', '0.6 - 0.7', '0.7 - 0.8', '0.8 - 0.9', '0.9 - 1'
+            '0.4 - 0.5', '0.5 - 0.6', '0.6 - 0.7', '0.7 - 0.8', '0.8 - 0.9', '0.9 - 1',
         ];
         $data->push($gradingScaleRow);
 
@@ -156,16 +157,15 @@ class ObjectiveMonthlyReport implements FromCollection, WithHeadings, WithStyles
     /**
      * Process individual objective data
      *
-     * @param Collection $data
-     * @param int $objIndex
-     * @param Objective $objective
+     * @param  Collection  $data
+     * @param  int  $objIndex
+     * @param  Objective  $objective
      */
     protected function processObjectiveData(&$data, $objIndex, $objective)
     {
         $keyResultsCount = count($objective->keyResults);
 
-        if ($keyResultsCount === 0)
-        {
+        if ($keyResultsCount === 0) {
             return;
         }
 
@@ -187,10 +187,10 @@ class ObjectiveMonthlyReport implements FromCollection, WithHeadings, WithStyles
             $finalScoreTotal += floatval($finalScore);
 
             $keyResultData[] = [
-                'Objective' => __('performance::app.kr') .' - '. ($krIndex + 1),
+                'Objective' => __('performance::app.kr').' - '.($krIndex + 1),
                 'Key Result' => $keyResult->title,
                 'weeklyScores' => $weeklyScores,
-                'finalScore' => $finalScore
+                'finalScore' => $finalScore,
             ];
         }
 
@@ -204,16 +204,16 @@ class ObjectiveMonthlyReport implements FromCollection, WithHeadings, WithStyles
     /**
      * Add objective total row to data collection
      *
-     * @param Collection $data
-     * @param int $objIndex
-     * @param Objective $objective
-     * @param array $weekTotals
-     * @param float $finalScoreTotal
-     * @param int $keyResultsCount
+     * @param  Collection  $data
+     * @param  int  $objIndex
+     * @param  Objective  $objective
+     * @param  array  $weekTotals
+     * @param  float  $finalScoreTotal
+     * @param  int  $keyResultsCount
      */
     protected function addObjectiveTotalRow($data, $objIndex, $objective, $weekTotals, $finalScoreTotal, $keyResultsCount)
     {
-        $totalRow = [__('performance::app.obj') .' - '. ($objIndex + 1), $objective->title];
+        $totalRow = [__('performance::app.obj').' - '.($objIndex + 1), $objective->title];
 
         foreach ($weekTotals as $weekTotal) {
             $weeklyAverage = $keyResultsCount > 0 ? $weekTotal / $keyResultsCount : 0;
@@ -227,8 +227,8 @@ class ObjectiveMonthlyReport implements FromCollection, WithHeadings, WithStyles
     /**
      * Add key result rows to data collection
      *
-     * @param Collection $data
-     * @param array $keyResultData
+     * @param  Collection  $data
+     * @param  array  $keyResultData
      */
     protected function addKeyResultRows(&$data, $keyResultData)
     {
@@ -256,8 +256,7 @@ class ObjectiveMonthlyReport implements FromCollection, WithHeadings, WithStyles
             if ($weekNumber !== null) {
                 if (isset($processedWeeks[$weekNumber])) {
                     $scores[$weekNumber] = floatval($scores[$weekNumber]) + ($checkIn->objective_percentage / 100);
-                }
-                else {
+                } else {
                     $scores[$weekNumber] = $checkIn->objective_percentage / 100;
                     $processedWeeks[$weekNumber] = true;
                 }
@@ -274,7 +273,7 @@ class ObjectiveMonthlyReport implements FromCollection, WithHeadings, WithStyles
 
         return [
             'scores' => $scores,
-            'uniqueWeeks' => count($uniqueScoredWeeks)
+            'uniqueWeeks' => count($uniqueScoredWeeks),
         ];
     }
 
@@ -285,6 +284,7 @@ class ObjectiveMonthlyReport implements FromCollection, WithHeadings, WithStyles
                 return $weekNumber;
             }
         }
+
         return null;
     }
 
@@ -297,7 +297,7 @@ class ObjectiveMonthlyReport implements FromCollection, WithHeadings, WithStyles
             return '0.00';
         }
 
-        $nonZeroScores = array_filter($scores, function($score) {
+        $nonZeroScores = array_filter($scores, function ($score) {
             return floatval($score) > 0;
         });
 
@@ -306,13 +306,14 @@ class ObjectiveMonthlyReport implements FromCollection, WithHeadings, WithStyles
         }
 
         $totalScore = array_sum($nonZeroScores);
+
         return number_format($totalScore / $uniqueWeeks, 2, '.', '');
     }
 
     protected function addRowsToCollection($data, $objIndex, $objective, $weekTotals, $finalScoreTotal, $keyResultsCount, $keyResultData)
     {
         // Add objective total row
-        $totalRow = [__('performance::app.obj') .' - '. ($objIndex + 1), $objective->title];
+        $totalRow = [__('performance::app.obj').' - '.($objIndex + 1), $objective->title];
 
         foreach ($weekTotals as $weekTotal) {
             $weeklyAverage = $weekTotal / $keyResultsCount;
@@ -345,7 +346,7 @@ class ObjectiveMonthlyReport implements FromCollection, WithHeadings, WithStyles
     /**
      * Convert number to Excel column letter (handles columns beyond 'Z')
      *
-     * @param int $n Column number (1-based)
+     * @param  int  $n  Column number (1-based)
      * @return string Excel column letter(s)
      */
     protected function getColumnLetter($n)
@@ -353,23 +354,23 @@ class ObjectiveMonthlyReport implements FromCollection, WithHeadings, WithStyles
         $letter = '';
         while ($n > 0) {
             $n--;
-            $letter = chr(65 + ($n % 26)) . $letter;
+            $letter = chr(65 + ($n % 26)).$letter;
             $n = intdiv($n, 26);
         }
+
         return $letter;
     }
 
     protected function isEmptyOrZero($value)
     {
-        return (
+        return
             $value === null ||
             $value === '' ||
             $value === '0' ||
             $value === '0.00' ||
             $value === 0 ||
             $value === 0.00 ||
-            trim((string)$value) === ''
-        );
+            trim((string) $value) === '';
     }
 
     public function styles(Worksheet $sheet)
@@ -396,7 +397,7 @@ class ObjectiveMonthlyReport implements FromCollection, WithHeadings, WithStyles
         $sheet->getColumnDimension($lastColumn)->setWidth(20);
 
         // Rest of your existing styles code, but using $lastColumn instead of the chr() calculation
-        $sheet->getStyle('A:' . $lastColumn)->getAlignment()
+        $sheet->getStyle('A:'.$lastColumn)->getAlignment()
             ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
 
         // Style the GRADING SCORE text as bold
@@ -405,7 +406,7 @@ class ObjectiveMonthlyReport implements FromCollection, WithHeadings, WithStyles
             ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
 
         // Style OKR SCORING REPORT
-        $mergeRange = 'A2:' . $lastColumn . '2';
+        $mergeRange = 'A2:'.$lastColumn.'2';
 
         $sheet->mergeCells($mergeRange);
         $sheet->getStyle('A2')->getAlignment()
@@ -416,7 +417,7 @@ class ObjectiveMonthlyReport implements FromCollection, WithHeadings, WithStyles
         $sheet->getDefaultRowDimension()->setRowHeight(20);
 
         // Apply vertical alignment to all cells
-        $sheet->getStyle('A:' . $lastColumn)->getAlignment()
+        $sheet->getStyle('A:'.$lastColumn)->getAlignment()
             ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
 
         // Style the GRADING SCORE row (row 1)
@@ -440,7 +441,7 @@ class ObjectiveMonthlyReport implements FromCollection, WithHeadings, WithStyles
                     return $kr->checkIns->isNotEmpty();
                 });
 
-                if (!$hasCurrentPeriodCheckIns) {
+                if (! $hasCurrentPeriodCheckIns) {
                     continue;
                 }
 
@@ -451,7 +452,7 @@ class ObjectiveMonthlyReport implements FromCollection, WithHeadings, WithStyles
                     // Apply colors to score cells
                     for ($i = 0; $i < $weeksCount + 1; $i++) { // +1 for final score
                         $column = $this->getColumnLetter($i + 3);
-                        $cellCoordinate = $column . $currentRow;
+                        $cellCoordinate = $column.$currentRow;
 
                         try {
                             $cell = $sheet->getCell($cellCoordinate);
@@ -459,9 +460,8 @@ class ObjectiveMonthlyReport implements FromCollection, WithHeadings, WithStyles
 
                             if ($this->isEmptyOrZero($value)) {
                                 $color = 'ff3333'; // Red for empty/zero
-                            }
-                            else {
-                                $numericValue = floatval(str_replace(',', '', (string)$value));
+                            } else {
+                                $numericValue = floatval(str_replace(',', '', (string) $value));
                                 $color = $this->getColorForScore($numericValue);
                             }
 
@@ -473,7 +473,8 @@ class ObjectiveMonthlyReport implements FromCollection, WithHeadings, WithStyles
                             $sheet->getStyle($cellCoordinate)->getAlignment()
                                 ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
                         } catch (\Exception $e) {
-                            error_log("Error processing cell {$cellCoordinate}: " . $e->getMessage());
+                            error_log("Error processing cell {$cellCoordinate}: ".$e->getMessage());
+
                             continue;
                         }
                     }
@@ -500,7 +501,7 @@ class ObjectiveMonthlyReport implements FromCollection, WithHeadings, WithStyles
         $columns = ['A', 'B'];
 
         foreach ($columns as $column) {
-            $cell = $column . $row;
+            $cell = $column.$row;
             $sheet->getStyle($cell)->getFill()
                 ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                 ->getStartColor()
@@ -532,7 +533,7 @@ class ObjectiveMonthlyReport implements FromCollection, WithHeadings, WithStyles
 
         // Add borders between columns
         for ($col = 'A'; $col <= $lastColumn; $col++) {
-                $sheet->getStyle("{$col}3")->getBorders()->getRight()
+            $sheet->getStyle("{$col}3")->getBorders()->getRight()
                 ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
         }
     }
@@ -546,7 +547,7 @@ class ObjectiveMonthlyReport implements FromCollection, WithHeadings, WithStyles
         $gradingRanges = [
             'B1:D1' => ['0 - 0.1', '0.1 - 0.2', '0.2 - 0.3'], // Red zone (0.00 - 0.30)
             'E1:H1' => ['0.3 - 0.4', '0.4 - 0.5', '0.5 - 0.6', '0.6 - 0.7'], // Yellow zone (0.31 - 0.70)
-            'I1:K1' => ['0.7 - 0.8', '0.8 - 0.9', '0.9 - 1.0'] // Green zone (0.71 - 1.00)
+            'I1:K1' => ['0.7 - 0.8', '0.8 - 0.9', '0.9 - 1.0'], // Green zone (0.71 - 1.00)
         ];
 
         // Apply colors to each range
@@ -566,11 +567,9 @@ class ObjectiveMonthlyReport implements FromCollection, WithHeadings, WithStyles
     {
         if (in_array($range, ['B1:D1'])) {
             return 'ff3333'; // Red
-        }
-        elseif (in_array($range, ['E1:H1'])) {
+        } elseif (in_array($range, ['E1:H1'])) {
             return 'ffff1a'; // Yellow
-        }
-        else {
+        } else {
             return '59b300'; // Green
         }
     }
@@ -584,10 +583,10 @@ class ObjectiveMonthlyReport implements FromCollection, WithHeadings, WithStyles
             // Calculate score columns using the new method
             for ($i = 0; $i < $weeksCount + 1; $i++) { // +1 for final score column
                 $column = $this->getColumnLetter($i + 3); // +3 because we start from C
-                $cellCoordinate = $column . $row;
+                $cellCoordinate = $column.$row;
 
                 // Validate cell coordinate
-                if (!\PhpOffice\PhpSpreadsheet\Cell\Coordinate::coordinateIsRange($cellCoordinate)) {
+                if (! \PhpOffice\PhpSpreadsheet\Cell\Coordinate::coordinateIsRange($cellCoordinate)) {
                     // Get cell value safely
                     try {
                         $cell = $sheet->getCell($cellCoordinate);
@@ -601,7 +600,7 @@ class ObjectiveMonthlyReport implements FromCollection, WithHeadings, WithStyles
                             $value === '0.00' ||
                             $value === 0 ||
                             $value === 0.00 ||
-                            trim((string)$value) === ''
+                            trim((string) $value) === ''
                         );
 
                         if ($isEmptyOrZero) {
@@ -610,8 +609,7 @@ class ObjectiveMonthlyReport implements FromCollection, WithHeadings, WithStyles
                                 ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                                 ->getStartColor()
                                 ->setARGB('ff3333');
-                        }
-                        else {
+                        } else {
                             $numericValue = is_numeric($value) ? floatval($value) : null;
                             if ($numericValue !== null) {
                                 $color = $this->getColorForScore($numericValue);
@@ -627,14 +625,15 @@ class ObjectiveMonthlyReport implements FromCollection, WithHeadings, WithStyles
                             ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
                     } catch (\PhpOffice\PhpSpreadsheet\Exception $e) {
                         // Log error or handle invalid cell
-                        error_log("Error processing cell {$cellCoordinate}: " . $e->getMessage());
+                        error_log("Error processing cell {$cellCoordinate}: ".$e->getMessage());
+
                         continue;
                     }
                 }
             }
         } catch (\Exception $e) {
             // Log any other errors that might occur
-            error_log("Error in applyScoreColors: " . $e->getMessage());
+            error_log('Error in applyScoreColors: '.$e->getMessage());
         }
     }
 
@@ -668,7 +667,7 @@ class ObjectiveMonthlyReport implements FromCollection, WithHeadings, WithStyles
 
         // Process each score cell
         for ($col = 'C'; $col <= $lastColumn; $col++) {
-            $cell = $col . $row;
+            $cell = $col.$row;
 
             try {
                 $cellValue = $sheet->getCell($cell)->getValue();
@@ -677,16 +676,15 @@ class ObjectiveMonthlyReport implements FromCollection, WithHeadings, WithStyles
                 if ($cellValue === null || $cellValue === '' ||
                     $cellValue === '0' || $cellValue === '0.00' ||
                     $cellValue === 0 || $cellValue === 0.00 ||
-                    trim((string)$cellValue) === '') {
+                    trim((string) $cellValue) === '') {
 
                     $sheet->getStyle($cell)->getFill()
                         ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                         ->getStartColor()
                         ->setARGB('ff3333'); // Red for zero/empty values
-                }
-                else {
+                } else {
                     // Convert to float and apply color based on score
-                    $numericValue = floatval(str_replace(',', '', (string)$cellValue));
+                    $numericValue = floatval(str_replace(',', '', (string) $cellValue));
                     $color = $this->getColorForScore($numericValue);
 
                     $sheet->getStyle($cell)->getFill()
@@ -696,7 +694,8 @@ class ObjectiveMonthlyReport implements FromCollection, WithHeadings, WithStyles
                 }
             } catch (\Exception $e) {
                 // Log any cell processing errors
-                error_log("Error processing cell {$cell}: " . $e->getMessage());
+                error_log("Error processing cell {$cell}: ".$e->getMessage());
+
                 continue;
             }
         }
@@ -707,14 +706,14 @@ class ObjectiveMonthlyReport implements FromCollection, WithHeadings, WithStyles
      */
     protected function getColorForScore($score)
     {
-        $score = (float)$score;
+        $score = (float) $score;
 
         // Red for 0.00 to 0.30 (including zero)
         if ($score <= 0.30) {
             return 'ff3333';
         }
         // Yellow for 0.31 to 0.70
-        else if ($score <= 0.70) {
+        elseif ($score <= 0.70) {
             return 'ffff1a';
         }
         // Green for 0.71 to 1.00
@@ -771,7 +770,7 @@ class ObjectiveMonthlyReport implements FromCollection, WithHeadings, WithStyles
             $keyResultLastCheckIn = $keyResult->checkins->last(); // Already ordered by desc
 
             if ($keyResultLastCheckIn &&
-                (!$lastCheckIn || $keyResultLastCheckIn->check_in_date > $lastCheckIn)) {
+                (! $lastCheckIn || $keyResultLastCheckIn->check_in_date > $lastCheckIn)) {
                 $lastCheckIn = $keyResultLastCheckIn->check_in_date;
             }
         }
@@ -787,7 +786,7 @@ class ObjectiveMonthlyReport implements FromCollection, WithHeadings, WithStyles
             $keyResultFirstCheckIn = $keyResult->checkins->first(); // Already ordered by desc
 
             if ($keyResultFirstCheckIn &&
-                (!$firstCheckIn || $keyResultFirstCheckIn->check_in_date < $firstCheckIn)) {
+                (! $firstCheckIn || $keyResultFirstCheckIn->check_in_date < $firstCheckIn)) {
                 $firstCheckIn = $keyResultFirstCheckIn->check_in_date;
             }
         }
@@ -797,7 +796,7 @@ class ObjectiveMonthlyReport implements FromCollection, WithHeadings, WithStyles
 
     public function map($row): array
     {
-        return array_map(function($item) {
+        return array_map(function ($item) {
             if (is_array($item) && isset($item['value']) && isset($item['colspan'])) {
                 return $item;
             }
@@ -820,9 +819,9 @@ class ObjectiveMonthlyReport implements FromCollection, WithHeadings, WithStyles
         $currentUserRoleIds = user()->roles()->pluck('id')->toArray();
         $viewByRoles = json_decode($goal->view_by_roles, true) ?? [];
 
-        return !(($goal && $goal->view_by_owner == 1 && in_array(user()->id, $ownerIds)) ||
+        return ! (($goal && $goal->view_by_owner == 1 && in_array(user()->id, $ownerIds)) ||
             ($goal && $goal->view_by_manager == 1 && in_array(user()->id, $managerIds)) ||
-            (!empty($viewByRoles) && array_intersect($currentUserRoleIds, $viewByRoles)) ||
+            (! empty($viewByRoles) && array_intersect($currentUserRoleIds, $viewByRoles)) ||
             user()->hasRole('admin') || $objective->created_by == user()->id);
     }
 
@@ -840,11 +839,10 @@ class ObjectiveMonthlyReport implements FromCollection, WithHeadings, WithStyles
         $currentUserRoleIds = user()->roles()->pluck('id')->toArray();
         $manageByRoles = json_decode($goal->manage_by_roles, true) ?? [];
 
-        return !(user()->hasRole('admin') ||
+        return ! (user()->hasRole('admin') ||
             $objective->created_by == user()->id ||
             ($goal && $goal->manage_by_owner == 1 && in_array(user()->id, $ownerIds)) ||
             ($goal && $goal->manage_by_manager == 1 && in_array(user()->id, $managerIds)) ||
-            (!empty($manageByRoles) && array_intersect($currentUserRoleIds, $manageByRoles)));
+            (! empty($manageByRoles) && array_intersect($currentUserRoleIds, $manageByRoles)));
     }
-
 }

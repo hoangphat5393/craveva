@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\DB;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\ProjectTimeLog|null $timelog
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectTimeLogBreak newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectTimeLogBreak newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectTimeLogBreak query()
@@ -36,16 +37,18 @@ use Illuminate\Support\Facades\DB;
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectTimeLogBreak whereTotalHours($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectTimeLogBreak whereTotalMinutes($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectTimeLogBreak whereUpdatedAt($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectTimeLogBreak whereCompanyId($value)
+ *
  * @mixin \Eloquent
  */
 class ProjectTimeLogBreak extends BaseModel
 {
-
-    use HasFactory;
     use HasCompany;
+    use HasFactory;
 
     protected $casts = [
         'start_time' => 'datetime',
@@ -94,7 +97,7 @@ class ProjectTimeLogBreak extends BaseModel
             ->whereNotNull('project_time_logs.end_time')
             ->select('project_time_log_breaks.*');
 
-        if (!is_null($userID)) {
+        if (! is_null($userID)) {
             $timelogs = $timelogs->where('project_time_logs.user_id', $userID);
         }
 
@@ -108,11 +111,10 @@ class ProjectTimeLogBreak extends BaseModel
             ->whereNotNull('project_time_logs.end_time')
             ->select('project_time_log_breaks.*');
 
-        if (!is_null($userID)) {
+        if (! is_null($userID)) {
             $timelogs = $timelogs->where('project_time_logs.user_id', $userID);
         }
 
         return $timelogs = $timelogs->sum('project_time_log_breaks.total_minutes');
     }
-
 }

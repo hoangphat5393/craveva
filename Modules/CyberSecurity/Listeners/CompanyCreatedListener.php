@@ -4,7 +4,6 @@ namespace Modules\CyberSecurity\Listeners;
 
 class CompanyCreatedListener
 {
-
     /**
      * Handle the event.
      *
@@ -15,5 +14,4 @@ class CompanyCreatedListener
     {
         //
     }
-
 }

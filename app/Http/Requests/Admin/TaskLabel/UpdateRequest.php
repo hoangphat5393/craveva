@@ -7,7 +7,6 @@ use Illuminate\Validation\Rule;
 
 class UpdateRequest extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -28,12 +27,11 @@ class UpdateRequest extends CoreRequest
         return [
             'label_name' => [
                 'required',
-                Rule::unique('task_label_list')->where(function($query){
+                Rule::unique('task_label_list')->where(function ($query) {
                     $query->where('id', '<>', $this->route('task_label'));
-                })
+                }),
             ],
             'color' => 'required|max:50',
         ];
     }
-
 }

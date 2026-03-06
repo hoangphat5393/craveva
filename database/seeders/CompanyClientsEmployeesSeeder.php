@@ -27,7 +27,7 @@ class CompanyClientsEmployeesSeeder extends Seeder
 
             // 5 clients per company
             foreach (range(1, 5) as $i) {
-                $user = new User();
+                $user = new User;
                 $user->company_id = $company->id;
                 $user->name = $faker->name;
                 $user->email = $faker->unique()->safeEmail();
@@ -39,7 +39,7 @@ class CompanyClientsEmployeesSeeder extends Seeder
                 $user->user_auth_id = $userAuth->id;
                 $user->saveQuietly();
 
-                $client = new ClientDetails();
+                $client = new ClientDetails;
                 $client->user_id = $user->id;
                 $client->company_id = $company->id;
                 $client->company_name = $faker->company;
@@ -51,7 +51,7 @@ class CompanyClientsEmployeesSeeder extends Seeder
                     $user->roles()->attach($clientRole->id);
                 }
 
-                $search = new UniversalSearch();
+                $search = new UniversalSearch;
                 $search->searchable_id = $user->id;
                 $search->company_id = $company->id;
                 $search->title = $user->name;
@@ -62,7 +62,7 @@ class CompanyClientsEmployeesSeeder extends Seeder
 
             // 3 employees per company
             foreach (range(1, 3) as $i) {
-                $user = new User();
+                $user = new User;
                 $user->company_id = $company->id;
                 $user->name = $faker->name;
                 $user->email = $faker->unique()->safeEmail();
@@ -74,17 +74,17 @@ class CompanyClientsEmployeesSeeder extends Seeder
                 $user->user_auth_id = $userAuth->id;
                 $user->saveQuietly();
 
-                $employee = new EmployeeDetails();
+                $employee = new EmployeeDetails;
                 $employee->user_id = $user->id;
                 $employee->company_id = $company->id;
-                $employee->employee_id = 'EMP-' . $user->id;
+                $employee->employee_id = 'EMP-'.$user->id;
                 $employee->save();
 
                 if ($employeeRole) {
                     $user->roles()->attach($employeeRole->id);
                 }
 
-                $search = new UniversalSearch();
+                $search = new UniversalSearch;
                 $search->searchable_id = $user->id;
                 $search->company_id = $company->id;
                 $search->title = $user->name;
@@ -96,4 +96,3 @@ class CompanyClientsEmployeesSeeder extends Seeder
         config(['app.seeding' => false]);
     }
 }
-

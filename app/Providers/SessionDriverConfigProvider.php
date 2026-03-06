@@ -10,7 +10,6 @@ use Illuminate\Support\ServiceProvider;
 
 class SessionDriverConfigProvider extends ServiceProvider
 {
-
     /**
      * Register services.
      *
@@ -46,5 +45,4 @@ class SessionDriverConfigProvider extends ServiceProvider
     {
         //
     }
-
 }

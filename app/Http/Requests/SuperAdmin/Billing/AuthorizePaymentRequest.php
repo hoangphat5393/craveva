@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class AuthorizePaymentRequest extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -30,5 +29,4 @@ class AuthorizePaymentRequest extends FormRequest
             'card_number' => 'required',
         ];
     }
-
 }

@@ -13,7 +13,6 @@ use Illuminate\Contracts\Encryption\DecryptException;
 
 class NotificationSettingController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -36,44 +35,44 @@ class NotificationSettingController extends AccountBaseController
         $this->pusherSettings = PusherSetting::first();
 
         switch ($tab) {
-        case 'slack-setting':
-            $this->checkedAll = $this->emailSettings->count() == $this->emailSettings->filter(function ($value) {
+            case 'slack-setting':
+                $this->checkedAll = $this->emailSettings->count() == $this->emailSettings->filter(function ($value) {
                     return $value->send_slack == 'yes';
-            })->count();
+                })->count();
 
-            $this->view = 'notification-settings.ajax.slack-setting';
-            break;
+                $this->view = 'notification-settings.ajax.slack-setting';
+                break;
 
-        case 'push-notification-setting':
-            $this->checkedAll = $this->emailSettings->count() == $this->emailSettings->filter(function ($value) {
+            case 'push-notification-setting':
+                $this->checkedAll = $this->emailSettings->count() == $this->emailSettings->filter(function ($value) {
                     return $value->send_push == 'yes';
-            })->count();
+                })->count();
 
-            $this->view = 'notification-settings.ajax.push-notification-setting';
-            break;
+                $this->view = 'notification-settings.ajax.push-notification-setting';
+                break;
 
-        case 'pusher-setting':
-            $this->view = 'notification-settings.ajax.pusher-setting';
-            break;
+            case 'pusher-setting':
+                $this->view = 'notification-settings.ajax.pusher-setting';
+                break;
 
-        default:
-            $this->checkedAll = $this->emailSettings->count() == $this->emailSettings->filter(function ($value) {
+            default:
+                $this->checkedAll = $this->emailSettings->count() == $this->emailSettings->filter(function ($value) {
                     return $value->send_email == 'yes';
-            })->count();
+                })->count();
 
-            $this->smtpSetting = SmtpSetting::first();
+                $this->smtpSetting = SmtpSetting::first();
 
-            try {
-                $this->smtpSetting->mail_password;
-            }catch (DecryptException $e){
-                // when we get message like below set password as null or o
-                // The MAC is invalid.
-                // The payload is invalid.
-                $this->smtpSetting->mail_password = null;
-                $this->smtpSetting->save();
-            }
-            $this->view = 'notification-settings.ajax.email-setting';
-            break;
+                try {
+                    $this->smtpSetting->mail_password;
+                } catch (DecryptException $e) {
+                    // when we get message like below set password as null or o
+                    // The MAC is invalid.
+                    // The payload is invalid.
+                    $this->smtpSetting->mail_password = null;
+                    $this->smtpSetting->save();
+                }
+                $this->view = 'notification-settings.ajax.email-setting';
+                break;
         }
 
         $this->activeTab = $tab ?: 'email-setting';
@@ -86,5 +85,4 @@ class NotificationSettingController extends AccountBaseController
 
         return view('notification-settings.index', $this->data);
     }
-
 }

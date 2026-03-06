@@ -1,4 +1,5 @@
 <?php
+
 return [
     'dashboard' => [
         'totalClients' => '총 클라이언트',
@@ -2379,5 +2380,5 @@ return [
         'sendEstimateRequest' => '견적 요청 보내기',
         'description' => '요구사항의 세부사항',
         'prefix' => 'ESTRQ',
-],
+    ],
 ];

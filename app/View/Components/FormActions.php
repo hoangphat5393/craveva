@@ -7,7 +7,6 @@ use Illuminate\View\Component;
 
 class FormActions extends Component
 {
-
     /**
      * Create a new component instance.
      *
@@ -27,5 +26,4 @@ class FormActions extends Component
     {
         return view('components.form-actions');
     }
-
 }

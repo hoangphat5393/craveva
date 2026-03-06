@@ -8,14 +8,13 @@ use Modules\Biolinks\Enums\BlockHoverAnimation;
 use Modules\Biolinks\Enums\BlockSpacing;
 use Modules\Biolinks\Enums\Font;
 use Modules\Biolinks\Enums\Theme;
-use Modules\Biolinks\Enums\YesNo;
 use Modules\Biolinks\Enums\VerifiedBadge;
+use Modules\Biolinks\Enums\YesNo;
 
 class BiolinkSetting extends BaseModel
 {
-
     protected $appends = [
-        'favicon_url'
+        'favicon_url',
     ];
 
     protected $casts = [
@@ -36,12 +35,11 @@ class BiolinkSetting extends BaseModel
             return global_setting()->favicon_url;
         }
 
-        return asset_url_local_s3('favicon/' . $this->favicon);
+        return asset_url_local_s3('favicon/'.$this->favicon);
     }
 
     public function biolink(): BelongsTo
     {
         return $this->belongsTo(Biolink::class, 'biolink_id');
     }
-
 }

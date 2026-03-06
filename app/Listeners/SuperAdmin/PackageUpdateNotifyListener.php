@@ -2,14 +2,13 @@
 
 namespace App\Listeners\SuperAdmin;
 
-use App\Models\Company;
-use Illuminate\Support\Facades\Notification;
 use App\Events\SuperAdmin\PackageUpdateNotifyEvent;
+use App\Models\Company;
 use App\Notifications\SuperAdmin\PackageEmployeeIssue;
+use Illuminate\Support\Facades\Notification;
 
 class PackageUpdateNotifyListener
 {
-
     /**
      * Handle the event.
      */
@@ -18,5 +17,4 @@ class PackageUpdateNotifyListener
         $notifyUser = Company::firstActiveAdmin($event->packageUpdateNotify->company);
         Notification::send($notifyUser, new PackageEmployeeIssue($event->packageUpdateNotify));
     }
-
 }

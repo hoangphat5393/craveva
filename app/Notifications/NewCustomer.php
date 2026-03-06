@@ -6,8 +6,6 @@ use App\Models\User;
 
 class NewCustomer extends BaseNotification
 {
-
-
     private $user;
 
     /**
@@ -41,7 +39,7 @@ class NewCustomer extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
@@ -50,16 +48,16 @@ class NewCustomer extends BaseNotification
         $url = route('clients.show', $this->user->id);
         $url = getDomainSpecificUrl($url, $this->company);
 
-        $content = __('email.newCustomer.text') . '<br>' . __('app.name') . ': ' . $this->user->name . '<br>' . __('app.email') . ': ' . $this->user->email;
+        $content = __('email.newCustomer.text').'<br>'.__('app.name').': '.$this->user->name.'<br>'.__('app.email').': '.$this->user->email;
 
         $build
-            ->subject(__('email.newCustomer.subject') . ' - ' . config('app.name') . '.')
+            ->subject(__('email.newCustomer.subject').' - '.config('app.name').'.')
             ->markdown('mail.email', [
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
-                'actionText' => __('app.view') . ' ' . __('app.client'),
-                'notifiableName' => $notifiable->name
+                'actionText' => __('app.view').' '.__('app.client'),
+                'notifiableName' => $notifiable->name,
             ]);
 
         parent::resetLocale();
@@ -76,14 +74,14 @@ class NewCustomer extends BaseNotification
     {
         return [
             'id' => $this->user->id,
-            'name' => $this->user->name
+            'name' => $this->user->name,
         ];
     }
 
     /**
      * Get the Slack representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\SlackMessage
      */
     public function toSlack($notifiable)
@@ -91,11 +89,11 @@ class NewCustomer extends BaseNotification
         try {
             $url = route('clients.show', $this->user->id);
             $url = getDomainSpecificUrl($url, $this->company);
-            $content = '*' . __('email.newCustomer.subject') . ' ' . config('app.name') . '!*' . "\n" . __('email.newCustomer.text') . "\n" . __('app.name') . ': ' . $this->user->name . "\n" . __('app.email') . ': ' . $this->user->email;
-            return $this->slackBuild($notifiable)->content($content );
+            $content = '*'.__('email.newCustomer.subject').' '.config('app.name').'!*'."\n".__('email.newCustomer.text')."\n".__('app.name').': '.$this->user->name."\n".__('app.email').': '.$this->user->email;
+
+            return $this->slackBuild($notifiable)->content($content);
         } catch (\Exception $e) {
             return $this->slackRedirectMessage('email.newCustomer.subject', $notifiable);
         }
     }
-
 }

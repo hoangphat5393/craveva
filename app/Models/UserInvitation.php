@@ -22,6 +22,7 @@ use Illuminate\Notifications\Notifiable;
  * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
  * @property-read int|null $notifications_count
  * @property-read \App\Models\User $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|UserInvitation newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|UserInvitation newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|UserInvitation query()
@@ -35,15 +36,17 @@ use Illuminate\Notifications\Notifiable;
  * @method static \Illuminate\Database\Eloquent\Builder|UserInvitation whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UserInvitation whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UserInvitation whereUserId($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|UserInvitation whereCompanyId($value)
+ *
  * @mixin \Eloquent
  */
 class UserInvitation extends BaseModel
 {
-
-    use Notifiable, HasCompany;
+    use HasCompany, Notifiable;
 
     protected $guarded = ['id'];
 
@@ -51,5 +54,4 @@ class UserInvitation extends BaseModel
     {
         return $this->belongsTo(User::class);
     }
-
 }

@@ -26,7 +26,7 @@ class ServerHostingObserver
                 'entity_id' => $serverHosting->id,
                 'action' => 'created',
                 'performed_by' => $performedBy,
-                'description' => 'Hosting "' . $serverHosting->name . '" was created',
+                'description' => 'Hosting "'.$serverHosting->name.'" was created',
             ]);
         }
 
@@ -51,7 +51,7 @@ class ServerHostingObserver
                 'entity_id' => $serverHosting->id,
                 'action' => 'updated',
                 'performed_by' => $performedBy,
-                'description' => 'Hosting "' . $serverHosting->name . '" was updated',
+                'description' => 'Hosting "'.$serverHosting->name.'" was updated',
             ]);
         }
 
@@ -80,7 +80,7 @@ class ServerHostingObserver
                 'entity_id' => $serverHosting->id,
                 'action' => 'deleted',
                 'performed_by' => $performedBy,
-                'description' => 'Hosting "' . $serverHosting->name . '" was deleted',
+                'description' => 'Hosting "'.$serverHosting->name.'" was deleted',
             ]);
         }
     }
@@ -102,7 +102,7 @@ class ServerHostingObserver
                 'entity_id' => $serverHosting->id,
                 'action' => 'restored',
                 'performed_by' => $performedBy,
-                'description' => 'Hosting "' . $serverHosting->name . '" was restored',
+                'description' => 'Hosting "'.$serverHosting->name.'" was restored',
             ]);
         }
     }
@@ -124,7 +124,7 @@ class ServerHostingObserver
                 'entity_id' => $serverHosting->id,
                 'action' => 'force_deleted',
                 'performed_by' => $performedBy,
-                'description' => 'Hosting "' . $serverHosting->name . '" was force deleted',
+                'description' => 'Hosting "'.$serverHosting->name.'" was force deleted',
             ]);
         }
     }

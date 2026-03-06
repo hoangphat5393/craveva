@@ -1,6 +1,6 @@
 <?php
 
-return array(
+return [
     'webhookNotFound' => 'Webhook not found',
     'headerNotFound' => 'Header not found',
-);
+];

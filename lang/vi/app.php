@@ -1,4 +1,5 @@
 <?php
+
 return [
     'dealWatcher' => 'Người theo dõi giao dịch',
     'pendingTimelog' => 'Thời gian chờ xử lý',

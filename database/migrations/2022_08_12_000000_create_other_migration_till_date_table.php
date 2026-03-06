@@ -6,6 +6,7 @@ use App\Models\DashboardWidget;
 use App\Models\EmployeeDetails;
 use App\Models\EmployeeShiftSchedule;
 use App\Models\Invoice;
+use App\Models\Module;
 use App\Models\ModuleSetting;
 use App\Models\Permission;
 use App\Models\PermissionType;
@@ -16,10 +17,9 @@ use Carbon\Carbon;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use App\Models\Module;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      * We have changed the file_name as 2018 for the purpose of modules
@@ -39,17 +39,16 @@ return new class extends Migration {
 
         // Run this and check if show_clock_in_button column exist
         // for application having
-        if (!Schema::hasColumn('attendance_settings', 'show_clock_in_button')) {
+        if (! Schema::hasColumn('attendance_settings', 'show_clock_in_button')) {
             $this->version5_1_7_to_5_1_8();
         }
 
         // Transition check for existence
-        if (!Schema::hasColumn('message_settings', 'restrict_client')) {
+        if (! Schema::hasColumn('message_settings', 'restrict_client')) {
             Schema::table('message_settings', function (Blueprint $table) {
                 $table->enum('restrict_client', ['yes', 'no'])->default('no');
             });
         }
-
 
         $this->version5_1_8_to_5_1_9();
 
@@ -63,9 +62,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function down()
-    {
-    }
+    public function down() {}
 
     private function shiftRoaster()
     {
@@ -74,7 +71,7 @@ return new class extends Migration {
         $module = Module::where('module_name', 'attendance')->first();
 
         $employeeCustomPermisisons = [
-            'view_shift_roster'
+            'view_shift_roster',
         ];
 
         foreach ($employeeCustomPermisisons as $permission) {
@@ -83,7 +80,7 @@ return new class extends Migration {
                 'display_name' => ucwords(str_replace('_', ' ', $permission)),
                 'is_custom' => 1,
                 'module_id' => $module->id,
-                'allowed_permissions' => Permission::ALL_4_OWNED_2_NONE_5
+                'allowed_permissions' => Permission::ALL_4_OWNED_2_NONE_5,
             ]);
 
             foreach ($admins as $item) {
@@ -91,7 +88,7 @@ return new class extends Migration {
                     [
                         'user_id' => $item->user_id,
                         'permission_id' => $perm->id,
-                        'permission_type_id' => $allTypePermisison->id
+                        'permission_type_id' => $allTypePermisison->id,
                     ]
                 );
             }
@@ -105,70 +102,70 @@ return new class extends Migration {
         if ($setting) {
             switch ($setting->date_format) {
 
-            case 'd-m-Y':
-                $setting->date_picker_format = 'dd-mm-yyyy';
-                $setting->moment_format = 'DD-MM-YYYY';
-                break;
-            case 'm-d-Y':
-                $setting->date_picker_format = 'mm-dd-yyyy';
-                $setting->moment_format = 'MM-DD-YYYY';
-                break;
-            case 'Y-m-d':
-                $setting->date_picker_format = 'yyyy-mm-dd';
-                $setting->moment_format = 'YYYY-MM-DD';
-                break;
-            case 'd.m.Y':
-                $setting->date_picker_format = 'dd.mm.yyyy';
-                $setting->moment_format = 'DD.MM.YYYY';
-                break;
-            case 'm.d.Y':
-                $setting->date_picker_format = 'mm.dd.yyyy';
-                $setting->moment_format = 'MM.DD.YYYY';
-                break;
-            case 'Y.m.d':
-                $setting->date_picker_format = 'yyyy.mm.dd';
-                $setting->moment_format = 'YYYY.MM.DD';
-                break;
-            case 'd/m/Y':
-                $setting->date_picker_format = 'dd/mm/yyyy';
-                $setting->moment_format = 'DD/MM/YYYY';
-                break;
-            case 'Y/m/d':
-                $setting->date_picker_format = 'yyyy/mm/dd';
-                $setting->moment_format = 'YYYY/MM/DD';
-                break;
-            case 'd-M-Y':
-                $setting->date_picker_format = 'dd-M-yyyy';
-                $setting->moment_format = 'DD-MMM-YYYY';
-                break;
-            case 'd/M/Y':
-                $setting->date_picker_format = 'dd/M/yyyy';
-                $setting->moment_format = 'DD/MMM/YYYY';
-                break;
-            case 'd.M.Y':
-                $setting->date_picker_format = 'dd.M.yyyy';
-                $setting->moment_format = 'DD.MMM.YYYY';
-                break;
-            case 'd M Y':
-                $setting->date_picker_format = 'dd M yyyy';
-                $setting->moment_format = 'DD MMM YYYY';
-                break;
-            case 'd F, Y':
-                $setting->date_picker_format = 'dd MM, yyyy';
-                $setting->moment_format = 'yyyy-mm-d';
-                break;
-            case 'd D M Y':
-                $setting->date_picker_format = 'dd D M yyyy';
-                $setting->moment_format = 'DD ddd MMM YYYY';
-                break;
-            case 'D d M Y':
-                $setting->date_picker_format = 'D dd M yyyy';
-                $setting->moment_format = 'ddd DD MMMM YYYY';
-                break;
-            default:
-                $setting->date_picker_format = 'mm/dd/yyyy';
-                $setting->moment_format = 'DD-MM-YYYY';
-                break;
+                case 'd-m-Y':
+                    $setting->date_picker_format = 'dd-mm-yyyy';
+                    $setting->moment_format = 'DD-MM-YYYY';
+                    break;
+                case 'm-d-Y':
+                    $setting->date_picker_format = 'mm-dd-yyyy';
+                    $setting->moment_format = 'MM-DD-YYYY';
+                    break;
+                case 'Y-m-d':
+                    $setting->date_picker_format = 'yyyy-mm-dd';
+                    $setting->moment_format = 'YYYY-MM-DD';
+                    break;
+                case 'd.m.Y':
+                    $setting->date_picker_format = 'dd.mm.yyyy';
+                    $setting->moment_format = 'DD.MM.YYYY';
+                    break;
+                case 'm.d.Y':
+                    $setting->date_picker_format = 'mm.dd.yyyy';
+                    $setting->moment_format = 'MM.DD.YYYY';
+                    break;
+                case 'Y.m.d':
+                    $setting->date_picker_format = 'yyyy.mm.dd';
+                    $setting->moment_format = 'YYYY.MM.DD';
+                    break;
+                case 'd/m/Y':
+                    $setting->date_picker_format = 'dd/mm/yyyy';
+                    $setting->moment_format = 'DD/MM/YYYY';
+                    break;
+                case 'Y/m/d':
+                    $setting->date_picker_format = 'yyyy/mm/dd';
+                    $setting->moment_format = 'YYYY/MM/DD';
+                    break;
+                case 'd-M-Y':
+                    $setting->date_picker_format = 'dd-M-yyyy';
+                    $setting->moment_format = 'DD-MMM-YYYY';
+                    break;
+                case 'd/M/Y':
+                    $setting->date_picker_format = 'dd/M/yyyy';
+                    $setting->moment_format = 'DD/MMM/YYYY';
+                    break;
+                case 'd.M.Y':
+                    $setting->date_picker_format = 'dd.M.yyyy';
+                    $setting->moment_format = 'DD.MMM.YYYY';
+                    break;
+                case 'd M Y':
+                    $setting->date_picker_format = 'dd M yyyy';
+                    $setting->moment_format = 'DD MMM YYYY';
+                    break;
+                case 'd F, Y':
+                    $setting->date_picker_format = 'dd MM, yyyy';
+                    $setting->moment_format = 'yyyy-mm-d';
+                    break;
+                case 'd D M Y':
+                    $setting->date_picker_format = 'dd D M yyyy';
+                    $setting->moment_format = 'DD ddd MMM YYYY';
+                    break;
+                case 'D d M Y':
+                    $setting->date_picker_format = 'D dd M yyyy';
+                    $setting->moment_format = 'ddd DD MMMM YYYY';
+                    break;
+                default:
+                    $setting->date_picker_format = 'mm/dd/yyyy';
+                    $setting->moment_format = 'DD-MM-YYYY';
+                    break;
             }
 
             $setting->saveQuietly();
@@ -182,7 +179,7 @@ return new class extends Migration {
         $module = Module::where('module_name', 'reports')->first();
 
         $employeeCustomPermisisons = [
-            'view_expense_report'
+            'view_expense_report',
         ];
 
         foreach ($employeeCustomPermisisons as $permission) {
@@ -193,7 +190,7 @@ return new class extends Migration {
                     'display_name' => ucwords(str_replace('_', ' ', $permission)),
                     'is_custom' => 1,
                     'module_id' => $module->id,
-                    'allowed_permissions' => Permission::ALL_NONE
+                    'allowed_permissions' => Permission::ALL_NONE,
                 ]);
                 // @codingStandardsIgnoreLine
             } catch (\Exception $e) {
@@ -205,7 +202,7 @@ return new class extends Migration {
                     [
                         'user_id' => $item->user_id,
                         'permission_id' => $perm->id,
-                        'permission_type_id' => $allTypePermisison->id
+                        'permission_type_id' => $allTypePermisison->id,
                     ]
                 );
             }
@@ -288,13 +285,11 @@ return new class extends Migration {
                 ->onDelete('cascade');
         });
 
-
         DB::table('custom_field_groups')->insert(
             [
                 'name' => 'Ticket', 'model' => 'App\Models\Ticket',
             ]
         );
-
 
         $this->shiftRoaster();
 
@@ -344,14 +339,13 @@ return new class extends Migration {
 
         if ($existingSchedules) {
             foreach ($existingSchedules as $item) {
-                $item->shift_start_time = $item->date->toDateString() . ' ' . $item->shift->office_start_time;
+                $item->shift_start_time = $item->date->toDateString().' '.$item->shift->office_start_time;
 
                 if (Carbon::parse($item->shift->office_start_time)->gt(Carbon::parse($item->shift->office_end_time))) {
-                    $item->shift_end_time = $item->date->addDay()->toDateString() . ' ' . $item->shift->office_end_time;
+                    $item->shift_end_time = $item->date->addDay()->toDateString().' '.$item->shift->office_end_time;
 
-                }
-                else {
-                    $item->shift_end_time = $item->date->toDateString() . ' ' . $item->shift->office_end_time;
+                } else {
+                    $item->shift_end_time = $item->date->toDateString().' '.$item->shift->office_end_time;
                 }
 
                 $item->save();
@@ -379,7 +373,7 @@ return new class extends Migration {
     {
         $companyCount = Company::count();
 
-        if (!Schema::hasColumn('companies', 'app_name')) {
+        if (! Schema::hasColumn('companies', 'app_name')) {
             Schema::table('companies', function (Blueprint $table) {
                 $table->string('app_name')->nullable()->after('company_name');
             });
@@ -395,7 +389,7 @@ return new class extends Migration {
 
             $log = CustomFieldGroup::where('model', 'App\Models\ProjectTimeLog')->first();
 
-            if (!$log) {
+            if (! $log) {
                 DB::table('custom_field_groups')->insert(
                     [
                         'name' => 'Time Log', 'model' => 'App\Models\ProjectTimeLog',
@@ -410,19 +404,19 @@ return new class extends Migration {
     private function version5_1_9_to_5_2_0()
     {
 
-        if (!Schema::hasColumn('employee_shift_schedules', 'remarks')) {
+        if (! Schema::hasColumn('employee_shift_schedules', 'remarks')) {
             Schema::table('employee_shift_schedules', function (Blueprint $table) {
                 $table->text('remarks')->nullable();
             });
         }
 
-        if (!Schema::hasColumn('employee_shift_change_requests', 'reason')) {
+        if (! Schema::hasColumn('employee_shift_change_requests', 'reason')) {
             Schema::table('employee_shift_change_requests', function (Blueprint $table) {
                 $table->text('reason')->nullable();
             });
         }
 
-        if (!Schema::hasColumn('invoices', 'custom_invoice_number')) {
+        if (! Schema::hasColumn('invoices', 'custom_invoice_number')) {
             Schema::table('invoices', function (Blueprint $table) {
                 $table->string('custom_invoice_number')->nullable();
             });
@@ -446,18 +440,15 @@ return new class extends Migration {
 
         }
 
-
-        if (!Schema::hasColumn('companies', 'license_type')) {
+        if (! Schema::hasColumn('companies', 'license_type')) {
             Schema::table('companies', function (Blueprint $table) {
                 $table->string('license_type', 20)->nullable();
             });
         }
 
-
-        if (!Schema::hasColumn('tasks', 'deleted_at')) {
+        if (! Schema::hasColumn('tasks', 'deleted_at')) {
 
             $this->expenseReportPermission();
-
 
             Schema::table('tasks', function (Blueprint $table) {
                 $table->softDeletes();
@@ -478,7 +469,7 @@ return new class extends Migration {
             }
         }
 
-        if (!Schema::hasColumn('custom_fields', 'export')) {
+        if (! Schema::hasColumn('custom_fields', 'export')) {
             Schema::table('custom_fields', function (Blueprint $table) {
                 $table->boolean('export')->default(0)->nullable()->after('values');
             });
@@ -489,7 +480,7 @@ return new class extends Migration {
     private function newVersion5_2_above()
     {
         // NEW VERSION
-        if (!Schema::hasColumn('employee_details', 'about_me')) {
+        if (! Schema::hasColumn('employee_details', 'about_me')) {
 
             try {
                 $this->addIndexes();
@@ -504,13 +495,13 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasColumn('attendance_settings', 'auto_clock_in')) {
+        if (! Schema::hasColumn('attendance_settings', 'auto_clock_in')) {
             Schema::table('attendance_settings', function (Blueprint $table) {
                 $table->enum('auto_clock_in', ['yes', 'no'])->after('id')->default('no');
             });
         }
 
-        if (!Schema::hasColumn('leaves', 'approved_by')) {
+        if (! Schema::hasColumn('leaves', 'approved_by')) {
             Schema::table('leaves', function (Blueprint $table) {
                 $table->integer('approved_by')->unsigned()->nullable();
                 $table->foreign('approved_by')->references('id')->on('users')->onDelete('SET NULL')->onUpdate('cascade');
@@ -520,19 +511,19 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasColumn('leave_types', 'monthly_limit')) {
+        if (! Schema::hasColumn('leave_types', 'monthly_limit')) {
             Schema::table('leave_types', function (Blueprint $table) {
                 $table->integer('monthly_limit')->default(0);
             });
         }
 
-        if (!Schema::hasColumn('teams', 'parent_id')) {
+        if (! Schema::hasColumn('teams', 'parent_id')) {
             Schema::table('teams', function (Blueprint $table) {
                 $table->integer('parent_id')->unsigned()->nullable()->after('team_name');
             });
         }
 
-        if (!Schema::hasTable('knowledge_base_files')) {
+        if (! Schema::hasTable('knowledge_base_files')) {
             Schema::create('knowledge_base_files', function (Blueprint $table) {
                 $table->increments('id');
                 $table->integer('company_id')->unsigned()->nullable();
@@ -559,5 +550,4 @@ return new class extends Migration {
             });
         }
     }
-
 };

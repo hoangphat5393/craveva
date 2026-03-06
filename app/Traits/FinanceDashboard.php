@@ -11,16 +11,11 @@ use App\Models\Proposal;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
-/**
- *
- */
 trait FinanceDashboard
 {
-
-    use CurrencyExchange, ClientDashboard;
+    use ClientDashboard, CurrencyExchange;
 
     /**
-     *
      * @return void
      */
     public function financeDashboard()
@@ -105,13 +100,11 @@ trait FinanceDashboard
                 if ($payment->currency->is_cryptocurrency == 'yes') {
                     $usdTotal = (floatval($payment->total) * floatval($payment->currency->usd_price));
                     $totalEarnings += floor(floatval($usdTotal) * floatval($payment->currency->exchange_rate));
-                }
-                else {
+                } else {
                     $totalEarnings += floatval($payment->total) * floatval($payment->exchange_rate);
                 }
 
-            }
-            else {
+            } else {
                 $totalEarnings += $payment->total;
             }
 
@@ -143,12 +136,10 @@ trait FinanceDashboard
                     $usdTotal = ($invoice->due_amount * $invoice->currency->usd_price);
                     $totalPendingAmount += floor(floatval($usdTotal) * floatval($invoice->currency->exchange_rate));
 
-                }
-                else {
+                } else {
                     $totalPendingAmount += floatval($invoice->due_amount) * floatval($invoice->currency->exchange_rate);
                 }
-            }
-            else {
+            } else {
                 $totalPendingAmount += $invoice->due_amount;
             }
         }
@@ -195,7 +186,6 @@ trait FinanceDashboard
         })->count();
         $data['colors'][] = '#FCBD01';
 
-
         $data['values'][] = $allInvoice->filter(function ($value, $key) {
             return $value->status == 'paid';
         })->count();
@@ -237,7 +227,6 @@ trait FinanceDashboard
             return $value->status == 'waiting' && $value->valid_till->lessThan(now());
         })->count();
         $data['colors'][] = '#D30000';
-
 
         $data['values'][] = $allEstimate->filter(function ($value, $key) {
             return $value->status == 'accepted';
@@ -321,10 +310,10 @@ trait FinanceDashboard
             ->union($projects)
             ->get();
 
-        $earningsByProjects = array();
+        $earningsByProjects = [];
 
         foreach ($invoices as $invoice) {
-            if (!array_key_exists($invoice->project_name, $earningsByProjects)) {
+            if (! array_key_exists($invoice->project_name, $earningsByProjects)) {
                 $earningsByProjects[$invoice->project_name] = 0;
             }
 
@@ -333,12 +322,10 @@ trait FinanceDashboard
                     $usdTotal = ($invoice->total * $invoice->usd_price);
                     $earningsByProjects[$invoice->project_name] = $earningsByProjects[$invoice->project_name] + round(floor(floatval($usdTotal) * floatval($invoice->exchange_rate)), 2);
 
-                }
-                else {
+                } else {
                     $earningsByProjects[$invoice->project_name] = $earningsByProjects[$invoice->project_name] + round((floatval($invoice->total) * floatval($invoice->exchange_rate)), 2);
                 }
-            }
-            else {
+            } else {
                 $earningsByProjects[$invoice->project_name] = $earningsByProjects[$invoice->project_name] + round($invoice->total, 2);
             }
         }
@@ -350,5 +337,4 @@ trait FinanceDashboard
 
         return $data;
     }
-
 }

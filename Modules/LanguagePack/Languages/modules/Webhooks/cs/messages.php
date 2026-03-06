@@ -1,5 +1,6 @@
-<?php 
+<?php
+
 return [
-  'webhookNotFound' => 'Webhook nenalezen',
-  'headerNotFound' => 'Záhlaví nenalezeno',
+    'webhookNotFound' => 'Webhook nenalezen',
+    'headerNotFound' => 'Záhlaví nenalezeno',
 ];

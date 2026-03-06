@@ -2,17 +2,21 @@
 
 namespace App\DataTables;
 
+use App\Helper\Common;
 use App\Models\ProposalTemplate;
 use Carbon\Carbon;
 use Yajra\DataTables\Html\Column;
-use App\Helper\Common;
+
 class ProposalTemplateDataTable extends BaseDataTable
 {
-
     private $viewProposalPermission;
+
     private $addProposalPermission;
+
     private $editProposalsPermission;
+
     private $deleteProposalPermission;
+
     private $manageProposalTemplate;
 
     public function __construct()
@@ -29,7 +33,7 @@ class ProposalTemplateDataTable extends BaseDataTable
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
@@ -41,31 +45,31 @@ class ProposalTemplateDataTable extends BaseDataTable
                 $action = '<div class="task_view">
                 <div class="dropdown">
                     <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" type="link"
-                        id="dropdownMenuLink-' . $row->id . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        id="dropdownMenuLink-'.$row->id.'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="icon-options-vertical icons"></i>
                     </a>
-                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-' . $row->id . '" tabindex="0">';
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-'.$row->id.'" tabindex="0">';
 
-                $action .= ' <a href="' . route('proposal-template.show', [$row->id]) . '" class="dropdown-item"><i class="fa fa-eye mr-2"></i>' . __('app.view') . '</a>';
+                $action .= ' <a href="'.route('proposal-template.show', [$row->id]).'" class="dropdown-item"><i class="fa fa-eye mr-2"></i>'.__('app.view').'</a>';
 
                 if ($this->addProposalPermission == 'all' || $this->addProposalPermission == 'added') {
-                    $action .= '<a class="dropdown-item" href="' . route('proposals.create') . '?template=' . $row->id . '">
+                    $action .= '<a class="dropdown-item" href="'.route('proposals.create').'?template='.$row->id.'">
                         <i class="fa fa-plus mr-2"></i>
-                        ' . trans('app.create') . ' ' . trans('app.menu.proposal') . '
+                        '.trans('app.create').' '.trans('app.menu.proposal').'
                     </a>';
                 }
 
                 if ($this->manageProposalTemplate == 'all' || $this->manageProposalTemplate == 'added') {
-                    $action .= '<a class="dropdown-item" href="' . route('proposal-template.edit', [$row->id]) . '">
+                    $action .= '<a class="dropdown-item" href="'.route('proposal-template.edit', [$row->id]).'">
                             <i class="fa fa-edit mr-2"></i>
-                            ' . trans('app.edit') . '
+                            '.trans('app.edit').'
                         </a>';
                 }
 
                 if ($this->manageProposalTemplate == 'all' || $this->manageProposalTemplate == 'added') {
-                    $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-user-id="' . $row->id . '">
+                    $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-user-id="'.$row->id.'">
                             <i class="fa fa-trash mr-2"></i>
-                            ' . trans('app.delete') . '
+                            '.trans('app.delete').'
                         </a>';
                 }
 
@@ -109,7 +113,7 @@ class ProposalTemplateDataTable extends BaseDataTable
         if ($request->searchText != '') {
             $model->where(function ($query) {
                 $safeTerm = Common::safeString(request('searchText'));
-                $query->where('proposal_templates.name', 'like', '%' . $safeTerm . '%');
+                $query->where('proposal_templates.name', 'like', '%'.$safeTerm.'%');
             });
         }
 
@@ -157,8 +161,7 @@ class ProposalTemplateDataTable extends BaseDataTable
                 ->printable(false)
                 ->orderable(false)
                 ->searchable(false)
-                ->addClass('text-right pr-20')
+                ->addClass('text-right pr-20'),
         ];
     }
-
 }

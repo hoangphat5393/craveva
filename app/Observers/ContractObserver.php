@@ -2,16 +2,16 @@
 
 namespace App\Observers;
 
-use App\Models\Contract;
 use App\Events\NewContractEvent;
+use App\Models\Contract;
 use App\Models\GoogleCalendarModule;
 use App\Models\Notification;
 use App\Models\User;
 use App\Services\Google;
+use App\Traits\EmployeeActivityTrait;
 use Carbon\Carbon;
 use Google\Service\Exception;
 use Google_Service_Calendar_Event;
-use App\Traits\EmployeeActivityTrait;
 
 class ContractObserver
 {
@@ -19,13 +19,13 @@ class ContractObserver
 
     public function saving(Contract $contract)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             if (user()) {
                 $contract->last_updated_by = user()->id;
             }
 
             /* Add/Update google calendar event */
-            if ($contract && !is_null($contract->end_date)) {
+            if ($contract && ! is_null($contract->end_date)) {
                 $contract->event_id = $this->googleCalendarEvent($contract);
             }
         }
@@ -33,7 +33,7 @@ class ContractObserver
 
     public function updating(Contract $contract)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             /* Add/Update google calendar event */
             if ($contract && $contract->end_date) {
                 $contract->event_id = $this->googleCalendarEvent($contract);
@@ -58,17 +58,17 @@ class ContractObserver
         }
 
         $invoiceSettings = company() ? company()->invoiceSetting : $contract->company->invoiceSetting;
-        $contract->original_contract_number = str($contract->contract_number)->replace($invoiceSettings->contract_prefix . $invoiceSettings->contract_number_separator, '');
+        $contract->original_contract_number = str($contract->contract_number)->replace($invoiceSettings->contract_prefix.$invoiceSettings->contract_number_separator, '');
 
     }
 
     // Notify client when new contract is created
     public function created(Contract $contract)
     {
-        if (!isRunningInConsoleOrSeeding() && user()) {
+        if (! isRunningInConsoleOrSeeding() && user()) {
             self::createEmployeeActivity(user()->id, 'contract-created', $contract->id, 'contract');
         }
-        
+
         event(new NewContractEvent($contract));
     }
 
@@ -78,7 +78,7 @@ class ContractObserver
         Notification::deleteNotification($notifyData, $contract->id);
 
         /* Start of deleting event from google calendar */
-        $google = new Google();
+        $google = new Google;
         $googleAccount = company();
 
         if (company()->google_calendar_status == 'active' && $googleAccount->google_calendar_verification_status == 'verified' && $googleAccount->token) {
@@ -109,7 +109,7 @@ class ContractObserver
 
         if (company()->google_calendar_status == 'active' && $googleAccount->google_calendar_verification_status == 'verified' && $googleAccount->token && $module->contract_status == 1) {
 
-            $google = new Google();
+            $google = new Google;
             $attendiesData = [];
 
             $attendees = User::where('id', $event->client_id)->first();
@@ -125,34 +125,33 @@ class ContractObserver
                 // Create event
                 $google = $google->connectUsing($googleAccount->token);
 
-                $eventData = new Google_Service_Calendar_Event(array(
+                $eventData = new Google_Service_Calendar_Event([
                     'summary' => $event->subject,
                     'location' => '',
                     'description' => '',
                     'colorId' => 2,
-                    'start' => array(
+                    'start' => [
                         'dateTime' => $start_date,
                         'timeZone' => $googleAccount->timezone,
-                    ),
-                    'end' => array(
+                    ],
+                    'end' => [
                         'dateTime' => $end_date,
                         'timeZone' => $googleAccount->timezone,
-                    ),
+                    ],
                     'attendees' => $attendiesData,
-                    'reminders' => array(
+                    'reminders' => [
                         'useDefault' => false,
-                        'overrides' => array(
-                            array('method' => 'email', 'minutes' => 24 * 60),
-                            array('method' => 'popup', 'minutes' => 10),
-                        ),
-                    ),
-                ));
+                        'overrides' => [
+                            ['method' => 'email', 'minutes' => 24 * 60],
+                            ['method' => 'popup', 'minutes' => 10],
+                        ],
+                    ],
+                ]);
 
                 try {
                     if ($event->event_id) {
                         $results = $google->service('Calendar')->events->patch('primary', $event->event_id, $eventData);
-                    }
-                    else {
+                    } else {
                         $results = $google->service('Calendar')->events->insert('primary', $eventData);
                     }
 
@@ -175,20 +174,17 @@ class ContractObserver
 
     public function updated(Contract $contract)
     {
-        if (!isRunningInConsoleOrSeeding() && user()) {
+        if (! isRunningInConsoleOrSeeding() && user()) {
             self::createEmployeeActivity(user()->id, 'contract-updated', $contract->id, 'contract');
-
 
         }
     }
 
     public function deleted(Contract $contract)
     {
-        if (!isRunningInConsoleOrSeeding() && user()) {
+        if (! isRunningInConsoleOrSeeding() && user()) {
             self::createEmployeeActivity(user()->id, 'contract-deleted');
-
 
         }
     }
-
 }

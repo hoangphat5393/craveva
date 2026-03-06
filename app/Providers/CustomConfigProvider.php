@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use App\Models\SuperAdmin\GlobalPaymentGatewayCredentials;
 use App\Traits\HasMaskImage;
 use Illuminate\Mail\MailServiceProvider;
 use Illuminate\Queue\QueueServiceProvider;
@@ -21,7 +20,6 @@ use Stripe\Stripe;
  */
 class CustomConfigProvider extends ServiceProvider
 {
-
     use HasMaskImage;
 
     const ALL_ENVIRONMENT = ['demo', 'development', 'production'];
@@ -62,7 +60,6 @@ class CustomConfigProvider extends ServiceProvider
                 )
                 ->first();
 
-
             if ($setting) {
                 $this->setMailConfig($setting);
                 $this->setPushNotification($setting);
@@ -83,7 +80,7 @@ class CustomConfigProvider extends ServiceProvider
 
     public function setMailConfig($setting)
     {
-        if (!in_array(app()->environment(), self::ALL_ENVIRONMENT)) {
+        if (! in_array(app()->environment(), self::ALL_ENVIRONMENT)) {
             $driver = ($setting->mail_driver != 'mail') ? $setting->mail_driver : 'sendmail';
 
             // Decrypt the password to be used
@@ -96,7 +93,7 @@ class CustomConfigProvider extends ServiceProvider
             Config::set('mail.mailers.smtp.password', $password);
             Config::set('mail.mailers.smtp.encryption', $setting->mail_encryption);
 
-            Config::set('mail.verified', (bool)$setting->email_verified);
+            Config::set('mail.verified', (bool) $setting->email_verified);
             Config::set('queue.default', $setting->mail_connection);
         }
 
@@ -105,7 +102,7 @@ class CustomConfigProvider extends ServiceProvider
 
         Config::set('app.name', $setting->global_app_name);
         Config::set('app.global_app_name', $setting->global_app_name);
-        Config::set('app.logo', is_null($setting->light_logo) ? asset('img/craveva-logo.png') : $this->generateMaskedImageAppUrl('app-logo/' . $setting->light_logo));
+        Config::set('app.logo', is_null($setting->light_logo) ? asset('img/craveva-logo.png') : $this->generateMaskedImageAppUrl('app-logo/'.$setting->light_logo));
     }
 
     public function setPushNotification($setting)
@@ -131,7 +128,6 @@ class CustomConfigProvider extends ServiceProvider
         Config::set('laravel_google_translate.google_translate_api_key', $setting->google_key);
     }
 
-
     public function setStripConfigs($setting)
     {
         if ($setting->stripe_mode === 'test') {
@@ -148,7 +144,6 @@ class CustomConfigProvider extends ServiceProvider
         $key = ($stripeClientId) ?: env('STRIPE_KEY');
         $apiSecret = ($stripeSecret) ?: env('STRIPE_SECRET');
         $webhookKey = ($stripeWebhookSecret) ?: env('STRIPE_WEBHOOK_SECRET');
-
 
         Config::set('cashier.key', $key);
         Config::set('cashier.secret', $apiSecret);

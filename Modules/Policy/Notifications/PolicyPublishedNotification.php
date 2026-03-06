@@ -3,8 +3,8 @@
 namespace Modules\Policy\Notifications;
 
 use App\Models\EmailNotificationSetting;
-use Illuminate\Bus\Queueable;
 use App\Notifications\BaseNotification;
+use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 
 class PolicyPublishedNotification extends BaseNotification
@@ -12,6 +12,7 @@ class PolicyPublishedNotification extends BaseNotification
     use Queueable;
 
     private $policy;
+
     private $emailSetting;
 
     /**
@@ -61,16 +62,16 @@ class PolicyPublishedNotification extends BaseNotification
         $url = route('policy.show', $this->policy->id);
         $url = getDomainSpecificUrl($url, $this->company);
 
-        $content = __('policy::email.policyPublished.text') . '<br><br>' . __('policy::email.policyPublished.title') . ': <b>' . $this->policy->title . '</b>.';
+        $content = __('policy::email.policyPublished.text').'<br><br>'.__('policy::email.policyPublished.title').': <b>'.$this->policy->title.'</b>.';
 
         return $build
-            ->subject(__('policy::email.policyPublished.subject') . ' - ' . config('app.name') . __('!'))
+            ->subject(__('policy::email.policyPublished.subject').' - '.config('app.name').__('!'))
             ->markdown('mail.email', [
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
                 'actionText' => __('policy::email.policyPublished.action'),
-                'notifiableName' => $notifiable->name
+                'notifiableName' => $notifiable->name,
             ]);
     }
 
@@ -92,16 +93,15 @@ class PolicyPublishedNotification extends BaseNotification
             $url = getDomainSpecificUrl($url, $this->company);
 
             $subject = __('policy::email.policyPublished.subject');
-            $notifiableName = __('email.hello') . ' ' . $notifiable->name;
+            $notifiableName = __('email.hello').' '.$notifiable->name;
 
-            $content = __('policy::email.policyPublished.text') . "\n\n" .
-                __('policy::email.policyPublished.title') . ': *' . $this->policy->title . '*.';
+            $content = __('policy::email.policyPublished.text')."\n\n".
+                __('policy::email.policyPublished.title').': *'.$this->policy->title.'*.';
 
             return $this->slackBuild($notifiable)
-                ->content($subject."\n\n". $notifiableName ."\n\n". $content  . "\n\n" . $url);
+                ->content($subject."\n\n".$notifiableName."\n\n".$content."\n\n".$url);
         } catch (\Exception $e) {
             return $this->slackRedirectMessage('policy::email.policyPublished.subject', $notifiable);
         }
     }
-
 }

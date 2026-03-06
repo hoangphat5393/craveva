@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class StoreUser extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -26,12 +25,11 @@ class StoreUser extends CoreRequest
     {
         return [
             'name' => 'required:max:50',
-            'email' => 'required|email:rfc,strict|unique:users,email,null,id,company_id,' . company()->id,
+            'email' => 'required|email:rfc,strict|unique:users,email,null,id,company_id,'.company()->id,
             'password' => 'required|min:6',
-            'slack_username' => 'nullable|unique:employee_details,slack_username,null,id,company_id,' . company()->id,
+            'slack_username' => 'nullable|unique:employee_details,slack_username,null,id,company_id,'.company()->id,
             'hourly_rate' => 'nullable|numeric',
-            'joining_date' => 'required'
+            'joining_date' => 'required',
         ];
     }
-
 }

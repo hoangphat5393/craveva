@@ -28,13 +28,13 @@ class UpdateClientRequest extends CoreRequest
     {
         $rules = [
             'slack_username' => 'nullable|unique',
-            'name'  => 'required',
-            'email' => 'nullable|email:rfc,strict|required_if:login,enable|unique:users,email,'.$this->route('client').',id,company_id,' . company()->id,
+            'name' => 'required',
+            'email' => 'nullable|email:rfc,strict|required_if:login,enable|unique:users,email,'.$this->route('client').',id,company_id,'.company()->id,
             'website' => 'nullable|url',
             'country' => 'required_with:mobile',
             'password' => 'nullable|min:8',
             'client_code' => 'nullable|unique:client_details,client_code,'.$this->route('client').',user_id',
-            'mobile' => 'nullable|numeric'
+            'mobile' => 'nullable|numeric',
         ];
 
         $rules = $this->customFieldRules($rules);
@@ -50,5 +50,4 @@ class UpdateClientRequest extends CoreRequest
 
         return $attributes;
     }
-
 }

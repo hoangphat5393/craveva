@@ -1,15 +1,15 @@
 <?php
 
-use App\Models\Role;
-use App\Models\User;
-use App\Models\Module;
 use App\Models\Company;
+use App\Models\Module;
 use App\Models\Permission;
 use App\Models\PermissionRole;
+use App\Models\Role;
+use App\Models\User;
 use App\Models\UserPermission;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -18,7 +18,6 @@ return new class extends Migration
      *
      * @return void
      */
-
     public function up()
     {
         Schema::create('custom_link_settings', function (Blueprint $table) {
@@ -35,16 +34,16 @@ return new class extends Migration
         $module = Module::where('module_name', 'settings')->first();
         $count = Company::withoutGlobalScope(\App\Scopes\ActiveScope::class)->count();
 
-        if (!is_null($module) && $count > 0) {
+        if (! is_null($module) && $count > 0) {
             $permissionType = [
-                    'module_id' => $module->id,
-                    'display_name' => 'Manage Custom Link Setting',
-                    'name' => 'manage_custom_link_setting',
-                    'is_custom' => 1,
-                    'allowed_permissions' => Permission::ALL_NONE,
-                ];
+                'module_id' => $module->id,
+                'display_name' => 'Manage Custom Link Setting',
+                'name' => 'manage_custom_link_setting',
+                'is_custom' => 1,
+                'allowed_permissions' => Permission::ALL_NONE,
+            ];
 
-            $permission = Permission::where('name', $permissionType['name'])->first() ?: new Permission();
+            $permission = Permission::where('name', $permissionType['name'])->first() ?: new Permission;
             $permission->name = $permissionType['name'];
             $permission->display_name = $permissionType['display_name'];
             $permission->module_id = $module->id;
@@ -54,10 +53,10 @@ return new class extends Migration
 
             $companies = Company::select('id')->get();
 
-            foreach($companies as $company){
+            foreach ($companies as $company) {
                 $role = Role::where('name', 'admin')->where('company_id', $company->id)->first();
 
-                $permissionRole = PermissionRole::where('permission_id', $permission->id)->where('role_id', $role->id)->first() ?: new PermissionRole();
+                $permissionRole = PermissionRole::where('permission_id', $permission->id)->where('role_id', $role->id)->first() ?: new PermissionRole;
                 $permissionRole->permission_id = $permission->id;
                 $permissionRole->role_id = $role->id;
                 $permissionRole->permission_type_id = 4;
@@ -65,8 +64,8 @@ return new class extends Migration
 
                 $admins = User::allAdmins($company->id);
 
-                foreach($admins as $admin) {
-                    $userPermission = UserPermission::where('permission_id', $permission->id)->where('user_id', $admin->id)->first() ?: new UserPermission();
+                foreach ($admins as $admin) {
+                    $userPermission = UserPermission::where('permission_id', $permission->id)->where('user_id', $admin->id)->first() ?: new UserPermission;
                     $userPermission->user_id = $admin->id;
                     $userPermission->permission_id = $permission->id;
                     $userPermission->permission_type_id = 4;
@@ -82,10 +81,8 @@ return new class extends Migration
      *
      * @return void
      */
-
     public function down()
     {
         Schema::dropIfExists('custom_link_settings');
     }
-
 };

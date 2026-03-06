@@ -9,7 +9,9 @@ use Illuminate\View\Component;
 class PublishButton extends Component
 {
     public $language;
+
     public $languageCode;
+
     public $isLanguagePublished;
 
     /**
@@ -29,5 +31,4 @@ class PublishButton extends Component
     {
         return view('languagepack::components.publish-button');
     }
-
 }

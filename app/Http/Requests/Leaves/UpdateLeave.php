@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class UpdateLeave extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -27,8 +26,7 @@ class UpdateLeave extends CoreRequest
         return [
             'user_id' => 'required',
             'leave_type_id' => 'required',
-            'reason' => 'required'
+            'reason' => 'required',
         ];
     }
-
 }

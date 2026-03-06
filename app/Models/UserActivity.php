@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read mixed $icon
  * @property-read \App\Models\User $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|UserActivity newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|UserActivity newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|UserActivity query()
@@ -24,19 +25,20 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|UserActivity whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UserActivity whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UserActivity whereUserId($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|UserActivity whereCompanyId($value)
+ *
  * @mixin \Eloquent
  */
 class UserActivity extends BaseModel
 {
-
     use HasCompany;
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id')->withoutGlobalScope(ActiveScope::class);
     }
-
 }

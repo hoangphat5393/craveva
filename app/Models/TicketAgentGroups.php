@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read mixed $icon
  * @property-read \App\Models\TicketGroup|null $group
  * @property-read \App\Models\User $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|TicketAgentGroups newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TicketAgentGroups newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TicketAgentGroups query()
@@ -26,18 +27,20 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|TicketAgentGroups whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TicketAgentGroups whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TicketAgentGroups whereUpdatedAt($value)
+ *
  * @property int|null $company_id
  * @property int|null $added_by
  * @property int|null $last_updated_by
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|TicketAgentGroups whereAddedBy($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TicketAgentGroups whereCompanyId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TicketAgentGroups whereLastUpdatedBy($value)
+ *
  * @mixin \Eloquent
  */
 class TicketAgentGroups extends BaseModel
 {
-
     use HasCompany;
 
     public function user(): BelongsTo
@@ -49,5 +52,4 @@ class TicketAgentGroups extends BaseModel
     {
         return $this->belongsTo(TicketGroup::class, 'group_id');
     }
-
 }

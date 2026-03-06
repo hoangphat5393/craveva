@@ -8,7 +8,6 @@ use Modules\Sms\Notifications\AttendanceReminder;
 
 class AttendanceReminderListener
 {
-
     /**
      * Handle the event.
      *
@@ -21,5 +20,4 @@ class AttendanceReminderListener
         } catch (\Exception $e) { // @codingStandardsIgnoreLine
         }
     }
-
 }

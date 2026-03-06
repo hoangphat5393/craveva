@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateRequest extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -32,11 +31,10 @@ class UpdateRequest extends FormRequest
                 'mail_password' => 'required',
                 'imap_host' => 'required',
                 'imap_port' => 'required',
-                'imap_encryption' => 'required'
+                'imap_encryption' => 'required',
             ];
         }
-        
+
         return [];
     }
-
 }

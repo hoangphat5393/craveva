@@ -5,27 +5,23 @@ namespace App\Http\Controllers;
 // use App\Http\Controllers\Carbon;
 
 use App\DataTables\ShiftRotationDataTable;
-use Carbon\Carbon;
-
-use App\Models\Role;
 use App\Helper\Reply;
-
-use App\Models\Holiday;
-use Illuminate\Http\Request;
-use App\Models\EmployeeShift;
-// use Endroid\QrCode\QrCode;
-use App\Models\AttendanceSetting;
-use Endroid\QrCode\Builder\Builder;
-use Endroid\QrCode\Writer\PngWriter;
-use App\Models\EmployeeShiftSchedule;
-use Endroid\QrCode\Encoding\Encoding;
-use Endroid\QrCode\RoundBlockSizeMode;
-use Endroid\QrCode\ErrorCorrectionLevel;
 use App\Http\Requests\AttendanceSetting\UpdateAttendanceSetting;
+use App\Models\AttendanceSetting;
+use App\Models\EmployeeShift;
+use App\Models\EmployeeShiftSchedule;
+// use Endroid\QrCode\QrCode;
+use App\Models\Holiday;
+use App\Models\Role;
+use Carbon\Carbon;
+use Endroid\QrCode\Builder\Builder;
+use Endroid\QrCode\Encoding\Encoding;
+use Endroid\QrCode\ErrorCorrectionLevel;
+use Endroid\QrCode\RoundBlockSizeMode;
+use Endroid\QrCode\Writer\PngWriter;
 
 class AttendanceSettingController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -33,7 +29,7 @@ class AttendanceSettingController extends AccountBaseController
         $this->activeSettingMenu = 'attendance_settings';
         $this->middleware(function ($request, $next) {
 
-            abort_403(!(user()->permission('manage_attendance_setting') == 'all' && in_array('attendance', user_modules())));
+            abort_403(! (user()->permission('manage_attendance_setting') == 'all' && in_array('attendance', user_modules())));
 
             return $next($request);
         });
@@ -55,36 +51,33 @@ class AttendanceSettingController extends AccountBaseController
 
         $tab = request('tab');
         switch ($tab) {
-        case 'shift':
-            $this->weekMap = Holiday::weekMap();
-            $this->employeeShifts = EmployeeShift::where('shift_name', '<>', 'Day Off')->get();
-            $this->view = 'attendance-settings.ajax.shift';
-            break;
+            case 'shift':
+                $this->weekMap = Holiday::weekMap();
+                $this->employeeShifts = EmployeeShift::where('shift_name', '<>', 'Day Off')->get();
+                $this->view = 'attendance-settings.ajax.shift';
+                break;
 
-        case 'qrcode':
+            case 'qrcode':
 
+                $this->qr = Builder::create()
+                    ->writer(new PngWriter)
+                    ->encoding(new Encoding('UTF-8'))
+                    ->data((route('settings.qr-login', ['hash' => company()->hash])))
+                    ->errorCorrectionLevel(ErrorCorrectionLevel::High)
+                    ->size(300)
+                    ->margin(10)
+                    ->roundBlockSizeMode(RoundBlockSizeMode::Margin)
+                    ->validateResult(false)
+                    ->build();
 
-            $this->qr = Builder::create()
-                ->writer(new PngWriter())
-                ->encoding(new Encoding('UTF-8'))
-                ->data((route('settings.qr-login', ['hash' => company()->hash])))
-                ->errorCorrectionLevel(ErrorCorrectionLevel::High)
-                ->size(300)
-                ->margin(10)
-                ->roundBlockSizeMode(RoundBlockSizeMode::Margin)
-                ->validateResult(false)
-                ->build();
-
-
-
-            $this->view = 'attendance-settings.ajax.qrcode';
-        break;
-        case 'shift-rotation':
-            return $this->shiftRotation();
-            break;
-        default:
-            $this->view = 'attendance-settings.ajax.attendance';
-            break;
+                $this->view = 'attendance-settings.ajax.qrcode';
+                break;
+            case 'shift-rotation':
+                return $this->shiftRotation();
+                break;
+            default:
+                $this->view = 'attendance-settings.ajax.attendance';
+                break;
         }
 
         $this->activeTab = $tab ?: 'attendance';
@@ -109,12 +102,12 @@ class AttendanceSettingController extends AccountBaseController
     }
 
     /**
-     * @param UpdateAttendanceSetting $request
-     * @param int $id
+     * @param  int  $id
      * @return array
+     *
      * @throws \Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException
      */
-    //phpcs:ignore
+    // phpcs:ignore
     public function update(UpdateAttendanceSetting $request, $id)
     {
         $setting = company()->attendanceSetting;
@@ -142,7 +135,7 @@ class AttendanceSettingController extends AccountBaseController
         $setting->monthly_report_roles = json_encode($request->monthly_report_roles);
         $setting->save();
 
-        session()->forget(['attendance_setting','company']);
+        session()->forget(['attendance_setting', 'company']);
 
         return Reply::success(__('messages.updateSuccess'));
     }
@@ -157,9 +150,9 @@ class AttendanceSettingController extends AccountBaseController
             ->where('date', now(company()->timezone)->toDateString())
             ->first();
 
-        $backDayFromDefault = Carbon::parse(now(company()->timezone)->subDay()->format('Y-m-d') . ' ' . $defaultAttendanceSettings->office_start_time);
+        $backDayFromDefault = Carbon::parse(now(company()->timezone)->subDay()->format('Y-m-d').' '.$defaultAttendanceSettings->office_start_time);
 
-        $backDayToDefault = Carbon::parse(now(company()->timezone)->subDay()->format('Y-m-d') . ' ' . $defaultAttendanceSettings->office_end_time);
+        $backDayToDefault = Carbon::parse(now(company()->timezone)->subDay()->format('Y-m-d').' '.$defaultAttendanceSettings->office_end_time);
 
         if ($backDayFromDefault->gt($backDayToDefault)) {
             $backDayToDefault->addDay();
@@ -170,27 +163,22 @@ class AttendanceSettingController extends AccountBaseController
         if ($checkPreviousDayShift && $nowTime->betweenIncluded($checkPreviousDayShift->shift_start_time, $checkPreviousDayShift->shift_end_time)) {
             $attendanceSettings = $checkPreviousDayShift;
 
-        }
-        else if ($nowTime->betweenIncluded($backDayFromDefault, $backDayToDefault)) {
+        } elseif ($nowTime->betweenIncluded($backDayFromDefault, $backDayToDefault)) {
             $attendanceSettings = $defaultAttendanceSettings;
 
-        }
-        else if ($checkTodayShift &&
+        } elseif ($checkTodayShift &&
             ($nowTime->betweenIncluded($checkTodayShift->shift_start_time, $checkTodayShift->shift_end_time)
                 || $nowTime->gt($checkTodayShift->shift_end_time)
-                || (!$nowTime->betweenIncluded($checkTodayShift->shift_start_time, $checkTodayShift->shift_end_time) && $defaultAttendanceSettings->show_clock_in_button == 'no'))
+                || (! $nowTime->betweenIncluded($checkTodayShift->shift_start_time, $checkTodayShift->shift_end_time) && $defaultAttendanceSettings->show_clock_in_button == 'no'))
         ) {
             $attendanceSettings = $checkTodayShift;
-        }
-        else if ($checkTodayShift && !is_null($checkTodayShift->shift->early_clock_in)) {
+        } elseif ($checkTodayShift && ! is_null($checkTodayShift->shift->early_clock_in)) {
             $attendanceSettings = $checkTodayShift;
-        }
-        else {
+        } else {
             $attendanceSettings = $defaultAttendanceSettings;
         }
 
         return $attendanceSettings->shift;
 
     }
-
 }

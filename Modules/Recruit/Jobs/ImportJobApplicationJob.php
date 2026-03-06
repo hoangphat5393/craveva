@@ -8,16 +8,14 @@ use Carbon\Exceptions\InvalidFormatException;
 use Exception;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Modules\Recruit\Entities\ApplicationSource;
 use Modules\Recruit\Entities\RecruitApplicationStatus;
-use Modules\Recruit\Entities\RecruitJob;
 use Modules\Recruit\Entities\RecruitJobApplication;
-use PhpParser\Node\Stmt\Catch_;
 
 class ImportJobApplicationJob implements ShouldQueue
 {
@@ -25,8 +23,11 @@ class ImportJobApplicationJob implements ShouldQueue
     use ExcelImportable;
 
     private $row;
+
     private $columns;
+
     private $company;
+
     private $recruitJobId;
 
     /**
@@ -53,6 +54,7 @@ class ImportJobApplicationJob implements ShouldQueue
 
                 if (empty($fullName)) {
                     $this->failJob(__('recruit::messages.fullNameRequired'));
+
                     return;
                 }
 
@@ -66,9 +68,9 @@ class ImportJobApplicationJob implements ShouldQueue
                     $this->failJob(__('recruit::messages.emailAlreadyExists', ['email' => $email]));
                 } else {
 
-                $source_id = ApplicationSource::where('application_source', $this->getColumnValue('source'))->first();
-                $status = RecruitApplicationStatus::where('slug', 'applied')->where('company_id', company()->id)->first();
-                    $jobApp = new RecruitJobApplication();
+                    $source_id = ApplicationSource::where('application_source', $this->getColumnValue('source'))->first();
+                    $status = RecruitApplicationStatus::where('slug', 'applied')->where('company_id', company()->id)->first();
+                    $jobApp = new RecruitJobApplication;
                     $jobApp->company_id = $this->company?->id;
                     $jobApp->recruit_job_id = $this->recruitJobId;
 
@@ -85,7 +87,7 @@ class ImportJobApplicationJob implements ShouldQueue
                     $jobApp->recruit_application_status_id = $status?->id;
                     $jobApp->save();
 
-            }
+                }
 
             } catch (InvalidFormatException $e) {
                 DB::rollBack();
@@ -100,5 +102,4 @@ class ImportJobApplicationJob implements ShouldQueue
         }
 
     }
-
 }

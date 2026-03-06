@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class FrontUpdateRequest extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -27,8 +26,7 @@ class FrontUpdateRequest extends FormRequest
         return [
             'title' => 'required',
             'description' => 'required',
-            'language' => 'required'
+            'language' => 'required',
         ];
     }
-
 }

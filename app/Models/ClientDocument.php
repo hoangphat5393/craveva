@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 /**
  * Class Holiday
  *
- * @package App\Models
  * @property int $id
  * @property int $user_id
  * @property string $name
@@ -23,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read mixed $doc_url
  * @property-read mixed $icon
  * @property-read \App\Models\User $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ClientDocument newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ClientDocument newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ClientDocument query()
@@ -36,16 +36,18 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|ClientDocument whereSize($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ClientDocument whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ClientDocument whereUserId($value)
+ *
  * @property-read \App\Models\User|null $client
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ClientDocument whereCompanyId($value)
+ *
  * @mixin \Eloquent
  */
 class ClientDocument extends BaseModel
 {
-
-    use IconTrait, HasCompany;
+    use HasCompany, IconTrait;
 
     const FILE_PATH = 'client-docs';
 
@@ -53,7 +55,9 @@ class ClientDocument extends BaseModel
     protected $fillable = [];
 
     protected $guarded = ['id'];
+
     protected $table = 'client_docs';
+
     protected $appends = ['doc_url', 'icon'];
 
     public function client(): BelongsTo
@@ -63,7 +67,6 @@ class ClientDocument extends BaseModel
 
     public function getDocUrlAttribute()
     {
-        return asset_url_local_s3(ClientDocument::FILE_PATH . '/' . $this->user_id . '/' . $this->hashname);
+        return asset_url_local_s3(ClientDocument::FILE_PATH.'/'.$this->user_id.'/'.$this->hashname);
     }
-
 }

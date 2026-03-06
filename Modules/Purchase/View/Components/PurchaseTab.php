@@ -6,10 +6,12 @@ use Illuminate\View\Component;
 
 class PurchaseTab extends Component
 {
-
     public $href;
+
     public $text;
+
     public $ajax;
+
     public $count;
 
     /**
@@ -35,5 +37,4 @@ class PurchaseTab extends Component
     {
         return view('purchase::components.purchase-tab');
     }
-
 }

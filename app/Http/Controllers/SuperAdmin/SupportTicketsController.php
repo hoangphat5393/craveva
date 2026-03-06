@@ -2,20 +2,19 @@
 
 namespace App\Http\Controllers\SuperAdmin;
 
-use App\Models\User;
-use App\Helper\Reply;
-use App\Models\Company;
-use Illuminate\Http\Request;
-use App\Models\SuperAdmin\SupportTicket;
-use App\Models\SuperAdmin\SupportTicketType;
-use App\Models\SuperAdmin\SupportTicketReply;
-use App\Http\Controllers\AccountBaseController;
 use App\DataTables\SuperAdmin\SupportTicketDataTable;
+use App\Helper\Reply;
+use App\Http\Controllers\AccountBaseController;
 use App\Http\Requests\SuperAdmin\SupportTickets\StoreRequest;
+use App\Models\Company;
+use App\Models\SuperAdmin\SupportTicket;
+use App\Models\SuperAdmin\SupportTicketReply;
+use App\Models\SuperAdmin\SupportTicketType;
+use App\Models\User;
+use Illuminate\Http\Request;
 
 class SupportTicketsController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -27,19 +26,17 @@ class SupportTicketsController extends AccountBaseController
      *
      * @return \Illuminate\Http\Response
      */
-
     public function index(SupportTicketDataTable $dataTable)
     {
         $this->viewPermission = user()->permission('view_superadmin_ticket');
 
         if (user()->is_superadmin) {
-            abort_403(!in_array($this->viewPermission, ['all', 'added', 'owned', 'both']));
-        }
-        else {
-            abort_403(!in_array('admin', user_roles()));
+            abort_403(! in_array($this->viewPermission, ['all', 'added', 'owned', 'both']));
+        } else {
+            abort_403(! in_array('admin', user_roles()));
         }
 
-        if (!request()->ajax()) {
+        if (! request()->ajax()) {
             $this->types = SupportTicketType::all();
             $this->superadmins = user()->is_superadmin ? User::allSuperAdmin() : [];
         }
@@ -57,10 +54,9 @@ class SupportTicketsController extends AccountBaseController
         $this->addPermission = user()->permission('add_superadmin_ticket');
 
         if (user()->is_superadmin) {
-            abort_403(!in_array($this->addPermission, ['all', 'added']));
-        }
-        else {
-            abort_403(!in_array('admin', user_roles()));
+            abort_403(! in_array($this->addPermission, ['all', 'added']));
+        } else {
+            abort_403(! in_array('admin', user_roles()));
         }
 
         $this->pageTitle = __('modules.tickets.addTicket');
@@ -81,12 +77,11 @@ class SupportTicketsController extends AccountBaseController
     /**
      * Store a newly created resource in storage.
      *
-     * @param StoreRequest $request
      * @return \Illuminate\Http\Response
      */
     public function store(StoreRequest $request)
     {
-        $ticket = new SupportTicket();
+        $ticket = new SupportTicket;
         $ticket->subject = $request->subject;
         $ticket->description = $request->description;
         $ticket->status = 'open';
@@ -111,7 +106,7 @@ class SupportTicketsController extends AccountBaseController
         $ticket->save();
 
         // Save first message
-        $reply = new SupportTicketReply();
+        $reply = new SupportTicketReply;
         $reply->message = $request->description;
         $reply->support_ticket_id = $ticket->id;
         $reply->user_id = $this->user->id; // Current logged in user
@@ -123,7 +118,7 @@ class SupportTicketsController extends AccountBaseController
     /**
      * Display the specified resource.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -131,18 +126,17 @@ class SupportTicketsController extends AccountBaseController
         $this->viewTicketPermission = user()->permission('view_superadmin_ticket');
 
         $this->ticket = SupportTicket::with('requester', 'requester.supportTickets', 'reply', 'reply.files', 'reply.user')->findOrFail($id);
-        $this->pageTitle = __('app.menu.ticket') . '#' . $this->ticket->id;
+        $this->pageTitle = __('app.menu.ticket').'#'.$this->ticket->id;
 
         if (user()->is_superadmin) {
-            abort_403(!(
+            abort_403(! (
                 $this->viewTicketPermission == 'all'
                 || ($this->viewTicketPermission == 'added' && user()->id == $this->ticket->created_by)
                 || ($this->viewTicketPermission == 'owned' && (user()->id == $this->ticket->user_id || $this->ticket->agent_id == user()->id))
                 || ($this->viewTicketPermission == 'both' && (user()->id == $this->ticket->user_id || $this->ticket->agent_id == user()->id || $this->ticket->created_by == user()->id))
             ));
-        }
-        else {
-            abort_403(!in_array('admin', user_roles()));
+        } else {
+            abort_403(! in_array('admin', user_roles()));
         }
 
         $this->superadmins = User::allSuperAdmin();
@@ -170,22 +164,22 @@ class SupportTicketsController extends AccountBaseController
     public function applyQuickAction(Request $request)
     {
         switch ($request->action_type) {
-        case 'delete':
-            $this->deleteRecords($request);
+            case 'delete':
+                $this->deleteRecords($request);
 
-            return Reply::success(__('messages.deleteSuccess'));
-        case 'change-status':
-            $this->changeBulkStatus($request);
+                return Reply::success(__('messages.deleteSuccess'));
+            case 'change-status':
+                $this->changeBulkStatus($request);
 
-            return Reply::success(__('messages.updateSuccess'));
-        default:
-            return Reply::error(__('messages.selectAction'));
+                return Reply::success(__('messages.updateSuccess'));
+            default:
+                return Reply::error(__('messages.selectAction'));
         }
     }
 
     protected function deleteRecords($request)
     {
-        abort_403(!user()->is_superadmin);
+        abort_403(! user()->is_superadmin);
         SupportTicket::whereIn('id', explode(',', $request->row_ids))->delete();
     }
 
@@ -209,8 +203,7 @@ class SupportTicketsController extends AccountBaseController
     /**
      * Update the specified resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -222,7 +215,7 @@ class SupportTicketsController extends AccountBaseController
         $message = str_replace('<p><br></p>', '', trim($request->message));
 
         if ($message != '') {
-            $reply = new SupportTicketReply();
+            $reply = new SupportTicketReply;
             $reply->message = $request->message;
             $reply->support_ticket_id = $ticket->id;
             $reply->user_id = $this->user->id; // Current logged in user
@@ -237,7 +230,7 @@ class SupportTicketsController extends AccountBaseController
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
@@ -245,7 +238,7 @@ class SupportTicketsController extends AccountBaseController
         $this->deleteTicketPermission = user()->permission('delete_superadmin_ticket');
         $ticket = SupportTicket::findOrFail($id);
 
-        abort_403(!user()->is_superadmin || !(
+        abort_403(! user()->is_superadmin || ! (
             $this->deleteTicketPermission == 'all'
             || ($this->deleteTicketPermission == 'added' && user()->id == $ticket->created_by)
             || ($this->deleteTicketPermission == 'owned' && (user()->id == $ticket->agent_id || user()->id == $ticket->user_id))
@@ -256,5 +249,4 @@ class SupportTicketsController extends AccountBaseController
 
         return Reply::success(__('messages.deleteSuccess'));
     }
-
 }

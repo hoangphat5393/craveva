@@ -7,7 +7,6 @@ use Illuminate\View\Component;
 
 class EmployeeImage extends Component
 {
-
     public $user;
 
     /**
@@ -29,5 +28,4 @@ class EmployeeImage extends Component
     {
         return view('components.employee-image');
     }
-
 }

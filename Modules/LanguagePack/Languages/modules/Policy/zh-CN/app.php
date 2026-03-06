@@ -1,6 +1,6 @@
 <?php
 
-return array(
+return [
     'policyCenter' => '政策中心',
     'policy' => '政策',
     'policies' => '政策',
@@ -32,4 +32,4 @@ return array(
     'saveAsDraft' => '保存为草稿',
     'saveAndPublished' => '保存并发布',
     'selectGender' => '选择性别',
-);
+];

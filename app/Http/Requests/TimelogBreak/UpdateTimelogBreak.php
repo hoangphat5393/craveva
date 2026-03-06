@@ -7,7 +7,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateTimelogBreak extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -27,9 +26,9 @@ class UpdateTimelogBreak extends FormRequest
     {
         $rules = [];
         $timelog = ProjectTimeLog::find(request('timelog_id'));
-        $rules['start_time'] = 'required|after_or_equal:"' . $timelog->start_time->timezone(company()->timezone) . '"';
-        $rules['end_time'] = 'required|before_or_equal:"' . $timelog->end_time->timezone(company()->timezone) . '"';
+        $rules['start_time'] = 'required|after_or_equal:"'.$timelog->start_time->timezone(company()->timezone).'"';
+        $rules['end_time'] = 'required|before_or_equal:"'.$timelog->end_time->timezone(company()->timezone).'"';
+
         return $rules;
     }
-
 }

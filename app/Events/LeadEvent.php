@@ -9,10 +9,10 @@ use Illuminate\Queue\SerializesModels;
 
 class LeadEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $notificationName;
+
     /**
      * @var Lead
      */
@@ -23,5 +23,4 @@ class LeadEvent
         $this->leadContact = $leadContact;
         $this->notificationName = $notificationName;
     }
-
 }

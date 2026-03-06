@@ -4,17 +4,16 @@ namespace App\Http\Controllers\SuperAdmin\FrontSetting;
 
 use App\Helper\Files;
 use App\Helper\Reply;
-use App\Models\ThemeSetting;
-use App\Models\GlobalSetting;
-use App\Models\CompanyAddress;
-use App\Models\SuperAdmin\GlobalCurrency;
-use App\Models\SuperAdmin\FrontDetail;
 use App\Http\Controllers\AccountBaseController;
 use App\Http\Requests\SuperAdmin\ThemeSetting\UpdateRequest;
+use App\Models\CompanyAddress;
+use App\Models\GlobalSetting;
+use App\Models\SuperAdmin\FrontDetail;
+use App\Models\SuperAdmin\GlobalCurrency;
+use App\Models\ThemeSetting;
 
 class ThemeSettingController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -47,8 +46,6 @@ class ThemeSettingController extends AccountBaseController
     /**
      * Update the specified resource in storage.
      *
-     * @param UpdateRequest $request
-     * @return array
      * @throws RelatedResourceNotFoundException
      */
     public function themeUpdate(UpdateRequest $request): array
@@ -100,5 +97,4 @@ class ThemeSettingController extends AccountBaseController
         return Reply::successWithData(__('messages.updateSuccess'), ['redirectUrl' => route('superadmin.front-settings.front_theme_settings')]);
 
     }
-
 }

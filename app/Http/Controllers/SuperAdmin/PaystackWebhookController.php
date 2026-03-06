@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers\SuperAdmin;
 
+use App\Models\SuperAdmin\GlobalInvoice;
+use App\Models\SuperAdmin\GlobalSubscription;
+use App\Traits\SuperAdmin\PaystackSettings;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use App\Models\SuperAdmin\GlobalInvoice;
-use App\Traits\SuperAdmin\PaystackSettings;
-use App\Models\SuperAdmin\GlobalSubscription;
 
 class PaystackWebhookController extends Controller
 {
-
     use PaystackSettings;
 
     public function saveInvoices(Request $request, $hash)
@@ -27,7 +26,7 @@ class PaystackWebhookController extends Controller
                     $subscription->transaction_id = $request['data']['subscription']['subscription_code'];
                     $subscription->save();
 
-                    $invoice = new GlobalInvoice();
+                    $invoice = new GlobalInvoice;
                     $invoice->company_id = $subscription->company_id;
                     $invoice->package_id = $subscription->package_id;
                     $invoice->currency_id = $subscription->currency_id;

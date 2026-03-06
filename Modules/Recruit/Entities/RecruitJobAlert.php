@@ -4,7 +4,6 @@ namespace Modules\Recruit\Entities;
 
 use App\Models\BaseModel;
 use App\Traits\HasCompany;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 
 class RecruitJobAlert extends BaseModel

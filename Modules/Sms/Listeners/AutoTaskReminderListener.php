@@ -8,7 +8,6 @@ use Modules\Sms\Notifications\AutoTaskReminder;
 
 class AutoTaskReminderListener
 {
-
     /**
      * Handle the event.
      *
@@ -21,5 +20,4 @@ class AutoTaskReminderListener
         } catch (\Exception $e) { // @codingStandardsIgnoreLine
         }
     }
-
 }

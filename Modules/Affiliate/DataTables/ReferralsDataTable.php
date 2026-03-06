@@ -3,8 +3,8 @@
 namespace Modules\Affiliate\DataTables;
 
 use App\DataTables\BaseDataTable;
-use Yajra\DataTables\Html\Button;
 use Modules\Affiliate\Entities\Referral;
+use Yajra\DataTables\Html\Button;
 
 class ReferralsDataTable extends BaseDataTable
 {
@@ -19,27 +19,26 @@ class ReferralsDataTable extends BaseDataTable
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
     {
         $datatables = datatables()->eloquent($query);
-        $datatables->editColumn('referral_id', fn($row) => $row->id);
-        $datatables->editColumn('affiliate_id', fn($row) => $row->affiliate->user->name ?? '--');
-        $datatables->editColumn('company_id', fn($row) => $row->company->company_name ?? '--');
-        $datatables->editColumn('commissions', fn($row) => global_currency_format($row->commissions) ?? '--');
-        $datatables->editColumn('created_date', fn($row) => $row->created_at->timezone(global_setting()->timezone)->translatedFormat(global_setting()->date_format));
+        $datatables->editColumn('referral_id', fn ($row) => $row->id);
+        $datatables->editColumn('affiliate_id', fn ($row) => $row->affiliate->user->name ?? '--');
+        $datatables->editColumn('company_id', fn ($row) => $row->company->company_name ?? '--');
+        $datatables->editColumn('commissions', fn ($row) => global_currency_format($row->commissions) ?? '--');
+        $datatables->editColumn('created_date', fn ($row) => $row->created_at->timezone(global_setting()->timezone)->translatedFormat(global_setting()->date_format));
         $datatables->addIndexColumn();
         $datatables->smart(false);
-        $datatables->setRowId(fn($row) => 'row-' . $row->id);
+        $datatables->setRowId(fn ($row) => 'row-'.$row->id);
         $datatables->rawColumns(['company_id', 'affiliate_id', 'commissions', 'created_date']);
 
         return $datatables;
     }
 
     /**
-     * @param Referral $model
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function query(Referral $model)
@@ -53,11 +52,11 @@ class ReferralsDataTable extends BaseDataTable
 
         if ($request->searchText != '') {
             $model->where(function ($query) {
-                $query->where('companies.company_name', 'like', '%' . request('searchText') . '%')
-                    ->orWhere('companies.company_email', 'like', '%' . request('searchText') . '%')
+                $query->where('companies.company_name', 'like', '%'.request('searchText').'%')
+                    ->orWhere('companies.company_email', 'like', '%'.request('searchText').'%')
                     ->orWhereHas('affiliate.user', function ($query) {
-                        $query->where('name', 'like', '%' . request('searchText') . '%');
-                        $query->orWhere('email', 'like', '%' . request('searchText') . '%');
+                        $query->where('name', 'like', '%'.request('searchText').'%');
+                        $query->orWhere('email', 'like', '%'.request('searchText').'%');
                     });
             });
         }
@@ -102,7 +101,7 @@ class ReferralsDataTable extends BaseDataTable
                     });
                 }',
             ])
-            ->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
+            ->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
     }
 
     /**
@@ -115,7 +114,7 @@ class ReferralsDataTable extends BaseDataTable
         $data = [
             '#' => ['data' => 'DT_RowIndex', 'orderable' => false, 'searchable' => false, 'visible' => false, 'exportable' => false],
             __('app.id') => ['data' => 'referral_id', 'name' => 'id', 'title' => __('app.id')],
-            __('affiliate::app.company') . ' ' . __('affiliate::app.referred') => ['data' => 'company_id', 'name' => 'company_id', 'title' => __('affiliate::app.company') . ' ' . __('affiliate::app.referred')],
+            __('affiliate::app.company').' '.__('affiliate::app.referred') => ['data' => 'company_id', 'name' => 'company_id', 'title' => __('affiliate::app.company').' '.__('affiliate::app.referred')],
             __('affiliate::app.affiliate') => ['data' => 'affiliate_id', 'name' => 'affiliate_id', 'title' => __('affiliate::app.affiliate')],
             __('affiliate::app.commissions') => ['data' => 'commissions', 'name' => 'commissions', 'title' => __('affiliate::app.commissions')],
             __('affiliate::app.dateCreated') => ['data' => 'created_date', 'name' => 'created_at', 'title' => __('affiliate::app.dateCreated')],
@@ -123,5 +122,4 @@ class ReferralsDataTable extends BaseDataTable
 
         return $data;
     }
-
 }

@@ -9,14 +9,13 @@ use NotificationChannels\OneSignal\OneSignalMessage;
 
 class NewExpenseRecurringAdmin extends BaseNotification
 {
-
-
     /**
      * Create a new notification instance.
      *
      * @return void
      */
     private $expense;
+
     private $emailSetting;
 
     public function __construct(Expense $expense)
@@ -30,7 +29,7 @@ class NewExpenseRecurringAdmin extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -50,7 +49,7 @@ class NewExpenseRecurringAdmin extends BaseNotification
         }
 
         if ($this->emailSetting->send_push == 'yes' && push_setting()->beams_push_status == 'active') {
-            $pushNotification = new \App\Http\Controllers\DashboardController();
+            $pushNotification = new \App\Http\Controllers\DashboardController;
             $pushUsersIds = [[$notifiable->id]];
             $pushNotification->sendPushNotifications($pushUsersIds, __('email.newExpense.subject'), $this->expense->item_name);
         }
@@ -61,7 +60,7 @@ class NewExpenseRecurringAdmin extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
@@ -72,16 +71,16 @@ class NewExpenseRecurringAdmin extends BaseNotification
         $url = route('expenses.show', $this->expense->id);
         $url = getDomainSpecificUrl($url, $this->company);
 
-        $content = __('email.newExpense.subject') . '.' . '<br>' . __('app.employee') . ': ' . $this->expense->user->name . '<br>' . __('modules.expenses.itemName') . ': ' . $this->expense->item_name . '<br>' . __('app.price') . ': ' . $this->expense->currency->currency_symbol . $this->expense->price;
+        $content = __('email.newExpense.subject').'.'.'<br>'.__('app.employee').': '.$this->expense->user->name.'<br>'.__('modules.expenses.itemName').': '.$this->expense->item_name.'<br>'.__('app.price').': '.$this->expense->currency->currency_symbol.$this->expense->price;
 
         $build
-            ->subject(__('email.newExpense.subject') . ' - ' . config('app.name'))
+            ->subject(__('email.newExpense.subject').' - '.config('app.name'))
             ->markdown('mail.email', [
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
                 'actionText' => __('email.newExpense.action'),
-                'notifiableName' => $user->name
+                'notifiableName' => $user->name,
             ]);
 
         parent::resetLocale();
@@ -92,10 +91,10 @@ class NewExpenseRecurringAdmin extends BaseNotification
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
-//phpcs:ignore
+    // phpcs:ignore
     public function toArray($notifiable)
     {
         return $this->expense->toArray();
@@ -104,13 +103,13 @@ class NewExpenseRecurringAdmin extends BaseNotification
     /**
      * Get the Slack representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\SlackMessage
      */
     public function toSlack($notifiable)
     {
         return $this->slackBuild($notifiable)
-            ->content(__('email.newExpense.subject') . ' - ' . $this->expense->item_name . ' - ' . $this->expense->currency->currency_symbol . $this->expense->price . "\n" . url('/login'));
+            ->content(__('email.newExpense.subject').' - '.$this->expense->item_name.' - '.$this->expense->currency->currency_symbol.$this->expense->price."\n".url('/login'));
 
     }
 
@@ -119,7 +118,6 @@ class NewExpenseRecurringAdmin extends BaseNotification
     {
         return OneSignalMessage::create()
             ->setSubject(__('email.newExpense.subject'))
-            ->setBody($this->expense->item_name . ' by ' . $this->expense->user->name);
+            ->setBody($this->expense->item_name.' by '.$this->expense->user->name);
     }
-
 }

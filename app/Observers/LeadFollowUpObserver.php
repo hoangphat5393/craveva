@@ -2,49 +2,45 @@
 
 namespace App\Observers;
 
-use App\Services\Google;
-use App\Models\LeadAgent;
-use App\Models\DealHistory;
 use App\Models\DealFollowUp;
-use App\Models\Notification;
-use App\Traits\DealHistoryTrait;
-use GPBMetadata\Google\Api\Service;
+use App\Models\DealHistory;
 use App\Models\GoogleCalendarModule;
+use App\Models\Notification;
+use App\Services\Google;
+use App\Traits\DealHistoryTrait;
+use App\Traits\EmployeeActivityTrait;
 use Carbon\Carbon;
 use Google\Service\Exception;
 use Google_Service_Calendar_Event;
-use App\Traits\EmployeeActivityTrait;
 
 class LeadFollowUpObserver
 {
-
     use DealHistoryTrait;
     use EmployeeActivityTrait;
 
     public function saving(DealFollowUp $leadFollowUp)
     {
-        if (!isRunningInConsoleOrSeeding() && user()) {
+        if (! isRunningInConsoleOrSeeding() && user()) {
             $leadFollowUp->last_updated_by = user()->id;
         }
     }
 
     public function creating(DealFollowUp $leadFollowUp)
     {
-        if (!isRunningInConsoleOrSeeding() && user()) {
+        if (! isRunningInConsoleOrSeeding() && user()) {
             $leadFollowUp->added_by = user()->id;
         }
     }
 
     public function created(DealFollowUp $leadFollowUp)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             if (user()) {
                 self::createEmployeeActivity(user()->id, 'followUp-created', $leadFollowUp->deal_id, 'deal_followup');
             }
 
-
             /* Add google calendar event */
-            if (!is_null($leadFollowUp->next_follow_up_date)) {
+            if (! is_null($leadFollowUp->next_follow_up_date)) {
                 $leadFollowUp->event_id = $this->googleCalendarEvent($leadFollowUp);
                 self::createDealHistory($leadFollowUp->deal_id, 'followup-created', agentId: $leadFollowUp->agent_id);
             }
@@ -53,10 +49,10 @@ class LeadFollowUpObserver
 
     public function updating(DealFollowUp $leadFollowUp)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
 
             /* Update google calendar event */
-            if (!is_null($leadFollowUp->next_follow_up_date)) {
+            if (! is_null($leadFollowUp->next_follow_up_date)) {
                 $leadFollowUp->event_id = $this->googleCalendarEvent($leadFollowUp);
             }
         }
@@ -64,9 +60,8 @@ class LeadFollowUpObserver
 
     public function updated(DealFollowUp $leadFollowUp)
     {
-        if (!isRunningInConsoleOrSeeding() && user()) {
+        if (! isRunningInConsoleOrSeeding() && user()) {
             self::createEmployeeActivity(user()->id, 'followUp-updated', $leadFollowUp->id, 'deal_followup');
-
 
         }
     }
@@ -74,14 +69,13 @@ class LeadFollowUpObserver
     public function deleting(DealFollowUp $leadFollowUp)
     {
         /* Start of deleting event from google calendar */
-        $deletedHistory = new DealHistory();
+        $deletedHistory = new DealHistory;
         $deletedHistory->deal_id = $leadFollowUp->deal_id;
         $deletedHistory->event_type = 'followup-deleted';
         $deletedHistory->created_by = user()->id;
         $deletedHistory->save();
 
-
-        $google = new Google();
+        $google = new Google;
         $googleAccount = company();
 
         if (company()->google_calendar_status == 'active' && $googleAccount->google_calendar_verification_status == 'verified' && $googleAccount->token) {
@@ -106,9 +100,8 @@ class LeadFollowUpObserver
         Notification::whereIn('type', $notificationModel)
             ->whereNull('read_at')
             ->where(function ($q) use ($leadFollowUp) {
-                $q->where('data', 'like', '{"follow_up_id":' . $leadFollowUp->id . ',%');
+                $q->where('data', 'like', '{"follow_up_id":'.$leadFollowUp->id.',%');
             })->delete();
-
 
         /* End of deleting event from google calendar */
     }
@@ -119,14 +112,13 @@ class LeadFollowUpObserver
         $module = GoogleCalendarModule::first();
 
         if (company()->google_calendar_status == 'active' && $googleAccount->google_calendar_verification_status == 'verified' && $googleAccount->token && $module->lead_status == 1) {
-            $google = new Google();
+            $google = new Google;
             $attendiesData = [];
-
 
             $attendee = $event->lead?->leadAgent;
 
             if ($attendee) {
-                if (!is_null($attendee->user)) {
+                if (! is_null($attendee->user)) {
                     $attendiesData[] = ['email' => $attendee->user->email];
                 }
             }
@@ -137,34 +129,33 @@ class LeadFollowUpObserver
                 // Create event
                 $google = $google->connectUsing($googleAccount->token);
 
-                $eventData = new Google_Service_Calendar_Event(array(
-                    'summary' => __('app.lead') . ' ' . __('app.followUp') . ': ' . $event->remark,
+                $eventData = new Google_Service_Calendar_Event([
+                    'summary' => __('app.lead').' '.__('app.followUp').': '.$event->remark,
                     'location' => '',
                     'description' => $event->remark,
                     'colorId' => 5,
-                    'start' => array(
+                    'start' => [
                         'dateTime' => $dateTime,
                         'timeZone' => $googleAccount->timezone,
-                    ),
-                    'end' => array(
+                    ],
+                    'end' => [
                         'dateTime' => $dateTime,
                         'timeZone' => $googleAccount->timezone,
-                    ),
+                    ],
                     'attendees' => $attendiesData,
-                    'reminders' => array(
+                    'reminders' => [
                         'useDefault' => false,
-                        'overrides' => array(
-                            array('method' => 'email', 'minutes' => 24 * 60),
-                            array('method' => 'popup', 'minutes' => 10),
-                        ),
-                    ),
-                ));
+                        'overrides' => [
+                            ['method' => 'email', 'minutes' => 24 * 60],
+                            ['method' => 'popup', 'minutes' => 10],
+                        ],
+                    ],
+                ]);
 
                 try {
                     if ($event->event_id) {
                         $results = $google->service('Calendar')->events->patch('primary', $event->event_id, $eventData);
-                    }
-                    else {
+                    } else {
                         $results = $google->service('Calendar')->events->insert('primary', $eventData);
                     }
 
@@ -193,5 +184,4 @@ class LeadFollowUpObserver
 
         }
     }
-
 }

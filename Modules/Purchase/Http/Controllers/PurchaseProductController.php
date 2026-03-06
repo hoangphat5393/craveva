@@ -2,39 +2,39 @@
 
 namespace Modules\Purchase\Http\Controllers;
 
-use Carbon\Carbon;
-use App\Models\Tax;
-use App\Models\Task;
 use App\Helper\Files;
 use App\Helper\Reply;
-use App\Models\UnitType;
-use App\Models\OrderCart;
-use App\Scopes\ActiveScope;
-use App\Models\InvoiceItems;
-use App\Models\ProductFiles;
-use Illuminate\Http\Request;
-use App\Models\ProductCategory;
-use App\Models\ProductSubCategory;
-use Illuminate\Contracts\Support\Renderable;
-use Illuminate\Http\Response;
-use Modules\Purchase\Entities\PurchaseProduct;
 use App\Http\Controllers\AccountBaseController;
-use App\Models\Product;
-use Modules\Purchase\Entities\PurchaseInventory;
-use Modules\Purchase\Entities\PurchaseSetting;
-use Modules\Purchase\Events\PurchaseInventoryEvent;
-use Modules\Purchase\Entities\PurchaseProductHistory;
-use Modules\Purchase\Entities\PurchaseStockAdjustment;
-use Modules\Purchase\DataTables\PurchaseProductsDataTable;
-use Modules\Purchase\DataTables\PurchaseProductTransaction;
-use Modules\Purchase\Entities\PurchaseStockAdjustmentReason;
-use Modules\Purchase\Http\Requests\Product\StorePurchaseProductRequest;
-use Modules\Purchase\Http\Requests\Product\UpdatePurchaseProductRequest;
-use App\Traits\ImportExcel;
+use App\Http\Requests\Admin\Employee\ImportProcessRequest;
+use App\Http\Requests\Admin\Employee\ImportRequest;
 use App\Imports\ProductImport;
 use App\Jobs\ImportProductJob;
-use App\Http\Requests\Admin\Employee\ImportRequest;
-use App\Http\Requests\Admin\Employee\ImportProcessRequest;
+use App\Models\InvoiceItems;
+use App\Models\OrderCart;
+use App\Models\Product;
+use App\Models\ProductCategory;
+use App\Models\ProductFiles;
+use App\Models\ProductSubCategory;
+use App\Models\Task;
+use App\Models\Tax;
+use App\Models\UnitType;
+use App\Scopes\ActiveScope;
+use App\Traits\ImportExcel;
+use Carbon\Carbon;
+use Illuminate\Contracts\Support\Renderable;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Modules\Purchase\DataTables\PurchaseProductsDataTable;
+use Modules\Purchase\DataTables\PurchaseProductTransaction;
+use Modules\Purchase\Entities\PurchaseInventory;
+use Modules\Purchase\Entities\PurchaseProduct;
+use Modules\Purchase\Entities\PurchaseProductHistory;
+use Modules\Purchase\Entities\PurchaseSetting;
+use Modules\Purchase\Entities\PurchaseStockAdjustment;
+use Modules\Purchase\Entities\PurchaseStockAdjustmentReason;
+use Modules\Purchase\Events\PurchaseInventoryEvent;
+use Modules\Purchase\Http\Requests\Product\StorePurchaseProductRequest;
+use Modules\Purchase\Http\Requests\Product\UpdatePurchaseProductRequest;
 
 class PurchaseProductController extends AccountBaseController
 {
@@ -45,7 +45,7 @@ class PurchaseProductController extends AccountBaseController
         parent::__construct();
         $this->pageTitle = 'app.menu.products';
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array(PurchaseSetting::MODULE_NAME, $this->user->modules));
+            abort_403(! in_array(PurchaseSetting::MODULE_NAME, $this->user->modules));
 
             return $next($request);
         });
@@ -53,12 +53,13 @@ class PurchaseProductController extends AccountBaseController
 
     /**
      * Display a listing of the resource.
+     *
      * @return Renderable
      */
     public function index(PurchaseProductsDataTable $dataTable)
     {
         $viewPermission = user()->permission('view_product');
-        abort_403(!in_array($viewPermission, ['all', 'added']));
+        abort_403(! in_array($viewPermission, ['all', 'added']));
 
         $productDetails = [];
         $productDetails = OrderCart::all();
@@ -76,13 +77,14 @@ class PurchaseProductController extends AccountBaseController
 
     /**
      * Show the form for creating a new resource.
+     *
      * @return Renderable
      */
     public function create()
     {
         $this->pageTitle = __('app.menu.addProducts');
         $this->addPermission = user()->permission('add_product');
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
 
         $this->taxes = Tax::all();
         $this->categories = ProductCategory::all();
@@ -90,9 +92,9 @@ class PurchaseProductController extends AccountBaseController
         $productId = request()['duplicate_product'];
 
         $this->product = $productId ? PurchaseProduct::findOrFail($productId) : null;
-        $this->subCategories = ($this->product && !is_null($this->product->sub_category_id)) ? ProductSubCategory::where('category_id', $this->product->category_id)->get() : [];
+        $this->subCategories = ($this->product && ! is_null($this->product->sub_category_id)) ? ProductSubCategory::where('category_id', $this->product->category_id)->get() : [];
 
-        $product = new Product();
+        $product = new Product;
 
         if ($product->getCustomFieldGroupsWithFields()) {
             $this->fields = $product->getCustomFieldGroupsWithFields()->fields;
@@ -113,15 +115,16 @@ class PurchaseProductController extends AccountBaseController
 
     /**
      * Store a newly created resource in storage.
-     * @param Request $request
+     *
+     * @param  Request  $request
      * @return Renderable
      */
     public function store(StorePurchaseProductRequest $request)
     {
         $this->addPermission = user()->permission('add_product');
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
 
-        $product = new PurchaseProduct();
+        $product = new PurchaseProduct;
         $product->name = $request->name;
         $product->taxes = $request->tax ? json_encode($request->tax) : null;
         $product->hsn_sac_code = $request->hsn_sac_code;
@@ -141,7 +144,7 @@ class PurchaseProductController extends AccountBaseController
         $product->storage_condition = $request->storage_condition;
         $product->certification = $request->certification;
 
-        if (!is_null($request->purchase_information)) {
+        if (! is_null($request->purchase_information)) {
             $product->purchase_information = $request->purchase_information;
             $product->purchase_price = ($request->purchase_price) ?: null;
         } else {
@@ -150,7 +153,7 @@ class PurchaseProductController extends AccountBaseController
             $product->purchase_description = null;
         }
 
-        if (!is_null($request->track_inventory)) {
+        if (! is_null($request->track_inventory)) {
             $product->track_inventory = $request->track_inventory;
             $product->opening_stock = $request->opening_stock ?: null;
         } else {
@@ -165,27 +168,27 @@ class PurchaseProductController extends AccountBaseController
 
         $product->save();
 
-        if (!is_null($request->track_inventory)) {
+        if (! is_null($request->track_inventory)) {
             $addStock = PurchaseStockAdjustment::where('product_id', $product->id)->first();
 
-            if (!$addStock) {
-                $inventory = new PurchaseInventory();
+            if (! $addStock) {
+                $inventory = new PurchaseInventory;
 
-                $addStock = new PurchaseStockAdjustment();
+                $addStock = new PurchaseStockAdjustment;
                 $addStock->product_id = $product->id;
             } else {
                 $inventory = PurchaseInventory::where('id', $addStock->inventory_id)->first();
             }
 
             $inventory->date = Carbon::today()->format('Y-m-d');
-            $inventory->type = (!is_null($request->opening_stock)) ? 'quantity' : 'value';
+            $inventory->type = (! is_null($request->opening_stock)) ? 'quantity' : 'value';
             $inventory->reason_id = null;
             $inventory->save();
 
             $addStock->inventory_id = $inventory->id;
             $addStock->reason_id = null;
             $addStock->date = Carbon::today()->format('Y-m-d');
-            $addStock->type = (!is_null($request->opening_stock)) ? 'quantity' : 'value';
+            $addStock->type = (! is_null($request->opening_stock)) ? 'quantity' : 'value';
             $addStock->net_quantity = $request->opening_stock ?: null;
             $addStock->changed_value = $request->rate_per_unit ?: null;
             $addStock->status = 'converted';
@@ -215,7 +218,8 @@ class PurchaseProductController extends AccountBaseController
 
     /**
      * Show the specified resource.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function show($id)
@@ -224,7 +228,7 @@ class PurchaseProductController extends AccountBaseController
         $this->viewPermission = user()->permission('view_product');
         $this->deletePermission = user()->permission('delete_product');
         $this->editInventoryPermission = user()->permission('edit_product');
-        abort_403(!($this->viewPermission == 'all' || ($this->viewPermission == 'added' && $this->product->added_by == user()->id)));
+        abort_403(! ($this->viewPermission == 'all' || ($this->viewPermission == 'added' && $this->product->added_by == user()->id)));
 
         $this->product = PurchaseProduct::with(['category', 'subCategory'])->findOrFail($id);
         $this->inventory = PurchaseStockAdjustment::where('product_id', $id)->first();
@@ -236,7 +240,7 @@ class PurchaseProductController extends AccountBaseController
 
         foreach ($this->taxes as $tax) {
             if ($this->product && isset($this->product->taxes) && json_decode($this->product->taxes) && array_search($tax->id, json_decode($this->product->taxes)) !== false) {
-                $taxes[] = $tax->tax_name . ' : ' . $tax->rate_percent . '%';
+                $taxes[] = $tax->tax_name.' : '.$tax->rate_percent.'%';
             }
         }
 
@@ -251,7 +255,6 @@ class PurchaseProductController extends AccountBaseController
         if ($getCustomFieldGroupsWithFields) {
             $this->fields = $getCustomFieldGroupsWithFields->fields;
         }
-
 
         $this->view = 'purchase::purchase-products.ajax.overview';
 
@@ -291,9 +294,9 @@ class PurchaseProductController extends AccountBaseController
     public function transactions()
     {
         $this->viewPermission = user()->permission('view_product');
-        abort_403(!($this->viewPermission == 'all' || ($this->viewPermission == 'added' && $this->product->added_by == user()->id)));
+        abort_403(! ($this->viewPermission == 'all' || ($this->viewPermission == 'added' && $this->product->added_by == user()->id)));
 
-        $dataTable = new PurchaseProductTransaction();
+        $dataTable = new PurchaseProductTransaction;
 
         $tab = request('tab');
         $this->activeTab = $tab ?: 'transactions';
@@ -304,7 +307,8 @@ class PurchaseProductController extends AccountBaseController
 
     /**
      * Show the form for editing the specified resource.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function edit($id)
@@ -323,13 +327,13 @@ class PurchaseProductController extends AccountBaseController
         }
 
         $this->editPermission = user()->permission('edit_product');
-        abort_403(!($this->editPermission == 'all' || ($this->editPermission == 'added' && $this->product->added_by == user()->id)));
+        abort_403(! ($this->editPermission == 'all' || ($this->editPermission == 'added' && $this->product->added_by == user()->id)));
 
         $this->taxes = Tax::all();
         $this->categories = ProductCategory::all();
         $this->unit_types = UnitType::all();
-        $this->subCategories = !is_null($this->product->sub_category_id) ? ProductSubCategory::where('category_id', $this->product->category_id)->get() : [];
-        $this->pageTitle = __('app.update') . ' ' . __('app.menu.products');
+        $this->subCategories = ! is_null($this->product->sub_category_id) ? ProductSubCategory::where('category_id', $this->product->category_id)->get() : [];
+        $this->pageTitle = __('app.update').' '.__('app.menu.products');
 
         $images = [];
 
@@ -348,13 +352,11 @@ class PurchaseProductController extends AccountBaseController
 
         $this->productData = Product::find($id)->withCustomFields();
 
-
         $getCustomFieldGroupsWithFields = $this->productData->getCustomFieldGroupsWithFields();
 
         if ($getCustomFieldGroupsWithFields) {
             $this->fields = $getCustomFieldGroupsWithFields->fields;
         }
-
 
         if (request()->ajax()) {
             $html = view('purchase::purchase-products.ajax.edit', $this->data)->render();
@@ -369,15 +371,16 @@ class PurchaseProductController extends AccountBaseController
 
     /**
      * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
+     *
+     * @param  Request  $request
+     * @param  int  $id
      * @return Renderable
      */
     public function update(UpdatePurchaseProductRequest $request, $id)
     {
         $product = PurchaseProduct::findOrFail($id);
         $this->editPermission = user()->permission('edit_product');
-        abort_403(!($this->editPermission == 'all' || ($this->editPermission == 'added' && $product->added_by == user()->id)));
+        abort_403(! ($this->editPermission == 'all' || ($this->editPermission == 'added' && $product->added_by == user()->id)));
 
         $product->name = $request->name;
         $product->taxes = $request->tax ? json_encode($request->tax) : null;
@@ -398,7 +401,7 @@ class PurchaseProductController extends AccountBaseController
         $product->storage_condition = $request->storage_condition;
         $product->certification = $request->certification;
 
-        if (!is_null($request->purchase_information) || !is_null($request->purchase_price)) {
+        if (! is_null($request->purchase_information) || ! is_null($request->purchase_price)) {
             $product->purchase_information = 1;
             $product->purchase_price = ($request->purchase_price) ?: null;
         } else {
@@ -407,7 +410,7 @@ class PurchaseProductController extends AccountBaseController
             $product->purchase_description = null;
         }
 
-        if (!is_null($request->track_inventory)) {
+        if (! is_null($request->track_inventory)) {
             $product->track_inventory = $request->track_inventory;
             $product->opening_stock = $request->opening_stock ?: null;
         } else {
@@ -422,33 +425,33 @@ class PurchaseProductController extends AccountBaseController
             $product->downloadable = false;
         }
 
-        if (!request()->hasFile('file')) {
+        if (! request()->hasFile('file')) {
             $product->default_image = request()->default_image;
         }
 
         $product->save();
 
-        if (!is_null($request->track_inventory)) {
+        if (! is_null($request->track_inventory)) {
             $addStock = PurchaseStockAdjustment::where('product_id', $product->id)->first();
 
-            if (!$addStock) {
-                $inventory = new PurchaseInventory();
+            if (! $addStock) {
+                $inventory = new PurchaseInventory;
 
-                $addStock = new PurchaseStockAdjustment();
+                $addStock = new PurchaseStockAdjustment;
                 $addStock->product_id = $product->id;
             } else {
                 $inventory = PurchaseInventory::where('id', $addStock->inventory_id)->first();
             }
 
             $inventory->date = Carbon::today()->format('Y-m-d');
-            $inventory->type = (!is_null($request->opening_stock)) ? 'quantity' : 'value';
+            $inventory->type = (! is_null($request->opening_stock)) ? 'quantity' : 'value';
             $inventory->reason_id = null;
             $inventory->save();
 
             $addStock->inventory_id = $inventory->id;
             $addStock->reason_id = null;
             $addStock->date = Carbon::today()->format('Y-m-d');
-            $addStock->type = (!is_null($request->opening_stock)) ? 'quantity' : 'value';
+            $addStock->type = (! is_null($request->opening_stock)) ? 'quantity' : 'value';
             $addStock->net_quantity = $request->opening_stock ?: null;
             $addStock->changed_value = $request->rate_per_unit ?: null;
             $addStock->status = 'converted';
@@ -467,14 +470,14 @@ class PurchaseProductController extends AccountBaseController
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
+     * @param  int  $id
      * @return Response
      */
     public function destroy($id)
     {
         $product = PurchaseProduct::findOrFail($id);
         $this->deletePermission = user()->permission('delete_product');
-        abort_403(!($this->deletePermission == 'all' || ($this->deletePermission == 'added' && $product->added_by == user()->id)));
+        abort_403(! ($this->deletePermission == 'all' || ($this->deletePermission == 'added' && $product->added_by == user()->id)));
 
         $stocks = PurchaseStockAdjustment::where('product_id', $product->id)->get();
 
@@ -499,7 +502,7 @@ class PurchaseProductController extends AccountBaseController
             $defaultImage = null;
 
             foreach ($request->file as $fileData) {
-                $file = new ProductFiles();
+                $file = new ProductFiles;
                 $file->product_id = $request->product_id;
 
                 $filename = Files::uploadLocalOrS3($fileData, ProductFiles::FILE_PATH);
@@ -529,7 +532,7 @@ class PurchaseProductController extends AccountBaseController
     {
         $product = PurchaseProduct::findOrFail($request->productId);
         $this->editPermission = user()->permission('edit_product');
-        abort_403(!($this->editPermission == 'all' || ($this->editPermission == 'added' && $product->added_by == user()->id)));
+        abort_403(! ($this->editPermission == 'all' || ($this->editPermission == 'added' && $product->added_by == user()->id)));
 
         $product->allow_purchase = $request->status;
         $product->save();
@@ -540,7 +543,7 @@ class PurchaseProductController extends AccountBaseController
     public function changeStatus(Request $request)
     {
         $this->editPermission = user()->permission('edit_product');
-        abort_403(!($this->editPermission == 'all' || ($this->editPermission == 'added' && $this->product->added_by == user()->id)));
+        abort_403(! ($this->editPermission == 'all' || ($this->editPermission == 'added' && $this->product->added_by == user()->id)));
 
         $expense = PurchaseProduct::findOrFail($request->productId);
         $expense->status = $request->status;
@@ -601,7 +604,7 @@ class PurchaseProductController extends AccountBaseController
     {
         $this->viewPermission = user()->permission('view_product');
         $this->deletePermission = user()->permission('delete_product');
-        abort_403(!in_array($this->viewPermission, ['all', 'added']));
+        abort_403(! in_array($this->viewPermission, ['all', 'added']));
 
         $this->product = PurchaseProduct::with('files')->findOrFail($request->id);
 
@@ -615,7 +618,7 @@ class PurchaseProductController extends AccountBaseController
     public function addImages()
     {
         $addPermission = user()->permission('add_product');
-        abort_403(!in_array($addPermission, ['all', 'added']));
+        abort_403(! in_array($addPermission, ['all', 'added']));
 
         $this->productId = request()->id;
 
@@ -625,7 +628,7 @@ class PurchaseProductController extends AccountBaseController
     public function adjustInventory()
     {
         $addPermission = user()->permission('add_inventory');
-        abort_403(!in_array($addPermission, ['all', 'added']));
+        abort_403(! in_array($addPermission, ['all', 'added']));
 
         $this->productId = request()->id;
         $this->product = PurchaseProduct::with('unit')->where('id', request()->id)->first();
@@ -638,14 +641,14 @@ class PurchaseProductController extends AccountBaseController
     public function updateInventory(Request $request)
     {
         $addPermission = user()->permission('edit_inventory');
-        abort_403(!in_array($addPermission, ['all', 'added']));
+        abort_403(! in_array($addPermission, ['all', 'added']));
 
         $updateStock = PurchaseStockAdjustment::where('product_id', $request->product_id)->first();
 
-        if (!$updateStock) {
-            $inventory = new PurchaseInventory();
+        if (! $updateStock) {
+            $inventory = new PurchaseInventory;
 
-            $updateStock = new PurchaseStockAdjustment();
+            $updateStock = new PurchaseStockAdjustment;
             $updateStock->product_id = $request->product_id;
         } else {
             $inventory = PurchaseInventory::where('id', $updateStock->inventory_id)->first();
@@ -701,9 +704,9 @@ class PurchaseProductController extends AccountBaseController
         $option = '';
 
         foreach ($products as $item) {
-            if ((!empty($item->inventory) && count($item->inventory) > 0 && $item->inventory[0]) || ($item->type == 'service')) {
+            if ((! empty($item->inventory) && count($item->inventory) > 0 && $item->inventory[0]) || ($item->type == 'service')) {
                 if (($item->track_inventory == 1 && $item->inventory[0]->net_quantity > 0) || ($item->type == 'service')) {
-                    $option .= '<option data-content="' . $item->name . '" value="' . $item->id . '"> ' . $item->name . '</option>';
+                    $option .= '<option data-content="'.$item->name.'" value="'.$item->id.'"> '.$item->name.'</option>';
                 }
             }
         }
@@ -713,15 +716,16 @@ class PurchaseProductController extends AccountBaseController
 
     public function importProduct()
     {
-        $this->pageTitle = __('app.importExcel') . ' ' . __('app.menu.product');
+        $this->pageTitle = __('app.importExcel').' '.__('app.menu.product');
 
         $this->addPermission = user()->permission('add_product');
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
 
         $this->view = 'purchase::purchase-products.ajax.import';
 
         if (request()->ajax()) {
             $html = view($this->view, $this->data)->render();
+
             return Reply::dataOnly(['status' => 'success', 'html' => $html, 'title' => $this->pageTitle]);
         }
 

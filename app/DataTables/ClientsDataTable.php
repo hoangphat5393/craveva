@@ -3,22 +3,22 @@
 namespace App\DataTables;
 
 use App\Helper\Common;
+use App\Models\ClientDetails;
+use App\Models\CustomField;
+use App\Models\CustomFieldGroup;
+use App\Models\User;
 use App\Scopes\ActiveScope;
 use Carbon\Carbon;
-use App\Models\User;
-use App\Models\CustomField;
-use App\Models\ClientDetails;
-use App\Models\CustomFieldGroup;
+use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
-use Illuminate\Support\Facades\DB;
-
 
 class ClientsDataTable extends BaseDataTable
 {
-
     private $viewClientPermission;
+
     private $editClientPermission;
+
     private $deleteClientPermission;
 
     public function __construct()
@@ -33,7 +33,7 @@ class ClientsDataTable extends BaseDataTable
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
@@ -41,35 +41,35 @@ class ClientsDataTable extends BaseDataTable
 
         $datatables = datatables()->eloquent($query);
         $datatables->addIndexColumn();
-        $datatables->addColumn('check', fn($row) => $this->checkBox($row));
+        $datatables->addColumn('check', fn ($row) => $this->checkBox($row));
         $datatables->addColumn('action', function ($row) {
 
             $action = '<div class="task_view">
 
                     <div class="dropdown">
                         <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" type="link"
-                            id="dropdownMenuLink-' . $row->id . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            id="dropdownMenuLink-'.$row->id.'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="icon-options-vertical icons"></i>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-' . $row->id . '" tabindex="0">';
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-'.$row->id.'" tabindex="0">';
 
-            $action .= '<a href="' . route('clients.show', [$row->id]) . '" class="dropdown-item"><i class="fa fa-eye mr-2"></i>' . __('app.view') . '</a>';
+            $action .= '<a href="'.route('clients.show', [$row->id]).'" class="dropdown-item"><i class="fa fa-eye mr-2"></i>'.__('app.view').'</a>';
 
-            if (in_array('admin', user_roles()) && !$row->admin_approval) {
-                $action .= '<a href="javascript:;" class="dropdown-item verify-user" data-user-id="' . $row->id . '"><i class="fa fa-check mr-2"></i>' . __('app.approve') . '</a>';
+            if (in_array('admin', user_roles()) && ! $row->admin_approval) {
+                $action .= '<a href="javascript:;" class="dropdown-item verify-user" data-user-id="'.$row->id.'"><i class="fa fa-check mr-2"></i>'.__('app.approve').'</a>';
             }
 
             if ($this->editClientPermission == 'all' || ($this->editClientPermission == 'added' && user()->id == $row->added_by) || ($this->editClientPermission == 'both' && user()->id == $row->added_by)) {
-                $action .= '<a class="dropdown-item openRightModal" href="' . route('clients.edit', [$row->id]) . '">
+                $action .= '<a class="dropdown-item openRightModal" href="'.route('clients.edit', [$row->id]).'">
                                 <i class="fa fa-edit mr-2"></i>
-                                ' . trans('app.edit') . '
+                                '.trans('app.edit').'
                             </a>';
             }
 
             if ($this->deleteClientPermission == 'all' || ($this->deleteClientPermission == 'added' && user()->id == $row->added_by) || ($this->deleteClientPermission == 'both' && user()->id == $row->added_by)) {
-                $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-user-id="' . $row->id . '">
+                $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-user-id="'.$row->id.'">
                                 <i class="fa fa-trash mr-2"></i>
-                                ' . trans('app.delete') . '
+                                '.trans('app.delete').'
                             </a>';
             }
 
@@ -79,26 +79,26 @@ class ClientsDataTable extends BaseDataTable
 
             return $action;
         });
-        $datatables->addColumn('client_code', fn($row) => $row->client_code ?? '--');
-        $datatables->addColumn('client_name', fn($row) => $row->name_salutation);
+        $datatables->addColumn('client_code', fn ($row) => $row->client_code ?? '--');
+        $datatables->addColumn('client_name', fn ($row) => $row->name_salutation);
         $datatables->addColumn('mobile', function ($row) {
-            if (!is_null($row->mobile) && !is_null($row->country_phonecode)) {
-                return '+' . $row->country_phonecode . ' ' . $row->mobile;
+            if (! is_null($row->mobile) && ! is_null($row->country_phonecode)) {
+                return '+'.$row->country_phonecode.' '.$row->mobile;
             }
 
             return '--';
         });
         $datatables->addColumn('category_name', function ($row) {
-            return !is_null($row->clientDetails->category_id) ? $row->cat_name : '--';
+            return ! is_null($row->clientDetails->category_id) ? $row->cat_name : '--';
         });
-        $datatables->addColumn('added_by', fn($row) => optional($row->clientDetails)->addedBy ? $row->clientDetails->addedBy->name : '--');
-        $datatables->editColumn('name', fn($row) => view('components.client', ['user' => $row]));
-        $datatables->editColumn('id', fn($row) => $row->clientDetails?->id);
-        $datatables->editColumn('created_at', fn($row) => Carbon::parse($row->created_at)->translatedFormat($this->company->date_format));
-        $datatables->editColumn('status', fn($row) => $row->status == 'active' ? Common::active() : Common::inactive());
+        $datatables->addColumn('added_by', fn ($row) => optional($row->clientDetails)->addedBy ? $row->clientDetails->addedBy->name : '--');
+        $datatables->editColumn('name', fn ($row) => view('components.client', ['user' => $row]));
+        $datatables->editColumn('id', fn ($row) => $row->clientDetails?->id);
+        $datatables->editColumn('created_at', fn ($row) => Carbon::parse($row->created_at)->translatedFormat($this->company->date_format));
+        $datatables->editColumn('status', fn ($row) => $row->status == 'active' ? Common::active() : Common::inactive());
         $datatables->addIndexColumn();
         $datatables->smart(false);
-        $datatables->setRowId(fn($row) => 'row-' . $row->id);
+        $datatables->setRowId(fn ($row) => 'row-'.$row->id);
         // Add Custom Field to datatable
         $customFieldColumns = CustomField::customFieldData($datatables, ClientDetails::CUSTOM_FIELD_MODEL, 'clientDetails');
 
@@ -108,7 +108,6 @@ class ClientsDataTable extends BaseDataTable
     }
 
     /**
-     * @param User $model
      * @return User|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder
      */
     public function query(User $model)
@@ -142,27 +141,27 @@ class ClientsDataTable extends BaseDataTable
             $users = $users->where('users.id', $request->client);
         }
 
-        if (!is_null($request->category_id) && $request->category_id != 'all') {
+        if (! is_null($request->category_id) && $request->category_id != 'all') {
             $users = $users->where('client_details.category_id', $request->category_id);
         }
 
-        if (!is_null($request->sub_category_id) && $request->sub_category_id != 'all') {
+        if (! is_null($request->sub_category_id) && $request->sub_category_id != 'all') {
             $users = $users->where('client_details.sub_category_id', $request->sub_category_id);
         }
 
-        if (!is_null($request->project_id) && $request->project_id != 'all') {
+        if (! is_null($request->project_id) && $request->project_id != 'all') {
             $users->whereHas('projects', function ($query) use ($request) {
                 return $query->where('id', $request->project_id);
             });
         }
 
-        if (!is_null($request->contract_type_id) && $request->contract_type_id != 'all') {
+        if (! is_null($request->contract_type_id) && $request->contract_type_id != 'all') {
             $users->whereHas('contracts', function ($query) use ($request) {
                 return $query->where('contracts.contract_type_id', $request->contract_type_id);
             });
         }
 
-        if (!is_null($request->country_id) && $request->country_id != 'all') {
+        if (! is_null($request->country_id) && $request->country_id != 'all') {
             $users->whereHas('country', function ($query) use ($request) {
                 return $query->where('id', $request->country_id);
             });
@@ -183,10 +182,10 @@ class ClientsDataTable extends BaseDataTable
         if ($request->searchText != '') {
             $users = $users->where(function ($query) {
                 $safeTerm = Common::safeString(request('searchText'));
-                $query->where('users.name', 'like', '%' . $safeTerm . '%')
-                    ->orWhere('users.email', 'like', '%' . $safeTerm . '%')
-                    ->orWhere('client_details.company_name', 'like', '%' . $safeTerm . '%')
-                    ->orWhere('client_details.client_code', 'like', '%' . $safeTerm . '%');
+                $query->where('users.name', 'like', '%'.$safeTerm.'%')
+                    ->orWhere('users.email', 'like', '%'.$safeTerm.'%')
+                    ->orWhere('client_details.company_name', 'like', '%'.$safeTerm.'%')
+                    ->orWhere('client_details.client_code', 'like', '%'.$safeTerm.'%');
             });
         }
 
@@ -212,7 +211,7 @@ class ClientsDataTable extends BaseDataTable
             ]);
 
         if (canDataTableExport()) {
-            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
+            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
         }
 
         return $dataTable;
@@ -231,9 +230,9 @@ class ClientsDataTable extends BaseDataTable
                     $data[] = [$customField->name => l_table" id="select-all-table" onclick="selectAllTable(this)">',
                 'exportable' => false,
                 'orderable' => false,
-                'searchable' => false
+                'searchable' => false,
             ],
-            '#' => ['data' => 'DT_RowIndex', 'orderable' => false, 'searchable' => false, 'visible' => !showId(), 'title' => '#'],
+            '#' => ['data' => 'DT_RowIndex', 'orderable' => false, 'searchable' => false, 'visible' => ! showId(), 'title' => '#'],
             __('app.id') => ['data' => 'id', 'name' => 'id', 'title' => __('app.id'), 'visible' => showId()],
             __('app.clientCode') => ['data' => 'client_code', 'name' => 'client_details.client_code', 'title' => __('app.clientCode')],
             __('app.name') => ['data' => 'name', 'name' => 'name', 'exportable' => false, 'title' => __('app.name')],
@@ -243,7 +242,7 @@ class ClientsDataTable extends BaseDataTable
             __('app.mobile') => ['data' => 'mobile', 'name' => 'mobile', 'title' => __('app.mobile')],
             __('app.category') => ['data' => 'category_name', 'name' => 'category_name', 'title' => __('app.category')],
             __('app.status') => ['data' => 'status', 'name' => 'status', 'title' => __('app.status')],
-            __('app.createdAt') => ['data' => 'created_at', 'name' => 'created_at', 'title' => __('app.createdAt')]
+            __('app.createdAt') => ['data' => 'created_at', 'name' => 'created_at', 'title' => __('app.createdAt')],
         ];
 
         $action = [
@@ -252,9 +251,9 @@ class ClientsDataTable extends BaseDataTable
                 ->printable(false)
                 ->orderable(false)
                 ->searchable(false)
-                ->addClass('text-right pr-20')
+                ->addClass('text-right pr-20'),
         ];
 
-        return array_merge($data, CustomFieldGroup::customFieldsDataMerge(new ClientDetails()), $action);
+        return array_merge($data, CustomFieldGroup::customFieldsDataMerge(new ClientDetails), $action);
     }
 }

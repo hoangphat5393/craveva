@@ -9,10 +9,10 @@ use Modules\Recruit\Entities\RecruitJobOfferLetter;
 
 class JobOfferStatusChangeEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $offer;
+
     public $recruiter;
 
     /**
@@ -20,7 +20,6 @@ class JobOfferStatusChangeEvent
      *
      * @return void
      */
-
     public function __construct(RecruitJobOfferLetter $jobOffer)
     {
         $this->offer = $jobOffer;
@@ -36,5 +35,4 @@ class JobOfferStatusChangeEvent
     {
         return [];
     }
-
 }

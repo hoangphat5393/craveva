@@ -2,25 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use Client;
-use App\Models\User;
-use App\Helper\Reply;
-use App\Models\Project;
-use App\Models\UserChat;
-use App\Models\ProjectMember;
-use App\Http\Requests\ChatStoreRequest;
-use Illuminate\Support\Facades\Session;
 use App\Helper\Common;
+use App\Helper\Reply;
+use App\Http\Requests\ChatStoreRequest;
+use App\Models\Project;
+use App\Models\ProjectMember;
+use App\Models\User;
+use App\Models\UserChat;
+use Illuminate\Support\Facades\Session;
 
 class MessageController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'app.menu.messages';
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('messages', $this->user->modules));
+            abort_403(! in_array('messages', $this->user->modules));
+
             return $next($request);
         });
     }
@@ -53,7 +52,7 @@ class MessageController extends AccountBaseController
                 $userLists = UserChat::userListLatest(user()->id, $safeTerm);
 
                 $messages = UserChat::where(function ($query) use ($safeTerm) {
-                    $query->where('message', 'LIKE', '%' . $safeTerm . '%');
+                    $query->where('message', 'LIKE', '%'.$safeTerm.'%');
                 })
                     ->where(function ($query) {
                         $query->where('from', user()->id)
@@ -72,6 +71,7 @@ class MessageController extends AccountBaseController
                 ->orderByDesc('id')->get();
 
             $userList = view('messages.user_list', $this->data)->render();
+
             return Reply::dataOnly(['status' => 'success', 'userList' => $userList]);
         }
 
@@ -92,11 +92,11 @@ class MessageController extends AccountBaseController
         if (in_array('client', user_roles())) {
             if ($this->messageSetting->allow_client_employee == 'yes' && $this->messageSetting->restrict_client == 'no') {
                 $this->employees = User::allEmployees(null, true);
-            } else if ($this->messageSetting->allow_client_employee == 'yes' && $this->messageSetting->restrict_client == 'yes') {
+            } elseif ($this->messageSetting->allow_client_employee == 'yes' && $this->messageSetting->restrict_client == 'yes') {
                 $this->project_id = Project::where('client_id', user()->id)->pluck('id');
                 $this->user_id = ProjectMember::whereIn('project_id', $this->project_id)->pluck('user_id');
                 $this->employees = User::whereIn('id', $this->user_id)->get();
-            } else if ($this->messageSetting->allow_client_admin == 'yes') {
+            } elseif ($this->messageSetting->allow_client_admin == 'yes') {
                 $this->employees = User::allAdmins($this->messageSetting->company->id);
             } else {
                 $this->employees = [];
@@ -139,14 +139,14 @@ class MessageController extends AccountBaseController
 
         $this->user_id = ProjectMember::whereIn('project_id', $this->project_id)->pluck('user_id');
 
-        if (!in_array('client', user_roles())) {
+        if (! in_array('client', user_roles())) {
             $this->employees = User::allEmployees($this->user->id, true, 'all');
 
             if (in_array('admin', user_roles())) {
                 $this->clients = User::allClients();
             } elseif (($this->messageSetting->allow_client_employee == 'yes' && $this->messageSetting->restrict_client == 'no')) {
                 $this->clients = User::allClients();
-            } else if ($this->messageSetting->allow_client_employee == 'yes' && $this->messageSetting->restrict_client == 'yes') {
+            } elseif ($this->messageSetting->allow_client_employee == 'yes' && $this->messageSetting->restrict_client == 'yes') {
                 $this->clients = User::whereIn('id', $this->employee_client_id)->get();
             }
         }
@@ -160,9 +160,9 @@ class MessageController extends AccountBaseController
         if (in_array('client', user_roles())) {
             if ($this->messageSetting->allow_client_employee == 'yes' && $this->messageSetting->restrict_client == 'no') {
                 $this->employees = User::allEmployees(null, true);
-            } else if ($this->messageSetting->allow_client_employee == 'yes' && $this->messageSetting->restrict_client == 'yes') {
+            } elseif ($this->messageSetting->allow_client_employee == 'yes' && $this->messageSetting->restrict_client == 'yes') {
                 $this->employees = User::whereIn('id', $this->user_id)->get();
-            } else if ($this->messageSetting->allow_client_admin == 'yes') {
+            } elseif ($this->messageSetting->allow_client_admin == 'yes') {
                 $this->employees = User::allAdmins($this->messageSetting->company->id);
             } else {
                 $this->employees = [];
@@ -210,12 +210,12 @@ class MessageController extends AccountBaseController
             }
         }
 
-        $message = new UserChat();
-        $message->message         = $request->message;
-        $message->user_one        = user()->id;
-        $message->user_id         = $receiverID;
-        $message->from            = user()->id;
-        $message->to              = $receiverID;
+        $message = new UserChat;
+        $message->message = $request->message;
+        $message->user_one = user()->id;
+        $message->user_id = $receiverID;
+        $message->from = user()->id;
+        $message->to = $receiverID;
         $message->notification_sent = 0;
         $message->save();
 
@@ -246,6 +246,7 @@ class MessageController extends AccountBaseController
         $this->userId = $id;
 
         $view = view('messages.message_list', $this->data)->render();
+
         return Reply::dataOnly(['status' => 'success', 'html' => $view, 'unreadMessages' => $this->unreadMessage, 'id' => $this->userId]);
     }
 

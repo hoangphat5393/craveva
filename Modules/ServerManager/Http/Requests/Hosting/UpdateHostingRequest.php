@@ -15,6 +15,7 @@ class UpdateHostingRequest extends FormRequest
     public function authorize()
     {
         $editPermission = user()->permission('edit_hosting');
+
         return in_array($editPermission, ['all', 'added', 'owned', 'both']);
     }
 
@@ -26,6 +27,7 @@ class UpdateHostingRequest extends FormRequest
     public function rules()
     {
         $setting = company();
+
         return [
             'name' => 'required|string|max:255',
             // 'domain_name' => 'required|string|max:255',
@@ -33,8 +35,8 @@ class UpdateHostingRequest extends FormRequest
             'server_type' => 'required|integer|exists:server_types,id',
             'server_location' => 'nullable|string|max:255',
             'ip_address' => 'nullable|ip',
-            'purchase_date' => 'required|date_format:"' . $setting->date_format . '"',
-            'renewal_date' => 'required|date_format:"' . $setting->date_format . '"|after:purchase_date',
+            'purchase_date' => 'required|date_format:"'.$setting->date_format.'"',
+            'renewal_date' => 'required|date_format:"'.$setting->date_format.'"|after:purchase_date',
             'annual_cost' => 'nullable|numeric|min:0|max:999999.99',
             'billing_cycle' => 'nullable|string|max:50',
             'status' => 'required|in:active,inactive,expired,suspended,cancelled,pending',

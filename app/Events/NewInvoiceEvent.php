@@ -9,10 +9,10 @@ use Illuminate\Queue\SerializesModels;
 
 class NewInvoiceEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $invoice;
+
     public $notifyUser;
 
     public function __construct(Invoice $invoice, $notifyUser)
@@ -20,5 +20,4 @@ class NewInvoiceEvent
         $this->invoice = $invoice;
         $this->notifyUser = $notifyUser;
     }
-
 }

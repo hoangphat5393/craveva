@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property-read mixed $icon
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Task[] $tasks
  * @property-read int|null $tasks_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|TaskboardColumn newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TaskboardColumn newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TaskboardColumn query()
@@ -29,14 +30,16 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @method static \Illuminate\Database\Eloquent\Builder|TaskboardColumn wherePriority($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TaskboardColumn whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TaskboardColumn whereUpdatedAt($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|TaskboardColumn whereCompanyId($value)
+ *
  * @mixin \Eloquent
  */
 class TaskboardColumn extends BaseModel
 {
-
     use HasCompany;
 
     protected $fillable = ['column_name', 'slug', 'label_color', 'priority'];

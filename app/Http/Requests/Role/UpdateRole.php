@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateRole extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -25,8 +24,7 @@ class UpdateRole extends FormRequest
     public function rules()
     {
         return [
-            'value' => 'required|unique:roles,name,'.$this->route('role_permission').',id,company_id,' . company()->id,
+            'value' => 'required|unique:roles,name,'.$this->route('role_permission').',id,company_id,'.company()->id,
         ];
     }
-
 }

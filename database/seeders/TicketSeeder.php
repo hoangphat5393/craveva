@@ -3,17 +3,16 @@
 namespace Database\Seeders;
 
 use App\Models\Ticket;
+use App\Models\TicketAgentGroups;
 use App\Models\TicketChannel;
+use App\Models\TicketGroup;
+use App\Models\TicketReply;
 use App\Models\TicketType;
 use App\Models\User;
 use Illuminate\Database\Seeder;
-use App\Models\TicketReply;
-use App\Models\TicketAgentGroups;
-use App\Models\TicketGroup;
 
 class TicketSeeder extends Seeder
 {
-
     /**
      * Run the database seeds.
      *
@@ -29,23 +28,23 @@ class TicketSeeder extends Seeder
         $ticketGroups = [
             [
                 'group_name' => 'Legal',
-                'company_id' => $companyId
+                'company_id' => $companyId,
             ],
             [
                 'group_name' => 'Installation',
-                'company_id' => $companyId
+                'company_id' => $companyId,
             ],
             [
                 'group_name' => 'Spam',
-                'company_id' => $companyId
+                'company_id' => $companyId,
             ],
             [
                 'group_name' => 'Very Important',
-                'company_id' => $companyId
+                'company_id' => $companyId,
             ],
             [
                 'group_name' => 'Technical',
-                'company_id' => $companyId
+                'company_id' => $companyId,
             ],
         ];
 
@@ -55,7 +54,7 @@ class TicketSeeder extends Seeder
         $groups = $this->getGroups($companyId);
 
         for ($i = 1; $i <= 5; $i++) {
-            $agent = new TicketAgentGroups();
+            $agent = new TicketAgentGroups;
             $agent->company_id = $companyId;
             $agent->agent_id = $faker->randomElement($agents);
             $agent->group_id = $faker->randomElement($groups);
@@ -74,7 +73,7 @@ class TicketSeeder extends Seeder
         $agent = $agents[array_rand($agents)];
         $group = $groups[array_rand($groups)];
 
-        Ticket::factory($companyId)->count((int)$count)
+        Ticket::factory($companyId)->count((int) $count)
             ->make()
             ->each(function (Ticket $ticket) use ($faker, $companyId, $type, $user, $channel, $agent, $group) {
 
@@ -94,7 +93,7 @@ class TicketSeeder extends Seeder
 
                 for ($i = 1; $i <= 5; $i++) {
                     // Save  message
-                    $reply = new TicketReply();
+                    $reply = new TicketReply;
                     $reply->message = $faker->realText(50);
                     $reply->ticket_id = $ticket->id;
                     /* @phpstan-ignore-line */
@@ -102,11 +101,11 @@ class TicketSeeder extends Seeder
                     $reply->save();
 
                     // Log search
-                    $search = new \App\Models\UniversalSearch();
+                    $search = new \App\Models\UniversalSearch;
                     $search->searchable_id = $ticket->ticket_number;
                     $search->company_id = $companyId;
                     /* @phpstan-ignore-line */
-                    $search->title = 'Ticket: ' . $ticket->subject;
+                    $search->title = 'Ticket: '.$ticket->subject;
                     /* @phpstan-ignore-line */
                     $search->route_name = 'tickets.show';
                     $search->save();
@@ -147,5 +146,4 @@ class TicketSeeder extends Seeder
             ->get()->pluck('id')
             ->toArray();
     }
-
 }

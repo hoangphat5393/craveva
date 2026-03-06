@@ -2,19 +2,17 @@
 
 namespace App\Observers;
 
-use App\Models\Notification;
-use App\Models\ProjectMember;
-use App\Models\EmployeeDetails;
-use App\Models\ProjectActivity;
 use App\Events\NewProjectMemberEvent;
-use App\Models\User;
+use App\Models\EmployeeDetails;
+use App\Models\Notification;
+use App\Models\ProjectActivity;
+use App\Models\ProjectMember;
 
 class ProjectMemberObserver
 {
-
     public function saving(ProjectMember $projectMember)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             $projectMember->last_updated_by = user()->id;
         }
 
@@ -22,16 +20,16 @@ class ProjectMemberObserver
 
     public function creating(ProjectMember $projectMember)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             $projectMember->added_by = user()->id;
             $member = EmployeeDetails::where('user_id', $projectMember->user_id)->first();
 
-            if (!is_null($member)) {
-                $projectMember->hourly_rate = (!is_null($member->hourly_rate) ? $member->hourly_rate : 0);
+            if (! is_null($member)) {
+                $projectMember->hourly_rate = (! is_null($member->hourly_rate) ? $member->hourly_rate : 0);
 
-                $activity = new ProjectActivity();
+                $activity = new ProjectActivity;
                 $activity->project_id = $projectMember->project_id;
-                $activity->activity = $member->user->name . ' ' . __('messages.isAddedAsProjectMember');
+                $activity->activity = $member->user->name.' '.__('messages.isAddedAsProjectMember');
                 $activity->save();
             }
         }
@@ -39,7 +37,7 @@ class ProjectMemberObserver
 
     public function created(ProjectMember $member)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             if (user() && $member->user_id != user()->id && is_null(request()->mention_user_ids)) {
                 event(new NewProjectMemberEvent($member));
 
@@ -54,10 +52,9 @@ class ProjectMemberObserver
             ->whereNull('read_at')
             ->where(
                 function ($q) use ($projectMember) {
-                    $q->where('data', 'like', '{"member_id":' . $projectMember->id . ',%');
+                    $q->where('data', 'like', '{"member_id":'.$projectMember->id.',%');
                 }
             )->delete();
 
     }
-
 }

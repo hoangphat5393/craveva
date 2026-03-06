@@ -14,6 +14,7 @@ use App\Traits\HasCompany;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property string|null $dashboard_type
  * @property-read mixed $icon
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|DashboardWidget newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|DashboardWidget newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|DashboardWidget query()
@@ -23,17 +24,19 @@ use App\Traits\HasCompany;
  * @method static \Illuminate\Database\Eloquent\Builder|DashboardWidget whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|DashboardWidget whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|DashboardWidget whereWidgetName($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|DashboardWidget whereCompanyId($value)
+ *
  * @mixin \Eloquent
  */
 class DashboardWidget extends BaseModel
 {
-
     use HasCompany;
 
-    protected $fillable = ['widget_name', 'status', 'dashboard_type', 'company_id','active'];
+    protected $fillable = ['widget_name', 'status', 'dashboard_type', 'company_id', 'active'];
 
     const WIDGETS = [
         ['dashboard_type' => 'admin-dashboard', 'widget_name' => 'total_clients',  'status' => 1],
@@ -129,7 +132,6 @@ class DashboardWidget extends BaseModel
         ['dashboard_type' => 'private-dashboard', 'widget_name' => 'documents', 'status' => 1],
     ];
 
-
     const MODULE = [
         ['tickets' => 'ticket'],
         ['leads' => 'lead'],
@@ -140,6 +142,4 @@ class DashboardWidget extends BaseModel
         ['leaves' => 'leave'],
         ['contracts' => 'contract_date'],
     ];
-
-
 }

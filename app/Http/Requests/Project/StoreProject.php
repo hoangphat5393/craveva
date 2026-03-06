@@ -30,26 +30,26 @@ class StoreProject extends CoreRequest
 
         $rules = [
             'project_name' => 'required|max:150',
-            'start_date' => 'required|date_format:"' . $setting->date_format . '"',
+            'start_date' => 'required|date_format:"'.$setting->date_format.'"',
             'hours_allocated' => 'nullable|numeric',
             'client_id' => 'requiredIf:client_view_task,true',
-            'project_code' => $this->project_code != '' ? 'unique:projects,project_short_code,null,id,company_id,' . company()->id : '',
+            'project_code' => $this->project_code != '' ? 'unique:projects,project_short_code,null,id,company_id,'.company()->id : '',
             'miroboard_checkbox' => 'nullable',
-            'miro_board_id' => 'nullable|required_if:miroboard_checkbox,checked'
+            'miro_board_id' => 'nullable|required_if:miroboard_checkbox,checked',
         ];
 
-        if (!request()->public && in_array('employee', user_roles())) {
+        if (! request()->public && in_array('employee', user_roles())) {
             $rules['user_id.0'] = 'required';
         }
 
-        if (!$this->has('without_deadline')) {
-            $rules['deadline'] = 'required|date_format:"' . $setting->date_format . '"|after_or_equal:start_date';
+        if (! $this->has('without_deadline')) {
+            $rules['deadline'] = 'required|date_format:"'.$setting->date_format.'"|after_or_equal:start_date';
         }
 
         // If deadline-based calculation is selected, both start_date and deadline are required
         if ($this->calculate_task_progress === 'project_deadline') {
-            $rules['start_date'] = 'required|date_format:"' . $setting->date_format . '"';
-            $rules['deadline'] = 'required|date_format:"' . $setting->date_format . '"|after_or_equal:start_date';
+            $rules['start_date'] = 'required|date_format:"'.$setting->date_format.'"';
+            $rules['deadline'] = 'required|date_format:"'.$setting->date_format.'"|after_or_equal:start_date';
         }
 
         // If time-based calculation is selected, hours_allocated is required
@@ -87,5 +87,4 @@ class StoreProject extends CoreRequest
 
         return $attributes;
     }
-
 }

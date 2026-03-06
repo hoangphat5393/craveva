@@ -1,6 +1,6 @@
 <?php
 
-return array(
+return [
     'trackInventoryMsg' => 'You can\'t enable/disable inventory tracking once you\'ve created transactions for this item.',
     'openingStockRequired' => 'Opening stock required if you have enabled track inventory.',
     'ratePerUnitRequired' => 'Rate per unit required if you have enabled track inventory.',
@@ -14,18 +14,18 @@ return array(
     'remainingCreditAmount' => 'Remaining Credit Amount: ',
     'thankYou' => 'Thank you for your business!',
 
-    'inventory' => array(
+    'inventory' => [
         'itemBlank' => 'On hand quantity cannot be blank.',
         'unitPriceNumber' => 'Changed value should be a number',
         'itemValueBlank' => 'Changed value cannot be blank.',
         'reason' => 'Please select the reason.',
         'type' => 'Mode of adjustment is required.',
         'quantityCannotLessThan' => 'Quantity cannot be less than invoiced quantity',
-    ),
+    ],
     'confirmStatus' => 'Yes, change status!',
     'confirmActiveStatus' => 'It will also change the status adjusted for each product in stock!',
     'confirmInactiveStatus' => 'It will also change the status drafted for each product in stock!',
     'orderMarkAsSent' => 'Order sent Successfully',
     'orderSentSuccessfully' => 'Order Mark as Sent Successfully',
     'billSentSuccessfully' => 'Bill sent successfully.',
-);
+];

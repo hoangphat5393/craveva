@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Storage;
 
 class AutoDeleteDatabaseBackup extends Command
 {
-
     /**
      * The console command signature.
      *
@@ -53,9 +52,9 @@ class AutoDeleteDatabaseBackup extends Command
                     $dateDifference = $date->diffInDays($now);
 
                     // Check if the difference is greater than the delete backup after days setting
-                    if ((int)$backupSetting->delete_backup_after_days > 0 && $dateDifference >= (int)$backupSetting->delete_backup_after_days) {
+                    if ((int) $backupSetting->delete_backup_after_days > 0 && $dateDifference >= (int) $backupSetting->delete_backup_after_days) {
                         // Delete the file
-                        $disk->delete('backup/' . str_replace(config('laravel-backup.backup.name') . 'backup/', '', $file));
+                        $disk->delete('backup/'.str_replace(config('laravel-backup.backup.name').'backup/', '', $file));
                     }
                 }
             }
@@ -63,6 +62,4 @@ class AutoDeleteDatabaseBackup extends Command
 
         return Command::SUCCESS;
     }
-
 }
-

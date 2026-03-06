@@ -28,6 +28,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read BankAccount|null $bankAccount
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|BankTransaction newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|BankTransaction newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|BankTransaction query()
@@ -49,13 +50,17 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|BankTransaction whereTransactionRelation($value)
  * @method static \Illuminate\Database\Eloquent\Builder|BankTransaction whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|BankTransaction whereUpdatedAt($value)
+ *
  * @property int|null $purchase_payment_id
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|BankTransaction wherePurchasePaymentId($value)
+ *
  * @mixin \Eloquent
  */
 class BankTransaction extends BaseModel
 {
     use HasCompany;
+
     protected $casts = [
         'transaction_date' => 'datetime',
     ];
@@ -64,5 +69,4 @@ class BankTransaction extends BaseModel
     {
         return $this->belongsTo(BankAccount::class, 'bank_account_id');
     }
-
 }

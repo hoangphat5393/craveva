@@ -7,8 +7,8 @@ use Illuminate\View\Component;
 
 class ButtonPrimary extends Component
 {
-
     public $icon;
+
     public $disabled;
 
     /**
@@ -31,5 +31,4 @@ class ButtonPrimary extends Component
     {
         return view('components.forms.button-primary');
     }
-
 }

@@ -11,13 +11,12 @@ use Illuminate\Http\Request;
 
 class ContractRenewController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'app.menu.contracts';
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('contracts', $this->user->modules));
+            abort_403(! in_array('contracts', $this->user->modules));
 
             return $next($request);
         });
@@ -28,7 +27,7 @@ class ContractRenewController extends AccountBaseController
         $id = $request->contract_id;
         $contract = Contract::findOrFail($id);
 
-        $contractRenew = new ContractRenew();
+        $contractRenew = new ContractRenew;
         $contractRenew->amount = $request->amount;
         $contractRenew->renewed_by = $this->user->id;
         $contractRenew->contract_id = $id;
@@ -36,7 +35,7 @@ class ContractRenewController extends AccountBaseController
         $contractRenew->end_date = companyToYmd($request->end_date);
         $contractRenew->save();
 
-        if (!$request->keep_customer_signature) {
+        if (! $request->keep_customer_signature) {
             ContractSign::where('contract_id', $contract->id)->delete();
         }
 
@@ -56,16 +55,16 @@ class ContractRenewController extends AccountBaseController
     {
         $this->renew = ContractRenew::findOrFail($id);
         $this->editPermission = user()->permission('edit_contract');
-        abort_403(!($this->editPermission == 'all' || ($this->editPermission == 'added' && $this->renew->added_by == user()->id)));
+        abort_403(! ($this->editPermission == 'all' || ($this->editPermission == 'added' && $this->renew->added_by == user()->id)));
 
         return view('contracts.renew.edit', $this->data);
 
     }
 
     /**
-     * @param Request $request
-     * @param int $id
+     * @param  int  $id
      * @return array
+     *
      * @throws \Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException
      */
     public function update(Request $request, $id)
@@ -90,12 +89,11 @@ class ContractRenewController extends AccountBaseController
     {
         $contractRenew = $this->renew = ContractRenew::findOrFail($id);
 
-
         $this->deletePermission = user()->permission('delete_contract');
-        abort_403(!($this->deletePermission == 'all' || ($this->deletePermission == 'added' && $this->renew->added_by == user()->id)));
+        abort_403(! ($this->deletePermission == 'all' || ($this->deletePermission == 'added' && $this->renew->added_by == user()->id)));
         $findNext = ContractRenew::where('created_at', '>', $contractRenew->created_at)->first();
 
-        if (!$findNext) {
+        if (! $findNext) {
             $findPrevious = ContractRenew::where('created_at', '<', $contractRenew->created_at)->latest()->first();
             $contract = Contract::findOrFail($contractRenew->contract_id);
 
@@ -103,8 +101,7 @@ class ContractRenewController extends AccountBaseController
                 $contract->start_date = $findPrevious->start_date;
                 $contract->end_date = $findPrevious->end_date;
                 $contract->amount = $findPrevious->amount;
-            }
-            else {
+            } else {
                 $contract->start_date = $contract->original_start_date;
                 $contract->end_date = $contract->original_end_date;
                 $contract->amount = $contract->original_amount;
@@ -122,5 +119,4 @@ class ContractRenewController extends AccountBaseController
         return Reply::successWithData(__('messages.deleteSuccess'), ['view' => $view]);
 
     }
-
 }

@@ -8,7 +8,6 @@ use Notification;
 
 class CandidateFollowUpReminderListener
 {
-
     /**
      * Handle the event.
      *
@@ -23,5 +22,4 @@ class CandidateFollowUpReminderListener
         }
 
     }
-
 }

@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\DB;
 
 class FinanceReportController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -36,7 +35,6 @@ class FinanceReportController extends AccountBaseController
     }
 
     /**
-     * @param Request $request
      * @return mixed
      */
     public function financeChartData(Request $request)
@@ -61,11 +59,11 @@ class FinanceReportController extends AccountBaseController
 
         $payments = $payments->where(DB::raw('DATE(payments.`paid_on`)'), '<=', $endDate);
 
-        if ($request->projectID != 'all' && !is_null($request->projectID)) {
+        if ($request->projectID != 'all' && ! is_null($request->projectID)) {
             $payments = $payments->where('payments.project_id', '=', $request->projectID);
         }
 
-        if ($request->clientID != 'all' && !is_null($request->clientID)) {
+        if ($request->clientID != 'all' && ! is_null($request->clientID)) {
             $clientId = $request->clientID;
             $payments = $payments->where(function ($query) use ($clientId) {
                 $query->where('projects.client_id', $clientId)
@@ -80,38 +78,35 @@ class FinanceReportController extends AccountBaseController
                 DB::raw('amount as total'),
                 'currencies.id as currency_id',
                 'payments.exchange_rate',
-                'payments.default_currency_id'
+                'payments.default_currency_id',
             ]);
 
-        $incomes = array();
+        $incomes = [];
 
         foreach ($payments as $invoice) {
 
-            if((is_null($invoice->default_currency_id) && is_null($invoice->exchange_rate)) ||
-            (!is_null($invoice->default_currency_id) && Company()->currency_id != $invoice->default_currency_id))
-            {
+            if ((is_null($invoice->default_currency_id) && is_null($invoice->exchange_rate)) ||
+            (! is_null($invoice->default_currency_id) && Company()->currency_id != $invoice->default_currency_id)) {
                 $currency = Currency::findOrFail($invoice->currency_id);
                 $exchangeRate = $currency->exchange_rate;
-            }
-            else {
+            } else {
                 $exchangeRate = $invoice->exchange_rate;
             }
 
-            if (!isset($incomes[$invoice->date])) {
+            if (! isset($incomes[$invoice->date])) {
                 $incomes[$invoice->date] = 0;
             }
 
             if ($invoice->currency_id != $this->company->currency_id && $exchangeRate != 0) {
                 $incomes[$invoice->date] += floatval($invoice->total) * floatval($exchangeRate);
-            }
-            else {
+            } else {
                 $incomes[$invoice->date] += floatval($invoice->total);
             }
         }
 
         $dates = array_keys($incomes);
 
-        $graphData = array();
+        $graphData = [];
 
         foreach ($dates as $date) {
             $graphData[] = [
@@ -123,6 +118,7 @@ class FinanceReportController extends AccountBaseController
         usort($graphData, function ($a, $b) {
             $t1 = strtotime($a['date']);
             $t2 = strtotime($b['date']);
+
             return $t1 - $t2;
         });
 
@@ -137,7 +133,7 @@ class FinanceReportController extends AccountBaseController
 
         $this->chartData = $data;
         $html = view('reports.timelogs.chart', $this->data)->render();
+
         return Reply::dataOnly(['status' => 'success', 'html' => $html, 'title' => $this->pageTitle, 'totalEarnings' => currency_format($totalEarning, company()->currency_id)]);
     }
-
 }

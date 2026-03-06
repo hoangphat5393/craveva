@@ -24,6 +24,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read \App\Models\UserChat $chat
  * @property-read mixed $file_url
  * @property-read mixed $icon
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|UserchatFile newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|UserchatFile newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|UserchatFile query()
@@ -39,40 +40,43 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|UserchatFile whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UserchatFile whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UserchatFile whereUsersChatId($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|UserchatFile whereCompanyId($value)
+ *
  * @property-read mixed $file
+ *
  * @mixin \Eloquent
  */
 class UserchatFile extends BaseModel
 {
-
-    use IconTrait;
     use HasCompany;
+    use IconTrait;
 
     const FILE_PATH = 'message-files';
 
     protected $appends = ['file_url', 'icon', 'file'];
+
     protected $table = 'users_chat_files';
 
     public function getFileUrlAttribute()
     {
-        if($this->external_link){
+        if ($this->external_link) {
             return str($this->external_link)->contains('http') ? $this->external_link : asset_url_local_s3($this->external_link);
         }
 
-        return asset_url_local_s3(UserchatFile::FILE_PATH . '/' . $this->hashname);
+        return asset_url_local_s3(UserchatFile::FILE_PATH.'/'.$this->hashname);
     }
 
     public function getFileAttribute()
     {
-        return $this->external_link ?: (UserchatFile::FILE_PATH . '/' . $this->hashname);
+        return $this->external_link ?: (UserchatFile::FILE_PATH.'/'.$this->hashname);
     }
 
     public function chat(): BelongsTo
     {
         return $this->belongsTo(UserChat::class, 'users_chat_id');
     }
-
 }

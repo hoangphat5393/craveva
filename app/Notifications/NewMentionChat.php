@@ -10,14 +10,13 @@ use NotificationChannels\OneSignal\OneSignalMessage;
 
 class NewMentionChat extends BaseNotification
 {
-
-
     /**
      * Create a new notification instance.
      *
      * @return void
      */
     private $userChat;
+
     private $emailSetting;
 
     public function __construct(UserChat $userChat)
@@ -32,7 +31,7 @@ class NewMentionChat extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     // phpcs:ignore
@@ -53,9 +52,9 @@ class NewMentionChat extends BaseNotification
         }
 
         if ($this->emailSetting->send_push == 'yes' && push_setting()->beams_push_status == 'active') {
-            $pushNotification = new \App\Http\Controllers\DashboardController();
+            $pushNotification = new \App\Http\Controllers\DashboardController;
             $pushUsersIds = [[$notifiable->id]];
-            $pushNotification->sendPushNotifications($pushUsersIds, __('email.newChat.mentionSubject') . ' ' . __('app.from') . ' ' . $this->userChat->fromUser->name, strip_tags($this->userChat->message));
+            $pushNotification->sendPushNotifications($pushUsersIds, __('email.newChat.mentionSubject').' '.__('app.from').' '.$this->userChat->fromUser->name, strip_tags($this->userChat->message));
         }
 
         return $via;
@@ -64,8 +63,7 @@ class NewMentionChat extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
-     * @return MailMessage
+     * @param  mixed  $notifiable
      */
     // phpcs:ignore
     public function toMail($notifiable): MailMessage
@@ -74,13 +72,13 @@ class NewMentionChat extends BaseNotification
         $content = $this->userChat->message;
 
         $build
-            ->subject(__('email.newChat.mentionSubject') . ' ' . __('app.from') . ' ' . $this->userChat->fromUser->name)
+            ->subject(__('email.newChat.mentionSubject').' '.__('app.from').' '.$this->userChat->fromUser->name)
             ->markdown('mail.email', [
                 'url' => route('messages.index'),
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
                 'actionText' => __('email.newChat.action'),
-                'notifiableName' => $notifiable->name
+                'notifiableName' => $notifiable->name,
             ]);
 
         parent::resetLocale();
@@ -91,10 +89,10 @@ class NewMentionChat extends BaseNotification
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
-    //phpcs:ignore
+    // phpcs:ignore
     public function toArray($notifiable)
     {
         return [
@@ -110,16 +108,15 @@ class NewMentionChat extends BaseNotification
         $url = getDomainSpecificUrl($url, $this->company);
 
         return $this->slackBuild($notifiable)
-            ->content('<' . $url . '|' . __('email.newChat.subject') . ' ' . __('app.from') . ' ' . $this->userChat->fromUser->name . '>');
+            ->content('<'.$url.'|'.__('email.newChat.subject').' '.__('app.from').' '.$this->userChat->fromUser->name.'>');
 
     }
 
     public function toOneSignal()
     {
         return OneSignalMessage::create()
-            ->setSubject(__('email.newChat.mentionSubject') . ' ' . __('app.from') . ' ' . $this->userChat->fromUser->name)
+            ->setSubject(__('email.newChat.mentionSubject').' '.__('app.from').' '.$this->userChat->fromUser->name)
             ->setBody($this->userChat->message)
             ->setUrl(route('messages.index'));
     }
-
 }

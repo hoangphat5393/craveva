@@ -10,7 +10,6 @@ use Illuminate\Http\Request;
 
 class EventFileController extends Controller
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -22,10 +21,10 @@ class EventFileController extends Controller
     {
         if ($request->hasFile('file')) {
             foreach ($request->file as $fileData) {
-                $file = new EventFile();
+                $file = new EventFile;
                 $file->event_id = $request->eventId;
 
-                $filename = Files::uploadLocalOrS3($fileData, EventFile::FILE_PATH .'/'. $request->eventId);
+                $filename = Files::uploadLocalOrS3($fileData, EventFile::FILE_PATH.'/'.$request->eventId);
 
                 $file->filename = $fileData->getClientOriginalName();
                 $file->hashname = $filename;
@@ -41,7 +40,7 @@ class EventFileController extends Controller
     {
         $file = EventFile::findOrFail($id);
         $this->event = Event::findorFail($file->event_id);
-        Files::deleteFile($file->hashname, EventFile::FILE_PATH . '/' . $file->event_id);
+        Files::deleteFile($file->hashname, EventFile::FILE_PATH.'/'.$file->event_id);
 
         EventFile::destroy($id);
 
@@ -55,8 +54,8 @@ class EventFileController extends Controller
     public function download($id)
     {
         $file = EventFile::whereRaw('md5(id) = ?', $id)->firstOrFail();
-        return download_local_s3($file, 'events/' . $file->event_id . '/' . $file->hashname);
+
+        return download_local_s3($file, 'events/'.$file->event_id.'/'.$file->hashname);
 
     }
-
 }

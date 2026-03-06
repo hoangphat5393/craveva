@@ -11,7 +11,6 @@ use Notification;
 
 class UpdateJobListener
 {
-
     /**
      * Create the event listener.
      *
@@ -25,7 +24,7 @@ class UpdateJobListener
     /**
      * Handle the event.
      *
-     * @param object $event
+     * @param  object  $event
      * @return void
      */
     public function handle(UpdateJobEvent $event)
@@ -35,15 +34,12 @@ class UpdateJobListener
         if ($job->isDirty('recruiter_id')) {
             $oldRecruiterId = $job->getOriginal('recruiter_id');
 
-
             try {
                 $oldRecruiter = User::findOrFail($oldRecruiterId);
                 Notification::send($oldRecruiter, new RemoveJobRecruiter($job));
             } catch (\Exception $e) {
 
-
             }
-
 
             if ($job->recruiter) {
                 Notification::send($job->recruiter, new JobRecruiter($job));
@@ -55,6 +51,4 @@ class UpdateJobListener
             }
         }
     }
-
-
 }

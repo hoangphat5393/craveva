@@ -4,30 +4,28 @@ namespace App\Http\Controllers;
 
 use App\DataTables\EstimateRequestDataTable;
 use App\Helper\Reply;
+use App\Helper\UserService;
 use App\Http\Requests\StoreEstimateRequest;
 use App\Http\Requests\UpdateEstimateRequestStatus;
+use App\Models\ClientContact;
 use App\Models\Currency;
 use App\Models\Estimate;
 use App\Models\EstimateRequest;
 use App\Models\Project;
 use App\Models\User;
 use App\Notifications\EstimateRequestInvite;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
-use App\Helper\UserService;
-use App\Models\ClientContact;
 
 class EstimateRequestController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'modules.estimateRequest.estimateRequests';
         $this->pageIcon = 'ti-file';
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('estimates', $this->user->modules));
+            abort_403(! in_array('estimates', $this->user->modules));
 
             return $next($request);
         });
@@ -38,8 +36,9 @@ class EstimateRequestController extends AccountBaseController
      */
     public function index(EstimateRequestDataTable $dataTable)
     {
-        abort_403(!in_array(user()->permission('view_estimate_request'), ['all', 'added', 'owned', 'both']));
-        $this->clients = User::allClients(active:false);
+        abort_403(! in_array(user()->permission('view_estimate_request'), ['all', 'added', 'owned', 'both']));
+        $this->clients = User::allClients(active: false);
+
         return $dataTable->render('estimate-requests.index', $this->data);
     }
 
@@ -49,7 +48,7 @@ class EstimateRequestController extends AccountBaseController
     public function create()
     {
         $this->addPermission = user()->permission('add_estimate_request');
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
         $this->pageTitle = __('modules.estimateRequest.createEstimateRequest');
         $this->userId = UserService::getUserId();
         $this->projects = Project::where('client_id', $this->userId)->get();
@@ -74,10 +73,10 @@ class EstimateRequestController extends AccountBaseController
         $invoiceSetting = invoice_setting();
         $zero = str_repeat('0', $invoiceSetting->estimate_request_digit - strlen($lastEstimate));
 
-        $originalNumber = $zero . $lastEstimate;
-        $requestNumber = $invoiceSetting->estimate_request_prefix . $invoiceSetting->estimate_request_number_separator . $zero . $lastEstimate;
+        $originalNumber = $zero.$lastEstimate;
+        $requestNumber = $invoiceSetting->estimate_request_prefix.$invoiceSetting->estimate_request_number_separator.$zero.$lastEstimate;
 
-        $estimateRequest = new EstimateRequest();
+        $estimateRequest = new EstimateRequest;
         $estimateRequest->client_id = $request->client_id;
         $estimateRequest->company_id = user()->company_id;
         $estimateRequest->description = trim_editor($request->description);
@@ -108,7 +107,7 @@ class EstimateRequestController extends AccountBaseController
         $this->estimateRequest = EstimateRequest::findOrFail($id);
         $this->viewPermission = user()->permission('view_estimate_request');
 
-        abort_403(!(
+        abort_403(! (
             $this->viewPermission == 'all'
             || ($this->viewPermission == 'added' && $this->estimateRequest->added_by == user()->id)
             || ($this->viewPermission == 'owned' && $this->estimateRequest->client_id == user()->id)
@@ -116,7 +115,7 @@ class EstimateRequestController extends AccountBaseController
         ));
 
         $this->pageTitle = __('modules.estimateRequest.estimateRequest');
-        $this->estimateLink = $this->estimateRequest->estimate ? '<p class="mb-0 text-dark-grey f-14 w-70 text-wrap m-0 mt-1"><a href="' . route('estimates.show', [$this->estimateRequest->estimate->id]) . '" class="text-dark-grey f-14 w-70 text-wrap">' . $this->estimateRequest->estimate->estimate_number . '</a></p>' : '--';
+        $this->estimateLink = $this->estimateRequest->estimate ? '<p class="mb-0 text-dark-grey f-14 w-70 text-wrap m-0 mt-1"><a href="'.route('estimates.show', [$this->estimateRequest->estimate->id]).'" class="text-dark-grey f-14 w-70 text-wrap">'.$this->estimateRequest->estimate->estimate_number.'</a></p>' : '--';
         $this->deleteEstimateRequestPermission = user()->permission('delete_estimate_request');
         $this->editEstimateRequestPermission = user()->permission('edit_estimate_request');
         $this->addEstimatePermission = user()->permission('add_estimates');
@@ -140,7 +139,7 @@ class EstimateRequestController extends AccountBaseController
         $userId = UserService::getUserId();
         $clientIds = ClientContact::where('user_id', $userId)->pluck('client_id')->toArray();
 
-        abort_403(!(
+        abort_403(! (
             $this->editPermission == 'all'
             || ($this->editPermission == 'added' && ($this->estimateRequest->added_by == user()->id || $this->estimateRequest->added_by == $userId || in_array($this->estimateRequest->added_by, $clientIds)))
             || ($this->editPermission == 'owned' && $this->estimateRequest->client_id == $userId)
@@ -182,7 +181,7 @@ class EstimateRequestController extends AccountBaseController
             $redirectUrl = route('estimate-request.index');
         }
 
-        return Reply::successWithData( __('messages.updateSuccess'), ['redirectUrl' => $redirectUrl]);
+        return Reply::successWithData(__('messages.updateSuccess'), ['redirectUrl' => $redirectUrl]);
     }
 
     /**
@@ -195,7 +194,7 @@ class EstimateRequestController extends AccountBaseController
         $userId = UserService::getUserId();
         $clientIds = ClientContact::where('user_id', $userId)->pluck('client_id')->toArray();
 
-        abort_403(!(
+        abort_403(! (
             $this->deletePermission == 'all'
             || ($this->deletePermission == 'added' && ($estimateRequest->added_by == user()->id || $estimateRequest->added_by == $userId || in_array($estimateRequest->added_by, $clientIds)))
             || ($this->deletePermission == 'owned' && $estimateRequest->client_id == $userId)
@@ -218,14 +217,13 @@ class EstimateRequestController extends AccountBaseController
         return Reply::error(__('messages.selectAction'));
     }
 
-    public function changeStatus (UpdateEstimateRequestStatus $request)
+    public function changeStatus(UpdateEstimateRequestStatus $request)
     {
         $estimateRequest = EstimateRequest::findOrFail($request->id);
 
         if ($request->status == 'rejected') {
             $estimateRequest->update(['status' => 'rejected', 'reason' => $request->reason]);
-        }
-        else {
+        } else {
             $estimateRequest->update(['status' => $request->status]);
         }
 
@@ -256,8 +254,9 @@ class EstimateRequestController extends AccountBaseController
 
         $client = User::findOrFail($request->client_id);
 
-        if (isset($client->email)){
+        if (isset($client->email)) {
             Notification::send($client, new EstimateRequestInvite($client));
+
             return Reply::success(__('messages.inviteEmailSuccess'));
         }
     }

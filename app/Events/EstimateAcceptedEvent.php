@@ -3,13 +3,12 @@
 namespace App\Events;
 
 use App\Models\Estimate;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Queue\SerializesModels;
 
 class EstimateAcceptedEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     /**
@@ -23,5 +22,4 @@ class EstimateAcceptedEvent
     {
         $this->estimate = $estimate;
     }
-
 }

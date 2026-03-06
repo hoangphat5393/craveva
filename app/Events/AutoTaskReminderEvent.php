@@ -9,7 +9,6 @@ use Illuminate\Queue\SerializesModels;
 
 class AutoTaskReminderEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $task;
@@ -18,5 +17,4 @@ class AutoTaskReminderEvent
     {
         $this->task = $task;
     }
-
 }

@@ -7,7 +7,6 @@ use Modules\Webhooks\Jobs\SendWebhook;
 
 class EmployeeDetailsObserver
 {
-
     public function created(EmployeeDetails $employeeDetails)
     {
         $data = $employeeDetails->toArray();
@@ -22,5 +21,4 @@ class EmployeeDetailsObserver
             ->delay(5)
             ->onQueue('default');
     }
-
 }

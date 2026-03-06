@@ -24,6 +24,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read \App\Models\User $awardTo
  * @property-read \App\Models\Company|null $company
  * @property-read mixed $image_url
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Appreciation newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Appreciation newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Appreciation query()
@@ -37,6 +38,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|Appreciation whereImage($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Appreciation whereSummary($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Appreciation whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class Appreciation extends BaseModel
@@ -48,12 +50,14 @@ class Appreciation extends BaseModel
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
+
     protected $appends = ['image_url'];
+
     protected $with = [];
 
     public function getImageUrlAttribute()
     {
-        return $this->image ? asset_url_local_s3('appreciation/' . $this->image) : '';
+        return $this->image ? asset_url_local_s3('appreciation/'.$this->image) : '';
     }
 
     public function awardTo(): BelongsTo
@@ -70,5 +74,4 @@ class Appreciation extends BaseModel
     {
         return $this->belongsTo(Award::class);
     }
-
 }

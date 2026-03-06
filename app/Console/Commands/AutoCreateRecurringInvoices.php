@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use App\Helper\Files;
-use App\Models\Company;
 use App\Models\CompanyAddress;
 use App\Models\Invoice;
 use App\Models\InvoiceItemImage;
@@ -18,7 +17,6 @@ use Illuminate\Console\Command;
 
 class AutoCreateRecurringInvoices extends Command
 {
-
     use UniversalSearchTrait;
 
     /**
@@ -40,10 +38,8 @@ class AutoCreateRecurringInvoices extends Command
      *
      * @return mixed
      */
-
     public function handle()
     {
-
 
         $recurringInvoices = RecurringInvoice::with(['recurrings'])
             ->where('status', 'active')
@@ -61,7 +57,7 @@ class AutoCreateRecurringInvoices extends Command
 
             $company = $recurring->company;
 
-            $this->info('Running for company:' . $company->id);
+            $this->info('Running for company:'.$company->id);
 
             $totalExistingCount = $recurring->recurrings->count();
 
@@ -87,7 +83,6 @@ class AutoCreateRecurringInvoices extends Command
                 }
             }
         }
-
 
         return Command::SUCCESS;
     }
@@ -115,7 +110,6 @@ class AutoCreateRecurringInvoices extends Command
      *
      * @return mixed
      */
-
     public function invoiceCreate($invoiceData, $date = null)
     {
 
@@ -131,7 +125,7 @@ class AutoCreateRecurringInvoices extends Command
         $diff = $recurring->issue_date->diffInDays($recurring->due_date);
         $dueDate = now()->addDays($diff)->format('Y-m-d');
 
-        $invoice = new Invoice();
+        $invoice = new Invoice;
         $invoice->invoice_recurring_id = $recurring->id;
         $invoice->company_id = $recurring->company_id;
         $invoice->project_id = $recurring->project_id ?? null;
@@ -174,14 +168,14 @@ class AutoCreateRecurringInvoices extends Command
                     'invoice_id' => $invoice->id,
                     'item_name' => $item->item_name,
                     'item_summary' => $item->item_summary,
-                    'unit_id' => (!is_null($item->unit_id)) ? $item->unit_id : null,
-                    'product_id' => (!is_null($item->product_id)) ? $item->product_id : null,
+                    'unit_id' => (! is_null($item->unit_id)) ? $item->unit_id : null,
+                    'product_id' => (! is_null($item->product_id)) ? $item->product_id : null,
                     'hsn_sac_code' => (isset($item->hsn_sac_code)) ? $item->hsn_sac_code : null,
                     'type' => 'item',
                     'quantity' => $item->quantity,
                     'unit_price' => $item->unit_price,
                     'amount' => $item->amount,
-                    'taxes' => $item->taxes
+                    'taxes' => $item->taxes,
                 ]
             );
 
@@ -193,28 +187,27 @@ class AutoCreateRecurringInvoices extends Command
                         'filename' => $item->recurringInvoiceItemImage->filename,
                         'hashname' => $item->recurringInvoiceItemImage->hashname,
                         'size' => $item->recurringInvoiceItemImage->size,
-                        'external_link' => $item->recurringInvoiceItemImage->external_link
+                        'external_link' => $item->recurringInvoiceItemImage->external_link,
                     ]
                 );
 
                 // Copy files here
                 if ($item->recurringInvoiceItemImage->filename != '') {
 
-                    $source = public_path(Files::UPLOAD_FOLDER . '/') . RecurringInvoiceItemImage::FILE_PATH . '/' . $item->id . '/' . $item->recurringInvoiceItemImage->hashname;
+                    $source = public_path(Files::UPLOAD_FOLDER.'/').RecurringInvoiceItemImage::FILE_PATH.'/'.$item->id.'/'.$item->recurringInvoiceItemImage->hashname;
 
-                    $path = public_path(Files::UPLOAD_FOLDER . '/') . InvoiceItemImage::FILE_PATH . '/' . $invoiceItem->id . '/';
+                    $path = public_path(Files::UPLOAD_FOLDER.'/').InvoiceItemImage::FILE_PATH.'/'.$invoiceItem->id.'/';
 
                     $filename = $item->recurringInvoiceItemImage->hashname;
 
-                    if (!file_exists($path)) {
+                    if (! file_exists($path)) {
                         mkdir($path, 0777, true);
                     }
 
-                    copy($source, $path . $filename);
+                    copy($source, $path.$filename);
                 }
             }
         }
-
 
         if (($invoice->project && $invoice->project->client_id != null) || $invoice->client_id != null) {
             $clientId = ($invoice->project && $invoice->project->client_id != null) ? $invoice->project->client_id : $invoice->client_id;

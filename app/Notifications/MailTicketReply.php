@@ -3,9 +3,9 @@
 namespace App\Notifications;
 
 use App\Models\TicketEmailSetting;
+use App\Models\TicketReply as ModelsTicketReply;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
-use App\Models\TicketReply as ModelsTicketReply;
 
 class MailTicketReply extends BaseNotification
 {
@@ -15,6 +15,7 @@ class MailTicketReply extends BaseNotification
      * Create a new notification instance.
      */
     private $ticketReply;
+
     private $ticketEmailSetting;
 
     public function __construct(ModelsTicketReply $ticketReply, TicketEmailSetting $ticketEmailSetting)
@@ -48,7 +49,7 @@ class MailTicketReply extends BaseNotification
                 ->subject($this->ticketReply->ticket->subject)
                 ->view('emails.ticket.reply');
 
-            if (!is_null($previousReply) && !is_null($previousReply->imap_message_id)) {
+            if (! is_null($previousReply) && ! is_null($previousReply->imap_message_id)) {
                 ModelsTicketReply::where('id', $this->ticketReply->id)->update(['imap_message_id' => $previousReply->imap_message_id]);
             }
 
@@ -73,5 +74,4 @@ class MailTicketReply extends BaseNotification
             //
         ];
     }
-
 }

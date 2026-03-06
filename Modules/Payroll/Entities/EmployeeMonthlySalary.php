@@ -5,7 +5,6 @@ namespace Modules\Payroll\Entities;
 use App\Models\BaseModel;
 use App\Models\Company;
 use App\Models\User;
-use App\Traits\HasCompany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class EmployeeMonthlySalary extends BaseModel
@@ -66,5 +65,4 @@ class EmployeeMonthlySalary extends BaseModel
     {
         return $this->belongsTo(Company::class, 'company_id');
     }
-
 }

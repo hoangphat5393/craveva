@@ -3,7 +3,6 @@
 namespace Modules\Onboarding\Listeners;
 
 use App\Events\NewUserEvent;
-use App\Models\EmployeeDetails;
 use Modules\Onboarding\Entities\OnboardingCompletedTask;
 use Modules\Onboarding\Entities\OnboardingTask;
 
@@ -12,7 +11,6 @@ class UserCreatedListener
     /**
      * Create the event listener.
      */
-
     public function __construct()
     {
         //
@@ -42,5 +40,4 @@ class UserCreatedListener
 
         OnboardingCompletedTask::insert($allTasks);
     }
-
 }

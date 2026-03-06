@@ -7,15 +7,22 @@ use Illuminate\View\Component;
 
 class File extends Component
 {
-
     public $fieldLabel;
+
     public $fieldValue;
+
     public $fieldName;
+
     public $fieldId;
+
     public $fieldHelp;
+
     public $fieldRequired;
+
     public $fieldHeight;
+
     public $popover;
+
     public $allowedFileExtensions;
 
     /**
@@ -45,5 +52,4 @@ class File extends Component
     {
         return view('components.forms.file');
     }
-
 }

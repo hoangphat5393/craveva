@@ -25,7 +25,7 @@ return new class extends Migration
                 'module_id' => $module->id,
                 'name' => 'manage_biometric_settings',
                 'allowed_permissions' => Permission::ALL_NONE,
-                'is_custom' => 1
+                'is_custom' => 1,
             ],
         ];
 
@@ -53,7 +53,7 @@ return new class extends Migration
                         ->where('role_id', $role->id)
                         ->first();
 
-                    $permissionRole = $permissionRole ?: new PermissionRole();
+                    $permissionRole = $permissionRole ?: new PermissionRole;
                     $permissionRole->permission_id = $permission->id;
                     $permissionRole->role_id = $role->id;
                     $permissionRole->permission_type_id = 4; // All
@@ -66,7 +66,7 @@ return new class extends Migration
             $adminUsers = User::allAdmins();
 
             foreach ($adminUsers as $adminUser) {
-                $userPermission = UserPermission::where('user_id', $adminUser->id)->where('permission_id', $permission->id)->first() ?: new UserPermission();
+                $userPermission = UserPermission::where('user_id', $adminUser->id)->where('permission_id', $permission->id)->first() ?: new UserPermission;
                 $userPermission->user_id = $adminUser->id;
                 $userPermission->permission_id = $permission->id;
                 $userPermission->permission_type_id = 4; // All

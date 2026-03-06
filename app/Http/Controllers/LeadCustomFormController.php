@@ -8,13 +8,13 @@ use Illuminate\Http\Request;
 
 class LeadCustomFormController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'modules.lead.leadForm';
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('leads', $this->user->modules));
+            abort_403(! in_array('leads', $this->user->modules));
+
             return $next($request);
         });
     }
@@ -31,22 +31,21 @@ class LeadCustomFormController extends AccountBaseController
     }
 
     /**
-     * @param Request $request
-     * @param int $id
+     * @param  int  $id
      * @return array
      */
     public function update(Request $request, $id)
     {
         $updateData = [];
-        
+
         if ($request->has('status')) {
             $updateData['status'] = $request->status;
         }
-        
+
         if ($request->has('required')) {
             $updateData['required'] = $request->required;
         }
-        
+
         LeadCustomForm::where('id', $id)->update($updateData);
 
         return Reply::success(__('messages.updateSuccess'));

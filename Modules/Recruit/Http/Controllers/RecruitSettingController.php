@@ -4,30 +4,26 @@ namespace Modules\Recruit\Http\Controllers;
 
 use App\Helper\Files;
 use App\Helper\Reply;
-use Illuminate\Support\Arr;
-use Illuminate\Http\Request;
-use Modules\Recruit\Entities\RecruitSetting;
 use App\Http\Controllers\AccountBaseController;
-use App\Models\Company;
 use App\Models\User;
+use Illuminate\Support\Arr;
 use Modules\Recruit\Entities\ApplicationSource;
+use Modules\Recruit\Entities\RecruitApplicationStatus;
 use Modules\Recruit\Entities\RecruitCustomQuestion;
 use Modules\Recruit\Entities\RecruitEmailNotificationSetting;
 use Modules\Recruit\Entities\Recruiter;
 use Modules\Recruit\Entities\RecruitFooterLink;
-use Modules\Recruit\Entities\RecruitJobCustomQuestion;
-use Modules\Recruit\Entities\RecruitApplicationStatus;
+use Modules\Recruit\Entities\RecruitSetting;
 use Modules\Recruit\Http\Requests\RecruitSetting\StoreSettingRequest;
 
 class RecruitSettingController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'recruit::app.menu.recruitSetting';
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array(RecruitSetting::MODULE_NAME, $this->user->modules));
+            abort_403(! in_array(RecruitSetting::MODULE_NAME, $this->user->modules));
 
             return $next($request);
         });
@@ -47,32 +43,31 @@ class RecruitSettingController extends AccountBaseController
         $this->statuses = RecruitApplicationStatus::with('category')->where('company_id', company()->id)->get();
         $this->sources = ApplicationSource::where('company_id', company()->id)->get();
 
-
         $tab = request('tab');
 
         switch ($tab) {
-        case 'recruit-setting':
-            $this->view = 'recruit::recruit-setting.ajax.recruit-setting';
-            break;
-        case 'footer-settings':
-            $this->view = 'recruit::recruit-setting.ajax.footer-settings';
-            break;
-        case 'recruit-email-notification-setting':
-            $this->view = 'recruit::recruit-setting.ajax.recruit-email-notification-setting';
-            break;
-        case 'job-application-status-settings':
-            $this->view = 'recruit::recruit-setting.ajax.job-application-status-settings';
-            break;
-        case 'recruit-custom-question-setting':
-            $this->view = 'recruit::recruit-setting.ajax.custom-question-settings';
-            break;
-        case 'recruit-source-setting':
+            case 'recruit-setting':
+                $this->view = 'recruit::recruit-setting.ajax.recruit-setting';
+                break;
+            case 'footer-settings':
+                $this->view = 'recruit::recruit-setting.ajax.footer-settings';
+                break;
+            case 'recruit-email-notification-setting':
+                $this->view = 'recruit::recruit-setting.ajax.recruit-email-notification-setting';
+                break;
+            case 'job-application-status-settings':
+                $this->view = 'recruit::recruit-setting.ajax.job-application-status-settings';
+                break;
+            case 'recruit-custom-question-setting':
+                $this->view = 'recruit::recruit-setting.ajax.custom-question-settings';
+                break;
+            case 'recruit-source-setting':
                 $this->view = 'recruit::recruit-setting.ajax.source-setting';
                 break;
-        default:
-            $this->general = RecruitSetting::where('company_id', '=', company()->id)->select('about')->first();
-            $this->view = 'recruit::recruit-setting.ajax.general-setting';
-            break;
+            default:
+                $this->general = RecruitSetting::where('company_id', '=', company()->id)->select('about')->first();
+                $this->view = 'recruit::recruit-setting.ajax.general-setting';
+                break;
         }
 
         $this->activeTab = $tab ?: 'general-setting';
@@ -108,21 +103,19 @@ class RecruitSettingController extends AccountBaseController
         if ($request->image_delete == 'yes') {
             Files::deleteFile($settings->background_image, 'background');
             $settings->background_image = null;
-        }
-        elseif ($request->type == 'bg-image') {
+        } elseif ($request->type == 'bg-image') {
             $oldImage = $settings->background_image;
 
             if ($request->hasFile('image')) {
                 $settings->background_image = Files::uploadLocalOrS3($request->image, 'background');
 
-                $path = Files::UPLOAD_FOLDER . '/background' . '/' . $oldImage;
+                $path = Files::UPLOAD_FOLDER.'/background'.'/'.$oldImage;
 
                 if (\File::exists($path)) {
                     Files::deleteFile($oldImage, 'background');
                 }
             }
-        }
-        elseif ($request->type == 'bg-color') {
+        } elseif ($request->type == 'bg-color') {
             $settings->background_color = $request->logo_background_color;
         }
 
@@ -163,5 +156,4 @@ class RecruitSettingController extends AccountBaseController
 
         return Reply::successWithData(__('recruit::messages.settingupdated'), ['redirectUrl' => route('recruit-settings.index')]);
     }
-
 }

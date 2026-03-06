@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Notification;
 
 class NewCreditNoteListener
 {
-
     /**
      * NewCreditNoteListener constructor.
      */
@@ -17,13 +16,8 @@ class NewCreditNoteListener
         //
     }
 
-    /**
-     * @param NewCreditNoteEvent $event
-     */
-
     public function handle(NewCreditNoteEvent $event)
     {
         Notification::send($event->notifyUser, new NewCreditNote($event->creditNote));
     }
-
 }

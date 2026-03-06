@@ -28,7 +28,6 @@ use Illuminate\Support\Facades\Schema;
 
 class FixUpgradeCompanyCommand extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
@@ -47,11 +46,12 @@ class FixUpgradeCompanyCommand extends Command
      * Execute the console command.
      *
      * @return int
+     *
      * @throws RelatedResourceNotFoundException
      */
     public function handle()
     {
-        if (!isCraveva()) {
+        if (! isCraveva()) {
             return true;
         }
 
@@ -63,7 +63,7 @@ class FixUpgradeCompanyCommand extends Command
         }
 
         // TRUNCATE TABLES
-        if (!config('app.non_saas_to_saas_enabled')) {
+        if (! config('app.non_saas_to_saas_enabled')) {
             DB::table('module_settings')->truncate();
             DB::table('dashboard_widgets')->truncate();
             DB::table('email_notification_settings')->truncate();
@@ -72,10 +72,9 @@ class FixUpgradeCompanyCommand extends Command
             PusherSetting::create();
         }
 
-
         Artisan::call('sync-user-permissions all');
 
-        $coreDatabaseSeeder = new CoreDatabaseSeeder();
+        $coreDatabaseSeeder = new CoreDatabaseSeeder;
         $coreDatabaseSeeder->dashboardBackupSetting();
 
         $this->languageSettings();
@@ -84,10 +83,10 @@ class FixUpgradeCompanyCommand extends Command
 
         $companies = Company::withoutGlobalScope(ActiveScope::class)->get();
 
-        $companyObserver = new CompanyObserver();
+        $companyObserver = new CompanyObserver;
 
         foreach ($companies as $company) {
-            echo $company->id . '' . "\n";
+            echo $company->id.''."\n";
 
             $this->seedPermission($company->id);
             $companyObserver->moduleSettings($company);
@@ -181,7 +180,6 @@ class FixUpgradeCompanyCommand extends Command
         \DB::statement('ALTER TABLE payment_gateway_credentials MODIFY authorize_status ENUM("active", "deactive") DEFAULT "deactive"');
         $authorizeCredentials->update(['authorize_status' => 'deactive']);
 
-
         $globalCredentials = GlobalPaymentGatewayCredentials::withoutGlobalScope(CompanyScope::class)->where('razorpay_status', 'deactive')->orWhereNull('razorpay_status')->orWhere('razorpay_status', '');
         $globalCredentials->update(['razorpay_status' => null]);
         \DB::statement('ALTER TABLE global_payment_gateway_credentials MODIFY razorpay_status ENUM("active", "inactive") DEFAULT "inactive"');
@@ -198,7 +196,7 @@ class FixUpgradeCompanyCommand extends Command
             'front_faqs',
             'front_features',
             'front_menu_buttons',
-            'tr_front_details'
+            'tr_front_details',
         ];
 
         $englishLanguage = LanguageSetting::where('language_code', 'en')->first();
@@ -237,7 +235,7 @@ class FixUpgradeCompanyCommand extends Command
         DB::statement('UPDATE `companies` SET light_logo=logo');
         DB::statement('UPDATE `global_settings` SET light_logo=logo');
 
-        if (!Schema::hasColumns('contracts', ['contract_note', 'cell', 'office'])) {
+        if (! Schema::hasColumns('contracts', ['contract_note', 'cell', 'office'])) {
             DB::statement('UPDATE `contracts` SET contract_note=description,cell=mobile,office=office_phone');
         }
 
@@ -275,7 +273,7 @@ class FixUpgradeCompanyCommand extends Command
     public function seedPermission($companyId)
     {
 
-        $employeePermissionSeeder = new EmployeePermissionSeeder();
+        $employeePermissionSeeder = new EmployeePermissionSeeder;
         $employeePermissionSeeder->insertUserRolePermission($companyId);
     }
 

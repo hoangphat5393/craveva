@@ -8,7 +8,6 @@ use App\Http\Controllers\AccountBaseController;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Modules\Recruit\Entities\RecruitApplicationFile;
-use Modules\Recruit\Entities\RecruitJobApplication;
 use Modules\Recruit\Entities\RecruitSetting;
 
 class JobApplicationFilesController extends AccountBaseController
@@ -86,6 +85,7 @@ class JobApplicationFilesController extends AccountBaseController
     public function download($id)
     {
         $file = RecruitApplicationFile::whereRaw('md5(id) = ?', $id)->firstOrFail();
+
         return download_local_s3($file, 'application-files/'.$file->recruit_job_application_id.'/'.$file->hashname);
     }
 }

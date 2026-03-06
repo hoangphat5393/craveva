@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Traits\IconTrait;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read mixed $file_url
  * @property-read mixed $icon
  * @property-read \App\Models\Leave $leave
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|LeaveFile newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|LeaveFile newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|LeaveFile query()
@@ -37,14 +38,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|LeaveFile whereSize($value)
  * @method static \Illuminate\Database\Eloquent\Builder|LeaveFile whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|LeaveFile whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class LeaveFile extends BaseModel
 {
-
-    use IconTrait;
-
     use HasFactory;
+    use IconTrait;
 
     const FILE_PATH = 'leave-files';
 
@@ -57,7 +57,6 @@ class LeaveFile extends BaseModel
 
     public function getFileUrlAttribute()
     {
-        return asset_url_local_s3(LeaveFile::FILE_PATH . '/' . $this->leave_id . '/' . $this->hashname);
+        return asset_url_local_s3(LeaveFile::FILE_PATH.'/'.$this->leave_id.'/'.$this->hashname);
     }
-
 }

@@ -9,7 +9,6 @@ use Modules\Purchase\Entities\PurchaseVendor;
 
 class VendorsTableSeeder extends Seeder
 {
-
     /**
      * Run the database seeds.
      *
@@ -36,5 +35,4 @@ class VendorsTableSeeder extends Seeder
             PurchaseVendor::create($vendor);
         }
     }
-
 }

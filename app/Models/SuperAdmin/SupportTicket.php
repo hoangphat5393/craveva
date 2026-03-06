@@ -2,15 +2,15 @@
 
 namespace App\Models\SuperAdmin;
 
-use App\Models\User;
-use App\Traits\HasCompany;
-use App\Scopes\CompanyScope;
 use App\Models\BaseModel;
+use App\Models\User;
+use App\Observers\SuperAdmin\SupportTicketObserver;
+use App\Scopes\CompanyScope;
+use App\Traits\HasCompany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Observers\SuperAdmin\SupportTicketObserver;
 
 /**
  * App\Models\SuperAdmin\SupportTicket
@@ -22,13 +22,16 @@ use App\Observers\SuperAdmin\SupportTicketObserver;
  * @property-read Collection|SupportTicketReply[] $reply
  * @property-read int|null $reply_count
  * @property-read User $requester
+ *
  * @method static Builder|SupportTicket newModelQuery()
  * @method static Builder|SupportTicket newQuery()
  * @method static \Illuminate\Database\Query\Builder|SupportTicket onlyTrashed()
  * @method static Builder|SupportTicket query()
  * @method static \Illuminate\Database\Query\Builder|SupportTicket withTrashed()
  * @method static \Illuminate\Database\Query\Builder|SupportTicket withoutTrashed()
+ *
  * @mixin Eloquent
+ *
  * @property int $id
  * @property int $user_id
  * @property int $created_by
@@ -42,6 +45,7 @@ use App\Observers\SuperAdmin\SupportTicketObserver;
  * @property Carbon|null $deleted_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ *
  * @method static Builder|SupportTicket whereAgentId($value)
  * @method static Builder|SupportTicket whereCreatedAt($value)
  * @method static Builder|SupportTicket whereCreatedBy($value)
@@ -57,9 +61,7 @@ use App\Observers\SuperAdmin\SupportTicketObserver;
  */
 class SupportTicket extends BaseModel
 {
-
     use HasCompany;
-
     use SoftDeletes;
 
     protected $dates = ['deleted_at', 'created_at', 'updated_at'];
@@ -133,10 +135,9 @@ class SupportTicket extends BaseModel
         $selfReplyCount = $this->reply()->where('user_id', $latestReplyUser?->id)->count();
 
         if ($totalReply > 1 && ($totalReply !== $selfReplyCount) && $latestReplyUser && $latestReplyUser->id !== user()->id) {
-            return '<' . $tag . ' class="mb-0"><span class="badge badge-secondary mr-1 bg-info">' . __('app.newResponse') . '</span></' . $tag . '>';
+            return '<'.$tag.' class="mb-0"><span class="badge badge-secondary mr-1 bg-info">'.__('app.newResponse').'</span></'.$tag.'>';
         }
 
-        return $totalReply == 1 || ($totalReply == $selfReplyCount) ? '<' . $tag . ' class="mb-0"><span class="badge badge-secondary mr-1 bg-dark-green">' . __('app.new') . '</span></' . $tag . '>' : '';
+        return $totalReply == 1 || ($totalReply == $selfReplyCount) ? '<'.$tag.' class="mb-0"><span class="badge badge-secondary mr-1 bg-dark-green">'.__('app.new').'</span></'.$tag.'>' : '';
     }
-
 }

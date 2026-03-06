@@ -2,20 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Events\SubmitWeeklyTimesheet;
+use App\Events\WeeklyTimesheetApprovedEvent;
+use App\Events\WeeklyTimesheetDraftEvent;
+use App\Helper\Reply;
+use App\Models\ProjectTimeLog;
 use App\Models\Task;
+use App\Models\User;
 use App\Models\WeeklyTimesheet;
 use App\Models\WeeklyTimesheetEntries;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
-use App\Helper\Reply;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Models\ProjectTimeLog;
-use App\Events\SubmitWeeklyTimesheet;
-use App\Events\WeeklyTimesheetApprovedEvent;
-use App\Events\WeeklyTimesheetDraftEvent;
-use App\Models\User;
-use Illuminate\Support\Facades\Http;
 
 class WeeklyTimesheetController extends AccountBaseController
 {
@@ -25,21 +24,19 @@ class WeeklyTimesheetController extends AccountBaseController
         $this->pageTitle = 'app.menu.weeklyTimesheets';
         $this->middleware(function ($request, $next) {
             $this->timelogMenuType = 'weekly-timesheets';
-            abort_403(!in_array('timelogs', $this->user->modules));
+            abort_403(! in_array('timelogs', $this->user->modules));
 
             return $next($request);
         });
     }
 
-
     public function index()
     {
 
         // get the user with the relation
-        $loginedUser = User::with('reportingTeam')->find(user()->id); 
+        $loginedUser = User::with('reportingTeam')->find(user()->id);
         $this->teamMembersCount = $loginedUser->reportingTeam ? $loginedUser->reportingTeam->count() : 0;
         $teamMembersIds = $loginedUser->reportingTeam ? $loginedUser->reportingTeam->pluck('user_id')->toArray() : [];
-        
 
         $this->timelogMenuType = 'weekly-timesheets';
 
@@ -48,22 +45,22 @@ class WeeklyTimesheetController extends AccountBaseController
         }
 
         if (request()->view == 'pending_approval') {
-            
-            if( 
-                !($this->teamMembersCount > 0 || in_array('admin', user_roles()))
-                ) {
+
+            if (
+                ! ($this->teamMembersCount > 0 || in_array('admin', user_roles()))
+            ) {
                 abort_403(true);
             }
-    
+
             $this->weeklyTimesheet = WeeklyTimesheet::where('weekly_timesheets.status', 'pending');
 
-            if ($this->teamMembersCount > 0 && !in_array('admin', user_roles())) {
-               
+            if ($this->teamMembersCount > 0 && ! in_array('admin', user_roles())) {
+
                 $this->weeklyTimesheet = $this->weeklyTimesheet->join('users', 'weekly_timesheets.user_id', 'users.id')
-                ->join('employee_details', 'employee_details.user_id', 'users.id')
-                ->whereIn('weekly_timesheets.user_id', $teamMembersIds);
+                    ->join('employee_details', 'employee_details.user_id', 'users.id')
+                    ->whereIn('weekly_timesheets.user_id', $teamMembersIds);
                 // ->whereIn('employee_details.reporting_to', [user()->id]);
-            } elseif ($this->teamMembersCount == 0 && !in_array('admin', user_roles())) {
+            } elseif ($this->teamMembersCount == 0 && ! in_array('admin', user_roles())) {
                 $this->weeklyTimesheet = $this->weeklyTimesheet->where('weekly_timesheets.user_id', user()->id);
             }
 
@@ -79,11 +76,11 @@ class WeeklyTimesheetController extends AccountBaseController
 
         $this->pendingApproval = WeeklyTimesheet::where('weekly_timesheets.status', 'pending');
 
-        if (user()->reportingTeam->count() > 0 && !in_array('admin', user_roles())) {
+        if (user()->reportingTeam->count() > 0 && ! in_array('admin', user_roles())) {
             $this->pendingApproval = $this->pendingApproval->join('users', 'weekly_timesheets.user_id', 'users.id')
-            ->join('employee_details', 'employee_details.user_id', 'users.id')
-            ->whereIn('employee_details.reporting_to', [user()->id]);
-        } elseif (user()->reportingTeam->count() == 0 && !in_array('admin', user_roles())) {
+                ->join('employee_details', 'employee_details.user_id', 'users.id')
+                ->whereIn('employee_details.reporting_to', [user()->id]);
+        } elseif (user()->reportingTeam->count() == 0 && ! in_array('admin', user_roles())) {
             $this->pendingApproval = $this->pendingApproval->where('weekly_timesheets.user_id', user()->id);
         }
 
@@ -105,12 +102,12 @@ class WeeklyTimesheetController extends AccountBaseController
         $this->weekPeriod = CarbonPeriod::create($this->weekStartDate, $this->weekEndDate); // Get All Dates from start to end date
 
         $this->weekTimesheet = WeeklyTimesheet::where('user_id', user()->id)
-        ->whereDate('week_start_date', $this->weekStartDate)
-        ->first();
+            ->whereDate('week_start_date', $this->weekStartDate)
+            ->first();
 
         $weekDates = [];
 
-        foreach($this->weekPeriod as $date) {
+        foreach ($this->weekPeriod as $date) {
             $dateFormatted = $date->format('Y-m-d');
             $weekDates[] = $dateFormatted;
         }
@@ -121,10 +118,10 @@ class WeeklyTimesheetController extends AccountBaseController
                 return $query->where(function ($q) {
                     // Task starts before or on end date AND ends after or on start date
                     $q->whereDate('tasks.start_date', '<=', $this->weekEndDate)
-                      ->where(function ($q) {
-                        $q->whereDate('tasks.due_date', '>=', $this->weekStartDate)
-                          ->orWhereNull('tasks.due_date');
-                      });
+                        ->where(function ($q) {
+                            $q->whereDate('tasks.due_date', '>=', $this->weekStartDate)
+                                ->orWhereNull('tasks.due_date');
+                        });
                 });
             })
             ->with('project:id,project_name')
@@ -151,27 +148,27 @@ class WeeklyTimesheetController extends AccountBaseController
         $hasHours = false;
         foreach ($hours as $hourRow) {
             foreach ($hourRow as $hour) {
-            if ($hour > 0) {
-                $hasHours = true;
-                break 2;
-            }
+                if ($hour > 0) {
+                    $hasHours = true;
+                    break 2;
+                }
             }
         }
 
-        if (!$hasHours) {
+        if (! $hasHours) {
             return Reply::error(__('messages.enterAtLeastOneHour'));
         }
 
         $this->validate($request, [
-            'task_ids' => 'required'
+            'task_ids' => 'required',
         ], [], [
-            'task_ids' => __('app.task')
+            'task_ids' => __('app.task'),
         ]);
 
         reset($taskIds);
 
         $firstKey = key($taskIds);
-        
+
         $weeklyTimesheet = WeeklyTimesheet::firstOrNew(['user_id' => user()->id, 'week_start_date' => $dates[$firstKey][0]]);
         $weeklyTimesheet->status = $request->status;
         $weeklyTimesheet->save();
@@ -181,7 +178,7 @@ class WeeklyTimesheetController extends AccountBaseController
 
         foreach ($taskIds as $key => $taskId) {
 
-            foreach($dates[$key] as $key2 => $date) {
+            foreach ($dates[$key] as $key2 => $date) {
                 $weeklyTimesheetEntry = WeeklyTimesheetEntries::firstOrNew(['weekly_timesheet_id' => $weeklyTimesheet->id, 'date' => $date, 'task_id' => $taskId]);
 
                 if ($weeklyTimesheetEntry->exists) {
@@ -195,7 +192,7 @@ class WeeklyTimesheetController extends AccountBaseController
 
                 if ($weeklyTimesheet->status == 'pending' && $weeklyTimesheetEntry->hours > 0) {
 
-                    $timeLog = new ProjectTimeLog();
+                    $timeLog = new ProjectTimeLog;
                     $timeLog->task_id = $taskId;
                     $timeLog->user_id = $weeklyTimesheet->user_id;
                     $timeLog->total_hours = $weeklyTimesheetEntry->hours;
@@ -220,9 +217,9 @@ class WeeklyTimesheetController extends AccountBaseController
     public function changeStatus(Request $request)
     {
         $this->validate($request, [
-            'reason' => 'required_if:status,draft'
+            'reason' => 'required_if:status,draft',
         ], [
-        'reason.required_if' => ':attribute ' . __('app.required')
+            'reason.required_if' => ':attribute '.__('app.required'),
         ]);
 
         $weeklyTimesheet = WeeklyTimesheet::find($request->timesheetId);
@@ -239,7 +236,7 @@ class WeeklyTimesheetController extends AccountBaseController
 
         if ($request->status == 'draft') {
             ProjectTimeLog::where('weekly_timesheet_id', $weeklyTimesheet->id)->delete();
-                    
+
             WeeklyTimesheetDraftEvent::dispatch($weeklyTimesheet);
         }
 
@@ -256,7 +253,7 @@ class WeeklyTimesheetController extends AccountBaseController
 
         $weekDates = [];
 
-        foreach($this->weekPeriod as $date) {
+        foreach ($this->weekPeriod as $date) {
             $dateFormatted = $date->format('Y-m-d');
             $weekDates[] = $dateFormatted;
         }
@@ -264,7 +261,7 @@ class WeeklyTimesheetController extends AccountBaseController
         $this->weekDates = $weekDates;
 
         if (request()->ajax()) {
-            $this->pageTitle = __('app.menu.weeklyTimesheets') . ' ' . __('app.details');
+            $this->pageTitle = __('app.menu.weeklyTimesheets').' '.__('app.details');
             $view = 'weekly-timesheets.ajax.show';
 
             return $this->returnAjax($view);
@@ -278,6 +275,7 @@ class WeeklyTimesheetController extends AccountBaseController
     public function showRejectModal(Request $request)
     {
         $this->weeklyTimesheet = WeeklyTimesheet::findOrFail($request->timesheet_id);
+
         return view('weekly-timesheets.reject_modal', $this->data);
     }
 
@@ -285,31 +283,29 @@ class WeeklyTimesheetController extends AccountBaseController
     {
         $this->weeklyTimesheet = WeeklyTimesheet::findOrFail($id);
 
-        
-
         $this->weekStartDate = $this->weeklyTimesheet->week_start_date;
         $this->weekEndDate = $this->weekStartDate->copy()->addDays(6);
         $this->weekPeriod = CarbonPeriod::create($this->weekStartDate, $this->weekEndDate); // Get All Dates from start to end date
-        
+
         $this->weekTimesheet = WeeklyTimesheet::where('user_id', user()->id)
-        ->whereDate('week_start_date', $this->weekStartDate)
-        ->first();
+            ->whereDate('week_start_date', $this->weekStartDate)
+            ->first();
 
         $weekDates = [];
 
-        foreach($this->weekPeriod as $date) {
+        foreach ($this->weekPeriod as $date) {
             $dateFormatted = $date->format('Y-m-d');
             $weekDates[] = $dateFormatted;
         }
 
         $tasks = Task::leftJoin('task_users', 'task_users.task_id', '=', 'tasks.id')
-        ->where('task_users.user_id', '=', user()->id)
-        ->where(function ($query) {
-            return $query->whereBetween(DB::raw('DATE(tasks.`start_date`)'), [$this->weekStartDate, $this->weekEndDate])
-            ->orWhereBetween(DB::raw('DATE(tasks.`due_date`)'), [$this->weekStartDate, $this->weekEndDate]);
-        })
-        ->with('project:id,project_name')
-        ->select('tasks.id', 'tasks.heading', 'tasks.project_id')->get();
+            ->where('task_users.user_id', '=', user()->id)
+            ->where(function ($query) {
+                return $query->whereBetween(DB::raw('DATE(tasks.`start_date`)'), [$this->weekStartDate, $this->weekEndDate])
+                    ->orWhereBetween(DB::raw('DATE(tasks.`due_date`)'), [$this->weekStartDate, $this->weekEndDate]);
+            })
+            ->with('project:id,project_name')
+            ->select('tasks.id', 'tasks.heading', 'tasks.project_id')->get();
 
         $this->tasksForWeek = $tasks;
         $this->weekDates = $weekDates;
@@ -319,8 +315,8 @@ class WeeklyTimesheetController extends AccountBaseController
         $now = now();
         $this->year = $now->format('Y');
         $this->month = $now->format('m');
+
         return view('weekly-timesheets.edit', $this->data);
 
     }
-
 }

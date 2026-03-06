@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class AutomateShift extends BaseModel
 {
-
     use HasFactory;
 
     protected $table = 'automate_shifts';
@@ -27,5 +26,4 @@ class AutomateShift extends BaseModel
     {
         return $this->hasMany(ShiftRotationSequence::class, 'employee_shift_rotation_id');
     }
-
 }

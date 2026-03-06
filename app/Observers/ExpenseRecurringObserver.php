@@ -8,17 +8,16 @@ use App\Models\Notification;
 
 class ExpenseRecurringObserver
 {
-
     public function saving(ExpenseRecurring $expense)
     {
-        if (!isRunningInConsoleOrSeeding() && user()) {
+        if (! isRunningInConsoleOrSeeding() && user()) {
             $expense->last_updated_by = user()->id;
         }
     }
 
     public function creating(ExpenseRecurring $expense)
     {
-        if (!isRunningInConsoleOrSeeding() && user()) {
+        if (! isRunningInConsoleOrSeeding() && user()) {
             $expense->added_by = user()->id;
         }
 
@@ -27,29 +26,29 @@ class ExpenseRecurringObserver
         }
 
         switch ($expense->rotation) {
-        case 'daily':
-            $days = $expense->issue_date->addDay();
-            break;
-        case 'weekly':
-            $days = $expense->issue_date->addWeek();
-            break;
-        case 'bi-weekly':
-            $days = $expense->issue_date->addWeeks(2);
-            break;
-        case 'monthly':
-            $days = $expense->issue_date->addMonth();
-            break;
-        case 'quarterly':
-            $days = $expense->issue_date->addQuarter();
-            break;
-        case 'half-yearly':
-            $days = $expense->issue_date->addMonths(6);
-            break;
-        case 'annually':
-            $days = $expense->issue_date->addYear();
-            break;
-        default:
-            $days = $expense->issue_date->addDay();
+            case 'daily':
+                $days = $expense->issue_date->addDay();
+                break;
+            case 'weekly':
+                $days = $expense->issue_date->addWeek();
+                break;
+            case 'bi-weekly':
+                $days = $expense->issue_date->addWeeks(2);
+                break;
+            case 'monthly':
+                $days = $expense->issue_date->addMonth();
+                break;
+            case 'quarterly':
+                $days = $expense->issue_date->addQuarter();
+                break;
+            case 'half-yearly':
+                $days = $expense->issue_date->addMonths(6);
+                break;
+            case 'annually':
+                $days = $expense->issue_date->addYear();
+                break;
+            default:
+                $days = $expense->issue_date->addDay();
         }
 
         $expense->next_expense_date = $days->format('Y-m-d');
@@ -57,7 +56,7 @@ class ExpenseRecurringObserver
 
     public function created(ExpenseRecurring $expense)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             event(new NewExpenseRecurringEvent($expense, ''));
         }
     }
@@ -88,14 +87,14 @@ class ExpenseRecurringObserver
                 break;
             default:
                 $days = $expense->issue_date->addDay();
-            }
+        }
 
-            $expense->next_expense_date = $days->format('Y-m-d');
+        $expense->next_expense_date = $days->format('Y-m-d');
     }
 
     public function updated(ExpenseRecurring $expense)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             if ($expense->isDirty('status')) {
                 event(new NewExpenseRecurringEvent($expense, 'status'));
             }
@@ -108,5 +107,4 @@ class ExpenseRecurringObserver
         Notification::deleteNotification($notifyData, $expense->id);
 
     }
-
 }

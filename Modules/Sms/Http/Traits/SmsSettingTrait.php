@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Config;
 
 trait SmsSettingTrait
 {
-
     public function setConfig()
     {
         $smsSettings = \Modules\Sms\Entities\SmsSetting::first();
@@ -26,5 +25,4 @@ trait SmsSettingTrait
         }
         (new \Illuminate\Notifications\VonageChannelServiceProvider(app()))->register();
     }
-
 }

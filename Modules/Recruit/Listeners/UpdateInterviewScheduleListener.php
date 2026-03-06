@@ -9,7 +9,6 @@ use Notification;
 
 class UpdateInterviewScheduleListener
 {
-
     /**
      * Create the event listener.
      *
@@ -23,7 +22,7 @@ class UpdateInterviewScheduleListener
     /**
      * Handle the event.
      *
-     * @param object $event
+     * @param  object  $event
      * @return void
      */
     public function handle(UpdateInterviewScheduleEvent $interview)
@@ -33,5 +32,4 @@ class UpdateInterviewScheduleListener
 
         Notification::send($interview->employee, new UpdateScheduleInterview($interview->interview));
     }
-
 }

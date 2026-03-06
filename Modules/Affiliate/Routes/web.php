@@ -1,13 +1,13 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Modules\Affiliate\Http\Controllers\PayoutController;
 use Modules\Affiliate\Http\Controllers\AffiliateController;
-use Modules\Affiliate\Http\Controllers\ReferralsController;
-use Modules\Affiliate\Http\Controllers\DashBoardController;
-use Modules\Affiliate\Http\Controllers\AffiliateSettingController;
 use Modules\Affiliate\Http\Controllers\AffiliateDashboardController;
 use Modules\Affiliate\Http\Controllers\AffiliatePublicController;
+use Modules\Affiliate\Http\Controllers\AffiliateSettingController;
+use Modules\Affiliate\Http\Controllers\DashBoardController;
+use Modules\Affiliate\Http\Controllers\PayoutController;
+use Modules\Affiliate\Http\Controllers\ReferralsController;
 
 Route::group(['middleware' => 'auth', 'prefix' => 'account'], function () {
     Route::resource('affiliates-dashboard', DashBoardController::class)->names('dashboard')->only(['index']);

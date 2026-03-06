@@ -3,20 +3,20 @@
 namespace App\Exports;
 
 use App\Http\Controllers\AccountBaseController;
-use App\Models\User;
+use App\Models\AttendanceSetting;
+use App\Models\EmployeeShift;
+use App\Models\EmployeeShiftSchedule;
 use App\Models\Holiday;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
-use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithEvents;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Events\AfterSheet;
-use App\Models\AttendanceSetting;
-use App\Models\EmployeeShiftSchedule;
-use App\Models\EmployeeShift;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 /**
  * App\Exports\EmployeeTimelogs
@@ -24,18 +24,18 @@ use App\Models\EmployeeShift;
  * @property-read EmployeeTimelogs $user
  * @property-read EmployeeTimelogs $modules
  * @property-read EmployeeTimelogs $viewTimeLogPermission
+ *
  * @mixin Eloquent
  */
-class EmployeeTimelogs extends AccountBaseController implements FromView, ShouldAutoSize, WithStyles, WithEvents
+class EmployeeTimelogs extends AccountBaseController implements FromView, ShouldAutoSize, WithEvents, WithStyles
 {
-
     private $viewTimelogPermission;
 
     public function __construct()
     {
         parent::__construct();
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('timelogs', $this->user->modules));
+            abort_403(! in_array('timelogs', $this->user->modules));
 
             return $next($request);
         });
@@ -56,25 +56,25 @@ class EmployeeTimelogs extends AccountBaseController implements FromView, Should
         $where = '';
 
         if ($projectId != 'all') {
-            $where .= ' and project_time_logs.project_id="' . $projectId . '" ';
+            $where .= ' and project_time_logs.project_id="'.$projectId.'" ';
         }
 
         $this->employees = $this->employees->select(
             'users.name',
             'users.id',
             DB::raw(
-                "(SELECT SUM(project_time_logs.total_minutes) FROM project_time_logs WHERE project_time_logs.user_id = users.id and DATE(project_time_logs.start_time) >= '" . $startDate . "' and DATE(project_time_logs.start_time) <= '" . $endDate . "' '" . $where . "' GROUP BY project_time_logs.user_id) as total_minutes"
+                "(SELECT SUM(project_time_logs.total_minutes) FROM project_time_logs WHERE project_time_logs.user_id = users.id and DATE(project_time_logs.start_time) >= '".$startDate."' and DATE(project_time_logs.start_time) <= '".$endDate."' '".$where."' GROUP BY project_time_logs.user_id) as total_minutes"
             ),
             DB::raw(
-                "(SELECT Count(leaves.id) FROM leaves WHERE leaves.user_id = users.id and leaves.status = 'approved' and DATE(leaves.leave_date) >= '" . $startDate . "' and DATE(leaves.leave_date) <= '" . $endDate . "' GROUP BY leaves.user_id) as total_leaves"
+                "(SELECT Count(leaves.id) FROM leaves WHERE leaves.user_id = users.id and leaves.status = 'approved' and DATE(leaves.leave_date) >= '".$startDate."' and DATE(leaves.leave_date) <= '".$endDate."' GROUP BY leaves.user_id) as total_leaves"
             )
         );
 
-        if (!is_null($employee) && $employee !== 'all') {
+        if (! is_null($employee) && $employee !== 'all') {
             $this->employees = $this->employees->where('project_time_logs.user_id', $employee);
         }
 
-        if (!is_null($projectId) && $projectId !== 'all') {
+        if (! is_null($projectId) && $projectId !== 'all') {
             $this->employees = $this->employees->where('project_time_logs.project_id', '=', $projectId);
         }
 
@@ -119,16 +119,16 @@ class EmployeeTimelogs extends AccountBaseController implements FromView, Should
 
             $isHoliday = Holiday::where('date', $start)
                 ->where(function ($query) use ($user) {
-                    $query->orWhere('department_id_json', 'like', '%"' . $user->employeeDetail->department_id . '"%')
+                    $query->orWhere('department_id_json', 'like', '%"'.$user->employeeDetail->department_id.'"%')
                         ->orWhereNull('department_id_json');
                 })
                 ->where(function ($query) use ($user) {
-                    $query->orWhere('designation_id_json', 'like', '%"' . $user->employeeDetail->designation_id . '"%')
+                    $query->orWhere('designation_id_json', 'like', '%"'.$user->employeeDetail->designation_id.'"%')
                         ->orWhereNull('designation_id_json');
                 })
                 ->where(function ($query) use ($user) {
-                    if (!is_Null($user->employeeDetail->employment_type)) {
-                        $query->orWhere('employment_type_json', 'like', '%"' . $user->employeeDetail->employment_type . '"%')
+                    if (! is_null($user->employeeDetail->employment_type)) {
+                        $query->orWhere('employment_type_json', 'like', '%"'.$user->employeeDetail->employment_type.'"%')
                             ->orWhereNull('employment_type_json');
                     }
                 })->exists();
@@ -141,6 +141,7 @@ class EmployeeTimelogs extends AccountBaseController implements FromView, Should
 
             if ($isHoliday || $isOnLeave) {
                 $start->addDay();
+
                 continue;
             }
 
@@ -191,15 +192,16 @@ class EmployeeTimelogs extends AccountBaseController implements FromView, Should
                         $holidayComments = $holidays->map(function ($holiday) {
                             $occasion = $holiday->occassion;
                             $date = Carbon::parse($holiday->date)->format('d/m/Y');
-                            return __('modules.holiday.occasion') . ": {$occasion} (" . __('modules.holiday.date') . " - {$date})";
+
+                            return __('modules.holiday.occasion').": {$occasion} (".__('modules.holiday.date')." - {$date})";
                         })->toArray();
 
                         $holidayComment = implode(', ', $holidayComments);
-                        $cell = 'F' . ($row + $index);
+                        $cell = 'F'.($row + $index);
                         $sheet->getComment($cell)->getText()->createTextRun($holidayComment);
                     }
                 }
-            }
+            },
         ];
     }
 
@@ -207,6 +209,7 @@ class EmployeeTimelogs extends AccountBaseController implements FromView, Should
     {
         $start = Carbon::parse($startDate);
         $end = Carbon::parse($endDate);
+
         return $start->diffInDays($end) + 1;
     }
 
@@ -232,15 +235,15 @@ class EmployeeTimelogs extends AccountBaseController implements FromView, Should
 
         $holidays->where(function ($query) use ($user) {
             $query->where(function ($q) use ($user) {
-                $q->orWhere('department_id_json', 'like', '%"' . $user->employeeDetails->department_id . '"%')
+                $q->orWhere('department_id_json', 'like', '%"'.$user->employeeDetails->department_id.'"%')
                     ->orWhereNull('department_id_json');
             });
             $query->where(function ($q) use ($user) {
-                $q->orWhere('designation_id_json', 'like', '%"' . $user->employeeDetails->designation_id . '"%')
+                $q->orWhere('designation_id_json', 'like', '%"'.$user->employeeDetails->designation_id.'"%')
                     ->orWhereNull('designation_id_json');
             });
             $query->where(function ($q) use ($user) {
-                $q->orWhere('employment_type_json', 'like', '%"' . $user->employeeDetails->employment_type . '"%')
+                $q->orWhere('employment_type_json', 'like', '%"'.$user->employeeDetails->employment_type.'"%')
                     ->orWhereNull('employment_type_json');
             });
         });

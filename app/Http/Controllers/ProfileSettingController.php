@@ -9,7 +9,6 @@ use App\Models\User;
 
 class ProfileSettingController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -35,34 +34,33 @@ class ProfileSettingController extends AccountBaseController
 
         switch ($tab) {
 
-        case 'emergency-contacts':
-            $this->contacts = EmergencyContact::where('user_id', user()->id)->get();
-            $this->view = 'profile-settings.ajax.emergency-contacts';
-            break;
-        case 'documents':
-            if (in_array('client', user_roles())) {
-                abort_403(($viewClientDocumentPermission == 'none'));
-                $this->view = 'profile-settings.ajax.client.index';
-            }
-            else {
-                abort_403(($viewDocumentPermission == 'none'));
-                $this->view = 'profile-settings.ajax.employee.index';
-            }
+            case 'emergency-contacts':
+                $this->contacts = EmergencyContact::where('user_id', user()->id)->get();
+                $this->view = 'profile-settings.ajax.emergency-contacts';
+                break;
+            case 'documents':
+                if (in_array('client', user_roles())) {
+                    abort_403(($viewClientDocumentPermission == 'none'));
+                    $this->view = 'profile-settings.ajax.client.index';
+                } else {
+                    abort_403(($viewDocumentPermission == 'none'));
+                    $this->view = 'profile-settings.ajax.employee.index';
+                }
 
-            break;
-        default:
-            $this->view = 'profile-settings.ajax.profile';
-            break;
+                break;
+            default:
+                $this->view = 'profile-settings.ajax.profile';
+                break;
         }
 
         $this->activeTab = $tab ?: 'profile';
 
         if (request()->ajax()) {
             $html = view($this->view, $this->data)->render();
+
             return Reply::dataOnly(['status' => 'success', 'html' => $html, 'title' => $this->pageTitle, 'activeTab' => $this->activeTab]);
         }
 
         return view('profile-settings.index', $this->data);
     }
-
 }

@@ -1,11 +1,11 @@
 <?php
 
-use App\Models\Role;
-use App\Models\User;
-use App\Models\Module;
 use App\Models\Company;
+use App\Models\Module;
 use App\Models\Permission;
 use App\Models\PermissionRole;
+use App\Models\Role;
+use App\Models\User;
 use App\Models\UserPermission;
 use Illuminate\Database\Migrations\Migration;
 
@@ -26,8 +26,8 @@ return new class extends Migration
                     'name' => 'view_employee_menu',
                     'display_name' => 'View Employee Menu',
                     'allowed_permissions' => Permission::ALL_NONE,
-                    'is_custom' => 1
-                ]
+                    'is_custom' => 1,
+                ],
             ];
 
             $companies = Company::select('id')->get();
@@ -54,14 +54,14 @@ return new class extends Migration
                             ->where('role_id', $adminRole->id)
                             ->first();
 
-                        $permissionRole = $permissionRole ?: new PermissionRole();
+                        $permissionRole = $permissionRole ?: new PermissionRole;
                         $permissionRole->permission_id = $permission->id;
                         $permissionRole->role_id = $adminRole->id;
                         $permissionRole->permission_type_id = 4; // All
                         $permissionRole->save();
                     }
 
-                    // Add permission to employee role 
+                    // Add permission to employee role
                     $employeeRole = Role::with('roleuser.user.role')->where('name', 'employee')
                         ->where('company_id', $company->id)
                         ->first();
@@ -71,25 +71,25 @@ return new class extends Migration
                             ->where('role_id', $employeeRole->id)
                             ->first();
 
-                        $permissionRole = $permissionRole ?: new PermissionRole();
+                        $permissionRole = $permissionRole ?: new PermissionRole;
                         $permissionRole->permission_id = $permission->id;
                         $permissionRole->role_id = $employeeRole->id;
                         $permissionRole->permission_type_id = 4;
                         $permissionRole->save();
-                        
+
                         // Add user permissions for employees who don't have customized permissions
                         foreach ($employeeRole->roleuser as $roleuser) {
                             if ($roleuser->user && count($roleuser->user->role) == 1 && $roleuser->user->customised_permissions == 0) {
                                 $userPermission = UserPermission::where('user_id', $roleuser->user->id)
                                     ->where('permission_id', $permission->id)
-                                    ->first() ?: new UserPermission();
+                                    ->first() ?: new UserPermission;
                                 $userPermission->user_id = $roleuser->user->id;
                                 $userPermission->permission_id = $permission->id;
                                 $userPermission->permission_type_id = 4; // All
                                 $userPermission->save();
-                                
+
                                 // Clear cache for this user
-                                cache()->forget('sidebar_user_perms_' . $roleuser->user->id);
+                                cache()->forget('sidebar_user_perms_'.$roleuser->user->id);
                             }
                         }
                     }
@@ -104,25 +104,25 @@ return new class extends Migration
                             ->where('role_id', $customRole->id)
                             ->first();
 
-                        $permissionRole = $permissionRole ?: new PermissionRole();
+                        $permissionRole = $permissionRole ?: new PermissionRole;
                         $permissionRole->permission_id = $permission->id;
                         $permissionRole->role_id = $customRole->id;
                         $permissionRole->permission_type_id = 4;
                         $permissionRole->save();
-                        
+
                         // Add user permissions for custom role users who don't have customized permissions
                         foreach ($customRole->roleuser as $roleuser) {
                             if ($roleuser->user && $roleuser->user->customised_permissions == 0) {
                                 $userPermission = UserPermission::where('user_id', $roleuser->user->id)
                                     ->where('permission_id', $permission->id)
-                                    ->first() ?: new UserPermission();
+                                    ->first() ?: new UserPermission;
                                 $userPermission->user_id = $roleuser->user->id;
                                 $userPermission->permission_id = $permission->id;
                                 $userPermission->permission_type_id = 4; // All
                                 $userPermission->save();
-                                
+
                                 // Clear cache for this user
-                                cache()->forget('sidebar_user_perms_' . $roleuser->user->id);
+                                cache()->forget('sidebar_user_perms_'.$roleuser->user->id);
                             }
                         }
                     }
@@ -134,18 +134,18 @@ return new class extends Migration
                 foreach ($adminUsers as $adminUser) {
                     $userPermission = UserPermission::where('user_id', $adminUser->id)
                         ->where('permission_id', $permission->id)
-                        ->first() ?: new UserPermission();
+                        ->first() ?: new UserPermission;
                     $userPermission->user_id = $adminUser->id;
                     $userPermission->permission_id = $permission->id;
                     $userPermission->permission_type_id = 4; // All
                     $userPermission->save();
-                    
+
                     // Clear cache for this user
-                    cache()->forget('sidebar_user_perms_' . $adminUser->id);
+                    cache()->forget('sidebar_user_perms_'.$adminUser->id);
                 }
             }
         }
-        
+
         // Clear application cache
         \Illuminate\Support\Facades\Artisan::call('cache:clear');
     }
@@ -157,7 +157,7 @@ return new class extends Migration
     {
         $module = Module::where('module_name', 'employees')->first();
 
-        if (!is_null($module)) {
+        if (! is_null($module)) {
             $permissions = ['view_employee_menu'];
 
             foreach ($permissions as $permissionName) {

@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 return [
-  'webhookName' => 'Напишіть назву вебхука',
+    'webhookName' => 'Напишіть назву вебхука',
 ];

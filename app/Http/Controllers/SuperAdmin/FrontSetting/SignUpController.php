@@ -3,19 +3,18 @@
 namespace App\Http\Controllers\SuperAdmin\FrontSetting;
 
 use App\Helper\Reply;
-use Illuminate\Http\Request;
-use App\Models\GlobalSetting;
-use App\Models\LanguageSetting;
-use App\Models\SuperAdmin\SignUpSetting;
 use App\Http\Controllers\AccountBaseController;
 use App\Http\Requests\Admin\SignUpSetting\SignUpSettingRequest;
+use App\Models\GlobalSetting;
+use App\Models\LanguageSetting;
 use App\Models\SuperAdmin\FrontDetail;
-use App\Models\UserAuth;
+use App\Models\SuperAdmin\SignUpSetting;
 use App\Models\User;
+use App\Models\UserAuth;
+use Illuminate\Http\Request;
 
 class SignUpController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -73,8 +72,8 @@ class SignUpController extends AccountBaseController
 
         $setting = SignUpSetting::where('language_setting_id', $request->language_setting_id == 0 ? null : $request->language_setting_id)->first();
 
-        if (!$setting) {
-            $setting = new SignUpSetting();
+        if (! $setting) {
+            $setting = new SignUpSetting;
         }
 
         $setting->language_setting_id = $request->language_setting_id == 0 ? null : $request->language_setting_id;
@@ -89,7 +88,7 @@ class SignUpController extends AccountBaseController
 
         return Reply::successWithData(__('messages.updateSuccess'), [
             'data' => $request->message,
-            'lang' => $setting->language->language_code
+            'lang' => $setting->language->language_code,
         ]);
     }
 
@@ -121,5 +120,4 @@ class SignUpController extends AccountBaseController
         return Reply::redirect(route('dashboard'), __('superadmin.emailVerificationCode.verifiedSuccess'));
 
     }
-
 }

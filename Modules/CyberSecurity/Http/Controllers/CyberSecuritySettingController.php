@@ -13,14 +13,13 @@ use Modules\CyberSecurity\Http\Requests\StoreSecurityRequest;
 
 class CyberSecuritySettingController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'cybersecurity::app.menu.cybersecurity';
         $this->activeSettingMenu = 'cybersecurity';
         $this->middleware(function ($request, $next) {
-            abort_403(!user()->is_superadmin);
+            abort_403(! user()->is_superadmin);
 
             return $next($request);
         });
@@ -28,6 +27,7 @@ class CyberSecuritySettingController extends AccountBaseController
 
     /**
      * Display a listing of the resource.
+     *
      * @return Renderable
      */
     public function index()
@@ -70,8 +70,8 @@ class CyberSecuritySettingController extends AccountBaseController
 
     /**
      * Update the specified resource in storage.
-     * @param StoreSecurityRequest $request
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function update(StoreSecurityRequest $request, $id)
@@ -90,7 +90,7 @@ class CyberSecuritySettingController extends AccountBaseController
     }
 
     /**
-     * @param mixed $request
+     * @param  mixed  $request
      * @return void
      */
     public function updateSecurity(StoreSecurityRequest $request)
@@ -108,7 +108,6 @@ class CyberSecuritySettingController extends AccountBaseController
     }
 
     /**
-     * @param StoreSecurityRequest $request
      * @return void
      */
     public function updateSingleSession(StoreSecurityRequest $request)

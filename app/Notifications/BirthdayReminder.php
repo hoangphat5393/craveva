@@ -3,16 +3,15 @@
 namespace App\Notifications;
 
 use App\Models\EmailNotificationSetting;
-use App\Models\GlobalSetting;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\HtmlString;
 
 class BirthdayReminder extends BaseNotification
 {
-
     private $birthDays;
+
     private $count;
+
     private $emailSetting;
 
     /**
@@ -32,13 +31,13 @@ class BirthdayReminder extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
     {
 
-        $via = array('database');
+        $via = ['database'];
 
         if ($this->emailSetting->send_email == 'yes' && $notifiable->email_notifications && $notifiable->email != '') {
             array_push($via, 'mail');
@@ -54,8 +53,7 @@ class BirthdayReminder extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
-     * @return MailMessage
+     * @param  mixed  $notifiable
      */
     // phpcs:ignore
     public function toMail($notifiable): MailMessage
@@ -65,7 +63,7 @@ class BirthdayReminder extends BaseNotification
         $list = '<ol>';
 
         foreach ($this->birthDays->upcomingBirthdays as $birthDay) {
-            $list .= '<li>' . $birthDay['name'] . '</li>';
+            $list .= '<li>'.$birthDay['name'].'</li>';
         }
 
         $list .= '</ol>';
@@ -73,15 +71,15 @@ class BirthdayReminder extends BaseNotification
         $url = route('dashboard');
         $url = getDomainSpecificUrl($url, $this->company);
 
-        $content = __('email.BirthdayReminder.text') . '<br>' . new HtmlString($list);
+        $content = __('email.BirthdayReminder.text').'<br>'.new HtmlString($list);
 
         $build
-            ->subject($this->count . ' ' . __('email.BirthdayReminder.subject'))
+            ->subject($this->count.' '.__('email.BirthdayReminder.subject'))
             ->markdown('mail.email', [
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
-                'actionText' => __('email.BirthdayReminder.action')
+                'actionText' => __('email.BirthdayReminder.action'),
             ]);
 
         parent::resetLocale();
@@ -99,17 +97,15 @@ class BirthdayReminder extends BaseNotification
         $name = '';
 
         foreach ($this->birthDays->upcomingBirthdays as $key => $birthDay) {
-            $name .= '>' . ($key + 1) . '. ' . $birthDay['name'] . "\n";
+            $name .= '>'.($key + 1).'. '.$birthDay['name']."\n";
         }
 
         if ($notifiable->employeeDetail->slack_username) {
             return $this->slackBuild($notifiable)
-                ->content('>*' . __('email.BirthdayReminder.text') . ' :birthday: *' . "\n" . $name . ' ');
+                ->content('>*'.__('email.BirthdayReminder.text').' :birthday: *'."\n".$name.' ');
         }
-
 
         return $this->slackRedirectMessage('email.BirthdayReminder.text', $notifiable);
 
     }
-
 }

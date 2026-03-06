@@ -21,12 +21,10 @@ class SmsNewExpenseListener
         try {
             if ($event->status == 'admin') {
                 Notification::send($event->expense->user, new NewExpenseMemberSms($event->expense));
-            }
-            elseif ($event->status == 'member') {
+            } elseif ($event->status == 'member') {
                 Notification::send(User::allAdmins($event->expense->company->id), new NewExpenseAdminSms($event->expense));
             }
         } catch (\Exception $e) { // @codingStandardsIgnoreLine
         }
     }
-
 }

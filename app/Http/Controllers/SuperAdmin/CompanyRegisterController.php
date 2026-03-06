@@ -24,7 +24,6 @@ use Symfony\Component\Mailer\Exception\TransportException;
 
 class CompanyRegisterController extends FrontBaseController
 {
-
     public function index()
     {
         $this->global = GlobalSetting::first();
@@ -32,7 +31,7 @@ class CompanyRegisterController extends FrontBaseController
         $user = user();
 
         if ($user) {
-            if (!is_null($user->company_id)) {
+            if (! is_null($user->company_id)) {
                 return redirect(getDomainSpecificUrl(route('login'), $user->company));
             }
 
@@ -45,11 +44,9 @@ class CompanyRegisterController extends FrontBaseController
 
         $view = ($this->setting->front_design == 1) ? 'super-admin.saas.register' : 'super-admin.front.register';
 
-
         if ($this->global->frontend_disable || $this->global->setup_homepage == 'custom') {
             $view = 'super-admin.register';
         }
-
 
         $this->trFrontDetail = TrFrontDetail::where('language_setting_id', $this->localeLanguage->id)->first();
         $this->trFrontDetail = $this->trFrontDetail ?: TrFrontDetail::where('language_setting_id', $this->enLocaleLanguage->id)->first();
@@ -67,23 +64,23 @@ class CompanyRegisterController extends FrontBaseController
 
         $global = GlobalSetting::first();
 
-        if (!$global->registration_open) {
+        if (! $global->registration_open) {
             abort_403('Registration Disabled');
         }
 
-        if ($global->google_recaptcha_status == 'active' && !$this->recaptchaValidate($request)) {
+        if ($global->google_recaptcha_status == 'active' && ! $this->recaptchaValidate($request)) {
             return Reply::error('Recaptcha not validated.');
         }
 
         DB::beginTransaction();
 
         try {
-            $company = new Company();
+            $company = new Company;
             $company->company_name = $request->company_name;
             $company->company_email = $request->email;
             $company->address = $request->company_name;
             $company->app_name = $request->company_name;
-            
+
             // Add phone number to company if provided
             if ($global->sign_up_phone_field == 'yes' && $request->has('phone')) {
                 $company->company_phone = $request->phone;
@@ -99,8 +96,8 @@ class CompanyRegisterController extends FrontBaseController
 
             DB::commit();
 
-            if (!$global->company_need_approval) {
-                if (!module_enabled('Subdomain')) {
+            if (! $global->company_need_approval) {
+                if (! module_enabled('Subdomain')) {
                     Auth::loginUsingId($user->user_auth_id);
                 }
             } else {
@@ -111,11 +108,11 @@ class CompanyRegisterController extends FrontBaseController
         } catch (TransportException $e) {
             DB::rollback();
 
-            return Reply::error('Please contact administrator to set SMTP details to add company.<br>' . $e->getMessage(), 'smtp_error');
+            return Reply::error('Please contact administrator to set SMTP details to add company.<br>'.$e->getMessage(), 'smtp_error');
         } catch (\Exception $e) {
             DB::rollback();
 
-            return Reply::error('Some error occurred when inserting the data. Please try again or contact support: ' . $e->getMessage());
+            return Reply::error('Some error occurred when inserting the data. Please try again or contact support: '.$e->getMessage());
         }
 
         return Reply::redirect(getDomainSpecificUrl(route('login'), $company), __('superadmin.signUpThankYou'));
@@ -138,7 +135,7 @@ class CompanyRegisterController extends FrontBaseController
             ->first();
 
         if (is_null($user)) {
-            $user = new User();
+            $user = new User;
         }
 
         $userAuth = UserAuth::createUserAuthCredentials($request->email);
@@ -151,15 +148,15 @@ class CompanyRegisterController extends FrontBaseController
         $user->user_auth_id = $userAuth->id;
         $user->locale = $company->locale;
         $user->country_id = $countryId;
-        
+
         // Add phone if provided
         if ($global->sign_up_phone_field == 'yes' && $request->has('phone')) {
             $user->mobile = $request->phone;
         }
-        
+
         $user->save();
 
-        if ($global->email_verification && !$global->company_need_approval && !module_enabled('Subdomain')) {
+        if ($global->email_verification && ! $global->company_need_approval && ! module_enabled('Subdomain')) {
             $userAuth->sendEmailVerificationNotification();
         }
 
@@ -168,7 +165,7 @@ class CompanyRegisterController extends FrontBaseController
             $user->notify(new NewUser($user, $request->password, signup: true));
         }
 
-        if (!$user->hasRole('admin')) {
+        if (! $user->hasRole('admin')) {
 
             // Attach Admin Role
             $adminRole = Role::withoutGlobalScope(CompanyScope::class)->where('name', 'admin')->where('company_id', $company->id)->first();
@@ -186,7 +183,7 @@ class CompanyRegisterController extends FrontBaseController
 
     private function addEmployeeDetails($user, $employeeRole, $companyId)
     {
-        $employee = new EmployeeDetails();
+        $employee = new EmployeeDetails;
         $employee->user_id = $user->id;
         $employee->company_id = $companyId;
         /* @phpstan-ignore-line */
@@ -194,7 +191,7 @@ class CompanyRegisterController extends FrontBaseController
         /* @phpstan-ignore-line */
         $employee->save();
 
-        $search = new UniversalSearch();
+        $search = new UniversalSearch;
         $search->searchable_id = $user->id;
         $search->company_id = $companyId;
         $search->title = $user->name;
@@ -217,7 +214,7 @@ class CompanyRegisterController extends FrontBaseController
 
             $validateRecaptcha = GlobalSetting::validateGoogleRecaptcha($gRecaptchaResponse);
 
-            if (!$validateRecaptcha) {
+            if (! $validateRecaptcha) {
                 return $this->googleRecaptchaMessage();
             }
         }

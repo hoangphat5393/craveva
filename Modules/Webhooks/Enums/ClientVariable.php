@@ -2,11 +2,8 @@
 
 namespace Modules\Webhooks\Enums;
 
-use Modules\Webhooks\Enums\Variable;
-
 enum ClientVariable: string implements Variable
 {
-
     case name = '##NAME##';
     case email = '##EMAIL##';
     case mobile = '##MOBILE##';
@@ -65,8 +62,7 @@ enum ClientVariable: string implements Variable
             'google_calendar_status',
             'customised_permissions',
             'email_notifications',
-            'stripe_id'
+            'stripe_id',
         ];
     }
-
 }

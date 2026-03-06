@@ -7,7 +7,6 @@ use Illuminate\Support\Carbon;
 
 enum LetterVariable: string
 {
-
     case current_date = '##CURRENT_DATE##';
     case employee_id = '##EMPLOYEE_ID##';
     case employee_name = '##EMPLOYEE_NAME##';
@@ -61,5 +60,4 @@ enum LetterVariable: string
         return $values;
 
     }
-
 }

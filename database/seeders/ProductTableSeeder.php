@@ -7,7 +7,6 @@ use Illuminate\Database\Seeder;
 
 class ProductTableSeeder extends Seeder
 {
-
     /**
      * Run the database seeds.
      *
@@ -17,12 +16,11 @@ class ProductTableSeeder extends Seeder
     {
 
         $count = config('app.seed_record_count');
-        Product::factory()->count((int)$count)
+        Product::factory()->count((int) $count)
             ->make()
             ->each(function (Product $product) use ($companyId) {
                 $product->company_id = $companyId;
                 $product->save();
             });
     }
-
 }

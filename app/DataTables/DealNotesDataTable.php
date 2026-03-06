@@ -2,16 +2,17 @@
 
 namespace App\DataTables;
 
+use App\Helper\Common;
 use App\Models\DealNote;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
-use App\Helper\Common;
 
 class DealNotesDataTable extends BaseDataTable
 {
-
     private $editLeadNotePermission;
+
     private $deleteLeadNotePermission;
+
     private $viewLeadNotePermission;
 
     public function __construct()
@@ -25,7 +26,7 @@ class DealNotesDataTable extends BaseDataTable
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
@@ -33,33 +34,33 @@ class DealNotesDataTable extends BaseDataTable
 
         return datatables()
             ->eloquent($query)
-            ->addColumn('check', fn($row) => $this->checkBox($row))
+            ->addColumn('check', fn ($row) => $this->checkBox($row))
             ->addColumn('action', function ($row) {
 
                 $action = '<div class="task_view">';
 
                 $action .= '<div class="dropdown">
                         <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" type="link"
-                            id="dropdownMenuLink-' . $row->id . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            id="dropdownMenuLink-'.$row->id.'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="icon-options-vertical icons"></i>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-' . $row->id . '" tabindex="0">';
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-'.$row->id.'" tabindex="0">';
 
                 if ($this->viewLeadNotePermission == 'all' || ($this->viewLeadNotePermission == 'added' && user()->id == $row->added_by) || ($this->viewLeadNotePermission == 'both' && user()->id == $row->added_by)) {
-                    $action .= '<a href="' . route('deal-notes.show', $row->id) . '" class="openRightModal dropdown-item"><i class="fa fa-eye mr-2"></i>' . __('app.view') . '</a>';
+                    $action .= '<a href="'.route('deal-notes.show', $row->id).'" class="openRightModal dropdown-item"><i class="fa fa-eye mr-2"></i>'.__('app.view').'</a>';
                 }
 
                 if ($this->editLeadNotePermission == 'all' || ($this->editLeadNotePermission == 'added' && user()->id == $row->added_by) || ($this->editLeadNotePermission == 'both' && user()->id == $row->added_by)) {
-                    $action .= '<a class="dropdown-item openRightModal" href="' . route('deal-notes.edit', [$row->id]) . '">
+                    $action .= '<a class="dropdown-item openRightModal" href="'.route('deal-notes.edit', [$row->id]).'">
                                 <i class="fa fa-edit mr-2"></i>
-                                ' . trans('app.edit') . '
+                                '.trans('app.edit').'
                             </a>';
                 }
 
                 if ($this->deleteLeadNotePermission == 'all' || ($this->deleteLeadNotePermission == 'added' && user()->id == $row->added_by) || ($this->deleteLeadNotePermission == 'both' && user()->id == $row->added_by)) {
-                    $action .= '<a class="dropdown-item delete-table-row-lead" href="javascript:;" data-id="' . $row->id . '">
+                    $action .= '<a class="dropdown-item delete-table-row-lead" href="javascript:;" data-id="'.$row->id.'">
                                 <i class="fa fa-trash mr-2"></i>
-                                ' . trans('app.delete') . '
+                                '.trans('app.delete').'
                             </a>';
                 }
 
@@ -70,13 +71,13 @@ class DealNotesDataTable extends BaseDataTable
                 return $action;
             })
             ->editColumn('created_at', function ($row) {
-                return $row->created_at->timezone(company()->timezone)->translatedFormat($this->company->date_format . ' ' . $this->company->time_format);
+                return $row->created_at->timezone(company()->timezone)->translatedFormat($this->company->date_format.' '.$this->company->time_format);
             })
             ->editColumn('title', function ($row) {
-                if (!in_array('admin', user_roles()) && $row->ask_password == 1) {
-                    return '<a href="javascript:;" style="color:black;" data-lead-note-id="' . $row->id . '">' . $row->title . '</a>';
+                if (! in_array('admin', user_roles()) && $row->ask_password == 1) {
+                    return '<a href="javascript:;" style="color:black;" data-lead-note-id="'.$row->id.'">'.$row->title.'</a>';
                 } else {
-                    return '<a href="' . route('deal-notes.show', $row->id) . '" class="openRightModal" style="color:black;">' . $row->title . '</a>';
+                    return '<a href="'.route('deal-notes.show', $row->id).'" class="openRightModal" style="color:black;">'.$row->title.'</a>';
                 }
             })
 
@@ -85,12 +86,11 @@ class DealNotesDataTable extends BaseDataTable
             })
             ->addIndexColumn()
             ->smart(false)
-            ->setRowId(fn($row) => 'row-' . $row->id)
+            ->setRowId(fn ($row) => 'row-'.$row->id)
             ->rawColumns(['action', 'check', 'title']);
     }
 
     /**
-     * @param DealNote $model
      * @return DealNote|\Illuminate\Database\Eloquent\Builder
      */
     public function query(DealNote $model)
@@ -98,9 +98,9 @@ class DealNotesDataTable extends BaseDataTable
         $request = $this->request();
         $notes = $model->select('deal_notes.*')->where('deal_id', $request->leadID);
 
-        if (!is_null($request->searchText)) {
+        if (! is_null($request->searchText)) {
             $safeTerm = Common::safeString(request('searchText'));
-            $notes->where('title', 'like', '%' . $safeTerm . '%');
+            $notes->where('title', 'like', '%'.$safeTerm.'%');
         }
 
         if ($this->viewLeadNotePermission == 'added') {
@@ -131,7 +131,7 @@ class DealNotesDataTable extends BaseDataTable
             ]);
 
         if (canDataTableExport()) {
-            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
+            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
         }
 
         return $dataTable;
@@ -149,7 +149,7 @@ class DealNotesDataTable extends BaseDataTable
                 'title' => '<input type="checkbox" name="select_all_table" id="select-all-table" onclick="selectAllTable(this)">',
                 'exportable' => false,
                 'orderable' => false,
-                'searchable' => false
+                'searchable' => false,
             ],
             '#' => ['data' => 'DT_RowIndex', 'orderable' => false, 'searchable' => false, 'visible' => false, 'title' => '#'],
             __('app.id') => ['data' => 'id', 'name' => 'id', 'visible' => false, 'title' => __('app.id')],
@@ -160,7 +160,7 @@ class DealNotesDataTable extends BaseDataTable
                 ->printable(false)
                 ->orderable(false)
                 ->searchable(false)
-                ->addClass('text-right pr-20')
+                ->addClass('text-right pr-20'),
         ];
     }
 }

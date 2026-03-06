@@ -21,6 +21,7 @@ namespace App\Models;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read mixed $social_auth_enable
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|SocialAuthSetting newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|SocialAuthSetting newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|SocialAuthSetting query()
@@ -39,12 +40,13 @@ namespace App\Models;
  * @method static \Illuminate\Database\Eloquent\Builder|SocialAuthSetting whereTwitterSecretId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|SocialAuthSetting whereTwitterStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|SocialAuthSetting whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class SocialAuthSetting extends BaseModel
 {
-
     protected $table = 'social_auth_settings';
+
     protected $guarded = ['id'];
 
     protected $appends = ['social_auth_enable', 'social_auth_enable_count'];
@@ -62,7 +64,7 @@ class SocialAuthSetting extends BaseModel
             $this->linkedin_status,
             $this->google_status,
             $this->twitter_status,
-            $this->facebook_status
+            $this->facebook_status,
         ]);
     }
 
@@ -72,12 +74,11 @@ class SocialAuthSetting extends BaseModel
             $this->linkedin_status,
             $this->google_status,
             $this->twitter_status,
-            $this->facebook_status
+            $this->facebook_status,
         ];
 
         return count(array_filter($statuses, function ($status) {
             return $status == 'enable';
         }));
     }
-
 }

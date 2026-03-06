@@ -2,19 +2,20 @@
 
 namespace App\Notifications;
 
-use App\Models\Estimate;
 use App\Models\EmailNotificationSetting;
+use App\Models\Estimate;
 
 class EstimateDeclined extends BaseNotification
 {
-
     /**
      * Create a new notification instance.
      *
      * @return void
      */
     private $estimate;
+
     protected $company;
+
     private $emailSetting;
 
     public function __construct(Estimate $estimate)
@@ -27,7 +28,7 @@ class EstimateDeclined extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -48,7 +49,7 @@ class EstimateDeclined extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
@@ -60,13 +61,13 @@ class EstimateDeclined extends BaseNotification
         $content = __('email.estimateDeclined.text');
 
         $build
-            ->subject(__('email.estimateDeclined.subject') . ' - ' . config('app.name') . __('!'))
+            ->subject(__('email.estimateDeclined.subject').' - '.config('app.name').__('!'))
             ->markdown('mail.email', [
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
                 'actionText' => __('email.estimateDeclined.action'),
-                'notifiableName' => $notifiable->name
+                'notifiableName' => $notifiable->name,
             ]);
 
         parent::resetLocale();
@@ -77,7 +78,7 @@ class EstimateDeclined extends BaseNotification
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
 
@@ -86,14 +87,13 @@ class EstimateDeclined extends BaseNotification
     {
         return [
             'id' => $this->estimate->id,
-            'estimate_number' => $this->estimate->estimate_number
+            'estimate_number' => $this->estimate->estimate_number,
         ];
     }
 
     public function toSlack($notifiable)
     {
-        return $this->slackBuild($notifiable)->content(__('email.hello') . ' ' . $notifiable->name . ' ' . __('email.estimateDeclined.subject'));
+        return $this->slackBuild($notifiable)->content(__('email.hello').' '.$notifiable->name.' '.__('email.estimateDeclined.subject'));
 
     }
-
 }

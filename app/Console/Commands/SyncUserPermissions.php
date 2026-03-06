@@ -8,7 +8,6 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 
 class SyncUserPermissions extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
@@ -25,7 +24,7 @@ class SyncUserPermissions extends Command
 
     public function handle()
     {
-        $output = new ConsoleOutput();
+        $output = new ConsoleOutput;
 
         $unsyncedUsers = User::with('roles')
             ->where('permission_sync', 0)
@@ -57,29 +56,27 @@ class SyncUserPermissions extends Command
 
     private function assignPermissions($user, $remaining)
     {
-        $output = new ConsoleOutput();
-        //phpcs:ignore
-        $output->writeln('<info>Remaining: ' . $remaining . ' Syncing permission started for ' . $user->name . '</info>');
+        $output = new ConsoleOutput;
+        // phpcs:ignore
+        $output->writeln('<info>Remaining: '.$remaining.' Syncing permission started for '.$user->name.'</info>');
         $rolesCount = $user->roles->count();
 
         if ($rolesCount > 1) {
             $role = $user->roles->where('name', '!=', 'employee')->first();
-        }
-        else {
+        } else {
             $role = $user->roles->first();
         }
 
-        if (!$role) {
-            //phpcs:ignore
-            $output->writeln('<error>Role not found for ' . $user->name . '</error>');
+        if (! $role) {
+            // phpcs:ignore
+            $output->writeln('<error>Role not found for '.$user->name.'</error>');
 
             return false;
         }
 
         $user->assignUserRolePermission($role->id);
 
-        //phpcs:ignore
-        $output->writeln('<info>Remaining: ' . $remaining . ' Syncing permission ended for ' . $user->name . '</info>');
+        // phpcs:ignore
+        $output->writeln('<info>Remaining: '.$remaining.' Syncing permission ended for '.$user->name.'</info>');
     }
-
 }

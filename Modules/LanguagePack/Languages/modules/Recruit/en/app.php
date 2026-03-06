@@ -97,7 +97,7 @@ return [
         'twitter' => 'Twitter',
         'other' => 'Other',
         'backToJobApplications' => 'Back To Job Applications',
-        'sampleCsv' => 'Download Sample CSV'
+        'sampleCsv' => 'Download Sample CSV',
 
     ],
     'interviewSchedule' => [
@@ -149,7 +149,7 @@ return [
         'compansationAmt' => 'Compansation Amount',
         'viewoffer' => 'View Offer Letter',
         'job' => 'Job',
-        'jobexpire' => 'Job Expire'
+        'jobexpire' => 'Job Expire',
     ],
 
 ];

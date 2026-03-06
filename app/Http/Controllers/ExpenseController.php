@@ -30,7 +30,8 @@ class ExpenseController extends AccountBaseController
         parent::__construct();
         $this->pageTitle = 'app.menu.expenses';
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('expenses', $this->user->modules));
+            abort_403(! in_array('expenses', $this->user->modules));
+
             return $next($request);
         });
     }
@@ -38,9 +39,9 @@ class ExpenseController extends AccountBaseController
     public function index(ExpensesDataTable $dataTable)
     {
         $viewPermission = user()->permission('view_expenses');
-        abort_403(!in_array($viewPermission, ['all', 'added', 'owned', 'both']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'owned', 'both']));
 
-        if (!request()->ajax()) {
+        if (! request()->ajax()) {
             $this->employees = User::allEmployees(null, true);
             $this->projects = Project::allProjects();
             $this->categories = ExpenseCategoryController::getCategoryByCurrentRole();
@@ -59,12 +60,13 @@ class ExpenseController extends AccountBaseController
         $expense = Expense::findOrFail($expenseId);
         $expense->status = $status;
         $expense->save();
+
         return Reply::success(__('messages.updateSuccess'));
     }
 
     public function show($id)
     {
-        $this->expense = Expense::with(['user', 'project', 'category', 'transactions' => function($q){
+        $this->expense = Expense::with(['user', 'project', 'category', 'transactions' => function ($q) {
             $q->orderByDesc('id')->limit(1);
         }, 'transactions.bankAccount'])->findOrFail($id)->withCustomFields();
 
@@ -73,7 +75,7 @@ class ExpenseController extends AccountBaseController
         $this->editExpensePermission = user()->permission('edit_expenses');
         $this->deleteExpensePermission = user()->permission('delete_expenses');
 
-        abort_403(!($this->viewPermission == 'all'
+        abort_403(! ($this->viewPermission == 'all'
         || ($this->viewPermission == 'added' && $this->expense->added_by == user()->id)
         || ($viewProjectPermission == 'owned' || $this->expense->user_id == user()->id)));
 
@@ -97,7 +99,7 @@ class ExpenseController extends AccountBaseController
     public function create()
     {
         $this->addPermission = user()->permission('add_expenses');
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
 
         $this->currencies = Currency::all();
         $this->categories = ExpenseCategoryController::getCategoryByCurrentRole();
@@ -106,7 +108,7 @@ class ExpenseController extends AccountBaseController
 
         $bankAccounts = BankAccount::where('status', 1)->where('currency_id', company()->currency_id);
 
-        if($this->viewBankAccountPermission == 'added'){
+        if ($this->viewBankAccountPermission == 'added') {
             $bankAccounts = $bankAccounts->where('added_by', user()->id);
         }
 
@@ -127,7 +129,7 @@ class ExpenseController extends AccountBaseController
         $this->pageTitle = __('modules.expenses.addExpense');
         $this->projectId = request('project_id') ? request('project_id') : null;
 
-        if (!is_null($this->projectId)) {
+        if (! is_null($this->projectId)) {
             $this->project = Project::with('projectMembers')->where('id', $this->projectId)->first();
             $this->projectName = $this->project->project_name;
             $this->employees = $this->project->projectMembers;
@@ -136,7 +138,7 @@ class ExpenseController extends AccountBaseController
             $this->employees = User::allEmployees(null, true);
         }
 
-        $expense = new Expense();
+        $expense = new Expense;
 
         $getCustomFieldGroupsWithFields = $expense->getCustomFieldGroupsWithFields();
 
@@ -159,7 +161,7 @@ class ExpenseController extends AccountBaseController
         $currencySetting = Currency::findOrFail($request->currency_id);
 
         $userRole = session('user_roles');
-        $expense = new Expense();
+        $expense = new Expense;
         $expense->item_name = $request->item_name;
         $expense->purchase_date = companyToYmd($request->purchase_date);
         $expense->purchase_from = $request->purchase_from;
@@ -213,7 +215,7 @@ class ExpenseController extends AccountBaseController
         $this->expense = Expense::findOrFail($id)->withCustomFields();
         $this->editPermission = user()->permission('edit_expenses');
 
-        abort_403(!($this->editPermission == 'all' || ($this->editPermission == 'added' && $this->expense->added_by == user()->id)));
+        abort_403(! ($this->editPermission == 'all' || ($this->editPermission == 'added' && $this->expense->added_by == user()->id)));
 
         $this->currencies = Currency::all();
         $this->categories = ExpenseCategoryController::getCategoryByCurrentRole();
@@ -224,28 +226,26 @@ class ExpenseController extends AccountBaseController
 
         $bankAccounts = BankAccount::where('status', 1)->where('currency_id', $this->expense->currency_id);
 
-        if($this->viewBankAccountPermission == 'added'){
+        if ($this->viewBankAccountPermission == 'added') {
             $bankAccounts = $bankAccounts->where('added_by', user()->id);
         }
 
         $bankAccounts = $bankAccounts->get();
         $this->bankDetails = $bankAccounts;
 
-
         $userId = $this->expense->user_id;
 
-        if (!is_null($userId)) {
+        if (! is_null($userId)) {
             $this->projects = Project::with('members')->whereHas('members', function ($q) use ($userId) {
                 $q->where('user_id', $userId);
             })->get();
-        }
-        else {
+        } else {
             $this->projects = Project::get();
         }
 
         $this->companyCurrency = Currency::where('id', company()->currency_id)->first();
 
-        $expense = new Expense();
+        $expense = new Expense;
 
         $getCustomFieldGroupsWithFields = $expense->getCustomFieldGroupsWithFields();
 
@@ -281,7 +281,6 @@ class ExpenseController extends AccountBaseController
 
         $expense->project_id = ($request->project_id > 0) ? $request->project_id : null;
 
-
         if ($request->bill_delete == 'yes') {
             Files::deleteFile($expense->bill, Expense::FILE_PATH);
             $expense->bill = null;
@@ -314,9 +313,10 @@ class ExpenseController extends AccountBaseController
     {
         $this->expense = Expense::findOrFail($id);
         $this->deletePermission = user()->permission('delete_expenses');
-        abort_403(!($this->deletePermission == 'all' || ($this->deletePermission == 'added' && $this->expense->added_by == user()->id)));
+        abort_403(! ($this->deletePermission == 'all' || ($this->deletePermission == 'added' && $this->expense->added_by == user()->id)));
 
         Expense::destroy($id);
+
         return Reply::success(__('messages.deleteSuccess'));
     }
 
@@ -328,13 +328,15 @@ class ExpenseController extends AccountBaseController
     public function applyQuickAction(Request $request)
     {
         switch ($request->action_type) {
-        case 'delete':
-            $this->deleteRecords($request);
+            case 'delete':
+                $this->deleteRecords($request);
+
                 return Reply::success(__('messages.deleteSuccess'));
-        case 'change-status':
-            $this->changeBulkStatus($request);
+            case 'change-status':
+                $this->changeBulkStatus($request);
+
                 return Reply::success(__('messages.updateSuccess'));
-        default:
+            default:
                 return Reply::error(__('messages.selectAction'));
         }
     }
@@ -364,37 +366,33 @@ class ExpenseController extends AccountBaseController
     protected function getEmployeeProjects(Request $request)
     {
         // Get employee category
-        if (!is_null($request->userId)) {
-            $categories = ExpensesCategory::with('roles')->whereHas('roles', function($q) use ($request) {
+        if (! is_null($request->userId)) {
+            $categories = ExpensesCategory::with('roles')->whereHas('roles', function ($q) use ($request) {
                 $user = User::withoutGlobalScope(ActiveScope::class)->findOrFail($request->userId);
 
                 $roleId = (count($user->role) > 1) ? $user->role[1]->role_id : $user->role[0]->role_id;
                 $q->where('role_id', $roleId);
             })->get();
 
-        }
-        else {
+        } else {
             $categories = ExpensesCategory::get();
         }
 
-        if($categories) {
+        if ($categories) {
             foreach ($categories as $category) {
                 $selected = $category->id == $request->categoryId ? 'selected' : '';
-                $categories .= '<option value="' . $category->id . '"'.$selected.'>' . $category->category_name . '</option>';
+                $categories .= '<option value="'.$category->id.'"'.$selected.'>'.$category->category_name.'</option>';
             }
         }
 
         // Get employee project
-        if (!is_null($request->userId)) {
+        if (! is_null($request->userId)) {
             $projects = Project::with('members')->whereHas('members', function ($q) use ($request) {
                 $q->where('user_id', $request->userId);
             })->get();
-        }
-        else if(user()->permission('add_expenses') == 'all' && is_null($request->userId))
-        {
+        } elseif (user()->permission('add_expenses') == 'all' && is_null($request->userId)) {
             $projects = [];
-        }
-        else {
+        } else {
             $projects = Project::get();
         }
 
@@ -402,10 +400,9 @@ class ExpenseController extends AccountBaseController
 
         if ($projects) {
             foreach ($projects as $project) {
-                $data .= '<option data-currency-id="'. $project->currency_id .'" value="' . $project->id . '">' . $project->project_name . '</option>';
+                $data .= '<option data-currency-id="'.$project->currency_id.'" value="'.$project->id.'">'.$project->project_name.'</option>';
             }
         }
-
 
         return Reply::dataOnly(['status' => 'success', 'data' => $data, 'category' => $categories]);
     }
@@ -417,13 +414,13 @@ class ExpenseController extends AccountBaseController
         $managers = [];
         $employees = [];
 
-        foreach($expenseCategory as $category) {
+        foreach ($expenseCategory as $category) {
             array_push($roleId, $category->role_id);
         }
 
-        if (count($roleId ) == 1 && $roleId != null) {
+        if (count($roleId) == 1 && $roleId != null) {
             $users = User::whereHas(
-                'role', function($q)  use ($roleId) {
+                'role', function ($q) use ($roleId) {
                     $q->whereIn('role_id', $roleId);
                 }
             )->get();
@@ -431,8 +428,7 @@ class ExpenseController extends AccountBaseController
             foreach ($users as $user) {
                 ($user->hasRole('Manager')) ? array_push($managers, $user) : array_push($employees, $user);
             }
-        }
-        else {
+        } else {
             $employees = User::allEmployees(null, false);
         }
 
@@ -440,26 +436,25 @@ class ExpenseController extends AccountBaseController
 
         if ($employees) {
             foreach ($employees as $employee) {
-                if($employee->status == 'active' || $employee->id == $request->userId){
+                if ($employee->status == 'active' || $employee->id == $request->userId) {
                     $data .= '<option ';
 
                     $content = ($employee->status == 'deactive') ? "<span class='badge badge-pill badge-danger border align-center ml-2 px-2'>Inactive</span>" : '';
                     $selected = $employee->id == $request->userId ? 'selected' : '';
-                    $itsYou = $employee->id == user()->id ? "<span class='ml-2 badge badge-secondary pr-1'>". __('app.itsYou') .'</span>' : '';
+                    $itsYou = $employee->id == user()->id ? "<span class='ml-2 badge badge-secondary pr-1'>".__('app.itsYou').'</span>' : '';
 
-                    $data .= 'data-content="<div class=\'d-inline-block mr-1\'><img class=\'taskEmployeeImg rounded-circle\' src=\'' . $employee->image_url . '\' ></div> '.$employee->name.$itsYou.$content.'"
-                    value="' . $employee->id . '"'.$selected.'>'.$employee->name.'</option>';
+                    $data .= 'data-content="<div class=\'d-inline-block mr-1\'><img class=\'taskEmployeeImg rounded-circle\' src=\''.$employee->image_url.'\' ></div> '.$employee->name.$itsYou.$content.'"
+                    value="'.$employee->id.'"'.$selected.'>'.$employee->name.'</option>';
                 }
             }
-        }
-        else {
+        } else {
             foreach ($managers as $manager) {
                 $data .= '<option ';
 
                 $selected = $manager->id == $request->userId ? 'selected' : '';
-                $itsYou = $manager->id == user()->id ? "<span class='ml-2 badge badge-secondary pr-1'>" . __('app.itsYou') . '</span>' : '';
-                $data .= 'data-content="<div class=\'d-inline-block mr-1\'><img class=\'taskEmployeeImg rounded-circle\' src=\'' . $manager->image_url . '\' ></div> '.$manager->name.'"
-                value="' . $manager->id . '"'.$selected.'>'.$manager->name.$itsYou.'</option>';
+                $itsYou = $manager->id == user()->id ? "<span class='ml-2 badge badge-secondary pr-1'>".__('app.itsYou').'</span>' : '';
+                $data .= 'data-content="<div class=\'d-inline-block mr-1\'><img class=\'taskEmployeeImg rounded-circle\' src=\''.$manager->image_url.'\' ></div> '.$manager->name.'"
+                value="'.$manager->id.'"'.$selected.'>'.$manager->name.$itsYou.'</option>';
             }
         }
 
@@ -468,10 +463,10 @@ class ExpenseController extends AccountBaseController
 
     public function import()
     {
-        $this->pageTitle = __('app.importExcel') . ' ' . __('app.menu.expenses');
+        $this->pageTitle = __('app.importExcel').' '.__('app.menu.expenses');
 
         $addPermission = user()->permission('add_expenses');
-        abort_403(!in_array($addPermission, ['all', 'added']));
+        abort_403(! in_array($addPermission, ['all', 'added']));
 
         $this->view = 'expenses.ajax.import';
 
@@ -486,7 +481,7 @@ class ExpenseController extends AccountBaseController
     {
         $rvalue = $this->importFileProcess($request, ExpenseImport::class);
 
-        if($rvalue == 'abort'){
+        if ($rvalue == 'abort') {
             return Reply::error(__('messages.abortAction'));
         }
 
@@ -501,5 +496,4 @@ class ExpenseController extends AccountBaseController
 
         return Reply::successWithData(__('messages.importProcessStart'), ['batch' => $batch]);
     }
-
 }

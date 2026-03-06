@@ -8,19 +8,15 @@ use Illuminate\Support\Facades\Notification;
 
 class NewContractListener
 {
-
     /**
      * Handle the event.
      *
-     * @param NewContractEvent $event
      * @return void
      */
-
     public function handle(NewContractEvent $event)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             Notification::send($event->contract->client, new NewContract($event->contract));
         }
     }
-
 }

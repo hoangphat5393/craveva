@@ -4,7 +4,6 @@ namespace Modules\Affiliate\Enums;
 
 enum PayoutType: string
 {
-
     // phpcs:disable
     case OnSignUp = 'on signup';
     case AfterSignUp = 'after signup';
@@ -19,5 +18,4 @@ enum PayoutType: string
             default => $this->value,
         };
     }
-
 }

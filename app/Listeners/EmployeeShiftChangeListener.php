@@ -13,20 +13,17 @@ use Illuminate\Support\Facades\Notification;
 
 class EmployeeShiftChangeListener
 {
-
     /**
      * Handle the event.
      *
-     * @param EmployeeShiftChangeEvent $event
      * @return void
      */
     public function handle(EmployeeShiftChangeEvent $event)
     {
-        if (!is_null($event->statusChange)) {
+        if (! is_null($event->statusChange)) {
             Notification::send($event->changeRequest->shiftSchedule->user, new ShiftChangeStatus($event->changeRequest));
 
-        }
-        else {
+        } else {
             $permission = Permission::where('name', 'manage_employee_shifts')->first();
             $allTypePermission = PermissionType::ofType('all')->first();
             $users = UserPermission::where('permission_type_id', $allTypePermission->id)->where('permission_id', $permission->id)->get()->pluck('user_id')->toArray();
@@ -34,5 +31,4 @@ class EmployeeShiftChangeListener
         }
 
     }
-
 }

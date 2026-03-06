@@ -3,7 +3,6 @@
 namespace Modules\Recruit\Providers;
 
 use App\Events\NewCompanyCreatedEvent;
-use App\Observers\RecruitSourceObserver as ObserversRecruitSourceObserver;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Modules\Recruit\Entities\ApplicationSource;
 use Modules\Recruit\Entities\RecruitApplicationStatus;
@@ -84,9 +83,8 @@ use Modules\Recruit\Observers\RecruitRecommendationStatusObserver;
 use Modules\Recruit\Observers\RecruitSalaryStructureObserver;
 use Modules\Recruit\Observers\RecruitSelectedSalaryComponentObserver;
 use Modules\Recruit\Observers\RecruitSkillObserver;
-use Modules\Recruit\Observers\RecruitWorkExperienceObserver;
 use Modules\Recruit\Observers\RecruitSourceObserver;
-
+use Modules\Recruit\Observers\RecruitWorkExperienceObserver;
 
 class EventServiceProvider extends ServiceProvider
 {

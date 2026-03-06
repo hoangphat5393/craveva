@@ -7,7 +7,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreClientRequest extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -26,7 +25,7 @@ class StoreClientRequest extends FormRequest
     public function rules()
     {
         \Illuminate\Support\Facades\Validator::extend('check_superadmin', function ($attribute, $value, $parameters, $validator) {
-            return !\App\Models\User::withoutGlobalScopes([\App\Scopes\ActiveScope::class, \App\Scopes\CompanyScope::class])
+            return ! \App\Models\User::withoutGlobalScopes([\App\Scopes\ActiveScope::class, \App\Scopes\CompanyScope::class])
                 ->where('email', $value)
                 ->where('is_superadmin', 1)
                 ->exists();
@@ -37,7 +36,7 @@ class StoreClientRequest extends FormRequest
 
         $rules = [
             'name' => 'required|string|max:255',
-            'email' => 'required|email:rfc|check_superadmin|unique:users,email,null,id,company_id,' . $company->id,
+            'email' => 'required|email:rfc|check_superadmin|unique:users,email,null,id,company_id,'.$company->id,
             'password' => 'required|min:8',
         ];
 
@@ -54,5 +53,4 @@ class StoreClientRequest extends FormRequest
             'email.check_superadmin' => __('superadmin.emailAlreadyExist'),
         ];
     }
-
 }

@@ -1,6 +1,6 @@
 <?php
 
-return array(
+return [
     'policyCenter' => 'Policy Center',
     'policy' => 'Policy',
     'policies' => 'Policies',
@@ -33,4 +33,4 @@ return array(
     'saveAsDraft' => 'Save As Draft',
     'saveAndPublished' => 'Save & Publish',
     'selectGender' => 'Select Gender',
-);
+];

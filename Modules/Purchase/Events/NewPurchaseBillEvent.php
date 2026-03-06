@@ -14,8 +14,7 @@ class NewPurchaseBillEvent
      *
      * @return void
      */
-
-     public $purchaseBill;
+    public $purchaseBill;
 
     public function __construct(PurchaseBill $purchaseBill)
     {
@@ -31,5 +30,4 @@ class NewPurchaseBillEvent
     {
         return [];
     }
-    
 }

@@ -4,7 +4,6 @@ namespace Modules\Purchase\Http\Requests\PurchaseSetting;
 
 use App\Http\Requests\CoreRequest;
 use App\Traits\CustomFieldsRequestTrait;
-use Illuminate\Foundation\Http\FormRequest;
 
 class UpdatePurchaseSettingRequest extends CoreRequest
 {
@@ -37,5 +36,4 @@ class UpdatePurchaseSettingRequest extends CoreRequest
     {
         return true;
     }
-
 }

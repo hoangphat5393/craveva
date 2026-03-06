@@ -2,11 +2,11 @@
 
 namespace App\Models\SuperAdmin;
 
-use App\Models\Company;
 use App\Models\BaseModel;
-use App\Traits\HasCompany;
-use App\Scopes\CompanyScope;
+use App\Models\Company;
 use App\Models\OfflinePaymentMethod;
+use App\Scopes\CompanyScope;
+use App\Traits\HasCompany;
 
 /**
  * App\Models\SuperAdmin\OfflinePlanChange
@@ -26,6 +26,7 @@ use App\Models\OfflinePaymentMethod;
  * @property-read mixed $file
  * @property-read OfflinePaymentMethod $offlineMethod
  * @property-read Package $package
+ *
  * @method static Builder|OfflinePlanChange newModelQuery()
  * @method static Builder|OfflinePlanChange newQuery()
  * @method static Builder|OfflinePlanChange query()
@@ -40,18 +41,18 @@ use App\Models\OfflinePaymentMethod;
  * @method static Builder|OfflinePlanChange wherePackageType($value)
  * @method static Builder|OfflinePlanChange whereStatus($value)
  * @method static Builder|OfflinePlanChange whereUpdatedAt($value)
+ *
  * @mixin Eloquent
  */
 class OfflinePlanChange extends BaseModel
 {
-
     use HasCompany;
 
     const FILE_PATH = 'offline-invoice';
 
     protected $dates = [
         'pay_date',
-        'next_pay_date'
+        'next_pay_date',
     ];
 
     protected $casts = [
@@ -78,7 +79,6 @@ class OfflinePlanChange extends BaseModel
 
     public function getFileAttribute()
     {
-        return ($this->file_name) ? asset_url_local_s3(OfflinePlanChange::FILE_PATH . '/' . $this->file_name) : asset('img/default-profile-3.png');
+        return ($this->file_name) ? asset_url_local_s3(OfflinePlanChange::FILE_PATH.'/'.$this->file_name) : asset('img/default-profile-3.png');
     }
-
 }

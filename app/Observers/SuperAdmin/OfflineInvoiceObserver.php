@@ -6,7 +6,6 @@ use App\Models\SuperAdmin\OfflineInvoice;
 
 class OfflineInvoiceObserver
 {
-
     public function saving(OfflineInvoice $invoice)
     {
         // Cannot put in creating, because saving is fired before creating. And we need company id for check bellow
@@ -14,5 +13,4 @@ class OfflineInvoiceObserver
             $invoice->company_id = company()->id;
         }
     }
-
 }

@@ -9,10 +9,10 @@ use Illuminate\Queue\SerializesModels;
 
 class NewExpenseRecurringEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $expense;
+
     public $status;
 
     public function __construct(ExpenseRecurring $expense, $status)
@@ -20,5 +20,4 @@ class NewExpenseRecurringEvent
         $this->expense = $expense;
         $this->status = $status;
     }
-
 }

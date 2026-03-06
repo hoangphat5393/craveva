@@ -6,7 +6,7 @@ return [
         'devices' => '设备',
         'attendance' => '考勤记录',
         'deviceEmployees' => '员工映射',
-        'commands' => '指令'
+        'commands' => '指令',
     ],
     'deviceName' => '设备名称',
     'serialNumber' => '序列号',

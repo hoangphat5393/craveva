@@ -11,7 +11,6 @@ class UnitTypeRequest extends FormRequest
      *
      * @return bool
      */
-
     public function authorize()
     {
         return true;
@@ -25,7 +24,7 @@ class UnitTypeRequest extends FormRequest
     public function rules()
     {
         return [
-            'unit_type' => 'required'
+            'unit_type' => 'required',
         ];
     }
 }

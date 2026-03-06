@@ -2,8 +2,8 @@
 
 namespace App\Models\SuperAdmin;
 
-use App\Models\LanguageSetting;
 use App\Models\BaseModel;
+use App\Models\LanguageSetting;
 
 /**
  * App\Models\SuperAdmin\FrontFeature
@@ -17,6 +17,7 @@ use App\Models\BaseModel;
  * @property Carbon|null $updated_at
  * @property-read Collection|Feature[] $features
  * @property-read int|null $features_count
+ *
  * @method static Builder|FrontFeature newModelQuery()
  * @method static Builder|FrontFeature newQuery()
  * @method static Builder|FrontFeature query()
@@ -27,12 +28,13 @@ use App\Models\BaseModel;
  * @method static Builder|FrontFeature whereStatus($value)
  * @method static Builder|FrontFeature whereTitle($value)
  * @method static Builder|FrontFeature whereUpdatedAt($value)
+ *
  * @mixin Eloquent
+ *
  * @property-read LanguageSetting|null $language
  */
 class FrontFeature extends BaseModel
 {
-
     public function features()
     {
         return $this->hasMany(Feature::class, 'front_feature_id');
@@ -42,5 +44,4 @@ class FrontFeature extends BaseModel
     {
         return $this->belongsTo(LanguageSetting::class, 'language_setting_id');
     }
-
 }

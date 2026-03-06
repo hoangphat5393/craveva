@@ -11,7 +11,6 @@ class StoreGoogleCalender extends FormRequest
      *
      * @return bool
      */
-
     public function authorize()
     {
         return true;
@@ -25,7 +24,6 @@ class StoreGoogleCalender extends FormRequest
     public function rules()
     {
         $rules = [];
-
 
         if (user()->is_superadmin && $this->status) {
             $rules['google_client_id'] = 'required';

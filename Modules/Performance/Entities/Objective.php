@@ -3,16 +3,15 @@
 namespace Modules\Performance\Entities;
 
 use App\Models\BaseModel;
+use App\Models\Project;
 use App\Models\Team;
 use App\Models\User;
-use App\Models\Project;
 use App\Traits\HasCompany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Objective extends BaseModel
 {
-
     use HasCompany;
 
     public function keyResults(): HasMany
@@ -49,5 +48,4 @@ class Objective extends BaseModel
     {
         return $this->belongsToMany(User::class, 'objective_owners', 'objective_id', 'owner_id');
     }
-
 }

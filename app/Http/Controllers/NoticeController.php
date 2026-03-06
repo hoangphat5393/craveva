@@ -4,22 +4,18 @@ namespace App\Http\Controllers;
 
 use App\DataTables\NoticeBoardDataTable;
 use App\Helper\Reply;
+use App\Helper\UserService;
 use App\Http\Requests\Notice\StoreNotice;
-use App\Models\AutomateShift;
 use App\Models\Notice;
 use App\Models\NoticeBoardUser;
 use App\Models\NoticeFile;
-use App\Models\NoticeUser;
 use App\Models\Team;
 use App\Models\User;
-use App\Scopes\ActiveScope;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Helper\UserService;
 
 class NoticeController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -34,7 +30,7 @@ class NoticeController extends AccountBaseController
     public function index(NoticeBoardDataTable $dataTable)
     {
         $viewPermission = user()->permission('view_notice');
-        abort_403(!in_array($viewPermission, ['all', 'added', 'owned', 'both']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'owned', 'both']));
 
         return $dataTable->render('notices.index', $this->data);
 
@@ -48,7 +44,7 @@ class NoticeController extends AccountBaseController
     public function create()
     {
         $this->addPermission = user()->permission('add_notice');
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
 
         $this->teams = Team::all();
         $this->pageTitle = __('modules.notices.addNotice');
@@ -64,18 +60,18 @@ class NoticeController extends AccountBaseController
     }
 
     /**
-     * @param StoreNotice $request
      * @return array|void
+     *
      * @throws \Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException
      */
     public function store(StoreNotice $request)
     {
         $this->addPermission = user()->permission('add_notice');
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
 
         DB::beginTransaction();
 
-        $notice = new Notice();
+        $notice = new Notice;
         $notice->heading = $request->heading;
         $notice->description = trim_editor($request->description);
         $notice->to = $request->to;
@@ -91,11 +87,11 @@ class NoticeController extends AccountBaseController
                 $noticeUsers[] = [
                     'notice_id' => $notice->id,
                     'type' => $type,
-                    'user_id' => $user
+                    'user_id' => $user,
                 ];
             }
 
-            if (!empty($noticeUsers)) {
+            if (! empty($noticeUsers)) {
                 NoticeBoardUser::insert($noticeUsers);
             }
         }
@@ -109,7 +105,7 @@ class NoticeController extends AccountBaseController
     /**
      * Display the specified resource.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -119,7 +115,7 @@ class NoticeController extends AccountBaseController
 
         $userId = UserService::getUserId();
 
-        abort_403(!(
+        abort_403(! (
             $this->viewPermission == 'all'
             || ($this->viewPermission == 'added' && $this->notice->added_by == $userId)
             || ($this->viewPermission == 'owned' && in_array($this->notice->to, user_roles()))
@@ -143,14 +139,13 @@ class NoticeController extends AccountBaseController
         $noticeClients = NoticeBoardUser::where('notice_id', $this->notice->id)->where('type', 'client')->pluck('user_id')->toArray();
         $this->noticeClients = User::whereIn('id', $noticeClients)->get();
 
-        if(in_array('client', user_roles())){
+        if (in_array('client', user_roles())) {
             $this->noticeClients = User::where('id', $userId)->get();
         }
 
         $this->readMembers = $this->notice->member->filter(function ($value, $key) {
             return $value->read == 1;
         });
-
 
         $this->unReadMembers = $this->notice->member->filter(function ($value, $key) {
             return $value->read == 0;
@@ -171,7 +166,7 @@ class NoticeController extends AccountBaseController
     /**
      * Show the form for editing the specified resource.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -181,7 +176,7 @@ class NoticeController extends AccountBaseController
 
         $userId = UserService::getUserId();
 
-        abort_403(!(
+        abort_403(! (
             $this->editPermission == 'all'
             || ($this->editPermission == 'added' && $this->notice->added_by == $userId)
             || ($this->editPermission == 'owned' && in_array($this->notice->to, user_roles()))
@@ -211,9 +206,9 @@ class NoticeController extends AccountBaseController
     }
 
     /**
-     * @param StoreNotice $request
-     * @param int $id
+     * @param  int  $id
      * @return array|void
+     *
      * @throws \Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException
      */
     public function update(StoreNotice $request, $id)
@@ -223,7 +218,7 @@ class NoticeController extends AccountBaseController
 
         $userId = UserService::getUserId();
 
-        abort_403(!(
+        abort_403(! (
             $this->editPermission == 'all'
             || ($this->editPermission == 'added' && $notice->added_by == $userId)
             || ($this->editPermission == 'owned' && in_array($notice->to, user_roles()))
@@ -241,7 +236,7 @@ class NoticeController extends AccountBaseController
         $type = $request->to;
         $users = ($type == 'employee') ? $request->employees : $request->clients;
 
-        if (!empty($users)) {
+        if (! empty($users)) {
             $noticeUsers = [];
 
             foreach ($users as $user) {
@@ -250,16 +245,16 @@ class NoticeController extends AccountBaseController
                     ->where('user_id', $user)
                     ->exists();
 
-                if (!$exists) {
+                if (! $exists) {
                     $noticeUsers[] = [
                         'notice_id' => $notice->id,
                         'type' => $type,
-                        'user_id' => $user
+                        'user_id' => $user,
                     ];
                 }
             }
 
-            if (!empty($noticeUsers)) {
+            if (! empty($noticeUsers)) {
                 NoticeBoardUser::insert($noticeUsers);
             }
         }
@@ -272,7 +267,7 @@ class NoticeController extends AccountBaseController
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
@@ -282,7 +277,7 @@ class NoticeController extends AccountBaseController
 
         $userId = UserService::getUserId();
 
-        abort_403(!(
+        abort_403(! (
             $this->deletePermission == 'all'
             || ($this->deletePermission == 'added' && $notice->added_by == $userId)
             || ($this->deletePermission == 'owned' && in_array($notice->to, user_roles()))
@@ -296,6 +291,7 @@ class NoticeController extends AccountBaseController
         }
 
         Notice::destroy($id);
+
         return Reply::successWithData(__('messages.deleteSuccess'), ['redirectUrl' => route('notices.index')]);
 
     }
@@ -303,10 +299,11 @@ class NoticeController extends AccountBaseController
     public function applyQuickAction(Request $request)
     {
         switch ($request->action_type) {
-        case 'delete':
-            $this->deleteRecords($request);
+            case 'delete':
+                $this->deleteRecords($request);
+
                 return Reply::success(__('messages.deleteSuccess'));
-        default:
+            default:
                 return Reply::error(__('messages.selectAction'));
         }
     }
@@ -317,5 +314,4 @@ class NoticeController extends AccountBaseController
 
         Notice::whereIn('id', explode(',', $request->row_ids))->forceDelete();
     }
-
 }

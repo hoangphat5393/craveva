@@ -8,19 +8,15 @@ use Illuminate\Support\Facades\Notification;
 
 class InvoiceUpdatedListener
 {
-
     /**
      * Handle the event.
      *
-     * @param InvoiceUpdatedEvent $event
      * @return void
      */
-
     public function handle(InvoiceUpdatedEvent $event)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             Notification::send($event->notifyUser, new InvoiceUpdated($event->invoice));
         }
     }
-
 }

@@ -9,7 +9,6 @@ use Modules\Sms\Notifications\EstimateDeclined;
 
 class EstimateDeclinedListener
 {
-
     /**
      * Handle the event.
      *
@@ -23,5 +22,4 @@ class EstimateDeclinedListener
         } catch (\Exception $e) { // @codingStandardsIgnoreLine
         }
     }
-
 }

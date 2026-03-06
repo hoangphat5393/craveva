@@ -6,17 +6,16 @@ use App\Models\EmergencyContact;
 
 class EmergencyContactObserver
 {
-
     public function saving(EmergencyContact $emergencyContact)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             $emergencyContact->last_updated_by = user()->id;
         }
     }
 
     public function creating(EmergencyContact $emergencyContact)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             $emergencyContact->added_by = user()->id;
 
         }
@@ -25,5 +24,4 @@ class EmergencyContactObserver
             $emergencyContact->company_id = company()->id;
         }
     }
-
 }

@@ -12,7 +12,6 @@ use Illuminate\Console\Command;
 
 class LicenceExpire extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
@@ -32,7 +31,6 @@ class LicenceExpire extends Command
      *
      * @return mixed
      */
-
     public function handle()
     {
         $companies = Company::with('package')
@@ -53,17 +51,17 @@ class LicenceExpire extends Command
         $otherPackages = $packages->filter(function ($value, $key) {
             return $value->default == 'no';
         });
-        if($defaultPackage == null){
+        if ($defaultPackage == null) {
             return;
         }
         // Set default package for license expired companies.
         foreach ($companies as $company) {
-            if($company->package != 'lifetime'){
+            if ($company->package != 'lifetime') {
 
                 $latestInvoice = GlobalInvoice::where('company_id', $company->id)
                     ->whereNotNull('pay_date')
                     ->latest()->first();
-                if (!($latestInvoice && $latestInvoice->next_pay_date->format('Y-m-d') > now()->format('Y-m-d'))) {
+                if (! ($latestInvoice && $latestInvoice->next_pay_date->format('Y-m-d') > now()->format('Y-m-d'))) {
                     $company->package_id = $defaultPackage->id;
                     $company->licence_expire_on = now()->addYear();
                     $company->status = 'license_expired';
@@ -76,12 +74,11 @@ class LicenceExpire extends Command
                 }
             }
 
-
         }
 
         // Sent notification to companies before license expire.
         foreach ($otherPackages as $package) {
-            if (!is_null($package->notification_before)) {
+            if (! is_null($package->notification_before)) {
                 $companiesNotify = Company::with('package')
                     ->where('status', 'active')
                     ->whereNotNull('licence_expire_on')
@@ -107,7 +104,7 @@ class LicenceExpire extends Command
             ->where('subscription_status', 'active')
             ->update(['subscription_status' => 'inactive']);
 
-        $subscription = new GlobalSubscription();
+        $subscription = new GlobalSubscription;
         $subscription->company_id = $company->id;
         $subscription->package_id = $package->id;
         $subscription->currency_id = $currencyId;
@@ -120,7 +117,7 @@ class LicenceExpire extends Command
         $subscription->transaction_id = str(str()->random(15))->upper();
         $subscription->save();
 
-        $offlineInvoice = new GlobalInvoice();
+        $offlineInvoice = new GlobalInvoice;
         $offlineInvoice->global_subscription_id = $subscription->id;
         $offlineInvoice->company_id = $company->id;
         $offlineInvoice->currency_id = $currencyId;
@@ -135,5 +132,4 @@ class LicenceExpire extends Command
         $offlineInvoice->transaction_id = $subscription->transaction_id;
         $offlineInvoice->save();
     }
-
 }

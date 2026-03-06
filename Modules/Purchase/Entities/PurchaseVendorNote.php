@@ -2,12 +2,11 @@
 
 namespace Modules\Purchase\Entities;
 
-use App\Models\User;
 use App\Models\BaseModel;
+use App\Models\User;
 use App\Traits\HasCompany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Modules\Purchase\Entities\PurchaseVendorUserNotes;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PurchaseVendorNote extends BaseModel
 {
@@ -29,5 +28,4 @@ class PurchaseVendorNote extends BaseModel
     {
         return $this->belongsTo(User::class, 'purchase_vendor_id');
     }
-
 }

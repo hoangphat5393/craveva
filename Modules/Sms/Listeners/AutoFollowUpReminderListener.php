@@ -8,7 +8,6 @@ use Modules\Sms\Notifications\AutoFollowUpReminder;
 
 class AutoFollowUpReminderListener
 {
-
     /**
      * Handle the event.
      *
@@ -25,5 +24,4 @@ class AutoFollowUpReminderListener
         } catch (\Exception $e) { // @codingStandardsIgnoreLine
         }
     }
-
 }

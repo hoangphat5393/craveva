@@ -1,36 +1,35 @@
 <?php
 
-use App\Http\Controllers\DesignationController;
 use Illuminate\Support\Facades\Route;
-use Modules\Recruit\Http\Controllers\JobController;
-use Modules\Recruit\Http\Controllers\SkillController;
-use Modules\Recruit\Http\Controllers\ReportController;
-use Modules\Recruit\Http\Controllers\JobFileController;
-use Modules\Recruit\Http\Controllers\JobTypeController;
-use Modules\Recruit\Http\Controllers\EvaluationController;
 use Modules\Recruit\Http\Controllers\ApplicantNoteController;
-use Modules\Recruit\Http\Controllers\InterviewFileController;
-use Modules\Recruit\Http\Controllers\Front\FrontJobController;
-use Modules\Recruit\Http\Controllers\JobApplicationController;
-use Modules\Recruit\Http\Controllers\JobOfferLetterController;
-use Modules\Recruit\Http\Controllers\RecruitSettingController;
-use Modules\Recruit\Http\Controllers\WorkExperienceController;
-use Modules\Recruit\Http\Controllers\RecruitDashboardController;
 use Modules\Recruit\Http\Controllers\CandidateDatabaseController;
+use Modules\Recruit\Http\Controllers\EvaluationController;
 use Modules\Recruit\Http\Controllers\FooterSettingsController;
-use Modules\Recruit\Http\Controllers\InterviewScheduleController;
-use Modules\Recruit\Http\Controllers\JobApplicationBoardController;
-use Modules\Recruit\Http\Controllers\JobApplicationFilesController;
-use Modules\Recruit\Http\Controllers\JobOfferLetterFilesController;
+use Modules\Recruit\Http\Controllers\Front\FrontJobController;
+use Modules\Recruit\Http\Controllers\InterviewFileController;
 use Modules\Recruit\Http\Controllers\InterviewRecommendationStatusController;
+use Modules\Recruit\Http\Controllers\InterviewScheduleController;
 use Modules\Recruit\Http\Controllers\InterviewStageController;
+use Modules\Recruit\Http\Controllers\JobApplicationBoardController;
+use Modules\Recruit\Http\Controllers\JobApplicationController;
+use Modules\Recruit\Http\Controllers\JobApplicationFilesController;
 use Modules\Recruit\Http\Controllers\JobCategoryController;
+use Modules\Recruit\Http\Controllers\JobController;
+use Modules\Recruit\Http\Controllers\JobFileController;
+use Modules\Recruit\Http\Controllers\JobOfferLetterController;
+use Modules\Recruit\Http\Controllers\JobOfferLetterFilesController;
 use Modules\Recruit\Http\Controllers\JobSubCategoryController;
+use Modules\Recruit\Http\Controllers\JobTypeController;
 use Modules\Recruit\Http\Controllers\RecruitCandidateFollowUpController;
 use Modules\Recruit\Http\Controllers\RecruitCustomQuestionController;
+use Modules\Recruit\Http\Controllers\RecruitDashboardController;
 use Modules\Recruit\Http\Controllers\RecruitEmailNotificationSettingsController;
 use Modules\Recruit\Http\Controllers\RecruiterController;
+use Modules\Recruit\Http\Controllers\RecruitSettingController;
 use Modules\Recruit\Http\Controllers\RecruitSourceController;
+use Modules\Recruit\Http\Controllers\ReportController;
+use Modules\Recruit\Http\Controllers\SkillController;
+use Modules\Recruit\Http\Controllers\WorkExperienceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -73,8 +72,8 @@ Route::group(['middleware' => 'auth', 'prefix' => 'account'], function () {
     Route::resource('job-category', JobCategoryController::class);
     Route::resource('job-type', JobTypeController::class);
 
-     // Interview schedule
-     Route::group(
+    // Interview schedule
+    Route::group(
         ['prefix' => 'job-offer-letter'],
         function () {
 
@@ -143,8 +142,6 @@ Route::group(['middleware' => 'auth', 'prefix' => 'account'], function () {
             Route::post('import/process', [JobApplicationController::class, 'importProcess'])->name('job-applications.import.process');
             Route::get('import/download-sample-csv', [JobApplicationController::class, 'downloadSampleCsv'])->name('job-applications.import.downloadSampleCsv');
 
-
-
         });
 
     Route::post('candidate-follow-up/change-follow-up-status', [RecruitCandidateFollowUpController::class, 'changefollowUpStatus'])->name('candidate-follow-up.change_follow_up_status');
@@ -202,7 +199,6 @@ Route::group(['middleware' => 'auth', 'prefix' => 'account'], function () {
 
     Route::resource('evaluation', EvaluationController::class);
     Route::resource('recommendation-status', InterviewRecommendationStatusController::class);
-
 
     Route::resource('notification-settings', RecruitEmailNotificationSettingsController::class);
     // Dashboard

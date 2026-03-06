@@ -7,8 +7,8 @@ use Illuminate\View\Component;
 
 class LineChart extends Component
 {
-
     public $chartData;
+
     public $multiple;
 
     /**
@@ -31,5 +31,4 @@ class LineChart extends Component
     {
         return view('components.line-chart');
     }
-
 }

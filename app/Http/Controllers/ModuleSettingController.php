@@ -8,14 +8,14 @@ use Illuminate\Http\Request;
 
 class ModuleSettingController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'app.menu.moduleSettings';
         $this->activeSettingMenu = 'module_settings';
         $this->middleware(function ($request, $next) {
-            abort_403(!(user()->permission('manage_module_setting') == 'all'));
+            abort_403(! (user()->permission('manage_module_setting') == 'all'));
+
             return $next($request);
         });
     }
@@ -36,6 +36,7 @@ class ModuleSettingController extends AccountBaseController
 
         if (request()->ajax()) {
             $html = view($this->view, $this->data)->render();
+
             return Reply::dataOnly(['status' => 'success', 'html' => $html, 'title' => $this->pageTitle, 'activeTab' => $this->activeTab]);
         }
 
@@ -50,5 +51,4 @@ class ModuleSettingController extends AccountBaseController
 
         return Reply::success(__('messages.updateSuccess'));
     }
-
 }

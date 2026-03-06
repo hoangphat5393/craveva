@@ -2,12 +2,12 @@
 
 namespace Modules\ServerManager\Database\Seeders;
 
+use App\Models\ClientDetails;
+use App\Models\Project;
+use App\Models\User;
+use Illuminate\Database\Seeder;
 use Modules\ServerManager\Entities\ServerDomain;
 use Modules\ServerManager\Entities\ServerHosting;
-use App\Models\User;
-use App\Models\Project;
-use App\Models\ClientDetails;
-use Illuminate\Database\Seeder;
 use Modules\ServerManager\Entities\ServerProvider;
 
 class ServerDomainSeeder extends Seeder
@@ -15,7 +15,7 @@ class ServerDomainSeeder extends Seeder
     /**
      * Run the database seeds.
      *
-     * @param int $companyId
+     * @param  int  $companyId
      * @return void
      */
     public function run($companyId)
@@ -28,16 +28,16 @@ class ServerDomainSeeder extends Seeder
         $clients = ClientDetails::where('company_id', $companyId)->pluck('id')->toArray();
 
         $providers = ServerProvider::where('company_id', $companyId)
-            ->where(function($query) {
+            ->where(function ($query) {
                 $query->where('type', 'hosting')
-                      ->orWhere('type', 'both');
+                    ->orWhere('type', 'both');
             })
             ->where('status', 'active')
             ->get(['id', 'name', 'url'])
             ->values();
 
         // Only create server domain records if users exist (required for foreign key constraints)
-        if (!empty($users)) {
+        if (! empty($users)) {
             ServerDomain::factory()
                 ->count(20)
                 ->make()
@@ -50,23 +50,23 @@ class ServerDomainSeeder extends Seeder
                     // $domain->updated_by = $faker->randomElement($users);
 
                     // Assign random project if available
-                    if (!empty($projects)) {
+                    if (! empty($projects)) {
                         $domain->project_id = $faker->optional(0.7)->randomElement($projects);
                     }
 
                     // Assign random client if available
-                    if (!empty($clients)) {
+                    if (! empty($clients)) {
                         $domain->client_id = $faker->optional(0.6)->randomElement($clients);
                     }
 
-                     // Assign random provider from database (hosting_provider and provider_url)
-                     $selectedProvider = $providers->random();
-                     $domain->domain_provider = $selectedProvider->id;
-                     $domain->provider_url = $selectedProvider->url;
+                    // Assign random provider from database (hosting_provider and provider_url)
+                    $selectedProvider = $providers->random();
+                    $domain->domain_provider = $selectedProvider->id;
+                    $domain->provider_url = $selectedProvider->url;
 
                     // Assign random hosting if available
                     $hostings = ServerHosting::where('company_id', $companyId)->pluck('id')->toArray();
-                    if (!empty($hostings)) {
+                    if (! empty($hostings)) {
                         $domain->hosting_id = $faker->optional(0.8)->randomElement($hostings);
                     }
 

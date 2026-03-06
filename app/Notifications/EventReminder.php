@@ -6,7 +6,6 @@ use App\Models\Event;
 
 class EventReminder extends BaseNotification
 {
-
     private $event;
 
     /**
@@ -23,12 +22,12 @@ class EventReminder extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
     {
-        $via = array('database');
+        $via = ['database'];
 
         if ($notifiable->email_notifications && $notifiable->email != '') {
             array_push($via, 'mail');
@@ -40,7 +39,7 @@ class EventReminder extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
@@ -49,16 +48,16 @@ class EventReminder extends BaseNotification
         $url = route('events.show', $this->event->id);
         $url = getDomainSpecificUrl($url, $this->company);
 
-        $content = __('email.eventReminder.text') . '<br>' . __('app.name') . ': ' . $this->event->event_name . '<br>' . __('app.venue') . ': ' . $this->event->where . '<br>' . __('app.time') . ': ' . $this->event->start_date_time->toDayDateTimeString();
+        $content = __('email.eventReminder.text').'<br>'.__('app.name').': '.$this->event->event_name.'<br>'.__('app.venue').': '.$this->event->where.'<br>'.__('app.time').': '.$this->event->start_date_time->toDayDateTimeString();
 
         $build
-            ->subject(__('email.eventReminder.subject') . ' - ' . config('app.name'))
+            ->subject(__('email.eventReminder.subject').' - '.config('app.name'))
             ->markdown('mail.email', [
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
                 'actionText' => __('email.eventReminder.action'),
-                'notifiableName' => $notifiable->name
+                'notifiableName' => $notifiable->name,
             ]);
 
         parent::resetLocale();
@@ -69,13 +68,12 @@ class EventReminder extends BaseNotification
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
-    //phpcs:ignore
+    // phpcs:ignore
     public function toArray($notifiable)
     {
         return $this->event->toArray();
     }
-
 }

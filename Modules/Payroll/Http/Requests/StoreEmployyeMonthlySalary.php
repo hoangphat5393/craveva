@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreEmployyeMonthlySalary extends FormRequest
 {
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -30,5 +29,4 @@ class StoreEmployyeMonthlySalary extends FormRequest
     {
         return true;
     }
-
 }

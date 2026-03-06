@@ -10,5 +10,4 @@ class PayCode extends BaseModel
     use HasCompany;
 
     protected $guarded = ['id'];
-
 }

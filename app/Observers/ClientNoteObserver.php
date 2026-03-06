@@ -6,10 +6,6 @@ use App\Models\ClientNote;
 
 class ClientNoteObserver
 {
-
-    /**
-     * @param ClientNote $clientNote
-     */
     public function saving(ClientNote $clientNote)
     {
         if (user()) {
@@ -27,5 +23,4 @@ class ClientNoteObserver
             $clientNote->company_id = company()->id;
         }
     }
-
 }

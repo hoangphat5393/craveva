@@ -7,11 +7,14 @@ use Illuminate\View\Component;
 
 class SubMenuItem extends Component
 {
-
     public $text;
+
     public $link;
+
     public $permission;
+
     public $addon;
+
     public $active;
 
     /**
@@ -38,5 +41,4 @@ class SubMenuItem extends Component
     {
         return view('components.sub-menu-item');
     }
-
 }

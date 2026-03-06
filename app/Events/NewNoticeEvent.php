@@ -9,11 +9,12 @@ use Illuminate\Queue\SerializesModels;
 
 class NewNoticeEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $notice;
+
     public $notifyUser;
+
     public $action;
 
     public function __construct(Notice $notice, $notifyUser, $action)
@@ -22,5 +23,4 @@ class NewNoticeEvent
         $this->notifyUser = $notifyUser;
         $this->action = $action;
     }
-
 }

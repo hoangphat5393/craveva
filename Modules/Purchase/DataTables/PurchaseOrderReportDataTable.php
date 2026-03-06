@@ -3,17 +3,14 @@
 namespace Modules\Purchase\DataTables;
 
 use App\DataTables\BaseDataTable;
-use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Modules\Purchase\Entities\PurchaseOrder;
 use Modules\Purchase\Entities\PurchaseVendor;
 use Yajra\DataTables\Html\Button;
-use Yajra\DataTables\Html\Column;
 
 class PurchaseOrderReportDataTable extends BaseDataTable
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -22,10 +19,9 @@ class PurchaseOrderReportDataTable extends BaseDataTable
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
-
     public function dataTable($query)
     {
 
@@ -42,12 +38,12 @@ class PurchaseOrderReportDataTable extends BaseDataTable
             })
             ->addIndexColumn()
             ->smart(false)
-            ->setRowId(fn($row) => 'row-' . $row->id)
+            ->setRowId(fn ($row) => 'row-'.$row->id)
             ->rawColumns(['purchase_order_count']);
     }
 
     /**
-     * @param PurchaseVendor $model
+     * @param  PurchaseVendor  $model
      * @return \Illuminate\Database\Query\Builder
      */
     public function query(PurchaseOrder $model)
@@ -58,15 +54,15 @@ class PurchaseOrderReportDataTable extends BaseDataTable
 
         $model = $model
             ->select('purchase_vendors.primary_name', 'purchase_vendors.id', 'purchase_vendors.opening_balance', 'purchase_vendors.currency_id',
-            DB::raw('( select count(purchase_orders.vendor_id) from purchase_orders where purchase_orders.vendor_id = purchase_vendors.id) as count_total_order'),
-            DB::raw('( select sum(orderAmount.total) from purchase_orders as orderAmount where orderAmount.vendor_id = purchase_vendors.id) as order_amount'),
-        )
+                DB::raw('( select count(purchase_orders.vendor_id) from purchase_orders where purchase_orders.vendor_id = purchase_vendors.id) as count_total_order'),
+                DB::raw('( select sum(orderAmount.total) from purchase_orders as orderAmount where orderAmount.vendor_id = purchase_vendors.id) as order_amount'),
+            )
             ->join('purchase_vendors', 'purchase_vendors.id', 'purchase_orders.vendor_id');
 
         if ($request->startDate !== null && $request->startDate != 'null' && $request->startDate != '') {
             $startDate = Carbon::createFromFormat($this->company->date_format, $request->startDate)->toDateString();
 
-            if (!is_null($startDate)) {
+            if (! is_null($startDate)) {
                 $model = $model->where(DB::raw('DATE(purchase_orders.`purchase_date`)'), '>=', $startDate);
 
             }
@@ -75,14 +71,14 @@ class PurchaseOrderReportDataTable extends BaseDataTable
         if ($request->endDate !== null && $request->endDate != 'null' && $request->endDate != '') {
             $endDate = Carbon::createFromFormat($this->company->date_format, $request->endDate)->toDateString();
 
-            if (!is_null($endDate)) {
+            if (! is_null($endDate)) {
                 $model = $model->where(function ($query) use ($endDate) {
                     $query->where(DB::raw('DATE(purchase_orders.`purchase_date`)'), '<=', $endDate);
                 });
             }
         }
 
-        if (!is_null($vendor) && $vendor !== 'all') {
+        if (! is_null($vendor) && $vendor !== 'all') {
             $model->where('purchase_vendors.id', $vendor);
         }
 
@@ -103,9 +99,9 @@ class PurchaseOrderReportDataTable extends BaseDataTable
                 'initComplete' => 'function () {
                     window.LaravelDataTables["purchase-order-report-table"].buttons().container()
                      .appendTo( "#table-actions")
-                 }'
+                 }',
             ])
-            ->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
+            ->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
     }
 
     /**
@@ -123,5 +119,4 @@ class PurchaseOrderReportDataTable extends BaseDataTable
             __('app.amount') => ['data' => 'order_amount', 'name' => 'order_amount', 'orderable' => true, 'title' => __('app.amount')],
         ];
     }
-
 }

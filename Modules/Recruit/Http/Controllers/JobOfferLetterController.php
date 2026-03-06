@@ -4,7 +4,8 @@ namespace Modules\Recruit\Http\Controllers;
 
 use App\Helper\Reply;
 use App\Http\Controllers\AccountBaseController;
-use App\Http\Requests\Admin\Employee\StoreRequest;
+use App\Http\Requests\Designation\StoreRequest as DesignationStore;
+use App\Models\BaseModel;
 use App\Models\Currency;
 use App\Models\Designation;
 use App\Models\EmployeeDetails;
@@ -29,15 +30,12 @@ use Modules\Recruit\Entities\RecruitSalaryStructure;
 use Modules\Recruit\Entities\RecruitSelectedSalaryComponent;
 use Modules\Recruit\Entities\RecruitSetting;
 use Modules\Recruit\Events\OfferLetterEvent;
-use Modules\Recruit\Http\Requests\OfferLetter\StoreOfferLetter;
-use App\Http\Requests\Designation\StoreRequest as DesignationStore;
-use App\Models\BaseModel;
 use Modules\Recruit\Http\Requests\EmployeeStoreRequest;
+use Modules\Recruit\Http\Requests\OfferLetter\StoreOfferLetter;
 use Symfony\Component\Mailer\Exception\TransportException;
 
 class JobOfferLetterController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -129,7 +127,6 @@ class JobOfferLetterController extends AccountBaseController
             $this->job_not_expired = false;
         }
 
-
         $this->label_class = '';
         $this->msg = '';
 
@@ -216,7 +213,6 @@ class JobOfferLetterController extends AccountBaseController
         $jobOffer->recruit_job_application_id = $request->jobApplicant;
         $jobOffer->recruit_job_id = $request->jobId;
         $jobOffer->description = $request->description;
-
 
         $jobOffer->job_expire = Carbon::createFromFormat($this->company->date_format, $request->jobExpireDate)->format('Y-m-d');
         $jobOffer->expected_joining_date = Carbon::createFromFormat($this->company->date_format, $request->expJoinDate)->format('Y-m-d');
@@ -621,7 +617,7 @@ class JobOfferLetterController extends AccountBaseController
         $dataStage = RecruitJob::with('stages')->findOrFail($jobId);
         $dataStage = $dataStage->stages->pluck('name', 'id')->toArray();
         $currencySymbol = Currency::where('id', '=', $jobData->currency_id)->first();
-        $payAccording = __('recruit::app.job.' . $jobData->pay_according);
+        $payAccording = __('recruit::app.job.'.$jobData->pay_according);
 
         return Reply::dataOnly(['status' => 'success', 'stages' => $dataStage, 'applications' => $data, 'job' => $jobData, 'id' => $request->job_id, 'currencySymbol' => $currencySymbol, 'payAccording' => $payAccording]);
     }
@@ -693,7 +689,7 @@ class JobOfferLetterController extends AccountBaseController
 
     public function designationStore(DesignationStore $request)
     {
-        $group = new Designation();
+        $group = new Designation;
         $group->name = $request->name;
         $group->parent_id = $request->parent_id ? $request->parent_id : null;
         $group->save();
@@ -706,14 +702,12 @@ class JobOfferLetterController extends AccountBaseController
 
         $newDesignationId = $group->id;
 
-
         $allDesignation = Designation::all();
-
 
         $options = BaseModel::options($allDesignation);
         $selectedDesignationId = $group->id;
 
-        return Reply::successWithData(__('messages.recordSaved'), ['data' => $options, 'selectedId' => $selectedDesignationId, 'selected' => $newDesignationId,]);
+        return Reply::successWithData(__('messages.recordSaved'), ['data' => $options, 'selectedId' => $selectedDesignationId, 'selected' => $newDesignationId]);
     }
 
     public function employeeStore(EmployeeStoreRequest $request)
@@ -767,7 +761,7 @@ class JobOfferLetterController extends AccountBaseController
             // Rollback Transaction
             DB::rollback();
 
-            return Reply::error('Some error occurred when inserting the data. Please try again or contact support: ' . $e->getMessage());
+            return Reply::error('Some error occurred when inserting the data. Please try again or contact support: '.$e->getMessage());
         }
 
         return Reply::successWithData(__('messages.recordSaved'), []);

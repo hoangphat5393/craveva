@@ -17,10 +17,8 @@ class TaskNoteMentionListener
                 $mentionUser = User::whereIn('id', ($mentionUserId))->get();
                 Notification::send($mentionUser, new TaskNoteMention($event->task, $event));
 
-
             }
         } catch (\Exception $e) { // @codingStandardsIgnoreLine
         }
     }
-
 }

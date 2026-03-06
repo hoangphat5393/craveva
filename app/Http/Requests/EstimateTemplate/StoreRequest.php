@@ -11,7 +11,6 @@ class StoreRequest extends CoreRequest
      *
      * @return bool
      */
-
     public function authorize()
     {
         return true;
@@ -27,8 +26,7 @@ class StoreRequest extends CoreRequest
         return [
             'sub_total' => 'required',
             'total' => 'required',
-            'name' => 'required'
+            'name' => 'required',
         ];
     }
-    
 }

@@ -18,12 +18,13 @@ use Illuminate\Support\Facades\DB;
 
 class ImportAttendanceJob implements ShouldQueue
 {
-
     use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use ExcelImportable;
 
     private $row;
+
     private $columns;
+
     private $company;
 
     /**
@@ -52,10 +53,9 @@ class ImportAttendanceJob implements ShouldQueue
                 $q->where('name', 'employee');
             })->first();
 
-            if (!$user) {
+            if (! $user) {
                 $this->failJobWithMessage(__('messages.employeeNotFound'));
-            }
-            else {
+            } else {
                 DB::beginTransaction();
                 try {
                     Attendance::create([
@@ -79,10 +79,8 @@ class ImportAttendanceJob implements ShouldQueue
                     $this->failJobWithMessage($e->getMessage());
                 }
             }
-        }
-        else {
+        } else {
             $this->failJob(__('messages.invalidData'));
         }
     }
-
 }

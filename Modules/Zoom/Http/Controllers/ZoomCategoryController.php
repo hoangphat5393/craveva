@@ -77,7 +77,7 @@ class ZoomCategoryController extends AccountBaseController
      * @param  int  $id
      * @return Response
      */
-    //phpcs:ignore
+    // phpcs:ignore
     public function show($id)
     {
         return view('zoom::show');
@@ -89,7 +89,7 @@ class ZoomCategoryController extends AccountBaseController
      * @param  int  $id
      * @return Response
      */
-    //phpcs:ignore
+    // phpcs:ignore
     public function edit($id)
     {
         return view('zoom::edit');

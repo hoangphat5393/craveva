@@ -20,12 +20,13 @@ use Illuminate\Support\Facades\Session;
 
 class ImportDealJob implements ShouldQueue
 {
-
     use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, UniversalSearchTrait;
     use ExcelImportable;
 
     private $row;
+
     private $columns;
+
     private $company;
 
     /**
@@ -61,7 +62,7 @@ class ImportDealJob implements ShouldQueue
 
             $lead = Lead::withoutGlobalScopes()->where('client_email', $this->getColumnValue('email'))->where('company_id', $this->company?->id)->first();
 
-            if (!$lead) {
+            if (! $lead) {
                 $this->failJob(__('messages.invalidData'));
 
                 return;
@@ -69,11 +70,11 @@ class ImportDealJob implements ShouldQueue
 
             $pipeline = LeadPipeline::withoutGlobalScopes()->where('name', $this->getColumnValue('pipeline'))->where('company_id', $this->company?->id)->first();
 
-            if (!$pipeline) {
+            if (! $pipeline) {
                 $pipeline = LeadPipeline::withoutGlobalScopes()->where('company_id', $this->company?->id)->first();
             }
 
-            if (!$pipeline) {
+            if (! $pipeline) {
                 $this->failJob(__('messages.invalidData'));
 
                 return;
@@ -81,11 +82,11 @@ class ImportDealJob implements ShouldQueue
 
             $stage = $pipeline->stages->where('name', $this->getColumnValue('stages'))->first();
 
-            if (!$stage) {
+            if (! $stage) {
                 $stage = $pipeline->stages->where('default', 1)->first();
             }
 
-            if (!$stage) {
+            if (! $stage) {
                 $this->failJob(__('messages.invalidData'));
 
                 return;
@@ -95,7 +96,7 @@ class ImportDealJob implements ShouldQueue
             Session::put('is_imported', true);
             try {
 
-                $deal = new Deal();
+                $deal = new Deal;
                 $deal->name = $this->getColumnValue('name');
                 $deal->lead_id = $lead->id;
                 $deal->next_follow_up = 'yes';
@@ -108,7 +109,7 @@ class ImportDealJob implements ShouldQueue
                 $leads = Session::get('leads', []);
 
                 $leads[] = [
-                    'deal_name'  => $lead->client_name,
+                    'deal_name' => $lead->client_name,
                     'email' => $lead->client_email,
                 ];
 
@@ -124,11 +125,8 @@ class ImportDealJob implements ShouldQueue
                 DB::rollBack();
                 $this->failJobWithMessage($e->getMessage());
             }
-        }
-        else {
+        } else {
             $this->failJob(__('messages.invalidData'));
         }
     }
-
 }
-

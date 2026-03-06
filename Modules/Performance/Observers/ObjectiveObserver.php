@@ -5,13 +5,11 @@ namespace Modules\Performance\Observers;
 use App\Models\User;
 use App\Traits\HasCompany;
 use Modules\Performance\Entities\Objective;
-use Modules\Performance\Entities\PerformanceSetting;
 use Modules\Performance\Events\ObjectiveCreatedEvent;
 
 class ObjectiveObserver
 {
-
-    Use HasCompany;
+    use HasCompany;
 
     public function creating(Objective $model)
     {
@@ -50,5 +48,4 @@ class ObjectiveObserver
         \App\Models\Notification::deleteNotification($notifyData, $objective->id);
 
     }
-
 }

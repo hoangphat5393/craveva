@@ -7,7 +7,6 @@ use Modules\Affiliate\Enums\PaymentStatus;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      */
@@ -37,5 +36,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('payouts');
     }
-
 };

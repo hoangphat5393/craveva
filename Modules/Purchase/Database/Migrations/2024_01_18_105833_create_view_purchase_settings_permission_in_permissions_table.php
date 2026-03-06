@@ -2,16 +2,12 @@
 
 use App\Models\Company;
 use App\Models\Module;
-use App\Models\ModuleSetting;
 use App\Models\Permission;
 use App\Models\PermissionRole;
 use App\Models\Role;
 use App\Models\User;
 use App\Models\UserPermission;
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
-use Modules\Purchase\Entities\PurchaseManagementSetting;
 
 return new class extends Migration
 {
@@ -22,7 +18,7 @@ return new class extends Migration
     {
         $module = Module::where('module_name', 'purchase')->first();
 
-        if (!is_null($module)) {
+        if (! is_null($module)) {
             $permissionName = 'view_purchase_setting';
 
             $permission = Permission::firstOrCreate([
@@ -30,11 +26,10 @@ return new class extends Migration
                 'display_name' => ucwords(str_replace('_', ' ', $permissionName)),
                 'is_custom' => 1,
                 'module_id' => $module->id,
-                'allowed_permissions' => Permission::ALL_NONE
+                'allowed_permissions' => Permission::ALL_NONE,
             ]);
 
             $companies = Company::all();
-
 
             foreach ($companies as $company) {
 
@@ -42,14 +37,14 @@ return new class extends Migration
                     ->where('company_id', $company->id)
                     ->first();
 
-                try{
-                    $permissionRole = new PermissionRole();
+                try {
+                    $permissionRole = new PermissionRole;
                     $permissionRole->permission_id = $permission->id;
                     $permissionRole->role_id = $role->id;
                     $permissionRole->permission_type_id = 4;
                     $permissionRole->save();
 
-                }catch (\Exception $e){
+                } catch (\Exception $e) {
 
                 }
 
@@ -73,8 +68,5 @@ return new class extends Migration
     /**
      * Reverse the migrations.
      */
-    public function down(): void
-    {
-
-    }
+    public function down(): void {}
 };

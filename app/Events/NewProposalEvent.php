@@ -9,11 +9,12 @@ use Illuminate\Queue\SerializesModels;
 
 class NewProposalEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $proposal;
+
     public $notifyUser;
+
     public $type;
 
     public function __construct(Proposal $proposal, $type)
@@ -21,5 +22,4 @@ class NewProposalEvent
         $this->proposal = $proposal;
         $this->type = $type;
     }
-
 }

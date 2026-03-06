@@ -11,7 +11,6 @@ use Illuminate\Queue\SerializesModels;
 
 class NewMessage implements ShouldBroadcastNow
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $userChat;
@@ -35,5 +34,4 @@ class NewMessage implements ShouldBroadcastNow
     {
         return new PrivateChannel('chat');
     }
-
 }

@@ -44,17 +44,17 @@ class ZoomSettingController extends AccountBaseController
         $this->slackSettings = SlackSetting::first();
 
         switch ($tab) {
-        case 'email-setting':
-            $this->view = 'zoom::notification-settings.ajax.email-setting';
-            break;
-        case 'slack-setting':
-            $this->view = 'zoom::notification-settings.ajax.slack-setting';
-            break;
-        default:
-            $this->zoom = ZoomSetting::first();
-            $this->webhookRoute = route('zoom-webhook', [$hash]);
-            $this->view = 'zoom::notification-settings.ajax.zoom-setting';
-            break;
+            case 'email-setting':
+                $this->view = 'zoom::notification-settings.ajax.email-setting';
+                break;
+            case 'slack-setting':
+                $this->view = 'zoom::notification-settings.ajax.slack-setting';
+                break;
+            default:
+                $this->zoom = ZoomSetting::first();
+                $this->webhookRoute = route('zoom-webhook', [$hash]);
+                $this->view = 'zoom::notification-settings.ajax.zoom-setting';
+                break;
         }
 
         $this->activeTab = $tab ?: 'zoom-setting';

@@ -6,15 +6,15 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use Modules\Recruit\Entities\RecruitInterviewSchedule;
-use Modules\Recruit\Entities\RecruitJobApplication;
 
 class CandidateInterviewScheduleEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $interview;
+
     public $jobApplication;
+
     public $candidateComment;
 
     /**
@@ -22,7 +22,6 @@ class CandidateInterviewScheduleEvent
      *
      * @return void
      */
-
     public function __construct(RecruitInterviewSchedule $interview, $jobApplication, $candidateComment)
     {
         $this->interview = $interview;
@@ -39,5 +38,4 @@ class CandidateInterviewScheduleEvent
     {
         return [];
     }
-
 }

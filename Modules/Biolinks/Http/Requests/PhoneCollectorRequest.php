@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class PhoneCollectorRequest extends FormRequest
 {
-
     /**
      * Get the validation rules that apply to the request.
      */
@@ -31,5 +30,4 @@ class PhoneCollectorRequest extends FormRequest
     {
         return true;
     }
-
 }

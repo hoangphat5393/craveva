@@ -1,21 +1,20 @@
 <?php
 
 use App\Models\Project;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      *
      * @return void
      */
-
     public function up()
     {
-        if (!Schema::hasColumn('projects', 'project_short_code')) {
+        if (! Schema::hasColumn('projects', 'project_short_code')) {
             Schema::table('projects', function (Blueprint $table) {
                 $table->string('project_short_code')->after('project_name')->nullable();
             });
@@ -27,8 +26,8 @@ return new class extends Migration {
 
                     $project->project_short_code = $this->initials($project->project_name);
                     $project->saveQuietly();
-                // @codingStandardsIgnoreLine
-                }catch (\Exception $e){
+                    // @codingStandardsIgnoreLine
+                } catch (\Exception $e) {
                 }
             }
         }
@@ -39,7 +38,6 @@ return new class extends Migration {
      *
      * @return void
      */
-
     public function down()
     {
         Schema::table('projects', function (Blueprint $table) {
@@ -65,11 +63,11 @@ return new class extends Migration {
         return $this->clean($ret);
     }
 
-    protected function clean($string) {
+    protected function clean($string)
+    {
         $string = str_replace(' ', '-', $string); // Replaces all spaces with hyphens.
         $string = preg_replace('/[^A-Za-z0-9\-]/', '', $string); // Removes special chars.
 
         return preg_replace('/-+/', '-', $string); // Replaces multiple hyphens with single one.
     }
-
 };

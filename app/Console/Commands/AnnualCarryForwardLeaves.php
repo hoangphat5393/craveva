@@ -49,7 +49,6 @@ class AnnualCarryForwardLeaves extends Command
             $companies = $companies->where('id', $companyID);
         }
 
-
         $companies->chunk(10, function ($companies) use ($userID, $force) {
             foreach ($companies as $company) {
 
@@ -74,7 +73,7 @@ class AnnualCarryForwardLeaves extends Command
                     }
 
                     if ($settings && $settings->leaves_start_from == 'joining_date') {
-                        $currentYearJoiningDate = Carbon::parse($user->employeeDetail->joining_date->format((now($settings->timezone)->year) . '-m-d'));
+                        $currentYearJoiningDate = Carbon::parse($user->employeeDetail->joining_date->format((now($settings->timezone)->year).'-m-d'));
                         $startingDate = $currentYearJoiningDate->startOfMonth();
 
                         if ($currentYearJoiningDate->copy()->format('Y-m-d') != now($settings->timezone)->format('Y-m-d') && $force != 'true') {
@@ -84,10 +83,10 @@ class AnnualCarryForwardLeaves extends Command
                         if ($startingDate->lt($user->employeeDetail->joining_date)) {
                             $startingDate = $user->employeeDetail->joining_date->startOfMonth();
                         }
-            
+
                     } else {
                         // yearly setting year_start
-            
+
                         $yearFrom = $settings && $settings->year_starts_from ? $settings->year_starts_from : 1;
                         $startingDate = Carbon::create(now()->year, $yearFrom)->startOfMonth();
 
@@ -102,7 +101,6 @@ class AnnualCarryForwardLeaves extends Command
                     } else {
                         $carryForwardAppliedYear = $startingDate->copy()->subYear()->year;
                     }
-
 
                     foreach ($leaveTypes as $value) {
                         $leaveQuota = EmployeeLeaveQuota::where('user_id', $user->id)->where('leave_type_id', $value->id)->first();
@@ -129,7 +127,7 @@ class AnnualCarryForwardLeaves extends Command
                         // $this->info('Leaves Remaining :: '. $user->name.' ' .$value->type_name.' '. $noOfRemainingLeaves);
                         // $this->info('Leaves Overutilised :: '. $user->name.' ' .$value->type_name.' '. $noOfOverutilisedLeaves);
                         // $this->info('Leaves Unused :: '. $user->name.' ' .$value->type_name.' '. $noOfLeavesUnused);
-               
+
                         if ($leaveQuota && $value->unused_leave == 'carry forward' && $leaveQuota->carry_forward_applied != $carryForwardAppliedYear) { // Here carry_forward_applied is the year for which the carry forward leaves are applied
                             $leaveQuota->carry_forward_leaves = $noOfRemainingLeaves;
                             $leaveQuota->overutilised_leaves = 0;
@@ -142,14 +140,13 @@ class AnnualCarryForwardLeaves extends Command
         });
     }
 
-    
     public function calculateNoOfLeavesAlloted($settings, $joiningDate, $user, $value)
     {
         $leaves = $value->no_of_leaves;
         $leaveToSubtract = 0;
 
         if ($settings && $settings->leaves_start_from == 'joining_date') {
-            $currentYearJoiningDate = Carbon::parse($user->employeeDetail->joining_date->format((now($settings->timezone)->year) . '-m-d'));;
+            $currentYearJoiningDate = Carbon::parse($user->employeeDetail->joining_date->format((now($settings->timezone)->year).'-m-d'));
 
             if (now()->gt($currentYearJoiningDate)) {
                 $differenceMonth = now()->startOfMonth()->diffInMonths($currentYearJoiningDate->copy()->startOfMonth());
@@ -160,13 +157,11 @@ class AnnualCarryForwardLeaves extends Command
 
             $differenceMonth = $differenceMonth + 1; // Include current month also
 
-
             $countOfMonthsAllowed = $differenceMonth > 12 ? $differenceMonth - 12 : $differenceMonth;
 
             if ($user->employeeDetail->joining_date->year == now()->year && $value->leavetype == 'yearly') {            // Calculate remaining days after full months
                 $remainingDays = now()->diffInDays($currentYearJoiningDate->copy()->subMonths($differenceMonth));
                 $remainingDays += 2; // adding 2 for becaus same day and next day is not counting as diff
-
 
                 if ($remainingDays >= 16) {
                     $countOfMonthsAllowed++;
@@ -187,12 +182,12 @@ class AnnualCarryForwardLeaves extends Command
             $countOfMonthsAllowed = $differenceMonth > 12 ? $differenceMonth - 12 : $differenceMonth;
 
             $remainingDays = 0;
-            $currentYearJoiningDate = Carbon::parse($user->employeeDetail->joining_date->format((now($settings->timezone)->year) . '-m-d'));;
+            $currentYearJoiningDate = Carbon::parse($user->employeeDetail->joining_date->format((now($settings->timezone)->year).'-m-d'));
 
             if ($user->employeeDetail->joining_date->year == now()->year && $value->leavetype == 'yearly') {
                 $remainingDays = now()->diffInDays($currentYearJoiningDate->copy()->subMonths($differenceMonth));
                 $remainingDays += 2; // adding 2 for becaus same day and next day is not counting as diff
-    
+
                 if ($remainingDays >= 16) {
                     $countOfMonthsAllowed++;
                     $remainingDays = 0;
@@ -236,7 +231,7 @@ class AnnualCarryForwardLeaves extends Command
             if ($value->leavetype == 'yearly') {
                 $monthlyLeaves = ($value->no_of_leaves / 12);
                 $leaveToSubtract = ($monthlyLeaves / 2);
-                
+
             } else {
                 $leaveToSubtract = ($value->no_of_leaves / 2);
             }
@@ -245,13 +240,13 @@ class AnnualCarryForwardLeaves extends Command
 
         if ($value->leavetype == 'yearly') {
             $leaves = $value->no_of_leaves - $leaveToSubtract;
-        
-        } else if ($value->leavetype == 'monthly') {
+
+        } elseif ($value->leavetype == 'monthly') {
             $leaves = ($value->no_of_leaves * $countOfMonthsAllowed) - $leaveToSubtract;
 
         }
 
-        $noOfLeavesAlloted = number_format((float)$leaves, 2, '.', '');
+        $noOfLeavesAlloted = number_format((float) $leaves, 2, '.', '');
 
         // Round off the fraction value for clear calculation and usage.
         // If fraction is between 0 to 0.5 then consider it as 0.5
@@ -263,10 +258,9 @@ class AnnualCarryForwardLeaves extends Command
         if ($fraction > 0 && $fraction <= 0.5) {
             $noOfLeavesAlloted = $whole + 0.5;
 
-        } else if ($fraction > 0.5 && $fraction <= 0.99) {
+        } elseif ($fraction > 0.5 && $fraction <= 0.99) {
             $noOfLeavesAlloted = $whole + 1;
         }
-
 
         // $this->info('Leaves Alloted :: '. $user->name.' ' .$value->type_name.' '. $noOfLeavesAlloted);
 
@@ -275,7 +269,7 @@ class AnnualCarryForwardLeaves extends Command
 
     public function calculateNoOfLeavesTaken($settings, $joiningDate, $user, $value, $carryForwardAppliedYear)
     {
-        $currentYearJoiningDate = Carbon::parse($joiningDate->format($carryForwardAppliedYear . '-m-d'));
+        $currentYearJoiningDate = Carbon::parse($joiningDate->format($carryForwardAppliedYear.'-m-d'));
 
         if ($currentYearJoiningDate->isFuture()) {
             $currentYearJoiningDate->subYear();
@@ -285,7 +279,7 @@ class AnnualCarryForwardLeaves extends Command
         $leaveTo = $currentYearJoiningDate->copy()->addYear()->toDateString();
 
         if ($settings->leaves_start_from !== 'joining_date') {
-            $leaveStartYear = Carbon::parse(now()->format((now($settings->timezone)->year) . '-' . $settings->year_starts_from . '-01'));
+            $leaveStartYear = Carbon::parse(now()->format((now($settings->timezone)->year).'-'.$settings->year_starts_from.'-01'));
 
             if ($leaveStartYear->isFuture()) {
                 $leaveStartYear = $leaveStartYear->subYear();
@@ -342,5 +336,4 @@ class AnnualCarryForwardLeaves extends Command
 
         return $noOfLeavesTaken;
     }
-
 }

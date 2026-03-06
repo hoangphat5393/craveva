@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Scopes\ActiveScope;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Scopes\ActiveScope;
 
 /**
  * App\Models\SubTask
@@ -21,6 +21,7 @@ use App\Scopes\ActiveScope;
  * @property int|null $last_updated_by
  * @property-read mixed $icon
  * @property-read \App\Models\Task $task
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|SubTask newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|SubTask newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|SubTask query()
@@ -34,18 +35,22 @@ use App\Scopes\ActiveScope;
  * @method static \Illuminate\Database\Eloquent\Builder|SubTask whereTaskId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|SubTask whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder|SubTask whereUpdatedAt($value)
+ *
  * @property string|null $description
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\SubTaskFile[] $files
  * @property-read int|null $files_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|SubTask whereDescription($value)
+ *
  * @property int|null $assigned_to
  * @property-read \App\Models\User|null $assignedTo
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|SubTask whereAssignedTo($value)
+ *
  * @mixin \Eloquent
  */
 class SubTask extends BaseModel
 {
-
     protected $casts = [
         'start_date' => 'datetime',
         'due_date' => 'datetime',
@@ -60,12 +65,11 @@ class SubTask extends BaseModel
 
     public function assignedTo(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'assigned_to')->withoutGlobalScope(ActiveScope::class);;
+        return $this->belongsTo(User::class, 'assigned_to')->withoutGlobalScope(ActiveScope::class);
     }
 
     public function files(): HasMany
     {
         return $this->hasMany(SubTaskFile::class, 'sub_task_id');
     }
-
 }

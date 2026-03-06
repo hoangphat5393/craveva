@@ -2,19 +2,20 @@
 
 namespace Modules\Recruit\DataTables;
 
-use Illuminate\Support\Carbon;
 use App\DataTables\BaseDataTable;
-use Modules\Recruit\Entities\RecruitInterviewEmployees;
+use Illuminate\Support\Carbon;
 use Modules\Recruit\Entities\RecruitInterviewSchedule;
-use Yajra\DataTables\Html\Column;
 use Yajra\DataTables\Html\Button;
+use Yajra\DataTables\Html\Column;
 
 class InterviewScheduleDataTable extends BaseDataTable
 {
-
     private $editInterviewSchedulePermission;
+
     private $deleteInterviewSchedulePermission;
+
     private $viewInterviewSchedulePermission;
+
     private $reschedulePermission;
 
     public function __construct()
@@ -29,7 +30,7 @@ class InterviewScheduleDataTable extends BaseDataTable
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
@@ -37,12 +38,12 @@ class InterviewScheduleDataTable extends BaseDataTable
         return datatables()
             ->eloquent($query)
             ->addColumn('check', function ($row) {
-                return '<input type="checkbox" class="select-table-row" id="datatable-row-' . $row->id . '"  name="datatable_ids[]" value="' . $row->id . '" onclick="dataTableRowCheck(' . $row->id . ')">';
+                return '<input type="checkbox" class="select-table-row" id="datatable-row-'.$row->id.'"  name="datatable_ids[]" value="'.$row->id.'" onclick="dataTableRowCheck('.$row->id.')">';
             })
             ->editColumn('full_name', function ($row) {
                 return '<div class="media align-items-center">
             <div class="media-body">
-            <h5 class="mb-0 f-13 text-darkest-grey"><a class="openRightModal" href="' . route('job-applications.show', [$row->recruit_job_application_id]) . '">' . $row->full_name . '</a></h5>
+            <h5 class="mb-0 f-13 text-darkest-grey"><a class="openRightModal" href="'.route('job-applications.show', [$row->recruit_job_application_id]).'">'.$row->full_name.'</a></h5>
             </div>
             </div>';
             })
@@ -53,16 +54,16 @@ class InterviewScheduleDataTable extends BaseDataTable
                 if (count($emp) > 0) {
                     foreach ($emp as $key => $member) {
                         if ($key < 4 && $member->user) {
-                            $img = '<img data-toggle="tooltip" data-original-title="' . $member->user->name . '" src="' . $member->user->image_url . '">';
+                            $img = '<img data-toggle="tooltip" data-original-title="'.$member->user->name.'" src="'.$member->user->image_url.'">';
 
                             $position = $key > 0 ? 'position-absolute' : '';
-                            $members .= '<div class="taskEmployeeImg rounded-circle ' . $position . '" style="left:  ' . ($key * 13) . 'px"><a href="' . route('employees.show', $member->user->id) . '">' . $img . '</a></div> ';
+                            $members .= '<div class="taskEmployeeImg rounded-circle '.$position.'" style="left:  '.($key * 13).'px"><a href="'.route('employees.show', $member->user->id).'">'.$img.'</a></div> ';
                         }
                     }
                 }
 
                 if (count($emp) > 4) {
-                    $members .= '<div class="taskEmployeeImg more-user-count text-center rounded-circle bg-amt-grey position-absolute" style="left:  52px"><a href="' . route('interview-schedule.show', [$row->id]) . '?tab=details" class="text-dark f-10">+' . (count($emp) - 4) . '</a></div> ';
+                    $members .= '<div class="taskEmployeeImg more-user-count text-center rounded-circle bg-amt-grey position-absolute" style="left:  52px"><a href="'.route('interview-schedule.show', [$row->id]).'?tab=details" class="text-dark f-10">+'.(count($emp) - 4).'</a></div> ';
                 }
 
                 $members .= '</div>';
@@ -87,35 +88,35 @@ class InterviewScheduleDataTable extends BaseDataTable
                         || ($this->editInterviewSchedulePermission == 'both' && ($row->user_id == user()->id || $row->added_by == user()->id))
                     )
                 ) {
-                    $status = '<select class="form-control select-picker change-interview-status" data-size="4" data-interview-id="' . $row->id . '">';
+                    $status = '<select class="form-control select-picker change-interview-status" data-size="4" data-interview-id="'.$row->id.'">';
                     $status .= '<option ';
 
                     if ($row->status == 'pending') {
                         $status .= 'selected';
                     }
 
-                    $status .= ' value="pending" data-content="<i class=\'fa fa-circle mr-2 text-yellow\'></i> ' . __('app.pending') . '">' . __('app.pending') . '</option>';
+                    $status .= ' value="pending" data-content="<i class=\'fa fa-circle mr-2 text-yellow\'></i> '.__('app.pending').'">'.__('app.pending').'</option>';
                     $status .= '<option ';
 
                     if ($row->status == 'hired') {
                         $status .= 'selected';
                     }
 
-                    $status .= ' value="hired" data-content="<i class=\'fa fa-circle mr-2 text-light-green\'></i> ' . __('recruit::app.interviewSchedule.hired') . '"' . __('recruit::app.interviewSchedule.hired') . '</option>';
+                    $status .= ' value="hired" data-content="<i class=\'fa fa-circle mr-2 text-light-green\'></i> '.__('recruit::app.interviewSchedule.hired').'"'.__('recruit::app.interviewSchedule.hired').'</option>';
                     $status .= '<option ';
 
                     if ($row->status == 'completed') {
                         $status .= 'selected';
                     }
 
-                    $status .= ' value="completed" data-content="<i class=\'fa fa-circle mr-2 text-blue\'></i> ' . __('app.completed') . '"' . __('app.completed') . '</option>';
+                    $status .= ' value="completed" data-content="<i class=\'fa fa-circle mr-2 text-blue\'></i> '.__('app.completed').'"'.__('app.completed').'</option>';
                     $status .= '<option ';
 
                     if ($row->status == 'canceled') {
                         $status .= 'selected';
                     }
 
-                    $status .= ' value="canceled" data-content="<i class=\'fa fa-circle mr-2 text-red\'></i> ' . __('app.canceled') . '">' . __('app.canceled') . '</option>';
+                    $status .= ' value="canceled" data-content="<i class=\'fa fa-circle mr-2 text-red\'></i> '.__('app.canceled').'">'.__('app.canceled').'</option>';
 
                     $status .= '<option ';
 
@@ -123,33 +124,28 @@ class InterviewScheduleDataTable extends BaseDataTable
                         $status .= 'selected';
                     }
 
-                    $status .= ' value="rejected" data-content="<i class=\'fa fa-circle mr-2 text-black\'></i> ' . __('app.rejected') . '">' . __('app.rejected') . '</option>';
+                    $status .= ' value="rejected" data-content="<i class=\'fa fa-circle mr-2 text-black\'></i> '.__('app.rejected').'">'.__('app.rejected').'</option>';
 
                     $status .= '</select>';
-                }
-                else {
+                } else {
                     if ($row->status == 'pending') {
                         $class = 'text-yellow';
                         $status = __('app.pending');
-                    }
-                    elseif ($row->status == 'hired') {
+                    } elseif ($row->status == 'hired') {
                         $class = 'text-light-green';
                         $status = __('recruit::app.interviewSchedule.hired');
-                    }
-                    elseif ($row->status == 'canceled') {
+                    } elseif ($row->status == 'canceled') {
                         $class = 'text-red';
                         $status = __('app.canceled');
-                    }
-                    elseif ($row->status == 'completed') {
+                    } elseif ($row->status == 'completed') {
                         $class = 'text-purple';
                         $status = __('app.completed');
-                    }
-                    else {
+                    } else {
                         $class = 'text-black';
                         $status = __('app.rejected');
                     }
 
-                    $status = '<i class="fa fa-circle mr-1 ' . $class . ' f-10"></i> ' . $status;
+                    $status = '<i class="fa fa-circle mr-1 '.$class.' f-10"></i> '.$status;
                 }
 
                 return $status;
@@ -167,7 +163,7 @@ class InterviewScheduleDataTable extends BaseDataTable
                 if (count($emp) > 0) {
 
                     foreach ($emp as $member) {
-                        if(!is_null($member->user)){
+                        if (! is_null($member->user)) {
                             $members[] = $member->user->name;
                         }
                     }
@@ -180,10 +176,10 @@ class InterviewScheduleDataTable extends BaseDataTable
 
                 <div class="dropdown">
                     <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" type="link"  data-boundary="window" 
-                        id="dropdownMenuLink-' . $row->id . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        id="dropdownMenuLink-'.$row->id.'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="icon-options-vertical icons"></i>
                     </a>
-                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-' . $row->id . '" tabindex="0">';
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-'.$row->id.'" tabindex="0">';
 
                 $emp = $row->employeesData->pluck('user_id')->toArray();
 
@@ -192,7 +188,7 @@ class InterviewScheduleDataTable extends BaseDataTable
                     ($this->viewInterviewSchedulePermission == 'owned' && in_array(user()->id, $emp)) ||
                     ($this->viewInterviewSchedulePermission == 'both' && (in_array(user()->id, $emp) ||
                             $row->added_by == user()->id))) {
-                    $action .= '<a href="' . route('interview-schedule.show', [$row->id]) . '" class="dropdown-item"><i class="fa fa-eye mr-2"></i>' . __('app.view') . '</a>';
+                    $action .= '<a href="'.route('interview-schedule.show', [$row->id]).'" class="dropdown-item"><i class="fa fa-eye mr-2"></i>'.__('app.view').'</a>';
                 }
 
                 if ($this->editInterviewSchedulePermission == 'all' ||
@@ -200,22 +196,22 @@ class InterviewScheduleDataTable extends BaseDataTable
                     ($this->editInterviewSchedulePermission == 'owned' && in_array(user()->id, $emp)) ||
                     ($this->editInterviewSchedulePermission == 'both' && (in_array(user()->id, $emp) ||
                             $row->added_by == user()->id))) {
-                    $action .= '<a class="dropdown-item openRightModal" href="' . route('interview-schedule.edit', [$row->id]) . '">
+                    $action .= '<a class="dropdown-item openRightModal" href="'.route('interview-schedule.edit', [$row->id]).'">
                                     <i class="fa fa-edit mr-2"></i>
-                                    ' . trans('app.edit') . '
+                                    '.trans('app.edit').'
                                 </a>';
                 }
 
                 if (in_array(user()->id, $emp) && $row->user_accept_status == 'waiting' && $row->status == 'pending') {
-                    $action .= '<a class="dropdown-item employeeResponse" data-interview-id='. $row->id .' data-user-id=' . user()->id . '
+                    $action .= '<a class="dropdown-item employeeResponse" data-interview-id='.$row->id.' data-user-id='.user()->id.'
                             data-response-action="accept" href="javascript:;">
                             <i class="fa fa-check mr-2"></i>
-                            ' . __('recruit::modules.interviewSchedule.acceptInterview') . '
+                            '.__('recruit::modules.interviewSchedule.acceptInterview').'
                     </a>';
-                    $action .= '<a data-response-id=' . $row->emp_id . '
+                    $action .= '<a data-response-id='.$row->emp_id.'
                             data-response-action="refuse" class="dropdown-item employeeResponse" href="javascript:;">
                             <i class="fa fa-times mr-2"></i>
-                            ' . __('recruit::modules.interviewSchedule.rejectInterview') . '
+                            '.__('recruit::modules.interviewSchedule.rejectInterview').'
                     </a>';
                 }
 
@@ -225,7 +221,7 @@ class InterviewScheduleDataTable extends BaseDataTable
                     ($this->reschedulePermission == 'both' && (in_array(user()->id, $emp) ||
                             $row->added_by == user()->id))) {
                     if ($row->status == 'pending') {
-                        $action .= '<a class="dropdown-item reschedule-interview" href="javascript:;" data-user-id="' . $row->id . '"><i class="fa fa-recycle mr-2"></i>' . trans('recruit::modules.interviewSchedule.reSchedule') . '</a>';
+                        $action .= '<a class="dropdown-item reschedule-interview" href="javascript:;" data-user-id="'.$row->id.'"><i class="fa fa-recycle mr-2"></i>'.trans('recruit::modules.interviewSchedule.reSchedule').'</a>';
                     }
                 }
 
@@ -234,9 +230,9 @@ class InterviewScheduleDataTable extends BaseDataTable
                     ($this->deleteInterviewSchedulePermission == 'owned' && in_array(user()->id, $emp)) ||
                     ($this->deleteInterviewSchedulePermission == 'both' && (in_array(user()->id, $emp) ||
                             $row->added_by == user()->id))) {
-                    $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-user-id="' . $row->id . '">
+                    $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-user-id="'.$row->id.'">
                                 <i class="fa fa-trash mr-2"></i>
-                                ' . trans('app.delete') . '
+                                '.trans('app.delete').'
                             </a>';
                 }
 
@@ -247,14 +243,13 @@ class InterviewScheduleDataTable extends BaseDataTable
                 return $action;
             })
             ->addIndexColumn()
-            ->setRowId(fn($row) => 'row-' . $row->id)
-            ->rawColumns(['action', 'full_name','interviewer', 'schedule_date', 'stage', 'status', 'check']);
+            ->setRowId(fn ($row) => 'row-'.$row->id)
+            ->rawColumns(['action', 'full_name', 'interviewer', 'schedule_date', 'stage', 'status', 'check']);
     }
 
     /**
      * Get query source of dataTable.
      *
-     * @param  $model
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function query(RecruitInterviewSchedule $model)
@@ -278,9 +273,9 @@ class InterviewScheduleDataTable extends BaseDataTable
 
         if ($this->request()->searchText != '') {
             $model = $model->where(function ($query) {
-                $query->where('recruit_job_applications.full_name', 'like', '%' . request('searchText') . '%')
-                    ->orWhere('recruit_interview_stages.name', 'like', '%' . request('searchText') . '%')
-                    ->orWhere('recruit_interview_schedules.status', 'like', '%' . request('searchText') . '%');
+                $query->where('recruit_job_applications.full_name', 'like', '%'.request('searchText').'%')
+                    ->orWhere('recruit_interview_stages.name', 'like', '%'.request('searchText').'%')
+                    ->orWhere('recruit_interview_schedules.status', 'like', '%'.request('searchText').'%');
             });
         }
 
@@ -307,7 +302,7 @@ class InterviewScheduleDataTable extends BaseDataTable
             $model->where('status', $request->status);
         }
 
-        if($request->employee != 'all' && $request->employee != null && $request->employee != ''){
+        if ($request->employee != 'all' && $request->employee != null && $request->employee != '') {
             $model->where('recruit_interview_employees.user_id', $request->employee);
         }
 
@@ -345,9 +340,9 @@ class InterviewScheduleDataTable extends BaseDataTable
                 'fnDrawCallback' => 'function( oSettings ) {
                    //
                    $(".select-picker").selectpicker();
-                 }'
+                 }',
             ])
-            ->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
+            ->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
     }
 
     /**
@@ -362,12 +357,12 @@ class InterviewScheduleDataTable extends BaseDataTable
                 'title' => '<input type="checkbox" name="select_all_table" id="select-all-table" onclick="selectAllTable(this)">',
                 'exportable' => false,
                 'orderable' => false,
-                'searchable' => false
+                'searchable' => false,
             ],
             '#' => ['data' => 'DT_RowIndex', 'orderable' => false, 'searchable' => false, 'visible' => false, 'exportable' => false],
-            __('recruit::modules.jobApplication.serialNo') => ['data' => 'DT_RowIndex', 'orderable' => false, 'searchable' => false, 'visible' => false ,'title' => __('recruit::modules.jobApplication.serialNo')],
+            __('recruit::modules.jobApplication.serialNo') => ['data' => 'DT_RowIndex', 'orderable' => false, 'searchable' => false, 'visible' => false, 'title' => __('recruit::modules.jobApplication.serialNo')],
             __('recruit::modules.interviewSchedule.candidate') => ['data' => 'full_name', 'exportable' => false, 'name' => 'full_name', 'title' => __('recruit::modules.interviewSchedule.candidate')],
-            __('recruit::modules.interviewSchedule.interviewer') => ['data' => 'interviewer','exportable' => false, 'name' => 'recruit_interview_employees.user_id', 'title' => __('recruit::modules.interviewSchedule.interviewer')],
+            __('recruit::modules.interviewSchedule.interviewer') => ['data' => 'interviewer', 'exportable' => false, 'name' => 'recruit_interview_employees.user_id', 'title' => __('recruit::modules.interviewSchedule.interviewer')],
             __('recruit::modules.interviewSchedule.candidateName') => ['data' => 'name', 'visible' => false, 'name' => 'name', 'title' => __('recruit::modules.interviewSchedule.candidateName')],
             __('recruit::modules.interviewSchedule.interviewerName') => ['data' => 'interviewer_name', 'name' => 'interviewer_name', 'visible' => false, 'title' => __('recruit::modules.interviewSchedule.interviewer')],
             __('recruit::modules.interviewSchedule.scheduleDateTime') => ['data' => 'schedule_date', 'name' => 'schedule_date', 'title' => __('recruit::modules.interviewSchedule.scheduleDateTime')],
@@ -380,8 +375,7 @@ class InterviewScheduleDataTable extends BaseDataTable
                 ->orderable(false)
                 ->searchable(false)
                 ->width(200)
-                ->addClass('text-right pr-20')
+                ->addClass('text-right pr-20'),
         ];
     }
-
 }

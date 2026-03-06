@@ -15,6 +15,7 @@ use App\Traits\HasCompany;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read mixed $icon
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectSetting newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectSetting newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectSetting query()
@@ -25,17 +26,20 @@ use App\Traits\HasCompany;
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectSetting whereRemindType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectSetting whereSendReminder($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectSetting whereUpdatedAt($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectSetting whereCompanyId($value)
+ *
  * @mixin \Eloquent
  */
 class ProjectSetting extends BaseModel
 {
-
     use HasCompany;
 
     const REMIND_TO_MEMBERS = 'members';
+
     const REMIND_TO_ADMINS = 'admins';
 
     public function getRemindToAttribute($value)
@@ -47,5 +51,4 @@ class ProjectSetting extends BaseModel
     {
         $this->attributes['remind_to'] = json_encode($value);
     }
-
 }

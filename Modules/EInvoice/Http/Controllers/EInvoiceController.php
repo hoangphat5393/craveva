@@ -17,13 +17,12 @@ use Saloon\XmlWrangler\XmlWriter;
 
 class EInvoiceController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'einvoice::app.menu.einvoice';
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('invoices', $this->user->modules));
+            abort_403(! in_array('invoices', $this->user->modules));
 
             return $next($request);
         });
@@ -32,15 +31,14 @@ class EInvoiceController extends AccountBaseController
     public function index(InvoicesDataTable $dataTable)
     {
         $viewPermission = user()->permission('view_invoices');
-        abort_403(!in_array($viewPermission, ['all', 'added', 'owned', 'both']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'owned', 'both']));
 
-        if (!request()->ajax()) {
+        if (! request()->ajax()) {
             $this->projects = Project::allProjects();
 
             if (in_array('client', user_roles())) {
                 $this->clients = User::client();
-            }
-            else {
+            } else {
                 $this->clients = User::allClients();
             }
         }
@@ -51,17 +49,17 @@ class EInvoiceController extends AccountBaseController
     public function exportXml($id)
     {
         $viewPermission = user()->permission('view_invoices');
-        abort_403(!in_array($viewPermission, ['all', 'added', 'owned', 'both']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'owned', 'both']));
 
         $invoice = Invoice::with('client')->findOrFail($id);
 
-        if (!$invoice->client?->clientdetails?->electronic_address || !$invoice->client?->clientdetails?->electronic_address_scheme) {
+        if (! $invoice->client?->clientdetails?->electronic_address || ! $invoice->client?->clientdetails?->electronic_address_scheme) {
             return redirect()->route('einvoice.index')->with('message', __('einvoice::app.clientElectronicAddressNotSet'));
         }
 
         $array = [];
 
-        $writer = new XmlWriter();
+        $writer = new XmlWriter;
 
         $rootElement = RootElement::make('Invoice', attributes: [
             'xmlns' => 'urn:oasis:names:specification:ubl:schema:xsd:Invoice-2',
@@ -75,7 +73,7 @@ class EInvoiceController extends AccountBaseController
 
         return response()->streamDownload(function () use ($xml) {
             echo $xml;
-        }, $invoice->invoice_number . '.xml');
+        }, $invoice->invoice_number.'.xml');
     }
 
     public function settings()
@@ -128,5 +126,4 @@ class EInvoiceController extends AccountBaseController
 
         return Reply::success(__('messages.updateSuccess'));
     }
-
 }

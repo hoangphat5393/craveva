@@ -2,18 +2,17 @@
 
 namespace App\Http\Requests\SuperAdmin\Register;
 
+use App\Http\Requests\CoreRequest;
+use App\Models\Company;
 use App\Models\GlobalSetting;
 use App\Models\User;
-use App\Models\Company;
 use App\Scopes\ActiveScope;
 use App\Scopes\CompanyScope;
-use Illuminate\Validation\Rule;
-use App\Http\Requests\CoreRequest;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class StoreRequest extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -32,20 +31,19 @@ class StoreRequest extends CoreRequest
     public function rules()
     {
         Validator::extend('check_superadmin', function ($attribute, $value, $parameters, $validator) {
-            return !User::withoutGlobalScopes([ActiveScope::class, CompanyScope::class])
+            return ! User::withoutGlobalScopes([ActiveScope::class, CompanyScope::class])
                 ->where('email', $value)
                 ->where('is_superadmin', 1)
                 ->exists();
         });
 
-
         // This is done to remove request()->merge(['sub_domain' => $subdomain]); and
         // validate on sub_domain part
         if (module_enabled('Subdomain')) {
             if (request()->sub_domain) {
-                $subdomain = preg_replace('/\.' . preg_quote(getDomain(), '/') . '/', '', request()->sub_domain, 1);
+                $subdomain = preg_replace('/\.'.preg_quote(getDomain(), '/').'/', '', request()->sub_domain, 1);
 
-                if (!preg_match('/^[A-Z][a-zA-Z0-9]+$/i', $subdomain)) {
+                if (! preg_match('/^[A-Z][a-zA-Z0-9]+$/i', $subdomain)) {
                     return [
                         'sub_domain' => 'regex:/^[A-Z][a-zA-Z0-9]+$/',
                     ];
@@ -62,14 +60,13 @@ class StoreRequest extends CoreRequest
             'company_name' => 'required',
             'name' => 'required',
             'email' => 'required|email:rfc,strict|check_superadmin',
-            'sub_domain' => module_enabled('Subdomain') ? 'required|banned_sub_domain|min:' . $min . '|unique:companies,sub_domain|max:50' : '',
+            'sub_domain' => module_enabled('Subdomain') ? 'required|banned_sub_domain|min:'.$min.'|unique:companies,sub_domain|max:50' : '',
         ];
 
         if (request()->has('password_confirmation')) {
             $rules['password'] = 'required|confirmed|min:8';
 
-        }
-        else {
+        } else {
             $rules['password'] = 'required|min:8';
         }
 
@@ -114,11 +111,11 @@ class StoreRequest extends CoreRequest
     {
         return [
             'email.check_superadmin' => __('superadmin.emailAlreadyExist'),
-            'terms_and_conditions.required' => __('superadmin.superadmin.acceptTerms') . ' ' . __('superadmin.superadmin.termsAndCondition'),
+            'terms_and_conditions.required' => __('superadmin.superadmin.acceptTerms').' '.__('superadmin.superadmin.termsAndCondition'),
             'g-recaptcha-response.required' => __('superadmin.recaptchaInvalid'),
             'g_recaptcha.prohibited' => __('superadmin.recaptchaInvalid'),
             'sub_domain.regex' => __('superadmin.validationSubDomain'),
-            'sub_domain.min' => __('validation.min.string', ['min' => 4])
+            'sub_domain.min' => __('validation.min.string', ['min' => 4]),
         ];
     }
 
@@ -129,9 +126,8 @@ class StoreRequest extends CoreRequest
         }
 
         // Add servername domain suffix at the end
-        $subdomain = trim($this->sub_domain, '.') . '.' . getDomain();
+        $subdomain = trim($this->sub_domain, '.').'.'.getDomain();
         $this->merge(['sub_domain' => $subdomain]);
         request()->merge(['sub_domain' => $subdomain]);
     }
-
 }

@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class UpdateTicketType extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -28,5 +27,4 @@ class UpdateTicketType extends CoreRequest
             'type' => 'required|unique:support_ticket_types,type,'.$this->route('superadmin.support-ticketTypes'),
         ];
     }
-
 }

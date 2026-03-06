@@ -3,9 +3,9 @@
 namespace Modules\Pricing\Entities;
 
 use App\Models\BaseModel;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\Product;
 use App\Traits\HasCompany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class VolumeDiscountRule extends BaseModel
 {

@@ -11,20 +11,16 @@ use Illuminate\Support\Facades\URL;
 
 class EmailVerified extends EnsureEmailIsVerified
 {
-
     /**
      * Handle an incoming request.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param \Closure $next
+     * @param  \Illuminate\Http\Request  $request
      */
     public function handle($request, Closure $next, $redirectToRoute = null)
     {
         $globalSetting = GlobalSetting::first();
 
-
-
-        if (!$request->user() || ($request->user() instanceof MustVerifyEmail && !$request->user()->hasVerifiedEmail() && $globalSetting->email_verification)) {
+        if (! $request->user() || ($request->user() instanceof MustVerifyEmail && ! $request->user()->hasVerifiedEmail() && $globalSetting->email_verification)) {
             $message = 'Your email address is not verified.';
 
             $user = auth()->user()->user;
@@ -38,5 +34,4 @@ class EmailVerified extends EnsureEmailIsVerified
 
         return $next($request);
     }
-
 }

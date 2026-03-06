@@ -9,10 +9,10 @@ use Illuminate\Queue\SerializesModels;
 
 class EmployeeShiftChangeEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $changeRequest;
+
     public $statusChange;
 
     /**
@@ -25,5 +25,4 @@ class EmployeeShiftChangeEvent
         $this->changeRequest = $changeRequest;
         $this->statusChange = $status;
     }
-
 }

@@ -7,11 +7,14 @@ use Illuminate\View\Component;
 
 class Data extends Component
 {
-
     public $title;
+
     public $padding;
+
     public $otherClasses;
+
     public $height;
+
     public $action;
 
     /**
@@ -37,5 +40,4 @@ class Data extends Component
     {
         return view('components.cards.data');
     }
-
 }

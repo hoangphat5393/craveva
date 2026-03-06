@@ -3,10 +3,8 @@
 namespace App\Listeners;
 
 use App\Events\SubmitWeeklyTimesheet;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
-use App\Notifications\NewTimesheetApproval;
 use App\Models\User;
+use App\Notifications\NewTimesheetApproval;
 use Illuminate\Support\Facades\Notification;
 
 class SubmitWeeklyTimesheetListener

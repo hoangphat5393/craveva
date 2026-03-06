@@ -9,10 +9,10 @@ use Illuminate\Queue\SerializesModels;
 
 class NewInvoiceRecurringEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $invoice;
+
     public $status;
 
     public function __construct(RecurringInvoice $invoice, $status)
@@ -20,5 +20,4 @@ class NewInvoiceRecurringEvent
         $this->invoice = $invoice;
         $this->status = $status;
     }
-
 }

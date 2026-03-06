@@ -2,26 +2,27 @@
 
 namespace App\Traits;
 
-use Carbon\Carbon;
 use App\Helper\Files;
 use App\Models\Company;
 use App\Models\CustomField;
 use App\Models\CustomFieldGroup;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use ReflectionClass;
 
 trait CustomFieldsTrait
 {
-
     public $model;
+
     private $extraData;
+
     public $custom_fields;
+
     public $custom_fields_data;
 
     /** Get company ID for current object
      * @return int Returns current object's company id
      */
-
     private function getModelName()
     {
         $model = new ReflectionClass($this);
@@ -39,7 +40,7 @@ trait CustomFieldsTrait
                 'custom_field_group_id' => 1,
                 'label' => $field['label'],
                 'name' => $field['name'],
-                'type' => $field['type']
+                'type' => $field['type'],
             ];
 
             if (isset($field['required']) && (in_array(strtolower($field['required']), ['yes', 'on', 1]))) {
@@ -118,7 +119,7 @@ trait CustomFieldsTrait
             $company = $company_id ? Company::findOrFail($company_id) : company();
 
             $value = ($fieldType == 'date') ? Carbon::createFromFormat(companyOrGlobalSetting()->date_format, $value)->format('Y-m-d') : $value;
-            $value = ($fieldType == 'file' && !is_string($value) && !is_null($value)) ? Files::uploadLocalOrS3($value, 'custom_fields') : $value;
+            $value = ($fieldType == 'file' && ! is_string($value) && ! is_null($value)) ? Files::uploadLocalOrS3($value, 'custom_fields') : $value;
 
             // Find is entry exists
             $entry = DB::table('custom_fields_data')
@@ -128,7 +129,7 @@ trait CustomFieldsTrait
                 ->first();
 
             if ($entry) {
-                if ($fieldType == 'file' && (!is_null($entry->value) && $entry->value != $value)) {
+                if ($fieldType == 'file' && (! is_null($entry->value) && $entry->value != $value)) {
                     Files::deleteFile($entry->value, 'custom_fields');
                 }
 
@@ -144,7 +145,7 @@ trait CustomFieldsTrait
                         'model' => $this->getModelName(),
                         'model_id' => $this->id,
                         'custom_field_id' => $id,
-                        'value' => (!is_null($value)) ? $value : ''
+                        'value' => (! is_null($value)) ? $value : '',
                     ]);
             }
         }

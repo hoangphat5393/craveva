@@ -1,21 +1,20 @@
 <?php
 
-use App\Models\Role;
-use App\Models\User;
 use App\Models\Company;
 use App\Models\Module;
 use App\Models\ModuleSetting;
 use App\Models\Permission;
 use App\Models\PermissionRole;
+use App\Models\Role;
+use App\Models\User;
 use App\Models\UserPermission;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 use Modules\Policy\Entities\PolicySetting;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      */
@@ -28,7 +27,7 @@ return new class extends Migration
             ['name' => 'edit_policy', 'display_name' => 'Edit Policy', 'is_custom' => 1, 'allowed_permissions' => Permission::ALL_4_ADDED_1_OWNED_2_BOTH_3_NONE_5],
             ['name' => 'delete_policy', 'display_name' => 'Delete Policy', 'is_custom' => 1, 'allowed_permissions' => Permission::ALL_4_ADDED_1_OWNED_2_BOTH_3_NONE_5],
             ['name' => 'view_acknowledged', 'display_name' => 'View Acknowledged', 'is_custom' => 1, 'allowed_permissions' => Permission::ALL_4_OWNED_2_NONE_5],
-            ['name' => 'view_non_acknowledged', 'display_name' => 'View Non Acknowledged', 'is_custom' => 1, 'allowed_permissions' => Permission::ALL_NONE]
+            ['name' => 'view_non_acknowledged', 'display_name' => 'View Non Acknowledged', 'is_custom' => 1, 'allowed_permissions' => Permission::ALL_NONE],
         ];
 
         $policyModule = Module::where('module_name', 'policy')->first();
@@ -57,7 +56,6 @@ return new class extends Migration
                     PermissionRole::where('permission_id', $permission->id)->where('role_id', $role->id)->where('permission_type_id', 4)->delete();
                 }
 
-
                 $admins = User::allAdmins($company->id);
 
                 foreach ($admins as $admin) {
@@ -71,7 +69,7 @@ return new class extends Migration
         }
 
         // Added publish_date and deleted_at column...
-        if (!Schema::hasColumn('publish_date', 'status', 'deleted_at')) {
+        if (! Schema::hasColumn('publish_date', 'status', 'deleted_at')) {
             Schema::table('policies', function (Blueprint $table) {
                 $table->date('publish_date')->nullable()->after('date');
                 $table->enum('status', ['draft', 'published'])->default('draft')->after('updated_by');
@@ -87,7 +85,7 @@ return new class extends Migration
             ['name' => 'delete_policy', 'display_name' => 'Delete Policy', 'is_custom' => 1, 'allowed_permissions' => Permission::ALL_4_ADDED_1_OWNED_2_BOTH_3_NONE_5],
             ['name' => 'can_archive_policy', 'display_name' => 'Can Archive Policy', 'is_custom' => 1, 'allowed_permissions' => Permission::ALL_NONE],
             ['name' => 'view_non_acknowledged', 'display_name' => 'View Non Acknowledged', 'is_custom' => 1, 'allowed_permissions' => Permission::ALL_NONE],
-            ['name' => 'view_acknowledged', 'display_name' => 'View Acknowledged', 'is_custom' => 1, 'allowed_permissions' => Permission::ALL_4_OWNED_2_NONE_5]
+            ['name' => 'view_acknowledged', 'display_name' => 'View Acknowledged', 'is_custom' => 1, 'allowed_permissions' => Permission::ALL_4_OWNED_2_NONE_5],
         ];
 
         Company::chunk(50, function ($companies) {
@@ -106,7 +104,7 @@ return new class extends Migration
                 'allowed_permissions' => $permissionType['allowed_permissions'],
             ]);
 
-            Company::chunk(50, function ($companies) use($permission) {
+            Company::chunk(50, function ($companies) use ($permission) {
                 foreach ($companies as $company) {
 
                     $role = Role::where('name', 'admin')->where('company_id', $company->id)->first();
@@ -116,7 +114,7 @@ return new class extends Migration
                             ->where('role_id', $role->id)->where('permission_type_id', 4)->first();
 
                         if (is_null($permissionData)) {
-                            $permissionRole = new PermissionRole();
+                            $permissionRole = new PermissionRole;
                             $permissionRole->permission_id = $permission->id;
                             $permissionRole->role_id = $role->id;
                             $permissionRole->permission_type_id = 4;
@@ -151,5 +149,4 @@ return new class extends Migration
             });
         }
     }
-
 };

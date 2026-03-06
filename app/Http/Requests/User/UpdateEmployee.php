@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class UpdateEmployee extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -25,10 +24,9 @@ class UpdateEmployee extends CoreRequest
     public function rules()
     {
         return [
-            'email' => 'required|unique:users,email,' . $this->route('employee').',id,company_id,' . company()->id,
-            'slack_username' => 'nullable|unique:employee_details,slack_username,' . $this->route('employee').',id,company_id,' . company()->id,
+            'email' => 'required|unique:users,email,'.$this->route('employee').',id,company_id,'.company()->id,
+            'slack_username' => 'nullable|unique:employee_details,slack_username,'.$this->route('employee').',id,company_id,'.company()->id,
             'name' => 'required',
         ];
     }
-
 }

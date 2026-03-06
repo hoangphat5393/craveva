@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class StoreRequest extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -32,5 +31,4 @@ class StoreRequest extends CoreRequest
             'is_rtl' => 'required',
         ];
     }
-
 }

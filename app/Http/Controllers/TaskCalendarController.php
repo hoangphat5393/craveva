@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helper\Common;
 use App\Models\Project;
 use App\Models\Task;
 use App\Models\TaskboardColumn;
@@ -11,19 +12,18 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Helper\Common;
 
 class TaskCalendarController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'app.menu.taskCalendar';
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('tasks', $this->user->modules));
+            abort_403(! in_array('tasks', $this->user->modules));
             $this->viewTaskPermission = user()->permission('view_tasks');
             $this->viewUnassignedTasksPermission = user()->permission('view_unassigned_tasks');
+
             return $next($request);
         });
     }
@@ -39,7 +39,7 @@ class TaskCalendarController extends AccountBaseController
         $this->clients = User::allClients();
         $this->employees = User::allEmployees();
         $this->taskCategories = TaskCategory::all();
-        $this->taskLabels  = TaskLabelList::all();
+        $this->taskLabels = TaskLabelList::all();
         $this->taskBoardStatus = TaskboardColumn::all();
 
         if (request('start') && request('end')) {
@@ -52,7 +52,7 @@ class TaskCalendarController extends AccountBaseController
                 ->leftJoin('users as client', 'client.id', '=', 'projects.client_id')
                 ->join('taskboard_columns', 'taskboard_columns.id', '=', 'tasks.board_column_id');
 
-            if ($this->viewUnassignedTasksPermission == 'all' && !in_array('client', user_roles()) && ($request->assignedTo == 'unassigned' || $request->assignedTo == 'all')) {
+            if ($this->viewUnassignedTasksPermission == 'all' && ! in_array('client', user_roles()) && ($request->assignedTo == 'unassigned' || $request->assignedTo == 'all')) {
                 $model->leftJoin('task_users', 'task_users.task_id', '=', 'tasks.id')
                     ->leftJoin('users', 'task_users.user_id', '=', 'users.id');
             } else {
@@ -114,9 +114,9 @@ class TaskCalendarController extends AccountBaseController
             if ($request->searchText != '') {
                 $model->where(function ($query) {
                     $safeTerm = Common::safeString(request('searchText'));
-                    $query->where('tasks.heading', 'like', '%' . $safeTerm . '%')
-                        ->orWhere('member.name', 'like', '%' . $safeTerm . '%')
-                        ->orWhere('projects.project_name', 'like', '%' . $safeTerm . '%');
+                    $query->where('tasks.heading', 'like', '%'.$safeTerm.'%')
+                        ->orWhere('member.name', 'like', '%'.$safeTerm.'%')
+                        ->orWhere('projects.project_name', 'like', '%'.$safeTerm.'%');
                 });
             }
 
@@ -128,7 +128,7 @@ class TaskCalendarController extends AccountBaseController
                         $q1->orWhere('projects.client_id', '=', user()->id);
                     }
 
-                    if ($this->viewUnassignedTasksPermission == 'all' && !in_array('client', user_roles()) && ($request->assignedTo == 'unassigned' || $request->assignedTo == 'all')) {
+                    if ($this->viewUnassignedTasksPermission == 'all' && ! in_array('client', user_roles()) && ($request->assignedTo == 'unassigned' || $request->assignedTo == 'all')) {
                         $q1->orWhereDoesntHave('users');
                     }
                 });
@@ -148,7 +148,7 @@ class TaskCalendarController extends AccountBaseController
                         $q1->orWhere('projects.client_id', '=', user()->id);
                     }
 
-                    if ($this->viewUnassignedTasksPermission == 'all' && !in_array('client', user_roles()) && ($request->assignedTo == 'unassigned' || $request->assignedTo == 'all')) {
+                    if ($this->viewUnassignedTasksPermission == 'all' && ! in_array('client', user_roles()) && ($request->assignedTo == 'unassigned' || $request->assignedTo == 'all')) {
                         $q1->orWhereDoesntHave('users');
                     }
                 });
@@ -156,15 +156,15 @@ class TaskCalendarController extends AccountBaseController
 
             $tasks = $model->get();
 
-            $taskData = array();
+            $taskData = [];
 
             foreach ($tasks as $key => $value) {
                 $taskData[] = [
                     'id' => $value->id,
                     'title' => $value->heading,
                     'start' => $value->start_date->format('Y-m-d'),
-                    'end' => (!is_null($value->due_date) ? $value->due_date->format('Y-m-d') : $value->start_date->format('Y-m-d')),
-                    'color' => $value->boardColumn->label_color
+                    'end' => (! is_null($value->due_date) ? $value->due_date->format('Y-m-d') : $value->start_date->format('Y-m-d')),
+                    'color' => $value->boardColumn->label_color,
                 ];
             }
 
@@ -172,12 +172,13 @@ class TaskCalendarController extends AccountBaseController
         }
 
         $taskBoardColumn = TaskboardColumn::waitingForApprovalColumn();
-        if (!in_array('admin', user_roles()) && in_array('employee', user_roles())) {
+        if (! in_array('admin', user_roles()) && in_array('employee', user_roles())) {
             $user = User::findOrFail(user()->id);
             $this->waitingApprovalCount = $user->tasks()->where('board_column_id', $taskBoardColumn->id)->count();
         } else {
             $this->waitingApprovalCount = Task::where('board_column_id', $taskBoardColumn->id)->count();
         }
+
         return view('tasks.calendar', $this->data);
     }
 }

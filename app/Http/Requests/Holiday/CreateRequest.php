@@ -1,11 +1,11 @@
 <?php
+
 namespace App\Http\Requests\Holiday;
 
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
  * Class CreateRequest
- * @package App\Http\Requests\Admin\Employee
  */
 class CreateRequest extends FormRequest
 {
@@ -14,7 +14,6 @@ class CreateRequest extends FormRequest
      *
      * @return bool
      */
-
     public function authorize()
     {
         // If admin
@@ -29,8 +28,8 @@ class CreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'date.*'  => 'required',
-            'occassion.*'  => 'required',
+            'date.*' => 'required',
+            'occassion.*' => 'required',
         ];
     }
 
@@ -41,5 +40,4 @@ class CreateRequest extends FormRequest
             'occassion.*.required' => 'Occassion is a require field.',
         ];
     }
-
 }

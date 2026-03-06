@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreRequest extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -19,9 +18,9 @@ class StoreRequest extends FormRequest
 
     public function prepareForValidation()
     {
-            $this->merge([
-                'description' => trim_editor($this->description)
-            ]);
+        $this->merge([
+            'description' => trim_editor($this->description),
+        ]);
     }
 
     /**
@@ -42,5 +41,4 @@ class StoreRequest extends FormRequest
             'description' => __('app.reply'),
         ];
     }
-
 }

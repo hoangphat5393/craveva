@@ -11,7 +11,6 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 
 class SendEventReminder extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
@@ -31,10 +30,9 @@ class SendEventReminder extends Command
      *
      * @return mixed
      */
-
     public function handle()
     {
-        $output = new ConsoleOutput();
+        $output = new ConsoleOutput;
 
         // Retrieve all companies that have events with send_reminder set to 'yes'
         $companiesWithEvents = Company::whereHas('events', function ($query) {
@@ -57,7 +55,6 @@ class SendEventReminder extends Command
                 ->where('company_id', $company->id)
                 ->get();
 
-
             foreach ($events as $event) {
                 $reminderDateTime = $this->calculateReminderDateTime($event, $company);
 
@@ -79,18 +76,17 @@ class SendEventReminder extends Command
         $reminderDateTime = '';
 
         switch ($type) {
-        case 'day':
-            $reminderDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $event->start_date_time, $company->timezone)->subDays($time);
-            break;
-        case 'hour':
-            $reminderDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $event->start_date_time, $company->timezone)->subHours($time);
-            break;
-        case 'minute':
-            $reminderDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $event->start_date_time, $company->timezone)->subMinutes($time);
-            break;
+            case 'day':
+                $reminderDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $event->start_date_time, $company->timezone)->subDays($time);
+                break;
+            case 'hour':
+                $reminderDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $event->start_date_time, $company->timezone)->subHours($time);
+                break;
+            case 'minute':
+                $reminderDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $event->start_date_time, $company->timezone)->subMinutes($time);
+                break;
         }
 
         return $reminderDateTime;
     }
-
 }

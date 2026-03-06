@@ -6,17 +6,16 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      *
      * @return void
      */
-
     public function up()
     {
-        if (!Schema::hasColumn('tasks', 'task_short_code')) {
+        if (! Schema::hasColumn('tasks', 'task_short_code')) {
             Schema::table('tasks', function (Blueprint $table) {
                 $table->string('task_short_code')->after('id')->nullable();
             });
@@ -26,7 +25,7 @@ return new class extends Migration {
 
         foreach ($projects as $value) {
             // phpcs:ignore
-            DB::statement("UPDATE tasks SET task_short_code = CONCAT( '$value->project_short_code', '-', id ) WHERE project_id = '" . $value->id . "'; ");
+            DB::statement("UPDATE tasks SET task_short_code = CONCAT( '$value->project_short_code', '-', id ) WHERE project_id = '".$value->id."'; ");
         }
 
     }
@@ -42,5 +41,4 @@ return new class extends Migration {
             $table->dropColumn('task_short_code');
         });
     }
-
 };

@@ -25,6 +25,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read int|null $users_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User[] $usersMany
  * @property-read int|null $users_many_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectTemplateTask newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectTemplateTask newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectTemplateTask query()
@@ -36,7 +37,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectTemplateTask whereProjectTemplateId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectTemplateTask whereProjectTemplateTaskCategoryId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectTemplateTask whereUpdatedAt($value)
+ *
  * @property-read \App\Models\TaskCategory|null $category
+ *
  * @mixin \Eloquent
  */
 class ProjectTemplateTask extends BaseModel
@@ -54,7 +57,6 @@ class ProjectTemplateTask extends BaseModel
     {
         return $this->belongsTo(ProjectTemplateMilestone::class, 'milestone_id');
     }
-
 
     public function users(): HasMany
     {
@@ -75,5 +77,4 @@ class ProjectTemplateTask extends BaseModel
     {
         return $this->belongsTo(TaskCategory::class, 'project_template_task_category_id');
     }
-
 }

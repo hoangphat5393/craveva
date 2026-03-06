@@ -19,5 +19,4 @@ class EstimateRequestAcceptedEvent
     {
         $this->estimateRequest = $estimateRequest;
     }
-
 }

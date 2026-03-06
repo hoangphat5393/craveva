@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      *
@@ -25,9 +24,8 @@ return new class extends Migration
             'credit_notes',
             'estimate_templates',
             'proposal_templates',
-            'invoice_recurring'
+            'invoice_recurring',
         ];
-
 
         foreach ($tablesForUnitId as $tableName) {
             if (Schema::hasColumn($tableName, 'unit_id')) {
@@ -52,12 +50,11 @@ return new class extends Migration
             'credit_note_items',
             'estimate_template_items',
             'proposal_template_items',
-            'invoice_recurring_items'
+            'invoice_recurring_items',
         ];
 
-
         foreach ($tablesForUnitId as $table) {
-            if (!Schema::hasColumn($table, 'unit_id')) {
+            if (! Schema::hasColumn($table, 'unit_id')) {
                 Schema::table($table, function (Blueprint $table) {
                     $table->bigInteger('unit_id')->unsigned()->nullable();
 
@@ -69,7 +66,7 @@ return new class extends Migration
                 });
             }
 
-            if (!Schema::hasColumn($table, 'product_id')) {
+            if (! Schema::hasColumn($table, 'product_id')) {
                 Schema::table($table, function (Blueprint $table) {
                     $table->unsignedInteger('product_id')->nullable();
                     $table->foreign('product_id')->references('id')->on('products')->onUpdate('CASCADE')->onDelete('SET NULL');
@@ -125,7 +122,6 @@ return new class extends Migration
             }
         }
 
-
     }
 
     /**
@@ -144,9 +140,8 @@ return new class extends Migration
             'credit_note_items',
             'estimate_template_items',
             'proposal_template_items',
-            'invoice_recurring_items'
+            'invoice_recurring_items',
         ];
-
 
         foreach ($tablesForUnitId as $table) {
             if (Schema::hasColumn($table, 'unit_id')) {
@@ -155,7 +150,7 @@ return new class extends Migration
                     $foreignKeys = $this->listTableForeignKeys($table);
                     /** @phpstan-ignore-next-line */
                     if (in_array($table.'_unit_id_foreign', $foreignKeys)) {
-                         /** @phpstan-ignore-next-line */
+                        /** @phpstan-ignore-next-line */
                         $table->dropForeign($table.'_unit_id_foreign');
                     }
 
@@ -188,5 +183,4 @@ return new class extends Migration
             return $key->getName();
         }, $conn->listTableForeignKeys($table));
     }
-
 };

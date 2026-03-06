@@ -7,10 +7,12 @@ use Illuminate\View\Component;
 
 class Label extends Component
 {
-
     public $fieldId;
+
     public $fieldLabel;
+
     public $popover;
+
     public $fieldRequired;
 
     /**
@@ -23,8 +25,7 @@ class Label extends Component
         $fieldRequired = false,
         $fieldLabel = null,
         $popover = null
-    )
-    {
+    ) {
         $this->fieldLabel = $fieldLabel;
         $this->fieldId = $fieldId;
         $this->popover = $popover;
@@ -40,5 +41,4 @@ class Label extends Component
     {
         return view('components.forms.label');
     }
-
 }

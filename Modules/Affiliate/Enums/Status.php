@@ -13,8 +13,8 @@ enum Status: string
     public function label(): string
     {
         return match ($this) {
-            self::Active => __('app.' . $this->value),
-            self::Inactive => __('app.' . $this->value),
+            self::Active => __('app.'.$this->value),
+            self::Inactive => __('app.'.$this->value),
             default => $this->value,
         };
     }
@@ -22,10 +22,9 @@ enum Status: string
     public function html(): string
     {
         return match ($this) {
-            self::Active => "<i class='fa fa-circle mr-2 text-light-green'></i> " . $this->label(),
-            self::Inactive => "<i class='fa fa-circle mr-2 text-red'></i> " . $this->label(),
-            default => "<i class='fa fa-circle mr-2 text-info'></i> " . $this->label(),
+            self::Active => "<i class='fa fa-circle mr-2 text-light-green'></i> ".$this->label(),
+            self::Inactive => "<i class='fa fa-circle mr-2 text-red'></i> ".$this->label(),
+            default => "<i class='fa fa-circle mr-2 text-info'></i> ".$this->label(),
         };
     }
-
 }

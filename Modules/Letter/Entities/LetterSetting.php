@@ -7,7 +7,6 @@ use App\Models\ModuleSetting;
 
 class LetterSetting extends BaseModel
 {
-
     protected $guarded = ['id'];
 
     const MODULE_NAME = 'letter';
@@ -17,6 +16,4 @@ class LetterSetting extends BaseModel
         $roles = ['employee', 'admin'];
         ModuleSetting::createRoleSettingEntry(self::MODULE_NAME, $roles, $company);
     }
-
 }
-

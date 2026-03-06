@@ -68,5 +68,4 @@ class ProductFactory extends Factory
             'description' => fake()->paragraph,
         ];
     }
-
 }

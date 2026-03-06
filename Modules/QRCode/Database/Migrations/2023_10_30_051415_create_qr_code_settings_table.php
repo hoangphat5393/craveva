@@ -7,7 +7,6 @@ use Modules\QRCode\Entities\QRCodeSetting;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      *
@@ -17,9 +16,8 @@ return new class extends Migration
     {
         \App\Models\Module::validateVersion(QRCodeSetting::MODULE_NAME);
 
-        if (!Schema::hasTable('qr_code_settings')) {
-            Schema::create('qr_code_settings', function(Blueprint $table)
-            {
+        if (! Schema::hasTable('qr_code_settings')) {
+            Schema::create('qr_code_settings', function (Blueprint $table) {
                 $table->id();
                 $table->string('purchase_code')->nullable();
                 $table->timestamp('supported_until')->nullable();
@@ -43,5 +41,4 @@ return new class extends Migration
     {
         Schema::drop('qr_code_settings');
     }
-
 };

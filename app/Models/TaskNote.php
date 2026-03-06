@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read mixed $icon
  * @property-read \App\Models\Task $task
  * @property-read \App\Models\User|null $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|TaskNote newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TaskNote newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TaskNote query()
@@ -32,17 +33,18 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder|TaskNote whereTaskId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TaskNote whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TaskNote whereUserId($value)
+ *
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MentionUser> $mentionNote
  * @property-read int|null $mention_note_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $mentionUser
  * @property-read int|null $mention_user_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MentionUser> $mentionNote
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $mentionUser
+ *
  * @mixin \Eloquent
  */
 class TaskNote extends BaseModel
 {
-
     protected $with = [];
 
     public function user(): BelongsTo
@@ -64,5 +66,4 @@ class TaskNote extends BaseModel
     {
         return $this->hasMany(MentionUser::class, 'task_note_id');
     }
-
 }

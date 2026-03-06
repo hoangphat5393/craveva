@@ -1,9 +1,9 @@
 <?php
 
-use App\Models\Role;
 use App\Models\Module;
 use App\Models\Permission;
 use App\Models\PermissionRole;
+use App\Models\Role;
 use App\Models\User;
 use App\Models\UserPermission;
 use Illuminate\Database\Migrations\Migration;
@@ -11,7 +11,6 @@ use Modules\Affiliate\Entities\AffiliateGlobalSetting;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      */
@@ -19,7 +18,7 @@ return new class extends Migration
     {
         $module = Module::withoutGlobalScopes()->firstOrCreate([
             'module_name' => AffiliateGlobalSetting::MODULE_NAME,
-            'is_superadmin' => 1
+            'is_superadmin' => 1,
         ]);
 
         $permissions = [
@@ -53,7 +52,7 @@ return new class extends Migration
                     ->where('role_id', $role->id)->where('permission_type_id', 4)->first();
 
                 if (is_null($permissionData)) {
-                    $permissionRole = new PermissionRole();
+                    $permissionRole = new PermissionRole;
                     $permissionRole->permission_id = $perm->id;
                     $permissionRole->role_id = $role->id;
                     $permissionRole->permission_type_id = 4;
@@ -69,7 +68,7 @@ return new class extends Migration
                 UserPermission::firstOrCreate([
                     'user_id' => $superadmin->id,
                     'permission_id' => $permission->id,
-                    'permission_type_id' => 4
+                    'permission_type_id' => 4,
                 ]);
             }
         }
@@ -79,8 +78,5 @@ return new class extends Migration
     /**
      * Reverse the migrations.
      */
-    public function down(): void
-    {
-    }
-
+    public function down(): void {}
 };

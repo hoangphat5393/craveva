@@ -13,7 +13,8 @@ class PurchaseOrderReportController extends AccountBaseController
         parent::__construct();
         $this->pageTitle = 'purchase::app.menu.purchaseOrderReport';
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array(PurchaseSetting::MODULE_NAME, $this->user->modules));
+            abort_403(! in_array(PurchaseSetting::MODULE_NAME, $this->user->modules));
+
             return $next($request);
         });
     }
@@ -21,7 +22,7 @@ class PurchaseOrderReportController extends AccountBaseController
     public function index(PurchaseOrderReportDataTable $dataTable)
     {
         $viewPermission = user()->permission('view_order_report');
-        abort_403(!in_array($viewPermission, ['all']));
+        abort_403(! in_array($viewPermission, ['all']));
 
         return $dataTable->render('purchase::reports.index', $this->data);
     }

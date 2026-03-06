@@ -6,26 +6,24 @@ use App\Models\Company;
 use App\Models\FileStorage;
 use App\Models\StorageSetting;
 use Exception;
+use Froiden\RestAPI\Exceptions\ApiException;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
-use Froiden\RestAPI\Exceptions\ApiException;
 use Intervention\Image\ImageManagerStatic as Image;
-use PhpOffice\PhpSpreadsheet\Calculation\MathTrig\Exp;
 
 class Files
 {
-
     const UPLOAD_FOLDER = 'user-uploads';
+
     const IMPORT_FOLDER = 'import-files';
 
     const REQUIRED_FILE_UPLOAD_SIZE = 20;
 
     /**
-     * @param mixed $image
-     * @param string $dir
-     * @param null $width
-     * @param int $height
+     * @param  mixed  $image
+     * @param  null  $width
      * @return string
+     *
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      * @throws \Exception
      */
@@ -35,18 +33,18 @@ class Files
         config(['filesystems.default' => 'local']);
 
         $uploadedFile = $image;
-        $folder = $dir . '/';
+        $folder = $dir.'/';
 
         self::validateUploadedFile($uploadedFile);
 
         $newName = self::generateNewFileName($uploadedFile->getClientOriginalName());
 
-        $tempPath = public_path(self::UPLOAD_FOLDER . '/temp/' . $newName);
+        $tempPath = public_path(self::UPLOAD_FOLDER.'/temp/'.$newName);
 
         /** Check if folder exits or not. If not then create the folder */
         self::createDirectoryIfNotExist($folder);
 
-        $newPath = $folder . '/' . $newName;
+        $newPath = $folder.'/'.$newName;
 
         $uploadedFile->storeAs('temp', $newName);
 
@@ -64,7 +62,6 @@ class Files
         // Deleting temp file
         File::delete($tempPath);
 
-
         return $newName;
     }
 
@@ -74,7 +71,7 @@ class Files
     public static function validateUploadedFile($uploadedFile)
     {
         // Check if file is valid
-        if (!$uploadedFile->isValid()) {
+        if (! $uploadedFile->isValid()) {
             throw new ApiException('File was not uploaded correctly');
         }
 
@@ -111,7 +108,7 @@ class Files
             'wsf',
             'ps1',
             'ps2',
-            'xml'
+            'xml',
         ];
 
         $forbiddenMimeTypes = [
@@ -147,7 +144,7 @@ class Files
             'application/x-msdos-vbs',
             'application/x-msdos-ps1',
             'application/xml',
-            'text/xml'
+            'text/xml',
         ];
 
         $extension = strtolower($uploadedFile->getClientOriginalExtension());
@@ -161,11 +158,11 @@ class Files
         }
 
         if (in_array($extension, $forbiddenExtensions)) {
-            throw new Exception('You are not allowed to upload files with extension: ' . $extension);
+            throw new Exception('You are not allowed to upload files with extension: '.$extension);
         }
 
         if (in_array($mimeType, $forbiddenMimeTypes)) {
-            throw new Exception('You are not allowed to upload files with mime type: ' . $mimeType);
+            throw new Exception('You are not allowed to upload files with mime type: '.$mimeType);
         }
 
         // Prevent uploading .htaccess or similar files by name
@@ -198,7 +195,7 @@ class Files
             $companyAllowedStorageSize = $maxStorageInBytes - $companyFilesSize;
 
             if ($uploadedFile->getSize() > $companyAllowedStorageSize) {
-                throw new Exception('You are not allowed to upload a file with filesize greater than ' . $companyAllowedStorageSize . ' bytes');
+                throw new Exception('You are not allowed to upload a file with filesize greater than '.$companyAllowedStorageSize.' bytes');
             }
         }
     }
@@ -223,7 +220,7 @@ class Files
         $ext = strtolower(File::extension($currentFileName));
         $newName = md5(microtime());
 
-        return ($ext === '') ? $newName : $newName . '.' . $ext;
+        return ($ext === '') ? $newName : $newName.'.'.$ext;
     }
 
     /**
@@ -252,11 +249,11 @@ class Files
             Storage::disk(config('filesystems.default'))->putFileAs($dir, $uploadedFile, $newName, $fileVisibility);
 
             // Upload files to aws s3 or digitalocean or wasabi or minio
-            Storage::disk(config('filesystems.default'))->missing($dir . '/' . $newName);
+            Storage::disk(config('filesystems.default'))->missing($dir.'/'.$newName);
 
             return $newName;
         } catch (\Exception $e) {
-            throw new \Exception(__('app.fileNotUploaded') . ' ' . $e->getMessage() . ' on ' . config('filesystems.default'));
+            throw new \Exception(__('app.fileNotUploaded').' '.$e->getMessage().' on '.config('filesystems.default'));
         }
     }
 
@@ -270,7 +267,7 @@ class Files
         $storageLocation = $setting->filesystem;
 
         // Store file information in the database
-        $fileStorage = new FileStorage();
+        $fileStorage = new FileStorage;
         $fileStorage->filename = $newName;
         $fileStorage->size = $file->getSize();
         $fileStorage->type = $file->getClientMimeType();
@@ -290,7 +287,7 @@ class Files
             $fileExist->delete();
         }
 
-        $filePath = $dir . '/' . $filename;
+        $filePath = $dir.'/'.$filename;
         $disk = Storage::disk(config('filesystems.default'));
 
         // Delete from Cloud
@@ -307,8 +304,8 @@ class Files
         }
 
         // Delete from Local
-        $path = public_path(Files::UPLOAD_FOLDER . '/' . $filePath);
-        if (!File::exists($path)) {
+        $path = public_path(Files::UPLOAD_FOLDER.'/'.$filePath);
+        if (! File::exists($path)) {
             return true;
         }
 
@@ -321,7 +318,6 @@ class Files
         return true;
     }
 
-
     public static function deleteDirectory($folder)
     {
         $dir = trim($folder);
@@ -330,7 +326,6 @@ class Files
         } catch (\Exception $e) {
             return true;
         }
-
 
         return true;
     }
@@ -342,9 +337,9 @@ class Files
 
     public static function createDirectoryIfNotExist($folder)
     {
-        $directoryPath = public_path(self::UPLOAD_FOLDER . '/' . $folder);
+        $directoryPath = public_path(self::UPLOAD_FOLDER.'/'.$folder);
 
-        if (!File::exists($directoryPath)) {
+        if (! File::exists($directoryPath)) {
             File::makeDirectory($directoryPath, 0775, true);
         }
     }
@@ -353,12 +348,12 @@ class Files
     {
         $newName = self::generateNewFileName($uploadedFile->getClientOriginalName());
 
-        $tempPath = public_path(self::UPLOAD_FOLDER . '/temp/' . $newName);
+        $tempPath = public_path(self::UPLOAD_FOLDER.'/temp/'.$newName);
 
         /** Check if folder exits or not. If not then create the folder */
         self::createDirectoryIfNotExist($folder);
 
-        $newPath = $folder . '/' . $newName;
+        $newPath = $folder.'/'.$newName;
 
         $uploadedFile->storeAs('temp', $newName, 'local');
 
@@ -386,7 +381,7 @@ class Files
 
     public static function uploadLocalFile($fileName, $path, $companyId = null): void
     {
-        if (!File::exists(public_path(Files::UPLOAD_FOLDER . '/' . $path . '/' . $fileName))) {
+        if (! File::exists(public_path(Files::UPLOAD_FOLDER.'/'.$path.'/'.$fileName))) {
             return;
         }
 
@@ -396,9 +391,9 @@ class Files
 
     public static function saveFileInfo($fileName, $path, $companyId = null)
     {
-        $filePath = public_path(Files::UPLOAD_FOLDER . '/' . $path . '/' . $fileName);
+        $filePath = public_path(Files::UPLOAD_FOLDER.'/'.$path.'/'.$fileName);
 
-        $fileStorage = FileStorage::where('filename', $fileName)->first() ?: new FileStorage();
+        $fileStorage = FileStorage::where('filename', $fileName)->first() ?: new FileStorage;
         $fileStorage->company_id = $companyId;
         $fileStorage->filename = $fileName;
         $fileStorage->size = File::size($filePath);
@@ -411,10 +406,11 @@ class Files
     public static function storeLocalFileOnCloud($fileName, $path)
     {
         if (config('filesystems.default') != 'local') {
-            $filePath = public_path(Files::UPLOAD_FOLDER . '/' . $path . '/' . $fileName);
+            $filePath = public_path(Files::UPLOAD_FOLDER.'/'.$path.'/'.$fileName);
             try {
                 $contents = File::get($filePath);
-                Storage::disk(config('filesystems.default'))->put($path . '/' . $fileName, $contents);
+                Storage::disk(config('filesystems.default'))->put($path.'/'.$fileName, $contents);
+
                 // TODO: Delete local file in Next release
                 // File::delete($filePath);
                 return true;
@@ -440,8 +436,7 @@ class Files
      *    ]
      * ];
      *
-     * @param mixed $model
-     * @param array $columns
+     * @param  mixed  $model
      * @return void
      */
     public static function fixLocalUploadFiles($model, array $columns)
@@ -458,9 +453,9 @@ class Files
                 /** @phpstan-ignore-next-line */
                 $companyId = ($model == Company::class) ? $item->id : $item->company_id;
 
-                $filePath = public_path(self::UPLOAD_FOLDER . '/' . $path . '/' . $fileName);
+                $filePath = public_path(self::UPLOAD_FOLDER.'/'.$path.'/'.$fileName);
 
-                if (!File::exists($filePath)) {
+                if (! File::exists($filePath)) {
                     continue;
                 }
 
@@ -482,8 +477,8 @@ class Files
             // Format the size in either MB or GB
             if ($sizeInBytes >= 1 << 30) {
                 return [
-                    'size' => round($sizeInBytes / (1 << 30), 2) . ' GB',
-                    'greater' => true
+                    'size' => round($sizeInBytes / (1 << 30), 2).' GB',
+                    'greater' => true,
                 ];
             }
 
@@ -491,26 +486,26 @@ class Files
 
             if ($sizeInBytes >= 1 << 20) {
                 return [
-                    'size' => round($sizeInBytes / (1 << 20), 2) . ' MB',
-                    'greater' => $mb >= self::REQUIRED_FILE_UPLOAD_SIZE
+                    'size' => round($sizeInBytes / (1 << 20), 2).' MB',
+                    'greater' => $mb >= self::REQUIRED_FILE_UPLOAD_SIZE,
                 ];
             }
 
             if ($sizeInBytes >= 1 << 10) {
                 return [
-                    'size' => round($sizeInBytes / (1 << 10), 2) . ' KB',
-                    'greater' => false
+                    'size' => round($sizeInBytes / (1 << 10), 2).' KB',
+                    'greater' => false,
                 ];
             }
 
             return [
-                'size' => $sizeInBytes . ' Bytes',
-                'greater' => false
+                'size' => $sizeInBytes.' Bytes',
+                'greater' => false,
             ];
         } catch (\Exception $e) {
             return [
                 'size' => '0 Bytes',
-                'greater' => true
+                'greater' => true,
             ];
         }
     }

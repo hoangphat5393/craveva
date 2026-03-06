@@ -56,7 +56,7 @@ class StoreMeeting extends CoreRequest
                 if ($this->start_date == $this->end_date) {
                     $data['end_time'] .= '|after_or_equal:start_time';
                 }
-                
+
             } else {
                 $data = [
                     'jobId' => 'required',

@@ -10,7 +10,6 @@ use Illuminate\Queue\SerializesModels;
 
 class NewChatEvent implements ShouldBroadcast
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $userChat;
@@ -29,5 +28,4 @@ class NewChatEvent implements ShouldBroadcast
     {
         return 'messages.received';
     }
-
 }

@@ -6,8 +6,8 @@ use App\Models\Team;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      *
@@ -49,7 +49,7 @@ return new class extends Migration {
 
     private function googleMapKey()
     {
-        if (!Schema::hasColumn('global_settings', 'google_map_key')) {
+        if (! Schema::hasColumn('global_settings', 'google_map_key')) {
             Schema::table('global_settings', function (Blueprint $table) {
                 $table->string('google_map_key')->nullable();
             });
@@ -66,7 +66,7 @@ return new class extends Migration {
 
     private function faviconToCompany()
     {
-        if (!Schema::hasColumn('companies', 'favicon')) {
+        if (! Schema::hasColumn('companies', 'favicon')) {
             Schema::table('companies', function (Blueprint $table) {
                 $table->string('favicon')->nullable()->after('logo');
             });
@@ -87,7 +87,7 @@ return new class extends Migration {
         $lastViewedTables = ['proposals', 'invoices', 'estimates'];
 
         foreach ($lastViewedTables as $tableName) {
-            if (!Schema::hasColumn($tableName, 'last_viewed')) {
+            if (! Schema::hasColumn($tableName, 'last_viewed')) {
                 Schema::table($tableName, function (Blueprint $table) {
                     $table->timestamp('last_viewed')->nullable();
                     $table->string('ip_address')->nullable();
@@ -102,5 +102,4 @@ return new class extends Migration {
             $table->text('details')->change();
         });
     }
-
 };

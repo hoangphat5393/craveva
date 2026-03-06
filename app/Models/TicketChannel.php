@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read mixed $icon
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Ticket[] $tickets
  * @property-read int|null $tickets_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|TicketChannel newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TicketChannel newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TicketChannel query()
@@ -22,19 +23,20 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder|TicketChannel whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TicketChannel whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TicketChannel whereUpdatedAt($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|TicketChannel whereCompanyId($value)
+ *
  * @mixin \Eloquent
  */
 class TicketChannel extends BaseModel
 {
-
     use HasCompany;
 
     public function tickets(): HasMany
     {
         return $this->hasMany(Ticket::class, 'channel_id');
     }
-
 }

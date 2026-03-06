@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
 class ProjectDepartment extends Pivot
 {
     protected $table = 'project_departments';
+
     protected $hidden = ['project_id', 'team_id'];
 
     public function project(): BelongsTo
@@ -19,5 +20,4 @@ class ProjectDepartment extends Pivot
     {
         return $this->belongsTo(Team::class, 'team_id');
     }
-
 }

@@ -35,10 +35,10 @@ class DatabaseAuditCommand extends Command
         if ($format === 'json') {
             $this->line(json_encode($summary, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
         } else {
-            $this->line('Total tables: ' . $summary['total_tables']);
-            $this->line('Unused candidates (' . count($unused) . '):');
+            $this->line('Total tables: '.$summary['total_tables']);
+            $this->line('Unused candidates ('.count($unused).'):');
             foreach ($unused as $t) {
-                $this->line('- ' . $t);
+                $this->line('- '.$t);
             }
         }
 
@@ -49,7 +49,7 @@ class DatabaseAuditCommand extends Command
 
     private function scanCodeReferences(): array
     {
-        $finder = new Finder();
+        $finder = new Finder;
         $finder->files()
             ->in(base_path('app'))
             ->in(base_path('Modules'))
@@ -86,4 +86,3 @@ class DatabaseAuditCommand extends Command
         return array_values(array_unique($referenced));
     }
 }
-

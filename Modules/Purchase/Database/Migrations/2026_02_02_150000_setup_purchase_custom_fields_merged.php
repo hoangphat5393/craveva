@@ -1,12 +1,12 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\DB;
 use App\Models\Company;
 use App\Models\CustomField;
 use App\Models\CustomFieldGroup;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -27,17 +27,18 @@ return new class extends Migration
         // purchase_inventory_adjustment
         if (Schema::hasTable('purchase_inventory_adjustment')) {
             Schema::table('purchase_inventory_adjustment', function (Blueprint $table) {
-                if (!Schema::hasColumn('purchase_inventory_adjustment', 'warehouse_id')) {
+                if (! Schema::hasColumn('purchase_inventory_adjustment', 'warehouse_id')) {
                     $table->unsignedBigInteger('warehouse_id')->nullable()->after('date');
                     $table->foreign('warehouse_id')->references('id')->on('warehouses')->onDelete('set null');
                 } else {
                     // Ensure it's nullable
                     try {
                         DB::statement('ALTER TABLE purchase_inventory_adjustment MODIFY warehouse_id BIGINT UNSIGNED NULL');
-                    } catch (\Exception $e) {}
+                    } catch (\Exception $e) {
+                    }
                 }
 
-                if (!Schema::hasColumn('purchase_inventory_adjustment', 'added_by')) {
+                if (! Schema::hasColumn('purchase_inventory_adjustment', 'added_by')) {
                     $table->integer('added_by')->unsigned()->nullable()->after('warehouse_id');
                     $table->foreign('added_by')->references('id')->on('users')->onDelete('SET NULL')->onUpdate('CASCADE');
                 }
@@ -47,56 +48,59 @@ return new class extends Migration
         // purchase_stock_adjustments
         if (Schema::hasTable('purchase_stock_adjustments')) {
             Schema::table('purchase_stock_adjustments', function (Blueprint $table) {
-                if (!Schema::hasColumn('purchase_stock_adjustments', 'warehouse_id')) {
+                if (! Schema::hasColumn('purchase_stock_adjustments', 'warehouse_id')) {
                     $table->unsignedBigInteger('warehouse_id')->nullable()->after('product_id');
                     $table->foreign('warehouse_id')->references('id')->on('warehouses')->onDelete('set null');
                 } else {
                     // Ensure it's nullable
                     try {
                         DB::statement('ALTER TABLE purchase_stock_adjustments MODIFY warehouse_id BIGINT UNSIGNED NULL');
-                    } catch (\Exception $e) {}
+                    } catch (\Exception $e) {
+                    }
                 }
 
-                if (!Schema::hasColumn('purchase_stock_adjustments', 'manufacturing_date')) {
+                if (! Schema::hasColumn('purchase_stock_adjustments', 'manufacturing_date')) {
                     $table->date('manufacturing_date')->nullable()->after('date');
                 }
 
-                if (!Schema::hasColumn('purchase_stock_adjustments', 'expiration_date')) {
+                if (! Schema::hasColumn('purchase_stock_adjustments', 'expiration_date')) {
                     $table->date('expiration_date')->nullable()->after('manufacturing_date');
                 }
 
-                if (!Schema::hasColumn('purchase_stock_adjustments', 'status')) {
+                if (! Schema::hasColumn('purchase_stock_adjustments', 'status')) {
                     $table->string('status')->default('draft')->nullable()->after('description');
                 }
 
-                if (!Schema::hasColumn('purchase_stock_adjustments', 'changed_value')) {
+                if (! Schema::hasColumn('purchase_stock_adjustments', 'changed_value')) {
                     $table->double('changed_value', 16, 2)->default(0)->nullable()->after('status');
                 }
 
-                if (!Schema::hasColumn('purchase_stock_adjustments', 'adjusted_value')) {
+                if (! Schema::hasColumn('purchase_stock_adjustments', 'adjusted_value')) {
                     $table->double('adjusted_value', 16, 2)->default(0)->nullable()->after('changed_value');
                 }
             });
 
             // Ensure warehouse_id type is correct
             if (Schema::hasColumn('purchase_stock_adjustments', 'warehouse_id')) {
-                 try {
-                     DB::statement('ALTER TABLE purchase_stock_adjustments MODIFY warehouse_id BIGINT UNSIGNED NULL');
-                 } catch (\Exception $e) {}
+                try {
+                    DB::statement('ALTER TABLE purchase_stock_adjustments MODIFY warehouse_id BIGINT UNSIGNED NULL');
+                } catch (\Exception $e) {
+                }
             }
         }
 
         // purchase_inventories - ensure warehouse_id is nullable if it exists
         if (Schema::hasTable('purchase_inventories') && Schema::hasColumn('purchase_inventories', 'warehouse_id')) {
-             try {
-                 DB::statement('ALTER TABLE purchase_inventories MODIFY warehouse_id BIGINT UNSIGNED NULL');
-             } catch (\Exception $e) {}
+            try {
+                DB::statement('ALTER TABLE purchase_inventories MODIFY warehouse_id BIGINT UNSIGNED NULL');
+            } catch (\Exception $e) {
+            }
         }
     }
 
     private function setupInventoryCustomFields()
     {
-        if (!class_exists(Company::class) || !class_exists(CustomFieldGroup::class)) {
+        if (! class_exists(Company::class) || ! class_exists(CustomFieldGroup::class)) {
             return;
         }
 
@@ -123,7 +127,7 @@ return new class extends Migration
                 ['name' => 'warehouse_code', 'label' => 'purchase::modules.inventory.warehouseCode', 'type' => 'text', 'sort_order' => 1],
                 ['name' => 'warehouse_name', 'label' => 'purchase::modules.inventory.warehouseName', 'type' => 'text', 'sort_order' => 2],
                 ['name' => 'batch_number', 'label' => 'purchase::modules.inventory.batchNumber', 'type' => 'text', 'sort_order' => 3],
-                
+
                 // Dates
                 ['name' => 'expiration_date', 'label' => 'purchase::modules.inventory.expirationDate', 'type' => 'date', 'sort_order' => 4],
                 ['name' => 'manufacturing_date', 'label' => 'purchase::modules.inventory.manufacturingDate', 'type' => 'date', 'sort_order' => 5],
@@ -140,7 +144,7 @@ return new class extends Migration
                 ['name' => 'inbound_quantity', 'label' => 'purchase::modules.inventory.inboundQuantity', 'type' => 'number', 'sort_order' => 10],
                 ['name' => 'outbound_quantity', 'label' => 'purchase::modules.inventory.outboundQuantity', 'type' => 'number', 'sort_order' => 11],
                 ['name' => 'beginning_package_inventory', 'label' => 'purchase::modules.inventory.beginningPackageInventory', 'type' => 'number', 'sort_order' => 13],
-                
+
                 // New Packaging Quantities
                 ['name' => 'packaging_inbound_quantity', 'label' => 'purchase::modules.inventory.packagingInboundQuantity', 'type' => 'number', 'sort_order' => 16],
                 ['name' => 'packaging_outbound_quantity', 'label' => 'purchase::modules.inventory.packagingOutboundQuantity', 'type' => 'number', 'sort_order' => 17],
@@ -154,8 +158,8 @@ return new class extends Migration
                     ->where('name', $fieldDef['name'])
                     ->first();
 
-                if (!$field) {
-                    $field = new CustomField();
+                if (! $field) {
+                    $field = new CustomField;
                     $field->custom_field_group_id = $group->id;
                     $field->company_id = $company->id;
                     $field->name = $fieldDef['name'];
@@ -174,15 +178,15 @@ return new class extends Migration
             CustomField::where('custom_field_group_id', $group->id)
                 ->where('name', 'expiry_date')
                 ->update(['label' => 'purchase::modules.inventory.expirationDate']);
-            
+
             CustomField::where('custom_field_group_id', $group->id)
                 ->where('name', 'location_code')
                 ->update(['label' => 'purchase::modules.inventory.locationCode']);
-                
+
             CustomField::where('custom_field_group_id', $group->id)
                 ->where('name', 'near_expiry_status')
                 ->update(['label' => 'purchase::modules.inventory.nearExpiryStatus']);
-                
+
             CustomField::where('custom_field_group_id', $group->id)
                 ->where('name', 'reserved_quantity')
                 ->update(['label' => 'purchase::modules.inventory.reservedQuantity']);

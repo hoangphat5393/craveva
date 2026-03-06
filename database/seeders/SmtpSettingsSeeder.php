@@ -6,7 +6,6 @@ use Illuminate\Database\Seeder;
 
 class SmtpSettingsSeeder extends Seeder
 {
-
     /**
      * Run the database seeds.
      *
@@ -14,7 +13,7 @@ class SmtpSettingsSeeder extends Seeder
      */
     public function run()
     {
-        $smtp = new \App\Models\SmtpSetting();
+        $smtp = new \App\Models\SmtpSetting;
         $smtp->mail_driver = 'smtp';
         $smtp->mail_host = 'smtp.gmail.com';
         $smtp->mail_port = '465';

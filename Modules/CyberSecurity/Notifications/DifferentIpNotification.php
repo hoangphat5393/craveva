@@ -7,8 +7,8 @@ use Illuminate\Notifications\Messages\MailMessage;
 
 class DifferentIpNotification extends BaseNotification
 {
-
     public $user;
+
     public $ip;
 
     /**
@@ -23,7 +23,7 @@ class DifferentIpNotification extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     // phpcs:ignore
@@ -35,8 +35,7 @@ class DifferentIpNotification extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
-     * @return MailMessage
+     * @param  mixed  $notifiable
      */
     // phpcs:ignore
     public function toMail($notifiable): MailMessage
@@ -54,5 +53,4 @@ class DifferentIpNotification extends BaseNotification
                 'content' => $content,
             ]);
     }
-
 }

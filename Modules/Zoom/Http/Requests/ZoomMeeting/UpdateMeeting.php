@@ -28,7 +28,7 @@ class UpdateMeeting extends CoreRequest
         return [
             'meeting_title' => 'required',
             'start_date' => 'required',
-            'end_date' => 'required|date_format:"' . $company->date_format . '"|after_or_equal:start_date',
+            'end_date' => 'required|date_format:"'.$company->date_format.'"|after_or_equal:start_date',
             'all_employees' => 'sometimes',
             'all_clients' => 'sometimes',
             'employee_id.0' => 'required_without_all:all_employees,all_clients,client_id.0',

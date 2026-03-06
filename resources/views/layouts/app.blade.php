@@ -131,9 +131,7 @@
         @include('sections.theme_css')
     @endif
 
-    @if (file_exists(public_path() . '/css/app-custom.css'))
-        <link href="{{ asset('css/app-custom.css') }}?v={{ time() }}" rel="stylesheet">
-    @endif
+    <link href="{{ asset('css/app-custom.css') }}?v={{ file_exists(public_path('css/app-custom.css')) ? filemtime(public_path('css/app-custom.css')) : time() }}" rel="stylesheet">
 
     @if (file_exists(public_path() . '/css/custom-css/theme-custom.css'))
         <link href="{{ asset('css/custom-css/theme-custom.css') }}" rel="stylesheet">

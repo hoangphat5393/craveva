@@ -9,7 +9,6 @@ use Illuminate\Queue\SerializesModels;
 
 class RemovalRequestApprovedRejectLeadEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $removal;
@@ -18,5 +17,4 @@ class RemovalRequestApprovedRejectLeadEvent
     {
         $this->removal = $removal;
     }
-
 }

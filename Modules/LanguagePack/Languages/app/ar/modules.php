@@ -1,4 +1,5 @@
 <?php
+
 return [
     'dashboard' => [
         'totalClients' => 'إجمالي العملاء',

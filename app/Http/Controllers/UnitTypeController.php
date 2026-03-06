@@ -3,15 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Helper\Reply;
-use App\Models\Company;
-use App\Models\Product;
-use App\Models\UnitType;
-use App\Models\BaseModel;
-use Illuminate\Http\Request;
 use App\Http\Requests\UnitTypeRequest;
+use App\Models\BaseModel;
 use App\Models\EstimateItem;
 use App\Models\InvoiceItems;
+use App\Models\Product;
 use App\Models\ProposalItem;
+use App\Models\UnitType;
 
 class UnitTypeController extends AccountBaseController
 {
@@ -20,7 +18,6 @@ class UnitTypeController extends AccountBaseController
      *
      * @return \Illuminate\Http\Response
      */
-
     public function __construct()
     {
         parent::__construct();
@@ -41,9 +38,9 @@ class UnitTypeController extends AccountBaseController
     public function store(UnitTypeRequest $request)
     {
         $this->addPermission = user()->permission('manage_project_category');
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
 
-        $unit_type = new UnitType();
+        $unit_type = new UnitType;
         $unit_type->unit_type = $request->unit_type;
         $unit_type->save();
 
@@ -58,6 +55,7 @@ class UnitTypeController extends AccountBaseController
     public function edit($id)
     {
         $this->unitType = UnitType::findOrFail($id);
+
         return view('invoice-settings.ajax.unit-edit', $this->data);
     }
 
@@ -69,6 +67,7 @@ class UnitTypeController extends AccountBaseController
         $unitType->default = 1;
         $unitType->save();
         session()->forget('invoice_setting');
+
         return Reply::success(__('messages.updateSuccess'));
     }
 
@@ -87,7 +86,7 @@ class UnitTypeController extends AccountBaseController
     public function destroy($id)
     {
         $unitExists1 = Product::where('company_id', company()->id)
-        ->where('unit_id', $id)->first();
+            ->where('unit_id', $id)->first();
 
         $unitExists2 = InvoiceItems::where('unit_id', $id)->first();
 
@@ -95,8 +94,9 @@ class UnitTypeController extends AccountBaseController
 
         $unitExists4 = EstimateItem::where('unit_id', $id)->first();
 
-        if(is_null($unitExists1) && is_null($unitExists2) && is_null($unitExists3) && is_null($unitExists4)) {
+        if (is_null($unitExists1) && is_null($unitExists2) && is_null($unitExists3) && is_null($unitExists4)) {
             UnitType::destroy($id);
+
             return Reply::success(__('messages.deleteSuccess'));
         }
 
@@ -107,7 +107,7 @@ class UnitTypeController extends AccountBaseController
     public function units()
     {
         $this->unitTypes = UnitType::all();
+
         return view('invoice-settings.ajax.units', $this->data);
     }
-
 }

@@ -2,23 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\SuperAdmin\GlobalCurrency;
-use DateTimeZone;
 use App\Helper\Reply;
+use App\Http\Requests\Admin\App\UpdateAppSetting;
 use App\Models\Company;
-use App\Models\Session;
 use App\Models\Currency;
-use App\Models\User;
 use App\Models\GlobalSetting;
+use App\Models\Session;
+use App\Models\SuperAdmin\FrontDetail;
+use App\Models\SuperAdmin\GlobalCurrency;
+use App\Models\User;
+use DateTimeZone;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Artisan;
-use App\Http\Requests\Admin\App\UpdateAppSetting;
-use App\Models\SuperAdmin\FrontDetail;
 
 class AppSettingController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -87,9 +86,9 @@ class AppSettingController extends AccountBaseController
     }
 
     /**
-     * @param UpdateAppSetting $request
-     * @param mixed $id
+     * @param  mixed  $id
      * @return array
+     *
      * @throws BindingResolutionException
      * @throws CommandNotFoundException
      */
@@ -135,7 +134,6 @@ class AppSettingController extends AccountBaseController
         $globalSetting->date_format = $request->date_format;
         $globalSetting->time_format = $request->time_format;
 
-
         if (user()->is_superadmin) {
             $globalSetting->company_need_approval = $request->company_need_approval == 'on' ? 1 : 0;
             $globalSetting->currency_id = $request->currency_id;
@@ -150,7 +148,7 @@ class AppSettingController extends AccountBaseController
     public function updateAppSetting($request)
     {
 
-        if (!user()->is_superadmin) {
+        if (! user()->is_superadmin) {
             $setting = company();
             $setting->currency_id = $request->currency_id;
             $setting->timezone = $request->timezone;
@@ -184,13 +182,12 @@ class AppSettingController extends AccountBaseController
 
         session()->forget('isRtl');
 
-        if (!user()->is_superadmin) {
+        if (! user()->is_superadmin) {
             if ($request->currency_id) {
                 \session()->forget('currency_format_setting');
                 currency_format_setting($setting->currency_id);
             }
         }
-
 
         if (user()->is_superadmin) {
             $this->globalSettingSave($request);
@@ -203,7 +200,7 @@ class AppSettingController extends AccountBaseController
 
     public function updateFileUploadSetting($request)
     {
-        if (!empty($request->allowed_file_types)) {
+        if (! empty($request->allowed_file_types)) {
             $allowed_file_types = $request->allowed_file_types;
 
             $fileTypeArray = [];
@@ -214,7 +211,7 @@ class AppSettingController extends AccountBaseController
         }
 
         $globalSetting = GlobalSetting::first();
-        $globalSetting->allowed_file_types = !empty($fileTypeArray) ? implode(',', $fileTypeArray) : '';
+        $globalSetting->allowed_file_types = ! empty($fileTypeArray) ? implode(',', $fileTypeArray) : '';
         $globalSetting->allowed_file_size = $request->allowed_file_size;
         $globalSetting->allow_max_no_of_files = $request->allow_max_no_of_files;
         $globalSetting->save();
@@ -237,7 +234,7 @@ class AppSettingController extends AccountBaseController
     }
 
     /**
-     * @param string $dateFormat
+     * @param  string  $dateFormat
      * @return string
      */
     public function momentFormat($dateFormat)
@@ -288,7 +285,7 @@ class AppSettingController extends AccountBaseController
 
     public function deleteSessions(array $usersIds = [])
     {
-        if (!empty($usersIds)) {
+        if (! empty($usersIds)) {
             Session::whereIn('user_id', $usersIds)->where('user_id', '<>', user()->id)->delete();
 
             return Reply::success(__('messages.deleteSuccess'));

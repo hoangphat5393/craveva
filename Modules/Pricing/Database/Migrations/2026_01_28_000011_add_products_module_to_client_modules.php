@@ -3,8 +3,6 @@
 use App\Models\Company;
 use App\Models\ModuleSetting;
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -25,7 +23,7 @@ return new class extends Migration
                 ->where('company_id', $company->id)
                 ->exists();
 
-            if (!$exists) {
+            if (! $exists) {
                 ModuleSetting::create([
                     'module_name' => 'products',
                     'type' => 'client',

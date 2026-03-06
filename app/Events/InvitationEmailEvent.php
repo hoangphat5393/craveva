@@ -9,7 +9,6 @@ use Illuminate\Queue\SerializesModels;
 
 class InvitationEmailEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $invite;
@@ -33,5 +32,4 @@ class InvitationEmailEvent
     {
         return [];
     }
-
 }

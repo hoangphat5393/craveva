@@ -20,14 +20,14 @@ use Modules\Performance\Http\Requests\CreateObjectiveRequest;
 
 class ObjectiveController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'performance::app.objective';
 
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array(PerformanceSetting::MODULE_NAME, $this->user->modules));
+            abort_403(! in_array(PerformanceSetting::MODULE_NAME, $this->user->modules));
+
             return $next($request);
         });
     }
@@ -62,7 +62,7 @@ class ObjectiveController extends AccountBaseController
         }
 
         if (request()->has('searchText')) {
-            $objectives->where('title', 'like', '%' . request()->searchText . '%');
+            $objectives->where('title', 'like', '%'.request()->searchText.'%');
         }
 
         if (request()->department != 'all' && request()->department != '') {
@@ -83,13 +83,11 @@ class ObjectiveController extends AccountBaseController
             $objectives->whereHas('status', function ($query) {
                 $query->where('status', request()->status);
             });
-        }
-        elseif (request()->status == 'incomplete' && request()->status != '' && request()->status != 'all') {
+        } elseif (request()->status == 'incomplete' && request()->status != '' && request()->status != 'all') {
             $objectives->whereHas('status', function ($query) {
                 $query->whereNot('status', 'completed');
             });
-        }
-        else if (request()->status != 'all' || request()->status == '') {
+        } elseif (request()->status != 'all' || request()->status == '') {
             $objectives->whereHas('status', function ($query) {
                 $query->whereNot('status', 'completed');
             });
@@ -99,12 +97,14 @@ class ObjectiveController extends AccountBaseController
 
         // Filter objectives based on user access
         $this->objectives = $allObjectives->filter(function ($objective) {
-            $objective->has_access = !$this->checkManageAccess($objective->id);
-            return !$this->checkViewAccess($objective->id);
+            $objective->has_access = ! $this->checkManageAccess($objective->id);
+
+            return ! $this->checkViewAccess($objective->id);
         });
 
         if (request()->ajax()) {
             $view = view('performance::objectives.ajax.objectives', $this->data)->render();
+
             return Reply::dataOnly(['status' => 'success', 'html' => $view]);
         }
 
@@ -130,11 +130,12 @@ class ObjectiveController extends AccountBaseController
         $this->meetingId = (request()->requestFrom === 'meeting') ? request()->meetingId : null;
 
         $this->currentUrl = $this->meetingId
-            ? route('meetings.show', ['meeting' => $this->meetingId]) . '?view=action'
+            ? route('meetings.show', ['meeting' => $this->meetingId]).'?view=action'
             : route('objectives.index');
 
         if (request()->ajax()) {
             $html = view('performance::objectives.ajax.create', $this->data)->render();
+
             return Reply::dataOnly(['status' => 'success', 'html' => $html, 'title' => $this->pageTitle]);
         }
 
@@ -151,7 +152,7 @@ class ObjectiveController extends AccountBaseController
         DB::beginTransaction();
         $goalType = GoalType::findOrFail($request->goal_type);
 
-        $objective = new Objective();
+        $objective = new Objective;
         $objective->title = $request->title;
         $objective->description = trim_editor($request->description);
         $objective->goal_type = $request->goal_type;
@@ -168,20 +169,19 @@ class ObjectiveController extends AccountBaseController
 
         if (isset($request->owner_id)) {
             foreach ($request->owner_id as $key => $user) {
-                $owner = new ObjectiveOwner();
+                $owner = new ObjectiveOwner;
                 $owner->objective_id = $objective->id;
                 $owner->owner_id = $user;
                 $owner->save();
             }
         }
 
-        if ((!is_null(request()->meeting_id))) {
+        if ((! is_null(request()->meeting_id))) {
             $meeting = Meeting::findOrFail(request()->meeting_id);
             $meeting->objective_id = $objective->id;
-            $meeting ->save();
+            $meeting->save();
             $meetingId = $meeting->id;
-        }
-        else {
+        } else {
             $meetingId = null;
         }
 
@@ -244,6 +244,7 @@ class ObjectiveController extends AccountBaseController
 
         if (request()->ajax()) {
             $html = view('performance::objectives.ajax.edit', $this->data)->render();
+
             return Reply::dataOnly(['status' => 'success', 'html' => $html, 'title' => $this->pageTitle]);
         }
 
@@ -280,7 +281,7 @@ class ObjectiveController extends AccountBaseController
             $objective->owners()->detach();
 
             foreach ($request->owner_id as $user) {
-                $owner = new ObjectiveOwner();
+                $owner = new ObjectiveOwner;
                 $owner->objective_id = $objective->id;
                 $owner->owner_id = $user;
                 $owner->save();
@@ -308,6 +309,7 @@ class ObjectiveController extends AccountBaseController
 
             $objective->keyResults()->delete();
             $objective->delete();
+
             return Reply::success(__('messages.deleteSuccess'));
         }
 
@@ -319,6 +321,7 @@ class ObjectiveController extends AccountBaseController
         abort_403($this->checkManageAccess($id));
 
         $this->objective = Objective::findOrFail($id);
+
         return view('performance::objectives.ajax.show-description', $this->data);
     }
 
@@ -336,9 +339,9 @@ class ObjectiveController extends AccountBaseController
         $currentUserRoleIds = user()->roles()->pluck('id')->toArray();
         $viewByRoles = json_decode($goal->view_by_roles, true) ?? [];
 
-        return !(($goal && $goal->view_by_owner == 1 && in_array(user()->id, $ownerIds)) ||
+        return ! (($goal && $goal->view_by_owner == 1 && in_array(user()->id, $ownerIds)) ||
             ($goal && $goal->view_by_manager == 1 && in_array(user()->id, $managerIds)) ||
-            (!empty($viewByRoles) && array_intersect($currentUserRoleIds, $viewByRoles)) ||
+            (! empty($viewByRoles) && array_intersect($currentUserRoleIds, $viewByRoles)) ||
             user()->hasRole('admin') || $objective->created_by == user()->id);
     }
 
@@ -356,11 +359,10 @@ class ObjectiveController extends AccountBaseController
         $currentUserRoleIds = user()->roles()->pluck('id')->toArray();
         $manageByRoles = json_decode($goal->manage_by_roles, true) ?? [];
 
-        return !(user()->hasRole('admin') ||
+        return ! (user()->hasRole('admin') ||
             $objective->created_by == user()->id ||
             ($goal && $goal->manage_by_owner == 1 && in_array(user()->id, $ownerIds)) ||
             ($goal && $goal->manage_by_manager == 1 && in_array(user()->id, $managerIds)) ||
-            (!empty($manageByRoles) && array_intersect($currentUserRoleIds, $manageByRoles)));
+            (! empty($manageByRoles) && array_intersect($currentUserRoleIds, $manageByRoles)));
     }
-
 }

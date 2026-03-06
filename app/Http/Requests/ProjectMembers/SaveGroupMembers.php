@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class SaveGroupMembers extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -26,7 +25,7 @@ class SaveGroupMembers extends CoreRequest
     {
         return [
             'group_id.0' => 'required',
-            'project_id' => 'required'
+            'project_id' => 'required',
         ];
     }
 
@@ -36,5 +35,4 @@ class SaveGroupMembers extends CoreRequest
             'group_id.0.required' => __('validation.selectAtLeastOne'),
         ];
     }
-
 }

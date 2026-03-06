@@ -2,26 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use Carbon\Carbon;
-use App\Models\Team;
-use App\Models\User;
-use App\Helper\Reply;
-use App\Models\Holiday;
-use App\Services\Google;
-use App\Models\Designation;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use App\DataTables\HolidayDataTable;
+use App\Helper\Common;
+use App\Helper\Reply;
 use App\Http\Requests\CommonRequest;
-use App\Models\GoogleCalendarModule;
-use Illuminate\Support\Facades\View;
 use App\Http\Requests\Holiday\CreateRequest;
 use App\Http\Requests\Holiday\UpdateRequest;
-use App\Helper\Common;
+use App\Models\Designation;
+use App\Models\GoogleCalendarModule;
+use App\Models\Holiday;
+use App\Models\Team;
+use App\Services\Google;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class HolidayController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -31,17 +28,16 @@ class HolidayController extends AccountBaseController
     public function index(Request $request)
     {
         $this->viewPermission = user()->permission('view_holiday');
-        abort_403(!in_array($this->viewPermission, ['all', 'added', 'owned', 'both']));
-
+        abort_403(! in_array($this->viewPermission, ['all', 'added', 'owned', 'both']));
 
         if (request('start') && request('end')) {
-            $holidayArray = array();
+            $holidayArray = [];
 
             $holidays = Holiday::orderBy('date', 'ASC');
 
             if (request()->searchText != '') {
                 $safeTerm = Common::safeString(request('searchText'));
-                $holidays->where('holidays.occassion', 'like', '%' . $safeTerm . '%');
+                $holidays->where('holidays.occassion', 'like', '%'.$safeTerm.'%');
             }
 
             if (in_array($this->viewPermission, ['owned', 'both'])) {
@@ -49,15 +45,15 @@ class HolidayController extends AccountBaseController
                 $holidays->where(function ($query) use ($user) {
                     // Common conditions
                     $query->where(function ($q) use ($user) {
-                        $q->orWhere('department_id_json', 'like', '%"' . $user->employeeDetails->department_id . '"%')
+                        $q->orWhere('department_id_json', 'like', '%"'.$user->employeeDetails->department_id.'"%')
                             ->orWhereNull('department_id_json');
                     });
                     $query->where(function ($q) use ($user) {
-                        $q->orWhere('designation_id_json', 'like', '%"' . $user->employeeDetails->designation_id . '"%')
+                        $q->orWhere('designation_id_json', 'like', '%"'.$user->employeeDetails->designation_id.'"%')
                             ->orWhereNull('designation_id_json');
                     });
                     $query->where(function ($q) use ($user) {
-                        $q->orWhere('employment_type_json', 'like', '%"' . $user->employeeDetails->employment_type . '"%')
+                        $q->orWhere('employment_type_json', 'like', '%"'.$user->employeeDetails->employment_type.'"%')
                             ->orWhereNull('employment_type_json');
                     });
 
@@ -92,7 +88,7 @@ class HolidayController extends AccountBaseController
     public function create()
     {
         $this->addPermission = user()->permission('add_holiday');
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
 
         $this->redirectUrl = request()->date ? route('holidays.index') : route('holidays.table_view');
         $this->date = request()->date ? Carbon::parse(request()->date)->timezone(company()->timezone)->translatedFormat(company()->date_format) : '';
@@ -112,8 +108,6 @@ class HolidayController extends AccountBaseController
     }
 
     /**
-     *
-     * @param CreateRequest $request
      * @return void
      */
     public function store(CreateRequest $request)
@@ -121,30 +115,29 @@ class HolidayController extends AccountBaseController
 
         $this->addPermission = user()->permission('add_holiday');
 
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
 
         $occassions = $request->occassion;
         $dates = $request->date;
         $notificationSent = $request->notification_sent;
 
-
         foreach ($dates as $index => $value) {
             if ($value != '') {
 
-                $holiday = new Holiday();
+                $holiday = new Holiday;
                 $holiday->date = Carbon::createFromFormat($this->company->date_format, $value);
                 $holiday->occassion = $occassions[$index];
                 $holiday->notification_sent = $notificationSent;
 
-                if (!empty($request->department)) {
+                if (! empty($request->department)) {
                     $holiday->department_id_json = json_encode($request->department);
                 }
 
-                if (!empty($request->designation)) {
+                if (! empty($request->designation)) {
                     $holiday->designation_id_json = json_encode($request->designation);
                 }
 
-                if (!empty($request->employment_type)) {
+                if (! empty($request->employment_type)) {
                     $holiday->employment_type_json = json_encode($request->employment_type);
                 }
 
@@ -180,20 +173,17 @@ class HolidayController extends AccountBaseController
         $departmentArray = $this->holiday?->department(json_decode($holiday->department_id_json));
         $this->department = $departmentArray ? implode(', ', $departmentArray) : '--';
 
-
         $designationArray = $this->holiday?->designation(json_decode($holiday->designation_id_json));
         $this->designation = $designationArray ? implode(', ', $designationArray) : '--';
 
-
-        $this->employment_type = !empty($holiday->employment_type_json) ? collect(json_decode($holiday->employment_type_json))
+        $this->employment_type = ! empty($holiday->employment_type_json) ? collect(json_decode($holiday->employment_type_json))
             ->map(function ($employmentType) {
-                return __('modules.employees.' . $employmentType);
+                return __('modules.employees.'.$employmentType);
             })
             ->implode(', ') : '--';
 
-
         $this->viewPermission = user()->permission('view_holiday');
-        abort_403(!($this->viewPermission == 'all' || $this->viewPermission == 'owned' || $this->viewPermission == 'both' || ($this->viewPermission == 'added' && $this->holiday->added_by == user()->id)));
+        abort_403(! ($this->viewPermission == 'all' || $this->viewPermission == 'owned' || $this->viewPermission == 'both' || ($this->viewPermission == 'added' && $this->holiday->added_by == user()->id)));
 
         $this->pageTitle = __('app.menu.holiday');
 
@@ -207,7 +197,6 @@ class HolidayController extends AccountBaseController
     }
 
     /**
-     * @param Holiday $holiday
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|mixed|void
      */
     public function edit(Holiday $holiday)
@@ -216,29 +205,27 @@ class HolidayController extends AccountBaseController
         $this->teams = Team::all();
         $this->designations = Designation::allDesignations();
 
-
         $this->departmentId = $this->holiday->department_id_json;
         $this->departmentArray = $this->departmentId ? json_decode($this->departmentId, true) : [];
-        if (!is_array($this->departmentArray)) {
+        if (! is_array($this->departmentArray)) {
             $this->departmentArray = [];
         }
 
         $this->designationId = $this->holiday->designation_id_json;
         $this->designationArray = $this->designationId ? json_decode($this->designationId, true) : [];
-        if (!is_array($this->designationArray)) {
+        if (! is_array($this->designationArray)) {
             $this->designationArray = [];
         }
 
         $this->employmentType = $this->holiday->employment_type_json;
         $this->employmentTypeArray = $this->employmentType ? json_decode($this->employmentType, true) : [];
-        if (!is_array($this->employmentTypeArray)) {
+        if (! is_array($this->employmentTypeArray)) {
             $this->employmentTypeArray = [];
         }
 
-
         $this->editPermission = user()->permission('edit_holiday');
 
-        abort_403(!($this->editPermission == 'all' || ($this->editPermission == 'added' && $this->holiday->added_by == user()->id)));
+        abort_403(! ($this->editPermission == 'all' || ($this->editPermission == 'added' && $this->holiday->added_by == user()->id)));
 
         $this->pageTitle = __('app.menu.holiday');
 
@@ -252,14 +239,13 @@ class HolidayController extends AccountBaseController
     }
 
     /**
-     * @param UpdateRequest $request
-     * @param Holiday $holiday
+     * @param  Holiday  $holiday
      * @return array|void
      */
-    public function update(UpdateRequest $request,  $id)
+    public function update(UpdateRequest $request, $id)
     {
         $this->editPermission = user()->permission('edit_holiday');
-        abort_403(!($this->editPermission == 'all' || ($this->editPermission == 'added' && $this->holiday->added_by == user()->id)));
+        abort_403(! ($this->editPermission == 'all' || ($this->editPermission == 'added' && $this->holiday->added_by == user()->id)));
 
         $data = $request->all();
         $data['date'] = companyToYmd($request->date);
@@ -284,13 +270,12 @@ class HolidayController extends AccountBaseController
     }
 
     /**
-     * @param Holiday $holiday
      * @return array|void
      */
     public function destroy(Holiday $holiday)
     {
         $deletePermission = user()->permission('delete_holiday');
-        abort_403(!($deletePermission == 'all' || ($deletePermission == 'added' && $holiday->added_by == user()->id)));
+        abort_403(! ($deletePermission == 'all' || ($deletePermission == 'added' && $holiday->added_by == user()->id)));
 
         $holiday->delete();
 
@@ -300,7 +285,7 @@ class HolidayController extends AccountBaseController
     public function tableView(HolidayDataTable $dataTable)
     {
         $viewPermission = user()->permission('view_holiday');
-        abort_403(!in_array($viewPermission, ['all', 'added', 'owned', 'both']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'owned', 'both']));
 
         $this->pageTitle = __('app.menu.listView');
         $this->currentYear = now()->format('Y');
@@ -309,8 +294,8 @@ class HolidayController extends AccountBaseController
         /* year range from last 5 year to next year */
         $years = [];
 
-        $latestFifthYear = (int)now()->subYears(5)->format('Y');
-        $nextYear = (int)now()->addYear()->format('Y');
+        $latestFifthYear = (int) now()->subYears(5)->format('Y');
+        $nextYear = (int) now()->addYear()->format('Y');
 
         for ($i = $latestFifthYear; $i <= $nextYear; $i++) {
             $years[] = $i;
@@ -323,7 +308,7 @@ class HolidayController extends AccountBaseController
 
     public function applyQuickAction(Request $request)
     {
-        abort_403(!in_array(user()->permission('edit_leave'), ['all', 'added']));
+        abort_403(! in_array(user()->permission('edit_leave'), ['all', 'added']));
 
         if ($request->action_type === 'delete') {
             $this->deleteRecords($request);
@@ -344,7 +329,7 @@ class HolidayController extends AccountBaseController
     public function markHoliday()
     {
         $this->addPermission = user()->permission('add_holiday');
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
 
         return view('holiday.mark-holiday.index', $this->data);
     }
@@ -352,9 +337,9 @@ class HolidayController extends AccountBaseController
     public function markDayHoliday(CommonRequest $request)
     {
         $this->addPermission = user()->permission('add_holiday');
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
 
-        if (!$request->has('office_holiday_days')) {
+        if (! $request->has('office_holiday_days')) {
             return Reply::error(__('messages.checkDayHoliday'));
         }
 
@@ -364,18 +349,17 @@ class HolidayController extends AccountBaseController
             $year = $request->has('year');
         }
 
-
         if ($request->office_holiday_days != null && count($request->office_holiday_days) > 0) {
             foreach ($request->office_holiday_days as $holiday) {
                 $day = $holiday;
 
-                $dateArray = $this->getDateForSpecificDayBetweenDates($year . '-01-01', $year . '-12-31', ($day));
+                $dateArray = $this->getDateForSpecificDayBetweenDates($year.'-01-01', $year.'-12-31', ($day));
 
                 foreach ($dateArray as $date) {
                     Holiday::firstOrCreate([
                         'date' => $date,
                         'notification_sent' => $request->notification_sent ?: 'no',
-                        'occassion' => $request->occassion ? $request->occassion : now()->weekday($day)->translatedFormat('l')
+                        'occassion' => $request->occassion ? $request->occassion : now()->weekday($day)->translatedFormat('l'),
                     ]);
                 }
 
@@ -405,13 +389,12 @@ class HolidayController extends AccountBaseController
             }
         } while (date('w', $startDate) != $weekdayNumber);
 
-
         while ($startDate <= $endDate) {
             $dateArr[] = date('Y-m-d', $startDate);
             $startDate += (7 * 24 * 3600); // add 7 days
         }
 
-        return ($dateArr);
+        return $dateArr;
     }
 
     protected function googleCalendarEvent($event)
@@ -421,7 +404,7 @@ class HolidayController extends AccountBaseController
 
         if ($googleAccount->google_calendar_status == 'active' && $googleAccount->google_calendar_verification_status == 'verified' && $googleAccount->token && $module->holiday_status == 1) {
 
-            $google = new Google();
+            $google = new Google;
 
             if ($event->date) {
                 $date = \Carbon\Carbon::parse($event->date)->shiftTimezone($googleAccount->timezone);
@@ -429,26 +412,26 @@ class HolidayController extends AccountBaseController
                 // Create event
                 $google = $google->connectUsing($googleAccount->token);
 
-                $eventData = new \Google_Service_Calendar_Event(array(
+                $eventData = new \Google_Service_Calendar_Event([
                     'summary' => $event->occassion,
                     'location' => $googleAccount->address,
                     'colorId' => 1,
-                    'start' => array(
+                    'start' => [
                         'dateTime' => $date->copy()->startOfDay(),
                         'timeZone' => $googleAccount->timezone,
-                    ),
-                    'end' => array(
+                    ],
+                    'end' => [
                         'dateTime' => $date->copy()->endOfDay(),
                         'timeZone' => $googleAccount->timezone,
-                    ),
-                    'reminders' => array(
+                    ],
+                    'reminders' => [
                         'useDefault' => false,
-                        'overrides' => array(
-                            array('method' => 'email', 'minutes' => 24 * 60),
-                            array('method' => 'popup', 'minutes' => 10),
-                        ),
-                    ),
-                ));
+                        'overrides' => [
+                            ['method' => 'email', 'minutes' => 24 * 60],
+                            ['method' => 'popup', 'minutes' => 10],
+                        ],
+                    ],
+                ]);
 
                 try {
                     if ($event->event_id) {
@@ -480,9 +463,9 @@ class HolidayController extends AccountBaseController
         $module = GoogleCalendarModule::first();
 
         if ($googleAccount->google_calendar_status == 'active' && $googleAccount->google_calendar_verification_status == 'verified' && $googleAccount->token && $module->holiday_status == 1) {
-            $google = new Google();
+            $google = new Google;
 
-            $allDays = $this->getDateForSpecificDayBetweenDates($year . '-01-01', $year . '-12-31', $day);
+            $allDays = $this->getDateForSpecificDayBetweenDates($year.'-01-01', $year.'-12-31', $day);
 
             $holiday = Holiday::where(DB::raw('DATE(`date`)'), $allDays[0])->first();
 
@@ -490,18 +473,18 @@ class HolidayController extends AccountBaseController
 
             $frequency = 'WEEKLY';
 
-            $eventData = new \Google_Service_Calendar_Event();
+            $eventData = new \Google_Service_Calendar_Event;
             $eventData->setSummary(now()->startOfWeek($day)->translatedFormat('l'));
             $eventData->setColorId(7);
             $eventData->setLocation('');
 
-            $start = new \Google_Service_Calendar_EventDateTime();
+            $start = new \Google_Service_Calendar_EventDateTime;
             $start->setDateTime($startDate);
             $start->setTimeZone($googleAccount->timezone);
 
             $eventData->setStart($start);
 
-            $end = new \Google_Service_Calendar_EventDateTime();
+            $end = new \Google_Service_Calendar_EventDateTime;
             $end->setDateTime($startDate);
             $end->setTimeZone($googleAccount->timezone);
 
@@ -509,7 +492,7 @@ class HolidayController extends AccountBaseController
 
             $dy = substr(now()->startOfWeek($day)->translatedFormat('l'), 0, 2);
 
-            $eventData->setRecurrence(array('RRULE:FREQ=' . $frequency . ';COUNT=' . count($allDays) . ';BYDAY=' . $dy));
+            $eventData->setRecurrence(['RRULE:FREQ='.$frequency.';COUNT='.count($allDays).';BYDAY='.$dy]);
 
             // Create event
             $google->connectUsing($googleAccount->token);

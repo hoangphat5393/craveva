@@ -13,13 +13,13 @@ use Illuminate\Support\Facades\Hash;
 
 class ProjectNoteController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'app.menu.projects';
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('projects', $this->user->modules));
+            abort_403(! in_array('projects', $this->user->modules));
+
             return $next($request);
         });
     }
@@ -28,8 +28,7 @@ class ProjectNoteController extends AccountBaseController
     {
         $this->viewProjectPermission = user()->permission('add_project_note');
         $this->project = Project::findOrFail(request('project'));
-        abort_403(!(in_array($this->viewProjectPermission, ['all']) || $this->project->project_admin == user()->id));
-
+        abort_403(! (in_array($this->viewProjectPermission, ['all']) || $this->project->project_admin == user()->id));
 
         $this->employees = $this->project->projectMembers;
 
@@ -63,9 +62,9 @@ class ProjectNoteController extends AccountBaseController
         $this->addProjectPermission = user()->permission('add_project_note');
         $this->project = Project::findOrFail(request('project_id'));
 
-        abort_403(!(in_array($this->addProjectPermission, ['all']) || $this->project->project_admin == user()->id));
+        abort_403(! (in_array($this->addProjectPermission, ['all']) || $this->project->project_admin == user()->id));
 
-        $note = new ProjectNote();
+        $note = new ProjectNote;
         $note->title = $request->title;
         $note->project_id = $request->project_id;
         $note->details = $request->details;
@@ -79,18 +78,17 @@ class ProjectNoteController extends AccountBaseController
         if ($request->type == 1) {
             $users = $request->user_id;
 
-            if (!is_null($users)) {
+            if (! is_null($users)) {
                 foreach ($users as $user) {
                     ProjectUserNote::firstOrCreate([
                         'user_id' => $user,
-                        'project_note_id' => $note->id
+                        'project_note_id' => $note->id,
                     ]);
                 }
             }
         }
 
-        return Reply::successWithData(__('messages.recordSaved'), ['redirectUrl' => route('projects.show', $note->project_id) . '?tab=notes']);
-
+        return Reply::successWithData(__('messages.recordSaved'), ['redirectUrl' => route('projects.show', $note->project_id).'?tab=notes']);
 
     }
 
@@ -107,11 +105,10 @@ class ProjectNoteController extends AccountBaseController
         }
 
         $memberIds = $this->note->project->members->pluck('user_id')->toArray(); /** @phpstan-ignore-line */
-
         $this->viewPermission = user()->permission('view_projects');
         $viewProjectNotePermission = user()->permission('view_project_note');
 
-        abort_403(!(
+        abort_403(! (
             $viewProjectNotePermission == 'all'
             || $this->note->type == 0
             /** @phpstan-ignore-next-line */
@@ -132,7 +129,7 @@ class ProjectNoteController extends AccountBaseController
             return $this->returnAjax($this->view);
         }
 
-        return redirect(route('projects.show', $this->note->project_id) . '?tab=notes');
+        return redirect(route('projects.show', $this->note->project_id).'?tab=notes');
 
     }
 
@@ -156,7 +153,7 @@ class ProjectNoteController extends AccountBaseController
 
         $this->projectuserData = $projectuserData;
 
-        abort_403(!in_array($this->editPermission, ['all', 'added', 'owned', 'both']));
+        abort_403(! in_array($this->editPermission, ['all', 'added', 'owned', 'both']));
 
         $this->pageTitle = __('app.editProjectNote');
 
@@ -187,17 +184,17 @@ class ProjectNoteController extends AccountBaseController
         if ($request->type == 1) {
             $users = $request->user_id;
 
-            if (!is_null($users)) {
+            if (! is_null($users)) {
                 foreach ($users as $user) {
                     ProjectUserNote::firstOrCreate([
                         'user_id' => $user,
-                        'project_note_id' => $note->id
+                        'project_note_id' => $note->id,
                     ]);
                 }
             }
         }
 
-        return Reply::successWithData(__('messages.updateSuccess'), ['redirectUrl' => route('projects.show', $note->project_id) . '?tab=notes']);
+        return Reply::successWithData(__('messages.updateSuccess'), ['redirectUrl' => route('projects.show', $note->project_id).'?tab=notes']);
 
     }
 
@@ -220,10 +217,11 @@ class ProjectNoteController extends AccountBaseController
     public function applyQuickAction(Request $request)
     {
         switch ($request->action_type) {
-        case 'delete':
-            $this->deleteRecords($request);
+            case 'delete':
+                $this->deleteRecords($request);
+
                 return Reply::success(__('messages.deleteSuccess'));
-        default:
+            default:
                 return Reply::error(__('messages.selectAction'));
         }
     }
@@ -232,6 +230,7 @@ class ProjectNoteController extends AccountBaseController
     {
         abort_403(user()->permission('delete_project_note') !== 'all');
         ProjectNote::whereIn('id', explode(',', $request->row_ids))->delete();
+
         return true;
     }
 
@@ -239,6 +238,7 @@ class ProjectNoteController extends AccountBaseController
     {
         $this->note = ProjectNote::findOrFail($id);
         $this->formType = request()->form_type;
+
         return view('projects.notes.verify-password', $this->data);
     }
 
@@ -248,5 +248,4 @@ class ProjectNoteController extends AccountBaseController
 
         return Hash::check($request->password, $this->client->password) ? Reply::success(__('messages.passwordMatched')) : Reply::error(__('messages.incorrectPassword'));
     }
-
 }

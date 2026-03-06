@@ -8,7 +8,6 @@ use Modules\Biolinks\Entities\BiolinksGlobalSetting;
 
 class ActivateModuleCommand extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
@@ -37,5 +36,4 @@ class ActivateModuleCommand extends Command
             BiolinksGlobalSetting::addModuleSetting($company);
         }
     }
-
 }

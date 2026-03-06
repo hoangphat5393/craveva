@@ -7,7 +7,6 @@ use App\Models\Team;
 
 class TeamObserver
 {
-
     public function creating(Team $model)
     {
         if (company()) {
@@ -22,12 +21,11 @@ class TeamObserver
             $leaveTypes = LeaveType::all();
 
             foreach ($leaveTypes as $leaveType) {
-                if (!is_null($leaveType->department)) {
+                if (! is_null($leaveType->department)) {
                     $department = json_decode($leaveType->department);
                     array_push($department, $model->id);
-                }
-                else {
-                    $department = array($model->id);
+                } else {
+                    $department = [$model->id];
                 }
 
                 $leaveType->department = json_encode($department);
@@ -43,7 +41,7 @@ class TeamObserver
 
             foreach ($leaveTypes as $leaveType) {
 
-                if (!is_null($leaveType->department)) {
+                if (! is_null($leaveType->department)) {
                     $department = json_decode($leaveType->department);
 
                     // Search value and delete
@@ -60,5 +58,4 @@ class TeamObserver
             }
         }
     }
-
 }

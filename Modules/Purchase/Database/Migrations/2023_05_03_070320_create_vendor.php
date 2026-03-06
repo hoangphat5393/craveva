@@ -1,27 +1,26 @@
 <?php
 
 use App\Models\Company;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
-use Modules\Purchase\Entities\PurchaseNotificationSetting;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 use Modules\Purchase\Entities\PurchaseManagementSetting;
+use Modules\Purchase\Entities\PurchaseNotificationSetting;
 use Modules\Purchase\Entities\PurchaseSetting;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      *
      * @return void
      */
-
     public function up()
     {
         \App\Models\Module::validateVersion(PurchaseManagementSetting::MODULE_NAME);
 
         // Purchase Settings Table
-        if (!Schema::hasTable('purchase_settings')) {
+        if (! Schema::hasTable('purchase_settings')) {
             Schema::create('purchase_settings', function (Blueprint $table) {
                 $table->bigIncrements('id');
                 $table->unsignedInteger('company_id')->nullable();
@@ -38,7 +37,6 @@ return new class extends Migration {
                 $table->timestamps();
             });
         }
-
 
         // Product Table changes
         Schema::table('products', function (Blueprint $table) {
@@ -57,9 +55,8 @@ return new class extends Migration {
             $table->string('sku', 100)->after('hsn_sac_code')->nullable();
         });
 
-
         // Purchase Vendor Table
-        if (!Schema::hasTable('purchase_vendors')) {
+        if (! Schema::hasTable('purchase_vendors')) {
             Schema::create('purchase_vendors', function (Blueprint $table) {
                 $table->increments('id');
                 $table->unsignedInteger('company_id')->nullable();
@@ -81,7 +78,7 @@ return new class extends Migration {
             });
         }
         // Purchase Vendor Contacts Table
-        if (!Schema::hasTable('purchase_vendor_contacts')) {
+        if (! Schema::hasTable('purchase_vendor_contacts')) {
             Schema::create('purchase_vendor_contacts', function (Blueprint $table) {
                 $table->increments('id');
                 $table->unsignedInteger('company_id')->nullable();
@@ -96,7 +93,7 @@ return new class extends Migration {
             });
         }
         // Purchase Vendor Notes Table
-        if (!Schema::hasTable('purchase_vendor_notes')) {
+        if (! Schema::hasTable('purchase_vendor_notes')) {
             Schema::create('purchase_vendor_notes', function (Blueprint $table) {
                 $table->increments('id');
                 $table->unsignedInteger('company_id')->nullable();
@@ -112,7 +109,7 @@ return new class extends Migration {
             });
         }
         // Purchase Order Setting Table
-        if (!Schema::hasTable('purchase_order_settings')) {
+        if (! Schema::hasTable('purchase_order_settings')) {
             Schema::create('purchase_order_settings', function (Blueprint $table) {
                 $table->increments('id');
                 $table->integer('company_id')->unsigned()->nullable();
@@ -124,7 +121,7 @@ return new class extends Migration {
             });
         }
         // Purchase orders Table
-        if (!Schema::hasTable('purchase_orders')) {
+        if (! Schema::hasTable('purchase_orders')) {
             Schema::create('purchase_orders', function (Blueprint $table) {
                 $table->increments('id');
                 $table->integer('company_id')->unsigned()->nullable();
@@ -161,7 +158,7 @@ return new class extends Migration {
             });
         }
         // Purchase Items Table
-        if (!Schema::hasTable('purchase_items')) {
+        if (! Schema::hasTable('purchase_items')) {
             Schema::create('purchase_items', function (Blueprint $table) {
                 $table->increments('id');
                 $table->integer('company_id')->unsigned()->nullable();
@@ -183,7 +180,7 @@ return new class extends Migration {
             });
         }
         // Purchase Item Taxes Table
-        if (!Schema::hasTable('purchase_item_taxes')) {
+        if (! Schema::hasTable('purchase_item_taxes')) {
             Schema::create('purchase_item_taxes', function (Blueprint $table) {
                 $table->increments('id');
                 $table->integer('purchase_order_id')->unsigned()->nullable();
@@ -196,7 +193,7 @@ return new class extends Migration {
             });
         }
         // Purchase Bills Table
-        if (!Schema::hasTable('purchase_bills')) {
+        if (! Schema::hasTable('purchase_bills')) {
             Schema::create('purchase_bills', function (Blueprint $table) {
                 $table->increments('id');
                 $table->integer('company_id')->unsigned()->nullable();
@@ -221,7 +218,7 @@ return new class extends Migration {
             });
         }
         // Purchase Stock Adjustment Reason Table
-        if (!Schema::hasTable('purchase_stock_adjustment_reasons')) {
+        if (! Schema::hasTable('purchase_stock_adjustment_reasons')) {
             Schema::create('purchase_stock_adjustment_reasons', function (Blueprint $table) {
                 $table->increments('id');
                 $table->integer('company_id')->unsigned()->nullable();
@@ -231,7 +228,7 @@ return new class extends Migration {
             });
         }
         // Purchase Inventory Adjustment Table
-        if (!Schema::hasTable('purchase_inventory_adjustment')) {
+        if (! Schema::hasTable('purchase_inventory_adjustment')) {
             Schema::create('purchase_inventory_adjustment', function (Blueprint $table) {
                 $table->increments('id');
                 $table->integer('company_id')->unsigned()->nullable();
@@ -245,7 +242,7 @@ return new class extends Migration {
             });
         }
         // Purchase Inventory Files Table
-        if (!Schema::hasTable('purchase_inventory_files')) {
+        if (! Schema::hasTable('purchase_inventory_files')) {
             Schema::create('purchase_inventory_files', function (Blueprint $table) {
                 $table->increments('id');
                 $table->integer('company_id')->unsigned()->nullable();
@@ -268,7 +265,7 @@ return new class extends Migration {
             });
         }
         // Purchase Stock Adjustment Table
-        if (!Schema::hasTable('purchase_stock_adjustments')) {
+        if (! Schema::hasTable('purchase_stock_adjustments')) {
             Schema::create('purchase_stock_adjustments', function (Blueprint $table) {
                 $table->increments('id');
                 $table->integer('company_id')->unsigned()->nullable();
@@ -292,7 +289,7 @@ return new class extends Migration {
             });
         }
         // Purchase Vendor Payments Table
-        if (!Schema::hasTable('purchase_vendor_payments')) {
+        if (! Schema::hasTable('purchase_vendor_payments')) {
             Schema::create('purchase_vendor_payments', function (Blueprint $table) {
                 $table->increments('id');
                 $table->integer('company_id')->unsigned();
@@ -316,7 +313,7 @@ return new class extends Migration {
                 $table->timestamps();
             });
         }
-        if (!Schema::hasTable('purchase_item_images')) {
+        if (! Schema::hasTable('purchase_item_images')) {
             Schema::create('purchase_item_images', function (Blueprint $table) {
                 $table->increments('id');
                 $table->unsignedInteger('purchase_item_id')->index('purchase_item_images_purchase_item_id_foreign');
@@ -328,7 +325,7 @@ return new class extends Migration {
                 $table->timestamps();
             });
         }
-        if (!Schema::hasTable('purchase_order_files')) {
+        if (! Schema::hasTable('purchase_order_files')) {
             Schema::create('purchase_order_files', function (Blueprint $table) {
                 $table->increments('id');
                 $table->unsignedInteger('purchase_order_id')->index('purchase_files_invoice_id_foreign');
@@ -344,7 +341,7 @@ return new class extends Migration {
             });
         }
         // Purchase Vendor History Table
-        if (!Schema::hasTable('purchase_vendor_histories')) {
+        if (! Schema::hasTable('purchase_vendor_histories')) {
             Schema::create('purchase_vendor_histories', function (Blueprint $table) {
                 $table->increments('id');
                 $table->integer('company_id')->unsigned()->nullable();
@@ -362,7 +359,7 @@ return new class extends Migration {
                 $table->timestamps();
             });
         }
-        if (!Schema::hasTable('purchase_vendor_user_notes')) {
+        if (! Schema::hasTable('purchase_vendor_user_notes')) {
             Schema::create('purchase_vendor_user_notes', function (Blueprint $table) {
                 $table->increments('id');
                 $table->integer('company_id')->unsigned()->nullable();
@@ -374,7 +371,7 @@ return new class extends Migration {
                 $table->timestamps();
             });
         }
-        if (!Schema::hasTable('purchase_product_histories')) {
+        if (! Schema::hasTable('purchase_product_histories')) {
             Schema::create('purchase_product_histories', function (Blueprint $table) {
                 $table->increments('id');
                 $table->integer('company_id')->unsigned()->nullable();
@@ -389,7 +386,7 @@ return new class extends Migration {
                 $table->timestamps();
             });
         }
-        if (!Schema::hasTable('purchase_vendor_credits')) {
+        if (! Schema::hasTable('purchase_vendor_credits')) {
             Schema::create('purchase_vendor_credits', function (Blueprint $table) {
                 $table->increments('id');
                 $table->integer('company_id')->unsigned()->nullable();
@@ -423,7 +420,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasTable('purchase_payment_bills')) {
+        if (! Schema::hasTable('purchase_payment_bills')) {
             Schema::create('purchase_payment_bills', function (Blueprint $table) {
                 $table->increments('id');
                 $table->integer('purchase_vendor_payment_id')->unsigned()->nullable();
@@ -439,7 +436,7 @@ return new class extends Migration {
                 $table->timestamps();
             });
         }
-        if (!Schema::hasTable('purchase_vendor_items')) {
+        if (! Schema::hasTable('purchase_vendor_items')) {
             Schema::create('purchase_vendor_items', function (Blueprint $table) {
                 $table->increments('id');
                 $table->integer('credit_id')->unsigned()->nullable();
@@ -459,7 +456,7 @@ return new class extends Migration {
                 $table->timestamps();
             });
         }
-        if (!Schema::hasTable('purchase_vendor_credit_item_images')) {
+        if (! Schema::hasTable('purchase_vendor_credit_item_images')) {
             Schema::create('purchase_vendor_credit_item_images', function (Blueprint $table) {
                 $table->increments('id');
                 $table->unsignedInteger('vendor_item_id')->index('purchase_vendor_item_images_vendor_item_id_foreign');
@@ -493,7 +490,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasTable('purchase_vendor_credit_histories')) {
+        if (! Schema::hasTable('purchase_vendor_credit_histories')) {
             Schema::create('purchase_vendor_credit_histories', function (Blueprint $table) {
                 $table->increments('id');
                 $table->integer('company_id')->unsigned()->nullable();
@@ -512,7 +509,7 @@ return new class extends Migration {
         }
 
         // Purchase Bill History Table
-        if (!Schema::hasTable('purchase_inventory_histories')) {
+        if (! Schema::hasTable('purchase_inventory_histories')) {
             Schema::create('purchase_inventory_histories', function (Blueprint $table) {
                 $table->increments('id');
                 $table->integer('company_id')->unsigned()->nullable();
@@ -533,7 +530,7 @@ return new class extends Migration {
                 $table->timestamps();
             });
         }
-        if (!Schema::hasTable('purchase_bill_histories')) {
+        if (! Schema::hasTable('purchase_bill_histories')) {
             Schema::create('purchase_bill_histories', function (Blueprint $table) {
                 $table->increments('id');
                 $table->integer('company_id')->unsigned()->nullable();
@@ -554,7 +551,7 @@ return new class extends Migration {
                 $table->timestamps();
             });
         }
-        if (!Schema::hasTable('purchase_order_histories')) {
+        if (! Schema::hasTable('purchase_order_histories')) {
             Schema::create('purchase_order_histories', function (Blueprint $table) {
                 $table->increments('id');
                 $table->integer('company_id')->unsigned()->nullable();
@@ -576,7 +573,7 @@ return new class extends Migration {
             $table->foreign('purchase_payment_id')->references('id')->on('purchase_vendor_payments')->onDelete('set null')->onUpdate('cascade');
         });
 
-        if (!Schema::hasTable('purchase_notification_settings')) {
+        if (! Schema::hasTable('purchase_notification_settings')) {
             Schema::create('purchase_notification_settings', function (Blueprint $table) {
                 $table->id();
                 $table->integer('company_id')->unsigned()->nullable();
@@ -631,11 +628,10 @@ return new class extends Migration {
                 $notificationSetting->saveQuietly();
             }
 
-            $purchaseSetting = new PurchaseSetting();
+            $purchaseSetting = new PurchaseSetting;
             $purchaseSetting->company_id = $company->id;
             $purchaseSetting->save();
         }
-
 
     }
 
@@ -644,10 +640,8 @@ return new class extends Migration {
      *
      * @return void
      */
-
     public function down()
     {
         //
     }
-
 };

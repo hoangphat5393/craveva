@@ -4,7 +4,6 @@ namespace App\Traits;
 
 trait IconTrait
 {
-
     private $filename;
 
     protected $mimeType = [
@@ -72,7 +71,6 @@ trait IconTrait
         'xlsx' => 'fa-file-excel',
         'pptx' => 'fa-file-powerpoint',
 
-
         // open office
         'odt' => 'fa-file-alt',
         'ods' => 'fa-file-alt',
@@ -91,5 +89,4 @@ trait IconTrait
 
         return $this->mimeType[$ext] ?? 'fa-file-alt';
     }
-
 }

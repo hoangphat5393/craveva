@@ -3,22 +3,21 @@
 namespace App\Notifications;
 
 use App\Models\EmailNotificationSetting;
-use App\Models\SlackSetting;
 use App\Models\Task;
 use NotificationChannels\OneSignal\OneSignalChannel;
 use NotificationChannels\OneSignal\OneSignalMessage;
 
 class TaskCommentMention extends BaseNotification
 {
-
-
     /**
      * Create a new notification instance.
      *
      * @return void
      */
     private $task;
+
     private $taskComment;
+
     private $emailSetting;
 
     public function __construct(Task $task, $taskComment)
@@ -33,7 +32,7 @@ class TaskCommentMention extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -57,7 +56,7 @@ class TaskCommentMention extends BaseNotification
         }
 
         if ($this->emailSetting->send_push == 'yes' && push_setting()->beams_push_status == 'active') {
-            $pushNotification = new \App\Http\Controllers\DashboardController();
+            $pushNotification = new \App\Http\Controllers\DashboardController;
             $pushUsersIds = [[$notifiable->id]];
             $pushNotification->sendPushNotifications($pushUsersIds, __('email.taskComment.mentionSubject'), $this->task->heading);
         }
@@ -68,7 +67,7 @@ class TaskCommentMention extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
@@ -76,32 +75,31 @@ class TaskCommentMention extends BaseNotification
         $url = route('tasks.show', [$this->task->id, 'view' => 'comments']);
         $url = getDomainSpecificUrl($url, $this->company);
 
-        $project = ((!is_null($this->task)) ? __('app.task') . ' - ' . $this->task->heading : '');
+        $project = ((! is_null($this->task)) ? __('app.task').' - '.$this->task->heading : '');
 
-        $content = __('email.taskComment.mentionTask') . '<br>' . $project . '<br>';
+        $content = __('email.taskComment.mentionTask').'<br>'.$project.'<br>';
 
         return parent::build($notifiable)
-            ->subject(__('email.taskComment.mentionSubject') . ' #' . $this->task->task_short_code . ' - ' . config('app.name') . '.')
+            ->subject(__('email.taskComment.mentionSubject').' #'.$this->task->task_short_code.' - '.config('app.name').'.')
             ->markdown(
                 'mail.email', [
                     'url' => $url,
                     'content' => $content,
                     'themeColor' => $this->company->header_color,
                     'actionText' => __('email.taskComment.action'),
-                    'notifiableName' => $notifiable->name
+                    'notifiableName' => $notifiable->name,
                 ]
             );
-
 
     }
 
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
-//phpcs:ignore
+    // phpcs:ignore
     public function toArray($notifiable)
     {
         return [
@@ -115,14 +113,14 @@ class TaskCommentMention extends BaseNotification
     /**
      * Get the Slack representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\SlackMessage
      */
     public function toSlack($notifiable)
     {
 
         return $this->slackBuild($notifiable)
-            ->content('*' . __('email.taskComment.mentionTask') . '*' . "\n" . $this->task->heading . "\n" . ' #' . $this->task->task_short_code);
+            ->content('*'.__('email.taskComment.mentionTask').'*'."\n".$this->task->heading."\n".' #'.$this->task->task_short_code);
 
     }
 
@@ -131,7 +129,6 @@ class TaskCommentMention extends BaseNotification
     {
         return OneSignalMessage::create()
             ->subject(__('email.taskComment.subject'))
-            ->body($this->task->heading . ' ' . __('email.taskComment.subject'));
+            ->body($this->task->heading.' '.__('email.taskComment.subject'));
     }
-
 }

@@ -37,6 +37,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property-read \App\Models\Project $project
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Invoice[] $recurrings
  * @property-read int|null $recurrings_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Order newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Order newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Order query()
@@ -54,31 +55,39 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @method static \Illuminate\Database\Eloquent\Builder|Order whereSubTotal($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Order whereTotal($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Order whereUpdatedAt($value)
+ *
  * @property mixed $order_number
  * @property float $discount
  * @property string $discount_type
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Order whereDiscount($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Order whereDiscountType($value)
+ *
  * @property int|null $company_id
  * @property int|null $company_address_id
  * @property-read \App\Models\CompanyAddress|null $address
  * @property-read \App\Models\Company|null $company
  * @property int|null $unit_id
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Order whereCompanyAddressId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Order whereCompanyId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Order whereOrderNumber($value)
+ *
  * @property-read \App\Models\UnitType $unit
  * @property int|null $unit_id
  * @property string|null $custom_order_number
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Order whereCustomOrderNumber($value)
+ *
  * @property string|null $original_order_number
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Order whereOriginalOrderNumber($value)
+ *
  * @mixin \Eloquent
  */
 class Order extends BaseModel
 {
-
-    use HasCompany,CustomFieldsTrait;
+    use CustomFieldsTrait,HasCompany;
 
     const CUSTOM_FIELD_MODEL = 'App\Models\Order';
 
@@ -119,7 +128,7 @@ class Order extends BaseModel
 
     public static function lastOrderNumber()
     {
-        return (int)Order::latest()->first()?->original_order_number ?? 0;
+        return (int) Order::latest()->first()?->original_order_number ?? 0;
     }
 
     /*
@@ -137,6 +146,7 @@ class Order extends BaseModel
     public function formatOrderNumber()
     {
         $orderSettings = (company()) ? company()->invoiceSetting : $this->company->invoiceSetting;
+
         return \App\Helper\NumberFormat::order($this->order_number, $orderSettings);
     }
 
@@ -144,5 +154,4 @@ class Order extends BaseModel
     {
         return $this->belongsTo(Project::class, 'project_id')->withTrashed();
     }
-
 }

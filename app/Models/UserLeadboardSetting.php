@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property int $collapsed
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|UserLeadboardSetting newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|UserLeadboardSetting newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|UserLeadboardSetting query()
@@ -23,19 +24,22 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @method static \Illuminate\Database\Eloquent\Builder|UserLeadboardSetting whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UserLeadboardSetting whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UserLeadboardSetting whereUserId($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|UserLeadboardSetting whereCompanyId($value)
+ *
  * @property int|null $pipeline_stage_id
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|UserLeadboardSetting wherePipelineStageId($value)
+ *
  * @mixin \Eloquent
  */
 class UserLeadboardSetting extends BaseModel
 {
-
-    use HasFactory;
     use HasCompany;
+    use HasFactory;
 
     protected $guarded = ['id'];
-
 }

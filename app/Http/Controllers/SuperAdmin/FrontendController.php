@@ -2,41 +2,40 @@
 
 namespace App\Http\Controllers\SuperAdmin;
 
-use App\Models\Role;
-use App\Models\SuperAdmin\SignUpSetting;
-use App\Models\User;
 use App\Helper\Reply;
-use App\Models\Module;
-use GuzzleHttp\Client;
-use App\Models\Company;
-use App\Models\GlobalSetting;
-use App\Models\SuperAdmin\Feature;
-use App\Models\SuperAdmin\Package;
-use App\Notifications\NewCustomer;
-use App\Models\SuperAdmin\FrontFaq;
-use Illuminate\Support\Facades\App;
-use App\Models\SuperAdmin\SeoDetail;
-use Illuminate\Support\Facades\Auth;
-use App\Models\SuperAdmin\FooterMenu;
-use App\Models\SuperAdmin\FrontDetail;
-use App\Models\SuperAdmin\FrontClients;
-use App\Models\SuperAdmin\FrontFeature;
-use App\Models\SuperAdmin\Testimonials;
-use App\Models\SuperAdmin\TrFrontDetail;
-use App\Models\SuperAdmin\PackageSetting;
-use Illuminate\Support\Facades\Notification;
 use App\Http\Controllers\AccountBaseController;
-use App\Notifications\SuperAdmin\ContactUsMail;
 use App\Http\Requests\SuperAdmin\ContactUs\ContactUsRequest;
 use App\Http\Requests\SuperAdmin\Register\StoreClientRequest;
+use App\Models\Company;
+use App\Models\GlobalSetting;
 use App\Models\LanguageSetting;
+use App\Models\Module;
+use App\Models\Role;
+use App\Models\SuperAdmin\Feature;
+use App\Models\SuperAdmin\FooterMenu;
+use App\Models\SuperAdmin\FrontClients;
+use App\Models\SuperAdmin\FrontDetail;
+use App\Models\SuperAdmin\FrontFaq;
+use App\Models\SuperAdmin\FrontFeature;
 use App\Models\SuperAdmin\GlobalCurrency;
+use App\Models\SuperAdmin\Package;
+use App\Models\SuperAdmin\PackageSetting;
+use App\Models\SuperAdmin\SeoDetail;
+use App\Models\SuperAdmin\SignUpSetting;
+use App\Models\SuperAdmin\Testimonials;
+use App\Models\SuperAdmin\TrFrontDetail;
+use App\Models\User;
 use App\Models\UserAuth;
+use App\Notifications\NewCustomer;
+use App\Notifications\SuperAdmin\ContactUsMail;
+use GuzzleHttp\Client;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 
 class FrontendController extends FrontBaseController
 {
-
     public function index($slug = null)
     {
 
@@ -76,12 +75,12 @@ class FrontendController extends FrontBaseController
 
         $this->featureWithImages = Feature::where([
             'language_setting_id' => $imageFeaturesCount > 0 ? ($localeLanguageId) : null,
-            'type' => 'image'
+            'type' => 'image',
         ])->whereNull('front_feature_id')->get();
 
         $this->featureWithIcons = Feature::where([
             'language_setting_id' => $iconFeaturesCount > 0 ? ($localeLanguageId) : null,
-            'type' => 'icon'
+            'type' => 'icon',
         ])->whereNull('front_feature_id')->get();
 
         $this->frontClients = FrontClients::where('language_setting_id', $frontClientsCount > 0 ? ($localeLanguageId) : null)->get();
@@ -130,9 +129,9 @@ class FrontendController extends FrontBaseController
 
         foreach ($types as $type) {
             $featureCount = Feature::select('id', 'language_setting_id', 'type')->where(['language_setting_id' => $this->localeLanguage ? $this->localeLanguage->id : null, 'type' => $type])->count();
-            $this->data['feature' . ucfirst(str_plural($type))] = Feature::where([
+            $this->data['feature'.ucfirst(str_plural($type))] = Feature::where([
                 'language_setting_id' => $featureCount > 0 ? ($this->localeLanguage ? $this->localeLanguage->id : null) : null,
-                'type' => $type
+                'type' => $type,
             ])->get();
         }
 
@@ -156,7 +155,6 @@ class FrontendController extends FrontBaseController
         App::setLocale($this->locale);
         $this->seoDetail = SeoDetail::where('page_name', 'pricing')->where('language_setting_id', $this->localeLanguage?->id)->first() ?: SeoDetail::where('page_name', 'pricing')->first();
         $this->pageTitle = isset($this->seoDetail) ? $this->seoDetail->seo_title : __('app.menu.pricing');
-
 
         $packageCurrencyId = request()->currencyId ?: global_setting()->currency_id;
 
@@ -191,13 +189,12 @@ class FrontendController extends FrontBaseController
             return $value->monthly_status == 1;
         })->count();
 
-
         $this->activeModule = $this->packageFeatures;
 
         if (request()->ajax()) {
             return Reply::dataOnly(
                 [
-                    'view' => view('super-admin.saas.pricing-plan', $this->data)->render()
+                    'view' => view('super-admin.saas.pricing-plan', $this->data)->render(),
                 ]
             );
         }
@@ -247,7 +244,7 @@ class FrontendController extends FrontBaseController
 
             return Reply::dataOnly(
                 [
-                    'view' => view('super-admin.front.section.pricing-plan', $this->data)->render()
+                    'view' => view('super-admin.front.section.pricing-plan', $this->data)->render(),
                 ]
             );
         }
@@ -288,15 +285,15 @@ class FrontendController extends FrontBaseController
         $this->table = '<table><tbody style="color:#0000009c;">
         <tr>
             <td><p>Name : </p></td>
-            <td><p>' . $request->name . '</p></td>
+            <td><p>'.$request->name.'</p></td>
         </tr>
         <tr>
             <td><p>Email : </p></td>
-            <td><p>' . $request->email . '</p></td>
+            <td><p>'.$request->email.'</p></td>
         </tr>
         <tr>
-            <td style="font-family: Avenir, Helvetica, sans-serif;box-sizing: border-box;min-width: 98px;vertical-align: super;"><p style="font-family: Avenir, Helvetica, sans-serif; box-sizing: border-box; color: #74787E; font-size: 16px; line-height: 1.5em; margin-top: 0; text-align: left;">' . __('app.message') . ' : </p></td>
-            <td><p>' . $request->message . '</p></td>
+            <td style="font-family: Avenir, Helvetica, sans-serif;box-sizing: border-box;min-width: 98px;vertical-align: super;"><p style="font-family: Avenir, Helvetica, sans-serif; box-sizing: border-box; color: #74787E; font-size: 16px; line-height: 1.5em; margin-top: 0; text-align: left;">'.__('app.message').' : </p></td>
+            <td><p>'.$request->message.'</p></td>
         </tr>
 </tbody>
 
@@ -309,7 +306,6 @@ class FrontendController extends FrontBaseController
             Notification::route('mail', $generatedBys)
                 ->notify(new ContactUsMail($this->data));
         }
-
 
         return Reply::success(__('superadmin.contactUsMessage'));
     }
@@ -324,7 +320,7 @@ class FrontendController extends FrontBaseController
             $gRecaptchaResponse = $global->google_captcha_version == 'v2' ? $request->{$gRecaptchaResponseInput} : $request->get('recaptcha_token');
             $validateRecaptcha = $this->validateGoogleRecaptcha($gRecaptchaResponse);
 
-            if (!$validateRecaptcha) {
+            if (! $validateRecaptcha) {
                 return false;
             }
         }
@@ -336,19 +332,19 @@ class FrontendController extends FrontBaseController
     {
         $setting = GlobalSetting::first();
 
-        $client = new Client();
+        $client = new Client;
         $response = $client->post(
             'https://www.google.com/recaptcha/api/siteverify',
             [
                 'form_params' => [
                     'secret' => $setting->google_recaptcha_secret,
                     'response' => $googleRecaptchaResponse,
-                    'remoteip' => $_SERVER['REMOTE_ADDR']
-                ]
+                    'remoteip' => $_SERVER['REMOTE_ADDR'],
+                ],
             ]
         );
 
-        $body = json_decode((string)$response->getBody());
+        $body = json_decode((string) $response->getBody());
 
         return $body->success;
     }
@@ -369,6 +365,7 @@ class FrontendController extends FrontBaseController
         if (\user()) {
             $user = \user();
             $company = ($user instanceof User) ? $user->company : Company::find($user->company_id);
+
             return redirect(getDomainSpecificUrl(route('login'), $company));
         }
 
@@ -376,7 +373,6 @@ class FrontendController extends FrontBaseController
         $this->pageTitle = __('app.signup');
 
         $view = ($this->setting->front_design == 1) ? 'super-admin.saas.register' : 'super-admin.front.register';
-
 
         if ($this->global->frontend_disable) {
             $view = 'auth.register';
@@ -398,10 +394,9 @@ class FrontendController extends FrontBaseController
         if (\user()) {
             $user = \user();
             $company = ($user instanceof User) ? $user->company : Company::find($user->company_id);
+
             return redirect(getDomainSpecificUrl(route('login'), $company));
         }
-
-
 
         if ($this->global->frontend_disable) {
             return view('auth.login', $this->data);
@@ -433,7 +428,7 @@ class FrontendController extends FrontBaseController
 
     public function clientRegister(StoreClientRequest $request, Company $company)
     {
-        if (!$company->allow_client_signup) {
+        if (! $company->allow_client_signup) {
             return abort(403, __('messages.clientSignUpDisabledByAdmin'));
         }
 
@@ -452,7 +447,7 @@ class FrontendController extends FrontBaseController
             'name' => $request->name,
             'email' => $request->email,
             'admin_approval' => $approval,
-            'user_auth_id' => $userAuth->id
+            'user_auth_id' => $userAuth->id,
         ]);
 
         $user->clientDetails()->create(['company_name' => $request->company_name]);
@@ -462,16 +457,16 @@ class FrontendController extends FrontBaseController
 
         $user->assignUserRolePermission($role->id);
 
-        $log = new AccountBaseController();
+        $log = new AccountBaseController;
 
         // Log search
         $log->logSearchEntry($user->id, $user->name, 'clients.show', 'client');
 
-        if (!is_null($user->email)) {
+        if (! is_null($user->email)) {
             $log->logSearchEntry($user->id, $user->email, 'clients.show', 'client');
         }
 
-        if (!is_null($user->clientDetails->company_name)) {
+        if (! is_null($user->clientDetails->company_name)) {
             $log->logSearchEntry($user->id, $user->clientDetails->company_name, 'clients.show', 'client');
         }
 

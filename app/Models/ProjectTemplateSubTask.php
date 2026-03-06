@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read mixed $icon
  * @property-read \App\Models\ProjectTemplateTask $task
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectTemplateSubTask newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectTemplateSubTask newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectTemplateSubTask query()
@@ -28,11 +29,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectTemplateSubTask whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectTemplateSubTask whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectTemplateSubTask whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class ProjectTemplateSubTask extends BaseModel
 {
-
     protected $casts = [
         'start_date' => 'datetime',
         'due_date' => 'datetime',
@@ -42,5 +43,4 @@ class ProjectTemplateSubTask extends BaseModel
     {
         return $this->belongsTo(ProjectTemplateTask::class);
     }
-
 }

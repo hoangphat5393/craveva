@@ -8,7 +8,6 @@ use Modules\LanguagePack\Console\PublishTranslationCommand;
 
 class LanguagePackServiceProvider extends ServiceProvider
 {
-
     /**
      * Indicates if loading of the provider is deferred.
      *
@@ -26,10 +25,10 @@ class LanguagePackServiceProvider extends ServiceProvider
         $this->registerTranslations();
         $this->registerConfig();
         $this->registerViews();
-        $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
+        $this->loadMigrationsFrom(__DIR__.'/../Database/Migrations');
         Blade::componentNamespace('Modules\\LanguagePack\\Views\\Components', 'languagepack');
         $this->commands([
-            PublishTranslationCommand::class
+            PublishTranslationCommand::class,
         ]);
     }
 
@@ -51,14 +50,13 @@ class LanguagePackServiceProvider extends ServiceProvider
     protected function registerConfig()
     {
         $this->publishes([
-            __DIR__ . '/../Config/config.php' => config_path('languagepack.php'),
+            __DIR__.'/../Config/config.php' => config_path('languagepack.php'),
         ]);
 
         $this->mergeConfigFrom(
-            __DIR__ . '/../Config/config.php',
+            __DIR__.'/../Config/config.php',
             'languagepack'
         );
-
 
         $this->mergeConfigFrom(
             module_path('languagepack', 'Config/xss_ignore.php'),
@@ -75,14 +73,14 @@ class LanguagePackServiceProvider extends ServiceProvider
     {
         $viewPath = base_path('resources/views/modules/languagepack');
 
-        $sourcePath = __DIR__ . '/../Resources/views';
+        $sourcePath = __DIR__.'/../Resources/views';
 
         $this->publishes([
-            $sourcePath => $viewPath
+            $sourcePath => $viewPath,
         ]);
 
         $this->loadViewsFrom(array_merge(array_map(function ($path) {
-            return $path . '/modules/languagepack';
+            return $path.'/modules/languagepack';
         }, \Config::get('view.paths')), [$sourcePath]), 'languagepack');
     }
 
@@ -98,7 +96,7 @@ class LanguagePackServiceProvider extends ServiceProvider
         if (is_dir($langPath)) {
             $this->loadTranslationsFrom($langPath, 'languagepack');
         } else {
-            $this->loadTranslationsFrom(__DIR__ . '/../Resources/lang', 'languagepack');
+            $this->loadTranslationsFrom(__DIR__.'/../Resources/lang', 'languagepack');
         }
     }
 
@@ -109,6 +107,6 @@ class LanguagePackServiceProvider extends ServiceProvider
      */
     public function provides()
     {
-        return array();
+        return [];
     }
 }

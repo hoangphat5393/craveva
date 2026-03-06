@@ -2,13 +2,12 @@
 
 use App\Models\Company;
 use App\Models\GlobalSetting;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      *
@@ -16,7 +15,7 @@ return new class extends Migration
      */
     public function up()
     {
-        if (!Schema::hasColumn('global_settings', 'google_calendar_status')) {
+        if (! Schema::hasColumn('global_settings', 'google_calendar_status')) {
             Schema::table('global_settings', function (Blueprint $table) {
                 $table->enum('google_calendar_status', ['active', 'inactive'])->default('inactive');
                 $table->text('google_client_id')->nullable();
@@ -45,5 +44,4 @@ return new class extends Migration
     {
         //
     }
-
 };

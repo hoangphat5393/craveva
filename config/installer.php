@@ -13,7 +13,7 @@ return [
     |
     */
     'core' => [
-        'minPhpVersion' => '8.2'
+        'minPhpVersion' => '8.2',
     ],
 
     'requirements' => [
@@ -29,7 +29,7 @@ return [
         'ctype',
         'json',
         'bcmath',
-        'gd'
+        'gd',
     ],
 
     /*
@@ -42,9 +42,9 @@ return [
     |
     */
     'permissions' => [
-        'storage/app/'           => '775',
-        'storage/framework/'     => '775',
-        'storage/logs/'          => '775',
-        'bootstrap/cache/'       => '775'
-    ]
+        'storage/app/' => '775',
+        'storage/framework/' => '775',
+        'storage/logs/' => '775',
+        'bootstrap/cache/' => '775',
+    ],
 ];

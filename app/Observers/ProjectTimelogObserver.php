@@ -7,8 +7,8 @@ use App\Models\EmployeeDetails;
 use App\Models\LogTimeFor;
 use App\Models\ProjectMember;
 use App\Models\ProjectTimeLog;
-use Illuminate\Support\Str;
 use App\Traits\EmployeeActivityTrait;
+use Illuminate\Support\Str;
 
 class ProjectTimelogObserver
 {
@@ -16,34 +16,33 @@ class ProjectTimelogObserver
 
     public function saving(ProjectTimeLog $projectTimeLog)
     {
-        if (!isRunningInConsoleOrSeeding() && user()) {
+        if (! isRunningInConsoleOrSeeding() && user()) {
             $projectTimeLog->last_updated_by = user()->id;
         }
 
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             $userId = (request()->has('user_id') ? request('user_id') : $projectTimeLog->user_id);
             $projectId = request('project_id');
 
             if ($projectId != '') {
-                if($projectTimeLog->project->public == 1){
+                if ($projectTimeLog->project->public == 1) {
                     $member = EmployeeDetails::where('user_id', $userId)->first();
                 } else {
                     $member = ProjectMember::where('user_id', $userId)->where('project_id', $projectId)->first();
                 }
 
-                $projectTimeLog->hourly_rate = ($member && !is_null($member->hourly_rate) ? $member->hourly_rate : 0);
+                $projectTimeLog->hourly_rate = ($member && ! is_null($member->hourly_rate) ? $member->hourly_rate : 0);
                 $projectTimeLog->project_id = $projectId;
-            }
-            else {
+            } else {
                 $task = $projectTimeLog->task;
 
-                if (!is_null($task) && !is_null($task->project_id)) {
+                if (! is_null($task) && ! is_null($task->project_id)) {
                     $projectId = $task->project_id;
                     $projectTimeLog->project_id = $task->project_id;
                 }
 
                 $member = EmployeeDetails::where('user_id', $userId)->first();
-                $projectTimeLog->hourly_rate = (!is_null($member->hourly_rate) ? $member->hourly_rate : 0);
+                $projectTimeLog->hourly_rate = (! is_null($member->hourly_rate) ? $member->hourly_rate : 0);
             }
 
             $minuteRate = $projectTimeLog->hourly_rate / 60;
@@ -66,11 +65,11 @@ class ProjectTimelogObserver
 
     public function creating(ProjectTimeLog $projectTimeLog)
     {
-        if (!isRunningInConsoleOrSeeding() && user()) {
+        if (! isRunningInConsoleOrSeeding() && user()) {
             $projectTimeLog->added_by = user()->id;
         }
 
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             $timeLogSetting = LogTimeFor::first();
 
             if ($timeLogSetting->approval_required) {
@@ -86,21 +85,19 @@ class ProjectTimelogObserver
 
     public function created(ProjectTimeLog $projectTimeLog)
     {
-        if (!isRunningInConsoleOrSeeding() && user()) {
+        if (! isRunningInConsoleOrSeeding() && user()) {
             self::createEmployeeActivity(user()->id, 'timelog-created', $projectTimeLog->id, 'timelog');
 
         }
-
 
     }
 
     public function updated(ProjectTimeLog $projectTimeLog)
     {
-        if (!isRunningInConsoleOrSeeding() && user()) {
+        if (! isRunningInConsoleOrSeeding() && user()) {
             self::createEmployeeActivity(user()->id, 'timelog-updated', $projectTimeLog->id, 'timelog');
 
         }
-
 
     }
 
@@ -111,9 +108,4 @@ class ProjectTimelogObserver
 
         }
     }
-
 }
-
-
-
-

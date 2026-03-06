@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\EmployeeShift $shift
  * @property-read \App\Models\EmployeeShiftSchedule $shiftSchedule
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|EmployeeShiftChangeRequest newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|EmployeeShiftChangeRequest newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|EmployeeShiftChangeRequest query()
@@ -29,14 +30,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|EmployeeShiftChangeRequest whereShiftScheduleId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|EmployeeShiftChangeRequest whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|EmployeeShiftChangeRequest whereUpdatedAt($value)
+ *
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|EmployeeShiftChangeRequest whereCompanyId($value)
+ *
  * @mixin \Eloquent
  */
 class EmployeeShiftChangeRequest extends BaseModel
 {
-
-    use HasFactory, HasCompany;
+    use HasCompany, HasFactory;
 
     protected $guarded = ['id'];
 
@@ -49,5 +52,4 @@ class EmployeeShiftChangeRequest extends BaseModel
     {
         return $this->belongsTo(EmployeeShift::class, 'employee_shift_id');
     }
-
 }

@@ -2,39 +2,38 @@
 
 namespace Modules\Purchase\Http\Controllers;
 
-use Carbon\Carbon;
 use App\Helper\Reply;
+use App\Http\Controllers\AccountBaseController;
 use App\Models\Currency;
+use Carbon\Carbon;
+use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Contracts\Support\Renderable;
-use Modules\Purchase\Entities\PurchaseSetting;
-use Modules\Purchase\Entities\PurchaseVendor;
-use App\Http\Controllers\AccountBaseController;
 use Modules\Purchase\DataTables\PurchaseBillDataTable;
-use Modules\Purchase\DataTables\VendorDataTable;
-use Modules\Purchase\DataTables\VendorNotesDataTable;
-use Modules\Purchase\Entities\PurchaseBill;
-use Modules\Purchase\Entities\PurchasePaymentBill;
-use Modules\Purchase\Entities\PurchaseVendorCategory;
-use Modules\Purchase\Entities\PurchaseVendorCredit;
-use Modules\Purchase\Entities\PurchaseVendorPayment;
-use Modules\Purchase\Entities\PurchaseVendorHistory;
-use Modules\Purchase\Entities\PurchasePaymentHistory;
-use Modules\Purchase\Http\Requests\Vendor\StoreRequest;
 use Modules\Purchase\DataTables\PurchaseContactsDataTable;
 use Modules\Purchase\DataTables\PurchaseOrderDataTable;
+use Modules\Purchase\DataTables\VendorDataTable;
+use Modules\Purchase\DataTables\VendorNotesDataTable;
 use Modules\Purchase\DataTables\VendorPaymentDataTable;
+use Modules\Purchase\Entities\PurchaseBill;
+use Modules\Purchase\Entities\PurchasePaymentBill;
+use Modules\Purchase\Entities\PurchasePaymentHistory;
+use Modules\Purchase\Entities\PurchaseSetting;
+use Modules\Purchase\Entities\PurchaseVendor;
+use Modules\Purchase\Entities\PurchaseVendorCategory;
+use Modules\Purchase\Entities\PurchaseVendorCredit;
+use Modules\Purchase\Entities\PurchaseVendorHistory;
+use Modules\Purchase\Entities\PurchaseVendorPayment;
+use Modules\Purchase\Http\Requests\Vendor\StoreRequest;
 
 class PurchaseVendorController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = __('purchase::app.menu.vendor');
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array(PurchaseSetting::MODULE_NAME, $this->user->modules));
+            abort_403(! in_array(PurchaseSetting::MODULE_NAME, $this->user->modules));
 
             return $next($request);
         });
@@ -42,26 +41,28 @@ class PurchaseVendorController extends AccountBaseController
 
     /**
      * Display a listing of the resource.
+     *
      * @return Renderable
      */
-
     public function index(VendorDataTable $dataTable)
     {
         $viewPermission = user()->permission('view_vendor');
-        abort_403(!in_array($viewPermission, ['all', 'added', 'owned', 'both']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'owned', 'both']));
         $this->pageTitle = __('purchase::app.menu.vendor');
         $this->categories = PurchaseVendorCategory::all();
+
         return $dataTable->render('purchase::vendors.index', $this->data);
     }
 
     /**
      * Show the form for creating a new resource.
+     *
      * @return Renderable
      */
     public function create()
     {
         $addPermission = user()->permission('add_vendor');
-        abort_403(!in_array($addPermission, ['all', 'added']));
+        abort_403(! in_array($addPermission, ['all', 'added']));
 
         $this->pageTitle = __('purchase::app.menu.addVendor');
         $this->currencies = Currency::all();
@@ -80,15 +81,16 @@ class PurchaseVendorController extends AccountBaseController
 
     /**
      * Store a newly created resource in storage.
-     * @param Request $request
+     *
+     * @param  Request  $request
      * @return Renderable
      */
     public function store(StoreRequest $request)
     {
         $addPermission = user()->permission('add_vendor');
-        abort_403(!in_array($addPermission, ['all', 'added']));
+        abort_403(! in_array($addPermission, ['all', 'added']));
 
-        $vendor = new PurchaseVendor();
+        $vendor = new PurchaseVendor;
         $vendor->primary_name = $request->primary_name;
         $vendor->company_name = $request->company_name;
         $vendor->category_id = $request->category_id;
@@ -112,7 +114,8 @@ class PurchaseVendorController extends AccountBaseController
 
     /**
      * Show the specified resource.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function show($id)
@@ -142,22 +145,22 @@ class PurchaseVendorController extends AccountBaseController
         $tab = request('tab');
 
         switch ($tab) {
-        case 'notes':
-            return $this->notes();
-        case 'contacts':
-            return $this->contacts();
-        case 'purchaseOrders':
-            return $this->purchaseOrders();
-        case 'bills':
-            return $this->bills();
-        case 'payments':
-            return $this->payments();
-        case 'history':
-            return $this->history($id);
-        default:
-            $this->currency = Currency::where('id', '=', $this->vendor->currency_id)->first();
-            $this->view = 'purchase::vendors.ajax.overview';
-            break;
+            case 'notes':
+                return $this->notes();
+            case 'contacts':
+                return $this->contacts();
+            case 'purchaseOrders':
+                return $this->purchaseOrders();
+            case 'bills':
+                return $this->bills();
+            case 'payments':
+                return $this->payments();
+            case 'history':
+                return $this->history($id);
+            default:
+                $this->currency = Currency::where('id', '=', $this->vendor->currency_id)->first();
+                $this->view = 'purchase::vendors.ajax.overview';
+                break;
         }
 
         if (request()->ajax()) {
@@ -180,13 +183,13 @@ class PurchaseVendorController extends AccountBaseController
             ->get([
                 DB::raw('DATE_FORMAT(payment_date,"%d-%M-%y") as date'),
                 DB::raw('YEAR(payment_date) year, MONTH(payment_date) month'),
-                DB::raw('received_payment as total')
+                DB::raw('received_payment as total'),
             ]);
 
         $incomes = [];
 
         foreach ($vendorPayments as $invoice) {
-            if (!isset($incomes[$invoice->payment_date])) {
+            if (! isset($incomes[$invoice->payment_date])) {
                 $incomes[$invoice->date] = 0;
             }
 
@@ -222,7 +225,8 @@ class PurchaseVendorController extends AccountBaseController
 
     /**
      * Show the form for editing the specified resource.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function edit($id)
@@ -231,7 +235,7 @@ class PurchaseVendorController extends AccountBaseController
         $this->vendor = PurchaseVendor::findOrFail($id);
 
         $this->editPermission = user()->permission('edit_vendor');
-        abort_403(!($this->editPermission == 'all'
+        abort_403(! ($this->editPermission == 'all'
             || ($this->editPermission == 'added' && $this->vendor->added_by == user()->id)));
 
         $this->currencies = Currency::all();
@@ -249,15 +253,16 @@ class PurchaseVendorController extends AccountBaseController
 
     /**
      * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
+     *
+     * @param  Request  $request
+     * @param  int  $id
      * @return Renderable
      */
     public function update(StoreRequest $request, $id)
     {
         $this->editPermission = user()->permission('edit_vendor');
         $vendor = PurchaseVendor::findOrFail($id);
-        abort_403(!($this->editPermission == 'all'
+        abort_403(! ($this->editPermission == 'all'
             || ($this->editPermission == 'added' && $vendor->added_by == user()->id)));
 
         $vendor->primary_name = $request->primary_name;
@@ -278,14 +283,15 @@ class PurchaseVendorController extends AccountBaseController
 
     /**
      * Remove the specified resource from storage.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function destroy($id)
     {
         $vendor = PurchaseVendor::findOrFail($id);
         $this->deletePermission = user()->permission('delete_vendor');
-        abort_403(!($this->deletePermission == 'all'
+        abort_403(! ($this->deletePermission == 'all'
             || ($this->deletePermission == 'added' && $vendor->added_by == user()->id)));
         $vendor->delete();
 
@@ -295,12 +301,12 @@ class PurchaseVendorController extends AccountBaseController
     public function applyQuickAction(Request $request)
     {
         switch ($request->action_type) {
-        case 'delete':
-            $this->deleteRecords($request);
+            case 'delete':
+                $this->deleteRecords($request);
 
-            return Reply::success(__('messages.deleteSuccess'));
-        default:
-            return Reply::error(__('messages.selectAction'));
+                return Reply::success(__('messages.deleteSuccess'));
+            default:
+                return Reply::error(__('messages.selectAction'));
         }
     }
 
@@ -314,7 +320,7 @@ class PurchaseVendorController extends AccountBaseController
 
     public function notes()
     {
-        $dataTable = new VendorNotesDataTable();
+        $dataTable = new VendorNotesDataTable;
 
         $tab = request('tab');
 
@@ -328,7 +334,7 @@ class PurchaseVendorController extends AccountBaseController
 
     public function contacts()
     {
-        $dataTable = new PurchaseContactsDataTable();
+        $dataTable = new PurchaseContactsDataTable;
 
         $tab = request('tab');
 
@@ -381,7 +387,7 @@ class PurchaseVendorController extends AccountBaseController
 
     public function purchaseOrders()
     {
-        $dataTable = new PurchaseOrderDataTable();
+        $dataTable = new PurchaseOrderDataTable;
 
         $tab = request('tab');
         $this->activeTab = $tab ?: 'overview';
@@ -393,7 +399,7 @@ class PurchaseVendorController extends AccountBaseController
 
     public function bills()
     {
-        $dataTable = new PurchaseBillDataTable();
+        $dataTable = new PurchaseBillDataTable;
         $tab = request('tab');
         $this->activeTab = $tab ?: 'overview';
 
@@ -404,7 +410,7 @@ class PurchaseVendorController extends AccountBaseController
 
     public function payments()
     {
-        $dataTable = new VendorPaymentDataTable();
+        $dataTable = new VendorPaymentDataTable;
 
         $tab = request('tab');
         $this->activeTab = $tab ?: 'overview';
@@ -413,5 +419,4 @@ class PurchaseVendorController extends AccountBaseController
 
         return $dataTable->render('purchase::vendors.show', $this->data);
     }
-
 }

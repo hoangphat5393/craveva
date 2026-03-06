@@ -11,7 +11,6 @@ use Yajra\DataTables\Html\Column;
 
 class ExpensesSalarySlipDataTable extends BaseDataTable
 {
-
     private $viewPayrollPermission;
 
     public function __construct()
@@ -25,7 +24,7 @@ class ExpensesSalarySlipDataTable extends BaseDataTable
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
@@ -35,12 +34,12 @@ class ExpensesSalarySlipDataTable extends BaseDataTable
             ->eloquent($query)
 
             ->editColumn('month', function ($row) {
-                return Carbon::parse($row->year . '-' . $row->month . '-01')->translatedFormat('F Y');
+                return Carbon::parse($row->year.'-'.$row->month.'-01')->translatedFormat('F Y');
             })
             ->editColumn('name', function ($row) {
 
                 return view('components.employee', [
-                    'user' => $row
+                    'user' => $row,
                 ]);
             })
             ->editColumn('net_salary', function ($row) {
@@ -55,58 +54,54 @@ class ExpensesSalarySlipDataTable extends BaseDataTable
 
             ->editColumn('salary_status', function ($row) {
                 if ($row->salary_status == 'generated') {
-                    return '<span class="badge badge-success bg-dark">' . __('payroll::modules.payroll.generated') . '</span>';
-                }
-                elseif ($row->salary_status == 'review') {
-                    return '<span class="badge badge-success bg-blue">' . __('payroll::modules.payroll.review') . '</span>';
-                }
-                elseif ($row->salary_status == 'locked') {
-                    return '<span class="badge badge-success bg-red">' . __('payroll::modules.payroll.locked') . '</span>';
-                }
-                elseif ($row->salary_status == 'paid') {
-                    return '<span class="badge badge-success bg-light-green">' . __('payroll::modules.payroll.paid') . '</span>';
+                    return '<span class="badge badge-success bg-dark">'.__('payroll::modules.payroll.generated').'</span>';
+                } elseif ($row->salary_status == 'review') {
+                    return '<span class="badge badge-success bg-blue">'.__('payroll::modules.payroll.review').'</span>';
+                } elseif ($row->salary_status == 'locked') {
+                    return '<span class="badge badge-success bg-red">'.__('payroll::modules.payroll.locked').'</span>';
+                } elseif ($row->salary_status == 'paid') {
+                    return '<span class="badge badge-success bg-light-green">'.__('payroll::modules.payroll.paid').'</span>';
                 }
 
                 return ucwords($row->salary_status);
             })
             ->editColumn('salary_from', function ($row) {
 
-                if (!is_null($row->salary_from) && !is_null($row->salary_to)) {
+                if (! is_null($row->salary_from) && ! is_null($row->salary_to)) {
                     $start = Carbon::parse($row->salary_from)->translatedFormat($this->company->date_format);
                     $end = Carbon::parse($row->salary_to)->translatedFormat($this->company->date_format);
 
-                    return $start . ' ' . __('app.to') . ' ' . $end;
+                    return $start.' '.__('app.to').' '.$end;
                 }
 
-                $start = Carbon::parse(Carbon::parse('01-' . $row->month . '-' . $row->year))->startOfMonth()->toDateString();
-                $end = Carbon::parse(Carbon::parse('01-' . $row->month . '-' . $row->year))->endOfMonth()->toDateString();
+                $start = Carbon::parse(Carbon::parse('01-'.$row->month.'-'.$row->year))->startOfMonth()->toDateString();
+                $end = Carbon::parse(Carbon::parse('01-'.$row->month.'-'.$row->year))->endOfMonth()->toDateString();
 
-                return $start . ' ' . __('app.to') . ' ' . $end;
+                return $start.' '.__('app.to').' '.$end;
             })
             ->editColumn('paid_on', function ($row) {
-                if (!is_null($row->paid_on)) {
+                if (! is_null($row->paid_on)) {
                     return Carbon::parse($row->paid_on)->translatedFormat($this->company->date_format);
-                }
-                else {
+                } else {
                     return '--';
                 }
             })
             ->addColumn('action', function ($row) {
-                $actions = '<a href="' . route('payroll.show', [$row->salary_slip_id]) . '" class="dropdown-item openRightModal"><i class="fa fa-eye mr-2"></i></a>';
+                $actions = '<a href="'.route('payroll.show', [$row->salary_slip_id]).'" class="dropdown-item openRightModal"><i class="fa fa-eye mr-2"></i></a>';
+
                 return $actions;
             })
             ->addIndexColumn()
-            ->setRowId(fn($row) => 'row-' . $row->id)
+            ->setRowId(fn ($row) => 'row-'.$row->id)
             ->rawColumns(['name', 'action', 'salary_status', 'salary_from', 'check']);
     }
 
     /**
      * Get query source of dataTable.
      *
-     * @param  $model
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    //phpcs:ignore
+    // phpcs:ignore
     public function query(User $model)
     {
         $request = $this->request();
@@ -129,11 +124,10 @@ class ExpensesSalarySlipDataTable extends BaseDataTable
 
         if ($request->searchText != '') {
             $users = $users->where(function ($query) {
-                $query->where('users.name', 'like', '%' . request('searchText') . '%')
-                    ->orWhere('users.email', 'like', '%' . request('searchText') . '%');
+                $query->where('users.name', 'like', '%'.request('searchText').'%')
+                    ->orWhere('users.email', 'like', '%'.request('searchText').'%');
             });
         }
-
 
         $users->where('salary_slips.expense_id', $expenseId);
         $users->groupBy('users.id');
@@ -182,8 +176,7 @@ class ExpensesSalarySlipDataTable extends BaseDataTable
                 ->printable(false)
                 ->orderable(false)
                 ->searchable(false)
-                ->addClass('text-right pr-20')
+                ->addClass('text-right pr-20'),
         ];
     }
-
 }

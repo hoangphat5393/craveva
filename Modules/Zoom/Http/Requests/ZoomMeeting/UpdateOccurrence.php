@@ -27,7 +27,7 @@ class UpdateOccurrence extends CoreRequest
 
         return [
             'start_date' => 'required',
-            'end_date' => 'required|date_format:"' . $setting->date_format . '"|after_or_equal:start_date',
+            'end_date' => 'required|date_format:"'.$setting->date_format.'"|after_or_equal:start_date',
         ];
     }
 }

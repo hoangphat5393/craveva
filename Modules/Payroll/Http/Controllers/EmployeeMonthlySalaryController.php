@@ -2,34 +2,32 @@
 
 namespace Modules\Payroll\Http\Controllers;
 
+use App\Helper\Reply;
+use App\Http\Controllers\AccountBaseController;
+use App\Models\Designation;
 use App\Models\Team;
 use App\Models\User;
-use App\Helper\Reply;
-use App\Models\Designation;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Modules\Payroll\Entities\PayrollCycle;
-use Modules\Payroll\Http\Requests\StoreSalary;
-use App\Http\Controllers\AccountBaseController;
-use Carbon\Carbon;
-use Modules\Payroll\Entities\EmployeeSalaryGroup;
-use Modules\Payroll\Entities\EmployeePayrollCycle;
-use Modules\Payroll\Entities\EmployeeMonthlySalary;
-use Modules\Payroll\Entities\PayrollCurrencySetting;
 use Modules\Payroll\DataTables\EmployeeSalaryDataTable;
+use Modules\Payroll\Entities\EmployeeMonthlySalary;
+use Modules\Payroll\Entities\EmployeePayrollCycle;
+use Modules\Payroll\Entities\EmployeeSalaryGroup;
 use Modules\Payroll\Entities\EmployeeVariableComponent;
+use Modules\Payroll\Entities\PayrollCycle;
 use Modules\Payroll\Entities\PayrollSetting;
 use Modules\Payroll\Http\Requests\StoreEmployyeMonthlySalary;
+use Modules\Payroll\Http\Requests\StoreSalary;
 
 class EmployeeMonthlySalaryController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'payroll::app.menu.employeeSalary';
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array(PayrollSetting::MODULE_NAME, $this->user->modules));
+            abort_403(! in_array(PayrollSetting::MODULE_NAME, $this->user->modules));
 
             return $next($request);
         });
@@ -37,14 +35,15 @@ class EmployeeMonthlySalaryController extends AccountBaseController
 
     /**
      * Display a listing of the resource.
+     *
      * @return Response
      */
     public function index(EmployeeSalaryDataTable $dataTable)
     {
         $viewPermission = user()->permission('manage_employee_salary');
-        abort_403(!in_array($viewPermission, ['all', 'added']));
+        abort_403(! in_array($viewPermission, ['all', 'added']));
 
-        if (!request()->ajax()) {
+        if (! request()->ajax()) {
             $this->departments = Team::all();
             $this->designations = Designation::allDesignations();
         }
@@ -54,6 +53,7 @@ class EmployeeMonthlySalaryController extends AccountBaseController
 
     /**
      * Show the form for creating a new resource.
+     *
      * @return Response
      */
     public function create()
@@ -63,13 +63,14 @@ class EmployeeMonthlySalaryController extends AccountBaseController
 
     /**
      * Store a newly created resource in storage.
-     * @param Request $request
+     *
+     * @param  Request  $request
      * @return Response
      */
     public function store(StoreSalary $request)
     {
         $viewPermission = user()->permission('manage_employee_salary');
-        abort_403(!in_array($viewPermission, ['all', 'added']));
+        abort_403(! in_array($viewPermission, ['all', 'added']));
 
         $initialSalary = EmployeeMonthlySalary::where('user_id', $request->user_id)->where('type', 'initial')->first();
 
@@ -78,7 +79,7 @@ class EmployeeMonthlySalaryController extends AccountBaseController
         }
 
         if ($request->annual_salary > 0) {
-            if (!is_null($initialSalary)) {
+            if (! is_null($initialSalary)) {
                 $salary = EmployeeMonthlySalary::find($initialSalary->id);
                 $salary->user_id = $request->user_id;
                 $salary->annual_salary = $request->annual_salary;
@@ -90,9 +91,9 @@ class EmployeeMonthlySalaryController extends AccountBaseController
                 $salary->date = now()->timezone($this->company->timezone)->toDateString();
                 $salary->save();
 
-                if (!is_null($request->deduction_variable)) {
+                if (! is_null($request->deduction_variable)) {
                     foreach ($request->deduction_variable as $key => $value) {
-                        $variable = new EmployeeVariableComponent();
+                        $variable = new EmployeeVariableComponent;
                         $variable->monthly_salary_id = $salary->id;
                         $variable->variable_component_id = $key;
                         $variable->variable_value = $value;
@@ -100,10 +101,10 @@ class EmployeeMonthlySalaryController extends AccountBaseController
                     }
                 }
 
-                if (!is_null($request->earning_variable)) {
+                if (! is_null($request->earning_variable)) {
 
                     foreach ($request->earning_variable as $key => $value) {
-                        $variable = new EmployeeVariableComponent();
+                        $variable = new EmployeeVariableComponent;
                         $variable->monthly_salary_id = $salary->id;
                         $variable->variable_component_id = $key;
                         $variable->variable_value = $value;
@@ -111,9 +112,8 @@ class EmployeeMonthlySalaryController extends AccountBaseController
                     }
                 }
 
-            }
-            else {
-                $salary = new EmployeeMonthlySalary();
+            } else {
+                $salary = new EmployeeMonthlySalary;
                 $salary->user_id = $request->user_id;
                 $salary->annual_salary = $request->annual_salary;
                 $salary->basic_salary = $request->basic_salary;
@@ -126,9 +126,9 @@ class EmployeeMonthlySalaryController extends AccountBaseController
                 $salary->date = now()->timezone($this->company->timezone)->toDateString();
                 $salary->save();
 
-                if (!is_null($request->deduction_variable)) {
+                if (! is_null($request->deduction_variable)) {
                     foreach ($request->deduction_variable as $key => $value) {
-                        $variable = new EmployeeVariableComponent();
+                        $variable = new EmployeeVariableComponent;
                         $variable->monthly_salary_id = $salary->id;
                         $variable->variable_component_id = $key;
                         $variable->variable_value = $value;
@@ -136,10 +136,10 @@ class EmployeeMonthlySalaryController extends AccountBaseController
                     }
                 }
 
-                if (!is_null($request->earning_variable)) {
+                if (! is_null($request->earning_variable)) {
 
                     foreach ($request->earning_variable as $key => $value) {
-                        $variable = new EmployeeVariableComponent();
+                        $variable = new EmployeeVariableComponent;
                         $variable->monthly_salary_id = $salary->id;
                         $variable->variable_component_id = $key;
                         $variable->variable_value = $value;
@@ -152,7 +152,7 @@ class EmployeeMonthlySalaryController extends AccountBaseController
 
             if (is_null($employeeCycle)) {
                 $payrollCycle = PayrollCycle::where('cycle', 'monthly')->first();
-                $employeeCycle = new EmployeePayrollCycle();
+                $employeeCycle = new EmployeePayrollCycle;
                 $employeeCycle->user_id = $request->user_id;
                 $employeeCycle->payroll_cycle_id = $payrollCycle->id;
                 $employeeCycle->save();
@@ -164,13 +164,14 @@ class EmployeeMonthlySalaryController extends AccountBaseController
 
     /**
      * Show the specified resource.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Response
      */
     public function show($id)
     {
         $viewPermission = user()->permission('manage_employee_salary');
-        abort_403(!in_array($viewPermission, ['all', 'added']));
+        abort_403(! in_array($viewPermission, ['all', 'added']));
 
         $this->employeeSalary = EmployeeMonthlySalary::employeeNetSalary($id);
         $this->employee = User::find($id);
@@ -182,58 +183,60 @@ class EmployeeMonthlySalaryController extends AccountBaseController
 
     /**
      * Show the form for editing the specified resource.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Response
      */
     public function edit($id)
     {
         $viewPermission = user()->permission('manage_employee_salary');
-        abort_403(!in_array($viewPermission, ['all', 'added']));
+        abort_403(! in_array($viewPermission, ['all', 'added']));
 
         $this->employeeSalary = EmployeeMonthlySalary::employeeNetSalary($id);
         $this->employee = User::find($id);
         $this->currency = PayrollSetting::with('currency')->first();
         $this->salaryGroups = EmployeeSalaryGroup::with('salary_group.components', 'salary_group.components.component')->where('user_id', $id)->first();
+
         return view('payroll::employee-salary.increment', $this->data);
     }
 
     /**
      * Increment
      *
-     * @param  mixed $id
+     * @param  mixed  $id
      * @return void
      */
     public function increment($id)
     {
         $viewPermission = user()->permission('manage_employee_salary');
-        abort_403(!in_array($viewPermission, ['all', 'added']));
+        abort_403(! in_array($viewPermission, ['all', 'added']));
 
         $this->employeeSalary = EmployeeMonthlySalary::employeeNetSalary($id);
         $this->employee = User::find($id);
         $this->currency = PayrollSetting::with('currency')->first();
         $this->salaryGroups = EmployeeSalaryGroup::with('salary_group.components', 'salary_group.components.component')->where('user_id', $id)->first();
+
         return view('payroll::employee-salary.increment', $this->data);
     }
 
     /**
      * UpdateIncrement
      *
-     * @param  mixed $request
-     * @param  mixed $id
+     * @param  mixed  $request
+     * @param  mixed  $id
      * @return void
      */
-    //phpcs:ignore
+    // phpcs:ignore
     public function incrementStore(StoreEmployyeMonthlySalary $request, $id)
     {
         $viewPermission = user()->permission('manage_employee_salary');
-        abort_403(!in_array($viewPermission, ['all', 'added']));
+        abort_403(! in_array($viewPermission, ['all', 'added']));
 
         $this->id = $id;
 
         $date = Carbon::createFromFormat($this->company->date_format, $request->date)->format('Y-m-d');
 
-
-        $salary = new EmployeeMonthlySalary();
+        $salary = new EmployeeMonthlySalary;
         $salary->user_id = $request->user_id;
         $salary->annual_salary = $request->annual_salary;
 
@@ -249,20 +252,21 @@ class EmployeeMonthlySalaryController extends AccountBaseController
     {
         $salaryId = $request->salaryId;
         $viewPermission = user()->permission('manage_employee_salary');
-        abort_403(!in_array($viewPermission, ['all', 'added']));
+        abort_403(! in_array($viewPermission, ['all', 'added']));
 
         $this->employeeSalary = EmployeeMonthlySalary::where('id', $salaryId)->first();
         $userId = $this->employeeSalary->user_id;
         $this->employee = User::find($userId);
         $this->currency = PayrollSetting::with('currency')->first();
         $this->salaryGroups = EmployeeSalaryGroup::with('salary_group.components', 'salary_group.components.component')->where('user_id', $userId)->first();
+
         return view('payroll::employee-salary.edit-increment', $this->data);
     }
 
     public function incrementUpdate(Request $request)
     {
         $viewPermission = user()->permission('manage_employee_salary');
-        abort_403(!in_array($viewPermission, ['all', 'added']));
+        abort_403(! in_array($viewPermission, ['all', 'added']));
         $id = $request->salaryId;
 
         $salary = EmployeeMonthlySalary::findOrFail($id);
@@ -278,19 +282,20 @@ class EmployeeMonthlySalaryController extends AccountBaseController
 
     /**
      * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
+     *
+     * @param  Request  $request
+     * @param  int  $id
      * @return Response
      */
-    //phpcs:ignore
+    // phpcs:ignore
     public function update(StoreEmployyeMonthlySalary $request, $id)
     {
         $viewPermission = user()->permission('manage_employee_salary');
-        abort_403(!in_array($viewPermission, ['all', 'added']));
+        abort_403(! in_array($viewPermission, ['all', 'added']));
 
         $this->id = $id;
 
-        $salary = new EmployeeMonthlySalary();
+        $salary = new EmployeeMonthlySalary;
         $salary->user_id = $request->user_id;
         $salary->annual_salary = $request->annual_salary;
 
@@ -304,13 +309,14 @@ class EmployeeMonthlySalaryController extends AccountBaseController
 
     /**
      * Remove the specified resource from storage.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Response
      */
     public function destroy($id)
     {
         $viewPermission = user()->permission('manage_employee_salary');
-        abort_403(!in_array($viewPermission, ['all', 'added']));
+        abort_403(! in_array($viewPermission, ['all', 'added']));
 
         EmployeeMonthlySalary::destroy($id);
 
@@ -321,8 +327,8 @@ class EmployeeMonthlySalaryController extends AccountBaseController
     {
         $employeeCycle = EmployeePayrollCycle::where('user_id', $request->user_id)->first();
 
-        if (!$employeeCycle) {
-            $employeeCycle = new EmployeePayrollCycle();
+        if (! $employeeCycle) {
+            $employeeCycle = new EmployeePayrollCycle;
             $employeeCycle->user_id = $request->user_id;
         }
 
@@ -344,10 +350,9 @@ class EmployeeMonthlySalaryController extends AccountBaseController
                 $status->save();
             }
 
-        }
-        else {
+        } else {
 
-            $employeeMonthly = new EmployeeMonthlySalary();
+            $employeeMonthly = new EmployeeMonthlySalary;
             $employeeMonthly->user_id = $request->user_id;
             $employeeMonthly->annual_salary = 0;
             $employeeMonthly->basic_salary = 0;
@@ -362,7 +367,7 @@ class EmployeeMonthlySalaryController extends AccountBaseController
 
             if (is_null($employeeCycle)) {
                 $payrollCycle = PayrollCycle::where('cycle', 'monthly')->first();
-                $employeeCycle = new EmployeePayrollCycle();
+                $employeeCycle = new EmployeePayrollCycle;
                 $employeeCycle->user_id = $request->user_id;
                 $employeeCycle->payroll_cycle_id = $payrollCycle->id;
                 $employeeCycle->save();
@@ -378,7 +383,7 @@ class EmployeeMonthlySalaryController extends AccountBaseController
         $this->user_id = $id;
         $this->employee = User::findOrFail($id);
         $this->salaryGroup = EmployeeSalaryGroup::with('salary_group.components', 'salary_group.components.component')->where('user_id', $id)->first();
-        $this->payrollController = new EmployeeMonthlySalaryController();
+        $this->payrollController = new EmployeeMonthlySalaryController;
         $this->currency = PayrollSetting::with('currency')->first();
 
         if (request()->ajax()) {
@@ -399,8 +404,7 @@ class EmployeeMonthlySalaryController extends AccountBaseController
         if ($request->basicType == 'fixed') {
             $this->basicSalary = $request->basicValue;
 
-        }
-        else {
+        } else {
             $this->basicSalary = ($request->annualSalary / 12) / 100 * $request->basicValue;
         }
 
@@ -414,9 +418,9 @@ class EmployeeMonthlySalaryController extends AccountBaseController
         $totalEarnings = [];
         $totalExpenses = [];
 
-        $this->payrollController = new EmployeeMonthlySalaryController();
+        $this->payrollController = new EmployeeMonthlySalaryController;
 
-        if (!is_null($this->salaryGroup)) {
+        if (! is_null($this->salaryGroup)) {
 
             foreach ($this->salaryGroup->salary_group->components as $component) {
 
@@ -437,8 +441,7 @@ class EmployeeMonthlySalaryController extends AccountBaseController
 
                         $totalEarnings[] = $component->component->component_value;
                     }
-                }
-                else {
+                } else {
 
                     if ($component->component->value_type == 'fixed') {
                         $totalExpenses[] = $component->component->component_value;
@@ -477,8 +480,7 @@ class EmployeeMonthlySalaryController extends AccountBaseController
         if ($request->basicType == 'fixed') {
             $this->basicSalary = $request->basicValue;
 
-        }
-        else {
+        } else {
             $this->basicSalary = ($request->annualSalary / 12) / 100 * $request->basicValue;
         }
 
@@ -493,9 +495,9 @@ class EmployeeMonthlySalaryController extends AccountBaseController
         $totalEarnings = [];
         $totalExpenses = [];
 
-        $this->payrollController = new EmployeeMonthlySalaryController();
+        $this->payrollController = new EmployeeMonthlySalaryController;
 
-        if (!is_null($this->salaryGroup)) {
+        if (! is_null($this->salaryGroup)) {
             foreach ($this->salaryGroup->salary_group->components as $component) {
 
                 if ($component->component->component_type == 'earning') {
@@ -514,15 +516,13 @@ class EmployeeMonthlySalaryController extends AccountBaseController
                     if ($component->component->value_type == 'variable') {
                         $compValue = $this->employeeVariableSalaries->where('variable_component_id', $component->component->id)->first();
 
-                        if($compValue){
+                        if ($compValue) {
                             $totalEarnings[] = $compValue->variable_value;
-                        }
-                        else{
+                        } else {
                             $totalEarnings[] = $component->component->component_value;
                         }
                     }
-                }
-                else {
+                } else {
 
                     if ($component->component->value_type == 'fixed') {
                         $totalExpenses[] = $component->component->component_value;
@@ -539,11 +539,10 @@ class EmployeeMonthlySalaryController extends AccountBaseController
                     if ($component->component->value_type == 'variable') {
                         $compValueDeduction = $this->employeeVariableSalaries->where('variable_component_id', $component->component->id)->first();
 
-                        if($compValueDeduction){
+                        if ($compValueDeduction) {
                             $totalExpenses[] = $compValueDeduction->variable_value;
                             $this->deductionTotalWithoutVar = array_sum($totalExpenses);
-                        }
-                        else{
+                        } else {
                             $totalExpenses[] = $component->component->component_value;
                             $this->deductionTotalWithoutVar = array_sum($totalExpenses);
                         }
@@ -551,7 +550,6 @@ class EmployeeMonthlySalaryController extends AccountBaseController
                 }
             }
         }
-
 
         $this->totalEarnings = $totalEarnings;
         $this->totalExpenses = $totalExpenses;
@@ -570,14 +568,13 @@ class EmployeeMonthlySalaryController extends AccountBaseController
         $this->employee = User::findOrFail($id);
         $this->salaryGroup = EmployeeSalaryGroup::with('salary_group.components', 'salary_group.components.component')->where('user_id', $id)->first();
         $this->employeeMonthlySalary = EmployeeMonthlySalary::where('user_id', $id)->first();
-        $this->payrollController = new EmployeeMonthlySalaryController();
+        $this->payrollController = new EmployeeMonthlySalaryController;
         $this->currency = PayrollSetting::with('currency')->first();
         $this->employeeVariableSalaries = EmployeeVariableComponent::with('component')->where('monthly_salary_id', $this->employeeMonthlySalary->id)->get() ?? [''];
 
         if ($this->employeeMonthlySalary->basic_value_type == 'fixed') {
             $this->basicSalary = $this->employeeMonthlySalary->basic_salary;
-        }
-        else {
+        } else {
             $this->basicSalary = ($this->employeeMonthlySalary->annual_salary / 12) / 100 * $this->employeeMonthlySalary->basic_salary;
         }
 
@@ -585,7 +582,7 @@ class EmployeeMonthlySalaryController extends AccountBaseController
         $totalExpenses = [];
         $this->deductionTotalWithoutVar = 0;
 
-        if (!is_null($this->salaryGroup)) {
+        if (! is_null($this->salaryGroup)) {
 
             foreach ($this->salaryGroup->salary_group->components as $component) {
 
@@ -605,15 +602,13 @@ class EmployeeMonthlySalaryController extends AccountBaseController
                     if ($component->component->value_type == 'variable') {
                         $compValue = $this->employeeVariableSalaries->where('variable_component_id', $component->component->id)->first() ?? null;
 
-                        if($compValue){
+                        if ($compValue) {
                             $totalEarnings[] = $compValue->variable_value;
-                        }
-                        else{
+                        } else {
                             $totalEarnings[] = $component->component->component_value;
                         }
                     }
-                }
-                else {
+                } else {
 
                     if ($component->component->value_type == 'fixed') {
                         $totalExpenses[] = $component->component->component_value;
@@ -627,16 +622,14 @@ class EmployeeMonthlySalaryController extends AccountBaseController
                         $totalExpenses[] = $this->basicSalary / 100 * $component->component->component_value;
                     }
 
-
                     if ($component->component->value_type == 'variable') {
                         $compValueDeduction = $this->employeeVariableSalaries->where('variable_component_id', $component->component->id)->first();
 
-                        if($compValueDeduction){
+                        if ($compValueDeduction) {
                             $totalExpenses[] = $compValueDeduction->variable_value;
                             $this->deductionTotalWithoutVar = array_sum($totalExpenses);
 
-                        }
-                        else{
+                        } else {
                             $totalExpenses[] = $component->component->component_value;
                             $this->deductionTotalWithoutVar = array_sum($totalExpenses);
                         }
@@ -648,7 +641,6 @@ class EmployeeMonthlySalaryController extends AccountBaseController
         $this->totalEarnings = $totalEarnings;
         $this->totalExpenses = $totalExpenses;
         $this->expenses = array_sum($totalExpenses);
-
 
         $this->fixedAllowance = is_int($this->employeeMonthlySalary->fixed_allowance) ? $this->employeeMonthlySalary->fixed_allowance : 0;
 
@@ -684,9 +676,9 @@ class EmployeeMonthlySalaryController extends AccountBaseController
             $salary->save();
             EmployeeVariableComponent::where('monthly_salary_id', $salary->id)->delete();
 
-            if (!is_null($request->deduction_variable)) {
+            if (! is_null($request->deduction_variable)) {
                 foreach ($request->deduction_variable as $key => $value) {
-                    $variable = new EmployeeVariableComponent();
+                    $variable = new EmployeeVariableComponent;
                     $variable->monthly_salary_id = $salary->id;
                     $variable->variable_component_id = $key;
                     $variable->variable_value = $value;
@@ -694,9 +686,9 @@ class EmployeeMonthlySalaryController extends AccountBaseController
                 }
             }
 
-            if (!is_null($request->earning_variable)) {
+            if (! is_null($request->earning_variable)) {
                 foreach ($request->earning_variable as $key => $value) {
-                    $variable = new EmployeeVariableComponent();
+                    $variable = new EmployeeVariableComponent;
                     $variable->monthly_salary_id = $salary->id;
                     $variable->variable_component_id = $key;
                     $variable->variable_value = $value;
@@ -708,7 +700,7 @@ class EmployeeMonthlySalaryController extends AccountBaseController
 
             if (is_null($employeeCycle)) {
                 $payrollCycle = PayrollCycle::where('cycle', 'monthly')->first();
-                $employeeCycle = new EmployeePayrollCycle();
+                $employeeCycle = new EmployeePayrollCycle;
                 $employeeCycle->user_id = $request->user_id;
                 $employeeCycle->payroll_cycle_id = $payrollCycle->id;
                 $employeeCycle->save();
@@ -722,11 +714,10 @@ class EmployeeMonthlySalaryController extends AccountBaseController
     {
         $formats = currency_format_setting();
 
-        $no_of_decimal = !is_null($formats->no_of_decimal) ? $formats->no_of_decimal : '0';
-        $thousand_separator = !is_null($formats->thousand_separator) ? $formats->thousand_separator : '';
-        $decimal_separator = !is_null($formats->decimal_separator) ? $formats->decimal_separator : '0';
+        $no_of_decimal = ! is_null($formats->no_of_decimal) ? $formats->no_of_decimal : '0';
+        $thousand_separator = ! is_null($formats->thousand_separator) ? $formats->thousand_separator : '';
+        $decimal_separator = ! is_null($formats->decimal_separator) ? $formats->decimal_separator : '0';
 
         return number_format($amount, $no_of_decimal, $decimal_separator, $thousand_separator);
     }
-
 }

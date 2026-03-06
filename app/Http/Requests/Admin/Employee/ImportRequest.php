@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class ImportRequest extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -28,5 +27,4 @@ class ImportRequest extends FormRequest
             'import_file' => 'required|file|mimes:xls,xlsx,csv,txt',
         ];
     }
-
 }

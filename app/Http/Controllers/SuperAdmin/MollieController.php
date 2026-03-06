@@ -2,26 +2,28 @@
 
 namespace App\Http\Controllers\SuperAdmin;
 
-use App\Models\User;
-use Illuminate\Http\Request;
-use App\Models\SuperAdmin\Package;
-use Mollie\Laravel\Facades\Mollie;
 use App\Http\Controllers\Controller;
-use Mollie\Api\Exceptions\ApiException;
 use App\Models\SuperAdmin\GlobalInvoice;
-use Illuminate\Support\Facades\Redirect;
-use App\Traits\SuperAdmin\MollieSettings;
-use Illuminate\Support\Facades\Notification;
 use App\Models\SuperAdmin\GlobalSubscription;
+use App\Models\SuperAdmin\Package;
+use App\Models\User;
 use App\Notifications\SuperAdmin\CompanyUpdatedPlan;
+use App\Traits\SuperAdmin\MollieSettings;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Redirect;
+use Mollie\Api\Exceptions\ApiException;
+use Mollie\Laravel\Facades\Mollie;
 
 class MollieController extends Controller
 {
     use MollieSettings;
+
     protected $client;
 
     /**
      * Redirect the User to Paystack Payment Page
+     *
      * @return \Illuminate\Http\RedirectResponse
      */
     public function redirectToGateway(Request $request)
@@ -32,10 +34,10 @@ class MollieController extends Controller
         $packageType = ($package->package_type != 'lifetime') ? $request->type : 'lifetime';
 
         $subscription = GlobalSubscription::where('gateway_name', 'mollie')->where('company_id', company()->id)->where('subscription_status', 'inactive')->whereNull('ends_at')->latest()->first();
-        $subscription = $subscription ? $subscription : new GlobalSubscription();
+        $subscription = $subscription ? $subscription : new GlobalSubscription;
 
         $customer = Mollie::api()->customers()->create([
-            'name'  => $request->name,
+            'name' => $request->name,
             'email' => $request->mollieEmail,
         ]);
 
@@ -54,18 +56,18 @@ class MollieController extends Controller
             'subscription_id' => $subscription->id,
             'package_id' => $package->id,
             'package_type' => $subscription->package_type,
-            'package_amount' => $package->{$subscription->package_type . '_price'},
+            'package_amount' => $package->{$subscription->package_type.'_price'},
         ];
         try {
             $payment = Mollie::api()->payments()->create([
                 'amount' => [
                     'currency' => $package->currency->currency_code,
-                    'value'    => number_format((float)$package->{$request->type . '_price'}, 2, '.', ''), // You must send the correct number of decimals, thus we enforce the use of strings
+                    'value' => number_format((float) $package->{$request->type.'_price'}, 2, '.', ''), // You must send the correct number of decimals, thus we enforce the use of strings
                 ],
-                'customerId'   => $customer->id,
+                'customerId' => $customer->id,
                 'sequenceType' => 'first',
-                'description'  => $package->name . ' payment',
-                'redirectUrl'  => route('billing.mollie.callback', ['paymentId' => 1, $hash]),
+                'description' => $package->name.' payment',
+                'redirectUrl' => route('billing.mollie.callback', ['paymentId' => 1, $hash]),
                 'metadata' => $metadata,
             ]);
 
@@ -78,13 +80,15 @@ class MollieController extends Controller
             return redirect($payment->getCheckoutUrl(), 303);
         } catch (ApiException $e) {
             if ($e->getField() == 'webhookUrl' && $e->getCode() == '422') {
-                return redirect()->back()->with('error', __('superadmin.messages.mollieLocalhost') . $e->getMessage());
+                return redirect()->back()->with('error', __('superadmin.messages.mollieLocalhost').$e->getMessage());
             }
 
             session()->put('error', $e->getMessage());
+
             return redirect()->route('billing.upgrade_plan');
         } catch (\Exception $e) {
             session()->put('error', $e->getMessage());
+
             return redirect()->route('billing.upgrade_plan');
         }
 
@@ -93,6 +97,7 @@ class MollieController extends Controller
 
     /**
      * Obtain the User payment information from Mollie
+     *
      * @return \Illuminate\Http\RedirectResponse
      */
     public function handleGatewayCallback($paymentId, $hash)
@@ -116,14 +121,13 @@ class MollieController extends Controller
             $subscription = Mollie::api()->subscriptions()->createFor($customer, [
                 'amount' => [
                     'currency' => $package->currency->currency_code,
-                    'value'    => number_format((float)$package->{$globalSubscription->package_type . '_price'}, 2, '.', ''), // You must send the correct number of decimals, thus we enforce the use of strings
+                    'value' => number_format((float) $package->{$globalSubscription->package_type.'_price'}, 2, '.', ''), // You must send the correct number of decimals, thus we enforce the use of strings
                 ],
                 'interval' => $interval,
-                'description'  => company()->company_name . ' subscribed',
-                'webhookUrl'  => route('billing.mollie.webhook', [$globalSubscription, $hash]),
+                'description' => company()->company_name.' subscribed',
+                'webhookUrl' => route('billing.mollie.webhook', [$globalSubscription, $hash]),
                 'startDate' => now()->{(($globalSubscription->package_type == 'monthly') ? 'addMonth' : 'addYear')}()->format('Y-m-d'),
             ]);
-
 
             $globalSubscription->transaction_id = $subscription->id;
             $globalSubscription->subscription_status = 'active';
@@ -131,7 +135,7 @@ class MollieController extends Controller
             $globalSubscription->save();
 
             $invoice = GlobalInvoice::where('transaction_id', $payment->id)->first();
-            $invoice = $invoice ? $invoice : new GlobalInvoice();
+            $invoice = $invoice ? $invoice : new GlobalInvoice;
             $invoice->company_id = $globalSubscription->company_id;
             $invoice->package_id = $globalSubscription->package_id;
             $invoice->currency_id = $globalSubscription->currency_id;
@@ -161,10 +165,11 @@ class MollieController extends Controller
             Notification::send($generatedBy, new CompanyUpdatedPlan($company, $globalSubscription->package_id));
             Notification::send($allAdmins, new CompanyUpdatedPlan($company, $globalSubscription->package_id));
             session()->put('success', __('superadmin.paymentSuccessfullyDone', ['package' => company()->package->name, 'planType' => company()->package_type]));
+
             return redirect(route('billing.index'));
         }
 
-        if (!$payment->isPaid()) {
+        if (! $payment->isPaid()) {
             session()->put('error', __('superadmin.paymentFailed'));
         }
 
@@ -174,8 +179,7 @@ class MollieController extends Controller
     /**
      * handleGatewayWebhook
      *
-     * @param  Request $request
-     * @param  mixed $hash
+     * @param  mixed  $hash
      * @return \Illuminate\Http\Response|\Illuminate\Contracts\Routing\ResponseFactory
      */
     public function handleGatewayWebhook(Request $request, $subscriptionId, $hash)
@@ -191,7 +195,7 @@ class MollieController extends Controller
             $oldInvoice = GlobalInvoice::where('global_subscription_id', $globalSubscription->id)->where('status', 'active')->whereNot('transaction_id', $payment->id)->latest()->first();
 
             $invoice = GlobalInvoice::where('transaction_id', $payment->id)->first();
-            $invoice = $invoice ? $invoice : new GlobalInvoice();
+            $invoice = $invoice ? $invoice : new GlobalInvoice;
             $invoice->company_id = $globalSubscription->company_id;
             $invoice->package_id = $globalSubscription->package_id;
             $invoice->currency_id = $globalSubscription->currency_id;

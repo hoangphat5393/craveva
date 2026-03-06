@@ -4,23 +4,22 @@ namespace Modules\Purchase\Entities;
 
 use App\Models\BaseModel;
 use App\Traits\HasCompany;
-use Modules\Purchase\Entities\PurchaseSetting;
-use Modules\Purchase\Entities\PurchasePaymentBill;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PurchaseBill extends BaseModel
 {
-
     use HasCompany;
 
     protected $fillable = [];
+
     protected $dates = ['bill_date'];
+
     protected $appends = ['bill_number', 'total_amount', 'original_bill_number'];
 
     public function getBillNumberAttribute()
     {
-        $purchaseSettings = cache()->rememberForever('purchase_setting_' . $this->company_id, function () {
+        $purchaseSettings = cache()->rememberForever('purchase_setting_'.$this->company_id, function () {
             return PurchaseSetting::first();
         });
 
@@ -31,18 +30,18 @@ class PurchaseBill extends BaseModel
             $condition = $purchaseSettings->bill_number_digit - strlen($this->attributes['purchase_bill_number']);
 
             for ($i = 0; $i < $condition; $i++) {
-                $zero = '0' . $zero;
+                $zero = '0'.$zero;
             }
         }
 
-        return $purchaseSettings->bill_prefix . $purchaseSettings->bill_number_separator . $zero . $this->attributes['purchase_bill_number'];
+        return $purchaseSettings->bill_prefix.$purchaseSettings->bill_number_separator.$zero.$this->attributes['purchase_bill_number'];
     }
 
     public function getTotalAmountAttribute()
     {
 
-        if (!is_null($this->price) && !is_null($this->tax)) {
-            return (int)$this->price + ((int)$this->price * ((int)$this->tax->rate_percent / 100));
+        if (! is_null($this->price) && ! is_null($this->tax)) {
+            return (int) $this->price + ((int) $this->price * ((int) $this->tax->rate_percent / 100));
         }
 
         return '';
@@ -60,7 +59,7 @@ class PurchaseBill extends BaseModel
 
     public static function lastPurchaseBillNumber()
     {
-        return (int)PurchaseBill::max('purchase_bill_number');
+        return (int) PurchaseBill::max('purchase_bill_number');
     }
 
     public function purchaseVendor(): BelongsTo
@@ -70,7 +69,7 @@ class PurchaseBill extends BaseModel
 
     public function getOriginalBillNumberAttribute()
     {
-        $purchaseSettings = cache()->rememberForever('purchase_setting_' . $this->company_id, function () {
+        $purchaseSettings = cache()->rememberForever('purchase_setting_'.$this->company_id, function () {
             return PurchaseSetting::first();
         });
 
@@ -80,11 +79,11 @@ class PurchaseBill extends BaseModel
             $condition = $purchaseSettings->bill_number_digit - strlen($this->attributes['purchase_bill_number']);
 
             for ($i = 0; $i < $condition; $i++) {
-                $zero = '0' . $zero;
+                $zero = '0'.$zero;
             }
         }
 
-        return $zero . $this->attributes['purchase_bill_number'];
+        return $zero.$this->attributes['purchase_bill_number'];
     }
 
     public function purchasePaymentBills(): HasMany
@@ -97,6 +96,7 @@ class PurchaseBill extends BaseModel
         $amountPaid = $this->purchasePaymentBills->where('purchase_vendor_id', $vendorId)->sum('total_paid');
         $total = $this->total;
         $due = $total - $amountPaid;
+
         return max($due, 0);
     }
 
@@ -127,5 +127,4 @@ class PurchaseBill extends BaseModel
                 ->orWhere('purchase_bills.status', 'partial_paid');
         });
     }
-
 }

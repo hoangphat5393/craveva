@@ -7,13 +7,13 @@ use App\Models\RecurringInvoice;
 
 class InvoiceRecurringStatus extends BaseNotification
 {
-
     /**
      * Create a new notification instance.
      *
      * @return void
      */
     private $invoice;
+
     private $emailSetting;
 
     public function __construct(RecurringInvoice $invoice)
@@ -26,7 +26,7 @@ class InvoiceRecurringStatus extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -44,7 +44,7 @@ class InvoiceRecurringStatus extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
@@ -53,16 +53,16 @@ class InvoiceRecurringStatus extends BaseNotification
         $url = route('invoice-recurring.show', $this->invoice->id);
         $url = getDomainSpecificUrl($url, $this->company);
 
-        $content = __('email.invoiceRecurringStatus.text') . ' ' . $this->invoice->status . '.';
+        $content = __('email.invoiceRecurringStatus.text').' '.$this->invoice->status.'.';
 
         $build
-            ->subject(__('email.invoiceRecurringStatus.subject') . ' - ' . config('app.name'))
+            ->subject(__('email.invoiceRecurringStatus.subject').' - '.config('app.name'))
             ->markdown('mail.email', [
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
                 'actionText' => __('email.invoiceRecurringStatus.action'),
-                'notifiableName' => $notifiable->name
+                'notifiableName' => $notifiable->name,
             ]);
 
         parent::resetLocale();
@@ -73,13 +73,12 @@ class InvoiceRecurringStatus extends BaseNotification
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
-//phpcs:ignore
+    // phpcs:ignore
     public function toArray($notifiable)
     {
         return $this->invoice->toArray();
     }
-
 }

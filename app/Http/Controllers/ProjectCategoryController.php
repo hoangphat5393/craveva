@@ -9,13 +9,13 @@ use App\Models\ProjectCategory;
 
 class ProjectCategoryController extends AccountBaseController
 {
-
     public function create()
     {
         $this->addPermission = user()->permission('manage_project_category');
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
 
         $this->categories = ProjectCategory::all();
+
         return view('projects.create_category', $this->data);
 
     }
@@ -23,9 +23,9 @@ class ProjectCategoryController extends AccountBaseController
     public function store(StoreProjectCategory $request)
     {
         $this->addPermission = user()->permission('manage_project_category');
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
 
-        $category = new ProjectCategory();
+        $category = new ProjectCategory;
         $category->category_name = $request->category_name;
         $category->save();
 
@@ -64,5 +64,4 @@ class ProjectCategoryController extends AccountBaseController
 
         return Reply::successWithData(__('messages.deleteSuccess'), ['data' => $options]);
     }
-
 }

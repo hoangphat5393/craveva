@@ -10,11 +10,9 @@ use Modules\Affiliate\Enums\Status;
 
 class AffiliatePublicController extends FrontBaseController
 {
-
     /**
      * Redirect referral to the original URL
      *
-     * @param Request $request
      * @return RedirectResponse
      */
     public function redirectReferral(Request $request)
@@ -30,10 +28,8 @@ class AffiliatePublicController extends FrontBaseController
 
         if ($this->referral) {
             return redirect(route('front.signup.index'))->with('flash-message', ['success', 'referral code applied successfully']);
-        }
-        else {
+        } else {
             return redirect(route('front.signup.index'))->with('flash-message', ['error', 'Invalid referral code.']);
         }
     }
-
 }

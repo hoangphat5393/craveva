@@ -15,6 +15,7 @@ use App\Traits\HasCompany;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read mixed $icon
  * @property-read mixed $label_color
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|TaskLabelList newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TaskLabelList newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TaskLabelList query()
@@ -24,27 +25,30 @@ use App\Traits\HasCompany;
  * @method static \Illuminate\Database\Eloquent\Builder|TaskLabelList whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TaskLabelList whereLabelName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TaskLabelList whereUpdatedAt($value)
+ *
  * @property int|null $project_id
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|TaskLabelList whereProjectId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TaskLabelList whereCompanyId($value)
+ *
  * @mixin \Eloquent
+ *
  * @property-read \App\Models\Company $company
  */
 class TaskLabelList extends BaseModel
 {
-
     use HasCompany;
 
     protected $table = 'task_label_list';
 
     protected $guarded = ['id'];
+
     public $appends = ['label_color'];
 
     public function getLabelColorAttribute()
     {
         return $this->color ?: '#3b0ae1';
     }
-
 }

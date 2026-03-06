@@ -1,5 +1,6 @@
-<?php 
+<?php
+
 return [
-  'previous' => '" 이전의',
-  'next' => '다음 "',
+    'previous' => '" 이전의',
+    'next' => '다음 "',
 ];

@@ -4,14 +4,13 @@ use App\Models\Company;
 use App\Models\DashboardWidget;
 use Illuminate\Database\Migrations\Migration;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      *
      * @return void
      */
-
     public function up()
     {
         Company::renameOrganisationTableToCompanyTable();
@@ -21,7 +20,7 @@ return new class extends Migration {
             $widget = [
                 'widget_name' => 'work_from_home',
                 'status' => 1,
-                'dashboard_type' => 'private-dashboard'
+                'dashboard_type' => 'private-dashboard',
             ];
 
             DashboardWidget::create($widget);
@@ -38,5 +37,4 @@ return new class extends Migration {
     {
         DashboardWidget::where('widget_name', 'work_from_home')->delete();
     }
-
 };

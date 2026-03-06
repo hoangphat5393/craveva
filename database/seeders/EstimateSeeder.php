@@ -12,7 +12,6 @@ use Illuminate\Database\Seeder;
 
 class EstimateSeeder extends Seeder
 {
-
     /**
      * Run the database seeds.
      *
@@ -30,11 +29,11 @@ class EstimateSeeder extends Seeder
 
         $unit = UnitType::select('id')->where('company_id', $companyId)->first();
         $currency = Currency::select('id')->where('company_id', $companyId)->first();
-        $estimate = new Estimate();
+        $estimate = new Estimate;
         $estimate->company_id = $companyId;
         $estimate->estimate_number = '001';
         $estimate->client_id = $client->id;
-        $estimate->valid_till = Carbon::parse((date('m')) . '/03/2022')->format('Y-m-d');
+        $estimate->valid_till = Carbon::parse((date('m')).'/03/2022')->format('Y-m-d');
         $estimate->sub_total = 1200;
         $estimate->total = 1200;
         $estimate->currency_id = $currency->id;
@@ -48,8 +47,8 @@ class EstimateSeeder extends Seeder
         $amount = ['500', '700'];
         $type = ['item', 'item'];
 
-        foreach ($items as $key => $item):
-            if (!is_null($item)) {
+        foreach ($items as $key => $item) {
+            if (! is_null($item)) {
                 EstimateItem::create([
                     'estimate_id' => $estimate->id,
                     'item_name' => $item,
@@ -57,18 +56,17 @@ class EstimateSeeder extends Seeder
                     'quantity' => $quantity[$key],
                     'unit_price' => $cost_per_item[$key],
                     'unit_id' => $unit->id,
-                    'amount' => $amount[$key]
+                    'amount' => $amount[$key],
                 ]);
             }
 
-        endforeach;
+        }
 
-
-        $estimate = new Estimate();
+        $estimate = new Estimate;
         $estimate->company_id = $companyId;
         $estimate->estimate_number = '002';
         $estimate->client_id = $client->id;
-        $estimate->valid_till = Carbon::parse((date('m')) . '/10/2022')->format('Y-m-d');
+        $estimate->valid_till = Carbon::parse((date('m')).'/10/2022')->format('Y-m-d');
         $estimate->sub_total = 4100;
         $estimate->total = 4100;
         $estimate->currency_id = $currency->id;
@@ -82,16 +80,15 @@ class EstimateSeeder extends Seeder
         $amount = ['2400', '1700'];
         $type = ['item', 'item'];
 
-        foreach ($items as $key => $item):
+        foreach ($items as $key => $item) {
             EstimateItem::create([
                 'estimate_id' => $estimate->id,
                 'item_name' => $item, 'type' => $type[$key],
                 'quantity' => $quantity[$key],
                 'unit_price' => $cost_per_item[$key],
                 'unit_id' => $unit->id,
-                'amount' => $amount[$key]
+                'amount' => $amount[$key],
             ]);
-        endforeach;
+        }
     }
-
 }

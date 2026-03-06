@@ -4,16 +4,15 @@ namespace App\Notifications;
 
 class RemovalRequestAdminNotification extends BaseNotification
 {
-
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
     {
-        $via = array();
+        $via = [];
 
         if ($notifiable->email_notifications && $notifiable->email != '') {
             array_push($via, 'mail');
@@ -25,7 +24,7 @@ class RemovalRequestAdminNotification extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
@@ -35,10 +34,10 @@ class RemovalRequestAdminNotification extends BaseNotification
         $content = __('email.removalRequestAdmin.text');
 
         $build
-            ->subject(__('email.removalRequestAdmin.subject') . ' ' . config('app.name') . __('!'))
+            ->subject(__('email.removalRequestAdmin.subject').' '.config('app.name').__('!'))
             ->markdown('mail.email', [
                 'content' => $content,
-                'notifiableName' => $notifiable->name
+                'notifiableName' => $notifiable->name,
             ]);
 
         parent::resetLocale();
@@ -49,15 +48,14 @@ class RemovalRequestAdminNotification extends BaseNotification
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
-    //phpcs:ignore
+    // phpcs:ignore
     public function toArray($notifiable)
     {
         return [
             //
         ];
     }
-
 }

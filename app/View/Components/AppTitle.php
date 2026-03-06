@@ -7,7 +7,6 @@ use Illuminate\View\Component;
 
 class AppTitle extends Component
 {
-
     public $pageTitle;
 
     /**
@@ -29,5 +28,4 @@ class AppTitle extends Component
     {
         return view('components.app-title');
     }
-
 }

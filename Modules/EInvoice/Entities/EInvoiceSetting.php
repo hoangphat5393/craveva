@@ -7,7 +7,6 @@ use App\Scopes\CompanyScope;
 
 class EInvoiceSetting extends BaseModel
 {
-
     protected $guarded = ['id'];
 
     const MODULE_NAME = 'einvoice';
@@ -22,6 +21,4 @@ class EInvoiceSetting extends BaseModel
             $newSetting->saveQuietly();
         }
     }
-
 }
-

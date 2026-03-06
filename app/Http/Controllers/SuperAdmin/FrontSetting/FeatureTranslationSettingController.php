@@ -3,15 +3,14 @@
 namespace App\Http\Controllers\SuperAdmin\FrontSetting;
 
 use App\Helper\Reply;
-use App\Http\Requests\SuperAdmin\FeatureTranslation\StoreRequest;
 use App\Http\Controllers\AccountBaseController;
+use App\Http\Requests\SuperAdmin\FeatureTranslation\StoreRequest;
 use App\Models\GlobalSetting;
 use App\Models\LanguageSetting;
 use App\Models\SuperAdmin\TrFrontDetail;
 
 class FeatureTranslationSettingController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -42,7 +41,7 @@ class FeatureTranslationSettingController extends AccountBaseController
 
         $this->trFrontDetail = TrFrontDetail::where('language_setting_id', $this->lang->id)->first();
 
-        $this->allLangTranslation = TrFrontDetail::select('language_setting_id')->where(function($q){
+        $this->allLangTranslation = TrFrontDetail::select('language_setting_id')->where(function ($q) {
             return $q->whereNotNull('feature_title')
                 ->orWhereNotNull('favourite_apps_title');
         })->get()->toArray();
@@ -61,7 +60,7 @@ class FeatureTranslationSettingController extends AccountBaseController
         $row = TrFrontDetail::where('language_setting_id', $request->language_setting_id == 0 ? null : $request->language_setting_id)->first();
 
         if (is_null($row)) {
-            $row = new TrFrontDetail();
+            $row = new TrFrontDetail;
         }
 
         $row->feature_title = $request->feature_title;
@@ -73,8 +72,7 @@ class FeatureTranslationSettingController extends AccountBaseController
 
         return Reply::successWithData(__('messages.updateSuccess'), [
             'data' => $request->feature_title ? $request->feature_title : $request->feature_app_title,
-            'lang' => $row->language->language_code
+            'lang' => $row->language->language_code,
         ]);
     }
-
 }

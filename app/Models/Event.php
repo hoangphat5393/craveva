@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use App\Scopes\ActiveScope;
-use App\Traits\HasCompany;
 use App\Traits\CustomFieldsTrait;
+use App\Traits\HasCompany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -33,6 +33,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\EventAttendee[] $attendee
  * @property-read int|null $attendee_count
  * @property-read mixed $icon
+ *
  * @method static \Database\Factories\EventFactory factory(...$parameters)
  * @method static \Illuminate\Database\Eloquent\Builder|Event newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Event newQuery()
@@ -55,27 +56,33 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder|Event whereStartDateTime($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Event whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Event whereWhere($value)
+ *
  * @property string|null $event_id
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Event whereEventId($value)
+ *
  * @property int|null $company_id
  * @property string|null $event_link
  * @property-read \App\Models\Company|null $company
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\EventFile[] $files
  * @property-read int|null $files_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Event whereCompanyId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Event whereEventLink($value)
+ *
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MentionUser> $mentionEvent
  * @property-read int|null $mention_event_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $mentionUser
  * @property-read int|null $mention_user_count
  * @property int|null $parent_id
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Event whereParentId($value)
+ *
  * @mixin \Eloquent
  */
 class Event extends BaseModel
 {
-
-    use HasFactory, HasCompany, CustomFieldsTrait;
+    use CustomFieldsTrait, HasCompany, HasFactory;
 
     const CUSTOM_FIELD_MODEL = 'App\Models\Event';
 
@@ -83,6 +90,7 @@ class Event extends BaseModel
         'start_date_time' => 'datetime',
         'end_date_time' => 'datetime',
     ];
+
     protected $fillable = ['start_date_time', 'end_date_time', 'event_name', 'where', 'description'];
 
     public function attendee(): HasMany

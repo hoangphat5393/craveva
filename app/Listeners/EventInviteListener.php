@@ -10,14 +10,11 @@ use Illuminate\Support\Facades\Notification;
 
 class EventInviteListener
 {
-
     /**
      * Handle the event.
      *
-     * @param EventInviteEvent $event
      * @return void
      */
-
     public function handle(EventInviteEvent $event)
     {
         $host = User::find($event->event->host);
@@ -28,5 +25,4 @@ class EventInviteListener
         }
 
     }
-
 }

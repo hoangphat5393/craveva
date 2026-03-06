@@ -10,7 +10,6 @@ use Modules\Performance\Http\Requests\CreteKeyResultsRequest;
 
 class KeyResultsMetricsController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -18,7 +17,8 @@ class KeyResultsMetricsController extends AccountBaseController
         $this->activeSettingMenu = 'performance_settings';
 
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array(PerformanceSetting::MODULE_NAME, $this->user->modules) && user()->permission('manage_performance_setting') != 'all');
+            abort_403(! in_array(PerformanceSetting::MODULE_NAME, $this->user->modules) && user()->permission('manage_performance_setting') != 'all');
+
             return $next($request);
         });
     }
@@ -36,7 +36,7 @@ class KeyResultsMetricsController extends AccountBaseController
      */
     public function store(CreteKeyResultsRequest $request)
     {
-        $keyResults = new KeyResultsMetrics();
+        $keyResults = new KeyResultsMetrics;
         $keyResults->company_id = company()->id;
         $keyResults->name = $request->name;
         $keyResults->save();
@@ -50,6 +50,7 @@ class KeyResultsMetricsController extends AccountBaseController
     public function edit($id)
     {
         $this->keyResults = KeyResultsMetrics::findOrFail($id);
+
         return view('performance::performance-settings.edit-key-results-metrcis', $this->data);
     }
 
@@ -74,10 +75,10 @@ class KeyResultsMetricsController extends AccountBaseController
 
         if ($keyResult) {
             $keyResult->delete();
+
             return Reply::success(__('messages.deleteSuccess'));
         }
 
         return Reply::error(__('performance::messages.keyResultsNotFound'));
     }
-
 }

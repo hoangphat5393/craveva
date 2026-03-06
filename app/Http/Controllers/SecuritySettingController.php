@@ -5,13 +5,11 @@ namespace App\Http\Controllers;
 use App\Helper\Reply;
 use App\Http\Requests\GoogleCaptcha\UpdateGoogleCaptchaSetting;
 use App\Models\GlobalSetting;
-use App\Models\SmtpSetting;
 use App\Models\User;
 use Illuminate\Support\Facades\Artisan;
 
 class SecuritySettingController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -38,12 +36,12 @@ class SecuritySettingController extends AccountBaseController
         $tab = request('tab');
 
         switch ($tab) {
-        case 'recaptcha':
-            abort_403(user()->permission('manage_superadmin_security_settings') != 'all' && !user()->is_superadmin);
-            $this->view = 'security-settings.ajax.google-recaptcha';
+            case 'recaptcha':
+                abort_403(user()->permission('manage_superadmin_security_settings') != 'all' && ! user()->is_superadmin);
+                $this->view = 'security-settings.ajax.google-recaptcha';
                 break;
-        default:
-            $this->view = 'security-settings.ajax.two-factor-authentication';
+            default:
+                $this->view = 'security-settings.ajax.two-factor-authentication';
                 break;
         }
 
@@ -55,7 +53,7 @@ class SecuritySettingController extends AccountBaseController
             return Reply::dataOnly([
                 'status' => 'success',
                 'html' => $html,
-                'title' => $this->pageTitle
+                'title' => $this->pageTitle,
             ]);
         }
 
@@ -63,12 +61,12 @@ class SecuritySettingController extends AccountBaseController
     }
 
     /**
-     * @param UpdateGoogleCaptchaSetting $request
-     * @param int $id
+     * @param  int  $id
      * @return array
+     *
      * @throws \Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException
      */
-    //phpcs:ignore
+    // phpcs:ignore
     public function update(UpdateGoogleCaptchaSetting $request, $id)
     {
         $google_captcha_setting = GlobalSetting::first();
@@ -78,20 +76,18 @@ class SecuritySettingController extends AccountBaseController
             $google_captcha_setting->google_recaptcha_v3_secret_key = $request->google_recaptcha_v3_secret_key;
             $google_captcha_setting->google_recaptcha_v3_status = 'active';
             $google_captcha_setting->google_recaptcha_v2_status = 'deactive';
-        }
-        elseif ($request->version == 'v2') {
+        } elseif ($request->version == 'v2') {
             $google_captcha_setting->google_recaptcha_v2_site_key = $request->google_recaptcha_v2_site_key;
             $google_captcha_setting->google_recaptcha_v2_secret_key = $request->google_recaptcha_v2_secret_key;
             $google_captcha_setting->google_recaptcha_v2_status = 'active';
             $google_captcha_setting->google_recaptcha_v3_status = 'deactive';
         }
 
-        if (!$request->google_recaptcha_status) {
+        if (! $request->google_recaptcha_status) {
             $google_captcha_setting->google_recaptcha_v2_status = 'deactive';
             $google_captcha_setting->google_recaptcha_v3_status = 'deactive';
             $google_captcha_setting->google_recaptcha_status = 'deactive';
-        }
-        elseif ($request->google_recaptcha_status) {
+        } elseif ($request->google_recaptcha_status) {
             $google_captcha_setting->google_recaptcha_status = 'active';
         }
 
@@ -102,8 +98,7 @@ class SecuritySettingController extends AccountBaseController
         if ($request->cache) {
             Artisan::call('optimize');
             Artisan::call('route:clear');
-        }
-        else {
+        } else {
             Artisan::call('optimize:clear');
             Artisan::call('config:clear');
             Artisan::call('route:clear');
@@ -117,7 +112,7 @@ class SecuritySettingController extends AccountBaseController
     public function verify()
     {
         $this->key = request()->key;
+
         return view('security-settings.verify-recaptcha-v3', $this->data);
     }
-
 }

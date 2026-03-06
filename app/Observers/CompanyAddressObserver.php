@@ -7,7 +7,6 @@ use App\Models\EmployeeDetails;
 
 class CompanyAddressObserver
 {
-
     public function creating(CompanyAddress $model)
     {
         if (company()) {
@@ -15,7 +14,8 @@ class CompanyAddressObserver
         }
     }
 
-    public function deleting(CompanyAddress $model){
+    public function deleting(CompanyAddress $model)
+    {
 
         $companyAddress = CompanyAddress::where('is_default', 1)->where('company_id', company()->id)->first();
         EmployeeDetails::where('company_address_id', $model->id)->update(['company_address_id' => $companyAddress->id]);

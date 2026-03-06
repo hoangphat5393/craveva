@@ -15,6 +15,7 @@ use App\Traits\HasCompany;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read mixed $icon
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|UniversalSearch newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|UniversalSearch newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|UniversalSearch query()
@@ -25,16 +26,17 @@ use App\Traits\HasCompany;
  * @method static \Illuminate\Database\Eloquent\Builder|UniversalSearch whereSearchableId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UniversalSearch whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UniversalSearch whereUpdatedAt($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|UniversalSearch whereCompanyId($value)
+ *
  * @mixin \Eloquent
  */
 class UniversalSearch extends BaseModel
 {
-
     use HasCompany;
 
     protected $table = 'universal_search';
-
 }

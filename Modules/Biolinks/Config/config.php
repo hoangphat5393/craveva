@@ -1,7 +1,7 @@
 <?php
 
 $addOnOf = 'craveva';
-$product = $addOnOf . '-biolinks-module';
+$product = $addOnOf.'-biolinks-module';
 
 return [
     'name' => 'Biolinks',

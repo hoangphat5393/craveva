@@ -2,46 +2,44 @@
 
 namespace Modules\Payroll\Http\Controllers;
 
-use Carbon\Carbon;
-use App\Models\Team;
-use App\Models\User;
 use App\Helper\Reply;
-use App\Models\Leave;
-use App\Models\Expense;
-use App\Models\Holiday;
-use App\Models\Designation;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use App\Models\ProjectTimeLog;
-use App\Models\EmployeeDetails;
-use App\Models\ExpensesCategory;
-use Illuminate\Support\Facades\DB;
-use Modules\Payroll\Entities\SalaryTds;
-use Modules\Payroll\Entities\SalarySlip;
-use Modules\Payroll\Entities\PayrollCycle;
-use Modules\Payroll\Entities\PayrollSetting;
 use App\Http\Controllers\AccountBaseController;
 use App\Models\Attendance;
+use App\Models\Designation;
+use App\Models\EmployeeDetails;
 use App\Models\EmployeeLeaveQuota;
 use App\Models\EmployeeShiftSchedule;
-use App\Models\LeaveSetting;
+use App\Models\Expense;
+use App\Models\ExpensesCategory;
+use App\Models\Holiday;
+use App\Models\Leave;
+use App\Models\ProjectTimeLog;
+use App\Models\Team;
+use App\Models\User;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Modules\Payroll\DataTables\PayrollDataTable;
-use Modules\Payroll\Entities\EmployeeSalaryGroup;
-use Modules\Payroll\Entities\SalaryPaymentMethod;
 use Modules\Payroll\Entities\EmployeeMonthlySalary;
+use Modules\Payroll\Entities\EmployeeSalaryGroup;
 use Modules\Payroll\Entities\EmployeeVariableComponent;
 use Modules\Payroll\Entities\OvertimeRequest;
+use Modules\Payroll\Entities\PayrollCycle;
+use Modules\Payroll\Entities\PayrollSetting;
+use Modules\Payroll\Entities\SalaryPaymentMethod;
+use Modules\Payroll\Entities\SalarySlip;
+use Modules\Payroll\Entities\SalaryTds;
 use Modules\Payroll\Notifications\SalaryStatusEmail;
 
 class PayrollController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = __('payroll::app.menu.payroll');
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array(PayrollSetting::MODULE_NAME, $this->user->modules));
+            abort_403(! in_array(PayrollSetting::MODULE_NAME, $this->user->modules));
 
             return $next($request);
         });
@@ -49,14 +47,14 @@ class PayrollController extends AccountBaseController
 
     /**
      * Display a listing of the resource.
+     *
      * @return Response
      */
-
     public function index(PayrollDataTable $dataTable)
     {
         $viewPermission = user()->permission('view_payroll');
 
-        abort_403(!in_array($viewPermission, ['all', 'added', 'owned', 'both']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'owned', 'both']));
 
         $this->departments = Team::all();
         $this->designations = Designation::all();
@@ -66,7 +64,7 @@ class PayrollController extends AccountBaseController
         $this->year = $now->format('Y');
         $this->month = $now->format('m');
 
-        if (!in_array('admin', user_roles())) {
+        if (! in_array('admin', user_roles())) {
             $this->month = 'all';
         }
 
@@ -86,6 +84,7 @@ class PayrollController extends AccountBaseController
 
     /**
      * Show the form for creating a new resource.
+     *
      * @return Response
      */
     public function create()
@@ -95,7 +94,7 @@ class PayrollController extends AccountBaseController
 
     /**
      * Store a newly created resource in storage.
-     * @param Request $request
+     *
      * @return Response
      */
     public function store(Request $request)
@@ -105,7 +104,8 @@ class PayrollController extends AccountBaseController
 
     /**
      * Show the specified resource.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Response
      */
     public function show($id)
@@ -114,7 +114,7 @@ class PayrollController extends AccountBaseController
 
         $this->salarySlip = SalarySlip::with('user', 'user.employeeDetail', 'salary_group', 'salary_payment_method', 'payroll_cycle')->findOrFail($id);
 
-        abort_403(!($viewPermission == 'all'
+        abort_403(! ($viewPermission == 'all'
             || ($viewPermission == 'owned' && $this->salarySlip->user_id == user()->id)
             || ($viewPermission == 'added' && $this->salarySlip->added_by == user()->id)
             || ($viewPermission == 'both' && ($this->salarySlip->user_id == user()->id || $this->salarySlip->added_by == user()->id))
@@ -126,25 +126,21 @@ class PayrollController extends AccountBaseController
         $extraJson = json_decode($this->salarySlip->extra_json, true);
         $additionalEarnings = json_decode($this->salarySlip->additional_earning_json, true);
 
-        if($this->salarySlip->payroll_cycle->cycle == 'monthly'){
-            $this->basicSalary = (float)$this->salarySlip->basic_salary;
-        }
-        elseif($this->salarySlip->payroll_cycle->cycle == 'weekly'){
-            $this->basicSalary = ((float)$this->salarySlip->basic_salary / 4);
-        }
-        elseif($this->salarySlip->payroll_cycle->cycle == 'semimonthly'){
-            $this->basicSalary = ((float)$this->salarySlip->basic_salary / 2);
-        }
-        elseif($this->salarySlip->payroll_cycle->cycle == 'biweekly'){
-            $perday = ((float)$this->salarySlip->basic_salary / 30);
+        if ($this->salarySlip->payroll_cycle->cycle == 'monthly') {
+            $this->basicSalary = (float) $this->salarySlip->basic_salary;
+        } elseif ($this->salarySlip->payroll_cycle->cycle == 'weekly') {
+            $this->basicSalary = ((float) $this->salarySlip->basic_salary / 4);
+        } elseif ($this->salarySlip->payroll_cycle->cycle == 'semimonthly') {
+            $this->basicSalary = ((float) $this->salarySlip->basic_salary / 2);
+        } elseif ($this->salarySlip->payroll_cycle->cycle == 'biweekly') {
+            $perday = ((float) $this->salarySlip->basic_salary / 30);
             $this->basicSalary = $perday * 14;
         }
 
         $earn = [];
 
-        foreach($this->earnings as $key => $value){
-            if($key != 'Total Hours')
-            {
+        foreach ($this->earnings as $key => $value) {
+            if ($key != 'Total Hours') {
                 $earn[] = $value;
             }
         }
@@ -153,38 +149,35 @@ class PayrollController extends AccountBaseController
 
         $this->fixedAllowance = $this->salarySlip->gross_salary - ($this->basicSalary + $earn);
 
-        if ($this->fixedAllowance < 0){
+        if ($this->fixedAllowance < 0) {
             $this->fixedAllowance = 0;
         }
 
-        if (!is_null($extraJson)) {
+        if (! is_null($extraJson)) {
 
             $this->earningsExtra = $extraJson['earnings'];
             $this->deductionsExtra = $extraJson['deductions'];
-        }
-        else {
+        } else {
             $this->earningsExtra = '';
             $this->deductionsExtra = '';
         }
 
-        if (!is_null($additionalEarnings)) {
+        if (! is_null($additionalEarnings)) {
             $this->earningsAdditional = $additionalEarnings['earnings'];
-        }
-        else {
+        } else {
             $this->earningsAdditional = '';
         }
 
         if ($this->earningsAdditional == '') {
-            $this->earningsAdditional = array();
+            $this->earningsAdditional = [];
         }
 
         if ($this->earningsExtra == '') {
-            $this->earningsExtra = array();
+            $this->earningsExtra = [];
         }
 
-
         if ($this->deductionsExtra == '') {
-            $this->deductionsExtra = array();
+            $this->deductionsExtra = [];
         }
 
         $this->payrollSetting = PayrollSetting::first();
@@ -197,15 +190,14 @@ class PayrollController extends AccountBaseController
         $this->employeeDetail = EmployeeDetails::where('user_id', '=', $this->salarySlip->user->id)->first()->withCustomFields();
         $this->currency = PayrollSetting::with('currency')->first();
 
-
-        if (!is_null($this->employeeDetail) && $this->employeeDetail->getCustomFieldGroupsWithFields()) {
+        if (! is_null($this->employeeDetail) && $this->employeeDetail->getCustomFieldGroupsWithFields()) {
             $this->fieldsData = $this->employeeDetail->getCustomFieldGroupsWithFields()->fields;
             $this->fields = $this->fieldsData->filter(function ($value, $key) {
                 return in_array($value->id, $this->extraFields);
             })->all();
         }
 
-        if($this->fixedAllowance < 1 && $this->fixedAllowance > -1 ){
+        if ($this->fixedAllowance < 1 && $this->fixedAllowance > -1) {
             $this->fixedAllowance = 0;
         }
 
@@ -222,7 +214,8 @@ class PayrollController extends AccountBaseController
 
     /**
      * Show the form for editing the specified resource.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Response
      */
     public function edit($id)
@@ -231,7 +224,7 @@ class PayrollController extends AccountBaseController
 
         $editPermission = user()->permission('edit_payroll');
 
-        abort_403(!($editPermission == 'all'
+        abort_403(! ($editPermission == 'all'
             || ($editPermission == 'owned' && $this->salarySlip->user_id == user()->id)
             || ($editPermission == 'added' && $this->salarySlip->added_by == user()->id)
             || ($editPermission == 'both' && ($this->salarySlip->user_id == user()->id || $this->salarySlip->added_by == user()->id))
@@ -243,45 +236,40 @@ class PayrollController extends AccountBaseController
         $extraJson = json_decode($this->salarySlip->extra_json, true);
         $additionalEarnings = json_decode($this->salarySlip->additional_earning_json, true);
 
-        if (!is_null($extraJson)) {
+        if (! is_null($extraJson)) {
             $this->earningsExtra = $extraJson['earnings'];
             $this->deductionsExtra = $extraJson['deductions'];
-        }
-        else {
+        } else {
             $this->earningsExtra = '';
             $this->deductionsExtra = '';
         }
 
-        if (!is_null($additionalEarnings)) {
+        if (! is_null($additionalEarnings)) {
             $this->earningsAdditional = $additionalEarnings['earnings'];
-        }
-        else {
+        } else {
             $this->earningsAdditional = '';
         }
 
         if ($this->earningsAdditional == '') {
-            $this->earningsAdditional = array();
+            $this->earningsAdditional = [];
         }
 
         if ($this->earningsExtra == '') {
-            $this->earningsExtra = array();
+            $this->earningsExtra = [];
         }
 
         if ($this->deductionsExtra == '') {
-            $this->deductionsExtra = array();
+            $this->deductionsExtra = [];
         }
 
-        if($this->salarySlip->payroll_cycle->cycle == 'monthly'){
+        if ($this->salarySlip->payroll_cycle->cycle == 'monthly') {
             $this->basicSalary = $this->salarySlip->basic_salary;
-        }
-        elseif($this->salarySlip->payroll_cycle->cycle == 'weekly'){
-            $this->basicSalary = ((float)$this->salarySlip->basic_salary / 4);
-        }
-        elseif($this->salarySlip->payroll_cycle->cycle == 'semimonthly'){
-            $this->basicSalary = ((float)$this->salarySlip->basic_salary / 2);
-        }
-        elseif($this->salarySlip->payroll_cycle->cycle == 'biweekly'){
-            $perday = (float)$this->salarySlip->basic_salary / 30;
+        } elseif ($this->salarySlip->payroll_cycle->cycle == 'weekly') {
+            $this->basicSalary = ((float) $this->salarySlip->basic_salary / 4);
+        } elseif ($this->salarySlip->payroll_cycle->cycle == 'semimonthly') {
+            $this->basicSalary = ((float) $this->salarySlip->basic_salary / 2);
+        } elseif ($this->salarySlip->payroll_cycle->cycle == 'biweekly') {
+            $perday = (float) $this->salarySlip->basic_salary / 30;
             $this->basicSalary = $perday * 14;
         }
 
@@ -290,30 +278,28 @@ class PayrollController extends AccountBaseController
 
         $this->earningsAdditionalTotal = isset($this->earningsAdditional) ? array_sum($this->earningsAdditional) : 0;
 
-        foreach($this->earnings as $key => $value){
-            if($key != 'Total Hours')
-            {
+        foreach ($this->earnings as $key => $value) {
+            if ($key != 'Total Hours') {
                 $earn[] = $value;
             }
         }
 
-        foreach($this->earningsExtra as $key => $value){
+        foreach ($this->earningsExtra as $key => $value) {
             $extraEarn[] = $value;
         }
 
-            $earn = array_sum($earn);
+        $earn = array_sum($earn);
 
-            $extraEarn = array_sum($extraEarn);
+        $extraEarn = array_sum($extraEarn);
 
-            $this->fixedAllowance = $this->salarySlip->gross_salary - ((float)$this->basicSalary + (float)$earn + (float)$extraEarn);
+        $this->fixedAllowance = $this->salarySlip->gross_salary - ((float) $this->basicSalary + (float) $earn + (float) $extraEarn);
 
-        if($this->fixedAllowance < 0 )
-            {
+        if ($this->fixedAllowance < 0) {
             $this->fixedAllowance = 0;
         }
 
-            $this->currency = PayrollSetting::with('currency')->first();
-            $this->salaryPaymentMethods = SalaryPaymentMethod::all();
+        $this->currency = PayrollSetting::with('currency')->first();
+        $this->salaryPaymentMethods = SalaryPaymentMethod::all();
 
         if (request()->ajax()) {
             $html = view('payroll::payroll.ajax.edit-modal', $this->data)->render();
@@ -329,8 +315,8 @@ class PayrollController extends AccountBaseController
 
     /**
      * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Response
      */
     public function update(Request $request, $id)
@@ -341,7 +327,7 @@ class PayrollController extends AccountBaseController
         $earningsName = $request->earnings_name;
         $earnings = $request->earnings;
         $deductionsName = $request->deductions_name;
-        $deductions = $request->deductions ? $request->deductions : array();
+        $deductions = $request->deductions ? $request->deductions : [];
         $extraEarningsName = $request->extra_earnings_name;
         $extraEarnings = $request->extra_earnings;
         $extraDeductionsName = $request->extra_deductions_name;
@@ -350,11 +336,11 @@ class PayrollController extends AccountBaseController
         $additionalEarningsName = $request->additional_name;
         $additionalEarningTotal = 0;
 
-        $earningsArray = array();
-        $deductionsArray = array();
-        $extraEarningsArray = array();
-        $extraDeductionsArray = array();
-        $additionalEarningsArray = array();
+        $earningsArray = [];
+        $deductionsArray = [];
+        $extraEarningsArray = [];
+        $extraDeductionsArray = [];
+        $additionalEarningsArray = [];
 
         if ($earnings != '') {
             foreach ($earnings as $key => $value) {
@@ -364,8 +350,7 @@ class PayrollController extends AccountBaseController
         }
 
         foreach ($deductions as $key => $value) {
-            if($value != 0 && $value != '')
-            {
+            if ($value != 0 && $value != '') {
                 $deductionsArray[$deductionsName[$key]] = floatval($value);
                 $totalDeductions = $totalDeductions + $deductionsArray[$deductionsName[$key]];
             }
@@ -373,14 +358,13 @@ class PayrollController extends AccountBaseController
 
         $salaryComponents = [
             'earnings' => $earningsArray,
-            'deductions' => $deductionsArray
+            'deductions' => $deductionsArray,
         ];
         $salaryComponentsJson = json_encode($salaryComponents);
 
         if ($extraEarnings != '') {
             foreach ($extraEarnings as $key => $value) {
-                if($value != 0 && $value != '')
-                {
+                if ($value != 0 && $value != '') {
                     $extraEarningsArray[$extraEarningsName[$key]] = floatval($value);
                     $grossEarning = $grossEarning + $extraEarningsArray[$extraEarningsName[$key]];
                 }
@@ -390,8 +374,7 @@ class PayrollController extends AccountBaseController
 
         if ($additionalEarnings != '') {
             foreach ($additionalEarnings as $key => $value) {
-                if($value != 0 && $value != '')
-                {
+                if ($value != 0 && $value != '') {
                     $additionalEarningsArray[$additionalEarningsName[$key]] = floatval($value);
                     $additionalEarningTotal = $additionalEarningTotal + $additionalEarningsArray[$additionalEarningsName[$key]];
                 }
@@ -400,8 +383,7 @@ class PayrollController extends AccountBaseController
 
         if ($extraDeductions != '') {
             foreach ($extraDeductions as $key => $value) {
-                if($value != 0 && $value != '')
-                {
+                if ($value != 0 && $value != '') {
                     $extraDeductionsArray[$extraDeductionsName[$key]] = floatval($value);
                     $totalDeductions = $totalDeductions + $extraDeductionsArray[$extraDeductionsName[$key]];
                 }
@@ -410,7 +392,7 @@ class PayrollController extends AccountBaseController
 
         $extraSalaryComponents = [
             'earnings' => $extraEarningsArray,
-            'deductions' => $extraDeductionsArray
+            'deductions' => $extraDeductionsArray,
         ];
 
         $extraSalaryComponentsJson = json_encode($extraSalaryComponents);
@@ -433,8 +415,8 @@ class PayrollController extends AccountBaseController
             $salarySlip->salary_payment_method_id = $request->salary_payment_method_id;
         }
 
-        $grossEarning   = $grossEarning + $request->fixed_allowance_input + $additionalEarningTotal;
-        $netSalary      = $netSalary + $request->fixed_allowance_input;
+        $grossEarning = $grossEarning + $request->fixed_allowance_input + $additionalEarningTotal;
+        $netSalary = $netSalary + $request->fixed_allowance_input;
 
         $salarySlip->status = $request->status;
         $salarySlip->expense_claims = $request->expense_claims;
@@ -455,7 +437,8 @@ class PayrollController extends AccountBaseController
 
     /**
      * Remove the specified resource from storage.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Response
      */
     public function destroy($id)
@@ -464,7 +447,7 @@ class PayrollController extends AccountBaseController
 
         $editPermission = user()->permission('delete_payroll');
 
-        abort_403(!($editPermission == 'all'
+        abort_403(! ($editPermission == 'all'
             || ($editPermission == 'owned' && $this->salarySlip->user_id == user()->id)
             || ($editPermission == 'added' && $this->salarySlip->added_by == user()->id)
             || ($editPermission == 'both' && ($this->salarySlip->user_id == user()->id || $this->salarySlip->added_by == user()->id))
@@ -478,7 +461,7 @@ class PayrollController extends AccountBaseController
     public function generatePaySlip(Request $request)
     {
         $this->addPermission = user()->permission('add_payroll');
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
 
         $month = explode(' ', $request->month);
         $payrollCycle = $request->cycle;
@@ -492,8 +475,7 @@ class PayrollController extends AccountBaseController
         $lastDayCheck = Carbon::parse($month[1]);
         $daysInMonth = $startDate->diffInDays($lastDayCheck->addDay()); // Days by start and end date
 
-        if ($request->userIds || $request->employee_id)
-        {
+        if ($request->userIds || $request->employee_id) {
             $users = User::with('employeeDetail')
                 ->join('employee_payroll_cycles', 'employee_payroll_cycles.user_id', '=', 'users.id')
                 ->join('employee_monthly_salaries', 'employee_monthly_salaries.user_id', '=', 'users.id')
@@ -501,18 +483,14 @@ class PayrollController extends AccountBaseController
                 ->where('employee_monthly_salaries.allow_generate_payroll', 'yes')
                 ->select('users.id', 'users.name', 'users.email', 'users.status', 'users.email_notifications', 'users.created_at', 'users.image', 'users.mobile', 'users.country_id', 'employee_monthly_salaries.id as salary_id');
 
-            if($request->userIds){
+            if ($request->userIds) {
                 $users = $users->whereIn('users.id', $request->userIds);
-            }
-            else{
+            } else {
                 $users = $users->whereIn('users.id', $request->employee_id);
             }
 
             $users = $users->get();
-        }
-
-        else if($request->department)
-        {
+        } elseif ($request->department) {
             $users = User::with('employeeDetail')
                 ->join('employee_payroll_cycles', 'employee_payroll_cycles.user_id', '=', 'users.id')
                 ->join('employee_monthly_salaries', 'employee_monthly_salaries.user_id', '=', 'users.id')
@@ -521,9 +499,7 @@ class PayrollController extends AccountBaseController
                 ->join('employee_details', 'employee_details.user_id', '=', 'users.id')
                 ->select('users.id', 'users.name', 'users.email', 'users.status', 'users.email_notifications', 'users.created_at', 'users.image', 'users.mobile', 'users.country_id', 'employee_monthly_salaries.id as salary_id')
                 ->where('employee_details.department_id', $request->department)->get();
-        }
-
-        else {
+        } else {
             $users = User::leftJoin('employee_details', 'employee_details.user_id', '=', 'users.id')
                 ->join('role_user', 'role_user.user_id', '=', 'users.id')
                 ->join('roles', 'roles.id', '=', 'role_user.role_id')
@@ -534,7 +510,7 @@ class PayrollController extends AccountBaseController
                 ->where('roles.name', '<>', 'client')
                 ->where('employee_monthly_salaries.allow_generate_payroll', 'yes')
                 ->orderBy('users.name', 'asc')
-                ->where(function ($query) use($startDate) {
+                ->where(function ($query) use ($startDate) {
                     $query->whereDate('employee_details.last_date', '>', $startDate->format('Y-m-d'))
                         ->orWhereNull('employee_details.last_date');
                 })
@@ -546,34 +522,31 @@ class PayrollController extends AccountBaseController
             $userId = $user->id;
             $employeeDetails = EmployeeDetails::where('user_id', $userId)->first();
             $joiningDate = Carbon::parse($employeeDetails->joining_date)->setTimezone($this->company->timezone);
-            $exitDate = (!is_null($employeeDetails->last_date)) ? Carbon::parse($employeeDetails->last_date)->setTimezone($this->company->timezone) : null;
+            $exitDate = (! is_null($employeeDetails->last_date)) ? Carbon::parse($employeeDetails->last_date)->setTimezone($this->company->timezone) : null;
             $payDays = $daysInMonth;
 
             if ($endDate->greaterThan($joiningDate)) {
                 $payDays = $this->countAttendace($startDate, $endDate, $userId, $daysInMonth, $useAttendance, $joiningDate, $exitDate);
 
                 // Check Joining date of the employee
-                if(!$useAttendance && $joiningDate->greaterThan($startDate))
-                {
+                if (! $useAttendance && $joiningDate->greaterThan($startDate)) {
                     $daysDifference = $joiningDate->diffInDays($startDate);
                     $payDays = ($payDays - $daysDifference);
                 }
 
-                if($useAttendance && $joiningDate->greaterThan($startDate))
-                {
+                if ($useAttendance && $joiningDate->greaterThan($startDate)) {
                     $holidayCountBeforeJoining = $this->getDayOffHolidaysCount($startDate->toDateString(), $joiningDate->subDay()->toDateString(), $userId); // Getting Holiday Data
                     $payDays = ($payDays - $holidayCountBeforeJoining['totalHolidayDayOffCount']);
                 }
 
                 // Check Exit date of the employee
-                if(!$useAttendance && (!is_null($exitDate) && $endDate->greaterThan($exitDate)))
-                {
+                if (! $useAttendance && (! is_null($exitDate) && $endDate->greaterThan($exitDate))) {
                     $daysDifference = $endDate->diffInDays($exitDate);
                     $payDays = ($payDays - $daysDifference);
                 }
 
                 $monthCur = $endDate->month;
-                $curMonthDays = Carbon::parse('01-' . $monthCur . '-' . $year)->daysInMonth;
+                $curMonthDays = Carbon::parse('01-'.$monthCur.'-'.$year)->daysInMonth;
                 $monthlySalary = EmployeeMonthlySalary::employeeNetSalary($userId, $endDate);
 
                 $curMonthDays = ($curMonthDays != 30 && $payrollCycleData->cycle == 'semimonthly') ? 30 : $curMonthDays;
@@ -589,23 +562,22 @@ class PayrollController extends AccountBaseController
 
                 if ($employeeBasicSalary->basic_value_type == 'fixed') {
                     $totalBasicSalary[] = $employeeBasicSalary->basic_salary;
-                }
-                else {
+                } else {
                     $totalBasicSalary[] = $employeeBasicSalary->effective_monthly_salary / 100 * $employeeBasicSalary->basic_salary;
                 }
 
                 $totalBasicSalary = array_sum($totalBasicSalary);
-                $earnings = array();
+                $earnings = [];
                 $earningsTotal = 0;
-                $deductions = array();
+                $deductions = [];
                 $deductionsTotal = 0;
 
-                if (!is_null($salaryGroup)) {
+                if (! is_null($salaryGroup)) {
                     $earnings = [];
                     $deductions = [];
 
                     foreach ($salaryGroup->salary_group->components as $key => $components) {
-                        $componentValueAmount = ($payrollCycleData->cycle != 'monthly') ? $components->component->{$payrollCycleData->cycle . '_value'} : $components->component->component_value;
+                        $componentValueAmount = ($payrollCycleData->cycle != 'monthly') ? $components->component->{$payrollCycleData->cycle.'_value'} : $components->component->component_value;
 
                         $componentCalculation = $this->componentCalculation($components, $basicSalary, $componentValueAmount, $payableSalary, $totalBasicSalary, $earningsTotal, $deductionsTotal, $earnings, $deductions, $user->salary_id);
                         $earningsTotal = $componentCalculation['earningsTotal'];
@@ -626,7 +598,7 @@ class PayrollController extends AccountBaseController
                 $slipYear = clone $startDate;
 
                 $financialYear = $this->getFinancialYear(
-                     $slipYear->month,
+                    $slipYear->month,
                     $slipYear->year,
                     $payrollSetting->finance_month
                 );
@@ -636,10 +608,10 @@ class PayrollController extends AccountBaseController
 
                 $userSlip = SalarySlip::where('user_id', $userId)
                     ->where(function ($query) use ($startDate, $endDate) {
-                            $query->whereBetween('salary_from', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
-                                ->orWhereBetween('salary_to', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')]);
+                        $query->whereBetween('salary_from', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
+                            ->orWhereBetween('salary_to', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')]);
                     })
-                        ->where('year', $slipYear->year)->where('status', 'paid')->first();
+                    ->where('year', $slipYear->year)->where('status', 'paid')->first();
 
                 if ($payrollSetting->tds_status) {
                     $deductions['TDS'] = 0;
@@ -662,7 +634,7 @@ class PayrollController extends AccountBaseController
                             ->where('status', 'paid')->get()
                             ->sum('tds');
 
-                        if(!is_null($userSlip)){
+                        if (! is_null($userSlip)) {
                             $tdsAlreadyPaid = ($tdsAlreadyPaid - $userSlip->tds);
                         }
 
@@ -698,7 +670,7 @@ class PayrollController extends AccountBaseController
 
                     $totalHours = 0;
 
-                    foreach($timeLogs as $timeLog){
+                    foreach ($timeLogs as $timeLog) {
                         $totalHours = $totalHours + $timeLog->total_hours;
                     }
 
@@ -723,17 +695,16 @@ class PayrollController extends AccountBaseController
                 // Get Remaining paid leaves
                 $paidLeaves = $this->getRemainingPaidLeaves($userId, $perDaySalary);
 
-                if($paidLeaves > 0)
-                {
+                if ($paidLeaves > 0) {
                     $earnings['Leave Reimburse'] = ($paidLeaves * $perDaySalary);
                     $payableSalary = $payableSalary + $earnings['Leave Reimburse'];
                 }
 
-                if($useAttendance){
+                if ($useAttendance) {
                     $unpaidDayCount = $daysInMonth - $payDays;
                     $unPaidAmount = round(($unpaidDayCount * $perDaySalary), 2);
 
-                    if($unPaidAmount > 0){
+                    if ($unPaidAmount > 0) {
                         $deductions['Unpaid Days Amount'] = $unPaidAmount;
                         $unpaidDaysAmount = $deductions['Unpaid Days Amount'];
                     }
@@ -741,7 +712,7 @@ class PayrollController extends AccountBaseController
 
                 $salaryComponents = [
                     'earnings' => $earnings,
-                    'deductions' => $deductions
+                    'deductions' => $deductions,
                 ];
 
                 $salaryComponentsJson = json_encode($salaryComponents);
@@ -805,9 +776,9 @@ class PayrollController extends AccountBaseController
     private function getFinancialYear($payrollMonth, $payrollYear, $financeStartMonth)
     {
         // Convert month numbers to ensure proper comparison (1-12)
-        $payrollMonth = (int)$payrollMonth;
-        $financeStartMonth = (int)$financeStartMonth;
-        $payrollYear = (int)$payrollYear;
+        $payrollMonth = (int) $payrollMonth;
+        $financeStartMonth = (int) $financeStartMonth;
+        $payrollYear = (int) $payrollYear;
 
         // Determine financial year start year based on payroll month
         $financialStartYear = ($payrollMonth < $financeStartMonth)
@@ -815,17 +786,17 @@ class PayrollController extends AccountBaseController
             : $payrollYear;
 
         // Calculate start and end dates
-        $financialYearStart = Carbon::parse($financialStartYear . '-' . $financeStartMonth . '-01')
+        $financialYearStart = Carbon::parse($financialStartYear.'-'.$financeStartMonth.'-01')
             ->setTimezone($this->company->timezone);
 
-        $financialYearEnd = Carbon::parse($financialStartYear . '-' . $financeStartMonth . '-01')
+        $financialYearEnd = Carbon::parse($financialStartYear.'-'.$financeStartMonth.'-01')
             ->addYear()
             ->subDay()
             ->setTimezone($this->company->timezone);
 
         return [
             'start' => $financialYearStart,
-            'end' => $financialYearEnd
+            'end' => $financialYearEnd,
         ];
     }
 
@@ -837,8 +808,7 @@ class PayrollController extends AccountBaseController
         if ($joiningDate->greaterThan($financialyearStart)) {
             $monthlySalary = EmployeeMonthlySalary::employeeNetSalary($userId);
             $currentSalary = $initialSalary = $monthlySalary['initialSalary'];
-        }
-        else {
+        } else {
             $monthlySalary = EmployeeMonthlySalary::employeeNetSalary($userId, $financialyearStart);
             $currentSalary = $initialSalary = $monthlySalary['netSalary'];
 
@@ -853,12 +823,11 @@ class PayrollController extends AccountBaseController
             if ($payrollMonthEndDate->greaterThan($incrementDate)) {
                 if (is_null($lastIncrement)) {
                     $payDays = $incrementDate->diffInDays($joiningDate, true);
-                    $perDaySalary = ($initialSalary / 30); /*30 is taken as no of days in a month*/
+                    $perDaySalary = ($initialSalary / 30); /* 30 is taken as no of days in a month */
                     $totalEarning = $payDays * $perDaySalary;
                     $lastIncrement = $incrementDate;
                     $currentSalary = $increment->amount + $initialSalary;
-                }
-                else {
+                } else {
                     $payDays = $incrementDate->diffInDays($lastIncrement, true);
                     $perDaySalary = ($currentSalary / 30);
                     $totalEarning = $totalEarning + ($payDays * $perDaySalary);
@@ -868,17 +837,15 @@ class PayrollController extends AccountBaseController
             }
         }
 
-        if (!is_null($lastIncrement)) {
+        if (! is_null($lastIncrement)) {
             $payDays = $financialyearEnd->diffInDays($lastIncrement, true);
             $perDaySalary = ($currentSalary / 30);
             $totalEarning = $totalEarning + ($payDays * $perDaySalary);
-        }
-        else {
+        } else {
 
             if ($joiningDate->greaterThan($financialyearStart)) {
                 $startFinanceDate = $joiningDate;
-            }
-            else {
+            } else {
                 $startFinanceDate = $financialyearStart;
             }
 
@@ -887,17 +854,15 @@ class PayrollController extends AccountBaseController
                 ->whereDate('salary_to', '<=', $financialyearEnd->format('Y-m-d'))
                 ->where('status', 'paid')->get();
 
-                $totalDaysSalary = $totalPaidSalary->sum('gross_salary');
+            $totalDaysSalary = $totalPaidSalary->sum('gross_salary');
 
             $totalDaysSalary = is_null($totalDaysSalary) ? 0 : $totalDaysSalary;
 
             if ($totalDaysSalary != 0) {
                 $payDays = $financialyearEnd->diffInDays($payrollMonthStartDate, true);
-            }
-            elseif ($joiningDate->greaterThan($financialyearStart)) {
+            } elseif ($joiningDate->greaterThan($financialyearStart)) {
                 $payDays = $financialyearEnd->diffInDays($joiningDate, true);
-            }
-            else {
+            } else {
                 $payDays = ($financialyearEnd->diffInDays($financialyearStart, true));
             }
 
@@ -907,7 +872,7 @@ class PayrollController extends AccountBaseController
 
             $slry = EmployeeMonthlySalary::where('user_id', $userId)->where('type', 'initial')->first();
 
-            $perDaySalary = ($slry->annual_salary / 365); /*365 is taken as no of days in a year*/
+            $perDaySalary = ($slry->annual_salary / 365); /* 365 is taken as no of days in a year */
 
             $totalEarning = $payDays * $perDaySalary;
 
@@ -930,20 +895,19 @@ class PayrollController extends AccountBaseController
         $salarySlipsTotal = SalarySlip::whereIn('id', $request->salaryIds)->sum('gross_salary');
 
         $data = [
-            'status' => $request->status
+            'status' => $request->status,
         ];
 
         if ($request->status == 'paid') {
             $data['salary_payment_method_id'] = $request->paymentMethod;
             $data['paid_on'] = Carbon::createFromFormat($this->company->date_format, $request->paidOn)->toDateString();
-        }
-        else {
+        } else {
             $data['salary_payment_method_id'] = null;
             $data['paid_on'] = null;
         }
 
         if ($request->add_expenses == 'yes') {
-            $expense = new Expense();
+            $expense = new Expense;
             $expenseTitle = null;
 
             if ($request->expense_title == null) {
@@ -951,13 +915,13 @@ class PayrollController extends AccountBaseController
                     $firstSalary = $salarySlips[0];
                     $payrollCycle = PayrollCycle::find($firstSalary->payroll_cycle_id);
 
-                    if (!is_null($payrollCycle) && $payrollCycle->cycle != 'monthly') {
-                        $expenseTitle = __('payroll::modules.payroll.salaryExpenseHeadingWithoutMonth') . ' ' . $firstSalary->salary_from->format($this->company->date_format) . ' - ' . $firstSalary->salary_to->format($this->company->date_format);
+                    if (! is_null($payrollCycle) && $payrollCycle->cycle != 'monthly') {
+                        $expenseTitle = __('payroll::modules.payroll.salaryExpenseHeadingWithoutMonth').' '.$firstSalary->salary_from->format($this->company->date_format).' - '.$firstSalary->salary_to->format($this->company->date_format);
                     }
                 }
 
                 if (is_null($expenseTitle)) {
-                    $expenseTitle = __('payroll::modules.payroll.salaryExpenseHeading') . ' ' . $request->month . ' ' . $request->year;
+                    $expenseTitle = __('payroll::modules.payroll.salaryExpenseHeading').' '.$request->month.' '.$request->year;
                 }
             }
 
@@ -996,8 +960,7 @@ class PayrollController extends AccountBaseController
                 $salaryJson = json_decode($salary->salary_json, true);
                 $earnings = $salaryJson['earnings'];
 
-                if(isset($earnings['Leave Reimburse']) && $earnings['Leave Reimburse'] > 0)
-                {
+                if (isset($earnings['Leave Reimburse']) && $earnings['Leave Reimburse'] > 0) {
                     EmployeeLeaveQuota::where('user_id', $salary->user_id)
                         ->update(['leaves_to_reimburse' => 0]);
                 }
@@ -1010,20 +973,20 @@ class PayrollController extends AccountBaseController
     public function getExpenseTitle(Request $request)
     {
         if ($request->status == 'yes') {
-            $expense = new Expense();
+            $expense = new Expense;
             $expenseTitle = null;
 
             if (isset($salarySlips[0])) {
                 $firstSalary = $salarySlips[0];
                 $payrollCycle = PayrollCycle::find($firstSalary->payroll_cycle_id);
 
-                if (!is_null($payrollCycle) && $payrollCycle->cycle != 'monthly') {
-                    $expenseTitle = __('payroll::modules.payroll.salaryExpenseHeadingWithoutMonth') . ' ' . $firstSalary->salary_from->format($this->company->date_format) . ' - ' . $firstSalary->salary_to->format($this->company->date_format);
+                if (! is_null($payrollCycle) && $payrollCycle->cycle != 'monthly') {
+                    $expenseTitle = __('payroll::modules.payroll.salaryExpenseHeadingWithoutMonth').' '.$firstSalary->salary_from->format($this->company->date_format).' - '.$firstSalary->salary_to->format($this->company->date_format);
                 }
             }
 
             if (is_null($expenseTitle)) {
-                $expenseTitle = __('payroll::modules.payroll.salaryExpenseHeading') . ' ' . $request->month . ' ' . $request->year;
+                $expenseTitle = __('payroll::modules.payroll.salaryExpenseHeading').' '.$request->month.' '.$request->year;
             }
         } else {
             $expenseTitle = '';
@@ -1050,7 +1013,7 @@ class PayrollController extends AccountBaseController
             $pdf = $pdfOption['pdf'];
             $filename = $pdfOption['fileName'];
 
-            return request()->view ? $pdf->stream($filename . '.pdf') : $pdf->download($filename . '.pdf');
+            return request()->view ? $pdf->stream($filename.'.pdf') : $pdf->download($filename.'.pdf');
         }
     }
 
@@ -1067,61 +1030,54 @@ class PayrollController extends AccountBaseController
         $extraJson = json_decode($this->salarySlip->extra_json, true);
         $additionalEarnings = json_decode($this->salarySlip->additional_earning_json, true);
 
-        if($this->salarySlip->payroll_cycle->cycle == 'monthly'){
+        if ($this->salarySlip->payroll_cycle->cycle == 'monthly') {
             $this->basicSalary = $this->salarySlip->basic_salary;
-        }
-        elseif($this->salarySlip->payroll_cycle->cycle == 'weekly'){
+        } elseif ($this->salarySlip->payroll_cycle->cycle == 'weekly') {
             $this->basicSalary = $this->salarySlip->basic_salary / 4;
-        }
-        elseif($this->salarySlip->payroll_cycle->cycle == 'semimonthly'){
+        } elseif ($this->salarySlip->payroll_cycle->cycle == 'semimonthly') {
             $this->basicSalary = $this->salarySlip->basic_salary / 2;
-        }
-        elseif($this->salarySlip->payroll_cycle->cycle == 'biweekly'){
+        } elseif ($this->salarySlip->payroll_cycle->cycle == 'biweekly') {
             $perday = $this->salarySlip->basic_salary / 30;
             $this->basicSalary = $perday * 14;
         }
 
-        if (!is_null($extraJson)) {
+        if (! is_null($extraJson)) {
             $this->earningsExtra = $extraJson['earnings'];
             $this->deductionsExtra = $extraJson['deductions'];
-        }
-        else {
+        } else {
             $this->earningsExtra = '';
             $this->deductionsExtra = '';
         }
 
-        if (!is_null($additionalEarnings)) {
+        if (! is_null($additionalEarnings)) {
             $this->earningsAdditional = $additionalEarnings['earnings'];
-        }
-        else {
+        } else {
             $this->earningsAdditional = '';
         }
 
         if ($this->earningsAdditional == '') {
-            $this->earningsAdditional = array();
+            $this->earningsAdditional = [];
         }
 
         if ($this->earningsExtra == '') {
-            $this->earningsExtra = array();
+            $this->earningsExtra = [];
         }
 
         if ($this->deductionsExtra == '') {
-            $this->deductionsExtra = array();
+            $this->deductionsExtra = [];
         }
 
         $earn = [];
         $extraEarn = [];
 
-        foreach($this->earnings as $key => $value){
-            if($key != 'Total Hours')
-            {
+        foreach ($this->earnings as $key => $value) {
+            if ($key != 'Total Hours') {
                 $earn[] = $value;
             }
         }
 
-        foreach($this->earningsExtra as $key => $value){
-            if($key != 'Total Hours')
-            {
+        foreach ($this->earningsExtra as $key => $value) {
+            if ($key != 'Total Hours') {
                 $extraEarn[] = $value;
             }
         }
@@ -1130,7 +1086,7 @@ class PayrollController extends AccountBaseController
 
         $extraEarn = array_sum($extraEarn);
 
-        if($this->basicSalary == '' || is_null($this->basicSalary)){
+        if ($this->basicSalary == '' || is_null($this->basicSalary)) {
             $this->basicSalary = 0.0;
         }
 
@@ -1149,7 +1105,7 @@ class PayrollController extends AccountBaseController
         $this->employeeDetail = EmployeeDetails::where('user_id', '=', $this->salarySlip->user->id)->first()->withCustomFields();
         $this->currency = PayrollSetting::with('currency')->first();
 
-        if (!is_null($this->employeeDetail) && $this->employeeDetail->getCustomFieldGroupsWithFields()) {
+        if (! is_null($this->employeeDetail) && $this->employeeDetail->getCustomFieldGroupsWithFields()) {
             $this->fieldsData = $this->employeeDetail->getCustomFieldGroupsWithFields()->fields;
             $this->fields = $this->fieldsData->filter(function ($value, $key) {
                 return in_array($value->id, $this->extraFields);
@@ -1163,11 +1119,11 @@ class PayrollController extends AccountBaseController
         $month = Carbon::createFromFormat('m', $this->salarySlip->month)->translatedFormat('F');
 
         $pdf->loadView('payroll::payroll.pdfview', $this->data);
-        $filename = $this->salarySlip->user->employeeDetail->employee_id . '-' . $month . '-' . $this->salarySlip->year;
+        $filename = $this->salarySlip->user->employeeDetail->employee_id.'-'.$month.'-'.$this->salarySlip->year;
 
         return [
             'pdf' => $pdf,
-            'fileName' => $filename
+            'fileName' => $filename,
         ];
 
     }
@@ -1182,7 +1138,7 @@ class PayrollController extends AccountBaseController
             $year = $request->year;
             $dateData = [];
             $weeks = 52;
-            $carbonFirst = new Carbon('first Monday of January ' . $year);
+            $carbonFirst = new Carbon('first Monday of January '.$year);
 
             for ($i = 1; $i <= $weeks; $i++) {
                 $dateData['start_date'][] = $carbonFirst->toDateString();
@@ -1215,7 +1171,7 @@ class PayrollController extends AccountBaseController
             $year = $request->year;
             $dateData = [];
             $weeks = 26;
-            $carbonFirst = new Carbon('first Monday of January ' . $year);
+            $carbonFirst = new Carbon('first Monday of January '.$year);
 
             $this->current = 0;
             $index = 0;
@@ -1274,8 +1230,7 @@ class PayrollController extends AccountBaseController
 
                 if ($endSecondDay > $daysInMonth) {
                     $dateData['end_date'][] = $endDateDataNew = Carbon::createFromDate($year, $month, $daysInMonth)->toDateString();
-                }
-                else {
+                } else {
                     $dateData['end_date'][] = $endDateDataNew = Carbon::createFromDate($year, $month, $endSecondDay)->toDateString();
                 }
 
@@ -1307,8 +1262,8 @@ class PayrollController extends AccountBaseController
 
             foreach ($months as $month) {
                 $date = Carbon::createFromDate($year, $month);
-                $dateData['start_date'][] = Carbon::parse(Carbon::parse('01-' . $month . '-' . $year))->startOfMonth()->toDateString();
-                $dateData['end_date'][] = Carbon::parse(Carbon::parse('01-' . $month . '-' . $year))->endOfMonth()->toDateString();
+                $dateData['start_date'][] = Carbon::parse(Carbon::parse('01-'.$month.'-'.$year))->startOfMonth()->toDateString();
+                $dateData['end_date'][] = Carbon::parse(Carbon::parse('01-'.$month.'-'.$year))->endOfMonth()->toDateString();
             }
 
             if ($request->has('with_view')) {
@@ -1332,7 +1287,7 @@ class PayrollController extends AccountBaseController
             $markApprovedLeavesPaid = true;
 
             $HolidayStartDate = ($joiningDate->greaterThan($startDate)) ? $joiningDate : $startDate;
-            $HolidayEndDate = (!is_null($exitDate) && $endDate->greaterThan($exitDate)) ? $exitDate : $endDate;
+            $HolidayEndDate = (! is_null($exitDate) && $endDate->greaterThan($exitDate)) ? $exitDate : $endDate;
 
             $holidayDetails = $this->getDayOffHolidaysCount($HolidayStartDate->toDateString(), $HolidayEndDate->toDateString(), $userId); // Getting Holiday Data
             $holidayData = $holidayDetails['holidays']->pluck('holiday_date')->values(); // Getting Holiday Data
@@ -1349,11 +1304,11 @@ class PayrollController extends AccountBaseController
                 ->where('status', 'approved')->get();
 
             $unpaidHaldDayCount = $leaveCount->filter(function ($value, $key) {
-                return $value->duration == "half day" && $value->paid == 0;
+                return $value->duration == 'half day' && $value->paid == 0;
             })->count();
 
             $unpaidFullDayCount = $leaveCount->filter(function ($value, $key) {
-                return $value->duration <> 'half day' && $value->paid == 0;
+                return $value->duration != 'half day' && $value->paid == 0;
             })->count();
 
             $halfDayCountUnpaid = ($unpaidHaldDayCount / 2);
@@ -1363,7 +1318,7 @@ class PayrollController extends AccountBaseController
             })->count();
 
             $PaidLeaveFullDayCount = $leaveCount->filter(function ($value, $key) {
-                return $value->duration <> 'half day' && $value->paid == 1;
+                return $value->duration != 'half day' && $value->paid == 1;
             })->count();
 
             $halfDayCountPaid = ($PaidLeaveHalfDayCount / 2);
@@ -1399,15 +1354,15 @@ class PayrollController extends AccountBaseController
         $holiday = $holiday->where(function ($query) use ($user) {
             $query->where(function ($subquery) use ($user) {
                 $subquery->where(function ($q) use ($user) {
-                    $q->where('department_id_json', 'like', '%"' . $user->employeeDetail->department_id . '"%')
+                    $q->where('department_id_json', 'like', '%"'.$user->employeeDetail->department_id.'"%')
                         ->orWhereNull('department_id_json');
                 });
                 $subquery->where(function ($q) use ($user) {
-                    $q->where('designation_id_json', 'like', '%"' . $user->employeeDetail->designation_id . '"%')
+                    $q->where('designation_id_json', 'like', '%"'.$user->employeeDetail->designation_id.'"%')
                         ->orWhereNull('designation_id_json');
                 });
                 $subquery->where(function ($q) use ($user) {
-                    $q->where('employment_type_json', 'like', '%"' . $user->employeeDetail->employment_type . '"%')
+                    $q->where('employment_type_json', 'like', '%"'.$user->employeeDetail->employment_type.'"%')
                         ->orWhereNull('employment_type_json');
                 });
             });
@@ -1421,7 +1376,7 @@ class PayrollController extends AccountBaseController
         $holidays = self::getHolidayByDates($startDate, $endDate, $userId);
 
         $userDayOfDates = EmployeeShiftSchedule::select(DB::raw('DATE_FORMAT(date, "%Y-%m-%d") as day_off_date'))
-            ->whereHas('shift', function($query) {
+            ->whereHas('shift', function ($query) {
                 $query->where('shift_name', 'Day Off');
             })
             ->where('user_id', $userId)
@@ -1446,7 +1401,7 @@ class PayrollController extends AccountBaseController
         ];
     }
 
-    public function componentCalculation($components, $basicSalary, $componentValueAmount, $payableSalary, $totalBasicSalary, $earningsTotal, $deductionsTotal, $earnings, $deductions, $salaryId=null)
+    public function componentCalculation($components, $basicSalary, $componentValueAmount, $payableSalary, $totalBasicSalary, $earningsTotal, $deductionsTotal, $earnings, $deductions, $salaryId = null)
     {
 
         if ($components->component->component_type == 'earning') {
@@ -1454,22 +1409,19 @@ class PayrollController extends AccountBaseController
                 $basicSalary = $basicSalary - $componentValueAmount;
 
                 $earnings[$components->component->component_name] = floatval($componentValueAmount);
-            }
-            elseif ($components->component->value_type == 'percent') {
+            } elseif ($components->component->value_type == 'percent') {
                 $componentValue = ($componentValueAmount / 100) * $payableSalary;
                 $basicSalary = $basicSalary - $componentValue;
 
                 $earnings[$components->component->component_name] = round(floatval($componentValue), 2);
-            }
-            elseif ($components->component->value_type == 'basic_percent') {
+            } elseif ($components->component->value_type == 'basic_percent') {
 
                 $componentValue = ($componentValueAmount / 100) * $totalBasicSalary;
                 $basicSalary = $basicSalary - $componentValue;
                 $earnings[$components->component->component_name] = round(floatval($componentValue), 2);
-            }
-            else {
+            } else {
                 $variableValue = EmployeeVariableComponent::where('monthly_salary_id', $salaryId)->where('variable_component_id', $components->salary_component_id)->first();
-                $componentValue = (!is_null($variableValue)) ? $variableValue->variable_value : $componentValueAmount;
+                $componentValue = (! is_null($variableValue)) ? $variableValue->variable_value : $componentValueAmount;
 
                 $basicSalary = $basicSalary - floatval($componentValue);
 
@@ -1477,22 +1429,18 @@ class PayrollController extends AccountBaseController
             }
 
             $earningsTotal = $earningsTotal + $earnings[$components->component->component_name];
-        }
-        else { // calculate deductions
+        } else { // calculate deductions
             if ($components->component->value_type == 'fixed') {
                 $deductions[$components->component->component_name] = floatval($componentValueAmount);
-            }
-            elseif ($components->component->value_type == 'percent') {
+            } elseif ($components->component->value_type == 'percent') {
                 $componentValue = ($componentValueAmount / 100) * $payableSalary;
                 $deductions[$components->component->component_name] = round(floatval($componentValue), 2);
-            }
-            elseif ($components->component->value_type == 'basic_percent') {
+            } elseif ($components->component->value_type == 'basic_percent') {
                 $componentValue = ($componentValueAmount / 100) * $totalBasicSalary;
                 $deductions[$components->component->component_name] = round(floatval($componentValue), 2);
-            }
-            else {
+            } else {
                 $variableValue = EmployeeVariableComponent::where('monthly_salary_id', $salaryId)->where('variable_component_id', $components->salary_component_id)->first();
-                $componentValueAm = (!is_null($variableValue)) ? $variableValue->variable_value : $componentValueAmount;
+                $componentValueAm = (! is_null($variableValue)) ? $variableValue->variable_value : $componentValueAmount;
                 $deductions[$components->component->component_name] = floatval($componentValueAm);
             }
 
@@ -1504,7 +1452,7 @@ class PayrollController extends AccountBaseController
             'earningsTotal' => $earningsTotal,
             'earnings' => $earnings,
             'deductionsTotal' => $deductionsTotal,
-            'deductions' => $deductions
+            'deductions' => $deductions,
         ];
     }
 
@@ -1518,8 +1466,7 @@ class PayrollController extends AccountBaseController
                 $tdsValue = ($tds->salary_percent / 100) * $taxableSalary;
 
                 $salaryTdsTotal = $salaryTdsTotal + $tdsValue;
-            }
-            elseif ($annualSalary >= $tds->salary_from && $annualSalary >= $tds->salary_to) {
+            } elseif ($annualSalary >= $tds->salary_from && $annualSalary >= $tds->salary_to) {
 
                 $previousLimit = $tds->salary_to - $previousLimit;
                 $taxableSalary = $taxableSalary - $previousLimit;
@@ -1553,10 +1500,10 @@ class PayrollController extends AccountBaseController
             ->where('user_id', $userId)
             ->whereNotIn(DB::raw('DATE(attendances.clock_in_time)'), $holidayData)->get();
 
-        return (isset($totalPresent[0]->presentCount)) ? ($totalPresent[0]->presentCount/2) : 0;
+        return (isset($totalPresent[0]->presentCount)) ? ($totalPresent[0]->presentCount / 2) : 0;
     }
 
-    public function byDepartment($payrollCycle=null, $departmentId=null)
+    public function byDepartment($payrollCycle = null, $departmentId = null)
     {
         $users = User::join('employee_details', 'employee_details.user_id', '=', 'users.id');
 
@@ -1574,10 +1521,9 @@ class PayrollController extends AccountBaseController
         $options = '';
 
         foreach ($users as $item) {
-            $options .= '<option  data-content="<div class=\'d-inline-block mr-1\'><img class=\'taskEmployeeImg rounded-circle\' src=' . $item->image_url . ' ></div>  ' . $item->name . '" value="' . $item->id . '"> ' . $item->name . ' </option>';
+            $options .= '<option  data-content="<div class=\'d-inline-block mr-1\'><img class=\'taskEmployeeImg rounded-circle\' src='.$item->image_url.' ></div>  '.$item->name.'" value="'.$item->id.'"> '.$item->name.' </option>';
         }
 
         return Reply::dataOnly(['status' => 'success', 'data' => $options]);
     }
-
 }

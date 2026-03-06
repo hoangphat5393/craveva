@@ -4,19 +4,18 @@ namespace App\Http\Controllers\SuperAdmin\FrontSetting;
 
 use App\Helper\Files;
 use App\Helper\Reply;
-use Illuminate\Http\Request;
+use App\Http\Controllers\AccountBaseController;
+use App\Http\Requests\SuperAdmin\ContactSetting\ContactSettingRequest;
+use App\Http\Requests\SuperAdmin\FrontSetting\UpdateDetail;
+use App\Http\Requests\SuperAdmin\FrontSetting\UpdatePriceSetting;
 use App\Models\GlobalSetting;
 use App\Models\LanguageSetting;
 use App\Models\SuperAdmin\FrontDetail;
 use App\Models\SuperAdmin\TrFrontDetail;
-use App\Http\Controllers\AccountBaseController;
-use App\Http\Requests\SuperAdmin\FrontSetting\UpdateDetail;
-use App\Http\Requests\SuperAdmin\FrontSetting\UpdatePriceSetting;
-use App\Http\Requests\SuperAdmin\ContactSetting\ContactSettingRequest;
+use Illuminate\Http\Request;
 
 class FrontSettingController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -75,7 +74,7 @@ class FrontSettingController extends AccountBaseController
 
         if ($request->hasFile('image')) {
 
-            if (!is_null($row)) {
+            if (! is_null($row)) {
                 Files::deleteFile($row->image, 'front');
             }
 
@@ -90,12 +89,11 @@ class FrontSettingController extends AccountBaseController
 
         return Reply::successWithData(__('messages.updateSuccess'), [
             'data' => $request->header_title,
-            'lang' => $row->language->language_code
+            'lang' => $row->language->language_code,
         ]);
     }
 
     /**
-     * @param Request $request
      * @return array
      */
     public function authUpdate(Request $request)
@@ -173,7 +171,7 @@ class FrontSettingController extends AccountBaseController
         $data = [
             'price_title' => $request->price_title,
             'price_description' => $request->price_description,
-            'language_setting_id' => $request->language_setting_id !== 0 ? $request->language_setting_id : null
+            'language_setting_id' => $request->language_setting_id !== 0 ? $request->language_setting_id : null,
         ];
 
         if ($row) {
@@ -184,7 +182,7 @@ class FrontSettingController extends AccountBaseController
 
         return Reply::successWithData(__('messages.updateSuccess'), [
             'data' => $request->price_title,
-            'lang' => $row->language->language_code
+            'lang' => $row->language->language_code,
         ]);
     }
 }

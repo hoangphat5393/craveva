@@ -6,11 +6,10 @@ use App\Models\UnitType;
 
 trait UnitTypeSaveTrait
 {
-
     public function unitType($model)
     {
         /* If the unit_id is already set, there's nothing to do */
-        if (!is_null($model->unit_id)) {
+        if (! is_null($model->unit_id)) {
             return $model;
         }
 
@@ -24,5 +23,4 @@ trait UnitTypeSaveTrait
 
         return $model;
     }
-
 }

@@ -12,6 +12,7 @@ use App\Traits\HasCompany;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read mixed $icon
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ContractType newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ContractType newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ContractType query()
@@ -19,14 +20,16 @@ use App\Traits\HasCompany;
  * @method static \Illuminate\Database\Eloquent\Builder|ContractType whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ContractType whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ContractType whereUpdatedAt($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ContractType whereCompanyId($value)
+ *
  * @mixin \Eloquent
  */
 class ContractType extends BaseModel
 {
-
     use HasCompany;
 
     //

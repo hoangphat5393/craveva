@@ -1,9 +1,7 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use App\Models\DashboardWidget;
+use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
@@ -16,16 +14,16 @@ return new class extends Migration
     {
         // Add documents widget to private dashboard for all companies
         $companies = \App\Models\Company::select('id')->get();
-        
+
         foreach ($companies as $company) {
             DashboardWidget::updateOrCreate(
                 [
                     'widget_name' => 'documents',
                     'dashboard_type' => 'private-dashboard',
-                    'company_id' => $company->id
+                    'company_id' => $company->id,
                 ],
                 [
-                    'status' => 1
+                    'status' => 1,
                 ]
             );
         }

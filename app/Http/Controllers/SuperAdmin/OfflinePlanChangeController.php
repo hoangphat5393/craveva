@@ -2,21 +2,20 @@
 
 namespace App\Http\Controllers\SuperAdmin;
 
+use App\DataTables\SuperAdmin\OfflinePlanChangeDataTable;
 use App\Helper\Files;
 use App\Helper\Reply;
+use App\Http\Controllers\AccountBaseController;
+use App\Http\Requests\SuperAdmin\Billing\OfflinePlanChangeRequest;
 use App\Models\Company;
 use App\Models\GlobalSetting;
-use Illuminate\Support\Carbon;
 use App\Models\SuperAdmin\GlobalInvoice;
-use App\Models\SuperAdmin\OfflinePlanChange;
 use App\Models\SuperAdmin\GlobalSubscription;
-use App\Http\Controllers\AccountBaseController;
-use App\DataTables\SuperAdmin\OfflinePlanChangeDataTable;
-use App\Http\Requests\SuperAdmin\Billing\OfflinePlanChangeRequest;
+use App\Models\SuperAdmin\OfflinePlanChange;
+use Illuminate\Support\Carbon;
 
 class OfflinePlanChangeController extends AccountBaseController
 {
-
     /**
      * SuperAdminInvoiceController constructor.
      */
@@ -41,7 +40,7 @@ class OfflinePlanChangeController extends AccountBaseController
     public function index(OfflinePlanChangeDataTable $dataTable)
     {
         $this->viewPermission = user()->permission('view_request');
-        abort_403(!($this->viewPermission == 'all'));
+        abort_403(! ($this->viewPermission == 'all'));
 
         $this->global = GlobalSetting::first();
         $this->totalRequest = OfflinePlanChange::count();
@@ -52,12 +51,11 @@ class OfflinePlanChangeController extends AccountBaseController
     public function show($id)
     {
         $this->viewPermission = user()->permission('view_request');
-        abort_403(!($this->viewPermission == 'all'));
+        abort_403(! ($this->viewPermission == 'all'));
 
         $this->offlinePlanChange = OfflinePlanChange::with('company', 'package', 'offlineMethod')->findOrFail($id);
         $this->pageTitle = $this->offlinePlanChange->company->company_name;
         $this->view = 'super-admin.offline-plan-change.ajax.show';
-
 
         if (request()->ajax()) {
             $html = view($this->view, $this->data)->render();
@@ -73,7 +71,7 @@ class OfflinePlanChangeController extends AccountBaseController
 
         abort_403(user()->permission('accept_reject_request') !== 'all');
 
-        $this->offlinePlanChange = OfflinePlanChange::with('company','package')->findOrFail($id);
+        $this->offlinePlanChange = OfflinePlanChange::with('company', 'package')->findOrFail($id);
         $this->pageTitle = $this->offlinePlanChange->company->company_name;
 
         $view = ($status == 'verified') ? 'super-admin.offline-plan-change.ajax.verify' : 'super-admin.offline-plan-change.ajax.reject';
@@ -84,7 +82,7 @@ class OfflinePlanChangeController extends AccountBaseController
     public function changePlan(OfflinePlanChangeRequest $request)
     {
         $this->acceptPermission = user()->permission('accept_reject_request');
-        abort_403(!($this->acceptPermission == 'all'));
+        abort_403(! ($this->acceptPermission == 'all'));
 
         $offlinePlanChange = OfflinePlanChange::with('package')->findOrFail($request->id);
         if ($request->status == 'verified') {
@@ -95,7 +93,7 @@ class OfflinePlanChangeController extends AccountBaseController
             $offlinePlanChange->next_pay_date = ($offlinePlanChange->package->package == 'lifetime') ? null : Carbon::parse($request->next_pay_date)->format('Y-m-d');
             $offlinePlanChange->status = 'verified';
 
-            $subscription = new GlobalSubscription();
+            $subscription = new GlobalSubscription;
             $subscription->company_id = $offlinePlanChange->company_id;
             $subscription->package_id = $offlinePlanChange->package_id;
             $subscription->package_type = $offlinePlanChange->package_type;
@@ -105,7 +103,7 @@ class OfflinePlanChangeController extends AccountBaseController
             $subscription->transaction_id = str(str()->random(15))->upper();
             $subscription->save();
 
-            $invoice = new GlobalInvoice();
+            $invoice = new GlobalInvoice;
             $invoice->company_id = $offlinePlanChange->company_id;
             $invoice->global_subscription_id = $subscription->id;
             $invoice->package_id = $offlinePlanChange->package_id;
@@ -127,8 +125,7 @@ class OfflinePlanChangeController extends AccountBaseController
             $company->licence_expire_on = ($offlinePlanChange->package->package == 'lifetime') ? null : Carbon::createFromFormat($this->global->date_format, $request->next_pay_date)->format('Y-m-d');
 
             $company->save();
-        }
-        elseif ($request->status == 'rejected') {
+        } elseif ($request->status == 'rejected') {
             $offlinePlanChange->remark = $request->remark;
             $offlinePlanChange->status = 'rejected';
         }
@@ -140,7 +137,7 @@ class OfflinePlanChangeController extends AccountBaseController
     }
 
     /**
-     * @param int $id
+     * @param  int  $id
      * @return string
      */
     public function download($id)
@@ -148,14 +145,14 @@ class OfflinePlanChangeController extends AccountBaseController
         $file = OfflinePlanChange::whereRaw('md5(id) = ?', $id)->firstOrFail();
 
         $ext = pathinfo($file->filename, PATHINFO_EXTENSION);
-        $filename = $file->name ? $file->name . '.' . $ext : $file->filename;
+        $filename = $file->name ? $file->name.'.'.$ext : $file->filename;
 
         try {
-            $filePath = public_path(Files::UPLOAD_FOLDER . '/' . OfflinePlanChange::FILE_PATH . '/' . $file->file_name);
+            $filePath = public_path(Files::UPLOAD_FOLDER.'/'.OfflinePlanChange::FILE_PATH.'/'.$file->file_name);
+
             return response()->download($filePath, $filename);
         } catch (\Exception $exception) {
             return $exception->getMessage();
         }
     }
-
 }

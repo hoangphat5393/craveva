@@ -16,7 +16,6 @@ use Modules\Subdomain\Notifications\ForgotCompany;
 
 class SubdomainController extends FrontBaseController
 {
-
     /**
      * Create a new controller instance.
      *
@@ -28,7 +27,7 @@ class SubdomainController extends FrontBaseController
     }
 
     /**
-     * @param null $slug
+     * @param  null  $slug
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function workspace()
@@ -37,7 +36,7 @@ class SubdomainController extends FrontBaseController
         $this->pageTitle = __('subdomain::app.core.workspaceTitle');
         $this->themeSetting = ThemeSetting::withoutGlobalScopes([CompanyScope::class])->first();
 
-        if ((isset(global_setting()->frontend_disable) && $this->global->frontend_disable) || $this->global->setup_homepage == "custom") {
+        if ((isset(global_setting()->frontend_disable) && $this->global->frontend_disable) || $this->global->setup_homepage == 'custom') {
             return view('subdomain::login-subdomain', $this->data);
         }
 
@@ -51,7 +50,7 @@ class SubdomainController extends FrontBaseController
         $this->pageTitle = __('subdomain::app.core.forgotCompanyTitle');
         $this->themeSetting = ThemeSetting::withoutGlobalScopes([CompanyScope::class])->first();
 
-        if ((isset($this->global->frontend_disable) && $this->global->frontend_disable) || $this->global->setup_homepage == "custom") {
+        if ((isset($this->global->frontend_disable) && $this->global->frontend_disable) || $this->global->setup_homepage == 'custom') {
             return view('subdomain::forgot-subdomain', $this->data);
         }
 
@@ -64,11 +63,11 @@ class SubdomainController extends FrontBaseController
     {
         $user = User::where('email', $request->email)->first();
 
-        if (!$user) {
+        if (! $user) {
             return Reply::error(__('subdomain::app.messages.forgetMailFail'));
         }
 
-        if (!$user->company) {
+        if (! $user->company) {
             return Reply::error(__('subdomain::app.messages.noCompanyLined'));
         }
 
@@ -80,7 +79,7 @@ class SubdomainController extends FrontBaseController
 
     public function checkDomain(CheckSubdomainRequest $request)
     {
-        return Reply::redirect(str_replace(request()->getHost(), $request->sub_domain . '.' . getDomain(), route('login')));
+        return Reply::redirect(str_replace(request()->getHost(), $request->sub_domain.'.'.getDomain(), route('login')));
     }
 
     public function notifyDomain(Request $request)
@@ -90,5 +89,4 @@ class SubdomainController extends FrontBaseController
 
         return Reply::success('Successfully notified to all admins');
     }
-
 }

@@ -15,7 +15,7 @@ class UpdatePolicy extends FormRequest
 
         $rules = [
             'title' => 'required',
-            'date' => 'required|date_format:"' . $setting->date_format . '"',
+            'date' => 'required|date_format:"'.$setting->date_format.'"',
         ];
 
         if (request()->status == 'draft' && request()->file == 'file') {

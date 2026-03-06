@@ -7,19 +7,17 @@ use App\Models\ClientDetails;
 use App\Models\EmployeeDetails;
 use App\Models\Role;
 use App\Models\UniversalSearch;
-use Illuminate\Database\Seeder;
 use App\Models\User;
 use App\Models\UserAuth;
+use Illuminate\Database\Seeder;
 
 class UsersTableSeeder extends Seeder
 {
-
     /**
      * Run the database seeds.
      *
      * @return void
      */
-
     public function run($companyId)
     {
 
@@ -29,10 +27,9 @@ class UsersTableSeeder extends Seeder
         $employeeRole = Role::where('name', 'employee')->where('company_id', $companyId)->first();
         $clientRole = Role::where('name', 'client')->where('company_id', $companyId)->first();
 
-
         $faker = \Faker\Factory::create();
 
-        $user = new User();
+        $user = new User;
         $user->name = $faker->name;
         $user->company_id = $companyId;
 
@@ -48,7 +45,7 @@ class UsersTableSeeder extends Seeder
             $this->addEmployeeDetails($user, $employeeRole, $companyId);
             $user->roles()->attach($adminRole->id); // id only
 
-            $user = new User();
+            $user = new User;
             $user->name = $faker->name;
             $user->company_id = $companyId;
             $user->email = 'employee@example.com';
@@ -62,12 +59,12 @@ class UsersTableSeeder extends Seeder
             $this->addEmployeeDetails($user, $employeeRole, $companyId);
 
             // Client details
-            $user = new User();
+            $user = new User;
             $user->name = $faker->name;
             $user->company_id = $companyId;
             $user->email = 'client@example.com';
         } else {
-            $user->email = 'admin' . $companyId . '@example.com';
+            $user->email = 'admin'.$companyId.'@example.com';
             $user->gender = 'male';
             $user->save();
 
@@ -78,10 +75,10 @@ class UsersTableSeeder extends Seeder
             $this->addEmployeeDetails($user, $employeeRole, $companyId);
             $user->roles()->attach($adminRole->id); // id only
 
-            $user = new User();
+            $user = new User;
             $user->name = $faker->name;
             $user->company_id = $companyId;
-            $user->email = 'employee' . $companyId . '@example.com';
+            $user->email = 'employee'.$companyId.'@example.com';
             $user->gender = 'male';
             $user->save();
 
@@ -92,10 +89,10 @@ class UsersTableSeeder extends Seeder
             $this->addEmployeeDetails($user, $employeeRole, $companyId);
 
             // Client details
-            $user = new User();
+            $user = new User;
             $user->name = $faker->name;
             $user->company_id = $companyId;
-            $user->email = 'client' . $companyId . '@example.com';
+            $user->email = 'client'.$companyId.'@example.com';
         }
 
         $user->save();
@@ -106,9 +103,8 @@ class UsersTableSeeder extends Seeder
 
         $this->addClientDetails($user, $clientRole, $companyId);
 
-
         // Multiple client create
-        User::factory()->count((int)$count)->make()
+        User::factory()->count((int) $count)->make()
             ->each(function (User $user) use ($clientRole, $companyId) {
 
                 $user->company_id = $companyId;
@@ -118,12 +114,12 @@ class UsersTableSeeder extends Seeder
                 $user->user_auth_id = $userAuth->id;
                 $user->saveQuietly();
 
-                $this->command->info('Seeding client: ' . ($user->id));
+                $this->command->info('Seeding client: '.($user->id));
                 $this->addClientDetails($user, $clientRole, $companyId);
             });
 
         // Multiple employee create
-        User::factory((int)$count)->make()
+        User::factory((int) $count)->make()
             ->each(function (User $user) use ($employeeRole, $companyId) {
 
                 $user->company_id = $companyId;
@@ -133,7 +129,7 @@ class UsersTableSeeder extends Seeder
                 $user->user_auth_id = $userAuth->id;
                 $user->saveQuietly();
 
-                $this->command->info('employee employee: ' . ($user->id));
+                $this->command->info('employee employee: '.($user->id));
                 $this->addEmployeeDetails($user, $employeeRole, $companyId);
             });
     }
@@ -141,11 +137,11 @@ class UsersTableSeeder extends Seeder
     private function addEmployeeDetails($user, $employeeRole, $companyId)
     {
         $faker = \Faker\Factory::create();
-        $employee = new EmployeeDetails();
+        $employee = new EmployeeDetails;
         $employee->user_id = $user->id;
         $employee->company_id = $companyId;
         /* @phpstan-ignore-line */
-        $employee->employee_id = 'EMP-' . (EmployeeDetails::where('company_id', $companyId)->count() + 1);
+        $employee->employee_id = 'EMP-'.(EmployeeDetails::where('company_id', $companyId)->count() + 1);
         /* @phpstan-ignore-line */
         $employee->address = $faker->address;
         $employee->about_me = 'I am super human';
@@ -157,7 +153,7 @@ class UsersTableSeeder extends Seeder
         $employee->marital_status = MaritalStatus::Single;
         $employee->save();
 
-        $search = new UniversalSearch();
+        $search = new UniversalSearch;
         $search->searchable_id = $user->id;
         $search->company_id = $companyId;
         $search->title = $user->name;
@@ -172,7 +168,7 @@ class UsersTableSeeder extends Seeder
     private function addClientDetails($user, $clientRole, $companyId)
     {
         $faker = \Faker\Factory::create();
-        $search = new UniversalSearch();
+        $search = new UniversalSearch;
         $search->searchable_id = $user->id;
         $search->company_id = $companyId;
         /* @phpstan-ignore-line */
@@ -182,7 +178,7 @@ class UsersTableSeeder extends Seeder
         $search->module_type = 'client';
         $search->save();
 
-        $client = new ClientDetails();
+        $client = new ClientDetails;
         $client->user_id = $user->id;
         $client->company_id = $companyId;
         /* @phpstan-ignore-line */

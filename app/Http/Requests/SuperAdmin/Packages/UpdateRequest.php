@@ -9,7 +9,6 @@ use Illuminate\Validation\Rule;
 
 class UpdateRequest extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -42,7 +41,7 @@ class UpdateRequest extends FormRequest
 
         $package = Package::find($this->route('package'));
 
-        if(request()->package == 'lifetime' && request()->package_type != 'free'){
+        if (request()->package == 'lifetime' && request()->package_type != 'free') {
             $data['price'] = 'required';
         }
         if ($package->default === 'trial') {
@@ -52,7 +51,7 @@ class UpdateRequest extends FormRequest
             return $data;
         }
 
-        if($package->default === 'yes'){
+        if ($package->default === 'yes') {
             return $data;
         }
 
@@ -66,11 +65,11 @@ class UpdateRequest extends FormRequest
 
                 $data['monthly_price'] = 'required|numeric|gt:0';
 
-                if($gateways->razorpay_status == 'active'){
+                if ($gateways->razorpay_status == 'active') {
                     $data['razorpay_monthly_plan_id'] = 'required';
                 }
 
-                if($gateways->stripe_status == 'active'){
+                if ($gateways->stripe_status == 'active') {
                     $data['stripe_monthly_plan_id'] = 'required';
                 }
             }
@@ -78,11 +77,11 @@ class UpdateRequest extends FormRequest
             if ($this->has('annual_status')) {
                 $data['annual_price'] = 'required|numeric|gt:0';
 
-                if($gateways->razorpay_status == 'active'){
+                if ($gateways->razorpay_status == 'active') {
                     $data['razorpay_annual_plan_id'] = 'required';
                 }
 
-                if($gateways->stripe_status == 'active'){
+                if ($gateways->stripe_status == 'active') {
                     $data['stripe_annual_plan_id'] = 'required';
                 }
             }
@@ -90,5 +89,4 @@ class UpdateRequest extends FormRequest
 
         return $data;
     }
-
 }

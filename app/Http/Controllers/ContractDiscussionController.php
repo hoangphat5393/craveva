@@ -3,21 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Helper\Reply;
+use App\Helper\UserService;
 use App\Http\Requests\Admin\Contract\StoreDiscussionRequest;
 use App\Http\Requests\Admin\Contract\UpdateDiscussionRequest;
-use App\Models\ContractDiscussion;
-use App\Helper\UserService;
 use App\Models\ClientContact;
+use App\Models\ContractDiscussion;
 
 class ContractDiscussionController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'app.menu.contracts';
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('contracts', $this->user->modules));
+            abort_403(! in_array('contracts', $this->user->modules));
 
             return $next($request);
         });
@@ -26,7 +25,7 @@ class ContractDiscussionController extends AccountBaseController
     public function store(StoreDiscussionRequest $request)
     {
         $this->addPermission = user()->permission('add_contract_discussion');
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
 
         $this->userId = UserService::getUserId();
         $this->cId = [];
@@ -35,7 +34,7 @@ class ContractDiscussionController extends AccountBaseController
             $this->cId = ClientContact::where('user_id', user()->id)->pluck('client_id')->toArray();
         }
 
-        $contractDiscussion = new ContractDiscussion();
+        $contractDiscussion = new ContractDiscussion;
         $contractDiscussion->from = $this->userId;
         $contractDiscussion->message = $request->comment;
         $contractDiscussion->contract_id = $request->contract_id;
@@ -59,7 +58,7 @@ class ContractDiscussionController extends AccountBaseController
             $this->cId = ClientContact::where('user_id', user()->id)->pluck('client_id')->toArray();
         }
 
-        abort_403(!($this->editPermission == 'all' || ($this->editPermission == 'added' && ($this->comment->added_by == user()->id || $this->comment->added_by == $this->userId || in_array($this->comment->added_by, $this->cId)))));
+        abort_403(! ($this->editPermission == 'all' || ($this->editPermission == 'added' && ($this->comment->added_by == user()->id || $this->comment->added_by == $this->userId || in_array($this->comment->added_by, $this->cId)))));
 
         return view('contracts.discussions.edit', $this->data);
 
@@ -75,7 +74,7 @@ class ContractDiscussionController extends AccountBaseController
         if (in_array('client', user_roles()) && user()->is_client_contact == null) {
             $this->cId = ClientContact::where('user_id', user()->id)->pluck('client_id')->toArray();
         }
-        abort_403(!($this->editPermission == 'all' || ($this->editPermission == 'added' && ($comment->added_by == user()->id || $comment->added_by == $this->userId || in_array($comment->added_by, $this->cId)))));
+        abort_403(! ($this->editPermission == 'all' || ($this->editPermission == 'added' && ($comment->added_by == user()->id || $comment->added_by == $this->userId || in_array($comment->added_by, $this->cId)))));
 
         $comment->message = $request->comment;
         $comment->save();
@@ -88,7 +87,7 @@ class ContractDiscussionController extends AccountBaseController
     }
 
     /**
-     * @param int $id
+     * @param  int  $id
      * @return mixed|void
      */
     public function destroy($id)
@@ -102,7 +101,7 @@ class ContractDiscussionController extends AccountBaseController
             $this->cId = ClientContact::where('user_id', user()->id)->pluck('client_id')->toArray();
         }
 
-        abort_403(!($this->deletePermission == 'all' || ($this->deletePermission == 'added' && ($comment->added_by == user()->id || $comment->added_by == $this->userId || in_array($comment->added_by, $this->cId)))));
+        abort_403(! ($this->deletePermission == 'all' || ($this->deletePermission == 'added' && ($comment->added_by == user()->id || $comment->added_by == $this->userId || in_array($comment->added_by, $this->cId)))));
 
         $comment_contract_id = $comment->contract_id;
         $comment->delete();
@@ -112,5 +111,4 @@ class ContractDiscussionController extends AccountBaseController
         return Reply::dataOnly(['status' => 'success', 'view' => $view]);
 
     }
-
 }

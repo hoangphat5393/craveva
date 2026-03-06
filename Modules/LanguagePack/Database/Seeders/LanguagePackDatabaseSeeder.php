@@ -6,10 +6,8 @@ use Illuminate\Database\Seeder;
 
 class LanguagePackDatabaseSeeder extends Seeder
 {
-
     public function run()
     {
         //
     }
-
 }

@@ -9,10 +9,10 @@ use Illuminate\Queue\SerializesModels;
 
 class NewExpenseEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $expense;
+
     public $status;
 
     public function __construct(Expense $expense, $status)
@@ -20,5 +20,4 @@ class NewExpenseEvent
         $this->expense = $expense;
         $this->status = $status;
     }
-
 }

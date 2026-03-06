@@ -2,17 +2,16 @@
 
 namespace App\Observers\SuperAdmin;
 
-use App\Models\User;
-use App\Models\SuperAdmin\SupportTicket;
 use App\Events\SuperAdmin\NewSupportTicketEvent;
 use App\Events\SuperAdmin\SupportTicketRequesterEvent;
+use App\Models\SuperAdmin\SupportTicket;
+use App\Models\User;
 
 class SupportTicketObserver
 {
-
     public function created(SupportTicket $ticket)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
 
             $users = User::allSuperAdmin();
 
@@ -26,11 +25,10 @@ class SupportTicketObserver
 
     public function updated(SupportTicket $ticket)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             if ($ticket->isDirty('agent_id')) {
                 event(new SupportTicketRequesterEvent($ticket, $ticket->agent));
             }
         }
     }
-
 }

@@ -8,14 +8,11 @@ use Illuminate\Support\Facades\Notification;
 
 class DiscussionReplyListener
 {
-
     /**
      * Handle the event.
      *
-     * @param DiscussionReplyEvent $event
      * @return void
      */
-
     public function handle(DiscussionReplyEvent $event)
     {
         $client = $event->discussionReply?->discussion?->project?->client;
@@ -26,5 +23,4 @@ class DiscussionReplyListener
 
         Notification::send($event->notifyUser, new NewDiscussionReply($event->discussionReply));
     }
-
 }

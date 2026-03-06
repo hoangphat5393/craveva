@@ -7,13 +7,14 @@ use Illuminate\Support\Carbon;
 use Modules\QRCode\Entities\QrCodeData;
 use Modules\QRCode\Enums\Format;
 use Modules\QRCode\Support\QrCode;
-use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
 
 class QRCodeDataTable extends BaseDataTable
 {
     private $addPermission;
+
     private $editPermission;
+
     private $deletePermission;
 
     public function __construct()
@@ -27,7 +28,7 @@ class QRCodeDataTable extends BaseDataTable
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
@@ -40,28 +41,28 @@ class QRCodeDataTable extends BaseDataTable
 
                     <div class="dropdown">
                         <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" type="link"
-                            id="dropdownMenuLink-' . $row->id . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            id="dropdownMenuLink-'.$row->id.'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="icon-options-vertical icons"></i>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-' . $row->id . '" tabindex="0">';
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-'.$row->id.'" tabindex="0">';
 
-            $action .= '<a href="javascript:;" class="qr-img-lightbox dropdown-item" data-id="' . $row->id . '"><i class="fa fa-eye mr-2"></i>'.__('app.view').'</a>';
+            $action .= '<a href="javascript:;" class="qr-img-lightbox dropdown-item" data-id="'.$row->id.'"><i class="fa fa-eye mr-2"></i>'.__('app.view').'</a>';
 
             if ($this->editPermission != 'none') {
-                $action .= '<a class="dropdown-item" href="' . route('qrcode.edit', [$row->id]) . '">
+                $action .= '<a class="dropdown-item" href="'.route('qrcode.edit', [$row->id]).'">
                     <i class="fa fa-edit mr-2"></i>
-                    ' . trans('app.edit') . '
+                    '.trans('app.edit').'
                 </a>';
             }
 
             foreach (Format::cases() as $format) {
-                $action .= '<a href="' . route('qrcode.download', [$row->id, $format]) . '" class="dropdown-item"><i class="' . $format->iconClass() . ' mr-2"></i>' . __('app.download') . ' ' . $format->label() . '</a>';
+                $action .= '<a href="'.route('qrcode.download', [$row->id, $format]).'" class="dropdown-item"><i class="'.$format->iconClass().' mr-2"></i>'.__('app.download').' '.$format->label().'</a>';
             }
 
             if ($this->deletePermission != 'none') {
-                $action .= '<a class="dropdown-item delete-qr-table-row" href="javascript:;" data-qr-id="' . $row->id . '">
+                $action .= '<a class="dropdown-item delete-qr-table-row" href="javascript:;" data-qr-id="'.$row->id.'">
                 <i class="fa fa-trash mr-2"></i>
-                    ' . trans('app.delete') . '
+                    '.trans('app.delete').'
                 </a>';
             }
 
@@ -74,8 +75,8 @@ class QRCodeDataTable extends BaseDataTable
 
         $datatables->addColumn('qr_code', function ($row) {
 
-            $html = ' <a href="javascript:;" class="qr-img-lightbox" data-id="' . $row->id . '">
-                <img src="' . QrCode::buildQrCode($row, false)->png()->build()->getDataUri() . '" width="100" height="100" class="img-thumbnail">
+            $html = ' <a href="javascript:;" class="qr-img-lightbox" data-id="'.$row->id.'">
+                <img src="'.QrCode::buildQrCode($row, false)->png()->build()->getDataUri().'" width="100" height="100" class="img-thumbnail">
             </a>';
 
             return $html;
@@ -86,9 +87,8 @@ class QRCodeDataTable extends BaseDataTable
             return $row->type->badge();
         });
 
-
         $datatables->editColumn('title', function ($row) {
-            $html = '<h5 class="mb-0 f-13 text-darkest-grey"><a href="javascript:;" class="qr-img-lightbox" data-id="' . $row->id . '">' . $row->title . '</a></h5>';
+            $html = '<h5 class="mb-0 f-13 text-darkest-grey"><a href="javascript:;" class="qr-img-lightbox" data-id="'.$row->id.'">'.$row->title.'</a></h5>';
 
             return $html;
         });
@@ -118,8 +118,8 @@ class QRCodeDataTable extends BaseDataTable
 
         if ($this->request()->searchText != '') {
             $model->where(function ($query) {
-                $query->where('data', 'like', '%' . $this->request()->searchText . '%')
-                    ->orWhere('title', 'like', '%' . $this->request()->searchText . '%');
+                $query->where('data', 'like', '%'.$this->request()->searchText.'%')
+                    ->orWhere('title', 'like', '%'.$this->request()->searchText.'%');
             });
         }
 
@@ -175,5 +175,4 @@ class QRCodeDataTable extends BaseDataTable
         ];
 
     }
-
 }

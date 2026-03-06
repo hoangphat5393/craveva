@@ -1,9 +1,9 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
 use App\Models\Company;
 use App\Models\CustomField;
 use App\Models\CustomFieldGroup;
+use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
@@ -13,7 +13,7 @@ return new class extends Migration
     public function up(): void
     {
         // Ensure we don't break if Company table is empty or doesn't exist yet (though it should)
-        if (!class_exists(Company::class)) {
+        if (! class_exists(Company::class)) {
             return;
         }
 
@@ -25,13 +25,13 @@ return new class extends Migration
                 [
                     'name' => 'Product',
                     'model' => 'App\Models\Product',
-                    'company_id' => $company->id
+                    'company_id' => $company->id,
                 ]
             );
 
             // 2. Storage Condition (Select)
-            if (!CustomField::where('custom_field_group_id', $group->id)->where('name', 'storage_condition')->exists()) {
-                $field = new CustomField();
+            if (! CustomField::where('custom_field_group_id', $group->id)->where('name', 'storage_condition')->exists()) {
+                $field = new CustomField;
                 $field->custom_field_group_id = $group->id;
                 $field->company_id = $company->id;
                 $field->label = 'Storage Condition';
@@ -44,8 +44,8 @@ return new class extends Migration
             }
 
             // 3. Certification (Text)
-            if (!CustomField::where('custom_field_group_id', $group->id)->where('name', 'certification')->exists()) {
-                $field = new CustomField();
+            if (! CustomField::where('custom_field_group_id', $group->id)->where('name', 'certification')->exists()) {
+                $field = new CustomField;
                 $field->custom_field_group_id = $group->id;
                 $field->company_id = $company->id;
                 $field->label = 'Certification';
@@ -63,7 +63,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        if (!class_exists(Company::class)) {
+        if (! class_exists(Company::class)) {
             return;
         }
 

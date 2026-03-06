@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
 use App\Models\Module;
+use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
@@ -12,8 +12,8 @@ return new class extends Migration
      */
     public function up()
     {
-         // Add ServerManager module to modules table
-         Module::firstOrCreate([
+        // Add ServerManager module to modules table
+        Module::firstOrCreate([
             'module_name' => 'servermanager',
         ], [
             'description' => 'Manage server hostings, domains, and related services',

@@ -27,7 +27,7 @@ class UpdateRequest extends CoreRequest
     public function rules()
     {
         \Illuminate\Support\Facades\Validator::extend('check_superadmin', function ($attribute, $value, $parameters, $validator) {
-            return !\App\Models\User::withoutGlobalScopes([\App\Scopes\ActiveScope::class, \App\Scopes\CompanyScope::class])
+            return ! \App\Models\User::withoutGlobalScopes([\App\Scopes\ActiveScope::class, \App\Scopes\CompanyScope::class])
                 ->where('email', $value)
                 ->where('is_superadmin', 1)
                 ->exists();
@@ -35,7 +35,7 @@ class UpdateRequest extends CoreRequest
 
         $rules = [
             'client_name' => 'required',
-            'client_email' => 'nullable|email:rfc,strict|unique:leads,client_email,'.$this->route('lead_contact').',id,company_id,' . company()->id,
+            'client_email' => 'nullable|email:rfc,strict|unique:leads,client_email,'.$this->route('lead_contact').',id,company_id,'.company()->id,
         ];
 
         $rules = $this->customFieldRules($rules);
@@ -61,5 +61,4 @@ class UpdateRequest extends CoreRequest
             'client_email.check_superadmin' => __('superadmin.emailAlreadyExist'),
         ];
     }
-
 }

@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int|null $last_updated_by
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ClientNote newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ClientNote newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ClientNote query()
@@ -35,18 +36,20 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder|ClientNote whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ClientNote whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ClientNote whereUpdatedAt($value)
+ *
  * @property-read \App\Models\User|null $client
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ClientUserNote[] $members
  * @property-read int|null $members_count
  * @property int|null $lead_id
  * @property int $is_lead_show
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|LeadNote whereIsLeadShow($value)
  * @method static \Illuminate\Database\Eloquent\Builder|LeadNote whereLeadId($value)
+ *
  * @mixin \Eloquent
  */
 class LeadNote extends BaseModel
 {
-
     public function client(): BelongsTo
     {
         return $this->belongsTo(User::class, 'lead_id');
@@ -56,5 +59,4 @@ class LeadNote extends BaseModel
     {
         return $this->hasMany(LeadUserNote::class, 'lead_note_id');
     }
-
 }

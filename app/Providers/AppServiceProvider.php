@@ -13,13 +13,11 @@ use Laravel\Sanctum\Sanctum;
 
 class AppServiceProvider extends ServiceProvider
 {
-
     /**
      * Register any application services.
      *
      * @return void
      */
-
     public function register()
     {
         Cashier::ignoreMigrations();

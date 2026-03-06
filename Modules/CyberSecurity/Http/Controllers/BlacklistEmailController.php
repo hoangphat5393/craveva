@@ -3,22 +3,21 @@
 namespace Modules\CyberSecurity\Http\Controllers;
 
 use App\Helper\Reply;
-use Illuminate\Http\Request;
-use Illuminate\Contracts\Support\Renderable;
-use Modules\CyberSecurity\Entities\BlacklistEmail;
 use App\Http\Controllers\AccountBaseController;
+use Illuminate\Contracts\Support\Renderable;
+use Illuminate\Http\Request;
+use Modules\CyberSecurity\Entities\BlacklistEmail;
 use Modules\CyberSecurity\Http\Requests\StoreEmailRequest;
 
 class BlacklistEmailController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'cybersecurity::app.menu.cybersecurity';
         $this->activeSettingMenu = 'cybersecurity';
         $this->middleware(function ($request, $next) {
-            abort_403(!user()->is_superadmin);
+            abort_403(! user()->is_superadmin);
 
             return $next($request);
         });
@@ -26,6 +25,7 @@ class BlacklistEmailController extends AccountBaseController
 
     /**
      * @return View|Factory
+     *
      * @throws BindingResolutionException
      */
     public function create()
@@ -35,7 +35,8 @@ class BlacklistEmailController extends AccountBaseController
 
     /**
      * Store a newly created resource in storage.
-     * @param Request $request
+     *
+     * @param  Request  $request
      * @return Renderable
      */
     public function store(StoreEmailRequest $request)
@@ -47,7 +48,8 @@ class BlacklistEmailController extends AccountBaseController
 
     /**
      * Show the form for editing the specified resource.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function edit($id)
@@ -59,8 +61,9 @@ class BlacklistEmailController extends AccountBaseController
 
     /**
      * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
+     *
+     * @param  Request  $request
+     * @param  int  $id
      * @return Renderable
      */
     public function update(StoreEmailRequest $request, $id)
@@ -74,13 +77,14 @@ class BlacklistEmailController extends AccountBaseController
 
     /**
      * Remove the specified resource from storage.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function destroy($id)
     {
         BlacklistEmail::destroy($id);
+
         return Reply::success(__('messages.deleteSuccess'));
     }
-
 }

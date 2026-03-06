@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class OfflinePaymentRequest extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -24,15 +23,14 @@ class OfflinePaymentRequest extends FormRequest
     {
         return [
             'slip' => 'required|mimes:jpg,png,jpeg,pdf,doc,docx,rtf',
-            'description' => 'required'
+            'description' => 'required',
         ];
     }
 
     public function attributes()
     {
         return [
-            'slip' => __('app.receipt')
+            'slip' => __('app.receipt'),
         ];
     }
-
 }

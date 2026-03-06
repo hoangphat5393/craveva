@@ -12,8 +12,8 @@ class BiometricDeviceStore extends FormRequest
     public function rules(): array
     {
         return [
-            'device_name' => 'required|string|max:255|unique:biometric_devices,device_name,NULL,id,company_id,' . company()->id,
-            'serial_number' => 'required|string|max:100|unique:biometric_devices,serial_number,NULL,id,company_id,' . company()->id
+            'device_name' => 'required|string|max:255|unique:biometric_devices,device_name,NULL,id,company_id,'.company()->id,
+            'serial_number' => 'required|string|max:100|unique:biometric_devices,serial_number,NULL,id,company_id,'.company()->id,
         ];
     }
 

@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read mixed $file_url
  * @property-read mixed $icon
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|EventFile newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|EventFile newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|EventFile query()
@@ -33,14 +34,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @method static \Illuminate\Database\Eloquent\Builder|EventFile whereLastUpdatedBy($value)
  * @method static \Illuminate\Database\Eloquent\Builder|EventFile whereSize($value)
  * @method static \Illuminate\Database\Eloquent\Builder|EventFile whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class EventFile extends BaseModel
 {
-
-    use IconTrait;
-
     use HasFactory;
+    use IconTrait;
 
     const FILE_PATH = 'events';
 
@@ -48,7 +48,6 @@ class EventFile extends BaseModel
 
     public function getFileUrlAttribute()
     {
-        return asset_url_local_s3(EventFile::FILE_PATH . '/' . $this->event_id . '/' . $this->hashname);
+        return asset_url_local_s3(EventFile::FILE_PATH.'/'.$this->event_id.'/'.$this->hashname);
     }
-
 }

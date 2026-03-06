@@ -1,9 +1,7 @@
 <?php
 
 use App\Models\Company;
-use App\Models\EmployeeDetails;
 use Illuminate\Database\Migrations\Migration;
-use Modules\Onboarding\Entities\OnboardingCompletedTask;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Modules\Onboarding\Entities\OnboardingNotificationSetting;
@@ -13,7 +11,6 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-
     public function up(): void
     {
 
@@ -33,16 +30,15 @@ return new class extends Migration
 
             $notificationDetails = [
                 ['company_id' => $company->id, 'setting_name' => 'Onboard Notification', 'send_email' => 'yes', 'slug' => 'onboard-notification'],
-                ['company_id' => $company->id, 'setting_name' => 'Onboard Notification', 'send_email' => 'yes', 'slug' => 'offboard-notification']
+                ['company_id' => $company->id, 'setting_name' => 'Onboard Notification', 'send_email' => 'yes', 'slug' => 'offboard-notification'],
             ];
 
-            foreach($notificationDetails as $notification){
+            foreach ($notificationDetails as $notification) {
                 $notify = OnboardingNotificationSetting::where('company_id', $notification['company_id'])->where('slug', $notification['slug'])->first();
 
-                if(!$notify){
+                if (! $notify) {
                     OnboardingNotificationSetting::create($notification);
                 }
-
 
             }
         }
@@ -56,5 +52,4 @@ return new class extends Migration
     {
         //
     }
-
 };

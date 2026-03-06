@@ -10,6 +10,7 @@ class TicketReplyUser extends Pivot
     use HasFactory;
 
     protected $guarded = ['id'];
+
     protected $table = 'ticket_reply_users';
 
     public function user()
@@ -21,5 +22,4 @@ class TicketReplyUser extends Pivot
     {
         return $this->belongsTo(TicketReply::class, 'ticket_reply_id');
     }
-
 }

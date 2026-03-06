@@ -11,7 +11,6 @@ return new class extends Migration
      *
      * @return void
      */
-
     public function up()
     {
         Schema::table('log_time_for', function (Blueprint $table) {
@@ -52,5 +51,4 @@ return new class extends Migration
         });
 
     }
-
 };

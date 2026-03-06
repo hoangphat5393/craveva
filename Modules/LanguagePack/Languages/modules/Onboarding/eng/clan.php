@@ -25,7 +25,7 @@ return [
         'action' => 'Action',
         'onboardingUsers' => 'Onboarding Users',
         'offboardingUsers' => 'Offboarding Users',
-        'notificationSetting' => 'Notification Setting'
+        'notificationSetting' => 'Notification Setting',
     ],
     'startOnboarding' => 'Start Onboarding',
     'startOffboarding' => 'Start Offboarding',

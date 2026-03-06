@@ -15,11 +15,12 @@ class VolumeRuleController extends AccountBaseController
         parent::__construct();
         $this->pageTitle = __('pricing::app.menu.pricing');
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('pricing', array_map('strtolower', $this->user->modules)));
+            abort_403(! in_array('pricing', array_map('strtolower', $this->user->modules)));
             // Ensure strict company context
-            if (!company()) {
+            if (! company()) {
                 abort(403, 'Company context is required.');
             }
+
             return $next($request);
         });
     }
@@ -66,9 +67,9 @@ class VolumeRuleController extends AccountBaseController
             'product_id' => 'nullable|exists:products,id',
         ]);
 
-        $rule = new VolumeDiscountRule();
+        $rule = new VolumeDiscountRule;
         $rule->company_id = user()->company_id;
-        
+
         if (is_null($rule->company_id)) {
             abort(403, 'Company context is required to create volume discount rules.');
         }
@@ -148,8 +149,8 @@ class VolumeRuleController extends AccountBaseController
 
         $rule = VolumeDiscountRule::find($request->id);
 
-        if (!$rule) {
-            return Reply::error('Record not found for ID: ' . $request->id);
+        if (! $rule) {
+            return Reply::error('Record not found for ID: '.$request->id);
         }
 
         $rule->is_active = $request->status == 'active';
@@ -173,9 +174,11 @@ class VolumeRuleController extends AccountBaseController
         switch ($request->action_type) {
             case 'delete':
                 $this->deleteRecords($request);
+
                 return Reply::success(__('messages.deleteSuccess'));
             case 'change-status':
                 $this->changeStatusBulk($request);
+
                 return Reply::success(__('messages.updateSuccess'));
             default:
                 return Reply::error(__('messages.selectAction'));

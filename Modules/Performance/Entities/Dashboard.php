@@ -8,5 +8,4 @@ use App\Traits\HasCompany;
 class Dashboard extends BaseModel
 {
     use HasCompany;
-
 }

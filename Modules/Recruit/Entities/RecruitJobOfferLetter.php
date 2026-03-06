@@ -12,8 +12,7 @@ use Modules\Recruit\Observers\OfferLetterObserver;
 
 class RecruitJobOfferLetter extends BaseModel
 {
-
-    use Notifiable, HasCompany;
+    use HasCompany, Notifiable;
 
     protected $table = 'recruit_job_offer_letter';
 
@@ -29,7 +28,7 @@ class RecruitJobOfferLetter extends BaseModel
 
     public function getFileUrlAttribute()
     {
-        return (!is_null($this->external_link)) ? $this->external_link : asset_url_local_s3('offer/accept/' . $this->sign_image);
+        return (! is_null($this->external_link)) ? $this->external_link : asset_url_local_s3('offer/accept/'.$this->sign_image);
     }
 
     public function files(): HasMany
@@ -51,5 +50,4 @@ class RecruitJobOfferLetter extends BaseModel
     {
         return $this->belongsTo(User::class, 'added_by');
     }
-
 }

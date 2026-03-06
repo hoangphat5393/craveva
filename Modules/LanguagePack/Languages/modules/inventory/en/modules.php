@@ -129,7 +129,7 @@ return [
         'status' => [
             'adequate' => 'In Stock',
             'low-stock' => 'Needs Attention',
-            'out-of-stock' => 'Critical'
+            'out-of-stock' => 'Critical',
         ],
         'unitPurchasePrice' => 'Unit Purchase Price',
         'expirationDate' => 'Expiration Date',
@@ -146,19 +146,19 @@ return [
         // Stats
         'stock_in' => [
             'title' => 'Stock In',
-            'subtitle' => 'Total Incoming Stock'
+            'subtitle' => 'Total Incoming Stock',
         ],
         'stock_out' => [
             'title' => 'Stock Out',
-            'subtitle' => 'Total Outgoing Stock'
+            'subtitle' => 'Total Outgoing Stock',
         ],
         'waste' => [
             'title' => 'Waste',
-            'subtitle' => 'Total Waste Stock'
+            'subtitle' => 'Total Waste Stock',
         ],
         'transfers' => [
             'title' => 'Transfers',
-            'subtitle' => 'Total Stock Transfers'
+            'subtitle' => 'Total Stock Transfers',
         ],
 
         // Filters
@@ -171,14 +171,14 @@ return [
                 'in' => 'Stock In',
                 'out' => 'Stock Out',
                 'waste' => 'Waste',
-                'transfer' => 'Transfer'
+                'transfer' => 'Transfer',
             ],
             'date_ranges' => [
                 'today' => 'Today',
                 'week' => 'This Week',
                 'month' => 'This Month',
-                'quarter' => 'This Quarter'
-            ]
+                'quarter' => 'This Quarter',
+            ],
         ],
 
         // Table Headers
@@ -189,7 +189,7 @@ return [
             'quantity_unit' => 'Quantity',
             'supplier' => 'Supplier',
             'staff' => 'Added By',
-            'actions' => 'Actions'
+            'actions' => 'Actions',
         ],
 
         // Loading State
@@ -327,7 +327,7 @@ return [
             'sent' => 'Sent',
             'received' => 'Received',
             'partially_received' => 'Partially Received',
-            'cancelled' => 'Cancelled'
+            'cancelled' => 'Cancelled',
         ],
 
         // Actions
@@ -377,8 +377,8 @@ return [
             'periods' => [
                 'daily' => 'Today',
                 'weekly' => 'This Week',
-                'monthly' => 'This Month'
-            ]
+                'monthly' => 'This Month',
+            ],
         ],
         'stock' => [
             'items' => 'items',
@@ -387,36 +387,36 @@ return [
             'status' => [
                 'adequate' => 'In Stock',
                 'low-stock' => 'Low Stock',
-                'out-of-stock' => 'Out of Stock'
-            ]
+                'out-of-stock' => 'Out of Stock',
+            ],
         ],
         'sections' => [
             'top_moving' => [
                 'title' => 'Top Moving Inventory Items',
                 'stock' => 'Stock',
                 'usage' => 'Usage',
-                'waste' => 'Waste'
+                'waste' => 'Waste',
             ],
             'low_stock' => [
                 'title' => 'Low Stock Alerts',
                 'alerts' => ':count alerts',
                 'current' => 'Current',
                 'threshold' => 'Threshold',
-                'no_items' => 'No low stock items'
+                'no_items' => 'No low stock items',
             ],
             'correlation' => [
                 'title' => 'Usage-Stock Correlation',
                 'current_stock' => 'Current Stock',
                 'usage' => 'Usage',
-                'stock_added' => 'Stock Added'
+                'stock_added' => 'Stock Added',
             ],
             'expiring_stock' => [
                 'title' => 'Expiring Stock',
                 'items' => 'items',
                 'expires_in' => 'Expires in :days days',
-                'stock' => 'Stock'
-            ]
-        ]
+                'stock' => 'Stock',
+            ],
+        ],
     ],
     'reports' => [
         'title' => 'Inventory Reports',
@@ -424,7 +424,7 @@ return [
             'usage' => 'Usage Trends',
             'forecasting' => 'Forecasting',
             'turnover' => 'Turnover Rate',
-            'cogs' => 'Cost of Goods Sold'
+            'cogs' => 'Cost of Goods Sold',
         ],
         'filters' => [
             'period' => 'Report Period',
@@ -443,7 +443,7 @@ return [
                 'fortnight' => '15 days',
                 'month' => '30 days',
                 'two_months' => '60 days',
-                'quarter' => '90 days'
+                'quarter' => '90 days',
             ],
         ],
         'usage' => [
@@ -462,7 +462,7 @@ return [
             'per_day' => 'per day',
             'export' => 'Export Report',
             'current_period' => 'Current Period',
-            'previous_period' => 'Previous Period'
+            'previous_period' => 'Previous Period',
         ],
         'forecasting' => [
             'title' => 'Inventory Usage Forecast',
@@ -504,17 +504,17 @@ return [
                 'end_date' => 'End Date',
                 'category' => 'Category',
                 'all_categories' => 'All Categories',
-                'generate_report' => 'Generate Report'
+                'generate_report' => 'Generate Report',
             ],
             'table' => [
                 'item' => 'Item',
                 'category' => 'Category',
                 'quantity_used' => 'Quantity Used',
-                'total_cost' => 'Total Cost'
+                'total_cost' => 'Total Cost',
             ],
             'summary' => [
-                'total_cogs' => 'Total Cost of Goods Sold'
-            ]
+                'total_cogs' => 'Total Cost of Goods Sold',
+            ],
         ],
         'common' => [
             'no_data' => 'No data available for the selected period',
@@ -529,8 +529,8 @@ return [
             'status' => [
                 'critical' => 'Critical',
                 'warning' => 'Warning',
-                'good' => 'Good'
-            ]
+                'good' => 'Good',
+            ],
         ],
         'stats' => [
             'total_items' => 'Total Items',
@@ -540,8 +540,8 @@ return [
             'comparison' => [
                 'up' => 'Up from last period',
                 'down' => 'Down from last period',
-                'same' => 'Same as last period'
-            ]
+                'same' => 'Same as last period',
+            ],
         ],
         'chart_labels' => [
             'quantity' => 'Quantity',
@@ -551,8 +551,8 @@ return [
             'usage' => 'Usage',
             'stock' => 'Stock',
             'forecast' => 'Forecast',
-            'trend' => 'Trend'
-        ]
+            'trend' => 'Trend',
+        ],
     ],
     'settings' => [
         'allowPurchaseOrder' => 'Allow auto Purchase Order',

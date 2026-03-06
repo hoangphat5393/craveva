@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
-use App\Traits\HasCompany;
 use App\Scopes\ActiveScope;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Traits\HasCompany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * App\Models\DiscussionReply
@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Discussion $discussion
  * @property-read \App\Models\User $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|DiscussionReply newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|DiscussionReply newQuery()
  * @method static \Illuminate\Database\Query\Builder|DiscussionReply onlyTrashed()
@@ -34,23 +35,26 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @method static \Illuminate\Database\Eloquent\Builder|DiscussionReply whereUserId($value)
  * @method static \Illuminate\Database\Query\Builder|DiscussionReply withTrashed()
  * @method static \Illuminate\Database\Query\Builder|DiscussionReply withoutTrashed()
+ *
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\DiscussionFile[] $files
  * @property-read int|null $files_count
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|DiscussionReply whereCompanyId($value)
+ *
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MentionUser> $mentionDiscussionReply
  * @property-read int|null $mention_discussion_reply_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $mentionUser
  * @property-read int|null $mention_user_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MentionUser> $mentionDiscussionReply
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $mentionUser
+ *
  * @mixin \Eloquent
  */
 class DiscussionReply extends BaseModel
 {
-
-    use SoftDeletes, HasCompany;
+    use HasCompany, SoftDeletes;
 
     protected $guarded = ['id'];
 
@@ -78,5 +82,4 @@ class DiscussionReply extends BaseModel
     {
         return $this->hasMany(MentionUser::class, 'discussion_reply_id');
     }
-
 }

@@ -9,7 +9,6 @@ use Illuminate\Queue\SerializesModels;
 
 class NewContractEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $contract;
@@ -18,5 +17,4 @@ class NewContractEvent
     {
         $this->contract = $contract;
     }
-
 }

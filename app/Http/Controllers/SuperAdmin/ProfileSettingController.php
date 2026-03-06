@@ -7,7 +7,6 @@ use App\Http\Controllers\AccountBaseController;
 
 class ProfileSettingController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -23,10 +22,10 @@ class ProfileSettingController extends AccountBaseController
 
         if (request()->ajax()) {
             $html = view($this->view, $this->data)->render();
+
             return Reply::dataOnly(['status' => 'success', 'html' => $html, 'title' => $this->pageTitle]);
         }
 
         return view('super-admin.profile.index', $this->data);
     }
-
 }

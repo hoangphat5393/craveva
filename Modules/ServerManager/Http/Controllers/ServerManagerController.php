@@ -2,15 +2,13 @@
 
 namespace Modules\ServerManager\Http\Controllers;
 
-use App\Http\Controllers\AccountBaseController;
+use App\Helper\Reply;
 // use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Modules\ServerManager\Entities\ServerHosting;
+use App\Http\Controllers\AccountBaseController;
 use Modules\ServerManager\Entities\ServerDomain;
+use Modules\ServerManager\Entities\ServerHosting;
 use Modules\ServerManager\Entities\ServerLog;
 use Modules\ServerManager\Entities\ServerSetting;
-use App\Helper\Reply;
-use Illuminate\Support\Facades\Request;
 
 class ServerManagerController extends AccountBaseController
 {
@@ -21,12 +19,11 @@ class ServerManagerController extends AccountBaseController
         parent::__construct();
         $this->pageTitle = __('servermanager::app.menu.serverManager');
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array(ServerSetting::MODULE_NAME, $this->user->modules));
+            abort_403(! in_array(ServerSetting::MODULE_NAME, $this->user->modules));
 
             return $next($request);
         });
     }
-
 
     /**
      * Display the server manager dashboard.
@@ -104,7 +101,7 @@ class ServerManagerController extends AccountBaseController
     public function getStatistics()
     {
         $viewPermission = user()->permission('view_server_statistics');
-        abort_403(!in_array($viewPermission, ['all', 'added', 'owned', 'both']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'owned', 'both']));
         $companyId = company()->id;
 
         $statistics = [
@@ -137,7 +134,7 @@ class ServerManagerController extends AccountBaseController
     public function getRecentActivities()
     {
         $viewPermission = user()->permission('view_server_activities');
-        abort_403(!in_array($viewPermission, ['all', 'added', 'owned', 'both']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'owned', 'both']));
         $companyId = company()->id;
 
         $activities = ServerLog::where('company_id', $companyId)
@@ -159,6 +156,4 @@ class ServerManagerController extends AccountBaseController
 
         return Reply::dataOnly($activities);
     }
-
-
 }

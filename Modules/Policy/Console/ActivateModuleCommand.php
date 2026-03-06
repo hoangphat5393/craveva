@@ -4,7 +4,6 @@ namespace Modules\Policy\Console;
 
 use App\Models\Company;
 use Illuminate\Console\Command;
-use Modules\Asset\Entities\AssetSetting;
 use Modules\Policy\Entities\PolicySetting;
 
 class ActivateModuleCommand extends Command
@@ -36,5 +35,4 @@ class ActivateModuleCommand extends Command
             PolicySetting::addModuleSetting($company);
         }
     }
-
 }

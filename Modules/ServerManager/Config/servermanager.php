@@ -15,7 +15,7 @@ return [
     'dns_api_url' => env('DNS_API_URL', 'https://dns.google.com/resolve'),
 
     // Alternative DNS APIs (you can switch between these)
-    //free, public DNS APIs (no api key required)
+    // free, public DNS APIs (no api key required)
     'dns_apis' => [
         'google' => [
             'url' => 'https://dns.google.com/resolve', // Google DNS API

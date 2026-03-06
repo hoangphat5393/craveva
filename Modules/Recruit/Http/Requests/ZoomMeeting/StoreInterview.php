@@ -39,7 +39,7 @@ class StoreInterview extends FormRequest
                     'employee_id.0' => 'required',
                     'jobStage' => 'required',
                 ];
-                
+
                 if ($this->start_date == $this->end_date) {
                     $data['end_time'] .= '|after_or_equal:start_time';
                 }

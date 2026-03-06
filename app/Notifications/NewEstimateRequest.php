@@ -2,19 +2,20 @@
 
 namespace App\Notifications;
 
-use App\Models\EstimateRequest;
 use App\Models\EmailNotificationSetting;
+use App\Models\EstimateRequest;
 
 class NewEstimateRequest extends BaseNotification
 {
-
     /**
      * Create a new notification instance.
      *
      * @return void
      */
     private $estimateRequest;
+
     protected $company;
+
     private $emailSetting;
 
     public function __construct(EstimateRequest $estimateRequest)
@@ -27,7 +28,7 @@ class NewEstimateRequest extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -48,7 +49,7 @@ class NewEstimateRequest extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
@@ -57,10 +58,10 @@ class NewEstimateRequest extends BaseNotification
         $url = route('estimate-request.show', $this->estimateRequest->id);
         $url = getDomainSpecificUrl($url, $this->company);
 
-        $content = __('email.newEstimateRequest.text') . '<br>' . __('modules.estimateRequest.estimateRequest') . ' ' . __('app.number') . ': ' .$this->estimateRequest->estimate_request_number;
+        $content = __('email.newEstimateRequest.text').'<br>'.__('modules.estimateRequest.estimateRequest').' '.__('app.number').': '.$this->estimateRequest->estimate_request_number;
 
         $build
-            ->subject(__('email.newEstimateRequest.subject') . ' (' . $this->estimateRequest->estimate_request_number . ') - ' . config('app.name') . __('!'))
+            ->subject(__('email.newEstimateRequest.subject').' ('.$this->estimateRequest->estimate_request_number.') - '.config('app.name').__('!'))
             ->markdown('mail.email', [
                 'url' => $url,
                 'content' => $content,
@@ -77,7 +78,7 @@ class NewEstimateRequest extends BaseNotification
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
 
@@ -92,8 +93,7 @@ class NewEstimateRequest extends BaseNotification
 
     public function toSlack($notifiable)
     {
-        return $this->slackBuild($notifiable)->content(__('email.hello') . ' ' . $notifiable->name . ' ' . __('email.newEstimateRequest.subject'));
+        return $this->slackBuild($notifiable)->content(__('email.hello').' '.$notifiable->name.' '.__('email.newEstimateRequest.subject'));
 
     }
-
 }

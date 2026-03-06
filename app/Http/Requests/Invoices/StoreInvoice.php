@@ -43,7 +43,7 @@ class StoreInvoice extends CoreRequest
         $rules = [
             'invoice_number' => [
                 'required',
-                Rule::unique('invoices')->where('company_id', company()->id)
+                Rule::unique('invoices')->where('company_id', company()->id),
             ],
             'issue_date' => 'required',
             'sub_total' => 'required',
@@ -55,7 +55,7 @@ class StoreInvoice extends CoreRequest
         ];
 
         if ($this->has('due_date')) {
-            $rules['due_date'] = 'required|date_format:"' . $setting->date_format . '"|after_or_equal:'.$this->issue_date;
+            $rules['due_date'] = 'required|date_format:"'.$setting->date_format.'"|after_or_equal:'.$this->issue_date;
         }
 
         $rules['client_id'] = 'required';
@@ -78,8 +78,7 @@ class StoreInvoice extends CoreRequest
     {
         return [
             'client_id.required' => __('modules.projects.selectClient'),
-            'gateway.required_if' => __('modules.projects.selectPayment')
+            'gateway.required_if' => __('modules.projects.selectPayment'),
         ];
     }
-
 }

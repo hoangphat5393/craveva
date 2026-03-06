@@ -1,7 +1,7 @@
 <?php
 
 $addOnOf = 'worksuite-saas-new';
-$product = $addOnOf . '-policy-module';
+$product = $addOnOf.'-policy-module';
 
 return [
     'name' => 'Policy',

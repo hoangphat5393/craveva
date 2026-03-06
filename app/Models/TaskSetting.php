@@ -33,6 +33,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property string $history
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|TaskSetting newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TaskSetting newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TaskSetting query()
@@ -61,11 +62,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @method static \Illuminate\Database\Eloquent\Builder|TaskSetting whereTimeEstimate($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TaskSetting whereTimeLogs($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TaskSetting whereUpdatedAt($value)
+ *
  * @property-read \App\Models\Company|null $company
+ *
  * @mixin \Eloquent
  */
 class TaskSetting extends BaseModel
 {
-
-    use HasFactory, HasCompany;
+    use HasCompany, HasFactory;
 }

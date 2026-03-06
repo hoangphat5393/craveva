@@ -5,18 +5,16 @@ namespace Modules\Purchase\Observers;
 use App\Models\BankAccount;
 use App\Models\BankTransaction;
 use Modules\Purchase\Entities\PurchaseBill;
-use Modules\Purchase\Entities\PurchaseVendorItem;
-use Modules\Purchase\Events\NewVendorPaymentEvent;
-use Modules\Purchase\Entities\PurchaseVendorPayment;
 use Modules\Purchase\Entities\PurchasePaymentHistory;
+use Modules\Purchase\Entities\PurchaseVendorPayment;
+use Modules\Purchase\Events\NewVendorPaymentEvent;
 use Modules\Purchase\Events\UpdateVendorPaymentEvent;
 
 class PurchaseVendorPaymentObserver
 {
-
     public function creating(PurchaseVendorPayment $model)
     {
-        if (!isRunningInConsoleOrSeeding() && user()) {
+        if (! isRunningInConsoleOrSeeding() && user()) {
             $model->added_by = user()->id;
         }
 
@@ -27,12 +25,12 @@ class PurchaseVendorPaymentObserver
 
     public function created(PurchaseVendorPayment $payment)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             event(new NewVendorPaymentEvent($payment));
 
             $amounts = array_combine(request()->bill_id, request()->amount_paid_per);
 
-            foreach($amounts as $key => $amt){
+            foreach ($amounts as $key => $amt) {
 
                 $bill = PurchaseBill::with('order')->where('id', $key)->first();
                 $purchaseOrderID = $bill->purchase_order_id;
@@ -46,16 +44,16 @@ class PurchaseVendorPaymentObserver
 
         }
 
-        if(!is_null($payment->bank_account_id)){
+        if (! is_null($payment->bank_account_id)) {
             $bankAccount = BankAccount::find($payment->bank_account_id);
             $bankBalance = $bankAccount->bank_balance;
             $totalBalance = $bankBalance - $payment->received_payment;
 
-            $transaction = new BankTransaction();
+            $transaction = new BankTransaction;
             $transaction->company_id = $payment->company_id;
             $transaction->bank_account_id = $payment->bank_account_id;
             $transaction->purchase_payment_id = $payment->id;
-            $transaction->type  = 'Dr';
+            $transaction->type = 'Dr';
             $transaction->amount = round($payment->received_payment, 2);
             $transaction->transaction_date = $payment->payment_date;
             $transaction->bank_balance = round($totalBalance);
@@ -70,19 +68,19 @@ class PurchaseVendorPaymentObserver
 
     public function saving(PurchaseVendorPayment $payment)
     {
-        if (!isRunningInConsoleOrSeeding() && user()) {
+        if (! isRunningInConsoleOrSeeding() && user()) {
             $payment->last_updated_by = user()->id;
         }
     }
 
     public function updated(PurchaseVendorPayment $payment)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             event(new UpdateVendorPaymentEvent($payment));
 
             $amounts = array_combine(request()->bill_id, request()->amount_paid_per);
 
-            foreach($amounts as $key => $amt){
+            foreach ($amounts as $key => $amt) {
                 $bill = PurchaseBill::with('order')->where('id', $key)->first();
 
                 $purchaseOrderID = $bill->purchase_order_id;
@@ -93,22 +91,20 @@ class PurchaseVendorPaymentObserver
 
             $this->logVendorPaymentActivity(company()->id, $vendorID, $payment->id, user()->id, $purchaseOrderID, $purchaseOrderNo, $key, $amt, 'vendorPaymentUpdated', 'Updated');
 
-            if(!is_null($payment->bank_account_id))
-            {
+            if (! is_null($payment->bank_account_id)) {
 
-                if($payment->isDirty('bank_account_id'))
-                {
+                if ($payment->isDirty('bank_account_id')) {
                     $originalAccount = $payment->getOriginal('bank_account_id');
                     $oldAmount = $payment->getOriginal('received_payment');
                     $newAmount = $payment->received_payment;
 
                     $bankAccount = BankAccount::find($originalAccount);
-                    
-                    if($bankAccount){
+
+                    if ($bankAccount) {
                         $bankBalance = $bankAccount->bank_balance;
                         $bankBalance += $oldAmount;
 
-                        $transaction = new BankTransaction();
+                        $transaction = new BankTransaction;
                         $transaction->purchase_payment_id = $payment->id;
                         $transaction->type = 'Cr';
                         $transaction->bank_account_id = $originalAccount;
@@ -126,11 +122,11 @@ class PurchaseVendorPaymentObserver
 
                     $newBankAccount = BankAccount::find($payment->bank_account_id);
 
-                    if($newBankAccount){
+                    if ($newBankAccount) {
                         $newBankBalance = $newBankAccount->bank_balance;
                         $newBankBalance -= $newAmount;
 
-                        $transaction = new BankTransaction();
+                        $transaction = new BankTransaction;
                         $transaction->purchase_payment_id = $payment->id;
                         $transaction->type = 'Dr';
                         $transaction->bank_account_id = $payment->bank_account_id;
@@ -154,18 +150,18 @@ class PurchaseVendorPaymentObserver
 
     public function deleting(PurchaseVendorPayment $payment)
     {
-        if(!is_null($payment->bank_account_id)){
+        if (! is_null($payment->bank_account_id)) {
 
             $account = $payment->bank_account_id;
             $amount = $payment->received_payment;
 
             $bankAccount = BankAccount::find($account);
 
-            if($bankAccount){
+            if ($bankAccount) {
                 $bankBalance = $bankAccount->bank_balance;
                 $bankBalance += $amount;
 
-                $transaction = new BankTransaction();
+                $transaction = new BankTransaction;
                 $transaction->purchase_payment_id = $payment->id;
                 $transaction->type = 'Cr';
                 $transaction->bank_account_id = $account;
@@ -185,7 +181,7 @@ class PurchaseVendorPaymentObserver
     public function logVendorPaymentActivity($companyID, $vendorID, $vendorPaymentID, $userID, $purchaseOrderID, $purchaseOrderNo, $vendorBillID, $amt, $text, $label)
     {
 
-        $activity = new PurchasePaymentHistory();
+        $activity = new PurchasePaymentHistory;
 
         $activity->company_id = $companyID;
         $activity->purchase_vendor_id = $vendorID;
@@ -199,5 +195,4 @@ class PurchaseVendorPaymentObserver
         $activity->label = $label;
         $activity->save();
     }
-
 }

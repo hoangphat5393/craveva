@@ -2,8 +2,8 @@
 
 namespace App\Models\SuperAdmin;
 
-use App\Traits\IconTrait;
 use App\Models\BaseModel;
+use App\Traits\IconTrait;
 
 /**
  * App\Models\SuperAdmin\FaqFile
@@ -22,6 +22,7 @@ use App\Models\BaseModel;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read mixed $file_url
+ *
  * @method static Builder|FaqFile newModelQuery()
  * @method static Builder|FaqFile newQuery()
  * @method static Builder|FaqFile query()
@@ -38,19 +39,19 @@ use App\Models\BaseModel;
  * @method static Builder|FaqFile whereSize($value)
  * @method static Builder|FaqFile whereUpdatedAt($value)
  * @method static Builder|FaqFile whereUserId($value)
+ *
  * @mixin Eloquent
+ *
  * @property-read mixed $icon
  */
 class FaqFile extends BaseModel
 {
-
     use IconTrait;
 
     protected $appends = ['file_url'];
 
     public function getFileUrlAttribute()
     {
-        return (!is_null($this->external_link)) ? $this->external_link : asset_url_local_s3('faq-files/' . $this->faq_id . '/' . $this->hashname);
+        return (! is_null($this->external_link)) ? $this->external_link : asset_url_local_s3('faq-files/'.$this->faq_id.'/'.$this->hashname);
     }
-
 }

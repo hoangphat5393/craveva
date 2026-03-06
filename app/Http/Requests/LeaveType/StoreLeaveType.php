@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class StoreLeaveType extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -34,15 +33,14 @@ class StoreLeaveType extends CoreRequest
             'role' => 'required',
         ];
 
-        if(!is_null(request('effective_after'))){
+        if (! is_null(request('effective_after'))) {
             $rules['effective_after'] = 'numeric|min:1';
         }
 
-        if(!is_null(request('leavetype'))){
+        if (! is_null(request('leavetype'))) {
             $rules['leavetype'] = 'required';
         }
 
         return $rules;
     }
-
 }

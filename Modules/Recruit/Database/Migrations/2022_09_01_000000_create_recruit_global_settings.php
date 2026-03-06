@@ -4,7 +4,6 @@ use App\Scopes\CompanyScope;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use Modules\Recruit\Entities\ApplicationSource;
 use Modules\Recruit\Entities\RecruitGlobalSetting;
 use Modules\Recruit\Entities\RecruitSetting;
 
@@ -46,5 +45,4 @@ return new class extends Migration
             $table->dropColumn(['purchase_code']);
         });
     }
-
 };

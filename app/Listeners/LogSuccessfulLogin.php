@@ -9,20 +9,18 @@ use Illuminate\Auth\Events\Login;
 
 class LogSuccessfulLogin
 {
-
     /**
      * Handle the event.
      *
-     * @param Login $event
      * @return void
      */
     public function handle(Login $event)
     {
 
-        if (!session()->has('impersonate') && !session()->has('stop_impersonate')) {
+        if (! session()->has('impersonate') && ! session()->has('stop_impersonate')) {
             $authUserId = $event->user?->id;
 
-            if (!$authUserId) {
+            if (! $authUserId) {
                 return;
             }
 
@@ -31,7 +29,7 @@ class LogSuccessfulLogin
                 ->where('status', 'active')
                 ->first();
 
-            if (!$user) {
+            if (! $user) {
                 return;
             }
 
@@ -42,7 +40,7 @@ class LogSuccessfulLogin
             if ($user->company_id) {
                 $company = Company::find($user->company_id);
 
-                if (!$company) {
+                if (! $company) {
                     return;
                 }
 

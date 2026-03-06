@@ -9,7 +9,6 @@ use Saloon\XmlWrangler\Data\Element;
 
 class Romania
 {
-
     public static function generate(Invoice $invoice)
     {
         $array = [
@@ -225,7 +224,7 @@ class Romania
                 unset($array[$key]);
             }
         }
+
         return $array;
     }
-
 }

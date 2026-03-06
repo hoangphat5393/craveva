@@ -5,8 +5,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      * We have changed the file_name as 2018 for the purpose of modules
@@ -21,13 +21,13 @@ return new class extends Migration {
             // return true;
         }
 
-        if (!Schema::hasColumn('modules', 'is_superadmin')) {
+        if (! Schema::hasColumn('modules', 'is_superadmin')) {
             Schema::table('modules', function (Blueprint $table) {
                 $table->boolean('is_superadmin')->default(0);
             });
         }
 
-        if (!Schema::hasColumn('permissions', 'is_custom')) {
+        if (! Schema::hasColumn('permissions', 'is_custom')) {
             Schema::table('permissions', function (Blueprint $table) {
                 $table->boolean('is_custom')->default(false);
                 $table->text('allowed_permissions')->nullable();
@@ -39,7 +39,7 @@ return new class extends Migration {
             '--force' => true,
         ]);
 
-        if (!Schema::hasColumn('contracts', 'currency_id')) {
+        if (! Schema::hasColumn('contracts', 'currency_id')) {
             Schema::table('contracts', function (Blueprint $table) {
                 $table->string('hash')->nullable();
                 $table->string('cell')->nullable();
@@ -57,7 +57,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasColumn('attendances', 'location_id')) {
+        if (! Schema::hasColumn('attendances', 'location_id')) {
             Schema::table('attendances', function (Blueprint $table) {
                 $table->unsignedBigInteger('location_id')->nullable()->index('attendances_location_id_foreign');
                 $table->unsignedInteger('added_by')->nullable()->index('attendances_added_by_foreign');
@@ -74,7 +74,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasColumn('client_contacts', 'title')) {
+        if (! Schema::hasColumn('client_contacts', 'title')) {
             Schema::table('client_contacts', function (Blueprint $table) {
                 $table->string('title')->nullable();
                 $table->unsignedInteger('added_by')->nullable()->index('client_contacts_added_by_foreign');
@@ -91,7 +91,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasColumn('client_docs', 'added_by')) {
+        if (! Schema::hasColumn('client_docs', 'added_by')) {
             Schema::table('client_docs', function (Blueprint $table) {
                 $table->unsignedInteger('added_by')->nullable()->index('client_docs_added_by_foreign');
                 $table->unsignedInteger('last_updated_by')->nullable()->index('client_docs_last_updated_by_foreign');
@@ -100,7 +100,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasColumn('client_user_notes', 'client_note_id')) {
+        if (! Schema::hasColumn('client_user_notes', 'client_note_id')) {
             Schema::table('client_user_notes', function (Blueprint $table) {
                 $table->dropForeign('client_user_notes_note_id_foreign');
                 $table->dropColumn('note_id');
@@ -116,7 +116,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasColumn('attendance_settings', 'allow_shift_change')) {
+        if (! Schema::hasColumn('attendance_settings', 'allow_shift_change')) {
             Schema::table('attendance_settings', function (Blueprint $table) {
                 $table->enum('auto_clock_in', ['yes', 'no'])->default('no');
                 $table->boolean('save_current_location')->default(false);
@@ -128,15 +128,14 @@ return new class extends Migration {
             });
         }
 
-
-        if (!Schema::hasColumn('events', 'remind_type')) {
+        if (! Schema::hasColumn('events', 'remind_type')) {
             Schema::table('events', function (Blueprint $table) {
                 $table->integer('remind_time')->nullable();
                 $table->enum('remind_type', ['day', 'hour', 'minute'])->default('day');
             });
         }
 
-        if (!Schema::hasColumn('expenses_category', 'added_by')) {
+        if (! Schema::hasColumn('expenses_category', 'added_by')) {
             Schema::table('expenses_category', function (Blueprint $table) {
                 $table->unsignedInteger('added_by')->nullable()->index();
                 $table->unsignedInteger('last_updated_by')->nullable()->index();
@@ -192,7 +191,6 @@ return new class extends Migration {
                 $table->foreign(['added_by'])->references(['id'])->on('users')->onUpdate('CASCADE')->onDelete('SET NULL');
                 $table->foreign(['last_updated_by'])->references(['id'])->on('users')->onUpdate('CASCADE')->onDelete('SET NULL');
             });
-
 
             Schema::table('lead_category', function (Blueprint $table) {
                 $table->unsignedInteger('added_by')->nullable()->index();
@@ -464,7 +462,6 @@ return new class extends Migration {
                 $table->renameColumn('razorpay_secret', 'live_razorpay_secret');
                 $table->string('test_razorpay_webhook_secret')->nullable()->after('razorpay_secret');
 
-
                 $table->string('test_razorpay_key')->nullable()->after('test_razorpay_webhook_secret');
                 $table->string('test_razorpay_secret')->nullable()->after('test_razorpay_key');
                 $table->string('live_razorpay_webhook_secret')->nullable()->after('test_razorpay_secret');
@@ -499,40 +496,37 @@ return new class extends Migration {
                 $table->string('live_flutterwave_hash')->nullable();
                 $table->string('flutterwave_webhook_secret_hash')->nullable();
 
-
                 $table->removeColumn('paystack_client_id');
             });
         }
 
-
-        if (!Schema::hasColumn('permission_role', 'permission_type_id')) {
+        if (! Schema::hasColumn('permission_role', 'permission_type_id')) {
             Schema::table('permission_role', function (Blueprint $table) {
                 $table->unsignedBigInteger('permission_type_id')->default(5)->index('permission_role_permission_type_id_foreign');
                 $table->foreign(['permission_type_id'])->references(['id'])->on('permission_types')->onUpdate('CASCADE')->onDelete('CASCADE');
             });
         }
 
-        if (!Schema::hasColumn('permission_role', 'permission_type_id')) {
+        if (! Schema::hasColumn('permission_role', 'permission_type_id')) {
             Schema::table('permission_role', function (Blueprint $table) {
                 $table->unsignedBigInteger('permission_type_id')->default(5)->index('permission_role_permission_type_id_foreign');
                 $table->foreign(['permission_type_id'])->references(['id'])->on('permission_types')->onUpdate('CASCADE')->onDelete('CASCADE');
             });
         }
 
-        if (!Schema::hasColumn('email_notification_settings', 'slug')) {
+        if (! Schema::hasColumn('email_notification_settings', 'slug')) {
             Schema::table('email_notification_settings', function (Blueprint $table) {
                 $table->string('slug')->nullable();
             });
         }
 
-
-        if (!Schema::hasColumn('theme_settings', 'sidebar_theme')) {
+        if (! Schema::hasColumn('theme_settings', 'sidebar_theme')) {
             Schema::table('theme_settings', function (Blueprint $table) {
                 $table->enum('sidebar_theme', ['dark', 'light'])->default('dark');
             });
         }
 
-        if (!Schema::hasColumn('employee_details', 'date_of_birth')) {
+        if (! Schema::hasColumn('employee_details', 'date_of_birth')) {
             Schema::table('employee_details', function (Blueprint $table) {
                 $table->unsignedInteger('added_by')->nullable()->index('employee_details_added_by_foreign');
                 $table->unsignedInteger('last_updated_by')->nullable()->index('employee_details_last_updated_by_foreign');
@@ -543,18 +537,16 @@ return new class extends Migration {
             });
         }
 
-
         if (Schema::hasTable('storage_settings')) {
             Schema::dropIfExists('file_storage_settings');
             Schema::rename('storage_settings', 'file_storage_settings');
         }
 
-        if (!Schema::hasColumn('file_storage', 'filename')) {
+        if (! Schema::hasColumn('file_storage', 'filename')) {
             Schema::table('file_storage', function (Blueprint $table) {
                 $table->renameColumn('name', 'filename');
             });
         }
-
 
         if (Schema::hasTable('google_accounts')) {
             Schema::dropIfExists('google_accounts');
@@ -567,8 +559,7 @@ return new class extends Migration {
             });
         }
 
-
-        if (!Schema::hasColumn('projects', 'hash')) {
+        if (! Schema::hasColumn('projects', 'hash')) {
             Schema::table('projects', function (Blueprint $table) {
                 $table->unsignedInteger('team_id')->nullable()->index('projects_team_id_foreign');
                 $table->unsignedInteger('added_by')->nullable()->index('projects_added_by_foreign');
@@ -586,7 +577,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasColumn('tasks', 'added_by')) {
+        if (! Schema::hasColumn('tasks', 'added_by')) {
             Schema::table('tasks', function (Blueprint $table) {
                 $table->unsignedInteger('added_by')->nullable()->index('tasks_added_by_foreign');
                 $table->unsignedInteger('last_updated_by')->nullable()->index('tasks_last_updated_by_foreign');
@@ -601,7 +592,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasColumn('project_time_logs', 'added_by')) {
+        if (! Schema::hasColumn('project_time_logs', 'added_by')) {
             Schema::table('project_time_logs', function (Blueprint $table) {
                 $table->unsignedInteger('added_by')->nullable()->index('project_time_logs_added_by_foreign');
                 $table->unsignedInteger('last_updated_by')->nullable()->index('project_time_logs_last_updated_by_foreign');
@@ -611,7 +602,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasColumn('client_details', 'added_by')) {
+        if (! Schema::hasColumn('client_details', 'added_by')) {
             Schema::table('client_details', function (Blueprint $table) {
                 $table->string('office')->nullable();
                 $table->unsignedInteger('added_by')->nullable()->index('client_details_added_by_foreign');
@@ -621,7 +612,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasColumn('proposals', 'hash')) {
+        if (! Schema::hasColumn('proposals', 'hash')) {
             Schema::table('proposals', function (Blueprint $table) {
                 $table->unsignedInteger('added_by')->nullable()->index('proposals_added_by_foreign');
                 $table->unsignedInteger('last_updated_by')->nullable()->index('proposals_last_updated_by_foreign');
@@ -632,7 +623,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasColumn('estimates', 'added_by')) {
+        if (! Schema::hasColumn('estimates', 'added_by')) {
             Schema::table('estimates', function (Blueprint $table) {
                 $table->longText('description')->nullable()->after('note');
                 $table->string('estimate_number')->nullable()->change()->after('client_id');
@@ -646,7 +637,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasColumn('invoices', 'due_amount')) {
+        if (! Schema::hasColumn('invoices', 'due_amount')) {
             Schema::table('invoices', function (Blueprint $table) {
                 $table->removeColumn('deleted_at');
                 $table->unsignedBigInteger('order_id')->nullable()->index('invoices_order_id_foreign');
@@ -667,7 +658,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasColumn('payments', 'order_id')) {
+        if (! Schema::hasColumn('payments', 'order_id')) {
             Schema::table('payments', function (Blueprint $table) {
                 $table->unsignedBigInteger('order_id')->nullable()->index('payments_order_id_foreign');
                 $table->unsignedInteger('credit_notes_id')->nullable()->index('payments_credit_notes_id_foreign');
@@ -682,7 +673,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasColumn('expenses', 'added_by')) {
+        if (! Schema::hasColumn('expenses', 'added_by')) {
             Schema::table('expenses', function (Blueprint $table) {
                 $table->unsignedInteger('added_by')->nullable()->index('expenses_added_by_foreign');
                 $table->unsignedInteger('last_updated_by')->nullable()->index('expenses_last_updated_by_foreign');
@@ -693,7 +684,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasColumn('products', 'added_by')) {
+        if (! Schema::hasColumn('products', 'added_by')) {
             Schema::table('products', function (Blueprint $table) {
                 $table->boolean('downloadable')->default(false);
                 $table->string('downloadable_file')->nullable();
@@ -705,7 +696,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasColumn('notices', 'added_by')) {
+        if (! Schema::hasColumn('notices', 'added_by')) {
             Schema::table('notices', function (Blueprint $table) {
                 $table->unsignedInteger('added_by')->nullable()->index('notices_added_by_foreign');
                 $table->unsignedInteger('last_updated_by')->nullable()->index('notices_last_updated_by_foreign');
@@ -714,7 +705,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasColumn('credit_notes', 'adjustment_amount')) {
+        if (! Schema::hasColumn('credit_notes', 'adjustment_amount')) {
             Schema::table('credit_notes', function (Blueprint $table) {
                 $table->double('adjustment_amount', 8, 2)->nullable();
                 $table->unsignedInteger('added_by')->nullable()->index('credit_notes_added_by_foreign');
@@ -725,8 +716,7 @@ return new class extends Migration {
             });
         }
 
-
-        if (!Schema::hasColumn('companies', 'light_logo')) {
+        if (! Schema::hasColumn('companies', 'light_logo')) {
             Schema::table('companies', function (Blueprint $table) {
                 $table->text('token')->nullable();
                 $table->string('logo_background_color')->nullable();
@@ -748,7 +738,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasColumn('invoice_settings', 'reminder')) {
+        if (! Schema::hasColumn('invoice_settings', 'reminder')) {
             Schema::table('invoice_settings', function (Blueprint $table) {
                 $table->enum('reminder', ['after', 'every'])->nullable();
                 $table->integer('send_reminder_after')->default(0);
@@ -762,14 +752,14 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasColumn('task_label_list', 'project_id')) {
+        if (! Schema::hasColumn('task_label_list', 'project_id')) {
             Schema::table('task_label_list', function (Blueprint $table) {
                 $table->unsignedInteger('project_id')->nullable()->index('task_label_list_project_id_foreign');
                 $table->foreign(['project_id'])->references(['id'])->on('projects')->onUpdate('CASCADE')->onDelete('CASCADE');
             });
         }
 
-        if (!Schema::hasColumn('employee_docs', 'last_updated_by')) {
+        if (! Schema::hasColumn('employee_docs', 'last_updated_by')) {
             Schema::table('employee_docs', function (Blueprint $table) {
                 $table->unsignedInteger('added_by')->nullable()->index('employee_docs_added_by_foreign');
                 $table->unsignedInteger('last_updated_by')->nullable()->index('employee_docs_last_updated_by_foreign');
@@ -778,14 +768,14 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasColumn('lead_custom_forms', 'custom_fields_id')) {
+        if (! Schema::hasColumn('lead_custom_forms', 'custom_fields_id')) {
             Schema::table('lead_custom_forms', function (Blueprint $table) {
                 $table->unsignedInteger('custom_fields_id')->nullable()->index('lead_custom_forms_custom_fields_id_foreign')->after('company_id');
                 $table->foreign(['custom_fields_id'])->references(['id'])->on('custom_fields')->onUpdate('CASCADE')->onDelete('CASCADE');
             });
         }
 
-        if (Schema::hasColumn('companies', 'licence_expire_on') && !Schema::hasColumn('companies', 'subscription_updated_at')) {
+        if (Schema::hasColumn('companies', 'licence_expire_on') && ! Schema::hasColumn('companies', 'subscription_updated_at')) {
             Schema::table('companies', function (Blueprint $table) {
                 $table->timestamp('license_updated_at')->nullable()->after('licence_expire_on');
                 $table->timestamp('subscription_updated_at')->nullable()->after('license_updated_at');
@@ -804,26 +794,26 @@ return new class extends Migration {
         if (Schema::hasTable('offline_payment_methods')) {
             OfflinePaymentMethod::all()->each(function ($offlinePaymentMethod) {
                 $offlinePaymentMethod->update([
-                    'description' => strip_tags($offlinePaymentMethod->description)
+                    'description' => strip_tags($offlinePaymentMethod->description),
                 ]);
             });
         }
 
         if (Schema::hasTable('stripe_invoices')) {
-            if (!Schema::hasColumn('stripe_invoices', 'invoice_number')) {
+            if (! Schema::hasColumn('stripe_invoices', 'invoice_number')) {
                 Schema::table('stripe_invoices', function (Blueprint $table) {
                     $table->string('stripe_invoice_number')->nullable();
                 });
             }
         }
 
-        if (!Schema::hasColumn('module_settings', 'is_allowed')) {
+        if (! Schema::hasColumn('module_settings', 'is_allowed')) {
             Schema::table('module_settings', function (Blueprint $table) {
                 $table->boolean('is_allowed')->default(1);
             });
         }
 
-        if (!Schema::hasColumn('slack_settings', 'status')) {
+        if (! Schema::hasColumn('slack_settings', 'status')) {
             Schema::table('slack_settings', function (Blueprint $table) {
                 $table->enum('status', ['active', 'inactive'])->default('inactive');
             });

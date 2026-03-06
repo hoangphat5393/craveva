@@ -6,17 +6,14 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreSignature extends FormRequest
 {
-
     /**
      * Get the validation rules that apply to the request.
      */
-
     public function rules(): array
     {
         $rules = [];
 
-        if(!request()->has('signature'))
-        {
+        if (! request()->has('signature')) {
             $rules = [
                 'image' => 'required|mimes:jpg,png,jpeg',
 
@@ -33,5 +30,4 @@ class StoreSignature extends FormRequest
     {
         return true;
     }
-
 }

@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class StoreLeadCategory extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -25,9 +24,8 @@ class StoreLeadCategory extends CoreRequest
     public function rules()
     {
         return [
-            'category_name' => 'required|unique:lead_category,category_name,null,id,company_id,' . company()->id
+            'category_name' => 'required|unique:lead_category,category_name,null,id,company_id,'.company()->id,
             // 'category_name' => 'required|unique:lead_category'
         ];
     }
-
 }

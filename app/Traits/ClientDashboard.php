@@ -9,8 +9,8 @@ use App\Models\Deal;
 use App\Models\Lead;
 use App\Models\LeadPipeline;
 use App\Models\LeadSource;
-use App\Models\PipelineStage;
 use App\Models\Payment;
+use App\Models\PipelineStage;
 use App\Models\ProjectTimeLog;
 use App\Models\Role;
 use App\Models\User;
@@ -18,14 +18,9 @@ use App\Scopes\ActiveScope;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
-/**
- *
- */
 trait ClientDashboard
 {
-
     /**
-     *
      * @return void
      */
     public function clientDashboard()
@@ -130,17 +125,16 @@ trait ClientDashboard
         $payments = $payments->orderBy('paid_on', 'ASC')
             ->get();
 
-        $chartDataClients = array();
+        $chartDataClients = [];
 
         foreach ($payments as $chart) {
             if (is_null($chart->client_id)) {
                 $chartName = $chart->invoice->client->name;
-            }
-            else {
+            } else {
                 $chartName = $chart->project->client->name;
             }
 
-            if (!array_key_exists($chartName, $chartDataClients)) {
+            if (! array_key_exists($chartName, $chartDataClients)) {
                 $chartDataClients[$chartName] = 0;
             }
 
@@ -149,12 +143,10 @@ trait ClientDashboard
                     $usdTotal = ($chart->amount * $chart->currency->usd_price);
                     $chartDataClients[$chartName] = $chartDataClients[$chartName] + round(floor(floatval($usdTotal) * floatval($chart->exchange_rate)), 2);
 
-                }
-                else {
+                } else {
                     $chartDataClients[$chartName] = $chartDataClients[$chartName] + round((floatval($chart->amount) * floatval($chart->exchange_rate)), 2);
                 }
-            }
-            else {
+            } else {
                 $chartDataClients[$chartName] = $chartDataClients[$chartName] + round($chart->amount, 2);
             }
         }
@@ -168,8 +160,6 @@ trait ClientDashboard
     }
 
     /**
-     * @param $startDate
-     * @param $endDate
      * @return array
      */
     public function clientTimelogChart($startDate, $endDate)
@@ -184,10 +174,10 @@ trait ClientDashboard
             ->select('project_time_logs.*', 'client.name')
             ->get();
 
-        $clientWiseTimelogs = array();
+        $clientWiseTimelogs = [];
 
         foreach ($allTimelogs as $timelog) {
-            if (!array_key_exists($timelog->name, $clientWiseTimelogs)) {
+            if (! array_key_exists($timelog->name, $clientWiseTimelogs)) {
                 $clientWiseTimelogs[$timelog->name] = 0;
             }
 
@@ -203,8 +193,6 @@ trait ClientDashboard
     }
 
     /**
-     * @param $startDate
-     * @param $endDate
      * @return array
      */
     public function leadStatusChart($startDate, $endDate, $pipelineID = null)
@@ -247,16 +235,15 @@ trait ClientDashboard
 
         foreach ($leadStatus->pluck('type') as $key => $value) {
             $labelName = current(explode(' ', $value));
-            $data['labels'][] = __('app.' . strtolower($labelName)) . '' . strstr($value, ' ');
+            $data['labels'][] = __('app.'.strtolower($labelName)).''.strstr($value, ' ');
         }
 
         foreach ($data['labels'] as $key => $value) {
-            $data['colors'][] = '#' . substr(md5($value), 0, 6);
+            $data['colors'][] = '#'.substr(md5($value), 0, 6);
         }
 
         $data['values'] = $leadStatus->pluck('leads_count')->toArray();
 
         return $data;
     }
-
 }

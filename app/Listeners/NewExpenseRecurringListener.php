@@ -5,12 +5,10 @@ namespace App\Listeners;
 use App\Events\NewExpenseRecurringEvent;
 use App\Notifications\ExpenseRecurringStatus;
 use App\Notifications\NewExpenseRecurringMember;
-use App\Models\User;
 use Illuminate\Support\Facades\Notification;
 
 class NewExpenseRecurringListener
 {
-
     /**
      * NewExpenseRecurringListener constructor.
      */
@@ -22,18 +20,14 @@ class NewExpenseRecurringListener
     /**
      * Handle the event.
      *
-     * @param NewExpenseRecurringEvent $event
      * @return void
      */
-
     public function handle(NewExpenseRecurringEvent $event)
     {
         if ($event->status == 'status') {
             Notification::send($event->expense->user, new ExpenseRecurringStatus($event->expense));
-        }
-        else {
+        } else {
             Notification::send($event->expense->user, new NewExpenseRecurringMember($event->expense));
         }
     }
-
 }

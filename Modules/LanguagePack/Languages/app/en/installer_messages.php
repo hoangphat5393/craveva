@@ -3,50 +3,36 @@
 return [
 
     /**
-     *
      * Shared translations.
-     *
      */
     'title' => 'Laravel Installer',
     'next' => 'Next Step',
     'finish' => 'Install',
 
-
     /**
-     *
      * Home page translations.
-     *
      */
     'welcome' => [
         'title' => 'Welcome To The Installer',
         'message' => 'Welcome to the setup wizard.',
     ],
 
-
     /**
-     *
      * Requirements page translations.
-     *
      */
     'requirements' => [
         'title' => 'Server Requirements',
     ],
 
-
     /**
-     *
      * Permissions page translations.
-     *
      */
     'permissions' => [
         'title' => 'Permissions',
     ],
 
-
     /**
-     *
      * Environment page translations.
-     *
      */
     'environment' => [
         'title' => 'Database Configuration',
@@ -57,16 +43,13 @@ return [
 
     'install' => 'Install',
 
-
     /**
-     *
      * Final page translations.
-     *
      */
     'final' => [
         'title' => 'Finished',
         'finished' => 'Application has been successfully installed.',
         'exit' => 'Click here to exit',
     ],
-    'checkPermissionAgain' => ' Check Permission Again'
+    'checkPermissionAgain' => ' Check Permission Again',
 ];

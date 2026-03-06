@@ -10,7 +10,6 @@ use Modules\Recruit\Notifications\UpdateOfferLetter;
 
 class UpdateOfferLetterListener
 {
-
     /**
      * Create the event listener.
      *
@@ -24,7 +23,7 @@ class UpdateOfferLetterListener
     /**
      * Handle the event.
      *
-     * @param object $event
+     * @param  object  $event
      * @return void
      */
     public function handle(UpdateOfferLetterEvent $event)
@@ -43,5 +42,4 @@ class UpdateOfferLetterListener
         $candidate = $jobOffer->jobApplication;
         Notification::send($candidate, new UpdateOfferLetter($jobOffer));
     }
-
 }

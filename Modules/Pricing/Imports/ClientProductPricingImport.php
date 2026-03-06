@@ -23,6 +23,7 @@ class ClientProductPricingImport implements ToArray
     public function array(array $array): array
     {
         $this->processedData = $array;
+
         return $array;
     }
 

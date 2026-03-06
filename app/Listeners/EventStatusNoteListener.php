@@ -3,13 +3,12 @@
 namespace App\Listeners;
 
 use App\Events\EventStatusNoteEvent;
-use Illuminate\Support\Facades\Notification;
 use App\Models\User;
 use App\Notifications\EventStatusNote;
+use Illuminate\Support\Facades\Notification;
 
 class EventStatusNoteListener
 {
-
     /**
      * Handle the event.
      */
@@ -27,5 +26,4 @@ class EventStatusNoteListener
             Notification::send($host, new EventStatusNote($event->event));
         }
     }
-
 }

@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreBulkShift extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -35,8 +34,7 @@ class StoreBulkShift extends FormRequest
     public function messages()
     {
         return [
-            'user_id.0.required' => __('messages.atleastOneValidation')
+            'user_id.0.required' => __('messages.atleastOneValidation'),
         ];
     }
-
 }

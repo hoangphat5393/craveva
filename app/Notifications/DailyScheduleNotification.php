@@ -2,20 +2,20 @@
 
 namespace App\Notifications;
 
-use App\Models\User;
 use App\Models\EmailNotificationSetting;
+use App\Models\User;
 
 class DailyScheduleNotification extends BaseNotification
 {
-
-
     /**
      * Create a new notification instance.
      */
-
     private $userData;
+
     private $userId;
+
     private $userModules;
+
     private $emailSetting;
 
     public function __construct($userData)
@@ -37,22 +37,22 @@ class DailyScheduleNotification extends BaseNotification
 
         $modulesToCheck = ['tasks', 'events', 'holidays', 'leaves', 'recruit'];
 
-        if (!empty(array_intersect($modulesToCheck, $this->userModules))) {
+        if (! empty(array_intersect($modulesToCheck, $this->userModules))) {
             if ($this->emailSetting->send_email == 'yes') {
                 array_push($via, 'mail');
             }
         }
 
-        if (!empty(array_intersect($modulesToCheck, $this->userModules))) {
+        if (! empty(array_intersect($modulesToCheck, $this->userModules))) {
             if ($this->emailSetting->send_slack == 'yes' && $this->company->slackSetting->status == 'active') {
                 $this->slackUserNameCheck($notifiable) ? array_push($via, 'slack') : null;
             }
         }
 
         if ($this->emailSetting->send_push == 'yes' && push_setting()->beams_push_status == 'active') {
-            $pushNotification = new \App\Http\Controllers\DashboardController();
+            $pushNotification = new \App\Http\Controllers\DashboardController;
             $pushUsersIds = [[$notifiable->id]];
-            $pushNotification->sendPushNotifications($pushUsersIds, __('email.dailyScheduleReminder.subject', ['date' => now()->format($this->company->date_format)]), $this->userData['tasks'] . ' ' . $this->userData['events'] . ' ' . $this->userData['holidays'] . ' ' . $this->userData['leaves'] . ' ' . $this->userData['interview']);
+            $pushNotification->sendPushNotifications($pushUsersIds, __('email.dailyScheduleReminder.subject', ['date' => now()->format($this->company->date_format)]), $this->userData['tasks'].' '.$this->userData['events'].' '.$this->userData['holidays'].' '.$this->userData['leaves'].' '.$this->userData['interview']);
         }
 
         return $via;
@@ -66,33 +66,33 @@ class DailyScheduleNotification extends BaseNotification
         $build = parent::build($notifiable);
         $url = getDomainSpecificUrl(route('dashboard'), $this->company);
 
-        $content = __('email.dailyScheduleReminder.content') . '<br>';
+        $content = __('email.dailyScheduleReminder.content').'<br>';
 
         if (in_array('tasks', $this->userModules)) {
-            $content .= '<br>' . __('email.dailyScheduleReminder.taskText') . ': <a class="text-dark-grey text-decoration-none" href=' . $url . '> ' . $this->userData['tasks'] . '</a>';
+            $content .= '<br>'.__('email.dailyScheduleReminder.taskText').': <a class="text-dark-grey text-decoration-none" href='.$url.'> '.$this->userData['tasks'].'</a>';
         }
 
         if (in_array('events', $this->userModules)) {
-            $content .= '<br>' . __('email.dailyScheduleReminder.eventText') . ': <a class="text-dark-grey" href=' . $url . '> ' . $this->userData['events'] . '</a>';
+            $content .= '<br>'.__('email.dailyScheduleReminder.eventText').': <a class="text-dark-grey" href='.$url.'> '.$this->userData['events'].'</a>';
         }
 
         if (in_array('holidays', $this->userModules)) {
-            $content .= '<br>' . __('email.dailyScheduleReminder.holidayText') . ': <a class="text-dark-grey" href=' . $url . '> ' . $this->userData['holidays'] . '</a>';
+            $content .= '<br>'.__('email.dailyScheduleReminder.holidayText').': <a class="text-dark-grey" href='.$url.'> '.$this->userData['holidays'].'</a>';
         }
 
         if (in_array('leaves', $this->userModules)) {
-            $content .= '<br>' . __('email.dailyScheduleReminder.leavesText') . ': <a class="text-dark-grey text-decoration-none" href=' . $url . '> ' . $this->userData['leaves'] . '</a>';
+            $content .= '<br>'.__('email.dailyScheduleReminder.leavesText').': <a class="text-dark-grey text-decoration-none" href='.$url.'> '.$this->userData['leaves'].'</a>';
         }
 
         if (module_enabled('Recruit') && in_array('recruit', $this->userModules)) {
-            $content .= '<br>' . __('email.dailyScheduleReminder.interviewText') . ': <a class="text-dark-grey text-decoration-none" href=' . $url . '> ' . $this->userData['interview'] . '</a>';
+            $content .= '<br>'.__('email.dailyScheduleReminder.interviewText').': <a class="text-dark-grey text-decoration-none" href='.$url.'> '.$this->userData['interview'].'</a>';
         }
 
         $buildFinal = $build
             ->subject(__('email.dailyScheduleReminder.subject', ['date' => now()->format($this->company->date_format)]))
             ->markdown('mail.email', [
                 'notifiableName' => $this->userData['user']->name,
-                'content' => $content
+                'content' => $content,
             ]);
 
         parent::resetLocale();
@@ -106,13 +106,12 @@ class DailyScheduleNotification extends BaseNotification
         $roles = $userData->roles;
         $userRoles = $roles->pluck('name')->toArray();
 
-        $module = new \App\Models\ModuleSetting();
+        $module = new \App\Models\ModuleSetting;
 
         if (in_array('admin', $userRoles)) {
             $module = $module->where('type', 'admin');
 
-        }
-        elseif (in_array('employee', $userRoles)) {
+        } elseif (in_array('employee', $userRoles)) {
             $module = $module->where('type', 'employee');
         }
 
@@ -133,36 +132,36 @@ class DailyScheduleNotification extends BaseNotification
     /**
      * Get the Slack representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\SlackMessage
      */
     public function toSlack($notifiable)
     {
         $url = getDomainSpecificUrl(route('dashboard'), $this->company);
 
-        $subject = '*' . __('email.dailyScheduleReminder.subject') . ' ' . now()->format($this->company->date_format) . ' ' . config('app.name') . '!*' . "\n";
+        $subject = '*'.__('email.dailyScheduleReminder.subject').' '.now()->format($this->company->date_format).' '.config('app.name').'!*'."\n";
         $content = '';
 
         if (in_array('tasks', $this->userModules)) {
-            $content .= __('email.dailyScheduleReminder.taskText') . ': ' . '<' . $url . '|' . $this->userData['tasks'] . '>' . "\n";
+            $content .= __('email.dailyScheduleReminder.taskText').': '.'<'.$url.'|'.$this->userData['tasks'].'>'."\n";
         }
 
         if (in_array('events', $this->userModules)) {
-            $content .= __('email.dailyScheduleReminder.eventText') . ': ' . '<' . $url . '|' . $this->userData['events'] . '>' . "\n";
+            $content .= __('email.dailyScheduleReminder.eventText').': '.'<'.$url.'|'.$this->userData['events'].'>'."\n";
         }
 
         if (in_array('holidays', $this->userModules)) {
-            $content .= __('email.dailyScheduleReminder.holidayText') . ': ' . '<' . $url . '|' . $this->userData['holidays'] . '>' . "\n";
+            $content .= __('email.dailyScheduleReminder.holidayText').': '.'<'.$url.'|'.$this->userData['holidays'].'>'."\n";
         }
 
         if (in_array('leaves', $this->userModules)) {
-            $content .= __('email.dailyScheduleReminder.leavesText') . ': ' . '<' . $url . '|' . $this->userData['leaves'] . '>' . "\n";
+            $content .= __('email.dailyScheduleReminder.leavesText').': '.'<'.$url.'|'.$this->userData['leaves'].'>'."\n";
         }
 
         if (module_enabled('Recruit') && in_array('recruit', $this->userModules)) {
-            $content .= __('email.dailyScheduleReminder.interviewText') . ': ' . '<' . $url . '|' . $this->userData['interview'] . '>' . "\n";
+            $content .= __('email.dailyScheduleReminder.interviewText').': '.'<'.$url.'|'.$this->userData['interview'].'>'."\n";
         }
 
-        return $this->slackBuild($notifiable)->content($subject . $content);
+        return $this->slackBuild($notifiable)->content($subject.$content);
     }
 }

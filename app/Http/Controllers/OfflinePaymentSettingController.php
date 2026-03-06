@@ -10,7 +10,6 @@ use App\Models\OfflinePaymentMethod;
 
 class OfflinePaymentSettingController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -26,6 +25,7 @@ class OfflinePaymentSettingController extends AccountBaseController
     public function index()
     {
         $this->offlineMethods = OfflinePaymentMethod::all();
+
         return view('payment-gateway-credentials.index', $this->data);
     }
 
@@ -40,13 +40,13 @@ class OfflinePaymentSettingController extends AccountBaseController
     }
 
     /**
-     * @param StoreRequest $request
      * @return array
+     *
      * @throws \Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException
      */
     public function store(StoreRequest $request)
     {
-        $method = new OfflinePaymentMethod();
+        $method = new OfflinePaymentMethod;
         $method->name = $request->name;
         $method->description = trim_editor($request->description);
 
@@ -73,9 +73,9 @@ class OfflinePaymentSettingController extends AccountBaseController
     }
 
     /**
-     * @param UpdateRequest $request
-     * @param int $id
+     * @param  int  $id
      * @return array|string[]
+     *
      * @throws \Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException
      */
     public function update(UpdateRequest $request, $id)
@@ -109,7 +109,7 @@ class OfflinePaymentSettingController extends AccountBaseController
     public function destroy($id)
     {
         OfflinePaymentMethod::destroy($id);
+
         return Reply::success(__('messages.deleteSuccess'));
     }
-
 }

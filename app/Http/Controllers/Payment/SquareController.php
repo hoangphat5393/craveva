@@ -3,27 +3,26 @@
 namespace App\Http\Controllers\Payment;
 
 use App\Helper\Reply;
-use App\Models\Order;
-use App\Models\Invoice;
-use Square\Models\Money;
-use Square\SquareClient;
-use Illuminate\Http\Request;
-use Square\Models\OrderLineItem;
-use Illuminate\Support\Facades\Log;
-use Square\Exceptions\ApiException;
 use App\Http\Controllers\Controller;
 use App\Models\GlobalSetting;
+use App\Models\Invoice;
+use App\Models\Order;
 use App\Traits\MakeOrderInvoiceTrait;
 use App\Traits\MakePaymentTrait;
-use Square\Models\CreateOrderRequest;
-use Square\Models\Order as SquareOrder;
-use Square\Models\CreateCheckoutRequest;
 use App\Traits\PaymentGatewayTrait;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Square\Exceptions\ApiException;
+use Square\Models\CreateCheckoutRequest;
+use Square\Models\CreateOrderRequest;
+use Square\Models\Money;
+use Square\Models\Order as SquareOrder;
+use Square\Models\OrderLineItem;
+use Square\SquareClient;
 
 class SquareController extends Controller
 {
-
-    use MakePaymentTrait, MakeOrderInvoiceTrait, PaymentGatewayTrait;
+    use MakeOrderInvoiceTrait, MakePaymentTrait, PaymentGatewayTrait;
 
     public function __construct()
     {
@@ -35,33 +34,33 @@ class SquareController extends Controller
     {
 
         switch ($request->type) {
-        case 'invoice':
-            $invoice = Invoice::findOrFail($request->id);
-            $company = $invoice->company;
-            $description = __('app.invoice') . ' #' . $invoice->invoice_number;
-            $metadata = [
-                'id' => $invoice->invoice_number,
-                'type' => $request->type
-            ];
-            $amount = $invoice->amountDue();
-            $callback_url = route('square.callback', [$request->id, $request->type, $company->hash]);
-            break;
+            case 'invoice':
+                $invoice = Invoice::findOrFail($request->id);
+                $company = $invoice->company;
+                $description = __('app.invoice').' #'.$invoice->invoice_number;
+                $metadata = [
+                    'id' => $invoice->invoice_number,
+                    'type' => $request->type,
+                ];
+                $amount = $invoice->amountDue();
+                $callback_url = route('square.callback', [$request->id, $request->type, $company->hash]);
+                break;
 
-        case 'order':
-            $order = Order::findOrFail($request->id);
-            $company = $order->company;
-            $invoice = $this->makeOrderInvoice($order, 'pending');
-            $description = __('app.order') . ' #' . $order->order_number;
-            $metadata = [
-                'id' => $order->order_number,
-                'type' => $request->type
-            ];
-            $amount = $order->total;
-            $callback_url = route('square.callback', [$request->id, $request->type, $company->hash]);
-            break;
+            case 'order':
+                $order = Order::findOrFail($request->id);
+                $company = $order->company;
+                $invoice = $this->makeOrderInvoice($order, 'pending');
+                $description = __('app.order').' #'.$order->order_number;
+                $metadata = [
+                    'id' => $order->order_number,
+                    'type' => $request->type,
+                ];
+                $amount = $order->total;
+                $callback_url = route('square.callback', [$request->id, $request->type, $company->hash]);
+                break;
 
-        default:
-            return Reply::error(__('messages.paymentTypeNotFound'));
+            default:
+                return Reply::error(__('messages.paymentTypeNotFound'));
         }
 
         $this->squareSet($company->hash);
@@ -78,7 +77,7 @@ class SquareController extends Controller
             // Set currency to the currency for the location
             $currency = $client->getLocationsApi()->retrieveLocation($location_id)->getResult()->getLocation()->getCurrency();
 
-            $money = new Money();
+            $money = new Money;
             $money->setCurrency($currency);
             $money->setAmount($amount * 100);
 
@@ -86,21 +85,19 @@ class SquareController extends Controller
             $item->setName($description);
             $item->setBasePriceMoney($money);
 
-
             // Create a new order and add the line items as necessary.
             $order = new SquareOrder($location_id);
             $order->setLineItems([$item]);
             // set metadata
             $order->setMetaData($metadata);
 
-            $create_order_request = new CreateOrderRequest();
+            $create_order_request = new CreateOrderRequest;
             $create_order_request->setOrder($order);
 
             // Similar to payments you must have a unique idempotency key.
             $checkout_request = new CreateCheckoutRequest(uniqid(), $create_order_request);
             // Set a custom redirect URL, otherwise a default Square confirmation page will be used
             $checkout_request->setRedirectUrl($callback_url);
-
 
             $response = $checkout_api->createCheckout($location_id, $checkout_request);
 
@@ -135,24 +132,24 @@ class SquareController extends Controller
             $amount = ($order->getTotalMoney()->getAmount() / 100);
 
             switch ($type) {
-            case 'invoice':
-                $invoice = Invoice::findOrFail($id);
-                $invoice->status = ($order->getState() == 'COMPLETED') ? 'paid' : 'unpaid';
-                $invoice->save();
-                $this->makePayment('Square', $amount, $invoice, $request->transactionId, (($order->getState() == 'COMPLETED') ? 'complete' : 'failed'));
+                case 'invoice':
+                    $invoice = Invoice::findOrFail($id);
+                    $invoice->status = ($order->getState() == 'COMPLETED') ? 'paid' : 'unpaid';
+                    $invoice->save();
+                    $this->makePayment('Square', $amount, $invoice, $request->transactionId, (($order->getState() == 'COMPLETED') ? 'complete' : 'failed'));
 
-                return redirect(url()->temporarySignedRoute('front.invoice', now()->addDays(GlobalSetting::SIGNED_ROUTE_EXPIRY), $invoice->hash));
+                    return redirect(url()->temporarySignedRoute('front.invoice', now()->addDays(GlobalSetting::SIGNED_ROUTE_EXPIRY), $invoice->hash));
 
-            case 'order':
+                case 'order':
 
-                $clientOrder = Order::findOrFail($id);
-                $invoice = $this->makeOrderInvoice($clientOrder, ($order->getState() == 'COMPLETED' ? 'completed' : 'failed'));
-                $this->makePayment('Square', $amount, $invoice, $request->transactionId, ($order->getState() == 'COMPLETED' ? 'complete' : 'failed'));
+                    $clientOrder = Order::findOrFail($id);
+                    $invoice = $this->makeOrderInvoice($clientOrder, ($order->getState() == 'COMPLETED' ? 'completed' : 'failed'));
+                    $this->makePayment('Square', $amount, $invoice, $request->transactionId, ($order->getState() == 'COMPLETED' ? 'complete' : 'failed'));
 
-                return redirect()->route('orders.show', $id);
+                    return redirect()->route('orders.show', $id);
 
-            default:
-                return redirect()->route('dashboard');
+                default:
+                    return redirect()->route('dashboard');
             }
 
         } catch (ApiException $e) {
@@ -183,21 +180,21 @@ class SquareController extends Controller
                 $amount = ($order->getTotalMoney()->getAmount() / 100);
 
                 switch ($order->getMetaData()['type']) {
-                case 'invoice':
-                    $invoice = Invoice::findOrFail($order->getMetaData()['id']);
-                    $invoice->status = ($order->getState() == 'COMPLETED') ? 'paid' : 'unpaid';
-                    $invoice->save();
-                    $this->makePayment('Square', $amount, $invoice, $request->data['id'], (($order->getState() == 'COMPLETED') ? 'complete' : 'failed'));
+                    case 'invoice':
+                        $invoice = Invoice::findOrFail($order->getMetaData()['id']);
+                        $invoice->status = ($order->getState() == 'COMPLETED') ? 'paid' : 'unpaid';
+                        $invoice->save();
+                        $this->makePayment('Square', $amount, $invoice, $request->data['id'], (($order->getState() == 'COMPLETED') ? 'complete' : 'failed'));
 
-                    break;
+                        break;
 
-                case 'order':
+                    case 'order':
 
-                    $clientOrder = Order::findOrFail($order->getMetaData()['id']);
-                    $invoice = $this->makeOrderInvoice($clientOrder, ($order->getState() == 'COMPLETED' ? 'completed' : 'failed'));
-                    $this->makePayment('Square', $amount, $invoice, $request->data['id'], ($order->getState() == 'COMPLETED' ? 'complete' : 'failed'));
+                        $clientOrder = Order::findOrFail($order->getMetaData()['id']);
+                        $invoice = $this->makeOrderInvoice($clientOrder, ($order->getState() == 'COMPLETED' ? 'completed' : 'failed'));
+                        $this->makePayment('Square', $amount, $invoice, $request->data['id'], ($order->getState() == 'COMPLETED' ? 'complete' : 'failed'));
 
-                    break;
+                        break;
                 }
 
             } catch (ApiException $e) {
@@ -210,5 +207,4 @@ class SquareController extends Controller
 
         }
     }
-
 }

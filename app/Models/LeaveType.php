@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property-read mixed $icon
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Leave[] $leaves
  * @property-read int|null $leaves_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|LeaveType newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|LeaveType newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|LeaveType query()
@@ -32,13 +33,16 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @method static \Illuminate\Database\Eloquent\Builder|LeaveType wherePaid($value)
  * @method static \Illuminate\Database\Eloquent\Builder|LeaveType whereTypeName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|LeaveType whereUpdatedAt($value)
+ *
  * @property int|null $company_id
  * @property int $monthly_limit
  * @property-read \App\Models\Company|null $company
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Leave[] $leavesCount
  * @property-read int|null $leaves_count_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|LeaveType whereCompanyId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|LeaveType whereMonthlyLimit($value)
+ *
  * @property int|null $effective_after
  * @property string|null $effective_type
  * @property string|null $unused_leave
@@ -50,6 +54,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string|null $department
  * @property string|null $designation
  * @property string|null $role
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|LeaveType whereAllowedNotice($value)
  * @method static \Illuminate\Database\Eloquent\Builder|LeaveType whereAllowedProbation($value)
  * @method static \Illuminate\Database\Eloquent\Builder|LeaveType whereDepartment($value)
@@ -61,11 +66,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @method static \Illuminate\Database\Eloquent\Builder|LeaveType whereMaritalStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|LeaveType whereRole($value)
  * @method static \Illuminate\Database\Eloquent\Builder|LeaveType whereUnusedLeave($value)
+ *
  * @mixin \Eloquent
  */
 class LeaveType extends BaseModel
 {
-
     use HasCompany, SoftDeletes;
 
     protected $casts = [
@@ -84,15 +89,15 @@ class LeaveType extends BaseModel
             ->groupBy('leave_type_id');
     }
 
-    public static function byUser($user, $leaveTypeId = null, $status = array('approved'), $leaveDate = null)
+    public static function byUser($user, $leaveTypeId = null, $status = ['approved'], $leaveDate = null)
     {
-        if (!is_null($leaveDate)) {
+        if (! is_null($leaveDate)) {
             $leaveDate = Carbon::createFromFormat(company()->date_format, $leaveDate);
         } else {
-            $leaveDate = Carbon::createFromFormat('d-m-Y', '01-' . company()->year_starts_from . '-' . now(company()->timezone)->year)->startOfMonth();
+            $leaveDate = Carbon::createFromFormat('d-m-Y', '01-'.company()->year_starts_from.'-'.now(company()->timezone)->year)->startOfMonth();
         }
 
-        if (!$user instanceof User) {
+        if (! $user instanceof User) {
             $user = User::withoutGlobalScope(ActiveScope::class)->withOut('clientDetails', 'role')->findOrFail($user);
         }
 
@@ -100,7 +105,7 @@ class LeaveType extends BaseModel
 
         if (isset($user->employee[0])) {
             if ($setting->leaves_start_from == 'joining_date') {
-                $currentYearJoiningDate = Carbon::parse($user->employee[0]->joining_date->format((now(company()->timezone)->year) . '-m-d'));
+                $currentYearJoiningDate = Carbon::parse($user->employee[0]->joining_date->format((now(company()->timezone)->year).'-m-d'));
 
                 if ($currentYearJoiningDate->isFuture()) {
                     $currentYearJoiningDate->subYear();
@@ -124,7 +129,7 @@ class LeaveType extends BaseModel
                     ->join('users', 'users.id', 'employee_leave_quotas.user_id')
                     ->join('employee_details', 'employee_details.user_id', 'users.id')->where('users.id', $user->id);
 
-                if (!is_null($leaveTypeId)) {
+                if (! is_null($leaveTypeId)) {
                     $leaveTypes = $leaveTypes->where('leave_types.id', $leaveTypeId);
                 }
 
@@ -149,7 +154,7 @@ class LeaveType extends BaseModel
                     ->join('employee_details', 'employee_details.user_id', 'users.id')->where('users.id', $user->id);
             }
 
-            if (!is_null($leaveTypeId)) {
+            if (! is_null($leaveTypeId)) {
                 $leaveTypes = $leaveTypes->where('leave_types.id', $leaveTypeId);
             }
 
@@ -163,7 +168,7 @@ class LeaveType extends BaseModel
     {
         $currentDate = now();
 
-        if (!$user->employee) {
+        if (! $user->employee) {
             return false;
         }
 
@@ -171,20 +176,20 @@ class LeaveType extends BaseModel
         $leaveRole = $leave->role;
 
         $effectiveDate = null;
-        if (!is_null($leave->effective_type) && !is_null($leave->effective_after) && $user->employeeDetail && $user->employeeDetail->joining_date) {
+        if (! is_null($leave->effective_type) && ! is_null($leave->effective_after) && $user->employeeDetail && $user->employeeDetail->joining_date) {
             $effectiveDate = $leave->effective_type == 'days'
                 ? $user->employeeDetail->joining_date->copy()->addDays($leave->effective_after)
                 : $user->employeeDetail->joining_date->copy()->addMonths($leave->effective_after);
         }
 
         $probationOk = true;
-        if (!is_null($leave->probation_end_date)) {
+        if (! is_null($leave->probation_end_date)) {
             $probation = Carbon::parse($leave->probation_end_date);
             $probationOk = ($leave->allowed_probation == 1) || ($leave->allowed_probation == 0 && $probation->lt($currentDate));
         }
 
         $noticeOk = true;
-        if (!is_null($leave->notice_period_start_date)) {
+        if (! is_null($leave->notice_period_start_date)) {
             $noticePeriod = Carbon::parse($leave->notice_period_start_date);
             $noticeOk = ($leave->allowed_notice == 1) || ($leave->allowed_notice == 0 && $noticePeriod->gt($currentDate));
         }
@@ -193,7 +198,7 @@ class LeaveType extends BaseModel
         $maritalOk = is_null($leave->marital_status) || in_array($user->employeeDetail?->marital_status?->value, (array) json_decode($leave->marital_status));
         $departmentOk = is_null($leave->department) || in_array($user->employeeDetail?->department?->id, (array) json_decode($leave->department));
         $designationOk = is_null($leave->designation) || in_array($user->employeeDetail?->designation?->id, (array) json_decode($leave->designation));
-        $roleOk = is_null($leaveRole) || !empty(array_intersect($userRole, (array) json_decode($leaveRole)));
+        $roleOk = is_null($leaveRole) || ! empty(array_intersect($userRole, (array) json_decode($leaveRole)));
         $effectiveOk = is_null($effectiveDate) || $currentDate->gt($effectiveDate);
 
         if ($probationOk && $noticeOk && $genderOk && $maritalOk && $departmentOk && $designationOk && $roleOk && $effectiveOk) {

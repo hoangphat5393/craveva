@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      */
@@ -27,7 +26,6 @@ return new class extends Migration
             $table->longText('role')->nullable()->change();
         });
 
-
         Schema::table('estimate_item_images', function (Blueprint $table) {
             $table->string('filename')->nullable()->change();
         });
@@ -36,5 +34,4 @@ return new class extends Migration
             $table->string('filename')->nullable()->change();
         });
     }
-
 };

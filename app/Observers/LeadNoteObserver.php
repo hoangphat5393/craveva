@@ -6,13 +6,9 @@ use App\Models\LeadNote;
 
 class LeadNoteObserver
 {
-
-    /**
-     * @param LeadNote $leadNote
-     */
     public function saving(LeadNote $leadNote)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             if (user()) {
                 $leadNote->last_updated_by = user()->id;
             }
@@ -21,11 +17,10 @@ class LeadNoteObserver
 
     public function creating(LeadNote $leadNote)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             if (user()) {
                 $leadNote->added_by = user()->id;
             }
         }
     }
-
 }

@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class EstimateAcceptRequest extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -30,14 +29,12 @@ class EstimateAcceptRequest extends FormRequest
             'email' => 'required|email:rfc,strict',
         ];
 
-        if(request('signature_type') == 'upload'){
+        if (request('signature_type') == 'upload') {
             $rules['image'] = 'required';
-        }
-        else {
+        } else {
             $rules['signature'] = 'required';
         }
 
         return $rules;
     }
-
 }

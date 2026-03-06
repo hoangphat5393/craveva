@@ -9,7 +9,6 @@ use Illuminate\Database\Seeder;
 
 class ContractTableSeeder extends Seeder
 {
-
     /**
      * Run the database seeds.
      *
@@ -29,7 +28,7 @@ class ContractTableSeeder extends Seeder
         $faker = \Faker\Factory::create();
 
         Contract::factory()
-            ->count((int)$count)
+            ->count((int) $count)
             ->make()
             ->each(function (Contract $contract) use ($faker, $admin, $setting, $companyId) {
                 $contract->company_id = $companyId;
@@ -62,5 +61,4 @@ class ContractTableSeeder extends Seeder
             ->inRandomOrder()
             ->first()->user_id;
     }
-
 }

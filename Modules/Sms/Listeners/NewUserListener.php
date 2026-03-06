@@ -20,5 +20,4 @@ class NewUserListener
         } catch (\Exception $e) { // @codingStandardsIgnoreLine
         }
     }
-
 }

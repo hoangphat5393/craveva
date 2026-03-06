@@ -7,21 +7,21 @@ use App\Helper\Reply;
 use App\Models\GdprSetting;
 use App\Models\PurposeConsent;
 use App\Models\PurposeConsentUser;
-use App\Models\User;
 use App\Models\RemovalRequest;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class GdprController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'app.menu.gdpr';
         $this->gdprSetting = GdprSetting::first();
 
-         $this->middleware(function ($request, $next) {
-            abort_403(!(user()->permission('manage_gdpr_setting') == 'all' || in_array('client', user_roles())));
+        $this->middleware(function ($request, $next) {
+            abort_403(! (user()->permission('manage_gdpr_setting') == 'all' || in_array('client', user_roles())));
+
             return $next($request);
         });
     }
@@ -37,7 +37,7 @@ class GdprController extends AccountBaseController
 
         $this->user = User::findOrFail($this->user->id);
 
-        $this->consents = PurposeConsent::with(['user' => function($query) {
+        $this->consents = PurposeConsent::with(['user' => function ($query) {
             $query->where('client_id', $this->user->id)
                 ->orderByDesc('created_at');
         }])->get();
@@ -58,6 +58,7 @@ class GdprController extends AccountBaseController
 
         if (request()->ajax()) {
             $html = view($this->view, $this->data)->render();
+
             return Reply::dataOnly(['status' => 'success', 'html' => $html, 'title' => $this->pageTitle, 'activeTab' => $this->activeTab]);
         }
 
@@ -68,9 +69,8 @@ class GdprController extends AccountBaseController
     {
         $allConsents = $request->has('consent_customer') ? $request->consent_customer : [];
 
-        foreach ($allConsents as $allConsentId => $allConsentStatus)
-        {
-            $newConsentLead = new PurposeConsentUser();
+        foreach ($allConsents as $allConsentId => $allConsentStatus) {
+            $newConsentLead = new PurposeConsentUser;
             $newConsentLead->client_id = $this->user->id;
             $newConsentLead->updated_by_id = $this->user->id;
             $newConsentLead->purpose_consent_id = $allConsentId;
@@ -87,7 +87,7 @@ class GdprController extends AccountBaseController
     {
         $removalRequest = RemovalRequest::where('company_id', company()->id)->where('user_id', $this->user->id)->where('status', 'pending')->first();
 
-        if (!$removalRequest) {
+        if (! $removalRequest) {
             $removalRequest = new RemovalRequest;
         }
         $removalRequest->user_id = $this->user->id;
@@ -95,6 +95,7 @@ class GdprController extends AccountBaseController
         $removalRequest->company_id = company()->id;
         $removalRequest->description = $request->consent_block;
         $removalRequest->save();
+
         return Reply::success(__('messages.gdprRequestUpdated'));
     }
 
@@ -103,11 +104,10 @@ class GdprController extends AccountBaseController
         $table = User::with('clientDetails', 'attendance', 'employee', 'employeeDetail', 'projects', 'member', 'group')->findOrFail(user()->id);
         $filename = Files::UPLOAD_FOLDER.'/user.json';
         $handle = fopen($filename, 'w+');
-        fputs($handle, $table->toJson(JSON_PRETTY_PRINT));
+        fwrite($handle, $table->toJson(JSON_PRETTY_PRINT));
         fclose($handle);
-        $headers = array('Content-type' => 'application/json');
+        $headers = ['Content-type' => 'application/json'];
 
         return response()->download($filename, 'user.json', $headers);
     }
-
 }

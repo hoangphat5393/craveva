@@ -20,5 +20,4 @@ class InvoiceReminderListener
         } catch (\Exception $e) { // @codingStandardsIgnoreLine
         }
     }
-
 }

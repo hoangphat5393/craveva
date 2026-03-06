@@ -1,6 +1,6 @@
 <?php
 
-return array (
+return [
     'manage_skill' => 'Manage Skills',
     'add_job' => 'Add Job',
     'view_job' => 'View Job',
@@ -472,4 +472,4 @@ return array (
     'edit_payouts' => 'Edit Payouts',
     'delete_payouts' => 'Delete Payouts',
     'manage_payout_status' => 'Manage Payout Status',
-);
+];

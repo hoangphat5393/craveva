@@ -2,10 +2,9 @@
 
 namespace Modules\Recruit\Events;
 
-use Illuminate\Queue\SerializesModels;
-use Modules\Recruit\Entities\RecruitJob;
-use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\SerializesModels;
 use Modules\Recruit\Entities\RecruitJobApplication;
 
 class NewJobApplicationEvent
@@ -13,6 +12,7 @@ class NewJobApplicationEvent
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $jobApplication;
+
     public $job;
 
     /**
@@ -23,7 +23,7 @@ class NewJobApplicationEvent
     public function __construct(RecruitJobApplication $jobApplication, $job)
     {
         $this->jobApplication = $jobApplication;
-        $this->job= $job;
+        $this->job = $job;
     }
 
     /**

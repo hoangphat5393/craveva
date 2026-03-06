@@ -9,7 +9,6 @@ use Illuminate\Database\Seeder;
 
 class AttendanceTableSeeder extends Seeder
 {
-
     /**
      * Run the database seeds.
      *
@@ -36,7 +35,7 @@ class AttendanceTableSeeder extends Seeder
 
         foreach ($userIds as $userId) {
             $date = $faker->randomElement([$faker->dateTimeThisMonth()->format('Y-m-d'), $faker->dateTimeThisYear('now')->format('Y-m-d')]);
-            $start = $date . 'T' . $faker->randomElement(['09:00', '10:00', '11:00', '12:00', '13:00']) . '+00:00';
+            $start = $date.'T'.$faker->randomElement(['09:00', '10:00', '11:00', '12:00', '13:00']).'+00:00';
 
             $clockIn = Carbon::parse($start)->addMinutes($faker->randomElement([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 10, 15, -20, 45, 120]))->format('Y-m-d H:i:s');
             $clockInIp = $faker->ipv4;
@@ -57,5 +56,4 @@ class AttendanceTableSeeder extends Seeder
 
         Attendance::insert($data);
     }
-
 }

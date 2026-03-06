@@ -1,6 +1,5 @@
 <?php
 
-
 use IvanoMatteo\LaravelDeviceTracking\DeviceHijackingDetectorDefault;
 
 return [

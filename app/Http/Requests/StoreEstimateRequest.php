@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreEstimateRequest extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -17,9 +16,9 @@ class StoreEstimateRequest extends FormRequest
 
     public function prepareForValidation()
     {
-            $this->merge([
-                'description' => trim_editor($this->description)
-            ]);
+        $this->merge([
+            'description' => trim_editor($this->description),
+        ]);
     }
 
     /**
@@ -43,5 +42,4 @@ class StoreEstimateRequest extends FormRequest
             'currency_id' => __('app.currency'),
         ];
     }
-
 }

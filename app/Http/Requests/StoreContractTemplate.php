@@ -11,7 +11,6 @@ class StoreContractTemplate extends FormRequest
      *
      * @return bool
      */
-
     public function authorize()
     {
         return true;
@@ -27,8 +26,7 @@ class StoreContractTemplate extends FormRequest
         return [
             'subject' => 'required',
             'contract_type' => 'required',
-            'amount' => 'required'
+            'amount' => 'required',
         ];
     }
-
 }

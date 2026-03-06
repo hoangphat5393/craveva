@@ -2,12 +2,11 @@
 
 namespace Modules\Purchase\Providers;
 
-use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Route;
 
 class RouteServiceProvider extends ServiceProvider
 {
-
     /**
      * The module namespace to assume when generating URLs to actions.
      *
@@ -55,5 +54,4 @@ class RouteServiceProvider extends ServiceProvider
             ->namespace($this->moduleNamespace)
             ->group(module_path('Purchase', '/Routes/api.php'));
     }
-
 }

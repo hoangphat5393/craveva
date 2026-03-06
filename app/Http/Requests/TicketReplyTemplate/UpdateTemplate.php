@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class UpdateTemplate extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -26,8 +25,7 @@ class UpdateTemplate extends CoreRequest
     {
         return [
             'reply_heading' => 'required',
-            'description' => 'required'
+            'description' => 'required',
         ];
     }
-
 }

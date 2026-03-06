@@ -2,19 +2,15 @@
 
 namespace Modules\Performance\Database\Seeders;
 
-use App\Models\User;
 use App\Models\Company;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Modules\Performance\Entities\Action;
 use Modules\Performance\Entities\Agenda;
 use Modules\Performance\Entities\Meeting;
-use Modules\Performance\Entities\PerformanceMeeting;
-use Modules\Performance\Entities\PerformanceMeetingAgenda;
-use Modules\Performance\Entities\PerformanceMeetingActions;
 
 class MeetingDataSeeder extends Seeder
 {
-
     /**
      * Run the database seeds.
      *
@@ -28,6 +24,7 @@ class MeetingDataSeeder extends Seeder
 
         if ($employees->count() < 3) {
             $this->command->error('Not enough employees to assign to the meetings!');
+
             return;
         }
 

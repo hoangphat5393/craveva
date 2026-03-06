@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biomixing Operational Flow</title>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        h1 { text-align: center; }
+        .mermaid { display: flex; justify-content: center; }
+    </style>
+</head>
+<body>
+    <h1>Biomixing Operational Flow</h1>
+    <div class="mermaid">
+        graph TD
+            %% Phase 1: Sales & Approval
+            subgraph "Phase 1: Sales & Approval"
+                A[Client Request] -->|Custom Recipe| B(Sales Creates Estimate)
+                B --> C{Sales AI Agent}
+                C -->|Suggests History| D[President Approves Recipe]
+                D --> E{Analytic AI Agent}
+                E -->|Simulates Margin| F[VP Approves Pricing]
+                F -->|Confirmed| G[Create Sales Order]
+            end
+
+            %% Phase 2: Planning
+            subgraph "Phase 2: Planning"
+                G -->|Auto-Trigger| H[Create Production Project]
+                H --> I{Analytic AI Agent}
+                I -->|Check Inventory| J{Stock Status?}
+                J -->|Insufficient| K[Create Purchase Request]
+                J -->|Sufficient| L[Assign Tasks: Weigh -> Mix -> Lab]
+            end
+
+            %% Phase 3: Production
+            subgraph "Phase 3: Production"
+                L --> M[Execute Production]
+                M --> N{Lab Quality Check}
+                N -->|Fail| O[Hold / Reject]
+                N -->|Pass| P[Complete Project & Stock In]
+            end
+
+            %% Phase 4: Fulfillment
+            subgraph "Phase 4: Fulfillment"
+                P --> Q{Logistics AI Agent}
+                Q -->|Verify Temp/Carrier| R[Generate Delivery Note & Labels]
+                R --> S[Ship & Invoice]
+            end
+
+            style C fill:#ff9,stroke:#333,stroke-width:2px
+            style E fill:#ff9,stroke:#333,stroke-width:2px
+            style I fill:#ff9,stroke:#333,stroke-width:2px
+            style Q fill:#ff9,stroke:#333,stroke-width:2px
+            style N fill:#f99,stroke:#333,stroke-width:2px
+    </div>
+</body>
+</html>

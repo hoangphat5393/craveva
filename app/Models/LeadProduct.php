@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Product $product
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|LeadProduct newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|LeadProduct newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|LeadProduct query()
@@ -24,6 +25,7 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
  * @method static \Illuminate\Database\Eloquent\Builder|LeadProduct whereProductId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|LeadProduct whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|LeadProduct whereDealId($value)
+ *
  * @mixin \Eloquent
  */
 class LeadProduct extends Pivot
@@ -31,6 +33,7 @@ class LeadProduct extends Pivot
     use HasFactory;
 
     protected $guarded = ['id'];
+
     protected $table = 'lead_products';
 
     public function product(): BelongsTo
@@ -42,5 +45,4 @@ class LeadProduct extends Pivot
     {
         return $this->belongsTo(Deal::class, 'deal_id');
     }
-
 }

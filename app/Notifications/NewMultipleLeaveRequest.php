@@ -10,15 +10,15 @@ use NotificationChannels\OneSignal\OneSignalMessage;
 
 class NewMultipleLeaveRequest extends BaseNotification
 {
-
-
     /**
      * Create a new notification instance.
      *
      * @return void
      */
     private $leave;
+
     private $multiDates;
+
     private $emailSetting;
 
     public function __construct(Leave $leave, $multiDates)
@@ -32,7 +32,7 @@ class NewMultipleLeaveRequest extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -52,9 +52,9 @@ class NewMultipleLeaveRequest extends BaseNotification
         }
 
         if ($this->emailSetting->send_push == 'yes' && push_setting()->beams_push_status == 'active') {
-            $pushNotification = new \App\Http\Controllers\DashboardController();
+            $pushNotification = new \App\Http\Controllers\DashboardController;
             $pushUsersIds = [[$notifiable->id]];
-            $pushNotification->sendPushNotifications($pushUsersIds, __('email.leaves.subject'). ' ' . __('app.from') . ' ' . $this->leave->user->name, $this->leave->leave_date->format($this->company->date_format) . ' ' . $this->leave->type->type_name);
+            $pushNotification->sendPushNotifications($pushUsersIds, __('email.leaves.subject').' '.__('app.from').' '.$this->leave->user->name, $this->leave->leave_date->format($this->company->date_format).' '.$this->leave->type->type_name);
         }
 
         return $via;
@@ -63,8 +63,7 @@ class NewMultipleLeaveRequest extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
-     * @return MailMessage
+     * @param  mixed  $notifiable
      */
     public function toMail($notifiable): MailMessage
     {
@@ -73,20 +72,20 @@ class NewMultipleLeaveRequest extends BaseNotification
         $url = getDomainSpecificUrl($url, $this->company);
 
         $user = $notifiable;
-        $dates = str_replace(',', ' to ', $this->multiDates);;
+        $dates = str_replace(',', ' to ', $this->multiDates);
 
         $emailDate = '';
         $emailDate .= $dates;
-        $content = __('email.leaves.subject') . ' ' . __('app.from') . ' ' . $this->leave->user->name . '.' . '<p><b>' . __('modules.leaves.leaveType') . ':</b> ' . $this->leave->type->type_name . '</p><p><b>' . __('modules.leaves.reason') . '</b></p><p>' . $this->leave->reason . '</p><p><b>' . __('app.leaveDate') . '</b></p><p>' . $emailDate . '</p>';
+        $content = __('email.leaves.subject').' '.__('app.from').' '.$this->leave->user->name.'.'.'<p><b>'.__('modules.leaves.leaveType').':</b> '.$this->leave->type->type_name.'</p><p><b>'.__('modules.leaves.reason').'</b></p><p>'.$this->leave->reason.'</p><p><b>'.__('app.leaveDate').'</b></p><p>'.$emailDate.'</p>';
 
         $build
-            ->subject(__('email.leaves.subject') . ' - ' . config('app.name'))
-            ->greeting(__('email.hello') . ' ' . $user->name . '!')
+            ->subject(__('email.leaves.subject').' - '.config('app.name'))
+            ->greeting(__('email.hello').' '.$user->name.'!')
             ->markdown('mail.leaves.multiple', [
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
-                'actionText' => __('email.leaves.action')
+                'actionText' => __('email.leaves.action'),
             ]);
 
         parent::resetLocale();
@@ -97,31 +96,30 @@ class NewMultipleLeaveRequest extends BaseNotification
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
-//phpcs:ignore
+    // phpcs:ignore
     public function toArray($notifiable)
     {
         return [
             'id' => $this->leave->id,
             'user_id' => $this->leave->user->id,
-            'user' => $this->leave->user
+            'user' => $this->leave->user,
         ];
     }
 
     public function toSlack($notifiable)
     {
 
-        $content = __('email.leaves.subject') . "\n" .
-            $this->leave->user->name . "\n" .
-            '*' . __('app.date') . '*: ' . $this->leave->leave_date->format($this->company->date_format) . "\n" .
-            '*' . __('modules.leaves.leaveType') . '*: ' . $this->leave->type->type_name . "\n" .
-            '*' . __('modules.leaves.reason') . '*' . "\n" .
+        $content = __('email.leaves.subject')."\n".
+            $this->leave->user->name."\n".
+            '*'.__('app.date').'*: '.$this->leave->leave_date->format($this->company->date_format)."\n".
+            '*'.__('modules.leaves.leaveType').'*: '.$this->leave->type->type_name."\n".
+            '*'.__('modules.leaves.reason').'*'."\n".
             $this->leave->reason;
 
         return $this->slackBuild($notifiable)->content($content);
-
 
     }
 
@@ -130,7 +128,6 @@ class NewMultipleLeaveRequest extends BaseNotification
     {
         return OneSignalMessage::create()
             ->setSubject(__('email.leaves.subject'))
-            ->setBody('by ' . $this->leave->user->name);
+            ->setBody('by '.$this->leave->user->name);
     }
-
 }

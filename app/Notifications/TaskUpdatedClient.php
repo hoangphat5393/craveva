@@ -7,14 +7,13 @@ use App\Models\Task;
 
 class TaskUpdatedClient extends BaseNotification
 {
-
-
     /**
      * Create a new notification instance.
      *
      * @return void
      */
     private $task;
+
     private $emailSetting;
 
     public function __construct(Task $task)
@@ -28,7 +27,7 @@ class TaskUpdatedClient extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -45,7 +44,7 @@ class TaskUpdatedClient extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
@@ -54,16 +53,16 @@ class TaskUpdatedClient extends BaseNotification
         $url = route('tasks.show', $this->task->id);
         $url = getDomainSpecificUrl($url, $this->company);
 
-        $content = $this->task->heading . ' ' . __('email.taskUpdate.subject') . '.';
+        $content = $this->task->heading.' '.__('email.taskUpdate.subject').'.';
 
         $build
-            ->subject(__('email.taskUpdate.subject') . ' - ' . config('app.name') . '.')
+            ->subject(__('email.taskUpdate.subject').' - '.config('app.name').'.')
             ->markdown('mail.email', [
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
                 'actionText' => __('email.taskUpdate.action'),
-                'notifiableName' => $notifiable->name
+                'notifiableName' => $notifiable->name,
             ]);
 
         parent::resetLocale();
@@ -82,8 +81,7 @@ class TaskUpdatedClient extends BaseNotification
             'id' => $this->task->id,
             'updated_at' => $this->task->updated_at->format('Y-m-d H:i:s'),
             'created_at' => $this->task->created_at->format('Y-m-d H:i:s'),
-            'heading' => $this->task->heading
+            'heading' => $this->task->heading,
         ];
     }
-
 }

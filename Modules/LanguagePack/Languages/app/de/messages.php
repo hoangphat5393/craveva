@@ -1,4 +1,5 @@
 <?php
+
 return [
     'attendanceIsMarked' => 'Für den Termin ist die Anwesenheit vorgemerkt',
     'autoClockOut' => 'Geben Sie ab der Endzeit die Anzahl der Stunden ein, nach denen der Mitarbeiter automatisch ausgestempelt wird. <br><br><b>Beispiel:</b> Wenn die Schichtendezeit 18:00 Uhr ist und der Wert für das automatische Ausstempeln 1 ist, wird der Mitarbeiter um 19:00 Uhr automatisch ausgestempelt.<br><br><b>Hinweis< /b>: Das automatische Ausstempeln funktioniert nicht, wenn in den Anwesenheitseinstellungen die Option „Einstempeln außerhalb der Schichtzeiten zulassen“ aktiviert ist.',

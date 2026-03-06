@@ -3,13 +3,10 @@
 namespace App\Notifications;
 
 use App\Models\Issue;
-
 use Illuminate\Notifications\Messages\MailMessage;
 
 class NewIssue extends BaseNotification
 {
-
-
     /**
      * Create a new notification instance.
      *
@@ -27,7 +24,7 @@ class NewIssue extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     // phpcs:ignore
@@ -39,8 +36,7 @@ class NewIssue extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
+     * @param  mixed  $notifiable
      */
     // phpcs:ignore
     public function toMail($notifiable): MailMessage
@@ -55,7 +51,7 @@ class NewIssue extends BaseNotification
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
-                'actionText' => __('email.notificationAction')
+                'actionText' => __('email.notificationAction'),
             ]);
 
         parent::resetLocale();
@@ -66,13 +62,12 @@ class NewIssue extends BaseNotification
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
-    //phpcs:ignore
+    // phpcs:ignore
     public function toArray($notifiable)
     {
         return $this->issue->toArray();
     }
-
 }

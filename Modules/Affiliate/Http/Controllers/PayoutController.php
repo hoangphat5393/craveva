@@ -3,24 +3,23 @@
 namespace Modules\Affiliate\Http\Controllers;
 
 use App\Helper\Reply;
-use Illuminate\Http\Request;
-use Modules\Affiliate\Entities\Payout;
-use Modules\Affiliate\Enums\PaymentStatus;
 use App\Http\Controllers\AccountBaseController;
+use Illuminate\Http\Request;
 use Modules\Affiliate\DataTables\PayoutsDataTable;
 use Modules\Affiliate\Entities\Affiliate;
 use Modules\Affiliate\Entities\AffiliateSetting;
+use Modules\Affiliate\Entities\Payout;
+use Modules\Affiliate\Enums\PaymentStatus;
 use Modules\Affiliate\Http\Requests\StorePayout;
 
 class PayoutController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'affiliate::app.menu.payouts';
 
-        $this->middleware(function ($request, $next){
+        $this->middleware(function ($request, $next) {
             return $next($request);
         });
     }
@@ -31,7 +30,7 @@ class PayoutController extends AccountBaseController
     public function index(PayoutsDataTable $dataTable)
     {
         $this->viewPermission = user()->permission('view_payouts');
-        abort_403((!in_array($this->viewPermission, ['all', 'owned'])));
+        abort_403((! in_array($this->viewPermission, ['all', 'owned'])));
         $this->users = Affiliate::all();
 
         return $dataTable->render('affiliate::payout.index', $this->data);
@@ -43,7 +42,7 @@ class PayoutController extends AccountBaseController
     public function create()
     {
         $this->viewPermission = user()->permission('add_payouts');
-        abort_403(!($this->viewPermission == 'all'));
+        abort_403(! ($this->viewPermission == 'all'));
 
         $this->pageTitle = __('affiliate::app.createWithdrawal');
         $this->view = 'affiliate::payout.ajax.create';
@@ -56,6 +55,7 @@ class PayoutController extends AccountBaseController
 
         if (request()->ajax()) {
             $html = view($this->view, $this->data)->render();
+
             return Reply::dataOnly(['status' => 'success', 'html' => $html, 'title' => $this->pageTitle]);
         }
 
@@ -75,7 +75,7 @@ class PayoutController extends AccountBaseController
             return Reply::error(__('affiliate::messages.alreadyRequested'));
         }
 
-        $payout = new Payout();
+        $payout = new Payout;
         $payout->affiliate_id = $request->affiliate_id;
         $payout->balance = $affiliate->balance;
         $payout->amount_requested = $request->amount;
@@ -95,7 +95,7 @@ class PayoutController extends AccountBaseController
         $this->payout = Payout::with('affiliate')->findOrFail($id);
         $this->viewPermission = user()->permission('view_payouts');
 
-        abort_403(!($this->viewPermission == 'all'
+        abort_403(! ($this->viewPermission == 'all'
             || (user()->id == $this->payout->affiliate->user_id)
         ));
 
@@ -116,7 +116,7 @@ class PayoutController extends AccountBaseController
     {
         $this->payout = Payout::findOrFail($id);
         $this->editPermission = user()->permission('edit_payouts');
-        abort_403(!($this->editPermission == 'all'
+        abort_403(! ($this->editPermission == 'all'
             || (user()->id == $this->payout->affiliate->user_id)
         ));
 
@@ -161,8 +161,8 @@ class PayoutController extends AccountBaseController
     {
         $payout = Payout::findOrFail($id);
         $this->deletePermission = user()->permission('delete_payouts');
-        abort_403(!($this->deletePermission == 'all'
-            || (     user()->id == $payout->affiliate->user_id)
+        abort_403(! ($this->deletePermission == 'all'
+            || (user()->id == $payout->affiliate->user_id)
         ));
 
         $payout->delete();
@@ -173,7 +173,7 @@ class PayoutController extends AccountBaseController
     public function changeStatus(Request $request)
     {
         $this->viewPermission = user()->permission('manage_payout_status');
-        abort_403(!($this->viewPermission == 'all'));
+        abort_403(! ($this->viewPermission == 'all'));
 
         $payout = Payout::findOrFail($request->id);
 
@@ -183,15 +183,13 @@ class PayoutController extends AccountBaseController
                     $payout->affiliate->balance -= $payout->amount_requested;
                     $payout->affiliate->save();
                     Payout::where('id', $request->id)->update(['paid_at' => now(), 'transaction_id' => $request->transaction_id, 'memo' => $request->memo]);
-                }
-                else {
+                } else {
                     return Reply::error(__('affiliate::messages.insufficientBalance'));
                 }
             }
 
             $payout->update(['status' => $request->status]);
-        }
-        else {
+        } else {
             return Reply::error(__('messages.selectAction'));
         }
 
@@ -201,12 +199,11 @@ class PayoutController extends AccountBaseController
     public function paidConfirmation($id)
     {
         $this->viewPermission = user()->permission('manage_payout_status');
-        abort_403(!($this->viewPermission == 'all'));
+        abort_403(! ($this->viewPermission == 'all'));
 
         $this->payout = Payout::findOrFail($id);
         $this->pageTitle = __('affiliate::app.confirmPaid');
 
         return view('affiliate::payout.ajax.confirm-paid', $this->data);
     }
-
 }

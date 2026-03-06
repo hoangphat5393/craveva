@@ -14,11 +14,10 @@ enum Theme: string
     public function label(): string
     {
         return match ($this) {
-            self::MONOCHROME => __('biolinks::app.' . $this->value),
-            self::GRADIENTA => __('biolinks::app.' . $this->value),
-            self::CUSTOM => __('biolinks::app.' . $this->value),
+            self::MONOCHROME => __('biolinks::app.'.$this->value),
+            self::GRADIENTA => __('biolinks::app.'.$this->value),
+            self::CUSTOM => __('biolinks::app.'.$this->value),
             default => $this->value,
         };
     }
-
 }

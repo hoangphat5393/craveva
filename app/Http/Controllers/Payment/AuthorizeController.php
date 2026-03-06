@@ -3,20 +3,19 @@
 namespace App\Http\Controllers\Payment;
 
 use App\Helper\Reply;
-use App\Models\Order;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\PaymentGateway\AuthorizeDetails;
 use App\Models\Invoice;
+use App\Models\Order;
+use App\Traits\MakeOrderInvoiceTrait;
 use App\Traits\MakePaymentTrait;
 use App\Traits\PaymentGatewayTrait;
-use App\Http\Controllers\Controller;
-use App\Traits\MakeOrderInvoiceTrait;
 use net\authorize\api\contract\v1 as AuthorizeAPI;
-use App\Http\Requests\PaymentGateway\AuthorizeDetails;
 use net\authorize\api\controller\CreateTransactionController;
 
 class AuthorizeController extends Controller
 {
-
-    use MakePaymentTrait, MakeOrderInvoiceTrait, PaymentGatewayTrait;
+    use MakeOrderInvoiceTrait, MakePaymentTrait, PaymentGatewayTrait;
 
     public function __construct()
     {
@@ -28,53 +27,53 @@ class AuthorizeController extends Controller
     {
 
         switch ($request->type) {
-        case 'invoice':
-            $invoice = Invoice::findOrFail($id);
-            $company = $invoice->company;
-            $amount = $invoice->amountDue();
-            $currency = $invoice->currency ? $invoice->currency->currency_code : 'USD';
-            break;
+            case 'invoice':
+                $invoice = Invoice::findOrFail($id);
+                $company = $invoice->company;
+                $amount = $invoice->amountDue();
+                $currency = $invoice->currency ? $invoice->currency->currency_code : 'USD';
+                break;
 
-        case 'order':
-            $order = Order::findOrFail($id);
-            $company = $order->company;
-            $amount = $order->total;
-            $currency = $order->currency ? $order->currency->currency_code : 'USD';
-            break;
+            case 'order':
+                $order = Order::findOrFail($id);
+                $company = $order->company;
+                $amount = $order->total;
+                $currency = $order->currency ? $order->currency->currency_code : 'USD';
+                break;
 
-        default:
-            return Reply::error(__('messages.paymentTypeNotFound'));
+            default:
+                return Reply::error(__('messages.paymentTypeNotFound'));
         }
 
         $this->authorizeSet($company->hash);
 
         /* Create a merchantAuthenticationType object with authentication details retrieved from the constants file */
-        $merchantAuthentication = new AuthorizeAPI\MerchantAuthenticationType();
+        $merchantAuthentication = new AuthorizeAPI\MerchantAuthenticationType;
         $merchantAuthentication->setName(config('services.authorize.login'));
         $merchantAuthentication->setTransactionKey(config('services.authorize.transaction'));
 
         // Set the transaction's refId and use this as transaction id because authorize.net give transaction id 0
-        $refId = 'ref' . time();
+        $refId = 'ref'.time();
 
         // Create the payment data for a credit card
-        $creditCard = new AuthorizeAPI\CreditCardType();
+        $creditCard = new AuthorizeAPI\CreditCardType;
         $creditCard->setCardNumber($request->card_number);
-        $creditCard->setExpirationDate($request->expiration_year . '-' . $request->expiration_month);
+        $creditCard->setExpirationDate($request->expiration_year.'-'.$request->expiration_month);
         $creditCard->setCardCode($request->cvv);
 
         // Add the payment data to a paymentType object
-        $paymentOne = new AuthorizeAPI\PaymentType();
+        $paymentOne = new AuthorizeAPI\PaymentType;
         $paymentOne->setCreditCard($creditCard);
 
         // Create a TransactionRequestType object and add the previous objects to it
-        $transactionRequestType = new AuthorizeAPI\TransactionRequestType();
+        $transactionRequestType = new AuthorizeAPI\TransactionRequestType;
         $transactionRequestType->setTransactionType('authCaptureTransaction');
         $transactionRequestType->setAmount($amount);
         $transactionRequestType->setCurrencyCode($currency);
         $transactionRequestType->setPayment($paymentOne);
 
         // Assemble the complete transaction request
-        $requests = new AuthorizeAPI\CreateTransactionRequest();
+        $requests = new AuthorizeAPI\CreateTransactionRequest;
         $requests->setMerchantAuthentication($merchantAuthentication);
 
         // Set the transaction's refId
@@ -95,29 +94,28 @@ class AuthorizeController extends Controller
 
                 if ($tresponse != null && $tresponse->getMessages() != null) {
 
-                    $message_text = $tresponse->getMessages()[0]->getDescription() . ', Transaction ID: ' . $tresponse->getTransId();
+                    $message_text = $tresponse->getMessages()[0]->getDescription().', Transaction ID: '.$tresponse->getTransId();
                     $msg_type = 'success';
 
                     switch ($request->type) {
-                    case 'invoice':
-                        $invoice = Invoice::findOrFail($id);
-                        $invoice->status = 'paid';
-                        $invoice->save();
-                        $this->makePayment('Authorize', $amount, $invoice, ($tresponse->getTransId() ?: $refId), 'complete');
+                        case 'invoice':
+                            $invoice = Invoice::findOrFail($id);
+                            $invoice->status = 'paid';
+                            $invoice->save();
+                            $this->makePayment('Authorize', $amount, $invoice, ($tresponse->getTransId() ?: $refId), 'complete');
 
-                        break;
+                            break;
 
-                    case 'order':
-                        $order = Order::findOrFail($id);
-                        $invoice = $this->makeOrderInvoice($order);
-                        $this->makePayment('Authorize', $amount, $invoice, ($tresponse->getTransId() ?: $refId), 'complete');
-                        break;
+                        case 'order':
+                            $order = Order::findOrFail($id);
+                            $invoice = $this->makeOrderInvoice($order);
+                            $this->makePayment('Authorize', $amount, $invoice, ($tresponse->getTransId() ?: $refId), 'complete');
+                            break;
 
-                    default:
-                        break;
+                        default:
+                            break;
                     }
-                }
-                else {
+                } else {
                     $message_text = __('modules.authorize.errorMessage');
                     $msg_type = 'error';
 
@@ -128,8 +126,7 @@ class AuthorizeController extends Controller
                 }
 
                 // Or, print errors if the API request wasn't successful
-            }
-            else {
+            } else {
 
                 /** @phpstan-ignore-next-line */
                 $tresponse = $response->getTransactionResponse();
@@ -137,8 +134,7 @@ class AuthorizeController extends Controller
                 if ($tresponse != null && $tresponse->getErrors() != null) {
                     $message_text = $tresponse->getErrors()[0]->getErrorText();
                     $msg_type = 'error_msg';
-                }
-                else {
+                } else {
                     $message_text = $response->getMessages()->getMessage()[0]->getText();
                     $msg_type = 'error';
                 }
@@ -158,13 +154,11 @@ class AuthorizeController extends Controller
 
                 $this->makePayment('Authorize', $amount, $invoice, ($tresponse->getTransId() ?: $refId), 'failed');
             }
-        }
-        else {
+        } else {
             $message_text = __('modules.authorize.errorNoResponse');
             $msg_type = 'error';
         }
 
         return ($msg_type == 'success') ? Reply::success($message_text) : Reply::error($message_text);
     }
-
 }

@@ -6,8 +6,7 @@ use App\Models\DealHistory;
 
 trait DealHistoryTrait
 {
-
-    static public function createDealHistory($dealId, string $eventType, $fileId = null, $stageFromId = null, $stageToId = null, $taskId = null, $followUpId = null, $noteId = null, $agentId = null, $proposalId = null): void
+    public static function createDealHistory($dealId, string $eventType, $fileId = null, $stageFromId = null, $stageToId = null, $taskId = null, $followUpId = null, $noteId = null, $agentId = null, $proposalId = null): void
     {
         DealHistory::create([
             'deal_id' => $dealId,
@@ -25,5 +24,4 @@ trait DealHistoryTrait
         ]);
 
     }
-
 }

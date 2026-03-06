@@ -7,7 +7,6 @@ use Illuminate\View\Component;
 
 class TabSection extends Component
 {
-
     /**
      * Create a new component instance.
      *
@@ -27,5 +26,4 @@ class TabSection extends Component
     {
         return view('components.tab-section');
     }
-
 }

@@ -2,21 +2,24 @@
 
 namespace App\DataTables;
 
-use App\Models\Expense;
+use App\Helper\Common;
 use App\Models\CustomField;
 use App\Models\CustomFieldGroup;
+use App\Models\Expense;
+use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
-use Illuminate\Support\Facades\DB;
-use App\Helper\Common;
 
 class ExpensesDataTable extends BaseDataTable
 {
-
     private $editExpensePermission;
+
     private $deleteExpensePermission;
+
     private $viewExpensePermission;
+
     private $approveExpensePermission;
+
     private $includeSoftDeletedProjects;
 
     public function __construct($includeSoftDeletedProjects = false)
@@ -32,7 +35,7 @@ class ExpensesDataTable extends BaseDataTable
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
@@ -40,38 +43,38 @@ class ExpensesDataTable extends BaseDataTable
 
         $datatables = datatables()->eloquent($query);
         $datatables->addIndexColumn();
-        $datatables->addColumn('check', fn($row) => $this->checkBox($row));
+        $datatables->addColumn('check', fn ($row) => $this->checkBox($row));
         $datatables->addColumn('action', function ($row) {
 
             $action = '<div class="task_view">
 
                     <div class="dropdown">
                         <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" type="link"
-                            id="dropdownMenuLink-' . $row->id . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            id="dropdownMenuLink-'.$row->id.'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="icon-options-vertical icons"></i>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-' . $row->id . '" tabindex="0">';
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-'.$row->id.'" tabindex="0">';
 
-            $action .= '<a href="' . route('expenses.show', [$row->id]) . '" class="dropdown-item openRightModal"><i class="fa fa-eye mr-2"></i>' . __('app.view') . '</a>';
+            $action .= '<a href="'.route('expenses.show', [$row->id]).'" class="dropdown-item openRightModal"><i class="fa fa-eye mr-2"></i>'.__('app.view').'</a>';
 
             if ($this->editExpensePermission == 'all' || ($this->editExpensePermission == 'added' && user()->id == $row->added_by)) {
                 if (is_null($row->project_id)) {
-                    $action .= '<a class="dropdown-item openRightModal" href="' . route('expenses.edit', [$row->id]) . '">
+                    $action .= '<a class="dropdown-item openRightModal" href="'.route('expenses.edit', [$row->id]).'">
                             <i class="fa fa-edit mr-2"></i>
-                            ' . trans('app.edit') . '
+                            '.trans('app.edit').'
                             </a>';
-                } else if (!is_null($row->project_id) && is_null($row->project_deleted_at)) {
-                    $action .= '<a class="dropdown-item openRightModal" href="' . route('expenses.edit', [$row->id]) . '">
+                } elseif (! is_null($row->project_id) && is_null($row->project_deleted_at)) {
+                    $action .= '<a class="dropdown-item openRightModal" href="'.route('expenses.edit', [$row->id]).'">
                         <i class="fa fa-edit mr-2"></i>
-                        ' . trans('app.edit') . '
+                        '.trans('app.edit').'
                         </a>';
                 }
             }
 
             if ($this->deleteExpensePermission == 'all' || ($this->deleteExpensePermission == 'added' && user()->id == $row->added_by)) {
-                $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-expense-id="' . $row->id . '">
+                $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-expense-id="'.$row->id.'">
                             <i class="fa fa-trash mr-2"></i>
-                            ' . trans('app.delete') . '
+                            '.trans('app.delete').'
                         </a>';
             }
 
@@ -81,18 +84,19 @@ class ExpensesDataTable extends BaseDataTable
 
             return $action;
         });
-        $datatables->editColumn('price', fn($row) => $row->total_amount);
+        $datatables->editColumn('price', fn ($row) => $row->total_amount);
 
         $datatables->editColumn('item_name', function ($row) {
-            $link = '<a href="' . route('expenses.show', $row->id) . '" class="openRightModal text-darkest-grey">' . $row->item_name . '</a>';
-            return is_null($row->expenses_recurring_id) ? $link : "$link <p class='mb-0'><span class='badge badge-primary'>" . __('app.recurring') . "</span></p>";
+            $link = '<a href="'.route('expenses.show', $row->id).'" class="openRightModal text-darkest-grey">'.$row->item_name.'</a>';
+
+            return is_null($row->expenses_recurring_id) ? $link : "$link <p class='mb-0'><span class='badge badge-primary'>".__('app.recurring').'</span></p>';
         });
 
-        $datatables->addColumn('export_item_name', fn($row) => $row->item_name);
+        $datatables->addColumn('export_item_name', fn ($row) => $row->item_name);
 
-        $datatables->addColumn('employee_name', fn($row) => $row->user?->name);
+        $datatables->addColumn('employee_name', fn ($row) => $row->user?->name);
 
-        $datatables->editColumn('user_id', fn($row) => view('components.employee', ['user' => $row->user]));
+        $datatables->editColumn('user_id', fn ($row) => view('components.employee', ['user' => $row->user]));
 
         $datatables->editColumn('status', function ($row) {
             if (
@@ -105,59 +109,55 @@ class ExpensesDataTable extends BaseDataTable
                 )
             ) {
 
-
-                $status = '<select class="form-control select-picker change-expense-status" data-expense-id="' . $row->id . '">';
+                $status = '<select class="form-control select-picker change-expense-status" data-expense-id="'.$row->id.'">';
                 $status .= '<option ';
 
                 if ($row->status == 'pending') {
                     $status .= 'selected';
                 }
 
-                $status .= ' value="pending" data-content="<i class=\'fa fa-circle mr-2 text-yellow\'></i> ' . __('app.pending') . '">' . __('app.pending') . '</option>';
+                $status .= ' value="pending" data-content="<i class=\'fa fa-circle mr-2 text-yellow\'></i> '.__('app.pending').'">'.__('app.pending').'</option>';
                 $status .= '<option ';
 
                 if ($row->status == 'approved') {
                     $status .= 'selected';
                 }
 
-                $status .= ' value="approved" data-content="<i class=\'fa fa-circle mr-2 text-light-green\'></i> ' . __('app.approved') . '"' . __('app.approved') . '</option>';
+                $status .= ' value="approved" data-content="<i class=\'fa fa-circle mr-2 text-light-green\'></i> '.__('app.approved').'"'.__('app.approved').'</option>';
                 $status .= '<option ';
 
                 if ($row->status == 'rejected') {
                     $status .= 'selected';
                 }
 
-                $status .= ' value="rejected" data-content="<i class=\'fa fa-circle mr-2 text-red\'></i> ' . __('app.rejected') . '">' . __('app.rejected') . '</option>';
+                $status .= ' value="rejected" data-content="<i class=\'fa fa-circle mr-2 text-red\'></i> '.__('app.rejected').'">'.__('app.rejected').'</option>';
 
                 $status .= '</select>';
 
-            }
-            else {
+            } else {
                 if ($row->status == 'pending') {
                     $class = 'text-yellow';
                     $status = __('app.pending');
 
-                }
-                else if ($row->status == 'approved') {
+                } elseif ($row->status == 'approved') {
                     $class = 'text-light-green';
                     $status = __('app.approved');
 
-                }
-                else {
+                } else {
                     $class = 'text-red';
                     $status = __('app.rejected');
                 }
 
-                $status = '<i class="fa fa-circle mr-1 ' . $class . ' f-10"></i> ' . $status;
+                $status = '<i class="fa fa-circle mr-1 '.$class.' f-10"></i> '.$status;
             }
 
             return $status;
         });
-        $datatables->addColumn('status_export', fn($row) => $row->status);
-        $datatables->editColumn('purchase_date', fn($row) => $row->purchase_date?->translatedFormat($this->company->date_format));
-        $datatables->editColumn('purchase_from', fn($row) => $row->purchase_from ?? '--');
+        $datatables->addColumn('status_export', fn ($row) => $row->status);
+        $datatables->editColumn('purchase_date', fn ($row) => $row->purchase_date?->translatedFormat($this->company->date_format));
+        $datatables->editColumn('purchase_from', fn ($row) => $row->purchase_from ?? '--');
         $datatables->smart(false);
-        $datatables->setRowId(fn($row) => 'row-' . $row->id);
+        $datatables->setRowId(fn ($row) => 'row-'.$row->id);
         $datatables->addIndexColumn();
         $datatables->removeColumn('currency_id');
         $datatables->removeColumn('name');
@@ -188,7 +188,7 @@ class ExpensesDataTable extends BaseDataTable
             ->leftJoin('projects', 'projects.id', 'expenses.project_id')
             ->join('currencies', 'currencies.id', 'expenses.currency_id');
 
-        if (!$this->includeSoftDeletedProjects) {
+        if (! $this->includeSoftDeletedProjects) {
             $model->whereNull('projects.deleted_at');
         }
 
@@ -202,19 +202,19 @@ class ExpensesDataTable extends BaseDataTable
             $model = $model->where(DB::raw('DATE(expenses.`purchase_date`)'), '<=', $endDate);
         }
 
-        if ($request->status != 'all' && !is_null($request->status)) {
+        if ($request->status != 'all' && ! is_null($request->status)) {
             $model = $model->where('expenses.status', '=', $request->status);
         }
 
-        if ($request->employee != 'all' && !is_null($request->employee)) {
+        if ($request->employee != 'all' && ! is_null($request->employee)) {
             $model = $model->where('expenses.user_id', '=', $request->employee);
         }
 
-        if ($request->projectId != 'all' && !is_null($request->projectId)) {
+        if ($request->projectId != 'all' && ! is_null($request->projectId)) {
             $model = $model->where('expenses.project_id', '=', $request->projectId);
         }
 
-        if ($request->categoryId != 'all' && !is_null($request->categoryId)) {
+        if ($request->categoryId != 'all' && ! is_null($request->categoryId)) {
             $model = $model->where('expenses.category_id', '=', $request->categoryId);
         }
 
@@ -225,10 +225,10 @@ class ExpensesDataTable extends BaseDataTable
         if ($request->searchText != '') {
             $model->where(function ($query) {
                 $safeTerm = Common::safeString(request('searchText'));
-                $query->where('expenses.item_name', 'like', '%' . $safeTerm . '%')
-                    ->orWhere('users.name', 'like', '%' . $safeTerm . '%')
-                    ->orWhere('expenses.price', 'like', '%' . $safeTerm . '%')
-                    ->orWhere('expenses.purchase_from', 'like', '%' . $safeTerm . '%');
+                $query->where('expenses.item_name', 'like', '%'.$safeTerm.'%')
+                    ->orWhere('users.name', 'like', '%'.$safeTerm.'%')
+                    ->orWhere('expenses.price', 'like', '%'.$safeTerm.'%')
+                    ->orWhere('expenses.purchase_from', 'like', '%'.$safeTerm.'%');
             });
         }
 
@@ -269,7 +269,7 @@ class ExpensesDataTable extends BaseDataTable
             ]);
 
         if (canDataTableExport()) {
-            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
+            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
         }
 
         return $dataTable;
@@ -287,10 +287,10 @@ class ExpensesDataTable extends BaseDataTable
                 'title' => '<input type="checkbox" name="select_all_table" id="select-all-table" onclick="selectAllTable(this)">',
                 'exportable' => false,
                 'orderable' => false,
-                'searchable' => false
+                'searchable' => false,
             ],
-            '#' => ['data' => 'DT_RowIndex', 'orderable' => false, 'searchable' => false, 'visible' => !showId(),'title' => '#'],
-            __('app.id') => ['data' => 'id', 'name' => 'expenses.id', 'title' => __('app.id'),'visible' => showId()],
+            '#' => ['data' => 'DT_RowIndex', 'orderable' => false, 'searchable' => false, 'visible' => ! showId(), 'title' => '#'],
+            __('app.id') => ['data' => 'id', 'name' => 'expenses.id', 'title' => __('app.id'), 'visible' => showId()],
             __('modules.expenses.itemName') => ['data' => 'item_name', 'name' => 'item_name', 'exportable' => false, 'title' => __('modules.expenses.itemName')],
             __('app.menu.itemName') => ['data' => 'export_item_name', 'name' => 'export_item_name', 'visible' => false, 'title' => __('modules.expenses.itemName')],
             __('app.price') => ['data' => 'price', 'name' => 'price', 'title' => __('app.price')],
@@ -299,7 +299,7 @@ class ExpensesDataTable extends BaseDataTable
             __('modules.expenses.purchaseFrom') => ['data' => 'purchase_from', 'name' => 'purchase_from', 'title' => __('modules.expenses.purchaseFrom')],
             __('modules.expenses.purchaseDate') => ['data' => 'purchase_date', 'name' => 'purchase_date', 'title' => __('modules.expenses.purchaseDate')],
             __('app.status') => ['data' => 'status', 'name' => 'status', 'exportable' => false, 'title' => __('app.status')],
-            __('app.expense') . ' ' . __('app.status') => ['data' => 'status_export', 'name' => 'status', 'visible' => false, 'title' => __('app.expense')]
+            __('app.expense').' '.__('app.status') => ['data' => 'status_export', 'name' => 'status', 'visible' => false, 'title' => __('app.expense')],
         ];
 
         $action = [
@@ -308,11 +308,10 @@ class ExpensesDataTable extends BaseDataTable
                 ->printable(false)
                 ->orderable(false)
                 ->searchable(false)
-                ->addClass('text-right pr-20')
+                ->addClass('text-right pr-20'),
         ];
 
-        return array_merge($data, CustomFieldGroup::customFieldsDataMerge(new Expense()), $action);
+        return array_merge($data, CustomFieldGroup::customFieldsDataMerge(new Expense), $action);
 
     }
-
 }

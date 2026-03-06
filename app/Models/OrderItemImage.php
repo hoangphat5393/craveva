@@ -14,6 +14,7 @@ use App\Traits\IconTrait;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read mixed $file_url
  * @property-read mixed $icon
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|OrderItemImage newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|OrderItemImage newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|OrderItemImage query()
@@ -22,12 +23,13 @@ use App\Traits\IconTrait;
  * @method static \Illuminate\Database\Eloquent\Builder|OrderItemImage whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|OrderItemImage whereOrderItemId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|OrderItemImage whereUpdatedAt($value)
+ *
  * @property-read mixed $file
+ *
  * @mixin \Eloquent
  */
 class OrderItemImage extends BaseModel
 {
-
     use IconTrait;
 
     protected $appends = ['file_url', 'icon', 'file'];
@@ -43,5 +45,4 @@ class OrderItemImage extends BaseModel
     {
         return $this->external_link;
     }
-
 }

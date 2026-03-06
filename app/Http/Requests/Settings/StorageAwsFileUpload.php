@@ -11,7 +11,6 @@ class StorageAwsFileUpload extends CoreRequest
      *
      * @return bool
      */
-
     public function authorize()
     {
         return true;
@@ -26,8 +25,7 @@ class StorageAwsFileUpload extends CoreRequest
     {
 
         return [
-            'file' => 'required|mimes:png,jpg,jpeg,csv,txt,xlx,xls,pdf,zip|max:2048'
+            'file' => 'required|mimes:png,jpg,jpeg,csv,txt,xlx,xls,pdf,zip|max:2048',
         ];
     }
-
 }

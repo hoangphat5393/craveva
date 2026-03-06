@@ -41,6 +41,7 @@ use Illuminate\Notifications\Notifiable;
  * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
  * @property-read int|null $notifications_count
  * @property-read \App\Models\AcceptEstimate|null $sign
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Estimate newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Estimate newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Estimate query()
@@ -60,37 +61,51 @@ use Illuminate\Notifications\Notifiable;
  * @method static \Illuminate\Database\Eloquent\Builder|Estimate whereTotal($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Estimate whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Estimate whereValidTill($value)
+ *
  * @property string|null $hash
  * @property int|null $unit_id
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Estimate whereHash($value)
+ *
  * @property string $calculate_tax
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Estimate whereCalculateTax($value)
+ *
  * @property string|null $description
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Estimate whereDescription($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\ClientDetails $clientdetails
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Estimate whereCompanyId($value)
+ *
  * @property \Illuminate\Support\Carbon|null $last_viewed
  * @property string|null $ip_address
  * @property-read \App\Models\UnitType|null $unit
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Estimate whereIpAddress($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Estimate whereLastViewed($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Estimate whereUnitId($value)
+ *
  * @property string|null $original_estimate_number
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Estimate whereOriginalEstimateNumber($value)
+ *
  * @mixin \Eloquent
  */
 class Estimate extends BaseModel
 {
-
-    use Notifiable, CustomFieldsTrait, HasCompany;
+    use CustomFieldsTrait, HasCompany, Notifiable;
 
     protected $casts = [
         'valid_till' => 'datetime',
         'last_viewed' => 'datetime',
     ];
+
     protected $appends = ['total_amount', 'valid_date'];
+
     protected $with = ['currency'];
 
     const CUSTOM_FIELD_MODEL = 'App\Models\Estimate';
@@ -137,28 +152,28 @@ class Estimate extends BaseModel
 
     public function getTotalAmountAttribute()
     {
-        return (!is_null($this->total) && isset($this->currency) && !is_null($this->currency->currency_symbol)) ? $this->currency->currency_symbol . $this->total : '';
+        return (! is_null($this->total) && isset($this->currency) && ! is_null($this->currency->currency_symbol)) ? $this->currency->currency_symbol.$this->total : '';
     }
 
     public function getValidDateAttribute()
     {
-        return !is_null($this->valid_till) ? Carbon::parse($this->valid_till)->format('d F, Y') : '';
+        return ! is_null($this->valid_till) ? Carbon::parse($this->valid_till)->format('d F, Y') : '';
     }
 
     public function formatEstimateNumber()
     {
         $invoiceSettings = (company()) ? company()->invoiceSetting : $this->company->invoiceSetting;
+
         return \App\Helper\NumberFormat::estimate($this->estimate_number, $invoiceSettings);
     }
 
     public static function lastEstimateNumber()
     {
-        return (int)Estimate::orderBy('id', 'desc')->first()?->original_estimate_number ?? 0;
+        return (int) Estimate::orderBy('id', 'desc')->first()?->original_estimate_number ?? 0;
     }
 
     public function estimateRequest(): BelongsTo
     {
         return $this->belongsTo(EstimateRequest::class, 'estimate_request_id');
     }
-
 }

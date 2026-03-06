@@ -3,10 +3,7 @@
 namespace Modules\Recruit\Http\Controllers;
 
 use App\Helper\Reply;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\RedirectResponse;
 use Modules\Recruit\Entities\ApplicationSource;
 use Modules\Recruit\Entities\RecruitJobApplication;
 use Modules\Recruit\Http\Requests\StoreSourceRequest;
@@ -14,7 +11,6 @@ use Modules\Recruit\Http\Requests\UpdateSourceRequest;
 
 class RecruitSourceController extends Controller
 {
-
     /**
      * Display a listing of the resource.
      */
@@ -38,11 +34,12 @@ class RecruitSourceController extends Controller
     {
         $company_id = auth()->user()->company_id;
 
-        $source = new ApplicationSource();
+        $source = new ApplicationSource;
         $source->application_source = $request->source;
         $source->company_id = $company_id;
         $source->is_predefined = false;
         $source->save();
+
         return Reply::success(__('messages.recordSaved'));
 
     }
@@ -61,6 +58,7 @@ class RecruitSourceController extends Controller
     public function edit($id)
     {
         $source = ApplicationSource::findOrFail($id);
+
         return view('recruit::job-applications.source.edit_source', ['source' => $source]);
 
     }
@@ -75,6 +73,7 @@ class RecruitSourceController extends Controller
         $source = ApplicationSource::findOrFail($id);
         $source->application_source = $request->source;
         $source->update();
+
         return Reply::successWithData(('messages.updateSuccess'), ['redirectUrl' => route('source-setting.edit', $id)]);
     }
 
@@ -93,5 +92,4 @@ class RecruitSourceController extends Controller
 
         return Reply::successWithData(__('messages.deleteSuccess'), ['redirectUrl' => route('source-setting.index')]);
     }
-
 }

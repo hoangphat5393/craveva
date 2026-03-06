@@ -6,7 +6,7 @@ return [
         'devices' => 'Thiết bị',
         'attendance' => 'Nhật ký chấm công',
         'deviceEmployees' => 'Bản đồ nhân viên',
-        'commands' => 'Lệnh'
+        'commands' => 'Lệnh',
     ],
     'deviceName' => 'Tên thiết bị',
     'serialNumber' => 'Số seri',

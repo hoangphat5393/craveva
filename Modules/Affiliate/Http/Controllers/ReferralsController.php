@@ -2,15 +2,15 @@
 
 namespace Modules\Affiliate\Http\Controllers;
 
-use App\Models\User;
 use App\Helper\Reply;
+use App\Http\Controllers\AccountBaseController;
 use App\Models\Company;
 use App\Models\GlobalSetting;
-use Modules\Affiliate\Entities\Referral;
-use Modules\Affiliate\Entities\Affiliate;
-use App\Http\Controllers\AccountBaseController;
+use App\Models\User;
 use Modules\Affiliate\DataTables\ReferralsDataTable;
+use Modules\Affiliate\Entities\Affiliate;
 use Modules\Affiliate\Entities\AffiliateSetting;
+use Modules\Affiliate\Entities\Referral;
 use Modules\Affiliate\Enums\CommissionType;
 use Modules\Affiliate\Enums\PayoutType;
 use Modules\Affiliate\Enums\YesNo;
@@ -18,14 +18,14 @@ use Modules\Affiliate\Http\Requests\CreateReferralsRequest;
 
 class ReferralsController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'affiliate::app.menu.referrals';
 
-        $this->middleware(function ($request, $next){
+        $this->middleware(function ($request, $next) {
             abort_403(GlobalSetting::validateSuperAdmin());
+
             return $next($request);
         });
     }
@@ -36,7 +36,7 @@ class ReferralsController extends AccountBaseController
     public function index(ReferralsDataTable $dataTable)
     {
         $this->viewPermission = user()->permission('view_referrals');
-        abort_403(!($this->viewPermission == 'all'));
+        abort_403(! ($this->viewPermission == 'all'));
 
         $this->companies = Company::active()->get();
         $this->affiliates = Affiliate::whereHas('user')->active()->get();
@@ -50,7 +50,7 @@ class ReferralsController extends AccountBaseController
     public function create()
     {
         $this->viewPermission = user()->permission('add_referrals');
-        abort_403(!($this->viewPermission == 'all'));
+        abort_403(! ($this->viewPermission == 'all'));
 
         $this->pageTitle = __('affiliate::app.createReferralsCommissions');
         $this->view = 'affiliate::referrals.ajax.create';
@@ -60,6 +60,7 @@ class ReferralsController extends AccountBaseController
 
         if (request()->ajax()) {
             $html = view($this->view, $this->data)->render();
+
             return Reply::dataOnly(['status' => 'success', 'html' => $html, 'title' => $this->pageTitle]);
         }
 
@@ -72,9 +73,9 @@ class ReferralsController extends AccountBaseController
     public function store(CreateReferralsRequest $request)
     {
         $this->viewPermission = user()->permission('add_referrals');
-        abort_403(!($this->viewPermission == 'all'));
+        abort_403(! ($this->viewPermission == 'all'));
 
-        $referral = new Referral();
+        $referral = new Referral;
         $referral->company_id = $request->company_id;
         $referral->affiliate_id = $request->affiliate_id;
         $referral->ip = request()->getClientIp();
@@ -87,13 +88,13 @@ class ReferralsController extends AccountBaseController
         if ($affiliateSettings->commission_enabled == YesNo::Yes &&
             $affiliateSettings->payout_type == PayoutType::OnSignUp &&
             $affiliateSettings->commission_type == CommissionType::Fixed) {
-                // Add commission to affiliate balance
-                $affiliate->balance += $affiliateSettings->commission_cap;
-                $affiliate->save();
+            // Add commission to affiliate balance
+            $affiliate->balance += $affiliateSettings->commission_cap;
+            $affiliate->save();
 
-                // Add commission to referral
-                $referral->commissions = $affiliateSettings->commission_cap;
-                $referral->save();
+            // Add commission to referral
+            $referral->commissions = $affiliateSettings->commission_cap;
+            $referral->save();
         }
 
         return Reply::redirect(route('referral.index'));
@@ -109,5 +110,4 @@ class ReferralsController extends AccountBaseController
 
         return Reply::dataOnly(['status' => 'success', 'data' => $affiliates]);
     }
-
 }

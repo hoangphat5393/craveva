@@ -8,8 +8,8 @@ use Modules\Recruit\Entities\RecruitJobApplication;
 
 class AdminNewJobApplication extends BaseNotification
 {
-
     private $jobApplication;
+
     private $emailSetting;
 
     /**
@@ -27,7 +27,7 @@ class AdminNewJobApplication extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -44,7 +44,7 @@ class AdminNewJobApplication extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
@@ -59,7 +59,7 @@ class AdminNewJobApplication extends BaseNotification
             'email' => $email,
             'text' => __('recruit::modules.newJobApplication.text'),
             'job_title' => $this->jobApplication->job->title,
-              ]);
+        ]);
 
         return parent::build()
             ->subject(__('recruit::modules.adminMail.newJobApplicationSubject'))
@@ -67,15 +67,15 @@ class AdminNewJobApplication extends BaseNotification
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
-                'actionText' => __('app.view') . ' ' . __('recruit::modules.jobApplication.jobApplication'),
-                'notifiableName' => $notifiable->name
+                'actionText' => __('app.view').' '.__('recruit::modules.jobApplication.jobApplication'),
+                'notifiableName' => $notifiable->name,
             ]);
     }
 
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function toArray($notifiable)
@@ -88,5 +88,4 @@ class AdminNewJobApplication extends BaseNotification
             'heading' => $this->jobApplication->full_name,
         ];
     }
-
 }

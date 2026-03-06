@@ -2,38 +2,37 @@
 
 namespace Modules\Purchase\Http\Controllers;
 
-use Carbon\Carbon;
-use App\Models\Tax;
 use App\Helper\Reply;
-use App\Models\Currency;
-use App\Models\UnitType;
-use Illuminate\Http\Request;
-use App\Models\CompanyAddress;
-use Illuminate\Support\Facades\App;
-use App\Models\PaymentGatewayCredentials;
-use Modules\Purchase\Entities\PurchaseBill;
-use Modules\Purchase\Entities\PurchaseItem;
-use Illuminate\Contracts\Support\Renderable;
-use Modules\Purchase\Entities\PurchaseOrder;
-use Modules\Purchase\Entities\PurchaseVendor;
-use Modules\Purchase\Http\Requests\StoreBill;
-use Modules\Purchase\Entities\PurchaseSetting;
 use App\Http\Controllers\AccountBaseController;
-use Modules\Purchase\Events\NewPurchaseBillEvent;
-use Modules\Purchase\Entities\PurchaseBillHistory;
-use Modules\Purchase\Entities\PurchasePaymentHistory;
+use App\Models\CompanyAddress;
+use App\Models\Currency;
+use App\Models\PaymentGatewayCredentials;
+use App\Models\Tax;
+use App\Models\UnitType;
+use Carbon\Carbon;
+use Illuminate\Contracts\Support\Renderable;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Modules\Purchase\DataTables\PurchaseBillDataTable;
+use Modules\Purchase\Entities\PurchaseBill;
+use Modules\Purchase\Entities\PurchaseBillHistory;
+use Modules\Purchase\Entities\PurchaseItem;
+use Modules\Purchase\Entities\PurchaseOrder;
+use Modules\Purchase\Entities\PurchasePaymentHistory;
+use Modules\Purchase\Entities\PurchaseSetting;
+use Modules\Purchase\Entities\PurchaseVendor;
+use Modules\Purchase\Events\NewPurchaseBillEvent;
+use Modules\Purchase\Http\Requests\StoreBill;
 
 class PurchaseBillController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'purchase::app.menu.bill';
 
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array(PurchaseSetting::MODULE_NAME, $this->user->modules));
+            abort_403(! in_array(PurchaseSetting::MODULE_NAME, $this->user->modules));
 
             return $next($request);
         });
@@ -41,16 +40,16 @@ class PurchaseBillController extends AccountBaseController
 
     /**
      * Display a listing of the resource.
+     *
      * @return Renderable
      */
-
     public function index(PurchaseBillDataTable $dataTable)
     {
         $this->viewBillPermission = user()->permission('view_bill');
         $this->addBillPermission = user()->permission('add_bill');
         $this->vendors = PurchaseVendor::with('currency')->get();
 
-        abort_403(!in_array($this->viewBillPermission, ['all', 'added', 'owned', 'both']));
+        abort_403(! in_array($this->viewBillPermission, ['all', 'added', 'owned', 'both']));
         $this->pageTitle = 'purchase::app.menu.bills';
 
         return $dataTable->render('purchase::bills.index', $this->data);
@@ -58,6 +57,7 @@ class PurchaseBillController extends AccountBaseController
 
     /**
      * Show the form for creating a new resource.
+     *
      * @return Renderable
      */
     public function create()
@@ -79,7 +79,7 @@ class PurchaseBillController extends AccountBaseController
             $condition = $this->purchaseSetting->bill_number_digit - strlen($this->lastBill);
 
             for ($i = 0; $i < $condition; $i++) {
-                $this->zero = '0' . $this->zero;
+                $this->zero = '0'.$this->zero;
             }
         }
 
@@ -101,12 +101,13 @@ class PurchaseBillController extends AccountBaseController
 
     /**
      * Store a newly created resource in storage.
-     * @param Request $request
+     *
+     * @param  Request  $request
      * @return Renderable
      */
     public function store(StoreBill $request)
     {
-        $bill = new PurchaseBill();
+        $bill = new PurchaseBill;
         $bill->purchase_bill_number = $request->bill_number;
         $bill->purchase_vendor_id = $request->vendor_id;
         $bill->bill_date = Carbon::createFromFormat($this->company->date_format, $request->issue_date)->format('Y-m-d');
@@ -119,13 +120,13 @@ class PurchaseBillController extends AccountBaseController
         $bill->note = $request->note;
         $bill->save();
 
-
         return reply::success(__('messages.recordSaved'));
     }
 
     /**
      * Show the specified resource.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function show($id)
@@ -135,7 +136,7 @@ class PurchaseBillController extends AccountBaseController
         $this->deleteBillPermission = user()->permission('delete_bill');
         $this->purchaseBill = PurchaseBill::with('purchaseVendor', 'order')->findOrFail($id);
         $this->orderCurrency = PurchaseOrder::where('id', $this->purchaseBill->order->id)->first();
-        abort_403(!($this->viewBillPermission == 'all' || $this->viewBillPermission == 'added' && user()->id == $this->purchaseBill->added_by));
+        abort_403(! ($this->viewBillPermission == 'all' || $this->viewBillPermission == 'added' && user()->id == $this->purchaseBill->added_by));
         $this->purchaseOrder = PurchaseOrder::with('items', 'items.taxes', 'items.purchaseItemImage')->findOrFail($this->purchaseBill->purchase_order_id);
         $this->settings = company();
 
@@ -149,23 +150,23 @@ class PurchaseBillController extends AccountBaseController
             }
         }
 
-        $taxList = array();
+        $taxList = [];
 
         foreach ($this->purchaseOrder->items as $item) {
-            if (!is_null($item->taxes)) {
+            if (! is_null($item->taxes)) {
                 foreach ($item->taxes as $tax) {
-                    if (!isset($taxList[$tax->tax_name . ': ' . $tax->rate_percent . '%'])) {
+                    if (! isset($taxList[$tax->tax_name.': '.$tax->rate_percent.'%'])) {
 
                         if ($this->purchaseOrder->calculate_tax == 'after_discount' && $this->discount > 0) {
-                            $taxList[$tax->tax_name . ': ' . $tax->rate_percent . '%'] = ($item->amount - ($item->amount / $this->purchaseOrder->sub_total) * $this->discount) * ($tax->rate_percent / 100);
+                            $taxList[$tax->tax_name.': '.$tax->rate_percent.'%'] = ($item->amount - ($item->amount / $this->purchaseOrder->sub_total) * $this->discount) * ($tax->rate_percent / 100);
                         } else {
-                            $taxList[$tax->tax_name . ': ' . $tax->rate_percent . '%'] = $item->amount * ($tax->rate_percent / 100);
+                            $taxList[$tax->tax_name.': '.$tax->rate_percent.'%'] = $item->amount * ($tax->rate_percent / 100);
                         }
                     } else {
                         if ($this->purchaseOrder->calculate_tax == 'after_discount' && $this->discount > 0) {
-                            $taxList[$tax->tax_name . ': ' . $tax->rate_percent . '%'] = $taxList[$tax->tax_name . ': ' . $tax->rate_percent . '%'] + (($item->amount - ($item->amount / $this->purchaseOrder->sub_total) * $this->discount) * ($tax->rate_percent / 100));
+                            $taxList[$tax->tax_name.': '.$tax->rate_percent.'%'] = $taxList[$tax->tax_name.': '.$tax->rate_percent.'%'] + (($item->amount - ($item->amount / $this->purchaseOrder->sub_total) * $this->discount) * ($tax->rate_percent / 100));
                         } else {
-                            $taxList[$tax->tax_name . ': ' . $tax->rate_percent . '%'] = $taxList[$tax->tax_name . ': ' . $tax->rate_percent . '%'] + ($item->amount * ($tax->rate_percent / 100));
+                            $taxList[$tax->tax_name.': '.$tax->rate_percent.'%'] = $taxList[$tax->tax_name.': '.$tax->rate_percent.'%'] + ($item->amount * ($tax->rate_percent / 100));
                         }
                     }
                 }
@@ -198,7 +199,8 @@ class PurchaseBillController extends AccountBaseController
 
     /**
      * Show the form for editing the specified resource.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function edit($id)
@@ -206,7 +208,7 @@ class PurchaseBillController extends AccountBaseController
         $this->editBillPermission = user()->permission('edit_bill');
         $this->purchaseBill = PurchaseBill::with('purchaseVendor', 'order')->findOrFail($id);
         abort_403(
-            !($this->editBillPermission == 'all'
+            ! ($this->editBillPermission == 'all'
                 || $this->editBillPermission == 'added' && user()->id == $this->purchaseBill->added_by)
         );
 
@@ -228,8 +230,8 @@ class PurchaseBillController extends AccountBaseController
 
     /**
      * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function update(Request $request, $id)
@@ -273,7 +275,7 @@ class PurchaseBillController extends AccountBaseController
             $notifyUser = $purchaseBill->purchaseVendor;
         }
 
-        if (isset($notifyUser) && !is_null($notifyUser)) {
+        if (isset($notifyUser) && ! is_null($notifyUser)) {
             event(new NewPurchaseBillEvent($purchaseBill, $notifyUser));
         }
 
@@ -288,7 +290,7 @@ class PurchaseBillController extends AccountBaseController
         $this->purchaseBill = PurchaseBill::findOrFail($id);
         $this->viewPermission = user()->permission('view_bill');
 
-        abort_403(!(
+        abort_403(! (
             $this->viewPermission == 'all'
             || ($this->viewPermission == 'added' && $this->purchaseBill->added_by == user()->id)
         ));
@@ -300,7 +302,7 @@ class PurchaseBillController extends AccountBaseController
         $pdf = $pdfOption['pdf'];
         $filename = $pdfOption['fileName'];
 
-        return request()->view ? $pdf->stream($filename . '.pdf') : $pdf->download($filename . '.pdf');
+        return request()->view ? $pdf->stream($filename.'.pdf') : $pdf->download($filename.'.pdf');
     }
 
     public function domPdfObjectForConsoleDownload($id)
@@ -319,29 +321,28 @@ class PurchaseBillController extends AccountBaseController
             $this->discount = 0;
         }
 
-        $taxList = array();
+        $taxList = [];
 
         foreach ($this->purchaseOrder->items as $item) {
-            if (!is_null($item->taxes)) {
+            if (! is_null($item->taxes)) {
                 foreach ($item->taxes as $tax) {
-                    if (!isset($taxList[$tax->tax_name . ': ' . $tax->rate_percent . '%'])) {
+                    if (! isset($taxList[$tax->tax_name.': '.$tax->rate_percent.'%'])) {
 
                         if ($this->purchaseOrder->calculate_tax == 'after_discount' && $this->discount > 0) {
-                            $taxList[$tax->tax_name . ': ' . $tax->rate_percent . '%'] = ($item->amount - ($item->amount / $this->purchaseOrder->sub_total) * $this->discount) * ($tax->rate_percent / 100);
+                            $taxList[$tax->tax_name.': '.$tax->rate_percent.'%'] = ($item->amount - ($item->amount / $this->purchaseOrder->sub_total) * $this->discount) * ($tax->rate_percent / 100);
                         } else {
-                            $taxList[$tax->tax_name . ': ' . $tax->rate_percent . '%'] = $item->amount * ($tax->rate_percent / 100);
+                            $taxList[$tax->tax_name.': '.$tax->rate_percent.'%'] = $item->amount * ($tax->rate_percent / 100);
                         }
                     } else {
                         if ($this->purchaseOrder->calculate_tax == 'after_discount' && $this->discount > 0) {
-                            $taxList[$tax->tax_name . ': ' . $tax->rate_percent . '%'] = $taxList[$tax->tax_name . ': ' . $tax->rate_percent . '%'] + (($item->amount - ($item->amount / $this->purchaseOrder->sub_total) * $this->discount) * ($tax->rate_percent / 100));
+                            $taxList[$tax->tax_name.': '.$tax->rate_percent.'%'] = $taxList[$tax->tax_name.': '.$tax->rate_percent.'%'] + (($item->amount - ($item->amount / $this->purchaseOrder->sub_total) * $this->discount) * ($tax->rate_percent / 100));
                         } else {
-                            $taxList[$tax->tax_name . ': ' . $tax->rate_percent . '%'] = $taxList[$tax->tax_name . ': ' . $tax->rate_percent . '%'] + ($item->amount * ($tax->rate_percent / 100));
+                            $taxList[$tax->tax_name.': '.$tax->rate_percent.'%'] = $taxList[$tax->tax_name.': '.$tax->rate_percent.'%'] + ($item->amount * ($tax->rate_percent / 100));
                         }
                     }
                 }
             }
         }
-
 
         $this->taxes = $taxList;
 
@@ -357,7 +358,7 @@ class PurchaseBillController extends AccountBaseController
 
         App::setLocale($this->invoiceSetting->locale ?? 'en');
         Carbon::setLocale($this->invoiceSetting->locale ?? 'en');
-        $pdf->loadView('purchase::bills.pdf.' . $this->invoiceSetting->template, $this->data);
+        $pdf->loadView('purchase::bills.pdf.'.$this->invoiceSetting->template, $this->data);
 
         $dom_pdf = $pdf->getDomPDF();
         $canvas = $dom_pdf->getCanvas();
@@ -367,7 +368,7 @@ class PurchaseBillController extends AccountBaseController
 
         return [
             'pdf' => $pdf,
-            'fileName' => $filename
+            'fileName' => $filename,
         ];
     }
 
@@ -391,23 +392,23 @@ class PurchaseBillController extends AccountBaseController
             $this->discount = 0;
         }
 
-        $taxList = array();
+        $taxList = [];
 
         foreach ($this->purchaseOrder->items as $item) {
-            if (!is_null($item->taxes)) {
+            if (! is_null($item->taxes)) {
                 foreach ($item->taxes as $tax) {
-                    if (!isset($taxList[$tax->tax_name . ': ' . $tax->rate_percent . '%'])) {
+                    if (! isset($taxList[$tax->tax_name.': '.$tax->rate_percent.'%'])) {
 
                         if ($this->purchaseOrder->calculate_tax == 'after_discount' && $this->discount > 0) {
-                            $taxList[$tax->tax_name . ': ' . $tax->rate_percent . '%'] = ($item->amount - ($item->amount / $this->purchaseOrder->sub_total) * $this->discount) * ($tax->rate_percent / 100);
+                            $taxList[$tax->tax_name.': '.$tax->rate_percent.'%'] = ($item->amount - ($item->amount / $this->purchaseOrder->sub_total) * $this->discount) * ($tax->rate_percent / 100);
                         } else {
-                            $taxList[$tax->tax_name . ': ' . $tax->rate_percent . '%'] = $item->amount * ($tax->rate_percent / 100);
+                            $taxList[$tax->tax_name.': '.$tax->rate_percent.'%'] = $item->amount * ($tax->rate_percent / 100);
                         }
                     } else {
                         if ($this->purchaseOrder->calculate_tax == 'after_discount' && $this->discount > 0) {
-                            $taxList[$tax->tax_name . ': ' . $tax->rate_percent . '%'] = $taxList[$tax->tax_name . ': ' . $tax->rate_percent . '%'] + (($item->amount - ($item->amount / $this->purchaseOrder->sub_total) * $this->discount) * ($tax->rate_percent / 100));
+                            $taxList[$tax->tax_name.': '.$tax->rate_percent.'%'] = $taxList[$tax->tax_name.': '.$tax->rate_percent.'%'] + (($item->amount - ($item->amount / $this->purchaseOrder->sub_total) * $this->discount) * ($tax->rate_percent / 100));
                         } else {
-                            $taxList[$tax->tax_name . ': ' . $tax->rate_percent . '%'] = $taxList[$tax->tax_name . ': ' . $tax->rate_percent . '%'] + ($item->amount * ($tax->rate_percent / 100));
+                            $taxList[$tax->tax_name.': '.$tax->rate_percent.'%'] = $taxList[$tax->tax_name.': '.$tax->rate_percent.'%'] + ($item->amount * ($tax->rate_percent / 100));
                         }
                     }
                 }
@@ -423,12 +424,12 @@ class PurchaseBillController extends AccountBaseController
         $pdf->setOption('isHtml5ParserEnabled', true);
         $pdf->setOption('isRemoteEnabled', true);
 
-        $pdf->loadView('purchase::bills.pdf.' . $this->invoiceSetting->template, $this->data);
+        $pdf->loadView('purchase::bills.pdf.'.$this->invoiceSetting->template, $this->data);
         $filename = $this->purchaseBill->bill_number;
 
         return [
             'pdf' => $pdf,
-            'fileName' => $filename
+            'fileName' => $filename,
         ];
     }
 

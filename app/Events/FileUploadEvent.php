@@ -9,7 +9,6 @@ use Illuminate\Queue\SerializesModels;
 
 class FileUploadEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $fileUpload;
@@ -18,5 +17,4 @@ class FileUploadEvent
     {
         $this->fileUpload = $fileUpload;
     }
-
 }

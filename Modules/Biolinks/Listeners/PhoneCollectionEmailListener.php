@@ -8,7 +8,6 @@ use Modules\Biolinks\Notifications\PhoneCollectionEmail;
 
 class PhoneCollectionEmailListener
 {
-
     /**
      * Handle the event.
      *
@@ -18,5 +17,4 @@ class PhoneCollectionEmailListener
     {
         Notification::send($event->biolinkBlock, new PhoneCollectionEmail($event->name, $event->phone));
     }
-
 }

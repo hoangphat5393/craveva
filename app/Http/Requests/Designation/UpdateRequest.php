@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class UpdateRequest extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -25,8 +24,7 @@ class UpdateRequest extends CoreRequest
     public function rules()
     {
         return [
-            'designation_name' => 'required|unique:designations,name,'.$this->route('designation').',id,company_id,' . company()->id
+            'designation_name' => 'required|unique:designations,name,'.$this->route('designation').',id,company_id,'.company()->id,
         ];
     }
-
 }

@@ -12,6 +12,7 @@ namespace App\Models;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ProjectMember[] $members
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectUserNote newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectUserNote newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectUserNote query()
@@ -20,12 +21,12 @@ namespace App\Models;
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectUserNote whereProjectNoteId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectUserNote whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectUserNote whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class ProjectUserNote extends BaseModel
 {
-
     protected $table = 'project_user_notes';
-    protected $fillable = ['user_id', 'project_note_id'];
 
+    protected $fillable = ['user_id', 'project_note_id'];
 }

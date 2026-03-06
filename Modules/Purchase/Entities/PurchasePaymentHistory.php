@@ -5,14 +5,12 @@ namespace Modules\Purchase\Entities;
 use App\Models\BaseModel;
 use App\Models\User;
 use App\Traits\HasCompany;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PurchasePaymentHistory extends BaseModel
 {
-
-    use HasFactory, HasCompany;
+    use HasCompany, HasFactory;
 
     protected $fillable = [];
 
@@ -30,5 +28,4 @@ class PurchasePaymentHistory extends BaseModel
     {
         return $this->belongsTo(PurchaseVendorPayment::class, 'purchase_payment_id');
     }
-
 }

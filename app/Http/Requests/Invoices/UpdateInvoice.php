@@ -31,7 +31,7 @@ class UpdateInvoice extends CoreRequest
         $setting = company();
 
         $rules = [
-            'invoice_number' => 'required|unique:invoices,invoice_number,' . $this->route('invoice').',id,company_id,' . company()->id,
+            'invoice_number' => 'required|unique:invoices,invoice_number,'.$this->route('invoice').',id,company_id,'.company()->id,
             'issue_date' => 'required',
             'sub_total' => 'required',
             'total' => 'required',
@@ -41,7 +41,7 @@ class UpdateInvoice extends CoreRequest
         ];
 
         if ($this->has('due_date')) {
-            $rules['due_date'] = 'required|date_format:"' . $setting->date_format . '"|after_or_equal:'.$this->issue_date;
+            $rules['due_date'] = 'required|date_format:"'.$setting->date_format.'"|after_or_equal:'.$this->issue_date;
         }
 
         if ($this->project_id == '') {
@@ -66,8 +66,7 @@ class UpdateInvoice extends CoreRequest
     {
         return [
             'client_id.required' => __('modules.projects.selectClient'),
-            'gateway.required_if' => __('modules.projects.selectPayment')
+            'gateway.required_if' => __('modules.projects.selectPayment'),
         ];
     }
-
 }

@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      *
@@ -17,7 +16,7 @@ return new class extends Migration
         Schema::table('theme_settings', function (Blueprint $table) {
             $table->boolean('restrict_admin_theme_change')->default(false);
         });
-        
+
     }
 
     /**
@@ -31,5 +30,4 @@ return new class extends Migration
             $table->dropColumn('restrict_admin_theme_change');
         });
     }
-
 };

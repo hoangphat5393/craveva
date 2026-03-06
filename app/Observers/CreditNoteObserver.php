@@ -2,21 +2,20 @@
 
 namespace App\Observers;
 
-use App\Models\CreditNotes;
 use App\Events\NewCreditNoteEvent;
+use App\Models\CreditNotes;
 use App\Models\Notification;
 use App\Models\Payment;
 use App\Models\UniversalSearch;
 use App\Models\User;
 use App\Scopes\ActiveScope;
-use App\Traits\UnitTypeSaveTrait;
 use App\Traits\EmployeeActivityTrait;
+use App\Traits\UnitTypeSaveTrait;
 
 class CreditNoteObserver
 {
-
-    use UnitTypeSaveTrait;
     use EmployeeActivityTrait;
+    use UnitTypeSaveTrait;
 
     public function saving(CreditNotes $creditNote)
     {
@@ -40,7 +39,7 @@ class CreditNoteObserver
         }
 
         $invoiceSettings = company() ? company()->invoiceSetting : $creditNote->company->invoiceSetting;
-        $creditNote->original_credit_note_number = str($creditNote->cn_number)->replace($invoiceSettings->credit_note_prefix . $invoiceSettings->credit_note_number_separator, '');
+        $creditNote->original_credit_note_number = str($creditNote->cn_number)->replace($invoiceSettings->credit_note_prefix.$invoiceSettings->credit_note_number_separator, '');
 
     }
 
@@ -61,24 +60,20 @@ class CreditNoteObserver
 
     public function created(CreditNotes $creditNote)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             if (user()) {
                 self::createEmployeeActivity(user()->id, 'creditNote-created', $creditNote->id, 'credit_note');
             }
-
 
             $clientId = null;
 
             if ($creditNote->client_id) {
                 $clientId = $creditNote->client_id;
-            }
-            elseif ($creditNote->invoice && $creditNote->invoice->client_id != null) {
+            } elseif ($creditNote->invoice && $creditNote->invoice->client_id != null) {
                 $clientId = $creditNote->invoice->client_id;
-            }
-            elseif ($creditNote->project && $creditNote->project->client_id != null) {
+            } elseif ($creditNote->project && $creditNote->project->client_id != null) {
                 $clientId = $creditNote->project->client_id;
-            }
-            elseif ($creditNote->invoice->project && $creditNote->invoice->project->client_id != null) {
+            } elseif ($creditNote->invoice->project && $creditNote->invoice->project->client_id != null) {
                 $clientId = $creditNote->invoice->project->client_id;
             }
 
@@ -92,7 +87,7 @@ class CreditNoteObserver
 
             if (isset($creditNote->invoice) && $creditNote->invoice->status == 'partial') {
                 /* Make and entry in payment table */
-                $payment = new Payment();
+                $payment = new Payment;
                 $payment->invoice_id = $creditNote->invoice->id;
                 $payment->customer_id = $creditNote->invoice->client_id;
                 $payment->credit_notes_id = $creditNote->id;
@@ -109,7 +104,7 @@ class CreditNoteObserver
 
     public function updated(CreditNotes $creditNote)
     {
-        if (!isRunningInConsoleOrSeeding() && user()) {
+        if (! isRunningInConsoleOrSeeding() && user()) {
             self::createEmployeeActivity(user()->id, 'creditNote-updated', $creditNote->id, 'credit_note');
         }
     }
@@ -121,5 +116,4 @@ class CreditNoteObserver
 
         }
     }
-
 }

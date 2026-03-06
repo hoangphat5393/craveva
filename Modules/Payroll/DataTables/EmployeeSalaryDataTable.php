@@ -2,62 +2,58 @@
 
 namespace Modules\Payroll\DataTables;
 
-use Carbon\Carbon;
+use App\DataTables\BaseDataTable;
 use App\Models\Role;
 use App\Models\User;
-use App\DataTables\BaseDataTable;
+use Modules\Payroll\Entities\EmployeeMonthlySalary;
+use Modules\Payroll\Entities\PayrollCycle;
+use Modules\Payroll\Entities\PayrollSetting;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
-use Modules\Payroll\Entities\PayrollCycle;
-use Modules\Payroll\Entities\EmployeeMonthlySalary;
-use Modules\Payroll\Entities\PayrollCurrencySetting;
-use Modules\Payroll\Entities\PayrollSetting;
 
 class EmployeeSalaryDataTable extends BaseDataTable
 {
-
     private $currency;
+
     private $cycles;
 
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
     {
 
-
         return datatables()
             ->eloquent($query)
             ->addColumn('action', function ($row) {
-                    $salary = EmployeeMonthlySalary::employeeNetSalary($row->id);
-                    $action = '<div class="task_view">
+                $salary = EmployeeMonthlySalary::employeeNetSalary($row->id);
+                $action = '<div class="task_view">
                         <div class="dropdown">
                             <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" type="link"
-                                id="dropdownMenuLink-' . $row->id . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                id="dropdownMenuLink-'.$row->id.'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="icon-options-vertical icons"></i>
                             </a>
-                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-' . $row->id . '" tabindex="0">';
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-'.$row->id.'" tabindex="0">';
 
                 if ($salary['netSalary'] > 0) {
-                    $action .= '<a class="dropdown-item openRightModal" href="' . route('employee-salary.edit-salary', [$row->id]) . '">
+                    $action .= '<a class="dropdown-item openRightModal" href="'.route('employee-salary.edit-salary', [$row->id]).'">
                                         <i class="fa fa-edit mr-2"></i>
-                                        ' . trans('app.edit') . '
+                                        '.trans('app.edit').'
                                     </a>';
-                    $action .= '<a href="javascript:;" data-user-id="' . $row->id . '" class="dropdown-item update-salary" ><i class="fa fa-plus"></i> ' .  __('payroll::modules.payroll.increment') . '</a>';
-                    $action .= '<a href="javascript:;" data-user-id="' . $row->id . '" class="dropdown-item salary-history" ><i class="fa fa-eye"></i> ' .__('payroll::modules.payroll.salaryHistory'). '</a>';
-                }
-                else{
-                    $action = '<a href="' . route('employee-salary.make-salary', [$row->id]) . '" data-user-id="' . $row->id . '" class="dropdown-item add-salary openRightModal float-left" ><i class="fa fa-plus"></i> ' .__('payroll::modules.payroll.addSalary'). '</a>';
+                    $action .= '<a href="javascript:;" data-user-id="'.$row->id.'" class="dropdown-item update-salary" ><i class="fa fa-plus"></i> '.__('payroll::modules.payroll.increment').'</a>';
+                    $action .= '<a href="javascript:;" data-user-id="'.$row->id.'" class="dropdown-item salary-history" ><i class="fa fa-eye"></i> '.__('payroll::modules.payroll.salaryHistory').'</a>';
+                } else {
+                    $action = '<a href="'.route('employee-salary.make-salary', [$row->id]).'" data-user-id="'.$row->id.'" class="dropdown-item add-salary openRightModal float-left" ><i class="fa fa-plus"></i> '.__('payroll::modules.payroll.addSalary').'</a>';
                 }
 
-                    $action .= '</div>
+                $action .= '</div>
                         </div>
                     </div>';
 
-                    return $action;
+                return $action;
             })
             ->editColumn(
                 'group_name',
@@ -66,7 +62,7 @@ class EmployeeSalaryDataTable extends BaseDataTable
                 }
             )
             ->addColumn('salary_cycle', function ($row) {
-                $details = '<select name="cycle"  data-user-id="' . $row->id . '"  class="form-control select-picker salary-cycle">';
+                $details = '<select name="cycle"  data-user-id="'.$row->id.'"  class="form-control select-picker salary-cycle">';
                 $selected = '';
 
                 foreach ($this->cycles as $cycle) {
@@ -74,7 +70,7 @@ class EmployeeSalaryDataTable extends BaseDataTable
                         $selected = 'selected';
                     }
 
-                    $details .= '<option ' . $selected . ' value="' . $cycle->id . '">' . __('payroll::app.menu.' . $cycle->cycle) . '</option>';
+                    $details .= '<option '.$selected.' value="'.$cycle->id.'">'.__('payroll::app.menu.'.$cycle->cycle).'</option>';
                     $selected = '';
                 }
 
@@ -87,11 +83,11 @@ class EmployeeSalaryDataTable extends BaseDataTable
             })
             ->editColumn('allow_generate_payroll', function ($row) {
 
-                $details = '<select name="status"  data-user-id="' . $row->id . '"  class="form-control select-picker payroll-status">';
+                $details = '<select name="status"  data-user-id="'.$row->id.'"  class="form-control select-picker payroll-status">';
                 $selected = ($row->allow_generate_payroll == 'yes' && $row->allow_generate_payroll != '') ? 'selected' : '';
-                $details .= '<option ' . $selected . ' value="yes">' . __('app.yes') . '</option>';
+                $details .= '<option '.$selected.' value="yes">'.__('app.yes').'</option>';
                 $selected = ($row->allow_generate_payroll == 'no' || $row->allow_generate_payroll == '') ? 'selected' : '';
-                $details .= '<option ' . $selected . ' value="no">' . __('app.no') . '</option>';
+                $details .= '<option '.$selected.' value="no">'.__('app.no').'</option>';
                 $details .= '</select>';
 
                 return $details;
@@ -110,7 +106,7 @@ class EmployeeSalaryDataTable extends BaseDataTable
             })
             ->editColumn('name', function ($row) {
                 return view('components.employee', [
-                    'user' => $row
+                    'user' => $row,
                 ]);
             })
             ->addColumn('user_name', function ($row) {
@@ -118,7 +114,7 @@ class EmployeeSalaryDataTable extends BaseDataTable
             })
 
             ->addIndexColumn()
-            ->setRowId(fn($row) => 'row-' . $row->id)
+            ->setRowId(fn ($row) => 'row-'.$row->id)
             ->rawColumns(['name', 'action', 'salary_cycle', 'allow_generate_payroll'])
             ->removeColumn('roleId')
             ->removeColumn('roleName')
@@ -128,10 +124,9 @@ class EmployeeSalaryDataTable extends BaseDataTable
     /**
      * Get query source of dataTable.
      *
-     * @param  $model
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    //phpcs:ignore
+    // phpcs:ignore
     public function query(User $model)
     {
         $request = $this->request();
@@ -168,8 +163,8 @@ class EmployeeSalaryDataTable extends BaseDataTable
 
         if ($request->searchText != '') {
             $users = $users->where(function ($query) {
-                $query->where('users.name', 'like', '%' . request('searchText') . '%')
-                    ->orWhere('users.email', 'like', '%' . request('searchText') . '%');
+                $query->where('users.name', 'like', '%'.request('searchText').'%')
+                    ->orWhere('users.email', 'like', '%'.request('searchText').'%');
             });
         }
 
@@ -194,7 +189,7 @@ class EmployeeSalaryDataTable extends BaseDataTable
                    $(".select-picker").selectpicker();
                  }',
             ])
-            ->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
+            ->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
     }
 
     /**
@@ -209,19 +204,18 @@ class EmployeeSalaryDataTable extends BaseDataTable
             __('app.name') => ['data' => 'name', 'name' => 'name', 'exportable' => false, 'title' => __('app.name')],
             __('app.employee') => ['data' => 'user_name', 'name' => 'name', 'visible' => false, 'title' => __('app.employee')],
             __('payroll::modules.payroll.salaryCycle') => ['data' => 'salary_cycle_export', 'name' => 'salary_cycle', 'visible' => false, 'title' => __('payroll::modules.payroll.salaryCycle')],
-            __('app.employee') .'  '.__('payroll::modules.payroll.salaryCycle') => ['data' => 'salary_cycle', 'name' => 'salary_cycle', 'exportable' => false, 'title' => __('app.employee') .'  '.__('payroll::modules.payroll.salaryCycle')],
+            __('app.employee').'  '.__('payroll::modules.payroll.salaryCycle') => ['data' => 'salary_cycle', 'name' => 'salary_cycle', 'exportable' => false, 'title' => __('app.employee').'  '.__('payroll::modules.payroll.salaryCycle')],
             __('payroll::modules.payroll.salaryGroup') => ['data' => 'group_name', 'name' => 'group_name', 'title' => __('payroll::modules.payroll.salaryGroup')],
-            __('app.employee') . ' ' . __('payroll::modules.payroll.allow_generate_payroll') => ['data' => 'allow_generate_payroll_export', 'name' => 'allow_generate_payroll', 'visible' => false, 'title' => __('app.employee') . ' ' . __('payroll::modules.payroll.allow_generate_payroll')],
+            __('app.employee').' '.__('payroll::modules.payroll.allow_generate_payroll') => ['data' => 'allow_generate_payroll_export', 'name' => 'allow_generate_payroll', 'visible' => false, 'title' => __('app.employee').' '.__('payroll::modules.payroll.allow_generate_payroll')],
             __('payroll::modules.payroll.allow_generate_payroll') => ['data' => 'allow_generate_payroll', 'name' => 'allow_generate_payroll', 'exportable' => false, 'title' => __('payroll::modules.payroll.allow_generate_payroll')],
-            __('payroll::modules.payroll.grossEarning') => ['data' => 'gross_earning', 'name' => 'name', 'visible' => true, 'title' => __('payroll::modules.payroll.netSalary') . ' (' . __('app.monthly') . ')'],
+            __('payroll::modules.payroll.grossEarning') => ['data' => 'gross_earning', 'name' => 'name', 'visible' => true, 'title' => __('payroll::modules.payroll.netSalary').' ('.__('app.monthly').')'],
 
             Column::computed('action', __('app.action'))
                 ->exportable(false)
                 ->printable(false)
                 ->orderable(false)
                 ->searchable(false)
-                ->addClass('text-right pr-20')
+                ->addClass('text-right pr-20'),
         ];
     }
-
 }

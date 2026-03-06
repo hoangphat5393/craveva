@@ -1,5 +1,6 @@
-<?php 
+<?php
+
 return [
-  'previous' => '" Öncesi',
-  'next' => 'Sonraki "',
+    'previous' => '" Öncesi',
+    'next' => 'Sonraki "',
 ];

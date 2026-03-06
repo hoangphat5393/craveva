@@ -9,11 +9,10 @@ use Yajra\DataTables\Html\Column;
 
 class LeadGDPRDataTable extends BaseDataTable
 {
-
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
@@ -24,11 +23,9 @@ class LeadGDPRDataTable extends BaseDataTable
             ->editColumn('status', function ($row) {
                 if ($row->status == 'agree') {
                     $status = __('modules.gdpr.optIn');
-                }
-                else if ($row->status == 'disagree') {
+                } elseif ($row->status == 'disagree') {
                     $status = __('modules.gdpr.optOut');
-                }
-                else {
+                } else {
                     $status = '';
                 }
 
@@ -56,7 +53,6 @@ class LeadGDPRDataTable extends BaseDataTable
     }
 
     /**
-     * @param PurposeConsentLead $model
      * @return \Illuminate\Database\Query\Builder
      */
     public function query(PurposeConsentLead $model)
@@ -91,7 +87,7 @@ class LeadGDPRDataTable extends BaseDataTable
             ]);
 
         if (canDataTableExport()) {
-            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
+            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
         }
 
         return $dataTable;
@@ -116,8 +112,7 @@ class LeadGDPRDataTable extends BaseDataTable
                 ->orderable(false)
                 ->searchable(false)
                 ->width(150)
-                ->addClass('text-right pr-20')
+                ->addClass('text-right pr-20'),
         ];
     }
-
 }

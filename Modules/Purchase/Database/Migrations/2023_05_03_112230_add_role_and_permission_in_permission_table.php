@@ -11,14 +11,13 @@ use App\Models\UserPermission;
 use Illuminate\Database\Migrations\Migration;
 use Modules\Purchase\Entities\PurchaseManagementSetting;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      *
      * @return void
      */
-
     public function up()
     {
         $purchaseModule = \App\Models\Module::firstOrCreate(['module_name' => PurchaseManagementSetting::MODULE_NAME]);
@@ -83,7 +82,6 @@ return new class extends Migration {
                 'allowed_permissions' => $permissionType['allowed_permissions'],
             ]);
 
-
             foreach ($companies as $company) {
 
                 $role = Role::where('name', 'admin')
@@ -95,14 +93,13 @@ return new class extends Migration {
                         ->where('role_id', $role->id)->where('permission_type_id', 4)->first();
 
                     if (is_null($permissionData)) {
-                        $permissionRole = new PermissionRole();
+                        $permissionRole = new PermissionRole;
                         $permissionRole->permission_id = $permission->id;
                         $permissionRole->role_id = $role->id;
                         $permissionRole->permission_type_id = 4;
                         $permissionRole->save();
                     }
                 }
-
 
                 $admins = User::allAdmins($company->id);
 
@@ -135,5 +132,4 @@ return new class extends Migration {
             $moduleSetting->delete();
         }
     }
-
 };

@@ -31,5 +31,4 @@ return [
     'editUser' => 'Edit User',
     'ip' => 'IP',
 
-
 ];

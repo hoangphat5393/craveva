@@ -15,7 +15,6 @@ use Modules\Recruit\Entities\RecruitSetting;
 
 class RecruitDashboardController extends AccountBaseController
 {
-
     /**
      * Display a listing of the resource.
      *
@@ -26,7 +25,7 @@ class RecruitDashboardController extends AccountBaseController
         parent::__construct();
         $this->pageTitle = __('recruit::app.menu.dashboard');
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array(RecruitSetting::MODULE_NAME, $this->user->modules));
+            abort_403(! in_array(RecruitSetting::MODULE_NAME, $this->user->modules));
 
             return $next($request);
         });
@@ -35,7 +34,7 @@ class RecruitDashboardController extends AccountBaseController
     public function index(DashboardPipelineWidgetDataTable $dataTable)
     {
         $viewPermission = user()->permission('view_dashboard');
-        abort_403(!in_array($viewPermission, ['all', 'added']));
+        abort_403(! in_array($viewPermission, ['all', 'added']));
 
         $this->loggedEmployee = user();
 
@@ -98,7 +97,7 @@ class RecruitDashboardController extends AccountBaseController
             __('recruit::app.jobApplication.facebook'),
             __('recruit::app.jobApplication.instagram'),
             __('recruit::app.jobApplication.twitter'),
-            __('recruit::app.jobApplication.other')
+            __('recruit::app.jobApplication.other'),
         ];
         $data['colors'] = ['#0A66C2', '#1877f2', '#E4405F', '#1DA1F2', '#F57D00'];
 
@@ -114,7 +113,6 @@ class RecruitDashboardController extends AccountBaseController
 
         return $data;
     }
-
 
     public function candidateStatusChartData()
     {
@@ -135,5 +133,4 @@ class RecruitDashboardController extends AccountBaseController
 
         return $data;
     }
-
 }

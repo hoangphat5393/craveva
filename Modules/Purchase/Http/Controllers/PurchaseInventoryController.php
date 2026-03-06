@@ -2,32 +2,32 @@
 
 namespace Modules\Purchase\Http\Controllers;
 
-use Carbon\Carbon;
-use App\Models\Tax;
 use App\Helper\Reply;
+use App\Http\Controllers\AccountBaseController;
+use App\Http\Requests\Admin\Employee\ImportProcessRequest;
+use App\Http\Requests\Admin\Employee\ImportRequest;
 use App\Models\Currency;
 use App\Models\InvoiceItems;
-use Illuminate\Http\Request;
 use App\Models\ProductCategory;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Schema;
+use App\Models\Tax;
+use App\Traits\ImportExcel;
+use Carbon\Carbon;
 use Illuminate\Contracts\Support\Renderable;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+use Modules\Purchase\DataTables\PurchaseInventoryDataTable;
+use Modules\Purchase\Entities\PurchaseInventory;
+use Modules\Purchase\Entities\PurchaseInventoryHistory;
 use Modules\Purchase\Entities\PurchaseProduct;
 use Modules\Purchase\Entities\PurchaseSetting;
-use App\Http\Controllers\AccountBaseController;
-use Modules\Purchase\Entities\PurchaseInventory;
-use Modules\Purchase\Events\PurchaseInventoryEvent;
 use Modules\Purchase\Entities\PurchaseStockAdjustment;
-use Modules\Purchase\Entities\PurchaseInventoryHistory;
-use Modules\Purchase\DataTables\PurchaseInventoryDataTable;
 use Modules\Purchase\Entities\PurchaseStockAdjustmentReason;
+use Modules\Purchase\Events\PurchaseInventoryEvent;
 use Modules\Purchase\Http\Requests\Inventory\StorePurchaseInventoryRequest;
-use App\Traits\ImportExcel;
 use Modules\Purchase\Imports\InventoryImport;
 use Modules\Purchase\Jobs\ImportInventoryJob;
-use App\Http\Requests\Admin\Employee\ImportRequest;
-use App\Http\Requests\Admin\Employee\ImportProcessRequest;
 
 class PurchaseInventoryController extends AccountBaseController
 {
@@ -38,7 +38,7 @@ class PurchaseInventoryController extends AccountBaseController
         parent::__construct();
         $this->pageTitle = 'purchase::app.menu.inventory';
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array(PurchaseSetting::MODULE_NAME, $this->user->modules));
+            abort_403(! in_array(PurchaseSetting::MODULE_NAME, $this->user->modules));
 
             return $next($request);
         });
@@ -46,12 +46,13 @@ class PurchaseInventoryController extends AccountBaseController
 
     /**
      * Display a listing of the resource.
+     *
      * @return Renderable
      */
     public function index(PurchaseInventoryDataTable $dataTable)
     {
         $viewPermission = user()->permission('view_inventory');
-        abort_403(!in_array($viewPermission, ['all', 'added', 'owned', 'both']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'owned', 'both']));
 
         $this->inventory = PurchaseInventory::all();
 
@@ -60,13 +61,14 @@ class PurchaseInventoryController extends AccountBaseController
 
     /**
      * Show the form for creating a new resource.
+     *
      * @return Renderable
      */
     public function create()
     {
         $this->pageTitle = __('purchase::app.addInventory');
         $this->addPermission = user()->permission('add_inventory');
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
 
         if (request('inventory') != '') {
             $this->inventoryId = request('inventory');
@@ -83,7 +85,7 @@ class PurchaseInventoryController extends AccountBaseController
             $this->warehouses = \Modules\Warehouse\Entities\Warehouse::where('status', 'active')->get();
         }
 
-        $inventory = new PurchaseInventory();
+        $inventory = new PurchaseInventory;
         if ($inventory->getCustomFieldGroupsWithFields()) {
             $this->fields = $inventory->getCustomFieldGroupsWithFields()->fields;
         }
@@ -101,7 +103,8 @@ class PurchaseInventoryController extends AccountBaseController
 
     /**
      * Store a newly created resource in storage.
-     * @param Request $request
+     *
+     * @param  Request  $request
      * @return Renderable
      */
     public function store(StorePurchaseInventoryRequest $request)
@@ -115,14 +118,14 @@ class PurchaseInventoryController extends AccountBaseController
             return Reply::error(__('messages.addItem'));
         }
 
-        if (!empty($quantity)) {
+        if (! empty($quantity)) {
             foreach ($quantity as $qty) {
 
                 if (is_null($qty)) {
                     return Reply::error(__('purchase::messages.inventory.itemBlank'));
                 }
 
-                if (!is_numeric($qty) && (intval($qty) < 1)) {
+                if (! is_numeric($qty) && (intval($qty) < 1)) {
                     return Reply::error(__('messages.quantityNumber'));
                 }
             }
@@ -133,7 +136,7 @@ class PurchaseInventoryController extends AccountBaseController
                     return Reply::error(__('purchase::messages.inventory.itemValueBlank'));
                 }
 
-                if (!is_numeric($rate)) {
+                if (! is_numeric($rate)) {
                     return Reply::error(__('messages.unitPriceNumber'));
                 }
             }
@@ -148,9 +151,9 @@ class PurchaseInventoryController extends AccountBaseController
                 $invoiceQuery->whereIn('status', ['paid', 'partial', 'unpaid']);
             })->where('product_id', $product)->sum('quantity');
 
-            if (!empty($quantity)) {
+            if (! empty($quantity)) {
                 if ($quantity[$key] < $invoicedItem) {
-                    return Reply::error(__('purchase::messages.inventory.quantityCannotLessThan') . '(' . $invoicedItem . ')');
+                    return Reply::error(__('purchase::messages.inventory.quantityCannotLessThan').'('.$invoicedItem.')');
                 }
             }
 
@@ -158,21 +161,21 @@ class PurchaseInventoryController extends AccountBaseController
                 ->where('warehouse_id', $warehouseId)
                 ->first();
 
-            if (!$addStock) {
-                $addStock = new PurchaseStockAdjustment();
+            if (! $addStock) {
+                $addStock = new PurchaseStockAdjustment;
                 $addStock->product_id = $product;
                 $addStock->warehouse_id = $warehouseId;
                 $addStock->net_quantity = 0;
 
                 if ($key == 0) {
-                    $inventory = new PurchaseInventory();
+                    $inventory = new PurchaseInventory;
                 }
             } else {
                 if ($key == 0) {
                     $inventory = PurchaseInventory::where('id', $addStock->inventory_id)->first();
-                    if (!$inventory) {
+                    if (! $inventory) {
                         // Fallback if inventory record is missing but stock record exists
-                        $inventory = new PurchaseInventory();
+                        $inventory = new PurchaseInventory;
                     }
                 }
             }
@@ -199,7 +202,7 @@ class PurchaseInventoryController extends AccountBaseController
             // product_id is already set if new, or existing.
             // warehouse_id is already set if new, or existing.
 
-            if (!empty($quantity)) {
+            if (! empty($quantity)) {
                 $addStock->net_quantity = $request->quantity_on_hand[$key] ?: null;
                 $addStock->quantity_adjustment = $request->quantity_adjusted[$key] ?: 0;
             } else {
@@ -217,7 +220,7 @@ class PurchaseInventoryController extends AccountBaseController
 
             $product = PurchaseProduct::findOrFail($product);
 
-            if (!is_null($addStock->changed_value)) {
+            if (! is_null($addStock->changed_value)) {
                 $product->price = $addStock->changed_value;
             }
 
@@ -234,7 +237,6 @@ class PurchaseInventoryController extends AccountBaseController
         event(new PurchaseInventoryEvent($inventory, $products, $company));
         DB::commit();
 
-
         $defaultImage = $request->default_image ? $request->default_image : '';
 
         return Reply::successWithData(__('messages.recordSaved'), ['inventoyID' => $inventory->id, 'defaultImage' => $defaultImage]);
@@ -242,7 +244,8 @@ class PurchaseInventoryController extends AccountBaseController
 
     /**
      * Show the specified resource.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function show($id)
@@ -253,7 +256,7 @@ class PurchaseInventoryController extends AccountBaseController
         $this->deletePermission = user()->permission('delete_inventory');
         $this->manageStockPermission = user()->permission('manage_stock_adjustment');
 
-        abort_403(!(
+        abort_403(! (
             $this->viewPermission == 'all'
             || ($this->viewPermission == 'added')
             || ($this->viewPermission == 'owned')
@@ -309,7 +312,7 @@ class PurchaseInventoryController extends AccountBaseController
     {
         $this->viewPermission = user()->permission('view_inventory');
         $this->deletePermission = user()->permission('delete_inventory');
-        abort_403(!in_array($this->viewPermission, ['all', 'added']));
+        abort_403(! in_array($this->viewPermission, ['all', 'added']));
 
         $this->inventory = PurchaseInventory::with('files')->findOrFail($request->id);
 
@@ -322,7 +325,8 @@ class PurchaseInventoryController extends AccountBaseController
 
     /**
      * Show the form for editing the specified resource.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function edit($id)
@@ -332,8 +336,8 @@ class PurchaseInventoryController extends AccountBaseController
 
     /**
      * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function update(Request $request, $id)
@@ -343,7 +347,8 @@ class PurchaseInventoryController extends AccountBaseController
 
     /**
      * Remove the specified resource from storage.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function destroy($id)
@@ -351,7 +356,7 @@ class PurchaseInventoryController extends AccountBaseController
         $inventory = PurchaseInventory::findOrFail($id);
 
         $this->deletePermission = user()->permission('delete_inventory');
-        abort_403(!($this->deletePermission == 'all' || ($this->deletePermission == 'added' && $inventory->added_by == user()->id)));
+        abort_403(! ($this->deletePermission == 'all' || ($this->deletePermission == 'added' && $inventory->added_by == user()->id)));
 
         $inventory->delete();
 
@@ -378,12 +383,12 @@ class PurchaseInventoryController extends AccountBaseController
                 if ($this->stockAdjustment) {
                     $this->stockAdjustment->net_quantity = $whStock->quantity;
                 } else {
-                    $this->stockAdjustment = new PurchaseStockAdjustment();
+                    $this->stockAdjustment = new PurchaseStockAdjustment;
                     $this->stockAdjustment->net_quantity = $whStock->quantity;
                 }
-            } elseif (!$this->stockAdjustment) {
+            } elseif (! $this->stockAdjustment) {
                 // No record in both, means 0 stock
-                $this->stockAdjustment = new PurchaseStockAdjustment();
+                $this->stockAdjustment = new PurchaseStockAdjustment;
                 $this->stockAdjustment->net_quantity = 0;
             }
         }
@@ -393,14 +398,14 @@ class PurchaseInventoryController extends AccountBaseController
         $this->invoiceSetting = $this->company->invoiceSetting;
         $exchangeRate = ($request->currencyId) ? Currency::findOrFail($request->currencyId) : Currency::findOrFail($companyCurrencyID);
 
-        if (!is_null($exchangeRate) && !is_null($exchangeRate->exchange_rate)) {
+        if (! is_null($exchangeRate) && ! is_null($exchangeRate->exchange_rate)) {
 
             if ($this->item->total_amount != '') {
 
                 $this->item->price = floor(floor($this->item->total_amount) * $exchangeRate->exchange_rate);
             } else {
                 /*** @phpstan-ignore-next-line */
-                $this->item->price = floor((int)$this->item->price * $exchangeRate->exchange_rate);
+                $this->item->price = floor((int) $this->item->price * $exchangeRate->exchange_rate);
             }
         } else {
             if ($this->item->total_amount != '') {
@@ -408,7 +413,7 @@ class PurchaseInventoryController extends AccountBaseController
             }
         }
 
-        $this->item->price = number_format((float)$this->item->price, 2, '.', '');
+        $this->item->price = number_format((float) $this->item->price, 2, '.', '');
         $this->taxes = Tax::all();
 
         if ($request->val == 'quantity') {
@@ -423,7 +428,7 @@ class PurchaseInventoryController extends AccountBaseController
     public function addFiles()
     {
         $addPermission = user()->permission('add_inventory');
-        abort_403(!in_array($addPermission, ['all', 'added']));
+        abort_403(! in_array($addPermission, ['all', 'added']));
 
         $this->inventoryId = request()->id;
 
@@ -433,7 +438,7 @@ class PurchaseInventoryController extends AccountBaseController
     public function changeStatus(Request $request)
     {
         $this->editPermission = user()->permission('edit_inventory');
-        abort_403(!($this->editPermission == 'all' || ($this->editPermission == 'added' && $this->product->added_by == user()->id)));
+        abort_403(! ($this->editPermission == 'all' || ($this->editPermission == 'added' && $this->product->added_by == user()->id)));
 
         DB::beginTransaction();
 
@@ -467,7 +472,7 @@ class PurchaseInventoryController extends AccountBaseController
         $this->purchaseInventory = PurchaseInventory::findOrFail($id);
         $this->viewPermission = user()->permission('view_inventory');
 
-        abort_403(!(
+        abort_403(! (
             $this->viewPermission == 'all'
             || ($this->viewPermission == 'added' && $this->purchaseInventory->added_by == user()->id)
         ));
@@ -479,7 +484,7 @@ class PurchaseInventoryController extends AccountBaseController
         $pdf = $pdfOption['pdf'];
         $filename = $pdfOption['fileName'];
 
-        return request()->view ? $pdf->stream($filename . '.pdf') : $pdf->download($filename . '.pdf');
+        return request()->view ? $pdf->stream($filename.'.pdf') : $pdf->download($filename.'.pdf');
     }
 
     public function domPdfObjectForDownload($id)
@@ -505,24 +510,25 @@ class PurchaseInventoryController extends AccountBaseController
             $pdf->loadView('purchase::purchase-inventory.pdf.invoice-5', $this->data);
         }
 
-        $filename = 'inventory-' . $this->inventory->id;
+        $filename = 'inventory-'.$this->inventory->id;
 
         return [
             'pdf' => $pdf,
-            'fileName' => $filename
+            'fileName' => $filename,
         ];
     }
 
     public function importInventory()
     {
-        $this->pageTitle = __('app.importExcel') . ' ' . __('purchase::app.menu.inventory');
+        $this->pageTitle = __('app.importExcel').' '.__('purchase::app.menu.inventory');
         $this->addPermission = user()->permission('add_inventory');
-        abort_403(!in_array($this->addPermission, ['all', 'added']));
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
 
         $this->view = 'purchase::purchase-inventory.ajax.import';
 
         if (request()->ajax()) {
             $html = view($this->view, $this->data)->render();
+
             return Reply::dataOnly(['status' => 'success', 'html' => $html, 'title' => $this->pageTitle]);
         }
 
@@ -554,6 +560,7 @@ class PurchaseInventoryController extends AccountBaseController
         switch ($request->action_type) {
             case 'delete':
                 $this->deleteRecords($request);
+
                 return Reply::success(__('messages.deleteSuccess'));
             default:
                 return Reply::error(__('messages.selectAction'));
@@ -563,7 +570,7 @@ class PurchaseInventoryController extends AccountBaseController
     protected function deleteRecords($request)
     {
         $deletePermission = user()->permission('delete_inventory');
-        abort_403(!in_array($deletePermission, ['all', 'added']));
+        abort_403(! in_array($deletePermission, ['all', 'added']));
 
         $inventories = PurchaseInventory::whereIn('id', explode(',', $request->row_ids))->get();
 

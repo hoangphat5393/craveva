@@ -6,8 +6,6 @@ use Illuminate\Notifications\Messages\MailMessage;
 
 class RemovalRequestApprovedReject extends BaseNotification
 {
-
-
     protected $type;
 
     /**
@@ -23,12 +21,12 @@ class RemovalRequestApprovedReject extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
     {
-        $via = array();
+        $via = [];
 
         if ($notifiable->email_notifications && $notifiable->email != '') {
             array_push($via, 'mail');
@@ -40,8 +38,7 @@ class RemovalRequestApprovedReject extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
-     * @return MailMessage
+     * @param  mixed  $notifiable
      */
     public function toMail($notifiable): MailMessage
     {
@@ -52,11 +49,11 @@ class RemovalRequestApprovedReject extends BaseNotification
             $content = __('email.removalRequestApprovedUser.text');
 
             $build
-                ->subject(__('email.removalRequestApprovedUser.subject') . ' ' . config('app.name') . '.')
-                ->greeting(__('email.hello') . ' ' . $notifiable->name . ',')
+                ->subject(__('email.removalRequestApprovedUser.subject').' '.config('app.name').'.')
+                ->greeting(__('email.hello').' '.$notifiable->name.',')
                 ->markdown('mail.email', [
                     'content' => $content,
-                    'notifiableName' => $notifiable->client_name
+                    'notifiableName' => $notifiable->client_name,
                 ]);
 
             parent::resetLocale();
@@ -67,11 +64,11 @@ class RemovalRequestApprovedReject extends BaseNotification
         $content = __('email.removalRequestRejectedUser.text');
 
         $build
-            ->subject(__('email.removalRequestRejectedUser.subject') . ' ' . config('app.name') . '.')
-            ->greeting(__('email.hello') . ' ' . $notifiable->name . ',')
+            ->subject(__('email.removalRequestRejectedUser.subject').' '.config('app.name').'.')
+            ->greeting(__('email.hello').' '.$notifiable->name.',')
             ->markdown('mail.email', [
                 'content' => $content,
-                'notifiableName' => $notifiable->client_name
+                'notifiableName' => $notifiable->client_name,
             ]);
 
         parent::resetLocale();
@@ -82,15 +79,14 @@ class RemovalRequestApprovedReject extends BaseNotification
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
-    //phpcs:ignore
+    // phpcs:ignore
     public function toArray($notifiable)
     {
         return [
             //
         ];
     }
-
 }

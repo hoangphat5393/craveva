@@ -5,8 +5,8 @@ use App\Models\Permission;
 use Illuminate\Database\Migrations\Migration;
 use Modules\Biolinks\Entities\BiolinksGlobalSetting;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
@@ -33,5 +33,4 @@ return new class extends Migration {
     {
         //
     }
-
 };

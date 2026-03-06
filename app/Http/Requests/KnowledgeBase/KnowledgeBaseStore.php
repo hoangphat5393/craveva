@@ -11,7 +11,6 @@ class KnowledgeBaseStore extends CoreRequest
      *
      * @return bool
      */
-
     public function authorize()
     {
         return true;
@@ -29,5 +28,4 @@ class KnowledgeBaseStore extends CoreRequest
             'category' => 'required',
         ];
     }
-
 }

@@ -14,6 +14,7 @@ class StoreProviderRequest extends FormRequest
     public function authorize()
     {
         $addPermission = user()->permission('add_provider');
+
         return in_array($addPermission, ['all', 'added']);
     }
 
@@ -48,5 +49,4 @@ class StoreProviderRequest extends FormRequest
             'status' => __('servermanager::validation.attributes.status'),
         ];
     }
-
 }

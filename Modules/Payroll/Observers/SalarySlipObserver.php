@@ -6,7 +6,6 @@ use Modules\Payroll\Entities\SalarySlip;
 
 class SalarySlipObserver
 {
-
     public function saving(SalarySlip $model)
     {
         if (user()) {
@@ -20,5 +19,4 @@ class SalarySlipObserver
             $model->company_id = company()->id;
         }
     }
-
 }

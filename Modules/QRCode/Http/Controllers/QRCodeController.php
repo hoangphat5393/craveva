@@ -6,11 +6,10 @@ use App\Helper\Files;
 use App\Helper\Reply;
 use App\Http\Controllers\AccountBaseController;
 use App\Models\Currency;
-use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Modules\QRCode\DataTables\QRCodeDataTable;
-use Modules\QRCode\Entities\QRCodeSetting;
 use Modules\QRCode\Entities\QrCodeData;
+use Modules\QRCode\Entities\QRCodeSetting;
 use Modules\QRCode\Enums\Format;
 use Modules\QRCode\Enums\Type;
 use Modules\QRCode\Http\Requests\QrPreview;
@@ -18,13 +17,12 @@ use Modules\QRCode\Support\QrCode;
 
 class QRCodeController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'qrcode::app.menu.qrcode';
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array(QRCodeSetting::MODULE_NAME, $this->user->modules));
+            abort_403(! in_array(QRCodeSetting::MODULE_NAME, $this->user->modules));
 
             return $next($request);
         });
@@ -71,6 +69,7 @@ class QRCodeController extends AccountBaseController
 
         if (request()->ajax()) {
             $html = view($this->view, $this->data)->render();
+
             return Reply::dataOnly(['status' => 'success', 'html' => $html, 'title' => $this->pageTitle]);
         }
 
@@ -85,8 +84,7 @@ class QRCodeController extends AccountBaseController
         if ($request->qrId) {
             $this->editPermission = user()->permission('edit_qrcode');
             abort_403($this->editPermission !== 'all');
-        }
-        else {
+        } else {
             $this->addPermission = user()->permission('add_qrcode');
             abort_403($this->addPermission !== 'all');
         }
@@ -139,7 +137,7 @@ class QRCodeController extends AccountBaseController
 
         $qr = $qr->svg()->build()->getDataUri();
 
-        return Reply::successWithData( __('messages.recordSaved'), ['qr' => $qr, 'id' => $qrCodeData->id]);
+        return Reply::successWithData(__('messages.recordSaved'), ['qr' => $qr, 'id' => $qrCodeData->id]);
     }
 
     /**
@@ -163,6 +161,7 @@ class QRCodeController extends AccountBaseController
 
         if (request()->ajax()) {
             $html = view($this->view, $this->data)->render();
+
             return Reply::dataOnly(['status' => 'success', 'html' => $html, 'title' => $this->pageTitle]);
         }
 
@@ -184,6 +183,7 @@ class QRCodeController extends AccountBaseController
         }
 
         $qrCodeData->delete();
+
         return Reply::success(__('messages.deleteSuccess'));
     }
 
@@ -206,9 +206,9 @@ class QRCodeController extends AccountBaseController
      */
     public function fields(Type $type)
     {
-        $view = 'qrcode::qrcode.fields.' . $type->value;
+        $view = 'qrcode::qrcode.fields.'.$type->value;
 
-        if (!view()->exists($view)) {
+        if (! view()->exists($view)) {
             return Reply::error(__('qrcode::app.invalidType'));
         }
 
@@ -273,11 +273,10 @@ class QRCodeController extends AccountBaseController
 
     private function qrEvent(QrPreview $request)
     {
-        $startDateTime = Carbon::createFromFormat($this->company->date_format . ' ' . $this->company->time_format, $request->start_date . ' ' . $request->start_time);
+        $startDateTime = Carbon::createFromFormat($this->company->date_format.' '.$this->company->time_format, $request->start_date.' '.$request->start_time);
 
-        $endDateTime = Carbon::createFromFormat($this->company->date_format . ' ' . $this->company->time_format, $request->end_date . ' ' . $request->end_time, $this->company->timezone);
+        $endDateTime = Carbon::createFromFormat($this->company->date_format.' '.$this->company->time_format, $request->end_date.' '.$request->end_time, $this->company->timezone);
 
         return QrCode::event($request->title, $startDateTime, $endDateTime, $request->location, $request->link, $request->note, $request->reminder);
     }
-
 }

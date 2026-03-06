@@ -6,7 +6,6 @@ use App\Models\GlobalSetting;
 
 class GlobalSettingObserver
 {
-
     public function saving(GlobalSetting $model)
     {
         cache()->forget('global_setting');
@@ -27,5 +26,4 @@ class GlobalSettingObserver
 
         return $model;
     }
-
 }

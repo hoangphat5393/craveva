@@ -2,18 +2,18 @@
 
 namespace Modules\ServerManager\Providers;
 
-use Illuminate\Support\ServiceProvider;
-use Modules\ServerManager\Console\ActivateModuleCommand;
-use Modules\ServerManager\Console\DatabaseAuditCommand;
-use Modules\ServerManager\Console\CheckHostingExpiryCommand;
-use Modules\ServerManager\Console\CheckDomainExpiryCommand;
-use Modules\ServerManager\Entities\ServerHosting;
-use Modules\ServerManager\Listeners\CompanyCreatedListener;
 use App\Events\NewCompanyCreatedEvent;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\ServiceProvider;
+use Modules\ServerManager\Console\ActivateModuleCommand;
+use Modules\ServerManager\Console\CheckDomainExpiryCommand;
+use Modules\ServerManager\Console\CheckHostingExpiryCommand;
+use Modules\ServerManager\Console\DatabaseAuditCommand;
 use Modules\ServerManager\Entities\ServerDomain;
-use Modules\ServerManager\Observers\ServerHostingObserver;
+use Modules\ServerManager\Entities\ServerHosting;
+use Modules\ServerManager\Listeners\CompanyCreatedListener;
 use Modules\ServerManager\Observers\ServerDomainObserver;
+use Modules\ServerManager\Observers\ServerHostingObserver;
 
 class ServerManagerServiceProvider extends ServiceProvider
 {
@@ -27,7 +27,7 @@ class ServerManagerServiceProvider extends ServiceProvider
         $this->registerTranslations();
         $this->registerConfig();
         $this->registerViews();
-        $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
+        $this->loadMigrationsFrom(__DIR__.'/../Database/Migrations');
         $this->commands([
             ActivateModuleCommand::class,
             CheckHostingExpiryCommand::class,
@@ -61,10 +61,10 @@ class ServerManagerServiceProvider extends ServiceProvider
     protected function registerConfig()
     {
         $this->publishes([
-            __DIR__ . '/../Config/config.php' => config_path('servermanager.php'),
+            __DIR__.'/../Config/config.php' => config_path('servermanager.php'),
         ], 'config');
         $this->mergeConfigFrom(
-            __DIR__ . '/../Config/config.php',
+            __DIR__.'/../Config/config.php',
             'servermanager'
         );
     }
@@ -78,7 +78,7 @@ class ServerManagerServiceProvider extends ServiceProvider
     {
         $viewPath = resource_path('views/modules/servermanager');
 
-        $sourcePath = __DIR__ . '/../Resources/views';
+        $sourcePath = __DIR__.'/../Resources/views';
 
         $this->publishes([
             $sourcePath => $viewPath,
@@ -99,7 +99,7 @@ class ServerManagerServiceProvider extends ServiceProvider
         if (is_dir($langPath)) {
             $this->loadTranslationsFrom($langPath, 'servermanager');
         } else {
-            $this->loadTranslationsFrom(__DIR__ . '/../Resources/lang', 'servermanager');
+            $this->loadTranslationsFrom(__DIR__.'/../Resources/lang', 'servermanager');
         }
     }
 

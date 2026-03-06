@@ -8,10 +8,10 @@ use Modules\Policy\Entities\Policy;
 
 class PolicyPublishedEvent
 {
-
     use Dispatchable, SerializesModels;
 
     public $policy;
+
     public $notifyUsers;
 
     /**
@@ -22,5 +22,4 @@ class PolicyPublishedEvent
         $this->policy = $policy;
         $this->notifyUsers = $notifyUsers;
     }
-
 }

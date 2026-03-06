@@ -25,6 +25,7 @@ use App\Traits\HasMaskImage;
  * @property Carbon|null $updated_at
  * @property-read mixed $image_url
  * @property-read mixed $light_color
+ *
  * @method static Builder|FrontDetail newModelQuery()
  * @method static Builder|FrontDetail newQuery()
  * @method static Builder|FrontDetail query()
@@ -42,32 +43,31 @@ use App\Traits\HasMaskImage;
  * @method static Builder|FrontDetail whereSignInShow($value)
  * @method static Builder|FrontDetail whereSocialLinks($value)
  * @method static Builder|FrontDetail whereUpdatedAt($value)
+ *
  * @mixin Eloquent
  */
 class FrontDetail extends BaseModel
 {
-
     use HasMaskImage;
+
     protected $appends = ['image_url', 'light_color', 'background_image_url'];
 
     public function getBackgroundImageUrlAttribute()
-
     {
-        return ($this->background_image) ? $this->generateMaskedImageAppUrl('front/homepage-background/' . $this->background_image) : null;
+        return ($this->background_image) ? $this->generateMaskedImageAppUrl('front/homepage-background/'.$this->background_image) : null;
     }
 
     public function getImageUrlAttribute()
     {
-        return ($this->image) ? asset_url_local_s3('front/' . $this->image) : asset('saas/img/home/home-crm.png');
+        return ($this->image) ? asset_url_local_s3('front/'.$this->image) : asset('saas/img/home/home-crm.png');
     }
 
     public function getLightColorAttribute()
     {
         if (strlen($this->primary_color) === 7) {
-            return $this->primary_color . '26';
+            return $this->primary_color.'26';
         }
 
         return $this->primary_color;
     }
-
 }

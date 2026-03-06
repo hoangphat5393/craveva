@@ -8,10 +8,9 @@ use App\Models\ProjectRating;
 
 class ProjectRatingObserver
 {
-
     public function created(ProjectRating $rating)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             // Send notification to user
             event(new RatingEvent($rating, 'add'));
         }
@@ -19,7 +18,7 @@ class ProjectRatingObserver
 
     public function deleting(ProjectRating $rating)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             // Send notification to user
             event(new RatingEvent($rating, 'update'));
 
@@ -29,5 +28,4 @@ class ProjectRatingObserver
         Notification::deleteNotification($notifyData, $rating->id);
 
     }
-
 }

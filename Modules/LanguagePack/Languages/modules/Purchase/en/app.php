@@ -1,6 +1,6 @@
 <?php
 
-return array(
+return [
     'qty' => 'Qty',
     'val' => 'Val',
     'sku' => 'SKU',
@@ -29,9 +29,7 @@ return array(
     'availableBalance' => 'Available Balance',
     'defaultImage' => 'Default Image',
 
-
-
-    'menu' => array(
+    'menu' => [
         'purchase' => 'Purchase',
         'purchaseSettings' => 'Purchase Settings',
         'purchaseNotificationSettings' => 'Purchase Notification Settings',
@@ -54,9 +52,9 @@ return array(
         'bill' => 'Bill',
         'bills' => 'Bills',
         'billDate' => 'Bill Date',
-    'billNumber' => 'Bill Number',
-    'purchaseOrder' => 'Purchase Order',
-    'deliveryOrders' => 'Delivery Orders',
+        'billNumber' => 'Bill Number',
+        'purchaseOrder' => 'Purchase Order',
+        'deliveryOrders' => 'Delivery Orders',
         'receipt' => 'Receipt',
         'report' => 'Report',
         'paymentDate' => 'Payment Date',
@@ -79,13 +77,13 @@ return array(
         'paymentReceipt' => 'Payment Receipt',
         'vendorName' => 'Vendor Name',
         'bankAccount' => 'Bank Account',
-    ),
-    'purchaseOrder' => array(
+    ],
+    'purchaseOrder' => [
         'vendorPayments' => 'Vendor Payments',
         'addVendorPayments' => 'Add Vendor Payment',
         'purchaseOrder' => 'Purchase Order',
         'vendorName' => 'Vendor Name',
         'paymentToVendor' => 'Payment To Vendor',
 
-    )
-);
+    ],
+];

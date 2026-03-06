@@ -6,13 +6,15 @@ use App\DataTables\BaseDataTable;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Modules\Purchase\Entities\PurchaseOrder;
-use Yajra\DataTables\Html\Column;
 use Yajra\DataTables\Html\Button;
+use Yajra\DataTables\Html\Column;
 
 class PurchaseOrderDataTable extends BaseDataTable
 {
     private $viewOrderPermission;
+
     private $deleteOrderPermission;
+
     private $editOrderPermission;
 
     public function __construct()
@@ -26,7 +28,7 @@ class PurchaseOrderDataTable extends BaseDataTable
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
@@ -39,81 +41,80 @@ class PurchaseOrderDataTable extends BaseDataTable
 
                 $action .= '<div class="dropdown">
                         <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" type="link"
-                            id="dropdownMenuLink-' . $row->id . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            id="dropdownMenuLink-'.$row->id.'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="icon-options-vertical icons"></i>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-' . $row->id . '" tabindex="0">';
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-'.$row->id.'" tabindex="0">';
 
-                $action .= '<a href="' . route('purchase-order.show', [$row->id]) . '" class="dropdown-item"><i class="fa fa-eye mr-2"></i>' . __('app.view') . '</a>';
+                $action .= '<a href="'.route('purchase-order.show', [$row->id]).'" class="dropdown-item"><i class="fa fa-eye mr-2"></i>'.__('app.view').'</a>';
 
                 if (
                     $this->viewOrderPermission == 'all'
                     || ($this->viewOrderPermission == 'added' && user()->id == $row->added_by)
                 ) {
-                    $action .= '<a class="dropdown-item" href="' . route('purchase_order.download', [$row->id]) . '">
+                    $action .= '<a class="dropdown-item" href="'.route('purchase_order.download', [$row->id]).'">
                                     <i class="fa fa-download mr-2"></i>
-                                    ' . trans('app.download') . '
+                                    '.trans('app.download').'
                                 </a>';
-                    $action .= '<a class="dropdown-item" target="_blank" href="' . route('purchase_order.download', [$row->id, 'view' => true]) . '">
+                    $action .= '<a class="dropdown-item" target="_blank" href="'.route('purchase_order.download', [$row->id, 'view' => true]).'">
                                     <i class="fa fa-eye mr-2"></i>
-                                    ' . trans('app.viewPdf') . '
+                                    '.trans('app.viewPdf').'
                                 </a>';
                 }
 
                 if ($row->purchase_status != 'canceled') {
-                    $action .= '<a class="dropdown-item sendButton" href="javascript:;" data-toggle="tooltip"  data-order-id="' . $row->id . '">
+                    $action .= '<a class="dropdown-item sendButton" href="javascript:;" data-toggle="tooltip"  data-order-id="'.$row->id.'">
                                     <i class="fa fa-paper-plane mr-2"></i>
-                                    ' . trans('app.send') . '
+                                    '.trans('app.send').'
                                 </a>';
                 }
 
                 if ($row->status != 'canceled' && $row->send_status == 0) {
-                    $action .= '<a class="dropdown-item sendButton d-flex justify-content-between align-items-center" data-type="mark_as_send" href="javascript:;"  data-order-id="' . $row->id . '">
+                    $action .= '<a class="dropdown-item sendButton d-flex justify-content-between align-items-center" data-type="mark_as_send" href="javascript:;"  data-order-id="'.$row->id.'">
                                     <div><i class="fa fa-check-double mr-2"></i>
-                                    ' . trans('app.markSent') . '
+                                    '.trans('app.markSent').'
                                     </div>
                                     <i class="fa fa-question-circle" data-toggle="tooltip" data-original-title="'.__('messages.markSentInfo').'"></i>
                                 </a>';
                 }
 
-                $edit = '<a class="dropdown-item openRightModal" href="' . route('purchase-order.edit', $row->id) . '" >
+                $edit = '<a class="dropdown-item openRightModal" href="'.route('purchase-order.edit', $row->id).'" >
                             <i class="fa fa-edit mr-2"></i>
-                            ' . trans('app.edit') . '
+                            '.trans('app.edit').'
                         </a>';
 
                 if ($row->status != 'paid' && $row->status != 'canceled'
                     && ($this->editOrderPermission == 'all' || ($this->editOrderPermission == 'added' && $row->added_by == user()->id))
-                    && $row->billed_status != 'billed' && $row->delivery_status != "delivered") {
-                            $action .= $edit;
+                    && $row->billed_status != 'billed' && $row->delivery_status != 'delivered') {
+                    $action .= $edit;
                 }
 
                 if (($row->status == 'unpaid' || $row->status == 'draft')) {
-                    $action .= '<a class="dropdown-item cancel-invoice" href="javascript:;"  data-invoice-id="' . $row->id . '">
+                    $action .= '<a class="dropdown-item cancel-invoice" href="javascript:;"  data-invoice-id="'.$row->id.'">
                         <i class="fa fa-times mr-2"></i>
-                        ' . trans('app.cancel') . '
+                        '.trans('app.cancel').'
                     </a>';
                 }
 
-                if($row->billed_status != 'billed' )
-                {
-                    $action .= '<a class="dropdown-item" href="' . route('bills.create') . '?order='.$row->id.'">
+                if ($row->billed_status != 'billed') {
+                    $action .= '<a class="dropdown-item" href="'.route('bills.create').'?order='.$row->id.'">
                     <i class="far fa-money-bill-alt"></i>
-                    ' . trans('purchase::modules.purchaseOrder.convertToBill') . '
+                    '.trans('purchase::modules.purchaseOrder.convertToBill').'
                     </a>';
                 }
 
                 if (
                     ($this->deleteOrderPermission == 'all'
                     || ($this->deleteOrderPermission == 'added' && $row->added_by == user()->id))
-                    && $row->billed_status != 'billed' && $row->delivery_status != "delivered"
+                    && $row->billed_status != 'billed' && $row->delivery_status != 'delivered'
                 ) {
-                        $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-toggle="tooltip"  data-order-id="' . $row->id . '">
+                    $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-toggle="tooltip"  data-order-id="'.$row->id.'">
                             <i class="fa fa-trash mr-2"></i>
-                            ' . trans('app.delete') . '
+                            '.trans('app.delete').'
                         </a>';
                 }
 
-                    $action .= '</div>
+                $action .= '</div>
                     </div>
                 </div>';
 
@@ -122,18 +123,18 @@ class PurchaseOrderDataTable extends BaseDataTable
             ->editColumn('purchase_order_number', function ($row) {
                 return '<div class="media align-items-center">
                             <div class="media-body">
-                        <h5 class="mb-0 f-13 text-darkest-grey"><a href="' . route('purchase-order.show', [$row->id]) . '">' . ($row->purchase_order_number) . '</a></h5>
+                        <h5 class="mb-0 f-13 text-darkest-grey"><a href="'.route('purchase-order.show', [$row->id]).'">'.($row->purchase_order_number).'</a></h5>
                         </div>
                       </div>';
             })
             ->editColumn('primary_name', function ($row) {
-                return '<a href="' . route('vendors.show', [$row->vendor_id]) . '" style="color:black;">' . $row->primary_name . '</a>';
+                return '<a href="'.route('vendors.show', [$row->vendor_id]).'" style="color:black;">'.$row->primary_name.'</a>';
             })
             ->editColumn('purchase_date', function ($row) {
-                    return !is_null($row->purchase_date) ? $row->purchase_date->translatedFormat($this->company->date_format) : '----';
+                return ! is_null($row->purchase_date) ? $row->purchase_date->translatedFormat($this->company->date_format) : '----';
             })
             ->editColumn('expected_delivery_date', function ($row) {
-                return !is_null($row->expected_delivery_date) ? $row->expected_delivery_date->translatedFormat($this->company->date_format) : '----';
+                return ! is_null($row->expected_delivery_date) ? $row->expected_delivery_date->translatedFormat($this->company->date_format) : '----';
             })
             ->editColumn('total', function ($row) {
                 $currencyId = (isset($row->vendor)) ? $row->vendor->currency_id : '';
@@ -144,10 +145,9 @@ class PurchaseOrderDataTable extends BaseDataTable
                 $status = '';
 
                 if ($row->billed_status == 'unbilled') {
-                    $status .= ' <i class="fa fa-circle mr-1 text-red f-10"></i>' . __('purchase::modules.purchaseOrder.' . $row->billed_status);
-                }
-                else {
-                    $status .= ' <i class="fa fa-circle mr-1 text-dark-green f-10"></i>' . __('purchase::modules.purchaseOrder.' . $row->billed_status);
+                    $status .= ' <i class="fa fa-circle mr-1 text-red f-10"></i>'.__('purchase::modules.purchaseOrder.'.$row->billed_status);
+                } else {
+                    $status .= ' <i class="fa fa-circle mr-1 text-dark-green f-10"></i>'.__('purchase::modules.purchaseOrder.'.$row->billed_status);
                 }
 
                 return $status;
@@ -181,66 +181,60 @@ class PurchaseOrderDataTable extends BaseDataTable
             ->editColumn('delivery_status', function ($row) {
                 $status = '';
 
-                if ($this->editOrderPermission == 'all' || ($this->editOrderPermission == 'added' && $row->added_by == user()->id))
-                {
+                if ($this->editOrderPermission == 'all' || ($this->editOrderPermission == 'added' && $row->added_by == user()->id)) {
                     if ($row->delivery_status == 'delivered') {
-                        $status .= '<i class="fa fa-circle mr-1 text-dark-green f-10"></i>' . __('purchase::modules.purchaseOrder.' . $row->delivery_status);
-                    }
-                    else{
-                        $status = '<select class="form-control select-picker change-delivery-status" id="delivery-status" data-order-id="' . $row->id . '">';
+                        $status .= '<i class="fa fa-circle mr-1 text-dark-green f-10"></i>'.__('purchase::modules.purchaseOrder.'.$row->delivery_status);
+                    } else {
+                        $status = '<select class="form-control select-picker change-delivery-status" id="delivery-status" data-order-id="'.$row->id.'">';
                         $status .= '<option ';
 
-                        $status .= ' value="delivered" data-content="<i class=\'fa fa-circle mr-2 text-light-green\'></i> ' . __('purchase::modules.purchaseOrder.delivered') . '">' . __('purchase::modules.purchaseOrder.delivered') . '</option>';
+                        $status .= ' value="delivered" data-content="<i class=\'fa fa-circle mr-2 text-light-green\'></i> '.__('purchase::modules.purchaseOrder.delivered').'">'.__('purchase::modules.purchaseOrder.delivered').'</option>';
                         $status .= '<option ';
 
                         if ($row->delivery_status == 'delivery_failed') {
                             $status .= 'selected';
                         }
 
-                        $status .= ' value="delivery_failed" data-content="<i class=\'fa fa-circle mr-2 text-red\'></i> ' . __('purchase::modules.purchaseOrder.deliveryFailed') . '">' . __('purchase::modules.purchaseOrder.deliveryFailed') . '</option>';
+                        $status .= ' value="delivery_failed" data-content="<i class=\'fa fa-circle mr-2 text-red\'></i> '.__('purchase::modules.purchaseOrder.deliveryFailed').'">'.__('purchase::modules.purchaseOrder.deliveryFailed').'</option>';
                         $status .= '<option ';
 
                         if ($row->delivery_status == 'in_transaction') {
                             $status .= 'selected';
                         }
 
-                        $status .= ' value="in_transaction" data-content="<i class=\'fa fa-circle mr-2 text-yellow\'></i> ' . __('purchase::modules.purchaseOrder.inTransaction') . '">' . __('purchase::modules.purchaseOrder.inTransaction') . '</option>';
+                        $status .= ' value="in_transaction" data-content="<i class=\'fa fa-circle mr-2 text-yellow\'></i> '.__('purchase::modules.purchaseOrder.inTransaction').'">'.__('purchase::modules.purchaseOrder.inTransaction').'</option>';
                         $status .= '<option ';
 
                         if ($row->delivery_status == 'not_started') {
                             $status .= 'selected';
                         }
 
-                        $status .= ' value="not_started" data-content="<i class=\'fa fa-circle mr-2 text-dark\'></i> ' . __('purchase::modules.purchaseOrder.notStarted') . '">' . __('purchase::modules.purchaseOrder.notStarted') . '</option>';
+                        $status .= ' value="not_started" data-content="<i class=\'fa fa-circle mr-2 text-dark\'></i> '.__('purchase::modules.purchaseOrder.notStarted').'">'.__('purchase::modules.purchaseOrder.notStarted').'</option>';
 
                         $status .= '</select>';
                     }
 
-                }
-                else {
+                } else {
 
                     if ($row->delivery_status == 'delivered') {
                         $class = 'text-light-green';
                         $status = __('purchase::modules.purchaseOrder.delivered');
 
-                    }
-                    else if ($row->delivery_status == 'delivery_failed') {
+                    } elseif ($row->delivery_status == 'delivery_failed') {
                         $class = 'text-red';
                         $status = __('purchase::modules.purchaseOrder.deliveryFailed');
 
-                    }
-                    else if ($row->delivery_status == 'in_transaction') {
+                    } elseif ($row->delivery_status == 'in_transaction') {
                         $class = 'text-yellow';
                         $status = __('purchase::modules.purchaseOrder.inTransaction');
 
-                    }
-                    else if ($row->delivery_status == 'not_started') {
+                    } elseif ($row->delivery_status == 'not_started') {
                         $class = 'text-dark';
                         $status = __('purchase::modules.purchaseOrder.notStarted');
 
                     }
 
-                    $status = '<i class="fa fa-circle mr-1 ' . $class . ' f-10"></i> ' . $status;
+                    $status = '<i class="fa fa-circle mr-1 '.$class.' f-10"></i> '.$status;
                 }
 
                 return $status;
@@ -248,12 +242,12 @@ class PurchaseOrderDataTable extends BaseDataTable
             })
             ->addIndexColumn()
             ->smart(false)
-            ->setRowId(fn($row) => 'row-' . $row->id)
-            ->rawColumns(['delivery_status', 'action', 'purchase_order_number', 'billed_status', 'primary_name', 'total','del_status']);
+            ->setRowId(fn ($row) => 'row-'.$row->id)
+            ->rawColumns(['delivery_status', 'action', 'purchase_order_number', 'billed_status', 'primary_name', 'total', 'del_status']);
     }
 
     /**
-     * @param BankAccount $model
+     * @param  BankAccount  $model
      * @return BankAccount|\Illuminate\Database\Eloquent\Builder
      */
     public function query(PurchaseOrder $model)
@@ -267,10 +261,10 @@ class PurchaseOrderDataTable extends BaseDataTable
 
         if ($request->searchText != '') {
             $model = $model->where(function ($query) {
-                $query->where('purchase_orders.purchase_order_number', 'like', '%' . request('searchText') . '%')
+                $query->where('purchase_orders.purchase_order_number', 'like', '%'.request('searchText').'%')
                     ->orWhere(function ($query) {
                         $query->whereHas('vendor', function ($q) {
-                            $q->where('primary_name', 'like', '%' . request('searchText') . '%');
+                            $q->where('primary_name', 'like', '%'.request('searchText').'%');
                         });
                     });
             });
@@ -286,7 +280,7 @@ class PurchaseOrderDataTable extends BaseDataTable
             $model = $model->where(DB::raw('DATE(purchase_orders.`purchase_date`)'), '<=', $endDate);
         }
 
-        if ($request->billedStatus != 'all' && !is_null($request->billedStatus)) {
+        if ($request->billedStatus != 'all' && ! is_null($request->billedStatus)) {
             $model = $model->where('purchase_orders.billed_status', '=', $request->billedStatus);
         }
 
@@ -314,7 +308,7 @@ class PurchaseOrderDataTable extends BaseDataTable
                     $(".select-picker").selectpicker();
                 }',
             ])
-            ->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
+            ->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
     }
 
     /**
@@ -334,16 +328,15 @@ class PurchaseOrderDataTable extends BaseDataTable
             __('modules.payments.totalAmount') => ['data' => 'total', 'name' => 'total', 'title' => __('modules.payments.totalAmount')],
             __('purchase::modules.purchaseOrder.billedStatus') => ['data' => 'billed_status', 'name' => 'billed_status', 'title' => __('purchase::modules.purchaseOrder.billedStatus')],
             __('purchase::modules.purchaseOrder.deliveryStatus') => ['data' => 'delivery_status', 'name' => 'delivery_status', 'exportable' => false, 'title' => __('purchase::modules.purchaseOrder.deliveryStatus')],
-            __('purchase::modules.purchaseOrder.del_status') => ['data' => 'del_status','visible' => false, 'name' => 'del_status', 'exportable' => true, 'title' => __('purchase::modules.purchaseOrder.deliveryStatus')],
+            __('purchase::modules.purchaseOrder.del_status') => ['data' => 'del_status', 'visible' => false, 'name' => 'del_status', 'exportable' => true, 'title' => __('purchase::modules.purchaseOrder.deliveryStatus')],
             Column::computed('action', __('app.action'))
                 ->exportable(false)
                 ->printable(false)
                 ->orderable(false)
                 ->searchable(false)
-                ->addClass('text-right pr-20')
+                ->addClass('text-right pr-20'),
         ];
 
         return $data;
     }
-
 }

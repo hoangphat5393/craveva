@@ -9,14 +9,15 @@ use Illuminate\Queue\SerializesModels;
 
 class DailyTimeLogReportEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     /**
      * Create a new event instance.
      */
     public $user;
+
     public $role;
+
     public $company;
 
     public function __construct(User $user, $role, $company)
@@ -25,5 +26,4 @@ class DailyTimeLogReportEvent
         $this->role = $role;
         $this->company = $company;
     }
-
 }

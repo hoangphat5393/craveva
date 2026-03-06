@@ -8,11 +8,10 @@ use Illuminate\Notifications\Messages\MailMessage;
 
 class SuperAdminLoginUrlEmail extends BaseNotification
 {
-
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -29,8 +28,7 @@ class SuperAdminLoginUrlEmail extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
+     * @param  mixed  $notifiable
      */
     public function toMail($notifiable): MailMessage
     {
@@ -42,15 +40,14 @@ class SuperAdminLoginUrlEmail extends BaseNotification
         return parent::build()
             ->subject(__('subdomain::app.emailSuperAdmin.subject'))
             ->line(__('subdomain::app.emailSuperAdmin.line3'))
-            ->line(__('subdomain::app.emailSuperAdmin.noteLoginUrlChanged') . " [**$url**]($url) ")
+            ->line(__('subdomain::app.emailSuperAdmin.noteLoginUrlChanged')." [**$url**]($url) ")
             ->action(__('app.login'), $url);
     }
 
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
-     * @return array
+     * @param  mixed  $notifiable
      */
     public function toArray($notifiable): array
     {
@@ -58,5 +55,4 @@ class SuperAdminLoginUrlEmail extends BaseNotification
             //
         ];
     }
-
 }

@@ -11,15 +11,13 @@ class PolicyUpdateRequest extends FormRequest
      *
      * @return array
      */
-
     public function rules()
     {
         $rules = [
-            'name' => 'required | unique:overtime_policies,name,' . $this->route('overtime_policy') .',id,company_id,' . company()->id,
+            'name' => 'required | unique:overtime_policies,name,'.$this->route('overtime_policy').',id,company_id,'.company()->id,
         ];
 
-        if(!$this->has('working_days') && !$this->has('week_end') && !$this->has('holiday'))
-        {
+        if (! $this->has('working_days') && ! $this->has('week_end') && ! $this->has('holiday')) {
             $rules['working_days'] = 'required';
         }
 
@@ -36,5 +34,4 @@ class PolicyUpdateRequest extends FormRequest
     {
         return true;
     }
-
 }

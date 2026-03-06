@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class UpdateRequest extends CoreRequest
 {
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -25,5 +24,4 @@ class UpdateRequest extends CoreRequest
             'linkedin_secret_id' => 'required_if:linkedin_status,enable|max:100',
         ];
     }
-
 }

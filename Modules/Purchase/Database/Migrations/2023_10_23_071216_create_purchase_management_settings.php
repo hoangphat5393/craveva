@@ -1,21 +1,20 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 use Modules\Purchase\Entities\PurchaseManagementSetting;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      *
      * @return void
      */
-
     public function up()
     {
-        if (!Schema::hasTable('purchase_management_settings')) {
+        if (! Schema::hasTable('purchase_management_settings')) {
             Schema::create('purchase_management_settings', function (Blueprint $table) {
                 $table->bigIncrements('id');
                 $table->string('purchase_code')->nullable();
@@ -37,5 +36,4 @@ return new class extends Migration {
     {
         Schema::dropIfExists('purchase_management_settings');
     }
-
 };

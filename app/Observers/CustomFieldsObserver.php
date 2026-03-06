@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\DB;
 
 class CustomFieldsObserver
 {
-
     public function creating(CustomField $model)
     {
         if (company()) {
@@ -32,7 +31,7 @@ class CustomFieldsObserver
             return false;
         }
 
-        $leadField = new LeadCustomForm();
+        $leadField = new LeadCustomForm;
         $leadField->required = ($customField->required == 'yes') ? 1 : 0;
         $leadField->field_display_name = str($customField->label);
         $leadField->custom_fields_id = $customField->id;
@@ -49,7 +48,7 @@ class CustomFieldsObserver
             return false;
         }
 
-        $ticketField = new TicketCustomForm();
+        $ticketField = new TicketCustomForm;
         $ticketField->required = ($customField->required == 'yes') ? 1 : 0;
         $ticketField->field_display_name = str($customField->label);
         $ticketField->custom_fields_id = $customField->id;
@@ -62,7 +61,6 @@ class CustomFieldsObserver
     public function updated(CustomField $customField)
     {
         $lead = CustomFieldGroup::where('name', 'Lead')->first();
-
 
         if ($customField->custom_field_group_id == $lead->id) {
             $id = $customField->id;
@@ -96,6 +94,4 @@ class CustomFieldsObserver
         }
 
     }
-
 }
-

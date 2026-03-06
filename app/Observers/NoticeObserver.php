@@ -11,10 +11,9 @@ use App\Models\User;
 
 class NoticeObserver
 {
-
     public function saving(Notice $notice)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             $notice->last_updated_by = user()->id;
 
             if (request()->_method == 'PUT') {
@@ -25,7 +24,7 @@ class NoticeObserver
 
     public function creating(Notice $notice)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             $notice->added_by = user()->id;
         }
 
@@ -36,7 +35,7 @@ class NoticeObserver
 
     public function created(Notice $notice)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             $this->sendNotification($notice);
         }
     }
@@ -63,10 +62,10 @@ class NoticeObserver
             $users = $users = User::whereIn('id', $empIds)->where('status', 'active')->get();
 
             foreach ($users as $userData) {
-                NoticeView::updateOrCreate(array(
+                NoticeView::updateOrCreate([
                     'user_id' => $userData->id,
-                    'notice_id' => $notice->id
-                ));
+                    'notice_id' => $notice->id,
+                ]);
             }
 
             event(new NewNoticeEvent($notice, $users, $action));
@@ -77,15 +76,14 @@ class NoticeObserver
             $users = $users = User::whereIn('id', $clientIds)->where('status', 'active')->get();
 
             foreach ($users as $userData) {
-                NoticeView::updateOrCreate(array(
+                NoticeView::updateOrCreate([
                     'user_id' => $userData->id,
-                    'notice_id' => $notice->id
-                ));
+                    'notice_id' => $notice->id,
+                ]);
             }
 
             event(new NewNoticeEvent($notice, $users, $action));
         }
 
     }
-
 }

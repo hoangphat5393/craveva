@@ -26,5 +26,4 @@ class AppreciationFactory extends Factory
             'summary' => fake()->realText(),
         ];
     }
-
 }

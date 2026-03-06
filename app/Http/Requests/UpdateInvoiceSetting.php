@@ -4,7 +4,6 @@ namespace App\Http\Requests;
 
 class UpdateInvoiceSetting extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -24,10 +23,9 @@ class UpdateInvoiceSetting extends CoreRequest
     {
         $rules = [
             'due_after' => 'required|numeric',
-            'invoice_terms' => 'required'
+            'invoice_terms' => 'required',
         ];
 
         return $rules;
     }
-
 }

@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read \App\Models\SubTask|null $subTask
  * @property-read \App\Models\Task $task
  * @property-read \App\Models\User $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|TaskHistory newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TaskHistory newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TaskHistory query()
@@ -32,11 +33,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|TaskHistory whereTaskId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TaskHistory whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TaskHistory whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class TaskHistory extends BaseModel
 {
-
     protected $table = 'task_history';
 
     protected $with = ['user', 'subTask', 'boardColumn'];
@@ -60,5 +61,4 @@ class TaskHistory extends BaseModel
     {
         return $this->belongsTo(TaskboardColumn::class, 'board_column_id');
     }
-
 }

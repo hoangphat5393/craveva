@@ -1,13 +1,13 @@
 <?php
 
-use App\Models\GlobalSetting;
 use App\Models\Company;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
+use App\Models\GlobalSetting;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      *
@@ -21,7 +21,7 @@ return new class extends Migration {
             $defaultDriver = 'file';
         }
 
-        if (!Schema::hasTable('global_settings')) {
+        if (! Schema::hasTable('global_settings')) {
             Schema::create('global_settings', function (Blueprint $table) use ($defaultDriver) {
                 $table->id();
                 $table->string('global_app_name')->nullable();
@@ -71,7 +71,7 @@ return new class extends Migration {
 
         $globalSetting = GlobalSetting::first();
 
-        if (!Schema::hasColumn('global_settings', 'global_app_name')) {
+        if (! Schema::hasColumn('global_settings', 'global_app_name')) {
             Schema::table('global_settings', function (Blueprint $table) use ($defaultDriver) {
                 $table->renameColumn('company_name', 'global_app_name');
                 $table->string('sidebar_logo_style')->nullable()->default('square');
@@ -97,8 +97,6 @@ return new class extends Migration {
                 $table->enum('auth_theme', ['dark', 'light'])->default('light');
                 $table->enum('session_driver', ['file', 'database'])->default($defaultDriver);
 
-
-
                 $table->decimal('latitude', 10, 8)->default('26.9124336');
                 $table->decimal('longitude', 11, 8)->default('75.78727090000007');
                 $table->boolean('rounded_theme');
@@ -108,7 +106,7 @@ return new class extends Migration {
             $globalSetting->saveQuietly();
         }
 
-        if (!Schema::hasColumn('global_settings', 'license_type')) {
+        if (! Schema::hasColumn('global_settings', 'license_type')) {
             Schema::table('global_settings', function (Blueprint $table) {
                 $table->string('license_type')->nullable()->after('purchase_code');
             });
@@ -116,11 +114,10 @@ return new class extends Migration {
 
         $company = Company::first();
 
-
         if ($company && isNonCraveva()) {
 
-            if (!$globalSetting) {
-                $globalSetting = new GlobalSetting();
+            if (! $globalSetting) {
+                $globalSetting = new GlobalSetting;
             }
 
             $globalSetting->global_app_name = $company->company_name;
@@ -199,7 +196,7 @@ return new class extends Migration {
                     'last_cron_run',
                     'session_driver',
                     'allowed_file_size',
-                    'allowed_file_types'
+                    'allowed_file_types',
                 ]);
 
                 if (Schema::hasColumn('companies', 'show_update_popup')) {

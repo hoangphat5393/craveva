@@ -11,10 +11,9 @@ return new class extends Migration
      *
      * @return void
      */
-
     public function up()
     {
-        if (!Schema::hasColumn('companies', 'year_starts_from')) {
+        if (! Schema::hasColumn('companies', 'year_starts_from')) {
             Schema::table('companies', function (Blueprint $table) {
                 $table->string('year_starts_from')->after('date_picker_format')->default(1);
             });
@@ -32,5 +31,4 @@ return new class extends Migration
             $table->dropColumn('year_starts_from');
         });
     }
-
 };

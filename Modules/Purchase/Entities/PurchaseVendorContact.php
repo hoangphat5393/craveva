@@ -7,7 +7,6 @@ use App\Traits\HasCompany;
 
 class PurchaseVendorContact extends BaseModel
 {
-
     use HasCompany;
 
     protected $fillable = ['contact_name', 'email', 'phone', 'title', 'purchase_vendor_id'];
@@ -16,5 +15,4 @@ class PurchaseVendorContact extends BaseModel
     {
         return \Modules\Purchase\Database\factories\PurchaseVendorContactFactory::new();
     }
-
 }

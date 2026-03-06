@@ -10,27 +10,26 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        if (!Schema::hasColumn('modules', 'is_superadmin')) {
+        if (! Schema::hasColumn('modules', 'is_superadmin')) {
             Schema::table('modules', function (Blueprint $table) {
                 $table->boolean('is_superadmin')->default(0);
             });
         }
 
-
         $checkFirstExists = Module::withoutGlobalScopes()->where('module_name', 'packages')->exists();
 
-        if (!$checkFirstExists) {
+        if (! $checkFirstExists) {
             $modules = Module::SUPERADMIN_MODULE_LIST;
 
             foreach ($modules as $module) {
-                $moduleData = Module::withoutGlobalScopes()->where('module_name', $module['module_name'])->first() ?: new Module();
+                $moduleData = Module::withoutGlobalScopes()->where('module_name', $module['module_name'])->first() ?: new Module;
 
                 $moduleData->module_name = $module['module_name'];
                 $moduleData->description = ($module['description'] ?? null);
@@ -54,7 +53,7 @@ return new class extends Migration {
 
             if (is_null($superadminRole)) {
                 // Add superadmin manager role
-                $role = new Role();
+                $role = new Role;
                 $role->company_id = null;
                 $role->name = 'superadmin';
                 $role->display_name = 'Superadmin';
@@ -82,7 +81,7 @@ return new class extends Migration {
 
                     foreach ($permissions as $permission) {
 
-                        $userPermission [] = [
+                        $userPermission[] = [
                             'user_id' => $superadmin->id,
                             'permission_id' => $permission->id,
                             'permission_type_id' => 4,
@@ -100,10 +99,6 @@ return new class extends Migration {
             }
         }
 
-
-
-
-
         session()->forget('sidebar_superadmin_perms');
     }
 
@@ -116,5 +111,4 @@ return new class extends Migration {
             $table->dropColumn('is_superadmin');
         });
     }
-
 };

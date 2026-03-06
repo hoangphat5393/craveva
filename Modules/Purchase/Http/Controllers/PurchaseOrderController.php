@@ -2,44 +2,43 @@
 
 namespace Modules\Purchase\Http\Controllers;
 
-use Carbon\Carbon;
-use App\Models\Tax;
 use App\Helper\Files;
 use App\Helper\Reply;
-use App\Models\Product;
-use App\Models\Currency;
-use App\Models\UnitType;
-use App\Models\BankAccount;
-use Illuminate\Http\Request;
-use App\Models\CompanyAddress;
-use App\Models\ProductCategory;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\App;
-use Modules\Purchase\Entities\PurchaseItem;
-use Illuminate\Contracts\Support\Renderable;
-use Modules\Purchase\Entities\PurchaseOrder;
-use Modules\Purchase\Entities\PurchaseVendor;
-use Modules\Purchase\Entities\PurchaseItemTax;
-use Modules\Purchase\Entities\PurchaseSetting;
 use App\Http\Controllers\AccountBaseController;
+use App\Models\BankAccount;
+use App\Models\CompanyAddress;
+use App\Models\Currency;
+use App\Models\Product;
+use App\Models\ProductCategory;
+use App\Models\Tax;
+use App\Models\UnitType;
+use Carbon\Carbon;
+use Illuminate\Contracts\Support\Renderable;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\DB;
+use Modules\Purchase\DataTables\PurchaseOrderDataTable;
+use Modules\Purchase\Entities\PurchaseItem;
 use Modules\Purchase\Entities\PurchaseItemImage;
-use Modules\Purchase\Events\NewPurchaseOrderEvent;
+use Modules\Purchase\Entities\PurchaseItemTax;
+use Modules\Purchase\Entities\PurchaseOrder;
 use Modules\Purchase\Entities\PurchaseOrderHistory;
 use Modules\Purchase\Entities\PurchasePaymentHistory;
-use Modules\Purchase\DataTables\PurchaseOrderDataTable;
+use Modules\Purchase\Entities\PurchaseSetting;
+use Modules\Purchase\Entities\PurchaseVendor;
+use Modules\Purchase\Events\NewPurchaseOrderEvent;
 use Modules\Purchase\Http\Requests\PurchaseOrder\StoreRequest;
 use Modules\Purchase\Http\Requests\PurchaseOrder\UpdateRequest;
 
 class PurchaseOrderController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'purchase::app.menu.purchaseOrder';
         $this->purchaseSetting = PurchaseSetting::first();
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array(PurchaseSetting::MODULE_NAME, $this->user->modules));
+            abort_403(! in_array(PurchaseSetting::MODULE_NAME, $this->user->modules));
 
             return $next($request);
         });
@@ -47,13 +46,13 @@ class PurchaseOrderController extends AccountBaseController
 
     /**
      * Display a listing of the resource.
+     *
      * @return Renderable
      */
-
     public function index(PurchaseOrderDataTable $dataTable)
     {
         $viewPermission = user()->permission('view_purchase_order');
-        abort_403(!in_array($viewPermission, ['all', 'added', 'owned', 'both']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'owned', 'both']));
         $this->pageTitle = 'purchase::app.menu.purchaseOrder';
 
         return $dataTable->render('purchase::purchase-order.index', $this->data);
@@ -61,6 +60,7 @@ class PurchaseOrderController extends AccountBaseController
 
     /**
      * Show the form for creating a new resource.
+     *
      * @return Renderable
      */
     public function create()
@@ -84,7 +84,7 @@ class PurchaseOrderController extends AccountBaseController
             $condition = $this->purchaseSetting->purchase_order_number_digit - strlen($this->lastOrder);
 
             for ($i = 0; $i < $condition; $i++) {
-                $this->zero = '0' . $this->zero;
+                $this->zero = '0'.$this->zero;
             }
         }
 
@@ -97,7 +97,7 @@ class PurchaseOrderController extends AccountBaseController
             $bankAccounts = $bankAccounts->where('added_by', user()->id);
         }
 
-        $order = new PurchaseOrder();
+        $order = new PurchaseOrder;
         $getCustomFieldGroupsWithFields = $order->getCustomFieldGroupsWithFields();
 
         if ($getCustomFieldGroupsWithFields) {
@@ -120,7 +120,7 @@ class PurchaseOrderController extends AccountBaseController
 
     /**
      * Store a newly created resource in storage.
-     * @param StoreRequest $request
+     *
      * @return Renderable
      */
     public function store(StoreRequest $request)
@@ -136,7 +136,6 @@ class PurchaseOrderController extends AccountBaseController
         $quantity = $request->quantity;
         $amount = $request->amount;
 
-
         if (empty($items)) {
             return Reply::error(__('messages.addItem'));
         }
@@ -148,24 +147,24 @@ class PurchaseOrderController extends AccountBaseController
         }
 
         foreach ($quantity as $qty) {
-            if (!is_numeric($qty) && (intval($qty) < 1)) {
+            if (! is_numeric($qty) && (intval($qty) < 1)) {
                 return Reply::error(__('messages.quantityNumber'));
             }
         }
 
         foreach ($cost_per_item as $rate) {
-            if (!is_numeric($rate)) {
+            if (! is_numeric($rate)) {
                 return Reply::error(__('messages.unitPriceNumber'));
             }
         }
 
         foreach ($amount as $amt) {
-            if (!is_numeric($amt)) {
+            if (! is_numeric($amt)) {
                 return Reply::error(__('messages.amountNumber'));
             }
         }
 
-        $order = new PurchaseOrder();
+        $order = new PurchaseOrder;
         $order->purchase_order_number = $request->purchase_order_number;
         $order->currency_id = $request->currency_id ?? null;
         $order->default_currency_id = company()->currency_id;
@@ -195,7 +194,8 @@ class PurchaseOrderController extends AccountBaseController
 
     /**
      * Show the specified resource.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function show($id)
@@ -206,7 +206,7 @@ class PurchaseOrderController extends AccountBaseController
         $this->deletePermission = user()->permission('delete_purchase_order');
         $this->addInvoicesPermission = user()->permission('add_purchase_order');
 
-        abort_403(!(
+        abort_403(! (
             $this->viewPermission == 'all'
             || ($this->viewPermission == 'added' && $this->order->added_by == user()->id)
             || ($this->viewPermission == 'owned' && $this->order->send_status)
@@ -225,29 +225,29 @@ class PurchaseOrderController extends AccountBaseController
             }
         }
 
-        $taxList = array();
+        $taxList = [];
 
         $items = PurchaseItem::with('itemTaxes')
             ->where('purchase_order_id', $this->order->id)
             ->get();
 
         foreach ($items as $item) {
-            if (!is_null($item->itemTaxes)) {
+            if (! is_null($item->itemTaxes)) {
                 foreach ($item->itemTaxes as $tax) {
                     $this->tax = PurchaseItemTax::taxbyid($tax->tax_id)->first();
 
-                    if (!isset($taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'])) {
+                    if (! isset($taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'])) {
 
                         if ($this->order->calculate_tax == 'after_discount' && $this->discount > 0) {
-                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = ($item->amount - ($item->amount / $this->order->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
+                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = ($item->amount - ($item->amount / $this->order->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
                         } else {
-                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $item->amount * ($this->tax->rate_percent / 100);
+                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $item->amount * ($this->tax->rate_percent / 100);
                         }
                     } else {
                         if ($this->order->calculate_tax == 'after_discount' && $this->discount > 0) {
-                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + (($item->amount - ($item->amount / $this->order->sub_total) * $this->discount) * ($this->tax->rate_percent / 100));
+                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + (($item->amount - ($item->amount / $this->order->sub_total) * $this->discount) * ($this->tax->rate_percent / 100));
                         } else {
-                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + ($item->amount * ($this->tax->rate_percent / 100));
+                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + ($item->amount * ($this->tax->rate_percent / 100));
                         }
                     }
                 }
@@ -284,7 +284,8 @@ class PurchaseOrderController extends AccountBaseController
 
     /**
      * Show the form for editing the specified resource.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function edit($id)
@@ -292,12 +293,12 @@ class PurchaseOrderController extends AccountBaseController
         $this->order = PurchaseOrder::with([
             'items',
             'vendor',
-            'items.itemTaxes'
+            'items.itemTaxes',
         ])->findOrFail($id);
 
         $this->editPermission = user()->permission('edit_purchase_order');
 
-        abort_403(!(
+        abort_403(! (
             $this->editPermission == 'all'
             || ($this->editPermission == 'added' && $this->order->added_by == user()->id)
         ));
@@ -341,8 +342,9 @@ class PurchaseOrderController extends AccountBaseController
 
     /**
      * Update the specified resource in storage.
-     * @param StoreRequest $request
-     * @param int $id
+     *
+     * @param  StoreRequest  $request
+     * @param  int  $id
      * @return Renderable
      */
     public function update(UpdateRequest $request, $id)
@@ -353,19 +355,19 @@ class PurchaseOrderController extends AccountBaseController
         $amount = $request->amount;
 
         foreach ($quantity as $qty) {
-            if (!is_numeric($qty) && $qty < 1) {
+            if (! is_numeric($qty) && $qty < 1) {
                 return Reply::error(__('messages.quantityNumber'));
             }
         }
 
         foreach ($cost_per_item as $rate) {
-            if (!is_numeric($rate)) {
+            if (! is_numeric($rate)) {
                 return Reply::error(__('messages.unitPriceNumber'));
             }
         }
 
         foreach ($amount as $amt) {
-            if (!is_numeric($amt)) {
+            if (! is_numeric($amt)) {
                 return Reply::error(__('messages.amountNumber'));
             }
         }
@@ -406,14 +408,15 @@ class PurchaseOrderController extends AccountBaseController
 
     /**
      * Remove the specified resource from storage.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function destroy($id)
     {
         $order = PurchaseOrder::findOrFail($id);
         $this->deletePermission = user()->permission('delete_invoices');
-        abort_403(!(
+        abort_403(! (
             $this->deletePermission == 'all'
             || ($this->deletePermission == 'added' && $order->added_by == user()->id)
             || ($this->deletePermission == 'both' || $order->added_by == user()->id)
@@ -432,7 +435,7 @@ class PurchaseOrderController extends AccountBaseController
             ? Currency::findOrFail($request->currencyId)
             : Currency::findOrFail($companyCurrencyID);
 
-        if (!is_null($exchangeRate) && !is_null($exchangeRate->exchange_rate)) {
+        if (! is_null($exchangeRate) && ! is_null($exchangeRate->exchange_rate)) {
             if ($this->items->total_amount != '') {
                 /** @phpstan-ignore-next-line */
                 $this->items->purchase_price = floor($this->items->total_amount * $exchangeRate->exchange_rate);
@@ -446,7 +449,7 @@ class PurchaseOrderController extends AccountBaseController
             }
         }
 
-        $this->items->price = number_format((float)$this->items->price, 2, '.', '');
+        $this->items->price = number_format((float) $this->items->price, 2, '.', '');
         $this->taxes = Tax::all();
         $this->units = UnitType::all();
         $view = view('purchase::purchase-order.ajax.add_item', $this->data)->render();
@@ -459,7 +462,7 @@ class PurchaseOrderController extends AccountBaseController
         $item = PurchaseItemImage::where('purchase_item_id', $request->purchase_item_id)->first();
 
         if ($item) {
-            Files::deleteFile($item->hashname, PurchaseItemImage::FILE_PATH . '/' . $item->id . '/');
+            Files::deleteFile($item->hashname, PurchaseItemImage::FILE_PATH.'/'.$item->id.'/');
             $item->delete();
         }
 
@@ -471,7 +474,7 @@ class PurchaseOrderController extends AccountBaseController
         $order = PurchaseOrder::with('vendor')->findOrFail($orderID);
         $notifyUser = $order->vendor;
 
-        if (isset($notifyUser) && !is_null($notifyUser) && request()->data_type != 'mark_as_send') {
+        if (isset($notifyUser) && ! is_null($notifyUser) && request()->data_type != 'mark_as_send') {
             event(new NewPurchaseOrderEvent($order, $notifyUser));
         }
 
@@ -496,7 +499,7 @@ class PurchaseOrderController extends AccountBaseController
         $this->viewPermission = user()->permission('view_purchase_order');
         $this->company = $this->order->company;
 
-        abort_403(!(
+        abort_403(! (
             $this->viewPermission == 'all'
             || ($this->viewPermission == 'added' && $this->order->added_by == user()->id)
         ));
@@ -506,14 +509,14 @@ class PurchaseOrderController extends AccountBaseController
 
         // Download file uploaded
         if ($this->order->file != null) {
-            return response()->download(storage_path('app/public/purchase-order-files') . '/' . $this->order->file);
+            return response()->download(storage_path('app/public/purchase-order-files').'/'.$this->order->file);
         }
 
         $pdfOption = $this->domPdfObjectForDownload($id);
         $pdf = $pdfOption['pdf'];
         $filename = $pdfOption['fileName'];
 
-        return request()->view ? $pdf->stream($filename . '.pdf') : $pdf->download($filename . '.pdf');
+        return request()->view ? $pdf->stream($filename.'.pdf') : $pdf->download($filename.'.pdf');
     }
 
     public function domPdfObjectForConsoleDownload($id)
@@ -530,29 +533,29 @@ class PurchaseOrderController extends AccountBaseController
             $this->discount = 0;
         }
 
-        $taxList = array();
+        $taxList = [];
 
         $items = PurchaseItem::with('itemTaxes')
             ->where('purchase_order_id', $this->order->id)
             ->get();
 
         foreach ($items as $item) {
-            if (!is_null($item->itemTaxes)) {
+            if (! is_null($item->itemTaxes)) {
                 foreach ($item->itemTaxes as $tax) {
                     $this->tax = PurchaseItemTax::taxbyid($tax->tax_id)->first();
 
-                    if (!isset($taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'])) {
+                    if (! isset($taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'])) {
 
                         if ($this->order->calculate_tax == 'after_discount' && $this->discount > 0) {
-                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = ($item->amount - ($item->amount / $this->order->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
+                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = ($item->amount - ($item->amount / $this->order->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
                         } else {
-                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $item->amount * ($this->tax->rate_percent / 100);
+                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $item->amount * ($this->tax->rate_percent / 100);
                         }
                     } else {
                         if ($this->order->calculate_tax == 'after_discount' && $this->discount > 0) {
-                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + (($item->amount - ($item->amount / $this->order->sub_total) * $this->discount) * ($this->tax->rate_percent / 100));
+                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + (($item->amount - ($item->amount / $this->order->sub_total) * $this->discount) * ($this->tax->rate_percent / 100));
                         } else {
-                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + ($item->amount * ($this->tax->rate_percent / 100));
+                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + ($item->amount * ($this->tax->rate_percent / 100));
                         }
                     }
                 }
@@ -582,7 +585,7 @@ class PurchaseOrderController extends AccountBaseController
 
         return [
             'pdf' => $pdf,
-            'fileName' => $filename
+            'fileName' => $filename,
         ];
     }
 
@@ -606,29 +609,29 @@ class PurchaseOrderController extends AccountBaseController
             $this->discount = 0;
         }
 
-        $taxList = array();
+        $taxList = [];
 
         $items = PurchaseItem::with('itemTaxes')
             ->where('purchase_order_id', $this->order->id)
             ->get();
 
         foreach ($items as $item) {
-            if (!is_null($item->itemTaxes)) {
+            if (! is_null($item->itemTaxes)) {
                 foreach ($item->itemTaxes as $tax) {
                     $this->tax = PurchaseItemTax::taxbyid($tax->tax_id)->first();
 
-                    if (!isset($taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'])) {
+                    if (! isset($taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'])) {
 
                         if ($this->order->calculate_tax == 'after_discount' && $this->discount > 0) {
-                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = ($item->amount - ($item->amount / $this->order->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
+                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = ($item->amount - ($item->amount / $this->order->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
                         } else {
-                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $item->amount * ($this->tax->rate_percent / 100);
+                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $item->amount * ($this->tax->rate_percent / 100);
                         }
                     } else {
                         if ($this->order->calculate_tax == 'after_discount' && $this->discount > 0) {
-                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + (($item->amount - ($item->amount / $this->order->sub_total) * $this->discount) * ($this->tax->rate_percent / 100));
+                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + (($item->amount - ($item->amount / $this->order->sub_total) * $this->discount) * ($this->tax->rate_percent / 100));
                         } else {
-                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + ($item->amount * ($this->tax->rate_percent / 100));
+                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + ($item->amount * ($this->tax->rate_percent / 100));
                         }
                     }
                 }
@@ -644,12 +647,12 @@ class PurchaseOrderController extends AccountBaseController
         $pdf->setOption('isHtml5ParserEnabled', true);
         $pdf->setOption('isRemoteEnabled', true);
 
-        $pdf->loadView('purchase::purchase-order.pdf.' . $this->invoiceSetting->template, $this->data);
+        $pdf->loadView('purchase::purchase-order.pdf.'.$this->invoiceSetting->template, $this->data);
         $filename = $this->order->purchase_order_number;
 
         return [
             'pdf' => $pdf,
-            'fileName' => $filename
+            'fileName' => $filename,
         ];
     }
 
@@ -674,7 +677,6 @@ class PurchaseOrderController extends AccountBaseController
             ->selectRaw('purchase_vendor_id, "null" as purchase_order_id, purchase_bill_id, "null" as purchase_payment_id, "null" as purchase_credit_id, purchase_order, "null" as purchase_vendor_notes_id, bill_date, user_id, amount, label, details, purchase_bill_histories.created_at, "bill" as type')
             ->where('purchase_bill_histories.company_id', company()->id);
 
-
         $paymentVariable = PurchasePaymentHistory::join('purchase_orders', 'purchase_orders.id', 'purchase_payment_histories.purchase_order_id')
             ->where('purchase_orders.id', $id)
             ->with('user')
@@ -692,7 +694,7 @@ class PurchaseOrderController extends AccountBaseController
 
     public function vendorCurrency(Request $request)
     {
-        if (!is_null($request->id)) {
+        if (! is_null($request->id)) {
             $PurchaseVendor = PurchaseVendor::with('currency')->findOrFail($request->id);
 
             return Reply::dataOnly(['data' => $PurchaseVendor->currency]);

@@ -7,25 +7,25 @@ use NotificationChannels\OneSignal\OneSignalMessage;
 
 class TestPush extends BaseNotification
 {
-
     private $pushNotificationSetting;
+
     public function __construct()
     {
 
-       $this->pushNotificationSetting = \App\Models\PushNotificationSetting::first();
+        $this->pushNotificationSetting = \App\Models\PushNotificationSetting::first();
     }
 
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     // phpcs:ignore
     public function via($notifiable)
     {
         if ($this->pushNotificationSetting->beams_push_status == 'active') {
-            $pushNotification = new \App\Http\Controllers\DashboardController();
+            $pushNotification = new \App\Http\Controllers\DashboardController;
             $pushUsersIds = [[$notifiable->id]];
             $pushNotification->sendPushNotifications($pushUsersIds, 'This is a test notification.', 'Notification content goes here.', 'https://www.google.com');
         }
@@ -40,7 +40,7 @@ class TestPush extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     // phpcs:ignore
@@ -55,7 +55,7 @@ class TestPush extends BaseNotification
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
-                'actionText' => __('email.notificationAction')
+                'actionText' => __('email.notificationAction'),
             ]);
 
         parent::resetLocale();
@@ -66,10 +66,10 @@ class TestPush extends BaseNotification
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
-//phpcs:ignore
+    // phpcs:ignore
     public function toArray($notifiable)
     {
         return [
@@ -84,5 +84,4 @@ class TestPush extends BaseNotification
             ->setSubject('This is a test notification.')
             ->setBody('Notification content goes here.');
     }
-
 }

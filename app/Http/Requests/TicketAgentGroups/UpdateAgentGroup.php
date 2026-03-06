@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class UpdateAgentGroup extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -25,7 +24,7 @@ class UpdateAgentGroup extends CoreRequest
     public function rules()
     {
         return [
-            'groupId.0' => 'required'
+            'groupId.0' => 'required',
         ];
     }
 
@@ -33,8 +32,7 @@ class UpdateAgentGroup extends CoreRequest
     {
         return [
             'user_id.required' => __('messages.atleastOneValidation').' '.__('modules.tickets.agent'),
-            'groupId.0.required' => __('modules.tickets.groupName').' '.__('app.required')
+            'groupId.0.required' => __('modules.tickets.groupName').' '.__('app.required'),
         ];
     }
-
 }

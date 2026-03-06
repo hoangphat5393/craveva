@@ -2,53 +2,52 @@
 
 namespace App\Http\Controllers;
 
-use Carbon\Carbon;
-use Stripe\Stripe;
-use App\Models\Tax;
-use App\Models\User;
-use App\Helper\Reply;
-use App\Models\Order;
-use App\Models\Invoice;
-use App\Models\Payment;
-use App\Models\Product;
-use App\Models\Project;
-use App\Models\Currency;
-use App\Models\UnitType;
-use App\Models\OrderItems;
-use App\Models\CreditNotes;
-use App\Scopes\ActiveScope;
-use App\Models\InvoiceItems;
-use Illuminate\Http\Request;
-use App\Events\NewOrderEvent;
-use App\Models\CompanyAddress;
-use App\Models\CreditNoteItem;
-use App\Models\OrderItemImage;
-use App\Events\NewInvoiceEvent;
-use App\Models\ProductCategory;
-use App\Models\InvoiceItemImage;
-use Illuminate\Support\Facades\DB;
 use App\DataTables\OrdersDataTable;
-use App\Models\CreditNoteItemImage;
-use Illuminate\Support\Facades\App;
-use App\Models\OfflinePaymentMethod;
-use Illuminate\Support\Facades\Cookie;
+use App\Events\NewInvoiceEvent;
+use App\Events\NewOrderEvent;
+use App\Helper\Reply;
+use App\Helper\UserService;
 use App\Http\Requests\Orders\PlaceOrder;
 use App\Http\Requests\Orders\UpdateOrder;
-use App\Models\PaymentGatewayCredentials;
 use App\Http\Requests\Stripe\StoreStripeDetail;
 use App\Models\BankAccount;
-use App\Helper\UserService;
+use App\Models\CompanyAddress;
+use App\Models\CreditNoteItem;
+use App\Models\CreditNoteItemImage;
+use App\Models\CreditNotes;
+use App\Models\Currency;
+use App\Models\Invoice;
+use App\Models\InvoiceItemImage;
+use App\Models\InvoiceItems;
+use App\Models\OfflinePaymentMethod;
+use App\Models\Order;
+use App\Models\OrderItemImage;
+use App\Models\OrderItems;
+use App\Models\Payment;
+use App\Models\PaymentGatewayCredentials;
+use App\Models\Product;
+use App\Models\ProductCategory;
+use App\Models\Project;
+use App\Models\Tax;
+use App\Models\UnitType;
+use App\Models\User;
+use App\Scopes\ActiveScope;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\DB;
+use Stripe\Stripe;
 
 class OrderController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'app.menu.orders';
         $this->middleware(
             function ($request, $next) {
-                abort_403(!in_array('orders', $this->user->modules));
+                abort_403(! in_array('orders', $this->user->modules));
 
                 return $next($request);
             }
@@ -59,7 +58,7 @@ class OrderController extends AccountBaseController
     {
         $viewPermission = user()->permission('view_order');
         $this->viewBankAccountPermission = user()->permission('view_bankaccount');
-        abort_403(!in_array($viewPermission, ['all', 'added', 'owned', 'both']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'owned', 'both']));
 
         $id = UserService::getUserId();
 
@@ -75,13 +74,12 @@ class OrderController extends AccountBaseController
             $this->bankDetails = $bankAccounts->get();
         }
 
-        if (!request()->ajax()) {
+        if (! request()->ajax()) {
             $this->projects = Project::allProjects();
 
             if (in_array('client', user_roles())) {
                 $this->clients = User::client();
-            }
-            else {
+            } else {
                 $this->clients = User::allClients();
             }
         }
@@ -92,7 +90,7 @@ class OrderController extends AccountBaseController
     public function create()
     {
         $this->addPermission = user()->permission('add_order');
-        abort_403(!in_array('clients', user_modules()) || in_array('client', user_roles()) || !in_array($this->addPermission, ['all', 'added', 'both']));
+        abort_403(! in_array('clients', user_modules()) || in_array('client', user_roles()) || ! in_array($this->addPermission, ['all', 'added', 'both']));
 
         $id = UserService::getUserId();
 
@@ -111,7 +109,7 @@ class OrderController extends AccountBaseController
             $condition = $this->orderSetting->order_digit - strlen($this->lastOrder);
 
             for ($i = 0; $i < $condition; $i++) {
-                $this->zero = '0' . $this->zero;
+                $this->zero = '0'.$this->zero;
             }
         }
 
@@ -132,7 +130,7 @@ class OrderController extends AccountBaseController
             $bankAccounts = $bankAccounts->where('added_by', $id);
         }
 
-        $order = new Order();
+        $order = new Order;
         $getCustomFieldGroupsWithFields = $order->getCustomFieldGroupsWithFields();
 
         if ($getCustomFieldGroupsWithFields) {
@@ -159,7 +157,7 @@ class OrderController extends AccountBaseController
 
         $id = UserService::getUserId();
 
-        $order = new Order();
+        $order = new Order;
         $order->client_id = $request->client_id ?: $id;
         $order->order_date = now()->format('Y-m-d');
         $order->sub_total = round($request->sub_total, 2);
@@ -193,10 +191,10 @@ class OrderController extends AccountBaseController
      */
     public function store(PlaceOrder $request)
     {
-        if (!in_array('client', user_roles())) {
+        if (! in_array('client', user_roles())) {
 
             $this->addPermission = user()->permission('add_order');
-            abort_403(!in_array($this->addPermission, ['all', 'added']));
+            abort_403(! in_array($this->addPermission, ['all', 'added']));
         }
 
         $id = UserService::getUserId();
@@ -206,36 +204,35 @@ class OrderController extends AccountBaseController
         $quantity = $request->quantity;
         $amount = $request->amount;
 
-        if (!empty($items)) {
+        if (! empty($items)) {
             foreach ($items as $itm) {
                 if (is_null($itm)) {
                     return Reply::error(__('messages.itemBlank'));
                 }
             }
-        }
-        else {
+        } else {
             return Reply::error(__('messages.addItem'));
         }
 
         foreach ($quantity as $qty) {
-            if (!is_numeric($qty) && (intval($qty) < 1) || ($qty == 0)) {
+            if (! is_numeric($qty) && (intval($qty) < 1) || ($qty == 0)) {
                 return Reply::error(__('messages.quantityNumber'));
             }
         }
 
         foreach ($cost_per_item as $rate) {
-            if (!is_numeric($rate)) {
+            if (! is_numeric($rate)) {
                 return Reply::error(__('messages.unitPriceNumber'));
             }
         }
 
         foreach ($amount as $amt) {
-            if (!is_numeric($amt)) {
+            if (! is_numeric($amt)) {
                 return Reply::error(__('messages.amountNumber'));
             }
         }
 
-        $order = new Order();
+        $order = new Order;
         $order->client_id = $request->client_id ?: $id;
         $order->project_id = $request->project_id;
         $order->order_date = now()->format('Y-m-d');
@@ -263,7 +260,6 @@ class OrderController extends AccountBaseController
             $client->saveQuietly();
         }
 
-
         if ($request->has('status') && $request->status == 'completed') {
             $clientId = $order->client_id;
             // Notify client
@@ -276,7 +272,6 @@ class OrderController extends AccountBaseController
             $invoice = $this->makeOrderInvoice($order, $request);
             $this->makePayment($order->total, $invoice, 'complete');
         }
-
 
         // Log search
         $this->logSearchEntry($order->id, $order->id, 'orders.show', 'order');
@@ -292,31 +287,29 @@ class OrderController extends AccountBaseController
         $this->invoiceSetting = $this->company->invoiceSetting;
         $exchangeRate = ($request->currencyId) ? Currency::findOrFail($request->currencyId) : Currency::findOrFail($companyCurrencyID);
 
-        if($exchangeRate->exchange_rate == $request->exchangeRate){
+        if ($exchangeRate->exchange_rate == $request->exchangeRate) {
             $exRate = $exchangeRate->exchange_rate;
-        }else{
+        } else {
             $exRate = floatval($request->exchangeRate ?: 1);
         }
 
-        if (!is_null($exchangeRate) && !is_null($exchangeRate->exchange_rate)) {
+        if (! is_null($exchangeRate) && ! is_null($exchangeRate->exchange_rate)) {
 
             if ($this->item->total_amount != '') {
 
                 $this->item->price = floor($this->item->total_amount / $exRate);
 
-            }
-            else {
+            } else {
                 /** @phpstan-ignore-next-line */
                 $this->item->price = $this->item->price / $exRate;
             }
-        }
-        else {
+        } else {
             if ($this->item->total_amount != '') {
                 $this->item->price = $this->item->total_amount;
             }
         }
 
-        $this->item->price = number_format((float)$this->item->price, 2, '.', '');
+        $this->item->price = number_format((float) $this->item->price, 2, '.', '');
         $this->taxes = Tax::all();
         $view = view('orders.ajax.add_item', $this->data)->render();
 
@@ -333,7 +326,7 @@ class OrderController extends AccountBaseController
 
         $userid = UserService::getUserId();
 
-        abort_403(in_array('client', user_roles()) || !($this->editPermission == 'all' || ($this->editPermission == 'both' && ($this->order->added_by == $userid || $this->order->client_id == $userid)) || ($this->editPermission == 'added' && $this->order->added_by == $userid) || ($this->editPermission == 'owned' && $this->order->client_id == $userid)));
+        abort_403(in_array('client', user_roles()) || ! ($this->editPermission == 'all' || ($this->editPermission == 'both' && ($this->order->added_by == $userid || $this->order->client_id == $userid)) || ($this->editPermission == 'added' && $this->order->added_by == $userid) || ($this->editPermission == 'owned' && $this->order->client_id == $userid)));
 
         abort_403(in_array($this->order->status, ['completed', 'canceled', 'refunded']));
         $this->pageTitle = $this->order->order_number;
@@ -380,19 +373,19 @@ class OrderController extends AccountBaseController
         }
 
         foreach ($quantity as $qty) {
-            if (!is_numeric($qty) && $qty < 1) {
+            if (! is_numeric($qty) && $qty < 1) {
                 return Reply::error(__('messages.quantityNumber'));
             }
         }
 
         foreach ($cost_per_item as $rate) {
-            if (!is_numeric($rate)) {
+            if (! is_numeric($rate)) {
                 return Reply::error(__('messages.unitPriceNumber'));
             }
         }
 
         foreach ($amount as $amt) {
-            if (!is_numeric($amt)) {
+            if (! is_numeric($amt)) {
                 return Reply::error(__('messages.amountNumber'));
             }
         }
@@ -425,18 +418,18 @@ class OrderController extends AccountBaseController
         }
 
         // delete old data
-        if (isset($item_ids) && !empty($item_ids)) {
+        if (isset($item_ids) && ! empty($item_ids)) {
             OrderItems::whereNotIn('id', $item_ids)->where('order_id', $order->id)->delete();
         }
 
-        foreach ($items as $key => $item) :
+        foreach ($items as $key => $item) {
 
             $order_item_id = isset($item_ids[$key]) ? $item_ids[$key] : 0;
 
             $orderItem = OrderItems::find($order_item_id);
 
             if ($orderItem === null) {
-                $orderItem = new OrderItems();
+                $orderItem = new OrderItems;
             }
 
             $orderItem->order_id = $order->id;
@@ -457,12 +450,12 @@ class OrderController extends AccountBaseController
                 OrderItemImage::create(
                     [
                         'order_item_id' => $orderItem->id,
-                        'external_link' => isset($invoice_item_image_url[$key]) ? $invoice_item_image_url[$key] : ''
+                        'external_link' => isset($invoice_item_image_url[$key]) ? $invoice_item_image_url[$key] : '',
                     ]
                 );
             }
 
-        endforeach;
+        }
 
         if ($request->has('shipping_address')) {
             if ($order->client_id != null && $order->client_id != '') {
@@ -476,7 +469,7 @@ class OrderController extends AccountBaseController
             }
         }
 
-        if ($request->has('status') && $request->status == 'completed' && !$order->invoice) {
+        if ($request->has('status') && $request->status == 'completed' && ! $order->invoice) {
             $invoice = $this->makeOrderInvoice($order, $request);
             $this->makePayment($order->total, $invoice, 'complete');
         }
@@ -491,7 +484,7 @@ class OrderController extends AccountBaseController
         $this->order = Order::with('client', 'unit')->findOrFail($id)->withCustomFields();
 
         $this->viewPermission = user()->permission('view_order');
-        abort_403(!($this->viewPermission == 'all' || ($this->viewPermission == 'both' && ($this->order->added_by == $userid || $this->order->client_id == $userid)) || ($this->viewPermission == 'owned' && $this->order->client_id == $userid) || ($this->viewPermission == 'added' && $this->order->added_by == $userid)));
+        abort_403(! ($this->viewPermission == 'all' || ($this->viewPermission == 'both' && ($this->order->added_by == $userid || $this->order->client_id == $userid)) || ($this->viewPermission == 'owned' && $this->order->client_id == $userid) || ($this->viewPermission == 'added' && $this->order->added_by == $userid)));
 
         $this->pageTitle = $this->order->order_number;
 
@@ -508,13 +501,12 @@ class OrderController extends AccountBaseController
             /** @phpstan-ignore-next-line */
             if ($this->order->discount_type == 'percent') {
                 $this->discount = (($this->order->discount / 100) * $this->order->sub_total);
-            }
-            else {
+            } else {
                 $this->discount = $this->order->discount;
             }
         }
 
-        $taxList = array();
+        $taxList = [];
 
         /** @phpstan-ignore-next-line */
         $items = OrderItems::whereNotNull('taxes')
@@ -530,11 +522,10 @@ class OrderController extends AccountBaseController
             foreach (json_decode($item->taxes) as $tax) {
                 $this->tax = OrderItems::taxbyid($tax)->first();
 
-                if (!isset($taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'])) {
-                    $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = ($this->tax->rate_percent / 100) * $item->amount;
-                }
-                else {
-                    $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + (($this->tax->rate_percent / 100) * $item->amount);
+                if (! isset($taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'])) {
+                    $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = ($this->tax->rate_percent / 100) * $item->amount;
+                } else {
+                    $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + (($this->tax->rate_percent / 100) * $item->amount);
                 }
             }
         }
@@ -545,7 +536,7 @@ class OrderController extends AccountBaseController
         $this->offlinePayemntDone = ($this->order->invoice) ? 'yes' : 'no';
         $this->credentials = PaymentGatewayCredentials::first();
         $this->methods = OfflinePaymentMethod::activeMethod();
-        $this->payment = Payment::where('order_id',$id)->first();
+        $this->payment = Payment::where('order_id', $id)->first();
 
         $this->viewBankAccountPermission = user()->permission('view_bankaccount');
         $this->bankDetails = null;
@@ -570,7 +561,7 @@ class OrderController extends AccountBaseController
         $userid = UserService::getUserId();
 
         $this->deletePermission = user()->permission('delete_order');
-        abort_403(in_array('client', user_roles()) || !($this->deletePermission == 'all' || ($this->deletePermission == 'both' && ($order->added_by == $userid || $order->client_id == $userid)) || ($this->deletePermission == 'added' && $order->added_by == $userid) || ($this->deletePermission == 'owned' && $order->client_id == $userid)));
+        abort_403(in_array('client', user_roles()) || ! ($this->deletePermission == 'all' || ($this->deletePermission == 'both' && ($order->added_by == $userid || $order->client_id == $userid)) || ($this->deletePermission == 'added' && $order->added_by == $userid) || ($this->deletePermission == 'owned' && $order->client_id == $userid)));
 
         Order::destroy($id);
 
@@ -602,12 +593,12 @@ class OrderController extends AccountBaseController
 
         $client = null;
 
-        if (isset($this->order) && !is_null($this->order->client_id)) {
+        if (isset($this->order) && ! is_null($this->order->client_id)) {
             /** @phpstan-ignore-next-line */
             $client = $this->order->client;
         }
 
-        if (($this->credentials->test_stripe_secret || $this->credentials->live_stripe_secret) && !is_null($client)) {
+        if (($this->credentials->test_stripe_secret || $this->credentials->live_stripe_secret) && ! is_null($client)) {
             // Company Specific
             Stripe::setApiKey($this->credentials->stripe_mode == 'test' ? $this->credentials->test_stripe_secret : $this->credentials->live_stripe_secret);
 
@@ -635,8 +626,8 @@ class OrderController extends AccountBaseController
                     'customer' => $customer->id,
                     'setup_future_usage' => 'off_session',
                     'payment_method_types' => ['card'],
-                    'description' => $this->order->id . ' Payment',
-                    'metadata' => ['integration_check' => 'accept_a_payment', 'order_id' => $id]
+                    'description' => $this->order->id.' Payment',
+                    'metadata' => ['integration_check' => 'accept_a_payment', 'order_id' => $id],
                 ]
             );
 
@@ -677,7 +668,7 @@ class OrderController extends AccountBaseController
         }
 
         /* make new payment entry with status=failed and other details */
-        $payment = new Payment();
+        $payment = new Payment;
         $payment->order_id = $order->id;
         $payment->currency_id = $order->currency_id;
         $payment->amount = $order->total;
@@ -697,9 +688,9 @@ class OrderController extends AccountBaseController
         $order->status = 'completed';
         $order->save();
 
-        if (!$order->invoice) {
+        if (! $order->invoice) {
             /* Step2 - make an invoice related to recently paid order_id */
-            $invoice = new Invoice();
+            $invoice = new Invoice;
             $invoice->order_id = $orderId;
             $invoice->client_id = $order->client_id;
             $invoice->sub_total = $order->sub_total;
@@ -728,26 +719,25 @@ class OrderController extends AccountBaseController
                         'amount' => $item->amount,
                         'product_id' => $item->product_id,
                         'unit_id' => $item->unit_id,
-                        'taxes' => $item->taxes
+                        'taxes' => $item->taxes,
                     ]
                 );
 
                 // Save invoice item image
                 if (isset($item->orderItemImage)) {
-                    $invoiceItemImage = new InvoiceItemImage();
+                    $invoiceItemImage = new InvoiceItemImage;
                     $invoiceItemImage->invoice_item_id = $invoiceItem->id;
                     $invoiceItemImage->external_link = $item->orderItemImage->external_link;
                     $invoiceItemImage->save();
                 }
 
             }
-        }
-        else {
+        } else {
             $invoice = $order->invoice;
         }
 
         /* Step3 - make payment of recently created invoice_id */
-        $payment = new Payment();
+        $payment = new Payment;
         /** @phpstan-ignore-next-line */
         $payment->invoice_id = $invoice->id;
         $payment->order_id = $orderId;
@@ -773,7 +763,7 @@ class OrderController extends AccountBaseController
         }
 
         /** @phpstan-ignore-next-line */
-        if ($request->status == 'refunded' && $order->invoice && !$order->invoice->credit_note && $order->status == 'completed') {
+        if ($request->status == 'refunded' && $order->invoice && ! $order->invoice->credit_note && $order->status == 'completed') {
             $this->createCreditNote($order->invoice);
         }
 
@@ -795,7 +785,7 @@ class OrderController extends AccountBaseController
 
         $id = UserService::getUserId();
 
-        $invoice = new Invoice();
+        $invoice = new Invoice;
         $invoice->order_id = $order->id;
         $invoice->client_id = $order->client_id;
         $invoice->project_id = $order->project_id;
@@ -825,7 +815,7 @@ class OrderController extends AccountBaseController
         $orderItems = OrderItems::where('order_id', $order->id)->get();
 
         foreach ($orderItems as $item) {
-            $invoiceItem = new InvoiceItems();
+            $invoiceItem = new InvoiceItems;
             $invoiceItem->invoice_id = $invoice->id;
             $invoiceItem->item_name = $item->item_name;
             $invoiceItem->item_summary = $item->item_summary;
@@ -840,7 +830,7 @@ class OrderController extends AccountBaseController
 
             // Save invoice item image
             if (isset($item->orderItemImage)) {
-                $invoiceItemImage = new InvoiceItemImage();
+                $invoiceItemImage = new InvoiceItemImage;
                 $invoiceItemImage->invoice_item_id = $invoiceItem->id;
                 $invoiceItemImage->external_link = $item->orderItemImage->external_link;
                 $invoiceItemImage->save();
@@ -858,7 +848,7 @@ class OrderController extends AccountBaseController
     {
         $payment = Payment::where('invoice_id', $invoice->id)->first();
 
-        $payment = ($payment && $transactionId) ? $payment : new Payment();
+        $payment = ($payment && $transactionId) ? $payment : new Payment;
         $payment->project_id = $invoice->project_id;
         $payment->invoice_id = $invoice->id;
         $payment->order_id = $invoice->order_id;
@@ -884,12 +874,11 @@ class OrderController extends AccountBaseController
 
         if ($invoice->client_id) {
             $clientId = $invoice->client_id;
-        }
-        elseif (!is_null($invoice->project) && $invoice->project->client_id) {
+        } elseif (! is_null($invoice->project) && $invoice->project->client_id) {
             $clientId = $invoice->project->client_id;
         }
 
-        $creditNote = new CreditNotes();
+        $creditNote = new CreditNotes;
 
         $creditNote->project_id = ($invoice->project_id) ? $invoice->project_id : null;
         $creditNote->client_id = $clientId;
@@ -918,8 +907,7 @@ class OrderController extends AccountBaseController
                     }
 
                     $invoice->status = 'paid';
-                }
-                else {
+                } else {
                     $amount = round($invoice->total, 2);
                     $invoice->status = 'partial';
                     $creditNote->status = 'closed';
@@ -942,7 +930,7 @@ class OrderController extends AccountBaseController
         foreach ($invoice->items as $key => $item) {
             $creditNoteItem = null;
 
-            if (!is_null($item)) {
+            if (! is_null($item)) {
                 $creditNoteItem = CreditNoteItem::create(
                     [
                         'credit_note_id' => $creditNote->id,
@@ -959,7 +947,7 @@ class OrderController extends AccountBaseController
                 );
             }
 
-            $invoice_item_image_url = $item->invoiceItemImage ? (!empty($item->invoiceItemImage->external_link) ? $item->invoiceItemImage->external_link : $item->invoiceItemImage->file_url) : null;
+            $invoice_item_image_url = $item->invoiceItemImage ? (! empty($item->invoiceItemImage->external_link) ? $item->invoiceItemImage->external_link : $item->invoiceItemImage->file_url) : null;
             /* Invoice file save here */
             if ($creditNoteItem && $invoice_item_image_url) {
                 CreditNoteItemImage::create(
@@ -986,7 +974,7 @@ class OrderController extends AccountBaseController
         $userid = UserService::getUserId();
 
         $this->viewPermission = user()->permission('view_order');
-        abort_403(!($this->viewPermission == 'all' || ($this->viewPermission == 'both' && ($this->order->added_by == $userid || $this->order->client_id == $userid)) || ($this->viewPermission == 'owned' && $this->order->client_id == $userid) || ($this->viewPermission == 'added' && $this->order->added_by == $userid)));
+        abort_403(! ($this->viewPermission == 'all' || ($this->viewPermission == 'both' && ($this->order->added_by == $userid || $this->order->client_id == $userid)) || ($this->viewPermission == 'owned' && $this->order->client_id == $userid) || ($this->viewPermission == 'added' && $this->order->added_by == $userid)));
 
         App::setLocale($this->invoiceSetting->locale ?? 'en');
         Carbon::setLocale($this->invoiceSetting->locale ?? 'en');
@@ -995,7 +983,7 @@ class OrderController extends AccountBaseController
         $pdf = $pdfOption['pdf'];
         $filename = $pdfOption['fileName'];
 
-        return $pdf->download($filename . '.pdf');
+        return $pdf->download($filename.'.pdf');
     }
 
     public function domPdfObjectForDownload($id)
@@ -1019,13 +1007,12 @@ class OrderController extends AccountBaseController
         if ($this->order->discount > 0) {
             if ($this->order->discount_type == 'percent') {
                 $this->discount = (($this->order->discount / 100) * $this->order->sub_total);
-            }
-            else {
+            } else {
                 $this->discount = $this->order->discount;
             }
         }
 
-        $taxList = array();
+        $taxList = [];
 
         $items = OrderItems::whereNotNull('taxes')->where('order_id', $this->order->id)->get();
 
@@ -1034,12 +1021,11 @@ class OrderController extends AccountBaseController
             foreach (json_decode($item->taxes) as $tax) {
                 $this->tax = OrderItems::taxbyid($tax)->first();
 
-                if (!isset($taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'])) {
+                if (! isset($taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'])) {
 
-                    $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $item->amount * ($this->tax->rate_percent / 100);
-                }
-                else {
-                    $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + ($item->amount * ($this->tax->rate_percent / 100));
+                    $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $item->amount * ($this->tax->rate_percent / 100);
+                } else {
+                    $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + ($item->amount * ($this->tax->rate_percent / 100));
                 }
             }
         }
@@ -1056,12 +1042,12 @@ class OrderController extends AccountBaseController
                 * { text-transform: none !important; }
             </style>';
 
-        $pdf->loadHTML($customCss . view('orders.pdf.' . $this->invoiceSetting->template, $this->data)->render());
+        $pdf->loadHTML($customCss.view('orders.pdf.'.$this->invoiceSetting->template, $this->data)->render());
         $filename = $this->order->order_number;
 
         return [
             'pdf' => $pdf,
-            'fileName' => $filename
+            'fileName' => $filename,
         ];
     }
 
@@ -1072,5 +1058,4 @@ class OrderController extends AccountBaseController
 
         return Reply::dataOnly(['status' => 'success', 'data' => $client_data, 'type' => $unitId]);
     }
-
 }

@@ -7,14 +7,13 @@ use App\Models\RecurringInvoice;
 
 class NewRecurringInvoice extends BaseNotification
 {
-
-
     /**
      * Create a new notification instance.
      *
      * @return void
      */
     private $invoice;
+
     private $emailSetting;
 
     public function __construct(RecurringInvoice $invoice)
@@ -27,7 +26,7 @@ class NewRecurringInvoice extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -40,7 +39,7 @@ class NewRecurringInvoice extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
@@ -49,7 +48,7 @@ class NewRecurringInvoice extends BaseNotification
         $url = route('recurring-invoices.show', $this->invoice->id);
         $url = getDomainSpecificUrl($url, $this->company);
 
-        $content = __('email.newInvoiceRecurring.subject') . '.' . '<br>' . __('email.newInvoiceRecurring.text') . '<br>' . __('app.total') . ': ' . $this->invoice->currency->currency_symbol . $this->invoice->total;
+        $content = __('email.newInvoiceRecurring.subject').'.'.'<br>'.__('email.newInvoiceRecurring.text').'<br>'.__('app.total').': '.$this->invoice->currency->currency_symbol.$this->invoice->total;
 
         $build
             ->subject(__('email.newInvoiceRecurring.subject'))
@@ -58,7 +57,7 @@ class NewRecurringInvoice extends BaseNotification
                 'content' => $content,
                 'themeColor' => $this->company->header_color,
                 'actionText' => __('email.newInvoiceRecurring.action'),
-                'notifiableName' => $notifiable->name
+                'notifiableName' => $notifiable->name,
             ]);
 
         parent::resetLocale();
@@ -69,16 +68,15 @@ class NewRecurringInvoice extends BaseNotification
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
-    //phpcs:ignore
+    // phpcs:ignore
     public function toArray($notifiable)
     {
         return [
             'id' => $this->invoice->id,
-            'invoice_number' => $this->invoice->invoice_number
+            'invoice_number' => $this->invoice->invoice_number,
         ];
     }
-
 }

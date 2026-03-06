@@ -11,7 +11,6 @@ class AccountSetupRequest extends FormRequest
      *
      * @return bool
      */
-
     public function authorize()
     {
         return true;
@@ -39,5 +38,4 @@ class AccountSetupRequest extends FormRequest
 
         return $rules;
     }
-
 }

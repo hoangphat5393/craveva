@@ -9,7 +9,6 @@ use Notification;
 
 class JobOfferStatusChangeListener
 {
-
     /**
      * Create the event listener.
      *
@@ -23,7 +22,7 @@ class JobOfferStatusChangeListener
     /**
      * Handle the event.
      *
-     * @param object $event
+     * @param  object  $event
      * @return void
      */
     public function handle(JobOfferStatusChangeEvent $jobOffer)
@@ -33,9 +32,8 @@ class JobOfferStatusChangeListener
 
         Notification::send($users, new JobofferStatusChange($jobOffer->offer));
 
-        if (!in_array($jobOffer->offer->user->id, $userIds)) {
+        if (! in_array($jobOffer->offer->user->id, $userIds)) {
             Notification::send($jobOffer->offer->job->recruiter, new JobofferStatusChange($jobOffer->offer));
         }
     }
-
 }

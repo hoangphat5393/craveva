@@ -1,11 +1,11 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
 use App\Models\EmployeeLeaveQuota;
 use App\Models\Leave;
+use Illuminate\Database\Migrations\Migration;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
@@ -31,5 +31,4 @@ return new class extends Migration {
     {
         //
     }
-
 };

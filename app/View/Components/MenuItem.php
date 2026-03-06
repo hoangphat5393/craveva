@@ -7,12 +7,16 @@ use Illuminate\View\Component;
 
 class MenuItem extends Component
 {
-
     public $icon;
+
     public $text;
+
     public $link;
+
     public $active;
+
     public $addon;
+
     public $count;
 
     /**
@@ -39,5 +43,4 @@ class MenuItem extends Component
     {
         return view('components.menu-item');
     }
-
 }

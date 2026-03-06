@@ -7,15 +7,17 @@ use App\Models\User;
 
 class NewUser extends BaseNotification
 {
-
     /**
      * Create a new notification instance.
      *
      * @return void
      */
     private $password;
+
     private $emailSetting;
+
     private $clientSignup;
+
     private $signup;
 
     public function __construct(User $user, $password, $clientSignup = false, $signup = false)
@@ -39,7 +41,8 @@ class NewUser extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *t('mail::layout')
-     * @param mixed $notifiable
+     *
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -57,7 +60,7 @@ class NewUser extends BaseNotification
         }
 
         if ($this->emailSetting->send_push == 'yes' && push_setting()->beams_push_status == 'active') {
-            $pushNotification = new \App\Http\Controllers\DashboardController();
+            $pushNotification = new \App\Http\Controllers\DashboardController;
             $pushUsersIds = [[$notifiable->id]];
             $pushNotification->sendPushNotifications($pushUsersIds, __('email.newUser.subject'), $notifiable->name);
         }
@@ -68,23 +71,21 @@ class NewUser extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
     {
 
-
         $url = route('login');
         $url = getDomainSpecificUrl($url, $this->company);
-
 
         $this->password = $this->password ?: __('superadmin.previousPassword');
 
         if ($this->clientSignup == true) {
-            $content = __('email.newUser.clientSignupMessage') . '<br>';
+            $content = __('email.newUser.clientSignupMessage').'<br>';
         } else {
-            $content = __('email.newUser.text') . '<br><br>' . __('app.email') . ': <b>' . $notifiable->email . '</b><br>' . __('app.password') . ': <b>' . $this->password . '</b>';
+            $content = __('email.newUser.text').'<br><br>'.__('app.email').': <b>'.$notifiable->email.'</b><br>'.__('app.password').': <b>'.$this->password.'</b>';
         }
 
         if ($this->signup) {
@@ -93,13 +94,13 @@ class NewUser extends BaseNotification
 
         $build = parent::build($notifiable);
         $build
-            ->subject(__('email.newUser.subject') . ' ' . config('app.name'))
+            ->subject(__('email.newUser.subject').' '.config('app.name'))
             ->markdown('mail.email', [
                 'url' => $url,
                 'content' => $content,
                 'themeColor' => $this->company ? $this->company->header_color : null,
                 'actionText' => __('email.newUser.action'),
-                'notifiableName' => $notifiable->name
+                'notifiableName' => $notifiable->name,
             ]);
 
         parent::resetLocale();
@@ -110,10 +111,10 @@ class NewUser extends BaseNotification
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
-    //phpcs:ignore
+    // phpcs:ignore
     public function toArray($notifiable)
     {
         return $notifiable->toArray();

@@ -4,7 +4,6 @@ namespace Modules\Biolinks\Enums;
 
 enum AvatarSize: string
 {
-
     // phpcs:disable
     case SIZE_75 = '75';
     case SIZE_100 = '100';
@@ -13,6 +12,5 @@ enum AvatarSize: string
     case SIZE_175 = '175';
     case SIZE_200 = '200';
     // phpcs:enable
-
 
 }

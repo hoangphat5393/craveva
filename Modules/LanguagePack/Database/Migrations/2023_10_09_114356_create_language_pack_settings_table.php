@@ -5,8 +5,8 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Modules\LanguagePack\Entities\LanguagePackSetting;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      *
@@ -16,7 +16,7 @@ return new class extends Migration {
     {
         \App\Models\Module::validateVersion(LanguagePackSetting::MODULE_NAME);
 
-        if (!Schema::hasTable('language_pack_settings')) {
+        if (! Schema::hasTable('language_pack_settings')) {
             Schema::create('language_pack_settings', function (Blueprint $table) {
                 $table->id();
                 $table->string('purchase_code')->nullable();
@@ -37,5 +37,4 @@ return new class extends Migration {
     {
         Schema::drop('language_pack_settings');
     }
-
 };

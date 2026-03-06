@@ -11,10 +11,12 @@ use Yajra\DataTables\Html\Column;
 
 class PayrollDataTable extends BaseDataTable
 {
-
     private $currency;
+
     private $editPayrollPermission;
+
     private $deletePayrollPermission;
+
     private $viewPayrollPermission;
 
     public function __construct()
@@ -28,7 +30,7 @@ class PayrollDataTable extends BaseDataTable
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
@@ -37,15 +39,15 @@ class PayrollDataTable extends BaseDataTable
         return datatables()
             ->eloquent($query)
             ->addColumn('check', function ($row) {
-                return '<input type="checkbox" class="select-table-row" data-user-id="' . $row->id . '" id="datatable-row-' . $row->salary_slip_id . '"  name="datatable_ids[]" value="' . $row->salary_slip_id . '" onclick="dataTableRowCheck(' . $row->salary_slip_id . ')">';
+                return '<input type="checkbox" class="select-table-row" data-user-id="'.$row->id.'" id="datatable-row-'.$row->salary_slip_id.'"  name="datatable_ids[]" value="'.$row->salary_slip_id.'" onclick="dataTableRowCheck('.$row->salary_slip_id.')">';
             })
             ->editColumn('month', function ($row) {
-                return Carbon::parse($row->year . '-' . $row->month . '-01')->translatedFormat('F Y');
+                return Carbon::parse($row->year.'-'.$row->month.'-01')->translatedFormat('F Y');
             })
             ->editColumn('name', function ($row) {
 
                 return view('components.employee', [
-                    'user' => $row
+                    'user' => $row,
                 ]);
             })
             ->editColumn('net_salary', function ($row) {
@@ -58,39 +60,35 @@ class PayrollDataTable extends BaseDataTable
             })
             ->editColumn('salary_status', function ($row) {
                 if ($row->salary_status == 'generated') {
-                    return '<span class="badge badge-success bg-dark">' . __('payroll::modules.payroll.generated') . '</span>';
-                }
-                elseif ($row->salary_status == 'review') {
-                    return '<span class="badge badge-success bg-blue">' . __('payroll::modules.payroll.review') . '</span>';
-                }
-                elseif ($row->salary_status == 'locked') {
-                    return '<span class="badge badge-success bg-red">' . __('payroll::modules.payroll.locked') . '</span>';
-                }
-                elseif ($row->salary_status == 'paid') {
-                    return '<span class="badge badge-success bg-light-green">' . __('payroll::modules.payroll.paid') . '</span>';
+                    return '<span class="badge badge-success bg-dark">'.__('payroll::modules.payroll.generated').'</span>';
+                } elseif ($row->salary_status == 'review') {
+                    return '<span class="badge badge-success bg-blue">'.__('payroll::modules.payroll.review').'</span>';
+                } elseif ($row->salary_status == 'locked') {
+                    return '<span class="badge badge-success bg-red">'.__('payroll::modules.payroll.locked').'</span>';
+                } elseif ($row->salary_status == 'paid') {
+                    return '<span class="badge badge-success bg-light-green">'.__('payroll::modules.payroll.paid').'</span>';
                 }
 
                 return ucwords($row->salary_status);
             })
             ->editColumn('salary_from', function ($row) {
 
-                if (!is_null($row->salary_from) && !is_null($row->salary_to)) {
+                if (! is_null($row->salary_from) && ! is_null($row->salary_to)) {
                     $start = Carbon::parse($row->salary_from)->translatedFormat($this->company->date_format);
                     $end = Carbon::parse($row->salary_to)->translatedFormat($this->company->date_format);
 
-                    return $start . ' ' . __('app.to') . ' ' . $end;
+                    return $start.' '.__('app.to').' '.$end;
                 }
 
-                $start = Carbon::parse(Carbon::parse('01-' . $row->month . '-' . $row->year))->startOfMonth()->toDateString();
-                $end = Carbon::parse(Carbon::parse('01-' . $row->month . '-' . $row->year))->endOfMonth()->toDateString();
+                $start = Carbon::parse(Carbon::parse('01-'.$row->month.'-'.$row->year))->startOfMonth()->toDateString();
+                $end = Carbon::parse(Carbon::parse('01-'.$row->month.'-'.$row->year))->endOfMonth()->toDateString();
 
-                return $start . ' ' . __('app.to') . ' ' . $end;
+                return $start.' '.__('app.to').' '.$end;
             })
             ->editColumn('paid_on', function ($row) {
-                if (!is_null($row->paid_on)) {
+                if (! is_null($row->paid_on)) {
                     return Carbon::parse($row->paid_on)->translatedFormat($this->company->date_format);
-                }
-                else {
+                } else {
                     return '--';
                 }
             })
@@ -102,20 +100,20 @@ class PayrollDataTable extends BaseDataTable
                         </a>
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-41" tabindex="0" x-placement="bottom-end" style="position: absolute; transform: translate3d(-137px, 26px, 0px); top: 0px; left: 0px; will-change: transform;">';
 
-                $actions .= '<a href="' . route('payroll.show', [$row->salary_slip_id]) . '" class="dropdown-item openRightModal"><i class="fa fa-eye mr-2"></i>' . __('app.view') . '</a>';
+                $actions .= '<a href="'.route('payroll.show', [$row->salary_slip_id]).'" class="dropdown-item openRightModal"><i class="fa fa-eye mr-2"></i>'.__('app.view').'</a>';
 
                 if ($this->editPayrollPermission == 'all' || ($this->editPayrollPermission == 'added' && user()->id == $row->added_by)) {
-                    $actions .= '<a class="dropdown-item openRightModal" href="' . route('payroll.edit', [$row->salary_slip_id]) . '">
+                    $actions .= '<a class="dropdown-item openRightModal" href="'.route('payroll.edit', [$row->salary_slip_id]).'">
                                     <i class="fa fa-edit mr-2"></i>
-                                    ' . __('app.edit') . '
+                                    '.__('app.edit').'
                             </a>';
                 }
 
                 if ($this->deletePayrollPermission == 'all' || ($this->deletePayrollPermission == 'added' && user()->id == $row->added_by)) {
-                    $actions .= '<a data-payroll-id=' . $row->salary_slip_id . '
+                    $actions .= '<a data-payroll-id='.$row->salary_slip_id.'
                                 class="dropdown-item delete-table-row" href="javascript:;">
                                    <i class="fa fa-trash mr-2"></i>
-                                    ' . __('app.delete') . '
+                                    '.__('app.delete').'
                             </a>';
                 }
 
@@ -124,24 +122,23 @@ class PayrollDataTable extends BaseDataTable
                 return $actions;
             })
             ->addIndexColumn()
-            ->setRowId(fn($row) => 'row-' . $row->id)
+            ->setRowId(fn ($row) => 'row-'.$row->id)
             ->rawColumns(['name', 'action', 'salary_status', 'salary_from', 'check']);
     }
 
     /**
      * Get query source of dataTable.
      *
-     * @param  $model
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    //phpcs:ignore
+    // phpcs:ignore
     public function query(User $model)
     {
         $request = $this->request();
         $startDate = null;
         $endDate = null;
 
-        if (!is_null($request->month) && $request->month != 'null' && $request->month != '') {
+        if (! is_null($request->month) && $request->month != 'null' && $request->month != '') {
             $explode = explode(' ', $request->month);
             $startDate = trim($explode[0]);
             $endDate = trim($explode[1]);
@@ -160,7 +157,7 @@ class PayrollDataTable extends BaseDataTable
             ->where('salary_slips.payroll_cycle_id', $request->cycle)
             ->where('salary_slips.year', $request->year);
 
-        if (!is_null($startDate) && !is_null($endDate)) {
+        if (! is_null($startDate) && ! is_null($endDate)) {
             $users = $users->whereRaw('Date(salary_slips.salary_from) = ?', [$startDate]);
             $users = $users->whereRaw('Date(salary_slips.salary_to) = ?', [$endDate]);
         }
@@ -178,11 +175,10 @@ class PayrollDataTable extends BaseDataTable
 
         if ($request->searchText != '') {
             $users = $users->where(function ($query) {
-                $query->where('users.name', 'like', '%' . request('searchText') . '%')
-                    ->orWhere('users.email', 'like', '%' . request('searchText') . '%');
+                $query->where('users.name', 'like', '%'.request('searchText').'%')
+                    ->orWhere('users.email', 'like', '%'.request('searchText').'%');
             });
         }
-
 
         $users->groupBy('users.id');
         $this->currency = PayrollSetting::with('currency')->first();
@@ -222,7 +218,7 @@ class PayrollDataTable extends BaseDataTable
                 'title' => '<input type="checkbox" name="select_all_table" id="select-all-table" onclick="selectAllTable(this)">',
                 'exportable' => false,
                 'orderable' => false,
-                'searchable' => false
+                'searchable' => false,
             ],
             '#' => ['data' => 'DT_RowIndex', 'orderable' => false, 'searchable' => false, 'visible' => false],
             __('app.name') => ['data' => 'name', 'name' => 'name', 'visible' => ($this->viewPayrollPermission == 'all'), 'title' => __('app.name')],
@@ -236,8 +232,7 @@ class PayrollDataTable extends BaseDataTable
                 ->printable(false)
                 ->orderable(false)
                 ->searchable(false)
-                ->addClass('text-right pr-20')
+                ->addClass('text-right pr-20'),
         ];
     }
-
 }

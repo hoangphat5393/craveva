@@ -15,5 +15,4 @@ class NewUserRegistrationViaInviteListener
         } catch (\Exception $e) { // @codingStandardsIgnoreLine
         }
     }
-
 }

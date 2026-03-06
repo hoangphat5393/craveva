@@ -1,7 +1,7 @@
 <?php
 
 $addOnOf = 'craveva';
-$product = $addOnOf . '-asset-module';
+$product = $addOnOf.'-asset-module';
 
 return [
     'name' => 'Asset',

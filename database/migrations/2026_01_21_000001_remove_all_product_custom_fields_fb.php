@@ -1,9 +1,8 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use App\Models\Company;
 use App\Models\CustomField;
 use App\Models\CustomFieldGroup;
+use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
@@ -19,7 +18,7 @@ return new class extends Migration
             foreach ($groups as $group) {
                 // Delete all custom fields in this group
                 CustomField::where('custom_field_group_id', $group->id)->delete();
-                
+
                 // Optionally delete the group itself
                 $group->delete();
             }

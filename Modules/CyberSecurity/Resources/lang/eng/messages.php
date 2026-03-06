@@ -1,6 +1,6 @@
 <?php
 
-return array(
+return [
     'maxRetriesToolTip' => 'Maximum failed attempts allowed before lockout',
     'extendLockoutToolTip' => 'Extend Lockout time after first lockout',
     'emailNotificationToolTip' => 'After (no. of lockouts) lockouts. 0 to disable email notification',
@@ -20,4 +20,4 @@ return array(
         'sendEmailDifferentIp' => 'Send email notification if login from different IP :ip.',
         'notSendEmailDifferentIp' => 'Do not send email notification if login from different IP.',
     ],
-);
+];

@@ -2,26 +2,25 @@
 
 namespace App\Http\Middleware;
 
-use Closure;
-use App\Models\User;
 use App\Models\Company;
+use App\Models\User;
 use App\Scopes\CompanyScope;
+use Closure;
+use Illuminate\Auth\Middleware\Authenticate as Middleware;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Auth\Middleware\Authenticate as Middleware;
 
 class Authenticate extends Middleware
 {
-
     /**
      * Get the path the user should be redirected to when they are not authenticated.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @return string|null
      */
     protected function redirectTo($request)
     {
-        if (!$request->expectsJson()) {
+        if (! $request->expectsJson()) {
             return route('login');
         }
     }
@@ -29,9 +28,8 @@ class Authenticate extends Middleware
     /**
      * Handle an incoming request.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param \Closure $next
-     * @param string[] ...$guards
+     * @param  \Illuminate\Http\Request  $request
+     * @param  string[]  ...$guards
      * @return mixed
      *
      * @throws \Illuminate\Auth\AuthenticationException
@@ -55,14 +53,14 @@ class Authenticate extends Middleware
         }
 
         if (user()) {
-            $isActive = cache()->rememberForever('user_is_active_' . user()->id, function () {
+            $isActive = cache()->rememberForever('user_is_active_'.user()->id, function () {
                 return User::withoutGlobalScope(CompanyScope::class)
                     ->where('id', user()->id)
                     ->where('status', 'active')
                     ->exists();
             });
 
-            if (!$isActive) {
+            if (! $isActive) {
                 auth()->logout();
                 session()->flush();
 
@@ -80,5 +78,4 @@ class Authenticate extends Middleware
 
         return $next($request);
     }
-
 }

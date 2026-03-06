@@ -7,7 +7,6 @@ use App\Http\Requests\CustomLink\StoreCustomLink;
 use App\Http\Requests\CustomLink\UpdateCustomLink;
 use App\Models\CustomLinkSetting;
 use App\Models\Role;
-use Illuminate\Http\Request;
 
 class CustomLinkSettingController extends AccountBaseController
 {
@@ -16,7 +15,6 @@ class CustomLinkSettingController extends AccountBaseController
      *
      * @return \Illuminate\Http\Response
      */
-
     public function __construct()
     {
         parent::__construct();
@@ -45,7 +43,6 @@ class CustomLinkSettingController extends AccountBaseController
             return Reply::dataOnly(['status' => 'success', 'html' => $html, 'title' => $this->pageTitle, 'activeTab' => $this->activeTab]);
         }
 
-
         return view('custom-link-settings.index', $this->data);
     }
 
@@ -64,12 +61,11 @@ class CustomLinkSettingController extends AccountBaseController
     /**
      * Store a newly created resource in storage.
      *
-     * @param  StoreCustomLink  $request
      * @return \Illuminate\Http\Response
      */
     public function store(StoreCustomLink $request)
     {
-        $custom_link = new CustomLinkSetting();
+        $custom_link = new CustomLinkSetting;
         $custom_link->link_title = $request->link_title;
         $custom_link->url = $request->url;
         $custom_link->can_be_viewed_by = json_encode($request->can_be_viewed_by);
@@ -110,7 +106,6 @@ class CustomLinkSettingController extends AccountBaseController
     /**
      * Update the specified resource in storage.
      *
-     * @param  UpdateCustomLink  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
@@ -144,5 +139,4 @@ class CustomLinkSettingController extends AccountBaseController
         return Reply::success(__('messages.deleteSuccess'));
 
     }
-
 }

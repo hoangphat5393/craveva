@@ -9,7 +9,6 @@ use Modules\Subdomain\Http\Requests\Auth\BannedSubdomainRequest;
 
 class BannedSubdomainController extends AccountBaseController
 {
-
     /**
      * Create a new controller instance.
      *
@@ -22,7 +21,7 @@ class BannedSubdomainController extends AccountBaseController
         $this->pageIcon = 'icon-settings';
         $this->activeSettingMenu = 'subdomain_setting';
         $this->middleware(function ($request, $next) {
-            abort_403(!user()->is_superadmin);
+            abort_403(! user()->is_superadmin);
 
             return $next($request);
         });
@@ -58,5 +57,4 @@ class BannedSubdomainController extends AccountBaseController
 
         return Reply::redirect(route('super-admin.get.banned-subdomains'));
     }
-
 }

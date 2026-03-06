@@ -8,7 +8,6 @@ use Yajra\DataTables\Html\Button;
 
 class EmployeeWiseTaskDataTable extends BaseDataTable
 {
-
     public function dataTable($query)
     {
         return datatables()
@@ -38,7 +37,7 @@ class EmployeeWiseTaskDataTable extends BaseDataTable
                 return $row->task_missed_deadline;
             })
 
-            ->setRowId(fn($row) => 'row-' . $row->id)
+            ->setRowId(fn ($row) => 'row-'.$row->id)
             ->rawColumns(['name', 'employee_name', 'total_task_assigned', 'total_task_completed', 'total_task_pending', 'task_missed_deadline']);
 
     }
@@ -61,15 +60,15 @@ class EmployeeWiseTaskDataTable extends BaseDataTable
         }
 
         $model = User::withRole('employee')
-            ->leftJoin('task_users', function($join) use ($startDate, $endDate, $request) {
+            ->leftJoin('task_users', function ($join) use ($startDate, $endDate) {
                 $join->on('users.id', '=', 'task_users.user_id')
-                    ->when($startDate !== null && $endDate !== null, function($query) use ($startDate, $endDate) {
-                        $query->whereExists(function($subquery) use ($startDate, $endDate) {
+                    ->when($startDate !== null && $endDate !== null, function ($query) use ($startDate, $endDate) {
+                        $query->whereExists(function ($subquery) use ($startDate, $endDate) {
                             $subquery->from('tasks')
                                 ->whereRaw('tasks.id = task_users.task_id')
-                                ->where(function($q) use ($startDate, $endDate) {
+                                ->where(function ($q) use ($startDate, $endDate) {
                                     $q->whereBetween(DB::raw('DATE(tasks.due_date)'), [$startDate, $endDate])
-                                    ->orWhereBetween(DB::raw('DATE(tasks.start_date)'), [$startDate, $endDate]);
+                                        ->orWhereBetween(DB::raw('DATE(tasks.start_date)'), [$startDate, $endDate]);
                                 });
                         });
                     });
@@ -92,6 +91,7 @@ class EmployeeWiseTaskDataTable extends BaseDataTable
 
         return $model;
     }
+
     /**
      * Optional method if you want to use the html builder.
      */
@@ -115,13 +115,13 @@ class EmployeeWiseTaskDataTable extends BaseDataTable
                 'columnDefs' => [
                     [
                         'targets' => 1,
-                        'className' => 'noVis'
-                    ]
-                ]
+                        'className' => 'noVis',
+                    ],
+                ],
             ]);
 
         if (canDataTableExport()) {
-            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
+            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
         }
 
         return $dataTable;
@@ -150,6 +150,6 @@ class EmployeeWiseTaskDataTable extends BaseDataTable
      */
     protected function filename(): string
     {
-        return 'EmployeeWiseTask_' . date('YmdHis');
+        return 'EmployeeWiseTask_'.date('YmdHis');
     }
 }

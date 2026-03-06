@@ -2,8 +2,8 @@
 
 namespace Modules\DeveloperTools\Services;
 
-use Modules\DeveloperTools\Entities\FileRecord;
 use Modules\DeveloperTools\Entities\FileDependency;
+use Modules\DeveloperTools\Entities\FileRecord;
 
 class FileScanner
 {
@@ -19,12 +19,13 @@ class FileScanner
 
     protected function scanPath(string $path, array $allowed): void
     {
-        if (!file_exists($path)) {
+        if (! file_exists($path)) {
             return;
         }
 
         if (is_file($path)) {
             $this->processFile($path, $allowed);
+
             return;
         }
 
@@ -39,7 +40,7 @@ class FileScanner
     protected function processFile(string $fullPath, array $allowed): void
     {
         $ext = $this->extension($fullPath);
-        if (!$this->isAllowed($ext, $allowed)) {
+        if (! $this->isAllowed($ext, $allowed)) {
             return;
         }
 
@@ -49,7 +50,7 @@ class FileScanner
         $role = $this->inferRole($fullPath);
         $mtime = @filemtime($fullPath);
         $hash = @hash_file('sha1', $fullPath) ?: null;
-        $version = $mtime ? 'mtime_' . date('YmdHis', $mtime) : null;
+        $version = $mtime ? 'mtime_'.date('YmdHis', $mtime) : null;
 
         $record = FileRecord::updateOrCreate(
             ['path' => $this->normalizePath($fullPath)],
@@ -86,6 +87,7 @@ class FileScanner
         if (str_ends_with($path, '.blade.php')) {
             return 'blade.php';
         }
+
         return pathinfo($path, PATHINFO_EXTENSION);
     }
 
@@ -99,6 +101,7 @@ class FileScanner
         if (preg_match('#Modules/([^/]+)/#', $path, $m)) {
             return $m[1];
         }
+
         return null;
     }
 
@@ -117,28 +120,49 @@ class FileScanner
 
     protected function inferFramework(string $ext, string $path): ?string
     {
-        if ($ext === 'blade.php') return 'Laravel';
-        if (str_contains($path, 'Modules') && $ext === 'php') return 'Laravel Modules';
+        if ($ext === 'blade.php') {
+            return 'Laravel';
+        }
+        if (str_contains($path, 'Modules') && $ext === 'php') {
+            return 'Laravel Modules';
+        }
+
         return null;
     }
 
     protected function inferRole(string $path): ?string
     {
-        if (str_contains($path, 'Http/Controllers')) return 'Controller';
-        if (str_contains($path, 'Entities') || str_contains($path, 'Models')) return 'Model';
-        if (str_contains($path, 'Database/Migrations')) return 'Migration';
-        if (str_contains($path, 'Resources/views')) return 'View';
-        if (str_contains($path, 'Routes')) return 'Route';
-        if (str_contains($path, 'Config')) return 'Config';
+        if (str_contains($path, 'Http/Controllers')) {
+            return 'Controller';
+        }
+        if (str_contains($path, 'Entities') || str_contains($path, 'Models')) {
+            return 'Model';
+        }
+        if (str_contains($path, 'Database/Migrations')) {
+            return 'Migration';
+        }
+        if (str_contains($path, 'Resources/views')) {
+            return 'View';
+        }
+        if (str_contains($path, 'Routes')) {
+            return 'Route';
+        }
+        if (str_contains($path, 'Config')) {
+            return 'Config';
+        }
+
         return 'Other';
     }
 
     protected function extractDependencies(string $path): array
     {
         $content = @file_get_contents($path);
-        if (!$content) return [];
+        if (! $content) {
+            return [];
+        }
 
         $deps = [];
+
         // Basic dependency detection logic
         return $deps;
     }

@@ -11,7 +11,6 @@ use Modules\Zoom\Events\MeetingInviteEvent;
 
 class ZoomWebhookController extends Controller
 {
-
     public function index($companyHash = null)
     {
         $response = request()->all();
@@ -19,32 +18,32 @@ class ZoomWebhookController extends Controller
 
         switch ($event) {
 
-        case 'meeting.started':
-            $this->meetingStarted($response);
-            break;
+            case 'meeting.started':
+                $this->meetingStarted($response);
+                break;
 
-        case 'meeting.ended':
-            $this->meetingEnded($response);
-            break;
+            case 'meeting.ended':
+                $this->meetingEnded($response);
+                break;
 
-        case 'meeting.deleted':
-            $this->meetingDeleted($response);
-            break;
+            case 'meeting.deleted':
+                $this->meetingDeleted($response);
+                break;
 
-        case 'meeting.created':
-            $this->meetingCreated($response);
-            break;
+            case 'meeting.created':
+                $this->meetingCreated($response);
+                break;
 
-        case 'meeting.updated':
-            $this->meetingUpdated($response);
-            break;
+            case 'meeting.updated':
+                $this->meetingUpdated($response);
+                break;
 
-        case 'endpoint.url_validation':
-            return $this->validateEndpointUrl($response, $companyHash);
+            case 'endpoint.url_validation':
+                return $this->validateEndpointUrl($response, $companyHash);
 
-        default:
-            //
-            break;
+            default:
+                //
+                break;
         }
 
         return response('Webhook Handled');
@@ -77,8 +76,7 @@ class ZoomWebhookController extends Controller
                 ->whereDate('start_date_time', $startTime)
                 ->first();
 
-        }
-        else {
+        } else {
 
             $meeting = ZoomMeeting::where('meeting_id', $zoomMeetingId)->first();
         }
@@ -105,8 +103,7 @@ class ZoomWebhookController extends Controller
                 $meeting->status = 'finished';
                 $meeting->save();
             }
-        }
-        else {
+        } else {
             $meeting = ZoomMeeting::where('meeting_id', $zoomMeetingId)->first();
 
             if ($meeting) {
@@ -123,15 +120,14 @@ class ZoomWebhookController extends Controller
         // Delete only occurrence if repeated meeting
         $meetings = ZoomMeeting::where('meeting_id', $zoomMeetingId)->orderBy('id')->get();
 
-        if (!is_null($meetings) && $meetings->count() > 1) {
+        if (! is_null($meetings) && $meetings->count() > 1) {
 
             if (isset($response['payload']['operation'])
                 && $response['payload']['operation'] == 'all'
             ) {
                 ZoomMeeting::where('meeting_id', $zoomMeetingId)->delete();
 
-            }
-            else {
+            } else {
                 $occurrences = $response['payload']['object']['occurrences'];
 
                 foreach ($meetings as $key => $value) {
@@ -139,8 +135,7 @@ class ZoomWebhookController extends Controller
                     ZoomMeeting::where('occurrence_id', $occurrenceId)->delete();
                 }
             }
-        }
-        else {
+        } else {
             ZoomMeeting::where('meeting_id', $zoomMeetingId)->delete();
         }
     }
@@ -150,7 +145,7 @@ class ZoomWebhookController extends Controller
         $zoomMeetingId = $response['payload']['object']['id'];
         $meeting = ZoomMeeting::with('attendees', 'company')->where('meeting_id', $zoomMeetingId)->first();
 
-        if (!is_null($meeting) && $meeting->repeat == 1) {
+        if (! is_null($meeting) && $meeting->repeat == 1) {
             $occurrences = $response['payload']['object']['occurrences'];
 
             foreach ($occurrences as $key => $value) {
@@ -162,8 +157,7 @@ class ZoomWebhookController extends Controller
                     $meeting->save();
                     event(new MeetingInviteEvent($meeting, $meeting->attendees));
 
-                }
-                else {
+                } else {
                     $occurrence = $meeting->replicate()->fill(
                         [
                             'occurrence_id' => $value['occurrence_id'],
@@ -187,7 +181,7 @@ class ZoomWebhookController extends Controller
 
         $meetings = ZoomMeeting::where('meeting_id', $zoomMeetingId)->orderBy('id')->get();
 
-        if (!is_null($meetings) && $meetings->count() > 1) {
+        if (! is_null($meetings) && $meetings->count() > 1) {
 
             $occurrences = $response['payload']['object']['occurrences'];
 
@@ -195,7 +189,7 @@ class ZoomWebhookController extends Controller
 
                 $occurrenceId = $occurrences[$key]['occurrence_id'];
 
-                if (!isset($occurrences[$key]['start_time'])) {
+                if (! isset($occurrences[$key]['start_time'])) {
                     continue;
                 }
 
@@ -213,7 +207,7 @@ class ZoomWebhookController extends Controller
 
         $meeting = ZoomMeeting::where('meeting_id', $zoomMeetingId)->orderBy('id')->first();
 
-        if (!isset($response['payload']['object']['start_time'])) {
+        if (! isset($response['payload']['object']['start_time'])) {
             return true;
         }
 
@@ -233,5 +227,4 @@ class ZoomWebhookController extends Controller
     {
         return response()->json(['message' => 'This URL should not be accessed directly. Only POST requests are allowed.']);
     }
-
 }

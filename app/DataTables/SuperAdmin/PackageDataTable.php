@@ -10,8 +10,8 @@ use Yajra\DataTables\Html\Column;
 
 class PackageDataTable extends BaseDataTable
 {
-
     private $editPackagesPermission;
+
     private $deletePackagesPermission;
 
     public function __construct()
@@ -25,7 +25,7 @@ class PackageDataTable extends BaseDataTable
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
@@ -43,33 +43,32 @@ class PackageDataTable extends BaseDataTable
             ->eloquent($query)
             ->addColumn('action', function ($row) {
 
-                if ($this->editPackagesPermission == 'all' || $this->deletePackagesPermission == 'all' ) {
+                if ($this->editPackagesPermission == 'all' || $this->deletePackagesPermission == 'all') {
                     $action = '<div class="task_view">
 
                     <div class="dropdown">
                         <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" type="link"
-                            id="dropdownMenuLink-' . $row->id . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            id="dropdownMenuLink-'.$row->id.'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="icon-options-vertical icons"></i>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-' . $row->id . '" tabindex="0">';
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-'.$row->id.'" tabindex="0">';
 
                     if ($this->editPackagesPermission == 'all') {
-                        $action .= '<a class="dropdown-item openRightModal" href="' . route('superadmin.packages.edit', $row->id) . '" >
+                        $action .= '<a class="dropdown-item openRightModal" href="'.route('superadmin.packages.edit', $row->id).'" >
                             <i class="fa fa-edit mr-2"></i>
-                            ' . trans('app.edit') . '
+                            '.trans('app.edit').'
                         </a>';
                     }
 
                     if ($row->default == 'no' && $this->deletePackagesPermission == 'all') {
-                        $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-toggle="tooltip"  data-order-id="' . $row->id . '">
+                        $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-toggle="tooltip"  data-order-id="'.$row->id.'">
                             <i class="fa fa-trash mr-2"></i>
-                            ' . trans('app.delete') . '
+                            '.trans('app.delete').'
                         </a>';
 
                     }
 
-
-                        $action .= '</div>
+                    $action .= '</div>
                         </div>
                     </div>';
 
@@ -80,13 +79,13 @@ class PackageDataTable extends BaseDataTable
 
             })
             ->editColumn('monthly_price', function ($row) {
-                return ($row->default === 'no' && $row->monthly_status == '1' && !$row->is_free) ? global_currency_format($row->monthly_price, $row->currency_id) : '--';
+                return ($row->default === 'no' && $row->monthly_status == '1' && ! $row->is_free) ? global_currency_format($row->monthly_price, $row->currency_id) : '--';
             })
             ->editColumn('annual_price', function ($row) {
-                return ($row->default === 'no' && $row->annual_status == '1' && !$row->is_free) ? global_currency_format($row->annual_price, $row->currency_id) : '--';
+                return ($row->default === 'no' && $row->annual_status == '1' && ! $row->is_free) ? global_currency_format($row->annual_price, $row->currency_id) : '--';
             })
             ->editColumn('price', function ($row) {
-                return ($row->default === 'lifetime' && $row->annual_status == '0' && !$row->is_free) ? global_currency_format($row->price, $row->currency_id) : '--';
+                return ($row->default === 'lifetime' && $row->annual_status == '0' && ! $row->is_free) ? global_currency_format($row->price, $row->currency_id) : '--';
             })
             ->editColumn('name', function ($row) use ($packageSetting) {
                 $string = '';
@@ -94,17 +93,17 @@ class PackageDataTable extends BaseDataTable
                 $string .= $row->name;
 
                 if ($row->default == 'yes') {
-                    $string .= '<i data-toggle="tooltip" data-placement="top"  class="fa fa-question-circle mr-1 mx-1 text-green"  data-original-title="' . __('superadmin.packages.defaultMessage') . '" data-html="true" data-trigger="hover"></i>';
+                    $string .= '<i data-toggle="tooltip" data-placement="top"  class="fa fa-question-circle mr-1 mx-1 text-green"  data-original-title="'.__('superadmin.packages.defaultMessage').'" data-html="true" data-trigger="hover"></i>';
                 }
 
                 $string = $this->trialPackageShow($row, $string, $packageSetting);
 
                 if ($row->is_recommended) {
-                    $string .= '<br><span class="badge badge-primary mr-1"><i class="bi bi-star mr-1"></i>' . __('superadmin.recommended') . '</span>';
+                    $string .= '<br><span class="badge badge-primary mr-1"><i class="bi bi-star mr-1"></i>'.__('superadmin.recommended').'</span>';
                 }
 
                 if ($row->is_private) {
-                    $string .= '<br><span class="badge badge-primary mr-1"><i class="bi bi-lock mr-1"></i>' . __('superadmin.packages.private') . '</span>';
+                    $string .= '<br><span class="badge badge-primary mr-1"><i class="bi bi-lock mr-1"></i>'.__('superadmin.packages.private').'</span>';
                 }
 
                 return $string;
@@ -112,7 +111,7 @@ class PackageDataTable extends BaseDataTable
             ->setRowClass(function ($row) use ($packageSetting) {
                 if ($row->default == 'trial') {
 
-                    return ($packageSetting->status == 'active' && !user()->dark_theme) ? 'bg-light-grey' : '';
+                    return ($packageSetting->status == 'active' && ! user()->dark_theme) ? 'bg-light-grey' : '';
                 }
             })
             ->editColumn('max_storage_size', function ($row) {
@@ -120,12 +119,12 @@ class PackageDataTable extends BaseDataTable
                     return __('superadmin.unlimited');
                 }
 
-                return $row->max_storage_size . ' (' . strtoupper($row->storage_unit) . ')';
+                return $row->max_storage_size.' ('.strtoupper($row->storage_unit).')';
             })
             ->editColumn('module_in_package', function ($row) use ($modulesAll) {
                 $modules = json_decode($row->module_in_package, true);
 
-                if (!$modules) {
+                if (! $modules) {
                     return 'No module selected';
                 }
 
@@ -133,10 +132,10 @@ class PackageDataTable extends BaseDataTable
 
                 foreach ($modulesAll as $module) {
                     $sign = in_array($module->module_name, $modules) ? ('<i class="fa fa-check"></i>') : ('<i class="fa fa-times"></i>');
-                    $string .= '<span class="col-md-3">' . $sign . ' ' . __('modules.module.' . $module->module_name) . '</span>';
+                    $string .= '<span class="col-md-3">'.$sign.' '.__('modules.module.'.$module->module_name).'</span>';
                 }
 
-                return '<div class="row f-11">' . $string . '<div>';
+                return '<div class="row f-11">'.$string.'<div>';
             })
             ->rawColumns(['action', 'module_in_package', 'name']);
     }
@@ -144,15 +143,14 @@ class PackageDataTable extends BaseDataTable
     private function trialPackageShow($row, $string, $packageSetting)
     {
         if ($row->default == 'trial') {
-            $string .= '<i data-toggle="tooltip" data-placement="top"  class="fa fa-question-circle mr-1 mx-1 text-green"  data-original-title="' . __('superadmin.packages.trialMessage') . '" data-html="true" data-trigger="hover"></i>';
+            $string .= '<i data-toggle="tooltip" data-placement="top"  class="fa fa-question-circle mr-1 mx-1 text-green"  data-original-title="'.__('superadmin.packages.trialMessage').'" data-html="true" data-trigger="hover"></i>';
 
             if ($packageSetting->status == 'active') {
-                $string .= ' <span class="badge badge-success mr-1">' . __('app.active') . '</span>';
-                $string .= ' <span class="badge badge-secondary mr-1">' . __('superadmin.packages.trialPeriod') . ' ' . $packageSetting->no_of_days . ' ' . __('app.days') . '</span>';
+                $string .= ' <span class="badge badge-success mr-1">'.__('app.active').'</span>';
+                $string .= ' <span class="badge badge-secondary mr-1">'.__('superadmin.packages.trialPeriod').' '.$packageSetting->no_of_days.' '.__('app.days').'</span>';
 
-            }
-            else {
-                $string .= ' <span class="badge badge-danger mr-1">' . __('app.inactive') . '</span>';
+            } else {
+                $string .= ' <span class="badge badge-danger mr-1">'.__('app.inactive').'</span>';
             }
 
         }
@@ -163,7 +161,6 @@ class PackageDataTable extends BaseDataTable
     /**
      * Get query source of dataTable.
      *
-     * @param \App\Models\SuperAdmin\Package $model
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function query(Package $model)
@@ -171,7 +168,7 @@ class PackageDataTable extends BaseDataTable
         return $model->newQuery()->where(function ($query) {
             if (request()->has('searchText')) {
                 $search_term = request()->get('searchText');
-                $query->where('name', 'LIKE', '%' . $search_term . '%')->orWhere('description', 'LIKE', '%' . $search_term . '%');
+                $query->where('name', 'LIKE', '%'.$search_term.'%')->orWhere('description', 'LIKE', '%'.$search_term.'%');
             }
         });
     }
@@ -213,7 +210,7 @@ class PackageDataTable extends BaseDataTable
             __('superadmin.annual_price') => ['data' => 'annual_price', 'name' => 'annual_price', 'title' => __('superadmin.annual_price')],
             __('superadmin.price') => ['data' => 'price', 'name' => 'price', 'title' => __('superadmin.lifetime_price')],
             __('superadmin.fileStorage') => ['data' => 'max_storage_size', 'name' => 'max_storage_size', 'title' => __('superadmin.fileStorage')],
-            __('superadmin.max') . ' ' . __('app.menu.employees') => ['data' => 'max_employees', 'name' => 'max_employees', 'title' => __('superadmin.max') . ' ' . __('app.menu.employees')],
+            __('superadmin.max').' '.__('app.menu.employees') => ['data' => 'max_employees', 'name' => 'max_employees', 'title' => __('superadmin.max').' '.__('app.menu.employees')],
             __('superadmin.module_in_package') => ['data' => 'module_in_package', 'name' => 'module_in_package', 'title' => __('superadmin.module_in_package'), 'orderable' => false],
             Column::computed('action', __('app.action'))
                 ->exportable(false)
@@ -221,8 +218,7 @@ class PackageDataTable extends BaseDataTable
                 ->orderable(false)
                 ->searchable(false)
                 ->width(50)
-                ->addClass('text-center pr-20')
+                ->addClass('text-center pr-20'),
         ];
     }
-
 }

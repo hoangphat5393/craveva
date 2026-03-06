@@ -1,7 +1,7 @@
 <?php
 
 $addOnOf = 'craveva';
-$product = $addOnOf . '-cybersecurity-module';
+$product = $addOnOf.'-cybersecurity-module';
 
 return [
     'name' => 'CyberSecurity',

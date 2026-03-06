@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      */
@@ -36,8 +35,7 @@ return new class extends Migration
 
         foreach ($employees as $employee) {
             foreach ($employee->leaveTypes as $leaveQuota) {
-                if (($leaveQuota->leaveType->leaveTypeCondition($leaveQuota->leaveType, $employee)))
-                {
+                if (($leaveQuota->leaveType->leaveTypeCondition($leaveQuota->leaveType, $employee))) {
                     $employeeLeaveQuotaHistories[] = [
                         'user_id' => $employee->id,
                         'leave_type_id' => $leaveQuota->leave_type_id,
@@ -62,5 +60,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('employee_leave_quota_histories');
     }
-
 };

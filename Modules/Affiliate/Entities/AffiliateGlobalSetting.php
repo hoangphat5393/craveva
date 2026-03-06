@@ -7,7 +7,6 @@ use App\Models\ModuleSetting;
 
 class AffiliateGlobalSetting extends BaseModel
 {
-
     protected $guarded = ['id'];
 
     const MODULE_NAME = 'affiliate';

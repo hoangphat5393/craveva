@@ -2,13 +2,12 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\Role;
 use App\Models\Permission;
+use App\Models\Role;
+use Illuminate\Database\Seeder;
 
 class RoleSeeder extends Seeder
 {
-
     /**
      * Run the database seeds.
      *
@@ -16,7 +15,7 @@ class RoleSeeder extends Seeder
      */
     public function run($companyId)
     {
-        $role = new Role();
+        $role = new Role;
         $role->name = 'Manager';
         $role->company_id = $companyId;
         $role->display_name = 'Manager';
@@ -32,5 +31,4 @@ class RoleSeeder extends Seeder
         $role->attachPermissions($permissions);
 
     }
-
 }

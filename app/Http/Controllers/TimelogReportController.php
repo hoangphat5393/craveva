@@ -2,24 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\DataTables\TimeLogReportDataTable;
 use App\DataTables\TimeLogConsolidatedReportDataTable;
 use App\DataTables\TimeLogProjectwiseReportDataTable;
+use App\DataTables\TimeLogReportDataTable;
 use App\Exports\ProjectwiseTimeLogExport;
 use App\Helper\Reply;
 use App\Models\Project;
 use App\Models\ProjectTimeLog;
 use App\Models\Task;
 use App\Models\User;
-use Carbon\Carbon;
-use Carbon\CarbonInterval;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 
 class TimelogReportController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -31,7 +28,7 @@ class TimelogReportController extends AccountBaseController
     {
         abort_403(user()->permission('view_time_log_report') != 'all');
 
-        if (!request()->ajax()) {
+        if (! request()->ajax()) {
             $this->fromDate = now($this->company->timezone)->startOfMonth();
             $this->toDate = now($this->company->timezone);
 
@@ -76,36 +73,35 @@ class TimelogReportController extends AccountBaseController
                 $query->whereNull('deleted_at');
             });
 
-        if (!is_null($employee) && $employee !== 'all') {
+        if (! is_null($employee) && $employee !== 'all') {
             $timelogs = $timelogs->where('project_time_logs.user_id', $employee);
         }
 
-        if (!is_null($client) && $client !== 'all') {
+        if (! is_null($client) && $client !== 'all') {
             $timelogs = $timelogs->where('projects.client_id', $client);
         }
 
-        if (!is_null($projectId) && $projectId !== 'all') {
+        if (! is_null($projectId) && $projectId !== 'all') {
             $timelogs = $timelogs->where('project_time_logs.project_id', '=', $projectId);
         }
 
-        if (!is_null($taskId) && $taskId !== 'all') {
+        if (! is_null($taskId) && $taskId !== 'all') {
             $timelogs = $timelogs->where('project_time_logs.task_id', '=', $taskId);
         }
 
-        if (!is_null($approved) && $approved !== 'all') {
+        if (! is_null($approved) && $approved !== 'all') {
             if ($approved == 2) {
                 $timelogs = $timelogs->whereNull('project_time_logs.end_time');
-            }
-            else {
+            } else {
                 $timelogs = $timelogs->where('project_time_logs.approved', '=', $approved);
             }
         }
 
-        if (!is_null($invoice) && $invoice !== 'all') {
+        if (! is_null($invoice) && $invoice !== 'all') {
             if ($invoice == 0) {
                 $timelogs = $timelogs->where('project_time_logs.invoice_id', '=', null);
 
-            }else if ($invoice == 1) {
+            } elseif ($invoice == 1) {
                 $timelogs = $timelogs->where('project_time_logs.invoice_id', '!=', null);
             }
         }
@@ -117,12 +113,12 @@ class TimelogReportController extends AccountBaseController
         }
 
         $timelogg = $timelogs
-        ->groupBy(DB::raw('DATE(project_time_logs.start_time)'))
-        ->orderBy('start_time', 'ASC')
-        ->get([
-            DB::raw('DATE_FORMAT(start_time,\'%d-%M-%y\') as date'),
-            DB::raw('FLOOR(SUM(total_minutes)) as total_minutes'),
-        ]);
+            ->groupBy(DB::raw('DATE(project_time_logs.start_time)'))
+            ->orderBy('start_time', 'ASC')
+            ->get([
+                DB::raw('DATE_FORMAT(start_time,\'%d-%M-%y\') as date'),
+                DB::raw('FLOOR(SUM(total_minutes)) as total_minutes'),
+            ]);
 
         $breaks = ProjectTimeLog::with('breaks')
             ->whereDate('project_time_logs.start_time', '>=', $startDate)
@@ -142,9 +138,9 @@ class TimelogReportController extends AccountBaseController
             $minutes = $loggedHours % 60;
             // $minutes = $minutes > 0 ? $minutes : 0;
             // Format output based on hours and minutes
-            
+
             $values[] = $hours > 0
-                ? $hours  . ($minutes > 0 ? '.' . $minutes : '')
+                ? $hours.($minutes > 0 ? '.'.$minutes : '')
                 : ($minutes > 0 ? $minutes : 0);
         }
 
@@ -155,6 +151,7 @@ class TimelogReportController extends AccountBaseController
 
         $this->chartData = $data;
         $html = view('reports.timelogs.chart', $this->data)->render();
+
         return Reply::dataOnly(['status' => 'success', 'html' => $html, 'title' => $this->pageTitle]);
     }
 
@@ -163,7 +160,7 @@ class TimelogReportController extends AccountBaseController
         abort_403(user()->permission('view_time_log_report') != 'all');
         $this->pageTitle = 'app.timelogConsolidatedReport';
 
-        if (!request()->ajax()) {
+        if (! request()->ajax()) {
             $this->fromDate = now($this->company->timezone)->startOfMonth();
             $this->toDate = now($this->company->timezone);
 
@@ -196,7 +193,7 @@ class TimelogReportController extends AccountBaseController
             $projectTimeLog = $projectTimeLog->where(DB::raw('DATE(`start_time`)'), '<=', $endDate);
         }
 
-        if ($request->employeeID != 'all' && !is_null($request->employeeID)) {
+        if ($request->employeeID != 'all' && ! is_null($request->employeeID)) {
             $employeeID = $request->employeeID;
             $projectTimeLog = $projectTimeLog->where(function ($query) use ($employeeID) {
                 $query->where('user_id', $employeeID);
@@ -211,8 +208,7 @@ class TimelogReportController extends AccountBaseController
         foreach ($projectTimeLog as $projectTime) {
             if (is_null($projectTime->end_time)) {
                 $totalWorkingTime += (($projectTime->activeBreak) ? $projectTime->activeBreak->start_time->diffInMinutes($projectTime->start_time) : now()->diffInMinutes($projectTime->start_time)) - $projectTime->breaks->sum('total_minutes');
-            }
-            else {
+            } else {
                 $totalWorkingTime += $projectTime->total_minutes - $projectTime->breaks->sum('total_minutes');
             }
             $totalBreakTime += $projectTime->breaks->sum('total_minutes');
@@ -232,7 +228,7 @@ class TimelogReportController extends AccountBaseController
         $minutes = $totalMinutes % 60;
 
         return $hours > 0
-            ? $hours . 'h' . ($minutes > 0 ? ' ' . sprintf('%02dm', $minutes) : '')
+            ? $hours.'h'.($minutes > 0 ? ' '.sprintf('%02dm', $minutes) : '')
             : ($minutes > 0 ? sprintf('%dm', $minutes) : '0s');
     }
 
@@ -241,7 +237,7 @@ class TimelogReportController extends AccountBaseController
         abort_403(user()->permission('view_time_log_report') != 'all');
         $this->pageTitle = 'app.projectWiseTimeLogReport';
 
-        if (!request()->ajax()) {
+        if (! request()->ajax()) {
             $this->fromDate = now($this->company->timezone)->startOfMonth();
             $this->toDate = now($this->company->timezone);
 
@@ -256,16 +252,13 @@ class TimelogReportController extends AccountBaseController
     {
         if ($request->startDate == null || $request->startDate == 'null') {
             $startDate = null;
-        }
-        else {
+        } else {
             $startDate = companyToDateString($request->startDate);
         }
 
-
         if ($request->end == null || $request->end == 'null') {
             $endDate = null;
-        }
-        else {
+        } else {
             $endDate = companyToDateString($request->startDate);
         }
 
@@ -280,5 +273,4 @@ class TimelogReportController extends AccountBaseController
 
         return Excel::download($export, 'project-wise-timelog.xlsx');
     }
-
 }

@@ -2,11 +2,10 @@
 
 namespace Modules\ServerManager\Entities;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\Company;
 use App\Models\ModuleSetting;
-use App\Scopes\CompanyScope;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ServerSetting extends Model
 {
@@ -61,5 +60,4 @@ class ServerSetting extends Model
         ModuleSetting::createRoleSettingEntry(self::MODULE_NAME, $roles, $company);
 
     }
-
 }

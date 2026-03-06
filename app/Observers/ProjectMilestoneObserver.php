@@ -6,10 +6,9 @@ use App\Models\ProjectMilestone;
 
 class ProjectMilestoneObserver
 {
-
     public function saving(ProjectMilestone $projectMilestone)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             $projectMilestone->last_updated_by = user()->id;
 
             if (company()) {
@@ -20,7 +19,7 @@ class ProjectMilestoneObserver
 
     public function creating(ProjectMilestone $projectMilestone)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             $projectMilestone->added_by = user()->id;
 
             if (company()) {
@@ -29,5 +28,4 @@ class ProjectMilestoneObserver
         }
 
     }
-
 }

@@ -24,10 +24,9 @@ class StoreRequest extends CoreRequest
      *
      * @return array
      */
-
     public function rules()
     {
-        $rules = array();
+        $rules = [];
 
         $rules['lead_contact'] = 'required';
         $rules['name'] = 'required';
@@ -52,5 +51,4 @@ class StoreRequest extends CoreRequest
 
         return $attributes;
     }
-
 }

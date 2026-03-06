@@ -2,25 +2,27 @@
 
 namespace Modules\Onboarding\Views\Components;
 
-use Illuminate\View\Component;
 use App\Models\EmployeeDetails;
+use Illuminate\View\Component;
 use Modules\Onboarding\Entities\OnboardingTask;
 
 class EmployeeOnboarding extends Component
 {
-
     public $type;
+
     public $onboard;
+
     public $onboardingTasks;
+
     public $totalOnboardTasks;
+
     public $onBoardCompleteTasks;
+
     public $manageOnboardingPermission;
 
     /**
      * Create a new component instance.
      *
-     * @param $employee
-     * @param $type
      * @return void
      */
     public function __construct($employee, $type = null)
@@ -54,7 +56,7 @@ class EmployeeOnboarding extends Component
     /**
      * Fetch onboarding tasks for the employee.
      *
-     * @param int $empId
+     * @param  int  $empId
      */
     protected function fetchOnboardingTasks($empId)
     {
@@ -83,5 +85,4 @@ class EmployeeOnboarding extends Component
     {
         return view('onboarding::components.employee-onboarding', get_object_vars($this));
     }
-
 }

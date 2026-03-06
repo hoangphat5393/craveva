@@ -10,21 +10,20 @@ use App\Models\ClientCategory;
 use App\Models\ClientContact;
 use App\Models\LanguageSetting;
 use App\Models\Lead;
+use App\Models\Notification;
 use App\Models\UniversalSearch;
 use App\Models\User;
 use App\Scopes\ActiveScope;
 use Illuminate\Http\Request;
-use App\Models\Notification;
 
 class ClientContactController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'app.menu.clients';
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('clients', $this->user->modules));
+            abort_403(! in_array('clients', $this->user->modules));
 
             return $next($request);
         });
@@ -35,7 +34,7 @@ class ClientContactController extends AccountBaseController
         $this->pageTitle = __('app.addContact');
         $this->addClientPermission = user()->permission('add_client_contacts');
 
-        abort_403(!in_array($this->addClientPermission, ['all', 'added']));
+        abort_403(! in_array($this->addClientPermission, ['all', 'added']));
 
         $this->clientId = request('client');
         $this->countries = countries();
@@ -55,7 +54,7 @@ class ClientContactController extends AccountBaseController
     {
         $contact = ClientContact::create($request->all());
 
-        return Reply::successWithData(__('messages.recordSaved'), ['redirectUrl' => route('clients.show', $contact->user_id) . '?tab=contacts']);
+        return Reply::successWithData(__('messages.recordSaved'), ['redirectUrl' => route('clients.show', $contact->user_id).'?tab=contacts']);
     }
 
     public function show($id)
@@ -68,7 +67,7 @@ class ClientContactController extends AccountBaseController
         $this->editClientPermission = user()->permission('edit_client_contacts');
         $this->deleteClientPermission = user()->permission('delete_client_contacts');
 
-        abort_403(!($this->viewPermission == 'all'
+        abort_403(! ($this->viewPermission == 'all'
             || ($this->viewPermission == 'added' && $this->contact->client->clientDetails->added_by == user()->id)
             || ($this->viewPermission == 'both' && $this->contact->client->clientDetails->added_by == user()->id)));
 
@@ -92,8 +91,7 @@ class ClientContactController extends AccountBaseController
 
         $this->editPermission = user()->permission('edit_client_contacts');
 
-
-        abort_403(!($this->editPermission == 'all'
+        abort_403(! ($this->editPermission == 'all'
             || ($this->editPermission == 'added' && $this->contact->client->clientDetails->added_by == user()->id)
             || ($this->editPermission == 'both' && $this->contact->client->clientDetails->added_by == user()->id)));
 
@@ -103,7 +101,6 @@ class ClientContactController extends AccountBaseController
         $this->languages = LanguageSetting::where('status', 'enabled')->get();
 
         $this->clientId = $this->contact->user_id;
-
 
         $this->view = 'clients.contacts.edit';
 
@@ -120,7 +117,7 @@ class ClientContactController extends AccountBaseController
         $contact = ClientContact::findOrFail($id);
         $contact->update($request->all());
 
-        return Reply::successWithData(__('messages.updateSuccess'), ['redirectUrl' => route('clients.show', $contact->user_id) . '?tab=contacts']);
+        return Reply::successWithData(__('messages.updateSuccess'), ['redirectUrl' => route('clients.show', $contact->user_id).'?tab=contacts']);
     }
 
     public function destroy($id)
@@ -135,7 +132,7 @@ class ClientContactController extends AccountBaseController
             || ($this->deletePermission == 'both' && $this->contact->client->clientDetails->added_by == user()->id)
         ) {
 
-            if(!is_null($this->contact->client_id)){
+            if (! is_null($this->contact->client_id)) {
 
                 $client = User::withoutGlobalScope(ActiveScope::class)->with('clientDetails')->findOrFail($this->contact->client_id);
                 $universalSearches = UniversalSearch::where('searchable_id', $client->id)->where('module_type', 'client')->get();
@@ -147,12 +144,12 @@ class ClientContactController extends AccountBaseController
                 }
 
                 Notification::whereNull('read_at')
-                ->where(function ($q) use ($client) {
-                    $q->where('data', 'like', '{"id":' . $client->id . ',%');
-                    $q->orWhere('data', 'like', '%,"name":' . $client->name . ',%');
-                    $q->orWhere('data', 'like', '%,"user_one":' . $client->id . ',%');
-                    $q->orWhere('data', 'like', '%,"client_id":' . $client->id . '%');
-                })->delete();
+                    ->where(function ($q) use ($client) {
+                        $q->where('data', 'like', '{"id":'.$client->id.',%');
+                        $q->orWhere('data', 'like', '%,"name":'.$client->name.',%');
+                        $q->orWhere('data', 'like', '%,"user_one":'.$client->id.',%');
+                        $q->orWhere('data', 'like', '%,"client_id":'.$client->id.'%');
+                    })->delete();
 
                 $client->delete();
 
@@ -162,19 +159,20 @@ class ClientContactController extends AccountBaseController
             $this->contact->delete();
         }
 
-        $redirectUrl = route('clients.show', $userID) . '?tab=contacts';
+        $redirectUrl = route('clients.show', $userID).'?tab=contacts';
+
         return Reply::successWithData(__('messages.deleteSuccess'), ['redirectUrl' => $redirectUrl]);
     }
 
     public function applyQuickAction(Request $request)
     {
         switch ($request->action_type) {
-        case 'delete':
-            $this->deleteRecords($request);
+            case 'delete':
+                $this->deleteRecords($request);
 
-            return Reply::success(__('messages.deleteSuccess'));
-        default:
-            return Reply::error(__('messages.selectAction'));
+                return Reply::success(__('messages.deleteSuccess'));
+            default:
+                return Reply::error(__('messages.selectAction'));
         }
     }
 
@@ -185,5 +183,4 @@ class ClientContactController extends AccountBaseController
 
         return true;
     }
-
 }

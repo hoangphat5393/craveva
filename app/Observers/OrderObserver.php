@@ -2,24 +2,23 @@
 
 namespace App\Observers;
 
-use App\Models\User;
-use App\Models\Order;
-use App\Models\OrderItems;
-use App\Models\Notification;
 use App\Events\NewOrderEvent;
-use App\Models\CompanyAddress;
-use App\Models\OrderItemImage;
 use App\Events\OrderUpdatedEvent;
+use App\Models\CompanyAddress;
+use App\Models\Notification;
+use App\Models\Order;
 use App\Models\OrderCart;
+use App\Models\OrderItemImage;
+use App\Models\OrderItems;
+use App\Models\User;
 use App\Scopes\ActiveScope;
-use App\Traits\UnitTypeSaveTrait;
 use App\Traits\EmployeeActivityTrait;
+use App\Traits\UnitTypeSaveTrait;
 
 class OrderObserver
 {
-
-    use UnitTypeSaveTrait;
     use EmployeeActivityTrait;
+    use UnitTypeSaveTrait;
 
     public function creating(Order $order)
     {
@@ -29,14 +28,13 @@ class OrderObserver
             $order->company_id = company()->id;
         }
 
-
         if (is_numeric($order->order_number) || is_null($order->order_number)) {
             $order->order_number = $order->formatOrderNumber();
         }
 
         $order->custom_order_number = $order->order_number;
         $orderSettings = (company()) ? company()->invoiceSetting : $order->company->invoiceSetting;
-        $order->original_order_number = str($order->order_number)->replace($orderSettings->order_prefix . $orderSettings->order_number_separator, '');
+        $order->original_order_number = str($order->order_number)->replace($orderSettings->order_prefix.$orderSettings->order_number_separator, '');
     }
 
     public function created(Order $order)
@@ -50,7 +48,7 @@ class OrderObserver
             return true;
         }
 
-        if (!empty(request()->item_name)) {
+        if (! empty(request()->item_name)) {
             $itemsId = request()->item_ids;
             $itemsSummary = request()->item_summary;
             $cost_per_item = request()->cost_per_item;
@@ -63,8 +61,8 @@ class OrderObserver
             $sku = request()->sku;
             $invoice_item_image_url = request()->invoice_item_image_url;
 
-            foreach (request()->item_name as $key => $item) :
-                if (!is_null($item)) {
+            foreach (request()->item_name as $key => $item) {
+                if (! is_null($item)) {
                     $orderItem = OrderItems::create(
                         [
                             'order_id' => $order->id,
@@ -79,7 +77,7 @@ class OrderObserver
                             'amount' => round($amount[$key], 2),
                             'taxes' => ($tax ? (array_key_exists($key, $tax) ? json_encode($tax[$key]) : null) : null),
                             'sku' => (isset($sku[$key])) ? $sku[$key] : null,
-                            'field_order' => $key + 1
+                            'field_order' => $key + 1,
                         ]
                     );
 
@@ -88,7 +86,7 @@ class OrderObserver
                         OrderItemImage::create(
                             [
                                 'order_item_id' => $orderItem->id,
-                                'external_link' => $invoice_item_image_url[$key] ?? ''
+                                'external_link' => $invoice_item_image_url[$key] ?? '',
                             ]
                         );
                     }
@@ -99,7 +97,7 @@ class OrderObserver
                     OrderCart::where('client_id', user()->id)->where('product_id', $itemsId[$key])->delete();
                 }
 
-            endforeach;
+            }
 
         }
 
@@ -114,7 +112,7 @@ class OrderObserver
 
     public function saving(Order $order)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
 
             if (is_null($order->company_address_id)) {
                 $defaultCompanyAddress = CompanyAddress::where('is_default', 1)->first();
@@ -151,8 +149,8 @@ class OrderObserver
             ->whereNull('read_at')
             ->where(
                 function ($q) use ($order) {
-                    $q->where('data', 'like', '{"id":' . $order->id . ',%');
-                    $q->orWhere('data', 'like', '%,"task_id":' . $order->id . ',%');
+                    $q->where('data', 'like', '{"id":'.$order->id.',%');
+                    $q->orWhere('data', 'like', '%,"task_id":'.$order->id.',%');
                 }
             )->delete();
     }
@@ -164,5 +162,4 @@ class OrderObserver
 
         }
     }
-
 }

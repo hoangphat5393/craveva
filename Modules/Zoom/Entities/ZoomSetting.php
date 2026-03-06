@@ -11,7 +11,6 @@ use Nwidart\Modules\Facades\Module;
 
 class ZoomSetting extends BaseModel
 {
-
     use HasCompany;
 
     protected $table = 'zoom_setting';
@@ -29,7 +28,7 @@ class ZoomSetting extends BaseModel
 
         $setting = ZoomSetting::withoutGlobalScope(CompanyScope::class)->where('company_id', $company->id)->first();
 
-        if (!$setting) {
+        if (! $setting) {
             $newSetting = new ZoomSetting;
             $newSetting->company_id = $company->id;
             $newSetting->saveQuietly();
@@ -38,7 +37,7 @@ class ZoomSetting extends BaseModel
         if (Schema::hasTable('zoom_notification_settings')) {
             $settingZoom = ZoomNotificationSetting::where('company_id', $company->id)->exists();
 
-            if (!$settingZoom) {
+            if (! $settingZoom) {
                 $settings = [
                     [
                         'company_id' => $company->id,
@@ -54,5 +53,4 @@ class ZoomSetting extends BaseModel
         }
 
     }
-
 }

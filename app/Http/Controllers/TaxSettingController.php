@@ -9,7 +9,6 @@ use App\Models\Tax;
 
 class TaxSettingController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -57,15 +56,15 @@ class TaxSettingController extends AccountBaseController
     }
 
     /**
-     * @param StoreTax $request
      * @return array
+     *
      * @throws \Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException
      */
     public function store(StoreTax $request)
     {
         abort_403(user()->permission('manage_tax') !== 'all');
 
-        $tax = new Tax();
+        $tax = new Tax;
         $tax->tax_name = $request->tax_name;
         $tax->rate_percent = $request->rate_percent;
         $tax->save();
@@ -77,9 +76,9 @@ class TaxSettingController extends AccountBaseController
     }
 
     /**
-     * @param UpdateTax $request
-     * @param int $id
+     * @param  int  $id
      * @return array
+     *
      * @throws \Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException
      */
     public function update(UpdateTax $request, $id)
@@ -92,8 +91,7 @@ class TaxSettingController extends AccountBaseController
         if (request()->via && request()->via == 'tax-setting') {
             $tax->tax_name = $request->tax_name;
             $tax->rate_percent = $request->rate_percent;
-        }
-        else {
+        } else {
             $request->type == 'tax_name' ? ($tax->tax_name = $request->value) : ($tax->rate_percent = $request->value);
         }
 
@@ -112,7 +110,7 @@ class TaxSettingController extends AccountBaseController
         $taxOptions = '<option value="">--</option>';
 
         foreach ($taxes as $item) {
-            $taxOptions .= '<option  value="' . $item->id . '">' . $item->tax_name . ' : ' . $item->rate_percent . '</option>';
+            $taxOptions .= '<option  value="'.$item->id.'">'.$item->tax_name.' : '.$item->rate_percent.'</option>';
         }
 
         return $taxOptions;
@@ -125,5 +123,4 @@ class TaxSettingController extends AccountBaseController
 
         return Reply::success(__('messages.deleteSuccess'));
     }
-
 }

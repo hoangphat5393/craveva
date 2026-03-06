@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class ActionLeave extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -25,8 +24,7 @@ class ActionLeave extends CoreRequest
     public function rules()
     {
         return [
-            'reason' => 'required_if:action,==,rejected'
+            'reason' => 'required_if:action,==,rejected',
         ];
     }
-
 }

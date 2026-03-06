@@ -3,23 +3,18 @@
 namespace App\Listeners;
 
 use App\Events\NewInvoiceRecurringEvent;
+use App\Models\User;
 use App\Notifications\InvoiceRecurringStatus;
 use App\Notifications\NewRecurringInvoice;
-use App\Models\User;
 use App\Scopes\ActiveScope;
 use Illuminate\Support\Facades\Notification;
 
 class NewInvoiceRecurringListener
 {
-
     public function __construct()
     {
         //
     }
-
-    /**
-     * @param NewInvoiceRecurringEvent $event
-     */
 
     public function handle(NewInvoiceRecurringEvent $event)
     {
@@ -31,13 +26,11 @@ class NewInvoiceRecurringListener
 
                 if ($event->status == 'status') {
                     Notification::send($notifyUser, new InvoiceRecurringStatus($event->invoice));
-                }
-                else {
+                } else {
                     Notification::send($notifyUser, new NewRecurringInvoice($event->invoice));
                 }
             }
         }
 
     }
-
 }

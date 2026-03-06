@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\DataTables\DesignationDataTable;
 use App\Helper\Reply;
+use App\Http\Requests\Designation\StoreRequest;
+use App\Http\Requests\Designation\UpdateRequest;
 use App\Models\Designation;
 use App\Models\EmployeeDetails;
 use Illuminate\Http\Request;
-use App\DataTables\DesignationDataTable;
-use App\Http\Requests\Designation\StoreRequest;
-use App\Http\Requests\Designation\UpdateRequest;
 
 class DesignationController extends AccountBaseController
 {
@@ -19,7 +19,8 @@ class DesignationController extends AccountBaseController
         parent::__construct();
         $this->pageTitle = __('app.menu.designation');
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('employees', $this->user->modules));
+            abort_403(! in_array('employees', $this->user->modules));
+
             return $next($request);
         });
     }
@@ -27,10 +28,11 @@ class DesignationController extends AccountBaseController
     public function index(DesignationDataTable $dataTable)
     {
         $viewPermission = user()->permission('view_designation');
-        abort_403(!in_array($viewPermission, ['all']));
+        abort_403(! in_array($viewPermission, ['all']));
 
         // get all designations
         $this->designations = Designation::all();
+
         return $dataTable->render('designation.index', $this->data);
     }
 
@@ -51,12 +53,11 @@ class DesignationController extends AccountBaseController
     }
 
     /**
-     * @param StoreRequest $request
      * @return array
      */
     public function store(StoreRequest $request)
     {
-        $group = new Designation();
+        $group = new Designation;
         $group->name = $request->name;
         $group->parent_id = $request->parent_id ? $request->parent_id : null;
         $group->save();
@@ -67,7 +68,6 @@ class DesignationController extends AccountBaseController
         if ($redirectUrl == '') {
             $redirectUrl = route('designations.index');
         }
-
 
         return Reply::successWithData(__('messages.recordSaved'), ['designations' => $this->designations, 'redirectUrl' => $redirectUrl]);
     }
@@ -98,9 +98,8 @@ class DesignationController extends AccountBaseController
 
         // remove child designations
         $this->designations = $designations->filter(function ($value, $key) use ($childDesignations) {
-            return !in_array($value->parent_id, $childDesignations);
+            return ! in_array($value->parent_id, $childDesignations);
         });
-
 
         $this->view = 'designation.ajax.edit';
 
@@ -113,12 +112,11 @@ class DesignationController extends AccountBaseController
     }
 
     /**
-     * @param UpdateRequest $request
-     * @param int $id
+     * @param  int  $id
      * @return array
+     *
      * @throws \Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException
      */
-
     public function update(UpdateRequest $request, $id)
     {
         $editDesignation = user()->permission('edit_designation');
@@ -126,12 +124,10 @@ class DesignationController extends AccountBaseController
 
         $group = Designation::findOrFail($id);
 
-        if($request->parent_id != null)
-        {
+        if ($request->parent_id != null) {
             $parent = Designation::findOrFail($request->parent_id);
 
-            if($id == $parent->parent_id)
-            {
+            if ($id == $parent->parent_id) {
                 $parent->parent_id = $group->parent_id;
                 $parent->save();
             }
@@ -142,6 +138,7 @@ class DesignationController extends AccountBaseController
         $group->save();
 
         $redirectUrl = route('designations.index');
+
         return Reply::successWithData(__('messages.updateSuccess'), ['redirectUrl' => $redirectUrl]);
     }
 
@@ -160,10 +157,8 @@ class DesignationController extends AccountBaseController
         $designation = Designation::where('parent_id', $id)->get();
         $parent = Designation::findOrFail($id);
 
-        if(count($designation) > 0)
-        {
-            foreach($designation as $designation)
-            {
+        if (count($designation) > 0) {
+            foreach ($designation as $designation) {
                 $child = Designation::findOrFail($designation->id);
                 $child->parent_id = $parent->parent_id;
                 $child->save();
@@ -173,6 +168,7 @@ class DesignationController extends AccountBaseController
         Designation::destroy($id);
 
         $redirectUrl = route('designations.index');
+
         return Reply::successWithData(__('messages.deleteSuccess'), ['redirectUrl' => $redirectUrl]);
     }
 
@@ -181,6 +177,7 @@ class DesignationController extends AccountBaseController
 
         if ($request->action_type === 'delete') {
             $this->deleteRecords($request);
+
             return Reply::success(__('messages.deleteSuccess'));
         }
 
@@ -204,10 +201,8 @@ class DesignationController extends AccountBaseController
             $designation = Designation::where('parent_id', $id)->get();
             $parent = Designation::findOrFail($id);
 
-            if(count($designation) > 0)
-            {
-                foreach($designation as $designation)
-                {
+            if (count($designation) > 0) {
+                foreach ($designation as $designation) {
                     $child = Designation::findOrFail($designation->id);
                     $child->parent_id = $parent->parent_id;
                     $child->save();
@@ -224,11 +219,10 @@ class DesignationController extends AccountBaseController
         abort_403($viewPermission != 'all');
 
         $this->pageTitle = 'Designation Hierarchy';
-        $this->chartDesignations = Designation::get(['id','name','parent_id']);
+        $this->chartDesignations = Designation::get(['id', 'name', 'parent_id']);
         $this->designations = Designation::with('childs')->where('parent_id', null)->get();
 
-        if(request()->ajax())
-        {
+        if (request()->ajax()) {
             return Reply::dataOnly(['status' => 'success', 'designations' => $this->designations]);
         }
 
@@ -245,19 +239,14 @@ class DesignationController extends AccountBaseController
 
         $designation = Designation::findOrFail($parent_id);
         // Root node again
-        if(request('newParent') && $designation)
-        {
+        if (request('newParent') && $designation) {
             $designation->parent_id = null;
             $designation->save();
-        }
-        else if ($designation && $child_ids != '') // update child Node
-        {
-            foreach ($child_ids as $child_id)
-            {
+        } elseif ($designation && $child_ids != '') { // update child Node
+            foreach ($child_ids as $child_id) {
                 $child = Designation::findOrFail($child_id);
 
-                if ($child)
-                {
+                if ($child) {
                     $child->parent_id = $parent_id;
                     $child->save();
                 }
@@ -265,13 +254,13 @@ class DesignationController extends AccountBaseController
             }
         }
 
-        $this->chartDesignations = Designation::get(['id','name','parent_id']);
+        $this->chartDesignations = Designation::get(['id', 'name', 'parent_id']);
         $this->designations = Designation::with('childs')->where('parent_id', null)->get();
 
         $html = view('designations-hierarchy.chart_tree', $this->data)->render();
         $organizational = view('designations-hierarchy.chart_organization', $this->data)->render();
 
-        return Reply::dataOnly(['status' => 'success', 'html' => $html,'organizational' => $organizational]);
+        return Reply::dataOnly(['status' => 'success', 'html' => $html, 'organizational' => $organizational]);
 
     }
 
@@ -279,72 +268,62 @@ class DesignationController extends AccountBaseController
     {
         $text = request('searchText');
 
-        if($text != '' && strlen($text) > 2)
-        {
-            $searchParent = Designation::with('childs')->where('name', 'like', '%' . $text . '%')->get();
+        if ($text != '' && strlen($text) > 2) {
+            $searchParent = Designation::with('childs')->where('name', 'like', '%'.$text.'%')->get();
 
             $id = [];
 
-            foreach($searchParent as $item)
-            {
+            foreach ($searchParent as $item) {
                 array_push($id, $item->parent_id);
             }
 
             $item = $searchParent->whereIn('id', $id)->pluck('id');
             $this->chartDepartments = $searchParent;
 
-            if($text != '' && !is_null($item)){
-                foreach($this->chartDepartments as $item){
+            if ($text != '' && ! is_null($item)) {
+                foreach ($this->chartDepartments as $item) {
                     $item['parent_id'] = null;
                 }
             }
 
-            $parent = array();
+            $parent = [];
 
-            foreach($this->chartDepartments as $designation)
-            {
+            foreach ($this->chartDepartments as $designation) {
                 array_push($parent, $designation->id);
 
-                if ($designation->childs)
-                {
+                if ($designation->childs) {
                     $this->child($designation->childs);
                 }
             }
 
-            $this->children = Designation::whereIn('id', $this->arr)->get(['id','name','parent_id']);
-            $this->parents = Designation::whereIn('id', $parent)->get(['id','name']);
+            $this->children = Designation::whereIn('id', $this->arr)->get(['id', 'name', 'parent_id']);
+            $this->parents = Designation::whereIn('id', $parent)->get(['id', 'name']);
             $this->chartDesignations = $this->parents->merge($this->children);
 
             $this->designations = Designation::with('childs')
-                ->where('name', 'like', '%' . $text . '%')
+                ->where('name', 'like', '%'.$text.'%')
                 ->get();
-        }
-        else
-        {
-            $this->chartDesignations = Designation::get(['id','name','parent_id']);
+        } else {
+            $this->chartDesignations = Designation::get(['id', 'name', 'parent_id']);
             $this->designations = Designation::with('childs')->where('parent_id', null)->get();
         }
 
         $html = view('designations-hierarchy.chart_tree', $this->data)->render();
         $organizational = view('designations-hierarchy.chart_organization', $this->data)->render();
 
-        return Reply::dataOnly(['status' => 'success', 'html' => $html,'organizational' => $organizational]);
+        return Reply::dataOnly(['status' => 'success', 'html' => $html, 'organizational' => $organizational]);
 
     }
 
     public function child($child)
     {
-        foreach($child as $item)
-        {
+        foreach ($child as $item) {
             array_push($this->arr, $item->id);
 
-            if ($item->childs)
-            {
+            if ($item->childs) {
                 $this->child($item->childs);
             }
         }
 
-
     }
-
 }

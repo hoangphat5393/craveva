@@ -4,8 +4,8 @@ namespace App\Models;
 
 use App\Traits\HasCompany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\DB;
 
 /**
  * App\Models\CustomField
@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property string $required
  * @property string|null $values
  * @property string|null $visible
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|CustomField newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|CustomField newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|CustomField query()
@@ -29,20 +30,24 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @method static \Illuminate\Database\Eloquent\Builder|CustomField whereRequired($value)
  * @method static \Illuminate\Database\Eloquent\Builder|CustomField whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|CustomField whereValues($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
  * @property-read \App\Models\LeadCustomForm|null $leadCustomForm
  * @property-read \App\Models\TicketCustomForm|null $ticketCustomForm
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|CustomField whereCompanyId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|CustomField whereExport($value)
+ *
  * @property-read \App\Models\CustomFieldGroup|null $customFieldGroup
  * @property-read \App\Models\CustomFieldGroup|null $fieldGroup
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|CustomField whereVisible($value)
+ *
  * @mixin \Eloquent
  */
 class CustomField extends BaseModel
 {
-
     use HasCompany;
 
     public $timestamps = false;
@@ -107,19 +112,21 @@ class CustomField extends BaseModel
 
                 if ($customField->type == 'date') {
                     $dateValue = $finalData?->value;
-                    if (!empty($dateValue)) {
+                    if (! empty($dateValue)) {
                         try {
                             $formattedDate = \Carbon\Carbon::parse($dateValue)->translatedFormat(company()->date_format);
+
                             return $formattedDate;
                         } catch (\Exception $e) {
-                            return '<span class="text-danger">' . __('Invalid Date') . '</span>';
+                            return '<span class="text-danger">'.__('Invalid Date').'</span>';
                         }
                     }
+
                     return '--';
                 }
 
                 if ($customField->type == 'file') {
-                    return $finalData ? '<a href="' . asset_url_local_s3('custom_fields/' . $finalData->value) . '" target="__blank" class="text-dark-grey">' . __('app.storageSetting.viewFile') . '</a>' : '--';
+                    return $finalData ? '<a href="'.asset_url_local_s3('custom_fields/'.$finalData->value).'" target="__blank" class="text-dark-grey">'.__('app.storageSetting.viewFile').'</a>' : '--';
                 }
 
                 return $finalData ? $finalData->value : '--';
@@ -143,15 +150,14 @@ class CustomField extends BaseModel
         if ($count > 0) {
             $i = 1;
 
-            while (CustomField::where('name', $slug . '-' . $i)->where('custom_field_group_id', $moduleId)->count() > 0) {
+            while (CustomField::where('name', $slug.'-'.$i)->where('custom_field_group_id', $moduleId)->count() > 0) {
                 $i++;
             }
 
-            $slug .= '-' . $i;
+            $slug .= '-'.$i;
         }
 
         return $slug;
 
     }
-
 }

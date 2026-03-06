@@ -2,8 +2,8 @@
 
 namespace Modules\Affiliate\Entities;
 
-use App\Models\Company;
 use App\Models\BaseModel;
+use App\Models\Company;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -28,5 +28,4 @@ class Referral extends BaseModel
     {
         return $this->belongsTo(Affiliate::class, 'affiliate_id');
     }
-
 }

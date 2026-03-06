@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Module;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -8,7 +7,6 @@ use Modules\CyberSecurity\Entities\CyberSecuritySetting;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      */
@@ -16,7 +14,7 @@ return new class extends Migration
     {
         \App\Models\Module::validateVersion(CyberSecuritySetting::MODULE_NAME);
 
-        if (!Schema::hasTable('cyber_security_settings')) {
+        if (! Schema::hasTable('cyber_security_settings')) {
             Schema::create('cyber_security_settings', function (Blueprint $table) {
                 $table->id();
                 $table->string('purchase_code')->nullable();
@@ -39,5 +37,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('cyber_security_settings');
     }
-
 };

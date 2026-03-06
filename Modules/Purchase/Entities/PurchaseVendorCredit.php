@@ -2,19 +2,18 @@
 
 namespace Modules\Purchase\Entities;
 
+use App\Models\BaseModel;
 use App\Models\Currency;
 use App\Models\UnitType;
-use App\Models\BaseModel;
 use App\Traits\HasCompany;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Notifications\Notifiable;
 
 class PurchaseVendorCredit extends BaseModel
 {
-
-    use HasFactory, HasCompany, Notifiable;
+    use HasCompany, HasFactory, Notifiable;
 
     protected $fillable = [];
 
@@ -27,7 +26,7 @@ class PurchaseVendorCredit extends BaseModel
 
     public static function lastVendorCreditNumber()
     {
-        return (int)PurchaseVendorCredit::max('credit_note_no');
+        return (int) PurchaseVendorCredit::max('credit_note_no');
     }
 
     public function items(): HasMany
@@ -75,12 +74,12 @@ class PurchaseVendorCredit extends BaseModel
     /* This is overall amount, cannot be used for particular credit note */
     public function creditAmountRemaining()
     {
-        return ($this->total) - $this->creditAmountUsed();
+        return $this->total - $this->creditAmountUsed();
     }
 
     public function getOriginalVendorCreditNumberAttribute()
     {
-        $purchaseSetting = cache()->rememberForever('purchase_setting_' . $this->company_id, function () {
+        $purchaseSetting = cache()->rememberForever('purchase_setting_'.$this->company_id, function () {
             return PurchaseSetting::first();
         });
 
@@ -90,11 +89,11 @@ class PurchaseVendorCredit extends BaseModel
             $condition = $purchaseSetting->vendor_credit_number_digit - strlen($this->attributes['vendor_credit_number']);
 
             for ($i = 0; $i < $condition; $i++) {
-                $zero = '0' . $zero;
+                $zero = '0'.$zero;
             }
         }
 
-        return $zero . $this->attributes['vendor_credit_number'];
+        return $zero.$this->attributes['vendor_credit_number'];
     }
 
     public function getVendorCreditNumberAttribute()
@@ -103,15 +102,13 @@ class PurchaseVendorCredit extends BaseModel
             return '';
         }
 
-        $purchaseSetting = cache()->rememberForever('purchase_setting_' . $this->company_id, function () {
+        $purchaseSetting = cache()->rememberForever('purchase_setting_'.$this->company_id, function () {
             return PurchaseSetting::first();
         });
 
         // Use str_pad to add leading zeros if necessary
         $paddedId = str_pad($this->id, $purchaseSetting->vendor_credit_number_digit, '0', STR_PAD_LEFT);
 
-        return $purchaseSetting->vendor_credit_prefix . $purchaseSetting->vendor_credit_number_seprator . $paddedId;
+        return $purchaseSetting->vendor_credit_prefix.$purchaseSetting->vendor_credit_number_seprator.$paddedId;
     }
-
-
 }

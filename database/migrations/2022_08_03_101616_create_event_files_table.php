@@ -4,14 +4,13 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      *
      * @return void
      */
-
     public function up()
     {
         Schema::create('event_files', function (Blueprint $table) {
@@ -35,12 +34,11 @@ return new class extends Migration {
             $table->timestamps();
         });
 
-        if (!Schema::hasColumn('events', 'event_link')) {
+        if (! Schema::hasColumn('events', 'event_link')) {
             Schema::table('events', function (Blueprint $table) {
                 $table->string('event_link')->after('remind_type')->nullable();
             });
         }
-
 
         Schema::table('proposal_templates', function (Blueprint $table) {
             $table->dropForeign(['lead_id']);
@@ -61,5 +59,4 @@ return new class extends Migration {
     {
         Schema::dropIfExists('event_files');
     }
-
 };

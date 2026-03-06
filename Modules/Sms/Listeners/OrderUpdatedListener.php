@@ -24,5 +24,4 @@ class OrderUpdatedListener
         } catch (\Exception $e) { // @codingStandardsIgnoreLine
         }
     }
-
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\DataTables\CreditNotesDataTable;
 use App\Helper\Reply;
+use App\Helper\UserService;
 use App\Http\Requests\CreditNotes\creditNoteFileStore;
 use App\Http\Requests\CreditNotes\StoreCreditNotes;
 use App\Http\Requests\CreditNotes\UpdateCreditNote;
@@ -20,19 +21,18 @@ use App\Models\UnitType;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
-use App\Helper\UserService;
+use Illuminate\Support\Facades\DB;
 
 class CreditNoteController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'app.menu.credit-note';
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('invoices', $this->user->modules));
+            abort_403(! in_array('invoices', $this->user->modules));
+
             return $next($request);
         });
     }
@@ -41,16 +41,15 @@ class CreditNoteController extends AccountBaseController
     {
         $viewPermission = user()->permission('view_invoices');
 
-        abort_403(!in_array($viewPermission, ['all', 'added', 'owned', 'both']));
+        abort_403(! in_array($viewPermission, ['all', 'added', 'owned', 'both']));
 
-        if (!request()->ajax()) {
+        if (! request()->ajax()) {
             $this->projects = Project::allProjects();
         }
 
         if (in_array('client', user_roles())) {
             $this->clients = User::client();
-        }
-        else {
+        } else {
             $this->clients = User::allClients();
         }
 
@@ -60,15 +59,14 @@ class CreditNoteController extends AccountBaseController
 
     public function create()
     {
-        abort_403(!in_array(user()->permission('add_invoices'), ['all', 'added']));
+        abort_403(! in_array(user()->permission('add_invoices'), ['all', 'added']));
 
-        abort_if(!request()->has('invoice'), 404);
+        abort_if(! request()->has('invoice'), 404);
 
         $this->invoiceId = $id = request('invoice');
         $this->creditNote = Invoice::with(['items', 'project', 'client'])->findOrFail($id);
 
-
-        abort_if(!in_array($this->creditNote->status, ['paid', 'partial']), 404);
+        abort_if(! in_array($this->creditNote->status, ['paid', 'partial']), 404);
 
         $this->lastCreditNote = CreditNotes::count() + 1;
         $this->creditNoteSetting = invoice_setting();
@@ -85,7 +83,7 @@ class CreditNoteController extends AccountBaseController
             $condition = $this->creditNoteSetting->credit_note_digit - strlen($this->lastCreditNote);
 
             for ($i = 0; $i < $condition; $i++) {
-                $this->zero = '0' . $this->zero;
+                $this->zero = '0'.$this->zero;
             }
         }
 
@@ -136,19 +134,19 @@ class CreditNoteController extends AccountBaseController
         $product = request()->product_id;
 
         foreach ($quantity as $qty) {
-            if (!is_numeric($qty) && (intval($qty) < 1)) {
+            if (! is_numeric($qty) && (intval($qty) < 1)) {
                 return Reply::error(__('messages.quantityNumber'));
             }
         }
 
         foreach ($cost_per_item as $rate) {
-            if (!is_numeric($rate)) {
+            if (! is_numeric($rate)) {
                 return Reply::error(__('messages.unitPriceNumber'));
             }
         }
 
         foreach ($amount as $amt) {
-            if (!is_numeric($amt)) {
+            if (! is_numeric($amt)) {
                 return Reply::error(__('messages.amountNumber'));
             }
         }
@@ -167,11 +165,10 @@ class CreditNoteController extends AccountBaseController
 
         if ($invoice->client_id) {
             $clientId = $invoice->client_id;
-        }
-        elseif (!is_null($invoice->project) && $invoice->project->client_id) {
+        } elseif (! is_null($invoice->project) && $invoice->project->client_id) {
             $clientId = $invoice->project->client_id;
         }
-        $creditNote = new CreditNotes();
+        $creditNote = new CreditNotes;
 
         $creditNote->project_id = ($invoice->project_id) ? $invoice->project_id : null;
         $creditNote->client_id = $clientId;
@@ -202,8 +199,7 @@ class CreditNoteController extends AccountBaseController
                     }
 
                     $invoice->status = 'paid';
-                }
-                else {
+                } else {
                     $amount = round($request->total, 2);
                     $invoice->status = 'partial';
                     $creditNote->status = 'closed';
@@ -223,35 +219,34 @@ class CreditNoteController extends AccountBaseController
 
         DB::commit();
 
-        foreach ($items as $key => $item) :
-            if (!is_null($item)) {
+        foreach ($items as $key => $item) {
+            if (! is_null($item)) {
                 $creditNoteItem = CreditNoteItem::create([
                     'credit_note_id' => $creditNote->id,
                     'item_name' => $item,
                     'type' => 'item',
-                    'unit_id' => (isset($unitId[$key]) && !is_null($unitId[$key])) ? $unitId[$key] : null,
-                    'product_id' => (isset($product[$key]) && !is_null($product[$key])) ? $product[$key] : null,
-                    'hsn_sac_code' => (isset($hsn_sac_code[$key]) && !is_null($hsn_sac_code[$key])) ? $hsn_sac_code[$key] : null,
+                    'unit_id' => (isset($unitId[$key]) && ! is_null($unitId[$key])) ? $unitId[$key] : null,
+                    'product_id' => (isset($product[$key]) && ! is_null($product[$key])) ? $product[$key] : null,
+                    'hsn_sac_code' => (isset($hsn_sac_code[$key]) && ! is_null($hsn_sac_code[$key])) ? $hsn_sac_code[$key] : null,
                     'item_summary' => $itemSummary[$key],
                     'quantity' => $quantity[$key],
                     'unit_price' => round($cost_per_item[$key], 2),
                     'amount' => round($amountArray[$key], 2),
-                    'taxes' => ($tax ? (array_key_exists($key, $tax) ? json_encode($tax[$key]) : null) : null)
+                    'taxes' => ($tax ? (array_key_exists($key, $tax) ? json_encode($tax[$key]) : null) : null),
                 ]);
 
                 /* Invoice file save here */
-                if(isset($invoice_item_image_url[$key])){
+                if (isset($invoice_item_image_url[$key])) {
                     CreditNoteItemImage::create(
                         [
                             'credit_note_item_id' => $creditNoteItem->id,
-                            'external_link' => isset($invoice_item_image_url[$key]) ? $invoice_item_image_url[$key] : null
+                            'external_link' => isset($invoice_item_image_url[$key]) ? $invoice_item_image_url[$key] : null,
                         ]
                     );
                 }
             }
 
-        endforeach;
-
+        }
 
         // Log search
         $this->logSearchEntry($creditNote->id, $creditNote->cn_number, 'creditnotes.show', 'creditNote');
@@ -265,7 +260,7 @@ class CreditNoteController extends AccountBaseController
         $this->viewPermission = user()->permission('view_invoices');
         $this->creditNote = CreditNotes::with('unit')->findOrFail($id);
 
-        abort_403(!(
+        abort_403(! (
             $this->viewPermission == 'all'
             || ($this->viewPermission == 'added' && $this->creditNote->invoice->added_by == user()->id)
             || ($this->viewPermission == 'owned' && $this->creditNote->client_id == user()->id)
@@ -275,14 +270,14 @@ class CreditNoteController extends AccountBaseController
         Carbon::setLocale($this->invoiceSetting->locale ?? 'en');
 
         if ($this->creditNote->file != null) {
-            return response()->download(storage_path('app/public/credit-note-files') . '/' . $this->creditNote->file);
+            return response()->download(storage_path('app/public/credit-note-files').'/'.$this->creditNote->file);
         }
 
         $pdfOption = $this->domPdfObjectForDownload($id);
         $pdf = $pdfOption['pdf'];
         $filename = $pdfOption['fileName'];
 
-        return request()->view ? $pdf->stream($filename . '.pdf') : $pdf->download($filename . '.pdf');
+        return request()->view ? $pdf->stream($filename.'.pdf') : $pdf->download($filename.'.pdf');
 
     }
 
@@ -301,7 +296,7 @@ class CreditNoteController extends AccountBaseController
 
         // Download file uploaded
         if ($this->creditNote->file != null) {
-            return response()->download(storage_path('app/public/credit-note-files') . '/' . $this->creditNote->file);
+            return response()->download(storage_path('app/public/credit-note-files').'/'.$this->creditNote->file);
         }
 
         $this->discount = 0;
@@ -309,13 +304,12 @@ class CreditNoteController extends AccountBaseController
         if ($this->creditNote->discount > 0) {
             if ($this->creditNote->discount_type == 'percent') {
                 $this->discount = (($this->creditNote->discount / 100) * $this->creditNote->sub_total);
-            }
-            else {
+            } else {
                 $this->discount = $this->creditNote->discount;
             }
         }
 
-        $taxList = array();
+        $taxList = [];
 
         $items = CreditNoteItem::whereNotNull('taxes')
             ->where('credit_note_id', $id)
@@ -326,22 +320,21 @@ class CreditNoteController extends AccountBaseController
             foreach (json_decode($item->taxes) as $tax) {
                 $this->tax = CreditNoteItem::taxbyid($tax)->first();
 
-                if (!isset($taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'])) {
+                if (! isset($taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'])) {
 
                     if ($this->creditNote->calculate_tax == 'after_discount' && $this->discount > 0) {
-                        $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = ($item->amount - ($item->amount / $this->creditNote->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
-
-                    } else{
-                        $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $item->amount * ($this->tax->rate_percent / 100);
-                    }
-
-                }
-                else {
-                    if ($this->creditNote->calculate_tax == 'after_discount' && $this->discount > 0) {
-                        $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + (($item->amount - ($item->amount / $this->creditNote->sub_total) * $this->discount) * ($this->tax->rate_percent / 100));
+                        $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = ($item->amount - ($item->amount / $this->creditNote->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
 
                     } else {
-                        $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + ($item->amount * ($this->tax->rate_percent / 100));
+                        $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $item->amount * ($this->tax->rate_percent / 100);
+                    }
+
+                } else {
+                    if ($this->creditNote->calculate_tax == 'after_discount' && $this->discount > 0) {
+                        $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + (($item->amount - ($item->amount / $this->creditNote->sub_total) * $this->discount) * ($this->tax->rate_percent / 100));
+
+                    } else {
+                        $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + ($item->amount * ($this->tax->rate_percent / 100));
                     }
                 }
             }
@@ -364,13 +357,13 @@ class CreditNoteController extends AccountBaseController
                 * { text-transform: none !important; }
             </style>';
 
-        $pdf->loadHTML($customCss . view('credit-notes.pdf.' . $this->invoiceSetting->template, $this->data)->render());
+        $pdf->loadHTML($customCss.view('credit-notes.pdf.'.$this->invoiceSetting->template, $this->data)->render());
 
         $filename = $this->creditNote->cn_number;
 
         return [
             'pdf' => $pdf,
-            'fileName' => $filename
+            'fileName' => $filename,
         ];
     }
 
@@ -379,7 +372,7 @@ class CreditNoteController extends AccountBaseController
         $this->creditNote = CreditNotes::with('invoice', 'unit')->findOrFail($id);
 
         $this->editPermission = user()->permission('edit_invoices');
-        abort_403(!($this->editPermission == 'all' || ($this->editPermission == 'added' && $this->creditNote->invoice->added_by == user()->id)));
+        abort_403(! ($this->editPermission == 'all' || ($this->editPermission == 'added' && $this->creditNote->invoice->added_by == user()->id)));
 
         $this->projects = Project::allProjects();
         $this->currencies = Currency::all();
@@ -399,19 +392,19 @@ class CreditNoteController extends AccountBaseController
         $amount = $request->amount;
 
         foreach ($quantity as $qty) {
-            if (!is_numeric($qty) && $qty < 1) {
+            if (! is_numeric($qty) && $qty < 1) {
                 return Reply::error(__('messages.quantityNumber'));
             }
         }
 
         foreach ($cost_per_item as $rate) {
-            if (!is_numeric($rate)) {
+            if (! is_numeric($rate)) {
                 return Reply::error(__('messages.unitPriceNumber'));
             }
         }
 
         foreach ($amount as $amt) {
-            if (!is_numeric($amt)) {
+            if (! is_numeric($amt)) {
                 return Reply::error(__('messages.amountNumber'));
             }
         }
@@ -442,7 +435,7 @@ class CreditNoteController extends AccountBaseController
         $this->creditNote = CreditNotes::with('invoice', 'unit')->findOrFail($id);
         $userId = UserService::getUserId();
 
-        abort_403(!((
+        abort_403(! ((
             $this->viewPermission == 'all'
             || ($this->viewPermission == 'added' && $this->creditNote->invoice->added_by == $userId)
             || ($this->viewPermission == 'owned' && $this->creditNote->client_id == $userId))
@@ -456,16 +449,15 @@ class CreditNoteController extends AccountBaseController
         if ($this->creditNote->discount > 0) {
             if ($this->creditNote->discount_type == 'percent') {
                 $this->discount = (($this->creditNote->discount / 100) * $this->creditNote->sub_total);
-            }
-            else {
+            } else {
                 $this->discount = $this->creditNote->discount;
             }
         }
 
-        if($this->creditNote->discount_type == 'percent') {
+        if ($this->creditNote->discount_type == 'percent') {
             $discountAmount = $this->creditNote->discount;
             $this->discountType = $discountAmount.'%';
-        }else {
+        } else {
             $discountAmount = $this->creditNote->discount;
             $this->discountType = currency_format($discountAmount, $this->creditNote->currency_id);
         }
@@ -476,7 +468,7 @@ class CreditNoteController extends AccountBaseController
             $this->invoiceExist = true;
         }
 
-        $taxList = array();
+        $taxList = [];
 
         $items = CreditNoteItem::whereNotNull('taxes')
             ->where('credit_note_id', $this->creditNote->id)
@@ -487,22 +479,21 @@ class CreditNoteController extends AccountBaseController
             foreach (json_decode($item->taxes) as $tax) {
                 $this->tax = CreditNoteItem::taxbyid($tax)->first();
 
-                if (!isset($taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'])) {
+                if (! isset($taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'])) {
 
                     if ($this->creditNote->calculate_tax == 'after_discount' && $this->discount > 0) {
-                        $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = ($item->amount - ($item->amount / $this->creditNote->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
-
-                    } else{
-                        $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $item->amount * ($this->tax->rate_percent / 100);
-                    }
-
-                }
-                else {
-                    if ($this->creditNote->calculate_tax == 'after_discount' && $this->discount > 0) {
-                        $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + (($item->amount - ($item->amount / $this->creditNote->sub_total) * $this->discount) * ($this->tax->rate_percent / 100));
+                        $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = ($item->amount - ($item->amount / $this->creditNote->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
 
                     } else {
-                        $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + ($item->amount * ($this->tax->rate_percent / 100));
+                        $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $item->amount * ($this->tax->rate_percent / 100);
+                    }
+
+                } else {
+                    if ($this->creditNote->calculate_tax == 'after_discount' && $this->discount > 0) {
+                        $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + (($item->amount - ($item->amount / $this->creditNote->sub_total) * $this->discount) * ($this->tax->rate_percent / 100));
+
+                    } else {
+                        $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + ($item->amount * ($this->tax->rate_percent / 100));
                     }
                 }
 
@@ -513,6 +504,7 @@ class CreditNoteController extends AccountBaseController
 
         $this->settings = $this->company;
         $this->creditNoteSetting = invoice_setting();
+
         return view('credit-notes.show', $this->data);
 
     }
@@ -522,7 +514,7 @@ class CreditNoteController extends AccountBaseController
         $this->deletePermission = user()->permission('delete_invoices');
 
         $this->creditNote = CreditNotes::with('invoice')->findOrFail($id);
-        abort_403(!($this->deletePermission == 'all' || ($this->deletePermission == 'added' && $this->creditNote->invoice->added_by == user()->id)));
+        abort_403(! ($this->deletePermission == 'all' || ($this->deletePermission == 'added' && $this->creditNote->invoice->added_by == user()->id)));
         $firstCreditNote = CreditNotes::orderBy('id', 'desc')->first();
 
         if ($firstCreditNote->id == $id) {
@@ -554,16 +546,16 @@ class CreditNoteController extends AccountBaseController
             }
 
             CreditNotes::destroy($id);
+
             return Reply::success(__('messages.deleteSuccess'));
-        }
-        else {
+        } else {
             return Reply::error(__('messages.creditNoteCanNotDeleted'));
         }
 
     }
 
     /**
-     * @param mixed $id
+     * @param  mixed  $id
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|mixed
      */
     public function applyToInvoice($id)
@@ -585,9 +577,9 @@ class CreditNoteController extends AccountBaseController
     }
 
     /**
-     * @param Request $request
-     * @param int $id
+     * @param  int  $id
      * @return array|string[]
+     *
      * @throws \Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException
      */
     public function applyInvoiceCredit(Request $request, $id)
@@ -605,17 +597,17 @@ class CreditNoteController extends AccountBaseController
         $creditNote = CreditNotes::findOrFail($id);
         $creditTotalAmount = 0.00;
 
-        if ((float)$request->remainingAmount <= 0) {
+        if ((float) $request->remainingAmount <= 0) {
             $creditNote->status = 'closed';
         }
 
         foreach ($request->invoices as $invoice) {
 
-            if ($invoice['value'] !== '0' && !is_null($invoice['value'])) {
-                $creditTotalAmount += (float)$invoice['value'];
+            if ($invoice['value'] !== '0' && ! is_null($invoice['value'])) {
+                $creditTotalAmount += (float) $invoice['value'];
 
                 $reqInvoice = Invoice::findOrFail($invoice['invoiceId']);
-                $this->makePayment($id, $invoice['invoiceId'], (float)$invoice['value']);
+                $this->makePayment($id, $invoice['invoiceId'], (float) $invoice['value']);
 
                 $reqInvoice->status = 'paid';
 
@@ -639,7 +631,7 @@ class CreditNoteController extends AccountBaseController
     {
         $creditNote = CreditNotes::findOrFail($creditNoteId);
 
-        $payment = new Payment();
+        $payment = new Payment;
         $payment->invoice_id = $invoiceId;
         $payment->credit_notes_id = $creditNoteId;
         $payment->amount = $amount;
@@ -703,7 +695,7 @@ class CreditNoteController extends AccountBaseController
         if ($this->payments->count() > 0) {
             $view = view('credit-notes.ajax.credited_invoices', $this->data)->render();
 
-            return Reply::successWithData(__('messages.deleteSuccess'), ['view' => $view, 'remainingAmount' => number_format((float)$this->creditNote->creditAmountRemaining(), 2, '.', '')]);
+            return Reply::successWithData(__('messages.deleteSuccess'), ['view' => $view, 'remainingAmount' => number_format((float) $this->creditNote->creditAmountRemaining(), 2, '.', '')]);
         }
 
         return Reply::redirect(route('creditnotes.show', [$this->creditNote->id]), __('messages.deleteSuccess'));
@@ -712,6 +704,7 @@ class CreditNoteController extends AccountBaseController
     public function fileUpload()
     {
         $this->creditNoteId = request('credit_note');
+
         return view('credit-notes.file_upload', $this->data);
     }
 
@@ -727,7 +720,7 @@ class CreditNoteController extends AccountBaseController
         if ($creditNote != null) {
 
             if ($creditNote->file != null) {
-                unlink(storage_path('app/public/credit-note-files') . '/' . $creditNote->file);
+                unlink(storage_path('app/public/credit-note-files').'/'.$creditNote->file);
             }
 
             $file->move(storage_path('app/public/credit-note-files'), $newName);
@@ -752,7 +745,7 @@ class CreditNoteController extends AccountBaseController
         if ($creditNote != null) {
 
             if ($creditNote->file != null) {
-                unlink(storage_path('app/public/credit-note-files') . '/' . $creditNote->file);
+                unlink(storage_path('app/public/credit-note-files').'/'.$creditNote->file);
             }
 
             $creditNote->file = null;
@@ -782,7 +775,7 @@ class CreditNoteController extends AccountBaseController
             $condition = $this->creditNoteSetting->credit_note_digit - strlen($this->lastCreditNote);
 
             for ($i = 0; $i < $condition; $i++) {
-                $this->zero = '0' . $this->zero;
+                $this->zero = '0'.$this->zero;
             }
         }
 
@@ -815,7 +808,7 @@ class CreditNoteController extends AccountBaseController
     {
         $client_data = Product::where('unit_id', $id)->get();
         $unitId = UnitType::where('id', $id)->first();
-        return Reply::dataOnly(['status' => 'success', 'data' => $client_data, 'type' => $unitId] );
-    }
 
+        return Reply::dataOnly(['status' => 'success', 'data' => $client_data, 'type' => $unitId]);
+    }
 }

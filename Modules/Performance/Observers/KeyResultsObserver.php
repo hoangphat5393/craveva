@@ -2,16 +2,15 @@
 
 namespace Modules\Performance\Observers;
 
-use Carbon\Carbon;
 use App\Traits\HasCompany;
+use Carbon\Carbon;
 use Modules\Performance\Entities\KeyResults;
 use Modules\Performance\Entities\Objective;
 use Modules\Performance\Entities\ObjectiveProgressStatus;
 
 class KeyResultsObserver
 {
-
-    Use HasCompany;
+    use HasCompany;
 
     public function creating(KeyResults $model)
     {
@@ -72,8 +71,7 @@ class KeyResultsObserver
         if ($currentValue > $targetValue) {
             // Current value is greater than target value
             $percentage = $this->calculateProgressPercentage($currentValue, $originalCurrentValue, $targetValue);
-        }
-        else {
+        } else {
             // Current value is less than or equal to target value
             $percentage = $this->calculateProgressPercentage($currentValue, $originalCurrentValue, $targetValue);
         }
@@ -98,11 +96,10 @@ class KeyResultsObserver
         $keyResult = KeyResults::findOrFail($keyId);
 
         if ($type == 'delete') {
-            $objective = Objective::with(['keyResults' => function ($query) use($keyId) {
+            $objective = Objective::with(['keyResults' => function ($query) use ($keyId) {
                 $query->where('id', '!=', $keyId);
             }])->where('id', $keyResult->objective_id)->first();
-        }
-        else {
+        } else {
             $objective = Objective::with('keyResults')->where('id', $keyResult->objective_id)->first();
         }
 
@@ -131,8 +128,7 @@ class KeyResultsObserver
                 $elapsedDays = $startDate->diffInDays($today);
                 $remainingDays = $totalDays - $elapsedDays;
                 $timeLeftPercentage = ($remainingDays / $totalDays) * 100;
-            }
-            else {
+            } else {
                 // If start and end dates are the same, no time left
                 $timeLeftPercentage = 0;
             }
@@ -142,20 +138,16 @@ class KeyResultsObserver
             if ($objectiveProgress >= 100) {
                 $status = 'completed';
                 $color = 'primary';
-            }
-            elseif ($objectiveProgress > 70 && $timeLeftPercentage > 50) {
+            } elseif ($objectiveProgress > 70 && $timeLeftPercentage > 50) {
                 $status = 'onTrack';
                 $color = 'success';
-            }
-            elseif ($objectiveProgress > 60 && $timeLeftPercentage <= 50) {
+            } elseif ($objectiveProgress > 60 && $timeLeftPercentage <= 50) {
                 $status = 'atRisk';
                 $color = 'warning';
-            }
-            elseif (($objectiveProgress == 0.0 || ($objectiveProgress >= 40 && $objectiveProgress <= 60) || $endDate < $today && $objectiveProgress < 100) && $timeLeftPercentage <= 50) {
+            } elseif (($objectiveProgress == 0.0 || ($objectiveProgress >= 40 && $objectiveProgress <= 60) || $endDate < $today && $objectiveProgress < 100) && $timeLeftPercentage <= 50) {
                 $status = 'offTrack';
                 $color = 'danger';
-            }
-            else {
+            } else {
                 $status = 'onTrack';
                 $color = 'success';
             }
@@ -173,5 +165,4 @@ class KeyResultsObserver
             );
         }
     }
-
 }

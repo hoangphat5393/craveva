@@ -2,9 +2,9 @@
 
 namespace Modules\ServerManager\Database\Seeders;
 
+use App\Models\Company;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use App\Models\Company;
 
 class ServerTypeSeeder extends Seeder
 {
@@ -350,7 +350,7 @@ class ServerTypeSeeder extends Seeder
             DB::table('server_types')->updateOrInsert(
                 [
                     'company_id' => $companyId,
-                    'slug' => $serverTypeData['slug']
+                    'slug' => $serverTypeData['slug'],
                 ],
                 [
                     'name' => $serverTypeData['name'],

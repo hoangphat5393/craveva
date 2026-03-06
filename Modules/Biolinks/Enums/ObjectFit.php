@@ -4,7 +4,6 @@ namespace Modules\Biolinks\Enums;
 
 enum ObjectFit: string
 {
-
     // phpcs:disable
     case COVER = 'cover';
     case FILL = 'fill';
@@ -15,9 +14,8 @@ enum ObjectFit: string
     public function label(): string
     {
         return match ($this) {
-            self::COVER, self::FILL, self::CONTAIN => __('biolinks::app.' . $this->value),
+            self::COVER, self::FILL, self::CONTAIN => __('biolinks::app.'.$this->value),
             default => $this->value,
         };
     }
-
 }

@@ -6,10 +6,9 @@ use App\Models\ContractRenew;
 
 class ContractRenewObserver
 {
-
     public function saving(ContractRenew $contractRenew)
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             if (user()) {
                 $contractRenew->last_updated_by = user()->id;
             }
@@ -26,5 +25,4 @@ class ContractRenewObserver
             $contractRenew->company_id = company()->id;
         }
     }
-
 }

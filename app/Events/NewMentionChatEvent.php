@@ -10,10 +10,10 @@ use Illuminate\Queue\SerializesModels;
 
 class NewMentionChatEvent implements ShouldBroadcast
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $userChat;
+
     public $notifyUser;
 
     public function __construct(UserChat $userChat, $notifyUser)
@@ -32,5 +32,4 @@ class NewMentionChatEvent implements ShouldBroadcast
     {
         return 'messages.received';
     }
-
 }

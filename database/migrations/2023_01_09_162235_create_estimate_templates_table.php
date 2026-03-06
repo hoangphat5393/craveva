@@ -8,14 +8,13 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      *
      * @return void
      */
-
     public function up()
     {
         Schema::create('estimate_templates', function (Blueprint $table) {
@@ -95,7 +94,7 @@ return new class extends Migration {
             $table->longText('details')->change();
         });
 
-        if (!Schema::hasColumn('client_details', 'company_logo')) {
+        if (! Schema::hasColumn('client_details', 'company_logo')) {
             Schema::table('client_details', function (Blueprint $table) {
                 $table->string('company_logo')->nullable()->after('last_updated_by');
             });
@@ -116,9 +115,7 @@ return new class extends Migration {
         // SET lat long null for default address
         DB::statement("UPDATE `company_addresses` SET `latitude`=NULL and longitude=NULL where latitude='26.91243360'");
 
-
         $this->customFieldsContracts();
-
 
     }
 
@@ -143,12 +140,11 @@ return new class extends Migration {
                 [
                     'name' => 'Contract',
                     'model' => Contract::CUSTOM_FIELD_MODEL,
-                    'company_id' => $company->id
-                ]
+                    'company_id' => $company->id,
+                ],
             ];
         }
 
         CustomFieldGroup::insert($customFieldGroup);
     }
-
 };

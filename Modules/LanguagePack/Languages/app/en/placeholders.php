@@ -1,6 +1,6 @@
 <?php
 
-return array(
+return [
     'knowledgeBase' => 'Update your profile picture',
     'writeshortcode' => 'Project unique short code',
     'taskshortcode' => 'Task unique short code',
@@ -43,7 +43,7 @@ return array(
     'linkTitle' => 'Link Title',
     'url' => 'URL',
     'categoryName' => 'e.g. Finance',
-    'invoices' => array(
+    'invoices' => [
         'invoicePrefix' => 'Enter invoice prefix',
         'estimatePrefix' => 'Enter estimate prefix',
         'creditNotePrefix' => 'Enter credit note prefix',
@@ -65,58 +65,58 @@ return array(
         'proposalNumberSeparator' => 'Enter Proposal Number Separator',
         'BankDetails' => 'Add Payment Method Details (e.g., Bank Account, Transfer Information)',
         'title' => 'Payment Description',
-    ),
+    ],
 
-    'currency' => array(
+    'currency' => [
         'currencyName' => 'e.g. Dollar',
         'currencySymbol' => 'e.g. $',
         'currencyCode' => 'e.g. USD',
         'thousandSeparator' => 'e.g. ,',
         'decimalSeparator' => 'e.g. .',
-    ),
-    'ticket' => array(
+    ],
+    'ticket' => [
         'replyTicket' => 'Enter template heading',
         'templateText' => 'Enter template text here',
-    ),
+    ],
     'columnName' => 'e.g. Pending',
     'message' => 'Write your message here',
-    'payments' => array(
+    'payments' => [
         'remark' => 'Enter a summary of the payment.',
         'transactionId' => 'Enter transaction ID of the payment',
-        'paymentGateway' => 'e.g. PayPal, Stripe, Bank Transfer, Cash etc.'
-    ),
-    'expense' => array(
+        'paymentGateway' => 'e.g. PayPal, Stripe, Bank Transfer, Cash etc.',
+    ],
+    'expense' => [
         'item' => 'e.g. Wireless Keyboard',
-        'vendor' => 'e.g. Acme Corporation'
-    ),
+        'vendor' => 'e.g. Acme Corporation',
+    ],
     'status' => 'e.g. In Progress',
-    'timelog' => array(
-        'memo' => 'e.g. Working on new logo'
-    ),
+    'timelog' => [
+        'memo' => 'e.g. Working on new logo',
+    ],
     'noticeTitle' => 'e.g. New year celebrations at office.',
     'search' => 'Enter keyword to search',
-    'attendance' => array(
-        'workFrom' => 'e.g. Office, Home, etc.'
-    ),
+    'attendance' => [
+        'workFrom' => 'e.g. Office, Home, etc.',
+    ],
     'dateRange' => 'Start Date To End Date',
     'emailDomain' => 'e.g. gmail.com',
     'slackWebhook' => 'e.g. https://hooks.slack.com/services/XXXXXXXXXXXXXXXXXXXX',
-    'gdpr' => array(
+    'gdpr' => [
         'additionDescription' => 'Enter Additional Description',
-    ),
+    ],
     'productName' => 'e.g. Web Hosting, Laptop, Notebook, Mobile App etc.',
-    'leave' => array(
+    'leave' => [
         'reason' => 'e.g. Feeling not well',
-    ),
+    ],
     'company' => 'e.g. Acme Corporation',
-    'storageSetting' => array(
+    'storageSetting' => [
         'awsKey' => 'e.g. AKIAXXXXX67FNYNM2P',
         'awsBucket' => 'e.g. test-bucket',
-    ),
+    ],
     'hsnSac' => 'e.g. 995431',
     'sku' => "Write the product's sku here",
     'hourEstimate' => 'e.g. 500',
-    'paymentGateway' => array(
+    'paymentGateway' => [
         'sandboxPaypalClientId' => 'e.g. AW-Ydt5KHz2FwhAikHsObpRrpB55qE8MyvUkHbQsFb_6_2Unv3WNBSmBxEqA8N74JzOaFTPBUI-MG4sB',
         'livePaypalClientId' => 'e.g. AW-Ydt5KHz2FwhAikHsObpRrpB55qE8MyvUkHbQsFb_6_2Unv3WNBSmBxEqA8N74JzOaFTPBUI-MG4sB',
         'testStripePublishableKey' => 'e.g. sk_test_XXXXXXXXXXxBXnjBe1d6G5reXbGAc8a1qumQN0doumYbhb2tChV6qTCuFfvQyxEDInYho7jhQoR4MqNBWcafRYPCb00r2jkEBKe',
@@ -125,13 +125,13 @@ return array(
         'liveRazorpayKey' => 'e.g. rzp_live_znKZOLn4TXXXXX',
         'paystackKey' => 'e.g. pk_live_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
         'flutterwaveKey' => 'e.g. FLWPUBK-xxxxxxxxxxxxxxxxxxxxx-X',
-    ),
-    'bankaccount' => array(
+    ],
+    'bankaccount' => [
         'accountName' => 'e.g. John Doe',
         'bankName' => 'e.g. Federal Bank',
         'accountNumber' => 'e.g. 123456789',
         'balance' => 'e.g. 25$',
-    ),
+    ],
     'renterPassword' => 'Please enter your password',
     'city' => 'e.g. New York, Jaipur, Dubai',
     'location' => 'Enter a location',
@@ -139,9 +139,9 @@ return array(
     'relationship' => 'e.g. father',
     'shiftName' => 'e.g. Night Shift',
     'shiftShortCode' => 'e.g. NS',
-    'appreciation' => array(
-        'title' => 'e.g. Employee of the month'
-    ),
+    'appreciation' => [
+        'title' => 'e.g. Employee of the month',
+    ],
     'select2Min' => 'Please enter 2 or more characters',
     'searchForProjects' => 'Search for projects',
     'min' => 'Min',
@@ -152,39 +152,39 @@ return array(
     'recaptchaV3' => 'e.g. 6LeL_s8ZAAAAAMVC2clQdxxxXXXxxxxxXXX',
     'fileSetting' => 'e.g. application/x-zip-compressed',
     'searchForCompany' => 'Search For A Company',
-    'tickets' => array(
+    'tickets' => [
         'ticketChannel' => 'e.g. Facebook, Phone, etc.',
         'ticketGroup' => 'e.g. Sales, Support, etc.',
-    ),
-    'offlinePayment' => array(
+    ],
+    'offlinePayment' => [
         'method' => 'e.g. Cash, Cheque, etc.',
         'description' => 'e.g. via USD dollar',
-    ),
+    ],
     'state' => 'e.g. California, Rajasthan, Dubai',
     'postalCode' => 'e.g. 90250',
     'gstNumber' => 'e.g. 18AABCU960XXXXX',
     'latitude' => 'e.g. 38.895',
     'longitude' => 'e.g. -77.0364',
-    'client' => array(
+    'client' => [
         'skype' => 'e.g. skypeUsername',
         'linkedin' => 'e.g. https://www.linkedin.com/XXXXXXXXXX/',
         'twitter' => 'e.g. @johndoe',
         'facebook' => 'e.g. https://www.facebook.com/XXXXXXXXXX/',
-    ),
+    ],
     'googleMapKey' => 'e.g. AIzaSyDSl2bG7XXXXXXXXXXXXXXXXXX',
     'categoryName' => 'e.g. Potential Client',
-    'role' => array(
+    'role' => [
         'roleName' => 'e.g. HR',
-    ),
+    ],
     'purchaseCode' => 'e.g. 147778a2-dfa2-424e-a29f-xxxxxxxxx',
-    'language' => array(
+    'language' => [
         'languageName' => 'e.g. English',
         'languageCode' => 'e.g. en',
-    ),
+    ],
     'gst/vat' => 'e.g. GST/VAT',
     'days' => 'e.g. 3 days',
-    'estimateRequest' => array(
+    'estimateRequest' => [
         'reason' => 'e.g. Not within budget',
-    ),
+    ],
     'twitterId' => 'e.g. 182180xxxxxx1843842',
-);
+];

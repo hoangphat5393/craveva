@@ -2,23 +2,27 @@
 
 namespace App\DataTables;
 
+use App\Helper\Common;
 use App\Models\EmployeeDetails;
 use App\Models\Leave;
 use App\Models\LeaveSetting;
-use App\Models\User;
 use Carbon\Carbon;
 use Yajra\DataTables\Html\Column;
-use App\Helper\Common;
 
 class LeaveDataTable extends BaseDataTable
 {
-
     private $editLeavePermission;
+
     private $deleteLeavePermission;
+
     private $deleteApproveLeavePermission;
+
     private $viewLeavePermission;
+
     private $approveRejectPermission;
+
     private $reportingPermission;
+
     private $reportingTo;
 
     public function __construct()
@@ -36,10 +40,9 @@ class LeaveDataTable extends BaseDataTable
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
-
     public function dataTable($query)
     {
         return datatables()
@@ -47,38 +50,38 @@ class LeaveDataTable extends BaseDataTable
             ->addIndexColumn()
 
             ->addColumn('check', function ($row) {
-                return '<input type="checkbox" class="select-table-row" data-unique-id="' . $row->unique_id . '" id="datatable-row-' . $row->id . '"  name="datatable_ids[]" value="' . $row->id . '" onclick="dataTableRowCheck(' . $row->id . ')">';
+                return '<input type="checkbox" class="select-table-row" data-unique-id="'.$row->unique_id.'" id="datatable-row-'.$row->id.'"  name="datatable_ids[]" value="'.$row->id.'" onclick="dataTableRowCheck('.$row->id.')">';
             })
             ->addColumn('employee_name', function ($row) {
                 return $row->user->name;
             })
             ->editColumn('employee', function ($row) {
                 return view('components.employee', [
-                    'user' => $row->user
+                    'user' => $row->user,
                 ]);
             })
             ->addColumn('leave_paid', function ($row) {
 
                 if ($row->paid == 1) {
-                    $leavePaidStatus = '<span class="badge badge-success">' . __('app.paid') . '</span>';
+                    $leavePaidStatus = '<span class="badge badge-success">'.__('app.paid').'</span>';
                 } else {
-                    $leavePaidStatus = '<span class="badge badge-danger">' . __('app.unpaid') . '</span>';
+                    $leavePaidStatus = '<span class="badge badge-danger">'.__('app.unpaid').'</span>';
                 }
 
                 if ($row->over_utilized == 1) {
-                    $leavePaidStatus .= '<br>(' . __('modules.leaves.overUtilized') . ')';
+                    $leavePaidStatus .= '<br>('.__('modules.leaves.overUtilized').')';
                 }
 
                 return $leavePaidStatus;
             })
             ->addColumn('leave_date', function ($row) {
-                return Carbon::parse($row->leave_date)->translatedFormat($this->company->date_format) . ' (' . Carbon::parse($row->leave_date)->translatedFormat('l') . ')';
+                return Carbon::parse($row->leave_date)->translatedFormat($this->company->date_format).' ('.Carbon::parse($row->leave_date)->translatedFormat('l').')';
             })
             ->addColumn('status', function ($row) {
                 if ($row->status == 'approved') {
                     $class = 'text-light-green';
                     $status = __('app.approved');
-                } else if ($row->status == 'pending') {
+                } elseif ($row->status == 'pending') {
                     $class = 'text-yellow';
                     $status = __('app.pending');
                 } else {
@@ -88,30 +91,31 @@ class LeaveDataTable extends BaseDataTable
 
                 $leaveStatus = ' <div class="media-bod1y">';
 
-                if ($row->duration == 'multiple' && !is_null($row->unique_id)) {
+                if ($row->duration == 'multiple' && ! is_null($row->unique_id)) {
 
                     $leaveStatus = '<h5 class="mb-0 f-13 ">
-                            <a class="view-related-leave text-darkest-grey ml-2" data-leave-id=' . $row->id . '
-                                    data-unique-id="' . $row->unique_id . '" data-leave-type-id="' . $row->leave_type_id . '" href="javascript:;">
-                                    ' . __('app.view') . ' ' . __('app.status') . '
+                            <a class="view-related-leave text-darkest-grey ml-2" data-leave-id='.$row->id.'
+                                    data-unique-id="'.$row->unique_id.'" data-leave-type-id="'.$row->leave_type_id.'" href="javascript:;">
+                                    '.__('app.view').' '.__('app.status').'
                                     </a></h5>';
                 } else {
-                    $leaveStatus = '<i class="fa fa-circle mr-1 ' . $class . ' f-10"></i> ' . $status;
+                    $leaveStatus = '<i class="fa fa-circle mr-1 '.$class.' f-10"></i> '.$status;
 
                     if ($row->manager_status_permission === 'pre-approve') {
-                        $leaveStatus .= '<div><span class="badge badge-success">' . __('modules.leaves.preApproved') . '</span></div>';
+                        $leaveStatus .= '<div><span class="badge badge-success">'.__('modules.leaves.preApproved').'</span></div>';
                     }
                 }
 
                 $leaveStatus .= ' </div>';
+
                 return $leaveStatus;
             })
             ->addColumn('duration', function ($row) {
                 $leave = ' <div class="media-body">
-                    <span class="mb-0 f-13 "> ' . (($row->duration == 'half day') ? __('modules.leaves.halfDay') : (($row->duration == 'multiple') ? __('modules.leaves.multiple') : __('app.' . $row->duration))) . ' </span></br>';
+                    <span class="mb-0 f-13 "> '.(($row->duration == 'half day') ? __('modules.leaves.halfDay') : (($row->duration == 'multiple') ? __('modules.leaves.multiple') : __('app.'.$row->duration))).' </span></br>';
 
                 if ($row->count_multiple_leaves != 0) {
-                    $leave .= '<span class="badge badge-secondary">' . $row->count_multiple_leaves . ' ' . __('app.leaveDay') . '</span>';
+                    $leave .= '<span class="badge badge-secondary">'.$row->count_multiple_leaves.' '.__('app.leaveDay').'</span>';
                 }
 
                 $leave .= ' </div>';
@@ -119,13 +123,13 @@ class LeaveDataTable extends BaseDataTable
                 return $leave;
             })
             ->addColumn('leave_type', function ($row) {
-                $type = '<span class="badge badge-success" style="background-color:' . $row->color . '">' . $row->type_name . '</span>';
+                $type = '<span class="badge badge-success" style="background-color:'.$row->color.'">'.$row->type_name.'</span>';
 
                 if ($row->duration == 'half day') {
-                    if (!is_null($row->half_day_type)) {
-                        $type .= ' <div class="badge-inverse badge">' . (($row->half_day_type == 'first_half') ? __('modules.leaves.firstHalf') : __('modules.leaves.secondHalf')) . '</div>';
+                    if (! is_null($row->half_day_type)) {
+                        $type .= ' <div class="badge-inverse badge">'.(($row->half_day_type == 'first_half') ? __('modules.leaves.firstHalf') : __('modules.leaves.secondHalf')).'</div>';
                     } else {
-                        $type .= ' <div class="badge-inverse badge">' . __('modules.leaves.halfDay') . '</div>';
+                        $type .= ' <div class="badge-inverse badge">'.__('modules.leaves.halfDay').'</div>';
                     }
                 }
 
@@ -141,10 +145,10 @@ class LeaveDataTable extends BaseDataTable
                         </a>
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-41" tabindex="0" x-placement="bottom-end" style="position: absolute; transform: translate3d(-137px, 26px, 0px); top: 0px; left: 0px; will-change: transform;">';
 
-                if ($row->duration == 'multiple' && !is_null($row->unique_id)) {
-                    $actions .= '<a href="' . route('leaves.show', [$row->unique_id]) . '" class="dropdown-item"><i class="fa fa-eye mr-2"></i>' . __('app.view') . '</a>';
+                if ($row->duration == 'multiple' && ! is_null($row->unique_id)) {
+                    $actions .= '<a href="'.route('leaves.show', [$row->unique_id]).'" class="dropdown-item"><i class="fa fa-eye mr-2"></i>'.__('app.view').'</a>';
                 } else {
-                    $actions .= '<a href="' . route('leaves.show', [$row->id]) . '?type=single" class="dropdown-item"><i class="fa fa-eye mr-2"></i>' . __('app.view') . '</a>';
+                    $actions .= '<a href="'.route('leaves.show', [$row->id]).'?type=single" class="dropdown-item"><i class="fa fa-eye mr-2"></i>'.__('app.view').'</a>';
                 }
 
                 $rejectActionAdded = false;
@@ -152,58 +156,58 @@ class LeaveDataTable extends BaseDataTable
                 // First Condition (Approve/Reject for all with certain permission)
                 if ($row->status == 'pending' && ($row->duration != 'multiple' || is_null($row->unique_id)) && $this->approveRejectPermission == 'all') {
                     // Add reject action if not already added
-                    if (!$approvedActionAdded) {
-                        $actions .= '<a class="dropdown-item leave-action-approved" data-leave-id=' . $row->id . '
-                             data-leave-action="approved" data-user-id="' . $row->user_id . '" data-leave-type-id="' . $row->leave_type_id . '" href="javascript:;">
-                                <i class="fa fa-check mr-2"></i>' . __('app.approve') . '</a>';
+                    if (! $approvedActionAdded) {
+                        $actions .= '<a class="dropdown-item leave-action-approved" data-leave-id='.$row->id.'
+                             data-leave-action="approved" data-user-id="'.$row->user_id.'" data-leave-type-id="'.$row->leave_type_id.'" href="javascript:;">
+                                <i class="fa fa-check mr-2"></i>'.__('app.approve').'</a>';
                         $approvedActionAdded = true;  // Set flag to true
                     }
 
                     // Add reject action if not already added
-                    if (!$rejectActionAdded) {
-                        $actions .= '<a data-leave-id=' . $row->id . '
-                              data-leave-action="rejected" data-user-id="' . $row->user_id . '" data-leave-type-id="' . $row->leave_type_id . '" class="dropdown-item leave-action-reject" href="javascript:;">
-                                <i class="fa fa-times mr-2"></i>' . __('app.reject') . '</a>';
+                    if (! $rejectActionAdded) {
+                        $actions .= '<a data-leave-id='.$row->id.'
+                              data-leave-action="rejected" data-user-id="'.$row->user_id.'" data-leave-type-id="'.$row->leave_type_id.'" class="dropdown-item leave-action-reject" href="javascript:;">
+                                <i class="fa fa-times mr-2"></i>'.__('app.reject').'</a>';
                         $rejectActionAdded = true;  // Set flag to true
                     }
                 }
 
-                if (($row->duration == 'multiple' && !is_null($row->unique_id)) && $this->approveRejectPermission == 'all') {
-                    $actions .= '<a class="dropdown-item view-related-leave" data-leave-id=' . $row->id . '
-                             data-unique-id="' . $row->unique_id . '" data-leave-type-id="' . $row->leave_type_id . '" href="javascript:;">
+                if (($row->duration == 'multiple' && ! is_null($row->unique_id)) && $this->approveRejectPermission == 'all') {
+                    $actions .= '<a class="dropdown-item view-related-leave" data-leave-id='.$row->id.'
+                             data-unique-id="'.$row->unique_id.'" data-leave-type-id="'.$row->leave_type_id.'" href="javascript:;">
                                 <i class="fa fa-eye mr-2"></i>
-                                ' . __('app.view') . ' ' . __('modules.leaves.relatedLeave') . '
+                                '.__('app.view').' '.__('modules.leaves.relatedLeave').'
                         </a>';
                 }
 
                 // Second Condition (Manager specific, check for reporting permission)
-                if ($row->status == 'pending' && $this->reportingTo && $row->user_id != user()->id && !in_array('admin', user_roles())) {
+                if ($row->status == 'pending' && $this->reportingTo && $row->user_id != user()->id && ! in_array('admin', user_roles())) {
 
                     // Only add reject action if not already added
-                    if (!$rejectActionAdded && $row->manager_status_permission == '' && !($this->reportingPermission == 'cannot-approve')) {
-                        $actions .= '<a data-leave-id=' . $row->id . '
-                                 data-leave-action="rejected" data-user-id="' . $row->user_id . '" data-leave-type-id="' . $row->leave_type_id . '" class="dropdown-item leave-action-reject" href="javascript:;">
+                    if (! $rejectActionAdded && $row->manager_status_permission == '' && ! ($this->reportingPermission == 'cannot-approve')) {
+                        $actions .= '<a data-leave-id='.$row->id.'
+                                 data-leave-action="rejected" data-user-id="'.$row->user_id.'" data-leave-type-id="'.$row->leave_type_id.'" class="dropdown-item leave-action-reject" href="javascript:;">
                                     <i class="fa fa-times mr-2"></i>
-                                    ' . __('app.reject') . '
+                                    '.__('app.reject').'
                             </a>';
                         $rejectActionAdded = true;  // Set flag to true
                     }
 
-                    if (!$approvedActionAdded && $this->reportingPermission == 'approved' && $row->manager_status_permission == '') {
+                    if (! $approvedActionAdded && $this->reportingPermission == 'approved' && $row->manager_status_permission == '') {
                         $approveAll = $row->duration == 'multiple' ? 'approveAll' : 'single';
                         $leaveID = $row->duration == 'multiple' ? $row->unique_id : $row->id;
-                        $actions .= '<a class="dropdown-item leave-action-approved" data-leave-id=' . $leaveID . '
-                                 data-leave-action="approved" data-type="' . $approveAll . '" data-user-id="' . $row->user_id . '" data-leave-type-id="' . $row->leave_type_id . '" href="javascript:;">
+                        $actions .= '<a class="dropdown-item leave-action-approved" data-leave-id='.$leaveID.'
+                                 data-leave-action="approved" data-type="'.$approveAll.'" data-user-id="'.$row->user_id.'" data-leave-type-id="'.$row->leave_type_id.'" href="javascript:;">
                                     <i class="fa fa-check mr-2"></i>
-                                    ' . __('app.approve') . '
+                                    '.__('app.approve').'
                             </a>';
                         $approvedActionAdded = true;  // Set flag to true
-                    } elseif ($this->reportingPermission == 'pre-approve' && !$row->manager_status_permission) {
-                        $actions .= '<a data-leave-id=' . $row->id . '
-                             data-leave-uid=' . $row->unique_id . '
-                             data-leave-action="pre-approve" data-user-id="' . $row->user_id . '" data-leave-type-id="' . $row->leave_type_id . '" class="dropdown-item leave-action-preapprove" href="javascript:;">
+                    } elseif ($this->reportingPermission == 'pre-approve' && ! $row->manager_status_permission) {
+                        $actions .= '<a data-leave-id='.$row->id.'
+                             data-leave-uid='.$row->unique_id.'
+                             data-leave-action="pre-approve" data-user-id="'.$row->user_id.'" data-leave-type-id="'.$row->leave_type_id.'" class="dropdown-item leave-action-preapprove" href="javascript:;">
                                <i class="fa fa-check mr-2"></i>
-                                ' . __('app.preApprove') . '
+                                '.__('app.preApprove').'
                         </a>';
                     }
                 }
@@ -215,9 +219,9 @@ class LeaveDataTable extends BaseDataTable
                         || ($this->editLeavePermission == 'owned' && user()->id == $row->user_id)
                         || ($this->editLeavePermission == 'both' && (user()->id == $row->user_id || user()->id == $row->added_by))
                     ) {
-                        $actions .= '<a class="dropdown-item openRightModal" href="' . route('leaves.edit', [$row->id]) . '">
+                        $actions .= '<a class="dropdown-item openRightModal" href="'.route('leaves.edit', [$row->id]).'">
                                 <i class="fa fa-edit mr-2"></i>
-                                ' . __('app.edit') . '
+                                '.__('app.edit').'
                         </a>';
                     }
                 }
@@ -229,16 +233,16 @@ class LeaveDataTable extends BaseDataTable
                     || ($this->deleteLeavePermission == 'both' && (user()->id == $row->user_id || user()->id == $row->added_by))
                 ) {
                     if ($row->status != 'approved') {
-                        $actions .= '<a data-leave-id=' . $row->id . ' data-unique-id="' . $row->unique_id . '"
-                                data-duration="' . $row->duration . '" class="dropdown-item delete-table-row" href="javascript:;">
+                        $actions .= '<a data-leave-id='.$row->id.' data-unique-id="'.$row->unique_id.'"
+                                data-duration="'.$row->duration.'" class="dropdown-item delete-table-row" href="javascript:;">
                                    <i class="fa fa-trash mr-2"></i>
-                                    ' . __('app.delete') . '
+                                    '.__('app.delete').'
                             </a>';
                     } else {
-                        ($this->deleteApproveLeavePermission == 'all') ? $actions .= '<a data-leave-id=' . $row->id . '
-                                    data-unique-id="' . $row->unique_id . '" data-duration="' . $row->duration . '" class="dropdown-item delete-table-row" href="javascript:;">
+                        ($this->deleteApproveLeavePermission == 'all') ? $actions .= '<a data-leave-id='.$row->id.'
+                                    data-unique-id="'.$row->unique_id.'" data-duration="'.$row->duration.'" class="dropdown-item delete-table-row" href="javascript:;">
                                    <i class="fa fa-trash mr-2"></i>
-                                    ' . __('app.delete') . '
+                                    '.__('app.delete').'
                             </a>' : '';
                     }
                 }
@@ -251,12 +255,11 @@ class LeaveDataTable extends BaseDataTable
                 $query->orderBy('paid', $row->paid);
             })
             ->smart(false)
-            ->setRowId(fn($row) => 'row-' . $row->id)
+            ->setRowId(fn ($row) => 'row-'.$row->id)
             ->rawColumns(['status', 'leave_type', 'action', 'check', 'employee', 'duration', 'leave_paid']);
     }
 
     /**
-     * @param Leave $model
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function query(Leave $model)
@@ -274,13 +277,13 @@ class LeaveDataTable extends BaseDataTable
             )
             ->groupByRaw('ifnull(leaves.unique_id, leaves.id)');
 
-        if (!is_null(request()->startDate)) {
+        if (! is_null(request()->startDate)) {
             $startDate = Carbon::createFromFormat($this->company->date_format, request()->startDate)->toDateString();
 
             $leavesList->whereRaw('Date(leaves.leave_date) >= ?', [$startDate]);
         }
 
-        if (!is_null(request()->endDate)) {
+        if (! is_null(request()->endDate)) {
             $endDate = Carbon::createFromFormat($this->company->date_format, request()->endDate)->toDateString();
 
             $leavesList->whereRaw('Date(leaves.leave_date) <= ?', [$endDate]);
@@ -305,7 +308,7 @@ class LeaveDataTable extends BaseDataTable
 
         if (request()->searchText != '') {
             $safeTerm = Common::safeString(request('searchText'));
-            $leavesList->where('users.name', 'like', '%' . $safeTerm . '%');
+            $leavesList->where('users.name', 'like', '%'.$safeTerm.'%');
         }
 
         if ($this->viewLeavePermission == 'owned') {
@@ -375,12 +378,12 @@ class LeaveDataTable extends BaseDataTable
                 'exportable' => false,
                 'orderable' => false,
                 'searchable' => false,
-                'visible' => ($this->viewLeavePermission == 'all')
+                'visible' => ($this->viewLeavePermission == 'all'),
             ],
             '#' => ['data' => 'DT_RowIndex', 'orderable' => false, 'searchable' => false, 'visible' => false, 'title' => '#'],
             __('app.id') => ['data' => 'id', 'name' => 'id', 'title' => __('app.id'), 'visible' => false],
             __('app.employee') => ['data' => 'employee', 'name' => 'user.name', 'exportable' => false, 'title' => __('app.employee')],
-            __('app.employee') . ' ' => ['data' => 'employee_name', 'name' => 'user.name', 'visible' => false, 'title' => __('app.employee')],
+            __('app.employee').' ' => ['data' => 'employee_name', 'name' => 'user.name', 'visible' => false, 'title' => __('app.employee')],
             __('app.leaveDate') => ['data' => 'leave_date', 'name' => 'leaves.leave_date', 'title' => __('app.leaveDate')],
             __('app.duration') => ['data' => 'duration', 'name' => 'duration', 'title' => __('app.duration')],
             __('app.leaveStatus') => ['data' => 'status', 'name' => 'leaves.status', 'title' => __('app.leaveStatus')],
@@ -391,7 +394,7 @@ class LeaveDataTable extends BaseDataTable
                 ->printable(false)
                 ->orderable(false)
                 ->searchable(false)
-                ->addClass('text-right pr-20')
+                ->addClass('text-right pr-20'),
         ];
     }
 }

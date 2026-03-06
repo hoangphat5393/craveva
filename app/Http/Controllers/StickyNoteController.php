@@ -9,7 +9,6 @@ use App\Models\StickyNote;
 
 class StickyNoteController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -53,9 +52,9 @@ class StickyNoteController extends AccountBaseController
 
     public function store(StoreStickyNote $request)
     {
-        $sticky = new StickyNote();
-        $sticky->note_text  = $request->notetext;
-        $sticky->colour     = $request->colour;
+        $sticky = new StickyNote;
+        $sticky->note_text = $request->notetext;
+        $sticky->colour = $request->colour;
         $sticky->user_id = user()->id;
         $sticky->save();
 
@@ -65,7 +64,7 @@ class StickyNoteController extends AccountBaseController
     public function show($id)
     {
         $this->stickyNotes = StickyNote::where('user_id', user()->id)->where('id', $id)->firstOrFail();
-        $this->pageTitle = __('app.note') . ' ' . __('app.details');
+        $this->pageTitle = __('app.note').' '.__('app.details');
 
         $this->view = 'sticky-notes.ajax.show';
 
@@ -93,8 +92,8 @@ class StickyNoteController extends AccountBaseController
     public function update(UpdateStickyNote $request, $id)
     {
         $sticky = StickyNote::findOrFail($id);
-        $sticky->note_text  = $request->notetext;
-        $sticky->colour     = $request->colour;
+        $sticky->note_text = $request->notetext;
+        $sticky->colour = $request->colour;
         $sticky->save();
 
         return Reply::successWithData(__('messages.updateSuccess'), ['redirectUrl' => route('sticky-notes.index')]);
@@ -103,7 +102,7 @@ class StickyNoteController extends AccountBaseController
     public function destroy($id)
     {
         StickyNote::destroy($id);
+
         return Reply::successWithData(__('messages.deleteSuccess'), ['redirectUrl' => route('sticky-notes.index')]);
     }
-
 }

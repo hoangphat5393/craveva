@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\ClientCategory $clientCategory
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ClientSubCategory newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ClientSubCategory newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ClientSubCategory query()
@@ -22,14 +23,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|ClientSubCategory whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ClientSubCategory whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ClientSubCategory whereUpdatedAt($value)
+ *
  * @property int|null $company_id
  * @property-read \App\Models\Company|null $company
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ClientSubCategory whereCompanyId($value)
+ *
  * @mixin \Eloquent
  */
 class ClientSubCategory extends BaseModel
 {
-
     use HasCompany;
 
     protected $table = 'client_sub_categories';
@@ -38,5 +41,4 @@ class ClientSubCategory extends BaseModel
     {
         return $this->belongsTo(ClientCategory::class, 'category_id');
     }
-
 }

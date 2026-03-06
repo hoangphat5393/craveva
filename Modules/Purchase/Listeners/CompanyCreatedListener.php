@@ -6,11 +6,10 @@ use Modules\Purchase\Entities\PurchaseSetting;
 
 class CompanyCreatedListener
 {
-
     /**
      * Handle the event.
      *
-     * @param object $event
+     * @param  object  $event
      * @return void
      */
     public function handle($event)
@@ -18,5 +17,4 @@ class CompanyCreatedListener
         $company = $event->company;
         PurchaseSetting::addModuleSetting($company);
     }
-
 }

@@ -1,10 +1,8 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use App\Models\EmployeeShiftSchedule;
 use Carbon\Carbon;
+use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
@@ -18,13 +16,12 @@ return new class extends Migration
         $getShiftSchedule->chunk(100, function ($getShiftSchedule) {
             foreach ($getShiftSchedule as $shiftSchedule) {
 
-                $shiftSchedule->shift_start_time = $shiftSchedule->date->toDateString() . ' ' . $shiftSchedule->shift->office_start_time;
+                $shiftSchedule->shift_start_time = $shiftSchedule->date->toDateString().' '.$shiftSchedule->shift->office_start_time;
 
                 if (Carbon::parse($shiftSchedule->shift->office_start_time)->gt(Carbon::parse($shiftSchedule->shift->office_end_time))) {
-                    $shiftSchedule->shift_end_time = $shiftSchedule->date->addDay()->toDateString() . ' ' . $shiftSchedule->shift->office_end_time;
-                }
-                else {
-                    $shiftSchedule->shift_end_time = $shiftSchedule->date->toDateString() . ' ' . $shiftSchedule->shift->office_end_time;
+                    $shiftSchedule->shift_end_time = $shiftSchedule->date->addDay()->toDateString().' '.$shiftSchedule->shift->office_end_time;
+                } else {
+                    $shiftSchedule->shift_end_time = $shiftSchedule->date->toDateString().' '.$shiftSchedule->shift->office_end_time;
                 }
 
                 $shiftSchedule->saveQuietly();
@@ -36,8 +33,5 @@ return new class extends Migration
     /**
      * Reverse the migrations.
      */
-    public function down(): void
-    {
-        
-    }
+    public function down(): void {}
 };

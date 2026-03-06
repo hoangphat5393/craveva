@@ -9,13 +9,12 @@ use App\Models\EstimateRequest;
 
 class EstimateRequestObserver
 {
-
     /**
      * Handle the EstimateRequest "created" event.
      */
     public function created(EstimateRequest $estimateRequest): void
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             event(new NewEstimateRequestEvent($estimateRequest));
         }
     }
@@ -25,7 +24,7 @@ class EstimateRequestObserver
      */
     public function updated(EstimateRequest $estimateRequest): void
     {
-        if (!isRunningInConsoleOrSeeding()) {
+        if (! isRunningInConsoleOrSeeding()) {
             if ($estimateRequest->status == 'rejected') {
                 event(new EstimateRequestRejectedEvent($estimateRequest));
             }
@@ -59,5 +58,4 @@ class EstimateRequestObserver
     {
         //
     }
-
 }

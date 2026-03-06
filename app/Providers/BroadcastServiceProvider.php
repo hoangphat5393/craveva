@@ -9,7 +9,6 @@ use Illuminate\Support\ServiceProvider;
 
 class BroadcastServiceProvider extends ServiceProvider
 {
-
     public function register()
     {
         try {
@@ -17,7 +16,7 @@ class BroadcastServiceProvider extends ServiceProvider
 
             if ($pusherSetting) {
 
-                if (!in_array(config('app.env'), ['demo', 'development'])) {
+                if (! in_array(config('app.env'), ['demo', 'development'])) {
 
                     $driver = ($pusherSetting->status == 1) ? 'pusher' : 'null';
 
@@ -45,5 +44,4 @@ class BroadcastServiceProvider extends ServiceProvider
 
         require base_path('routes/channels.php');
     }
-
 }

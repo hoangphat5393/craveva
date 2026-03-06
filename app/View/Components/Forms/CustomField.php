@@ -7,8 +7,8 @@ use Illuminate\View\Component;
 
 class CustomField extends Component
 {
-
     public $fields;
+
     public $model;
 
     /**
@@ -31,5 +31,4 @@ class CustomField extends Component
     {
         return view('components.forms.custom-field');
     }
-
 }

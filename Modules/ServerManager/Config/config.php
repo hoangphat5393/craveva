@@ -17,7 +17,7 @@ return [
     'verification_required' => true,
 
     'parent_min_version' => '5.2.3',
-    'script_name' => $addOnOf . '-servermanager-module',
+    'script_name' => $addOnOf.'-servermanager-module',
     'parent_product_name' => $addOnOf,
     'setting' => \Modules\ServerManager\Entities\ServerManagerGlobalSetting::class,
 

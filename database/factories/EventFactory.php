@@ -32,5 +32,4 @@ class EventFactory extends Factory
             'repeat' => 'no',
         ];
     }
-
 }

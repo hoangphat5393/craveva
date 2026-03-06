@@ -10,7 +10,6 @@ use Illuminate\Console\Command;
 
 class SendTaskReminder extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
@@ -25,9 +24,6 @@ class SendTaskReminder extends Command
      */
     protected $description = 'Send task reminders';
 
-    /**
-     *
-     */
     public function handle()
     {
         // Get all companies
@@ -64,8 +60,6 @@ class SendTaskReminder extends Command
     /**
      * Send task reminders for the given date and company.
      *
-     * @param string $dueDate
-     * @param Company $company
      *
      * @return void
      */
@@ -88,5 +82,4 @@ class SendTaskReminder extends Command
             event(new TaskReminderEvent($task));
         }
     }
-
 }

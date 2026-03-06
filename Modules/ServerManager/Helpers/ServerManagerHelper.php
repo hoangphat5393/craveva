@@ -84,7 +84,7 @@ class ServerManagerHelper
             $bytes /= 1024;
         }
 
-        return round($bytes, 2) . ' ' . $units[$i];
+        return round($bytes, 2).' '.$units[$i];
     }
 
     /**
@@ -93,6 +93,7 @@ class ServerManagerHelper
     public static function getDaysUntilExpiry(string $expiryDate): int
     {
         $expiry = \Carbon\Carbon::parse($expiryDate);
+
         return now()->diffInDays($expiry, false);
     }
 
@@ -102,6 +103,7 @@ class ServerManagerHelper
     public static function isExpiringSoon(string $expiryDate, int $days = 30): bool
     {
         $daysUntilExpiry = self::getDaysUntilExpiry($expiryDate);
+
         return $daysUntilExpiry <= $days && $daysUntilExpiry > 0;
     }
 

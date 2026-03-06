@@ -16,7 +16,6 @@ use Illuminate\Database\Seeder;
 
 class CoreDatabaseSeeder extends Seeder
 {
-
     /**
      * Run the database seeds.
      *
@@ -37,7 +36,7 @@ class CoreDatabaseSeeder extends Seeder
 
     public function dashboardBackupSetting()
     {
-        $backupSetting = new DatabaseBackupSetting();
+        $backupSetting = new DatabaseBackupSetting;
         $backupSetting->status = 'inactive';
         $backupSetting->hour_of_day = '';
         $backupSetting->backup_after_days = '0';
@@ -47,7 +46,7 @@ class CoreDatabaseSeeder extends Seeder
 
     private function fileStorageSetting()
     {
-        $storage = new StorageSetting();
+        $storage = new StorageSetting;
         $storage->filesystem = 'local';
         $storage->status = 'enabled';
         $storage->save();
@@ -55,7 +54,7 @@ class CoreDatabaseSeeder extends Seeder
 
     private function gdprSetting()
     {
-        $gdpr = new GdprSetting();
+        $gdpr = new GdprSetting;
         $gdpr->create();
     }
 
@@ -76,13 +75,13 @@ class CoreDatabaseSeeder extends Seeder
 
     private function pushNotification()
     {
-        $slack = new PushNotificationSetting();
+        $slack = new PushNotificationSetting;
         $slack->onesignal_app_id = null;
         $slack->onesignal_rest_api_key = null;
         $slack->notification_logo = null;
         $slack->save();
 
-        $pusherSetting = new PusherSetting();
+        $pusherSetting = new PusherSetting;
         $pusherSetting->save();
 
     }
@@ -106,6 +105,4 @@ class CoreDatabaseSeeder extends Seeder
             AwardIcon::create($icon);
         }
     }
-
 }
-

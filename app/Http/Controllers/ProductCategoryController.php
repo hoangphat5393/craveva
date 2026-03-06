@@ -10,7 +10,6 @@ use App\Models\ProductSubCategory;
 
 class ProductCategoryController extends AccountBaseController
 {
-
     /**
      * Show the form for creating a new resource.
      *
@@ -19,17 +18,18 @@ class ProductCategoryController extends AccountBaseController
     public function create()
     {
         $this->categories = ProductCategory::all();
+
         return view('products.category.create', $this->data);
     }
 
     /**
-     * @param StoreProductCategory $request
      * @return array
+     *
      * @throws \Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException
      */
     public function store(StoreProductCategory $request)
     {
-        $category = new ProductCategory();
+        $category = new ProductCategory;
         $category->category_name = $request->category_name;
 
         if (company()) {
@@ -48,9 +48,9 @@ class ProductCategoryController extends AccountBaseController
     }
 
     /**
-     * @param StoreProductCategory $request
-     * @param int $id
+     * @param  int  $id
      * @return array
+     *
      * @throws \Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException
      */
     public function update(StoreProductCategory $request, $id)
@@ -68,13 +68,14 @@ class ProductCategoryController extends AccountBaseController
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
         ProductCategory::destroy($id);
         $categoryData = ProductCategory::all();
+
         return Reply::successWithData(__('messages.deleteSuccess'), ['data' => $categoryData]);
     }
 }

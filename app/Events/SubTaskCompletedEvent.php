@@ -9,10 +9,10 @@ use Illuminate\Queue\SerializesModels;
 
 class SubTaskCompletedEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $subTask;
+
     public $status;
 
     public function __construct(SubTask $subTask, $status)
@@ -20,5 +20,4 @@ class SubTaskCompletedEvent
         $this->subTask = $subTask;
         $this->status = $status;
     }
-
 }

@@ -11,11 +11,11 @@ class DailyScheduleEvent
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $userData;
+
     public $notifiable;
 
     public function __construct($userData)
     {
         $this->userData = $userData;
     }
-
 }

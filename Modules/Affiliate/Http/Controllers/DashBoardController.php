@@ -2,22 +2,22 @@
 
 namespace Modules\Affiliate\Http\Controllers;
 
-use Modules\Affiliate\Entities\Payout;
-use Modules\Affiliate\Entities\Referral;
-use Modules\Affiliate\Entities\Affiliate;
 use App\Http\Controllers\AccountBaseController;
 use App\Models\GlobalSetting;
+use Modules\Affiliate\Entities\Affiliate;
+use Modules\Affiliate\Entities\Payout;
+use Modules\Affiliate\Entities\Referral;
 
 class DashBoardController extends AccountBaseController
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->pageTitle = 'affiliate::app.menu.dashboard';
 
-        $this->middleware(function ($request, $next){
+        $this->middleware(function ($request, $next) {
             abort_403(GlobalSetting::validateSuperAdmin());
+
             return $next($request);
         });
     }
@@ -28,7 +28,7 @@ class DashBoardController extends AccountBaseController
     public function index()
     {
         $this->managePermission = user()->permission('view_affiliate_dashboard');
-        abort_403(!($this->managePermission == 'all'));
+        abort_403(! ($this->managePermission == 'all'));
 
         $this->totalReferrals = Referral::count();
         $this->totalAffiliates = Affiliate::count();
@@ -54,5 +54,4 @@ class DashBoardController extends AccountBaseController
 
         return view('affiliate::dashboard.index', $this->data);
     }
-
 }

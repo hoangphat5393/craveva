@@ -22,8 +22,7 @@ class NewInvoiceRecurringListener
 
                     if ($event->status == 'status') {
                         Notification::send($notifyUser, new InvoiceRecurringStatus($event->invoice));
-                    }
-                    else {
+                    } else {
                         Notification::send($notifyUser, new NewRecurringInvoice($event->invoice));
                     }
                 }
@@ -31,5 +30,4 @@ class NewInvoiceRecurringListener
         } catch (\Exception $e) { // @codingStandardsIgnoreLine
         }
     }
-
 }

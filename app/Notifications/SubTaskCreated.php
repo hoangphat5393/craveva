@@ -6,8 +6,6 @@ use App\Models\SubTask;
 
 class SubTaskCreated extends BaseNotification
 {
-
-
     /**
      * Create a new notification instance.
      *
@@ -24,10 +22,10 @@ class SubTaskCreated extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
-    //phpcs:ignore
+    // phpcs:ignore
     public function via($notifiable)
     {
         $via = ['database'];
@@ -38,17 +36,16 @@ class SubTaskCreated extends BaseNotification
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
-//phpcs:ignore
+    // phpcs:ignore
     public function toArray($notifiable)
     {
         return [
             'id' => $this->subTask->task->id,
             'created_at' => $this->subTask->created_at->format('Y-m-d H:i:s'),
-            'heading' => $this->subTask->title
+            'heading' => $this->subTask->title,
         ];
     }
-
 }

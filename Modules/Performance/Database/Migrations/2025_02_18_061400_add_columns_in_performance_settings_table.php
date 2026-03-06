@@ -7,7 +7,6 @@ use Modules\Performance\Entities\PerformanceSetting;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      */
@@ -57,5 +56,4 @@ return new class extends Migration
             $table->enum('send_notification', ['yes', 'no'])->default('no')->after('company_id');
         });
     }
-
 };

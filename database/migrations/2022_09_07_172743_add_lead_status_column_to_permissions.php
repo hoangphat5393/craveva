@@ -8,14 +8,13 @@ use App\Models\RoleUser;
 use App\Models\UserPermission;
 use Illuminate\Database\Migrations\Migration;
 
-return new class extends Migration {
-
+return new class extends Migration
+{
     /**
      * Run the migrations.
      *
      * @return void
      */
-
     public function up()
     {
 
@@ -30,10 +29,9 @@ return new class extends Migration {
                 [
                     'display_name' => ucwords(str_replace('_', ' ', 'manage_lead_status')),
                     'is_custom' => 1,
-                    'allowed_permissions' => Permission::ALL_ADDED_NONE
+                    'allowed_permissions' => Permission::ALL_ADDED_NONE,
                 ]
             );
-
 
             $admins = RoleUser::join('roles', 'roles.id', '=', 'role_user.role_id')
                 ->where('name', 'admin')
@@ -44,14 +42,14 @@ return new class extends Migration {
                     [
                         'user_id' => $item->user_id,
                         'permission_id' => $perm->id,
-                        'permission_type_id' => $allTypePermission->id ?? PermissionType::ALL
+                        'permission_type_id' => $allTypePermission->id ?? PermissionType::ALL,
                     ]
                 );
             }
 
             $invoiceModule = Module::where('module_name', 'invoices')->first();
 
-            if (!is_null($invoiceModule)) {
+            if (! is_null($invoiceModule)) {
                 $allTypePermission = PermissionType::ofType('all')->first();
 
                 $perm = Permission::updateOrCreate(
@@ -59,7 +57,7 @@ return new class extends Migration {
                     [
                         'display_name' => ucwords(str_replace('_', ' ', 'manage_recurring_invoice')),
                         'is_custom' => 1,
-                        'allowed_permissions' => Permission::ALL_ADDED_NONE
+                        'allowed_permissions' => Permission::ALL_ADDED_NONE,
                     ]
                 );
 
@@ -68,13 +66,12 @@ return new class extends Migration {
                         [
                             'user_id' => $item->user_id,
                             'permission_id' => $perm->id,
-                            'permission_type_id' => $allTypePermission->id ?? PermissionType::ALL
+                            'permission_type_id' => $allTypePermission->id ?? PermissionType::ALL,
                         ]
                     );
                 }
             }
         }
-
 
     }
 
@@ -83,9 +80,5 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function down()
-    {
-
-    }
-
+    public function down() {}
 };

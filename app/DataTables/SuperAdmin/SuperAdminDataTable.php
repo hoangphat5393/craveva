@@ -13,9 +13,10 @@ use Yajra\DataTables\Services\DataTable;
 
 class SuperAdminDataTable extends BaseDataTable
 {
-
     private $editSuperadminPermission;
+
     private $deleteSuperadminPermission;
+
     private $changeSuperadminRolePermission;
 
     public function __construct()
@@ -30,7 +31,7 @@ class SuperAdminDataTable extends BaseDataTable
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
@@ -51,23 +52,22 @@ class SuperAdminDataTable extends BaseDataTable
 
                 <div class="dropdown">
                     <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" type="link"
-                        id="dropdownMenuLink-' . $row->id . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        id="dropdownMenuLink-'.$row->id.'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="icon-options-vertical icons"></i>
                     </a>
-                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-' . $row->id . '" tabindex="0">';
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-'.$row->id.'" tabindex="0">';
 
                 if ((user()->id == $row->id || $firstSuperAdmin->id != $row->id) && $this->editSuperadminPermission == 'all') {
-                    $action .= '<a class="dropdown-item openRightModal" href="' . route('superadmin.superadmin.edit', $row->id) . '" >
+                    $action .= '<a class="dropdown-item openRightModal" href="'.route('superadmin.superadmin.edit', $row->id).'" >
                         <i class="fa fa-edit mr-2"></i>
-                        ' . trans('app.edit') . '
+                        '.trans('app.edit').'
                     </a>';
                 }
 
-
                 if (user()->id != $row->id && $firstSuperAdmin->id != $row->id && $this->deleteSuperadminPermission == 'all') {
-                    $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-toggle="tooltip"  data-superadmin-id="' . $row->id . '">
+                    $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-toggle="tooltip"  data-superadmin-id="'.$row->id.'">
                             <i class="fa fa-trash mr-2"></i>
-                            ' . trans('app.delete') . '
+                            '.trans('app.delete').'
                         </a>';
                 }
 
@@ -80,7 +80,7 @@ class SuperAdminDataTable extends BaseDataTable
             ->editColumn('status', function ($row) {
                 $status = $row->status == 'active' ? 'text-light-green' : 'text-red';
 
-                return '<i class="fa fa-circle mr-1 ' . $status . ' f-10"></i>' . __('app.' . $row->status);
+                return '<i class="fa fa-circle mr-1 '.$status.' f-10"></i>'.__('app.'.$row->status);
             })
             ->addColumn('role', function ($row) use ($roles) {
                 $userRole = $row->roles->pluck('name')->toArray();
@@ -88,24 +88,23 @@ class SuperAdminDataTable extends BaseDataTable
                 if (in_array('superadmin', $userRole)) {
                     $uRole = __('superadmin.menu.superadmin');
 
-                }
-                else {
+                } else {
                     $uRole = $row->current_role_name;
                 }
 
-                if (in_array('superadmin', $userRole) && !in_array('superadmin', user_roles())) {
-                    return $uRole . ' <i data-toggle="tooltip" data-original-title="' . __('messages.roleCannotChange') . '" class="fa fa-info-circle"></i>';
+                if (in_array('superadmin', $userRole) && ! in_array('superadmin', user_roles())) {
+                    return $uRole.' <i data-toggle="tooltip" data-original-title="'.__('messages.roleCannotChange').'" class="fa fa-info-circle"></i>';
                 }
 
                 if ($row->id == user()->id) {
-                    return $uRole . ' <i data-toggle="tooltip" data-original-title="' . __('messages.roleCannotChange') . '" class="fa fa-info-circle"></i>';
+                    return $uRole.' <i data-toggle="tooltip" data-original-title="'.__('messages.roleCannotChange').'" class="fa fa-info-circle"></i>';
                 }
 
                 if ($this->changeSuperadminRolePermission != 'all') {
                     return $uRole;
                 }
 
-                $role = '<select class="form-control select-picker assign_role" data-user-id="' . $row->id . '">';
+                $role = '<select class="form-control select-picker assign_role" data-user-id="'.$row->id.'">';
 
                 foreach ($roles as $item) {
                     if (
@@ -117,12 +116,12 @@ class SuperAdminDataTable extends BaseDataTable
 
                         if (
                             (in_array($item->name, $userRole) && $item->name == 'superadmin')
-                            || (in_array($item->name, $userRole) && !in_array('superadmin', $userRole))
+                            || (in_array($item->name, $userRole) && ! in_array('superadmin', $userRole))
                         ) {
                             $role .= 'selected';
                         }
 
-                        $role .= ' value="' . $item->id . '">' . ($item->display_name) . '</option>';
+                        $role .= ' value="'.$item->id.'">'.($item->display_name).'</option>';
 
                     }
                 }
@@ -198,8 +197,7 @@ class SuperAdminDataTable extends BaseDataTable
                 ->orderable(false)
                 ->searchable(false)
                 ->width(150)
-                ->addClass('text-right pr-20')
+                ->addClass('text-right pr-20'),
         ];
     }
-
 }

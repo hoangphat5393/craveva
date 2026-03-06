@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright (c) 2016, Mollie B.V.
  * All rights reserved.
@@ -27,6 +28,7 @@
  * @license     Berkeley Software Distribution License (BSD-License 2) http://www.opensource.org/licenses/bsd-license.php
  * @author      Mollie B.V. <info@mollie.com>
  * @copyright   Mollie B.V.
+ *
  * @link        https://www.mollie.com
  */
 return [
@@ -34,7 +36,7 @@ return [
     'key' => env('MOLLIE_KEY', 'test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'),
     'api' => env('MOLLIE_KEY', 'test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'),
 
-/*     If you intend on using Mollie Connect, place the following in the 'config/services.php'
+    /*     If you intend on using Mollie Connect, place the following in the 'config/services.php'
     'mollie' => [
         'client_id'     => env('MOLLIE_CLIENT_ID', 'app_xxx'),
         'client_secret' => env('MOLLIE_CLIENT_SECRET'),

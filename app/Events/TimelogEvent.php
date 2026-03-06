@@ -9,7 +9,6 @@ use Illuminate\Queue\SerializesModels;
 
 class TimelogEvent
 {
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $timelog;
@@ -38,5 +37,4 @@ class TimelogEvent
     {
         return 'timelog-saved';
     }
-
 }

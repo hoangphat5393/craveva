@@ -2,16 +2,17 @@
 
 namespace Modules\ServerManager\Services;
 
+use Exception;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Exception;
 
 class DnsLookupService
 {
     protected $apiKey;
+
     protected $baseUrl;
 
-        public function __construct()
+    public function __construct()
     {
         // Load configuration from the module config
         $this->apiKey = config('servermanager.dns_api_key', null);
@@ -51,9 +52,9 @@ class DnsLookupService
             ];
 
         } catch (Exception $e) {
-            Log::error('DNS lookup failed for domain: ' . $domain, [
+            Log::error('DNS lookup failed for domain: '.$domain, [
                 'error' => $e->getMessage(),
-                'domain' => $domain
+                'domain' => $domain,
             ]);
 
             return [
@@ -144,7 +145,7 @@ class DnsLookupService
                 $data = $response->json();
 
                 if (isset($data['Answer'])) {
-                    return array_map(function($answer) {
+                    return array_map(function ($answer) {
                         return [
                             'name' => $answer['name'],
                             'type' => $answer['type'],
@@ -158,7 +159,8 @@ class DnsLookupService
             // If Google DNS API fails, try Cloudflare DNS API
             return $this->queryCloudflareDNS($domain, $type);
         } catch (Exception $e) {
-            Log::warning("Google DNS API failed for {$domain} type {$type}: " . $e->getMessage());
+            Log::warning("Google DNS API failed for {$domain} type {$type}: ".$e->getMessage());
+
             return $this->queryCloudflareDNS($domain, $type);
         }
     }
@@ -182,7 +184,7 @@ class DnsLookupService
                 $data = $response->json();
 
                 if (isset($data['Answer'])) {
-                    return array_map(function($answer) {
+                    return array_map(function ($answer) {
                         return [
                             'name' => $answer['name'],
                             'type' => $answer['type'],
@@ -196,7 +198,8 @@ class DnsLookupService
             // If Cloudflare fails, try OpenDNS API
             return $this->queryOpenDNS($domain, $type);
         } catch (Exception $e) {
-            Log::warning("Cloudflare DNS API failed for {$domain} type {$type}: " . $e->getMessage());
+            Log::warning("Cloudflare DNS API failed for {$domain} type {$type}: ".$e->getMessage());
+
             return $this->queryOpenDNS($domain, $type);
         }
     }
@@ -216,7 +219,7 @@ class DnsLookupService
                 $data = $response->json();
 
                 if (isset($data['Answer'])) {
-                    return array_map(function($answer) {
+                    return array_map(function ($answer) {
                         return [
                             'name' => $answer['name'],
                             'type' => $answer['type'],
@@ -229,9 +232,11 @@ class DnsLookupService
 
             // If all APIs fail, return empty array
             Log::error("All DNS APIs failed for {$domain} type {$type}");
+
             return [];
         } catch (Exception $e) {
-            Log::error("OpenDNS API failed for {$domain} type {$type}: " . $e->getMessage());
+            Log::error("OpenDNS API failed for {$domain} type {$type}: ".$e->getMessage());
+
             return [];
         }
     }
@@ -318,6 +323,7 @@ class DnsLookupService
     {
         try {
             $response = Http::timeout(5)->get("http://{$domain}");
+
             return [
                 'success' => true,
                 'status_code' => $response->status(),
@@ -339,15 +345,15 @@ class DnsLookupService
     {
         $dnsData = $this->getDnsRecords($domain);
 
-        if (!$dnsData['success']) {
+        if (! $dnsData['success']) {
             return $dnsData;
         }
 
         // Format records for display
         $formattedRecords = [];
         foreach ($dnsData['records'] as $type => $records) {
-            if (!empty($records)) {
-                $formattedRecords[$type] = array_map(function($record) {
+            if (! empty($records)) {
+                $formattedRecords[$type] = array_map(function ($record) {
                     return [
                         'name' => $record['name'],
                         'type' => $record['type'],
@@ -385,12 +391,12 @@ class DnsLookupService
         ];
 
         // Check for common issues
-        if (!$dnsData['success']) {
+        if (! $dnsData['success']) {
             $health['issues'][] = 'DNS resolution failed';
             $health['recommendations'][] = 'Check domain configuration and nameservers';
         }
 
-        if (!$accessibility['accessible']) {
+        if (! $accessibility['accessible']) {
             $health['issues'][] = 'Website not accessible';
             $health['recommendations'][] = 'Check web server configuration and firewall settings';
         }
@@ -419,6 +425,7 @@ class DnsLookupService
                 if (preg_match('/(\d+)\s+(.+)/', $data, $matches)) {
                     return "Priority: {$matches[1]}, Server: {$matches[2]}";
                 }
+
                 return $data;
 
             case 'SOA':
@@ -427,6 +434,7 @@ class DnsLookupService
                 if (count($parts) >= 7) {
                     return "Primary NS: {$parts[0]}, Admin: {$parts[1]}, Serial: {$parts[2]}";
                 }
+
                 return $data;
 
             case 'TXT':

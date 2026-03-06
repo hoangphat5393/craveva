@@ -3,12 +3,11 @@
 namespace Modules\Asset\Http\Controllers;
 
 use App\Helper\Reply;
-use Illuminate\Http\Request;
-use App\Models\ProjectCategory;
-use Modules\Asset\Entities\AssetType;
-use Modules\Asset\Entities\AssetSetting;
-use Illuminate\Contracts\Support\Renderable;
 use App\Http\Controllers\AccountBaseController;
+use App\Models\ProjectCategory;
+use Illuminate\Contracts\Support\Renderable;
+use Modules\Asset\Entities\AssetSetting;
+use Modules\Asset\Entities\AssetType;
 
 class AssetSettingController extends AccountBaseController
 {
@@ -26,6 +25,7 @@ class AssetSettingController extends AccountBaseController
 
     /**
      * Display a listing of the resource.
+     *
      * @return Renderable
      */
     public function index()
@@ -45,6 +45,7 @@ class AssetSettingController extends AccountBaseController
 
     /**
      * Show the form for creating a new resource.
+     *
      * @return Renderable
      */
     public function create()
@@ -54,12 +55,14 @@ class AssetSettingController extends AccountBaseController
 
     /**
      * Show the form for editing the specified resource.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Renderable
      */
     public function edit($id)
     {
         $this->assetType = AssetType::findOrfail($id);
+
         return view('asset::asset-settings.edit-asset-type-settings-modal', $this->data);
     }
 }

@@ -10,22 +10,15 @@ use Illuminate\Support\Facades\Notification;
 
 class NewProposalListener
 {
-
-    /**
-     * @param NewProposalEvent $event
-     */
-
     public function handle(NewProposalEvent $event)
     {
         if ($event->type == 'signed' && $event->proposal->status != 'waiting') {
             $allAdmins = User::allAdmins($event->proposal->company->id);
             // Notify admins
             Notification::send($allAdmins, new ProposalSigned($event->proposal));
-        }
-        else {
+        } else {
             // Notify client
             Notification::send($event->proposal->lead, new NewProposal($event->proposal));
         }
     }
-
 }

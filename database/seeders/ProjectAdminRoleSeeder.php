@@ -1,12 +1,12 @@
 <?php
+
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Role;
+use Illuminate\Database\Seeder;
 
 class ProjectAdminRoleSeeder extends Seeder
 {
-
     /**
      * Run the database seeds.
      *
@@ -14,11 +14,10 @@ class ProjectAdminRoleSeeder extends Seeder
      */
     public function run()
     {
-        $admin = new Role();
+        $admin = new Role;
         $admin->name = 'project_admin';
         $admin->display_name = 'Project Admin'; // optional
         $admin->description = 'Project admin is allowed to manage all the projects in a company.'; // optional
         $admin->save();
     }
-
 }

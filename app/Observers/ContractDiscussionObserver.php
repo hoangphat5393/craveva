@@ -6,7 +6,6 @@ use App\Models\ContractDiscussion;
 
 class ContractDiscussionObserver
 {
-
     public function saving(ContractDiscussion $contract)
     {
         if (user()) {
@@ -24,5 +23,4 @@ class ContractDiscussionObserver
             $contract->company_id = company()->id;
         }
     }
-
 }

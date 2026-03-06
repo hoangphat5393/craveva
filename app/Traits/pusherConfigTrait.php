@@ -6,7 +6,6 @@ use Pusher\Pusher;
 
 trait pusherConfigTrait
 {
-
     /**
      * @throws PusherException
      */
@@ -22,7 +21,7 @@ trait pusherConfigTrait
                 $pusherSetting->pusher_app_id,
                 [
                     'cluster' => $pusherSetting->pusher_cluster,
-                    'useTLS' => $pusherSetting->force_tls
+                    'useTLS' => $pusherSetting->force_tls,
                 ]
             );
 
@@ -30,5 +29,4 @@ trait pusherConfigTrait
         }
 
     }
-
 }

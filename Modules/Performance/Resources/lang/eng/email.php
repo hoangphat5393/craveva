@@ -1,7 +1,7 @@
 <?php
 
-return array(
-    'objective' => array(
+return [
+    'objective' => [
         'hi' => 'hi',
         'subject' => 'New Objective Assigned',
         'title' => 'We are excited to inform you that a new objective has been created! Here are the details',
@@ -17,8 +17,8 @@ return array(
         'actionRequiredNote' => 'Thank you for your commitment to achieving our goals together!',
         'viewObjective' => 'View Objective',
 
-    ),
-    'checkin' => array(
+    ],
+    'checkin' => [
         'checkInNow' => 'Check-in Now',
         'subject' => 'Check-In Reminder for Objective:',
         'title' => 'This is a friendly reminder to check-in on your objective:',
@@ -27,8 +27,8 @@ return array(
         'description' => 'Objective Description:',
         'text' => 'Please make sure to update your progress. Your contributions are valuable, and we appreciate your hard work!',
         'note' => 'Thank you for your commitment!',
-    ),
-    'meeting' => array(
+    ],
+    'meeting' => [
         'agendas' => 'Agendas',
         'subject' => '1:1 Meeting Created',
         'viewMeeting' => 'View Meeting',
@@ -41,6 +41,6 @@ return array(
         'endTime' => 'End Time',
         'reminderSubject' => 'Meeting Reminder',
         'reminderMessage' => 'This is a reminder for a meeting.',
-    ),
+    ],
 
-);
+];

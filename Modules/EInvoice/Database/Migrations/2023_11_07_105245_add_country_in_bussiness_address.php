@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Schema;
 // This file copy from main application to add new column in company_addresses table if not exist
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      */
@@ -29,5 +28,4 @@ return new class extends Migration
             $table->dropColumn('country_id');
         });
     }
-
 };

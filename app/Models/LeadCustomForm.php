@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property int|null $added_by
  * @property int|null $last_updated_by
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|LeadCustomForm newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|LeadCustomForm newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|LeadCustomForm query()
@@ -30,20 +31,24 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|LeadCustomForm whereLastUpdatedBy($value)
  * @method static \Illuminate\Database\Eloquent\Builder|LeadCustomForm whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|LeadCustomForm whereUpdatedAt($value)
+ *
  * @property int $required
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|LeadCustomForm whereRequired($value)
+ *
  * @property int|null $company_id
  * @property int|null $custom_fields_id
  * @property-read \App\Models\Company|null $company
  * @property-read \App\Models\CustomField|null $customField
  * @property-read mixed $extras
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|LeadCustomForm whereCompanyId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|LeadCustomForm whereCustomFieldsId($value)
+ *
  * @mixin \Eloquent
  */
 class LeadCustomForm extends BaseModel
 {
-
     use CustomFieldsTrait;
     use HasCompany;
 
@@ -167,5 +172,4 @@ class LeadCustomForm extends BaseModel
     {
         return $this->belongsTo(CustomField::class, 'custom_fields_id');
     }
-
 }

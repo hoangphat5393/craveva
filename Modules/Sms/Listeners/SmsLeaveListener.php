@@ -28,8 +28,7 @@ class SmsLeaveListener
                 if (! is_null($event->multiDates)) {
                     Notification::send($event->leave->user, new MultipleLeaveApplication($event->leave, $event->multiDates));
                     Notification::send(User::allAdmins($event->leave->company->id), new NewMultipleLeaveRequest($event->leave, $event->multiDates));
-                }
-                else {
+                } else {
                     Notification::send($event->leave->user, new LeaveApplicationSms($event->leave));
                     Notification::send(User::allAdmins($event->leave->company->id), new NewLeaveRequestSms($event->leave));
                 }
@@ -47,5 +46,4 @@ class SmsLeaveListener
         } catch (\Exception $e) { // @codingStandardsIgnoreLine
         }
     }
-
 }

@@ -2,17 +2,14 @@
 
 namespace Modules\Performance\Listeners;
 
-use Illuminate\Support\Facades\Notification;
 use Modules\Performance\Events\CheckInReminderEvent;
 use Modules\Performance\Notifications\CheckInReminderNotification;
 
 class CheckInReminderListener
 {
-
     /**
      * Handle the meeting.
      *
-     * @param CheckInReminderEvent $reminder
      * @return void
      */
     public function handle(CheckInReminderEvent $reminder)
@@ -27,5 +24,4 @@ class CheckInReminderListener
             }
         }
     }
-
 }

@@ -17,9 +17,8 @@ class PurchaseBillItem extends BaseModel
         return \Modules\Purchase\Database\factories\PurchaseBillItemFactory::new();
     }
 
-    public function bill() :BelongsTo
+    public function bill(): BelongsTo
     {
         return $this->belongsTo(PurchaseBill::class);
     }
-
 }

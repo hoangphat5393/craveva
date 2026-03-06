@@ -2,7 +2,6 @@
 
 namespace Modules\Subdomain\Console;
 
-use App\DataTables\SuperAdmin\SuperAdminDataTable;
 use App\Models\Company;
 use App\Models\User;
 use App\Scopes\ActiveScope;
@@ -13,7 +12,6 @@ use Modules\Subdomain\Notifications\SuperAdminLoginUrlEmail;
 
 class ActivateModuleCommand extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
@@ -55,10 +53,9 @@ class ActivateModuleCommand extends Command
             ->get();
 
         try {
-            Notification::send($users, new SuperAdminLoginUrlEmail());
+            Notification::send($users, new SuperAdminLoginUrlEmail);
         } catch (\Exception $e) {
             echo $e->getMessage();
         }
     }
-
 }

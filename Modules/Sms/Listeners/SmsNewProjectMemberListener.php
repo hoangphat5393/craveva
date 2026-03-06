@@ -22,5 +22,4 @@ class SmsNewProjectMemberListener
         } catch (\Exception $e) { // @codingStandardsIgnoreLine
         }
     }
-
 }

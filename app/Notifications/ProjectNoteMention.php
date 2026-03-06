@@ -4,21 +4,20 @@ namespace App\Notifications;
 
 use App\Models\EmailNotificationSetting;
 use App\Models\Project;
-use App\Models\SlackSetting;
 use NotificationChannels\OneSignal\OneSignalChannel;
 use NotificationChannels\OneSignal\OneSignalMessage;
 
 class ProjectNoteMention extends BaseNotification
 {
-
-
     /**
      * Create a new notification instance.
      *
      * @return void
      */
     private $project;
+
     private $emailSetting;
+
     private $event;
 
     public function __construct(Project $project, $event)
@@ -33,7 +32,7 @@ class ProjectNoteMention extends BaseNotification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -53,7 +52,7 @@ class ProjectNoteMention extends BaseNotification
         }
 
         if ($this->emailSetting->send_push == 'yes' && push_setting()->beams_push_status == 'active') {
-            $pushNotification = new \App\Http\Controllers\DashboardController();
+            $pushNotification = new \App\Http\Controllers\DashboardController;
             $pushUsersIds = [[$notifiable->id]];
             $pushNotification->sendPushNotifications($pushUsersIds, __('email.projectNote.mentionSubject'), $this->project->project_name);
         }
@@ -64,25 +63,25 @@ class ProjectNoteMention extends BaseNotification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
     {
-        $url = route('projects.show', $this->project->id) . '?tab=notes';
+        $url = route('projects.show', $this->project->id).'?tab=notes';
         $url = getDomainSpecificUrl($url, $this->company);
 
-        $content = __('email.projectNote.mentionText') . ' - ' . $this->project->project_name . '<br>';
+        $content = __('email.projectNote.mentionText').' - '.$this->project->project_name.'<br>';
 
         return parent::build($notifiable)
-            ->subject(__('email.projectNote.mentionSubject') . ' - ' . config('app.name') . '.')
+            ->subject(__('email.projectNote.mentionSubject').' - '.config('app.name').'.')
             ->markdown(
                 'mail.email', [
                     'url' => $url,
                     'content' => $content,
                     'themeColor' => $this->company->header_color,
                     'actionText' => __('email.projectNote.action'),
-                    'notifiableName' => $notifiable->name
+                    'notifiableName' => $notifiable->name,
                 ]
             );
 
@@ -91,10 +90,10 @@ class ProjectNoteMention extends BaseNotification
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
-//phpcs:ignore
+    // phpcs:ignore
     public function toArray($notifiable)
     {
         return [
@@ -107,14 +106,14 @@ class ProjectNoteMention extends BaseNotification
     /**
      * Get the Slack representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\SlackMessage
      */
     public function toSlack($notifiable)
     {
 
         return $this->slackBuild($notifiable)
-            ->content('*' . __('email.projectNote.mentionText') . '*' . "\n" . __('email.newProjectMember.text') . ' - ' . $this->project->project_name);
+            ->content('*'.__('email.projectNote.mentionText').'*'."\n".__('email.newProjectMember.text').' - '.$this->project->project_name);
 
     }
 
@@ -123,7 +122,6 @@ class ProjectNoteMention extends BaseNotification
     {
         return OneSignalMessage::create()
             ->subject(__('email.projectNote.mentionSubject'))
-            ->body($this->project->heading . ' ' . __('email.projectNote.subject'));
+            ->body($this->project->heading.' '.__('email.projectNote.subject'));
     }
-
 }

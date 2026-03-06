@@ -3,15 +3,14 @@
 namespace App\Observers;
 
 use App\Events\PromotionAddedEvent;
-use App\Models\Promotion;
 use App\Models\EmployeeDetails;
+use App\Models\Notification as ModelsNotification;
+use App\Models\Promotion;
 use App\Notifications\PromotionUpdated;
 use Illuminate\Support\Facades\Notification;
-use App\Models\Notification as ModelsNotification;
 
 class PromotionObserver
 {
-
     public function creating(Promotion $promotion)
     {
         if (company()) {
@@ -22,9 +21,9 @@ class PromotionObserver
     public function created(Promotion $promotion)
     {
         EmployeeDetails::where('user_id', $promotion->employee_id)
-        ->update(['designation_id' => $promotion->current_designation_id, 'department_id' => $promotion->current_department_id]);
+            ->update(['designation_id' => $promotion->current_designation_id, 'department_id' => $promotion->current_department_id]);
 
-        if (!isRunningInConsoleOrSeeding() && $promotion->send_notification == 'yes') {
+        if (! isRunningInConsoleOrSeeding() && $promotion->send_notification == 'yes') {
             event(new PromotionAddedEvent($promotion));
         } else {
             $promotion->is_send = 0;
@@ -58,8 +57,7 @@ class PromotionObserver
         ModelsNotification::where('type', 'App\Notifications\PromotionAdded')
             ->whereNull('read_at')
             ->where(function ($q) use ($promotion) {
-                $q->where('data', 'like', '{"id":' . $promotion->id . ',%');
+                $q->where('data', 'like', '{"id":'.$promotion->id.',%');
             })->delete();
     }
-
 }

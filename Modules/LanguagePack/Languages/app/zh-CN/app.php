@@ -1,4 +1,5 @@
 <?php
+
 return [
     'dealWatcher' => '交易观察者',
     'pendingTimelog' => '等待时间表',

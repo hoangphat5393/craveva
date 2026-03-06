@@ -30,12 +30,12 @@ class StoreTicket extends CoreRequest
         $rules['description'] = [
             'required',
             function ($attribute, $value, $fail) {
-                $comment = trim_editor($value);;
+                $comment = trim_editor($value);
 
                 if ($comment == '') {
                     $fail(__('validation.required'));
                 }
-            }
+            },
         ];
         $rules['priority'] = 'required';
         $rules['user_id'] = 'required_if:requester_type,employee';
@@ -60,9 +60,8 @@ class StoreTicket extends CoreRequest
     public function messages()
     {
         return [
-            'user_id.required_if' => __('modules.tickets.requesterName') . ' ' . __('app.required'),
-            'client_id.required_if' => __('modules.tickets.requesterName') . ' ' . __('app.required'),
+            'user_id.required_if' => __('modules.tickets.requesterName').' '.__('app.required'),
+            'client_id.required_if' => __('modules.tickets.requesterName').' '.__('app.required'),
         ];
     }
-
 }

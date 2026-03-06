@@ -8,7 +8,6 @@ use Illuminate\Support\ServiceProvider;
 
 class FileStorageCustomConfigProvider extends ServiceProvider
 {
-
     public function register()
     {
         if (in_array(app()->environment(), ['demo'])) {
@@ -35,7 +34,6 @@ class FileStorageCustomConfigProvider extends ServiceProvider
                     config(['filesystems.disks.s3.bucket' => $bucket]);
                     break;
 
-
                 case 'digitalocean':
                     $authKeys = json_decode(Crypt::decryptString($setting->auth_keys));
                     $driver = $authKeys->driver;
@@ -49,7 +47,7 @@ class FileStorageCustomConfigProvider extends ServiceProvider
                     config(['filesystems.disks.digitalocean.secret' => $secret]);
                     config(['filesystems.disks.digitalocean.region' => $region]);
                     config(['filesystems.disks.digitalocean.bucket' => $bucket]);
-                    config(['filesystems.disks.digitalocean.endpoint' => 'https://' . $region . '.digitaloceanspaces.com']);
+                    config(['filesystems.disks.digitalocean.endpoint' => 'https://'.$region.'.digitaloceanspaces.com']);
                     break;
 
                 case 'wasabi':
@@ -65,7 +63,7 @@ class FileStorageCustomConfigProvider extends ServiceProvider
                     config(['filesystems.disks.wasabi.secret' => $secret]);
                     config(['filesystems.disks.wasabi.region' => $region]);
                     config(['filesystems.disks.wasabi.bucket' => $bucket]);
-                    config(['filesystems.disks.wasabi.endpoint' => 'https://s3.' . $region . '.wasabisys.com']);
+                    config(['filesystems.disks.wasabi.endpoint' => 'https://s3.'.$region.'.wasabisys.com']);
                     break;
                 case 'minio':
                     $authKeys = json_decode(Crypt::decryptString($setting->auth_keys));
@@ -84,7 +82,7 @@ class FileStorageCustomConfigProvider extends ServiceProvider
                     config(['filesystems.disks.minio.endpoint' => $endpoint]);
                     break;
 
-                // For local storage
+                    // For local storage
                 default:
                     config(['filesystems.default' => $setting->filesystem]);
                     break;

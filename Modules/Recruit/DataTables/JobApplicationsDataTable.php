@@ -2,18 +2,19 @@
 
 namespace Modules\Recruit\DataTables;
 
-use Illuminate\Support\Carbon;
 use App\DataTables\BaseDataTable;
+use Illuminate\Support\Carbon;
+use Modules\Recruit\Entities\RecruitApplicationStatus;
+use Modules\Recruit\Entities\RecruitJobApplication;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
-use Modules\Recruit\Entities\RecruitJobApplication;
-use Modules\Recruit\Entities\RecruitApplicationStatus;
 
 class JobApplicationsDataTable extends BaseDataTable
 {
-
     private $editJobApplicationPermission;
+
     private $deleteJobApplicationPermission;
+
     private $viewJobApplicationPermission;
 
     public function __construct()
@@ -27,7 +28,7 @@ class JobApplicationsDataTable extends BaseDataTable
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
@@ -37,17 +38,17 @@ class JobApplicationsDataTable extends BaseDataTable
         return datatables()
             ->eloquent($query)
             ->addColumn('check', function ($row) {
-                return '<input type="checkbox" class="select-table-row" id="datatable-row-' . $row->id . '"  name="datatable_ids[]" value="' . $row->id . '" onclick="dataTableRowCheck(' . $row->id . ')">';
+                return '<input type="checkbox" class="select-table-row" id="datatable-row-'.$row->id.'"  name="datatable_ids[]" value="'.$row->id.'" onclick="dataTableRowCheck('.$row->id.')">';
             })
             ->editColumn('full_name', function ($row) {
                 return '<div class="media align-items-center">
                 <div class="media-body">
-                <h5 class="mb-0 f-13 text-darkest-grey"><a href="' . route('job-applications.show', [$row->id]) . '" class="openRightModal">' . $row->full_name . '</a></h5>
+                <h5 class="mb-0 f-13 text-darkest-grey"><a href="'.route('job-applications.show', [$row->id]).'" class="openRightModal">'.$row->full_name.'</a></h5>
                 </div>
                 </div>';
             })
             ->addColumn('recruit_job_id', function ($row) {
-                return '<a href="' . route('jobs.show', [$row->recruit_job_id]) . '" class="text-darkest-grey" >' . $row->title . '</a>';
+                return '<a href="'.route('jobs.show', [$row->recruit_job_id]).'" class="text-darkest-grey" >'.$row->title.'</a>';
             })
             ->editColumn('location', function ($row) {
                 return $row->location;
@@ -61,7 +62,7 @@ class JobApplicationsDataTable extends BaseDataTable
                     ($this->editJobApplicationPermission == 'owned' && user()->id == $row->recruiter_id) ||
                     ($this->editJobApplicationPermission == 'both' && user()->id == $row->recruiter_id) ||
                     $row->added_by == user()->id) {
-                    $status = '<select data-size="4" class="form-control select-picker change-status" data-status-id="' . $row->id . '">';
+                    $status = '<select data-size="4" class="form-control select-picker change-status" data-status-id="'.$row->id.'">';
 
                     foreach ($jobBoardColumns as $item) {
                         $status .= '<option ';
@@ -70,13 +71,12 @@ class JobApplicationsDataTable extends BaseDataTable
                             $status .= 'selected';
                         }
 
-                        $status .= '  data-content="<i class=\'fa fa-circle mr-2\' style=\'color: ' . $item->color . '\'></i> ' . $item->status . '" value="' . $item->id . '">' . $item->status . '</option>';
+                        $status .= '  data-content="<i class=\'fa fa-circle mr-2\' style=\'color: '.$item->color.'\'></i> '.$item->status.'" value="'.$item->id.'">'.$item->status.'</option>';
                     }
 
                     $status .= '</select>';
-                }
-                else {
-                    return ' <i class="fa fa-circle mr-1 text-light-green f-10" style=\'color: ' . $row->color . '\'></i>' . $row->status;
+                } else {
+                    return ' <i class="fa fa-circle mr-1 text-light-green f-10" style=\'color: '.$row->color.'\'></i>'.$row->status;
                 }
 
                 return $status;
@@ -113,17 +113,17 @@ class JobApplicationsDataTable extends BaseDataTable
 
                     <div class="dropdown">
                         <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" type="link"  data-boundary="window" 
-                            id="dropdownMenuLink-' . $row->id . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            id="dropdownMenuLink-'.$row->id.'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="icon-options-vertical icons"></i>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-' . $row->id . '" tabindex="0">';
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-'.$row->id.'" tabindex="0">';
 
                 if ($this->viewJobApplicationPermission == 'all' ||
                     ($this->viewJobApplicationPermission == 'added' && $row->added_by == user()->id) ||
                     ($this->viewJobApplicationPermission == 'owned' && user()->id == $row->recruiter_id) ||
                     ($this->viewJobApplicationPermission == 'both' && user()->id == $row->recruiter_id) ||
                     $row->added_by == user()->id) {
-                    $action .= '<a href="' . route('job-applications.show', [$row->id]) . '" class="dropdown-item openRightModal"><i class="fa fa-eye mr-2"></i>' . __('app.view') . '</a>';
+                    $action .= '<a href="'.route('job-applications.show', [$row->id]).'" class="dropdown-item openRightModal"><i class="fa fa-eye mr-2"></i>'.__('app.view').'</a>';
                 }
 
                 if ($this->editJobApplicationPermission == 'all' ||
@@ -131,9 +131,9 @@ class JobApplicationsDataTable extends BaseDataTable
                     ($this->editJobApplicationPermission == 'owned' && user()->id == $row->recruiter_id) ||
                     ($this->editJobApplicationPermission == 'both' && user()->id == $row->recruiter_id) ||
                     $row->added_by == user()->id) {
-                    $action .= '<a class="dropdown-item openRightModal" href="' . route('job-applications.edit', [$row->id]) . '">
+                    $action .= '<a class="dropdown-item openRightModal" href="'.route('job-applications.edit', [$row->id]).'">
                                     <i class="fa fa-edit mr-2"></i>
-                                    ' . trans('app.edit') . '
+                                    '.trans('app.edit').'
                                 </a>';
                 }
 
@@ -142,9 +142,9 @@ class JobApplicationsDataTable extends BaseDataTable
                     ($this->editJobApplicationPermission == 'owned' && user()->id == $row->recruiter_id) ||
                     ($this->editJobApplicationPermission == 'both' && user()->id == $row->recruiter_id) ||
                     $row->added_by == user()->id) {
-                    $action .= '<a class="dropdown-item archive-job" href="javascript:;" data-application-id="' . $row->id . '">
+                    $action .= '<a class="dropdown-item archive-job" href="javascript:;" data-application-id="'.$row->id.'">
                                     <i class="fa fa-archive mr-2"></i>
-                                    ' . trans('recruit::modules.jobApplication.archiveApplication') . '
+                                    '.trans('recruit::modules.jobApplication.archiveApplication').'
                                 </a>';
                 }
 
@@ -153,9 +153,9 @@ class JobApplicationsDataTable extends BaseDataTable
                     ($this->editJobApplicationPermission == 'owned' && user()->id == $row->recruiter_id) ||
                     ($this->editJobApplicationPermission == 'both' && user()->id == $row->recruiter_id) ||
                     $row->added_by == user()->id) {
-                    $action .= '<a class="dropdown-item follow-up" href="javascript:;" data-datatable="true" data-application-id="' . $row->id . '">
+                    $action .= '<a class="dropdown-item follow-up" href="javascript:;" data-datatable="true" data-application-id="'.$row->id.'">
                     <i class="fa fa-thumbs-up mr-2"></i>
-                    ' . trans('modules.lead.addFollowUp') . '
+                    '.trans('modules.lead.addFollowUp').'
                     </a>';
                 }
 
@@ -164,9 +164,9 @@ class JobApplicationsDataTable extends BaseDataTable
                     ($this->deleteJobApplicationPermission == 'owned' && user()->id == $row->recruiter_id) ||
                     ($this->deleteJobApplicationPermission == 'both' && user()->id == $row->recruiter_id) ||
                     $row->added_by == user()->id) {
-                    $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-application-id="' . $row->id . '">
+                    $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-application-id="'.$row->id.'">
                                     <i class="fa fa-trash mr-2"></i>
-                                    ' . trans('app.delete') . '
+                                    '.trans('app.delete').'
                                 </a>';
                 }
 
@@ -177,14 +177,13 @@ class JobApplicationsDataTable extends BaseDataTable
                 return $action;
             })
             ->addIndexColumn()
-            ->setRowId(fn($row) => 'row-' . $row->id)
-            ->rawColumns(['action', 'status', 'full_name', 'recruit_job_id', 'location', 'date', 'check','phone', 'email', 'current_ctc', 'expected_ctc', 'total_experience', 'source', 'gender']);
+            ->setRowId(fn ($row) => 'row-'.$row->id)
+            ->rawColumns(['action', 'status', 'full_name', 'recruit_job_id', 'location', 'date', 'check', 'phone', 'email', 'current_ctc', 'expected_ctc', 'total_experience', 'source', 'gender']);
     }
 
     /**
      * Get query source of dataTable.
      *
-     * @param  $model
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function query(RecruitJobApplication $model)
@@ -229,13 +228,13 @@ class JobApplicationsDataTable extends BaseDataTable
 
         if ($this->request()->searchText != '') {
             $model = $model->where(function ($query) {
-                $query->where('recruit_job_applications.full_name', 'like', '%' . request('searchText') . '%')
-                    ->orWhere('recruit_job_applications.phone', 'like', '%' . request('searchText') . '%')
-                    ->orWhere('recruit_job_applications.email', 'like', '%' . request('searchText') . '%')
-                    ->orWhere('recruit_jobs.title', 'like', '%' . request('searchText') . '%')
-                    ->orWhere('company_addresses.location', 'like', '%' . request('searchText') . '%')
-                    ->orWhere('recruit_application_status.status', 'like', '%' . request('searchText') . '%')
-                    ->orWhere('application_sources.application_source', 'like', '%' . request('searchText') . '%');
+                $query->where('recruit_job_applications.full_name', 'like', '%'.request('searchText').'%')
+                    ->orWhere('recruit_job_applications.phone', 'like', '%'.request('searchText').'%')
+                    ->orWhere('recruit_job_applications.email', 'like', '%'.request('searchText').'%')
+                    ->orWhere('recruit_jobs.title', 'like', '%'.request('searchText').'%')
+                    ->orWhere('company_addresses.location', 'like', '%'.request('searchText').'%')
+                    ->orWhere('recruit_application_status.status', 'like', '%'.request('searchText').'%')
+                    ->orWhere('application_sources.application_source', 'like', '%'.request('searchText').'%');
             });
         }
 
@@ -307,9 +306,9 @@ class JobApplicationsDataTable extends BaseDataTable
                 'fnDrawCallback' => 'function( oSettings ) {
                    //
                    $(".select-picker").selectpicker();
-                 }'
+                 }',
             ])
-            ->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
+            ->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
     }
 
     /**
@@ -324,7 +323,7 @@ class JobApplicationsDataTable extends BaseDataTable
                 'title' => '<input type="checkbox" name="select_all_table" id="select-all-table" onclick="selectAllTable(this)">',
                 'exportable' => false,
                 'orderable' => false,
-                'searchable' => false
+                'searchable' => false,
             ],
             '#' => ['data' => 'DT_RowIndex', 'orderable' => false, 'searchable' => false, 'visible' => false, 'title' => '#'],
             __('recruit::modules.jobApplication.name') => ['data' => 'full_name', 'exportable' => false, 'name' => 'full_name', 'title' => __('recruit::modules.jobApplication.name')],
@@ -334,7 +333,7 @@ class JobApplicationsDataTable extends BaseDataTable
             __('recruit::modules.jobApplication.jobs') => ['data' => 'recruit_job_id', 'exportable' => false, 'name' => 'recruit_jobs.title', 'title' => __('recruit::modules.jobApplication.jobs')],
             __('recruit::app.jobOffer.job') => ['data' => 'job_name', 'visible' => false, 'name' => 'job_name', 'title' => __('recruit::app.jobOffer.job')],
             __('recruit::modules.job.location') => ['data' => 'location', 'name' => 'company_addresses.location', 'title' => __('recruit::modules.job.location')],
-            __('recruit::modules.jobApplication.gender') => ['data' => 'gender', 'name' => 'gender','visible' => false, 'title' => __('recruit::modules.jobApplication.gender')],
+            __('recruit::modules.jobApplication.gender') => ['data' => 'gender', 'name' => 'gender', 'visible' => false, 'title' => __('recruit::modules.jobApplication.gender')],
             __('recruit::app.jobApplication.date') => ['data' => 'created_at', 'name' => 'created_at', 'title' => __('recruit::app.jobApplication.date')],
             __('app.status') => ['data' => 'status', 'name' => 'status', 'exportable' => false, 'orderable' => false, 'title' => __('app.status')],
             __('recruit::modules.jobApplication.currentCtc') => ['data' => 'current_ctc', 'name' => 'current_ctc', 'visible' => false, 'title' => __('recruit::modules.jobApplication.currentCtc')],
@@ -342,15 +341,13 @@ class JobApplicationsDataTable extends BaseDataTable
             __('recruit::modules.jobApplication.experience') => ['data' => 'total_experience', 'name' => 'total_experience', 'visible' => false, 'title' => __('recruit::modules.jobApplication.experience')],
             __('recruit::modules.sourceSetting.source') => ['data' => 'source', 'name' => 'source', 'visible' => false, 'title' => __('recruit::modules.sourceSetting.source')],
 
-
             Column::computed('action', __('app.action'))
                 ->exportable(false)
                 ->printable(false)
                 ->orderable(false)
                 ->searchable(false)
                 ->width(200)
-                ->addClass('text-right pr-20')
+                ->addClass('text-right pr-20'),
         ];
     }
-
 }

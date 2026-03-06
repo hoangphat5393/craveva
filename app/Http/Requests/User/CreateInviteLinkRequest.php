@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class CreateInviteLinkRequest extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -38,8 +37,7 @@ class CreateInviteLinkRequest extends FormRequest
     public function messages()
     {
         return [
-            'email_domain.regex' => __('validation.email_domain')
+            'email_domain.regex' => __('validation.email_domain'),
         ];
     }
-
 }

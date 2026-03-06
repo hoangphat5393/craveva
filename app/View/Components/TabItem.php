@@ -7,8 +7,8 @@ use Illuminate\View\Component;
 
 class TabItem extends Component
 {
-
     public $link;
+
     public $active;
 
     /**
@@ -31,5 +31,4 @@ class TabItem extends Component
     {
         return view('components.tab-item');
     }
-
 }

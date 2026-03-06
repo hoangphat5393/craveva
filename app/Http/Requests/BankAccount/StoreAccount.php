@@ -11,7 +11,6 @@ class StoreAccount extends CoreRequest
      *
      * @return bool
      */
-
     public function authorize()
     {
         return true;
@@ -32,13 +31,11 @@ class StoreAccount extends CoreRequest
             'currency_id' => 'required',
         ];
 
-        if (request('type') == 'bank')
-        {
+        if (request('type') == 'bank') {
             $rules['bank_name'] = 'required';
             $rules['account_number'] = 'required';
         }
 
         return $rules;
     }
-
 }

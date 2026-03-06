@@ -1,13 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
 use Modules\Biometric\Http\Controllers\BiometricAttendanceController;
 use Modules\Biometric\Http\Controllers\BiometricDeviceController;
 use Modules\Biometric\Http\Controllers\BiometricEmployeeController;
-
-
-
 
 /*
 |--------------------------------------------------------------------------
@@ -22,7 +18,6 @@ use Modules\Biometric\Http\Controllers\BiometricEmployeeController;
 
 // Admin routes
 Route::group(['middleware' => 'auth', 'prefix' => 'account'], function () {
-
 
     Route::post('biometric-devices/change-status', [BiometricDeviceController::class, 'changeStatus'])->name('biometric-devices.change-status');
     Route::post('biometric-devices/sync-employees', [BiometricDeviceController::class, 'syncEmployees'])->name('biometric-devices.sync-employees');

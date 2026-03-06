@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 use Modules\Affiliate\Entities\AffiliateSetting;
 use Modules\Affiliate\Enums\CommissionType;
 use Modules\Affiliate\Enums\PayoutType;
@@ -10,7 +10,6 @@ use Modules\Affiliate\Enums\YesNo;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      *
@@ -58,5 +57,4 @@ return new class extends Migration
             'minimum_payout' => 200,
         ]);
     }
-
 };

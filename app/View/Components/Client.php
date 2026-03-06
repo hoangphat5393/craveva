@@ -7,7 +7,6 @@ use Illuminate\View\Component;
 
 class Client extends Component
 {
-
     public $user;
 
     /**
@@ -25,10 +24,8 @@ class Client extends Component
      *
      * @return View|string
      */
-
     public function render()
     {
         return view('components.client');
     }
-
 }

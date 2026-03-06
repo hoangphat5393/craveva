@@ -2,17 +2,18 @@
 
 namespace Modules\Purchase\DataTables;
 
-use App\Models\User;
 use App\DataTables\BaseDataTable;
+use App\Models\User;
 use Carbon\Carbon;
 use Modules\Purchase\Entities\PurchaseVendor;
 use Yajra\DataTables\Html\Column;
 
 class VendorDataTable extends BaseDataTable
 {
-
     private $editPermission;
+
     private $deletePermission;
+
     private $viewPermission;
 
     public function __construct()
@@ -26,7 +27,7 @@ class VendorDataTable extends BaseDataTable
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
@@ -34,39 +35,39 @@ class VendorDataTable extends BaseDataTable
         return datatables()
             ->eloquent($query)
             ->addColumn('check', function ($row) {
-                return '<input type="checkbox" class="select-table-row" id="datatable-row-' . $row->id . '"  name="datatable_ids[]" value="' . $row->id . '" onclick="dataTableRowCheck(' . $row->id . ')">';
+                return '<input type="checkbox" class="select-table-row" id="datatable-row-'.$row->id.'"  name="datatable_ids[]" value="'.$row->id.'" onclick="dataTableRowCheck('.$row->id.')">';
             })
             ->addColumn('action', function ($row) {
                 $action = '<div class="task_view">
 
                     <div class="dropdown">
                         <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" type="link"
-                            id="dropdownMenuLink-' . $row->id . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            id="dropdownMenuLink-'.$row->id.'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="icon-options-vertical icons"></i>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-' . $row->id . '" tabindex="0">';
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-'.$row->id.'" tabindex="0">';
 
                 if ($this->viewPermission == 'all' ||
                 ($this->viewPermission == 'added' && $row->added_by == user()->id)) {
-                    $action .= '<a class="dropdown-item" href="' . route('vendors.show', [$row->id]) . '">
+                    $action .= '<a class="dropdown-item" href="'.route('vendors.show', [$row->id]).'">
                                 <i class="fa fa-eye mr-2"></i>
-                                ' . trans('app.view') . '
+                                '.trans('app.view').'
                             </a>';
                 }
 
                 if ($this->editPermission == 'all' ||
                 ($this->editPermission == 'added' && $row->added_by == user()->id)) {
-                    $action .= '<a class="dropdown-item openRightModal" href="' . route('vendors.edit', [$row->id]) . '">
+                    $action .= '<a class="dropdown-item openRightModal" href="'.route('vendors.edit', [$row->id]).'">
                                 <i class="fa fa-edit mr-2"></i>
-                                ' . trans('app.edit') . '
+                                '.trans('app.edit').'
                             </a>';
                 }
 
                 if ($this->deletePermission == 'all' ||
                 ($this->deletePermission == 'added' && $row->added_by == user()->id)) {
-                    $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-vendor-id="' . $row->id . '">
+                    $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-vendor-id="'.$row->id.'">
                                 <i class="fa fa-trash mr-2"></i>
-                                ' . trans('app.delete') . '
+                                '.trans('app.delete').'
                             </a>';
                 }
 
@@ -77,7 +78,7 @@ class VendorDataTable extends BaseDataTable
                 return $action;
             })
             ->editColumn('primary_name', function ($row) {
-                return '<a href="' . route('vendors.show', [$row->id]) . '" style="color:black;">' . $row->primary_name . '</a>';
+                return '<a href="'.route('vendors.show', [$row->id]).'" style="color:black;">'.$row->primary_name.'</a>';
             })
             ->editColumn('company_name', function ($row) {
                 return $row->company_name ?? '--';
@@ -89,15 +90,15 @@ class VendorDataTable extends BaseDataTable
                 return $row->phone ?? '--';
             })
             ->addColumn('category_name', function ($row) {
-                return !is_null($row->category_id) ? $row->category->category_name : '--';
+                return ! is_null($row->category_id) ? $row->category->category_name : '--';
             })
             ->addIndexColumn()
-            ->setRowId(fn($row) => 'row-' . $row->id)
+            ->setRowId(fn ($row) => 'row-'.$row->id)
             ->rawColumns(['primary_name', 'company_name', 'email', 'phone', 'action', 'check']);
     }
 
     /**
-     * @param User $model
+     * @param  User  $model
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function query(PurchaseVendor $model)
@@ -114,14 +115,14 @@ class VendorDataTable extends BaseDataTable
             $endDate = Carbon::createFromFormat($this->company->date_format, $request->endDate)->toDateString();
         }
 
-        $model = $model->select('id','category_id', 'primary_name', 'company_name', 'email', 'phone', 'added_by');
+        $model = $model->select('id', 'category_id', 'primary_name', 'company_name', 'email', 'phone', 'added_by');
 
         if ($request->searchText != '') {
             $model = $model->where(function ($query) {
-                $query->where('purchase_vendors.primary_name', 'like', '%' . request('searchText') . '%')
-                    ->orWhere('purchase_vendors.company_name', 'like', '%' . request('searchText') . '%')
-                    ->orWhere('purchase_vendors.email', 'like', '%' . request('searchText') . '%')
-                    ->orWhere('purchase_vendors.phone', 'like', '%' . request('searchText') . '%');
+                $query->where('purchase_vendors.primary_name', 'like', '%'.request('searchText').'%')
+                    ->orWhere('purchase_vendors.company_name', 'like', '%'.request('searchText').'%')
+                    ->orWhere('purchase_vendors.email', 'like', '%'.request('searchText').'%')
+                    ->orWhere('purchase_vendors.phone', 'like', '%'.request('searchText').'%');
             });
         }
 
@@ -133,7 +134,7 @@ class VendorDataTable extends BaseDataTable
             $model = $model->whereDate('purchase_vendors.created_at', '<=', $endDate);
         }
 
-        if (!is_null($request->category_id) && $request->category_id != 'all') {
+        if (! is_null($request->category_id) && $request->category_id != 'all') {
             $model = $model->where('purchase_vendors.category_id', $request->category_id);
         }
 
@@ -172,12 +173,12 @@ class VendorDataTable extends BaseDataTable
                 'title' => '<input type="checkbox" name="select_all_table" id="select-all-table" onclick="selectAllTable(this)">',
                 'exportable' => false,
                 'orderable' => false,
-                'searchable' => false
+                'searchable' => false,
             ],
             '#' => ['data' => 'DT_RowIndex', 'orderable' => false, 'searchable' => false, 'visible' => false],
             __('app.name') => ['data' => 'primary_name', 'name' => 'primary_name'],
             __('purchase::modules.vendor.companyName') => ['data' => 'company_name', 'name' => 'company_name'],
-             __('app.category') => ['data' => 'category_name', 'name' => 'category_name', 'title' => __('app.category')],
+            __('app.category') => ['data' => 'category_name', 'name' => 'category_name', 'title' => __('app.category')],
             __('app.email') => ['data' => 'email', 'name' => 'email'],
             __('app.phone') => ['data' => 'phone', 'name' => 'phone'],
             Column::computed('action', __('app.action'))
@@ -186,8 +187,7 @@ class VendorDataTable extends BaseDataTable
                 ->orderable(false)
                 ->searchable(false)
                 ->width(150)
-                ->addClass('text-right pr-20')
+                ->addClass('text-right pr-20'),
         ];
     }
-
 }

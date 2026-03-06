@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Route;
 
 class RouteServiceProvider extends ServiceProvider
 {
-
     /**
      * The path to the "home" route for your application.
      *
@@ -37,7 +36,6 @@ class RouteServiceProvider extends ServiceProvider
             $this->mapSettingRoutes();
             $this->mapApiRoutes();
             $this->mapWebRoutes();
-
 
             if (isCraveva()) {
                 $this->mapSuperAdminRoutes();
@@ -127,7 +125,6 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @return void
      */
-
     protected function mapSuperAdminRoutes()
     {
         Route::middleware('web')

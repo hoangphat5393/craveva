@@ -6,7 +6,6 @@ use App\Http\Requests\CoreRequest;
 
 class StoreOrder extends CoreRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -41,8 +40,7 @@ class StoreOrder extends CoreRequest
     public function messages()
     {
         return [
-            'client_id.required' => __('modules.projects.selectClient')
+            'client_id.required' => __('modules.projects.selectClient'),
         ];
     }
-
 }

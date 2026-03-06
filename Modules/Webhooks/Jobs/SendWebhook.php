@@ -46,13 +46,20 @@ class SendWebhook implements ShouldQueue
             $headers = $this->mapHeaders($webhook);
             $client = $this->getClientRequest($webhook, $data, $headers);
 
+            $requestOptions = [
+                'headers' => $headers,
+            ];
+
+            if ($webhook->request_format == 'JSON') {
+                $requestOptions['json'] = $data;
+            } else {
+                $requestOptions['form_params'] = $data;
+            }
+
             $client->request(
                 $webhook->request_method,
                 $webhook->url,
-                [
-                    'headers' => $headers,
-                    'form_params' => $data,
-                ]
+                $requestOptions
             );
         }
     }
@@ -61,7 +68,7 @@ class SendWebhook implements ShouldQueue
     {
 
         $logger = new Logger('Zapier');
-        $logger->pushHandler(new StreamHandler(storage_path('logs/zapier-'.date('Y-m-d').'.log')));
+        $logger->pushHandler(new StreamHandler(storage_path('logs/zapier-' . date('Y-m-d') . '.log')));
 
         $stack = HandlerStack::create();
         //        $stack->push(
@@ -165,9 +172,7 @@ class SendWebhook implements ShouldQueue
                     $data[$key] = str_replace('\\/', '/', $value);
                 }
             } catch (\Exception $e) {
-
             }
-
         }
 
         return $data;

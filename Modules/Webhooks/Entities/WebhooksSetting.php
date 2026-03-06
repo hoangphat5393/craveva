@@ -107,6 +107,7 @@ class WebhooksSetting extends BaseModel
         'Upgrade',
         'Via',
         'Warning',
+        'X-Webhook-Signature',
         'custom',
     ];
 

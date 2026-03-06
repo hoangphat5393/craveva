@@ -193,10 +193,15 @@ class DeveloperToolsController extends AccountBaseController
                 }
             }
 
+            // Use quoted identifier for source DB to handle names with dots (e.g. craveva.test)
+            $mainDbQuoted = '`' . str_replace('`', '``', $mainDb) . '`';
+
             $mainDbSafe = $policy->sanitizeIdentifier($mainDb);
             if ($mainDbSafe === '') {
-                throw new \RuntimeException('Invalid source database name');
+                // Fallback if sanitization fails completely
+                $mainDbSafe = preg_replace('/[^a-zA-Z0-9]/', '', $mainDb);
             }
+
             $allowedTables = $policy->resolveAllowedTables($mainDb, $effectiveModules);
             $globalTables = $policy->globalTables();
             $joinViews = $policy->joinViews();
@@ -223,12 +228,15 @@ class DeveloperToolsController extends AccountBaseController
                     continue;
                 }
 
+                // Source table name quoted (handle special chars if any)
+                $tableNameQuoted = '`' . str_replace('`', '``', $tableName) . '`';
+
                 DB::statement("DROP VIEW IF EXISTS `$gatewayDbSafe`.`$tableNameSafe`");
 
                 if (array_key_exists($tableName, $joinViews)) {
                     $def = $joinViews[$tableName];
-                    $from = str_replace('{mainDb}.', "`{$mainDbSafe}`.`", $def['from']);
-                    $from = str_replace('{mainDb}', "`{$mainDbSafe}`", $from);
+                    // Use quoted DB name. Remove backticks from replacement if config assumes none.
+                    $from = str_replace('{mainDb}', $mainDbQuoted, $def['from']);
                     $where = str_replace('{companyId}', (string) ((int) $company->id), $def['where']);
                     $select = $def['select'];
 
@@ -248,7 +256,7 @@ class DeveloperToolsController extends AccountBaseController
                 if (in_array($tableName, $globalTables, true)) {
                     DB::statement("
                         CREATE VIEW `$gatewayDbSafe`.`$tableNameSafe` AS
-                        SELECT {$selectColumns} FROM `$mainDbSafe`.`$tableNameSafe`
+                        SELECT {$selectColumns} FROM {$mainDbQuoted}.{$tableNameQuoted}
                     ");
                     $createdViewsCount++;
 
@@ -258,7 +266,7 @@ class DeveloperToolsController extends AccountBaseController
                 if (isset($tablesWithCompanyId[$tableName])) {
                     DB::statement("
                         CREATE VIEW `$gatewayDbSafe`.`$tableNameSafe` AS
-                        SELECT {$selectColumns} FROM `$mainDbSafe`.`$tableNameSafe`
+                        SELECT {$selectColumns} FROM {$mainDbQuoted}.{$tableNameQuoted}
                         WHERE `company_id` = {$company->id}
                     ");
                     $createdViewsCount++;

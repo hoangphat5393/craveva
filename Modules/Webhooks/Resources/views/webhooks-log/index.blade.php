@@ -4,10 +4,20 @@
     @include('sections.datatable_css')
     <style>
         #webhooks-log-table .webhook-url-cell { min-width: 320px; word-break: break-all; }
-        #webhooks-log-table .request-method-cell { width: 100px; max-width: 100px; }
+        #webhooks-log-table .request-method-cell { width: 100px; max-width: 100px; text-align: center; }
         #webhooks-log-table .webhook-for-cell { width: 140px; max-width: 140px; }
         #webhooks-log-table .response-code-cell { width: 100px; max-width: 100px; text-align: center; }
         #webhooks-log-table .recorded-on-cell { width: 110px; max-width: 110px; }
+        /* Webhook log detail (modal) - contrast & readability */
+        .webhook-log-detail .card { border: 1px solid #dee2e6 !important; box-shadow: 0 2px 6px rgba(0,0,0,.1) !important; }
+        .webhook-log-detail .card-body { background: #f1f3f5 !important; }
+        .webhook-log-detail table { background: #fff; border: 1px solid #dee2e6; border-radius: 4px; overflow: hidden; }
+        .webhook-log-detail table td { border-color: #e9ecef; padding: 10px 12px; color: #212529; }
+        .webhook-log-detail table tbody tr:nth-child(odd) { background: #fff; }
+        .webhook-log-detail table tbody tr:nth-child(even) { background: #f8f9fa; }
+        .webhook-log-detail table tbody tr:hover { background: #e9ecef; }
+        .webhook-log-detail table td:first-child { font-weight: 600; color: #495057; width: 180px; }
+        .webhook-log-detail pre { background: #2d3748 !important; color: #e2e8f0 !important; padding: 16px !important; border-radius: 6px !important; border: 1px solid #4a5568; font-size: 13px; line-height: 1.5; overflow-x: auto; }
     </style>
 @endpush
 
@@ -62,7 +72,7 @@
 
 @push('scripts')
     @include('sections.datatable_js')
-
+    <script src="{{ asset('vendor/jquery/clipboard.min.js') }}"></script>
     <script>
         $('#webhooks-log-table').on('preXhr.dt', function(e, settings, data) {
             var searchText = $('#search-text-field').val();
@@ -186,5 +196,30 @@
                 }
             });
         };
+
+        // Copy button for webhook log detail (works in modal)
+        document.addEventListener('click', function(e) {
+            var btn = e.target.closest('.btn-copy-webhook-log');
+            if (!btn) return;
+            e.preventDefault();
+            var targetId = btn.getAttribute('data-copy-target');
+            var target = document.querySelector(targetId);
+            if (target) {
+                var text = target.innerText || target.textContent;
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(text).then(function() {
+                        window.Swal.fire({ icon: 'success', title: '@lang("app.copy")', text: '@lang("messages.copiedToClipboard")', timer: 1500, showConfirmButton: false });
+                    });
+                } else {
+                    var textarea = document.createElement('textarea');
+                    textarea.value = text;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                    window.Swal.fire({ icon: 'success', title: '@lang("app.copy")', text: '@lang("messages.copiedToClipboard")', timer: 1500, showConfirmButton: false });
+                }
+            }
+        });
     </script>
 @endpush

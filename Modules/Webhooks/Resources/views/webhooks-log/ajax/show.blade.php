@@ -1,4 +1,4 @@
-<div class="row">
+<div class="row webhook-log-detail">
     <div class="col-sm-12">
         <div class="add-client bg-white rounded">
             <h4 class="mb-0 p-20 f-21 font-weight-normal border-bottom-grey">
@@ -11,6 +11,12 @@
                         <x-slot:title>
                             @lang('webhooks::app.requestDetails')
                         </x-slot:title>
+                        <x-slot:action>
+                            <button type="button" class="btn btn-secondary btn-sm btn-copy-webhook-log" data-copy-target="#webhook-log-request-details" title="@lang('app.copy')">
+                                <i class="fa fa-copy"></i> @lang('app.copy')
+                            </button>
+                        </x-slot:action>
+                        <div id="webhook-log-request-details">
                         <table class="table table-striped table-hover mb-0">
                             <tbody>
                                 <tr>
@@ -31,6 +37,7 @@
                                 </tr>
                             </tbody>
                         </table>
+                        </div>
                     </x-cards.data>
                     </div>
                 </div>
@@ -40,6 +47,12 @@
                         <x-slot:title>
                             @lang('webhooks::app.requestHeaders')
                         </x-slot:title>
+                        <x-slot:action>
+                            <button type="button" class="btn btn-secondary btn-sm btn-copy-webhook-log" data-copy-target="#webhook-log-request-headers" title="@lang('app.copy')">
+                                <i class="fa fa-copy"></i> @lang('app.copy')
+                            </button>
+                        </x-slot:action>
+                        <div id="webhook-log-request-headers">
                         <table class="table table-striped table-hover mb-0">
                             <tbody>
                                 @forelse (json_decode($log->headers) as $key => $value)
@@ -52,6 +65,7 @@
                                 @endforelse
                             </tbody>
                         </table>
+                        </div>
                     </x-cards.data>
                     </div>
                 </div>
@@ -62,11 +76,14 @@
                             @lang('webhooks::app.requestBody')
                         </x-slot:title>
                         <x-slot:action>
-                            <div class="">
+                            <div class="d-flex align-items-center gap-2">
+                                <button type="button" class="btn btn-secondary btn-sm btn-copy-webhook-log" data-copy-target="#webhook-log-request-body" title="@lang('app.copy')">
+                                    <i class="fa fa-copy"></i> @lang('app.copy')
+                                </button>
                                 <span class="badge badge-info">@lang('webhooks::app.requestFormat'): {{ $log->webhookSettings?->request_format }}</span>
                             </div>
                         </x-slot:action>
-                        <pre>{!! $log->raw_content !!}</pre>
+                        <pre id="webhook-log-request-body">{!! $log->raw_content !!}</pre>
                     </x-cards.data>
                     </div>
                 </div>
@@ -77,11 +94,14 @@
                             @lang('webhooks::app.response')
                         </x-slot:title>
                         <x-slot:action>
-                            <div class="">
+                            <div class="d-flex align-items-center gap-2">
+                                <button type="button" class="btn btn-secondary btn-sm btn-copy-webhook-log" data-copy-target="#webhook-log-response" title="@lang('app.copy')">
+                                    <i class="fa fa-copy"></i> @lang('app.copy')
+                                </button>
                                 <span class="badge badge-info">{{ $log->response_code }}</span>
                             </div>
                         </x-slot:action>
-                        <pre>{{ $log->response }}</pre>
+                        <pre id="webhook-log-response">{{ $log->response }}</pre>
                     </x-cards.data>
                     </div>
                 </div>

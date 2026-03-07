@@ -4,7 +4,7 @@
     @include('sections.datatable_css')
     <style>
         #webhooks-table .webhook-for-cell { width: 160px; max-width: 180px; }
-        #webhooks-table .request-method-cell { width: 100px; max-width: 100px; }
+        #webhooks-table .request-method-cell { width: 100px; max-width: 100px; text-align: center; }
         #webhooks-table .status-cell { width: 120px; max-width: 120px; }
         #webhooks-table .webhook-url-cell { min-width: 320px; word-break: break-all; }
     </style>

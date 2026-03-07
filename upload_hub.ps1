@@ -16,7 +16,11 @@ New-Item -ItemType Directory -Force -Path $LocalTempDir | Out-Null
 
 # 2. Define files and directories to upload (Synced with Staging)
 $FilesToCopy = @(
+    "app/Http/Controllers/Controller.php",
     "app/Helper/start.php",
+    "app/Http/Controllers/Controller.php",
+    "app/Http/Controllers/Controller.php",
+    "app/Http/Controllers/Controller.php",
     "deploy_zipper.php",
     "check_pricing_v2.php",
     "fix_inventory_cf.php",

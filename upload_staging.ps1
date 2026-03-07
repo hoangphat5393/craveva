@@ -385,6 +385,9 @@ $RemoteCommand += " && sudo unzip -o deploy_staging.zip && sudo rm deploy_stagin
 # Fix permissions
 $RemoteCommand += " && sudo chown -R www-data:www-data $StagingPath/Modules $StagingPath/resources $StagingPath/storage $StagingPath/bootstrap/cache $StagingPath/public"
 $RemoteCommand += " && sudo chmod -R 775 $StagingPath/storage $StagingPath/bootstrap/cache"
+# ACL: Cho phep ca www-data VA user SSH ghi vao storage; default ACL -> file moi ke thua quyen (tranh loi moi ngay)
+$RemoteCommand += " && DEPLOY_USER=`$(whoami) && sudo setfacl -R -m u:www-data:rwX -m u:`$DEPLOY_USER:rwX $StagingPath/storage $StagingPath/bootstrap/cache 2>/dev/null || true"
+$RemoteCommand += " && sudo setfacl -dR -m u:www-data:rwX -m u:`$DEPLOY_USER:rwX $StagingPath/storage $StagingPath/bootstrap/cache 2>/dev/null || true"
 $RemoteCommand += " && sudo chmod -R 755 $StagingPath/public"
 $RemoteCommand += " && sudo chown -R www-data:www-data $StagingPath/public/vendor"
 $RemoteCommand += " && sudo chmod -R 755 $StagingPath/public/vendor"

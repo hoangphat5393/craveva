@@ -62,9 +62,19 @@ class Controller extends BaseController
 
             $this->socialAuthSettings = social_auth_setting();
 
-            $this->companyName = company() ? $this->company->company_name : $this->global->global_app_name;
-
-            $this->appName = company() ? $this->company->app_name : $this->global->global_app_name;
+            // Super Admin panel: luôn dùng global_app_name cho sidebar (Theme Settings)
+            // Tránh trường hợp auto-set company khiến hiển thị sai tên
+            // Dùng route check vì user() có thể trả về company user (is_superadmin=0) khi session có company
+            $isSuperAdminRoute = request()->routeIs('superadmin.*')
+                || request()->routeIs('app-settings.*')
+                || (request()->route() && str_starts_with(request()->route()->uri(), 'account/settings'));
+            if ($isSuperAdminRoute && auth()->check()) {
+                $this->companyName = $this->global->global_app_name;
+                $this->appName = $this->global->global_app_name;
+            } else {
+                $this->companyName = company() ? $this->company->company_name : $this->global->global_app_name;
+                $this->appName = company() ? $this->company->app_name : $this->global->global_app_name;
+            }
             $this->locale = session('locale') ? session('locale') : (company() ? $this->company->locale : $this->global->locale);
 
             $this->taskBoardColumnLength = $this->company ? $this->company->taskboard_length : 10;

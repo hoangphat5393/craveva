@@ -356,7 +356,8 @@ class DeveloperToolsController extends AccountBaseController
             // We attempt to drop user if it exists.
 
             try {
-                DB::statement("DROP USER IF EXISTS '$dbUsername'@'%'");
+                $userQuoted = DB::getPdo()->quote($dbUsername);
+                DB::statement("DROP USER IF EXISTS {$userQuoted}@'%'");
             } catch (\Exception $dropEx) {
             }
 
@@ -395,7 +396,8 @@ class DeveloperToolsController extends AccountBaseController
         $credential = DeveloperToolsCredential::where('company_id', $company->id)->findOrFail($id);
 
         try {
-            DB::statement("DROP USER IF EXISTS '{$credential->db_username}'@'%'");
+            $userQuoted = DB::getPdo()->quote($credential->db_username);
+            DB::statement("DROP USER IF EXISTS {$userQuoted}@'%'");
         } catch (\Exception $e) {
             // User might already be deleted or permission denied
             // Continue to delete record

@@ -2,14 +2,10 @@
 
 namespace Modules\DeveloperTools\Entities;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Modules\DeveloperTools\Database\factories\DeveloperToolsCredentialFactory;
 
 class DeveloperToolsCredential extends Model
 {
-    use HasFactory;
-
     /**
      * The attributes that are mass assignable.
      */
@@ -33,9 +29,4 @@ class DeveloperToolsCredential extends Model
         'allowed_modules' => 'array',
         'last_generated_at' => 'datetime',
     ];
-
-    protected static function newFactory(): DeveloperToolsCredentialFactory
-    {
-        // return DeveloperToolsCredentialFactory::new();
-    }
 }

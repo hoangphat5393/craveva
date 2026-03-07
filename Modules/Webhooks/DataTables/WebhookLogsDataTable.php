@@ -30,6 +30,14 @@ class WebhookLogsDataTable extends BaseDataTable
             return $row->webhookSettings ? '<a href="'.route('webhooks-log.show', [$row->id]).'" class="text-darkest-grey openRightModal">'.$row->webhookSettings->name.'</a>' : '--';
         });
 
+        $datatables->addColumn('method', function ($row) {
+            return $row->method ?? '--';
+        });
+
+        $datatables->addColumn('webhook_for', function ($row) {
+            return $row->webhook_for ?? '--';
+        });
+
         $datatables->addColumn('webhook_url', function ($row) {
             $url = $row->webhookSettings?->url ?? '--';
             if ($url === '--') {
@@ -148,7 +156,11 @@ class WebhookLogsDataTable extends BaseDataTable
 
             __('webhooks::app.webhookName') => ['data' => 'name', 'name' => 'name', 'title' => __('webhooks::app.webhookName'), 'exportable' => false],
 
+            __('webhooks::app.webhookFor') => ['data' => 'webhook_for', 'name' => 'webhook_for', 'title' => __('webhooks::app.webhookFor'), 'orderable' => false, 'searchable' => false, 'className' => 'webhook-for-cell'],
+
             __('webhooks::app.requestUrl') => ['data' => 'webhook_url', 'name' => 'webhook_url', 'title' => __('webhooks::app.requestUrl'), 'orderable' => false, 'searchable' => false, 'className' => 'webhook-url-cell'],
+
+            __('webhooks::app.requestMethod') => ['data' => 'method', 'name' => 'method', 'title' => __('webhooks::app.requestMethod'), 'orderable' => false, 'searchable' => false, 'className' => 'request-method-cell'],
 
             __('webhooks::app.responseCode') => ['data' => 'response_code', 'name' => 'response_code', 'title' => __('webhooks::app.responseCode'), 'className' => 'response-code-cell'],
 

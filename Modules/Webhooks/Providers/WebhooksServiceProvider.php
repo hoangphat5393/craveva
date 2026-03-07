@@ -2,6 +2,7 @@
 
 namespace Modules\Webhooks\Providers;
 
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
 use Modules\Webhooks\Console\ActivateModuleCommand;
 
@@ -53,6 +54,8 @@ class WebhooksServiceProvider extends ServiceProvider
             'CreditNotes' => \App\Models\CreditNotes::class,
             'PurchaseOrder' => \Modules\Purchase\Entities\PurchaseOrder::class,
             'PurchaseBill' => \Modules\Purchase\Entities\PurchaseBill::class,
+            'PurchaseVendor' => \Modules\Purchase\Entities\PurchaseVendor::class,
+            'PurchaseInventory' => \Modules\Purchase\Entities\PurchaseInventory::class,
             'RecruitJob' => \Modules\Recruit\Entities\RecruitJob::class,
             'RecruitJobApplication' => \Modules\Recruit\Entities\RecruitJobApplication::class,
             'ZoomMeeting' => \Modules\Zoom\Entities\ZoomMeeting::class,
@@ -71,12 +74,12 @@ class WebhooksServiceProvider extends ServiceProvider
                 if (class_exists($moduleClass)) {
                     $modelClass = $moduleClass;
                 } else {
-                     // Try fallback to the name itself if it happens to be a full class name
-                     if (class_exists($name)) {
-                         $modelClass = $name;
-                     } else {
-                         continue;
-                     }
+                    // Try fallback to the name itself if it happens to be a full class name
+                    if (class_exists($name)) {
+                        $modelClass = $name;
+                    } else {
+                        continue;
+                    }
                 }
             }
 
@@ -85,14 +88,14 @@ class WebhooksServiceProvider extends ServiceProvider
                 // Check if specific observer exists
                 // We check for exact match "NameObserver" or mapped observer if we knew it
                 // But for Client, the observer is ClientDetailsObserver, which matches ClientDetails model basename.
-                
+
                 $basename = class_basename($modelClass);
                 $observerClass = "Modules\\Webhooks\\Observers\\{$basename}Observer";
-                
+
                 if (class_exists($observerClass)) {
-                     $modelClass::observe($observerClass);
+                    $modelClass::observe($observerClass);
                 } else {
-                     $modelClass::observe(\Modules\Webhooks\Observers\GenericObserver::class);
+                    $modelClass::observe(\Modules\Webhooks\Observers\GenericObserver::class);
                 }
             }
         }
@@ -116,11 +119,12 @@ class WebhooksServiceProvider extends ServiceProvider
     protected function registerConfig()
     {
         $this->publishes([
-            module_path($this->moduleName, 'Config/config.php') => config_path($this->moduleNameLower.'.php'),
+            module_path($this->moduleName, 'Config/config.php') => config_path($this->moduleNameLower . '.php'),
         ], 'config');
 
         $this->mergeConfigFrom(
-            module_path($this->moduleName, 'Config/config.php'), $this->moduleNameLower
+            module_path($this->moduleName, 'Config/config.php'),
+            $this->moduleNameLower
         );
 
         $this->mergeConfigFrom(
@@ -131,7 +135,6 @@ class WebhooksServiceProvider extends ServiceProvider
             module_path('webhooks', 'Config/xss_ignore.php'),
             'webhooks::xss_ignore'
         );
-
     }
 
     /**
@@ -141,13 +144,13 @@ class WebhooksServiceProvider extends ServiceProvider
      */
     public function registerViews()
     {
-        $viewPath = resource_path('views/modules/'.$this->moduleNameLower);
+        $viewPath = resource_path('views/modules/' . $this->moduleNameLower);
 
         $sourcePath = module_path($this->moduleName, 'Resources/views');
 
         $this->publishes([
             $sourcePath => $viewPath,
-        ], ['views', $this->moduleNameLower.'-module-views']);
+        ], ['views', $this->moduleNameLower . '-module-views']);
 
         $this->loadViewsFrom(array_merge($this->getPublishableViewPaths(), [$sourcePath]), $this->moduleNameLower);
     }
@@ -159,7 +162,7 @@ class WebhooksServiceProvider extends ServiceProvider
      */
     public function registerTranslations()
     {
-        $langPath = resource_path('lang/modules/'.$this->moduleNameLower);
+        $langPath = resource_path('lang/modules/' . $this->moduleNameLower);
 
         if (is_dir($langPath)) {
             $this->loadTranslationsFrom($langPath, $this->moduleNameLower);
@@ -183,9 +186,9 @@ class WebhooksServiceProvider extends ServiceProvider
     private function getPublishableViewPaths(): array
     {
         $paths = [];
-        foreach (\Config::get('view.paths') as $path) {
-            if (is_dir($path.'/modules/'.$this->moduleNameLower)) {
-                $paths[] = $path.'/modules/'.$this->moduleNameLower;
+        foreach (Config::get('view.paths') as $path) {
+            if (is_dir($path . '/modules/' . $this->moduleNameLower)) {
+                $paths[] = $path . '/modules/' . $this->moduleNameLower;
             }
         }
 

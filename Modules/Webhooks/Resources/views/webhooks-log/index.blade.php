@@ -4,6 +4,8 @@
     @include('sections.datatable_css')
     <style>
         #webhooks-log-table .webhook-url-cell { min-width: 320px; word-break: break-all; }
+        #webhooks-log-table .request-method-cell { width: 100px; max-width: 100px; }
+        #webhooks-log-table .webhook-for-cell { width: 140px; max-width: 140px; }
         #webhooks-log-table .response-code-cell { width: 100px; max-width: 100px; text-align: center; }
         #webhooks-log-table .recorded-on-cell { width: 110px; max-width: 110px; }
     </style>

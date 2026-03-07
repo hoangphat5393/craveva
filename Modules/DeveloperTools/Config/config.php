@@ -74,7 +74,7 @@ return [
                 'depends_on' => ['core'],
                 'table_patterns' => [
                     'e_invoice_%',
-                    'e_invoices%',
+                    'e_invoice_%',
                 ],
             ],
             'onboarding' => [

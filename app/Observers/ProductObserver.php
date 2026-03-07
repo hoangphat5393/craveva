@@ -29,12 +29,17 @@ class ProductObserver
 
     public function creating(Product $product)
     {
+        \Illuminate\Support\Facades\Log::info('App\Observers\ProductObserver::creating called');
+
         if (! isRunningInConsoleOrSeeding()) {
             $product->added_by = user() ? user()->id : null;
         }
 
         if (company()) {
             $product->company_id = company()->id;
+            \Illuminate\Support\Facades\Log::info('App\Observers\ProductObserver::creating - Set company_id to: ' . $product->company_id);
+        } else {
+            \Illuminate\Support\Facades\Log::warning('App\Observers\ProductObserver::creating - Company context missing!');
         }
     }
 

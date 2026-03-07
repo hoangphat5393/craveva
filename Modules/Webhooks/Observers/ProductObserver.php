@@ -9,6 +9,8 @@ class ProductObserver
 {
     public function created(Product $product)
     {
+        \Illuminate\Support\Facades\Log::info('Modules\Webhooks\Observers\ProductObserver::created called for Product ID: ' . $product->id);
+        \Illuminate\Support\Facades\Log::info('Product Company ID: ' . ($product->company_id ?? 'NULL'));
         $this->sendWebhook($product, 'created');
     }
 
@@ -39,7 +41,7 @@ class ProductObserver
         }
 
         $data = $product->toArray();
-        
+
         // Add action to payload to distinguish events
         $data['event_action'] = $action;
 
@@ -47,7 +49,7 @@ class ProductObserver
         $data['category_name'] = $product->category ? $product->category->category_name : null;
         $data['sub_category_name'] = $product->subCategory ? $product->subCategory->category_name : null;
         $data['unit_type'] = $product->unit ? $product->unit->unit_type : null;
-        
+
         // Handle taxes specifically if needed (it's often a collection or complex structure)
         if ($product->tax) {
             $data['tax_info'] = $product->tax->toArray();

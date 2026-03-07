@@ -373,6 +373,9 @@
                     @if ($canViewWebhooks || $canViewZoom)
                         @if ($canViewWebhooks)
                             <x-sub-menu-item :link="route('webhooks.index')" :text="__('webhooks::app.webhooks')" />
+                            @if (user()->permission('view_webhooks_logs') == 'all')
+                                <x-sub-menu-item :link="route('webhooks-log.index')" :text="__('webhooks::app.log')" />
+                            @endif
                         @endif
 
                         @if ($canViewZoom)

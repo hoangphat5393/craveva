@@ -24,8 +24,19 @@ class WebhookLogsDataTable extends BaseDataTable
     {
         $datatables = datatables()->eloquent($query);
 
+        $datatables->addColumn('check', fn ($row) => $this->checkBox($row));
+
         $datatables->addColumn('name', function ($row) {
-            return $row->webhookSettings ? '<a href="'.route('webhooks-log.show', [$row->id]).'" class="text-darkest-grey">'.$row->webhookSettings->name.'</a>' : '--';
+            return $row->webhookSettings ? '<a href="'.route('webhooks-log.show', [$row->id]).'" class="text-darkest-grey openRightModal">'.$row->webhookSettings->name.'</a>' : '--';
+        });
+
+        $datatables->addColumn('webhook_url', function ($row) {
+            $url = $row->webhookSettings?->url ?? '--';
+            if ($url === '--') {
+                return $url;
+            }
+
+            return '<a href="'.e($url).'" target="_blank" rel="noopener" class="text-primary" title="'.e($url).'">'.e($url).'</a>';
         });
 
         $datatables->addColumn('response_code', function ($row) {
@@ -50,7 +61,21 @@ class WebhookLogsDataTable extends BaseDataTable
         });
 
         $datatables->addColumn('action', function ($row) {
-            return $row->webhookSettings ? '<div class="task_view"> <a href="'.route('webhooks-log.show', [$row->id]).'" class="task_view_more d-flex align-items-center justify-content-center edit-custom-field" href="javascript:;" data-id="{{ $row->id }}" >'.__('app.view').'</a> </div>' : '--';
+            if (! $row->webhookSettings) {
+                return '--';
+            }
+            $action = '<div class="task_view"><div class="dropdown">
+                <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" type="link"
+                    id="dropdownMenuLink-'.$row->id.'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="icon-options-vertical icons"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-'.$row->id.'" tabindex="0">
+                    <a href="'.route('webhooks-log.show', [$row->id]).'" class="dropdown-item openRightModal"><i class="fa fa-eye mr-2"></i>'.__('app.view').'</a>
+                    <a class="dropdown-item delete-table-row" href="javascript:;" data-log-id="'.$row->id.'"><i class="fa fa-trash mr-2"></i>'.__('app.delete').'</a>
+                </div>
+            </div></div>';
+
+            return $action;
         });
 
         $datatables->addIndexColumn();
@@ -58,7 +83,7 @@ class WebhookLogsDataTable extends BaseDataTable
 
         $datatables->setRowId(fn ($row) => 'row-'.$row->id);
 
-        $datatables->rawColumns(['name', 'action', 'response_code', 'created_at']);
+        $datatables->rawColumns(['check', 'name', 'webhook_url', 'action', 'response_code', 'created_at']);
 
         return $datatables;
     }
@@ -70,12 +95,16 @@ class WebhookLogsDataTable extends BaseDataTable
     {
         $request = $this->request();
 
-        $model = $model->select('*', 'webhooks_logs.id as id')->join('webhooks_settings', 'webhooks_settings.id', '=', 'webhooks_logs.webhooks_setting_id');
+        $model = $model->with('webhookSettings')
+            ->select('webhooks_logs.*', 'webhooks_settings.name as ws_name', 'webhooks_settings.url as ws_url')
+            ->join('webhooks_settings', 'webhooks_settings.id', '=', 'webhooks_logs.webhooks_setting_id')
+            ->orderBy('webhooks_logs.created_at', 'desc');
 
         if ($request->searchText != '') {
             $model->where(function ($query) {
                 $query->where('webhooks_settings.name', 'like', '%'.request('searchText').'%')
-                    ->orWhere('webhooks_logs.response_code', 'like', '%'.request('searchText').'%');
+                    ->orWhere('webhooks_logs.response_code', 'like', '%'.request('searchText').'%')
+                    ->orWhere('webhooks_settings.url', 'like', '%'.request('searchText').'%');
             });
         }
 
@@ -115,11 +144,15 @@ class WebhookLogsDataTable extends BaseDataTable
 
             __('app.id') => ['data' => 'id', 'name' => 'id', 'title' => __('app.id'), 'visible' => false],
 
+            'check' => ['data' => 'check', 'name' => 'check', 'title' => '<input type="checkbox" name="select_all_table" id="select-all-table" onclick="selectAllTable(this)">', 'orderable' => false, 'searchable' => false, 'exportable' => false],
+
             __('webhooks::app.webhookName') => ['data' => 'name', 'name' => 'name', 'title' => __('webhooks::app.webhookName'), 'exportable' => false],
 
-            __('webhooks::app.responseCode') => ['data' => 'response_code', 'name' => 'response_code', 'title' => __('webhooks::app.responseCode')],
+            __('webhooks::app.requestUrl') => ['data' => 'webhook_url', 'name' => 'webhook_url', 'title' => __('webhooks::app.requestUrl'), 'orderable' => false, 'searchable' => false, 'className' => 'webhook-url-cell'],
 
-            __('webhooks::app.createdAt') => ['data' => 'created_at', 'name' => 'created_at', 'title' => __('webhooks::app.createdAt'), 'visible' => false],
+            __('webhooks::app.responseCode') => ['data' => 'response_code', 'name' => 'response_code', 'title' => __('webhooks::app.responseCode'), 'className' => 'response-code-cell'],
+
+            __('webhooks::app.createdAt') => ['data' => 'created_at', 'name' => 'created_at', 'title' => __('webhooks::app.createdAt'), 'visible' => true, 'className' => 'recorded-on-cell'],
         ];
 
         $action = [

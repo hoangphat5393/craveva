@@ -230,17 +230,108 @@ class WebhooksController extends AccountBaseController
         return Reply::successWithData(__('messages.deleteSuccess'), ['redirectUrl' => route('webhooks.index')]);
     }
 
+    /**
+     * Duplicate the specified webhook.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function duplicate($id)
+    {
+        abort_403(user()->permission('add_webhooks') != 'all');
+
+        $source = WebhooksSetting::with(['webhooksHeadersRequests', 'webhooksBodyRequests'])->findOrFail($id);
+
+        DB::beginTransaction();
+
+        $webhook = new WebhooksSetting;
+        $webhook->name = $source->name . ' (' . __('app.copy') . ')';
+        $webhook->company_id = $this->company->id;
+        $webhook->webhook_for = $source->webhook_for;
+        $webhook->action = $source->action;
+        $webhook->url = $source->url;
+        $webhook->request_method = $source->request_method;
+        $webhook->request_format = $source->request_format;
+        $webhook->status = $source->status ?? 'active';
+        $webhook->save();
+
+        foreach ($source->webhooksHeadersRequests as $header) {
+            $newHeader = new WebhooksRequest;
+            $newHeader->company_id = $this->company->id;
+            $newHeader->webhooks_setting_id = $webhook->id;
+            $newHeader->headers_key = $header->headers_key;
+            $newHeader->headers_value = $header->headers_value;
+            $newHeader->request_type = 'headers';
+            $newHeader->save();
+        }
+
+        foreach ($source->webhooksBodyRequests as $body) {
+            $newBody = new WebhooksRequest;
+            $newBody->company_id = $this->company->id;
+            $newBody->webhooks_setting_id = $webhook->id;
+            $newBody->request_type = 'body';
+            $newBody->body_key = $body->body_key;
+            $newBody->body_value = $body->body_value;
+            $newBody->save();
+        }
+
+        DB::commit();
+
+        return Reply::success(__('messages.recordSaved'));
+    }
+
     public function applyQuickAction(Request $request)
     {
-        if ($request->type == 'status') {
-            WebhooksSetting::where('id', $request->id)->update(['status' => $request->status]);
-        } elseif ($request->type == 'debug') {
-            WebhooksSetting::where('id', $request->id)->update(['run_debug' => $request->status]);
-        } else {
+        abort_403(user()->permission('edit_webhooks') != 'all' && user()->permission('delete_webhooks') != 'all');
+
+        // Single row (status/webhook_for dropdown in table)
+        if ($request->has('id') && $request->has('type')) {
+            if ($request->type == 'status') {
+                abort_403(user()->permission('edit_webhooks') != 'all');
+                WebhooksSetting::where('id', $request->id)->update(['status' => $request->status]);
+
+                return Reply::success(__('messages.updateSuccess'));
+            }
+            if ($request->type == 'webhook_for') {
+                abort_403(user()->permission('edit_webhooks') != 'all');
+                WebhooksSetting::where('id', $request->id)->update(['webhook_for' => $request->webhook_for]);
+
+                return Reply::success(__('messages.updateSuccess'));
+            }
+            if ($request->type == 'debug') {
+                WebhooksSetting::where('id', $request->id)->update(['run_debug' => $request->status]);
+
+                return Reply::success(__('messages.updateSuccess'));
+            }
+
             return Reply::error(__('messages.selectAction'));
         }
 
-        return Reply::success(__('messages.updateSuccess'));
+        // Bulk action
+        $ids = array_filter(explode(',', $request->row_ids ?? ''));
+
+        if (empty($ids)) {
+            return Reply::error(__('messages.selectAction'));
+        }
+
+        switch ($request->action_type) {
+            case 'change-status':
+                abort_403(user()->permission('edit_webhooks') != 'all');
+                WebhooksSetting::whereIn('id', $ids)->update(['status' => $request->status]);
+
+                return Reply::success(__('messages.updateSuccess'));
+            case 'delete':
+                abort_403(user()->permission('delete_webhooks') != 'all');
+                $webhooks = WebhooksSetting::whereIn('id', $ids)->get();
+                foreach ($webhooks as $webhook) {
+                    $webhook->webhooksRequests()->delete();
+                    $webhook->delete();
+                }
+
+                return Reply::success(__('messages.deleteSuccess'));
+            default:
+                return Reply::error(__('messages.selectAction'));
+        }
     }
 
     public function webhooksForVariable($webhookFor)

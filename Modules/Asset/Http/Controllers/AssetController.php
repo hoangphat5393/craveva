@@ -67,7 +67,6 @@ class AssetController extends AccountBaseController
         }
 
         return view('asset::asset.create', $this->data);
-
     }
 
     public function store(StoreRequest $request)
@@ -152,8 +151,8 @@ class AssetController extends AccountBaseController
                 }
 
                 return $query->orderByDesc('id');
-
-            }, 'assetType'])
+            }, 'assetType']
+        )
             ->findOrFail($id);
 
         $this->viewPermission = $viewPermission;
@@ -177,6 +176,5 @@ class AssetController extends AccountBaseController
         Asset::destroy($id);
 
         return Reply::success(__('messages.deleteSuccess'));
-
     }
 }

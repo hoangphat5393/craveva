@@ -33,6 +33,69 @@ class WebhooksServiceProvider extends ServiceProvider
                 ActivateModuleCommand::class,
             ]
         );
+
+        $this->registerObservers();
+    }
+
+    /**
+     * Register observers.
+     *
+     * @return void
+     */
+    public function registerObservers()
+    {
+        $webhookFor = \Modules\Webhooks\Entities\WebhooksSetting::WEBHOOK_FOR;
+
+        // Manual mapping for models that don't match the simple name or are in Modules
+        $modelMap = [
+            'Client' => \App\Models\ClientDetails::class,
+            'Employee' => \App\Models\EmployeeDetails::class,
+            'CreditNotes' => \App\Models\CreditNotes::class,
+            'PurchaseOrder' => \Modules\Purchase\Entities\PurchaseOrder::class,
+            'PurchaseBill' => \Modules\Purchase\Entities\PurchaseBill::class,
+            'RecruitJob' => \Modules\Recruit\Entities\RecruitJob::class,
+            'RecruitJobApplication' => \Modules\Recruit\Entities\RecruitJobApplication::class,
+            'ZoomMeeting' => \Modules\Zoom\Entities\ZoomMeeting::class,
+            'Asset' => \Modules\Asset\Entities\Asset::class,
+            'Warehouse' => \Modules\Warehouse\Entities\Warehouse::class,
+            'Letter' => \Modules\Letter\Entities\Letter::class,
+        ];
+
+        foreach ($webhookFor as $name) {
+            $modelClass = $modelMap[$name] ?? "App\\Models\\$name";
+
+            // Check if model exists in App\Models or Modules
+            if (!class_exists($modelClass)) {
+                // Try Modules namespace (e.g. Modules\Asset\Entities\Asset)
+                $moduleClass = "Modules\\$name\\Entities\\$name";
+                if (class_exists($moduleClass)) {
+                    $modelClass = $moduleClass;
+                } else {
+                     // Try fallback to the name itself if it happens to be a full class name
+                     if (class_exists($name)) {
+                         $modelClass = $name;
+                     } else {
+                         continue;
+                     }
+                }
+            }
+
+            // Final check: is it a Model?
+            if (class_exists($modelClass) && is_subclass_of($modelClass, \Illuminate\Database\Eloquent\Model::class)) {
+                // Check if specific observer exists
+                // We check for exact match "NameObserver" or mapped observer if we knew it
+                // But for Client, the observer is ClientDetailsObserver, which matches ClientDetails model basename.
+                
+                $basename = class_basename($modelClass);
+                $observerClass = "Modules\\Webhooks\\Observers\\{$basename}Observer";
+                
+                if (class_exists($observerClass)) {
+                     $modelClass::observe($observerClass);
+                } else {
+                     $modelClass::observe(\Modules\Webhooks\Observers\GenericObserver::class);
+                }
+            }
+        }
     }
 
     /**

@@ -18,7 +18,9 @@ use Modules\Webhooks\Http\Controllers\WebhooksLogController;
 Route::group(['middleware' => 'auth', 'prefix' => 'account'], function () {
 
     Route::post('webhooks/apply-quick-action', [WebhooksController::class, 'applyQuickAction'])->name('webhooks.apply_quick_action');
+    Route::post('webhooks/{webhook}/duplicate', [WebhooksController::class, 'duplicate'])->name('webhooks.duplicate');
     Route::resource('webhooks', WebhooksController::class);
+    Route::post('webhooks-log/apply-quick-action', [WebhooksLogController::class, 'applyQuickAction'])->name('webhooks-log.apply_quick_action');
     Route::resource('webhooks-log', WebhooksLogController::class);
     Route::get('webhooks-for-variable/{webhookFor}', [WebhooksController::class, 'webhooksForVariable'])->name('webhooks.webhooks_for_variable');
 });

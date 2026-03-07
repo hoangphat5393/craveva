@@ -1,11 +1,200 @@
-exclude:
-  - node_modules/**
-  - vendor/**
-  - public/**
-  - storage/**
-  - .git/**
-  - dist/**
-  - build/**
-  - *.log
-  - *.min.js
-  - *.sql
+---
+description: 
+alwaysApply: true
+---
+
+---
+description: 
+alwaysApply: true
+---
+
+# Craveva ERP — TRAE Project Rules (Strict Version)
+
+You are modifying the Craveva AI ERP (Laravel Modular Architecture).
+Your #1 priority is SAFETY, STABILITY, and NON-DESTRUCTIVE behavior.
+
+Follow EVERY rule with ZERO exceptions.
+
+---
+
+## 1. Forbidden Directories — DO NOT TOUCH
+
+vendor/
+node_modules/
+bootstrap/cache/  
+storage/framework/  
+storage/logs/  
+installer/  
+auto-setup folders  
+public/uploads/  
+resources/views/vendor/  
+app/Exceptions/
+
+Laravel framework core files
+
+If user requests changes here → REFUSE and warn.
+
+---
+
+## 2. Deletion Rules — NEVER DELETE ANYTHING
+
+Only allowed if user writes EXACTLY:
+
+**"DELETE THIS FILE"**  
+or  
+**"REMOVE THIS CODE ENTIRELY"**
+
+Otherwise:
+
+- No deletions
+- No destructive overwrites
+- No renaming files
+- No moving files
+- Only ADDITIVE changes allowed
+
+---
+
+## 3. Module-Only Development
+
+All feature logic MUST be inside:
+
+Modules/<ModuleName>/Http/Controllers/  
+Modules/<ModuleName>/Entities/  
+Modules/<ModuleName>/Resources/views/  
+Modules/<ModuleName>/Database/Migrations/  
+Modules/<ModuleName>/Routes/  
+Modules/<ModuleName>/Config/
+
+Never place logic outside a module.
+
+---
+
+## 4. Database Rules (Strict)
+
+- Always NEW migrations
+- Never modify old migrations
+- Never drop columns/tables unless user explicitly instructs
+- Never use raw SQL unless requested
+
+When adding a field:
+
+1. New migration
+2. Update model `$fillable`
+3. Update controller logic
+4. Update Blade view
+
+---
+
+## 5. Blade (UI) Rules
+
+- UI changes ONLY in Blade
+- No logic inside Blade
+- Do not modify layouts unless told
+
+---
+
+## 6. Backend Logic Rules
+
+- Controllers → Only module-specific logic
+- Models → Fillable/casts/relations only
+- Services → Only if module already includes them
+
+You must NOT modify:
+
+- Authentication
+- Global middleware
+- Global routes
+- Permission system
+- User roles
+
+---
+
+## 7. Environment & Security Rules
+
+Never hard‑code:
+
+- passwords
+- API keys
+- SMTP creds
+- tokens
+- domains
+
+Always use `.env → config → code`.
+
+---
+
+## 8. Response Requirements
+
+Every output MUST include:
+
+- Full file paths
+- Full code blocks
+- Explanation
+- Guarantee no unrelated files were touched
+
+Do NOT:
+
+- hallucinate files
+- assume directories
+- create new folders unless instructed
+
+If unsure → ASK.
+
+---
+
+## 9. Deployment Awareness
+
+Always assume production environment is:
+
+Local → GitHub → GCP  
+Linux (Ubuntu)  
+Nginx  
+PHP‑FPM
+
+Never output OS‑specific or absolute paths.
+
+---
+
+## 10. Error Prevention (Mandatory)
+
+Before outputting code:
+
+- Validate namespace
+- Validate imports
+- Validate syntax
+- Confirm path exists
+- Confirm Laravel structure is respected
+
+If uncertain → STOP & ASK.
+
+---
+
+## 11. Conservative Change Policy
+
+- No refactoring
+- No rewriting big files
+- No optimization
+- Only modify exactly what user requests
+
+---
+
+## 12. Execution Safety Rule
+
+If instruction is ambiguous or dangerous, say:
+
+**"Please confirm: This action may break existing logic."**
+
+---
+
+## 13. System Stability Rule
+
+Never break:
+
+- authentication
+- routing
+- module loading
+- migrations
+- composer autoload
+- UI layout
+
+Warn user before any risky action.

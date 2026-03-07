@@ -35,10 +35,14 @@ class SendWebhook implements ShouldQueue
 
     public function handle()
     {
+        \Illuminate\Support\Facades\Log::info("SendWebhook: Handling job for {$this->webhookFor}, Company: {$this->companyId}");
+
         $webhooks = WebhooksSetting::where('company_id', $this->companyId)
             ->where('status', 'active')
             ->where('webhook_for', $this->webhookFor)
             ->get();
+
+        \Illuminate\Support\Facades\Log::info("SendWebhook: Found " . $webhooks->count() . " webhooks.");
 
         foreach ($webhooks as $webhook) {
             $data = $this->data;

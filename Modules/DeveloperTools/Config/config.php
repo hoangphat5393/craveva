@@ -9,7 +9,12 @@ return [
         base_path('routes'),
     ],
     'allowed_extensions' => [
-        'php', 'blade.php', 'json', 'md', 'css', 'js',
+        'php',
+        'blade.php',
+        'json',
+        'md',
+        'css',
+        'js',
     ],
     'db_access' => [
         'default_modules' => ['core', 'pricing', 'warehouse'],
@@ -26,6 +31,7 @@ return [
                     'company_%',
                     'users',
                     'client_details',
+                    'client_%',
                     'unit_types',
                     'currencies',
                     'countries',
@@ -74,7 +80,6 @@ return [
                 'depends_on' => ['core'],
                 'table_patterns' => [
                     'e_invoice_%',
-                    'e_invoice_%',
                 ],
             ],
             'onboarding' => [
@@ -95,6 +100,30 @@ return [
                 'label' => 'LineIntegration',
                 'depends_on' => ['core', 'pricing', 'warehouse'],
                 'table_patterns' => [],
+            ],
+            'delivery' => [
+                'label' => 'Delivery (Giao hàng/Vận đơn)',
+                'depends_on' => ['core', 'warehouse'],
+                'table_patterns' => [
+                    'delivery_orders',
+                    'delivery_order_items',
+                    'stock_movements',
+                ],
+            ],
+            'customer_request' => [
+                'label' => 'Customer Request (Estimate Request)',
+                'depends_on' => ['core'],
+                'table_patterns' => [
+                    'estimate_requests',
+                    'estimates',
+                    'estimate_items',
+                    'estimate_item_images',
+                    'estimate_templates',
+                    'estimate_template_items',
+                    'estimate_template_item_images',
+                    'accept_estimates',
+                    'projects',
+                ],
             ],
         ],
         'deny_tables' => [
@@ -152,6 +181,21 @@ return [
                 'select' => 'ccpp.*',
                 'from' => '{mainDb}.company_customer_product_pricing ccpp JOIN {mainDb}.company_customer_pricing ccp ON ccp.id = ccpp.company_customer_pricing_id',
                 'where' => 'ccp.company_id = {companyId}',
+            ],
+            'delivery_order_items' => [
+                'select' => 'doi.*',
+                'from' => '{mainDb}.delivery_order_items doi JOIN {mainDb}.delivery_orders do ON do.id = doi.delivery_order_id',
+                'where' => 'do.company_id = {companyId}',
+            ],
+            'estimate_items' => [
+                'select' => 'ei.*',
+                'from' => '{mainDb}.estimate_items ei JOIN {mainDb}.estimates e ON e.id = ei.estimate_id',
+                'where' => 'e.company_id = {companyId}',
+            ],
+            'estimate_item_images' => [
+                'select' => 'eii.*',
+                'from' => '{mainDb}.estimate_item_images eii JOIN {mainDb}.estimate_items ei ON ei.id = eii.estimate_item_id JOIN {mainDb}.estimates e ON e.id = ei.estimate_id',
+                'where' => 'e.company_id = {companyId}',
             ],
         ],
     ],

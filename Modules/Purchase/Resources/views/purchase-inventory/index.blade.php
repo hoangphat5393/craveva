@@ -171,8 +171,9 @@
 
             var dateRangePicker = $('#datatableRange').data('daterangepicker');
             var startDate = $('#datatableRange').val();
+            var endDate = null;
 
-            if (startDate == '') {
+            if (!startDate || startDate == '' || !dateRangePicker || !dateRangePicker.startDate) {
                 startDate = null;
                 endDate = null;
             } else {

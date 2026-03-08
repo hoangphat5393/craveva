@@ -3,8 +3,10 @@
 namespace Modules\LanguagePack\Providers;
 
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
 use Modules\LanguagePack\Console\PublishTranslationCommand;
+use Modules\LanguagePack\Console\SyncKeysCommand;
 
 class LanguagePackServiceProvider extends ServiceProvider
 {
@@ -29,6 +31,7 @@ class LanguagePackServiceProvider extends ServiceProvider
         Blade::componentNamespace('Modules\\LanguagePack\\Views\\Components', 'languagepack');
         $this->commands([
             PublishTranslationCommand::class,
+            SyncKeysCommand::class,
         ]);
     }
 
@@ -81,7 +84,7 @@ class LanguagePackServiceProvider extends ServiceProvider
 
         $this->loadViewsFrom(array_merge(array_map(function ($path) {
             return $path.'/modules/languagepack';
-        }, \Config::get('view.paths')), [$sourcePath]), 'languagepack');
+        }, Config::get('view.paths')), [$sourcePath]), 'languagepack');
     }
 
     /**

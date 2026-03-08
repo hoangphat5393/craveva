@@ -16,6 +16,7 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Modules\Purchase\DataTables\PurchaseInventoryDataTable;
 use Modules\Purchase\Entities\PurchaseInventory;
@@ -28,6 +29,7 @@ use Modules\Purchase\Events\PurchaseInventoryEvent;
 use Modules\Purchase\Http\Requests\Inventory\StorePurchaseInventoryRequest;
 use Modules\Purchase\Imports\InventoryImport;
 use Modules\Purchase\Jobs\ImportInventoryJob;
+use Modules\Warehouse\Entities\WarehouseProductStock;
 
 class PurchaseInventoryController extends AccountBaseController
 {
@@ -54,9 +56,27 @@ class PurchaseInventoryController extends AccountBaseController
         $viewPermission = user()->permission('view_inventory');
         abort_403(! in_array($viewPermission, ['all', 'added', 'owned', 'both']));
 
-        $this->inventory = PurchaseInventory::all();
+        // DataTable loads via AJAX - avoid loading all records for initial page render
+        $this->inventory = collect();
 
-        return $dataTable->render('purchase::purchase-inventory.index', $this->data);
+        try {
+            return $dataTable->render('purchase::purchase-inventory.index', $this->data);
+        } catch (\Throwable $e) {
+            if (request()->ajax() || request()->wantsJson()) {
+                Log::error('PurchaseInventory DataTable error: ' . $e->getMessage(), [
+                    'trace' => $e->getTraceAsString(),
+                ]);
+
+                return response()->json([
+                    'draw' => (int) request('draw', 1),
+                    'recordsTotal' => 0,
+                    'recordsFiltered' => 0,
+                    'data' => [],
+                    'error' => $e->getMessage(),
+                ]);
+            }
+            throw $e;
+        }
     }
 
     /**

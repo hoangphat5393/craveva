@@ -1,5 +1,10 @@
 {
     "private": true,
+    "pnpm": {
+        "overrides": {
+            "popper.js": "npm:@popperjs/core@^2.11.8"
+        }
+    },
     "scripts": {
         "dev": "npm run development",
         "development": "mix",

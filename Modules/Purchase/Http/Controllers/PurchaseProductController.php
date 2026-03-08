@@ -240,7 +240,7 @@ class PurchaseProductController extends AccountBaseController
 
         foreach ($this->taxes as $tax) {
             if ($this->product && isset($this->product->taxes) && json_decode($this->product->taxes) && array_search($tax->id, json_decode($this->product->taxes)) !== false) {
-                $taxes[] = $tax->tax_name.' : '.$tax->rate_percent.'%';
+                $taxes[] = $tax->tax_name . ' : ' . $tax->rate_percent . '%';
             }
         }
 
@@ -333,7 +333,7 @@ class PurchaseProductController extends AccountBaseController
         $this->categories = ProductCategory::all();
         $this->unit_types = UnitType::all();
         $this->subCategories = ! is_null($this->product->sub_category_id) ? ProductSubCategory::where('category_id', $this->product->category_id)->get() : [];
-        $this->pageTitle = __('app.update').' '.__('app.menu.products');
+        $this->pageTitle = __('app.update') . ' ' . __('app.menu.products');
 
         $images = [];
 
@@ -479,17 +479,31 @@ class PurchaseProductController extends AccountBaseController
         $this->deletePermission = user()->permission('delete_product');
         abort_403(! ($this->deletePermission == 'all' || ($this->deletePermission == 'added' && $product->added_by == user()->id)));
 
+        // Kiểm tra sản phẩm còn inventory - không cho xóa
+        if (PurchaseStockAdjustment::where('product_id', $product->id)->exists()) {
+            return Reply::error(__('purchase::messages.productHasInventory') . ' ' . __('purchase::app.product') . ': ' . $product->name);
+        }
+
         $stocks = PurchaseStockAdjustment::where('product_id', $product->id)->get();
 
-        foreach ($stocks as $item) {
-            $inventory = PurchaseInventory::where('id', $item->inventory_id)->first();
-            if ($inventory) {
-                $inventory->delete();
-            }
+        // Thu thập inventory_ids trước khi xóa StockAdjustment
+        $inventoryIdsToCheck = $stocks->pluck('inventory_id')->filter()->unique()->values();
 
+        // 1. Xóa StockAdjustment trước (con - tham chiếu cả Inventory và Product)
+        foreach ($stocks as $item) {
             $item->delete();
         }
 
+        // 2. Xóa Inventory nếu không còn StockAdjustment nào tham chiếu
+        foreach ($inventoryIdsToCheck as $inventoryId) {
+            $inventory = PurchaseInventory::find($inventoryId);
+            if ($inventory && $inventory->stocks()->count() === 0) {
+                $inventory->files()->each(fn($file) => $file->delete());
+                $inventory->delete();
+            }
+        }
+
+        // 3. Xóa Product cuối cùng
         $product->delete();
 
         return Reply::successWithData(__('messages.deleteSuccess'), ['redirectUrl' => route('purchase-products.index')]);
@@ -556,7 +570,10 @@ class PurchaseProductController extends AccountBaseController
     {
         switch ($request->action_type) {
             case 'delete':
-                $this->deleteRecords($request);
+                $errorReply = $this->deleteRecords($request);
+                if ($errorReply) {
+                    return $errorReply;
+                }
 
                 return Reply::success(__('messages.deleteSuccess'));
             case 'change-status':
@@ -580,7 +597,19 @@ class PurchaseProductController extends AccountBaseController
     {
         abort_403(user()->permission('delete_product') != 'all');
 
-        $products = PurchaseProduct::whereIn('id', explode(',', $request->row_ids))->get();
+        $rowIds = array_filter(array_map('intval', explode(',', $request->row_ids)));
+        $products = PurchaseProduct::whereIn('id', $rowIds)->get();
+
+        // Kiểm tra sản phẩm nào còn inventory - không cho xóa
+        $productsWithInventory = $products->filter(function ($product) {
+            return PurchaseStockAdjustment::where('product_id', $product->id)->exists();
+        });
+
+        if ($productsWithInventory->isNotEmpty()) {
+            $productNames = $productsWithInventory->pluck('name')->implode(', ');
+
+            return Reply::error(__('purchase::messages.productHasInventory') . ' ' . __('purchase::app.product') . ': ' . $productNames);
+        }
 
         foreach ($products as $product) {
             $product->files()->each(function ($file) {
@@ -588,14 +617,28 @@ class PurchaseProductController extends AccountBaseController
             });
 
             $stocks = PurchaseStockAdjustment::where('product_id', $product->id)->get();
+            $inventoryIdsToCheck = [];
 
+            // 1. Xóa StockAdjustment trước (con - tham chiếu cả Inventory và Product)
             foreach ($stocks as $item) {
-                $inventory = PurchaseInventory::where('id', $item->inventory_id)->first();
-                $inventory->delete();
-
+                if ($item->inventory_id) {
+                    $inventoryIdsToCheck[] = $item->inventory_id;
+                }
                 $item->delete();
             }
 
+            // 2. Xóa Inventory orphan (không còn StockAdjustment nào tham chiếu)
+            foreach (array_unique($inventoryIdsToCheck) as $inventoryId) {
+                $hasOtherStocks = PurchaseStockAdjustment::where('inventory_id', $inventoryId)->exists();
+                if (! $hasOtherStocks) {
+                    $inventory = PurchaseInventory::find($inventoryId);
+                    if ($inventory) {
+                        $inventory->delete();
+                    }
+                }
+            }
+
+            // 3. Xóa Product cuối cùng
             $product->delete();
         }
     }
@@ -706,7 +749,7 @@ class PurchaseProductController extends AccountBaseController
         foreach ($products as $item) {
             if ((! empty($item->inventory) && count($item->inventory) > 0 && $item->inventory[0]) || ($item->type == 'service')) {
                 if (($item->track_inventory == 1 && $item->inventory[0]->net_quantity > 0) || ($item->type == 'service')) {
-                    $option .= '<option data-content="'.$item->name.'" value="'.$item->id.'"> '.$item->name.'</option>';
+                    $option .= '<option data-content="' . $item->name . '" value="' . $item->id . '"> ' . $item->name . '</option>';
                 }
             }
         }
@@ -716,7 +759,7 @@ class PurchaseProductController extends AccountBaseController
 
     public function importProduct()
     {
-        $this->pageTitle = __('app.importExcel').' '.__('app.menu.product');
+        $this->pageTitle = __('app.importExcel') . ' ' . __('app.menu.product');
 
         $this->addPermission = user()->permission('add_product');
         abort_403(! in_array($this->addPermission, ['all', 'added']));

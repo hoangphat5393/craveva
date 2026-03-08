@@ -34,9 +34,12 @@ class ImportInventoryJob implements ShouldQueue
 
     public function handle()
     {
-        if ($this->company) {
-            company($this->company);
+        if (! $this->company) {
+            $this->failJobWithMessage(__('messages.invalidData').': Company context is required for import.');
+
+            return;
         }
+        company($this->company);
 
         $date = null;
         if ($this->isColumnExists('date')) {
@@ -263,7 +266,7 @@ class ImportInventoryJob implements ShouldQueue
                             }
                         }
 
-                        if (! is_null($value)) {
+                        if (! is_null($value) && $value !== '') {
                             if ($customField->type == 'date' && ! empty($value)) {
                                 try {
                                     $dateObj = Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value));
@@ -278,7 +281,10 @@ class ImportInventoryJob implements ShouldQueue
                                 $value = $dateObj->format(companyOrGlobalSetting()->date_format);
                             }
 
-                            $customFieldsData['field_'.$customField->id] = $value;
+                            // Skip date fields with empty value to prevent Carbon::createFromFormat crash
+                            if ($customField->type !== 'date' || ! empty($value)) {
+                                $customFieldsData['field_'.$customField->id] = $value;
+                            }
                         }
                     }
                     if (! empty($customFieldsData)) {

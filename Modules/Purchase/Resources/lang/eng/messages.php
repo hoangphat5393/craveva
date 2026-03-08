@@ -14,6 +14,7 @@ return [
     'remainingCreditAmount' => 'Remaining Credit Amount: ',
     'thankYou' => 'Thank you for your business!',
 
+    'productHasInventory' => 'Cannot delete product(s) that still have inventory. Please remove or adjust inventory first.',
     'inventory' => [
         'itemBlank' => 'On hand quantity cannot be blank.',
         'unitPriceNumber' => 'Changed value should be a number',

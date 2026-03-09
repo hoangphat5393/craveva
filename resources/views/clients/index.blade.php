@@ -176,7 +176,7 @@
                 @endif
 
                 @if ($addClientPermission == 'all' || $addClientPermission == 'added' || $addClientPermission == 'both')
-                    <x-forms.link-secondary :link="route('clients.import')" class="mr-3 float-left mb-2 mb-lg-0 mb-md-0 d-sm-bloc d-none d-lg-block" icon="file-upload">
+                    <x-forms.link-secondary :link="route('clients.import')" class="mr-3 openRightModal float-left mb-2 mb-lg-0 mb-md-0" icon="file-upload">
                         @lang('app.importExcel')
                     </x-forms.link-secondary>
                 @endif

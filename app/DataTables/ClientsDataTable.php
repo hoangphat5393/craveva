@@ -82,11 +82,12 @@ class ClientsDataTable extends BaseDataTable
         $datatables->addColumn('client_code', fn ($row) => $row->client_code ?? '--');
         $datatables->addColumn('client_name', fn ($row) => $row->name_salutation);
         $datatables->addColumn('mobile', function ($row) {
-            if (! is_null($row->mobile) && ! is_null($row->country_phonecode)) {
-                return '+'.$row->country_phonecode.' '.$row->mobile;
+            if (trim((string) ($row->mobile ?? '')) === '') {
+                return '--';
             }
+            $prefix = ! is_null($row->country_phonecode) && $row->country_phonecode !== '' ? '+'.$row->country_phonecode.' ' : '';
 
-            return '--';
+            return $prefix.$row->mobile;
         });
         $datatables->addColumn('category_name', function ($row) {
             return ! is_null($row->clientDetails->category_id) ? $row->cat_name : '--';
@@ -96,11 +97,29 @@ class ClientsDataTable extends BaseDataTable
         $datatables->editColumn('id', fn ($row) => $row->clientDetails?->id);
         $datatables->editColumn('created_at', fn ($row) => Carbon::parse($row->created_at)->translatedFormat($this->company->date_format));
         $datatables->editColumn('status', fn ($row) => $row->status == 'active' ? Common::active() : Common::inactive());
-        $datatables->addIndexColumn();
         $datatables->smart(false);
         $datatables->setRowId(fn ($row) => 'row-'.$row->id);
-        // Add Custom Field to datatable
-        $customFieldColumns = CustomField::customFieldData($datatables, ClientDetails::CUSTOM_FIELD_MODEL, 'clientDetails');
+        // Order map: column index => DB column (phải trùng thứ tự với DataTable để custom field load đúng trang)
+        $clientOrderMap = [
+            2 => 'users.id',
+            3 => 'client_details.client_code',
+            4 => 'users.name',
+            5 => 'users.name',
+            6 => 'users.email',
+            7 => 'client_details.added_by',
+            8 => 'users.mobile',
+            9 => 'client_categories.category_name',
+            10 => 'users.status',
+            11 => 'users.created_at',
+        ];
+        $customFieldColumns = CustomField::customFieldData(
+            $datatables,
+            ClientDetails::CUSTOM_FIELD_MODEL,
+            'clientDetails',
+            $query,
+            'client_details.id',
+            $clientOrderMap
+        );
 
         $datatables->rawColumns(array_merge(['name', 'action', 'status', 'check'], $customFieldColumns));
 
@@ -125,12 +144,12 @@ class ClientsDataTable extends BaseDataTable
 
         if ($request->startDate !== null && $request->startDate != 'null' && $request->startDate != '') {
             $startDate = companyToDateString($request->startDate);
-            $users = $users->where(DB::raw('DATE(users.`created_at`)'), '>=', $startDate);
+            $users = $users->where('users.created_at', '>=', $startDate.' 00:00:00');
         }
 
         if ($request->endDate !== null && $request->endDate != 'null' && $request->endDate != '') {
             $endDate = companyToDateString($request->endDate);
-            $users = $users->where(DB::raw('DATE(users.`created_at`)'), '<=', $endDate);
+            $users = $users->where('users.created_at', '<=', $endDate.' 23:59:59');
         }
 
         if ($request->status != 'all' && $request->status != '') {
@@ -202,17 +221,21 @@ class ClientsDataTable extends BaseDataTable
         $dataTable = $this->setBuilder('clients-table', 2)
             ->parameters([
                 'initComplete' => 'function () {
-                   window.LaravelDataTables["clients-table"].buttons().container()
-                    .appendTo("#table-actions")
+                    var dt = window.LaravelDataTables["clients-table"];
+                    if (dt && dt.buttons) {
+                        dt.buttons().container().appendTo("#client-dt-buttons");
+                    }
                 }',
                 'fnDrawCallback' => 'function( oSettings ) {
                   //
                 }',
             ]);
 
+        $buttons = [Button::make(['extend' => 'colvis', 'text' => '<i class="fa fa-columns"></i> '.trans('app.columns')])];
         if (canDataTableExport()) {
-            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
+            array_unshift($buttons, Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
         }
+        $dataTable->buttons($buttons);
 
         return $dataTable;
     }
@@ -226,8 +249,7 @@ class ClientsDataTable extends BaseDataTable
     {
         $data = [
             'check' => [
-                'title' => '<input type="checkbox" name="select_alField as $customField) {
-                    $data[] = [$customField->name => l_table" id="select-all-table" onclick="selectAllTable(this)">',
+                'title' => '<input type="checkbox" name="select_all_table" id="select-all-table" onclick="selectAllTable(this)">',
                 'exportable' => false,
                 'orderable' => false,
                 'searchable' => false,

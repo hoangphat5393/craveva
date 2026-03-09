@@ -16,7 +16,7 @@
                         <div class="form-group">
                             <label class="f-14 text-dark-grey mb-12">@lang('app.client')</label>
                             <div class="f-14 font-weight-bold">
-                                {{ $client->name }}
+                                @if (!empty($clientCode)){{ $clientCode }} - @endif{{ $client->name }}
                                 @if (!empty($companyName))
                                     <span class="text-lightest ml-1">({{ $companyName }})</span>
                                 @endif
@@ -24,7 +24,15 @@
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <x-forms.text fieldId="client_code" :fieldLabel="__('pricing::app.customerCode')" fieldName="client_code" :fieldPlaceholder="__('app.code')" :fieldValue="$clientCode" />
+                        <x-forms.select fieldId="client_code_search" :fieldLabel="__('pricing::app.customerCode')" fieldName="client_switcher" search="true">
+                            @foreach ($clients as $c)
+                                <option value="{{ $c->id }}" data-edit-url="{{ route('pricing.client_tiers.edit', $c->id) }}" @if ($c->id == $client->id) selected @endif>
+                                    @if (!empty($c->client_code)){{ $c->client_code }} - @endif{{ $c->name }}
+                                    @if (!empty($c->company_name))({{ $c->company_name }})@endif
+                                </option>
+                            @endforeach
+                        </x-forms.select>
+                        <input type="hidden" name="client_code" value="{{ $clientCode }}">
                     </div>
                     <div class="col-md-6">
                         <x-forms.select fieldId="pricing_tier_id" :fieldLabel="__('pricing::app.pricingTier')" fieldName="pricing_tier_id" search="true">
@@ -52,6 +60,28 @@
 <script>
     $(document).ready(function() {
         init(RIGHT_MODAL);
+
+        // Customer Code: chọn client khác -> load form edit (dùng select search như Pricing Tier)
+        $('#client_code_search').on('change', function() {
+            var selectedOption = $(this).find('option:selected');
+            var editUrl = selectedOption.data('edit-url');
+            if (editUrl && typeof RIGHT_MODAL_CONTENT !== 'undefined') {
+                $.easyAjax({
+                    url: editUrl,
+                    blockUI: true,
+                    container: RIGHT_MODAL,
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            $(RIGHT_MODAL_CONTENT).html(response.html);
+                            if (response.title) $(RIGHT_MODAL_TITLE).html(response.title);
+                            init(RIGHT_MODAL);
+                        }
+                    }
+                });
+            } else if (editUrl) {
+                window.location.href = editUrl;
+            }
+        });
     });
 
     $('body').on('click', '#save-client-tier', function() {

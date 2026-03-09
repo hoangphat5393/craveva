@@ -26,6 +26,7 @@ class ImportProcessRequest extends FormRequest
         return [
             'file' => 'required',
             'has_heading' => 'nullable|boolean',
+            'has_skip_footer' => 'nullable|boolean',
             'columns' => ['required', 'array', 'min:1'],
         ];
     }

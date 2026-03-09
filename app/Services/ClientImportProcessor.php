@@ -32,6 +32,18 @@ class ClientImportProcessor
             throw new Exception(__('messages.invalidData'));
         }
 
+        $nameValue = self::getValue($row, $columns, 'name');
+        $nameTrimmed = $nameValue !== null ? trim((string) $nameValue) : '';
+        // Fallback: when name column is empty but client_code exists, use client_code as display name
+        // (common in Miaolin/ERP exports where last row or some rows have code only)
+        if ($nameTrimmed === '' && self::columnExists($columns, 'client_code')) {
+            $codeValue = self::getValue($row, $columns, 'client_code');
+            $nameTrimmed = $codeValue !== null ? trim((string) $codeValue) : '';
+        }
+        if ($nameTrimmed === '') {
+            throw new Exception(__('messages.clientNameRequired'));
+        }
+
         $companyId = $company?->id;
         $user = null;
 
@@ -61,7 +73,7 @@ class ClientImportProcessor
 
         $user = new User;
         $user->company_id = $companyId;
-        $user->name = self::getValue($row, $columns, 'name');
+        $user->name = $nameTrimmed;
         $user->email = self::columnExists($columns, 'email') && self::isEmailValid(self::getValue($row, $columns, 'email'))
             ? self::getValue($row, $columns, 'email')
             : null;

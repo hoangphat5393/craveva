@@ -15,6 +15,7 @@
 </div>
 <div class="col-lg-6">
     <x-forms.text class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('einvoice::app.settingForm.companyID')" fieldName="e_invoice_company_id" fieldId="e_invoice_company_id" :fieldValue="$setting?->e_invoice_company_id"/>
+    <small class="form-text text-muted">@lang('einvoice::app.settingForm.companyTaxIdNote')</small>
 </div>
 <div class="col-lg-6">
     <x-forms.text class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('einvoice::app.settingForm.companyIDScheme')" fieldName="e_invoice_company_id_scheme" fieldId="e_invoice_company_id_scheme" :fieldValue="$setting?->e_invoice_company_id_scheme"/>

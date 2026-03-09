@@ -24,7 +24,7 @@ class ClientImport implements ToArray
             ['id' => 'postal_code', 'name' => __('modules.stripeCustomerAddress.postalCode'), 'required' => 'No'],
             ['id' => 'company_phone', 'name' => __('modules.client.officePhoneNumber'), 'required' => 'No'],
             ['id' => 'company_website', 'name' => __('modules.client.website'), 'required' => 'No'],
-            ['id' => 'gst_number', 'name' => __('app.gstNumber'), 'required' => 'No'],
+            ['id' => 'gst_number', 'name' => __('app.gstNumber').' ('.__('app.taxId').')', 'required' => 'No'],
             // Custom fields (Client group)
             ['id' => 'salesperson', 'name' => __('modules.client.salesperson'), 'required' => 'No'],
             ['id' => 'department', 'name' => __('modules.client.department'), 'required' => 'No'],

@@ -2163,6 +2163,7 @@ return [
     'import' => [
         'file' => '上传文件（文件类型必须为：xls、xlsx、csv）',
         'containsHeadings' => '文件包含标题行',
+        'skipFooterRow' => '跳过最后一行（文件末尾的汇总/页脚行）',
     ],
     'productImage' => '产品图片',
     'invoiceFiles' => '发票文件',

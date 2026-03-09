@@ -7,6 +7,7 @@ use App\Models\Company;
 use App\Models\CustomField;
 use App\Models\CustomFieldGroup;
 use Carbon\Carbon;
+use Carbon\Exceptions\InvalidFormatException;
 use Illuminate\Support\Facades\DB;
 use ReflectionClass;
 
@@ -118,12 +119,12 @@ trait CustomFieldsTrait
             $fieldType = CustomField::findOrFail($id)->type;
             $company = $company_id ? Company::findOrFail($company_id) : company();
 
-            // Handle date type: skip parse when empty to prevent Carbon::createFromFormat crash
+            // Handle date type: support multiple formats (company format, Ymd/YYYYMMDD, etc.)
             if ($fieldType == 'date') {
                 if (empty($value)) {
                     $value = '';
                 } else {
-                    $value = Carbon::createFromFormat(companyOrGlobalSetting()->date_format, $value)->format('Y-m-d');
+                    $value = self::parseDateForCustomField($value, $company);
                 }
             }
             $value = ($fieldType == 'file' && ! is_string($value) && ! is_null($value)) ? Files::uploadLocalOrS3($value, 'custom_fields') : $value;
@@ -173,5 +174,47 @@ trait CustomFieldsTrait
         $this->custom_fields_data = $this->getCustomFieldsData();
 
         return $this;
+    }
+
+    /**
+     * Parse date string for custom field. Supports:
+     * - Company date format (e.g. d-m-Y, m/d/Y)
+     * - Ymd (YYYYMMDD e.g. 20240513) – common in Excel/Asia exports
+     * - Carbon::parse() as fallback
+     *
+     * @param  string|int|float  $value  Raw date value from import
+     * @param  \App\Models\Company|null  $company
+     * @return string Y-m-d or empty string on failure
+     */
+    private static function parseDateForCustomField($value, $company = null): string
+    {
+        $str = trim((string) $value);
+        if ($str === '') {
+            return '';
+        }
+
+        $formats = ['Ymd', 'Y-m-d', 'd-m-Y', 'm/d/Y', 'd/m/Y', 'Y/m/d'];
+        $settings = $company ?? (function_exists('companyOrGlobalSetting') ? companyOrGlobalSetting() : null);
+        $companyFormat = $settings?->date_format ?? null;
+        if ($companyFormat && ! in_array($companyFormat, $formats)) {
+            array_unshift($formats, $companyFormat);
+        }
+
+        foreach ($formats as $format) {
+            try {
+                $date = Carbon::createFromFormat($format, $str);
+                if ($date) {
+                    return $date->format('Y-m-d');
+                }
+            } catch (InvalidFormatException $e) {
+                continue;
+            }
+        }
+
+        try {
+            return Carbon::parse($str)->format('Y-m-d');
+        } catch (InvalidFormatException $e) {
+            return '';
+        }
     }
 }

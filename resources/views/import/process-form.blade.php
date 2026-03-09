@@ -31,7 +31,8 @@
 
             <div class="col-md-12 import-table">
                 <input type="hidden" name="file" value="{{ $file }}">
-                <input type="hidden" name="has_heading" value="{{ $hasHeading }}">
+                <input type="hidden" name="has_heading" value="{{ $hasHeading ?? false }}">
+                <input type="hidden" name="has_skip_footer" value="{{ ($hasSkipFooter ?? false) ? '1' : '0' }}">
 
                 <div class="row">
                     @forelse ($importSample[0] as $key => $item)
@@ -208,6 +209,7 @@
     }
 
     function requiredMatchAction() {
+        updateJsMatchedColumnArray();
         let requiredMatched = checkRequiredMatch();
         if (requiredMatched.length == 0) {
             $("#getUnMatchedSuccess").show();
@@ -219,6 +221,7 @@
             msg = msg.replace(":columns", str);
             $("#getUnMatchedSuccess").hide();
             $("#requiredColumnsUnmatched").html(msg).show();
+            $("#process-{{ $importClassName }}-form").attr("disabled", "disabled");
         }
     }
 
@@ -445,7 +448,7 @@
                         failedMsg = failedMsg.replace(':failedJobs', failedJobs).replace(':totalJobs', totalJobs);
                         $('#failedJobsCount').html(failedMsg);
                         $('#failedJobsCount').show();
-                        getQueueException();
+                        getQueueException(batchId);
                     }
                     if (processedJobs > 0) {
                         var processedMsg = `@lang('app.importProcessedJobs')`;
@@ -463,7 +466,7 @@
                         $('#progress').hide();
                         $('#afterProcessing').removeClass('d-none');
                         $('#afterProcessing').addClass('d-lg-flex d-md-flex d-block');
-                        getQueueException();
+                        getQueueException(batchId);
                     }
                 },
                 error: function(response) {
@@ -475,8 +478,11 @@
         }, 2000);
     }
 
-    function getQueueException() {
+    function getQueueException(batchId) {
         var url = "{{ route('import.process.exception', $importClassName) }}";
+        if (batchId) {
+            url += '?batch_id=' + batchId;
+        }
 
         $.easyAjax({
             type: 'GET',

@@ -10,9 +10,9 @@
                         <x-forms.select fieldId="client_id" :fieldLabel="__('app.client')" fieldName="client_id" search="true">
                             @foreach ($clients as $client)
                                 <option value="{{ $client->id }}" {{ $pricing->client_id == $client->id ? 'selected' : '' }}>
-                                    {{ $client->name }}
-                                    @if(!empty($client->company_name)) 
-                                        ({{ $client->company_name }}) 
+                                    @if (!empty($client->client_code)){{ $client->client_code }} - @endif{{ $client->name }}
+                                    @if(!empty($client->company_name))
+                                        ({{ $client->company_name }})
                                     @endif
                                 </option>
                             @endforeach

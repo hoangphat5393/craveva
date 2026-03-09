@@ -49,9 +49,7 @@
 
         <div class="form-group text-left">
             <label for="email">@lang('auth.email')</label>
-            <input tabindex="1" type="email" name="email"
-                class="form-control height-50 f-15 light_text @error('email') is-invalid @enderror" autofocus
-                value="{{ request()->old('email') }}" placeholder="@lang('auth.email')" id="email">
+            <input tabindex="1" type="email" name="email" class="form-control height-50 f-15 light_text @error('email') is-invalid @enderror" autofocus value="{{ request()->old('email') }}" placeholder="@lang('auth.email')" id="email">
             @if ($errors->has('email'))
                 <div class="invalid-feedback">{{ $errors->first('email') }}</div>
             @endif
@@ -67,16 +65,14 @@
                 @lang('auth.next') <i class="fa fa-arrow-right pl-1"></i></button>
 
             @if ($company?->allow_client_signup && isNonCraveva())
-                <a href="{{ route('register') }}" id="signup-client-next"
-                    class="btn-secondary f-w-500 rounded w-100 height-50 f-15 mt-3">
+                <a href="{{ route('register') }}" id="signup-client-next" class="btn-secondary f-w-500 rounded w-100 height-50 f-15 mt-3">
                     @lang('app.signUpAsClient')
                 </a>
             @endif
 
             @if (isCraveva() && !module_enabled('Subdomain'))
                 @if ($globalSetting->enable_register)
-                    <a href="{{ route('front.signup.index') }}" id="signup-customer"
-                        class="btn-secondary f-w-500 rounded w-100 height-50 f-15 mt-3">
+                    <a href="{{ route('front.signup.index') }}" id="signup-customer" class="btn-secondary f-w-500 rounded w-100 height-50 f-15 mt-3">
                         @lang('app.signUp')
                     </a>
                 @endif
@@ -88,13 +84,10 @@
             <div class="form-group text-left">
                 <label for="password">@lang('app.password')</label>
                 <x-forms.input-group>
-                    <input type="password" name="password" id="password" placeholder="@lang('placeholders.password')"
-                        tabindex="3"
-                        class="form-control height-50 f-15 light_text @error('password') is-invalid @enderror">
+                    <input type="password" name="password" id="password" placeholder="@lang('placeholders.password')" tabindex="3" class="form-control height-50 f-15 light_text @error('password') is-invalid @enderror">
 
                     <x-slot name="append">
-                        <button type="button" data-toggle="tooltip" data-original-title="@lang('app.viewPassword')"
-                            class="btn btn-outline-secondary border-grey height-50 toggle-password">
+                        <button type="button" data-toggle="tooltip" data-original-title="@lang('app.viewPassword')" class="btn btn-outline-secondary border-grey height-50 toggle-password">
                             <i class="fa fa-eye"></i></button>
                     </x-slot>
 
@@ -134,8 +127,7 @@
             @endif
         </div>
 
-        <input type="hidden" name="locale"
-            value="{{ session()->has('locale') ? session('locale') : global_setting()->locale }}">
+        <input type="hidden" name="locale" value="{{ session()->has('locale') ? session('locale') : global_setting()->locale }}">
         <input type="hidden" id="current-latitude" name="current_latitude">
         <input type="hidden" id="current-longitude" name="current_longitude">
         <x-slot name="outsideLoginBox">
@@ -146,10 +138,7 @@
                     $redirect = route('front.home');
                     $signup = route('front.signup.index');
                     if (module_enabled('Subdomain')) {
-                        $redirect =
-                            !is_null($rootCrmSubDomain) && $rootCrmSubDomain !== ''
-                                ? '//' . $rootCrmSubDomain
-                                : '//' . getDomain();
+                        $redirect = !is_null($rootCrmSubDomain) && $rootCrmSubDomain !== '' ? '//' . $rootCrmSubDomain : '//' . getDomain();
                         $signup = $redirect . '/signup';
                     }
                 @endphp
@@ -159,8 +148,7 @@
                     </p>
                 @endif
                 @if ($globalSetting->enable_register)
-                    <p class="my-2 f-12">@lang('superadmin.dontHaveAccount') <a href="{{ $signup }}"
-                            class="text-dark-grey">@lang('app.signUp') </a>
+                    <p class="my-2 f-12">@lang('superadmin.dontHaveAccount') <a href="{{ $signup }}" class="text-dark-grey">@lang('app.signUp') </a>
                     </p>
                 @endif
             @endif
@@ -171,10 +159,7 @@
     <x-slot name="scripts">
 
         <script>
-            @if (isNonCraveva() &&
-                    ($company->attendance_status == 'active' &&
-                        ($company->attendance_setting->radius_check == 'yes' ||
-                            $company->attendance_setting->save_current_location == 'yes')))
+            @if (isNonCraveva() && ($company->attendance_status == 'active' && ($company->attendance_setting->radius_check == 'yes' || $company->attendance_setting->save_current_location == 'yes')))
                 function setCurrentLocation() {
                     const currentLatitude = document.getElementById("current-latitude");
                     const currentLongitude = document.getElementById("current-longitude");
@@ -216,8 +201,7 @@
             </script>
         @endif
         @if ($globalSetting->google_recaptcha_status == 'active' && $globalSetting->google_recaptcha_v3_status == 'active')
-            <script src="https://www.google.com/recaptcha/api.js?render={{ $globalSetting->google_recaptcha_v3_site_key }}">
-            </script>
+            <script src="https://www.google.com/recaptcha/api.js?render={{ $globalSetting->google_recaptcha_v3_site_key }}"></script>
             <script>
                 grecaptcha.ready(function() {
                     grecaptcha.execute('{{ $globalSetting->google_recaptcha_v3_site_key }}').then(function(token) {

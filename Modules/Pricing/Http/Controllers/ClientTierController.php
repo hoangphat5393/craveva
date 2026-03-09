@@ -54,6 +54,7 @@ class ClientTierController extends AccountBaseController
         }
 
         $this->tiers = PricingTier::orderBy('name')->get();
+        $this->clients = User::allClients(active: false);
 
         if (request()->ajax()) {
             return $this->returnAjax('pricing::client_tiers.ajax.edit');

@@ -81,13 +81,14 @@ class ClientController extends AccountBaseController
         abort_403(! in_array($viewPermission, ['all', 'added', 'both']));
 
         if (! request()->ajax()) {
-            $this->clients = User::allClients(active: false);
+            $clientsQuery = User::allClients(active: false, execute: false);
+            $this->totalClients = $clientsQuery->count();
+            $this->clients = $clientsQuery->get();
             $this->subcategories = ClientSubCategory::all();
             $this->categories = ClientCategory::all();
             $this->projects = Project::all();
             $this->contracts = ContractType::all();
             $this->countries = countries();
-            $this->totalClients = count($this->clients);
         }
 
         return $dataTable->render('clients.index', $this->data);
@@ -991,12 +992,9 @@ class ClientController extends AccountBaseController
 
     public function importProcess(ImportProcessRequest $request)
     {
-        $chunkSize = $request->filled('chunk_size') ? (int) $request->chunk_size : 0;
-        if ($chunkSize > 0) {
-            $batch = $this->importJobProcessChunked($request, ClientImport::class, ImportClientChunkJob::class, $chunkSize);
-        } else {
-            $batch = $this->importJobProcess($request, ClientImport::class, ImportClientJob::class);
-        }
+        // Use chunked import by default (100 rows) to get correct file row numbers in errors
+        $chunkSize = $request->filled('chunk_size') ? (int) $request->chunk_size : 100;
+        $batch = $this->importJobProcessChunked($request, ClientImport::class, ImportClientChunkJob::class, $chunkSize);
 
         return Reply::successWithData(__('messages.importProcessStart'), ['batch' => $batch]);
     }

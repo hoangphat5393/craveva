@@ -208,7 +208,7 @@
                     @php
                         $viewPayrollPermission = user()->permission('view_payroll');
                     @endphp
-                    @if (in_array(\Modules\Payroll\Entities\PayrollSetting::MODULE_NAME, user_modules()) && $viewPayrollPermission != 'none')
+                    @if (in_array(\Modules\Payroll\Entities\PayrollSetting::MODULE_NAME, user_modules()) && $viewPayrollPermission != 'none' && Route::has('payroll.index'))
                         <x-sub-menu-item :link="route('payroll.index')" :text="__('payroll::app.menu.payroll')" />
                         <x-sub-menu-item :link="route('employee-salary.index')" :text="__('payroll::app.menu.employeeSalary')" :permission="user()->permission('manage_employee_salary') == 'all'" />
                         <x-sub-menu-item :link="route('payroll-expenses.index')" :text="__('payroll::app.payrollExpenses')" />
@@ -366,40 +366,40 @@
                         <x-sub-menu-item :link="$canManageCompanySetting ? route('company-settings.index') : route('profile-settings.index')" :text="__('app.menu.accountSettings')" />
                     @endif
 
-                    @if ($canViewServerManager)
+                    @if ($canViewServerManager && Route::has('server-manager.index'))
                         <x-sub-menu-item :link="route('server-manager.index')" :text="__('servermanager::app.menu.serverManager')" />
                     @endif
 
                     @if ($canViewWebhooks || $canViewZoom)
-                        @if ($canViewWebhooks)
+                        @if ($canViewWebhooks && Route::has('webhooks.index'))
                             <x-sub-menu-item :link="route('webhooks.index')" :text="__('webhooks::app.webhooks')" />
-                            @if (user()->permission('view_webhooks_logs') == 'all')
+                            @if (user()->permission('view_webhooks_logs') == 'all' && Route::has('webhooks-log.index'))
                                 <x-sub-menu-item :link="route('webhooks-log.index')" :text="__('webhooks::app.log')" />
                             @endif
                         @endif
 
-                        @if ($canViewZoom)
+                        @if ($canViewZoom && Route::has('zoom-meetings.index'))
                             <x-sub-menu-item :link="route('zoom-meetings.index')" :text="__('zoom::app.menu.zoomMeeting')" />
                         @endif
                     @endif
 
-                    @if ($canViewBiometric)
+                    @if ($canViewBiometric && Route::has('biometric-devices.index'))
                         <x-sub-menu-item :link="route('biometric-devices.index')" :text="__('biometric::app.menu.biometric')" />
                     @endif
 
-                    @if ($canViewAsset)
+                    @if ($canViewAsset && Route::has('assets.index'))
                         <x-sub-menu-item :link="route('assets.index')" :text="__('asset::app.menu.asset')" />
                     @endif
 
-                    @if ($canViewPolicy)
+                    @if ($canViewPolicy && Route::has('policy.index'))
                         <x-sub-menu-item :link="route('policy.index')" :text="__('policy::app.policyCenter')" />
                     @endif
 
-                    @if ($canViewQrCode)
+                    @if ($canViewQrCode && Route::has('qrcode.index'))
                         <x-sub-menu-item :link="route('qrcode.index')" :text="__('qrcode::app.menu.qrcode')" />
                     @endif
 
-                    @if ($canViewBiolinks)
+                    @if ($canViewBiolinks && Route::has('biolinks.index'))
                         <x-sub-menu-item :link="route('biolinks.index')" :text="__('biolinks::app.biolinks')" />
                     @endif
                 </div>
@@ -644,8 +644,8 @@
             </x-menu-item>
         @endif
 
-        <!-- NAV ITEM - PRICING -->
-        @if (!user()->is_superadmin && in_array('pricing', user_modules()))
+        <!-- NAV ITEM - PRICING (Tier Pricing) -->
+        @if (!user()->is_superadmin && in_array('pricing', user_modules()) && Route::has('pricing.tiers.index'))
             <x-menu-item icon="tag" :text="__('pricing::app.menu.pricing')" :active="request()->routeIs('pricing.*')">
                 <x-slot name="iconPath">
                     <path d="M6 4.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm-1 0a.5.5 0 1 0-1 0 .5.5 0 0 0 1 0z" />

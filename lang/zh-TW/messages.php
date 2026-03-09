@@ -406,6 +406,8 @@ return [
     'downloadable' => '可下載產品可在購買後存取文件',
     'invalidData' => '無效資料 ：',
     'invalidDate' => '日期格式無效：',
+    'importFileCsvDisguisedAsXlsx' => '此檔案副檔名為 .xlsx 但實際內容為 CSV/純文字（非真正的 Excel 檔案）。請：1) 在 Excel 中另存為正確的 .xlsx 格式（檔案 → 另存新檔 → Excel 活頁簿），或 2) 以 .csv 副檔名上傳。',
+    'duplicateEntry' => '重複條目（客戶代碼已存在）',
     'duplicateEntryForEmail' => '電子郵件重複條目：',
     'duplicateEntryForEmployeeId' => '員工 ID 重複輸入：',
     'employeeNotFound' => '未找到員工',

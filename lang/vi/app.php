@@ -603,6 +603,7 @@ return [
     'longitude' => 'Kinh độ',
     'generateKey' => 'Tạo khóa',
     'gstNumber' => 'Số GST/GTGT',
+    'taxId' => 'Mã số thuế',
     'showGst' => 'Hiển thị mã số thuế trên hóa đơn',
     'showTaxCalculationMessage' => 'Hiển thị thông báo tính thuế',
     'showProjectOnInvoice' => 'Hiển thị dự án trên hóa đơn',

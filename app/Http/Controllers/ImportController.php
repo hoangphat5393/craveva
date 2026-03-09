@@ -44,11 +44,23 @@ class ImportController extends Controller
 
     public function getQueueException($name)
     {
-        $exceptions = DB::table('failed_jobs')
-            // ->where('queue', $name)
-            ->orderBy('failed_at', 'desc')
-            ->limit(50)
-            ->get();
+        $batchId = request()->query('batch_id');
+
+        if ($batchId) {
+            $batchRecord = DB::table('job_batches')->where('id', $batchId)->first();
+            $failedIds = $batchRecord && ! empty($batchRecord->failed_job_ids)
+                ? json_decode($batchRecord->failed_job_ids, true) ?? []
+                : [];
+            $exceptions = $failedIds !== []
+                ? DB::table('failed_jobs')->whereIn('uuid', $failedIds)->orderBy('failed_at', 'desc')->get()
+                : collect();
+        } else {
+            $exceptions = DB::table('failed_jobs')
+                ->where('queue', $name)
+                ->orderBy('failed_at', 'desc')
+                ->limit(50)
+                ->get();
+        }
 
         foreach ($exceptions as $exception) {
             $exception->exception = '['.$exception->queue.'] '.$this->parseExceptionMessage($exception->exception);
@@ -59,10 +71,13 @@ class ImportController extends Controller
         return Reply::dataOnly(['view' => $view, 'count' => count($exceptions)]);
     }
 
+    /**
+     * Parse exception message. Returns full message with newlines preserved (max 50 lines).
+     */
     private function parseExceptionMessage($exceptionTrace)
     {
-        $lines = explode("\n", $exceptionTrace);
+        $lines = explode("\n", (string) $exceptionTrace);
 
-        return $lines[0];
+        return implode("\n", array_slice($lines, 0, 50));
     }
 }

@@ -2176,6 +2176,7 @@ return [
     'import' => [
         'file' => 'Upload File (file must be a file of type: xls, xlsx, csv)',
         'containsHeadings' => 'File Contains Headings Row',
+        'skipFooterRow' => 'Skip last row (footer/summary row at end of file)',
     ],
     'productImage' => 'Product Image',
     'invoiceFiles' => 'Invoice Files',

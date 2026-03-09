@@ -66,6 +66,45 @@ class Files
     }
 
     /**
+     * Detect if a file with .xlsx extension is actually CSV (plain text) renamed to .xlsx.
+     * XLSX files are ZIP archives and start with PK (0x50 0x4B).
+     *
+     * @param  string  $filePath  Full path to the file
+     * @return bool  True if file appears to be CSV disguised as xlsx
+     */
+    public static function isCsvDisguisedAsXlsx(string $filePath): bool
+    {
+        if (! file_exists($filePath) || ! is_readable($filePath)) {
+            return false;
+        }
+
+        $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+        if ($ext !== 'xlsx') {
+            return false;
+        }
+
+        $fp = fopen($filePath, 'rb');
+        if (! $fp) {
+            return false;
+        }
+
+        $header = fread($fp, 4);
+        fclose($fp);
+
+        if (strlen($header) < 2) {
+            return true; // Too short to be valid XLSX
+        }
+
+        // XLSX/ZIP magic: PK (0x50 0x4B)
+        if ($header[0] === "\x50" && $header[1] === "\x4B") {
+            return false; // Real XLSX
+        }
+
+        // Plain text / CSV - not a valid XLSX binary
+        return true;
+    }
+
+    /**
      * @throws ApiException
      */
     public static function validateUploadedFile($uploadedFile)

@@ -601,6 +601,7 @@ return [
     'longitude' => 'Longitude',
     'generateKey' => 'Generate Key',
     'gstNumber' => 'GST/VAT Number',
+    'taxId' => 'Tax ID',
     'showGst' => 'Show Tax number on invoice',
     'showTaxCalculationMessage' => 'Show tax calculation message',
     'showProjectOnInvoice' => 'Show Project on invoice',

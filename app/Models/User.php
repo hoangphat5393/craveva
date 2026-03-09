@@ -274,21 +274,21 @@ class User extends BaseModel
 
     public function getNameSalutationAttribute()
     {
-        return ($this->salutation ? $this->salutation->label().' ' : '').$this->name;
+        return ($this->salutation ? $this->salutation->label() . ' ' : '') . $this->name;
     }
 
     public function getImageUrlAttribute()
     {
         $gravatarHash = ! is_null($this->email) ? md5(strtolower(trim($this->email))) : md5($this->id);
 
-        return ($this->image) ? asset_url_local_s3('avatar/'.$this->image) : asset('img/gravatar.png');
+        return ($this->image) ? asset_url_local_s3('avatar/' . $this->image) : asset('img/gravatar.png');
     }
 
     public function maskedImageUrl(): Attribute
     {
         return Attribute::make(
             get: function () {
-                return ($this->image) ? $this->generateMaskedImageAppUrl('avatar/'.$this->image) : asset('img/gravatar.png');
+                return ($this->image) ? $this->generateMaskedImageAppUrl('avatar/' . $this->image) : asset('img/gravatar.png');
             },
         );
     }
@@ -297,7 +297,7 @@ class User extends BaseModel
     {
         // Craft a potential URL for the Gravatar and test its headers
         $hash = md5(strtolower(trim($email)));
-        $uri = 'http://www.gravatar.com/avatar/'.$hash.'?d=404';
+        $uri = 'http://www.gravatar.com/avatar/' . $hash . '?d=404';
         $headers = @get_headers($uri);
 
         // Check if the Gravatar URL returns a valid response
@@ -318,7 +318,7 @@ class User extends BaseModel
     public function getMobileWithPhoneCodeAttribute()
     {
         if (! is_null($this->mobile) && ! is_null($this->country_phonecode)) {
-            return '+'.$this->country_phonecode.$this->mobile;
+            return '+' . $this->country_phonecode . $this->mobile;
         }
 
         return '--';
@@ -365,7 +365,7 @@ class User extends BaseModel
     public function routeNotificationForTwilio()
     {
         if (! is_null($this->mobile) && ! is_null($this->country_phonecode)) {
-            return '+'.$this->country_phonecode.$this->mobile;
+            return '+' . $this->country_phonecode . $this->mobile;
         }
 
         return null;
@@ -387,7 +387,7 @@ class User extends BaseModel
     public function routeNotificationForNexmo($notification)
     {
         if (! is_null($this->mobile) && ! is_null($this->country_phonecode)) {
-            return $this->country_phonecode.$this->mobile;
+            return $this->country_phonecode . $this->mobile;
         }
 
         return null;
@@ -397,7 +397,7 @@ class User extends BaseModel
     public function routeNotificationForVonage($notification)
     {
         if (! is_null($this->mobile) && ! is_null($this->country_phonecode)) {
-            return $this->country_phonecode.$this->mobile;
+            return $this->country_phonecode . $this->mobile;
         }
 
         return null;
@@ -407,7 +407,7 @@ class User extends BaseModel
     public function routeNotificationForMsg91($notification)
     {
         if (! is_null($this->mobile) && ! is_null($this->country_phonecode)) {
-            return $this->country_phonecode.$this->mobile;
+            return $this->country_phonecode . $this->mobile;
         }
 
         return null;
@@ -613,7 +613,7 @@ class User extends BaseModel
         return $company;
     }
 
-    public static function allClients($exceptId = null, $active = true, $overRidePermission = null, $companyId = null)
+    public static function allClients($exceptId = null, $active = true, $overRidePermission = null, $companyId = null, $execute = true)
     {
         if (! isRunningInConsoleOrSeeding() && ! is_null($overRidePermission)) {
             $viewClientPermission = $overRidePermission;
@@ -622,7 +622,7 @@ class User extends BaseModel
         }
 
         if (isset($viewClientPermission) && $viewClientPermission == 'none') {
-            return collect([]);
+            return $execute ? collect([]) : User::query()->whereRaw('1 = 0');
         }
 
         $id = UserService::getUserId();
@@ -631,7 +631,7 @@ class User extends BaseModel
             ->join('role_user', 'role_user.user_id', '=', 'users.id')
             ->join('roles', 'roles.id', '=', 'role_user.role_id')
             ->join('client_details', 'users.id', '=', 'client_details.user_id')
-            ->select('users.id', 'users.name', 'users.email', 'users.created_at', 'client_details.company_name', 'users.image', 'users.email_notifications', 'users.mobile', 'users.country_id', 'users.salutation', 'users.status', 'users.is_client_contact')
+            ->select('users.id', 'users.name', 'users.email', 'users.created_at', 'client_details.company_name', 'client_details.client_code', 'users.image', 'users.email_notifications', 'users.mobile', 'users.country_id', 'users.salutation', 'users.status', 'users.is_client_contact')
             ->whereNull('users.is_client_contact')
             ->where('roles.name', 'client');
 
@@ -661,7 +661,9 @@ class User extends BaseModel
             $clients->where('client_details.user_id', $id);
         }
 
-        return $clients->orderBy('users.name', 'asc')->get();
+        $clients->orderBy('users.name', 'asc');
+
+        return $execute ? $clients->get() : $clients;
     }
 
     public static function client()
@@ -779,7 +781,7 @@ class User extends BaseModel
         $termCnd = '';
 
         if ($term) {
-            $termCnd = 'and users.name like %'.$term.'%';
+            $termCnd = 'and users.name like %' . $term . '%';
         }
 
         $messageSetting = message_setting();
@@ -808,14 +810,14 @@ class User extends BaseModel
                     INNER JOIN users_chat ON users_chat.from = users.id
                     LEFT JOIN role_user ON role_user.user_id = users.id
                     LEFT JOIN roles ON roles.id = role_user.role_id
-                    WHERE users_chat.to = '.$userID.' '.$termCnd.'
+                    WHERE users_chat.to = ' . $userID . ' ' . $termCnd . '
                     UNION
                     SELECT users.id,"0" AS groupId, users.name,users.image, users.email, users_chat.created_at  as last_message, users_chat.message, users_chat.message_seen, users_chat.user_one
                     FROM users
                     INNER JOIN users_chat ON users_chat.to = users.id
                     LEFT JOIN role_user ON role_user.user_id = users.id
                     LEFT JOIN roles ON roles.id = role_user.role_id
-                    WHERE users_chat.from = '.$userID.' '.$termCnd.'
+                    WHERE users_chat.from = ' . $userID . ' ' . $termCnd . '
                     ) AS allUsers
                     ORDER BY  last_message DESC
                     ) AS allUsersSorted
@@ -952,7 +954,7 @@ class User extends BaseModel
         $nonClientRoles = cache()->remember(
             'non-client-roles',
             now()->addDay(),
-            fn () => Role::where('name', '<>', 'client')->orderBy('id')->get()
+            fn() => Role::where('name', '<>', 'client')->orderBy('id')->get()
         );
 
         foreach ($nonClientRoles as $role) {
@@ -975,7 +977,7 @@ class User extends BaseModel
      */
     public function permission($permission)
     {
-        $cacheKey = 'permission-'.$permission.'-'.$this->id;
+        $cacheKey = 'permission-' . $permission . '-' . $this->id;
 
         cache()->forget($cacheKey); // Clear the cache
 
@@ -999,7 +1001,7 @@ class User extends BaseModel
 
     public function permissionTypeId($permission)
     {
-        $cacheKey = 'permission-id-'.$permission.'-'.$this->id;
+        $cacheKey = 'permission-id-' . $permission . '-' . $this->id;
 
         if (cache()->has($cacheKey)) {
             return cache($cacheKey);
@@ -1098,12 +1100,12 @@ class User extends BaseModel
 
     public function userBadge()
     {
-        $itsYou = ' <span class="ml-1 badge badge-secondary pr-1">'.__('app.itsYou').'</span>';
+        $itsYou = ' <span class="ml-1 badge badge-secondary pr-1">' . __('app.itsYou') . '</span>';
         /** @phpstan-ignore-next-line */
         $name = $this->name_salutation;
 
         if (user() && user()->id == $this->id) {
-            return $name.$itsYou;
+            return $name . $itsYou;
         }
 
         return $name;

@@ -125,6 +125,21 @@ return [
                     'projects',
                 ],
             ],
+            'invoice' => [
+                'label' => 'Invoice (Hóa đơn)',
+                'depends_on' => ['core'],
+                'table_patterns' => [
+                    'invoices',
+                    'invoice_items',
+                    'invoice_item_images',
+                    'invoice_recurring',
+                    'invoice_recurring_items',
+                    'invoice_recurring_item_images',
+                    'invoice_settings',
+                    'invoice_files',
+                    'invoice_payment_details',
+                ],
+            ],
         ],
         'deny_tables' => [
             'migrations',
@@ -196,6 +211,16 @@ return [
                 'select' => 'eii.*',
                 'from' => '{mainDb}.estimate_item_images eii JOIN {mainDb}.estimate_items ei ON ei.id = eii.estimate_item_id JOIN {mainDb}.estimates e ON e.id = ei.estimate_id',
                 'where' => 'e.company_id = {companyId}',
+            ],
+            'invoice_items' => [
+                'select' => 'ii.*',
+                'from' => '{mainDb}.invoice_items ii JOIN {mainDb}.invoices i ON i.id = ii.invoice_id',
+                'where' => 'i.company_id = {companyId}',
+            ],
+            'invoice_item_images' => [
+                'select' => 'iii.*',
+                'from' => '{mainDb}.invoice_item_images iii JOIN {mainDb}.invoice_items ii ON ii.id = iii.invoice_item_id JOIN {mainDb}.invoices i ON i.id = ii.invoice_id',
+                'where' => 'i.company_id = {companyId}',
             ],
         ],
     ],

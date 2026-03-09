@@ -2172,6 +2172,7 @@ return [
     'import' => [
         'file' => 'Tải tệp lên (tệp phải là tệp thuộc loại: xls, xlsx, csv)',
         'containsHeadings' => 'Tệp chứa hàng tiêu đề',
+        'skipFooterRow' => 'Bỏ qua dòng cuối (dòng tổng kết/footer ở cuối file)',
     ],
     'productImage' => 'Hình ảnh sản phẩm',
     'invoiceFiles' => 'Tệp hóa đơn',

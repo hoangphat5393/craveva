@@ -481,7 +481,7 @@ class PurchaseProductController extends AccountBaseController
 
         // Kiểm tra sản phẩm còn inventory - không cho xóa
         if (PurchaseStockAdjustment::where('product_id', $product->id)->exists()) {
-            return Reply::error(__('purchase::messages.productHasInventory') . ' ' . __('purchase::app.product') . ': ' . $product->name);
+            return Reply::error(__('purchase::messages.productHasInventory') . ' ' . $product->name);
         }
 
         $stocks = PurchaseStockAdjustment::where('product_id', $product->id)->get();
@@ -608,7 +608,7 @@ class PurchaseProductController extends AccountBaseController
         if ($productsWithInventory->isNotEmpty()) {
             $productNames = $productsWithInventory->pluck('name')->implode(', ');
 
-            return Reply::error(__('purchase::messages.productHasInventory') . ' ' . __('purchase::app.product') . ': ' . $productNames);
+            return Reply::error(__('purchase::messages.productHasInventory') . ' ' . $productNames);
         }
 
         foreach ($products as $product) {

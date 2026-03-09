@@ -84,7 +84,6 @@ class CustomFieldGroup extends BaseModel
             ];
 
             $customFieldsDataMerge = array_merge($customFieldsDataMerge, $customFieldsData);
-            info($customFieldsDataMerge);
         }
 
         return $customFieldsDataMerge;

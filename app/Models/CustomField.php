@@ -88,13 +88,57 @@ class CustomField extends BaseModel
         return $customFields;
     }
 
-    public static function customFieldData($datatables, $model, $relation = null)
+    /**
+     * @param  array<int, string>|null  $orderColumnMap  Map column index => orderBy column (e.g. [2 => 'users.id', 3 => 'client_details.client_code']) to match DataTable order
+     */
+    public static function customFieldData($datatables, $model, $relation = null, $idsQuery = null, $modelIdColumn = null, $orderColumnMap = null)
     {
         $customFields = CustomField::exportCustomFields($model);
         $customFieldNames = [];
         $customFieldsId = $customFields->pluck('id');
 
-        $fieldData = DB::table('custom_fields_data')->where('model', $model)->whereIn('custom_field_id', $customFieldsId)->select('id', 'custom_field_id', 'model_id', 'value')->get();
+        $modelConstant = is_string($model) ? $model : $model::CUSTOM_FIELD_MODEL;
+
+        if ($customFieldsId->isEmpty()) {
+            return $customFieldNames;
+        }
+
+        $fieldData = collect();
+        if ($idsQuery !== null && $modelIdColumn !== null && request()->ajax() && request()->has('start') && request()->has('length')) {
+            $start = (int) request()->input('start', 0);
+            $length = (int) request()->input('length', 10);
+            $length = min(max($length, 1), 500);
+            $orderCol = 'users.id';
+            $orderDir = 'asc';
+            if (is_array($orderColumnMap) && ! empty($orderColumnMap)) {
+                $orderIndex = (int) request()->input('order.0.column', 2);
+                $orderDir = strtolower((string) request()->input('order.0.dir', 'asc')) === 'desc' ? 'desc' : 'asc';
+                $orderCol = $orderColumnMap[$orderIndex] ?? 'users.id';
+            }
+            $idsQueryClone = (clone $idsQuery)
+                ->select(DB::raw($modelIdColumn.' as _model_id'))
+                ->skip($start)
+                ->take($length);
+            $idsQueryClone->orderBy($orderCol, $orderDir);
+            $ids = $idsQueryClone->pluck('_model_id')
+                ->filter()
+                ->unique()
+                ->values();
+            if ($ids->isNotEmpty()) {
+                $fieldData = DB::table('custom_fields_data')
+                    ->where('model', $modelConstant)
+                    ->whereIn('custom_field_id', $customFieldsId)
+                    ->whereIn('model_id', $ids)
+                    ->select('id', 'custom_field_id', 'model_id', 'value')
+                    ->get();
+            }
+        } else {
+            $fieldData = DB::table('custom_fields_data')
+                ->where('model', $modelConstant)
+                ->whereIn('custom_field_id', $customFieldsId)
+                ->select('id', 'custom_field_id', 'model_id', 'value')
+                ->get();
+        }
 
         foreach ($customFields as $customField) {
             $datatables->addColumn($customField->name, function ($row) use ($fieldData, $customField, $relation) {

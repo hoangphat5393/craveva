@@ -168,7 +168,7 @@
         <!-- Add Task Export Buttons Start -->
         <div class="d-grid d-lg-flex d-md-flex action-bar">
 
-            <div id="table-actions" class="flex-grow-1 align-items-center">
+            <div id="table-actions" class="flex-grow-1 align-items-center d-flex flex-wrap">
                 @if ($addClientPermission == 'all' || $addClientPermission == 'added' || $addClientPermission == 'both')
                     <x-forms.link-primary :link="route('clients.create')" class="mr-3 openRightModal float-left mb-2 mb-lg-0 mb-md-0" icon="plus">
                         @lang('app.addClient')
@@ -180,6 +180,7 @@
                         @lang('app.importExcel')
                     </x-forms.link-secondary>
                 @endif
+                <div id="client-dt-buttons" class="d-inline-flex align-items-center mb-2 mb-lg-0 mb-md-0"></div>
             </div>
 
             <x-datatable.actions>

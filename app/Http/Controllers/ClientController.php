@@ -23,6 +23,7 @@ use App\Http\Requests\Admin\Employee\ImportProcessRequest;
 use App\Http\Requests\Admin\Employee\ImportRequest;
 use App\Http\Requests\Gdpr\SaveConsentUserDataRequest;
 use App\Imports\ClientImport;
+use App\Jobs\ImportClientChunkJob;
 use App\Jobs\ImportClientJob;
 use App\Models\BaseModel;
 use App\Models\ClientCategory;
@@ -990,7 +991,12 @@ class ClientController extends AccountBaseController
 
     public function importProcess(ImportProcessRequest $request)
     {
-        $batch = $this->importJobProcess($request, ClientImport::class, ImportClientJob::class);
+        $chunkSize = $request->filled('chunk_size') ? (int) $request->chunk_size : 0;
+        if ($chunkSize > 0) {
+            $batch = $this->importJobProcessChunked($request, ClientImport::class, ImportClientChunkJob::class, $chunkSize);
+        } else {
+            $batch = $this->importJobProcess($request, ClientImport::class, ImportClientJob::class);
+        }
 
         return Reply::successWithData(__('messages.importProcessStart'), ['batch' => $batch]);
     }

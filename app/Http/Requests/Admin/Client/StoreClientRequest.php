@@ -39,7 +39,7 @@ class StoreClientRequest extends CoreRequest
             'slack_username' => 'nullable',
             'website' => 'nullable|url',
             'country' => 'required_with:mobile',
-            'client_code' => 'nullable|unique:client_details,client_code',
+            'client_code' => ['nullable', \Illuminate\Validation\Rule::unique('client_details', 'client_code')->where('company_id', company()->id)],
             'mobile' => 'nullable|numeric',
         ];
 

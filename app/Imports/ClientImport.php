@@ -11,6 +11,7 @@ class ClientImport implements ToArray
     public static function fields(): array
     {
         return [
+            ['id' => 'client_code', 'name' => __('modules.client.clientCode'), 'required' => 'No'],
             ['id' => 'name', 'name' => __('modules.client.clientName'), 'required' => 'Yes'],
             ['id' => 'email', 'name' => __('app.email'), 'required' => 'No'],
             ['id' => 'mobile', 'name' => __('app.mobile'), 'required' => 'No'],

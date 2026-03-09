@@ -1,0 +1,129 @@
+<?php
+
+namespace App\Services;
+
+use App\Models\ClientDetails;
+use App\Models\Country;
+use App\Models\Role;
+use App\Models\User;
+use App\Models\UserAuth;
+use App\Traits\UniversalSearchTrait;
+use Exception;
+
+class ClientImportProcessor
+{
+    use UniversalSearchTrait;
+
+    /**
+     * Process a single row of client import. Throws on duplicate or error.
+     *
+     * @param  array  $row  Row data (array of cell values)
+     * @param  array  $columns  Map of column index => field id (e.g. [0 => 'name', 1 => 'email'])
+     * @param  \App\Models\Company|null  $company
+     * @return \App\Models\User Created user
+     *
+     * @throws Exception
+     */
+    public static function processRow(array $row, array $columns, $company): User
+    {
+        if (empty(self::columnKeys($columns, 'name'))) {
+            throw new Exception(__('messages.invalidData'));
+        }
+
+        $companyId = $company?->id;
+        $user = null;
+
+        if (self::columnExists($columns, 'email') && self::isEmailValid(self::getValue($row, $columns, 'email'))) {
+            $user = User::where('company_id', $companyId)->where('email', self::getValue($row, $columns, 'email'))->first();
+        }
+
+        if (! $user && self::columnExists($columns, 'client_code') && self::getValue($row, $columns, 'client_code')) {
+            $existingDetails = ClientDetails::where('company_id', $companyId)
+                ->where('client_code', self::getValue($row, $columns, 'client_code'))
+                ->first();
+            if ($existingDetails) {
+                $user = $existingDetails->user;
+            }
+        }
+
+        if ($user) {
+            $msg = self::columnExists($columns, 'email') && self::isEmailValid(self::getValue($row, $columns, 'email'))
+                ? __('messages.duplicateEntryForEmail') . self::getValue($row, $columns, 'email')
+                : __('messages.duplicateEntry') . ' (client_code: ' . self::getValue($row, $columns, 'client_code') . ')';
+            throw new Exception($msg);
+        }
+
+        $countryID = self::columnExists($columns, 'country_id')
+            ? Country::where('name', self::getValue($row, $columns, 'country_id'))->first()?->id
+            : null;
+
+        $user = new User;
+        $user->company_id = $companyId;
+        $user->name = self::getValue($row, $columns, 'name');
+        $user->email = self::columnExists($columns, 'email') && self::isEmailValid(self::getValue($row, $columns, 'email'))
+            ? self::getValue($row, $columns, 'email')
+            : null;
+        $user->mobile = self::columnExists($columns, 'mobile') ? self::getValue($row, $columns, 'mobile') : null;
+        $user->gender = self::columnExists($columns, 'gender') ? strtolower(self::getValue($row, $columns, 'gender')) : null;
+        $user->country_id = $countryID;
+
+        $emailKey = self::columnKeys($columns, 'email');
+        $emailValue = ! empty($emailKey) ? ($row[$emailKey[0]] ?? null) : null;
+        if ($emailValue && filter_var($emailValue, FILTER_VALIDATE_EMAIL)) {
+            $userAuth = UserAuth::createUserAuthCredentials($emailValue);
+            $user->user_auth_id = $userAuth->id;
+        }
+
+        $user->save();
+
+        $clientDetails = new ClientDetails;
+        $clientDetails->company_id = $companyId;
+        $clientDetails->user_id = $user->id;
+        $clientDetails->client_code = self::columnExists($columns, 'client_code') ? self::getValue($row, $columns, 'client_code') : null;
+        $clientDetails->company_name = self::columnExists($columns, 'company_name') ? self::getValue($row, $columns, 'company_name') : null;
+        $clientDetails->address = self::columnExists($columns, 'address') ? self::getValue($row, $columns, 'address') : null;
+        $clientDetails->city = self::columnExists($columns, 'city') ? self::getValue($row, $columns, 'city') : null;
+        $clientDetails->state = self::columnExists($columns, 'state') ? self::getValue($row, $columns, 'state') : null;
+        $clientDetails->postal_code = self::columnExists($columns, 'postal_code') ? self::getValue($row, $columns, 'postal_code') : null;
+        $clientDetails->office = self::columnExists($columns, 'company_phone') ? self::getValue($row, $columns, 'company_phone') : null;
+        $clientDetails->website = self::columnExists($columns, 'company_website') ? self::getValue($row, $columns, 'company_website') : null;
+        $clientDetails->gst_number = self::columnExists($columns, 'gst_number') ? self::getValue($row, $columns, 'gst_number') : null;
+        $clientDetails->save();
+
+        $role = Role::where('name', 'client')->where('company_id', $companyId)->select('id')->first();
+        $user->attachRole($role->id);
+        $user->assignUserRolePermission($role->id);
+
+        $processor = new self;
+        if ($user->email) {
+            $processor->logSearchEntry($user->id, $user->email, 'clients.show', 'client', $user->company_id);
+        }
+        if ($user->clientDetails && $user->clientDetails->company_name) {
+            $processor->logSearchEntry($user->id, $user->clientDetails->company_name, 'clients.show', 'client', $user->company_id);
+        }
+
+        return $user;
+    }
+
+    protected static function getValue(array $row, array $columns, string $column)
+    {
+        $keys = self::columnKeys($columns, $column);
+
+        return ! empty($keys) ? ($row[$keys[0]] ?? null) : null;
+    }
+
+    protected static function columnExists(array $columns, string $column): bool
+    {
+        return ! empty(self::columnKeys($columns, $column));
+    }
+
+    protected static function columnKeys(array $columns, string $column): array
+    {
+        return array_keys($columns, $column);
+    }
+
+    protected static function isEmailValid(?string $email): bool
+    {
+        return $email !== null && $email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL);
+    }
+}

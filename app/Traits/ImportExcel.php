@@ -106,4 +106,44 @@ trait ImportExcel
 
         return $batch;
     }
+
+    /**
+     * Dispatch import as chunk jobs (e.g. 100 rows per job) to reduce queue overhead and speed up import.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  string  $importClass  e.g. ClientImport::class
+     * @param  string  $chunkJobClass  Job that accepts (array $rows, array $columns, $company) e.g. ImportClientChunkJob::class
+     * @param  int  $chunkSize  Rows per chunk (default 100)
+     * @return \Illuminate\Bus\PendingBatch
+     */
+    public function importJobProcessChunked($request, $importClass, $chunkJobClass, int $chunkSize = 100)
+    {
+        $importClassName = (new ReflectionClass($importClass))->getShortName();
+
+        Artisan::call('queue:clear database --queue='.$importClassName);
+        Artisan::call('queue:flush');
+
+        $columns = array_filter($request->columns, fn ($value) => $value !== null);
+
+        $importInstance = new $importClass;
+        Excel::import($importInstance, public_path(Files::UPLOAD_FOLDER.'/'.Files::IMPORT_FOLDER.'/'.$request->file));
+        $excelData = $importInstance->getProcessedData();
+
+        if ($request->has_heading) {
+            array_shift($excelData);
+        }
+
+        $jobs = [];
+        foreach (array_chunk($excelData, $chunkSize) as $chunk) {
+            $jobs[] = new $chunkJobClass($chunk, $columns, company());
+        }
+
+        $batch = Bus::batch($jobs)->onConnection('database')->onQueue($importClassName)->name($importClassName.'-chunked')->dispatch();
+
+        Files::deleteFile($request->file, Files::IMPORT_FOLDER);
+
+        Session::put('leads_count', count($excelData));
+
+        return $batch;
+    }
 }

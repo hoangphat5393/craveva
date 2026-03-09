@@ -43,7 +43,9 @@ class ImportClientProductPricingJob implements ShouldQueue
         $clientDetails = null;
 
         if (! empty($customerCode)) {
-            $clientDetails = ClientDetails::where('client_code', $customerCode)->first();
+            $clientDetails = ClientDetails::where('company_id', $this->company?->id)
+                ->where('client_code', $customerCode)
+                ->first();
         }
 
         if (! $clientDetails && $this->isEmailValid($email)) {

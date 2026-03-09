@@ -217,7 +217,6 @@ if (! function_exists('global_setting')) {
     // @codingStandardsIgnoreLine
     function global_setting()
     {
-
         if (! cache()->has('global_setting')) {
             $setting = \App\Models\GlobalSetting::first();
             cache(['global_setting' => $setting]);
@@ -225,7 +224,20 @@ if (! function_exists('global_setting')) {
             return $setting;
         }
 
-        return cache('global_setting');
+        try {
+            $setting = cache('global_setting');
+            // Trigger decrypt on all encrypted attributes to detect wrong APP_KEY (e.g. after DB restore)
+            if ($setting instanceof \App\Models\GlobalSetting) {
+                $setting->getAttributeValue('google_map_key');
+                $setting->getAttributeValue('google_client_secret');
+            }
+
+            return $setting;
+        } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
+            cache()->forget('global_setting');
+
+            return \App\Models\GlobalSetting::first();
+        }
     }
 }
 

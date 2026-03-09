@@ -238,9 +238,29 @@
         const RIGHT_MODAL = '#task-detail-1';
         const RIGHT_MODAL_CONTENT = '#right-modal-content';
         const RIGHT_MODAL_TITLE = '#right-modal-title';
-        const company = @json(companyOrGlobalSetting());
-        const pusher_setting = @json(pusher_settings());
-        const message_setting = @json(message_setting());
+        @php
+            $companyJson = '{}';
+            $pusherSettingJson = '{}';
+            $messageSettingJson = '{}';
+            try {
+                $companyJson = (string) \Illuminate\Support\Js::from(companyOrGlobalSetting());
+            } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
+                $companyJson = '{}';
+            }
+            try {
+                $pusherSettingJson = (string) \Illuminate\Support\Js::from(pusher_settings());
+            } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
+                $pusherSettingJson = '{}';
+            }
+            try {
+                $messageSettingJson = (string) \Illuminate\Support\Js::from(message_setting());
+            } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
+                $messageSettingJson = '{}';
+            }
+        @endphp
+        const company = {!! $companyJson !!};
+        const pusher_setting = {!! $pusherSettingJson !!};
+        const message_setting = {!! $messageSettingJson !!};
         const SEARCH_KEYWORD = "{{ request('search_keyword') }}";
         const MOMENTJS_TIME_FORMAT =
             "{{ companyOrGlobalSetting()->time_format == 'h:i A' ? 'hh:mm A' : (companyOrGlobalSetting()->time_format == 'h:i a' ? 'hh:mm a' : 'H:mm') }}";

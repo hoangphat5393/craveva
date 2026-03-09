@@ -35,3 +35,6 @@ public/css/app-custom.css
 public/css/theme-custom.css
 public/css/custom-css/theme-custom.css
 FUNC_*/
+composer.lock
+package-lock.json
+pnpm-lock.yaml

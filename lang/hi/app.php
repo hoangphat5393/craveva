@@ -78,6 +78,7 @@ return [
     'active' => 'सक्रिय',
     'license_expired' => 'लायसेंस की समय सीमा समाप्त',
     'clientName' => 'ग्राहक नाम',
+    'clientCode' => 'ग्राहक कोड',
     'lead' => 'नेतृत्व करना',
     'NewLeadContact' => 'कुल नए लीड संपर्क',
     'paymentOn' => 'भुगतान चालू',

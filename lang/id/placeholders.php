@@ -42,6 +42,7 @@ return [
     'linkTitle' => 'Judul Tautan',
     'url' => 'URL',
     'categoryName' => 'misalnya Klien Potensial',
+    'clientCode' => 'mis. CLT-001',
     'invoices' => [
         'invoicePrefix' => 'Masukkan awalan faktur',
         'estimatePrefix' => 'Masukkan perkiraan awalan',

@@ -42,6 +42,7 @@ return [
     'linkTitle' => '链接标题',
     'url' => '网址',
     'categoryName' => '例如潜在客户',
+    'clientCode' => '例如 CLT-001',
     'invoices' => [
         'invoicePrefix' => '输入发票前缀',
         'estimatePrefix' => '输入估算前缀',

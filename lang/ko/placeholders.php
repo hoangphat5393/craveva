@@ -42,6 +42,7 @@ return [
     'linkTitle' => '링크 제목',
     'url' => 'URL',
     'categoryName' => '예를 들어 잠재 고객',
+    'clientCode' => '예: CLT-001',
     'invoices' => [
         'invoicePrefix' => '송장 접두어 입력',
         'estimatePrefix' => '추정 접두사를 입력하세요.',

@@ -42,6 +42,7 @@ return [
     'linkTitle' => 'リンクタイトル',
     'url' => 'URL',
     'categoryName' => '例えば潜在的な顧客',
+    'clientCode' => '例：CLT-001',
     'invoices' => [
         'invoicePrefix' => '請求書のプレフィックスを入力してください',
         'estimatePrefix' => '見積プレフィックスを入力してください',

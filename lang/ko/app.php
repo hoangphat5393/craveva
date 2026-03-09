@@ -78,6 +78,7 @@ return [
     'active' => '활동적인',
     'license_expired' => '라이센스가 만료되었습니다',
     'clientName' => '고객 이름',
+    'clientCode' => '고객 코드',
     'lead' => '선두',
     'NewLeadContact' => '총 신규 리드 연락처',
     'paymentOn' => '결제일',

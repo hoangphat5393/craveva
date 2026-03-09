@@ -78,6 +78,7 @@ return [
     'active' => 'Tích cực',
     'license_expired' => 'Giấy phép đã hết hạn',
     'clientName' => 'Tên khách hàng',
+    'clientCode' => 'Mã khách hàng',
     'lead' => 'Chỉ huy',
     'NewLeadContact' => 'Tổng số khách hàng tiềm năng mới Liên hệ',
     'paymentOn' => 'Thanh toán trên',

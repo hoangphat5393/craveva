@@ -78,6 +78,7 @@ return [
     'active' => 'Aktif',
     'license_expired' => 'Lisensi Kedaluwarsa',
     'clientName' => 'Nama Klien',
+    'clientCode' => 'Kode Klien',
     'lead' => 'Memimpin',
     'NewLeadContact' => 'Total Kontak Prospek Baru',
     'paymentOn' => 'Pembayaran Aktif',

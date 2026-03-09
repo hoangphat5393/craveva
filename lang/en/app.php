@@ -78,6 +78,7 @@ return [
     'active' => 'Active',
     'license_expired' => 'License Expired',
     'clientName' => 'Client Name',
+    'clientCode' => 'Client Code',
     'lead' => 'Lead',
     'NewLeadContact' => 'Total New Lead Contact',
     'paymentOn' => 'Payment On',

@@ -42,6 +42,7 @@ return [
     'linkTitle' => 'लिंक शीर्षक',
     'url' => 'यूआरएल',
     'categoryName' => 'जैसे संभावित ग्राहक',
+    'clientCode' => 'जैसे CLT-001',
     'invoices' => [
         'invoicePrefix' => 'चालान उपसर्ग दर्ज करें',
         'estimatePrefix' => 'अनुमान उपसर्ग दर्ज करें',

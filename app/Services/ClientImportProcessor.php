@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Models\ClientDetails;
 use App\Models\Country;
+use App\Models\CustomField;
+use App\Models\CustomFieldGroup;
 use App\Models\Role;
 use App\Models\User;
 use App\Models\UserAuth;
@@ -90,6 +92,13 @@ class ClientImportProcessor
         $clientDetails->gst_number = self::columnExists($columns, 'gst_number') ? self::getValue($row, $columns, 'gst_number') : null;
         $clientDetails->save();
 
+        self::saveCustomFieldsFromRow($clientDetails, $row, $columns, $companyId);
+
+        if (self::columnExists($columns, 'business_closure_date') && self::getValue($row, $columns, 'business_closure_date')) {
+            $user->status = 'inactive';
+            $user->save();
+        }
+
         $role = Role::where('name', 'client')->where('company_id', $companyId)->select('id')->first();
         $user->attachRole($role->id);
         $user->assignUserRolePermission($role->id);
@@ -125,5 +134,57 @@ class ClientImportProcessor
     protected static function isEmailValid(?string $email): bool
     {
         return $email !== null && $email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL);
+    }
+
+    protected static function getClientCustomFieldNames(): array
+    {
+        return [
+            'salesperson',
+            'department',
+            'sales_assistant_name',
+            'channel_type',
+            'business_type',
+            'last_transaction_at',
+            'payment_terms',
+            'business_closure_date',
+        ];
+    }
+
+    protected static function saveCustomFieldsFromRow(ClientDetails $clientDetails, array $row, array $columns, $companyId): void
+    {
+        $group = CustomFieldGroup::where('name', 'Client')
+            ->where('model', ClientDetails::CUSTOM_FIELD_MODEL)
+            ->where('company_id', $companyId)
+            ->first();
+
+        if (! $group) {
+            return;
+        }
+
+        $customNames = self::getClientCustomFieldNames();
+        $fields = CustomField::where('custom_field_group_id', $group->id)
+            ->whereIn('name', $customNames)
+            ->get()
+            ->keyBy('name');
+
+        $data = [];
+        foreach ($customNames as $name) {
+            if (! self::columnExists($columns, $name)) {
+                continue;
+            }
+            $field = $fields->get($name);
+            if (! $field) {
+                continue;
+            }
+            $value = self::getValue($row, $columns, $name);
+            if ($value === null || $value === '') {
+                continue;
+            }
+            $data['field_' . $field->id] = $value;
+        }
+
+        if (! empty($data)) {
+            $clientDetails->updateCustomFieldData($data, $companyId);
+        }
     }
 }

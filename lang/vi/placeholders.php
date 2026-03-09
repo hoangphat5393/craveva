@@ -42,6 +42,7 @@ return [
     'linkTitle' => 'Tiêu đề liên kết',
     'url' => 'URL',
     'categoryName' => 'ví dụ. Khách hàng tiềm năng',
+    'clientCode' => 'vd. CLT-001',
     'invoices' => [
         'invoicePrefix' => 'Nhập tiền tố hóa đơn',
         'estimatePrefix' => 'Nhập tiền tố ước tính',

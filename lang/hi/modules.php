@@ -156,6 +156,7 @@ return [
         'clientBasicDetails' => 'ग्राहक का मूल विवरण',
         'clientOtherDetails' => 'अन्य विवरण',
         'clientName' => 'ग्राहक नाम',
+        'clientCode' => 'ग्राहक कोड',
         'clientEmail' => 'ग्राहक ईमेल',
         'clientPhone' => 'ग्राहक फ़ोन',
         'emailNote' => 'ग्राहक इस ईमेल का उपयोग करके लॉगिन करेगा और ईमेल सूचनाएं इस ईमेल पर भेजी जाएंगी।',

@@ -78,6 +78,7 @@ return [
     'active' => 'คล่องแคล่ว',
     'license_expired' => 'ใบอนุญาตหมดอายุ',
     'clientName' => 'ชื่อลูกค้า',
+    'clientCode' => 'รหัสลูกค้า',
     'lead' => 'ตะกั่ว',
     'NewLeadContact' => 'การติดต่อลูกค้าเป้าหมายใหม่ทั้งหมด',
     'paymentOn' => 'ชำระเงินบน',

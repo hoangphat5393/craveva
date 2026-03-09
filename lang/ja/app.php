@@ -78,6 +78,7 @@ return [
     'active' => 'アクティブ',
     'license_expired' => 'ライセンスが失効しています',
     'clientName' => 'クライアント名',
+    'clientCode' => '顧客コード',
     'lead' => '鉛',
     'NewLeadContact' => '新規リードコンタクトの合計',
     'paymentOn' => '支払い日',

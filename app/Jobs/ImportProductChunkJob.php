@@ -67,9 +67,12 @@ class ImportProductChunkJob implements ShouldQueue
         foreach ($this->rows as $index => $row) {
             try {
                 $normalizedRow = $this->normalizeRow($row);
-                DB::transaction(function () use ($normalizedRow, $index) {
-                    $this->processRow($normalizedRow, $this->chunkStartIndex + $index);
+                $created = DB::transaction(function () use ($normalizedRow, $index) {
+                    return $this->processRow($normalizedRow, $this->chunkStartIndex + $index);
                 });
+                if (! $created) {
+                    continue;
+                }
             } catch (Exception $e) {
                 $fileRow = $this->chunkStartIndex + $index + 2; // +2: 1-based and header row
                 $failures[] = 'Row ' . $fileRow . ': ' . $e->getMessage();
@@ -85,7 +88,10 @@ class ImportProductChunkJob implements ShouldQueue
         }
     }
 
-    private function processRow(array $row, int $index): void
+    /**
+     * @return bool true if product was created, false if row skipped (duplicate SKU)
+     */
+    private function processRow(array $row, int $index): bool
     {
         if (! $this->columnExists('product_name') || ! $this->columnExists('price')) {
             throw new Exception(__('messages.invalidData'));
@@ -97,12 +103,21 @@ class ImportProductChunkJob implements ShouldQueue
             throw new Exception(__('messages.invalidData'));
         }
 
+        $sku = $this->columnExists('sku') ? $this->getValue($row, 'sku') : null;
+        $skuTrimmed = $sku !== null && $sku !== '' ? trim((string) $sku) : null;
+        if ($skuTrimmed !== null && $this->company) {
+            $exists = Product::where('company_id', $this->company->id)->where('sku', $skuTrimmed)->exists();
+            if ($exists) {
+                return false;
+            }
+        }
+
         $product = new Product;
         $product->company_id = $this->company?->id;
         $product->name = $this->getValue($row, 'product_name');
         $product->price = (float) $cleanedPrice;
         $product->description = $this->columnExists('description') ? $this->getValue($row, 'description') : null;
-        $product->sku = $this->columnExists('sku') ? $this->getValue($row, 'sku') : null;
+        $product->sku = $skuTrimmed ?? $sku;
         $product->storage_condition = $this->columnExists('storage_condition') ? $this->getValue($row, 'storage_condition') : null;
         $product->certification = $this->columnExists('certification') ? $this->getValue($row, 'certification') : null;
         $product->wholesale_price = $this->columnExists('wholesale_price') ? $this->getValue($row, 'wholesale_price') : null;
@@ -133,6 +148,8 @@ class ImportProductChunkJob implements ShouldQueue
         if (user()) {
             self::createEmployeeActivity(user()->id, 'product-created', $product->id, 'product');
         }
+
+        return true;
     }
 
     private function getValue(array $row, string $fieldId)

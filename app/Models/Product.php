@@ -135,6 +135,7 @@ class Product extends BaseModel
         'wholesale_price',
         'price_per_box',
         'employee_price',
+        'shelf_life_days',
         'allow_purchase',
         'unit_id',
         'category_id',
@@ -160,17 +161,17 @@ class Product extends BaseModel
 
     public function getImageUrlAttribute()
     {
-        if (app()->environment(['development', 'demo']) && str_contains($this->default_image, 'http')) {
+        if (app()->environment(['development', 'demo']) && $this->default_image && str($this->default_image)->contains('http')) {
             return $this->default_image;
         }
 
-        return ($this->default_image) ? asset_url_local_s3(Product::FILE_PATH.'/'.$this->default_image) : '';
+        return ($this->default_image) ? asset_url_local_s3(Product::FILE_PATH . '/' . $this->default_image) : '';
     }
 
     public function getImageAttribute()
     {
         if ($this->default_image) {
-            return str($this->default_image)->contains('http') ? $this->default_image : (Product::FILE_PATH.'/'.$this->default_image);
+            return str($this->default_image)->contains('http') ? $this->default_image : (Product::FILE_PATH . '/' . $this->default_image);
         }
 
         return $this->default_image;
@@ -178,7 +179,7 @@ class Product extends BaseModel
 
     public function getDownloadFileUrlAttribute()
     {
-        return ($this->downloadable_file) ? asset_url_local_s3(Product::FILE_PATH.'/'.$this->downloadable_file) : null;
+        return ($this->downloadable_file) ? asset_url_local_s3(Product::FILE_PATH . '/' . $this->downloadable_file) : null;
     }
 
     public function tax(): BelongsTo
@@ -237,9 +238,9 @@ class Product extends BaseModel
             if (! is_null($productItem->taxes)) {
                 foreach (json_decode($productItem->taxes) as $index => $tax) {
                     $tax = $this->taxbyid($tax)->first();
-                    $taxes .= $tax->tax_name.': '.$tax->rate_percent.'%';
+                    $taxes .= $tax->tax_name . ': ' . $tax->rate_percent . '%';
 
-                    $taxes = ($index + 1 != $numItems) ? $taxes.', ' : $taxes;
+                    $taxes = ($index + 1 != $numItems) ? $taxes . ', ' : $taxes;
                 }
             }
         }
@@ -250,7 +251,6 @@ class Product extends BaseModel
     public function orderItem(): HasMany
     {
         return $this->hasMany(OrderItems::class, 'product_id');
-
     }
 
     public function inventory()

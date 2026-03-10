@@ -539,6 +539,7 @@ return [
     'projectAdminPanel' => 'Project Admin Panel',
     'loginAsProjectAdmin' => 'Login As Project Admin',
     'price' => 'Price',
+    'shelfLifeDays' => 'Shelf life (days)',
     'last' => 'Last',
     'income' => 'Income',
     'expense' => 'Expense',

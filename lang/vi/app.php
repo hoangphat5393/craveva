@@ -541,6 +541,7 @@ return [
     'projectAdminPanel' => 'Bảng quản trị dự án',
     'loginAsProjectAdmin' => 'Đăng nhập với tư cách quản trị viên dự án',
     'price' => 'Giá',
+    'shelfLifeDays' => 'Hạn sử dụng (ngày)',
     'last' => 'Cuối cùng',
     'income' => 'Thu nhập',
     'expense' => 'Chi phí',

@@ -129,6 +129,26 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="row mt-3">
+                                    <div class="col-md-4">
+                                        <x-forms.number fieldId="wholesale_price" :fieldLabel="__('Wholesale Price')" fieldName="wholesale_price" :fieldPlaceholder="__('0')" :fieldValue="$product->wholesale_price">
+                                        </x-forms.number>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <x-forms.number fieldId="price_per_box" :fieldLabel="__('Price Per Box')" fieldName="price_per_box" :fieldPlaceholder="__('0')" :fieldValue="$product->price_per_box">
+                                        </x-forms.number>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <x-forms.number fieldId="employee_price" :fieldLabel="__('Employee Price')" fieldName="employee_price" :fieldPlaceholder="__('0')" :fieldValue="$product->employee_price">
+                                        </x-forms.number>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-md-4">
+                                        <x-forms.number fieldId="shelf_life_days" :fieldLabel="__('app.shelfLifeDays')" fieldName="shelf_life_days" :fieldPlaceholder="__('app.shelfLifeDays')" :fieldValue="$product->shelf_life_days ?? ''" :minValue="0">
+                                        </x-forms.number>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="col-lg-6 col-md-6 mt-4 mb-4">
@@ -226,23 +246,6 @@
                                     <div class="col-md-6">
                                         <x-forms.text fieldId="certification" :fieldLabel="__('Certification')" fieldName="certification" :fieldPlaceholder="__('Certification')" :fieldValue="$product->certification">
                                         </x-forms.text>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-12 mt-3">
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <x-forms.number fieldId="wholesale_price" :fieldLabel="__('Wholesale Price')" fieldName="wholesale_price" :fieldPlaceholder="__('0')" :fieldValue="$product->wholesale_price">
-                                        </x-forms.number>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <x-forms.number fieldId="price_per_box" :fieldLabel="__('Price Per Box')" fieldName="price_per_box" :fieldPlaceholder="__('0')" :fieldValue="$product->price_per_box">
-                                        </x-forms.number>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <x-forms.number fieldId="employee_price" :fieldLabel="__('Employee Price')" fieldName="employee_price" :fieldPlaceholder="__('0')" :fieldValue="$product->employee_price">
-                                        </x-forms.number>
                                     </div>
                                 </div>
                             </div>

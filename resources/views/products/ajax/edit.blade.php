@@ -28,22 +28,28 @@ $addProductSubCategoryPermission = user()->permission('manage_product_sub_catego
                                     :fieldValue="$product->price" />
                             </div>
 
-                            <div class="col-md-4">
-                                <x-forms.number class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('Wholesale Price')"
+                            <div class="col-12">
+                                <x-forms.number class="w-100" :fieldLabel="__('Wholesale Price')"
                                     fieldName="wholesale_price" fieldId="wholesale_price" :fieldPlaceholder="__('Wholesale Price')"
                                     :fieldValue="$product->wholesale_price" />
                             </div>
 
-                            <div class="col-md-4">
-                                <x-forms.number class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('Price Per Box')"
+                            <div class="col-12">
+                                <x-forms.number class="w-100" :fieldLabel="__('Price Per Box')"
                                     fieldName="price_per_box" fieldId="price_per_box" :fieldPlaceholder="__('Price Per Box')"
                                     :fieldValue="$product->price_per_box" />
                             </div>
 
-                            <div class="col-md-4">
-                                <x-forms.number class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('Employee Price')"
+                            <div class="col-12">
+                                <x-forms.number class="w-100" :fieldLabel="__('Employee Price')"
                                     fieldName="employee_price" fieldId="employee_price" :fieldPlaceholder="__('Employee Price')"
                                     :fieldValue="$product->employee_price" />
+                            </div>
+
+                            <div class="col-md-4">
+                                <x-forms.number :fieldLabel="__('app.shelfLifeDays')" fieldName="shelf_life_days"
+                                    fieldId="shelf_life_days" :fieldPlaceholder="__('app.shelfLifeDays')"
+                                    :fieldValue="$product->shelf_life_days ?? ''" />
                             </div>
 
                             <div class="col-md-4">

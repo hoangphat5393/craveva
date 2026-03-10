@@ -29,6 +29,7 @@ class UpdatePurchaseProductRequest extends CoreRequest
             'price_per_box' => 'nullable|numeric',
             'employee_price' => 'nullable|numeric',
             'inventory_type' => 'nullable|string',
+            'shelf_life_days' => 'nullable|integer|min:0',
 
         ];
 

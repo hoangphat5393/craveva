@@ -134,6 +134,7 @@
                                         </div>
                                     </div>
                                 </div>
+
                             </div>
 
                             <div class="col-md-6">
@@ -155,6 +156,24 @@
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+
+                            <div class="col-md-12 mt-3">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <x-forms.number fieldId="wholesale_price" :fieldLabel="__('Wholesale Price')" fieldName="wholesale_price" :fieldPlaceholder="__('0')">
+                                        </x-forms.number>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <x-forms.number fieldId="price_per_box" :fieldLabel="__('Price Per Box')" fieldName="price_per_box" :fieldPlaceholder="__('0')">
+                                        </x-forms.number>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <x-forms.number fieldId="employee_price" :fieldLabel="__('Employee Price')" fieldName="employee_price" :fieldPlaceholder="__('0')">
+                                        </x-forms.number>
+                                    </div>
+                                </div>
+
                             </div>
 
                             <div class="col-md-4 my-3">
@@ -225,22 +244,6 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-12 mt-3">
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <x-forms.number fieldId="wholesale_price" :fieldLabel="__('Wholesale Price')" fieldName="wholesale_price" :fieldPlaceholder="__('0')">
-                                        </x-forms.number>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <x-forms.number fieldId="price_per_box" :fieldLabel="__('Price Per Box')" fieldName="price_per_box" :fieldPlaceholder="__('0')">
-                                        </x-forms.number>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <x-forms.number fieldId="employee_price" :fieldLabel="__('Employee Price')" fieldName="employee_price" :fieldPlaceholder="__('0')">
-                                        </x-forms.number>
-                                    </div>
-                                </div>
-                            </div>
 
                             <div class="col-md-12 mt-3">
                                 <div class="row">
@@ -248,6 +251,12 @@
                                         <x-forms.text fieldId="inventory_type" :fieldLabel="__('Inventory Type')" fieldName="inventory_type" :fieldPlaceholder="__('Inventory Type')">
                                         </x-forms.text>
                                     </div>
+
+                                    <div class="col-md-6">
+                                        <x-forms.number fieldId="shelf_life_days" :fieldLabel="__('app.shelfLifeDays')" fieldName="shelf_life_days" :fieldPlaceholder="__('app.shelfLifeDays')" minValue="0">
+                                        </x-forms.number>
+                                    </div>
+
                                 </div>
                             </div>
 

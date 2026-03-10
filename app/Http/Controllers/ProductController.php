@@ -108,6 +108,7 @@ class ProductController extends AccountBaseController
         $product->wholesale_price = $request->wholesale_price;
         $product->price_per_box = $request->price_per_box;
         $product->employee_price = $request->employee_price;
+        $product->shelf_life_days = $request->filled('shelf_life_days') ? (int) $request->shelf_life_days : null;
         $product->taxes = $request->tax ? json_encode($request->tax) : null;
         $product->description = trim_editor($request->description);
         $product->hsn_sac_code = $request->hsn_sac_code;
@@ -253,6 +254,7 @@ class ProductController extends AccountBaseController
         $product->wholesale_price = $request->wholesale_price;
         $product->price_per_box = $request->price_per_box;
         $product->employee_price = $request->employee_price;
+        $product->shelf_life_days = $request->filled('shelf_life_days') ? (int) $request->shelf_life_days : null;
         $product->taxes = $request->tax ? json_encode($request->tax) : null;
         $product->hsn_sac_code = $request->hsn_sac_code;
         $product->sku = $request->sku;

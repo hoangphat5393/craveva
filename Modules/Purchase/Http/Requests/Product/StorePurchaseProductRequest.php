@@ -32,6 +32,7 @@ class StorePurchaseProductRequest extends CoreRequest
             'opening_stock' => 'required_if:track_inventory,1',
             'purchase_price' => 'required_if:purchase_information,1,numeric',
             'downloadable_file' => 'required_if:downloadable,true|file',
+            'shelf_life_days' => 'nullable|integer|min:0',
         ];
 
         $rules = $this->customFieldRules($rules);

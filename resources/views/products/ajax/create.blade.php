@@ -28,16 +28,20 @@
                                 <x-forms.number class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('app.price')" fieldName="price" fieldId="price" fieldRequired="true" :fieldPlaceholder="__('placeholders.price')" fieldValue="0" />
                             </div>
 
-                            <div class="col-lg-4 col-md-6">
-                                <x-forms.number class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('Wholesale Price')" fieldName="wholesale_price" fieldId="wholesale_price" fieldRequired="true" :fieldPlaceholder="__('Wholesale Price')" fieldValue="0" />
+                            <div class="col-12">
+                                <x-forms.number class="w-100" :fieldLabel="__('Wholesale Price')" fieldName="wholesale_price" fieldId="wholesale_price" fieldRequired="true" :fieldPlaceholder="__('Wholesale Price')" fieldValue="0" />
+                            </div>
+
+                            <div class="col-12">
+                                <x-forms.number class="w-100" :fieldLabel="__('Price Per Box')" fieldName="price_per_box" fieldId="price_per_box" fieldRequired="true" :fieldPlaceholder="__('Price Per Box')" fieldValue="0" />
+                            </div>
+
+                            <div class="col-12">
+                                <x-forms.number class="w-100" :fieldLabel="__('Employee Price')" fieldName="employee_price" fieldId="employee_price" fieldRequired="true" :fieldPlaceholder="__('Employee Price')" fieldValue="0" />
                             </div>
 
                             <div class="col-lg-4 col-md-6">
-                                <x-forms.number class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('Price Per Box')" fieldName="price_per_box" fieldId="price_per_box" fieldRequired="true" :fieldPlaceholder="__('Price Per Box')" fieldValue="0" />
-                            </div>
-
-                            <div class="col-lg-4 col-md-6">
-                                <x-forms.number class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('Employee Price')" fieldName="employee_price" fieldId="employee_price" fieldRequired="true" :fieldPlaceholder="__('Employee Price')" fieldValue="0" />
+                                <x-forms.number :fieldLabel="__('app.shelfLifeDays')" fieldName="shelf_life_days" fieldId="shelf_life_days" :fieldPlaceholder="__('app.shelfLifeDays')" fieldValue="" />
                             </div>
 
                             <div class="col-lg-4 col-md-6">

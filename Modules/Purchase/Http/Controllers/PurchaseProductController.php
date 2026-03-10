@@ -141,6 +141,7 @@ class PurchaseProductController extends AccountBaseController
         $product->wholesale_price = $request->wholesale_price ?? 0;
         $product->price_per_box = $request->price_per_box;
         $product->employee_price = $request->employee_price;
+        $product->shelf_life_days = $request->filled('shelf_life_days') ? (int) $request->shelf_life_days : null;
         $product->inventory_type = $request->inventory_type;
         $product->storage_condition = $request->storage_condition;
         $product->certification = $request->certification;
@@ -398,6 +399,7 @@ class PurchaseProductController extends AccountBaseController
         $product->wholesale_price = $request->wholesale_price ?? 0;
         $product->price_per_box = $request->price_per_box;
         $product->employee_price = $request->employee_price;
+        $product->shelf_life_days = $request->filled('shelf_life_days') ? (int) $request->shelf_life_days : null;
         $product->inventory_type = $request->inventory_type;
         $product->storage_condition = $request->storage_condition;
         $product->certification = $request->certification;

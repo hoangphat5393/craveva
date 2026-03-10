@@ -130,9 +130,10 @@ trait ImportExcel
      * @param  string  $importClass  e.g. ClientImport::class
      * @param  string  $chunkJobClass  Job that accepts (array $rows, array $columns, $company) e.g. ImportClientChunkJob::class
      * @param  int  $chunkSize  Rows per chunk (default 100)
+     * @param  array  $options  Optional data passed to each job (e.g. ['default_unit_id' => 1])
      * @return \Illuminate\Bus\PendingBatch
      */
-    public function importJobProcessChunked($request, $importClass, $chunkJobClass, int $chunkSize = 100)
+    public function importJobProcessChunked($request, $importClass, $chunkJobClass, int $chunkSize = 100, array $options = [])
     {
         $importClassName = (new ReflectionClass($importClass))->getShortName();
 
@@ -164,7 +165,7 @@ trait ImportExcel
         $jobs = [];
         $chunkStartIndex = 0;
         foreach (array_chunk($excelData, $chunkSize) as $chunk) {
-            $jobs[] = new $chunkJobClass($chunk, $columns, company(), $chunkStartIndex);
+            $jobs[] = new $chunkJobClass($chunk, $columns, company(), $chunkStartIndex, $options);
             $chunkStartIndex += count($chunk);
         }
 

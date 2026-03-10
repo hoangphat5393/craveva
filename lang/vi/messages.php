@@ -379,6 +379,8 @@ return [
     'pleaseSelectCategory' => 'Hãy chọn một danh mục',
     'importUploadSuccess' => 'Dữ liệu được tải lên thành công.',
     'importProcessStart' => 'Quá trình nhập khẩu bắt đầu. Vui lòng chờ.',
+    'importDefaultUnitType' => 'Unit type mặc định (khi không map cột hoặc ô trống)',
+    'importDefaultUnitTypeHelp' => 'Chọn unit để dùng cho sản phẩm không có unit trong file. Để trống thì dùng unit đầu tiên.',
     'importRunningInBackground' => 'Import đang chạy nền. Nếu không thấy thanh tiến trình nhảy, vẫn đừng tắt trang — khi xong sản phẩm sẽ hiện.',
     'confirmResetPermission' => 'Thao tác này sẽ đặt lại quyền cho tất cả người dùng có vai trò này. Bạn có muốn thiết lập lại không?',
     'invoiceDueOn' => 'Hóa đơn đến hạn',

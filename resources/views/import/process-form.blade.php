@@ -34,6 +34,21 @@
                 <input type="hidden" name="has_heading" value="{{ $hasHeading ?? false }}">
                 <input type="hidden" name="has_skip_footer" value="{{ ($hasSkipFooter ?? false) ? '1' : '0' }}">
 
+                @if(isset($unitTypes) && $unitTypes->isNotEmpty())
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="control-label">@lang('messages.importDefaultUnitType')</label>
+                        <select class="form-control select-picker" name="default_unit_id" data-live-search="true">
+                            <option value="">— @lang('app.skip') —</option>
+                            @foreach($unitTypes as $ut)
+                                <option value="{{ $ut->id }}">{{ $ut->unit_type }}</option>
+                            @endforeach
+                        </select>
+                        <p class="text-muted small mb-0">@lang('messages.importDefaultUnitTypeHelp')</p>
+                    </div>
+                </div>
+                @endif
+
                 <div class="row">
                     @forelse ($importSample[0] as $key => $item)
                         <div class="col-md-3 importBox  border-grey {{ !empty($heading) ? (collect($columns)->whereIn('id', $heading[$key])->first() ? 'matched' : 'unmatched') : 'unmatched' }}" id="box_{{ $key }}" data-key="{{ $key }}">

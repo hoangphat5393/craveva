@@ -28,6 +28,7 @@ class ImportProcessRequest extends FormRequest
             'has_heading' => 'nullable|boolean',
             'has_skip_footer' => 'nullable|boolean',
             'columns' => ['required', 'array', 'min:1'],
+            'default_unit_id' => 'nullable|integer|exists:unit_types,id',
         ];
     }
 

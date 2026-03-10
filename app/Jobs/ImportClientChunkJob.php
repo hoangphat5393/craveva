@@ -35,7 +35,7 @@ class ImportClientChunkJob implements ShouldQueue
      */
     private int $chunkStartIndex;
 
-    public function __construct(array $rows, array $columns, $company = null, int $chunkStartIndex = 0)
+    public function __construct(array $rows, array $columns, $company = null, int $chunkStartIndex = 0, array $options = [])
     {
         $this->rows = $rows;
         $this->columns = $columns;

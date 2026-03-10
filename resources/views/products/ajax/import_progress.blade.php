@@ -3,4 +3,5 @@
     'processRoute' => route('products.import.process'),
     'backRoute' => route('products.index'),
     'backButtonText' => __('app.backToProducts'),
+    'unitTypes' => $unitTypes ?? collect(),
 ])

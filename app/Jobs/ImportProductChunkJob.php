@@ -32,7 +32,10 @@ class ImportProductChunkJob implements ShouldQueue
 
     private int $chunkStartIndex;
 
-    /** Cache for unit_type name => id (or 'default' => id) within this chunk to avoid repeated queries. */
+    /** User-selected default unit id (from import UI). Khi có giá trị thì dùng luôn, không query. */
+    private ?int $defaultUnitId = null;
+
+    /** Cache for unit_type name => id within this chunk. */
     private array $unitTypeCache = [];
 
     /** Cache for category name => id. */
@@ -41,15 +44,16 @@ class ImportProductChunkJob implements ShouldQueue
     /** Cache for sub_category "categoryId|name" => id. */
     private array $subCategoryCache = [];
 
-    /** Cached fallback unit type id: khi không có unit_type thì dùng unit đầu tiên (theo id), chỉ query 1 lần/chunk. */
+    /** Cached fallback unit type id: khi không có unit_type và không có defaultUnitId thì dùng unit đầu tiên, chỉ query 1 lần/chunk. */
     private $fallbackUnitId = null;
 
-    public function __construct(array $rows, array $columns, $company = null, int $chunkStartIndex = 0)
+    public function __construct(array $rows, array $columns, $company = null, int $chunkStartIndex = 0, array $options = [])
     {
         $this->rows = $rows;
         $this->columns = $columns;
         $this->company = $company;
         $this->chunkStartIndex = $chunkStartIndex;
+        $this->defaultUnitId = isset($options['default_unit_id']) && $options['default_unit_id'] ? (int) $options['default_unit_id'] : null;
     }
 
     public function handle(): void
@@ -154,12 +158,12 @@ class ImportProductChunkJob implements ShouldQueue
         };
 
         if (! $this->columnExists('unit_type')) {
-            return $getFallbackOnce();
+            return $this->defaultUnitId ?? $getFallbackOnce();
         }
 
         $name = trim((string) $this->getValue($row, 'unit_type'));
         if ($name === '') {
-            return $getFallbackOnce();
+            return $this->defaultUnitId ?? $getFallbackOnce();
         }
 
         if (! array_key_exists($name, $this->unitTypeCache)) {
@@ -172,7 +176,7 @@ class ImportProductChunkJob implements ShouldQueue
             return $id;
         }
 
-        return $getFallbackOnce();
+        return $this->defaultUnitId ?? $getFallbackOnce();
     }
 
     private function resolveCategoryId(array $row): ?int

@@ -769,6 +769,8 @@ class PurchaseProductController extends AccountBaseController
             return Reply::error(__('messages.abortAction'));
         }
 
+        $this->data['unitTypes'] = UnitType::orderBy('id')->get();
+
         $view = view('purchase::purchase-products.ajax.import_progress', $this->data)->render();
 
         return Reply::successWithData(__('messages.importUploadSuccess'), ['view' => $view]);
@@ -776,9 +778,9 @@ class PurchaseProductController extends AccountBaseController
 
     public function importProcess(ImportProcessRequest $request)
     {
-        // Chunked import (100 rows/job) for faster bulk import (e.g. 1000 products)
         $chunkSize = 100;
-        $batch = $this->importJobProcessChunked($request, ProductImport::class, ImportProductChunkJob::class, $chunkSize);
+        $options = ['default_unit_id' => $request->input('default_unit_id') ? (int) $request->input('default_unit_id') : null];
+        $batch = $this->importJobProcessChunked($request, ProductImport::class, ImportProductChunkJob::class, $chunkSize, $options);
 
         return Reply::successWithData(__('messages.importProcessStart'), ['batch' => $batch]);
     }

@@ -32,6 +32,7 @@ class SettingsController extends AccountBaseController
         $setting->save();
 
         session(['locale' => $request->lang]);
+        session(['user' => $setting->fresh()]);
 
         if ($request->ajax()) {
             return Reply::redirect(url()->previous(), __('messages.updateSuccess'));

@@ -7,6 +7,7 @@ use App\Http\Controllers\AccountBaseController;
 use App\Models\LanguageSetting;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 use Modules\LanguagePack\Http\Requests\PublishLanguageRequest;
 use Symfony\Component\Console\Output\BufferedOutput;
 
@@ -86,7 +87,7 @@ class LanguagePackController extends AccountBaseController
     private function formatPublishErrorMessage(\Throwable $th): string
     {
         $msg = $th->getMessage();
-        if (str_contains($msg, 'Permission denied') || str_contains($msg, 'Failed to open stream')) {
+        if (Str::contains($msg, 'Permission denied') || Str::contains($msg, 'Failed to open stream')) {
             return $msg . ' ' . __('languagepack::messages.publishPermissionHint');
         }
 

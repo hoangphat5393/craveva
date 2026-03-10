@@ -268,7 +268,7 @@
                             </div>
 
                             <div class="col-md-12 mt-3">
-                                <x-forms.text fieldId="specification" :fieldLabel="__('Specification (規格)')" fieldName="specification" :fieldPlaceholder="__('Specification')" :fieldValue="$product->specification ?? ''">
+                                <x-forms.text fieldId="specification" :fieldLabel="__('app.specification')" fieldName="specification" :fieldPlaceholder="__('app.specification')" :fieldValue="$product->specification ?? ''">
                                 </x-forms.text>
                             </div>
 

@@ -177,6 +177,11 @@ $addProductSubCategoryPermission = user()->permission('manage_product_sub_catego
                                 </div>
                             </div>
 
+                            <div class="col-md-12 mt-3">
+                                <x-forms.text fieldId="specification" :fieldLabel="__('Specification (規格)')" fieldName="specification" :fieldPlaceholder="__('Specification')" :fieldValue="$product->specification ?? ''">
+                                </x-forms.text>
+                            </div>
+
                             <div class="col-lg-12">
                                 <x-forms.file-multiple class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('app.menu.addFile')"
                                     fieldName="file" fieldId="file-upload-dropzone" />

@@ -2,6 +2,8 @@
 
 namespace App\Jobs;
 
+use App\Models\CustomField;
+use App\Models\CustomFieldGroup;
 use App\Models\Product;
 use App\Traits\EmployeeActivityTrait;
 use App\Traits\UniversalSearchTrait;
@@ -93,11 +95,13 @@ class ImportProductChunkJob implements ShouldQueue
      */
     private function processRow(array $row, int $index): bool
     {
-        if (! $this->columnExists('product_name') || ! $this->columnExists('price')) {
+        if (! $this->columnExists('product_name')) {
             throw new Exception(__('messages.invalidData'));
         }
-
-        $priceVal = $this->getValue($row, 'price');
+        $priceVal = $this->columnExists('standard_price') ? $this->getValue($row, 'standard_price') : $this->getValue($row, 'price');
+        if (! $this->columnExists('price') && ! $this->columnExists('standard_price')) {
+            throw new Exception(__('messages.invalidData'));
+        }
         $cleanedPrice = is_scalar($priceVal) ? preg_replace('/[^\d.]/', '', (string) $priceVal) : '';
         if (! is_numeric($cleanedPrice)) {
             throw new Exception(__('messages.invalidData'));
@@ -117,12 +121,18 @@ class ImportProductChunkJob implements ShouldQueue
         $product->name = $this->getValue($row, 'product_name');
         $product->price = (float) $cleanedPrice;
         $product->description = $this->columnExists('description') ? $this->getValue($row, 'description') : null;
+        $product->specification = $this->columnExists('specification') ? $this->getValue($row, 'specification') : null;
         $product->sku = $skuTrimmed ?? $sku;
         $product->storage_condition = $this->columnExists('storage_condition') ? $this->getValue($row, 'storage_condition') : null;
         $product->certification = $this->columnExists('certification') ? $this->getValue($row, 'certification') : null;
         $product->wholesale_price = $this->columnExists('wholesale_price') ? $this->getValue($row, 'wholesale_price') : null;
         $product->price_per_box = $this->columnExists('price_per_box') ? $this->getValue($row, 'price_per_box') : null;
         $product->employee_price = $this->columnExists('employee_price') ? $this->getValue($row, 'employee_price') : null;
+
+        if ($this->columnExists('shelf_life_days')) {
+            $v = $this->getValue($row, 'shelf_life_days');
+            $product->shelf_life_days = ($v !== null && $v !== '' && is_numeric(trim((string) $v))) ? (int) trim((string) $v) : null;
+        }
 
         if ($this->columnExists('track_inventory')) {
             $v = strtolower((string) $this->getValue($row, 'track_inventory'));
@@ -145,11 +155,54 @@ class ImportProductChunkJob implements ShouldQueue
 
         $product->save();
 
+        $customFieldsData = $this->buildProductCustomFieldsData($row);
+        if ($customFieldsData !== []) {
+            $product->updateCustomFieldData($customFieldsData);
+        }
+
         if (user()) {
             self::createEmployeeActivity(user()->id, 'product-created', $product->id, 'product');
         }
 
         return true;
+    }
+
+    /**
+     * Build custom_fields_data array for Product from row. Maps import column ids (product_grade, product_source, brand)
+     * to CustomField id via Product group for current company.
+     *
+     * @return array<string, mixed> keys like 'field_123' => value
+     */
+    private function buildProductCustomFieldsData(array $row): array
+    {
+        $customFieldNames = ['product_grade', 'product_source', 'brand'];
+        $companyId = $this->company?->id;
+        if (! $companyId) {
+            return [];
+        }
+
+        $group = CustomFieldGroup::where('company_id', $companyId)->where('model', Product::class)->first();
+        if (! $group) {
+            return [];
+        }
+
+        $fields = CustomField::where('custom_field_group_id', $group->id)->whereIn('name', $customFieldNames)->get();
+        if ($fields->isEmpty()) {
+            return [];
+        }
+
+        $data = [];
+        foreach ($fields as $field) {
+            if (! $this->columnExists($field->name)) {
+                continue;
+            }
+            $value = $this->getValue($row, $field->name);
+            if ($value !== null && $value !== '') {
+                $data['field_' . $field->id] = is_scalar($value) ? trim((string) $value) : (string) $value;
+            }
+        }
+
+        return $data;
     }
 
     private function getValue(array $row, string $fieldId)

@@ -49,20 +49,21 @@ Rule of thumb: **DB column** = used in queries, filters, reports, or core busine
 | **sku** (品號)                  | **DB** (already exists)              | Unique key, search, duplicate check.                                                                                                       |
 | **product_name** (品名)         | **DB** (already `name`)              | Core attribute.                                                                                                                            |
 | **規格** (specification)        | **DB**                               | Map to existing **description** (or add `specification` column if description is used for something else). Used in listings and inventory. |
+| **規格** (specification) bổ sung      | **DB** (`specification`)             | Cột `specification` đã thêm (migration 2026_03_11, đổi tên 2026_03_11_000002); có trong Product form (main + Purchase) và ProductImport.   |
 | **庫存單位** (stock unit)       | **DB** (already `unit_id`)           | Unit is used in orders and inventory.                                                                                                      |
 | **標準價** (standard price)     | **DB** (already `price`)             | Core pricing.                                                                                                                              |
 | **成箱價** (price per box)      | **DB** (already `price_per_box`)     | Pricing.                                                                                                                                   |
 | **儲存溫層** (storage temp)     | **DB** (already `storage_condition`) | F&B logic, filtering.                                                                                                                      |
 | **備貨型態** (inventory type)   | **DB** (already `inventory_type`)    | Inventory logic.                                                                                                                           |
-| **保存天數** (shelf life, days) | **DB** (recommend add column)        | Numeric, used for expiry rules and reports; better as column than custom field.                                                            |
-| **商品級別** (product grade)    | **Custom field**                     | Values like "S+級" are client-specific; no need to index or join.                                                                          |
-| **商品來源** (product source)   | **Custom field**                     | Values like "自行進口商品", "分裝品" are descriptive and client-specific.                                                                  |
-| **品牌類別** (brand)            | **Custom field**                     | Brand names vary; if later you need global filter by brand, can add a `brand` column.                                                      |
+| **保存天數** (shelf life, days) | **DB** (đã có)                       | Cột `shelf_life_days` đã thêm (migration 2026_03_09); có trong Product form (main + Purchase).                                             |
+| **商品級別** (product grade)    | **Custom field** (user đã tạo)       | Tạo trong Settings > Custom Fields; map cột 商品級別 trong file → custom field tương ứng.                                                  |
+| **商品來源** (product source)   | **Custom field** (user đã tạo)       | Tạo trong Settings > Custom Fields; map cột 商品來源 trong file → custom field tương ứng.                                                  |
+| **品牌類別** (brand)            | **Custom field** (user đã tạo)       | Tạo trong Settings > Custom Fields; map cột 品牌類別 trong file → custom field tương ứng.                                                  |
 
 **Summary**
 
-- **Chắc chắn cần có trong DB (hoặc đã có):** `sku`, `name`, `description` (規格), `unit_id`, `price`, `price_per_box`, `wholesale_price`, `employee_price`, `storage_condition`, `inventory_type`. Nên thêm cột **shelf_life_days** (integer, nullable) cho 保存天數.
-- **Nên dùng custom field:** 商品級別 (product_grade), 商品來源 (product_source), 品牌類別 (brand). 備貨型態 đã có trong DB là `inventory_type`, không cần custom field.
+- **Chắc chắn cần có trong DB (đã có):** `sku`, `name`, `description` (規格), **specification** (規格, migration 2026_03_11), `unit_id`, `price`, `price_per_box`, `wholesale_price`, `employee_price`, `storage_condition`, `inventory_type`, **shelf_life_days** (migration 2026_03_09).
+- **Custom field (user đã tạo qua Settings):** 商品級別 (product_grade), 商品來源 (product_source), 品牌類別 (brand). Cần map trong ProductImport::fields() và gọi updateCustomFieldData trong ImportProductChunkJob để lưu khi import.
 
 ---
 
@@ -149,17 +150,17 @@ So **import_product full** is already close: only **price**, **wholesale_price**
 
 ### 5.1. Standard fields in ProductImport
 
-product_name, price, unit_type, product_category, product_sub_category, sku, description, storage_condition, certification, wholesale_price, price_per_box, employee_price, track_inventory, inventory_type, status.
+product_name, price, unit_type, product_category, product_sub_category, sku, description, **specification** (規格), storage_condition, certification, wholesale_price, price_per_box, employee_price, shelf_life_days, track_inventory, inventory_type, status.
 
 ### 5.2. products table (fillable)
 
-name, price, sku, description, unit_id, category_id, sub_category_id, storage_condition, certification, wholesale_price, price_per_box, employee_price, track_inventory, inventory_type, status, …
+name, price, sku, description, **specification**, unit_id, category_id, sub_category_id, storage_condition, certification, wholesale_price, price_per_box, employee_price, **shelf_life_days**, track_inventory, inventory_type, status, …
 
 ### 5.3. Product custom fields (current state)
 
-- **Product** `CustomFieldGroup` (model = `App\Models\Product`) may exist.
-- Migration `2026_01_21_000001_remove_all_product_custom_fields_fb` **removed all** Product custom fields; there may be **no** custom fields left.
-- Previously there were: batch_tracking_enabled, inventory_issue_rule, near_expiry_days_threshold, near_expiry_discount_eligible, erp_sku_mapping, wms_sku_mapping, **brand**, **shelf_life_days**.
+- **Product** `CustomFieldGroup` (model = `App\Models\Product`) tồn tại (migration 2026_02_06).
+- **User đã tạo custom fields** qua Settings > Custom Fields cho Product. Các field khuyến nghị cho Miaolin: **product_grade** (商品級別), **product_source** (商品來源), **brand** (品牌類別).
+- **shelf_life_days** không dùng custom field nữa – đã chuyển sang cột DB `products.shelf_life_days`.
 
 ---
 
@@ -167,15 +168,18 @@ name, price, sku, description, unit_id, category_id, sub_category_id, storage_co
 
 ### 6.1. Product import (main: Miaolin Product.xlsx; reference: import_product full)
 
-| Need                                              | Source file                          | Action                                                                                                                                                                                                                                                   |
-| ------------------------------------------------- | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Map 標準價 / standard_price → price               | Miaolin Product, import_product full | Add `standard_price` in ProductImport::fields() and map to `$product->price` in ImportProductChunkJob.                                                                                                                                                   |
-| Map whole_sale_price → wholesale_price            | import_product full                  | Add or alias `whole_sale_price` and map to `wholesale_price`.                                                                                                                                                                                            |
-| Map employee_price_gia_nhan_vien → employee_price | import_product full                  | Add or alias and map to `employee_price`.                                                                                                                                                                                                                |
-| 規格 (specification)                              | Miaolin Product col 2                | Map to **description** or add a **specification** column and field.                                                                                                                                                                                      |
-| 儲存溫層 (col 9)                                  | Miaolin Product                      | Map to **storage_condition**.                                                                                                                                                                                                                            |
-| 商品級別, 商品來源, 品牌類別, 保存天數, 備貨型態  | Miaolin Product cols 4–8             | Add **Product custom fields** (e.g. product_grade, product_source, brand, shelf_life_days, stock_type) and add them to ProductImport::fields(); then **persist custom field data** in ImportProductChunkJob (e.g. updateCustomFieldData or bulk insert). |
-| Chinese headers → empty                           | Miaolin Product                      | Use heading formatter `none` for Product import and/or add bilingual labels in fields() so users can map by position or by Chinese text.                                                                                                                 |
+| Need                                              | Source file                          | Action                                                                                                                                     |
+| ------------------------------------------------- | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| Map 標準價 / standard_price → price               | Miaolin Product, import_product full | Add `standard_price` in ProductImport::fields() and map to `$product->price` in ImportProductChunkJob.                                     |
+| Map whole_sale_price → wholesale_price            | import_product full                  | Add or alias `whole_sale_price` and map to `wholesale_price`.                                                                              |
+| Map employee_price_gia_nhan_vien → employee_price | import_product full                  | Add or alias and map to `employee_price`.                                                                                                  |
+| 規格 (specification)                              | Miaolin Product col 2                | Map to **description**.                                                                                                                     |
+| 規格 (specification) bổ sung                      | (optional column in file)            | **DB** column `specification` (migration 2026_03_11). Field id `specification` in ProductImport::fields(); map in ImportProductChunkJob.    |
+| 儲存溫層 (col 9)                                  | Miaolin Product                      | Map to **storage_condition**.                                                                                                              |
+| 商品級別, 商品來源, 品牌類別                      | Miaolin Product cols 4–6             | User đã tạo custom fields. Add vào ProductImport::fields() và gọi **updateCustomFieldData** trong ImportProductChunkJob để lưu khi import. |
+| 保存天數 (shelf_life_days)                        | Miaolin Product col 7                | Đã có cột DB. Add field id vào ProductImport::fields() và map trong processRow → `$product->shelf_life_days`.                              |
+| 備貨型態 (inventory_type)                         | Miaolin Product col 8                | Đã có cột DB. Map trong ProductImport.                                                                                                     |
+| Chinese headers → empty                           | Miaolin Product                      | Use heading formatter `none` for Product import and/or add bilingual labels in fields() so users can map by position or by Chinese text.   |
 
 ### 6.2. Product import does not save custom fields
 
@@ -191,7 +195,7 @@ name, price, sku, description, unit_id, category_id, sub_category_id, storage_co
 
 ## 7. Conclusion
 
-- **Miaolin Product.xlsx (main product file):** Needs mapping for 標準價 (price), 規格 (description or specification), 儲存溫層 (storage_condition), and **custom fields** for 商品級別, 商品來源, 品牌類別, 保存天數, 備貨型態; plus logic in the product import job to **save custom field data**. Product module changes should prioritise this file.
+- **Miaolin Product.xlsx (main product file):** Cần map 標準價 → price, 規格 → description, 規格 (bổ sung) → specification (DB column, migration 2026_03_11), 儲存溫層 → storage_condition, 備貨型態 → inventory_type, 保存天數 → shelf_life_days (DB column). Custom fields (product_grade, product_source, brand) user đã tạo; cần thêm vào ProductImport::fields() và gọi updateCustomFieldData trong ImportProductChunkJob.
 - **import_product full.xlsx (comparison only):** Aligns well with product import; only **standard_price → price**, **whole_sale_price → wholesale_price**, and **employee_price_gia_nhan_vien → employee_price** need to be supported if that file is also used.
 - **import_inventory full.xlsx (comparison only):** Only a subset of columns is covered by current InventoryImport::fields(); the rest need to be added to fields() and to the inventory import flow (or to custom fields) for a full match.
 

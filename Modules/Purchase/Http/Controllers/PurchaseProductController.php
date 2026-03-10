@@ -131,6 +131,7 @@ class PurchaseProductController extends AccountBaseController
         $product->hsn_sac_code = $request->hsn_sac_code;
         $product->unit_id = $request->unit_type;
         $product->description = trim_editor($request->description);
+        $product->specification = $request->specification;
         $product->allow_purchase = $request->purchase_allow == 'no';
         $product->downloadable = $request->downloadable == 'true';
         $product->category_id = ($request->category_id) ?: null;
@@ -389,6 +390,7 @@ class PurchaseProductController extends AccountBaseController
         $product->hsn_sac_code = $request->hsn_sac_code;
         $product->unit_id = $request->unit_type;
         $product->description = trim_editor($request->description);
+        $product->specification = $request->specification;
         $product->allow_purchase = ($request->purchase_allow == 'no') ? true : false;
         $product->downloadable = ($request->downloadable == 'true') ? true : false;
         $product->category_id = ($request->category_id) ? $request->category_id : null;

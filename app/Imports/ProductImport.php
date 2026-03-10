@@ -12,20 +12,26 @@ class ProductImport implements ToArray
     {
         return [
             ['id' => 'product_name', 'name' => __('modules.client.productName'), 'required' => 'Yes'],
-            ['id' => 'price', 'name' => __('app.price'), 'required' => 'Yes'],
+            ['id' => 'price', 'name' => __('app.price'), 'required' => 'No'],
             ['id' => 'unit_type', 'name' => __('modules.unitType.unitType'), 'required' => 'No'],
             ['id' => 'product_category', 'name' => __('modules.productCategory.productCategory'), 'required' => 'No'],
             ['id' => 'product_sub_category', 'name' => __('modules.productCategory.productSubCategory'), 'required' => 'No'],
             ['id' => 'sku', 'name' => __('app.sku'), 'required' => 'No'],
             ['id' => 'description', 'name' => __('app.description'), 'required' => 'No'],
+            ['id' => 'specification', 'name' => 'Specification (規格)', 'required' => 'No'],
             ['id' => 'storage_condition', 'name' => 'Storage Condition', 'required' => 'No'],
             ['id' => 'certification', 'name' => 'Certification', 'required' => 'No'],
             ['id' => 'wholesale_price', 'name' => 'Wholesale Price', 'required' => 'No'],
             ['id' => 'price_per_box', 'name' => 'Price Per Box', 'required' => 'No'],
             ['id' => 'employee_price', 'name' => 'Employee Price', 'required' => 'No'],
+            ['id' => 'shelf_life_days', 'name' => __('app.shelfLifeDays'), 'required' => 'No'],
             ['id' => 'track_inventory', 'name' => 'Track Inventory (Yes/No)', 'required' => 'No'],
             ['id' => 'inventory_type', 'name' => 'Inventory Type', 'required' => 'No'],
             ['id' => 'status', 'name' => 'Status (Active/Inactive)', 'required' => 'No'],
+            ['id' => 'standard_price', 'name' => 'Standard Price (標準價)', 'required' => 'No'],
+            ['id' => 'product_grade', 'name' => 'Product Grade (商品級別)', 'required' => 'No'],
+            ['id' => 'product_source', 'name' => 'Product Origin (商品來源)', 'required' => 'No'],
+            ['id' => 'brand', 'name' => 'Brand (品牌類別)', 'required' => 'No'],
         ];
     }
 

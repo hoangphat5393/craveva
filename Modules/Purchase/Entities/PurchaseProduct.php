@@ -24,6 +24,7 @@ class PurchaseProduct extends BaseModel
         'name',
         'price',
         'description',
+        'specification',
         'taxes',
         'storage_condition',
         'certification',

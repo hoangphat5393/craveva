@@ -268,6 +268,11 @@
                                 </div>
                             </div>
 
+                            <div class="col-md-12 mt-3">
+                                <x-forms.text fieldId="specification" :fieldLabel="__('Specification (規格)')" fieldName="specification" :fieldPlaceholder="__('Specification')" :fieldValue="$product ? $product->specification : ''">
+                                </x-forms.text>
+                            </div>
+
                             <div class="col-lg-12">
                                 <x-forms.file-multiple class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('purchase::modules.product.addImages')" fieldName="file" fieldId="file-upload-dropzones" />
                             </div>

@@ -127,6 +127,7 @@ class Product extends BaseModel
         'name',
         'price',
         'description',
+        'specification',
         'taxes',
         'sku',
         'storage_condition',

@@ -111,6 +111,7 @@ class ProductController extends AccountBaseController
         $product->shelf_life_days = $request->filled('shelf_life_days') ? (int) $request->shelf_life_days : null;
         $product->taxes = $request->tax ? json_encode($request->tax) : null;
         $product->description = trim_editor($request->description);
+        $product->specification = $request->specification;
         $product->hsn_sac_code = $request->hsn_sac_code;
         $product->sku = $request->sku;
         $product->unit_id = $request->unit_type;
@@ -260,6 +261,7 @@ class ProductController extends AccountBaseController
         $product->sku = $request->sku;
         $product->unit_id = $request->unit_type;
         $product->description = trim_editor($request->description);
+        $product->specification = $request->specification;
         $product->allow_purchase = ($request->purchase_allow == 'no') ? true : false;
         $product->downloadable = ($request->downloadable == 'true') ? true : false;
         $product->category_id = ($request->category_id) ? $request->category_id : null;

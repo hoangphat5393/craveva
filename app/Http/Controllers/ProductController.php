@@ -10,6 +10,7 @@ use App\Http\Requests\Admin\Employee\ImportRequest;
 use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
 use App\Imports\ProductImport;
+use App\Jobs\ImportProductChunkJob;
 use App\Jobs\ImportProductJob;
 use App\Models\Order;
 use App\Models\OrderCart;
@@ -511,7 +512,8 @@ class ProductController extends AccountBaseController
 
     public function importProcess(ImportProcessRequest $request)
     {
-        $batch = $this->importJobProcess($request, ProductImport::class, ImportProductJob::class);
+        $chunkSize = 100;
+        $batch = $this->importJobProcessChunked($request, ProductImport::class, ImportProductChunkJob::class, $chunkSize);
 
         return Reply::successWithData(__('messages.importProcessStart'), ['batch' => $batch]);
     }

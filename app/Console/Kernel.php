@@ -20,6 +20,7 @@ use App\Console\Commands\DeleteSpamCompanies;
 use App\Console\Commands\FetchTicketEmails;
 use App\Console\Commands\HideCronJobMessage;
 use App\Console\Commands\InActiveEmployee;
+use App\Console\Commands\PhpIniCheckCommand;
 use App\Console\Commands\LeavesQuotaRenew;
 use App\Console\Commands\RecalculateLeavesQuotas;
 use App\Console\Commands\RemoveSeenNotification;
@@ -91,6 +92,7 @@ class Kernel extends ConsoleKernel
         UpdateProjectProgressByDeadline::class,
         SendEmployeeDocumentExpiryAlert::class,
         SendImmigrationExpiryAlert::class,
+        PhpIniCheckCommand::class,
     ];
 
     /**

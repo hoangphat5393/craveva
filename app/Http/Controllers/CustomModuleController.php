@@ -306,7 +306,7 @@ class CustomModuleController extends AccountBaseController
         cache(['craveva_plugins' => array_keys($plugins)]);
 
         if (strtolower($moduleName) == 'languagepack' && $status == 'active') {
-            session(['languagepack_module_activated' => true]);
+            session(['languagepack_module_activated' => 'activated']);
         }
 
         return Reply::redirect(route('custom-modules.index').'?tab=custom', 'Status Changed. Reloading');

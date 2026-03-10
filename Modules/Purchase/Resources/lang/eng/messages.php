@@ -14,7 +14,7 @@ return [
     'remainingCreditAmount' => 'Remaining Credit Amount: ',
     'thankYou' => 'Thank you for your business!',
 
-    'productHasInventory' => 'This product has stock records (from Purchase Orders or Inventory adjustments). Stock may not appear in the "Stock On Hand" column here. Please adjust or remove stock in Operations > Inventory first, then try again. Product:',
+    'productHasInventory' => 'This product still has stock records. To delete it, go to Operations > Inventory to adjust or clear stock for this product first, then try again.',
     'inventory' => [
         'itemBlank' => 'On hand quantity cannot be blank.',
         'unitPriceNumber' => 'Changed value should be a number',

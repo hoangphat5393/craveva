@@ -92,21 +92,8 @@ class ImportProductJob implements ShouldQueue
 
                 $product->allow_purchase = true;
 
-                // Check if unit type exists
-                if ($this->isColumnExists('unit_type')) {
-                    $unitTypeName = $this->getColumnValue('unit_type');
-                    $unitType = DB::table('unit_types')->where('unit_type', $unitTypeName)->first();
-
-                    if ($unitType) {
-                        $product->unit_id = $unitType->id;
-                    } else {
-                        $defaultUnitType = DB::table('unit_types')->where('default', true)->first();
-                        $product->unit_id = $defaultUnitType ? $defaultUnitType->id : null;
-                    }
-                } else {
-                    $defaultUnitType = DB::table('unit_types')->where('default', true)->first();
-                    $product->unit_id = $defaultUnitType ? $defaultUnitType->id : null;
-                }
+                // Unit type: có cột thì tra theo tên; không có hoặc trống thì dùng unit đầu tiên (theo id), chỉ query 1 lần
+                $product->unit_id = $this->resolveUnitIdForRow();
 
                 // Check if category and sub category exists
                 if ($this->isColumnExists('product_category')) {
@@ -155,5 +142,34 @@ class ImportProductJob implements ShouldQueue
         } else {
             $this->failJob(__('messages.invalidData'));
         }
+    }
+
+    /** Cache unit_id của unit type đầu tiên (theo id), chỉ query 1 lần. */
+    private static $firstUnitIdCache = null;
+
+    /** Unit type: có cột thì tra theo tên; không có hoặc trống/không tìm thấy thì dùng unit đầu tiên (theo id). */
+    private function resolveUnitIdForRow(): ?int
+    {
+        if (! $this->isColumnExists('unit_type')) {
+            return $this->getFirstUnitId();
+        }
+
+        $name = trim((string) $this->getColumnValue('unit_type'));
+        if ($name === '') {
+            return $this->getFirstUnitId();
+        }
+
+        $unitType = DB::table('unit_types')->where('unit_type', $name)->first();
+
+        return $unitType ? $unitType->id : $this->getFirstUnitId();
+    }
+
+    private function getFirstUnitId(): ?int
+    {
+        if (self::$firstUnitIdCache === null) {
+            self::$firstUnitIdCache = DB::table('unit_types')->orderBy('id')->value('id');
+        }
+
+        return self::$firstUnitIdCache;
     }
 }

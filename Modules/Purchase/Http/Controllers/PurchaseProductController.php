@@ -8,6 +8,7 @@ use App\Http\Controllers\AccountBaseController;
 use App\Http\Requests\Admin\Employee\ImportProcessRequest;
 use App\Http\Requests\Admin\Employee\ImportRequest;
 use App\Imports\ProductImport;
+use App\Jobs\ImportProductChunkJob;
 use App\Jobs\ImportProductJob;
 use App\Models\InvoiceItems;
 use App\Models\OrderCart;
@@ -479,11 +480,7 @@ class PurchaseProductController extends AccountBaseController
         $this->deletePermission = user()->permission('delete_product');
         abort_403(! ($this->deletePermission == 'all' || ($this->deletePermission == 'added' && $product->added_by == user()->id)));
 
-        // Kiểm tra sản phẩm còn inventory - không cho xóa
-        if (PurchaseStockAdjustment::where('product_id', $product->id)->exists()) {
-            return Reply::error(__('purchase::messages.productHasInventory') . ' ' . $product->name);
-        }
-
+        // Xóa toàn bộ stock records của product (kể cả orphan từ PO), sau đó xóa product
         $stocks = PurchaseStockAdjustment::where('product_id', $product->id)->get();
 
         // Thu thập inventory_ids trước khi xóa StockAdjustment
@@ -599,17 +596,6 @@ class PurchaseProductController extends AccountBaseController
 
         $rowIds = array_filter(array_map('intval', explode(',', $request->row_ids)));
         $products = PurchaseProduct::whereIn('id', $rowIds)->get();
-
-        // Kiểm tra sản phẩm nào còn inventory - không cho xóa
-        $productsWithInventory = $products->filter(function ($product) {
-            return PurchaseStockAdjustment::where('product_id', $product->id)->exists();
-        });
-
-        if ($productsWithInventory->isNotEmpty()) {
-            $productNames = $productsWithInventory->pluck('name')->implode(', ');
-
-            return Reply::error(__('purchase::messages.productHasInventory') . ' ' . $productNames);
-        }
 
         foreach ($products as $product) {
             $product->files()->each(function ($file) {
@@ -790,7 +776,9 @@ class PurchaseProductController extends AccountBaseController
 
     public function importProcess(ImportProcessRequest $request)
     {
-        $batch = $this->importJobProcess($request, ProductImport::class, ImportProductJob::class);
+        // Chunked import (100 rows/job) for faster bulk import (e.g. 1000 products)
+        $chunkSize = 100;
+        $batch = $this->importJobProcessChunked($request, ProductImport::class, ImportProductChunkJob::class, $chunkSize);
 
         return Reply::successWithData(__('messages.importProcessStart'), ['batch' => $batch]);
     }

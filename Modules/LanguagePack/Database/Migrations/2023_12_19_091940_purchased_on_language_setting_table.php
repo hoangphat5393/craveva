@@ -22,6 +22,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('order_items', function (Blueprint $table) {});
+        Schema::table('language_pack_settings', function (Blueprint $table) {
+            $table->dropColumn('purchased_on');
+        });
     }
 };

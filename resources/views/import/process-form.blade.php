@@ -129,6 +129,7 @@
     <div class="bg-white rounded p-2" id="afterSubmitting" style="display:none">
         <div class="alert alert-warning" role="alert" id="process-warning">
             @lang('app.doNotCloseOrRefreshPage')
+            <p class="mb-0 mt-2 small">@lang('messages.importRunningInBackground')</p>
         </div>
         <div class="alert alert-success" role="alert" id="importSuccess" style="display:none">
         </div>
@@ -138,8 +139,9 @@
         </div>
         <div id="progressError" style="display:none"></div>
         <div id="progress">
-            <p>@lang('app.importInProgress') <strong id="progressAmount">@lang('app.pleaseWait')</strong></p>
-            <div class="progress">
+            <p class="mb-1">@lang('app.importInProgress') <strong id="progressAmount">@lang('app.pleaseWait')</strong></p>
+            <p class="mb-2 font-weight-bold text-primary" id="progressCountLine" style="font-size: 1.1rem;">—</p>
+            <div class="progress" style="height: 24px;">
                 <div id="processingBarStatus" class="progress-bar  progress-bar-striped  progress-bar-animated" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
             </div>
         </div>
@@ -159,6 +161,7 @@
     // Current column being edited
     let columnID = 0;
     let progress = 0;
+    let isFirstPoll = true;
     // Fields associated with this import
     let jsColumnArray = @json($columns);
     let currentImportColumnID = jsColumnArray[0].id; // By default column 0 is selected
@@ -427,21 +430,27 @@
         var url = "{{ route('import.process.progress', [$importClassName, ':batchId']) }}";
         url = url.replace(':batchId', batchId);
 
+        var delay = isFirstPoll ? 0 : 2000;
+        if (isFirstPoll) isFirstPoll = false;
         setTimeout(function() {
             $.easyAjax({
                 type: 'GET',
                 url: url,
                 success: function(response) {
-                    var failedJobs = response.failedJobs;
-                    var pendingJobs = response.pendingJobs;
-                    var processedJobs = response.processedJobs;
-                    progress = response.progress;
-                    var totalJobs = response.totalJobs;
+                    var failedJobs = response.failedJobs || 0;
+                    var pendingJobs = response.pendingJobs || 0;
+                    var processedJobs = response.processedJobs || 0;
+                    progress = response.progress || 0;
+                    var totalJobs = response.totalJobs || 0;
 
                     $('#processingBarStatus').width(progress + '%');
                     $('#processingBarStatus').html(progress + '%');
                     $('#progressAmount').html(progress + '%');
-
+                    if (totalJobs > 0 && $('#progressCountLine').length) {
+                        $('#progressCountLine').html((processedJobs + failedJobs) + ' / ' + totalJobs).show();
+                    } else if ($('#progressCountLine').length) {
+                        $('#progressCountLine').html(processedJobs > 0 ? (processedJobs + ' …') : '…').show();
+                    }
 
                     if (failedJobs > 0) {
                         var failedMsg = `@lang('app.importFailedJobs')`;
@@ -475,7 +484,7 @@
                     }
                 }
             });
-        }, 2000);
+        }, delay);
     }
 
     function getQueueException(batchId) {

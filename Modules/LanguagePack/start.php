@@ -55,12 +55,11 @@ if (! function_exists('isLanguagePublished')) {
     {
         $path = lang_path($languageCode);
 
-        $isPublished = ! File::isDirectory($path);
-
-        if (File::isDirectory($path)) {
-            $isPublished = File::isEmptyDirectory($path);
+        if (! File::isDirectory($path)) {
+            return false;
         }
 
-        return ! $isPublished;
+        // Published when directory contains files (isEmptyDirectory not in all Laravel versions)
+        return (new \FilesystemIterator($path))->valid();
     }
 }

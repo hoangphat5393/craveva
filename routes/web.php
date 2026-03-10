@@ -99,6 +99,30 @@ use App\Http\Controllers\TimelogReportController;
 use App\Http\Controllers\UserPermissionController;
 use Illuminate\Support\Facades\Route;
 
+// Kiểm tra php.ini đang dùng (WEB request) - chỉ khi APP_DEBUG=true
+Route::get('php-ini-check', function () {
+    if (! config('app.debug')) {
+        return response()->json(['error' => 'Chỉ khả dụng khi APP_DEBUG=true'], 403);
+    }
+    $loaded = php_ini_loaded_file();
+    return response()->json([
+        'sapi' => php_sapi_name(),
+        'note' => 'Đây là cấu hình PHP cho request WEB (trình duyệt). Import progress dùng cấu hình này.',
+        'php_ini_loaded_file' => $loaded ?: null,
+        'php_ini_scanned_files' => php_ini_scanned_files() ?: null,
+        'directives' => [
+            'max_execution_time' => ini_get('max_execution_time'),
+            'max_input_time' => ini_get('max_input_time'),
+            'memory_limit' => ini_get('memory_limit'),
+            'max_input_vars' => ini_get('max_input_vars'),
+        ],
+        'import_execution_jobs_per_poll' => (function () {
+        $n = (int) (ini_get('max_execution_time') / 10);
+        return $n > 1 ? min($n, 100) : 50;
+    })(),
+    ], 200, ['Content-Type' => 'application/json'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+})->name('php-ini.check');
+
 Route::get('debug-final-check', function () {
     $user = \App\Models\User::whereHas('roles', function ($q) {
         $q->where('name', 'client');

@@ -17,11 +17,13 @@ class ImportController extends Controller
      */
     public function getImportProgress($name, $id)
     {
-        // Get Count of Execution of Jobs
-        $execution_jobs = (int) (ini_get('max_execution_time') / 10);
+        // Đảm bảo request đủ lâu để xử lý nhiều job (web server thường dùng php.ini khác CLI)
+        set_time_limit(300);
 
-        // Execute Jobs
-        Artisan::call('queue:work database  --max-jobs='.($execution_jobs > 1 ? $execution_jobs : 1).' --queue='.$name.' --stop-when-empty');
+        // Xử lý nhiều job mỗi lần poll để import 50–100 dòng không bị chậm (tránh phải poll 10–20 lần)
+        $execution_jobs = 50;
+
+        Artisan::call('queue:work database --max-jobs=' . $execution_jobs . ' --queue=' . $name . ' --stop-when-empty');
 
         $batch = Bus::findBatch($id);
         $progress = 0;
@@ -63,7 +65,7 @@ class ImportController extends Controller
         }
 
         foreach ($exceptions as $exception) {
-            $exception->exception = '['.$exception->queue.'] '.$this->parseExceptionMessage($exception->exception);
+            $exception->exception = '[' . $exception->queue . '] ' . $this->parseExceptionMessage($exception->exception);
         }
 
         $view = view('import.import_exception', $this->data)->with(['exceptions' => $exceptions])->render();

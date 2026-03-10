@@ -1345,6 +1345,7 @@ return [
     'addMore' => 'Add More',
     'timesheetRejectReason' => 'Timesheet Reject Reason',
     'projectWiseTimeLogReport' => 'Project Wise Report',
+    'clientCode' => 'Client Code', 
     'cyberSecurity' => 'Cyber Security',
     'onboarding' => 'Onboarding',
     'performance' => 'Performance',

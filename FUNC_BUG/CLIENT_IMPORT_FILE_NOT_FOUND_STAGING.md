@@ -10,57 +10,58 @@ File does not exist at path /var/www/craveva-staging/current/craveva/public/user
 
 ### Luồng upload (giữ nguyên logic)
 
-1. **ClientController::importStore()** → **importFileProcess()** → **Files::upload($request->import_file, Files::IMPORT_FOLDER)**  
-   - `IMPORT_FOLDER = 'import-files'`
+1. **ClientController::importStore()** → **importFileProcess()** → **Files::upload($request->import_file, Files::IMPORT_FOLDER)**
+    - `IMPORT_FOLDER = 'import-files'`
 
 2. **Files::upload()** (app/Helper/Files.php):
-   - `config(['filesystems.default' => 'local'])`  
-     → disk `local` trong `config/filesystems.php` có `'root' => public_path('user-uploads')`
-   - `$uploadedFile->storeAs('temp', $newName)`  
-     → ghi file vào **public/user-uploads/temp/{tên_file}**
-   - `$tempPath = public_path('user-uploads/temp/'.$newName)`
-   - `Storage::put($newPath, File::get($tempPath))` với `$newPath = 'import-files/'.$newName`  
-     → copy từ temp sang **public/user-uploads/import-files/{tên_file}**
-   - `File::delete($tempPath)`  
-     → xóa file trong **temp**
-   - Trả về `$newName` (chỉ tên file).
+    - `config(['filesystems.default' => 'local'])`  
+      → disk `local` trong `config/filesystems.php` có `'root' => public_path('user-uploads')`
+    - `$uploadedFile->storeAs('temp', $newName)`  
+      → ghi file vào **public/user-uploads/temp/{tên_file}**
+    - `$tempPath = public_path('user-uploads/temp/'.$newName)`
+    - `Storage::put($newPath, File::get($tempPath))` với `$newPath = 'import-files/'.$newName`  
+      → copy từ temp sang **public/user-uploads/import-files/{tên_file}**
+    - `File::delete($tempPath)`  
+      → xóa file trong **temp**
+    - Trả về `$newName` (chỉ tên file).
 
 3. **ImportExcel::importFileProcess()** (sau khi upload):
-   - Đọc file bằng:  
-     `$filePath = public_path(Files::UPLOAD_FOLDER.'/'.Files::IMPORT_FOLDER.'/'.$this->file)`  
-     → **public/user-uploads/import-files/{tên_file}**
+    - Đọc file bằng:  
+      `$filePath = public_path(Files::UPLOAD_FOLDER.'/'.Files::IMPORT_FOLDER.'/'.$this->file)`  
+      → **public/user-uploads/import-files/{tên_file}**
 
 4. Form bước 2 gửi `<input type="hidden" name="file" value="{{ $file }}">` (chỉ tên file).
 
 5. **ClientController::importProcess()**:
-   - `$filePath = public_path(Files::UPLOAD_FOLDER.'/'.Files::IMPORT_FOLDER.'/'.$request->file)`  
-     → lại dùng **public/user-uploads/import-files/{tên_file}**
+    - `$filePath = public_path(Files::UPLOAD_FOLDER.'/'.Files::IMPORT_FOLDER.'/'.$request->file)`  
+      → lại dùng **public/user-uploads/import-files/{tên_file}**
 
-**Kết luận code:**  
-- Mọi chỗ đọc file import đều dùng **import-files**, không dùng **temp** sau khi upload xong.  
-- Đường dẫn **temp** chỉ dùng **trong** `Files::upload()` (bước trung gian).  
+**Kết luận code:**
+
+- Mọi chỗ đọc file import đều dùng **import-files**, không dùng **temp** sau khi upload xong.
+- Đường dẫn **temp** chỉ dùng **trong** `Files::upload()` (bước trung gian).
 - Lỗi “File does not exist at path .../temp/...” nhiều khả năng xảy ra **trong** `Files::upload()` khi gọi `File::get($tempPath)` (sau `storeAs('temp', $newName)`).
 
 ### Khác biệt Local vs Staging
 
-| | Local | Staging (Deployer) |
-|---|--------|---------------------|
-| **public_path()** | Thư mục project (vd: `D:\xampp\htdocs\...\public`) | `/var/www/craveva-staging/current/craveva/public` (symlink `current` → release) |
-| **Ghi file** | Trực tiếp vào thư mục project | Có thể khác user (deploy vs www-data), quyền thư mục |
-| **Nhiều server** | Thường 1 process | Có thể nhiều node; file upload ở node A, request sau ở node B |
-| **Symlink** | Ít dùng | `current` → release mới mỗi lần deploy; nếu deploy giữa bước 1 và 2, file có thể nằm release cũ |
+|                   | Local                                              | Staging (Deployer)                                                                              |
+| ----------------- | -------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| **public_path()** | Thư mục project (vd: `D:\xampp\htdocs\...\public`) | `/var/www/craveva-staging/current/craveva/public` (symlink `current` → release)                 |
+| **Ghi file**      | Trực tiếp vào thư mục project                      | Có thể khác user (deploy vs www-data), quyền thư mục                                            |
+| **Nhiều server**  | Thường 1 process                                   | Có thể nhiều node; file upload ở node A, request sau ở node B                                   |
+| **Symlink**       | Ít dùng                                            | `current` → release mới mỗi lần deploy; nếu deploy giữa bước 1 và 2, file có thể nằm release cũ |
 
 ### Nguyên nhân khả dĩ trên staging
 
 1. **Thư mục không tồn tại hoặc không ghi được**
-   - `public/user-uploads/temp` hoặc `public/user-uploads/import-files` chưa có hoặc không writable (www-data).
-   - `storeAs('temp', $newName)` không ghi được → file không nằm ở `.../temp/...` → `File::get($tempPath)` → “File does not exist at path .../temp/...”.
+    - `public/user-uploads/temp` hoặc `public/user-uploads/import-files` chưa có hoặc không writable (www-data).
+    - `storeAs('temp', $newName)` không ghi được → file không nằm ở `.../temp/...` → `File::get($tempPath)` → “File does not exist at path .../temp/...”.
 
 2. **Config filesystem**
-   - Staging cache config với `FILESYSTEM_DRIVER` khác (vd S3) → nếu có chỗ dùng disk trước khi `config(['filesystems.default' => 'local'])` có hiệu lực, file có thể ghi vào chỗ khác, không vào `public/user-uploads/temp`.
+    - Staging cache config với `FILESYSTEM_DRIVER` khác (vd S3) → nếu có chỗ dùng disk trước khi `config(['filesystems.default' => 'local'])` có hiệu lực, file có thể ghi vào chỗ khác, không vào `public/user-uploads/temp`.
 
 3. **Deploy giữa hai bước**
-   - File được lưu vào release cũ; sau deploy `current` trỏ sang release mới → `public_path()` không còn trỏ tới file → lỗi (thường sẽ là đường dẫn **import-files** chứ không phải temp, trừ khi lỗi xảy ra ngay trong request upload).
+    - File được lưu vào release cũ; sau deploy `current` trỏ sang release mới → `public_path()` không còn trỏ tới file → lỗi (thường sẽ là đường dẫn **import-files** chứ không phải temp, trừ khi lỗi xảy ra ngay trong request upload).
 
 ## Cách xử lý (không đổi logic form/route)
 

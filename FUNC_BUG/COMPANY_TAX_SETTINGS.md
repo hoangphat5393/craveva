@@ -29,8 +29,8 @@ Khi import client, nếu file Excel có cột **統一編號** hoặc **Tax ID**
 
 ## Tóm tắt
 
-| Mục đích              | Nơi cấu hình                         | Trường / Option                         |
-|------------------------|---------------------------------------|-----------------------------------------|
-| Thuế công ty (E-Invoice) | E-Invoice Settings                    | Company ID (Tax ID / 統一編號)           |
-| Thuế công ty (địa chỉ)  | Settings → Business Addresses         | Tax, Tax Name                           |
-| Thuế khách hàng (import) | Import Client → map cột               | Chọn **GST/VAT Number (Tax ID)**        |
+| Mục đích                 | Nơi cấu hình                  | Trường / Option                  |
+| ------------------------ | ----------------------------- | -------------------------------- |
+| Thuế công ty (E-Invoice) | E-Invoice Settings            | Company ID (Tax ID / 統一編號)   |
+| Thuế công ty (địa chỉ)   | Settings → Business Addresses | Tax, Tax Name                    |
+| Thuế khách hàng (import) | Import Client → map cột       | Chọn **GST/VAT Number (Tax ID)** |

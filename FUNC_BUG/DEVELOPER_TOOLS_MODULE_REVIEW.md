@@ -12,18 +12,18 @@ Module **DeveloperTools** (`Modules/DeveloperTools`) cung cấp:
 
 ## 2. Cấu trúc đã kiểm tra
 
-| Thành phần | Trạng thái |
-|------------|------------|
-| `module.json` | OK – khai báo provider |
-| `Config/config.php` | OK – scan_paths, db_access modules, deny/sensitive/join_views |
-| `Routes/web.php` | OK – auth middleware |
-| `Routes/api.php` | OK – auth:sanctum, 1 route v1/developertools |
-| `DeveloperToolsController` | Xem mục 3 |
-| Entities (Credential, DbAccessLog, DbUserMapping, FileRecord, FileDependency) | OK |
-| Services (DbAccessPolicy, FileScanner) | Xem mục 4, 5 |
-| Migrations | OK – credentials, db_user_mapping, files, dependencies, access_logs, add_access_policy |
-| Views (index, codemap/index) | OK |
-| Console `SetupDatabase` | Khác logic với controller – xem mục 6 |
+| Thành phần                                                                    | Trạng thái                                                                             |
+| ----------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `module.json`                                                                 | OK – khai báo provider                                                                 |
+| `Config/config.php`                                                           | OK – scan_paths, db_access modules, deny/sensitive/join_views                          |
+| `Routes/web.php`                                                              | OK – auth middleware                                                                   |
+| `Routes/api.php`                                                              | OK – auth:sanctum, 1 route v1/developertools                                           |
+| `DeveloperToolsController`                                                    | Xem mục 3                                                                              |
+| Entities (Credential, DbAccessLog, DbUserMapping, FileRecord, FileDependency) | OK                                                                                     |
+| Services (DbAccessPolicy, FileScanner)                                        | Xem mục 4, 5                                                                           |
+| Migrations                                                                    | OK – credentials, db_user_mapping, files, dependencies, access_logs, add_access_policy |
+| Views (index, codemap/index)                                                  | OK                                                                                     |
+| Console `SetupDatabase`                                                       | Khác logic với controller – xem mục 6                                                  |
 
 ---
 
@@ -39,10 +39,10 @@ Module **DeveloperTools** (`Modules/DeveloperTools`) cung cấp:
 
 ### 3.2 Bảo mật & dữ liệu
 
-- **store**:  
-  - Tạo DB user, database, views; username/DB name có giới hạn độ dài và ký tự.  
-  - Dùng `DbAccessPolicy` để giới hạn bảng theo module → OK.  
-  - Mật khẩu chỉ flash session một lần → OK.
+- **store**:
+    - Tạo DB user, database, views; username/DB name có giới hạn độ dài và ký tự.
+    - Dùng `DbAccessPolicy` để giới hạn bảng theo module → OK.
+    - Mật khẩu chỉ flash session một lần → OK.
 
 - **destroy**: Revoke credential, DROP USER, xóa mapping và bản ghi credential. Có try/catch khi DROP USER → OK.
 
@@ -87,9 +87,9 @@ Module **DeveloperTools** (`Modules/DeveloperTools`) cung cấp:
 
 Hệ quả:
 
-- Hai cơ chế khác nhau:  
-  - Command: 1 DB + function (user-based).  
-  - Controller: N DB (1/company) + filter cố định theo company.
+- Hai cơ chế khác nhau:
+    - Command: 1 DB + function (user-based).
+    - Controller: N DB (1/company) + filter cố định theo company.
 - Nếu chỉ chạy controller (không chạy command), function trong main DB không được tạo → command dùng cho kiểu triển khai “single gateway DB + function”.
 - **Đề xuất**: Ghi rõ trong tài liệu hoặc comment khi nào dùng command, khi nào dùng “Generate Credential” trong UI; hoặc thống nhất một mô hình (chỉ dùng command hoặc chỉ dùng controller).
 
@@ -103,15 +103,15 @@ Hệ quả:
 
 ## 8. Routes
 
-- **Web**:  
-  - `GET developertools` → index  
-  - `POST developertools/create-credential` → store  
-  - `DELETE developertools/revoke/{id}` → destroy  
-  - `GET developertools/codemap/view` → codeMap (name: developertools.codemap)  
-  - `POST developertools/codemap/scan` → scanCodeMap  
-  - `GET developertools/codemap/export` → exportCodeMap  
-  - `GET funcnews` → codeMap (alias)  
-  - `GET funcnews/export` → exportCodeMap (alias)  
+- **Web**:
+    - `GET developertools` → index
+    - `POST developertools/create-credential` → store
+    - `DELETE developertools/revoke/{id}` → destroy
+    - `GET developertools/codemap/view` → codeMap (name: developertools.codemap)
+    - `POST developertools/codemap/scan` → scanCodeMap
+    - `GET developertools/codemap/export` → exportCodeMap
+    - `GET funcnews` → codeMap (alias)
+    - `GET funcnews/export` → exportCodeMap (alias)
 - Form revoke dùng `@method('DELETE')` và route là `Route::delete(...)` → khớp.
 
 ---

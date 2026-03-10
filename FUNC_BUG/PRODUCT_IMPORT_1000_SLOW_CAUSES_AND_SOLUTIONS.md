@@ -6,13 +6,13 @@
 
 ## 1. Nguyên nhân chậm (trước khi sửa)
 
-| Nguyên nhân                   | Mô tả                                                                                                                                                    |
-| ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **1 job / 1 dòng**            | 1000 dòng = 1000 job. Mỗi job: lấy từ queue, unserialize, chạy, commit. Overhead rất lớn.                                                                |
-| **Giới hạn job mỗi lần poll** | `getImportProgress()` chạy `queue:work --max-jobs=50`. 1000 job → ít nhất 20 lần poll. Mỗi lần poll = 1 request HTTP xử lý 50 job.                       |
-| **Timeout request**           | Mỗi request xử lý 50 job; nếu mỗi job ~0,3–0,5s thì 50 job ≈ 15–25s. PHP/nginx timeout 30–60s dễ cắt request → không trả JSON → progress không cập nhật. |
+| Nguyên nhân                   | Mô tả                                                                                                                                                                                                                                                                                    |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **1 job / 1 dòng**            | 1000 dòng = 1000 job. Mỗi job: lấy từ queue, unserialize, chạy, commit. Overhead rất lớn.                                                                                                                                                                                                |
+| **Giới hạn job mỗi lần poll** | `getImportProgress()` chạy `queue:work --max-jobs=50`. 1000 job → ít nhất 20 lần poll. Mỗi lần poll = 1 request HTTP xử lý 50 job.                                                                                                                                                       |
+| **Timeout request**           | Mỗi request xử lý 50 job; nếu mỗi job ~0,3–0,5s thì 50 job ≈ 15–25s. PHP/nginx timeout 30–60s dễ cắt request → không trả JSON → progress không cập nhật.                                                                                                                                 |
 | **Không cache lookup**        | **Category/Sub-category:** chỉ query khi có map cột đó; không map thì không query. **Unit type:** sản phẩm luôn cần `unit_id`; khi không map cột Unit type, code cũ vẫn gọi “default unit” mỗi dòng → 1000 dòng = 1000 query. Khi có map unit/category, cùng tên vẫn query lặp mỗi dòng. |
-| **Poll 2 giây**               | Delay 2s giữa các lần poll cộng dồn (20 × 2s = 40s chỉ chờ).                                                                                             |
+| **Poll 2 giây**               | Delay 2s giữa các lần poll cộng dồn (20 × 2s = 40s chỉ chờ).                                                                                                                                                                                                                             |
 
 **Ước lượng:** 1000 dòng với 50 job/poll → 20 poll; thời gian xử lý 1000 job + chờ poll + rủi ro timeout → **vài phút đến >10 phút**, và có thể không thấy progress nếu request bị timeout.
 

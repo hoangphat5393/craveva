@@ -7,6 +7,7 @@ return [
     'name' => 'e.g. John Doe',
     'email' => 'e.g. johndoe@example.com',
     'mobile' => 'e.g. 1234567890',
+    'clientCode' => 'e.g. C0001',
     'mobileWithPlus' => 'e.g. +19876543',
     'password' => 'Must have at least 8 characters',
     'designation' => 'e.g. Team Lead',

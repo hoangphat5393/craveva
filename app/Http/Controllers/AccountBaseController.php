@@ -16,6 +16,7 @@ use App\Models\UserChat;
 use App\Traits\UniversalSearchTrait;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
 
 class AccountBaseController extends Controller
@@ -112,9 +113,16 @@ class AccountBaseController extends Controller
         $this->pusherSettings = pusher_settings();
         $this->globalInvoiceSetting = global_invoice_setting();
 
-        App::setLocale(user()->locale);
-        Carbon::setLocale(user()->locale);
-        setlocale(LC_TIME, user()->locale.'_'.mb_strtoupper($this->company->locale));
+        $locale = user()->locale;
+        if (empty($locale) || ! File::isDirectory(lang_path($locale))) {
+            $locale = config('app.fallback_locale');
+        }
+        if (empty($locale) || ! File::isDirectory(lang_path($locale))) {
+            $locale = config('app.locale');
+        }
+        App::setLocale($locale);
+        Carbon::setLocale($locale);
+        setlocale(LC_TIME, $locale.'_'.mb_strtoupper($this->company->locale));
 
         if (! isset(user()->roles)) {
             session(['user' => User::find(user()->id)]);

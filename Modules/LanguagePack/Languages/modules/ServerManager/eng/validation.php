@@ -1,17 +1,6 @@
 <?php
 
 return [
-    /*
-    |--------------------------------------------------------------------------
-    | Validation Language Lines
-    |--------------------------------------------------------------------------
-    |
-    | The following language lines contain the default error messages used by
-    | the validator class. Some of these rules have multiple versions such
-    | as the size rules. Feel free to tweak each of these messages here.
-    |
-    */
-
     'accepted' => 'The :attribute must be accepted.',
     'accepted_if' => 'The :attribute must be accepted when :other is :value.',
     'active_url' => 'The :attribute is not a valid URL.',
@@ -156,18 +145,6 @@ return [
     'url' => 'The :attribute must be a valid URL.',
     'ulid' => 'The :attribute must be a valid ULID.',
     'uuid' => 'The :attribute must be a valid UUID.',
-
-    /*
-    |--------------------------------------------------------------------------
-    | Custom Validation Language Lines
-    |--------------------------------------------------------------------------
-    |
-    | Here you may specify custom validation messages for attributes using the
-    | convention "rule.attribute" to name the lines. This makes it quick to
-    | specify a specific custom language line for a given attribute rule.
-    |
-    */
-
     'custom' => [
         'domain_name' => [
             'required' => 'Domain name is required.',
@@ -198,8 +175,9 @@ return [
             'after' => 'Expiry date must be after registration date.',
         ],
         'renewal_date' => [
+            'required' => 'Expiry date is required.',
             'date' => 'Expiry date must be a valid date.',
-            'after' => 'Expiry date must be after registration date.',
+            'after' => 'Expiry date must be after purchase date.',
         ],
         'annual_cost' => [
             'numeric' => 'Annual cost must be a number.',
@@ -244,8 +222,6 @@ return [
         'notes' => [
             'max' => 'Notes cannot be more than 1000 characters.',
         ],
-
-        // Hosting validation messages
         'name' => [
             'required' => 'Hosting name is required.',
             'max' => 'Hosting name cannot be more than 255 characters.',
@@ -267,11 +243,6 @@ return [
         'purchase_date' => [
             'required' => 'Purchase date is required.',
             'date' => 'Purchase date must be a valid date.',
-        ],
-        'renewal_date' => [
-            'required' => 'Expiry date is required.',
-            'date' => 'Expiry date must be a valid date.',
-            'after' => 'Expiry date must be after purchase date.',
         ],
         'disk_space' => [
             'max' => 'Disk space cannot be more than 100 characters.',
@@ -297,7 +268,6 @@ return [
             'min' => 'Email limit cannot be less than 0.',
         ],
     ],
-
     'provider' => [
         'name' => [
             'required' => 'Provider name is required.',
@@ -317,18 +287,6 @@ return [
             'in' => 'Provider status must be active or inactive.',
         ],
     ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Custom Validation Attributes
-    |--------------------------------------------------------------------------
-    |
-    | The following language lines are used to swap our attribute placeholder
-    | with something more reader friendly such as "E-Mail Address" instead
-    | of "email". This simply helps us make our message more expressive.
-    |
-    */
-
     'attributes' => [
         'domain_name' => 'Domain Name',
         'domain_provider' => 'Domain Provider',
@@ -361,8 +319,6 @@ return [
         'notification_time_unit' => 'Notification Time Unit',
         'assigned_to' => 'Assigned To',
         'notes' => 'Notes',
-
-        // Hosting attributes
         'name' => 'Name',
         'hosting_provider' => 'Hosting Provider',
         'server_type' => 'Server Type',
@@ -375,18 +331,15 @@ return [
         'backup_enabled' => 'Backup Enabled',
         'control_panel' => 'Control Panel',
         'cpanel_url' => 'CPanel URL',
-        'username' => 'Username',
-        'password' => 'Password',
         'project' => 'Project',
         'client' => 'Client',
         'ftp_username' => 'FTP Username',
         'ftp_password' => 'FTP Password',
         'database_limit' => 'Database Limit',
         'email_limit' => 'Email Limit',
-
-        // Provider attributes
         'provider_name' => 'Provider Name',
         'provider_type' => 'Provider Type',
         'provider_description' => 'Provider Description',
+        'description' => 'Description',
     ],
 ];

@@ -91,4 +91,25 @@
             }
         });
     });
+
+    $('body').on('click', '#languagePackSyncKeys', function() {
+        var url = "{{ route('language-pack.sync-keys') }}";
+        var token = "{{ csrf_token() }}";
+        $.easyAjax({
+            type: 'POST',
+            url: url,
+            data: { '_token': token },
+            blockUI: true,
+            success: function(response) {
+                if (response.message) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: response.message,
+                        buttonsStyling: false,
+                        customClass: { confirmButton: 'btn btn-primary' }
+                    });
+                }
+            }
+        });
+    });
 </script>

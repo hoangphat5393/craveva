@@ -42,7 +42,6 @@ return [
     'linkTitle' => 'ชื่อลิงค์',
     'url' => 'URL',
     'categoryName' => 'เช่น. ผู้มีโอกาสเป็นลูกค้า',
-    'clientCode' => 'เช่น CLT-001',
     'invoices' => [
         'invoicePrefix' => 'ป้อนคำนำหน้าใบแจ้งหนี้',
         'estimatePrefix' => 'ป้อนคำนำหน้าการประมาณการ',

@@ -162,11 +162,12 @@ class SyncKeysCommand extends Command
         }
 
         $file = $group ?: 'app';
+        $pathValue = $path ?: $group;
 
         return [
             'vendor' => $vendor,
             'file' => $file,
-            'path' => $path ?: $group,
+            'path' => is_string($pathValue) ? $pathValue : (is_array($pathValue) ? implode('.', $pathValue) : ''),
         ];
     }
 
@@ -178,6 +179,11 @@ class SyncKeysCommand extends Command
             $vendor = $parsed['vendor'];
             $file = $parsed['file'].'.php';
             $path = $parsed['path'];
+            $path = is_array($path) ? implode('.', $path) : (string) $path;
+            $path = trim($path, '.');
+            if ($path === '') {
+                continue;
+            }
 
             if ($vendor) {
                 $moduleDir = $this->resolveModuleDirName($vendor);
@@ -219,8 +225,9 @@ class SyncKeysCommand extends Command
                 $data = [];
             }
 
+            $pathKey = $path;
             $pathArr = explode('.', $path);
-            $existing = Arr::get($data, implode('.', $pathArr));
+            $existing = Arr::get($data, $pathKey);
 
             if ($existing !== null) {
                 continue;
@@ -229,7 +236,7 @@ class SyncKeysCommand extends Command
             $defaultValue = $this->humanizeKey(end($pathArr));
 
             if (! $dryRun) {
-                Arr::set($data, $pathArr, $defaultValue);
+                Arr::set($data, $pathKey, $defaultValue);
                 $this->writePhpArray($targetFile, $data);
                 $added++;
             }
@@ -263,7 +270,7 @@ class SyncKeysCommand extends Command
     {
         $pathArr = explode('.', $keyPath);
         $data = [];
-        Arr::set($data, $pathArr, $this->humanizeKey(end($pathArr)));
+        Arr::set($data, $keyPath, $this->humanizeKey(end($pathArr)));
         $this->writePhpArray($path, $data);
     }
 

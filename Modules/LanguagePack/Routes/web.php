@@ -22,6 +22,7 @@ Route::group(['middleware' => 'auth', 'prefix' => 'account'], function () {
         function () {
             Route::post('language-pack/publish-all', [LanguagePackController::class, 'publishAll'])->name('language-pack.publish-all');
             Route::post('language-pack/publish', [LanguagePackController::class, 'publish'])->name('language-pack.publish');
+            Route::post('language-pack/sync-keys', [LanguagePackController::class, 'syncKeys'])->name('language-pack.sync-keys');
         }
     );
 

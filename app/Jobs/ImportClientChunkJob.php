@@ -50,7 +50,10 @@ class ImportClientChunkJob implements ShouldQueue
         foreach ($this->rows as $index => $row) {
             try {
                 $normalizedRow = self::normalizeRow($row);
-                DB::transaction(fn () => ClientImportProcessor::processRow($normalizedRow, $this->columns, $this->company));
+                $user = DB::transaction(fn () => ClientImportProcessor::processRow($normalizedRow, $this->columns, $this->company));
+                if ($user === null) {
+                    continue;
+                }
             } catch (Exception $e) {
                 // File row number: row 1 = header, row 2 = first data
                 $fileRow = $this->chunkStartIndex + $index + 2;

@@ -78,7 +78,6 @@ return [
     'active' => '积极的',
     'license_expired' => '证件过期',
     'clientName' => '客户名称',
-    'clientCode' => '客户代号',
     'lead' => '带领',
     'NewLeadContact' => '新潜在客户联系人总数',
     'paymentOn' => '付款方式',

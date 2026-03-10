@@ -43,7 +43,6 @@ return [
     'linkTitle' => 'Link Title',
     'url' => 'URL',
     'categoryName' => 'e.g. Finance',
-    'clientCode' => 'e.g. CLT-001',
     'invoices' => [
         'invoicePrefix' => 'Enter invoice prefix',
         'estimatePrefix' => 'Enter estimate prefix',

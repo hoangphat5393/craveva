@@ -31,7 +31,7 @@ return [
     'refresh' => 'Refresh',
     'deviceConfigurationGuide' => 'Device Configuration Guide',
     'checkDeviceAdmsSupport' => 'Check Device ADMS Support',
-    'zktecoAdmsInfo' => 'Your ZKTeco must support ADMS mode. Look for "ADMS" or "Cloud Server Settings" in the menu or manual.',
+    'zktecoAdmsInfo' => 'Your ZKTeco must support ADMS mode. Look for \\\\\\\\\\\"ADMS\\\\\\\\\\\" or \\\\\\\\\\\"Cloud Server Settings\\\\\\\\\\\" in the menu or manual.',
     'configureAdmsSettings' => 'Configure ADMS Settings',
     'goToMenuCommunication' => '1. Menu → 2. Communication → 3. Cloud Server Settings',
     'serverMode' => 'Server Mode',
@@ -54,8 +54,6 @@ return [
     'offline' => 'Offline',
     'admsSettings' => 'ADMS Settings',
     'noMatchingRecordsFound' => 'No matching records found',
-
-    // Create device form strings
     'howToFindDeviceSerialNumber' => 'How to Find Your Device Serial Number',
     'serialNumberLocationInfo' => 'The serial number can be found in your device by navigating to Menu -> System Info -> Device Info',
     'step1Menu' => 'Step 1: Menu',
@@ -66,8 +64,6 @@ return [
     'step3FindSerialNumber' => 'Step 3: Find Serial Number in Device Info',
     'deviceSerialNumberLocation' => 'Device Serial Number Location',
     'serialNumberLocation' => 'Serial Number Location',
-
-    // Employee edit form strings
     'configured' => 'Configured',
     'notConfigured' => 'Not Configured',
     'biometricConfigurationInstructions' => 'Biometric Configuration Instructions',
@@ -91,16 +87,13 @@ return [
     'removeFromDevice' => 'Remove from Biometric Device',
     'removeEmployeeFromDeviceWarning' => 'Are you sure you want to remove this employee from the biometric device? This action cannot be undone.',
     'employeeRemovedFromDevice' => 'Employee has been removed from the biometric device successfully.',
-
-    // Sync Employees
     'syncAllEmployees' => 'Sync All Employees',
     'syncAllEmployeesConfirmation' => 'This will send all active employees to all online biometric devices. Continue?',
-    'employeesSyncInitiated' => 'Employee synchronization has been initiated. The devices will be updated shortly. You can check the status of pending commands <a href=":pendingCommandsUrl">here</a>.',
+    'employeesSyncInitiated' => 'Employee synchronization has been initiated. The devices will be updated shortly. You can check the status of pending commands <a href=\\\\\\\\\\\":pendingCommandsUrl\\\\\\\\\\\">here</a>.',
     'noActiveDevices' => 'No active devices found. Please ensure at least one device is online.',
     'followingEmployeesWillBeSynced' => 'The following employees will be synchronized with all active biometric devices.',
     'noEmployeesToSync' => 'No employees found to synchronize.',
     'confirmSync' => 'Confirm Sync',
-
     'commandType' => 'Command Type',
     'deleteUser' => 'Delete User',
     'addUser' => 'Add User',
@@ -116,7 +109,6 @@ return [
     'executedAt' => 'Executed At',
     'failedAt' => 'Failed At',
     'employeesPushedToDevices' => 'Employees Pushed to Devices',
-
     'commandStatusDefinitions' => 'Command Status Definitions',
     'pendingDefinition' => 'Command is waiting to be sent to the device',
     'sentDefinition' => 'Command has been sent to the device but not yet executed',
@@ -143,9 +135,14 @@ return [
     'biometricAndEmployeeId' => 'Biometric and Employee ID',
     'employeeIdOnly' => 'Employee ID Only',
     'biometricId' => 'Biometric ID',
-    'employeeId' => 'Employee ID',
     'biometricIdAndEmployeeId' => 'Biometric ID and Employee ID',
     'biometricIdOnly' => 'Biometric ID Only',
     'copyToBiometricId' => 'Copy to Biometric ID',
     'fingerprintRegistered' => 'Fingerprint Registered',
+    'status1' => 'Status1',
+    'haveFingerPrint' => 'Havefingerprint',
+    'fingerCount' => 'Fingercount',
+    'refreshing' => 'Refreshing',
+    'cardRegistered' => 'Cardregistered',
+    'fetchBiometricData' => 'Fetchbiometricdata',
 ];

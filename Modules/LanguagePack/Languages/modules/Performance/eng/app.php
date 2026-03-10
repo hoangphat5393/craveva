@@ -143,4 +143,5 @@ return [
     'pendingCheckIns' => 'Pending Check-ins',
     'upcomingCheckIns' => 'Upcoming Check-ins',
     'loadMore' => 'Load More',
+    'addActionPoints' => 'Addactionpoints',
 ];

@@ -406,8 +406,6 @@ return [
     'downloadable' => '可下载产品可在购买后访问文件',
     'invalidData' => '无效数据 ：',
     'invalidDate' => '日期格式无效：',
-    'importFileCsvDisguisedAsXlsx' => '此文件扩展名为 .xlsx 但实际内容为 CSV/纯文本（非真正的 Excel 文件）。请：1) 在 Excel 中另存为正确的 .xlsx 格式（文件 → 另存为 → Excel 工作簿），或 2) 以 .csv 扩展名上传。',
-    'duplicateEntry' => '重复条目（客户代码已存在）',
     'duplicateEntryForEmail' => '电子邮件重复条目：',
     'duplicateEntryForEmployeeId' => '员工 ID 重复输入：',
     'employeeNotFound' => '未找到员工',

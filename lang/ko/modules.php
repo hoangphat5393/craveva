@@ -156,7 +156,6 @@ return [
         'clientBasicDetails' => '클라이언트 기본 세부정보',
         'clientOtherDetails' => '그 외 세부 사항',
         'clientName' => '고객 이름',
-        'clientCode' => '고객 코드',
         'clientEmail' => '클라이언트 이메일',
         'clientPhone' => '클라이언트 전화',
         'emailNote' => '고객은 이 이메일을 사용하여 로그인하고 이메일 알림이 이 이메일로 전송됩니다.',

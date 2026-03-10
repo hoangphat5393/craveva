@@ -42,7 +42,6 @@ return [
     'linkTitle' => '連結標題',
     'url' => '網址',
     'categoryName' => '例如潛在客戶',
-    'clientCode' => '例如 CLT-001',
     'invoices' => [
         'invoicePrefix' => '輸入發票前綴',
         'estimatePrefix' => '輸入估算前綴',

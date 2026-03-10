@@ -23,9 +23,10 @@
                                                   class="mb-2 mr-2"> @lang('modules.languageSettings.translate')
                         </x-forms.button-secondary>
                         <x-forms.button-secondary icon="cog" id="autoTranslate"
-                                                  class="mb-2"> @lang('modules.languageSettings.autoTranslate')
+                                                  class="mb-2 mr-2"> @lang('modules.languageSettings.autoTranslate')
                         </x-forms.button-secondary>
                         @includeIf('languagepack::publish-all-button')
+                        @includeIf('languagepack::sync-keys-button')
                     </div>
                 </div>
             </x-slot>

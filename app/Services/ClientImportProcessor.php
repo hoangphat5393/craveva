@@ -17,16 +17,16 @@ class ClientImportProcessor
     use UniversalSearchTrait;
 
     /**
-     * Process a single row of client import. Throws on duplicate or error.
+     * Process a single row of client import. Throws on error; returns null when duplicate client_code (skip).
      *
      * @param  array  $row  Row data (array of cell values)
      * @param  array  $columns  Map of column index => field id (e.g. [0 => 'name', 1 => 'email'])
      * @param  \App\Models\Company|null  $company
-     * @return \App\Models\User Created user
+     * @return \App\Models\User|null Created user, or null if row skipped (duplicate client_code)
      *
      * @throws Exception
      */
-    public static function processRow(array $row, array $columns, $company): User
+    public static function processRow(array $row, array $columns, $company): ?User
     {
         if (empty(self::columnKeys($columns, 'name'))) {
             throw new Exception(__('messages.invalidData'));
@@ -46,6 +46,7 @@ class ClientImportProcessor
 
         $companyId = $company?->id;
         $user = null;
+        $duplicateByClientCode = false;
 
         if (self::columnExists($columns, 'email') && self::isEmailValid(self::getValue($row, $columns, 'email'))) {
             $user = User::where('company_id', $companyId)->where('email', self::getValue($row, $columns, 'email'))->first();
@@ -57,13 +58,15 @@ class ClientImportProcessor
                 ->first();
             if ($existingDetails) {
                 $user = $existingDetails->user;
+                $duplicateByClientCode = true;
             }
         }
 
         if ($user) {
-            $msg = self::columnExists($columns, 'email') && self::isEmailValid(self::getValue($row, $columns, 'email'))
-                ? __('messages.duplicateEntryForEmail') . self::getValue($row, $columns, 'email')
-                : __('messages.duplicateEntry') . ' (client_code: ' . self::getValue($row, $columns, 'client_code') . ')';
+            if ($duplicateByClientCode) {
+                return null;
+            }
+            $msg = __('messages.duplicateEntryForEmail') . self::getValue($row, $columns, 'email');
             throw new Exception($msg);
         }
 

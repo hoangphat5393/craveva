@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     'form' => [
         'email' => 'Email',
         'phone' => 'Phone',
@@ -15,14 +14,11 @@ return [
         'status' => 'Status',
         'cover_letter' => 'Cover Letter',
     ],
-
     'name' => [
         'HR round' => 'HR Round',
         'Technical round' => 'Technical Round',
         'Manager round' => 'Manager Round',
-
     ],
-
     'type' => [
         'text' => 'Text',
         'number' => 'Number',
@@ -34,7 +30,6 @@ return [
         'checkbox' => 'Checkbox',
         'file' => 'File',
     ],
-
     'skill' => [
         'skilldepartment' => 'Skill Department',
         'skillname' => 'Skill Name',
@@ -42,7 +37,6 @@ return [
         'addSkills' => 'Skill cannot be blank.',
         'createnew' => 'Create New',
     ],
-
     'message' => [
         'jobOfferStatus' => 'Job Offer',
         'mailsent' => 'Mail sent succesfully.',
@@ -113,7 +107,6 @@ return [
         'payAccording' => 'Pay according',
         'requiredFiled' => '<p>Selected field will be visible and considered as mandatatory field for <strong>Job Application Form</strong></p>',
         'selectJob' => 'Select Job',
-
     ],
     'jobApplication' => [
         'fullName' => 'full name',
@@ -149,7 +142,6 @@ return [
         'columnName' => 'Column Name',
         'boardColumn' => 'Board Column',
         'jobType' => 'Job Type',
-        'coverLetter' => 'Cover Letter',
         'resume' => 'Resume',
         'noNotesFound' => 'No Notes found',
         'stages' => 'Interview Rounds',
@@ -160,9 +152,7 @@ return [
         'experience' => 'Total Experience',
         'currentLocation' => 'Current Location',
         'currentLocationPlaceholder' => 'e.g. California',
-        'currentCtc' => 'Current CTC',
         'currentCtcPlaceHolder' => 'current ctc',
-        'expectedCtc' => 'Expected CTC',
         'expectedCtcPlaceHolder' => 'expected ctc',
         'noticePeriod' => 'Notice Period',
         'fresher' => 'Fresher',
@@ -190,7 +180,6 @@ return [
         'applicationNotMoved' => 'Application was not moved to this stage',
         'sendMailToJobApplicant' => 'Send Email Notification To Job Applicant',
     ],
-
     'interviewSchedule' => [
         'employee' => 'Employee',
         'startDate' => 'Start Date',
@@ -199,32 +188,27 @@ return [
         'addInterviewSchedule' => 'Add Interview Schedule ',
         'interview' => 'Interview',
         'candidate' => 'Candidate',
-        'employee' => 'Employee',
         'interviewType' => 'Interview Type',
         'interviewScheduleDetails' => 'Interview Schedule Details',
-        'meetingId' => 'Meeting ID',
+        'meetingId' => 'Meeting Id',
         'employeeResponse' => 'Employee Response',
         'candidateEmail' => 'Candidate Email',
         'candidateName' => 'Candidate Name',
         'assignedEmployee' => 'Assigned Interviewer',
         'employeeEmail' => 'Employee Email',
-        'meetingName' => 'Meeting Name',
+        'meetingName' => 'Meeting Title',
         'meetingStatus' => 'Meeting Status',
         'allEmployees' => 'All Employees',
         'allClients' => 'All Client',
         'addEmployees' => 'Add Employees',
         'addClients' => 'Add Clients',
-        'meetingId' => 'Meeting Id',
-        'meetingName' => 'Meeting Title',
         'startOn' => 'Start On',
         'endOn' => 'End On',
         'addMeeting' => 'Add Meeting',
         'tableView' => 'Table View',
-        'meetingName' => 'Meeting Title',
-        'where' => 'where',
+        'where' => 'Where',
         'description' => 'Description (optional)',
         'addAttendees' => 'Add Attendees',
-        'where' => 'Where',
         'repeat' => 'Recurring meeting',
         'repeatEvery' => 'Repeat every',
         'cycles' => 'Cycles',
@@ -251,7 +235,6 @@ return [
         'hideFinishedMeetings' => 'Hide Finished',
         'deleteAllOccurrences' => 'Delete All Occurrences',
         'meetingHost' => 'Meeting Host',
-        'meetingDetails' => 'Meeting Details',
         'recurrence' => 'Recurrence',
         'occursOn' => 'Occurs on',
         'dayOfMonth' => 'day of the month',
@@ -452,7 +435,6 @@ return [
     'newJobApplication' => [
         'subject' => 'New job application received',
         'text' => 'applied for job',
-
     ],
     'updateJobApplication' => [
         'subject' => 'Job application updated',
@@ -471,21 +453,19 @@ return [
         'subject' => 'Job offer reject',
         'text' => 'You have rejected offer letter for the job',
     ],
-
     'newJob' => [
         'subject' => 'New job opening',
         'text' => 'Now you are a recruiter for job',
         'alertMsg' => 'There is an new job openings for',
         'lastDate' => 'last date to apply',
+        'viewJob' => 'Viewjob',
     ],
-
     'updateJob' => [
         'subject' => 'Removed from Job',
         'subject2' => 'Job Updated',
         'text' => 'You have been removed from Job',
         'text2' => 'Job has been updated',
     ],
-
     'offerLetter' => [
         'subject' => 'Offer letter created',
         'text' => 'offer letter has been created for job',
@@ -493,12 +473,10 @@ return [
         'reminderText' => 'This mail is to inform you that your offer letter is expiring on date',
         'reminderTextline' => 'Please respond accordingly.',
     ],
-
     'updateOffer' => [
         'subject' => 'Offer letter updated',
         'text' => 'offer letter has been  updated for job',
     ],
-
     'emailNotification' => [
         'notificationSetting' => 'Notification',
         'new-jobadded-by-admin' => 'New Job (Added by Admin)',
@@ -507,7 +485,6 @@ return [
         'new-offer-letteradded-by-admin' => 'New Offer Letter (Added by Admin)',
         'notification-to-recruiter' => 'Notifications to Recruiter',
     ],
-
     'adminMail' => [
         'newJobSubject' => 'New Job Created',
         'newJobText' => 'New Job has been created',
@@ -516,7 +493,6 @@ return [
         'updateInterviewText' => 'Interview Schedule Updated for job',
         'rescheduleSubject' => 'Interview Reschedule',
     ],
-
     'followUpReminder' => [
         'subject' => 'Urgent: Candidate Follow-up Reminder',
     ],
@@ -524,7 +500,5 @@ return [
         'addSource' => 'Add Source',
         'source' => 'Source',
         'editSource' => 'Edit Source',
-
     ],
-
 ];

@@ -22,4 +22,8 @@ return [
     'orderMarkAsSent' => 'Order sent Successfully',
     'orderSentSuccessfully' => 'Order Mark as Sent Successfully',
     'billSentSuccessfully' => 'Bill sent successfully.',
+    'paymentConfirmation' => 'Paymentconfirmation',
+    'messagePayment' => 'Messagepayment',
+    'remainingCreditAmount' => 'Remainingcreditamount',
+    'thankYou' => 'Thankyou',
 ];

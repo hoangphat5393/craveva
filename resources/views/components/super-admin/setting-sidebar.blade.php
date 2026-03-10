@@ -19,6 +19,14 @@
 
     <!-- SETTINGS MENU START -->
     <ul class="settings-menu" id="settingsMenu">
+        @if (\Route::has('developertools.index'))
+            <x-setting-menu-item :active="$activeMenu" menu="developertools" :href="route('developertools.index')"
+                                 :text="__('Developer Tools')"/>
+        @endif
+        @if (\Route::has('developertools.codemap'))
+            <x-setting-menu-item :active="$activeMenu" menu="codemap" :href="route('developertools.codemap')"
+                                 :text="__('CodeMap')"/>
+        @endif
         @if (user()->permission('manage_superadmin_app_settings') == 'all')
             <x-setting-menu-item :active="$activeMenu" menu="app_settings" :href="route('app-settings.index')"
                              :text="__('app.menu.appSettings')"/>

@@ -81,7 +81,6 @@ return [
     'active' => '啟用',
     'license_expired' => '授權已過期',
     'clientName' => '客戶名稱',
-    'clientCode' => '客戶代號',
     'lead' => '潛在客戶',
     'NewLeadContact' => '新潛在客戶聯絡人總數',
     'paymentOn' => '付款日期',

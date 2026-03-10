@@ -38,6 +38,7 @@ return [
         'signedOffer' => 'signed offer letter on',
         'description' => 'Description',
         'notDisclosed' => 'Not Disclosed',
+        'evaluation' => 'Evaluation',
     ],
     'job' => [
         'withdraw' => 'Withdraw',
@@ -101,7 +102,6 @@ return [
         'other' => 'Other',
         'backToJobApplications' => 'Back To Job Applications',
         'sampleCsv' => 'Download Sample CSV',
-
     ],
     'interviewSchedule' => [
         'approve' => 'Approve',
@@ -154,5 +154,4 @@ return [
         'job' => 'Job',
         'jobexpire' => 'Job Expire',
     ],
-
 ];

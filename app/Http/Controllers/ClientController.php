@@ -992,8 +992,10 @@ class ClientController extends AccountBaseController
 
     public function importProcess(ImportProcessRequest $request)
     {
-        // Use chunked import by default (100 rows) to get correct file row numbers in errors
-        $chunkSize = $request->filled('chunk_size') ? (int) $request->chunk_size : 100;
+        // Default chunk 20: when import has errors, smaller chunks = easier to locate failed rows,
+        // retry only 20 rows per job, and error message is less likely to be truncated (max 50 per job).
+        // Override via request chunk_size if needed (e.g. 100 for faster import when file is clean).
+        $chunkSize = $request->filled('chunk_size') ? (int) $request->chunk_size : 20;
         $batch = $this->importJobProcessChunked($request, ClientImport::class, ImportClientChunkJob::class, $chunkSize);
 
         return Reply::successWithData(__('messages.importProcessStart'), ['batch' => $batch]);

@@ -156,7 +156,6 @@ return [
         'clientBasicDetails' => 'Detail Dasar Klien',
         'clientOtherDetails' => 'Detail lainnya',
         'clientName' => 'Nama Klien',
-        'clientCode' => 'Kode Klien',
         'clientEmail' => 'Email Klien',
         'clientPhone' => 'Telepon Klien',
         'emailNote' => 'Klien akan login menggunakan email ini dan email notifikasi akan dikirimkan ke email ini.',

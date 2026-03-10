@@ -68,6 +68,7 @@ return [
     'stop' => 'Dừng lại',
     'remove' => 'Di dời',
     'description' => 'Sự miêu tả',
+    'specification' => 'Quy cách',
     'incomplete' => 'chưa hoàn thiện',
     'invoice' => 'Hóa đơn',
     'date' => 'Ngày',

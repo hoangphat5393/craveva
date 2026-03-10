@@ -142,7 +142,7 @@
                                 </div>
                             </div>
                             <div class="col-md-12 mt-3">
-                                <x-forms.text fieldId="specification" :fieldLabel="__('Specification (規格)')" fieldName="specification" :fieldPlaceholder="__('Specification')">
+                                <x-forms.text fieldId="specification" :fieldLabel="__('app.specification')" fieldName="specification" :fieldPlaceholder="__('app.specification')">
                                 </x-forms.text>
                             </div>
                             <div class="col-lg-12">

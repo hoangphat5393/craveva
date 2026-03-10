@@ -68,6 +68,7 @@ return [
     'stop' => 'Stop',
     'remove' => 'Remove',
     'description' => 'Description',
+    'specification' => 'Specification',
     'incomplete' => 'Incomplete',
     'invoice' => 'Invoice',
     'date' => 'Date',

@@ -18,7 +18,7 @@ class ProductImport implements ToArray
             ['id' => 'product_sub_category', 'name' => __('modules.productCategory.productSubCategory'), 'required' => 'No'],
             ['id' => 'sku', 'name' => __('app.sku'), 'required' => 'No'],
             ['id' => 'description', 'name' => __('app.description'), 'required' => 'No'],
-            ['id' => 'specification', 'name' => 'Specification (規格)', 'required' => 'No'],
+            ['id' => 'specification', 'name' => __('app.specification'), 'required' => 'No'],
             ['id' => 'storage_condition', 'name' => 'Storage Condition', 'required' => 'No'],
             ['id' => 'certification', 'name' => 'Certification', 'required' => 'No'],
             ['id' => 'wholesale_price', 'name' => 'Wholesale Price', 'required' => 'No'],

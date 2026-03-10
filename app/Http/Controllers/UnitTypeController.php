@@ -32,13 +32,19 @@ class UnitTypeController extends AccountBaseController
 
     public function create()
     {
+        if (request('no_reload')) {
+            $this->unitTypes = UnitType::orderBy('unit_type')->get();
+
+            return view('unit-type.create-modal', $this->data);
+        }
+
         return view('invoice-settings.ajax.unit-type');
     }
 
     public function store(UnitTypeRequest $request)
     {
-        $this->addPermission = user()->permission('manage_project_category');
-        abort_403(! in_array($this->addPermission, ['all', 'added']));
+        $this->addPermission = user()->permission('manage_finance_setting');
+        abort_403($this->addPermission !== 'all');
 
         $unit_type = new UnitType;
         $unit_type->unit_type = $request->unit_type;
@@ -97,7 +103,10 @@ class UnitTypeController extends AccountBaseController
         if (is_null($unitExists1) && is_null($unitExists2) && is_null($unitExists3) && is_null($unitExists4)) {
             UnitType::destroy($id);
 
-            return Reply::success(__('messages.deleteSuccess'));
+            $unitTypes = UnitType::orderBy('unit_type')->get();
+            $options = BaseModel::options($unitTypes, null, 'unit_type');
+
+            return Reply::successWithData(__('messages.deleteSuccess'), ['data' => $options]);
         }
 
         return Reply::error(__('messages.unitDeleteError'));

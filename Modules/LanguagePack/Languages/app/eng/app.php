@@ -1390,5 +1390,6 @@ return [
     'saving' => 'Saving',
     'suspended' => 'Suspended',
     'transferred' => 'Transferred',
+    'shelfLifeDays' => 'Shelf Life (Days)',
     'billingInformation' => 'Billinginformation',
 ];

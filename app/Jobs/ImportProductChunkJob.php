@@ -49,6 +49,9 @@ class ImportProductChunkJob implements ShouldQueue
     /** Cached fallback unit type id: khi không có unit_type và không có defaultUnitId thì dùng unit đầu tiên, chỉ query 1 lần/chunk. */
     private $fallbackUnitId = null;
 
+    /** Cache SKU đã tồn tại trong DB (và trong chunk) để tránh N query exists() – key = sku, O(1) lookup. */
+    private array $existingSkus = [];
+
     public function __construct(array $rows, array $columns, $company = null, int $chunkStartIndex = 0, array $options = [])
     {
         $this->rows = $rows;
@@ -62,6 +65,15 @@ class ImportProductChunkJob implements ShouldQueue
     {
         if ($this->company) {
             company($this->company);
+        }
+
+        // Cache SKU đã tồn tại trong DB (1 query/chunk) để tránh exists() từng dòng.
+        if ($this->company) {
+            $this->existingSkus = Product::where('company_id', $this->company->id)
+                ->whereNotNull('sku')
+                ->pluck('sku')
+                ->flip()
+                ->all();
         }
 
         $failures = [];
@@ -109,11 +121,8 @@ class ImportProductChunkJob implements ShouldQueue
 
         $sku = $this->columnExists('sku') ? $this->getValue($row, 'sku') : null;
         $skuTrimmed = $sku !== null && $sku !== '' ? trim((string) $sku) : null;
-        if ($skuTrimmed !== null && $this->company) {
-            $exists = Product::where('company_id', $this->company->id)->where('sku', $skuTrimmed)->exists();
-            if ($exists) {
-                return false;
-            }
+        if ($skuTrimmed !== null && isset($this->existingSkus[$skuTrimmed])) {
+            return false;
         }
 
         $product = new Product;
@@ -154,6 +163,10 @@ class ImportProductChunkJob implements ShouldQueue
         $product->added_by = user() ? user()->id : null;
 
         $product->save();
+
+        if ($skuTrimmed !== null) {
+            $this->existingSkus[$skuTrimmed] = true;
+        }
 
         $customFieldsData = $this->buildProductCustomFieldsData($row);
         if ($customFieldsData !== []) {

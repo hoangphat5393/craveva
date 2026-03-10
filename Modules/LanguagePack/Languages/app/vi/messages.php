@@ -379,6 +379,7 @@ return [
     'pleaseSelectCategory' => 'Hãy chọn một danh mục',
     'importUploadSuccess' => 'Dữ liệu được tải lên thành công.',
     'importProcessStart' => 'Quá trình nhập khẩu bắt đầu. Vui lòng chờ.',
+    'importRunningInBackground' => 'Nhập liệu đang chạy nền.',
     'confirmResetPermission' => 'Thao tác này sẽ đặt lại quyền cho tất cả người dùng có vai trò này. Bạn có muốn thiết lập lại không?',
     'invoiceDueOn' => 'Hóa đơn đến hạn',
     'googleCalendar' => [

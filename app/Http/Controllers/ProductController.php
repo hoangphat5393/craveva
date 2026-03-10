@@ -518,10 +518,9 @@ class ProductController extends AccountBaseController
 
     public function importProcess(ImportProcessRequest $request)
     {
-        // Default chunk 20: when import has errors, smaller chunks = easier to locate failed rows,
-        // retry only 20 rows per job, and error message is less likely to be truncated (max 50 per job).
+        // Default chunk 30: balance between fewer jobs (faster) and smaller retry unit on errors.
         // Override via request chunk_size if needed (e.g. 100 for faster import when file is clean).
-        $chunkSize = $request->filled('chunk_size') ? (int) $request->chunk_size : 20;
+        $chunkSize = $request->filled('chunk_size') ? (int) $request->chunk_size : 30;
         $options = ['default_unit_id' => $request->input('default_unit_id') ? (int) $request->input('default_unit_id') : null];
         $batch = $this->importJobProcessChunked($request, ProductImport::class, ImportProductChunkJob::class, $chunkSize, $options);
 

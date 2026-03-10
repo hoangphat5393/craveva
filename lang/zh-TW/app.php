@@ -1358,6 +1358,7 @@ return [
     'sms' => '簡訊',
     'subdomain' => '子網域',
     'warehouse' => '倉庫',
+    'shelfLifeDays' => '保存期限 (天)',
     'webhooks' => 'Webhooks',
     'zoom' => 'Zoom',
     'affiliate' => '聯盟行銷',

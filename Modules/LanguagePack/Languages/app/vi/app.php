@@ -1353,6 +1353,7 @@ return [
     'sms' => 'SMS',
     'subdomain' => 'Tên miền phụ',
     'warehouse' => 'Kho hàng',
+    'shelfLifeDays' => 'Hạn sử dụng (ngày)',
     'webhooks' => 'Webhooks',
     'zoom' => 'Zoom',
     'affiliate' => 'Tiếp thị liên kết',

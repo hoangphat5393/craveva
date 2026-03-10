@@ -1328,4 +1328,5 @@ return [
     'addMore' => '添加更多',
     'timesheetRejectReason' => '时间表拒绝原因',
     'projectWiseTimeLogReport' => '项目明智的报告',
+    'shelfLifeDays' => '保存期限 (天)',
 ];

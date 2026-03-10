@@ -379,6 +379,7 @@ return [
     'pleaseSelectCategory' => '请选择类别',
     'importUploadSuccess' => '数据上传成功。',
     'importProcessStart' => '导入过程开始。请稍等。',
+    'importRunningInBackground' => '导入正在后台运行。',
     'confirmResetPermission' => '这将重置具有此角色的所有用户的权限。您想重置吗？',
     'invoiceDueOn' => '发票到期日',
     'googleCalendar' => [

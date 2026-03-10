@@ -66,6 +66,12 @@
                                             </option>
                                         @endforeach
                                     </select>
+
+                                    @if (user()->permission('manage_finance_setting') == 'all')
+                                        <x-slot name="append">
+                                            <button id="add-unit-type" type="button" data-toggle="tooltip" data-original-title="{{ __('app.add') . ' ' . __('modules.unitType.unitType') }}" class="btn btn-outline-secondary border-grey">@lang('app.add')</button>
+                                        </x-slot>
+                                    @endif
                                 </x-forms.input-group>
                             </div>
 
@@ -558,6 +564,12 @@
 
         $('#add-tax').click(function() {
             const url = "{{ route('taxes.create') }}";
+            $(MODAL_LG + ' ' + MODAL_HEADING).html('...');
+            $.ajaxModal(MODAL_LG, url);
+        });
+
+        $('#add-unit-type').click(function() {
+            const url = "{{ route('unit-type.create') }}?no_reload=1";
             $(MODAL_LG + ' ' + MODAL_HEADING).html('...');
             $.ajaxModal(MODAL_LG, url);
         });

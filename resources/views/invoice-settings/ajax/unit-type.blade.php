@@ -20,6 +20,7 @@
 </div>
 
 <script>
+    var noReloadOnUnitTypeAdd = {{ request('no_reload') ? 'true' : 'false' }};
     $('#save-unit').click(function() {
         var url = "{{ route('unit-type.store') }}";
         $.easyAjax({
@@ -32,7 +33,9 @@
                     $('#unit_type_id').html(response.data);
                     $('#unit_type_id').selectpicker('refresh');
                     $(MODAL_LG).modal('hide');
-                    window.location.reload();
+                    if (!noReloadOnUnitTypeAdd) {
+                        window.location.reload();
+                    }
                 }
             }
         })

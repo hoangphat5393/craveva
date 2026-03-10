@@ -380,6 +380,7 @@ return [
     'pleaseSelectCategory' => 'Please select a Category',
     'importUploadSuccess' => 'Data uploaded successfully.',
     'importProcessStart' => 'Import process started. Please wait.',
+    'importRunningInBackground' => 'Import is running in the background.',
     'confirmResetPermission' => 'This will reset permissions for all users with this role. Do you want to reset?',
     'invoiceDueOn' => 'Invoice Due On',
     'googleCalendar' => [

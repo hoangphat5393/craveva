@@ -1355,6 +1355,7 @@ return [
     'sms' => 'SMS',
     'subdomain' => 'Subdomain',
     'warehouse' => 'Warehouse',
+    'shelfLifeDays' => 'Shelf Life (Days)',
     'webhooks' => 'Webhooks',
     'zoom' => 'Zoom',
     'affiliate' => 'Affiliate',

@@ -375,7 +375,7 @@ return [
     'requiredColumnsUnmatched' => 'Requiredcolumnsunmatched',
     'importDefaultUnitType' => 'Importdefaultunittype',
     'importDefaultUnitTypeHelp' => 'Importdefaultunittypehelp',
-    'importRunningInBackground' => 'Importrunninginbackground',
+    'importRunningInBackground' => 'Import is running in the background.',
     'pleaseSelectAColumn' => 'Pleaseselectacolumn',
     'invoiceLogoTooltip' => 'Invoicelogotooltip',
     'authorisedSignatorySignatureTooltip' => 'Authorisedsignatorysignaturetooltip',

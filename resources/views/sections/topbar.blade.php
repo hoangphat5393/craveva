@@ -78,7 +78,7 @@
                 <span class="d-none d-xl-inline">{{ $activeLang->language_name ?? 'English' }}</span>
             </a>
             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink" tabindex="0">
-                @foreach ($languageSettings->sortBy('language_code') as $language)
+                @foreach ($languageSettings->sortBy('language_code')->unique('language_name') as $language)
                     <a class="dropdown-item f-14 text-dark" href="{{ route('settings.change_language', ['lang' => $language->language_code]) }}">
                         {{ $language->language_name }}
                     </a>

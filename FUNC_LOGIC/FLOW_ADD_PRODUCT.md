@@ -22,7 +22,7 @@
         +-------+-------+
 ```
 
-**Lưu ý Import:** product_source, brand, product_grade ghi vào cột DB **products** (không qua custom_fields_data). Các custom field khác (nếu có trong Product group) vẫn có thể ghi qua updateCustomFieldData; hiện buildProductCustomFieldsData trả về rỗng nên import không ghi custom_fields_data. Chỉ form UI mới ghi custom_fields_data khi request có custom_fields_data.
+**Lưu ý Import:** product_source, brand, product_grade ghi vào cột DB **products** (không qua custom_fields_data). Hiện tại buildProductCustomFieldsData trả về rỗng (danh sách custom field dùng khi import rỗng) nên import **không ghi** custom_fields_data. Chỉ form UI mới ghi custom_fields_data khi request có custom_fields_data. Nếu sau này bổ sung custom field cho Product và muốn import theo cột Excel thì cần mở lại buildProductCustomFieldsData + ProductImport::fields() (xem IMPORT_CHUNK_AND_BULK_INSERT_ANALYSIS §6).
 
 ---
 
@@ -98,20 +98,32 @@
 
 ## 6. So sánh UI vs Import
 
-| Nội dung           | Form UI      | Import Excel                                                 |
-| ------------------ | ------------ | ------------------------------------------------------------ |
-| products           | Có           | Có (gồm specification, product_source, brand, product_grade) |
-| unit_types         | Không tạo    | Có (tạo mới nếu unit trong file chưa có)                     |
-| custom_fields_data | Có (nếu gửi) | Không (product_source, brand, product_grade là cột DB)       |
-| employee_activity  | Không        | Có (1 dòng/product)                                          |
+| Nội dung           | Form UI      | Import Excel                                                                                        |
+| ------------------ | ------------ | --------------------------------------------------------------------------------------------------- |
+| products           | Có           | Có (gồm specification, product_source, brand, product_grade)                                        |
+| unit_types         | Không tạo    | Có (tạo mới nếu unit trong file chưa có)                                                            |
+| custom_fields_data | Có (nếu gửi) | Không (product_source, brand, product_grade là cột DB; custom field khác hiện không ghi khi import) |
+| employee_activity  | Không        | Có (1 dòng/product)                                                                                 |
 
 ---
 
 ## 7. Import Excel – chi tiết
 
-| Mục            | Mô tả                                                                                                                                                 |
-| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Chunk size** | Mặc định 100 dòng/job (ProductController, PurchaseProductController). Override qua request `chunk_size`.                                              |
-| **SKU cache**  | Mỗi job load toàn bộ SKU của company 1 lần; kiểm tra trùng bằng lookup trong memory (O(1)). Product tạo mới được thêm vào cache trong chunk.          |
-| **Unit type**  | Tìm theo tên (ưu tiên unit của company, rồi global). Nếu **chưa có** → tạo mới trong `unit_types` (company_id, default=0), dùng id mới cho product.   |
-| **Cột import** | ProductImport::fields() gồm product_name, price, sku, description, specification, product_source, brand, product_grade, unit_type, shelf_life_days, … |
+| Mục                         | Mô tả                                                                                                                                                 |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Chunk size**              | Mặc định 100 dòng/job (ProductController, PurchaseProductController). Override qua request `chunk_size`.                                              |
+| **SKU cache**               | Mỗi job load toàn bộ SKU của company 1 lần; kiểm tra trùng bằng lookup trong memory (O(1)). Product tạo mới được thêm vào cache trong chunk.          |
+| **Unit type**               | Tìm theo tên (ưu tiên unit của company, rồi global). Nếu **chưa có** → tạo mới trong `unit_types` (company_id, default=0), dùng id mới cho product.   |
+| **Category / sub_category** | Cache theo tên trong chunk (categoryCache, subCategoryCache); không query lặp từng dòng.                                                              |
+| **Cột import**              | ProductImport::fields() gồm product_name, price, sku, description, specification, product_source, brand, product_grade, unit_type, shelf_life_days, … |
+| **Custom field**            | Hiện không ghi custom_fields_data khi import (buildProductCustomFieldsData trả về []). product_grade, product_source, brand đã là cột DB.             |
+
+## 8. Đối chiếu kế hoạch (IMPORT_CHUNK_AND_BULK_INSERT_ANALYSIS) – đã triển khai
+
+| Phương án trong kế hoạch       | Product import | Ghi chú                                                    |
+| ------------------------------ | -------------- | ---------------------------------------------------------- |
+| Chunk 10                       | ❌ Không dùng  | Dùng chunk **100** để giảm số job.                         |
+| Bulk insert custom_fields_data | ❌ Chưa        | Hiện không ghi custom field khi import.                    |
+| Cache metadata trong job       | ✅ Có          | SKU, unit type, category, sub_category.                    |
+| Bỏ qua custom field (hiệu quả) | ✅ Có          | Không ghi custom field → không phát sinh query.            |
+| Tối ưu riêng đã làm            | ✅ Có          | Chunk 100, SKU cache, unit auto-create, 3 trường → cột DB. |

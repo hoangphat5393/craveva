@@ -2,12 +2,12 @@
 
 Thư mục lưu tài liệu mô tả **lệnh**, **flow** và **thư viện** dùng trong dự án.
 
-| File | Nội dung |
-|------|----------|
-| **Login_Flow.md** | Flow đăng nhập (Fortify, session, cache, troubleshooting). |
-| **Package_Modules_Commands.md** | Lệnh `packages:modules` (list, activate-all, activate) và cách dùng. |
-| **Package_Modules_Flow.md** | Flow Package → module_in_package → Company → module_settings, observer, cache. |
-| **Libraries_And_Module_Names.md** | Thư viện Composer liên quan Package/Module và tên module trong app. |
+| File                              | Nội dung                                                                       |
+| --------------------------------- | ------------------------------------------------------------------------------ |
+| **Login_Flow.md**                 | Flow đăng nhập (Fortify, session, cache, troubleshooting).                     |
+| **Package_Modules_Commands.md**   | Lệnh `packages:modules` (list, activate-all, activate) và cách dùng.           |
+| **Package_Modules_Flow.md**       | Flow Package → module_in_package → Company → module_settings, observer, cache. |
+| **Libraries_And_Module_Names.md** | Thư viện Composer liên quan Package/Module và tên module trong app.            |
 
 ---
 

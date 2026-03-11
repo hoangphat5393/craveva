@@ -140,6 +140,7 @@
         <div id="progressError" style="display:none"></div>
         <div id="progress">
             <p class="mb-1">@lang('app.importInProgress') <strong id="progressAmount">@lang('app.pleaseWait')</strong></p>
+            <p class="mb-1 small text-muted">@lang('messages.importFirstProgressMayTakeAMinute')</p>
             <p class="mb-2 font-weight-bold text-primary" id="progressCountLine" style="font-size: 1.1rem;">—</p>
             <div class="progress" style="height: 24px;">
                 <div id="processingBarStatus" class="progress-bar  progress-bar-striped  progress-bar-animated" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>

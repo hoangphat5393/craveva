@@ -130,3 +130,42 @@
     - Cuối chunk: **một (hoặc vài) lần** `DB::table('custom_fields_data')->insert($bulkRows)`.
 
 Như vậy vừa giữ đúng hành vi (custom field vẫn gắn đúng client), vừa giảm mạnh số query và tăng tốc import khi có nhiều custom field.
+
+---
+
+## 6. Product import – đối chiếu kế hoạch đề xuất vs đã triển khai
+
+**Tài liệu tham chiếu:** FUNC_LOGIC/PRODUCT_IMPORT_SLOWNESS_ANALYSIS.md, FUNC_LOGIC/FLOW_ADD_PRODUCT.md
+
+### 6.1. Các phương án trong IMPORT_CHUNK_AND_BULK_INSERT_ANALYSIS (mục 1–5)
+
+| Đề xuất / Phương án                        | Áp dụng cho Product?              | Trạng thái Product import | Ghi chú                                                                                                                                                                  |
+| ------------------------------------------ | --------------------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Chunk 10** (mục 1)                       | Không áp dụng                     | ❌ Không dùng             | Product dùng **chunk 100** để giảm số job và overhead queue (ngược với “chunk 10” – xem PRODUCT_IMPORT_SLOWNESS_ANALYSIS).                                               |
+| **Bulk insert custom_fields_data** (mục 2) | Có (khi Product ghi custom field) | ❌ Chưa triển khai        | Hiện Product import **không ghi** custom field (danh sách custom field dùng khi import rỗng); khi nào bật ghi custom field lại thì nên triển khai bulk insert.           |
+| **Cache metadata trong job** (mục 3)       | Có                                | ✅ Đã triển khai          | SKU cache (1 query/chunk), unit type cache, category/sub_category cache; không query lặp từng dòng cho metadata.                                                         |
+| **Tùy chọn “Bỏ qua custom field”** (mục 3) | Có                                | ✅ Hiệu quả tương đương   | Product không ghi custom field khi import (product_grade, product_source, brand là cột DB; custom field khác không đưa vào import) → không phát sinh query custom field. |
+| **Giảm round-trip / Upsert** (mục 3)       | Có (nếu sau này ghi custom field) | ❌ Chưa cần               | Chưa ghi custom field nên chưa áp dụng.                                                                                                                                  |
+
+### 6.2. Các tối ưu đã triển khai riêng cho Product import
+
+| Tối ưu                                            | Mô tả ngắn                                                                                                                     |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| **Chunk size 100**                                | Mặc định 100 dòng/job (ProductController, PurchaseProductController); override qua request `chunk_size`.                       |
+| **SKU cache**                                     | 1 query/chunk load toàn bộ SKU company; kiểm tra trùng O(1) trong memory; product mới tạo trong chunk được cập nhật vào cache. |
+| **Unit type cache + auto-create**                 | Cache unit theo tên trong chunk; nếu unit trong file chưa có trong DB thì tạo mới (INSERT `unit_types`) rồi dùng.              |
+| **Category / sub_category cache**                 | Cache theo tên (và categoryId cho sub) trong chunk, không query lặp từng dòng.                                                 |
+| **product_grade, product_source, brand = cột DB** | Không lưu qua custom_fields_data → giảm query và đơn giản hóa import.                                                          |
+
+### 6.3. Tóm tắt: đã thực hiện bao nhiêu phương án?
+
+- **Từ kế hoạch đề xuất trong file này (mục 1–5):**
+    - **Không** áp dụng chunk 10 (Product đi theo hướng chunk lớn).
+    - **Chưa** bulk insert custom field (và hiện không ghi custom field khi import).
+    - **Đã** áp dụng: cache metadata (SKU, unit, category, sub_category) và hiệu quả tương đương “bỏ qua custom field” (không ghi custom field).
+
+- **Các bước đã làm thêm cho Product:** chunk 100, SKU cache, unit cache + auto-create, category/sub_category cache, 3 trường chuyển sang cột DB.
+  </think>
+  Đang cập nhật FLOW_ADD_PRODUCT và PRODUCT_IMPORT_SLOWNESS_ANALYSIS.
+  <｜tool▁calls▁begin｜><｜tool▁call▁begin｜>
+  TodoWrite

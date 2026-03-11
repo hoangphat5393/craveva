@@ -164,22 +164,25 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-12 mt-3">
+                            <div class="col-12 mt-3">
                                 <div class="row">
-                                    <div class="col-md-4">
+                                    <div class="col-md-3 col-6">
                                         <x-forms.number fieldId="wholesale_price" :fieldLabel="__('Wholesale Price')" fieldName="wholesale_price" :fieldPlaceholder="__('0')">
                                         </x-forms.number>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-3 col-6">
                                         <x-forms.number fieldId="price_per_box" :fieldLabel="__('Price Per Box')" fieldName="price_per_box" :fieldPlaceholder="__('0')">
                                         </x-forms.number>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-3 col-6">
                                         <x-forms.number fieldId="employee_price" :fieldLabel="__('Employee Price')" fieldName="employee_price" :fieldPlaceholder="__('0')">
                                         </x-forms.number>
                                     </div>
+                                    <div class="col-md-3 col-6">
+                                        <x-forms.number fieldId="shelf_life_days" :fieldLabel="__('app.shelfLifeDays')" fieldName="shelf_life_days" :fieldPlaceholder="__('app.shelfLifeDays')" minValue="0">
+                                        </x-forms.number>
+                                    </div>
                                 </div>
-
                             </div>
 
                             <div class="col-md-4 my-3">
@@ -257,12 +260,6 @@
                                         <x-forms.text fieldId="inventory_type" :fieldLabel="__('Inventory Type')" fieldName="inventory_type" :fieldPlaceholder="__('Inventory Type')">
                                         </x-forms.text>
                                     </div>
-
-                                    <div class="col-md-6">
-                                        <x-forms.number fieldId="shelf_life_days" :fieldLabel="__('app.shelfLifeDays')" fieldName="shelf_life_days" :fieldPlaceholder="__('app.shelfLifeDays')" minValue="0">
-                                        </x-forms.number>
-                                    </div>
-
                                 </div>
                             </div>
 
@@ -274,26 +271,25 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-12 mt-3">
+                            <div class="col-md-6">
                                 <x-forms.text fieldId="specification" :fieldLabel="__('app.specification')" fieldName="specification" :fieldPlaceholder="__('app.specification')" :fieldValue="$product ? $product->specification : ''">
                                 </x-forms.text>
                             </div>
-                            <div class="col-md-12 mt-3">
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <x-forms.text fieldId="product_source" :fieldLabel="__('app.productSource')" fieldName="product_source" :fieldPlaceholder="__('app.productSource')" :fieldValue="$product ? $product->product_source : ''">
-                                        </x-forms.text>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <x-forms.text fieldId="brand" :fieldLabel="__('app.brand')" fieldName="brand" :fieldPlaceholder="__('app.brand')" :fieldValue="$product ? $product->brand : ''">
-                                        </x-forms.text>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <x-forms.text fieldId="product_grade" :fieldLabel="__('app.productGrade')" fieldName="product_grade" :fieldPlaceholder="__('app.productGrade')" :fieldValue="$product ? $product->product_grade : ''">
-                                        </x-forms.text>
-                                    </div>
-                                </div>
+
+                            <div class="col-md-6">
+                                <x-forms.text fieldId="product_source" :fieldLabel="__('app.productSource')" fieldName="product_source" :fieldPlaceholder="__('app.productSource')" :fieldValue="$product ? $product->product_source : ''">
+                                </x-forms.text>
                             </div>
+                            <div class="col-md-6">
+                                <x-forms.text fieldId="brand" :fieldLabel="__('app.brand')" fieldName="brand" :fieldPlaceholder="__('app.brand')" :fieldValue="$product ? $product->brand : ''">
+                                </x-forms.text>
+                            </div>
+
+                            <div class="col-md-6">
+                                <x-forms.text fieldId="product_grade" :fieldLabel="__('app.productGrade')" fieldName="product_grade" :fieldPlaceholder="__('app.productGrade')" :fieldValue="$product ? $product->product_grade : ''">
+                                </x-forms.text>
+                            </div>
+
 
                             <div class="col-lg-12">
                                 <x-forms.file-multiple class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('purchase::modules.product.addImages')" fieldName="file" fieldId="file-upload-dropzones" />

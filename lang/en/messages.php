@@ -381,6 +381,7 @@ return [
     'importUploadSuccess' => 'Data uploaded successfully.',
     'importProcessStart' => 'Import process started. Please wait.',
     'importRunningInBackground' => 'Import is running in the background.',
+    'importFirstProgressMayTakeAMinute' => 'The first progress update may take 1–2 minutes for large files; please keep this page open.',
     'confirmResetPermission' => 'This will reset permissions for all users with this role. Do you want to reset?',
     'invoiceDueOn' => 'Invoice Due On',
     'googleCalendar' => [

@@ -132,6 +132,9 @@ class PurchaseProductController extends AccountBaseController
         $product->unit_id = $request->unit_type;
         $product->description = trim_editor($request->description);
         $product->specification = $request->specification;
+        $product->product_source = $request->product_source;
+        $product->brand = $request->brand;
+        $product->product_grade = $request->product_grade;
         $product->allow_purchase = $request->purchase_allow == 'no';
         $product->downloadable = $request->downloadable == 'true';
         $product->category_id = ($request->category_id) ?: null;
@@ -391,6 +394,9 @@ class PurchaseProductController extends AccountBaseController
         $product->unit_id = $request->unit_type;
         $product->description = trim_editor($request->description);
         $product->specification = $request->specification;
+        $product->product_source = $request->product_source;
+        $product->brand = $request->brand;
+        $product->product_grade = $request->product_grade;
         $product->allow_purchase = ($request->purchase_allow == 'no') ? true : false;
         $product->downloadable = ($request->downloadable == 'true') ? true : false;
         $product->category_id = ($request->category_id) ? $request->category_id : null;
@@ -784,8 +790,8 @@ class PurchaseProductController extends AccountBaseController
     {
         // Default chunk 20: when import has errors, smaller chunks = easier to locate failed rows,
         // retry only 20 rows per job, and error message is less likely to be truncated (max 50 per job).
-        // Override via request chunk_size if needed (e.g. 100 for faster import when file is clean).
-        $chunkSize = $request->filled('chunk_size') ? (int) $request->chunk_size : 20;
+        // Default chunk 100; override via request chunk_size if needed.
+        $chunkSize = $request->filled('chunk_size') ? (int) $request->chunk_size : 100;
         $options = ['default_unit_id' => $request->input('default_unit_id') ? (int) $request->input('default_unit_id') : null];
         $batch = $this->importJobProcessChunked($request, ProductImport::class, ImportProductChunkJob::class, $chunkSize, $options);
 

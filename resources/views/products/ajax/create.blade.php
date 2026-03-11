@@ -151,6 +151,22 @@
                                 <x-forms.text fieldId="specification" :fieldLabel="__('app.specification')" fieldName="specification" :fieldPlaceholder="__('app.specification')">
                                 </x-forms.text>
                             </div>
+                            <div class="col-md-12 mt-3">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <x-forms.text fieldId="product_source" :fieldLabel="__('app.productSource')" fieldName="product_source" :fieldPlaceholder="__('app.productSource')">
+                                        </x-forms.text>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <x-forms.text fieldId="brand" :fieldLabel="__('app.brand')" fieldName="brand" :fieldPlaceholder="__('app.brand')">
+                                        </x-forms.text>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <x-forms.text fieldId="product_grade" :fieldLabel="__('app.productGrade')" fieldName="product_grade" :fieldPlaceholder="__('app.productGrade')">
+                                        </x-forms.text>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="col-lg-12">
                                 <x-forms.file-multiple class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('app.menu.addFile')" fieldName="file" fieldId="file-upload-dropzone-product" />
                             </div>

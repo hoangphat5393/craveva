@@ -242,7 +242,7 @@ class PurchaseProductsDataTable extends BaseDataTable
         $request = $this->request();
 
         $model = $model->with('tax', 'category', 'subCategory', 'inventory', 'inventory.product')->join('unit_types', 'unit_types.id', '=', 'products.unit_id')
-            ->select('products.id', 'products.name', 'products.sku', 'products.price', 'products.status', 'products.taxes', 'products.unit_id', 'products.opening_stock', 'products.track_inventory', 'products.allow_purchase', 'products.added_by', 'products.default_image', 'products.category_id', 'products.sub_category_id', 'products.description');
+            ->select('products.id', 'products.name', 'products.sku', 'products.price', 'products.status', 'products.taxes', 'products.unit_id', 'products.opening_stock', 'products.track_inventory', 'products.allow_purchase', 'products.added_by', 'products.default_image', 'products.category_id', 'products.sub_category_id', 'products.description', 'products.product_source', 'products.brand', 'products.product_grade');
 
         if (! is_null($request->category_id) && $request->category_id != 'all' && $request->category_id > 0) {
             $model->where('category_id', $request->category_id);
@@ -340,9 +340,16 @@ class PurchaseProductsDataTable extends BaseDataTable
             __('app.price').' ('.__('app.inclusiveAllTaxes').')' => ['data' => 'price', 'name' => 'price', 'title' => __('app.price').' ('.__('app.inclusiveAllTaxes').')'],
             __('purchase::modules.product.stockOnHand') => ['data' => 'stock_on_hand', 'name' => 'stock_on_hand', 'title' => __('purchase::modules.product.stockOnHand')],
             __('app.unit_type').' ('.__('modules.unitType.unitType').')' => ['data' => 'unit_type', 'name' => 'unit_type', 'title' => __('modules.unitType.unitType')],
+            __('app.productSource') => ['data' => 'product_source', 'name' => 'product_source', 'title' => __('app.productSource'), 'visible' => false],
+            __('app.brand') => ['data' => 'brand', 'name' => 'brand', 'title' => __('app.brand'), 'visible' => false],
+            __('app.productGrade') => ['data' => 'product_grade', 'name' => 'product_grade', 'title' => __('app.productGrade'), 'visible' => false],
             __('app.purchaseAllow') => ['data' => 'allow_purchase', 'name' => 'allow_purchase', 'visible' => ! in_array('client', user_roles()), 'title' => __('app.purchaseAllow')],
             __('app.status') => ['data' => 'status', 'name' => 'status', 'exportable' => false, 'title' => __('app.status')],
         ];
+
+        $customFieldMerge = CustomFieldGroup::customFieldsDataMerge(new Product);
+        $excludeKeys = ['product_grade', 'product_source', 'brand', 'product-grade', 'product-source'];
+        $customFieldMerge = array_diff_key($customFieldMerge, array_flip($excludeKeys));
 
         $action = [
             Column::computed('action', __('app.action'))
@@ -353,6 +360,6 @@ class PurchaseProductsDataTable extends BaseDataTable
                 ->addClass('text-right pr-20'),
         ];
 
-        return array_merge($data, CustomFieldGroup::customFieldsDataMerge(new Product), $action);
+        return array_merge($data, $customFieldMerge, $action);
     }
 }

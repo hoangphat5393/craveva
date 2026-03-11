@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Models\CustomField;
 use App\Models\CustomFieldGroup;
 use App\Models\Product;
+use App\Models\UnitType;
 use App\Traits\EmployeeActivityTrait;
 use App\Traits\UniversalSearchTrait;
 use Carbon\Exceptions\InvalidFormatException;
@@ -131,6 +132,9 @@ class ImportProductChunkJob implements ShouldQueue
         $product->price = (float) $cleanedPrice;
         $product->description = $this->columnExists('description') ? $this->getValue($row, 'description') : null;
         $product->specification = $this->columnExists('specification') ? $this->getValue($row, 'specification') : null;
+        $product->product_source = $this->columnExists('product_source') ? $this->getValue($row, 'product_source') : null;
+        $product->brand = $this->columnExists('brand') ? $this->getValue($row, 'brand') : null;
+        $product->product_grade = $this->columnExists('product_grade') ? $this->getValue($row, 'product_grade') : null;
         $product->sku = $skuTrimmed ?? $sku;
         $product->storage_condition = $this->columnExists('storage_condition') ? $this->getValue($row, 'storage_condition') : null;
         $product->certification = $this->columnExists('certification') ? $this->getValue($row, 'certification') : null;
@@ -181,14 +185,14 @@ class ImportProductChunkJob implements ShouldQueue
     }
 
     /**
-     * Build custom_fields_data array for Product from row. Maps import column ids (product_grade, product_source, brand)
-     * to CustomField id via Product group for current company.
+     * Build custom_fields_data array for Product from row. Only for custom fields still in use;
+     * product_grade, product_source, brand are now DB columns, not custom fields.
      *
      * @return array<string, mixed> keys like 'field_123' => value
      */
     private function buildProductCustomFieldsData(array $row): array
     {
-        $customFieldNames = ['product_grade', 'product_source', 'brand'];
+        $customFieldNames = [];
         $companyId = $this->company?->id;
         if (! $companyId) {
             return [];
@@ -234,7 +238,13 @@ class ImportProductChunkJob implements ShouldQueue
     {
         $getFallbackOnce = function (): ?int {
             if ($this->fallbackUnitId === null) {
-                $this->fallbackUnitId = DB::table('unit_types')->orderBy('id')->value('id');
+                $query = DB::table('unit_types')->orderBy('id');
+                if ($this->company) {
+                    $query->where(function ($q) {
+                        $q->where('company_id', $this->company->id)->orWhereNull('company_id');
+                    });
+                }
+                $this->fallbackUnitId = $query->value('id');
             }
 
             return $this->fallbackUnitId;
@@ -250,16 +260,60 @@ class ImportProductChunkJob implements ShouldQueue
         }
 
         if (! array_key_exists($name, $this->unitTypeCache)) {
-            $ut = DB::table('unit_types')->where('unit_type', $name)->first();
-            $this->unitTypeCache[$name] = $ut ? $ut->id : null;
+            $ut = $this->findUnitTypeByName($name);
+            if ($ut !== null) {
+                $this->unitTypeCache[$name] = $ut->id;
+            } else {
+                $newUnit = $this->createUnitType($name);
+                $this->unitTypeCache[$name] = $newUnit?->id;
+            }
         }
 
-        $id = $this->unitTypeCache[$name];
+        $id = $this->unitTypeCache[$name] ?? null;
         if ($id !== null) {
             return $id;
         }
 
         return $this->defaultUnitId ?? $getFallbackOnce();
+    }
+
+    /**
+     * Find unit type by name (company-scoped or global).
+     */
+    private function findUnitTypeByName(string $name): ?object
+    {
+        $query = DB::table('unit_types')->where('unit_type', $name);
+        if ($this->company) {
+            $query->where(function ($q) {
+                $q->where('company_id', $this->company->id)->orWhereNull('company_id');
+            })->orderByRaw('company_id IS NOT NULL DESC');
+        }
+
+        return $query->first();
+    }
+
+    /**
+     * Create new unit type when not found in DB (import auto-create).
+     */
+    private function createUnitType(string $name): ?UnitType
+    {
+        $companyId = $this->company?->id;
+        $existsQuery = UnitType::where('unit_type', $name);
+        if ($companyId === null) {
+            $existsQuery->whereNull('company_id');
+        } else {
+            $existsQuery->where('company_id', $companyId);
+        }
+        $existing = $existsQuery->first();
+        if ($existing !== null) {
+            return $existing;
+        }
+
+        return UnitType::create([
+            'unit_type' => $name,
+            'company_id' => $companyId,
+            'default' => 0,
+        ]);
     }
 
     private function resolveCategoryId(array $row): ?int

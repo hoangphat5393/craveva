@@ -112,6 +112,9 @@ class ProductController extends AccountBaseController
         $product->taxes = $request->tax ? json_encode($request->tax) : null;
         $product->description = trim_editor($request->description);
         $product->specification = $request->specification;
+        $product->product_source = $request->product_source;
+        $product->brand = $request->brand;
+        $product->product_grade = $request->product_grade;
         $product->hsn_sac_code = $request->hsn_sac_code;
         $product->sku = $request->sku;
         $product->unit_id = $request->unit_type;
@@ -262,6 +265,9 @@ class ProductController extends AccountBaseController
         $product->unit_id = $request->unit_type;
         $product->description = trim_editor($request->description);
         $product->specification = $request->specification;
+        $product->product_source = $request->product_source;
+        $product->brand = $request->brand;
+        $product->product_grade = $request->product_grade;
         $product->allow_purchase = ($request->purchase_allow == 'no') ? true : false;
         $product->downloadable = ($request->downloadable == 'true') ? true : false;
         $product->category_id = ($request->category_id) ? $request->category_id : null;
@@ -518,9 +524,9 @@ class ProductController extends AccountBaseController
 
     public function importProcess(ImportProcessRequest $request)
     {
-        // Default chunk 30: balance between fewer jobs (faster) and smaller retry unit on errors.
-        // Override via request chunk_size if needed (e.g. 100 for faster import when file is clean).
-        $chunkSize = $request->filled('chunk_size') ? (int) $request->chunk_size : 30;
+        // Default chunk 100: fewer jobs, less SKU load + queue overhead (see PRODUCT_IMPORT_SLOWNESS_ANALYSIS).
+        // Override via request chunk_size if needed.
+        $chunkSize = $request->filled('chunk_size') ? (int) $request->chunk_size : 100;
         $options = ['default_unit_id' => $request->input('default_unit_id') ? (int) $request->input('default_unit_id') : null];
         $batch = $this->importJobProcessChunked($request, ProductImport::class, ImportProductChunkJob::class, $chunkSize, $options);
 

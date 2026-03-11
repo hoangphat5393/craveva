@@ -155,7 +155,7 @@ class ProductsDataTable extends BaseDataTable
     {
         $request = $this->request();
 
-        $model = $model->with('tax', 'category', 'subCategory')->select('id', 'name', 'sku', 'price', 'taxes', 'allow_purchase', 'added_by', 'default_image', 'category_id', 'sub_category_id', 'description');
+        $model = $model->with('tax', 'category', 'subCategory')->select('id', 'name', 'sku', 'price', 'taxes', 'allow_purchase', 'added_by', 'default_image', 'category_id', 'sub_category_id', 'description', 'product_source', 'brand', 'product_grade');
 
         if (! is_null($request->category_id) && $request->category_id != 'all' && $request->category_id > 0) {
             $model->where('category_id', $request->category_id);
@@ -241,8 +241,15 @@ class ProductsDataTable extends BaseDataTable
             __('modules.productCategory.productSubCategory') => ['data' => 'sub_category', 'name' => 'sub_category', 'title' => __('modules.productCategory.productSubCategory'), 'visible' => false],
             __('app.description') => ['data' => 'description', 'name' => 'description', 'title' => __('app.description'), 'visible' => false],
             __('app.price').' ('.__('app.inclusiveAllTaxes').')' => ['data' => 'price', 'name' => 'price', 'title' => __('app.price').' ('.__('app.inclusiveAllTaxes').')'],
+            __('app.productSource') => ['data' => 'product_source', 'name' => 'product_source', 'title' => __('app.productSource'), 'visible' => false],
+            __('app.brand') => ['data' => 'brand', 'name' => 'brand', 'title' => __('app.brand'), 'visible' => false],
+            __('app.productGrade') => ['data' => 'product_grade', 'name' => 'product_grade', 'title' => __('app.productGrade'), 'visible' => false],
             __('app.purchaseAllow') => ['data' => 'allow_purchase', 'name' => 'allow_purchase', 'visible' => ! in_array('client', user_roles()), 'title' => __('app.purchaseAllow')],
         ];
+
+        $customFieldMerge = CustomFieldGroup::customFieldsDataMerge(new Product);
+        $excludeKeys = ['product_grade', 'product_source', 'brand', 'product-grade', 'product-source'];
+        $customFieldMerge = array_diff_key($customFieldMerge, array_flip($excludeKeys));
 
         $action = [
             Column::computed('action', __('app.action'))
@@ -253,6 +260,6 @@ class ProductsDataTable extends BaseDataTable
                 ->addClass('text-right pr-20'),
         ];
 
-        return array_merge($data, CustomFieldGroup::customFieldsDataMerge(new Product), $action);
+        return array_merge($data, $customFieldMerge, $action);
     }
 }

@@ -28,10 +28,10 @@ class ProductImport implements ToArray
             ['id' => 'track_inventory', 'name' => 'Track Inventory (Yes/No)', 'required' => 'No'],
             ['id' => 'inventory_type', 'name' => 'Inventory Type', 'required' => 'No'],
             ['id' => 'status', 'name' => 'Status (Active/Inactive)', 'required' => 'No'],
-            ['id' => 'standard_price', 'name' => 'Standard Price (標準價)', 'required' => 'No'],
-            ['id' => 'product_grade', 'name' => 'Product Grade (商品級別)', 'required' => 'No'],
-            ['id' => 'product_source', 'name' => 'Product Origin (商品來源)', 'required' => 'No'],
-            ['id' => 'brand', 'name' => 'Brand (品牌類別)', 'required' => 'No'],
+            ['id' => 'standard_price', 'name' => 'Standard Price', 'required' => 'No'],
+            ['id' => 'product_grade', 'name' => __('app.productGrade'), 'required' => 'No'],
+            ['id' => 'product_source', 'name' => __('app.productSource'), 'required' => 'No'],
+            ['id' => 'brand', 'name' => __('app.brand'), 'required' => 'No'],
         ];
     }
 

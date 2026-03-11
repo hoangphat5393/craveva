@@ -86,9 +86,9 @@
 
 ### 4.2. Nếu chỉ chia sheet, không sửa code
 
-| Tình huống | Kết quả |
-|------------|--------|
-| File 1 sheet 17 000 dòng | Import đủ 17 000 dòng; một lần load 17 000 dòng vào memory → dễ chạm **memory limit** (PHP). |
+| Tình huống                         | Kết quả                                                                                      |
+| ---------------------------------- | -------------------------------------------------------------------------------------------- |
+| File 1 sheet 17 000 dòng           | Import đủ 17 000 dòng; một lần load 17 000 dòng vào memory → dễ chạm **memory limit** (PHP). |
 | File 17 sheet mỗi sheet 1 000 dòng | Chỉ **sheet đầu tiên** được đọc → chỉ import **1 000 dòng**; 16 sheet còn lại **bị bỏ qua**. |
 
 → Chia nhiều sheet **không** tự động cải thiện tốc độ; nếu không đổi code thì còn **giảm** số dòng được import (chỉ 1 sheet).
@@ -101,11 +101,11 @@
 
 ### 4.4. Kết luận (chia nhiều sheet)
 
-| Mục tiêu | Chia nhiều sheet (không sửa code) | Chia nhiều sheet + sửa đọc từng sheet |
-|----------|-----------------------------------|----------------------------------------|
-| Import đủ 17 000 dòng | Không (chỉ 1 sheet = 1 000 dòng) | Có |
-| Giảm memory | Không | Có (peak memory thấp hơn) |
-| Tăng tốc (giảm thời gian) | Không | Gần như không (cùng khối lượng xử lý) |
+| Mục tiêu                  | Chia nhiều sheet (không sửa code) | Chia nhiều sheet + sửa đọc từng sheet |
+| ------------------------- | --------------------------------- | ------------------------------------- |
+| Import đủ 17 000 dòng     | Không (chỉ 1 sheet = 1 000 dòng)  | Có                                    |
+| Giảm memory               | Không                             | Có (peak memory thấp hơn)             |
+| Tăng tốc (giảm thời gian) | Không                             | Gần như không (cùng khối lượng xử lý) |
 
 **Khuyến nghị:** Chia nhiều sheet **chỉ hữu ích** khi kèm **thay đổi code** đọc từng sheet để (1) import đủ tất cả sheet và (2) tránh vượt memory. Muốn **tăng tốc** thật sự vẫn cần **bulk insert** (và/hoặc bỏ qua custom field, cache metadata) như mục 2 và 3.
 

@@ -271,23 +271,25 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-6">
-                                <x-forms.text fieldId="specification" :fieldLabel="__('app.specification')" fieldName="specification" :fieldPlaceholder="__('app.specification')" :fieldValue="$product ? $product->specification : ''">
-                                </x-forms.text>
-                            </div>
-
-                            <div class="col-md-6">
-                                <x-forms.text fieldId="product_source" :fieldLabel="__('app.productSource')" fieldName="product_source" :fieldPlaceholder="__('app.productSource')" :fieldValue="$product ? $product->product_source : ''">
-                                </x-forms.text>
-                            </div>
-                            <div class="col-md-6">
-                                <x-forms.text fieldId="brand" :fieldLabel="__('app.brand')" fieldName="brand" :fieldPlaceholder="__('app.brand')" :fieldValue="$product ? $product->brand : ''">
-                                </x-forms.text>
-                            </div>
-
-                            <div class="col-md-6">
-                                <x-forms.text fieldId="product_grade" :fieldLabel="__('app.productGrade')" fieldName="product_grade" :fieldPlaceholder="__('app.productGrade')" :fieldValue="$product ? $product->product_grade : ''">
-                                </x-forms.text>
+                            <div class="col-md-12 mt-3">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <x-forms.text fieldId="specification" :fieldLabel="__('app.specification')" fieldName="specification" :fieldPlaceholder="__('app.specification')" :fieldValue="$product ? $product->specification : ''">
+                                        </x-forms.text>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <x-forms.text fieldId="product_source" :fieldLabel="__('app.productSource')" fieldName="product_source" :fieldPlaceholder="__('app.productSource')" :fieldValue="$product ? $product->product_source : ''">
+                                        </x-forms.text>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <x-forms.text fieldId="brand" :fieldLabel="__('app.brand')" fieldName="brand" :fieldPlaceholder="__('app.brand')" :fieldValue="$product ? $product->brand : ''">
+                                        </x-forms.text>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <x-forms.text fieldId="product_grade" :fieldLabel="__('app.productGrade')" fieldName="product_grade" :fieldPlaceholder="__('app.productGrade')" :fieldValue="$product ? $product->product_grade : ''">
+                                        </x-forms.text>
+                                    </div>
+                                </div>
                             </div>
 
 

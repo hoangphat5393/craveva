@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\ClientDetails;
 use App\Services\ClientImportProcessor;
 use Exception;
 use Illuminate\Bus\Batchable;
@@ -46,18 +47,54 @@ class ImportClientChunkJob implements ShouldQueue
     public function handle(): void
     {
         $failures = [];
+        $companyId = $this->company?->id;
+
+        // Load Client custom field metadata once per chunk (cache for bulk insert)
+        $fieldMap = ClientImportProcessor::getClientCustomFieldMap($companyId);
+        $bulkCustomRows = [];
 
         foreach ($this->rows as $index => $row) {
             try {
                 $normalizedRow = self::normalizeRow($row);
-                $user = DB::transaction(fn () => ClientImportProcessor::processRow($normalizedRow, $this->columns, $this->company));
+                $user = DB::transaction(fn () => ClientImportProcessor::processRow(
+                    $normalizedRow,
+                    $this->columns,
+                    $this->company,
+                    ['skip_custom_fields' => true]
+                ));
                 if ($user === null) {
                     continue;
+                }
+
+                $user->load('clientDetails');
+                $clientDetails = $user->clientDetails;
+                if ($clientDetails && $fieldMap !== []) {
+                    // Remove existing custom_fields_data for this client so bulk insert does not duplicate (update path)
+                    DB::table('custom_fields_data')
+                        ->where('model', ClientDetails::CUSTOM_FIELD_MODEL)
+                        ->where('model_id', $clientDetails->id)
+                        ->delete();
+                    $rows = ClientImportProcessor::buildCustomFieldRowsForBulk(
+                        $normalizedRow,
+                        $this->columns,
+                        $clientDetails->id,
+                        $companyId,
+                        $fieldMap
+                    );
+                    foreach ($rows as $r) {
+                        $bulkCustomRows[] = $r;
+                    }
                 }
             } catch (Exception $e) {
                 // File row number: row 1 = header, row 2 = first data
                 $fileRow = $this->chunkStartIndex + $index + 2;
                 $failures[] = 'Row ' . $fileRow . ': ' . $e->getMessage();
+            }
+        }
+
+        if ($bulkCustomRows !== []) {
+            foreach (array_chunk($bulkCustomRows, 500) as $batch) {
+                DB::table('custom_fields_data')->insert($batch);
             }
         }
 

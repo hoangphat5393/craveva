@@ -2,6 +2,8 @@
 
 **Phạm vi:** Tạo client mới qua **form UI** (ClientController::store) hoặc **import Excel** (ClientImportProcessor::processRow). Tài liệu mô tả các bảng được ghi dữ liệu và quan hệ 1-n.
 
+**Client module hiện có:** Form thêm/sửa client; import Excel theo chunk (mặc định 100 dòng/job), **bulk insert** custom_fields_data và **cache metadata** 1 lần/chunk; khi **client_code trùng** thì **cập nhật** client cũ (updateExistingClient); custom field gồm salesperson, department, sales_assistant_name, **customer_grade**, channel_type, business_type, last_transaction_at, payment_terms, business_closure_date; trường DB vs custom giữ như §9.
+
 ---
 
 ## 1. Tổng quan luồng
@@ -94,8 +96,9 @@ Giả sử file có header và **một dòng dữ liệu** (vd. dòng 2) như sa
 | 9         | company_phone         | `02-12345678`                             |
 | 10        | salesperson           | `王小明` (custom field)                   |
 | 11        | department            | `北區業務` (custom field)                 |
-| 12        | payment_terms         | `月結30天` (custom field)                 |
-| 13        | business_closure_date | `20251231` hoặc `31/12/2025` custom field |
+| 12        | customer_grade        | `C級客戶` (custom field)                  |
+| 13        | payment_terms         | `月結30天` (custom field)                 |
+| 14        | business_closure_date | `20251231` hoặc `31/12/2025` custom field |
 
 **Columns (map gửi từ form):** `[0=>'client_code', 1=>'name', 2=>'email', ...]` — index là key, value là field id.
 
@@ -240,19 +243,167 @@ INSERT INTO universal_search (company_id, searchable_id, title, route_name, modu
 
 ## 6. Nguồn code tham chiếu
 
-| Bước         | File / method                                            |
-| ------------ | -------------------------------------------------------- |
-| Form UI      | `App\Http\Controllers\ClientController::store()`         |
-| Import       | `App\Services\ClientImportProcessor::processRow()`       |
-| UserAuth     | `App\Models\UserAuth::createUserAuthCredentials()`       |
-| Custom field | `App\Traits\CustomFieldsTrait::updateCustomFieldData()`  |
-| Role         | `User::attachRole()`, `User::assignUserRolePermission()` |
-| Search       | `App\Traits\UniversalSearchTrait::logSearchEntry()`      |
+| Bước            | File / method                                                                 |
+| ---------------- | ----------------------------------------------------------------------------- |
+| Form UI          | `App\Http\Controllers\ClientController::store()`                              |
+| Import chunk     | `App\Jobs\ImportClientChunkJob::handle()`                                    |
+| Import 1 dòng    | `App\Services\ClientImportProcessor::processRow()`                             |
+| Cập nhật trùng   | `ClientImportProcessor::updateExistingClient()`                              |
+| Bulk custom      | `ClientImportProcessor::getClientCustomFieldMap()`, `buildCustomFieldRowsForBulk()` |
+| UserAuth         | `App\Models\UserAuth::createUserAuthCredentials()`                            |
+| Custom field (form / từng dòng) | `App\Traits\CustomFieldsTrait::updateCustomFieldData()`               |
+| Role             | `User::attachRole()`, `User::assignUserRolePermission()`                     |
+| Search           | `App\Traits\UniversalSearchTrait::logSearchEntry()`                           |
 
 ---
 
 ## 7. Lưu ý Import
 
 - Import **không** tạo `client_contacts`, `client_notes`.
-- Import **có** gọi `saveCustomFieldsFromRow()` → `updateCustomFieldData()` nên vẫn ghi `custom_fields_data` như form.
+- **Custom field khi import:** Khi chạy qua **ImportClientChunkJob** (mặc định): processRow gọi với `skip_custom_fields => true`, custom field được gom và ghi **một lần** cuối chunk (bulk insert). Khi gọi processRow trực tiếp không qua chunk job (vd. ImportClientJob từng dòng): vẫn gọi `saveCustomFieldsFromRow()` → `updateCustomFieldData()`.
 - `model_id` trong `custom_fields_data` cho Client = **client_details.id** (PK của bảng client_details), không phải users.id.
+
+---
+
+## 8. Import Client – Cải thiện cho file lớn (vd. Miaolin Product Customer ~17k dòng)
+
+**Đã triển khai:** Bulk insert custom_fields_data, cache metadata (getClientCustomFieldMap 1 lần/chunk), chunk size mặc định 100, queue database. Chi tiết §8.2 (cột Trạng thái) và §8.3.
+
+**Tham chiếu:** CLIENT_IMPORT_REVIEW_AND_IMPROVEMENTS.md, IMPORT_CHUNK_AND_BULK_INSERT_ANALYSIS.md, kinh nghiệm Product import (chunk 100, cache metadata).
+
+### 8.1. Vấn đề trước đây (đã xử lý)
+
+- **Chunk size:** 20 dòng/job → file 17k dòng ≈ 850 job; overhead queue lớn. → **Đã cải thiện:** chunk mặc định 100.
+- **Custom field:** Mỗi dòng gọi `updateCustomFieldData()` → ~300+ query/chunk chỉ cho custom field. → **Đã cải thiện:** bulk insert cuối chunk.
+- **Metadata:** CustomFieldGroup + CustomField load mỗi dòng. → **Đã cải thiện:** load 1 lần/chunk qua `getClientCustomFieldMap()`.
+
+### 8.2. Các bước cải thiện (ưu tiên) – trạng thái
+
+**Theo logic mới (cập nhật khi client_code trùng – §10):** Phương án dưới đây **vẫn hữu hiệu**. Cả dòng **tạo mới** và dòng **cập nhật** (trùng client_code) đều ghi `custom_fields_data` (create gọi `saveCustomFieldsFromRow`, update cũng gọi `saveCustomFieldsFromRow` trong `updateExistingClient`). Do đó bulk insert phải gom custom field của **cả hai nhánh** trong chunk (mỗi dòng trả về một `client_details.id` – dù mới hay cũ – rồi gom theo `model_id` đó); cache metadata và tăng chunk size / queue vẫn đúng như trước.
+
+| Thứ tự | Cải thiện                          | Mô tả ngắn                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | Hiệu quả                                                                     | Trạng thái                               |
+| ------ | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------- | ---------------------------------------- |
+| 1      | **Bulk insert custom_fields_data** | Trong mỗi chunk job: load group + list CustomField **1 lần**; mỗi dòng tạo mới hoặc cập nhật User + ClientDetails (và role/permissions/universal_search khi tạo mới), **không** gọi `updateCustomFieldData`/`saveCustomFieldsFromRow` trong vòng lặp. Gom toàn bộ (model, model_id, custom_field_id, value) đã chuẩn hóa vào mảng, cuối chunk gọi **một lần** `DB::table('custom_fields_data')->insert($bulkRows)` (có thể chia batch 100–500 dòng/lần). **Áp dụng cho cả dòng create và dòng update** (model_id = client_details.id tương ứng). | Giảm mạnh query/chunk (từ ~300+ xuống ~3–5 cho phần custom field).           | ✅ **Đã triển khai**                     |
+| 2      | **Cache metadata trong chunk**     | Load CustomFieldGroup (Client) + CustomField (id, name, type) **1 lần** trong `ImportClientChunkJob::handle()`, truyền map (name → id, type) vào logic build custom field; bỏ mọi `CustomField::findOrFail()` từng field.                                                                                                                                                                                                                                                                                                                        | Đã nằm trong thiết kế bulk insert; nếu chưa bulk thì vẫn giảm đáng kể query. | ✅ **Đã triển khai**                     |
+| 3      | **Chunk size**                     | Sau khi có bulk insert: tăng chunk lên **50–100** dòng/job (như Product) để giảm số job; cân bằng với timeout mỗi request (poll chạy queue:work --max-jobs=50).                                                                                                                                                                                                                                                                                                                                                                                  | Giảm số job, giảm overhead queue.                                            | ✅ **Đã triển khai** (mặc định 100)      |
+| 4      | **Queue**                          | Giữ `QUEUE_CONNECTION=database` cho file ~17k dòng; tránh timeout và có progress.                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Ổn định, không treo request.                                                 | ✅ **Đã triển khai** (cấu hình hiện tại) |
+
+**Tùy chọn:** Checkbox "Không import custom field" trên form import → bỏ hoàn toàn query custom field để import nhanh (user cập nhật custom field sau nếu cần).
+
+### 8.3. Luồng đã triển khai (bulk insert + chunk 100)
+
+1. **ImportClientChunkJob::handle():**
+    - Load 1 lần: `ClientImportProcessor::getClientCustomFieldMap($companyId)` → map name → [id, type].
+    - Khởi tạo `$bulkCustomRows = []`.
+2. **Với mỗi dòng trong chunk:**
+    - Gọi `ClientImportProcessor::processRow(..., ['skip_custom_fields' => true])` → không gọi `saveCustomFieldsFromRow()` trong processRow. processRow trả về `User` (tạo mới hoặc cập nhật).
+    - `$user->load('clientDetails')`, lấy `$clientDetails = $user->clientDetails`. Xóa sẵn `custom_fields_data` theo `model_id = $clientDetails->id` (tránh trùng khi update). Gọi `ClientImportProcessor::buildCustomFieldRowsForBulk(...)` → chuẩn hóa value (date qua `parseDateForCustomField`), đẩy vào `$bulkCustomRows`.
+3. **Hết chunk:** `DB::table('custom_fields_data')->insert($batch)` từng batch 500 dòng.
+4. **Chunk size mặc định:** 100 dòng/job (`ClientController::importProcess()`).
+
+### 8.4. File và tài liệu tham chiếu
+
+| Nội dung                                     | File / tài liệu                                           |
+| -------------------------------------------- | --------------------------------------------------------- |
+| Phân tích chi tiết import chậm + bulk insert | FUNC_LOGIC/CLIENT_IMPORT_REVIEW_AND_IMPROVEMENTS.md       |
+| Chunk vs bulk insert, queue sync/database    | FUNC_LOGIC/IMPORT_CHUNK_AND_BULK_INSERT_ANALYSIS.md       |
+| Cột file Miaolin vs DB/Custom                | FUNC_LOGIC/MIAOLIN_IMPORT_FIELDS_DB_VS_CUSTOM_ANALYSIS.md |
+
+---
+
+## 9. Trường import: DB vs Custom (khuyến nghị giữ hiện trạng)
+
+**Áp dụng cho file:** Miaolin Customer / Miaolin Product Customer (cấu trúc cột tương tự). **Tham chiếu:** MIAOLIN_IMPORT_FIELDS_DB_VS_CUSTOM_ANALYSIS.md.
+
+### 9.1. Trường nên ở DB (đã có – không đổi)
+
+Các trường dùng cho nghiệp vụ cốt lõi: định danh, tìm kiếm, trùng lặp, địa chỉ, liên hệ, thuế. **Không** cần thêm cột DB mới.
+
+| Trường hệ thống          | Bảng           | Cột file tương ứng (vd. Miaolin) | Bắt buộc import?             |
+| ------------------------ | -------------- | -------------------------------- | ---------------------------- |
+| name                     | users          | 客戶簡稱 \| Customer Short Name  | **Có** (required)            |
+| client_code              | client_details | 客戶代號 \| Customer Code        | Nên có (unique/company)      |
+| company_name             | client_details | Có thể = 客戶簡稱 hoặc trống     | Không                        |
+| email                    | users          | (File có thể không có)           | Không                        |
+| mobile                   | users          | TEL_NO(一) hoặc (二)             | Không                        |
+| office                   | client_details | TEL_NO(一)/(二)                  | Không                        |
+| address                  | client_details | 送貨地址 \| Delivery Address     | Không (quan trọng giao hàng) |
+| city, state, postal_code | client_details | (Nếu file có)                    | Không                        |
+| gst_number               | client_details | 統一編號 \| Tax ID               | Không                        |
+
+### 9.2. Trường chỉ cần Custom Field (giữ như hiện tại)
+
+Các trường nghiệp vụ đặc thù công ty, **không** đưa vào bảng users/client_details; giữ trong **custom_fields_data** (Custom Field Group "Client"). ClientImport và ClientImportProcessor đã map đủ.
+
+| Trường custom (name)  | Cột file (vd. Miaolin)               | Ghi chú                                            |
+| --------------------- | ------------------------------------ | -------------------------------------------------- |
+| salesperson           | 業務員 \| Salesperson                | ✅ Đã có trong ClientImport                        |
+| department            | 部門 \| Department                   | ✅ Đã có                                           |
+| sales_assistant_name  | 業務助理名稱 \| Sales Assistant Name | ✅ Đã có                                           |
+| customer_grade        | 客戶(集團)分級 \| Customer Grade     | ✅ Đã có (ClientImport::fields + getClientCustomFieldNames)              |
+| channel_type          | 通路別 \| Channel Type               | ✅ Đã có                                           |
+| business_type         | 型態別 \| Business Type              | ✅ Đã có                                           |
+| last_transaction_at   | 最近交易 \| Last Transaction Date    | ✅ Đã có                                           |
+| payment_terms         | 交易條件 \| Payment Terms            | ✅ Đã có                                           |
+| business_closure_date | 歇業日期 \| Business Closure Date    | ✅ Đã có (có giá trị → set User.status = inactive) |
+
+### 9.3. Cột file khác (đã map hoặc tùy chọn)
+
+| Cột file / trường | Trạng thái | Ghi chú |
+| ------------------- | ---------- | ------- |
+| **客戶(集團)分級 \| Customer Grade** | ✅ **Đã map** | custom field `customer_grade` đã có trong ClientImport::fields() và getClientCustomFieldNames(); không nhầm với pricing_tier_id (Tier Pricing). |
+
+### 9.4. Kết luận
+
+- **Không** cần thêm cột DB mới cho các cột hiện có trong file Miaolin Product Customer / Miaolin Customer. Cấu trúc hiện tại (name, client_code, address, office, gst_number… trên DB; salesperson, department, payment_terms… trên custom field) là **hợp lý** và nên giữ.
+- Cải thiện chính cho file ~17k dòng: **bulk insert custom_fields_data** + cache metadata trong chunk + tăng chunk size sau khi bulk insert; không thay đổi cách phân chia DB vs Custom.
+
+### 9.5. Ảnh hưởng khi khách hàng xóa hoặc thêm custom field
+
+Import client dùng **danh sách tên custom field cố định** trong code (`ClientImportProcessor::getClientCustomFieldNames()` và `ClientImport::fields()`). Khi admin xóa hoặc thêm custom field trong Settings (Client group):
+
+| Tình huống                                                      | Ảnh hưởng                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Xóa custom field** (vd. xóa "salesperson" khỏi nhóm Client)   | **Không gây lỗi.** Trong `saveCustomFieldsFromRow()` ta load CustomField theo group + `whereIn('name', $customNames)`. Field đã xóa không còn trong DB → `$fields->get($name)` null → bỏ qua, không ghi. Cột tương ứng trong file import sẽ **không được ghi** vào `custom_fields_data` (đúng với việc field không còn dùng). Dữ liệu cũ đã lưu với custom_field_id đó có thể thành "orphan" tùy chính sách khi xóa custom field (có xóa luôn custom_fields_data hay không).                                                               |
+| **Thêm custom field mới** (vd. thêm "region" trong nhóm Client) | **Field mới chưa được import.** Danh sách trong code không có tên mới → không map cột file vào field đó. Để import được: (1) thêm tên vào `getClientCustomFieldNames()`, (2) thêm cột (id + name) vào `ClientImport::fields()` để user map cột Excel. **Hoặc** sau này có thể đổi sang cách **động**: load toàn bộ CustomField của group Client từ DB (theo company), dùng danh sách đó thay cho hardcode → mọi custom field admin thêm sẽ tự có thể map và import (cần đảm bảo form import có cách hiển thị/chọn cột cho các field động). |
+
+**Tóm tắt:** Xóa custom field → an toàn, chỉ không ghi field đó khi import. Thêm custom field mới → mặc định không import được; cần cập nhật code (hoặc làm dynamic theo DB) thì mới map được.
+
+---
+
+## 10. Import: xử lý khi client_code trùng với dữ liệu cũ
+
+Khi một dòng trong file import có **client_code** trùng với client đã tồn tại (cùng `company_id`), hệ thống cần chọn một trong các cách xử lý sau.
+
+### 10.1. Cách xử lý hiện tại (đã triển khai – Update khi trùng)
+
+| Hành vi               | Mô tả                                                                                                                                                                                                                                                                                                                                                                       |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Trùng client_code** | `ClientImportProcessor::processRow()` tìm thấy `ClientDetails` cùng company + client_code → gọi `updateExistingClient()` để **cập nhật** client đó theo dữ liệu dòng file.                                                                                                                                                                                                  |
+| **Cập nhật**          | Cập nhật `users` (name, email, mobile, gender, country_id), `client_details` (company_name, address, city, state, postal_code, office, website, gst_number), custom fields (gồm customer_grade — khi không dùng bulk thì qua `saveCustomFieldsFromRow`, khi dùng bulk thì qua bulk insert trong job); business_closure_date có giá trị → `User.status = 'inactive'`; xóa và tạo lại `universal_search`. Không tạo user_auth/role/permissions mới. |
+| **Trong chunk job**   | `processRow()` trả về `User` (created hoặc updated) → chunk job coi dòng thành công.                                                                                                                                                                                                                                                                                        |
+| **Kết quả**           | Dòng được xử lý: client mới thì tạo; client_code trùng thì **cập nhật** dữ liệu từ file.                                                                                                                                                                                                                                                                                    |
+
+**Code tham chiếu:** `ClientImportProcessor::processRow()` — khi có `$existingDetails` theo client_code thì `return self::updateExistingClient(...)`. `ClientImportProcessor::updateExistingClient()` — cập nhật user, client_details, saveCustomFieldsFromRow, business_closure_date → inactive, UniversalSearch delete + logSearchEntry.
+
+### 10.2. Các lựa chọn khác (Skip / Fail)
+
+| Cách     | Mô tả                                                 | Ghi chú                                                          |
+| -------- | ----------------------------------------------------- | ---------------------------------------------------------------- |
+| **Skip** | Trùng client_code → bỏ qua dòng, không cập nhật.      | Có thể bật lại bằng tùy chọn trên form import (chưa triển khai). |
+| **Fail** | Trùng client_code → throw Exception, dòng vào failed. | Dùng khi bắt buộc file không được chứa client_code đã tồn tại.   |
+
+### 10.3. Khuyến nghị
+
+- **Hiện tại:** Đã triển khai **Update** khi trùng client_code — phù hợp khi file là nguồn master (vd. export ERP rồi import lại) để vừa tạo mới vừa đồng bộ client cũ.
+- Nếu sau này cần **Skip** khi trùng: thêm tùy chọn trên form import và truyền vào job/processor, trong `processRow()` khi `$duplicateByClientCode` và option = Skip thì `return null` thay vì gọi `updateExistingClient()`.
+
+### 10.4. Chi tiết đã triển khai (updateExistingClient)
+
+- Lấy `$user = $existingDetails->user`, `$clientDetails = $existingDetails`.
+- Cập nhật `$user`: name, email, mobile, gender, country_id (không tạo user_auth mới).
+- Cập nhật `$clientDetails`: company_name, address, city, state, postal_code, office, website, gst_number; **không** đổi client_code.
+- Custom field: khi **bulk insert** (chunk job) thì processRow gọi với `skip_custom_fields => true`, job xóa sẵn custom_fields_data theo model_id rồi gom và insert cuối chunk; khi **không** dùng bulk thì gọi `saveCustomFieldsFromRow()` — gồm customer_grade và các custom field khác.
+- Nếu có business_closure_date → set `$user->status = 'inactive'` và save.
+- Xóa bản ghi `universal_search` (searchable_id = user.id, module_type = 'client', company_id); tạo lại bằng `logSearchEntry` (name, email nếu có, company_name nếu có).
+- Return `$user` để chunk job coi dòng thành công.

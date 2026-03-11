@@ -24,11 +24,12 @@ class ClientImport implements ToArray
             ['id' => 'postal_code', 'name' => __('modules.stripeCustomerAddress.postalCode'), 'required' => 'No'],
             ['id' => 'company_phone', 'name' => __('modules.client.officePhoneNumber'), 'required' => 'No'],
             ['id' => 'company_website', 'name' => __('modules.client.website'), 'required' => 'No'],
-            ['id' => 'gst_number', 'name' => __('app.gstNumber').' ('.__('app.taxId').')', 'required' => 'No'],
+            ['id' => 'gst_number', 'name' => __('app.gstNumber') . ' (' . __('app.taxId') . ')', 'required' => 'No'],
             // Custom fields (Client group)
             ['id' => 'salesperson', 'name' => __('modules.client.salesperson'), 'required' => 'No'],
             ['id' => 'department', 'name' => __('modules.client.department'), 'required' => 'No'],
             ['id' => 'sales_assistant_name', 'name' => __('modules.client.salesAssistantName'), 'required' => 'No'],
+            ['id' => 'customer_grade', 'name' => __('modules.client.customerGrade'), 'required' => 'No'],
             ['id' => 'channel_type', 'name' => __('modules.client.channelType'), 'required' => 'No'],
             ['id' => 'business_type', 'name' => __('modules.client.businessType'), 'required' => 'No'],
             ['id' => 'last_transaction_at', 'name' => __('modules.client.lastTransactionAt'), 'required' => 'No'],

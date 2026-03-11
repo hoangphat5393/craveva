@@ -7,9 +7,12 @@ use App\Models\Country;
 use App\Models\CustomField;
 use App\Models\CustomFieldGroup;
 use App\Models\Role;
+use App\Models\UniversalSearch;
 use App\Models\User;
 use App\Models\UserAuth;
 use App\Traits\UniversalSearchTrait;
+use Carbon\Carbon;
+use Carbon\Exceptions\InvalidFormatException;
 use Exception;
 
 class ClientImportProcessor
@@ -17,16 +20,17 @@ class ClientImportProcessor
     use UniversalSearchTrait;
 
     /**
-     * Process a single row of client import. Throws on error; returns null when duplicate client_code (skip).
+     * Process a single row of client import. Creates new client or updates existing when client_code matches.
      *
      * @param  array  $row  Row data (array of cell values)
      * @param  array  $columns  Map of column index => field id (e.g. [0 => 'name', 1 => 'email'])
      * @param  \App\Models\Company|null  $company
-     * @return \App\Models\User|null Created user, or null if row skipped (duplicate client_code)
+     * @param  array  $options  e.g. ['skip_custom_fields' => true] for bulk insert in chunk job
+     * @return \App\Models\User Created or updated user
      *
      * @throws Exception
      */
-    public static function processRow(array $row, array $columns, $company): ?User
+    public static function processRow(array $row, array $columns, $company, array $options = []): ?User
     {
         if (empty(self::columnKeys($columns, 'name'))) {
             throw new Exception(__('messages.invalidData'));
@@ -64,7 +68,7 @@ class ClientImportProcessor
 
         if ($user) {
             if ($duplicateByClientCode) {
-                return null;
+                return self::updateExistingClient($user, $existingDetails, $row, $columns, $companyId, $nameTrimmed, $options);
             }
             $msg = __('messages.duplicateEntryForEmail') . self::getValue($row, $columns, 'email');
             throw new Exception($msg);
@@ -107,7 +111,9 @@ class ClientImportProcessor
         $clientDetails->gst_number = self::columnExists($columns, 'gst_number') ? self::getValue($row, $columns, 'gst_number') : null;
         $clientDetails->save();
 
-        self::saveCustomFieldsFromRow($clientDetails, $row, $columns, $companyId);
+        if (! ($options['skip_custom_fields'] ?? false)) {
+            self::saveCustomFieldsFromRow($clientDetails, $row, $columns, $companyId);
+        }
 
         if (self::columnExists($columns, 'business_closure_date') && self::getValue($row, $columns, 'business_closure_date')) {
             $user->status = 'inactive';
@@ -124,6 +130,60 @@ class ClientImportProcessor
         }
         if ($user->clientDetails && $user->clientDetails->company_name) {
             $processor->logSearchEntry($user->id, $user->clientDetails->company_name, 'clients.show', 'client', $user->company_id);
+        }
+
+        return $user;
+    }
+
+    /**
+     * Update existing client when import row has same client_code. Sync users, client_details, custom fields, universal_search.
+     */
+    protected static function updateExistingClient(User $user, ClientDetails $existingDetails, array $row, array $columns, $companyId, string $nameTrimmed, array $options = []): User
+    {
+        $countryID = self::columnExists($columns, 'country_id')
+            ? Country::where('name', self::getValue($row, $columns, 'country_id'))->first()?->id
+            : null;
+
+        $user->name = $nameTrimmed;
+        $user->email = self::columnExists($columns, 'email') && self::isEmailValid(self::getValue($row, $columns, 'email'))
+            ? self::getValue($row, $columns, 'email')
+            : null;
+        $user->mobile = self::columnExists($columns, 'mobile') ? self::getValue($row, $columns, 'mobile') : null;
+        $user->gender = self::columnExists($columns, 'gender') ? strtolower(self::getValue($row, $columns, 'gender')) : null;
+        $user->country_id = $countryID;
+        $user->save();
+
+        $existingDetails->company_name = self::columnExists($columns, 'company_name') ? self::getValue($row, $columns, 'company_name') : null;
+        $existingDetails->address = self::columnExists($columns, 'address') ? self::getValue($row, $columns, 'address') : null;
+        $existingDetails->city = self::columnExists($columns, 'city') ? self::getValue($row, $columns, 'city') : null;
+        $existingDetails->state = self::columnExists($columns, 'state') ? self::getValue($row, $columns, 'state') : null;
+        $existingDetails->postal_code = self::columnExists($columns, 'postal_code') ? self::getValue($row, $columns, 'postal_code') : null;
+        $existingDetails->office = self::columnExists($columns, 'company_phone') ? self::getValue($row, $columns, 'company_phone') : null;
+        $existingDetails->website = self::columnExists($columns, 'company_website') ? self::getValue($row, $columns, 'company_website') : null;
+        $existingDetails->gst_number = self::columnExists($columns, 'gst_number') ? self::getValue($row, $columns, 'gst_number') : null;
+        $existingDetails->save();
+
+        if (! ($options['skip_custom_fields'] ?? false)) {
+            self::saveCustomFieldsFromRow($existingDetails, $row, $columns, $companyId);
+        }
+
+        if (self::columnExists($columns, 'business_closure_date') && self::getValue($row, $columns, 'business_closure_date')) {
+            $user->status = 'inactive';
+            $user->save();
+        }
+
+        UniversalSearch::where('searchable_id', $user->id)
+            ->where('module_type', 'client')
+            ->where('company_id', $companyId)
+            ->delete();
+
+        $processor = new self;
+        $processor->logSearchEntry($user->id, $user->name, 'clients.show', 'client', $user->company_id);
+        if ($user->email) {
+            $processor->logSearchEntry($user->id, $user->email, 'clients.show', 'client', $user->company_id);
+        }
+        if ($existingDetails->company_name) {
+            $processor->logSearchEntry($user->id, $existingDetails->company_name, 'clients.show', 'client', $user->company_id);
         }
 
         return $user;
@@ -157,12 +217,112 @@ class ClientImportProcessor
             'salesperson',
             'department',
             'sales_assistant_name',
+            'customer_grade',
             'channel_type',
             'business_type',
             'last_transaction_at',
             'payment_terms',
             'business_closure_date',
         ];
+    }
+
+    /**
+     * Load Client custom field group and return map name => ['id' => custom_field_id, 'type' => type].
+     * Used once per chunk for bulk insert (cache metadata).
+     */
+    public static function getClientCustomFieldMap($companyId): array
+    {
+        $group = CustomFieldGroup::where('name', 'Client')
+            ->where('model', ClientDetails::CUSTOM_FIELD_MODEL)
+            ->where('company_id', $companyId)
+            ->first();
+
+        if (! $group) {
+            return [];
+        }
+
+        $customNames = self::getClientCustomFieldNames();
+        $fields = CustomField::where('custom_field_group_id', $group->id)
+            ->whereIn('name', $customNames)
+            ->get();
+
+        $map = [];
+        foreach ($fields as $field) {
+            $map[$field->name] = ['id' => $field->id, 'type' => $field->type ?? 'text'];
+        }
+
+        return $map;
+    }
+
+    /**
+     * Build rows for bulk insert into custom_fields_data from one import row.
+     * Caller inserts all collected rows at end of chunk.
+     *
+     * @return array<int, array{model: string, model_id: int, custom_field_id: int, value: string}>
+     */
+    public static function buildCustomFieldRowsForBulk(array $row, array $columns, int $clientDetailsId, $companyId, array $fieldMap): array
+    {
+        $company = $companyId ? \App\Models\Company::find($companyId) : null;
+        $rows = [];
+        foreach (self::getClientCustomFieldNames() as $name) {
+            if (! self::columnExists($columns, $name)) {
+                continue;
+            }
+            $fieldInfo = $fieldMap[$name] ?? null;
+            if (! $fieldInfo) {
+                continue;
+            }
+            $value = self::getValue($row, $columns, $name);
+            if ($value === null || $value === '') {
+                continue;
+            }
+            $value = self::normalizeCustomFieldValue($value, $fieldInfo['type'], $company);
+            $rows[] = [
+                'model' => ClientDetails::CUSTOM_FIELD_MODEL,
+                'model_id' => $clientDetailsId,
+                'custom_field_id' => $fieldInfo['id'],
+                'value' => (string) $value,
+            ];
+        }
+
+        return $rows;
+    }
+
+    protected static function normalizeCustomFieldValue($value, string $type, $company = null): string
+    {
+        if ($type === 'date') {
+            return self::parseDateForCustomField($value, $company);
+        }
+
+        return (string) $value;
+    }
+
+    protected static function parseDateForCustomField($value, $company = null): string
+    {
+        $str = trim((string) $value);
+        if ($str === '') {
+            return '';
+        }
+        $formats = ['Ymd', 'Y-m-d', 'd-m-Y', 'm/d/Y', 'd/m/Y', 'Y/m/d'];
+        $companyFormat = $company?->date_format ?? null;
+        if ($companyFormat && ! in_array($companyFormat, $formats)) {
+            array_unshift($formats, $companyFormat);
+        }
+        foreach ($formats as $format) {
+            try {
+                $date = Carbon::createFromFormat($format, $str);
+                if ($date) {
+                    return $date->format('Y-m-d');
+                }
+            } catch (InvalidFormatException $e) {
+                continue;
+            }
+        }
+        try {
+            return Carbon::parse($str)->format('Y-m-d');
+        } catch (InvalidFormatException $e) {
+            return '';
+        }
     }
 
     protected static function saveCustomFieldsFromRow(ClientDetails $clientDetails, array $row, array $columns, $companyId): void

@@ -376,6 +376,7 @@ return [
     'importDefaultUnitType' => 'Importdefaultunittype',
     'importDefaultUnitTypeHelp' => 'Importdefaultunittypehelp',
     'importRunningInBackground' => 'Import is running in the background.',
+    'importFirstProgressMayTakeAMinute' => 'The first progress update may take 1–2 minutes for large files; please keep this page open.',
     'pleaseSelectAColumn' => 'Pleaseselectacolumn',
     'invoiceLogoTooltip' => 'Invoicelogotooltip',
     'authorisedSignatorySignatureTooltip' => 'Authorisedsignatorysignaturetooltip',

@@ -419,3 +419,12 @@ Remove-Item -Force $ZipFile
 Write-Host "----------------------------------------------------------------"
 Write-Host "Upload and deployment to $HubHost complete!"
 Write-Host "----------------------------------------------------------------"
+
+
+=== RAM ===
+               total        used        free      shared  buff/cache   available
+Mem:           3.8Gi       2.2Gi       466Mi       266Mi       1.1Gi       1.1Gi
+Swap:          1.0Gi          0B       1.0Gi
+=== DISK ===
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/root       194G   50G  144G  26% /

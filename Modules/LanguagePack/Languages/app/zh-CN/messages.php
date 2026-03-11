@@ -380,6 +380,7 @@ return [
     'importUploadSuccess' => '数据上传成功。',
     'importProcessStart' => '导入过程开始。请稍等。',
     'importRunningInBackground' => '导入正在后台运行。',
+    'importFirstProgressMayTakeAMinute' => '首次进度更新对于大文件可能需要 1–2 分钟，请勿关闭此页面。',
     'confirmResetPermission' => '这将重置具有此角色的所有用户的权限。您想重置吗？',
     'invoiceDueOn' => '发票到期日',
     'googleCalendar' => [

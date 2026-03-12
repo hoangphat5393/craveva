@@ -3,6 +3,8 @@
 namespace App\Jobs;
 
 use App\Models\ClientDetails;
+use App\Models\PermissionRole;
+use App\Models\Role;
 use App\Services\ClientImportProcessor;
 use Exception;
 use Illuminate\Bus\Batchable;
@@ -49,9 +51,19 @@ class ImportClientChunkJob implements ShouldQueue
         $failures = [];
         $companyId = $this->company?->id;
 
-        // Load Client custom field metadata once per chunk (cache for bulk insert)
+        // Load once per chunk: custom field map, role (client), role permissions (for bulk insert)
         $fieldMap = ClientImportProcessor::getClientCustomFieldMap($companyId);
         $bulkCustomRows = [];
+
+        $role = $companyId ? Role::where('name', 'client')->where('company_id', $companyId)->select('id')->first() : null;
+        $roleId = $role?->id;
+        $rolePermissions = $roleId ? PermissionRole::where('role_id', $roleId)->get() : collect();
+        $options = ['skip_custom_fields' => true, 'skip_role_and_search' => true, 'role_id' => $roleId];
+
+        $roleUserRows = [];
+        $userPermissionRows = [];
+        $universalSearchRows = [];
+        $now = now();
 
         $maxDeadlockRetries = 3;
 
@@ -66,7 +78,7 @@ class ImportClientChunkJob implements ShouldQueue
                             $normalizedRow,
                             $this->columns,
                             $this->company,
-                            ['skip_custom_fields' => true]
+                            $options
                         ));
                         break;
                     } catch (Exception $e) {
@@ -85,8 +97,44 @@ class ImportClientChunkJob implements ShouldQueue
 
                 $user->load('clientDetails');
                 $clientDetails = $user->clientDetails;
+
+                // New client: collect role_user, user_permissions, universal_search for bulk insert
+                if ($user->wasRecentlyCreated && $roleId) {
+                    $roleUserRows[] = ['user_id' => $user->id, 'role_id' => $roleId];
+                    foreach ($rolePermissions as $pr) {
+                        $userPermissionRows[] = [
+                            'user_id' => $user->id,
+                            'permission_id' => $pr->permission_id,
+                            'permission_type_id' => $pr->permission_type_id,
+                        ];
+                    }
+                    $route = 'clients.show';
+                    $moduleType = 'client';
+                    if ($user->email) {
+                        $universalSearchRows[] = [
+                            'company_id' => $companyId,
+                            'searchable_id' => $user->id,
+                            'module_type' => $moduleType,
+                            'title' => $user->email,
+                            'route_name' => $route,
+                            'created_at' => $now,
+                            'updated_at' => $now,
+                        ];
+                    }
+                    if ($clientDetails && $clientDetails->company_name) {
+                        $universalSearchRows[] = [
+                            'company_id' => $companyId,
+                            'searchable_id' => $user->id,
+                            'module_type' => $moduleType,
+                            'title' => $clientDetails->company_name,
+                            'route_name' => $route,
+                            'created_at' => $now,
+                            'updated_at' => $now,
+                        ];
+                    }
+                }
+
                 if ($clientDetails && $fieldMap !== []) {
-                    // Remove existing custom_fields_data for this client so bulk insert does not duplicate (update path)
                     DB::table('custom_fields_data')
                         ->where('model', ClientDetails::CUSTOM_FIELD_MODEL)
                         ->where('model_id', $clientDetails->id)
@@ -103,9 +151,29 @@ class ImportClientChunkJob implements ShouldQueue
                     }
                 }
             } catch (Exception $e) {
-                // File row number: row 1 = header, row 2 = first data
                 $fileRow = $this->chunkStartIndex + $index + 2;
                 $failures[] = 'Row ' . $fileRow . ': ' . $e->getMessage();
+            }
+        }
+
+        // Bulk insert role_user
+        if ($roleUserRows !== []) {
+            foreach (array_chunk($roleUserRows, 100) as $batch) {
+                DB::table('role_user')->insert($batch);
+            }
+        }
+        // Bulk delete then insert user_permissions for new users in this chunk
+        if ($userPermissionRows !== []) {
+            $newUserIds = array_unique(array_column($roleUserRows, 'user_id'));
+            DB::table('user_permissions')->whereIn('user_id', $newUserIds)->delete();
+            foreach (array_chunk($userPermissionRows, 500) as $batch) {
+                DB::table('user_permissions')->insert($batch);
+            }
+        }
+        // Bulk insert universal_search
+        if ($universalSearchRows !== []) {
+            foreach (array_chunk($universalSearchRows, 200) as $batch) {
+                DB::table('universal_search')->insert($batch);
             }
         }
 

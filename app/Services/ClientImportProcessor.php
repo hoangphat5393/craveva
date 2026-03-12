@@ -120,16 +120,23 @@ class ClientImportProcessor
             $user->save();
         }
 
-        $role = Role::where('name', 'client')->where('company_id', $companyId)->select('id')->first();
-        $user->attachRole($role->id);
-        $user->assignUserRolePermission($role->id);
-
-        $processor = new self;
-        if ($user->email) {
-            $processor->logSearchEntry($user->id, $user->email, 'clients.show', 'client', $user->company_id);
-        }
-        if ($user->clientDetails && $user->clientDetails->company_name) {
-            $processor->logSearchEntry($user->id, $user->clientDetails->company_name, 'clients.show', 'client', $user->company_id);
+        if (! ($options['skip_role_and_search'] ?? false)) {
+            $roleId = $options['role_id'] ?? null;
+            if ($roleId === null) {
+                $role = Role::where('name', 'client')->where('company_id', $companyId)->select('id')->first();
+                $roleId = $role?->id;
+            }
+            if ($roleId) {
+                $user->attachRole($roleId);
+                $user->assignUserRolePermission($roleId);
+            }
+            $processor = new self;
+            if ($user->email) {
+                $processor->logSearchEntry($user->id, $user->email, 'clients.show', 'client', $user->company_id);
+            }
+            if ($user->clientDetails && $user->clientDetails->company_name) {
+                $processor->logSearchEntry($user->id, $user->clientDetails->company_name, 'clients.show', 'client', $user->company_id);
+            }
         }
 
         return $user;

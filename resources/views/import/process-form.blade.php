@@ -32,7 +32,7 @@
             <div class="col-md-12 import-table">
                 <input type="hidden" name="file" value="{{ $file }}">
                 <input type="hidden" name="has_heading" value="{{ $hasHeading ?? false }}">
-                <input type="hidden" name="has_skip_footer" value="{{ ($hasSkipFooter ?? false) ? '1' : '0' }}">
+                <input type="hidden" name="has_skip_footer" value="{{ $hasSkipFooter ?? false ? '1' : '0' }}">
 
                 <div class="row">
                     @forelse ($importSample[0] as $key => $item)
@@ -498,10 +498,9 @@
             type: 'GET',
             url: url,
             success: function(response) {
-                if (response.count) {
+                if (response.view) {
                     $('#exceptionTable').html(response.view);
                     $('#exceptionTable').show();
-
                 }
             }
         });

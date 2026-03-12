@@ -64,13 +64,40 @@ class ImportController extends Controller
                 ->get();
         }
 
+        $failedRows = [];
         foreach ($exceptions as $exception) {
-            $exception->exception = '[' . $exception->queue . '] ' . $this->parseExceptionMessage($exception->exception);
+            $raw = $this->parseExceptionMessage($exception->exception);
+            $exception->exception = '[' . $exception->queue . '] ' . $raw;
+            foreach ($this->parseFailedRowsFromMessage($raw) as $item) {
+                $failedRows[] = $item;
+            }
+        }
+        $failedRows = $this->sortAndDedupeFailedRows($failedRows);
+
+        $summary = null;
+        if ($batchId && $batchRecord) {
+            $totalJobs = (int) ($batchRecord->total_jobs ?? 0);
+            $failedJobsCount = (int) ($batchRecord->failed_jobs ?? 0);
+            $processedJobs = $totalJobs - $failedJobsCount;
+            $summary = [
+                'total_jobs' => $totalJobs,
+                'failed_jobs' => $failedJobsCount,
+                'processed_jobs' => $processedJobs,
+            ];
         }
 
-        $view = view('import.import_exception', $this->data)->with(['exceptions' => $exceptions])->render();
+        $view = view('import.import_exception', $this->data)->with([
+            'exceptions' => $exceptions,
+            'failedRows' => $failedRows,
+            'summary' => $summary,
+        ])->render();
 
-        return Reply::dataOnly(['view' => $view, 'count' => count($exceptions)]);
+        return Reply::dataOnly([
+            'view' => $view,
+            'count' => count($exceptions),
+            'failed_rows' => $failedRows,
+            'summary' => $summary,
+        ]);
     }
 
     /**
@@ -81,5 +108,43 @@ class ImportController extends Controller
         $lines = explode("\n", (string) $exceptionTrace);
 
         return implode("\n", array_slice($lines, 0, 50));
+    }
+
+    /**
+     * Extract "Row N: message" pairs from exception text (e.g. from ImportClientChunkJob::fail()).
+     *
+     * @return array<int, array{row: int, message: string}>
+     */
+    private function parseFailedRowsFromMessage(string $text): array
+    {
+        $out = [];
+        $lines = explode("\n", $text);
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if (preg_match('/^Row\s+(\d+):\s*(.+)$/i', $line, $m)) {
+                $out[] = ['row' => (int) $m[1], 'message' => trim($m[2])];
+            }
+        }
+
+        return $out;
+    }
+
+    /**
+     * Sort by row number and remove duplicate rows (keep first message).
+     *
+     * @param  array<int, array{row: int, message: string}>  $rows
+     * @return array<int, array{row: int, message: string}>
+     */
+    private function sortAndDedupeFailedRows(array $rows): array
+    {
+        $byRow = [];
+        foreach ($rows as $r) {
+            if (! isset($byRow[$r['row']])) {
+                $byRow[$r['row']] = $r;
+            }
+        }
+        ksort($byRow, SORT_NUMERIC);
+
+        return array_values($byRow);
     }
 }

@@ -6,9 +6,8 @@ $Project = "craveva-org-55934-project"
 $Zone = "asia-southeast1-a"
 $Instance = "craveva-staging"
 
-# Optional: set target machine type (more RAM). Leave empty to auto-upgrade one tier.
-# Examples: e2-standard-2 (8GB), e2-standard-4 (16GB), e2-standard-8 (32GB)
-$TargetMachineType = "e2-standard"   # 8GB RAM - change to e2-standard-4 for 16GB if needed
+# Target: 4GB RAM. Staging hiện 2GB (e2-small) -> nâng lên 4GB (e2-medium)
+$TargetMachineType = "e2-medium"   # 4GB RAM
 
 Write-Host "Project: $Project | Zone: $Zone | Instance: $Instance" -ForegroundColor Cyan
 Write-Host "Other VMs (craveva-ai, craveva-hub-server) will NOT be modified." -ForegroundColor Green

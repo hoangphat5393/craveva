@@ -305,6 +305,8 @@ INSERT INTO universal_search (company_id, searchable_id, title, route_name, modu
 
 Khi nhiều chunk job chạy song song (vd. `queue:work --max-jobs=50`), nhiều transaction cùng ghi `user_permissions` (DELETE + INSERT trong `assignUserRolePermission`) → MySQL báo **deadlock (1213)** hoặc **serialization failure (40001)**.
 
+**Tại sao import Product không bị?** Mỗi client mới = 1 user + 1 client_details + **role_user** + **user_permissions** (hàng chục dòng quyền từ role "client"). Nhiều job cùng INSERT/DELETE trên bảng `user_permissions` → tranh chấp lock/index → deadlock. Import product chỉ ghi vào `products`, `unit_types`, `universal_search` (và có thể employee_activity); **không** tạo user, không gán role, không đụng `user_permissions` → không có deadlock từ bảng đó.
+
 **Đã triển khai:** Trong `ImportClientChunkJob`, mỗi dòng được xử lý trong transaction có **retry khi deadlock**: tối đa 3 lần, mỗi lần thất bại chờ 100ms/200ms/300ms rồi thử lại. Chỉ retry với exception là deadlock/serialization (code 1213, 40001 hoặc message chứa "Deadlock"); lỗi khác vẫn ghi vào failed ngay.
 
 **Gợi ý thêm trên staging:** Nếu vẫn nhiều failed do deadlock, giảm số job chạy đồng thời (vd. `--max-jobs=10` hoặc 20) khi poll import để giảm tranh chấp lock.

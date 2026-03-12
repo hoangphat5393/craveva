@@ -37,11 +37,26 @@ gcloud compute instances set-machine-type $Instance --machine-type=$TargetMachin
 if ($LASTEXITCODE -ne 0) { throw "Failed to set machine type" }
 Write-Host "  Machine type set to $TargetMachineType." -ForegroundColor Gray
 
-# 5. Start instance
+# 5. Start instance (nếu zone hết tài nguyên thì chuyển sang zone khác trong region)
 Write-Host "[5/5] Starting $Instance..." -ForegroundColor Yellow
-gcloud compute instances start $Instance --zone=$Zone --project=$Project
-if ($LASTEXITCODE -ne 0) { throw "Failed to start instance" }
-Write-Host "  Instance started." -ForegroundColor Gray
+$startResult = gcloud compute instances start $Instance --zone=$Zone --project=$Project 2>&1
+if ($LASTEXITCODE -ne 0) {
+    if ($startResult -match "ZONE_RESOURCE_POOL_EXHAUSTED|does not have enough resources") {
+        $ZoneAlt = "asia-southeast1-b"
+        Write-Host "  Zone $Zone het tai nguyen. Dang chuyen VM sang $ZoneAlt..." -ForegroundColor Yellow
+        gcloud compute instances move $Instance --zone=$Zone --destination-zone=$ZoneAlt --project=$Project
+        if ($LASTEXITCODE -ne 0) { throw "Failed to move instance to $ZoneAlt" }
+        $Zone = $ZoneAlt
+        gcloud compute instances start $Instance --zone=$Zone --project=$Project
+        if ($LASTEXITCODE -ne 0) { throw "Failed to start instance in $Zone" }
+        Write-Host "  Instance da chuyen sang $Zone va da start." -ForegroundColor Gray
+        Write-Host "  Luu y: VM hien o zone $Zone (IP co the thay doi, kiem tra lai trong Console)." -ForegroundColor Cyan
+    } else {
+        throw "Failed to start instance: $startResult"
+    }
+} else {
+    Write-Host "  Instance started." -ForegroundColor Gray
+}
 
 Write-Host ""
 Write-Host "Done. craveva-staging now uses $TargetMachineType. Other servers unchanged." -ForegroundColor Green

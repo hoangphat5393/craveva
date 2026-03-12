@@ -1,0 +1,28 @@
+GỬI CHO ADMIN / NGƯỜI CÓ QUYỀN CLOUD SQL (Owner project GCP)
+============================================================
+
+Nếu bạn vào Cloud SQL mà báo thiếu quyền (can't create / can't see list):
+→ Xin Admin grant cho tài khoản của bạn (ví dụ hoangphat5393@gmail.com) một trong hai role sau trong IAM, project craveva-org-55934-project:
+   • Cloud SQL Editor   (roles/cloudsql.editor)  – đủ để xem instance và thêm Authorized network
+   • Cloud SQL Admin    (roles/cloudsql.admin)   – đủ mọi thao tác Cloud SQL
+  Sau khi có quyền, vào Cloud SQL → chọn instance 136.110.52.19 → Connections → ADD NETWORK (IP bên dưới).
+  HOẶC nhờ Admin làm giúp bước thêm IP bên dưới (không cần cấp quyền cho bạn).
+
+---
+
+Staging (https://staging.craveva.com/) bị lỗi 504 vì máy chủ staging đổi sang IP mới nhưng chưa được phép nối tới database.
+
+Cần làm 1 việc: thêm IP sau vào "Authorized networks" của Cloud SQL (instance có IP 136.110.52.19):
+
+   IP cần thêm:  35.240.234.226
+   Tên (Name):   staging-vm   (tùy chọn)
+
+Cách làm nhanh:
+1. Vào https://console.cloud.google.com/sql/instances
+2. Chọn project chứa database (instance có IP 136.110.52.19)
+3. Bấm vào TÊN instance đó
+4. Tab "Connections" → phần "Authorized networks" → "ADD NETWORK"
+5. Điền Network: 35.240.234.226    Name: staging-vm
+6. Bấm Done → Save
+
+Sau khi lưu, đợi 1–2 phút rồi thử lại https://staging.craveva.com/

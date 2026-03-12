@@ -516,6 +516,7 @@ return [
         'address' => 'Address',
         'projectSubCategory' => 'Projectsubcategory',
         'password' => 'Password',
+        'customerGrade' => 'Customergrade',
     ],
     'proposal' => [
         'publicLink' => 'Publiclink',
@@ -1288,7 +1289,7 @@ return [
     'import' => [
         'file' => 'File',
         'containsHeadings' => 'Containsheadings',
-        'skipFooterRow' => 'Skipfooterrow',
+        'skipFooterRow' => 'Skip Footer Row',
     ],
     'module' => [
         'biometric' => 'Biometric',

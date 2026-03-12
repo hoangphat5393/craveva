@@ -182,7 +182,6 @@ return [
         'salesperson' => 'Salesperson',
         'department' => 'Department',
         'salesAssistantName' => 'Sales Assistant Name',
-        'customerGrade' => 'Customer Grade',
         'channelType' => 'Channel Type',
         'businessType' => 'Business Type',
         'lastTransactionAt' => 'Last Transaction At',

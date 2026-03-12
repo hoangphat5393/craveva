@@ -14,10 +14,8 @@
                         <x-forms.file :fieldLabel="__('modules.import.file')" fieldName="import_file" fieldId="product_import" />
                     </div>
                     <div class="col-md-12">
-                        <x-forms.toggle-switch class="mr-0 mr-lg-12"
-                            :fieldLabel="__('modules.import.containsHeadings')"
-                            fieldName="heading"
-                            fieldId="heading"/>
+                        <x-forms.toggle-switch class="mr-0 mr-lg-12" :fieldLabel="__('modules.import.containsHeadings')" fieldName="heading" fieldId="heading" />
+                        <x-forms.toggle-switch class="mr-0 mr-lg-12" :fieldLabel="__('modules.import.skipFooterRow')" fieldName="skip_footer" fieldId="skip_footer" />
                     </div>
                 </div>
                 <x-form-actions>
@@ -34,7 +32,6 @@
 </div>
 
 <script>
-
     $(document).ready(function() {
 
         $("#product_import").dropify({

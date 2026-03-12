@@ -243,17 +243,17 @@ INSERT INTO universal_search (company_id, searchable_id, title, route_name, modu
 
 ## 6. Nguồn code tham chiếu
 
-| Bước            | File / method                                                                 |
-| ---------------- | ----------------------------------------------------------------------------- |
-| Form UI          | `App\Http\Controllers\ClientController::store()`                              |
-| Import chunk     | `App\Jobs\ImportClientChunkJob::handle()`                                    |
-| Import 1 dòng    | `App\Services\ClientImportProcessor::processRow()`                             |
-| Cập nhật trùng   | `ClientImportProcessor::updateExistingClient()`                              |
-| Bulk custom      | `ClientImportProcessor::getClientCustomFieldMap()`, `buildCustomFieldRowsForBulk()` |
-| UserAuth         | `App\Models\UserAuth::createUserAuthCredentials()`                            |
-| Custom field (form / từng dòng) | `App\Traits\CustomFieldsTrait::updateCustomFieldData()`               |
-| Role             | `User::attachRole()`, `User::assignUserRolePermission()`                     |
-| Search           | `App\Traits\UniversalSearchTrait::logSearchEntry()`                           |
+| Bước                            | File / method                                                                       |
+| ------------------------------- | ----------------------------------------------------------------------------------- |
+| Form UI                         | `App\Http\Controllers\ClientController::store()`                                    |
+| Import chunk                    | `App\Jobs\ImportClientChunkJob::handle()`                                           |
+| Import 1 dòng                   | `App\Services\ClientImportProcessor::processRow()`                                  |
+| Cập nhật trùng                  | `ClientImportProcessor::updateExistingClient()`                                     |
+| Bulk custom                     | `ClientImportProcessor::getClientCustomFieldMap()`, `buildCustomFieldRowsForBulk()` |
+| UserAuth                        | `App\Models\UserAuth::createUserAuthCredentials()`                                  |
+| Custom field (form / từng dòng) | `App\Traits\CustomFieldsTrait::updateCustomFieldData()`                             |
+| Role                            | `User::attachRole()`, `User::assignUserRolePermission()`                            |
+| Search                          | `App\Traits\UniversalSearchTrait::logSearchEntry()`                                 |
 
 ---
 
@@ -301,7 +301,15 @@ INSERT INTO universal_search (company_id, searchable_id, title, route_name, modu
 3. **Hết chunk:** `DB::table('custom_fields_data')->insert($batch)` từng batch 500 dòng.
 4. **Chunk size mặc định:** 100 dòng/job (`ClientController::importProcess()`).
 
-### 8.4. File và tài liệu tham chiếu
+### 8.4. Deadlock khi import trên staging (đã xử lý)
+
+Khi nhiều chunk job chạy song song (vd. `queue:work --max-jobs=50`), nhiều transaction cùng ghi `user_permissions` (DELETE + INSERT trong `assignUserRolePermission`) → MySQL báo **deadlock (1213)** hoặc **serialization failure (40001)**.
+
+**Đã triển khai:** Trong `ImportClientChunkJob`, mỗi dòng được xử lý trong transaction có **retry khi deadlock**: tối đa 3 lần, mỗi lần thất bại chờ 100ms/200ms/300ms rồi thử lại. Chỉ retry với exception là deadlock/serialization (code 1213, 40001 hoặc message chứa "Deadlock"); lỗi khác vẫn ghi vào failed ngay.
+
+**Gợi ý thêm trên staging:** Nếu vẫn nhiều failed do deadlock, giảm số job chạy đồng thời (vd. `--max-jobs=10` hoặc 20) khi poll import để giảm tranh chấp lock.
+
+### 8.5. File và tài liệu tham chiếu
 
 | Nội dung                                     | File / tài liệu                                           |
 | -------------------------------------------- | --------------------------------------------------------- |
@@ -335,22 +343,22 @@ Các trường dùng cho nghiệp vụ cốt lõi: định danh, tìm kiếm, tr
 
 Các trường nghiệp vụ đặc thù công ty, **không** đưa vào bảng users/client_details; giữ trong **custom_fields_data** (Custom Field Group "Client"). ClientImport và ClientImportProcessor đã map đủ.
 
-| Trường custom (name)  | Cột file (vd. Miaolin)               | Ghi chú                                            |
-| --------------------- | ------------------------------------ | -------------------------------------------------- |
-| salesperson           | 業務員 \| Salesperson                | ✅ Đã có trong ClientImport                        |
-| department            | 部門 \| Department                   | ✅ Đã có                                           |
-| sales_assistant_name  | 業務助理名稱 \| Sales Assistant Name | ✅ Đã có                                           |
-| customer_grade        | 客戶(集團)分級 \| Customer Grade     | ✅ Đã có (ClientImport::fields + getClientCustomFieldNames)              |
-| channel_type          | 通路別 \| Channel Type               | ✅ Đã có                                           |
-| business_type         | 型態別 \| Business Type              | ✅ Đã có                                           |
-| last_transaction_at   | 最近交易 \| Last Transaction Date    | ✅ Đã có                                           |
-| payment_terms         | 交易條件 \| Payment Terms            | ✅ Đã có                                           |
-| business_closure_date | 歇業日期 \| Business Closure Date    | ✅ Đã có (có giá trị → set User.status = inactive) |
+| Trường custom (name)  | Cột file (vd. Miaolin)               | Ghi chú                                                     |
+| --------------------- | ------------------------------------ | ----------------------------------------------------------- |
+| salesperson           | 業務員 \| Salesperson                | ✅ Đã có trong ClientImport                                 |
+| department            | 部門 \| Department                   | ✅ Đã có                                                    |
+| sales_assistant_name  | 業務助理名稱 \| Sales Assistant Name | ✅ Đã có                                                    |
+| customer_grade        | 客戶(集團)分級 \| Customer Grade     | ✅ Đã có (ClientImport::fields + getClientCustomFieldNames) |
+| channel_type          | 通路別 \| Channel Type               | ✅ Đã có                                                    |
+| business_type         | 型態別 \| Business Type              | ✅ Đã có                                                    |
+| last_transaction_at   | 最近交易 \| Last Transaction Date    | ✅ Đã có                                                    |
+| payment_terms         | 交易條件 \| Payment Terms            | ✅ Đã có                                                    |
+| business_closure_date | 歇業日期 \| Business Closure Date    | ✅ Đã có (có giá trị → set User.status = inactive)          |
 
 ### 9.3. Cột file khác (đã map hoặc tùy chọn)
 
-| Cột file / trường | Trạng thái | Ghi chú |
-| ------------------- | ---------- | ------- |
+| Cột file / trường                    | Trạng thái    | Ghi chú                                                                                                                                         |
+| ------------------------------------ | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
 | **客戶(集團)分級 \| Customer Grade** | ✅ **Đã map** | custom field `customer_grade` đã có trong ClientImport::fields() và getClientCustomFieldNames(); không nhầm với pricing_tier_id (Tier Pricing). |
 
 ### 9.4. Kết luận
@@ -377,12 +385,12 @@ Khi một dòng trong file import có **client_code** trùng với client đã t
 
 ### 10.1. Cách xử lý hiện tại (đã triển khai – Update khi trùng)
 
-| Hành vi               | Mô tả                                                                                                                                                                                                                                                                                                                                                                       |
-| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Trùng client_code** | `ClientImportProcessor::processRow()` tìm thấy `ClientDetails` cùng company + client_code → gọi `updateExistingClient()` để **cập nhật** client đó theo dữ liệu dòng file.                                                                                                                                                                                                  |
+| Hành vi               | Mô tả                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Trùng client_code** | `ClientImportProcessor::processRow()` tìm thấy `ClientDetails` cùng company + client_code → gọi `updateExistingClient()` để **cập nhật** client đó theo dữ liệu dòng file.                                                                                                                                                                                                                                                                        |
 | **Cập nhật**          | Cập nhật `users` (name, email, mobile, gender, country_id), `client_details` (company_name, address, city, state, postal_code, office, website, gst_number), custom fields (gồm customer_grade — khi không dùng bulk thì qua `saveCustomFieldsFromRow`, khi dùng bulk thì qua bulk insert trong job); business_closure_date có giá trị → `User.status = 'inactive'`; xóa và tạo lại `universal_search`. Không tạo user_auth/role/permissions mới. |
-| **Trong chunk job**   | `processRow()` trả về `User` (created hoặc updated) → chunk job coi dòng thành công.                                                                                                                                                                                                                                                                                        |
-| **Kết quả**           | Dòng được xử lý: client mới thì tạo; client_code trùng thì **cập nhật** dữ liệu từ file.                                                                                                                                                                                                                                                                                    |
+| **Trong chunk job**   | `processRow()` trả về `User` (created hoặc updated) → chunk job coi dòng thành công.                                                                                                                                                                                                                                                                                                                                                              |
+| **Kết quả**           | Dòng được xử lý: client mới thì tạo; client_code trùng thì **cập nhật** dữ liệu từ file.                                                                                                                                                                                                                                                                                                                                                          |
 
 **Code tham chiếu:** `ClientImportProcessor::processRow()` — khi có `$existingDetails` theo client_code thì `return self::updateExistingClient(...)`. `ClientImportProcessor::updateExistingClient()` — cập nhật user, client_details, saveCustomFieldsFromRow, business_closure_date → inactive, UniversalSearch delete + logSearchEntry.
 

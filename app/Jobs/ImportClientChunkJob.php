@@ -53,15 +53,32 @@ class ImportClientChunkJob implements ShouldQueue
         $fieldMap = ClientImportProcessor::getClientCustomFieldMap($companyId);
         $bulkCustomRows = [];
 
+        $maxDeadlockRetries = 3;
+
         foreach ($this->rows as $index => $row) {
             try {
                 $normalizedRow = self::normalizeRow($row);
-                $user = DB::transaction(fn () => ClientImportProcessor::processRow(
-                    $normalizedRow,
-                    $this->columns,
-                    $this->company,
-                    ['skip_custom_fields' => true]
-                ));
+                $user = null;
+                $attempt = 0;
+                while ($attempt < $maxDeadlockRetries) {
+                    try {
+                        $user = DB::transaction(fn() => ClientImportProcessor::processRow(
+                            $normalizedRow,
+                            $this->columns,
+                            $this->company,
+                            ['skip_custom_fields' => true]
+                        ));
+                        break;
+                    } catch (Exception $e) {
+                        if (self::isDeadlockException($e) && $attempt < $maxDeadlockRetries - 1) {
+                            $attempt++;
+                            usleep(100000 * $attempt); // 100ms, 200ms, 300ms
+                            continue;
+                        }
+                        throw $e;
+                    }
+                }
+
                 if ($user === null) {
                     continue;
                 }
@@ -120,6 +137,29 @@ class ImportClientChunkJob implements ShouldQueue
         }
 
         return $result;
+    }
+
+    /**
+     * Detect MySQL/InnoDB deadlock (1213) or serialization failure (40001).
+     * Used to retry the row transaction on staging when many chunk jobs run in parallel.
+     */
+    private static function isDeadlockException(Exception $e): bool
+    {
+        $message = $e->getMessage();
+        $code = $e->getCode();
+
+        if ($code === '40001' || $code === '1213') {
+            return true;
+        }
+        if (strpos($message, '1213') !== false || strpos($message, 'Deadlock') !== false) {
+            return true;
+        }
+        $previous = $e->getPrevious();
+        if ($previous && ($previous->getCode() === '40001' || $previous->getCode() === '1213')) {
+            return true;
+        }
+
+        return false;
     }
 
     private static function cellToScalar($value): ?string

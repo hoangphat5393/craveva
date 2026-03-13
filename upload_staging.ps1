@@ -5,6 +5,12 @@ $StagingPath = "/var/www/craveva-staging/current/craveva"
 $LocalTempDir = ".\temp_deploy"
 $ZipFile = ".\deploy_staging.zip"
 
+# --- Setup lần đầu sau khi clone (chạy trong PowerShell tại thư mục project) ---
+# 1) Tải .env từ staging (nếu cần):   scp "${StagingHost}:${StagingPath}/.env" ".env"
+# 2) Bật Composer cache rồi cài dependency (không cần lấy composer.lock từ staging):
+#    $env:COMPOSER_HOME = "$env:USERPROFILE\.composer"
+#    composer install
+
 # 1. Clean up previous temp files
 if (Test-Path $LocalTempDir) { Remove-Item -Recurse -Force $LocalTempDir }
 if (Test-Path $ZipFile) { Remove-Item -Force $ZipFile }

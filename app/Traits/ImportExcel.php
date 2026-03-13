@@ -19,9 +19,19 @@ trait ImportExcel
         // get class name from $importClass
         $this->importClassName = (new ReflectionClass($importClass))->getShortName();
 
+        if (! $request->hasFile('import_file') || ! $request->file('import_file')->isValid()) {
+            $msg = __('messages.pleaseSelectFile');
+            if ($msg === 'messages.pleaseSelectFile') {
+                $msg = 'Please select a valid file to upload.';
+            }
+            throw ValidationException::withMessages([
+                'import_file' => [$msg],
+            ]);
+        }
+
         $this->file = Files::upload($request->import_file, Files::IMPORT_FOLDER);
 
-        $filePath = public_path(Files::UPLOAD_FOLDER.'/'.Files::IMPORT_FOLDER.'/'.$this->file);
+        $filePath = public_path(Files::UPLOAD_FOLDER . '/' . Files::IMPORT_FOLDER . '/' . $this->file);
         if (Files::isCsvDisguisedAsXlsx($filePath)) {
             Files::deleteFile($this->file, Files::IMPORT_FOLDER);
             throw ValidationException::withMessages([
@@ -89,7 +99,7 @@ trait ImportExcel
         $importClassName = (new ReflectionClass($importClass))->getShortName();
 
         // clear previous import
-        Artisan::call('queue:clear database --queue='.$importClassName);
+        Artisan::call('queue:clear database --queue=' . $importClassName);
         Artisan::call('queue:flush');
         // Get index of an array not null value with key
         $columns = array_filter($request->columns, function ($value) {
@@ -97,7 +107,7 @@ trait ImportExcel
         });
 
         $importInstance = new $importClass;
-        Excel::import($importInstance, public_path(Files::UPLOAD_FOLDER.'/'.Files::IMPORT_FOLDER.'/'.$request->file));
+        Excel::import($importInstance, public_path(Files::UPLOAD_FOLDER . '/' . Files::IMPORT_FOLDER . '/' . $request->file));
         $excelData = $importInstance->getProcessedData();
 
         if ($request->has_heading) {
@@ -137,12 +147,12 @@ trait ImportExcel
     {
         $importClassName = (new ReflectionClass($importClass))->getShortName();
 
-        Artisan::call('queue:clear database --queue='.$importClassName);
+        Artisan::call('queue:clear database --queue=' . $importClassName);
         Artisan::call('queue:flush');
 
-        $columns = array_filter($request->columns, fn ($value) => $value !== null);
+        $columns = array_filter($request->columns, fn($value) => $value !== null);
 
-        $filePath = public_path(Files::UPLOAD_FOLDER.'/'.Files::IMPORT_FOLDER.'/'.$request->file);
+        $filePath = public_path(Files::UPLOAD_FOLDER . '/' . Files::IMPORT_FOLDER . '/' . $request->file);
         if (Files::isCsvDisguisedAsXlsx($filePath)) {
             throw ValidationException::withMessages([
                 'file' => [__('messages.importFileCsvDisguisedAsXlsx')],
@@ -169,7 +179,7 @@ trait ImportExcel
             $chunkStartIndex += count($chunk);
         }
 
-        $batch = Bus::batch($jobs)->onConnection('database')->onQueue($importClassName)->name($importClassName.'-chunked')->dispatch();
+        $batch = Bus::batch($jobs)->onConnection('database')->onQueue($importClassName)->name($importClassName . '-chunked')->dispatch();
 
         Files::deleteFile($request->file, Files::IMPORT_FOLDER);
 

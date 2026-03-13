@@ -378,6 +378,7 @@ return [
     'unmatchedColumns' => '<span id="unmatchedCount">:unmatchCount</span> unmatched columns.',
     'pleaseSelectAColumn' => 'Please select a column or click on skip',
     'pleaseSelectCategory' => 'Please select a Category',
+    'pleaseSelectFile' => 'Please select a valid file to upload.',
     'importUploadSuccess' => 'Data uploaded successfully.',
     'importProcessStart' => 'Import process started. Please wait.',
     'importRunningInBackground' => 'Import is running in the background.',

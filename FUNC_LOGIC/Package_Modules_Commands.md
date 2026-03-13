@@ -4,12 +4,12 @@ Tài liệu lưu các lệnh Artisan và cách dùng cho quản lý module trong
 
 **Hai loại "bật module" khác nhau:**
 
-| Loại | Lệnh / UI | Lưu ở đâu | Ảnh hưởng |
-|------|-----------|-----------|-----------|
-| **Module trong gói (Package)** | `activate-all` / `activate` | `packages.module_in_package`, `module_settings` | Quyền module theo gói/công ty (menu, tính năng theo subscription). |
-| **Custom Modules (toggle trên UI)** | `enable-custom` hoặc bật từng cái trên trang **Settings > Module Settings > Custom Modules** | `storage/app/modules_statuses.json` (nwidart) | Bật/tắt module Laravel (Affiliate, Asset, Payroll, …); nếu tắt thì module không load. |
+| Loại                                | Lệnh / UI                                                                                    | Lưu ở đâu                                       | Ảnh hưởng                                                                             |
+| ----------------------------------- | -------------------------------------------------------------------------------------------- | ----------------------------------------------- | ------------------------------------------------------------------------------------- |
+| **Module trong gói (Package)**      | `activate-all` / `activate`                                                                  | `packages.module_in_package`, `module_settings` | Quyền module theo gói/công ty (menu, tính năng theo subscription).                    |
+| **Custom Modules (toggle trên UI)** | `enable-custom` hoặc bật từng cái trên trang **Settings > Module Settings > Custom Modules** | `storage/app/modules_statuses.json` (nwidart)   | Bật/tắt module Laravel (Affiliate, Asset, Payroll, …); nếu tắt thì module không load. |
 
-→ Chạy `activate-all` **không** đổi trạng thái toggle trên trang **Custom Modules**. Để tất cả toggle ON, dùng `enable-custom`.
+→ Chạy `activate-all` **không** đổi trạng thái toggle trên trang **Custom Modules**. Để tất cả toggle ON, dùng `enable-custom` hoặc dùng một lệnh gộp `activate-all-full` (xem mục 2.5).
 
 ---
 
@@ -17,11 +17,11 @@ Tài liệu lưu các lệnh Artisan và cách dùng cho quản lý module trong
 
 **File:** `app/Console/Commands/PackageModulesCommand.php`
 
-| Tham số / Option | Mô tả |
-|------------------|--------|
-| `action` (bắt buộc) | `list` \| `activate-all` \| `activate` \| `enable-custom` |
-| `--package=` | ID package (tùy chọn; mặc định: tất cả package) |
-| `--module=` | Tên module (bắt buộc khi `action=activate`) |
+| Tham số / Option    | Mô tả                                                                            |
+| ------------------- | -------------------------------------------------------------------------------- |
+| `action` (bắt buộc) | `list` \| `activate-all` \| `activate` \| `enable-custom` \| `activate-all-full` |
+| `--package=`        | ID package (tùy chọn; mặc định: tất cả package)                                  |
+| `--module=`         | Tên module (bắt buộc khi `action=activate`)                                      |
 
 ---
 
@@ -89,6 +89,24 @@ php artisan packages:modules enable-custom
 - Ghi trạng thái enabled cho từng module vào `modules_statuses.json`.
 - Xóa cache `craveva_plugins`, `user_modules`.
 - Reload trang **Module Settings** để thấy toggle ON.
+
+---
+
+### 2.5. Bật triệt để: Package modules + Custom Modules (một lệnh)
+
+Nếu muốn **vừa** bật đủ module trong mọi package **vừa** cho trang **Custom Modules** hiển thị toàn bộ toggle ON, dùng:
+
+```bash
+php artisan packages:modules activate-all-full
+```
+
+- Thực hiện lần lượt: `activate-all` (cập nhật package + đồng bộ `module_settings`) rồi `enable-custom` (ghi `modules_statuses.json` + cache).
+- Sau khi chạy xong, reload trang **Settings > Module Settings > Custom Modules** để thấy tất cả toggle đã bật.
+
+**Xử lý nhanh khi đã chạy activate-all mà trang Custom Modules vẫn nhiều toggle OFF:**
+
+1. Chạy thêm: `php artisan packages:modules enable-custom`
+2. Hoặc lần sau dùng luôn: `php artisan packages:modules activate-all-full`
 
 ---
 

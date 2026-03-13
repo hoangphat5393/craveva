@@ -1863,6 +1863,8 @@ return [
         'biolinks' => 'Биолинкс',
         'performance' => 'Перформансе',
         'Policy' => 'Центар за политику',
+        'policy' => 'Центар за политику',
+        'servermanager' => 'Управник сервера',
         'biometric' => 'Биометријски',
     ],
     'projectSettings' => [

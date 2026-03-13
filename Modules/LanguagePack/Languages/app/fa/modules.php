@@ -1863,6 +1863,8 @@ return [
         'biolinks' => 'پیوندهای زیستی',
         'performance' => 'عمل',
         'Policy' => 'مرکز سیاست',
+        'policy' => 'مرکز سیاست',
+        'servermanager' => 'مدیر سرور',
         'biometric' => 'بی سیم',
     ],
     'projectSettings' => [

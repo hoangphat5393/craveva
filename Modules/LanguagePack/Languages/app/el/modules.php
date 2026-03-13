@@ -1863,6 +1863,8 @@ return [
         'biolinks' => 'Biolinks',
         'performance' => 'Εκτέλεση',
         'Policy' => 'Κέντρο Πολιτικής',
+        'policy' => 'Κέντρο Πολιτικής',
+        'servermanager' => 'Διαχειριστής διακομιστή',
         'biometric' => 'Βιομετρικός',
     ],
     'projectSettings' => [

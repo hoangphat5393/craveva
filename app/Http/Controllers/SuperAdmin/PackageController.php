@@ -117,6 +117,15 @@ class PackageController extends AccountBaseController
         $this->pageTitle = __('superadmin.packages.edit');
         $this->package = Package::findOrFail($id);
 
+        // Gán currency mặc định nếu package chưa có (tránh lỗi currency_symbol on null khi mở form edit)
+        if (! $this->package->currency_id && ($this->package->default === 'no' || $this->package->default === 'lifetime')) {
+            $defaultCurrencyId = $this->global->currency_id ?? GlobalCurrency::first()?->id;
+            if ($defaultCurrencyId) {
+                $this->package->currency_id = $defaultCurrencyId;
+                $this->package->saveQuietly();
+            }
+        }
+
         $this->packageModules = Module::where('module_name', '<>', 'settings')
             ->where('module_name', '<>', 'dashboards')
             ->where('module_name', '<>', 'restApi')

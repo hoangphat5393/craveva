@@ -1872,7 +1872,10 @@ return [
         'biolinks' => '生物链接',
         'performance' => '表现',
         'Policy' => '政策中心',
+        'policy' => '政策中心',
+        'servermanager' => '服务器管理器',
         'biometric' => '生物识别',
+        'pricing' => '分层定价',
     ],
     'projectSettings' => [
         'sendNotificationsTo' => '发送提醒至',

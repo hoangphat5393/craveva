@@ -11,22 +11,26 @@ use Nwidart\Modules\Facades\Module as NwidartModule;
 class PackageModulesCommand extends Command
 {
     protected $signature = 'packages:modules
-                            {action : list | activate-all | activate | enable-custom }
+                            {action : list | activate-all | activate | enable-custom | activate-all-full }
                             {--package= : Package ID (optional; for activate-all/activate, default: all packages)}
                             {--module= : Module name (required for action=activate)}';
 
-    protected $description = 'List/activate package modules (list|activate-all|activate) or enable Custom Modules toggles (enable-custom).';
+    protected $description = 'List/activate package modules (list|activate-all|activate) or enable Custom Modules toggles (enable-custom). Use activate-all-full to do both.';
 
     public function handle(): int
     {
         $action = strtolower($this->argument('action'));
+
+        if ($action === 'activate-all-full') {
+            return $this->runActivateAllFull();
+        }
 
         if ($action === 'enable-custom') {
             return $this->runEnableCustom();
         }
 
         if (! in_array($action, ['list', 'activate-all', 'activate'], true)) {
-            $this->error('Action phải là: list | activate-all | activate | enable-custom');
+            $this->error('Action phải là: list | activate-all | activate | enable-custom | activate-all-full');
 
             return self::FAILURE;
         }
@@ -50,13 +54,29 @@ class PackageModulesCommand extends Command
             }
             $module = strtolower(trim($module));
             if (! in_array($module, $allModuleNames, true)) {
-                $this->warn("Module \"{$module}\" không nằm trong danh sách module gói. Danh sách: ".implode(', ', $allModuleNames));
+                $this->warn("Module \"{$module}\" không nằm trong danh sách module gói. Danh sách: " . implode(', ', $allModuleNames));
             }
 
             return $this->runActivateOne($module, $allModuleNames);
         }
 
         return self::SUCCESS;
+    }
+
+    /**
+     * Bật cả package modules (activate-all) và Custom Modules (enable-custom).
+     * Dùng khi muốn một lệnh xong: gói đủ module + trang Custom Modules toàn bộ toggle ON.
+     */
+    protected function runActivateAllFull(): int
+    {
+        $this->info('Bước 1/2: Bật toàn bộ module trong Package và đồng bộ module_settings...');
+        $allModuleNames = $this->getAllPackageModuleNames();
+        if ($this->runActivateAll($allModuleNames) !== self::SUCCESS) {
+            return self::FAILURE;
+        }
+        $this->newLine();
+        $this->info('Bước 2/2: Bật toàn bộ Custom Modules (toggle trang Module Settings)...');
+        return $this->runEnableCustom();
     }
 
     /**

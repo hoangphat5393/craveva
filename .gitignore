@@ -37,6 +37,7 @@ public/css/theme-custom.css
 public/css/custom-css/theme-custom.css
 composer.lock
 package-lock.json
+/.composer-cache
 pnpm-lock.yaml
 
 # Invalid lang file name that breaks git index (delete manually from eng folder if present)

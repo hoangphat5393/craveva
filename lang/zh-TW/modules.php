@@ -1872,6 +1872,8 @@ return [
         'biolinks' => '生物連結',
         'performance' => '表現',
         'Policy' => '政策中心',
+        'policy' => '政策中心',
+        'servermanager' => '伺服器管理器',
         'biometric' => '生物識別',
     ],
     'projectSettings' => [

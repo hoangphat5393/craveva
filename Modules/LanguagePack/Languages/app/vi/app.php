@@ -1368,4 +1368,12 @@ return [
     'qrCode' => 'Mã QR',
     'recruit' => 'Tuyển dụng',
     'restApi' => 'Rest API',
+    'clientImportLog' => 'Nhật ký nhập khách hàng',
+    'clientImportLogNotFound' => 'Không tìm thấy nhật ký nhập',
+    'clientImportLogTotalJobs' => 'Tổng công việc',
+    'clientImportLogProcessed' => 'Đã xử lý',
+    'clientImportLogFailed' => 'Thất bại',
+    'clientImportLogEmpty' => 'Chưa có nhật ký nhập',
+    'clientImportLogRequestBody' => 'Nội dung yêu cầu',
+    'clientImportLogRequestFormat' => 'Định dạng yêu cầu',
 ];

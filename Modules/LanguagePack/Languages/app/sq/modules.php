@@ -1863,6 +1863,8 @@ return [
         'biolinks' => 'Lidhjet biologjike',
         'performance' => 'Performancë',
         'Policy' => 'Qendra e Politikave',
+        'policy' => 'Qendra e Politikave',
+        'servermanager' => 'Menaxheri i serverit',
         'biometric' => 'Biometrik',
     ],
     'projectSettings' => [

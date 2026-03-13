@@ -1875,6 +1875,8 @@ return [
         'biolinks' => 'Biolinks',
         'performance' => 'Performance',
         'Policy' => 'Policy Center',
+        'policy' => 'Policy Center',
+        'servermanager' => 'Server Manager',
         'biometric' => 'Biometric',
         'pricing' => 'Tier Pricing',
     ],

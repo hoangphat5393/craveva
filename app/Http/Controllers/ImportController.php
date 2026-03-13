@@ -6,6 +6,7 @@ use App\Helper\Reply;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class ImportController extends Controller
 {
@@ -86,6 +87,11 @@ class ImportController extends Controller
             ];
         }
 
+        // Phương án E: persist client import log to file for later review (UX like webhook log)
+        if ($batchId && $batchRecord && $name === 'ClientImport') {
+            $this->writeClientImportLogFile($batchId, $batchRecord, $failedRows, $summary);
+        }
+
         $view = view('import.import_exception', $this->data)->with([
             'exceptions' => $exceptions,
             'failedRows' => $failedRows,
@@ -98,6 +104,49 @@ class ImportController extends Controller
             'failed_rows' => $failedRows,
             'summary' => $summary,
         ]);
+    }
+
+    /**
+     * Write client import result to JSON file (storage/app/import-logs/clients/{company_id}/{batch_id}.json).
+     * Allows viewing import history in UI similar to webhook log.
+     */
+    private function writeClientImportLogFile(string $batchId, object $batchRecord, array $failedRows, ?array $summary): void
+    {
+        $companyId = company()?->id;
+        $user = user();
+        if (! $companyId || ! $user) {
+            return;
+        }
+        $totalJobs = (int) ($batchRecord->total_jobs ?? 0);
+        $failedJobsCount = (int) ($batchRecord->failed_jobs ?? 0);
+        $processedJobs = $totalJobs - $failedJobsCount;
+        $payload = [
+            'batch_id' => $batchId,
+            'company_id' => $companyId,
+            'user_id' => $user->id,
+            'user_name' => $user->name,
+            'type' => 'client',
+            'total_jobs' => $totalJobs,
+            'processed_jobs' => $processedJobs,
+            'failed_jobs' => $failedJobsCount,
+            'failed_rows' => $failedRows,
+            'summary' => $summary ?? [
+                'total_jobs' => $totalJobs,
+                'failed_jobs' => $failedJobsCount,
+                'processed_jobs' => $processedJobs,
+            ],
+            'completed_at' => now()->toIso8601String(),
+        ];
+        $dir = sprintf('import-logs/clients/%s', $companyId);
+        $path = $dir . '/' . $batchId . '.json';
+        try {
+            if (! Storage::disk('local')->exists($dir)) {
+                Storage::disk('local')->makeDirectory($dir);
+            }
+            Storage::disk('local')->put($path, json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        } catch (\Throwable $e) {
+            report($e);
+        }
     }
 
     /**

@@ -1862,6 +1862,8 @@ return [
         'biolinks' => 'Biolinks',
         'performance' => 'Leistung',
         'Policy' => 'Richtlinienzentrum',
+        'policy' => 'Richtlinienzentrum',
+        'servermanager' => 'Server-Manager',
         'biometric' => 'Biometrisch',
     ],
     'projectSettings' => [

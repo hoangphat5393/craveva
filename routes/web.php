@@ -8,6 +8,7 @@ use App\Http\Controllers\BankAccountController;
 use App\Http\Controllers\ClientCategoryController;
 use App\Http\Controllers\ClientContactController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\ClientImportLogController;
 use App\Http\Controllers\ClientDocController;
 use App\Http\Controllers\ClientNoteController;
 use App\Http\Controllers\ContractController;
@@ -105,6 +106,39 @@ Route::get('php-ini-check', function () {
         return response()->json(['error' => 'Chỉ khả dụng khi APP_DEBUG=true'], 403);
     }
     $loaded = php_ini_loaded_file();
+    $loadedExtensions = array_map('strtolower', get_loaded_extensions());
+    $requiredForImport = [
+        'zip' => 'Đọc file .xlsx (Excel là định dạng ZIP)',
+        'xml' => 'Xử lý XML trong file Excel',
+        'libxml' => 'XML parsing',
+        'dom' => 'DOM XML',
+        'mbstring' => 'Chuỗi đa byte (tiếng Việt, CJK trong Excel)',
+        'zlib' => 'Nén/giải nén',
+        'fileinfo' => 'Kiểm tra loại file upload',
+    ];
+    $optionalForImport = [
+        'gd' => 'Xử lý ảnh trong Excel (tùy chọn)',
+        'imagick' => 'Thay thế GD cho ảnh (tùy chọn)',
+    ];
+    $extensions_status = [];
+    foreach ($requiredForImport as $ext => $desc) {
+        $extensions_status[$ext] = [
+            'loaded' => in_array($ext, $loadedExtensions),
+            'description' => $desc,
+            'required' => true,
+        ];
+    }
+    foreach ($optionalForImport as $ext => $desc) {
+        $extensions_status[$ext] = [
+            'loaded' => in_array($ext, $loadedExtensions),
+            'description' => $desc,
+            'required' => false,
+        ];
+    }
+    $missing_required = array_keys(array_filter($extensions_status, function ($s) {
+        return ($s['required'] ?? false) && ! $s['loaded'];
+    }));
+
     return response()->json([
         'sapi' => php_sapi_name(),
         'note' => 'Đây là cấu hình PHP cho request WEB (trình duyệt). Import progress dùng cấu hình này.',
@@ -115,11 +149,19 @@ Route::get('php-ini-check', function () {
             'max_input_time' => ini_get('max_input_time'),
             'memory_limit' => ini_get('memory_limit'),
             'max_input_vars' => ini_get('max_input_vars'),
+            'post_max_size' => ini_get('post_max_size'),
+            'upload_max_filesize' => ini_get('upload_max_filesize'),
         ],
         'import_execution_jobs_per_poll' => (function () {
-        $n = (int) (ini_get('max_execution_time') / 10);
-        return $n > 1 ? min($n, 100) : 50;
-    })(),
+            $n = (int) (ini_get('max_execution_time') / 10);
+            return $n > 1 ? min($n, 100) : 50;
+        })(),
+        'extensions' => [
+            'all_loaded' => get_loaded_extensions(),
+            'required_for_import' => $extensions_status,
+            'missing_required' => $missing_required,
+            'import_ok' => count($missing_required) === 0,
+        ],
     ], 200, ['Content-Type' => 'application/json'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 })->name('php-ini.check');
 
@@ -219,6 +261,8 @@ Route::group(['middleware' => ['auth', 'multi-company-select', 'email_verified']
     Route::get('clients/import', [ClientController::class, 'importClient'])->name('clients.import');
     Route::post('clients/import', [ClientController::class, 'importStore'])->name('clients.import.store');
     Route::post('clients/import/process', [ClientController::class, 'importProcess'])->name('clients.import.process');
+    Route::get('clients/import-log', [ClientImportLogController::class, 'index'])->name('clients.import_log.index');
+    Route::get('clients/import-log/{batchId}', [ClientImportLogController::class, 'show'])->name('clients.import_log.show');
     Route::get('clients/finance-count/{id}', [ClientController::class, 'financeCount'])->name('clients.finance_count');
     Route::resource('clients', ClientController::class);
 
@@ -972,7 +1016,7 @@ Route::get('/test-broadcast', function () {
 
         return response()->json(['success' => true, 'message' => 'Event broadcasted successfully']);
     } catch (\Throwable $e) {
-        return response()->json(['success' => false, 'message' => 'Error: '.$e->getMessage()]);
+        return response()->json(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
     }
 })->name('test-broadcast');
 

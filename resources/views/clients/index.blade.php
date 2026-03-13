@@ -5,14 +5,12 @@
 @endpush
 
 @section('filter-section')
-
     <x-filters.filter-box>
         <!-- DATE START -->
         <div class="select-box d-flex pr-2 border-right-grey border-right-grey-sm-0">
             <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('modules.client.addedOn')</p>
             <div class="select-status d-flex">
-                <input type="text" class="position-relative text-dark form-control border-0 p-2 text-left f-14 f-w-500 border-additional-grey"
-                    id="datatableRange" placeholder="@lang('placeholders.dateRange')">
+                <input type="text" class="position-relative text-dark form-control border-0 p-2 text-left f-14 f-w-500 border-additional-grey" id="datatableRange" placeholder="@lang('placeholders.dateRange')">
             </div>
         </div>
         <!-- DATE END -->
@@ -33,8 +31,7 @@
         <div class="select-box d-flex py-2 px-lg-2 px-md-2 px-0 border-right-grey border-right-grey-sm-0">
             <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('app.category')</p>
             <div class="select-status">
-                <select class="form-control select-picker" id="filter_category_id" data-live-search="true"
-                            data-container="body" data-size="8">
+                <select class="form-control select-picker" id="filter_category_id" data-live-search="true" data-container="body" data-size="8">
                     <option value="all">@lang('app.all')</option>
                     @foreach ($categories as $category)
                         <option value="{{ $category->id }}">{{ $category->category_name }}</option>
@@ -46,8 +43,7 @@
         <div class="select-box d-flex py-2 px-lg-2 px-md-2 px-0 border-right-grey border-right-grey-sm-0">
             <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('modules.productCategory.subCategory')</p>
             <div class="select-status">
-                <select class="form-control select-picker" id="filter_sub_category_id" data-live-search="true"
-                            data-container="body" data-size="8">
+                <select class="form-control select-picker" id="filter_sub_category_id" data-live-search="true" data-container="body" data-size="8">
                     <option value="all">@lang('app.all')</option>
                 </select>
             </div>
@@ -64,8 +60,7 @@
                             <i class="fa fa-search f-13 text-dark-grey"></i>
                         </span>
                     </div>
-                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field"
-                        placeholder="@lang('app.startTyping')">
+                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field" placeholder="@lang('app.startTyping')">
                 </div>
             </form>
         </div>
@@ -99,8 +94,7 @@
                 <label class="f-14 text-dark-grey mb-12 " for="usr">@lang('app.project')</label>
                 <div class="select-filter mb-4">
                     <div class="select-others select-filter-project">
-                        <select class="form-control select-picker" id="project_id" data-live-search="true"
-                            data-container="body" data-size="8">
+                        <select class="form-control select-picker" id="project_id" data-live-search="true" data-container="body" data-size="8">
                             <option value="all">@lang('app.all')</option>
                             @foreach ($projects as $project)
                                 <option value="{{ $project->id }}">{{ $project->project_name }}</option>
@@ -111,12 +105,10 @@
             </div>
 
             <div class="more-filter-items">
-                <label class="f-14 text-dark-grey mb-12 "
-                    for="usr">@lang('modules.contracts.contractType')</label>
+                <label class="f-14 text-dark-grey mb-12 " for="usr">@lang('modules.contracts.contractType')</label>
                 <div class="select-filter mb-4">
                     <div class="select-others">
-                        <select class="form-control select-picker" id="contract_type_id" data-live-search="true"
-                            data-container="body" data-size="8">
+                        <select class="form-control select-picker" id="contract_type_id" data-live-search="true" data-container="body" data-size="8">
                             <option value="all">@lang('app.all')</option>
                             @foreach ($contracts as $contract)
                                 <option value="{{ $contract->id }}">{{ $contract->name }}</option>
@@ -130,12 +122,10 @@
                 <label class="f-14 text-dark-grey mb-12 " for="usr">@lang('app.country')</label>
                 <div class="select-filter mb-4">
                     <div class="select-others">
-                        <select class="form-control select-picker" id="country_id" data-live-search="true"
-                            data-container="body" data-size="8">
+                        <select class="form-control select-picker" id="country_id" data-live-search="true" data-container="body" data-size="8">
                             <option value="all">@lang('app.all')</option>
                             @foreach ($countries as $country)
-                                <option value="{{ $country->id }}"
-                                    data-content="<span class='flag-icon flag-icon-{{ strtolower($country->iso) }} flag-icon-squared'></span> {{ $country->nicename }}">{{ $country->nicename }}</option>
+                                <option value="{{ $country->id }}" data-content="<span class='flag-icon flag-icon-{{ strtolower($country->iso) }} flag-icon-squared'></span> {{ $country->nicename }}">{{ $country->nicename }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -158,11 +148,9 @@
         </x-filters.more-filter-box>
         <!-- MORE FILTERS END -->
     </x-filters.filter-box>
-
 @endsection
 
 @section('content')
-
     <!-- CONTENT WRAPPER START -->
     <div class="content-wrapper">
         <!-- Add Task Export Buttons Start -->
@@ -178,6 +166,11 @@
                 @if ($addClientPermission == 'all' || $addClientPermission == 'added' || $addClientPermission == 'both')
                     <x-forms.link-secondary :link="route('clients.import')" class="mr-3 openRightModal float-left mb-2 mb-lg-0 mb-md-0" icon="file-upload">
                         @lang('app.importExcel')
+                    </x-forms.link-secondary>
+                @endif
+                @if ($sidebarUserPermissions['view_clients'] != 5 && $sidebarUserPermissions['view_clients'] != 'none')
+                    <x-forms.link-secondary :link="route('clients.import_log.index')" class="mr-3 float-left mb-2 mb-lg-0 mb-md-0" icon="file-text">
+                        @lang('app.clientImportLog')
                     </x-forms.link-secondary>
                 @endif
                 <div id="client-dt-buttons" class="d-inline-flex align-items-center mb-2 mb-lg-0 mb-md-0"></div>
@@ -201,11 +194,9 @@
 
 
             <div class="btn-group mt-2 mt-lg-0 mt-md-0 ml-0 ml-lg-3 ml-md-3" role="group">
-                <a href="{{ route('clients.index') }}" class="btn btn-secondary f-14 btn-active show-clients" data-toggle="tooltip"
-                    data-original-title="@lang('app.menu.clients')"><i class="side-icon bi bi-list-ul"></i></a>
+                <a href="{{ route('clients.index') }}" class="btn btn-secondary f-14 btn-active show-clients" data-toggle="tooltip" data-original-title="@lang('app.menu.clients')"><i class="side-icon bi bi-list-ul"></i></a>
 
-                <a href="javascript:;" class="btn btn-secondary f-14 show-unverified" data-toggle="tooltip"
-                    data-original-title="@lang('modules.dashboard.verificationPending')"><i class="side-icon bi bi-person-x"></i></a>
+                <a href="javascript:;" class="btn btn-secondary f-14 show-unverified" data-toggle="tooltip" data-original-title="@lang('modules.dashboard.verificationPending')"><i class="side-icon bi bi-person-x"></i></a>
             </div>
 
         </div>
@@ -220,7 +211,6 @@
         <!-- Task Box End -->
     </div>
     <!-- CONTENT WRAPPER END -->
-
 @endsection
 
 @push('scripts')
@@ -296,7 +286,7 @@
             let categoryId = $(this).val();
 
             $('#filter_sub_category_id')
-                .html('<option value="all">@lang("app.all")</option>')
+                .html('<option value="all">@lang('app.all')</option>')
                 .val('all')
                 .selectpicker('refresh');
 
@@ -344,7 +334,7 @@
             $('#filter-form')[0].reset();
             $('.filter-box .select-picker').selectpicker("refresh");
 
-            $('#filter_sub_category_id').html('<option value="all">@lang("app.all")</option>');
+            $('#filter_sub_category_id').html('<option value="all">@lang('app.all')</option>');
             $('#filter_sub_category_id').selectpicker("refresh");
 
             $('.show-unverified').removeClass("btn-active");
@@ -532,12 +522,12 @@
             showTable();
         });
 
-        $( document ).ready(function() {
+        $(document).ready(function() {
             @if (!is_null(request('start')) && !is_null(request('end')))
-            $('#datatableRange').val('{{ request('start') }}' +
-            ' @lang("app.to") ' + '{{ request('end') }}');
-            $('#datatableRange').data('daterangepicker').setStartDate("{{ request('start') }}");
-            $('#datatableRange').data('daterangepicker').setEndDate("{{ request('end') }}");
+                $('#datatableRange').val('{{ request('start') }}' +
+                    ' @lang('app.to') ' + '{{ request('end') }}');
+                $('#datatableRange').data('daterangepicker').setStartDate("{{ request('start') }}");
+                $('#datatableRange').data('daterangepicker').setEndDate("{{ request('end') }}");
                 showTable();
             @endif
         });

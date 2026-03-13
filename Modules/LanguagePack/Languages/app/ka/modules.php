@@ -1863,6 +1863,8 @@ return [
         'biolinks' => 'ბიოლინკები',
         'performance' => 'შესრულება',
         'Policy' => 'პოლიტიკის ცენტრი',
+        'policy' => 'პოლიტიკის ცენტრი',
+        'servermanager' => 'სერვერის მენეჯერი',
         'biometric' => 'ბიომეტრიული',
     ],
     'projectSettings' => [

@@ -377,6 +377,7 @@ return [
     'unmatchedColumns' => '<span id="unmatchedCount">:unmatchCount</span> cột chưa khớp.',
     'pleaseSelectAColumn' => 'Vui lòng chọn một cột hoặc nhấp vào bỏ qua',
     'pleaseSelectCategory' => 'Hãy chọn một danh mục',
+    'pleaseSelectFile' => 'Vui lòng chọn file hợp lệ để tải lên.',
     'importUploadSuccess' => 'Dữ liệu được tải lên thành công.',
     'importProcessStart' => 'Quá trình nhập khẩu bắt đầu. Vui lòng chờ.',
     'importRunningInBackground' => 'Nhập liệu đang chạy nền.',

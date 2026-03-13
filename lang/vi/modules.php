@@ -1872,6 +1872,8 @@ return [
         'biolinks' => 'Liên kết sinh học',
         'performance' => 'Hiệu suất',
         'Policy' => 'Trung tâm chính sách',
+        'policy' => 'Trung tâm chính sách',
+        'servermanager' => 'Quản lý máy chủ',
         'biometric' => 'Sinh trắc học',
         'pricing' => 'Tier Pricing',
     ],

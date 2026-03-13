@@ -12,7 +12,8 @@ This document is the central reference for **business flow**, **business logic**
 4. [Permissions & roles](#4-permissions--roles)
 5. [Core modules (company-level)](#5-core-modules-company-level)
 6. [Add-on modules](#6-add-on-modules)
-7. [References](#7-references)
+7. [Composer install chậm – khắc phục](#7-composer-install-chậm--khắc-phục)
+8. [References](#8-references)
 
 ---
 
@@ -388,7 +389,63 @@ Exact permissions and routes for each add-on are defined inside the module (e.g.
 
 ---
 
-## 7. References
+## 7. Composer install chậm – khắc phục
+
+Khi chạy `composer install` báo **"Cannot create cache directory F:/composer-cache/files/"** và cài rất lâu (306 package):
+
+1. **Cho Composer dùng cache ghi được**  
+   Trong PowerShell (hoặc terminal), trước khi chạy `composer install`:
+
+    ```powershell
+    $env:COMPOSER_HOME = "$env:USERPROFILE\.composer"
+    composer install
+    ```
+
+    Hoặc dùng cache ngay trong project:
+
+    ```powershell
+    $env:COMPOSER_HOME = "E:\web\craveva-staging\.composer-cache"
+    if (-not (Test-Path $env:COMPOSER_HOME)) { New-Item -ItemType Directory -Path $env:COMPOSER_HOME -Force }
+    composer install
+    ```
+
+2. **Chỉ cài dependency production (bỏ dev)** – ít package hơn, nhanh hơn:
+
+    ```powershell
+    composer install --no-dev
+    ```
+
+3. **Đảm bảo dùng Composer 2** (nhanh hơn Composer 1):
+
+    ```powershell
+    composer --version
+    ```
+
+4. **Lần sau** chỉ cần set `COMPOSER_HOME` một lần trong session rồi chạy `composer install`; Composer sẽ tái sử dụng cache.
+
+**Nhược điểm / lưu ý khi dùng Composer cache:**
+
+| Vấn đề                  | Mô tả                                                                                                                                                                                                            |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Dung lượng đĩa**      | Cache lưu bản tải về (zip, metadata), có thể vài trăm MB nếu nhiều project/dependency. Cache trong `$env:USERPROFILE\.composer` dùng chung mọi project; cache trong project (`.composer-cache`) chỉ cho repo đó. |
+| **Dữ liệu cũ**          | Rất hiếm: nếu maintainer đè bản release (cùng version), cache có thể phục vụ bản cũ. Có thể xóa cache thư mục con hoặc chạy `composer clear-cache` khi nghi ngờ.                                                 |
+| **Cache trong project** | Thư mục `.composer-cache` đã được thêm vào `.gitignore` — không commit cache lên git để tránh repo phình.                                                                                                        |
+| **CI/CD**               | Trong CI thường cache thư mục Composer cache để build nhanh; cần đảm bảo cache key (vd. lock file) đúng để không dùng lock cũ.                                                                                   |
+
+Nhìn chung lợi ích (tốc độ, ít tải lại) lớn hơn; chỉ cần chú ý dung lượng và không commit cache vào repo.
+
+**Composer audit – 2 advisory hiện tại (dependency gián tiếp):**
+
+| Package                                 | CVE                     | Nguồn kéo vào                                                                                   | Cần thiết?                                                                                                                                  |
+| --------------------------------------- | ----------------------- | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `firebase/php-jwt` (< 7.0)              | CVE-2025-45769 (low)    | google/apiclient, laravel/socialite, macsidigital/laravel-api-client, pusher-push-notifications | Có — dùng cho Google API, Socialite, Zoom, Pusher. Không thể bỏ trừ khi bỏ hết các package đó. Nên nâng lên 7.x khi các package cha hỗ trợ. |
+| `guzzlehttp/oauth-subscriber` (< 0.8.1) | CVE-2025-21617 (medium) | macsidigital/laravel-api-client (Zoom)                                                          | Chỉ cần nếu dùng Zoom/OAuth1. Có thể chấp nhận rủi ro tạm thời hoặc chờ package Zoom cập nhật constraint.                                   |
+
+Laravel 10 không trực tiếp dùng hai package trên; chúng là dependency của các package bên thứ ba (Google, Socialite, Zoom, Pusher). Để giảm advisory: chạy `composer update` định kỳ; khi nào google/apiclient, laravel/socialite, macsidigital/laravel-api-client nâng constraint thì sẽ cài được bản đã patch.
+
+---
+
+## 8. References
 
 | Resource                                 | Description                                                                 |
 | ---------------------------------------- | --------------------------------------------------------------------------- |

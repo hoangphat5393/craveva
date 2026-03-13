@@ -41,10 +41,10 @@ Luồng dữ liệu từ Package → module_in_package → Company → module_se
 1. `Company::saasSaving()` (observer) phát hiện `package_id` thay đổi.
 2. Gọi `CompanyObserver::updateModuleSettings($company)`.
 3. Trong `updateModuleSettings`:
-   - Lấy `module_in_package` từ package của company.
-   - Với mỗi bản ghi `module_settings` của company: nếu `module_name` nằm trong package → `is_allowed=1`, `status=active`; ngược lại → `is_allowed=0`, `status=deactive`.
-   - Gọi `CompanyObserver::widgetUpdate($company, $moduleInPackage)` để bật/tắt dashboard widget theo module.
-   - Gọi `clearCompanyUserCache($company)` (xóa cache `user_modules_{user_id}`).
+    - Lấy `module_in_package` từ package của company.
+    - Với mỗi bản ghi `module_settings` của company: nếu `module_name` nằm trong package → `is_allowed=1`, `status=active`; ngược lại → `is_allowed=0`, `status=deactive`.
+    - Gọi `CompanyObserver::widgetUpdate($company, $moduleInPackage)` để bật/tắt dashboard widget theo module.
+    - Gọi `clearCompanyUserCache($company)` (xóa cache `user_modules_{user_id}`).
 
 ### 2.3. Khi sửa package (Super Admin UI hoặc lệnh Artisan)
 
@@ -60,22 +60,22 @@ Luồng dữ liệu từ Package → module_in_package → Company → module_se
 
 ## 3. Bảng / Model liên quan
 
-| Bảng / Model | Ý nghĩa |
-|--------------|---------|
-| `packages` | Gói gói (Default, Trial, Free, …), cột `module_in_package` (JSON). |
-| `companies` | Công ty, `package_id` → package. |
+| Bảng / Model      | Ý nghĩa                                                                                            |
+| ----------------- | -------------------------------------------------------------------------------------------------- |
+| `packages`        | Gói gói (Default, Trial, Free, …), cột `module_in_package` (JSON).                                 |
+| `companies`       | Công ty, `package_id` → package.                                                                   |
 | `module_settings` | Theo company: `company_id`, `module_name`, `type` (admin/employee/client), `status`, `is_allowed`. |
-| `modules` | Danh sách module hệ thống (dùng cho form Package và lệnh `packages:modules`). |
+| `modules`         | Danh sách module hệ thống (dùng cho form Package và lệnh `packages:modules`).                      |
 
 ---
 
 ## 4. File chính
 
-| File | Vai trò |
-|------|---------|
-| `app/Models/SuperAdmin/Package.php` | Model Package, quan hệ `companies`. |
-| `app/Models/ModuleSetting.php` | Model module_settings, `checkModule()`, CLIENT_MODULES, OTHER_MODULES. |
-| `app/Models/Module.php` | Danh sách module, `disabledModuleArray()`. |
-| `app/Observers/CompanyObserver.php` | `createModuleSettings()`, `updateModuleSettings()`, `widgetUpdate()`, `clearCompanyUserCache()`. |
-| `app/Http/Controllers/SuperAdmin/PackageController.php` | CRUD package, lưu `module_in_package`. |
-| `app/Console/Commands/PackageModulesCommand.php` | Lệnh `packages:modules` (list, activate-all, activate). |
+| File                                                    | Vai trò                                                                                          |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `app/Models/SuperAdmin/Package.php`                     | Model Package, quan hệ `companies`.                                                              |
+| `app/Models/ModuleSetting.php`                          | Model module_settings, `checkModule()`, CLIENT_MODULES, OTHER_MODULES.                           |
+| `app/Models/Module.php`                                 | Danh sách module, `disabledModuleArray()`.                                                       |
+| `app/Observers/CompanyObserver.php`                     | `createModuleSettings()`, `updateModuleSettings()`, `widgetUpdate()`, `clearCompanyUserCache()`. |
+| `app/Http/Controllers/SuperAdmin/PackageController.php` | CRUD package, lưu `module_in_package`.                                                           |
+| `app/Console/Commands/PackageModulesCommand.php`        | Lệnh `packages:modules` (list, activate-all, activate).                                          |

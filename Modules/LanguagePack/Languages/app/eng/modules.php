@@ -1297,6 +1297,8 @@ return [
         'estimates' => 'Estimates',
         'addknowledgebaseCategory' => 'Addknowledgebasecategory',
         'tasks' => 'Tasks',
+        'policy' => 'Policy Center',
+        'servermanager' => 'Server Manager',
     ],
     'profile' => [
         'yourPassword' => 'Yourpassword',

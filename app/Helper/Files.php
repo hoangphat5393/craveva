@@ -37,7 +37,11 @@ class Files
 
         self::validateUploadedFile($uploadedFile);
 
+        $realPath = $uploadedFile->getRealPath();
         $newName = self::generateNewFileName($uploadedFile->getClientOriginalName());
+        if ($newName === '') {
+            $newName = md5(microtime()) . '.xlsx';
+        }
 
         $tempPath = public_path(self::UPLOAD_FOLDER . '/temp/' . $newName);
 
@@ -47,7 +51,20 @@ class Files
 
         $newPath = $folder . '/' . $newName;
 
-        $uploadedFile->storeAs('temp', $newName);
+        // On Windows or some PHP configs getRealPath() can return false even when file is valid; fallback to writing content to temp
+        if ($realPath === false || $realPath === '') {
+            $content = $uploadedFile->get();
+            if ($content === null || $content === '') {
+                $msg = __('messages.pleaseSelectFile');
+                if ($msg === 'messages.pleaseSelectFile') {
+                    $msg = 'Please select a valid file to upload.';
+                }
+                throw new Exception($msg);
+            }
+            File::put($tempPath, $content);
+        } else {
+            $uploadedFile->storeAs('temp', $newName, 'local');
+        }
 
         if (($width && $height) && File::extension($uploadedFile->getClientOriginalName()) !== 'svg') {
             Image::make($tempPath)
@@ -286,10 +303,14 @@ class Files
             }
 
             // We have given 2 options of upload for now s3 and local
-            Storage::disk(config('filesystems.default'))->putFileAs($dir, $uploadedFile, $newName, $fileVisibility);
+            /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
+            $disk = Storage::disk(config('filesystems.default'));
+            $disk->putFileAs($dir, $uploadedFile, $newName, $fileVisibility);
 
             // Upload files to aws s3 or digitalocean or wasabi or minio
-            Storage::disk(config('filesystems.default'))->missing($dir . '/' . $newName);
+            if ($disk->missing($dir . '/' . $newName)) {
+                throw new \Exception(__('app.fileNotUploaded') . ' File was not stored. Check disk: ' . config('filesystems.default'));
+            }
 
             return $newName;
         } catch (\Exception $e) {

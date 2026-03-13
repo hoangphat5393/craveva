@@ -1863,6 +1863,8 @@ return [
         'biolinks' => 'Liens biologiques',
         'performance' => 'Performance',
         'Policy' => 'Centre d\'informations sur les règles',
+        'policy' => 'Centre d\'informations sur les règles',
+        'servermanager' => 'Gestionnaire de serveur',
         'biometric' => 'Biométrique',
     ],
     'projectSettings' => [

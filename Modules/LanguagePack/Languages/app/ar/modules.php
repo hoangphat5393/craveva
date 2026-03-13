@@ -1863,6 +1863,8 @@ return [
         'biolinks' => 'الروابط الحيوية',
         'performance' => 'أداء',
         'Policy' => 'مركز السياسات',
+        'policy' => 'مركز السياسات',
+        'servermanager' => 'مدير الخادم',
         'biometric' => 'القياس الحيوي',
     ],
     'projectSettings' => [

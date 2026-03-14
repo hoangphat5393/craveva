@@ -2,6 +2,7 @@
 
 use App\Models\Company;
 use App\Models\Module;
+use Illuminate\Support\Facades\Artisan;
 use App\Models\Permission;
 use App\Models\PermissionRole;
 use App\Models\Role;
@@ -89,7 +90,7 @@ return new class extends Migration
                                 $userPermission->save();
 
                                 // Clear cache for this user
-                                cache()->forget('sidebar_user_perms_'.$roleuser->user->id);
+                                cache()->forget('sidebar_user_perms_' . $roleuser->user->id);
                             }
                         }
                     }
@@ -122,7 +123,7 @@ return new class extends Migration
                                 $userPermission->save();
 
                                 // Clear cache for this user
-                                cache()->forget('sidebar_user_perms_'.$roleuser->user->id);
+                                cache()->forget('sidebar_user_perms_' . $roleuser->user->id);
                             }
                         }
                     }
@@ -141,13 +142,13 @@ return new class extends Migration
                     $userPermission->save();
 
                     // Clear cache for this user
-                    cache()->forget('sidebar_user_perms_'.$adminUser->id);
+                    cache()->forget('sidebar_user_perms_' . $adminUser->id);
                 }
             }
         }
 
         // Clear application cache
-        \Illuminate\Support\Facades\Artisan::call('cache:clear');
+        Artisan::call('cache:clear');
     }
 
     /**

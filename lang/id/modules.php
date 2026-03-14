@@ -1863,6 +1863,8 @@ return [
         'biolinks' => 'Tautan Bio',
         'performance' => 'Pertunjukan',
         'Policy' => 'Pusat Kebijakan',
+        'policy' => 'Pusat Kebijakan',
+        'servermanager' => 'Pengelola Server',
         'biometric' => 'Biometrik',
     ],
     'projectSettings' => [

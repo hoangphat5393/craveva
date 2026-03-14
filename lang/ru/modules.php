@@ -1863,6 +1863,8 @@ return [
         'biolinks' => 'Биоссылки',
         'performance' => 'Производительность',
         'Policy' => 'Политический центр',
+        'policy' => 'Политический центр',
+        'servermanager' => 'Диспетчер сервера',
         'biometric' => 'Биометрический',
     ],
     'projectSettings' => [

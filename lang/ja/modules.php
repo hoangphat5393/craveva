@@ -1863,6 +1863,8 @@ return [
         'biolinks' => 'バイオリンク',
         'performance' => 'パフォーマンス',
         'Policy' => 'ポリシーセンター',
+        'policy' => 'ポリシーセンター',
+        'servermanager' => 'サーバーマネージャー',
         'biometric' => '生体認証',
     ],
     'projectSettings' => [

@@ -80,4 +80,5 @@ return [
     'thankyouNote' => 'Thank you for considering a career with us.',
     'greetingMessage' => 'We hope this message finds you well.',
     'predefinedSourceDelete' => 'You can\'t delete pre-defined sources.',
+    'interviewScheduleExist' => 'Interviewscheduleexist',
 ];

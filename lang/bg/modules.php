@@ -1863,6 +1863,8 @@ return [
         'biolinks' => 'Биовръзки',
         'performance' => 'Изпълнение',
         'Policy' => 'Център за правила',
+        'policy' => 'Център за правила',
+        'servermanager' => 'Управление на сървър',
         'biometric' => 'Биометрични',
     ],
     'projectSettings' => [

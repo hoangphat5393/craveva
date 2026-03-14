@@ -20,7 +20,7 @@ class SyncKeysCommand extends Command
     protected $signature = 'languagepack:sync-keys
                             {--paths= : Đường dẫn quét, phân cách bởi dấu phẩy (mặc định: app,resources,Modules)}
                             {--dry-run : Chỉ liệt kê key tìm thấy, không ghi file}
-                            {--locale=eng : Locale mặc định để thêm key (eng hoặc en)}';
+                            {--locale=en : Locale mặc định để thêm key (en chuẩn, eng fallback)}';
 
     protected $description = 'Quét code tìm key dịch (__(), @lang...) và thêm key thiếu vào LanguagePack';
 
@@ -50,17 +50,17 @@ class SyncKeysCommand extends Command
     {
         $paths = $this->option('paths') ? explode(',', $this->option('paths')) : ['app', 'resources', 'Modules'];
         $dryRun = $this->option('dry-run');
-        $locale = $this->option('locale') ?: 'eng';
+        $locale = $this->option('locale') ?: 'en';
 
-        $this->info('Quét thư mục: '.implode(', ', $paths));
-        $this->info('Locale mặc định: '.$locale);
+        $this->info('Quét thư mục: ' . implode(', ', $paths));
+        $this->info('Locale mặc định: ' . $locale);
         if ($dryRun) {
             $this->warn('Chế độ dry-run: không ghi file');
         }
         $this->newLine();
 
         foreach ($paths as $path) {
-            $fullPath = $this->basePath.'/'.trim($path);
+            $fullPath = $this->basePath . '/' . trim($path);
             if (File::isDirectory($fullPath)) {
                 $this->scanDirectory($fullPath);
             }
@@ -72,11 +72,11 @@ class SyncKeysCommand extends Command
             return self::SUCCESS;
         }
 
-        $this->info('Tìm thấy '.count($this->foundKeys).' key.');
+        $this->info('Tìm thấy ' . count($this->foundKeys) . ' key.');
         $added = $this->mergeKeysIntoLanguagePack($locale, $dryRun);
 
         if ($dryRun) {
-            $this->table(['Key', 'Vendor', 'File', 'Path'], array_map(fn ($k, $v) => [$k, $v['vendor'] ?? '-', $v['file'], $v['path']], array_keys($this->foundKeys), array_values($this->foundKeys)));
+            $this->table(['Key', 'Vendor', 'File', 'Path'], array_map(fn($k, $v) => [$k, $v['vendor'] ?? '-', $v['file'], $v['path']], array_keys($this->foundKeys), array_values($this->foundKeys)));
         } else {
             $this->info("Đã thêm {$added} key mới vào LanguagePack.");
         }
@@ -113,11 +113,11 @@ class SyncKeysCommand extends Command
         $capture = '([\'"][^\'"]*[\'"])';
 
         return [
-            '/__\s*\(\s*'.$capture.'\s*\)/',
-            '/trans\s*\(\s*'.$capture.'\s*\)/',
-            '/@lang\s*\(\s*'.$capture.'\s*\)/',
-            '/Lang::get\s*\(\s*'.$capture.'\s*\)/',
-            '/Lang::trans\s*\(\s*'.$capture.'\s*\)/',
+            '/__\s*\(\s*' . $capture . '\s*\)/',
+            '/trans\s*\(\s*' . $capture . '\s*\)/',
+            '/@lang\s*\(\s*' . $capture . '\s*\)/',
+            '/Lang::get\s*\(\s*' . $capture . '\s*\)/',
+            '/Lang::trans\s*\(\s*' . $capture . '\s*\)/',
         ];
     }
 
@@ -166,9 +166,19 @@ class SyncKeysCommand extends Command
 
         return [
             'vendor' => $vendor,
-            'file' => $file,
+            'file' => $this->sanitizeLangFileName($file),
             'path' => is_string($pathValue) ? $pathValue : (is_array($pathValue) ? implode('.', $pathValue) : ''),
         ];
+    }
+
+    /**
+     * Tên file lang chỉ dùng chữ, số, gạch dưới/gạch ngang (tránh khoảng trắng → lỗi copy trên Windows).
+     */
+    private function sanitizeLangFileName(string $name): string
+    {
+        $sanitized = preg_replace('/[^a-zA-Z0-9_\-]/', '_', $name);
+        $sanitized = trim($sanitized, '_');
+        return $sanitized !== '' ? $sanitized : 'app';
     }
 
     private function mergeKeysIntoLanguagePack(string $locale, bool $dryRun): int
@@ -177,7 +187,7 @@ class SyncKeysCommand extends Command
 
         foreach ($this->foundKeys as $fullKey => $parsed) {
             $vendor = $parsed['vendor'];
-            $file = $parsed['file'].'.php';
+            $file = $parsed['file'] . '.php';
             $path = $parsed['path'];
             $path = is_array($path) ? implode('.', $path) : (string) $path;
             $path = trim($path, '.');
@@ -190,27 +200,27 @@ class SyncKeysCommand extends Command
                 if (! $moduleDir) {
                     continue;
                 }
-                $targetDir = $this->languagePackPath.'/modules/'.$moduleDir.'/'.$locale;
+                $targetDir = $this->languagePackPath . '/modules/' . $moduleDir . '/' . $locale;
                 if (! File::isDirectory($targetDir)) {
-                    $targetDir = $this->languagePackPath.'/modules/'.$moduleDir.'/en';
+                    $targetDir = $this->languagePackPath . '/modules/' . $moduleDir . '/' . ($locale === 'en' ? 'eng' : 'en');
                 }
                 if (! File::isDirectory($targetDir)) {
-                    $targetDir = $this->languagePackPath.'/modules/'.$moduleDir.'/eng';
+                    $targetDir = $this->languagePackPath . '/modules/' . $moduleDir . '/eng';
                 }
                 if (! File::isDirectory($targetDir)) {
                     continue;
                 }
             } else {
-                $targetDir = $this->languagePackPath.'/app/'.$locale;
+                $targetDir = $this->languagePackPath . '/app/' . $locale;
                 if (! File::isDirectory($targetDir)) {
-                    $targetDir = $this->languagePackPath.'/app/'.($locale === 'eng' ? 'en' : 'eng');
+                    $targetDir = $this->languagePackPath . '/app/' . ($locale === 'en' ? 'eng' : 'en');
                 }
                 if (! File::isDirectory($targetDir)) {
                     continue;
                 }
             }
 
-            $targetFile = $targetDir.'/'.$file;
+            $targetFile = $targetDir . '/' . $file;
             if (! File::exists($targetFile)) {
                 if (! $dryRun) {
                     File::ensureDirectoryExists($targetDir);
@@ -252,7 +262,7 @@ class SyncKeysCommand extends Command
 
     private function resolveModuleDirName(string $vendor): ?string
     {
-        $modulesPath = $this->languagePackPath.'/modules';
+        $modulesPath = $this->languagePackPath . '/modules';
         if (! File::isDirectory($modulesPath)) {
             return null;
         }
@@ -276,7 +286,7 @@ class SyncKeysCommand extends Command
 
     private function writePhpArray(string $path, array $data): void
     {
-        $content = "<?php\n\nreturn ".$this->formatArray($data).";\n";
+        $content = "<?php\n\nreturn " . $this->formatArray($data) . ";\n";
         File::put($path, $content);
     }
 
@@ -286,15 +296,15 @@ class SyncKeysCommand extends Command
         $lines = ["[\n"];
 
         foreach ($arr as $k => $v) {
-            $key = is_numeric($k) ? $k : "'".addslashes($k)."'";
+            $key = is_numeric($k) ? $k : "'" . addslashes($k) . "'";
             if (is_array($v)) {
-                $lines[] = $pad.'    '.$key.' => '.$this->formatArray($v, $indent + 1).",\n";
+                $lines[] = $pad . '    ' . $key . ' => ' . $this->formatArray($v, $indent + 1) . ",\n";
             } else {
-                $lines[] = $pad.'    '.$key.' => '."'".addslashes((string) $v)."'".",\n";
+                $lines[] = $pad . '    ' . $key . ' => ' . "'" . addslashes((string) $v) . "'" . ",\n";
             }
         }
 
-        $lines[] = $pad.']';
+        $lines[] = $pad . ']';
 
         return implode('', $lines);
     }

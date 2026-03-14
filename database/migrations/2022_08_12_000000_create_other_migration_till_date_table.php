@@ -16,6 +16,8 @@ use App\Models\UserPermission;
 use Carbon\Carbon;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -29,7 +31,7 @@ return new class extends Migration
     public function up()
     {
 
-        if (\Illuminate\Support\Facades\File::get(public_path('version.txt')) < '5.1.7') {
+        if (File::get(public_path('version.txt')) < '5.1.7') {
             $message = 'Please contact the author for gradation. You are not allowed to upgrade the application if your application is below 5.1.7';
             throw new \Exception($message);
         }
@@ -194,7 +196,6 @@ return new class extends Migration
                 ]);
                 // @codingStandardsIgnoreLine
             } catch (\Exception $e) {
-
             }
 
             foreach ($admins as $item) {
@@ -287,7 +288,8 @@ return new class extends Migration
 
         DB::table('custom_field_groups')->insert(
             [
-                'name' => 'Ticket', 'model' => 'App\Models\Ticket',
+                'name' => 'Ticket',
+                'model' => 'App\Models\Ticket',
             ]
         );
 
@@ -339,13 +341,12 @@ return new class extends Migration
 
         if ($existingSchedules) {
             foreach ($existingSchedules as $item) {
-                $item->shift_start_time = $item->date->toDateString().' '.$item->shift->office_start_time;
+                $item->shift_start_time = $item->date->toDateString() . ' ' . $item->shift->office_start_time;
 
                 if (Carbon::parse($item->shift->office_start_time)->gt(Carbon::parse($item->shift->office_end_time))) {
-                    $item->shift_end_time = $item->date->addDay()->toDateString().' '.$item->shift->office_end_time;
-
+                    $item->shift_end_time = $item->date->addDay()->toDateString() . ' ' . $item->shift->office_end_time;
                 } else {
-                    $item->shift_end_time = $item->date->toDateString().' '.$item->shift->office_end_time;
+                    $item->shift_end_time = $item->date->toDateString() . ' ' . $item->shift->office_end_time;
                 }
 
                 $item->save();
@@ -365,7 +366,6 @@ return new class extends Migration
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
         });
-
     }
 
     // phpcs:ignore
@@ -392,12 +392,12 @@ return new class extends Migration
             if (! $log) {
                 DB::table('custom_field_groups')->insert(
                     [
-                        'name' => 'Time Log', 'model' => 'App\Models\ProjectTimeLog',
+                        'name' => 'Time Log',
+                        'model' => 'App\Models\ProjectTimeLog',
                     ]
                 );
             }
         }
-
     }
 
     // phpcs:ignore
@@ -437,7 +437,6 @@ return new class extends Migration
             foreach ($widgets as $widget) {
                 DashboardWidget::create($widget);
             }
-
         }
 
         if (! Schema::hasColumn('companies', 'license_type')) {

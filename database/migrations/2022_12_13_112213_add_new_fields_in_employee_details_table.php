@@ -4,6 +4,7 @@ use App\Models\Company;
 use App\Models\DashboardWidget;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -25,7 +26,6 @@ return new class extends Migration
             $table->string('employment_type')->nullable()->after('reporting_to');
             $table->date('internship_end_date')->nullable()->after('reporting_to');
             $table->date('contract_end_date')->nullable()->after('reporting_to');
-
         });
 
         $companies = Company::select('id')->get();
@@ -43,7 +43,8 @@ return new class extends Migration
                     'status' => 1,
                     'company_id' => $company->id,
                     'dashboard_type' => 'private-dashboard',
-                ], [
+                ],
+                [
                     'widget_name' => 'contract_date',
                     'status' => 1,
                     'company_id' => $company->id,
@@ -61,7 +62,7 @@ return new class extends Migration
         }
 
         // Remove duplicates from module_settings table
-        \Illuminate\Support\Facades\DB::statement('DELETE t1 FROM module_settings t1
+        DB::statement('DELETE t1 FROM module_settings t1
         INNER JOIN module_settings t2 WHERE
         t1.id > t2.id
         AND t1.type = t2.type

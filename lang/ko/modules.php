@@ -1863,6 +1863,8 @@ return [
         'biolinks' => '바이오링크',
         'performance' => '성능',
         'Policy' => '정책센터',
+        'policy' => '정책센터',
+        'servermanager' => '서버 관리자',
         'biometric' => '생체 인식',
     ],
     'projectSettings' => [

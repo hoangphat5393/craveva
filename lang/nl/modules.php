@@ -1863,6 +1863,8 @@ return [
         'biolinks' => 'Biolinks',
         'performance' => 'Prestatie',
         'Policy' => 'Beleidscentrum',
+        'policy' => 'Beleidscentrum',
+        'servermanager' => 'Serverbeheer',
         'biometric' => 'Biometrisch',
     ],
     'projectSettings' => [

@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\Artisan;
 
 return new class extends Migration
 {
@@ -9,7 +10,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        \Illuminate\Support\Facades\Artisan::call('db:seed', [
+        Artisan::call('db:seed', [
             '--class' => 'NonSaasToSaasSeeder',
             '--force' => true,
         ]);

@@ -1863,6 +1863,8 @@ return [
         'biolinks' => 'बायोलिंक्स',
         'performance' => 'प्रदर्शन',
         'Policy' => 'नीति केंद्र',
+        'policy' => 'नीति केंद्र',
+        'servermanager' => 'सर्वर प्रबंधक',
         'biometric' => 'बॉयोमीट्रिक',
     ],
     'projectSettings' => [

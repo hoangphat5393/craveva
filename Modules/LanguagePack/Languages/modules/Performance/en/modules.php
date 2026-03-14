@@ -23,4 +23,5 @@ return [
     'sendReminderMeeting' => 'Send reminder for pending meetings.',
     'sendReminderObjective' => 'Send reminder for the pending check-ins on this objective.',
     'hideCompletedObjectives' => 'Hide completed objectives',
+    'actionPoints' => 'Actionpoints',
 ];

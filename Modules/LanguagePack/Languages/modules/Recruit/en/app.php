@@ -38,6 +38,7 @@ return [
         'signedOffer' => 'signed offer letter on',
         'description' => 'Description',
         'notDisclosed' => 'Not Disclosed',
+        'evaluation' => 'Evaluation',
     ],
     'job' => [
         'withdraw' => 'Withdraw',
@@ -79,6 +80,9 @@ return [
         'inProgress' => 'In Progress',
         'scheduled' => 'Scheduled',
         'offerReleased' => 'Offer Released',
+        'workType' => 'Worktype',
+        'onsite' => 'Onsite',
+        'remote' => 'Remote',
     ],
     'jobApplication' => [
         'applied' => 'Applied',
@@ -98,7 +102,6 @@ return [
         'other' => 'Other',
         'backToJobApplications' => 'Back To Job Applications',
         'sampleCsv' => 'Download Sample CSV',
-
     ],
     'interviewSchedule' => [
         'approve' => 'Approve',
@@ -151,5 +154,4 @@ return [
         'job' => 'Job',
         'jobexpire' => 'Job Expire',
     ],
-
 ];

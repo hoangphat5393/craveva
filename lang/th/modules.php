@@ -1863,6 +1863,8 @@ return [
         'biolinks' => 'ไบโอลิงค์',
         'performance' => 'ผลงาน',
         'Policy' => 'ศูนย์นโยบาย',
+        'policy' => 'ศูนย์นโยบาย',
+        'servermanager' => 'ตัวจัดการเซิร์ฟเวอร์',
         'biometric' => 'เกี่ยวกับไบโอเมตริกซ์',
     ],
     'projectSettings' => [

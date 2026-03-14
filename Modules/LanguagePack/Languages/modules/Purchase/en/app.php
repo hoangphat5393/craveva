@@ -28,7 +28,6 @@ return [
     'availableStock' => 'Available Stock',
     'availableBalance' => 'Available Balance',
     'defaultImage' => 'Default Image',
-
     'menu' => [
         'purchase' => 'Purchase',
         'purchaseSettings' => 'Purchase Settings',
@@ -66,7 +65,6 @@ return [
         'addFiles' => 'Add files',
         'inventoryValuationSummary' => 'inventory Valuation Summary',
         'addPayment' => 'Add Payment',
-        'purchaseOrder' => 'Purchase Order',
         'vendorCredits' => 'Vendor Credits',
         'vendorCredit' => 'Vendor Credit',
         'addVendorCredit' => 'Add Vendor Credit',
@@ -84,6 +82,7 @@ return [
         'purchaseOrder' => 'Purchase Order',
         'vendorName' => 'Vendor Name',
         'paymentToVendor' => 'Payment To Vendor',
-
     ],
+    'erpShipmentRef' => 'Erpshipmentref',
+    'wmsShipmentRef' => 'Wmsshipmentref',
 ];

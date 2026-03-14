@@ -1,0 +1,5 @@
+<?php
+
+return [
+    'Certification' => 'Certification',
+];

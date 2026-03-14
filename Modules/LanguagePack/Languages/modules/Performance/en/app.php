@@ -142,5 +142,6 @@ return [
     'objectiveCheckIns' => 'Check-ins',
     'pendingCheckIns' => 'Pending Check-ins',
     'upcomingCheckIns' => 'Upcoming Check-ins',
-
+    'addActionPoints' => 'Addactionpoints',
+    'loadMore' => 'Loadmore',
 ];

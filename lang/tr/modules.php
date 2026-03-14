@@ -1863,6 +1863,8 @@ return [
         'biolinks' => 'Biyolinkler',
         'performance' => 'Performans',
         'Policy' => 'Politika Merkezi',
+        'policy' => 'Politika Merkezi',
+        'servermanager' => 'Sunucu Yöneticisi',
         'biometric' => 'Biyometrik',
     ],
     'projectSettings' => [

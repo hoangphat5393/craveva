@@ -1863,6 +1863,8 @@ return [
         'biolinks' => 'Biolingid',
         'performance' => 'Esinemine',
         'Policy' => 'Poliitikakeskus',
+        'policy' => 'Poliitikakeskus',
+        'servermanager' => 'Serverihaldur',
         'biometric' => 'Biomeetriline',
     ],
     'projectSettings' => [

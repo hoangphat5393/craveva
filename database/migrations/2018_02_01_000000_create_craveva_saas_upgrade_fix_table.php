@@ -3,6 +3,8 @@
 use App\Models\OfflinePaymentMethod;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -34,7 +36,7 @@ return new class extends Migration
             });
         }
 
-        \Illuminate\Support\Facades\Artisan::call('db:seed', [
+        Artisan::call('db:seed', [
             '--class' => 'ModulePermissionSeeder',
             '--force' => true,
         ]);
@@ -440,7 +442,7 @@ return new class extends Migration
             });
 
             Schema::table('users', function (Blueprint $table) {
-                \DB::statement("ALTER TABLE `users` CHANGE `gender` `gender` ENUM('male', 'female', 'others') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL;");
+                DB::statement("ALTER TABLE `users` CHANGE `gender` `gender` ENUM('male', 'female', 'others') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL;");
                 $table->string('email')->nullable()->change();
                 $table->dropColumn(['email_verification_code', 'social_token', 'authorize_id', 'authorize_payment_id', 'card_brand', 'card_last_four']);
             });

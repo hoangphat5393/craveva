@@ -1,5 +1,0 @@
-<?php
-
-return [
-    'Certification' => 'Certification',
-];

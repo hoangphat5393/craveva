@@ -9,7 +9,6 @@ use App\Models\CustomFieldGroup;
 use App\Models\User;
 use App\Scopes\ActiveScope;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
 
@@ -41,35 +40,35 @@ class ClientsDataTable extends BaseDataTable
 
         $datatables = datatables()->eloquent($query);
         $datatables->addIndexColumn();
-        $datatables->addColumn('check', fn ($row) => $this->checkBox($row));
+        $datatables->addColumn('check', fn($row) => $this->checkBox($row));
         $datatables->addColumn('action', function ($row) {
 
             $action = '<div class="task_view">
 
                     <div class="dropdown">
                         <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" type="link"
-                            id="dropdownMenuLink-'.$row->id.'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            id="dropdownMenuLink-' . $row->id . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="icon-options-vertical icons"></i>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-'.$row->id.'" tabindex="0">';
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-' . $row->id . '" tabindex="0">';
 
-            $action .= '<a href="'.route('clients.show', [$row->id]).'" class="dropdown-item"><i class="fa fa-eye mr-2"></i>'.__('app.view').'</a>';
+            $action .= '<a href="' . route('clients.show', [$row->id]) . '" class="dropdown-item"><i class="fa fa-eye mr-2"></i>' . __('app.view') . '</a>';
 
             if (in_array('admin', user_roles()) && ! $row->admin_approval) {
-                $action .= '<a href="javascript:;" class="dropdown-item verify-user" data-user-id="'.$row->id.'"><i class="fa fa-check mr-2"></i>'.__('app.approve').'</a>';
+                $action .= '<a href="javascript:;" class="dropdown-item verify-user" data-user-id="' . $row->id . '"><i class="fa fa-check mr-2"></i>' . __('app.approve') . '</a>';
             }
 
             if ($this->editClientPermission == 'all' || ($this->editClientPermission == 'added' && user()->id == $row->added_by) || ($this->editClientPermission == 'both' && user()->id == $row->added_by)) {
-                $action .= '<a class="dropdown-item openRightModal" href="'.route('clients.edit', [$row->id]).'">
+                $action .= '<a class="dropdown-item openRightModal" href="' . route('clients.edit', [$row->id]) . '">
                                 <i class="fa fa-edit mr-2"></i>
-                                '.trans('app.edit').'
+                                ' . trans('app.edit') . '
                             </a>';
             }
 
             if ($this->deleteClientPermission == 'all' || ($this->deleteClientPermission == 'added' && user()->id == $row->added_by) || ($this->deleteClientPermission == 'both' && user()->id == $row->added_by)) {
-                $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-user-id="'.$row->id.'">
+                $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-user-id="' . $row->id . '">
                                 <i class="fa fa-trash mr-2"></i>
-                                '.trans('app.delete').'
+                                ' . trans('app.delete') . '
                             </a>';
             }
 
@@ -79,26 +78,26 @@ class ClientsDataTable extends BaseDataTable
 
             return $action;
         });
-        $datatables->addColumn('client_code', fn ($row) => $row->client_code ?? '--');
-        $datatables->addColumn('client_name', fn ($row) => $row->name_salutation);
+        $datatables->addColumn('client_code', fn($row) => $row->client_code ?? '--');
+        $datatables->addColumn('client_name', fn($row) => $row->name_salutation);
         $datatables->addColumn('mobile', function ($row) {
             if (trim((string) ($row->mobile ?? '')) === '') {
                 return '--';
             }
-            $prefix = ! is_null($row->country_phonecode) && $row->country_phonecode !== '' ? '+'.$row->country_phonecode.' ' : '';
+            $prefix = ! is_null($row->country_phonecode) && $row->country_phonecode !== '' ? '+' . $row->country_phonecode . ' ' : '';
 
-            return $prefix.$row->mobile;
+            return $prefix . $row->mobile;
         });
         $datatables->addColumn('category_name', function ($row) {
             return ! is_null($row->clientDetails->category_id) ? $row->cat_name : '--';
         });
-        $datatables->addColumn('added_by', fn ($row) => optional($row->clientDetails)->addedBy ? $row->clientDetails->addedBy->name : '--');
-        $datatables->editColumn('name', fn ($row) => view('components.client', ['user' => $row]));
-        $datatables->editColumn('id', fn ($row) => $row->clientDetails?->id);
-        $datatables->editColumn('created_at', fn ($row) => Carbon::parse($row->created_at)->translatedFormat($this->company->date_format));
-        $datatables->editColumn('status', fn ($row) => $row->status == 'active' ? Common::active() : Common::inactive());
+        $datatables->addColumn('added_by', fn($row) => optional($row->clientDetails)->addedBy ? $row->clientDetails->addedBy->name : '--');
+        $datatables->editColumn('name', fn($row) => view('components.client', ['user' => $row]));
+        $datatables->editColumn('id', fn($row) => $row->clientDetails?->id);
+        $datatables->editColumn('created_at', fn($row) => Carbon::parse($row->created_at)->translatedFormat($this->company->date_format));
+        $datatables->editColumn('status', fn($row) => $row->status == 'active' ? Common::active() : Common::inactive());
         $datatables->smart(false);
-        $datatables->setRowId(fn ($row) => 'row-'.$row->id);
+        $datatables->setRowId(fn($row) => 'row-' . $row->id);
         // Order map: column index => DB column (phải trùng thứ tự với DataTable để custom field load đúng trang)
         $clientOrderMap = [
             2 => 'users.id',
@@ -144,12 +143,12 @@ class ClientsDataTable extends BaseDataTable
 
         if ($request->startDate !== null && $request->startDate != 'null' && $request->startDate != '') {
             $startDate = companyToDateString($request->startDate);
-            $users = $users->where('users.created_at', '>=', $startDate.' 00:00:00');
+            $users = $users->where('users.created_at', '>=', $startDate . ' 00:00:00');
         }
 
         if ($request->endDate !== null && $request->endDate != 'null' && $request->endDate != '') {
             $endDate = companyToDateString($request->endDate);
-            $users = $users->where('users.created_at', '<=', $endDate.' 23:59:59');
+            $users = $users->where('users.created_at', '<=', $endDate . ' 23:59:59');
         }
 
         if ($request->status != 'all' && $request->status != '') {
@@ -201,10 +200,10 @@ class ClientsDataTable extends BaseDataTable
         if ($request->searchText != '') {
             $users = $users->where(function ($query) {
                 $safeTerm = Common::safeString(request('searchText'));
-                $query->where('users.name', 'like', '%'.$safeTerm.'%')
-                    ->orWhere('users.email', 'like', '%'.$safeTerm.'%')
-                    ->orWhere('client_details.company_name', 'like', '%'.$safeTerm.'%')
-                    ->orWhere('client_details.client_code', 'like', '%'.$safeTerm.'%');
+                $query->where('users.name', 'like', '%' . $safeTerm . '%')
+                    ->orWhere('users.email', 'like', '%' . $safeTerm . '%')
+                    ->orWhere('client_details.company_name', 'like', '%' . $safeTerm . '%')
+                    ->orWhere('client_details.client_code', 'like', '%' . $safeTerm . '%');
             });
         }
 
@@ -231,9 +230,13 @@ class ClientsDataTable extends BaseDataTable
                 }',
             ]);
 
-        $buttons = [Button::make(['extend' => 'colvis', 'text' => '<i class="fa fa-columns"></i> '.trans('app.columns')])];
+        $buttons = [Button::make([
+            'extend' => 'colvis',
+            'text' => '<i class="fa fa-columns"></i> ' . trans('app.columns'),
+            'columns' => ':not(:first):not(:last)',
+        ])];
         if (canDataTableExport()) {
-            array_unshift($buttons, Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
+            array_unshift($buttons, Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
         }
         $dataTable->buttons($buttons);
 

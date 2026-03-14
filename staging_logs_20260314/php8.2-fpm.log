@@ -1,0 +1,78 @@
+﻿[08-Mar-2026 00:00:00] NOTICE: error log file re-opened
+[08-Mar-2026 06:53:24] NOTICE: [pool www] child 262251 exited with code 0 after 84531.542109 seconds from start
+[08-Mar-2026 06:53:24] NOTICE: [pool www] child 346689 started
+[08-Mar-2026 06:53:25] NOTICE: [pool www] child 262254 exited with code 0 after 84531.882676 seconds from start
+[08-Mar-2026 06:53:25] NOTICE: [pool www] child 346690 started
+[08-Mar-2026 06:53:26] NOTICE: [pool www] child 262252 exited with code 0 after 84532.830513 seconds from start
+[08-Mar-2026 06:53:26] NOTICE: [pool www] child 346691 started
+[08-Mar-2026 06:53:26] NOTICE: [pool www] child 262253 exited with code 0 after 84533.302100 seconds from start
+[08-Mar-2026 06:53:26] NOTICE: [pool www] child 346692 started
+[08-Mar-2026 11:52:23] NOTICE: [pool www] child 274723 exited with code 0 after 90511.011552 seconds from start
+[08-Mar-2026 11:52:23] NOTICE: [pool www] child 365296 started
+[10-Mar-2026 06:26:50] NOTICE: Terminating ...
+[10-Mar-2026 06:26:50] NOTICE: exiting, bye-bye!
+[10-Mar-2026 06:26:51] NOTICE: fpm is running, pid 522715
+[10-Mar-2026 06:26:51] NOTICE: ready to handle connections
+[10-Mar-2026 06:26:51] NOTICE: systemd monitor interval set to 10000ms
+[10-Mar-2026 21:28:51] WARNING: [pool www] seems busy (you may need to increase pm.start_servers, or pm.min/max_spare_servers), spawning 8 children, there are 0 idle, and 11 total children
+[10-Mar-2026 21:28:52] WARNING: [pool www] server reached pm.max_children setting (12), consider raising it
+[10-Mar-2026 21:29:30] WARNING: [pool www] server reached pm.max_children setting (12), consider raising it
+[11-Mar-2026 01:50:51] NOTICE: [pool www] child 608284 exited with code 0 after 5063.297689 seconds from start
+[11-Mar-2026 01:50:51] NOTICE: [pool www] child 613648 started
+[11-Mar-2026 01:51:03] NOTICE: [pool www] child 608288 exited with code 0 after 5069.434163 seconds from start
+[11-Mar-2026 01:51:03] NOTICE: [pool www] child 613651 started
+[11-Mar-2026 01:51:05] NOTICE: [pool www] child 608287 exited with code 0 after 5073.361991 seconds from start
+[11-Mar-2026 01:51:05] NOTICE: [pool www] child 613652 started
+[11-Mar-2026 01:51:26] NOTICE: [pool www] child 608289 exited with code 0 after 5081.989332 seconds from start
+[11-Mar-2026 01:51:26] NOTICE: [pool www] child 613656 started
+[11-Mar-2026 05:58:49] WARNING: [pool www] child 628025 exited on signal 9 (SIGKILL) after 1722.041182 seconds from start
+[11-Mar-2026 05:58:49] NOTICE: [pool www] child 628504 started
+[11-Mar-2026 05:58:49] NOTICE: Terminating ...
+[11-Mar-2026 05:58:49] NOTICE: exiting, bye-bye!
+[11-Mar-2026 05:58:52] NOTICE: fpm is running, pid 628562
+[11-Mar-2026 05:58:52] NOTICE: ready to handle connections
+[11-Mar-2026 05:58:52] NOTICE: systemd monitor interval set to 10000ms
+[11-Mar-2026 06:20:18] WARNING: [pool www] child 628617 exited on signal 9 (SIGKILL) after 1286.163218 seconds from start
+[11-Mar-2026 06:20:18] NOTICE: [pool www] child 630376 started
+[11-Mar-2026 06:20:18] NOTICE: Terminating ...
+[11-Mar-2026 06:20:18] NOTICE: exiting, bye-bye!
+[11-Mar-2026 06:20:20] NOTICE: fpm is running, pid 630429
+[11-Mar-2026 06:20:21] NOTICE: ready to handle connections
+[11-Mar-2026 06:20:21] NOTICE: systemd monitor interval set to 10000ms
+[11-Mar-2026 09:54:47] NOTICE: fpm is running, pid 476
+[11-Mar-2026 09:54:48] NOTICE: ready to handle connections
+[11-Mar-2026 09:54:48] NOTICE: systemd monitor interval set to 10000ms
+[11-Mar-2026 10:42:13] NOTICE: Terminating ...
+[11-Mar-2026 10:42:13] NOTICE: exiting, bye-bye!
+[11-Mar-2026 10:42:13] NOTICE: fpm is running, pid 5608
+[11-Mar-2026 10:42:13] NOTICE: ready to handle connections
+[11-Mar-2026 10:42:13] NOTICE: systemd monitor interval set to 10000ms
+[11-Mar-2026 10:49:01] NOTICE: fpm is running, pid 475
+[11-Mar-2026 10:49:01] NOTICE: ready to handle connections
+[11-Mar-2026 10:49:01] NOTICE: systemd monitor interval set to 10000ms
+[11-Mar-2026 10:49:05] WARNING: [pool www] seems busy (you may need to increase pm.start_servers, or pm.min/max_spare_servers), spawning 8 children, there are 0 idle, and 9 total children
+[11-Mar-2026 10:49:06] WARNING: [pool www] seems busy (you may need to increase pm.start_servers, or pm.min/max_spare_servers), spawning 16 children, there are 0 idle, and 11 total children
+[11-Mar-2026 10:56:32] NOTICE: fpm is running, pid 474
+[11-Mar-2026 10:56:32] NOTICE: ready to handle connections
+[11-Mar-2026 10:56:32] NOTICE: systemd monitor interval set to 10000ms
+[11-Mar-2026 11:01:05] NOTICE: Terminating ...
+[11-Mar-2026 11:01:05] NOTICE: exiting, bye-bye!
+[11-Mar-2026 11:01:05] NOTICE: fpm is running, pid 1586
+[11-Mar-2026 11:01:05] NOTICE: ready to handle connections
+[11-Mar-2026 11:01:05] NOTICE: systemd monitor interval set to 10000ms
+[11-Mar-2026 11:04:25] NOTICE: Terminating ...
+[11-Mar-2026 11:04:25] NOTICE: exiting, bye-bye!
+[11-Mar-2026 11:04:26] NOTICE: fpm is running, pid 1635
+[11-Mar-2026 11:04:26] NOTICE: ready to handle connections
+[11-Mar-2026 11:04:26] NOTICE: systemd monitor interval set to 10000ms
+[11-Mar-2026 18:53:28] WARNING: [pool www] server reached pm.max_children setting (12), consider raising it
+[12-Mar-2026 04:16:27] NOTICE: Terminating ...
+[12-Mar-2026 04:16:27] NOTICE: exiting, bye-bye!
+[12-Mar-2026 05:07:14] NOTICE: fpm is running, pid 490
+[12-Mar-2026 05:07:14] NOTICE: ready to handle connections
+[12-Mar-2026 05:07:14] NOTICE: systemd monitor interval set to 10000ms
+[12-Mar-2026 05:07:18] WARNING: [pool www] seems busy (you may need to increase pm.start_servers, or pm.min/max_spare_servers), spawning 8 children, there are 0 idle, and 9 total children
+[12-Mar-2026 05:07:19] WARNING: [pool www] seems busy (you may need to increase pm.start_servers, or pm.min/max_spare_servers), spawning 16 children, there are 0 idle, and 11 total children
+[12-Mar-2026 05:07:20] WARNING: [pool www] server reached pm.max_children setting (12), consider raising it
+[12-Mar-2026 07:32:14] WARNING: [pool www] server reached pm.max_children setting (12), consider raising it
+[12-Mar-2026 10:38:39] WARNING: [pool www] server reached pm.max_children setting (12), consider raising it

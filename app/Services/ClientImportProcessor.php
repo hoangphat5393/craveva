@@ -81,6 +81,7 @@ class ClientImportProcessor
         $user = new User;
         $user->company_id = $companyId;
         $user->name = $nameTrimmed;
+        $user->login = 'disable'; // Mặc định không cho client đăng nhập khi import; admin bật "Login Allowed" sau nếu cần
         $user->email = self::columnExists($columns, 'email') && self::isEmailValid(self::getValue($row, $columns, 'email'))
             ? self::getValue($row, $columns, 'email')
             : null;

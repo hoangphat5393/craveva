@@ -302,10 +302,23 @@ class Files
                 $fileVisibility = ['directory_visibility' => 'public', 'visibility' => 'public'];
             }
 
-            // We have given 2 options of upload for now s3 and local
             /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
             $disk = Storage::disk(config('filesystems.default'));
-            $disk->putFileAs($dir, $uploadedFile, $newName, $fileVisibility);
+
+            $realPath = $uploadedFile->getRealPath();
+            if ($realPath === false || $realPath === '') {
+                $content = $uploadedFile->get();
+                if ($content === null || $content === '') {
+                    $msg = __('messages.pleaseSelectFile');
+                    if ($msg === 'messages.pleaseSelectFile') {
+                        $msg = 'Please select a valid file to upload.';
+                    }
+                    throw new \Exception($msg);
+                }
+                $disk->put($dir . '/' . $newName, $content, $fileVisibility);
+            } else {
+                $disk->putFileAs($dir, $uploadedFile, $newName, $fileVisibility);
+            }
 
             // Upload files to aws s3 or digitalocean or wasabi or minio
             if ($disk->missing($dir . '/' . $newName)) {
@@ -341,6 +354,10 @@ class Files
 
     public static function deleteFile($filename, $folder)
     {
+        if ($filename === null || $filename === '') {
+            return true;
+        }
+
         $dir = trim($folder, '/');
 
         // Check and delete file record from database
@@ -413,10 +430,24 @@ class Files
 
         /** Check if folder exits or not. If not then create the folder */
         self::createDirectoryIfNotExist($folder);
+        self::createDirectoryIfNotExist('temp');
 
         $newPath = $folder . '/' . $newName;
 
-        $uploadedFile->storeAs('temp', $newName, 'local');
+        $realPath = $uploadedFile->getRealPath();
+        if ($realPath === false || $realPath === '') {
+            $content = $uploadedFile->get();
+            if ($content === null || $content === '') {
+                $msg = __('messages.pleaseSelectFile');
+                if ($msg === 'messages.pleaseSelectFile') {
+                    $msg = 'Please select a valid file to upload.';
+                }
+                throw new \Exception($msg);
+            }
+            File::put($tempPath, $content);
+        } else {
+            $uploadedFile->storeAs('temp', $newName, 'local');
+        }
 
         // Resizing image if width and height is provided
         $svgNot = File::extension($uploadedFile->getClientOriginalName()) !== 'svg';

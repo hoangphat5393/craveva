@@ -164,7 +164,8 @@ return [
         ],
         'sensitive_tables' => [
             'users' => [
-                'allow_columns' => ['id', 'company_id', 'name', 'email', 'mobile', 'image', 'status', 'login', 'created_at', 'updated_at'],
+                // country_phonecode needed for AI client verification (normalize phone: +84 + mobile)
+                'allow_columns' => ['id', 'company_id', 'name', 'email', 'mobile', 'country_phonecode', 'image', 'status', 'login', 'created_at', 'updated_at'],
             ],
             'companies' => [
                 'allow_columns' => ['id', 'company_name', 'company_email', 'company_phone', 'website', 'address', 'city', 'state', 'country', 'postal_code', 'created_at', 'updated_at'],

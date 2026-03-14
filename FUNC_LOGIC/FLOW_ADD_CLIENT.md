@@ -332,17 +332,17 @@ Trước đây: nhiều chunk job chạy song song, mỗi dòng gọi `assignUse
 
 Các trường dùng cho nghiệp vụ cốt lõi: định danh, tìm kiếm, trùng lặp, địa chỉ, liên hệ, thuế. **Không** cần thêm cột DB mới.
 
-| Trường hệ thống          | Bảng           | Cột file tương ứng (vd. Miaolin) | Bắt buộc import?             |
-| ------------------------ | -------------- | -------------------------------- | ---------------------------- |
-| name                     | users          | 客戶簡稱 \| Customer Short Name  | **Có** (required)            |
-| client_code              | client_details | 客戶代號 \| Customer Code        | Nên có (unique/company)      |
-| company_name             | client_details | Có thể = 客戶簡稱 hoặc trống     | Không                        |
-| email                    | users          | (File có thể không có)           | Không                        |
-| mobile                   | users          | TEL_NO(一) hoặc (二)             | Không                        |
-| office                   | client_details | TEL_NO(一)/(二)                  | Không                        |
-| address                  | client_details | 送貨地址 \| Delivery Address     | Không (quan trọng giao hàng) |
-| city, state, postal_code | client_details | (Nếu file có)                    | Không                        |
-| gst_number               | client_details | 統一編號 \| Tax ID               | Không                        |
+| Trường hệ thống          | Bảng           | Cột file tương ứng (vd. Miaolin)  | Bắt buộc import?             |
+| ------------------------ | -------------- | --------------------------------- | ---------------------------- |
+| name                     | users          | 客戶簡稱 \| Customer Short Name   | **Có** (required)            |
+| client_code              | client_details | 客戶代號 \| Customer Code         | Nên có (unique/company)      |
+| company_name             | client_details | Có thể = 客戶簡稱 hoặc trống      | Không                        |
+| email                    | users          | (File có thể không có)            | Không                        |
+| mobile                   | users          | TEL_NO(一) hoặc (二)              | Không                        |
+| office                   | client_details | TEL_NO(二) — điện thoại văn phòng | Không                        |
+| address                  | client_details | 送貨地址 \| Delivery Address      | Không (quan trọng giao hàng) |
+| city, state, postal_code | client_details | (Nếu file có)                     | Không                        |
+| gst_number               | client_details | 統一編號 \| Tax ID                | Không                        |
 
 ### 9.2. Trường chỉ cần Custom Field (giữ như hiện tại)
 
@@ -371,7 +371,25 @@ Các trường nghiệp vụ đặc thù công ty, **không** đưa vào bảng 
 - **Không** cần thêm cột DB mới cho các cột hiện có trong file Miaolin Product Customer / Miaolin Customer. Cấu trúc hiện tại (name, client_code, address, office, gst_number… trên DB; salesperson, department, payment_terms… trên custom field) là **hợp lý** và nên giữ.
 - Cải thiện chính cho file ~17k dòng: **bulk insert custom_fields_data** + cache metadata trong chunk + tăng chunk size sau khi bulk insert; không thay đổi cách phân chia DB vs Custom.
 
-### 9.5. Ảnh hưởng khi khách hàng xóa hoặc thêm custom field
+### 9.5. Cột `client_details.mobile` và `client_details.office_phone` – không sử dụng (legacy)
+
+**Đã kiểm tra toàn bộ dự án:** Không có code nào đọc hoặc ghi `client_details.mobile` hoặc `client_details.office_phone`.
+
+| Cột                           | Trạng thái    | Ghi chú                                                                                                               |
+| ----------------------------- | ------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `client_details.mobile`       | Không sử dụng | Cột dư từ migration SaaS; app dùng `users.mobile` cho SĐT di động. Model ClientDetails `$fillable` không có `mobile`. |
+| `client_details.office_phone` | Không sử dụng | Cột dư; app dùng `client_details.office` cho SĐT văn phòng. `$fillable` không có `office_phone`.                      |
+
+**Mapping thực tế:**
+
+| Dữ liệu       | Bảng / cột              | Form, Import, DataTable                                                |
+| ------------- | ----------------------- | ---------------------------------------------------------------------- |
+| SĐT di động   | `users.mobile`          | ClientController store/update, ClientImportProcessor, ClientsDataTable |
+| SĐT văn phòng | `client_details.office` | ClientImportProcessor (company_phone → office), form edit client       |
+
+**Migration:** `2018_02_01_000000_create_craveva_saas_upgrade_fix_table.php` đã drop rồi add lại `mobile`, `office_phone` vào `client_details`. Các cột này tồn tại trong DB nhưng luôn NULL vì app không ghi vào. Có thể tạo migration `dropColumn(['mobile','office_phone'])` nếu muốn dọn schema.
+
+### 9.6. Ảnh hưởng khi khách hàng xóa hoặc thêm custom field
 
 Import client dùng **danh sách tên custom field cố định** trong code (`ClientImportProcessor::getClientCustomFieldNames()` và `ClientImport::fields()`). Khi admin xóa hoặc thêm custom field trong Settings (Client group):
 

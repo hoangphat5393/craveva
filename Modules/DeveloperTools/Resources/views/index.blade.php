@@ -33,11 +33,10 @@
                                                 <div class="mb-3">
                                                     <div class="mb-2 font-weight-bold">Allowed modules (read-only)</div>
                                                     <div class="d-flex flex-wrap">
-                                                        @foreach(($availableModules ?? []) as $moduleKey => $moduleDef)
+                                                        @foreach ($availableModules ?? [] as $moduleKey => $moduleDef)
                                                             <div class="mr-4 mb-2">
                                                                 <label class="mb-0">
-                                                                    <input type="checkbox" name="modules[]" value="{{ $moduleKey }}"
-                                                                        @if(in_array($moduleKey, old('modules', $defaultModules ?? []))) checked @endif>
+                                                                    <input type="checkbox" name="modules[]" value="{{ $moduleKey }}" @if (in_array($moduleKey, old('modules', $defaultModules ?? []))) checked @endif>
                                                                     {{ $moduleDef['label'] ?? $moduleKey }}
                                                                 </label>
                                                             </div>
@@ -60,20 +59,73 @@
                                     @endif
 
                                     @if (session('new_db_password'))
-                                        <div class="alert alert-warning">
+                                        <div class="alert alert-warning" id="devtools-credential-box">
                                             <h4><i class="icon fa fa-warning"></i>IMPORTANT: Save these credentials now!</h4>
-                                            <p><strong>Database Host:</strong> {{ request()->getHost() }}</p>
-                                            <p><strong>Database Name:</strong> {{ session('new_db_name', config('developertools.gateway_db', 'api_gateway_db')) }}</p>
-                                            <p><strong>Username:</strong> {{ session('new_db_username') }}</p>
-                                            <p><strong>Password:</strong> <span class="badge badge-warning" style="font-size: 1.2em">{{ session('new_db_password') }}</span></p>
+                                            <p><strong>Database Host:</strong>
+                                                <span class="credential-value" data-copy="{{ request()->getHost() }}">{{ request()->getHost() }}</span>
+                                                <button type="button" class="btn btn-sm btn-outline-dark ml-1 devtools-copy-btn" data-copy="{{ request()->getHost() }}" title="Copy"><i class="fa fa-copy"></i></button>
+                                            </p>
+                                            <p><strong>Database Name:</strong>
+                                                <span class="credential-value" data-copy="{{ session('new_db_name', config('developertools.gateway_db', 'api_gateway_db')) }}">{{ session('new_db_name', config('developertools.gateway_db', 'api_gateway_db')) }}</span>
+                                                <button type="button" class="btn btn-sm btn-outline-dark ml-1 devtools-copy-btn" data-copy="{{ session('new_db_name', config('developertools.gateway_db', 'api_gateway_db')) }}" title="Copy"><i class="fa fa-copy"></i></button>
+                                            </p>
+                                            <p><strong>Username:</strong>
+                                                <span class="credential-value" data-copy="{{ session('new_db_username') }}">{{ session('new_db_username') }}</span>
+                                                <button type="button" class="btn btn-sm btn-outline-dark ml-1 devtools-copy-btn" data-copy="{{ session('new_db_username') }}" title="Copy"><i class="fa fa-copy"></i></button>
+                                            </p>
+                                            <p><strong>Password:</strong>
+                                                <span class="badge badge-warning credential-value" style="font-size: 1.2em" data-copy="{{ session('new_db_password') }}">{{ session('new_db_password') }}</span>
+                                                <button type="button" class="btn btn-sm btn-outline-dark ml-1 devtools-copy-btn" data-copy="{{ session('new_db_password') }}" title="Copy"><i class="fa fa-copy"></i></button>
+                                            </p>
                                             @if (session('new_db_modules'))
-                                                <p><strong>Allowed Modules:</strong> {{ is_array(session('new_db_modules')) ? implode(', ', session('new_db_modules')) : session('new_db_modules') }}</p>
+                                                @php $modulesStr = is_array(session('new_db_modules')) ? implode(', ', session('new_db_modules')) : session('new_db_modules'); @endphp
+                                                <p><strong>Allowed Modules:</strong>
+                                                    <span class="credential-value" data-copy="{{ $modulesStr }}">{{ $modulesStr }}</span>
+                                                    <button type="button" class="btn btn-sm btn-outline-dark ml-1 devtools-copy-btn" data-copy="{{ $modulesStr }}" title="Copy"><i class="fa fa-copy"></i></button>
+                                                </p>
                                             @endif
                                             @if (session('new_db_views_count'))
-                                                <p><strong>Created Views:</strong> {{ session('new_db_views_count') }}</p>
+                                                <p><strong>Created Views:</strong>
+                                                    <span class="credential-value" data-copy="{{ session('new_db_views_count') }}">{{ session('new_db_views_count') }}</span>
+                                                    <button type="button" class="btn btn-sm btn-outline-dark ml-1 devtools-copy-btn" data-copy="{{ session('new_db_views_count') }}" title="Copy"><i class="fa fa-copy"></i></button>
+                                                </p>
                                             @endif
                                             <p class="mb-0">The password will not be shown again.</p>
                                         </div>
+                                        <script>
+                                            (function() {
+                                                document.querySelectorAll('.devtools-copy-btn').forEach(function(btn) {
+                                                    btn.addEventListener('click', function() {
+                                                        var text = this.getAttribute('data-copy') || '';
+                                                        if (navigator.clipboard && navigator.clipboard.writeText) {
+                                                            navigator.clipboard.writeText(text).then(function() {
+                                                                var icon = btn.querySelector('i');
+                                                                var oldClass = icon.className;
+                                                                icon.className = 'fa fa-check text-success';
+                                                                setTimeout(function() {
+                                                                    icon.className = oldClass;
+                                                                }, 1200);
+                                                            });
+                                                        } else {
+                                                            var ta = document.createElement('textarea');
+                                                            ta.value = text;
+                                                            ta.style.position = 'fixed';
+                                                            ta.style.opacity = '0';
+                                                            document.body.appendChild(ta);
+                                                            ta.select();
+                                                            document.execCommand('copy');
+                                                            document.body.removeChild(ta);
+                                                            var icon = btn.querySelector('i');
+                                                            var oldClass = icon.className;
+                                                            icon.className = 'fa fa-check text-success';
+                                                            setTimeout(function() {
+                                                                icon.className = oldClass;
+                                                            }, 1200);
+                                                        }
+                                                    });
+                                                });
+                                            })();
+                                        </script>
                                     @endif
 
                                     <div class="table-responsive mb-4">

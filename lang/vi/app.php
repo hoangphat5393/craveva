@@ -1370,6 +1370,7 @@ return [
     'restApi' => 'Rest API',
     'clientImportLog' => 'Nhật ký nhập khách hàng',
     'clientImportLogNotFound' => 'Không tìm thấy nhật ký nhập',
+    'clientImportLogOriginalFile' => 'File Excel',
     'clientImportLogTotalJobs' => 'Tổng công việc',
     'clientImportLogProcessed' => 'Đã xử lý',
     'clientImportLogFailed' => 'Thất bại',

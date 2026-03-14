@@ -179,7 +179,11 @@ trait ImportExcel
             $chunkStartIndex += count($chunk);
         }
 
-        $batch = Bus::batch($jobs)->onConnection('database')->onQueue($importClassName)->name($importClassName . '-chunked')->dispatch();
+        $batch = Bus::batch($jobs)->onConnection('database')->onQueue($importClassName)->name($importClassName . '-chunked');
+        if ($request->filled('original_filename')) {
+            $batch = $batch->withOption('original_filename', $request->input('original_filename'));
+        }
+        $batch = $batch->dispatch();
 
         Files::deleteFile($request->file, Files::IMPORT_FOLDER);
 

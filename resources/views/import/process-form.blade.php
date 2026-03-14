@@ -31,6 +31,7 @@
 
             <div class="col-md-12 import-table">
                 <input type="hidden" name="file" value="{{ $file }}">
+                <input type="hidden" name="original_filename" value="{{ $originalImportFilename ?? '' }}">
                 <input type="hidden" name="has_heading" value="{{ $hasHeading ?? false }}">
                 <input type="hidden" name="has_skip_footer" value="{{ $hasSkipFooter ?? false ? '1' : '0' }}">
 

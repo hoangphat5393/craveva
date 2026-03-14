@@ -18,6 +18,7 @@
                     <thead>
                         <tr>
                             <th>@lang('app.date')</th>
+                            <th>@lang('app.clientImportLogOriginalFile')</th>
                             <th>@lang('app.user')</th>
                             <th class="text-center">@lang('app.clientImportLogTotalJobs')</th>
                             <th class="text-center">@lang('app.clientImportLogProcessed')</th>
@@ -29,6 +30,7 @@
                         @forelse ($logs as $log)
                             <tr>
                                 <td>{{ $log['completed_at']? \Carbon\Carbon::parse($log['completed_at'])->timezone(company()->timezone)->translatedFormat(company()->date_format . ' ' . company()->time_format): '—' }}</td>
+                                <td><span class="text-dark-grey" title="{{ $log['original_filename'] ?? '—' }}">{{ Str::limit($log['original_filename'] ?? '—', 30) }}</span></td>
                                 <td>{{ $log['user_name'] }}</td>
                                 <td class="text-center">{{ $log['total_jobs'] }}</td>
                                 <td class="text-center text-success">{{ $log['processed_jobs'] }}</td>
@@ -39,7 +41,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="text-center text-muted py-4">@lang('app.clientImportLogEmpty')</td>
+                                <td colspan="7" class="text-center text-muted py-4">@lang('app.clientImportLogEmpty')</td>
                             </tr>
                         @endforelse
                     </tbody>

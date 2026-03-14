@@ -392,6 +392,29 @@
             }
         });
 
+        $('body').on('change', '.change-client-status', function() {
+            const clientId = $(this).data('client-id');
+            const status = $(this).val();
+            const url = "{{ route('clients.change_status') }}";
+            const token = "{{ csrf_token() }}";
+            if (typeof clientId !== 'undefined') {
+                $.easyAjax({
+                    url: url,
+                    type: "POST",
+                    data: {
+                        _token: token,
+                        client_id: clientId,
+                        status: status
+                    },
+                    success: function(response) {
+                        if (response.status == "success") {
+                            showTable();
+                        }
+                    }
+                });
+            }
+        });
+
         $('body').on('click', '.verify-user', function() {
             const id = $(this).data('user-id');
             Swal.fire({

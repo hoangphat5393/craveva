@@ -258,6 +258,7 @@ Route::group(['middleware' => ['auth', 'multi-company-select', 'email_verified']
     Route::get('clients/client-details/{id}', [ClientController::class, 'clientDetails'])->name('clients.client_details');
     Route::post('clients/project-list/{id}', [ClientController::class, 'projectList'])->name('clients.project_list');
     Route::post('clients/apply-quick-action', [ClientController::class, 'applyQuickAction'])->name('clients.apply_quick_action');
+    Route::post('clients/change-status', [ClientController::class, 'changeStatusQuick'])->name('clients.change_status');
     Route::get('clients/import', [ClientController::class, 'importClient'])->name('clients.import');
     Route::post('clients/import', [ClientController::class, 'importStore'])->name('clients.import.store');
     Route::post('clients/import/process', [ClientController::class, 'importProcess'])->name('clients.import.process');

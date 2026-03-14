@@ -95,7 +95,16 @@ class ClientsDataTable extends BaseDataTable
         $datatables->editColumn('name', fn($row) => view('components.client', ['user' => $row]));
         $datatables->editColumn('id', fn($row) => $row->clientDetails?->id);
         $datatables->editColumn('created_at', fn($row) => Carbon::parse($row->created_at)->translatedFormat($this->company->date_format));
-        $datatables->editColumn('status', fn($row) => $row->status == 'active' ? Common::active() : Common::inactive());
+        $datatables->editColumn('status', function ($row) {
+            if ($this->editClientPermission == 'all' || ($this->editClientPermission == 'added' && user()->id == $row->clientDetails?->added_by) || ($this->editClientPermission == 'both' && user()->id == $row->clientDetails?->added_by)) {
+                $status = '<select class="form-control select-picker change-client-status" data-size="4" data-client-id="' . $row->id . '">';
+                $status .= '<option ' . ($row->status == 'active' ? 'selected' : '') . ' value="active" data-content="<i class=\'fa fa-circle mr-2 text-light-green\'></i> ' . __('app.active') . '">' . __('app.active') . '</option>';
+                $status .= '<option ' . ($row->status == 'deactive' ? 'selected' : '') . ' value="deactive" data-content="<i class=\'fa fa-circle mr-2 text-red\'></i> ' . __('app.inactive') . '">' . __('app.inactive') . '</option>';
+                $status .= '</select>';
+                return $status;
+            }
+            return $row->status == 'active' ? Common::active() : Common::inactive();
+        });
         $datatables->smart(false);
         $datatables->setRowId(fn($row) => 'row-' . $row->id);
         // Order map: column index => DB column (phải trùng thứ tự với DataTable để custom field load đúng trang)
@@ -226,7 +235,7 @@ class ClientsDataTable extends BaseDataTable
                     }
                 }',
                 'fnDrawCallback' => 'function( oSettings ) {
-                  //
+                    $(".change-client-status").selectpicker();
                 }',
             ]);
 

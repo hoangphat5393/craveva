@@ -39,6 +39,7 @@ class ClientImportLogController extends AccountBaseController
                                 'processed_jobs' => $data['processed_jobs'] ?? 0,
                                 'failed_jobs' => $data['failed_jobs'] ?? 0,
                                 'user_name' => $data['user_name'] ?? '—',
+                                'original_filename' => $data['original_filename'] ?? null,
                             ];
                         }
                     } catch (\Throwable $e) {

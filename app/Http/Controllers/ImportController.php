@@ -117,6 +117,8 @@ class ImportController extends Controller
         if (! $companyId || ! $user) {
             return;
         }
+        $batchOptions = $batchRecord->options ? (json_decode($batchRecord->options, true) ?? []) : [];
+        $originalFilename = $batchOptions['original_filename'] ?? null;
         $totalJobs = (int) ($batchRecord->total_jobs ?? 0);
         $failedJobsCount = (int) ($batchRecord->failed_jobs ?? 0);
         $processedJobs = $totalJobs - $failedJobsCount;
@@ -126,6 +128,7 @@ class ImportController extends Controller
             'user_id' => $user->id,
             'user_name' => $user->name,
             'type' => 'client',
+            'original_filename' => $originalFilename,
             'total_jobs' => $totalJobs,
             'processed_jobs' => $processedJobs,
             'failed_jobs' => $failedJobsCount,

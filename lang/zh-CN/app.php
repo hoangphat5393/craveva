@@ -1331,6 +1331,7 @@ return [
     'shelfLifeDays' => '保存期限 (天)',
     'clientImportLog' => '客户导入日志',
     'clientImportLogNotFound' => '未找到导入日志',
+    'clientImportLogOriginalFile' => 'Excel 文件',
     'clientImportLogTotalJobs' => '总任务数',
     'clientImportLogProcessed' => '已处理',
     'clientImportLogFailed' => '失败',

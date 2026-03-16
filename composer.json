@@ -126,6 +126,7 @@
         }
     ],
     "config": {
+        "cache-dir": ".composer-cache",
         "optimize-autoloader": true,
         "preferred-install": "dist",
         "sort-packages": true,

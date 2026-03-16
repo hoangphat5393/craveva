@@ -102,7 +102,7 @@ return [
                 'table_patterns' => [],
             ],
             'delivery' => [
-                'label' => 'Delivery (Giao hàng/Vận đơn)',
+                'label' => 'Delivery',
                 'depends_on' => ['core', 'warehouse'],
                 'table_patterns' => [
                     'delivery_orders',
@@ -126,7 +126,7 @@ return [
                 ],
             ],
             'invoice' => [
-                'label' => 'Invoice (Hóa đơn)',
+                'label' => 'Invoice',
                 'depends_on' => ['core'],
                 'table_patterns' => [
                     'invoices',

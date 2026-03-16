@@ -257,7 +257,12 @@ class SyncKeysCommand extends Command
 
     private function humanizeKey(string $key): string
     {
-        return Str::title(str_replace(['_', '-'], ' ', $key));
+        // Replace _ and - with space
+        $key = str_replace(['_', '-'], ' ', $key);
+        // Add space before capital letters (camelCase → "Camel Case")
+        $key = preg_replace('/([a-z])([A-Z])/', '$1 $2', $key);
+        $key = preg_replace('/([A-Z]+)([A-Z][a-z])/', '$1 $2', $key); // ABCDef → ABC Def
+        return Str::title(trim($key));
     }
 
     private function resolveModuleDirName(string $vendor): ?string

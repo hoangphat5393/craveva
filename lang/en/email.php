@@ -485,7 +485,7 @@ return [
         'slackStatusUpdated' => 'Slackstatusupdated',
         'text' => 'Text',
         'text2' => 'Text2',
-        'statusUpdated' => 'Statusupdated',
+        'statusUpdated' => 'Status Updated',
     ],
     'taskNote' => [
         'subject' => 'Subject',

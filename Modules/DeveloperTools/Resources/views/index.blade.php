@@ -60,7 +60,12 @@
 
                                     @if (session('new_db_password'))
                                         <div class="alert alert-warning" id="devtools-credential-box">
-                                            <h4><i class="icon fa fa-warning"></i>IMPORTANT: Save these credentials now!</h4>
+                                            <div class="d-flex justify-content-between align-items-center flex-wrap mb-2">
+                                                <h4 class="mb-0"><i class="icon fa fa-warning"></i>IMPORTANT: Save these credentials now!</h4>
+                                                <button type="button" class="btn btn-sm btn-primary devtools-copy-all-btn" title="Copy all credentials">
+                                                    <i class="fa fa-copy"></i> Copy all
+                                                </button>
+                                            </div>
                                             <p><strong>Database Host:</strong>
                                                 <span class="credential-value" data-copy="{{ request()->getHost() }}">{{ request()->getHost() }}</span>
                                                 <button type="button" class="btn btn-sm btn-outline-dark ml-1 devtools-copy-btn" data-copy="{{ request()->getHost() }}" title="Copy"><i class="fa fa-copy"></i></button>
@@ -91,9 +96,61 @@
                                                 </p>
                                             @endif
                                             <p class="mb-0">The password will not be shown again.</p>
+                                            @php
+                                                $copyAllLines = ['Database Host: ' . request()->getHost(), 'Database Name: ' . session('new_db_name', config('developertools.gateway_db', 'api_gateway_db')), 'Username: ' . session('new_db_username'), 'Password: ' . session('new_db_password')];
+                                                if (session('new_db_modules')) {
+                                                    $copyAllLines[] = 'Allowed Modules: ' . (is_array(session('new_db_modules')) ? implode(', ', session('new_db_modules')) : session('new_db_modules'));
+                                                }
+                                                if (session('new_db_views_count')) {
+                                                    $copyAllLines[] = 'Created Views: ' . session('new_db_views_count');
+                                                }
+                                                $copyAllText = implode("\n", $copyAllLines);
+                                            @endphp
+                                            <textarea id="devtools-copy-all-text" class="d-none" readonly>{{ $copyAllText }}</textarea>
                                         </div>
                                         <script>
                                             (function() {
+                                                var copyAllBtn = document.querySelector('.devtools-copy-all-btn');
+                                                if (copyAllBtn) {
+                                                    copyAllBtn.addEventListener('click', function() {
+                                                        var ta = document.getElementById('devtools-copy-all-text');
+                                                        var text = ta ? ta.value : '';
+                                                        if (!text) return;
+                                                        if (navigator.clipboard && navigator.clipboard.writeText) {
+                                                            navigator.clipboard.writeText(text).then(function() {
+                                                                var icon = copyAllBtn.querySelector('i');
+                                                                var label = copyAllBtn.childNodes[1] && copyAllBtn.childNodes[1].textContent ? copyAllBtn.childNodes[1] : null;
+                                                                var oldHtml = copyAllBtn.innerHTML;
+                                                                copyAllBtn.innerHTML = '<i class="fa fa-check"></i> Copied!';
+                                                                copyAllBtn.classList.add('btn-success');
+                                                                copyAllBtn.classList.remove('btn-primary');
+                                                                setTimeout(function() {
+                                                                    copyAllBtn.innerHTML = oldHtml;
+                                                                    copyAllBtn.classList.remove('btn-success');
+                                                                    copyAllBtn.classList.add('btn-primary');
+                                                                }, 1500);
+                                                            });
+                                                        } else {
+                                                            var tmp = document.createElement('textarea');
+                                                            tmp.value = text;
+                                                            tmp.style.position = 'fixed';
+                                                            tmp.style.opacity = '0';
+                                                            document.body.appendChild(tmp);
+                                                            tmp.select();
+                                                            document.execCommand('copy');
+                                                            document.body.removeChild(tmp);
+                                                            var oldHtml = copyAllBtn.innerHTML;
+                                                            copyAllBtn.innerHTML = '<i class="fa fa-check"></i> Copied!';
+                                                            copyAllBtn.classList.add('btn-success');
+                                                            copyAllBtn.classList.remove('btn-primary');
+                                                            setTimeout(function() {
+                                                                copyAllBtn.innerHTML = oldHtml;
+                                                                copyAllBtn.classList.remove('btn-success');
+                                                                copyAllBtn.classList.add('btn-primary');
+                                                            }, 1500);
+                                                        }
+                                                    });
+                                                }
                                                 document.querySelectorAll('.devtools-copy-btn').forEach(function(btn) {
                                                     btn.addEventListener('click', function() {
                                                         var text = this.getAttribute('data-copy') || '';

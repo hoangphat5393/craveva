@@ -295,11 +295,13 @@ class DeveloperToolsController extends AccountBaseController
             DB::statement("CREATE USER {$userQuoted}@'%' IDENTIFIED BY {$passQuoted}");
             Log::info('Created user');
 
-            // Grant permissions on the Gateway DB ONLY
+            // Grant permissions on the Gateway DB ONLY.
+            // DEMO MODE: allow SELECT, INSERT, UPDATE, DELETE on gateway views so AI can write via the virtual layer.
+            // IMPORTANT: This should be restricted or moved behind an API layer for production.
             // We cannot bind parameters for GRANT statement in some drivers, so we carefully construct it.
             // Since $dbUsername and $gatewayDb are generated/config controlled, it's relatively safe.
 
-            DB::statement("GRANT SELECT ON `$gatewayDbSafe`.* TO {$userQuoted}@'%'");
+            DB::statement("GRANT SELECT, INSERT, UPDATE, DELETE ON `$gatewayDbSafe`.* TO {$userQuoted}@'%'");
             DB::statement('FLUSH PRIVILEGES');
             Log::info('Granted privileges');
 

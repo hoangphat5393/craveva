@@ -3,7 +3,7 @@
 return [
     'superAdminDashboard' => 'Super Admin Dashboard',
     'superadmin' => [
-        'loginAsCompany' => 'Loginascompany',
+        'loginAsCompany' => 'Impersonate',
         'registerDate' => 'Registerdate',
         'totalUsers' => 'Totalusers',
         'create' => 'Create',

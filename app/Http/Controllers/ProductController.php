@@ -22,6 +22,7 @@ use App\Models\Tax;
 use App\Models\UnitType;
 use App\Traits\ImportExcel;
 use Illuminate\Http\Request;
+use Modules\Pricing\Services\PricingService;
 
 class ProductController extends AccountBaseController
 {
@@ -170,7 +171,7 @@ class ProductController extends AccountBaseController
 
         foreach ($this->taxes as $tax) {
             if ($this->product && isset($this->product->taxes) && array_search($tax->id, json_decode($this->product->taxes)) !== false) {
-                $taxes[] = $tax->tax_name.' : '.$tax->rate_percent.'%';
+                $taxes[] = $tax->tax_name . ' : ' . $tax->rate_percent . '%';
             }
         }
 
@@ -208,7 +209,7 @@ class ProductController extends AccountBaseController
         $this->categories = ProductCategory::all();
         $this->unit_types = UnitType::all();
         $this->subCategories = ! is_null($this->product->sub_category_id) ? ProductSubCategory::where('category_id', $this->product->category_id)->get() : [];
-        $this->pageTitle = __('app.update').' '.__('app.menu.products');
+        $this->pageTitle = __('app.update') . ' ' . __('app.menu.products');
 
         $images = [];
 
@@ -361,9 +362,9 @@ class ProductController extends AccountBaseController
 
             $unitPrice = $orderCartUpdate->unit_price;
 
-            if (in_array('client', user_roles()) && class_exists(\Modules\Pricing\Services\PricingService::class)) {
+            if (in_array('client', user_roles()) && class_exists(PricingService::class)) {
                 try {
-                    $pricingService = new \Modules\Pricing\Services\PricingService;
+                    $pricingService = app(PricingService::class);
                     $calculated = $pricingService->calculate($newItem, user()->id, $quantity);
 
                     if (isset($calculated['price'])) {
@@ -394,9 +395,9 @@ class ProductController extends AccountBaseController
 
             $price = $productDetails->price ?? 0;
 
-            if (in_array('client', user_roles()) && class_exists(\Modules\Pricing\Services\PricingService::class)) {
+            if (in_array('client', user_roles()) && class_exists(PricingService::class)) {
                 try {
-                    $pricingService = new \Modules\Pricing\Services\PricingService;
+                    $pricingService = app(PricingService::class);
                     $calculated = $pricingService->calculate($productDetails->id, user()->id, $quantity);
 
                     if (isset($calculated['price'])) {
@@ -485,7 +486,7 @@ class ProductController extends AccountBaseController
         $option = '';
 
         foreach ($products as $item) {
-            $option .= '<option data-content="'.$item->name.'" value="'.$item->id.'"> '.$item->name.'</option>';
+            $option .= '<option data-content="' . $item->name . '" value="' . $item->id . '"> ' . $item->name . '</option>';
         }
 
         return Reply::dataOnly(['products' => $option]);
@@ -493,7 +494,7 @@ class ProductController extends AccountBaseController
 
     public function importProduct()
     {
-        $this->pageTitle = __('app.importExcel').' '.__('app.menu.product');
+        $this->pageTitle = __('app.importExcel') . ' ' . __('app.menu.product');
 
         $this->addPermission = user()->permission('add_product');
         abort_403(! in_array($this->addPermission, ['all', 'added']));

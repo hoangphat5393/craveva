@@ -35,7 +35,7 @@ class ImportInventoryJob implements ShouldQueue
     public function handle()
     {
         if (! $this->company) {
-            $this->failJobWithMessage(__('messages.invalidData').': Company context is required for import.');
+            $this->failJobWithMessage(__('messages.invalidData') . ': Company context is required for import.');
 
             return;
         }
@@ -64,7 +64,9 @@ class ImportInventoryJob implements ShouldQueue
         if ($this->isColumnExists('sku')) {
             $sku = $this->getColumnValue('sku');
             if (! empty($sku)) {
-                $product = PurchaseProduct::where('sku', $sku)->first();
+                $product = PurchaseProduct::where('company_id', $this->company->id)
+                    ->where('sku', $sku)
+                    ->first();
             }
         }
 
@@ -72,7 +74,9 @@ class ImportInventoryJob implements ShouldQueue
             $productName = $this->getColumnValue('product_name');
 
             if (! empty($productName)) {
-                $product = PurchaseProduct::where('name', $productName)->first();
+                $product = PurchaseProduct::where('company_id', $this->company->id)
+                    ->where('name', $productName)
+                    ->first();
 
                 if (! $product) {
                     $product = new PurchaseProduct;
@@ -248,8 +252,8 @@ class ImportInventoryJob implements ShouldQueue
                     foreach ($customFields->customField as $customField) {
                         $value = null;
 
-                        if ($this->isColumnExists('field_'.$customField->id)) {
-                            $value = $this->getColumnValue('field_'.$customField->id);
+                        if ($this->isColumnExists('field_' . $customField->id)) {
+                            $value = $this->getColumnValue('field_' . $customField->id);
                         }
 
                         // Map hardcoded system fields to custom fields if they match by label
@@ -283,7 +287,7 @@ class ImportInventoryJob implements ShouldQueue
 
                             // Skip date fields with empty value to prevent Carbon::createFromFormat crash
                             if ($customField->type !== 'date' || ! empty($value)) {
-                                $customFieldsData['field_'.$customField->id] = $value;
+                                $customFieldsData['field_' . $customField->id] = $value;
                             }
                         }
                     }
@@ -310,7 +314,7 @@ class ImportInventoryJob implements ShouldQueue
                 return;
             }
 
-            $this->failJob(__('messages.invalidData').': Product not found. Row: ');
+            $this->failJob(__('messages.invalidData') . ': Product not found. Row: ');
         }
     }
 }

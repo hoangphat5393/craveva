@@ -4,6 +4,8 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Config;
 
 class DatabaseSeeder extends Seeder
 {
@@ -16,7 +18,7 @@ class DatabaseSeeder extends Seeder
     {
         // Set Seeding to true check if data is seeding.
         // This is required to stop notification in installation
-        config(['app.seeding' => true]);
+        Config::set('app.seeding', true);
 
         Artisan::call('key:generate');
 
@@ -36,8 +38,8 @@ class DatabaseSeeder extends Seeder
         // SAAS
         $this->call(SuperAdminRoleTableSeeder::class);
 
-        config(['app.seeding' => false]);
+        Config::set('app.seeding', false);
 
-        cache()->flush();
+        Cache::flush();
     }
 }

@@ -27,6 +27,7 @@ use Modules\Purchase\Entities\PurchasePaymentHistory;
 use Modules\Purchase\Entities\PurchaseSetting;
 use Modules\Purchase\Entities\PurchaseVendor;
 use Modules\Purchase\Events\NewPurchaseOrderEvent;
+use Modules\Purchase\Http\Requests\PurchaseOrder\ChangeStatusRequest;
 use Modules\Purchase\Http\Requests\PurchaseOrder\StoreRequest;
 use Modules\Purchase\Http\Requests\PurchaseOrder\UpdateRequest;
 
@@ -84,7 +85,7 @@ class PurchaseOrderController extends AccountBaseController
             $condition = $this->purchaseSetting->purchase_order_number_digit - strlen($this->lastOrder);
 
             for ($i = 0; $i < $condition; $i++) {
-                $this->zero = '0'.$this->zero;
+                $this->zero = '0' . $this->zero;
             }
         }
 
@@ -236,18 +237,18 @@ class PurchaseOrderController extends AccountBaseController
                 foreach ($item->itemTaxes as $tax) {
                     $this->tax = PurchaseItemTax::taxbyid($tax->tax_id)->first();
 
-                    if (! isset($taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'])) {
+                    if (! isset($taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'])) {
 
                         if ($this->order->calculate_tax == 'after_discount' && $this->discount > 0) {
-                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = ($item->amount - ($item->amount / $this->order->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
+                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = ($item->amount - ($item->amount / $this->order->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
                         } else {
-                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $item->amount * ($this->tax->rate_percent / 100);
+                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $item->amount * ($this->tax->rate_percent / 100);
                         }
                     } else {
                         if ($this->order->calculate_tax == 'after_discount' && $this->discount > 0) {
-                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + (($item->amount - ($item->amount / $this->order->sub_total) * $this->discount) * ($this->tax->rate_percent / 100));
+                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + (($item->amount - ($item->amount / $this->order->sub_total) * $this->discount) * ($this->tax->rate_percent / 100));
                         } else {
-                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + ($item->amount * ($this->tax->rate_percent / 100));
+                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + ($item->amount * ($this->tax->rate_percent / 100));
                         }
                     }
                 }
@@ -462,7 +463,7 @@ class PurchaseOrderController extends AccountBaseController
         $item = PurchaseItemImage::where('purchase_item_id', $request->purchase_item_id)->first();
 
         if ($item) {
-            Files::deleteFile($item->hashname, PurchaseItemImage::FILE_PATH.'/'.$item->id.'/');
+            Files::deleteFile($item->hashname, PurchaseItemImage::FILE_PATH . '/' . $item->id . '/');
             $item->delete();
         }
 
@@ -509,14 +510,14 @@ class PurchaseOrderController extends AccountBaseController
 
         // Download file uploaded
         if ($this->order->file != null) {
-            return response()->download(storage_path('app/public/purchase-order-files').'/'.$this->order->file);
+            return response()->download(storage_path('app/public/purchase-order-files') . '/' . $this->order->file);
         }
 
         $pdfOption = $this->domPdfObjectForDownload($id);
         $pdf = $pdfOption['pdf'];
         $filename = $pdfOption['fileName'];
 
-        return request()->view ? $pdf->stream($filename.'.pdf') : $pdf->download($filename.'.pdf');
+        return request()->view ? $pdf->stream($filename . '.pdf') : $pdf->download($filename . '.pdf');
     }
 
     public function domPdfObjectForConsoleDownload($id)
@@ -544,18 +545,18 @@ class PurchaseOrderController extends AccountBaseController
                 foreach ($item->itemTaxes as $tax) {
                     $this->tax = PurchaseItemTax::taxbyid($tax->tax_id)->first();
 
-                    if (! isset($taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'])) {
+                    if (! isset($taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'])) {
 
                         if ($this->order->calculate_tax == 'after_discount' && $this->discount > 0) {
-                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = ($item->amount - ($item->amount / $this->order->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
+                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = ($item->amount - ($item->amount / $this->order->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
                         } else {
-                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $item->amount * ($this->tax->rate_percent / 100);
+                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $item->amount * ($this->tax->rate_percent / 100);
                         }
                     } else {
                         if ($this->order->calculate_tax == 'after_discount' && $this->discount > 0) {
-                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + (($item->amount - ($item->amount / $this->order->sub_total) * $this->discount) * ($this->tax->rate_percent / 100));
+                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + (($item->amount - ($item->amount / $this->order->sub_total) * $this->discount) * ($this->tax->rate_percent / 100));
                         } else {
-                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + ($item->amount * ($this->tax->rate_percent / 100));
+                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + ($item->amount * ($this->tax->rate_percent / 100));
                         }
                     }
                 }
@@ -620,18 +621,18 @@ class PurchaseOrderController extends AccountBaseController
                 foreach ($item->itemTaxes as $tax) {
                     $this->tax = PurchaseItemTax::taxbyid($tax->tax_id)->first();
 
-                    if (! isset($taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'])) {
+                    if (! isset($taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'])) {
 
                         if ($this->order->calculate_tax == 'after_discount' && $this->discount > 0) {
-                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = ($item->amount - ($item->amount / $this->order->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
+                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = ($item->amount - ($item->amount / $this->order->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
                         } else {
-                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $item->amount * ($this->tax->rate_percent / 100);
+                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $item->amount * ($this->tax->rate_percent / 100);
                         }
                     } else {
                         if ($this->order->calculate_tax == 'after_discount' && $this->discount > 0) {
-                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + (($item->amount - ($item->amount / $this->order->sub_total) * $this->discount) * ($this->tax->rate_percent / 100));
+                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + (($item->amount - ($item->amount / $this->order->sub_total) * $this->discount) * ($this->tax->rate_percent / 100));
                         } else {
-                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + ($item->amount * ($this->tax->rate_percent / 100));
+                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + ($item->amount * ($this->tax->rate_percent / 100));
                         }
                     }
                 }
@@ -647,7 +648,7 @@ class PurchaseOrderController extends AccountBaseController
         $pdf->setOption('isHtml5ParserEnabled', true);
         $pdf->setOption('isRemoteEnabled', true);
 
-        $pdf->loadView('purchase::purchase-order.pdf.'.$this->invoiceSetting->template, $this->data);
+        $pdf->loadView('purchase::purchase-order.pdf.' . $this->invoiceSetting->template, $this->data);
         $filename = $this->order->purchase_order_number;
 
         return [
@@ -703,9 +704,17 @@ class PurchaseOrderController extends AccountBaseController
         }
     }
 
-    public function changeStatus($id, Request $request)
+    public function changeStatus($id, ChangeStatusRequest $request)
     {
+        $editPermission = user()->permission('edit_purchase_order');
         $purchaseOrder = PurchaseOrder::findOrFail($id);
+
+        abort_403(! (
+            $editPermission == 'all'
+            || ($editPermission == 'added' && $purchaseOrder->added_by == user()->id)
+            || ($editPermission == 'both' && $purchaseOrder->added_by == user()->id)
+        ));
+
         $purchaseOrder->delivery_status = $request->delivery_status;
         $purchaseOrder->save();
 

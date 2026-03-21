@@ -36,7 +36,7 @@ class ProjectTemplateMilestoneController extends AccountBaseController
         $this->project = ProjectTemplate::findOrFail($id);
 
         $addProjectMilestonePermission = user()->permission('add_project_milestones');
-        abort_403(! $addProjectMilestonePermission == 'all');
+        abort_403($addProjectMilestonePermission !== 'all');
 
         return view('project-templates.milestone.create', $this->data);
     }

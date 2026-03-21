@@ -319,8 +319,9 @@ class ClientController extends AccountBaseController
             ->count();
 
         $this->editPermission = user()->permission('edit_clients');
+        $clientAddedBy = optional($this->client->clientDetails)->added_by;
 
-        abort_403(! ($this->editPermission == 'all' || ($this->editPermission == 'added' && $this->client->clientDetails->added_by == user()->id) || ($this->editPermission == 'both' && $this->client->clientDetails->added_by == user()->id)));
+        abort_403(! ($this->editPermission == 'all' || ($this->editPermission == 'added' && $clientAddedBy == user()->id) || ($this->editPermission == 'both' && $clientAddedBy == user()->id)));
 
         $this->countries = countries();
         $this->categories = ClientCategory::all();

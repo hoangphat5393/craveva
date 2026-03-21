@@ -98,11 +98,14 @@ use App\Http\Controllers\TimelogCalendarController;
 use App\Http\Controllers\TimelogController;
 use App\Http\Controllers\TimelogReportController;
 use App\Http\Controllers\UserPermissionController;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Session;
 
 // Kiểm tra php.ini đang dùng (WEB request) - chỉ khi APP_DEBUG=true
 Route::get('php-ini-check', function () {
-    if (! config('app.debug')) {
+    if (! Config::get('app.debug')) {
         return response()->json(['error' => 'Chỉ khả dụng khi APP_DEBUG=true'], 403);
     }
     $loaded = php_ini_loaded_file();
@@ -173,10 +176,10 @@ Route::get('debug-final-check', function () {
         return 'No client user found';
     }
 
-    auth()->login($user);
+    Auth::login($user);
 
     // Force session user to ensure helper uses this user
-    session(['user' => $user]);
+    Session::put('user', $user);
 
     // Ensure cache is fresh (it was cleared, but just in case)
     // cache()->forget('user_modules_' . $user->id);
@@ -1024,10 +1027,10 @@ Route::get('/test-broadcast', function () {
 // Debug broadcasting confiuration
 Route::get('/debug-broadcast', function () {
     return response()->json([
-        'broadcast_driver' => config('broadcasting.default'),
-        'pusher_key' => config('broadcasting.connections.pusher.key'),
-        'pusher_cluster' => config('broadcasting.connections.pusher.options.host'),
-        'app_env' => config('app.env'),
-        'queue_connection' => config('queue.default'),
+        'broadcast_driver' => Config::get('broadcasting.default'),
+        'pusher_key' => Config::get('broadcasting.connections.pusher.key'),
+        'pusher_cluster' => Config::get('broadcasting.connections.pusher.options.host'),
+        'app_env' => Config::get('app.env'),
+        'queue_connection' => Config::get('queue.default'),
     ]);
 })->name('debug-broadcast');

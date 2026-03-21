@@ -7,6 +7,7 @@ use App\Models\CustomField;
 use App\Models\CustomFieldGroup;
 use App\Models\OrderCart;
 use App\Models\Product;
+use Modules\Pricing\Services\PricingService;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
 
@@ -33,7 +34,7 @@ class ProductsDataTable extends BaseDataTable
     {
         $datatables = datatables()->eloquent($query);
 
-        $datatables->addColumn('check', fn ($row) => $this->checkBox($row));
+        $datatables->addColumn('check', fn($row) => $this->checkBox($row));
         $datatables->addColumn('category', function ($row) {
             return ($row->category) ? $row->category->category_name : '';
         });
@@ -47,38 +48,38 @@ class ProductsDataTable extends BaseDataTable
 
             if (in_array('client', user_roles())) {
                 $cartProductIds = OrderCart::where('client_id', user()->id)->pluck('product_id')->toArray();
-                $addToCart = '<i class="fa fa-plus mr-1"></i>'.__('app.addToCart');
+                $addToCart = '<i class="fa fa-plus mr-1"></i>' . __('app.addToCart');
                 if (in_array($row->id, $cartProductIds)) {
                     $addToCart = __('app.addedToCart');
                 }
 
-                return '<button type="button" class="btn-secondary rounded f-14 add-product" data-product-id="'.$row->id.'" id="add-to-cart-btn-'.$row->id.'">
-                        '.$addToCart.'
+                return '<button type="button" class="btn-secondary rounded f-14 add-product" data-product-id="' . $row->id . '" id="add-to-cart-btn-' . $row->id . '">
+                        ' . $addToCart . '
                     </button>';
             }
 
             $action = '<div class="task_view">
-            <a href="'.route('products.show', [$row->id]).'"
-                class="taskView openRightModal text-darkest-grey f-w-500" data-product-id="'.$row->id.'">'.__('app.view').'</a>
+            <a href="' . route('products.show', [$row->id]) . '"
+                class="taskView openRightModal text-darkest-grey f-w-500" data-product-id="' . $row->id . '">' . __('app.view') . '</a>
 
                     <div class="dropdown">
                         <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" type="link"
-                            id="dropdownMenuLink-'.$row->id.'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            id="dropdownMenuLink-' . $row->id . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="icon-options-vertical icons"></i>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-'.$row->id.'" tabindex="0">';
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-' . $row->id . '" tabindex="0">';
 
             if ($this->editProductPermission == 'all' || ($this->editProductPermission == 'added' && user()->id == $row->added_by)) {
-                $action .= '<a class="dropdown-item openRightModal" href="'.route('products.edit', [$row->id]).'">
+                $action .= '<a class="dropdown-item openRightModal" href="' . route('products.edit', [$row->id]) . '">
                                 <i class="fa fa-edit mr-2"></i>
-                                '.trans('app.edit').'
+                                ' . trans('app.edit') . '
                             </a>';
             }
 
             if ($this->deleteProductPermission == 'all' || ($this->deleteProductPermission == 'added' && user()->id == $row->added_by)) {
-                $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-product-id="'.$row->id.'">
+                $action .= '<a class="dropdown-item delete-table-row" href="javascript:;" data-product-id="' . $row->id . '">
                                 <i class="fa fa-trash mr-2"></i>
-                                '.trans('app.delete').'
+                                ' . trans('app.delete') . '
                             </a>';
             }
 
@@ -92,17 +93,17 @@ class ProductsDataTable extends BaseDataTable
         $datatables->editColumn('name', function ($row) {
             $name = $row->name;
 
-            return '<a href="'.route('products.show', [$row->id]).'" class="openRightModal text-darkest-grey" >'.$name.'</a>';
+            return '<a href="' . route('products.show', [$row->id]) . '" class="openRightModal text-darkest-grey" >' . $name . '</a>';
         });
         $datatables->editColumn('default_image', function ($row) {
-            return '<img src="'.$row->image_url.'" class="rounded height-35" />';
+            return '<img src="' . $row->image_url . '" class="rounded height-35" />';
         });
         $datatables->editColumn('allow_purchase', function ($row) {
 
             if ($row->allow_purchase == 1) {
-                $status = '<i class="fa fa-circle mr-1 text-dark-green f-10"></i>'.__('app.allowed').'</label>';
+                $status = '<i class="fa fa-circle mr-1 text-dark-green f-10"></i>' . __('app.allowed') . '</label>';
             } else {
-                $status = '<i class="fa fa-circle mr-1 text-red f-10"></i>'.__('app.notAllowed').'</label>';
+                $status = '<i class="fa fa-circle mr-1 text-red f-10"></i>' . __('app.notAllowed') . '</label>';
             }
 
             return $status;
@@ -110,9 +111,9 @@ class ProductsDataTable extends BaseDataTable
         $datatables->editColumn('price', function ($row) {
             $price = $row->price;
 
-            if (in_array('client', user_roles()) && class_exists(\Modules\Pricing\Services\PricingService::class)) {
+            if (in_array('client', user_roles()) && class_exists(PricingService::class)) {
                 try {
-                    $pricingService = new \Modules\Pricing\Services\PricingService;
+                    $pricingService = app(PricingService::class);
                     $calculated = $pricingService->calculate($row->id, user()->id, 1);
                     $price = $calculated['unit_price'];
                 } catch (\Exception $e) {
@@ -138,7 +139,7 @@ class ProductsDataTable extends BaseDataTable
         });
         $datatables->addIndexColumn();
         $datatables->smart(false);
-        $datatables->setRowId(fn ($row) => 'row-'.$row->id);
+        $datatables->setRowId(fn($row) => 'row-' . $row->id);
 
         // Custom Fields For export
         $customFieldColumns = CustomField::customFieldData($datatables, Product::CUSTOM_FIELD_MODEL);
@@ -172,9 +173,9 @@ class ProductsDataTable extends BaseDataTable
         if ($request->searchText != '') {
             $safeTerm = Common::safeString(request('searchText'));
             $model->where(function ($query) use ($safeTerm) {
-                $query->where('products.name', 'like', '%'.$safeTerm.'%')
-                    ->orWhere('products.price', 'like', '%'.$safeTerm.'%')
-                    ->orWhere('products.sku', 'like', '%'.$safeTerm.'%');
+                $query->where('products.name', 'like', '%' . $safeTerm . '%')
+                    ->orWhere('products.price', 'like', '%' . $safeTerm . '%')
+                    ->orWhere('products.sku', 'like', '%' . $safeTerm . '%');
             });
         }
 
@@ -210,7 +211,7 @@ class ProductsDataTable extends BaseDataTable
             ]);
 
         if (canDataTableExport()) {
-            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
+            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
         }
 
         return $dataTable;
@@ -240,7 +241,7 @@ class ProductsDataTable extends BaseDataTable
             __('modules.productCategory.productCategory') => ['data' => 'category', 'name' => 'category', 'title' => __('modules.productCategory.productCategory'), 'visible' => false],
             __('modules.productCategory.productSubCategory') => ['data' => 'sub_category', 'name' => 'sub_category', 'title' => __('modules.productCategory.productSubCategory'), 'visible' => false],
             __('app.description') => ['data' => 'description', 'name' => 'description', 'title' => __('app.description'), 'visible' => false],
-            __('app.price').' ('.__('app.inclusiveAllTaxes').')' => ['data' => 'price', 'name' => 'price', 'title' => __('app.price').' ('.__('app.inclusiveAllTaxes').')'],
+            __('app.price') . ' (' . __('app.inclusiveAllTaxes') . ')' => ['data' => 'price', 'name' => 'price', 'title' => __('app.price') . ' (' . __('app.inclusiveAllTaxes') . ')'],
             __('app.productSource') => ['data' => 'product_source', 'name' => 'product_source', 'title' => __('app.productSource'), 'visible' => false],
             __('app.brand') => ['data' => 'brand', 'name' => 'brand', 'title' => __('app.brand'), 'visible' => false],
             __('app.productGrade') => ['data' => 'product_grade', 'name' => 'product_grade', 'title' => __('app.productGrade'), 'visible' => false],

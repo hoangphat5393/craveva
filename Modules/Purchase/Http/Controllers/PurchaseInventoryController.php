@@ -166,96 +166,105 @@ class PurchaseInventoryController extends AccountBaseController
 
         DB::beginTransaction();
 
-        foreach ($products as $key => $product) {
-            $invoicedItem = InvoiceItems::whereHas('invoice', function ($invoiceQuery) {
-                $invoiceQuery->whereIn('status', ['paid', 'partial', 'unpaid']);
-            })->where('product_id', $product)->sum('quantity');
+        try {
+            foreach ($products as $key => $product) {
+                $invoicedItem = InvoiceItems::whereHas('invoice', function ($invoiceQuery) {
+                    $invoiceQuery->whereIn('status', ['paid', 'partial', 'unpaid']);
+                })->where('product_id', $product)->sum('quantity');
 
-            if (! empty($quantity)) {
-                if ($quantity[$key] < $invoicedItem) {
-                    return Reply::error(__('purchase::messages.inventory.quantityCannotLessThan').'('.$invoicedItem.')');
-                }
-            }
-
-            $addStock = PurchaseStockAdjustment::where('product_id', $product)
-                ->where('warehouse_id', $warehouseId)
-                ->first();
-
-            if (! $addStock) {
-                $addStock = new PurchaseStockAdjustment;
-                $addStock->product_id = $product;
-                $addStock->warehouse_id = $warehouseId;
-                $addStock->net_quantity = 0;
-
-                if ($key == 0) {
-                    $inventory = new PurchaseInventory;
-                }
-            } else {
-                if ($key == 0) {
-                    $inventory = PurchaseInventory::where('id', $addStock->inventory_id)->first();
-                    if (! $inventory) {
-                        // Fallback if inventory record is missing but stock record exists
-                        $inventory = new PurchaseInventory;
+                if (! empty($quantity)) {
+                    if ($quantity[$key] < $invoicedItem) {
+                        throw new \RuntimeException(__('purchase::messages.inventory.quantityCannotLessThan') . '(' . $invoicedItem . ')');
                     }
                 }
-            }
 
-            if ($key == 0) {
-                $inventory->date = $request->date ? Carbon::parse($request->date)->format('Y-m-d') : null;
-                $inventory->type = $request->type;
-                $inventory->reason_id = $request->reason_id;
-                $inventory->warehouse_id = $warehouseId;
-                $inventory->added_by = user()->id;
-                $inventory->save();
+                $addStock = PurchaseStockAdjustment::where('product_id', $product)
+                    ->where('warehouse_id', $warehouseId)
+                    ->first();
 
-                // To add custom fields data
-                if ($request->custom_fields_data) {
-                    $inventory->updateCustomFieldData($request->custom_fields_data);
+                if (! $addStock) {
+                    $addStock = new PurchaseStockAdjustment;
+                    $addStock->product_id = $product;
+                    $addStock->warehouse_id = $warehouseId;
+                    $addStock->net_quantity = 0;
+
+                    if ($key == 0) {
+                        $inventory = new PurchaseInventory;
+                    }
+                } else {
+                    if ($key == 0) {
+                        $inventory = PurchaseInventory::where('id', $addStock->inventory_id)->first();
+                        if (! $inventory) {
+                            // Fallback if inventory record is missing but stock record exists
+                            $inventory = new PurchaseInventory;
+                        }
+                    }
                 }
+
+                if ($key == 0) {
+                    $inventory->date = $request->date ? Carbon::parse($request->date)->format('Y-m-d') : null;
+                    $inventory->type = $request->type;
+                    $inventory->reason_id = $request->reason_id;
+                    $inventory->warehouse_id = $warehouseId;
+                    $inventory->added_by = user()->id;
+                    $inventory->save();
+
+                    // To add custom fields data
+                    if ($request->custom_fields_data) {
+                        $inventory->updateCustomFieldData($request->custom_fields_data);
+                    }
+                }
+
+                $addStock->type = $request->type ?: null;
+                $addStock->date = $request->date ? Carbon::parse($request->date)->format('Y-m-d') : null;
+                $addStock->inventory_id = $inventory->id;
+                $addStock->reason_id = $request->reason_id ?: null;
+                $addStock->reference_number = $request->reference_number ?: null;
+                // product_id is already set if new, or existing.
+                // warehouse_id is already set if new, or existing.
+
+                if (! empty($quantity)) {
+                    $addStock->net_quantity = $request->quantity_on_hand[$key] ?: null;
+                    $addStock->quantity_adjustment = $request->quantity_adjusted[$key] ?: 0;
+                } else {
+                    $addStock->changed_value = $request->changed_value[$key] ?: null;
+                    $addStock->adjusted_value = $request->adjusted_value[$key] ?: 0;
+                }
+
+                $addStock->description = $request->description ?: null;
+                $addStock->status = $request->formType == 'save' ? 'converted' : 'draft';
+
+                $addStock->manufacturing_date = isset($request->manufacturing_date[$key]) && $request->manufacturing_date[$key] ? Carbon::parse($request->manufacturing_date[$key])->format('Y-m-d') : null;
+                $addStock->expiration_date = isset($request->expiration_date[$key]) && $request->expiration_date[$key] ? Carbon::parse($request->expiration_date[$key])->format('Y-m-d') : null;
+
+                $addStock->save();
+
+                $product = PurchaseProduct::findOrFail($product);
+
+                if (! is_null($addStock->changed_value)) {
+                    $product->price = $addStock->changed_value;
+                }
+
+                $product->save();
             }
 
-            $addStock->type = $request->type ?: null;
-            $addStock->date = $request->date ? Carbon::parse($request->date)->format('Y-m-d') : null;
-            $addStock->inventory_id = $inventory->id;
-            $addStock->reason_id = $request->reason_id ?: null;
-            $addStock->reference_number = $request->reference_number ?: null;
-            // product_id is already set if new, or existing.
-            // warehouse_id is already set if new, or existing.
-
-            if (! empty($quantity)) {
-                $addStock->net_quantity = $request->quantity_on_hand[$key] ?: null;
-                $addStock->quantity_adjustment = $request->quantity_adjusted[$key] ?: 0;
-            } else {
-                $addStock->changed_value = $request->changed_value[$key] ?: null;
-                $addStock->adjusted_value = $request->adjusted_value[$key] ?: 0;
+            // To add custom fields data
+            if ($request->custom_fields_data) {
+                $inventory->updateCustomFieldData($request->custom_fields_data);
             }
 
-            $addStock->description = $request->description ?: null;
-            $addStock->status = $request->formType == 'save' ? 'converted' : 'draft';
+            $company = company();
 
-            $addStock->manufacturing_date = isset($request->manufacturing_date[$key]) && $request->manufacturing_date[$key] ? Carbon::parse($request->manufacturing_date[$key])->format('Y-m-d') : null;
-            $addStock->expiration_date = isset($request->expiration_date[$key]) && $request->expiration_date[$key] ? Carbon::parse($request->expiration_date[$key])->format('Y-m-d') : null;
+            event(new PurchaseInventoryEvent($inventory, $products, $company));
+            DB::commit();
+        } catch (\RuntimeException $e) {
+            DB::rollBack();
 
-            $addStock->save();
-
-            $product = PurchaseProduct::findOrFail($product);
-
-            if (! is_null($addStock->changed_value)) {
-                $product->price = $addStock->changed_value;
-            }
-
-            $product->save();
+            return Reply::error($e->getMessage());
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            throw $e;
         }
-
-        // To add custom fields data
-        if ($request->custom_fields_data) {
-            $inventory->updateCustomFieldData($request->custom_fields_data);
-        }
-
-        $company = company();
-
-        event(new PurchaseInventoryEvent($inventory, $products, $company));
-        DB::commit();
 
         $defaultImage = $request->default_image ? $request->default_image : '';
 
@@ -458,28 +467,30 @@ class PurchaseInventoryController extends AccountBaseController
     public function changeStatus(Request $request)
     {
         $this->editPermission = user()->permission('edit_inventory');
-        abort_403(! ($this->editPermission == 'all' || ($this->editPermission == 'added' && $this->product->added_by == user()->id)));
+        $validated = $request->validate([
+            'id' => 'required|integer|exists:purchase_inventory_adjustment,id',
+            'status' => 'required|in:active,inactive',
+        ]);
 
-        DB::beginTransaction();
+        $inventory = PurchaseInventory::findOrFail($validated['id']);
+        abort_403(! ($this->editPermission == 'all' || ($this->editPermission == 'added' && $inventory->added_by == user()->id)));
 
-        $inventory = PurchaseInventory::findOrFail($request->id);
+        DB::transaction(function () use ($inventory, $validated) {
+            $stocks = PurchaseStockAdjustment::where('inventory_id', $inventory->id)->get();
 
-        $stocks = PurchaseStockAdjustment::where('inventory_id', $inventory->id)->get();
-
-        if ($request->status == 'active') {
-            foreach ($stocks as $stock) {
-                $stock->update(['status' => 'converted']);
+            if ($validated['status'] === 'active') {
+                foreach ($stocks as $stock) {
+                    $stock->update(['status' => 'converted']);
+                }
+            } else {
+                foreach ($stocks as $stock) {
+                    $stock->update(['status' => 'draft']);
+                }
             }
-        } else {
-            foreach ($stocks as $stock) {
-                $stock->update(['status' => 'draft']);
-            }
-        }
 
-        $inventory->status = $request->status;
-        $inventory->save();
-
-        DB::commit();
+            $inventory->status = $validated['status'];
+            $inventory->save();
+        });
 
         return Reply::success(__('messages.updateSuccess'));
     }
@@ -504,7 +515,7 @@ class PurchaseInventoryController extends AccountBaseController
         $pdf = $pdfOption['pdf'];
         $filename = $pdfOption['fileName'];
 
-        return request()->view ? $pdf->stream($filename.'.pdf') : $pdf->download($filename.'.pdf');
+        return request()->view ? $pdf->stream($filename . '.pdf') : $pdf->download($filename . '.pdf');
     }
 
     public function domPdfObjectForDownload($id)
@@ -530,7 +541,7 @@ class PurchaseInventoryController extends AccountBaseController
             $pdf->loadView('purchase::purchase-inventory.pdf.invoice-5', $this->data);
         }
 
-        $filename = 'inventory-'.$this->inventory->id;
+        $filename = 'inventory-' . $this->inventory->id;
 
         return [
             'pdf' => $pdf,
@@ -540,7 +551,7 @@ class PurchaseInventoryController extends AccountBaseController
 
     public function importInventory()
     {
-        $this->pageTitle = __('app.importExcel').' '.__('purchase::app.menu.inventory');
+        $this->pageTitle = __('app.importExcel') . ' ' . __('purchase::app.menu.inventory');
         $this->addPermission = user()->permission('add_inventory');
         abort_403(! in_array($this->addPermission, ['all', 'added']));
 

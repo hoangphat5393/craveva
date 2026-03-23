@@ -2,10 +2,12 @@
 
 namespace MacsiDigital\API\Traits;
 
+use Exception;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Str;
 use MacsiDigital\API\Exceptions\InvalidActionException;
+use MacsiDigital\API\Exceptions\JsonEncodingException;
 use MacsiDigital\API\Exceptions\ValidationFailedException;
 use MacsiDigital\API\Support\Builder;
 
@@ -95,7 +97,7 @@ trait InteractsWithAPI
 
     public function newQuery()
     {
-        return $this->query($this);
+        return $this->query();
     }
 
     public function getApiDataField()
@@ -330,7 +332,7 @@ trait InteractsWithAPI
      * Save the model to the database.
      *
      * @param  array  $options
-     * @return bool
+     * @return static|null
      */
     public function save(array $options = [])
     {
@@ -359,7 +361,7 @@ trait InteractsWithAPI
         // If the model is successfully saved, we need to do a few more things once
         // that is done. We will call the "saved" method here to run any actions
         // we need to happen after a model gets successfully saved right here.
-        if (! $resource->hasApiError()) {
+        if ($resource !== null && ! $resource->hasApiError()) {
             $this->afterSave($options, $query);
         }
 
@@ -386,7 +388,7 @@ trait InteractsWithAPI
      * Perform a model update operation.
      *
      * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @return bool
+     * @return static|null
      */
     protected function performUpdate(Builder $query)
     {
@@ -419,7 +421,7 @@ trait InteractsWithAPI
      * Perform a model insert operation.
      *
      * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @return bool
+     * @return static|null
      */
     protected function performInsert(Builder $query)
     {
@@ -494,7 +496,7 @@ trait InteractsWithAPI
         // We will actually pull the models from the database table and call delete on
         // each of them individually so that their events get fired properly with a
         // correct set of attributes in case the developers wants to check these.
-        $key = ($instance = (new static($this->client)))->getKeyName();
+        $key = ($instance = new static)->getKeyName();
 
         foreach ($instance->whereIn($key, $ids)->get() as $model) {
             if ($model->delete()) {
@@ -643,7 +645,7 @@ trait InteractsWithAPI
      * @param  array|null  $except
      * @return static
      */
-    public function replicate(array $except = null)
+    public function replicate(?array $except = null)
     {
         $defaults = [
             $this->getKeyName(),

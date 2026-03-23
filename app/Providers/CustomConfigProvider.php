@@ -67,9 +67,9 @@ class CustomConfigProvider extends ServiceProvider
                 $this->translateSettingConfig($setting);
                 $this->setStripConfigs($setting);
             }
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            // APP_KEY không khớp dữ liệu mã hóa trong DB → tránh vỡ `php artisan` (route:list, migrate, …)
             // info($e->getMessage());
-            // Handle exceptions appropriately, e.g., log the error
         }
 
         $app = App::getInstance();
@@ -102,7 +102,7 @@ class CustomConfigProvider extends ServiceProvider
 
         Config::set('app.name', $setting->global_app_name);
         Config::set('app.global_app_name', $setting->global_app_name);
-        Config::set('app.logo', is_null($setting->light_logo) ? asset('img/craveva-logo.png') : $this->generateMaskedImageAppUrl('app-logo/'.$setting->light_logo));
+        Config::set('app.logo', is_null($setting->light_logo) ? asset('img/craveva-logo.png') : $this->generateMaskedImageAppUrl('app-logo/' . $setting->light_logo));
     }
 
     public function setPushNotification($setting)

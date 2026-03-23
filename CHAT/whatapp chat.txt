@@ -1,115 +1,35 @@
-Here’s the proposal to fix “agent recommends wrong product / can’t remember what customer ordered”, split clearly into **what Miaolin must provide** vs **what we must implement**. This is the most production-safe way to get accuracy up fast.
+@251294392528993
 
-## **Root cause (why it’s failing today)**
-- The agent is trying to map **human language** (“flour”, “Nisshin 山茶花”, “same as last time”) to **SKUs** using incomplete product metadata.
-- LINE does **not** reliably provide full historical chat for bots, so the agent has no guaranteed memory unless we store it.
-- Without a strict retrieval + confidence policy, the model will “guess” and can be wrong.
+Tonight check these after 11 pm...then let me know then if ok log a ticket and complete when check is done...use your credit to made purchase and do refund also...test using LIVE STRIPE...you setup a SGD$1 plan
 
----
+Test Results Summary
 
-## **A) What we need Miaolin to provide / fix (Data side)**
-This is the biggest lever. If the data is clean, the agent becomes accurate.
+Admin registration — PASS.
+* Creating a new company account with all required fields (name, email, password, company name, mobile, industry) works correctly. Returns JWT tokens.
 
-### 1) Product Master improvements (must-have)
-Ask Miaolin to include these fields in the product export (or add mapping columns in BI):
-- **product_code (SKU)** (unique)
-- **product_name (CN/EN)** (as displayed to customer)
-- **brand** (e.g., Nisshin)
-- **category** (e.g., Flour, Oil, Sauce)
-- **subcategory/type** (e.g., High-gluten, Cake flour)
-- **pack_size + uom** (e.g., 25kg, 1kg)
-- **is_active / discontinued flag**
-- **search_keywords / aliases** (critical): synonyms + Chinese terms
-  Example: “flour, 麵粉, 高筋, 低筋, 山茶花”
+* Invitation-only flow — PASS. Regular registration correctly blocks unless invited or registering as a company admin.
 
-If Miaolin cannot do aliases, we can generate them, but accuracy will be slower.
+Login
+* Login with email/password — PASS. Returns access token and user details correctly.
 
-### 2) Order Status export (must-have for “what did I order last time?”)
-We need `orders.csv` (or an order-lines export) to power “order status” and “buy again”.
-Minimum:
-- `order_id`, `customer_code`, `order_date`, `status`
-Recommended:
-- `tracking_number`, `estimated_delivery`
-Best (for recommendations):
-- **order lines**: `order_id`, `product_code`, `qty`, `unit_price`
+Password Reset
+* /api/v1/auth/password/forgot — PASS. Sends reset email. Returns safe "if that email exists" message (no email enumeration).
 
-### 3) Customer authentication fields (must-have)
-In customers export:
-- `customer_code`
-- `auth_username`
-- `auth_phone` (normalized format agreed, e.g., +886… or local)
+Billing — Credits / Top-up
+* Billing summary — PASS. Returns credit balance and status.
 
-### 4) Stock snapshot quality (important)
-Inventory export should include:
-- `product_code`, `qty_available`
-Optional:
-- `warehouse_id`, `qty_safety`
+Credit history — PASS.
+* Top-up initiation — PASS. Creates a real live Stripe checkout session and returns a valid checkout.stripe.com URL. Invoice created in DB automatically.
 
----
+Billing — Subscription
+* Subscription checkout (Basic plan, monthly) — PASS. Creates a real live Stripe checkout session (cs_live_...) with a valid URL.
+* Subscription status — PASS. Returns null for new users
 
-## **B) What we must implement / fix (Craveva side)**
-This is how we prevent wrong answers and improve recall.
+Billing — Stripe
+* Stripe publishable key — PASS. Returns pk_live_...
+* Payment gateways — PASS. Stripe listed and working.
 
-### 1) “Deterministic retrieval first” policy (non-negotiable)
-For structured questions (price/stock/order status):
-- AI **must** query MySQL and respond based on returned records
-- If results are ambiguous or low confidence → **ask clarification**, never guess
+Invoices — PASS.
+* Payment transactions — PASS. 3 transactions found on the test company.
 
-Example clarification questions:
-- “Do you mean Nisshin brand flour or any flour?”
-- “Which pack size: 1kg or 25kg?”
-- “Which product name from this list?”
-
-### 2) Build a Product Matching pipeline (fast + accurate)
-Implement staged matching:
-1) **Detect intent/entities**: brand/category/pack size keywords
-2) **Candidate search** in MySQL using:
-   - exact SKU match
-   - aliases/keywords match
-   - brand + category filter
-
-
-3) **Rank** candidates by:
-   - exact brand match > category match > fuzzy name match
-   - in-stock priority (if user wants to order)
-4) **Confidence gates**:
-   - if top score below threshold → ask question instead of answer
-
-### 3) Store “Craveva memory” (don’t rely on LINE chat history)
-We should log:
-- last N messages per LINE user
-- last N recognized products discussed
-- last ordered products (from orders export)
-
-Then we can answer:
-- “same as last time” → lookup last purchased SKU(s)
-- “recommend alternative” → same category + in-stock + similar pack size
-
-### 4) Safety guardrails (to protect trust)
-- Rate-limit verification attempts
-- Never expose other customers’ data
-- For out-of-stock: offer alternatives, but clearly label “alternative suggestions”
-- Always include SKU + pack size in confirmations to avoid ordering wrong item
-
----
-
-## **C) What to tell Miaolin (actionable request list)**
-Send them this list:
-
-**Please add/confirm in daily exports:**
-- products.csv: brand, category, subcategory, pack_size, uom, is_active, aliases/keywords
-- orders.csv: order headers + ideally order lines (product_code + qty)
-- customers.csv: auth_username + auth_phone format standard
-- inventory.csv: qty_available (and warehouse if relevant)
-
----
-
-## **D) Execution plan (simple, practical)**
-- Step 1 (Miaolin): provide updated product fields + orders export sample
-- Step 2 (Craveva): implement strict retrieval + disambiguation flow
-- Step 3 (Craveva): add memory tables + “buy again” logic from orders
-- Step 4: run a test suite with 30–50 real queries (flour/brand/pack size/out-of-stock/order status)
-
----
-
-If you paste a sample row from their current `products.csv` (or screenshots of the columns), I can tell you **exactly** which 3–5 fields are missing that are causing the wrong recommendations, and give you the exact wording to request from Miaolin.
+Usage / Usage by operation — PASS.

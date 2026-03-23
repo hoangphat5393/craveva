@@ -3,7 +3,7 @@
 return [
     'menu' => [
         'recruit' => 'Recruit',
-        'recruitSetting' => 'Recruit ',
+        'recruitSetting' => 'Recruit Settings',
         'recruitersSettings' => 'Recruiter Settings',
         'skills' => 'Skills',
         'skill' => 'Skill',
@@ -80,7 +80,7 @@ return [
         'inProgress' => 'In Progress',
         'scheduled' => 'Scheduled',
         'offerReleased' => 'Offer Released',
-        'workType' => 'Worktype',
+        'workType' => 'Work Type',
         'onsite' => 'Onsite',
         'remote' => 'Remote',
     ],
@@ -149,7 +149,7 @@ return [
         'jobExpire' => 'Job Expire On',
         'expJoinDate' => 'Expected Joining Date',
         'SignatureReq' => 'Signature Required',
-        'compansationAmt' => 'Compansation Amount',
+        'compansationAmt' => 'Compensation Amount',
         'viewoffer' => 'View Offer Letter',
         'job' => 'Job',
         'jobexpire' => 'Job Expire',

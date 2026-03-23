@@ -18,7 +18,7 @@ return new class extends Migration
             });
 
             // Update existing records only if we just added the columns
-            \DB::table('client_product_pricing')->update([
+            `\DB`::table('client_product_pricing')->update([
                 'start_date' => \DB::raw('created_at'),
                 'end_date' => '2099-12-31 23:59:59',
             ]);
@@ -36,26 +36,21 @@ return new class extends Migration
                 $table->dateTime('end_date')->nullable(false)->change();
             }
 
-            // Drop unique constraint
-            // First, add a regular index on client_id to satisfy FK constraint
-            $sm = Schema::getConnection()->getDoctrineSchemaManager();
-            $indexes = $sm->listTableIndexes('client_product_pricing');
+            // Drop unique constraint — Laravel 11: không dùng Doctrine; dùng getIndexes()
+            $indexNames = array_column(
+                Schema::getConnection()->getSchemaBuilder()->getIndexes('client_product_pricing'),
+                'name'
+            );
 
-            if (! array_key_exists('client_product_pricing_client_id_index', $indexes)) {
+            if (! in_array('client_product_pricing_client_id_index', $indexNames, true)) {
                 $table->index('client_id', 'client_product_pricing_client_id_index');
             }
 
-            // Check if unique index exists before dropping
-            // Note: Laravel's Schema builder doesn't have hasIndex easily, checking by name convention
-            // We'll wrap in try-catch or use raw SQL to be safe if checking via Doctrine is complex
-            // But relying on Doctrine list above:
-
-            if (array_key_exists('client_product_pricing_client_id_product_id_unique', $indexes)) {
+            if (in_array('client_product_pricing_client_id_product_id_unique', $indexNames, true)) {
                 $table->dropUnique('client_product_pricing_client_id_product_id_unique');
             }
 
-            // Add composite index for performance if not exists
-            if (! array_key_exists('client_product_pricing_client_id_product_id_index', $indexes)) {
+            if (! in_array('client_product_pricing_client_id_product_id_index', $indexNames, true)) {
                 $table->index(['client_id', 'product_id'], 'client_product_pricing_client_id_product_id_index');
             }
         });

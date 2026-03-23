@@ -14,6 +14,7 @@ This document is the central reference for **business flow**, **business logic**
 6. [Add-on modules](#6-add-on-modules)
 7. [Composer install chậm – khắc phục](#7-composer-install-chậm--khắc-phục)
 8. [References](#8-references)
+9. [Laravel 11 upgrade](#9-laravel-11-upgrade)
 
 ---
 
@@ -466,4 +467,10 @@ Laravel 10 không trực tiếp dùng hai package trên; chúng là dependency c
 
 ---
 
-_Last updated: 2025-03-12. Update this file when adding or changing major business flows, modules, or permissions._
+## 9. Laravel 11 upgrade
+
+Nâng cấp framework **Laravel 10 → 11** (breaking changes, migration, QA thanh toán, đóng gói deploy): **`docs/LARAVEL_11_UPGRADE_GUIDE.md`**. Tóm tắt cho người dùng không kỹ thuật: **`docs/LARAVEL_11_NGUOI_DUNG_KHONG_KY_THUAT.md`**.
+
+---
+
+_Last updated: 2025-03-13. Update this file when adding or changing major business flows, modules, or permissions._

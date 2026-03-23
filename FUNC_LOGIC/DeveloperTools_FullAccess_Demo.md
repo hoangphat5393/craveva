@@ -15,32 +15,38 @@ Allow the AI user (created by DeveloperTools module) to **INSERT / UPDATE / DELE
 
 File: `Modules/DeveloperTools/Http/Controllers/DeveloperToolsController.php`
 
-In `store()` (after creating the MySQL user), current code grants **read‑only**:
+In `store()` (after creating the MySQL user), the code grants **full privileges on the gateway database only**:
 
-- `GRANT SELECT ON \`$gatewayDbSafe\`.\* TO {userQuoted}@'%'`
+- `GRANT ALL PRIVILEGES ON \`$gatewayDbSafe\`.\* TO {userQuoted}@'%'`
 
 This is the only place that controls the DB privileges for the generated AI user.
 
 ---
 
-## 3. How to temporarily give full DML rights (demo only)
+## 3. How to apply full rights (demo / staging)
 
-1. **Edit grant statement for the gateway DB**
+1. **Code (already in repo)**
 
-    In `DeveloperToolsController::store()` replace:
-    - `GRANT SELECT ON \`$gatewayDbSafe\`.\* TO {userQuoted}@'%'`
-
-    with:
-    - `GRANT SELECT, INSERT, UPDATE, DELETE ON \`$gatewayDbSafe\`.\* TO {userQuoted}@'%'`
+    In `DeveloperToolsController::store()` the grant is:
+    - `GRANT ALL PRIVILEGES ON \`$gatewayDbSafe\`.\* TO {userQuoted}@'%'`
 
     Keep `FLUSH PRIVILEGES` as‑is.
 
 2. **Regenerate credential**
     - In Developer Tools UI, click **Revoke** on existing credential.
     - Generate a new credential (same modules: core, pricing, warehouse, …).
-    - New DB user will now have SELECT/INSERT/UPDATE/DELETE on the gateway DB.
+    - New DB user will have **ALL PRIVILEGES** on `api_gateway_{company_id}` only (not `*` global).
 
-3. **Important limitations**
+3. **If you cannot regenerate** (same username must stay), run as MySQL admin **on the server**:
+
+    ```sql
+    GRANT ALL PRIVILEGES ON `api_gateway_20`.* TO 'api_20_xxxx'@'%';
+    FLUSH PRIVILEGES;
+    ```
+
+    Replace `api_gateway_20` and username with your actual DB name and user.
+
+4. **Important limitations**
     - Only **simple views** with `SELECT ... FROM main.table WHERE company_id = X` (WITH CHECK OPTION) are updatable.
     - Complex `join_views` are **not** updatable by MySQL; AI can still read them but cannot INSERT/UPDATE through those views.
     - Writes always go via the **gateway DB** (e.g. `api_gateway_20.products` view); main DB tables are never directly exposed.

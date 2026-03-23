@@ -10,7 +10,7 @@ return [
         'electronicAddressScheme' => 'Electronic Address Scheme',
         'companyID' => 'Company ID',
         'companyIDScheme' => 'Company ID Scheme',
-        'companyTaxIdNote' => 'Companytaxidnote',
+        'companyTaxIdNote' => 'Company tax ID note',
     ],
     'companyAddressNote' => 'This module uses the country from the Business Address. If you have not selected a country, please choose one from the :link',
     'generateEInvoice' => 'E-Invoice',

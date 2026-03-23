@@ -35,7 +35,6 @@ return new class extends Migration
         });
 
         EmployeeDetails::whereNull('marital_status')->update(['marital_status' => MaritalStatus::Single]);
-
     }
 
     /**
@@ -48,10 +47,6 @@ return new class extends Migration
 
     public function listTableForeignKeys($table)
     {
-        $conn = Schema::getConnection()->getDoctrineSchemaManager();
-
-        return array_map(function ($key) {
-            return $key->getName();
-        }, $conn->listTableForeignKeys($table));
+        return array_column(Schema::getConnection()->getSchemaBuilder()->getForeignKeys($table), 'name');
     }
 };

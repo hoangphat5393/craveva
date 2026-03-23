@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\User;
 use App\Models\UserAuth;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class ChatboxToggleTest extends TestCase
@@ -40,7 +41,7 @@ class ChatboxToggleTest extends TestCase
         return UserAuth::find($user->id);
     }
 
-    /** @test */
+    #[Test]
     public function it_contains_chatbox_container_in_layout()
     {
         $user = $this->getAuthenticatableUser();
@@ -52,7 +53,7 @@ class ChatboxToggleTest extends TestCase
         $response->assertSee('id="ai-chatbot-container"', false);
     }
 
-    /** @test */
+    #[Test]
     public function it_contains_toggle_logic_in_layout()
     {
         $user = $this->getAuthenticatableUser();
@@ -67,7 +68,7 @@ class ChatboxToggleTest extends TestCase
         $response->assertSee('const aiWorkspaceKey = \'ai_workspace_active\';', false);
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_auto_show_chatbox_on_load()
     {
         $user = $this->getAuthenticatableUser();

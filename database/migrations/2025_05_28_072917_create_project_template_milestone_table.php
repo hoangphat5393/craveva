@@ -22,7 +22,7 @@ return new class extends Migration
             $table->unsignedInteger('currency_id')->nullable()->index('project_milestones_currency_id_foreign');
             $table->string('milestone_title');
             $table->mediumText('summary');
-            $table->double('cost', 30, 2);
+            $table->decimal('cost', 30, 2);
             $table->enum('status', ['complete', 'incomplete'])->default('incomplete');
             $table->enum('add_to_budget', ['yes', 'no'])->default('no');
             $table->boolean('invoice_created');

@@ -183,10 +183,10 @@ return new class extends Migration
                 $table->unsignedInteger('client_id')->index('estimates_client_id_foreign');
                 $table->string('estimate_number')->nullable()->unique();
                 $table->date('valid_till');
-                $table->double('sub_total', 16, 2);
+                $table->decimal('sub_total', 16, 2);
                 $table->double('discount')->default(0);
                 $table->enum('discount_type', ['percent', 'fixed'])->default('percent');
-                $table->double('total', 16, 2);
+                $table->decimal('total', 16, 2);
                 $table->unsignedInteger('currency_id')->nullable()->index('estimates_currency_id_foreign');
                 $table->enum('status', ['declined', 'accepted', 'waiting', 'sent', 'draft', 'canceled'])->default('waiting');
                 $table->mediumText('note')->nullable();
@@ -591,9 +591,9 @@ return new class extends Migration
                 $table->tinyInteger('completion_percent');
                 $table->enum('calculate_task_progress', ['true', 'false'])->default('true');
 
-                $table->double('project_budget', 20, 2)->nullable();
+                $table->decimal('project_budget', 20, 2)->nullable();
                 $table->unsignedInteger('currency_id')->nullable()->index('projects_currency_id_foreign');
-                $table->double('hours_allocated', 8, 2)->nullable();
+                $table->decimal('hours_allocated', 8, 2)->nullable();
                 $table->enum('status', ['not started', 'in progress', 'on hold', 'canceled', 'finished', 'under review'])->default('in progress');
                 $table->unsignedInteger('added_by')->nullable()->index('projects_added_by_foreign');
                 $table->unsignedInteger('last_updated_by')->nullable()->index('projects_last_updated_by_foreign');
@@ -622,9 +622,9 @@ return new class extends Migration
                 $table->date('due_date');
                 $table->double('discount')->default(0);
                 $table->enum('discount_type', ['percent', 'fixed'])->default('percent');
-                $table->double('sub_total', 15, 2);
-                $table->double('total', 15, 2);
-                $table->double('adjustment_amount', 8, 2)->nullable();
+                $table->decimal('sub_total', 15, 2);
+                $table->decimal('total', 15, 2);
+                $table->decimal('adjustment_amount', 8, 2)->nullable();
                 $table->unsignedInteger('currency_id')->nullable()->index('credit_notes_currency_id_foreign');
                 $table->enum('status', ['closed', 'open'])->default('open');
                 $table->enum('recurring', ['yes', 'no'])->default('no');
@@ -653,8 +653,8 @@ return new class extends Migration
                 $table->string('item_name');
                 $table->enum('type', ['item', 'discount', 'tax'])->default('item');
                 $table->integer('quantity');
-                $table->double('unit_price', 8, 2);
-                $table->double('amount', 8, 2);
+                $table->decimal('unit_price', 8, 2);
+                $table->decimal('amount', 8, 2);
                 $table->string('taxes')->nullable();
                 $table->string('hsn_sac_code')->nullable();
                 $table->text('item_summary')->nullable();
@@ -991,9 +991,9 @@ return new class extends Migration
                 $table->string('item_name');
                 $table->text('item_summary')->nullable();
                 $table->enum('type', ['item', 'discount', 'tax'])->default('item');
-                $table->double('quantity', 16, 2);
-                $table->double('unit_price', 16, 2);
-                $table->double('amount', 16, 2);
+                $table->decimal('quantity', 16, 2);
+                $table->decimal('unit_price', 16, 2);
+                $table->decimal('amount', 16, 2);
                 $table->string('taxes')->nullable();
                 $table->string('hsn_sac_code')->nullable();
                 $table->timestamps();
@@ -1098,7 +1098,7 @@ return new class extends Migration
                 $table->string('item_name');
                 $table->date('purchase_date');
                 $table->string('purchase_from')->nullable();
-                $table->double('price', 16, 2);
+                $table->decimal('price', 16, 2);
                 $table->unsignedInteger('currency_id')->index('expenses_currency_id_foreign');
                 $table->unsignedInteger('project_id')->nullable();
                 $table->string('bill')->nullable();
@@ -1228,10 +1228,10 @@ return new class extends Migration
                 $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade')->onUpdate('cascade');
                 $table->unsignedInteger('client_id')->nullable()->index('orders_client_id_foreign');
                 $table->date('order_date');
-                $table->double('sub_total', 8, 2);
+                $table->decimal('sub_total', 8, 2);
                 $table->double('discount')->default(0);
                 $table->enum('discount_type', ['percent', 'fixed'])->default('percent');
-                $table->double('total', 8, 2);
+                $table->decimal('total', 8, 2);
                 $table->enum('status', ['pending', 'on-hold', 'failed', 'processing', 'completed', 'canceled', 'refunded'])->default('pending');
                 $table->unsignedInteger('currency_id')->nullable()->index('orders_currency_id_foreign');
                 $table->enum('show_shipping_address', ['yes', 'no'])->default('no');
@@ -1299,10 +1299,10 @@ return new class extends Migration
                 $table->string('invoice_number')->unique();
                 $table->date('issue_date');
                 $table->date('due_date')->index();
-                $table->double('sub_total', 16, 2);
+                $table->decimal('sub_total', 16, 2);
                 $table->double('discount')->default(0);
                 $table->enum('discount_type', ['percent', 'fixed'])->default('percent');
-                $table->double('total', 16, 2);
+                $table->decimal('total', 16, 2);
                 $table->unsignedInteger('currency_id')->nullable()->index('invoices_currency_id_foreign');
                 $table->enum('status', ['paid', 'unpaid', 'partial', 'canceled', 'draft'])->default('unpaid');
                 $table->enum('recurring', ['yes', 'no'])->default('no');
@@ -1316,7 +1316,7 @@ return new class extends Migration
                 $table->enum('show_shipping_address', ['yes', 'no'])->default('no');
                 $table->unsignedInteger('estimate_id')->nullable()->index('invoices_estimate_id_foreign');
                 $table->boolean('send_status')->default(true);
-                $table->double('due_amount', 8, 2)->default(0);
+                $table->decimal('due_amount', 8, 2)->default(0);
                 $table->unsignedInteger('parent_id')->nullable()->index('invoices_parent_id_foreign');
                 $table->unsignedBigInteger('invoice_recurring_id')->nullable()->index('invoices_invoice_recurring_id_foreign');
                 $table->unsignedInteger('created_by')->nullable()->index('invoices_created_by_foreign');
@@ -1348,9 +1348,9 @@ return new class extends Migration
                 $table->string('item_name');
                 $table->text('item_summary')->nullable();
                 $table->enum('type', ['item', 'discount', 'tax'])->default('item');
-                $table->double('quantity', 16, 2);
-                $table->double('unit_price', 16, 2);
-                $table->double('amount', 16, 2);
+                $table->decimal('quantity', 16, 2);
+                $table->decimal('unit_price', 16, 2);
+                $table->decimal('amount', 16, 2);
                 $table->string('taxes')->nullable();
                 $table->string('hsn_sac_code')->nullable();
                 $table->timestamps();
@@ -1851,9 +1851,9 @@ return new class extends Migration
                 $table->string('item_name');
                 $table->text('item_summary')->nullable();
                 $table->enum('type', ['item', 'discount', 'tax'])->default('item');
-                $table->double('quantity', 16, 2);
+                $table->decimal('quantity', 16, 2);
                 $table->integer('unit_price');
-                $table->double('amount', 8, 2);
+                $table->decimal('amount', 8, 2);
                 $table->string('hsn_sac_code')->nullable();
                 $table->string('taxes')->nullable();
                 $table->timestamps();
@@ -2005,7 +2005,7 @@ return new class extends Migration
                 $table->unsignedInteger('currency_id')->nullable()->index('project_milestones_currency_id_foreign');
                 $table->string('milestone_title');
                 $table->mediumText('summary');
-                $table->double('cost', 16, 2);
+                $table->decimal('cost', 16, 2);
                 $table->enum('status', ['complete', 'incomplete'])->default('incomplete');
                 $table->boolean('invoice_created');
                 $table->integer('invoice_id')->nullable();
@@ -2317,8 +2317,8 @@ return new class extends Migration
                 $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade')->onUpdate('cascade');
                 $table->unsignedInteger('lead_id')->index('proposals_lead_id_foreign');
                 $table->date('valid_till');
-                $table->double('sub_total', 16, 2);
-                $table->double('total', 16, 2);
+                $table->decimal('sub_total', 16, 2);
+                $table->decimal('total', 16, 2);
                 $table->unsignedInteger('currency_id')->nullable()->index('proposals_currency_id_foreign');
                 $table->enum('discount_type', ['percent', 'fixed']);
                 $table->double('discount');
@@ -2345,9 +2345,9 @@ return new class extends Migration
                 $table->foreign(['proposal_id'])->references(['id'])->on('proposals')->onUpdate('CASCADE')->onDelete('CASCADE');
                 $table->string('item_name');
                 $table->enum('type', ['item', 'discount', 'tax'])->default('item');
-                $table->double('quantity', 16, 2);
-                $table->double('unit_price', 16, 2);
-                $table->double('amount', 16, 2);
+                $table->decimal('quantity', 16, 2);
+                $table->decimal('unit_price', 16, 2);
+                $table->decimal('amount', 16, 2);
                 $table->text('item_summary')->nullable();
                 $table->string('taxes')->nullable();
                 $table->string('hsn_sac_code')->nullable();
@@ -2453,8 +2453,8 @@ return new class extends Migration
                 $table->string('client_email');
                 $table->string('phone')->nullable();
                 $table->text('address')->nullable();
-                $table->double('sub_total', 8, 2);
-                $table->double('total', 8, 2);
+                $table->decimal('sub_total', 8, 2);
+                $table->decimal('total', 8, 2);
                 $table->timestamps();
             });
 
@@ -2465,7 +2465,7 @@ return new class extends Migration
                 $table->string('item_name');
                 $table->integer('quantity');
                 $table->integer('unit_price');
-                $table->double('amount', 8, 2);
+                $table->decimal('amount', 8, 2);
                 $table->string('hsn_sac_code')->nullable();
                 $table->timestamps();
             });

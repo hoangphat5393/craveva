@@ -72,11 +72,11 @@ return new class extends Migration
                 }
 
                 if (! Schema::hasColumn('purchase_stock_adjustments', 'changed_value')) {
-                    $table->double('changed_value', 16, 2)->default(0)->nullable()->after('status');
+                    $table->decimal('changed_value', 16, 2)->default(0)->nullable()->after('status');
                 }
 
                 if (! Schema::hasColumn('purchase_stock_adjustments', 'adjusted_value')) {
-                    $table->double('adjusted_value', 16, 2)->default(0)->nullable()->after('changed_value');
+                    $table->decimal('adjusted_value', 16, 2)->default(0)->nullable()->after('changed_value');
                 }
             });
 

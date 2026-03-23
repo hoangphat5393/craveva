@@ -85,7 +85,7 @@ return new class extends Migration
                 $table->unsignedBigInteger('agent_id')->nullable()->index('leads_agent_id_foreign');
                 $table->foreign(['agent_id'])->references(['id'])->on('lead_agents')->onUpdate('CASCADE')->onDelete('CASCADE');
                 $table->enum('next_follow_up', ['yes', 'no'])->default('yes');
-                $table->double('value', 30, 2)->nullable()->default(0);
+                $table->decimal('value', 30, 2)->nullable()->default(0);
                 $table->longText('note')->nullable();
                 $table->text('hash')->nullable();
                 $table->unsignedInteger('currency_id')->nullable()->index('leads_currency_id_foreign');

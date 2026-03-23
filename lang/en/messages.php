@@ -230,7 +230,7 @@ return [
     'sessionDeleteConfirmation' => 'Sessiondeleteconfirmation',
     'lowerValue' => 'Lowervalue',
     'googleMapRemove' => 'Googlemapremove',
-    'noRecordFound' => 'Norecordfound',
+    'noRecordFound' => 'No record found',
     'appreciationPhoto' => 'Appreciationphoto',
     'recoverRecord' => 'Recoverrecord',
     'confirmDelete' => 'Confirmdelete',

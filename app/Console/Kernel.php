@@ -21,6 +21,7 @@ use App\Console\Commands\FetchTicketEmails;
 use App\Console\Commands\HideCronJobMessage;
 use App\Console\Commands\InActiveEmployee;
 use App\Console\Commands\PhpIniCheckCommand;
+use App\Console\Commands\VerifyStripePaymentEnvironmentCommand;
 use App\Console\Commands\LeavesQuotaRenew;
 use App\Console\Commands\RecalculateLeavesQuotas;
 use App\Console\Commands\RemoveSeenNotification;
@@ -93,6 +94,7 @@ class Kernel extends ConsoleKernel
         SendEmployeeDocumentExpiryAlert::class,
         SendImmigrationExpiryAlert::class,
         PhpIniCheckCommand::class,
+        VerifyStripePaymentEnvironmentCommand::class,
     ];
 
     /**
@@ -102,7 +104,6 @@ class Kernel extends ConsoleKernel
     {
         // Get the timezone from the configuration
         return config('app.cron_timezone');
-
     }
 
     // Cache for schedule commands to be array. Such that it do not conflict with application cache
@@ -183,6 +184,6 @@ class Kernel extends ConsoleKernel
      */
     protected function commands()
     {
-        $this->load(__DIR__.'/Commands');
+        $this->load(__DIR__ . '/Commands');
     }
 }

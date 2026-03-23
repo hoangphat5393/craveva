@@ -187,7 +187,7 @@ return [
         'dayOff' => 'Day Off',
         'dayoff' => 'Day Off',
         'overtimeType' => 'Overtime Type',
-        'salaryExpenseHeadingWithoutMonth' => 'Salaryexpenseheadingwithoutmonth',
+        'salaryExpenseHeadingWithoutMonth' => 'Salary expense (no month)',
         'OvertimeType' => 'Overtimetype',
         'Holiday' => 'Holiday',
     ],

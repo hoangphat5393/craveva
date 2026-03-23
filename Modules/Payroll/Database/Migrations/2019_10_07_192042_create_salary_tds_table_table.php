@@ -15,9 +15,9 @@ return new class extends Migration
     {
         Schema::create('salary_tds', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->double('salary_from', 16, 2);
-            $table->double('salary_to', 16, 2);
-            $table->double('salary_percent', 5, 2);
+            $table->decimal('salary_from', 16, 2);
+            $table->decimal('salary_to', 16, 2);
+            $table->decimal('salary_percent', 5, 2);
             $table->timestamps();
         });
     }

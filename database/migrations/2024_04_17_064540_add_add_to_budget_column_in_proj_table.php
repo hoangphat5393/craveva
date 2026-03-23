@@ -29,7 +29,7 @@ return new class extends Migration
         });
 
         Schema::table('project_time_logs', function (Blueprint $table) {
-            $table->double('earnings', 16, 2)->change();
+            $table->decimal('earnings', 16, 2)->change();
         });
 
         if (! Schema::hasColumn('attendance_settings', 'qr_enable')) {

@@ -32,8 +32,8 @@ return new class extends Migration
                 Schema::table($tableName, function (Blueprint $table) use ($tableName) {
                     $foreignKeys = $this->listTableForeignKeys($tableName);
 
-                    if (in_array($tableName.'_unit_id_foreign', $foreignKeys)) {
-                        $table->dropForeign($tableName.'_unit_id_foreign');
+                    if (in_array($tableName . '_unit_id_foreign', $foreignKeys)) {
+                        $table->dropForeign($tableName . '_unit_id_foreign');
                     }
 
                     $table->dropColumn('unit_id');
@@ -121,7 +121,6 @@ return new class extends Migration
                     ->update(['invoice_recurring_items.unit_id' => $defaultUnit->id]);
             }
         }
-
     }
 
     /**
@@ -149,9 +148,9 @@ return new class extends Migration
 
                     $foreignKeys = $this->listTableForeignKeys($table);
                     /** @phpstan-ignore-next-line */
-                    if (in_array($table.'_unit_id_foreign', $foreignKeys)) {
+                    if (in_array($table . '_unit_id_foreign', $foreignKeys)) {
                         /** @phpstan-ignore-next-line */
-                        $table->dropForeign($table.'_unit_id_foreign');
+                        $table->dropForeign($table . '_unit_id_foreign');
                     }
 
                     $table->dropColumn('unit_id');
@@ -164,9 +163,9 @@ return new class extends Migration
                     $foreignKeys = $this->listTableForeignKeys($table);
 
                     /** @phpstan-ignore-next-line */
-                    if (in_array($table.'_product_id_foreign', $foreignKeys)) {
+                    if (in_array($table . '_product_id_foreign', $foreignKeys)) {
                         /** @phpstan-ignore-next-line */
-                        $table->dropForeign($table.'_product_id_foreign');
+                        $table->dropForeign($table . '_product_id_foreign');
                     }
 
                     $table->dropColumn('product_id');
@@ -177,10 +176,6 @@ return new class extends Migration
 
     public function listTableForeignKeys($table)
     {
-        $conn = Schema::getConnection()->getDoctrineSchemaManager();
-
-        return array_map(function ($key) {
-            return $key->getName();
-        }, $conn->listTableForeignKeys($table));
+        return array_column(Schema::getConnection()->getSchemaBuilder()->getForeignKeys($table), 'name');
     }
 };

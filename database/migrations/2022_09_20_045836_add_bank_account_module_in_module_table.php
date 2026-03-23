@@ -42,7 +42,7 @@ return new class extends Migration
                 ->onDelete('set null')
                 ->onUpdate('cascade');
             $table->string('contact_number')->nullable();
-            $table->double('opening_balance', 15, 2)->nullable();
+            $table->decimal('opening_balance', 15, 2)->nullable();
             $table->string('bank_logo')->nullable();
             $table->boolean('status')->nullable();
             $table->integer('added_by')->unsigned()->nullable();
@@ -57,7 +57,7 @@ return new class extends Migration
                 ->on('users')
                 ->onDelete('set null')
                 ->onUpdate('cascade');
-            $table->double('bank_balance', 16, 2)->nullable();
+            $table->decimal('bank_balance', 16, 2)->nullable();
             $table->timestamps();
         });
 
@@ -93,7 +93,7 @@ return new class extends Migration
                 ->on('expenses')
                 ->onDelete('set null')
                 ->onUpdate('cascade');
-            $table->double('amount', 15, 2)->nullable();
+            $table->decimal('amount', 15, 2)->nullable();
             $table->enum('type', ['Cr', 'Dr'])->default('Cr');
             $table->integer('added_by')->unsigned()->nullable();
             $table->foreign('added_by')
@@ -112,7 +112,7 @@ return new class extends Migration
             $table->string('transaction_related_to')->nullable();
             $table->text('title')->nullable();
             $table->date('transaction_date')->nullable();
-            $table->double('bank_balance', 16, 2)->nullable();
+            $table->decimal('bank_balance', 16, 2)->nullable();
             $table->timestamps();
         });
 

@@ -183,10 +183,10 @@ return new class extends Migration
                 $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade')->onUpdate('cascade');
                 $table->unsignedInteger('client_id')->nullable()->index('orders_client_id_foreign');
                 $table->date('order_date');
-                $table->double('sub_total', 8, 2);
+                $table->decimal('sub_total', 8, 2);
                 $table->double('discount')->default(0);
                 $table->enum('discount_type', ['percent', 'fixed'])->default('percent');
-                $table->double('total', 8, 2);
+                $table->decimal('total', 8, 2);
                 $table->enum('status', ['pending', 'on-hold', 'failed', 'processing', 'completed', 'canceled', 'refunded'])->default('pending');
                 $table->unsignedInteger('currency_id')->nullable()->index('orders_currency_id_foreign');
                 $table->enum('show_shipping_address', ['yes', 'no'])->default('no');
@@ -334,9 +334,9 @@ return new class extends Migration
                 $table->string('item_name');
                 $table->text('item_summary')->nullable();
                 $table->enum('type', ['item', 'discount', 'tax'])->default('item');
-                $table->double('quantity', 16, 2);
+                $table->decimal('quantity', 16, 2);
                 $table->integer('unit_price');
-                $table->double('amount', 8, 2);
+                $table->decimal('amount', 8, 2);
                 $table->string('hsn_sac_code')->nullable();
                 $table->string('taxes')->nullable();
                 $table->timestamps();

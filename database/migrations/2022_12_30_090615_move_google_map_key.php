@@ -42,7 +42,7 @@ return new class extends Migration
 
         foreach ($subTotalTables as $tableName) {
             Schema::table($tableName, function (Blueprint $table) {
-                $table->double('sub_total', 16, 2)->change();
+                $table->decimal('sub_total', 16, 2)->change();
             });
         }
     }

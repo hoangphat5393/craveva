@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
@@ -10,12 +12,16 @@ class FileStorageCustomConfigProvider extends ServiceProvider
 {
     public function register()
     {
-        if (in_array(app()->environment(), ['demo'])) {
+        if (App::environment('demo')) {
             return true;
         }
 
         try {
             $setting = DB::table('file_storage_settings')->where('status', 'enabled')->first();
+
+            if ($setting === null) {
+                return;
+            }
 
             switch ($setting->filesystem) {
 
@@ -26,12 +32,12 @@ class FileStorageCustomConfigProvider extends ServiceProvider
                     $secret = $authKeys->secret;
                     $region = $authKeys->region;
                     $bucket = $authKeys->bucket;
-                    config(['filesystems.default' => $driver]);
-                    config(['filesystems.cloud' => $driver]);
-                    config(['filesystems.disks.s3.key' => $key]);
-                    config(['filesystems.disks.s3.secret' => $secret]);
-                    config(['filesystems.disks.s3.region' => $region]);
-                    config(['filesystems.disks.s3.bucket' => $bucket]);
+                    Config::set('filesystems.default', $driver);
+                    Config::set('filesystems.cloud', $driver);
+                    Config::set('filesystems.disks.s3.key', $key);
+                    Config::set('filesystems.disks.s3.secret', $secret);
+                    Config::set('filesystems.disks.s3.region', $region);
+                    Config::set('filesystems.disks.s3.bucket', $bucket);
                     break;
 
                 case 'digitalocean':
@@ -41,13 +47,13 @@ class FileStorageCustomConfigProvider extends ServiceProvider
                     $secret = $authKeys->secret;
                     $region = $authKeys->region;
                     $bucket = $authKeys->bucket;
-                    config(['filesystems.default' => 'digitalocean']);
-                    config(['filesystems.cloud' => 'digitalocean']);
-                    config(['filesystems.disks.digitalocean.key' => $key]);
-                    config(['filesystems.disks.digitalocean.secret' => $secret]);
-                    config(['filesystems.disks.digitalocean.region' => $region]);
-                    config(['filesystems.disks.digitalocean.bucket' => $bucket]);
-                    config(['filesystems.disks.digitalocean.endpoint' => 'https://'.$region.'.digitaloceanspaces.com']);
+                    Config::set('filesystems.default', 'digitalocean');
+                    Config::set('filesystems.cloud', 'digitalocean');
+                    Config::set('filesystems.disks.digitalocean.key', $key);
+                    Config::set('filesystems.disks.digitalocean.secret', $secret);
+                    Config::set('filesystems.disks.digitalocean.region', $region);
+                    Config::set('filesystems.disks.digitalocean.bucket', $bucket);
+                    Config::set('filesystems.disks.digitalocean.endpoint', 'https://' . $region . '.digitaloceanspaces.com');
                     break;
 
                 case 'wasabi':
@@ -57,13 +63,13 @@ class FileStorageCustomConfigProvider extends ServiceProvider
                     $secret = $authKeys->secret;
                     $region = $authKeys->region;
                     $bucket = $authKeys->bucket;
-                    config(['filesystems.default' => 'wasabi']);
-                    config(['filesystems.cloud' => 'wasabi']);
-                    config(['filesystems.disks.wasabi.key' => $key]);
-                    config(['filesystems.disks.wasabi.secret' => $secret]);
-                    config(['filesystems.disks.wasabi.region' => $region]);
-                    config(['filesystems.disks.wasabi.bucket' => $bucket]);
-                    config(['filesystems.disks.wasabi.endpoint' => 'https://s3.'.$region.'.wasabisys.com']);
+                    Config::set('filesystems.default', 'wasabi');
+                    Config::set('filesystems.cloud', 'wasabi');
+                    Config::set('filesystems.disks.wasabi.key', $key);
+                    Config::set('filesystems.disks.wasabi.secret', $secret);
+                    Config::set('filesystems.disks.wasabi.region', $region);
+                    Config::set('filesystems.disks.wasabi.bucket', $bucket);
+                    Config::set('filesystems.disks.wasabi.endpoint', 'https://s3.' . $region . '.wasabisys.com');
                     break;
                 case 'minio':
                     $authKeys = json_decode(Crypt::decryptString($setting->auth_keys));
@@ -73,23 +79,23 @@ class FileStorageCustomConfigProvider extends ServiceProvider
                     $region = $authKeys->region;
                     $bucket = $authKeys->bucket;
                     $endpoint = $authKeys->endpoint;
-                    config(['filesystems.default' => 'minio']);
-                    config(['filesystems.cloud' => 'minio']);
-                    config(['filesystems.disks.minio.key' => $key]);
-                    config(['filesystems.disks.minio.secret' => $secret]);
-                    config(['filesystems.disks.minio.region' => $region]);
-                    config(['filesystems.disks.minio.bucket' => $bucket]);
-                    config(['filesystems.disks.minio.endpoint' => $endpoint]);
+                    Config::set('filesystems.default', 'minio');
+                    Config::set('filesystems.cloud', 'minio');
+                    Config::set('filesystems.disks.minio.key', $key);
+                    Config::set('filesystems.disks.minio.secret', $secret);
+                    Config::set('filesystems.disks.minio.region', $region);
+                    Config::set('filesystems.disks.minio.bucket', $bucket);
+                    Config::set('filesystems.disks.minio.endpoint', $endpoint);
                     break;
 
-                    // For local storage
+                // For local storage
                 default:
-                    config(['filesystems.default' => $setting->filesystem]);
+                    Config::set('filesystems.default', $setting->filesystem);
                     break;
             }
         }
         // @codingStandardsIgnoreLine
-        catch (\Exception $e) {
+        catch (\Throwable $e) {
         }
     }
 

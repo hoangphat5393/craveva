@@ -3,7 +3,7 @@
 namespace Modules\ServerManager\Console;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Symfony\Component\Finder\Finder;
 
 class DatabaseAuditCommand extends Command
@@ -16,9 +16,7 @@ class DatabaseAuditCommand extends Command
     {
         $this->info('Starting database audit...');
 
-        $connection = DB::connection();
-        $schemaManager = $connection->getDoctrineSchemaManager();
-        $tables = $schemaManager->listTableNames();
+        $tables = Schema::getConnection()->getSchemaBuilder()->getTableListing();
 
         $referenced = $this->scanCodeReferences();
 
@@ -35,10 +33,10 @@ class DatabaseAuditCommand extends Command
         if ($format === 'json') {
             $this->line(json_encode($summary, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
         } else {
-            $this->line('Total tables: '.$summary['total_tables']);
-            $this->line('Unused candidates ('.count($unused).'):');
+            $this->line('Total tables: ' . $summary['total_tables']);
+            $this->line('Unused candidates (' . count($unused) . '):');
             foreach ($unused as $t) {
-                $this->line('- '.$t);
+                $this->line('- ' . $t);
             }
         }
 

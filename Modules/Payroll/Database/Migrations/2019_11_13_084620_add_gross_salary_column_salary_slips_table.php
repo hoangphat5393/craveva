@@ -14,8 +14,8 @@ return new class extends Migration
     public function up()
     {
         Schema::table('salary_slips', function (Blueprint $table) {
-            $table->double('gross_salary', 16, 2);
-            $table->double('total_deductions', 16, 2);
+            $table->decimal('gross_salary', 16, 2);
+            $table->decimal('total_deductions', 16, 2);
         });
     }
 

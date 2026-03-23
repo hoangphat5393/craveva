@@ -133,7 +133,6 @@ return new class extends Migration
         }
 
         DB::statement("ALTER TABLE recruit_job_applications MODIFY COLUMN total_experience ENUM('fresher','0-1', '1-2','2-3','3-4','4-5', '5-6','6-7', '7-8', '8-9', '9-10', '10-11', '11-12', '12-13', '13-14', 'over-15')");
-
     }
 
     /**
@@ -150,10 +149,6 @@ return new class extends Migration
 
     public function listTableForeignKeys($table)
     {
-        $conn = Schema::getConnection()->getDoctrineSchemaManager();
-
-        return array_map(function ($key) {
-            return $key->getName();
-        }, $conn->listTableForeignKeys($table));
+        return array_column(Schema::getConnection()->getSchemaBuilder()->getForeignKeys($table), 'name');
     }
 };

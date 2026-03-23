@@ -51,5 +51,5 @@ return [
                             <p>2. <b>%test%</b> (match anywhere in the string)</p>
                             <p>3. <b>%test</b> (match anywhere but must end with \'test\')</p>',
     ],
-    'companyNotFound' => 'Companynotfound',
+    'companyNotFound' => 'Company not found',
 ];

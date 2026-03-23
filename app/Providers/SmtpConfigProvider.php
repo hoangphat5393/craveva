@@ -50,7 +50,7 @@ class SmtpConfigProvider extends ServiceProvider
                 if (is_null($settings->light_logo)) {
                     Config::set('app.logo', asset('img/craveva-logo.png'));
                 } else {
-                    Config::set('app.logo', $this->generateMaskedImageAppUrl('app-logo/'.$settings->light_logo));
+                    Config::set('app.logo', $this->generateMaskedImageAppUrl('app-logo/' . $settings->light_logo));
                 }
 
                 $pushSetting = DB::table('push_notification_settings')->first();
@@ -64,7 +64,7 @@ class SmtpConfigProvider extends ServiceProvider
             }
         }
         // @codingStandardsIgnoreLine
-        catch (\Exception $e) {
+        catch (\Throwable $e) {
         }
 
         $app = App::getInstance();

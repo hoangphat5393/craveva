@@ -28,6 +28,7 @@ use PayPal\Api\Amount;
 use PayPal\Api\Currency;
 use PayPal\Api\Item;
 use PayPal\Api\ItemList;
+
 /** All Paypal Details class **/
 
 use PayPal\Api\MerchantPreferences;
@@ -61,6 +62,13 @@ class SuperAdminPaypalController extends AccountBaseController
     {
         parent::__construct();
 
+        $this->pageTitle = 'modules.paymentSetting.paypal';
+
+        // Tránh đọc credential + khởi tạo PayPal API khi chạy Artisan (route:list, …)
+        if (app()->runningInConsole()) {
+            return;
+        }
+
         $credential = GlobalPaymentGatewayCredentials::first();
 
         if ($credential->paypal_mode == 'sandbox') {
@@ -77,7 +85,6 @@ class SuperAdminPaypalController extends AccountBaseController
         $paypal_conf = Config::get('paypal');
         $this->_api_context = new ApiContext(new OAuthTokenCredential($paypalClientId, $PaypalSecret));
         $this->_api_context->setConfig($paypal_conf['settings']);
-        $this->pageTitle = 'modules.paymentSetting.paypal';
     }
 
     /**
@@ -120,12 +127,12 @@ class SuperAdminPaypalController extends AccountBaseController
         $this->companyName = company()->company_name;
 
         $plan = new Plan;
-        $plan->setName('#'.$package->name)
-            ->setDescription('Payment for package '.$package->name)
+        $plan->setName('#' . $package->name)
+            ->setDescription('Payment for package ' . $package->name)
             ->setType('INFINITE');
 
         $paymentDefinition = new PaymentDefinition;
-        $paymentDefinition->setName('Payment for package '.$package->name)
+        $paymentDefinition->setName('Payment for package ' . $package->name)
             ->setType('REGULAR')
             ->setFrequency(strtoupper($frequency))
             ->setFrequencyInterval(1)
@@ -133,8 +140,8 @@ class SuperAdminPaypalController extends AccountBaseController
             ->setAmount(new Currency(['value' => $totalAmount, 'currency' => $package->currency->currency_code]));
 
         $merchantPreferences = new MerchantPreferences;
-        $merchantPreferences->setReturnUrl(route('billing.paypal-recurring').'?success=true&invoice_id='.$invoiceId)
-            ->setCancelUrl(route('billing.paypal-recurring').'?success=false&invoice_id='.$invoiceId)
+        $merchantPreferences->setReturnUrl(route('billing.paypal-recurring') . '?success=true&invoice_id=' . $invoiceId)
+            ->setCancelUrl(route('billing.paypal-recurring') . '?success=false&invoice_id=' . $invoiceId)
             ->setAutoBillAmount('yes')
             ->setInitialFailAmountAction('CONTINUE')
             ->setMaxFailAttempts('0');
@@ -152,7 +159,7 @@ class SuperAdminPaypalController extends AccountBaseController
                 return Redirect::route('billing.upgrade_plan');
             } else {
 
-                \Session::put('error', 'An error occurred. We apologize for the inconvenience.: '.$ex->getMessage());
+                \Session::put('error', 'An error occurred. We apologize for the inconvenience.: ' . $ex->getMessage());
 
                 return Redirect::route('billing.upgrade_plan');
             }
@@ -178,7 +185,7 @@ class SuperAdminPaypalController extends AccountBaseController
 
                 return Redirect::route('billing.upgrade_plan');
             } else {
-                \Session::put('error', 'An error occurred. We apologize for the inconvenience.: '.$ex->getMessage());
+                \Session::put('error', 'An error occurred. We apologize for the inconvenience.: ' . $ex->getMessage());
 
                 return Redirect::route('billing.upgrade_plan');
             }
@@ -195,7 +202,7 @@ class SuperAdminPaypalController extends AccountBaseController
 
         $agreement = new Agreement;
         $agreement->setName($package->name)
-            ->setDescription('Payment for package # '.$package->name)
+            ->setDescription('Payment for package # ' . $package->name)
             ->setStartDate($startingDate);
 
         $plan1 = new Plan;
@@ -219,7 +226,7 @@ class SuperAdminPaypalController extends AccountBaseController
                 return Redirect::route('billing.upgrade_plan');
             } else {
 
-                \Session::put('error', 'An error occurred. We apologize for the inconvenience.: '.$ex->getMessage());
+                \Session::put('error', 'An error occurred. We apologize for the inconvenience.: ' . $ex->getMessage());
 
                 return Redirect::route('billing.upgrade_plan');
             }
@@ -379,7 +386,7 @@ class SuperAdminPaypalController extends AccountBaseController
 
                     return Redirect::route('billing.upgrade_plan');
                 } else {
-                    \Session::put('error', 'An error occurred. We apologize for the inconvenience.: '.$errData->getMessage());
+                    \Session::put('error', 'An error occurred. We apologize for the inconvenience.: ' . $errData->getMessage());
 
                     return Redirect::route('billing.upgrade_plan');
                 }
@@ -468,7 +475,7 @@ class SuperAdminPaypalController extends AccountBaseController
                     $company->licence_expire_on = $paypalInvoice->end_on;
                     $company->save();
                 } catch (\Exception $ex) {
-                    \Session::put('error', 'An error occurred. We apologize for the inconvenience.: '.$ex->getMessage());
+                    \Session::put('error', 'An error occurred. We apologize for the inconvenience.: ' . $ex->getMessage());
                 }
             }
         } elseif (! is_null($firstInvoice) && $firstInvoice->method == 'Stripe') {
@@ -486,7 +493,7 @@ class SuperAdminPaypalController extends AccountBaseController
                     $company->licence_expire_on = $subscription->ends_at;
                     $company->save();
                 } catch (\Exception $ex) {
-                    \Session::put('error', 'An error occurred. We apologize for the inconvenience.: '.$ex->getMessage());
+                    \Session::put('error', 'An error occurred. We apologize for the inconvenience.: ' . $ex->getMessage());
                 }
             }
         }
@@ -500,7 +507,7 @@ class SuperAdminPaypalController extends AccountBaseController
         $this->setKeys(company()->hash);
         $companyName = company()->company_name;
         $paymentType = 'lifetime';
-        $paymentTitle = 'Payment for package #'.$companyName;
+        $paymentTitle = 'Payment for package #' . $companyName;
         $currencyCode = company()->currency->currency_code;
 
         $payer = new Payer;
@@ -524,7 +531,7 @@ class SuperAdminPaypalController extends AccountBaseController
         $transaction = new Transaction;
         $transaction->setAmount($amount)
             ->setItemList($item_list)
-            ->setDescription($companyName.' '.$paymentTitle);
+            ->setDescription($companyName . ' ' . $paymentTitle);
 
         $redirect_urls = new RedirectUrls;
         $redirect_urls->setReturnUrl(route('get_paypal_status'))

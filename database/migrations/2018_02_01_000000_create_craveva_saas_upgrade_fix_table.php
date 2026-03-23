@@ -645,7 +645,7 @@ return new class extends Migration
                 $table->unsignedBigInteger('order_id')->nullable()->index('invoices_order_id_foreign');
 
                 $table->string('invoice_number')->change();
-                $table->double('due_amount', 8, 2)->default(0);
+                $table->decimal('due_amount', 8, 2)->default(0);
                 $table->unsignedInteger('parent_id')->nullable()->index('invoices_parent_id_foreign');
                 $table->unsignedInteger('added_by')->nullable()->index('invoices_added_by_foreign');
                 $table->unsignedInteger('last_updated_by')->nullable()->index('invoices_last_updated_by_foreign');
@@ -709,7 +709,7 @@ return new class extends Migration
 
         if (! Schema::hasColumn('credit_notes', 'adjustment_amount')) {
             Schema::table('credit_notes', function (Blueprint $table) {
-                $table->double('adjustment_amount', 8, 2)->nullable();
+                $table->decimal('adjustment_amount', 8, 2)->nullable();
                 $table->unsignedInteger('added_by')->nullable()->index('credit_notes_added_by_foreign');
                 $table->unsignedInteger('last_updated_by')->nullable()->index('credit_notes_last_updated_by_foreign');
                 $table->foreign(['added_by'])->references(['id'])->on('users')->onUpdate('CASCADE')->onDelete('SET NULL');
@@ -878,10 +878,6 @@ return new class extends Migration
 
     public function listTableForeignKeys($table)
     {
-        $conn = Schema::getConnection()->getDoctrineSchemaManager();
-
-        return array_map(function ($key) {
-            return $key->getName();
-        }, $conn->listTableForeignKeys($table));
+        return array_column(Schema::getConnection()->getSchemaBuilder()->getForeignKeys($table), 'name');
     }
 };

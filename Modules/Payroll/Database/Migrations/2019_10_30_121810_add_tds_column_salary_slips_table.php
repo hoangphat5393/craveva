@@ -14,8 +14,8 @@ return new class extends Migration
     public function up()
     {
         Schema::table('salary_slips', function (Blueprint $table) {
-            $table->double('tds', 16, 2);
-            $table->double('monthly_salary', 16, 2);
+            $table->decimal('tds', 16, 2);
+            $table->decimal('monthly_salary', 16, 2);
         });
     }
 

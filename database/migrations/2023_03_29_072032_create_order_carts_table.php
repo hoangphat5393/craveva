@@ -24,9 +24,9 @@ return new class extends Migration
                 $table->string('item_name');
                 $table->text('description')->nullable();
                 $table->enum('type', ['item', 'discount', 'tax'])->default('item');
-                $table->double('quantity', 16, 2);
-                $table->double('unit_price', 16, 2);
-                $table->double('amount', 16, 2);
+                $table->decimal('quantity', 16, 2);
+                $table->decimal('unit_price', 16, 2);
+                $table->decimal('amount', 16, 2);
                 $table->string('taxes')->nullable();
                 $table->string('hsn_sac_code')->nullable();
                 $table->timestamps();

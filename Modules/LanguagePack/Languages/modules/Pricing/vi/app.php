@@ -8,6 +8,7 @@ return [
         'companyPricing' => 'Định giá hợp đồng',
         'clientTiers' => 'Gán cấp độ khách hàng',
         'volumeDiscounts' => 'Quy tắc chiết khấu số lượng',
+        'contractPricing' => 'Định giá theo hợp đồng',
     ],
     'assignPricingTier' => 'Gán cấp độ định giá',
     'customerCode' => 'Mã khách hàng',

@@ -21,7 +21,7 @@ return new class extends Migration
                 $table->integer('estimate_id')->unsigned()->nullable();
                 $table->foreign('estimate_id')->references('id')->on('estimates')->onDelete('cascade')->onUpdate('cascade');
                 $table->longText('description');
-                $table->double('estimated_budget', 16, 2);
+                $table->decimal('estimated_budget', 16, 2);
                 $table->integer('project_id')->unsigned()->nullable();
                 $table->foreign(['project_id'])->references(['id'])->on('projects')->onUpdate('cascade')->onDelete('cascade');
                 $table->text('early_requirement')->nullable();

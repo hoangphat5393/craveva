@@ -16,12 +16,10 @@ return new class extends Migration
             // Step 1: Rename and Cleanup
             if (Schema::hasColumn('company_customer_pricing', 'customer_company_id')) {
                 Schema::table('company_customer_pricing', function (Blueprint $table) {
-                    $sm = Schema::getConnection()->getDoctrineSchemaManager();
-                    $indexes = $sm->listTableForeignKeys('company_customer_pricing');
-
-                    foreach ($indexes as $index) {
-                        if (str_contains($index->getName(), 'customer_company_id')) {
-                            $table->dropForeign($index->getName());
+                    $foreignKeys = Schema::getConnection()->getSchemaBuilder()->getForeignKeys('company_customer_pricing');
+                    foreach ($foreignKeys as $fk) {
+                        if (str_contains($fk['name'], 'customer_company_id')) {
+                            $table->dropForeign($fk['name']);
                         }
                     }
 
@@ -60,11 +58,10 @@ return new class extends Migration
         if (Schema::hasTable('company_customer_pricing')) {
             if (Schema::hasColumn('company_customer_pricing', 'client_id')) {
                 Schema::table('company_customer_pricing', function (Blueprint $table) {
-                    $sm = Schema::getConnection()->getDoctrineSchemaManager();
-                    $indexes = $sm->listTableForeignKeys('company_customer_pricing');
-                    foreach ($indexes as $index) {
-                        if (str_contains($index->getName(), 'client_id')) {
-                            $table->dropForeign($index->getName());
+                    $foreignKeys = Schema::getConnection()->getSchemaBuilder()->getForeignKeys('company_customer_pricing');
+                    foreach ($foreignKeys as $fk) {
+                        if (str_contains($fk['name'], 'client_id')) {
+                            $table->dropForeign($fk['name']);
                         }
                     }
 

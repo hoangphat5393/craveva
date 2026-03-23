@@ -13,7 +13,7 @@ return new class extends Migration
     {
         if (! Schema::hasColumn('employee_details', 'overtime_hourly_rate')) {
             Schema::table('employee_details', function (Blueprint $table) {
-                $table->double('overtime_hourly_rate', 16, 2)->nullable()->comment('This field is only for overtime calculation');
+                $table->decimal('overtime_hourly_rate', 16, 2)->nullable()->comment('This field is only for overtime calculation');
             });
         }
 
@@ -23,9 +23,9 @@ return new class extends Migration
             $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade')->onUpdate('cascade');
             $table->string('name')->nullable();
             $table->string('code')->nullable();
-            $table->double('time', 20)->nullable();
+            $table->decimal('time', 20, 2)->nullable();
             $table->boolean('fixed')->default(0);
-            $table->double('fixed_amount', 20)->nullable();
+            $table->decimal('fixed_amount', 20, 2)->nullable();
             $table->text('description')->nullable();
             $table->timestamps();
         });

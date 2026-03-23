@@ -11,6 +11,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $user_id
  * @property int $leave_type_id
  * @property int $no_of_leaves
+ * @property float|int $leaves_used
+ * @property float|int $leaves_remaining
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\LeaveType $leaveType

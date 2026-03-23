@@ -62,7 +62,7 @@ return [
         'taskRecurring' => 'Taskrecurring',
         'securitySettings' => 'Security Settings',
         'shiftRotation' => 'Shiftrotation',
-        'signUpSetting' => 'Signupsetting',
+        'signUpSetting' => 'Sign Up Settings',
         'stickyNotes' => 'Stickynotes',
         'home' => 'Home',
         'pricing' => 'Pricing',
@@ -109,7 +109,7 @@ return [
         'languageSettings' => 'Language Settings',
         'socialLogin' => 'Social Login',
         'customLinkSetting' => 'Custom Link Setting',
-        'gdprSettings' => 'Gdprsettings',
+        'gdprSettings' => 'GDPR Settings',
         'issuesDate' => 'Issuesdate',
         'hr' => 'Hr',
         'finance' => 'Finance',
@@ -205,7 +205,7 @@ return [
         'replyTemplates' => 'Replytemplates',
         'emailSync' => 'Emailsync',
         'affiliates' => 'Affiliates',
-        'lettersTemplates' => 'Letterstemplates',
+        'lettersTemplates' => 'Letters Templates',
         'operations' => 'Operations',
     ],
     'project' => 'Project',
@@ -950,7 +950,7 @@ return [
     'projectWiseTimeLogReport' => 'Projectwisetimelogreport',
     'unsyncedUsers' => 'Unsyncedusers',
     'notice' => 'Notice',
-    'leadContact' => 'Leadcontact',
+    'leadContact' => 'Lead Contact',
     'onesignal' => [
         'tip' => [
             'state' => [
@@ -1088,7 +1088,7 @@ return [
     'saving' => 'Saving',
     'suspended' => 'Suspended',
     'transferred' => 'Transferred',
-    'billingInformation' => 'Billinginformation',
+    'billingInformation' => 'Billing information',
     'flowId' => 'Flowid',
     'smsTemplateCopied' => 'Smstemplatecopied',
 ];

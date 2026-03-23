@@ -129,7 +129,6 @@ return new class extends Migration
                 $table->timestamp('license_updated_at')->nullable();
                 $table->timestamp('subscription_updated_at')->nullable();
             });
-
         }
 
         if (! Schema::hasTable('package_settings')) {
@@ -354,8 +353,8 @@ return new class extends Migration
                     ->on('packages')
                     ->onUpdate('cascade')
                     ->onDelete('set null');
-                $table->double('sub_total', [15, 2])->nullable()->default(null);
-                $table->double('total', [15, 2])->nullable()->default(null);
+                $table->decimal('sub_total', 15, 2)->nullable()->default(null);
+                $table->decimal('total', 15, 2)->nullable()->default(null);
                 $table->string('transaction_id')->nullable()->default(null);
                 $table->string('remarks')->nullable()->default(null);
                 $table->string('billing_frequency')->nullable()->default(null);
@@ -913,7 +912,6 @@ return new class extends Migration
                 $ticket->save();
             }
         }
-
     }
 
     /**

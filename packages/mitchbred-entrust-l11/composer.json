@@ -1,0 +1,118 @@
+{
+    "name": "mitchbred/entrust",
+    "description": "This package provides a flexible way to add role-based permissions to Laravel and is a fork from Zizaco/entrust",
+    "type": "library",
+    "license": "MIT",
+    "minimum-stability": "dev",
+    "prefer-stable": false,
+    "version": "2.5.5.1",
+    "require": {
+        "php": "^8.3",
+        "doctrine/inflector": "^2.0.8",
+        "illuminate/bus": "^11.0",
+        "illuminate/cache": "^11.0",
+        "illuminate/collections": "^11.0",
+        "illuminate/conditionable": "^11.0",
+        "illuminate/console": "^11.0",
+        "illuminate/container": "^11.0",
+        "illuminate/contracts": "^11.0",
+        "illuminate/events": "^11.0",
+        "illuminate/filesystem": "^11.0",
+        "illuminate/macroable": "^11.0",
+        "illuminate/pipeline": "^11.0",
+        "illuminate/support": "^11.0",
+        "illuminate/view": "^11.0",
+        "illuminate/database": "^11.0",
+        "laravel/prompts": "^0.1.13",
+        "nesbot/carbon": "^3.8.4",
+        "nunomaduro/termwind": "^2.3",
+        "psr/clock": "^1.0.0",
+        "psr/container": "^2.0.2",
+        "psr/simple-cache": "^3.0.0",
+        "symfony/console": "^7.0",
+        "symfony/deprecation-contracts": "^3.3.0",
+        "symfony/finder": "^7.0",
+        "symfony/polyfill-ctype": "^1.0.0",
+        "symfony/polyfill-intl-grapheme": "^1.0.0",
+        "symfony/polyfill-intl-normalizer": "^1.0.0",
+        "symfony/polyfill-mbstring": "^1.0.0",
+        "symfony/polyfill-php80": "^1.0.0",
+        "symfony/process": "^7.0",
+        "symfony/service-contracts": "^3.3.0",
+        "symfony/string": "^7.0",
+        "symfony/translation": "^6.3|^7.0",
+        "symfony/translation-contracts": "^3.3.0",
+        "voku/portable-ascii": "^2.0.1",
+        "brick/math": "^0.12",
+        "hamcrest/hamcrest-php": "^2.0.1",
+        "myclabs/deep-copy": "^1.11.0",
+        "nikic/php-parser": "^5.0.2",
+        "phar-io/manifest": "^2.0.3",
+        "phar-io/version": "^3.2.1",
+        "psr/cache": "^3.0.0",
+        "psr/event-dispatcher": "^1.0.0",
+        "psr/log": "^3.0.0",
+        "sebastian/cli-parser": "^3.0",
+        "sebastian/code-unit": "^3.0",
+        "sebastian/code-unit-reverse-lookup": "^4.0.0",
+        "sebastian/comparator": "^6.0",
+        "sebastian/complexity": "^4.0",
+        "sebastian/diff": "^6.0",
+        "sebastian/environment": "^7.0",
+        "sebastian/exporter": "^6.0",
+        "sebastian/global-state": "^7.0",
+        "sebastian/lines-of-code": "^3.0",
+        "sebastian/object-enumerator": "^6.0",
+        "sebastian/object-reflector": "^4.0",
+        "sebastian/recursion-context": "^6.0|dev-main",
+        "sebastian/type": "^5.0",
+        "sebastian/version": "^5.0",
+        "symfony/cache": "^6.3.0",
+        "symfony/cache-contracts": "^3.3.0",
+        "symfony/event-dispatcher": "^6.3.0",
+        "symfony/event-dispatcher-contracts": "^3.3.0",
+        "symfony/options-resolver": "^6.3.0",
+        "symfony/var-exporter": "^6.3.0",
+        "symfony/yaml": "^6.3.0",
+        "theseer/tokenizer": "^1.2.1"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11.0",
+        "mockery/mockery": "^2.0",
+        "overtrue/phplint": "^9.0.3",
+        "phpunit/php-code-coverage": "^11.0",
+        "phpunit/php-file-iterator": "^5.0",
+        "phpunit/php-invoker": "^5.0",
+        "phpunit/php-text-template": "^4.0",
+        "phpunit/php-timer": "^7.0",
+        "rector/rector": "dev-main"
+    },
+    "autoload": {
+        "classmap": [
+            "src/commands"
+        ],
+        "psr-4": {
+            "Trebol\\Entrust\\": "src/Entrust/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Trebol\\Entrust\\EntrustServiceProvider"
+            ],
+            "aliases": {
+                "Entrust": "Trebol\\Entrust\\EntrustFacade"
+            }
+        }
+    },
+    "autoload-dev": {
+        "classmap": [
+            "tests/Middleware/MiddlewareTest.php"
+        ]
+    },
+    "config": {
+        "platform": {
+            "php": "8.3"
+        }
+    }
+}

@@ -28,6 +28,8 @@ class NonSaasToSaasSeeder extends Seeder
         config(['app.seeding' => false]);
 
         cache()->flush();
+
+        return true;
     }
 
     protected function seedInitialData()

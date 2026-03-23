@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'quantityReceived' => 'Quantityreceived',
+    'quantityReceived' => 'Quantity received',
 ];

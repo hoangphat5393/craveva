@@ -11,18 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Laravel 11: Connection::getDoctrineSchemaManager() đã bỏ — dùng Schema::hasIndex()
+        if (Schema::hasIndex('purchase_stock_adjustments', 'psa_product_warehouse_unique')) {
+            return;
+        }
+
         Schema::table('purchase_stock_adjustments', function (Blueprint $table) {
-            // Add composite unique index if it doesn't exist
-            // We use a raw check because Schema::hasIndex is not reliable for named indices in all versions
-            // But we can just try to add it. If it exists, it might throw error.
-            // Better to use Schema manager.
-
-            $sm = Schema::getConnection()->getDoctrineSchemaManager();
-            $indexes = $sm->listTableIndexes('purchase_stock_adjustments');
-
-            if (! array_key_exists('psa_product_warehouse_unique', $indexes)) {
-                $table->unique(['product_id', 'warehouse_id'], 'psa_product_warehouse_unique');
-            }
+            $table->unique(['product_id', 'warehouse_id'], 'psa_product_warehouse_unique');
         });
     }
 

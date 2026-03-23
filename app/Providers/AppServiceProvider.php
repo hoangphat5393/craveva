@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Cashier\Cashier;
-use Laravel\Sanctum\Sanctum;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -20,8 +19,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        Cashier::ignoreMigrations();
-        Sanctum::ignoreMigrations();
+        // Cashier 15+ / Sanctum 4+: migrations are opt-in via `php artisan vendor:publish` (no ignoreMigrations API).
 
         if (config('app.redirect_https')) {
             $this->app['request']->server->set('HTTPS', true);

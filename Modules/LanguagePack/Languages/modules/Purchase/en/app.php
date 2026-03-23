@@ -83,6 +83,6 @@ return [
         'vendorName' => 'Vendor Name',
         'paymentToVendor' => 'Payment To Vendor',
     ],
-    'erpShipmentRef' => 'Erpshipmentref',
-    'wmsShipmentRef' => 'Wmsshipmentref',
+    'erpShipmentRef' => 'ERP shipment reference',
+    'wmsShipmentRef' => 'WMS shipment reference',
 ];

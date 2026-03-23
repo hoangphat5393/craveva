@@ -71,29 +71,37 @@ class BillingController extends AccountBaseController
         parent::__construct();
 
         $this->paymentGatewatActive = false;
-        $this->stripeSettings = GlobalPaymentGatewayCredentials::first();
-
-        if (in_array('active', [
-            $this->stripeSettings->paypal_status,
-            $this->stripeSettings->stripe_status,
-            $this->stripeSettings->razorpay_status,
-            $this->stripeSettings->paystack_status,
-            $this->stripeSettings->mollie_status,
-            $this->stripeSettings->payfast_status,
-            $this->stripeSettings->authorize_status,
-        ])) {
-            $this->paymentGatewatActive = true;
-        }
-
-        $this->offlinePaymentGateways = OfflinePaymentMethod::withoutGlobalScope(CompanyScope::class)->where('status', 'yes')->whereNull('company_id')->count();
+        $this->stripeSettings = null;
+        $this->offlinePaymentGateways = 0;
         $this->paymentActive = false;
 
-        if (! ($this->paymentGatewatActive == false && $this->offlinePaymentGateways == 0)) {
-            $this->paymentActive = true;
-        }
+        // Tránh query credential / set Stripe config khi chạy Artisan (route:list, …) — giảm rủi ro lỗi decrypt/DB trong CLI
+        if (! app()->runningInConsole()) {
+            $this->stripeSettings = GlobalPaymentGatewayCredentials::first();
 
-        // Moved to service provider
-        $this->setStripConfigs();
+            if ($this->stripeSettings) {
+                if (in_array('active', [
+                    $this->stripeSettings->paypal_status,
+                    $this->stripeSettings->stripe_status,
+                    $this->stripeSettings->razorpay_status,
+                    $this->stripeSettings->paystack_status,
+                    $this->stripeSettings->mollie_status,
+                    $this->stripeSettings->payfast_status,
+                    $this->stripeSettings->authorize_status,
+                ])) {
+                    $this->paymentGatewatActive = true;
+                }
+            }
+
+            $this->offlinePaymentGateways = OfflinePaymentMethod::withoutGlobalScope(CompanyScope::class)->where('status', 'yes')->whereNull('company_id')->count();
+
+            if (! ($this->paymentGatewatActive == false && $this->offlinePaymentGateways == 0)) {
+                $this->paymentActive = true;
+            }
+
+            // Moved to service provider
+            $this->setStripConfigs();
+        }
 
         $this->pageTitle = 'superadmin.menu.billing';
 
@@ -366,7 +374,7 @@ class BillingController extends AccountBaseController
 
         try {
             $this->intent = $this->company->createSetupIntent([
-                'description' => $this->package->name.$request->type.' Payment',
+                'description' => $this->package->name . $request->type . ' Payment',
                 'metadata' => [
                     'integration_check' => 'accept_a_payment',
                 ],
@@ -374,7 +382,7 @@ class BillingController extends AccountBaseController
         } catch (\Stripe\Exception\InvalidRequestException $e) {
             if (str_contains($e->getMessage(), 'No such customer')) {
                 // Smart Self-Healing Logic (Lock -> Search -> Link/Reset -> Log)
-                $lock = Cache::lock('stripe_fixing_company_'.$this->company->id, 10);
+                $lock = Cache::lock('stripe_fixing_company_' . $this->company->id, 10);
 
                 if ($lock->get()) {
                     try {
@@ -402,13 +410,13 @@ class BillingController extends AccountBaseController
 
                         // Retry Intent Creation after fixing
                         $this->intent = $this->company->createSetupIntent([
-                            'description' => $this->package->name.$request->type.' Payment',
+                            'description' => $this->package->name . $request->type . ' Payment',
                             'metadata' => [
                                 'integration_check' => 'accept_a_payment',
                             ],
                         ]);
                     } catch (\Exception $ex) {
-                        Log::error('Stripe Self-Healing Failed: '.$ex->getMessage());
+                        Log::error('Stripe Self-Healing Failed: ' . $ex->getMessage());
                         throw $e; // Throw original error if healing fails
                     } finally {
                         $lock->release();
@@ -420,7 +428,7 @@ class BillingController extends AccountBaseController
                     $this->company->refresh(); // Refresh model to get updated stripe_id
 
                     $this->intent = $this->company->createSetupIntent([
-                        'description' => $this->package->name.$request->type.' Payment',
+                        'description' => $this->package->name . $request->type . ' Payment',
                         'metadata' => [
                             'integration_check' => 'accept_a_payment',
                         ],
@@ -482,7 +490,7 @@ class BillingController extends AccountBaseController
         if ($subscriptionCancel) {
 
             if ($plan->max_employees < $this->company->employees->count()) {
-                \session()->put('error', 'You can\'t downgrade package because your employees length is '.$this->company->employees->count().' and package max employees count is '.$plan->max_employees);
+                \session()->put('error', 'You can\'t downgrade package because your employees length is ' . $this->company->employees->count() . ' and package max employees count is ' . $plan->max_employees);
 
                 return redirect()->route('billing.upgrade_plan');
             }
@@ -493,9 +501,9 @@ class BillingController extends AccountBaseController
 
             try {
                 if ($subscription->count() > 0) {
-                    $company->subscription('primary')->swap($plan->{'stripe_'.$request->type.'_plan_id'});
+                    $company->subscription('primary')->swap($plan->{'stripe_' . $request->type . '_plan_id'});
                 } else {
-                    $company->newSubscription('primary', $plan->{'stripe_'.$request->type.'_plan_id'})->create($token, ['email' => $email]);
+                    $company->newSubscription('primary', $plan->{'stripe_' . $request->type . '_plan_id'})->create($token, ['email' => $email]);
                 }
 
                 $subscription = new GlobalSubscription;
@@ -624,7 +632,7 @@ class BillingController extends AccountBaseController
             $plan = Package::with('currency')->find($request->plan_id);
             $type = $request->type;
 
-            $expectedSignature = hash_hmac('sha256', $paymentId.'|'.$subscriptionId, $secretKey);
+            $expectedSignature = hash_hmac('sha256', $paymentId . '|' . $subscriptionId, $secretKey);
         } catch (\Exception $e) {
             \session()->put('error', $e->getMessage());
 
@@ -634,7 +642,7 @@ class BillingController extends AccountBaseController
         if ($expectedSignature === $razorpaySignature) {
 
             if ($plan->max_employees < $this->company->employees->count()) {
-                \session()->put('error', 'You can\'t downgrade package because your employees length is '.$this->company->employees->count().' and package max employees count is '.$plan->max_employees);
+                \session()->put('error', 'You can\'t downgrade package because your employees length is ' . $this->company->employees->count() . ' and package max employees count is ' . $plan->max_employees);
 
                 return Reply::redirect(route('billing.upgrade_plan'));
             }
@@ -871,7 +879,7 @@ class BillingController extends AccountBaseController
                     $merchantAuthentication->setTransactionKey($credential->authorize_transaction_key);
 
                     // Set the transaction's refId
-                    $refId = 'ref'.time();
+                    $refId = 'ref' . time();
 
                     $request = new AnetAPI\ARBCancelSubscriptionRequest;
                     $request->setMerchantAuthentication($merchantAuthentication);
@@ -910,7 +918,7 @@ class BillingController extends AccountBaseController
                 $client = new Client;
                 $res = $client->request(
                     'PUT',
-                    'https://sandbox.payfast.co.za/subscriptions/'.$payfastInvoice->token.'/cancel',
+                    'https://sandbox.payfast.co.za/subscriptions/' . $payfastInvoice->token . '/cancel',
                     ['merchant-id' => $credential->payfast_key, 'version' => 'v1', 'timestamp' => $date->toDateTimeString(), 'signature' => $payfastInvoice->signature]
                 );
 
@@ -1058,6 +1066,6 @@ class BillingController extends AccountBaseController
     {
         $file = OfflinePlanChange::whereRaw('md5(id) = ?', $id)->firstOrFail();
 
-        return download_local_s3($file, OfflinePlanChange::FILE_PATH.'/'.$file->file_name);
+        return download_local_s3($file, OfflinePlanChange::FILE_PATH . '/' . $file->file_name);
     }
 }

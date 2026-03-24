@@ -74,4 +74,43 @@ Remote cleanup `find ... -exec rm -rf` — rủi ro filesystem; nên chuyển d�
 
 ---
 
-_Last updated: 2026-03-23_
+## Update 2026-03-24 (Phase 1 verify)
+
+### What was done safely
+
+```bash
+cd /var/www/craveva-staging/current/craveva
+git fetch origin main
+git pull --ff-only origin main
+sudo chown -R www-data:www-data storage bootstrap/cache
+sudo chmod -R 775 storage bootstrap/cache
+APP_ENV=production php artisan --version
+APP_ENV=production php artisan migrate:status
+APP_ENV=production php artisan config:cache
+APP_ENV=production php artisan route:cache
+APP_ENV=production php artisan view:cache
+```
+
+### Results
+
+- Pull success to latest `main`.
+- Laravel version check success: `11.50.0`.
+- HTTP health check: `200 OK` via nginx.
+- No destructive DB command executed.
+
+### DB safety status
+
+- **Not executed intentionally:** `php artisan migrate --force` (requires explicit approval because it changes DB schema/data).
+- Current pending migrations on staging:
+    - `2026_03_23_120100_add_default_warehouse_id_to_client_details_table`
+    - `2026_03_23_120200_add_multi_warehouse_indexes_to_stock_movements_table`
+    - `2026_03_24_100000_add_inbound_stock_applied_to_delivery_orders_table`
+    - `2026_03_24_100100_add_delivery_order_item_id_to_invoice_items_table`
+
+### Note
+
+- Staging disk is still critically high usage. Temporary safe cleanup was applied (cache/log zip cleanup), but a fuller disk-capacity cleanup plan is recommended soon.
+
+---
+
+_Last updated: 2026-03-24_

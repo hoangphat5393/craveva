@@ -140,7 +140,7 @@ return [
     ],
     'productName' => 'Productname',
     'hsnSac' => 'Hsnsac',
-    'sku' => 'Sku',
+    'sku' => 'SKU',
     'twitterId' => 'Twitterid',
     'relationship' => 'Relationship',
     'project' => 'Project',

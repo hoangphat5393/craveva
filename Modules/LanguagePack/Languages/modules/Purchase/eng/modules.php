@@ -240,7 +240,7 @@ return [
     'reports' => [
         'inventorySummary' => 'Inventory Summary',
         'itemName' => 'Item Name',
-        'sku' => 'Sku',
+        'sku' => 'SKU',
         'quantityOrdered' => 'Quantity Ordered',
         'quantityIn' => 'Quantity In',
         'quantityOut' => 'Quantity Out',

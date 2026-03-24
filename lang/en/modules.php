@@ -1007,7 +1007,7 @@ return [
         'createOrder' => 'Createorder',
         'orderNumber' => 'Ordernumber',
     ],
-    'productImage' => 'Productimage',
+    'productImage' => 'Product Image',
     'productCategory' => [
         'productCategory' => 'Product Category',
         'productSubCategory' => 'Product Sub Category',

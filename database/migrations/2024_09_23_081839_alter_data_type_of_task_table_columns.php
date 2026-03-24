@@ -4,6 +4,7 @@ use App\Models\Task;
 use Carbon\Carbon;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -13,10 +14,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('tasks', function (Blueprint $table) {
-            $table->dateTime('start_date')->nullable()->change();
-            $table->dateTime('due_date')->nullable()->change();
-        });
+        $this->setDateTimeNullable('tasks', 'start_date', true);
+        $this->setDateTimeNullable('tasks', 'due_date', true);
 
         Task::whereNotNull('created_at')
             ->whereRaw("TIME(start_date) = '00:00:00' AND TIME(due_date) = '00:00:00'")
@@ -69,9 +68,63 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('your_table_name', function (Blueprint $table) {
-            $table->date('start_date')->nullable()->change();
-            $table->date('due_date')->nullable()->change();
-        });
+        $this->setDate('tasks', 'start_date', true);
+        $this->setDate('tasks', 'due_date', true);
+    }
+
+    private function setDateTimeNullable(string $table, string $column, bool $nullable): void
+    {
+        if (! Schema::hasColumn($table, $column)) {
+            return;
+        }
+
+        $driver = Schema::getConnection()->getDriverName();
+        $nullSql = $nullable ? 'NULL' : 'NOT NULL';
+
+        if (in_array($driver, ['mysql', 'mariadb'], true)) {
+            DB::statement("ALTER TABLE `{$table}` MODIFY `{$column}` DATETIME {$nullSql}");
+            return;
+        }
+
+        if ($driver === 'pgsql') {
+            DB::statement("ALTER TABLE \"{$table}\" ALTER COLUMN \"{$column}\" TYPE TIMESTAMP");
+            DB::statement("ALTER TABLE \"{$table}\" ALTER COLUMN \"{$column}\" " . ($nullable ? 'DROP NOT NULL' : 'SET NOT NULL'));
+            return;
+        }
+
+        if ($driver === 'sqlsrv') {
+            DB::statement("ALTER TABLE [{$table}] ALTER COLUMN [{$column}] DATETIME2 {$nullSql}");
+            return;
+        }
+
+        throw new \RuntimeException('change() fallback is disabled to avoid doctrine/dbal dependency in this migration.');
+    }
+
+    private function setDate(string $table, string $column, bool $nullable): void
+    {
+        if (! Schema::hasColumn($table, $column)) {
+            return;
+        }
+
+        $driver = Schema::getConnection()->getDriverName();
+        $nullSql = $nullable ? 'NULL' : 'NOT NULL';
+
+        if (in_array($driver, ['mysql', 'mariadb'], true)) {
+            DB::statement("ALTER TABLE `{$table}` MODIFY `{$column}` DATE {$nullSql}");
+            return;
+        }
+
+        if ($driver === 'pgsql') {
+            DB::statement("ALTER TABLE \"{$table}\" ALTER COLUMN \"{$column}\" TYPE DATE");
+            DB::statement("ALTER TABLE \"{$table}\" ALTER COLUMN \"{$column}\" " . ($nullable ? 'DROP NOT NULL' : 'SET NOT NULL'));
+            return;
+        }
+
+        if ($driver === 'sqlsrv') {
+            DB::statement("ALTER TABLE [{$table}] ALTER COLUMN [{$column}] DATE {$nullSql}");
+            return;
+        }
+
+        throw new \RuntimeException('change() fallback is disabled to avoid doctrine/dbal dependency in this migration.');
     }
 };

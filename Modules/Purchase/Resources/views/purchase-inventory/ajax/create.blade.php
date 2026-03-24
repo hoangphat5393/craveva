@@ -35,12 +35,11 @@
                             </div>
 
 
-                            {{-- Warehouse field removed as per user request (replaced by Custom Fields) --}}
-                            {{-- <div class="col-md-4">
+                            <div class="col-md-4">
                                 <x-forms.label class="mt-3" fieldId="warehouse_id" :fieldLabel="__('purchase::modules.inventory.warehouse')" fieldRequired>
                                 </x-forms.label>
                                 <x-forms.input-group>
-                                    <select class="form-control select-picker" name="warehouse_id" id="warehouse_id" data-live-search="true">
+                                    <select class="form-control select-picker" name="warehouse_id" id="warehouse_id" data-live-search="true" @if ($warehouses->count()) required @endif>
                                         <option value="">--</option>
                                         @foreach ($warehouses as $warehouse)
                                             <option value="{{ $warehouse->id }}">
@@ -49,7 +48,7 @@
                                         @endforeach
                                     </select>
                                 </x-forms.input-group>
-                            </div> --}}
+                            </div>
 
 
                             <div class="col-md-4">
@@ -258,6 +257,11 @@
                     }
                 }
             })
+        });
+
+        $('#warehouse_id').change(function() {
+            // Warehouse change invalidates loaded rows because available quantity is warehouse-specific.
+            $("#sortable .item-row").remove();
         });
 
         $('.save-form').click(function() {

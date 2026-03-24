@@ -114,3 +114,33 @@ APP_ENV=production php artisan view:cache
 ---
 
 _Last updated: 2026-03-24_
+
+## Update 2026-03-24 (Step 3 complete)
+
+### Incident and recovery
+
+- Root cause of 500 earlier: disk full (`No space left on device`) and missing module view directory (`resources/views/modules/einvoice`).
+- Safe recovery executed:
+    - freed disk with log/cache cleanup (no DB changes)
+    - created required module view directories
+    - recached Laravel config/routes/views
+- HTTP recovered to `200 OK`.
+
+### Step 3 execution (DB-safe migration flow)
+
+```bash
+cd /var/www/craveva-staging/current/craveva
+APP_ENV=production php artisan migrate --pretend --force
+APP_ENV=production php artisan migrate --force
+APP_ENV=production php artisan migrate:status
+APP_ENV=production php artisan config:cache
+APP_ENV=production php artisan route:cache
+APP_ENV=production php artisan view:cache
+```
+
+### Result
+
+- `migrate --pretend --force`: `Nothing to migrate`
+- `migrate --force`: `Nothing to migrate`
+- No migration remains in `Pending` state.
+- Staging endpoint check after run: `HTTP/1.1 200 OK`.

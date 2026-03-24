@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -35,10 +36,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::table('employee_leave_quotas', function (Blueprint $table) {
-            $table->double('no_of_leaves')->change();
-        });
-
+        $this->setDoubleNullable('employee_leave_quotas', 'no_of_leaves', false);
     }
 
     /**
@@ -49,5 +47,33 @@ return new class extends Migration
     public function down()
     {
         Schema::dropIfExists('leave_files');
+    }
+
+    private function setDoubleNullable(string $table, string $column, bool $nullable): void
+    {
+        if (! Schema::hasColumn($table, $column)) {
+            return;
+        }
+
+        $driver = Schema::getConnection()->getDriverName();
+        $nullSql = $nullable ? 'NULL' : 'NOT NULL';
+
+        if (in_array($driver, ['mysql', 'mariadb'], true)) {
+            DB::statement("ALTER TABLE `{$table}` MODIFY `{$column}` DOUBLE {$nullSql}");
+            return;
+        }
+
+        if ($driver === 'pgsql') {
+            DB::statement("ALTER TABLE \"{$table}\" ALTER COLUMN \"{$column}\" TYPE DOUBLE PRECISION");
+            DB::statement("ALTER TABLE \"{$table}\" ALTER COLUMN \"{$column}\" " . ($nullable ? 'DROP NOT NULL' : 'SET NOT NULL'));
+            return;
+        }
+
+        if ($driver === 'sqlsrv') {
+            DB::statement("ALTER TABLE [{$table}] ALTER COLUMN [{$column}] FLOAT {$nullSql}");
+            return;
+        }
+
+        throw new \RuntimeException('change() fallback is disabled to avoid doctrine/dbal dependency in this migration.');
     }
 };

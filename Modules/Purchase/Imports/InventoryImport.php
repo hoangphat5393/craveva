@@ -15,12 +15,15 @@ class InventoryImport implements ToArray
             ['id' => 'product_name', 'name' => __('modules.client.productName'), 'required' => 'No'],
             ['id' => 'date', 'name' => __('app.date'), 'required' => 'No'],
             ['id' => 'type', 'name' => __('app.type'), 'required' => 'No'],
+            ['id' => 'warehouse_code', 'name' => __('purchase::modules.inventory.warehouseCode'), 'required' => 'No'],
+            ['id' => 'warehouse_name', 'name' => __('purchase::modules.inventory.warehouseName'), 'required' => 'No'],
             ['id' => 'quantity', 'name' => __('purchase::modules.product.quantity'), 'required' => 'No'],
             ['id' => 'ending_inventory', 'name' => __('purchase::modules.inventory.endingInventory'), 'required' => 'No'],
             ['id' => 'cost_price', 'name' => __('app.price'), 'required' => 'No'],
             ['id' => 'description', 'name' => __('app.description'), 'required' => 'No'],
             ['id' => 'unit', 'name' => __('modules.unitType.unitType'), 'required' => 'No'],
             ['id' => 'specification', 'name' => __('purchase::modules.inventory.specification'), 'required' => 'No'],
+            ['id' => 'batch_number', 'name' => __('purchase::modules.inventory.batchNumber'), 'required' => 'No'],
             ['id' => 'manufacturing_date', 'name' => __('purchase::modules.inventory.manufacturingDate'), 'required' => 'No'],
             ['id' => 'expiration_date', 'name' => __('purchase::modules.inventory.expirationDate'), 'required' => 'No'],
         ];
@@ -38,7 +41,7 @@ class InventoryImport implements ToArray
 
                 foreach ($customFields->customField as $customField) {
                     if (! in_array(__($customField->label), $systemFieldNames)) {
-                        $fields[] = ['id' => 'field_'.$customField->id, 'name' => __($customField->label), 'required' => 'No'];
+                        $fields[] = ['id' => 'field_' . $customField->id, 'name' => __($customField->label), 'required' => 'No'];
                     }
                 }
             }

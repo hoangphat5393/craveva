@@ -51,6 +51,7 @@ use App\Traits\EmployeeActivityTrait;
 use App\Traits\ImportExcel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class ClientController extends AccountBaseController
 {
@@ -122,6 +123,12 @@ class ClientController extends AccountBaseController
         $this->pageTitle = __('app.addClient');
         $this->countries = countries();
         $this->categories = ClientCategory::all();
+        $this->warehouses = collect();
+        if (class_exists(\Modules\Warehouse\Entities\Warehouse::class) && Schema::hasTable('warehouses')) {
+            $this->warehouses = \Modules\Warehouse\Entities\Warehouse::where('company_id', company()->id)
+                ->where('status', 'active')
+                ->get();
+        }
         $this->salutations = Salutation::cases();
         $this->languages = LanguageSetting::where('status', 'enabled')->get();
 
@@ -325,6 +332,12 @@ class ClientController extends AccountBaseController
 
         $this->countries = countries();
         $this->categories = ClientCategory::all();
+        $this->warehouses = collect();
+        if (class_exists(\Modules\Warehouse\Entities\Warehouse::class) && Schema::hasTable('warehouses')) {
+            $this->warehouses = \Modules\Warehouse\Entities\Warehouse::where('company_id', company()->id)
+                ->where('status', 'active')
+                ->get();
+        }
 
         if ($this->editPermission == 'all') {
             $this->employees = User::allEmployees();

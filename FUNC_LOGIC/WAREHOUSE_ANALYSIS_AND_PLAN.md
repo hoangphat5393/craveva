@@ -479,3 +479,18 @@ From these columns, expected behavior is:
 
 - UI form DO: thêm chọn `warehouse_id` / `type` nếu cần (hiện fallback PO).
 - **FEFO** khi thiếu expiry — **Chưa rõ** nghiệp vụ.
+
+### Phase 3.5 (UI + mapping hardening) - In progress (2026-03-24)
+
+#### Done in this pass
+
+- Re-enabled `warehouse_id` selector on Purchase Inventory create form.
+- Purchase Inventory quantity adjustments now sync delta via `StockMovementService` to keep `warehouse_product_batches` + `stock_movements` aligned.
+- Inventory import now resolves warehouse by `warehouse_code`/`warehouse_name` and syncs quantity delta via movement service.
+- Client create/edit now exposes `default_warehouse_id` selector.
+- Client import supports `designated_warehouse_code/name` -> `client_details.default_warehouse_id`.
+
+#### Still pending
+
+- Reservation wiring to Sales outbound flow (SO/DO consume/release).
+- Final UAT on mixed legacy data (old `purchase_stock_adjustments` rows without warehouse) and importer edge cases.

@@ -45,6 +45,7 @@
                 <tr class="d-md-block d-lg-table-row">
                     <td colspan="{{ $invoiceSetting->hsn_sac_code_show ? '2' : '1' }}" class="dash-border-top bblr">
                         <textarea type="text" readonly class="f-14 border-0 w-100 desktop-description" name="" placeholder="">{{ strip_tags($item->description) }}</textarea>
+                        <input type="text" class="form-control f-14 mt-2" name="batch_number[]" placeholder="@lang('purchase::modules.inventory.batchNumber')">
                     </td>
                     <td class="dash-border-top">
                         <input type="text" class="form-control f-14 border-0 w-100 date-picker-inventory date-picker-inventory-{{ $item->id }}" name="manufacturing_date[]" placeholder="@lang('purchase::modules.product.manufacturingDate')">
@@ -75,8 +76,8 @@
                     });
                 },
                 showAllDates: true,
-                customDays: {!!  json_encode(\App\Models\GlobalSetting::getDaysOfWeek())!!},
-                customMonths: {!!  json_encode(\App\Models\GlobalSetting::getMonthsOfYear())!!},
+                customDays: {!! json_encode(\App\Models\GlobalSetting::getDaysOfWeek()) !!},
+                customMonths: {!! json_encode(\App\Models\GlobalSetting::getMonthsOfYear()) !!},
                 images: {
                     header: [],
                     footer: []

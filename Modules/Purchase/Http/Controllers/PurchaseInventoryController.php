@@ -29,6 +29,7 @@ use Modules\Purchase\Events\PurchaseInventoryEvent;
 use Modules\Purchase\Http\Requests\Inventory\StorePurchaseInventoryRequest;
 use Modules\Purchase\Imports\InventoryImport;
 use Modules\Purchase\Jobs\ImportInventoryJob;
+use Modules\Warehouse\Services\StockMovementService;
 use Modules\Warehouse\Entities\WarehouseProductStock;
 
 class PurchaseInventoryController extends AccountBaseController
@@ -134,6 +135,10 @@ class PurchaseInventoryController extends AccountBaseController
         $quantity = $request->quantity_on_hand;
         $warehouseId = $request->warehouse_id;
 
+        if (class_exists(\Modules\Warehouse\Entities\Warehouse::class) && Schema::hasTable('warehouses') && empty($warehouseId)) {
+            return Reply::error(__('purchase::modules.inventory.warehouse') . ' ' . __('app.required'));
+        }
+
         if (empty($items)) {
             return Reply::error(__('messages.addItem'));
         }
@@ -168,9 +173,11 @@ class PurchaseInventoryController extends AccountBaseController
 
         try {
             foreach ($products as $key => $product) {
+                $productId = (int) $product;
+
                 $invoicedItem = InvoiceItems::whereHas('invoice', function ($invoiceQuery) {
                     $invoiceQuery->whereIn('status', ['paid', 'partial', 'unpaid']);
-                })->where('product_id', $product)->sum('quantity');
+                })->where('product_id', $productId)->sum('quantity');
 
                 if (! empty($quantity)) {
                     if ($quantity[$key] < $invoicedItem) {
@@ -178,13 +185,13 @@ class PurchaseInventoryController extends AccountBaseController
                     }
                 }
 
-                $addStock = PurchaseStockAdjustment::where('product_id', $product)
+                $addStock = PurchaseStockAdjustment::where('product_id', $productId)
                     ->where('warehouse_id', $warehouseId)
                     ->first();
 
                 if (! $addStock) {
                     $addStock = new PurchaseStockAdjustment;
-                    $addStock->product_id = $product;
+                    $addStock->product_id = $productId;
                     $addStock->warehouse_id = $warehouseId;
                     $addStock->net_quantity = 0;
 
@@ -224,7 +231,8 @@ class PurchaseInventoryController extends AccountBaseController
                 // warehouse_id is already set if new, or existing.
 
                 if (! empty($quantity)) {
-                    $addStock->net_quantity = $request->quantity_on_hand[$key] ?: null;
+                    $targetNetQuantity = isset($request->quantity_on_hand[$key]) ? (float) $request->quantity_on_hand[$key] : null;
+                    $addStock->net_quantity = $targetNetQuantity;
                     $addStock->quantity_adjustment = $request->quantity_adjusted[$key] ?: 0;
                 } else {
                     $addStock->changed_value = $request->changed_value[$key] ?: null;
@@ -233,13 +241,31 @@ class PurchaseInventoryController extends AccountBaseController
 
                 $addStock->description = $request->description ?: null;
                 $addStock->status = $request->formType == 'save' ? 'converted' : 'draft';
+                $addStock->batch_number = $request->batch_number[$key] ?? null;
 
                 $addStock->manufacturing_date = isset($request->manufacturing_date[$key]) && $request->manufacturing_date[$key] ? Carbon::parse($request->manufacturing_date[$key])->format('Y-m-d') : null;
                 $addStock->expiration_date = isset($request->expiration_date[$key]) && $request->expiration_date[$key] ? Carbon::parse($request->expiration_date[$key])->format('Y-m-d') : null;
 
                 $addStock->save();
 
-                $product = PurchaseProduct::findOrFail($product);
+                if (! empty($quantity) && $warehouseId && class_exists(StockMovementService::class)) {
+                    $currentWarehouseQty = (float) (WarehouseProductStock::where('warehouse_id', $warehouseId)
+                        ->where('product_id', $productId)
+                        ->value('quantity') ?? 0);
+
+                    $this->syncWarehouseStockFromAbsoluteQuantity(
+                        app(StockMovementService::class),
+                        $inventory,
+                        (int) $warehouseId,
+                        $productId,
+                        $currentWarehouseQty,
+                        (float) $targetNetQuantity,
+                        $request->expiration_date[$key] ?? null,
+                        $request->manufacturing_date[$key] ?? null
+                    );
+                }
+
+                $product = PurchaseProduct::findOrFail($productId);
 
                 if (! is_null($addStock->changed_value)) {
                     $product->price = $addStock->changed_value;
@@ -269,6 +295,39 @@ class PurchaseInventoryController extends AccountBaseController
         $defaultImage = $request->default_image ? $request->default_image : '';
 
         return Reply::successWithData(__('messages.recordSaved'), ['inventoyID' => $inventory->id, 'defaultImage' => $defaultImage]);
+    }
+
+    protected function syncWarehouseStockFromAbsoluteQuantity(
+        StockMovementService $movementService,
+        PurchaseInventory $inventory,
+        int $warehouseId,
+        int $productId,
+        float $currentQuantity,
+        float $targetQuantity,
+        ?string $expiryDate = null,
+        ?string $manufacturingDate = null
+    ): void {
+        $delta = round($targetQuantity - $currentQuantity, 6);
+        if (abs($delta) < 0.000001) {
+            return;
+        }
+
+        $basePayload = [
+            'company_id' => $inventory->company_id,
+            'warehouse_id' => $warehouseId,
+            'product_id' => $productId,
+            'batch_number' => null,
+            'expiry_date' => $expiryDate ?: null,
+            'manufacturing_date' => $manufacturingDate ?: null,
+            'reference_type' => PurchaseInventory::class,
+            'reference_id' => $inventory->id,
+        ];
+
+        if ($delta > 0) {
+            $movementService->recordInbound($basePayload + ['quantity' => $delta]);
+        } else {
+            $movementService->recordOutbound($basePayload + ['quantity' => abs($delta)]);
+        }
     }
 
     /**

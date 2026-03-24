@@ -16,10 +16,11 @@ class StorePurchaseInventoryRequest extends CoreRequest
         $rules = [
             'date' => 'required|date',
             'reason_id' => 'required|numeric',
-            'warehouse_id' => 'nullable|numeric',
+            'warehouse_id' => 'nullable|integer|exists:warehouses,id',
             'type' => 'required|in:quantity,value',
             'quantity_adjusted*' => 'required_if:type,quantity',
             'adjusted_value*' => 'required_if:type,value',
+            'batch_number.*' => 'nullable|string|max:191',
             'manufacturing_date.*' => 'nullable|date',
             'expiration_date.*' => 'nullable|date',
         ];

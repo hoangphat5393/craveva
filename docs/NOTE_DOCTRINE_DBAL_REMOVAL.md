@@ -1,6 +1,6 @@
-# Ghi chú: Gỡ `doctrine/dbal` (tham khảo — **chưa thực hiện**)
+# Ghi chú: Gỡ `doctrine/dbal` (đã thực hiện)
 
-_File này lưu các rủi ro và vị trí code liên quan **trước khi** ai đó xóa package `doctrine/dbal` khỏi Craveva. Hiện tại **khuyến nghị: không gỡ** cho đến khi refactor xong._
+_File này lưu trạng thái sau khi đã gỡ package `doctrine/dbal` khỏi Craveva, cùng các rủi ro migration còn lại._
 
 **Tham chiếu:** `docs/LARAVEL_11_UPGRADE_GUIDE.md` §2.1.1
 
@@ -10,8 +10,8 @@ _File này lưu các rủi ro và vị trí code liên quan **trước khi** ai 
 
 | Nguồn                           | Giá trị                                                      |
 | ------------------------------- | ------------------------------------------------------------ |
-| `composer.json`                 | `"doctrine/dbal": "^3.0"`                                    |
-| `composer.lock` (thời điểm ghi) | **3.10.x** — kiểm tra lại bằng `composer show doctrine/dbal` |
+| `composer.json`                 | `doctrine/dbal` đã được remove                               |
+| `composer.lock`                 | không còn package `doctrine/dbal`                            |
 
 ---
 
@@ -32,7 +32,7 @@ _File này lưu các rủi ro và vị trí code liên quan **trước khi** ai 
 
 **Cập nhật:** Các migration từng liệt kê ở đây đã **được thay** bằng `Schema::getConnection()->getSchemaBuilder()->getForeignKeys()` / `getIndexes()` / `Schema::hasIndex()` — xem **`LARAVEL_11_UPGRADE_GUIDE.md` §7.5 mục 19**.
 
-Package **`doctrine/dbal`** trong `composer.json` **vẫn nên giữ** cho các migration còn dùng **`->change()`**, **`renameColumn`**, v.v. (xem §3.2).
+Package **`doctrine/dbal`** đã được gỡ. Các migration còn `->change()`/`->renameColumn()` cần tiếp tục được theo dõi theo phase để giảm rủi ro tương thích theo driver DB.
 
 **Đã refactor (không còn trong bảng trên):** `Modules/ServerManager/Console/DatabaseAuditCommand.php` — dùng `getTableListing()` — xem `LARAVEL_11_UPGRADE_GUIDE.md` §7.5 mục 14.
 
@@ -57,14 +57,15 @@ Sau khi gỡ DBAL cần chạy thử toàn bộ migration trên engine giống p
 
 ---
 
-## 4. Checklist nếu sau này quyết định gỡ
+## 4. Checklist sau khi đã gỡ
 
 1. [x] ~~Thay `getDoctrineSchemaManager()` trong migration~~ — đã dùng `getForeignKeys` / `getIndexes` / `hasIndex` (§7.5 mục 19); migration còn `renameColumn`/`change()` vẫn cần `doctrine/dbal`.
 2. [x] ~~Refactor `DatabaseAuditCommand`~~ — đã dùng `getSchemaBuilder()->getTableListing()`.
 3. [x] Rà migration có `->change()` / `->renameColumn()` — đã có audit file và số lượng (`docs/DOCTRINE_DBAL_MIGRATION_AUDIT.md`).
 4. [ ] Refactor theo nhóm migration để giảm phụ thuộc DBAL.
 5. [ ] CI: chạy migrate trên DB giống production (không DB reset ở môi trường đang dùng).
-6. [ ] Chỉ sau đó mới `composer remove doctrine/dbal` và kiểm tra `composer why-not` / test toàn bộ.
+6. [x] `composer remove doctrine/dbal` đã chạy thành công.
+7. [ ] Tiếp tục refactor các migration còn `->change()` / `->renameColumn()` để giảm rủi ro chạy migration trên môi trường mới.
 
 ---
 

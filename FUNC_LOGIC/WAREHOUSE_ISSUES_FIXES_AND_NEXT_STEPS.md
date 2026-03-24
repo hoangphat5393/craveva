@@ -48,6 +48,25 @@ Thay `__('Certification')` bằng `__('Certification.Certification')` (và tươ
     - `recordTransfer()` — **một** `DB::transaction`, gọi `executeOutboundMovement` + `applyInboundOnce` (tránh transaction lồng từ `recordOutbound`/`recordInbound`).
 - **`Modules/Warehouse/Services/StockReservationService.php`** — Dùng cùng trait cho `lockBatch`.
 
+### 2.4 Multi-warehouse hardening pass (2026-03-24)
+
+- **`Modules/Purchase/Resources/views/purchase-inventory/ajax/create.blade.php`**
+    - Bật lại dropdown `warehouse_id` (trước đó bị comment).
+    - Khi đổi kho sẽ reset item rows để tránh lấy tồn sai kho.
+- **`Modules/Purchase/Http/Controllers/PurchaseInventoryController.php`**
+    - Validate bắt buộc kho khi module Warehouse bật.
+    - Với adjustment kiểu `quantity`, đồng bộ chênh lệch tồn tuyệt đối sang `StockMovementService` (inbound/outbound), giữ tương thích bảng cũ.
+- **`Modules/Purchase/Jobs/ImportInventoryJob.php`**
+    - Khôi phục resolver kho từ `warehouse_code`/`warehouse_name`.
+    - Đồng bộ movement theo delta tồn tuyệt đối trong import quantity.
+- **`Modules/Purchase/DataTables/PurchaseInventoryDataTable.php`** + `PurchaseInventory` model + `overview.blade.php`
+    - Hiển thị lại cột/tóm tắt `warehouse_name` để vận hành dễ đối soát.
+- **Client default warehouse (core field)**
+    - `resources/views/clients/ajax/create.blade.php` + `edit.blade.php`: thêm chọn `default_warehouse_id`.
+    - `ClientController` load danh sách kho active theo company.
+    - `Store/UpdateClientRequest` validate `default_warehouse_id`.
+    - `ClientImport` + `ClientImportProcessor`: thêm mapping import `designated_warehouse_code/name` -> `client_details.default_warehouse_id`.
+
 ---
 
 ## 3. Việc nên làm tiếp theo (ưu tiên gợi ý)
@@ -62,7 +81,7 @@ Thay `__('Certification')` bằng `__('Certification.Certification')` (và tươ
    Quét codebase các pattern `__('SomeKey')` trùng tên file trong `lang/en/SomeKey.php` để tránh trả về mảng tương tự.
 
 4. **Tài liệu vận hành**  
-   Giữ `MULTI_WAREHOUSE_UI_OPERATIONS_GUIDE.md` và `MAOLIN_MULTI_WAREHOUSE_ANALYSIS_AND_PLAN.md` đồng bộ khi đổi cờ `.env` hoặc luồng PO/DO.
+   Giữ `WAREHOUSE_UI_OPERATIONS_GUIDE.md` và `WAREHOUSE_ANALYSIS_AND_PLAN.md` đồng bộ khi đổi cờ `.env` hoặc luồng PO/DO.
 
 5. **Staging / production**  
    Sau deploy: smoke test — Edit sản phẩm, điều chỉnh tồn kho, chuyển kho, và một kịch bản PO delivered hoặc DO received (theo cấu hình thật).
@@ -71,13 +90,13 @@ Thay `__('Certification')` bằng `__('Certification.Certification')` (và tươ
 
 ## 4. Liên kết nhanh
 
-| Tài liệu / vùng code                                     | Mục đích                    |
-| -------------------------------------------------------- | --------------------------- |
-| `FUNC_LOGIC/MAOLIN_MULTI_WAREHOUSE_ANALYSIS_AND_PLAN.md` | Kế hoạch tổng thể           |
-| `FUNC_LOGIC/MULTI_WAREHOUSE_UI_OPERATIONS_GUIDE.md`      | Hướng dẫn UI / URL / `.env` |
-| `Modules/Warehouse/Config/config.php`                    | Cờ inbound PO/DO, âm tồn    |
-| `Modules/Purchase/Observers/DeliveryOrderObserver.php`   | Inbound khi DO `received`   |
-| `Modules/Purchase/Observers/PurchaseOrderObserver.php`   | Inbound khi PO `delivered`  |
+| Tài liệu / vùng code                                   | Mục đích                    |
+| ------------------------------------------------------ | --------------------------- |
+| `FUNC_LOGIC/WAREHOUSE_ANALYSIS_AND_PLAN.md`            | Kế hoạch tổng thể           |
+| `FUNC_LOGIC/WAREHOUSE_UI_OPERATIONS_GUIDE.md`          | Hướng dẫn UI / URL / `.env` |
+| `Modules/Warehouse/Config/config.php`                  | Cờ inbound PO/DO, âm tồn    |
+| `Modules/Purchase/Observers/DeliveryOrderObserver.php` | Inbound khi DO `received`   |
+| `Modules/Purchase/Observers/PurchaseOrderObserver.php` | Inbound khi PO `delivered`  |
 
 ---
 

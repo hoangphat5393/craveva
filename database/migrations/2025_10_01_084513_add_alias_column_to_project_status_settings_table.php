@@ -20,9 +20,7 @@ return new class extends Migration
         DB::statement('UPDATE project_status_settings SET alias = status_name WHERE alias IS NULL');
 
         // Make alias NOT NULL after populating
-        Schema::table('project_status_settings', function (Blueprint $table) {
-            $table->string('alias')->nullable(false)->change();
-        });
+        DB::statement('ALTER TABLE `project_status_settings` MODIFY `alias` VARCHAR(255) NOT NULL');
     }
 
     /**

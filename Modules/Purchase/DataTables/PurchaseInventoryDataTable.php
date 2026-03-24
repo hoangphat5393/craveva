@@ -77,10 +77,10 @@ class PurchaseInventoryDataTable extends BaseDataTable
             return optional($stock)->product->name ?? '--';
         });
 
-        // 3. Warehouse Name (Removed as per user request)
-        // $datatables->addColumn('warehouse_name', function ($row) {
-        //     return $row->warehouse_name ?? '--';
-        // });
+        // 3. Warehouse Name
+        $datatables->addColumn('warehouse_name', function ($row) {
+            return $row->warehouse?->name ?? '--';
+        });
 
         // 4. Available Quantity (Calculated)
         $datatables->addColumn('available_quantity', function ($row) {
@@ -193,6 +193,7 @@ class PurchaseInventoryDataTable extends BaseDataTable
                 'date',
                 'sku',
                 'product_name',
+                'warehouse_name',
                 'available_quantity',
                 'unit',
                 'status',
@@ -270,26 +271,14 @@ class PurchaseInventoryDataTable extends BaseDataTable
     {
         $request = $this->request();
 
-        $maxCustomFieldJoins = (int) (config('purchase.inventory_max_custom_field_joins') ?? 0);
         $model = $model->select('purchase_inventory_adjustment.*')
             ->join('purchase_stock_adjustments', 'purchase_inventory_adjustment.id', '=', 'purchase_stock_adjustments.inventory_id')
-            ->join('products', 'purchase_stock_adjustments.product_id', '=', 'products.id');
+            ->join('products', 'purchase_stock_adjustments.product_id', '=', 'products.id')
+            ->addSelect(DB::raw('MAX(purchase_stock_adjustments.batch_number) as batch_number_value'));
 
-        if ($maxCustomFieldJoins > 0) {
-            $model->leftJoin('custom_fields_data as batch_data', function ($join) {
-                $join->on('purchase_inventory_adjustment.id', '=', 'batch_data.model_id')
-                    ->where('batch_data.model', '=', PurchaseInventory::CUSTOM_FIELD_MODEL);
-            })
-                ->leftJoin('custom_fields as batch_field', function ($join) {
-                    $join->on('batch_data.custom_field_id', '=', 'batch_field.id')
-                        ->where('batch_field.name', '=', 'batch_number');
-                })
-                ->addSelect(DB::raw('MAX(batch_data.value) as batch_number_value'));
-        } else {
-            $model->addSelect(DB::raw("NULL as batch_number_value"));
-        }
+        $maxCustomFieldJoins = (int) (config('purchase.inventory_max_custom_field_joins') ?? 0);
 
-        $model->with(['stocks', 'stocks.product', 'stocks.product.unit']);
+        $model->with(['warehouse', 'stocks', 'stocks.product', 'stocks.product.unit']);
 
         if ($request->status != 'all' && ! is_null($request->status)) {
             $model = $model->where('products.status', '=', $request->status);
@@ -429,7 +418,7 @@ class PurchaseInventoryDataTable extends BaseDataTable
             // --- Tier 1: Always Visible ---
             __('purchase::modules.reports.sku') => ['data' => 'sku', 'name' => 'sku', 'title' => __('purchase::modules.reports.sku'), 'orderable' => false],
             __('app.product') => ['data' => 'product_name', 'name' => 'product_name', 'title' => __('app.product'), 'orderable' => false],
-            // __('purchase::modules.inventory.warehouseName') => ['data' => 'warehouse_name', 'name' => 'warehouse_name', 'title' => __('purchase::modules.inventory.warehouseName'), 'orderable' => false],
+            __('purchase::modules.inventory.warehouseName') => ['data' => 'warehouse_name', 'name' => 'warehouse_name', 'title' => __('purchase::modules.inventory.warehouseName'), 'orderable' => false],
 
             // Core KPIs
             __('purchase::modules.product.availableQuantity') => ['data' => 'available_quantity', 'name' => 'available_quantity', 'title' => __('purchase::modules.product.availableQuantity'), 'orderable' => false],

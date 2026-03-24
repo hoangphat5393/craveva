@@ -4,6 +4,7 @@ use App\Models\UserAuth;
 use App\Scopes\ActiveScope;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -19,10 +20,8 @@ return new class extends Migration
             return true;
         }
 
-        Schema::table('global_invoices', function (Blueprint $table) {
-            $table->double('sub_total')->nullable()->change();
-            $table->double('total')->nullable()->change();
-        });
+        $this->setDoubleNullable('global_invoices', 'sub_total', true);
+        $this->setDoubleNullable('global_invoices', 'total', true);
 
         Schema::table('front_details', function (Blueprint $table) {
             $table->enum('homepage_background', ['default', 'color', 'image', 'image_and_color'])->default('default');
@@ -30,10 +29,8 @@ return new class extends Migration
             $table->string('background_image')->nullable();
         });
 
-        Schema::table('packages', function (Blueprint $table) {
-            $table->double('annual_price')->nullable()->change();
-            $table->double('monthly_price')->nullable()->change();
-        });
+        $this->setDoubleNullable('packages', 'annual_price', true);
+        $this->setDoubleNullable('packages', 'monthly_price', true);
 
         // Delete the users that are not in users table
         UserAuth::withoutGlobalScope(ActiveScope::class)
@@ -49,5 +46,33 @@ return new class extends Migration
     public function down()
     {
         //
+    }
+
+    private function setDoubleNullable(string $table, string $column, bool $nullable): void
+    {
+        if (! Schema::hasColumn($table, $column)) {
+            return;
+        }
+
+        $driver = Schema::getConnection()->getDriverName();
+        $nullSql = $nullable ? 'NULL' : 'NOT NULL';
+
+        if (in_array($driver, ['mysql', 'mariadb'], true)) {
+            DB::statement("ALTER TABLE `{$table}` MODIFY `{$column}` DOUBLE {$nullSql}");
+            return;
+        }
+
+        if ($driver === 'pgsql') {
+            DB::statement("ALTER TABLE \"{$table}\" ALTER COLUMN \"{$column}\" TYPE DOUBLE PRECISION");
+            DB::statement("ALTER TABLE \"{$table}\" ALTER COLUMN \"{$column}\" " . ($nullable ? 'DROP NOT NULL' : 'SET NOT NULL'));
+            return;
+        }
+
+        if ($driver === 'sqlsrv') {
+            DB::statement("ALTER TABLE [{$table}] ALTER COLUMN [{$column}] FLOAT {$nullSql}");
+            return;
+        }
+
+        throw new \RuntimeException('change() fallback is disabled to avoid doctrine/dbal dependency in this migration.');
     }
 };

@@ -28,14 +28,13 @@ Thư mục lưu **ghi chú kỹ thuật**, **flow**, **phân tích MAOLIN/B2B**,
 
 ### Flow nghiệp vụ (FLOW\_\*)
 
-| File                                                       | Nội dung                                                                |
-| ---------------------------------------------------------- | ----------------------------------------------------------------------- |
-| [FLOW_ADD_CLIENT.md](FLOW_ADD_CLIENT.md)                   | Thêm client                                                             |
-| [FLOW_ADD_PRODUCT.md](FLOW_ADD_PRODUCT.md)                 | Thêm sản phẩm                                                           |
-| [FLOW_ADD_INVENTORY.md](FLOW_ADD_INVENTORY.md)             | Thêm / tồn kho                                                          |
-| [FLOW_Pricing_Module.md](FLOW_Pricing_Module.md)           | Pricing (EN)                                                            |
-| [FLOW_Pricing_Module_VI.md](FLOW_Pricing_Module_VI.md)     | Pricing (VI) — _có thể gộp với bản EN thành một file hai phần nếu muốn_ |
-| [FLOW_LanguagePack_Module.md](FLOW_LanguagePack_Module.md) | LanguagePack                                                            |
+| File                                                       | Nội dung                                   |
+| ---------------------------------------------------------- | ------------------------------------------ |
+| [FLOW_ADD_CLIENT.md](FLOW_ADD_CLIENT.md)                   | Thêm client                                |
+| [FLOW_ADD_PRODUCT.md](FLOW_ADD_PRODUCT.md)                 | Thêm sản phẩm                              |
+| [FLOW_ADD_INVENTORY.md](FLOW_ADD_INVENTORY.md)             | Thêm / tồn kho                             |
+| [FLOW_Pricing_Module_VI.md](FLOW_Pricing_Module_VI.md)     | Pricing (VI) — bản chuẩn đã hợp nhất EN/VI |
+| [FLOW_LanguagePack_Module.md](FLOW_LanguagePack_Module.md) | LanguagePack                               |
 
 ### MAOLIN / ERP / B2B
 

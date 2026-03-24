@@ -14,6 +14,7 @@ use App\Traits\UniversalSearchTrait;
 use Carbon\Carbon;
 use Carbon\Exceptions\InvalidFormatException;
 use Exception;
+use Illuminate\Support\Facades\Schema;
 
 class ClientImportProcessor
 {
@@ -110,6 +111,7 @@ class ClientImportProcessor
         $clientDetails->office = self::columnExists($columns, 'company_phone') ? self::getValue($row, $columns, 'company_phone') : null;
         $clientDetails->website = self::columnExists($columns, 'company_website') ? self::getValue($row, $columns, 'company_website') : null;
         $clientDetails->gst_number = self::columnExists($columns, 'gst_number') ? self::getValue($row, $columns, 'gst_number') : null;
+        $clientDetails->default_warehouse_id = self::resolveDefaultWarehouseId($row, $columns, $companyId);
         $clientDetails->save();
 
         if (! ($options['skip_custom_fields'] ?? false)) {
@@ -169,6 +171,7 @@ class ClientImportProcessor
         $existingDetails->office = self::columnExists($columns, 'company_phone') ? self::getValue($row, $columns, 'company_phone') : null;
         $existingDetails->website = self::columnExists($columns, 'company_website') ? self::getValue($row, $columns, 'company_website') : null;
         $existingDetails->gst_number = self::columnExists($columns, 'gst_number') ? self::getValue($row, $columns, 'gst_number') : null;
+        $existingDetails->default_warehouse_id = self::resolveDefaultWarehouseId($row, $columns, $companyId);
         $existingDetails->save();
 
         if (! ($options['skip_custom_fields'] ?? false)) {
@@ -369,5 +372,42 @@ class ClientImportProcessor
         if (! empty($data)) {
             $clientDetails->updateCustomFieldData($data, $companyId);
         }
+    }
+
+    protected static function resolveDefaultWarehouseId(array $row, array $columns, ?int $companyId): ?int
+    {
+        if (! $companyId || ! class_exists(\Modules\Warehouse\Entities\Warehouse::class) || ! Schema::hasTable('warehouses')) {
+            return null;
+        }
+
+        $warehouseCode = self::columnExists($columns, 'designated_warehouse_code')
+            ? trim((string) self::getValue($row, $columns, 'designated_warehouse_code'))
+            : '';
+        $warehouseName = self::columnExists($columns, 'designated_warehouse_name')
+            ? trim((string) self::getValue($row, $columns, 'designated_warehouse_name'))
+            : '';
+
+        if ($warehouseCode === '' && $warehouseName === '') {
+            return null;
+        }
+
+        $query = \Modules\Warehouse\Entities\Warehouse::query()
+            ->where('company_id', $companyId);
+
+        if ($warehouseCode !== '') {
+            $warehouse = (clone $query)->where('code', $warehouseCode)->first();
+            if ($warehouse) {
+                return (int) $warehouse->id;
+            }
+        }
+
+        if ($warehouseName !== '') {
+            $warehouse = (clone $query)->where('name', $warehouseName)->first();
+            if ($warehouse) {
+                return (int) $warehouse->id;
+            }
+        }
+
+        return null;
     }
 }

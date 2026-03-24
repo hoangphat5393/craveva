@@ -10,6 +10,7 @@ use App\Models\InvoiceSetting;
 use App\Models\Order;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -28,30 +29,30 @@ return new class extends Migration
 
         if (! Schema::hasColumn('contracts', 'original_contract_number')) {
             Schema::table('contracts', function (Blueprint $table) {
-                $table->string('contract_number')->nullable()->change();
                 $table->string('original_contract_number')->nullable()->after('contract_number');
             });
+            $this->setStringNullable('contracts', 'contract_number', 255, true);
         }
 
         if (! Schema::hasColumn('estimates', 'original_estimate_number')) {
             Schema::table('estimates', function (Blueprint $table) {
-                $table->string('estimate_number')->nullable()->change();
                 $table->string('original_estimate_number')->nullable()->after('estimate_number');
             });
+            $this->setStringNullable('estimates', 'estimate_number', 255, true);
         }
 
         if (! Schema::hasColumn('orders', 'original_order_number')) {
             Schema::table('orders', function (Blueprint $table) {
-                $table->string('order_number')->nullable()->change();
                 $table->string('original_order_number')->nullable()->after('order_number');
             });
+            $this->setStringNullable('orders', 'order_number', 255, true);
         }
 
         if (! Schema::hasColumn('invoices', 'original_invoice_number')) {
             Schema::table('invoices', function (Blueprint $table) {
-                $table->string('invoice_number')->change();
                 $table->string('original_invoice_number')->nullable()->after('invoice_number');
             });
+            $this->setStringNullable('invoices', 'invoice_number', 255, false);
         }
 
         $companeis = Company::get();
@@ -63,7 +64,7 @@ return new class extends Migration
 
             foreach ($creditNotes as $creditNote) {
                 $creditNote->cn_number = NumberFormat::creditNote($creditNote->cn_number, $invoiceSettings);
-                $creditNote->original_credit_note_number = str($creditNote->cn_number)->replace($invoiceSettings->credit_note_prefix.$invoiceSettings->credit_note_number_separator, '');
+                $creditNote->original_credit_note_number = str($creditNote->cn_number)->replace($invoiceSettings->credit_note_prefix . $invoiceSettings->credit_note_number_separator, '');
                 $creditNote->saveQuietly();
             }
 
@@ -71,7 +72,7 @@ return new class extends Migration
 
             foreach ($contracts as $contract) {
                 $contract->contract_number = NumberFormat::contract($contract->contract_number, $invoiceSettings);
-                $contract->original_contract_number = str($contract->contract_number)->replace($invoiceSettings->contract_prefix.$invoiceSettings->contract_number_separator, '');
+                $contract->original_contract_number = str($contract->contract_number)->replace($invoiceSettings->contract_prefix . $invoiceSettings->contract_number_separator, '');
                 $contract->saveQuietly();
             }
 
@@ -79,7 +80,7 @@ return new class extends Migration
 
             foreach ($invoices as $invoice) {
                 $invoice->invoice_number = NumberFormat::invoice($invoice->invoice_number, $invoiceSettings);
-                $invoice->original_invoice_number = str($invoice->invoice_number)->replace($invoiceSettings->invoice_prefix.$invoiceSettings->invoice_number_separator, '');
+                $invoice->original_invoice_number = str($invoice->invoice_number)->replace($invoiceSettings->invoice_prefix . $invoiceSettings->invoice_number_separator, '');
                 $invoice->saveQuietly();
             }
 
@@ -87,7 +88,7 @@ return new class extends Migration
 
             foreach ($estimates as $estimate) {
                 $estimate->estimate_number = NumberFormat::estimate($estimate->estimate_number, $invoiceSettings);
-                $estimate->original_estimate_number = str($estimate->estimate_number)->replace($invoiceSettings->estimate_prefix.$invoiceSettings->estimate_number_separator, '');
+                $estimate->original_estimate_number = str($estimate->estimate_number)->replace($invoiceSettings->estimate_prefix . $invoiceSettings->estimate_number_separator, '');
                 $estimate->saveQuietly();
             }
 
@@ -95,10 +96,37 @@ return new class extends Migration
 
             foreach ($orders as $order) {
                 $order->order_number = NumberFormat::order($order->order_number, $invoiceSettings);
-                $order->original_order_number = str($order->order_number)->replace($invoiceSettings->order_prefix.$invoiceSettings->order_number_separator, '');
+                $order->original_order_number = str($order->order_number)->replace($invoiceSettings->order_prefix . $invoiceSettings->order_number_separator, '');
                 $order->saveQuietly();
             }
         }
+    }
 
+    private function setStringNullable(string $table, string $column, int $length, bool $nullable): void
+    {
+        if (! Schema::hasColumn($table, $column)) {
+            return;
+        }
+
+        $driver = Schema::getConnection()->getDriverName();
+        $nullSql = $nullable ? 'NULL' : 'NOT NULL';
+
+        if (in_array($driver, ['mysql', 'mariadb'], true)) {
+            DB::statement("ALTER TABLE `{$table}` MODIFY `{$column}` VARCHAR({$length}) {$nullSql}");
+            return;
+        }
+
+        if ($driver === 'pgsql') {
+            DB::statement("ALTER TABLE \"{$table}\" ALTER COLUMN \"{$column}\" TYPE VARCHAR({$length})");
+            DB::statement("ALTER TABLE \"{$table}\" ALTER COLUMN \"{$column}\" " . ($nullable ? 'DROP NOT NULL' : 'SET NOT NULL'));
+            return;
+        }
+
+        if ($driver === 'sqlsrv') {
+            DB::statement("ALTER TABLE [{$table}] ALTER COLUMN [{$column}] NVARCHAR({$length}) {$nullSql}");
+            return;
+        }
+
+        throw new \RuntimeException('change() fallback is disabled to avoid doctrine/dbal dependency in this migration.');
     }
 };

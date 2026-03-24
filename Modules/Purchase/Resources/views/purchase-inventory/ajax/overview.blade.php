@@ -8,6 +8,7 @@
             <div class="row">
                 <div class="col-md-8">
                     <x-cards.data-row :label="__('app.date')" :value="\Carbon\Carbon::parse($inventory->date)->translatedFormat(company()->date_format) ?? '--'" />
+                    <x-cards.data-row :label="__('purchase::modules.inventory.warehouse')" :value="$inventory->warehouse?->name ?? '--'" />
                     <x-cards.data-row :label="__('purchase::modules.product.reason')" :value="$inventory->reason ? $inventory->reason->name : '--'" />
                     <x-cards.data-row :label="__('purchase::modules.product.modeOfAdjustment')" :value="$inventory->type ?? '--'" />
 

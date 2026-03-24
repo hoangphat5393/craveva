@@ -35,12 +35,13 @@ class StoreClientRequest extends CoreRequest
 
         $rules = [
             'name' => 'required',
-            'email' => 'nullable|email:rfc,strict|required_if:login,enable|unique:users,email,null,id,company_id,'.company()->id.'|check_superadmin',
+            'email' => 'nullable|email:rfc,strict|required_if:login,enable|unique:users,email,null,id,company_id,' . company()->id . '|check_superadmin',
             'slack_username' => 'nullable',
             'website' => 'nullable|url',
             'country' => 'required_with:mobile',
             'client_code' => ['nullable', \Illuminate\Validation\Rule::unique('client_details', 'client_code')->where('company_id', company()->id)],
             'mobile' => 'nullable|numeric',
+            'default_warehouse_id' => 'nullable|integer|exists:warehouses,id',
         ];
 
         $rules = $this->customFieldRules($rules);

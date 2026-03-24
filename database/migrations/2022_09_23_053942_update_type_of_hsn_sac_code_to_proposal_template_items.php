@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -13,9 +14,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('proposal_template_items', function (Blueprint $table) {
-            $table->string('hsn_sac_code')->nullable()->change();
-        });
+        $this->setStringNullable('proposal_template_items', 'hsn_sac_code', 255, true);
     }
 
     /**
@@ -28,5 +27,33 @@ return new class extends Migration
         Schema::table('proposal_template_items', function (Blueprint $table) {
             $table->dropColumn('hsn_sac_code');
         });
+    }
+
+    private function setStringNullable(string $table, string $column, int $length, bool $nullable): void
+    {
+        if (! Schema::hasColumn($table, $column)) {
+            return;
+        }
+
+        $driver = Schema::getConnection()->getDriverName();
+        $nullSql = $nullable ? 'NULL' : 'NOT NULL';
+
+        if (in_array($driver, ['mysql', 'mariadb'], true)) {
+            DB::statement("ALTER TABLE `{$table}` MODIFY `{$column}` VARCHAR({$length}) {$nullSql}");
+            return;
+        }
+
+        if ($driver === 'pgsql') {
+            DB::statement("ALTER TABLE \"{$table}\" ALTER COLUMN \"{$column}\" TYPE VARCHAR({$length})");
+            DB::statement("ALTER TABLE \"{$table}\" ALTER COLUMN \"{$column}\" " . ($nullable ? 'DROP NOT NULL' : 'SET NOT NULL'));
+            return;
+        }
+
+        if ($driver === 'sqlsrv') {
+            DB::statement("ALTER TABLE [{$table}] ALTER COLUMN [{$column}] NVARCHAR({$length}) {$nullSql}");
+            return;
+        }
+
+        throw new \RuntimeException('change() fallback is disabled to avoid doctrine/dbal dependency in this migration.');
     }
 };

@@ -11,9 +11,12 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Modules\Purchase\Entities\PurchaseInventory;
 use Modules\Purchase\Entities\PurchaseProduct;
 use Modules\Purchase\Entities\PurchaseStockAdjustment;
+use Modules\Warehouse\Entities\WarehouseProductStock;
+use Modules\Warehouse\Services\StockMovementService;
 
 class ImportInventoryJob implements ShouldQueue
 {
@@ -164,9 +167,7 @@ class ImportInventoryJob implements ShouldQueue
                 }
             }
 
-            // Find Warehouse - Logic Removed as per user request (unstable feature)
-            // Warehouse fields now handled via Custom Fields (warehouse_code, warehouse_name)
-            $warehouseId = null;
+            $warehouseId = $this->resolveWarehouseId();
 
             DB::beginTransaction();
             try {
@@ -179,6 +180,7 @@ class ImportInventoryJob implements ShouldQueue
                 $inventory = new PurchaseInventory;
                 $inventory->date = $date;
                 $inventory->type = $type;
+                $inventory->warehouse_id = $warehouseId;
                 $inventory->added_by = user() ? user()->id : null;
                 $inventory->save();
 
@@ -188,6 +190,7 @@ class ImportInventoryJob implements ShouldQueue
                 $addStock->inventory_id = $inventory->id;
                 $addStock->product_id = $product->id;
                 $addStock->warehouse_id = $warehouseId;
+                $addStock->batch_number = $this->isColumnExists('batch_number') ? $this->getColumnValue('batch_number') : null;
                 $addStock->description = $this->isColumnExists('description') ? $this->getColumnValue('description') : null;
 
                 // Add Date Fields
@@ -240,6 +243,22 @@ class ImportInventoryJob implements ShouldQueue
                 }
 
                 $addStock->save();
+
+                if ($type == 'quantity' && $warehouseId && class_exists(StockMovementService::class)) {
+                    $currentWarehouseQty = (float) (WarehouseProductStock::where('warehouse_id', $warehouseId)
+                        ->where('product_id', $product->id)
+                        ->value('quantity') ?? 0);
+                    $this->syncWarehouseStockFromAbsoluteQuantity(
+                        app(StockMovementService::class),
+                        $inventory,
+                        (int) $warehouseId,
+                        (int) $product->id,
+                        $currentWarehouseQty,
+                        (float) $quantity,
+                        $addStock->expiration_date,
+                        $addStock->manufacturing_date
+                    );
+                }
 
                 // Save Custom Fields
                 $customFields = \App\Models\CustomFieldGroup::where('model', PurchaseInventory::CUSTOM_FIELD_MODEL)
@@ -315,6 +334,68 @@ class ImportInventoryJob implements ShouldQueue
             }
 
             $this->failJob(__('messages.invalidData') . ': Product not found. Row: ');
+        }
+    }
+
+    protected function resolveWarehouseId(): ?int
+    {
+        if (! class_exists(\Modules\Warehouse\Entities\Warehouse::class) || ! Schema::hasTable('warehouses')) {
+            return null;
+        }
+
+        $code = $this->isColumnExists('warehouse_code') ? trim((string) $this->getColumnValue('warehouse_code')) : '';
+        $name = $this->isColumnExists('warehouse_name') ? trim((string) $this->getColumnValue('warehouse_name')) : '';
+
+        $baseQuery = \Modules\Warehouse\Entities\Warehouse::query()
+            ->where('company_id', $this->company->id);
+
+        if ($code !== '') {
+            $warehouse = (clone $baseQuery)->where('code', $code)->first();
+            if ($warehouse) {
+                return (int) $warehouse->id;
+            }
+        }
+
+        if ($name !== '') {
+            $warehouse = (clone $baseQuery)->where('name', $name)->first();
+            if ($warehouse) {
+                return (int) $warehouse->id;
+            }
+        }
+
+        return null;
+    }
+
+    protected function syncWarehouseStockFromAbsoluteQuantity(
+        StockMovementService $movementService,
+        PurchaseInventory $inventory,
+        int $warehouseId,
+        int $productId,
+        float $currentQuantity,
+        float $targetQuantity,
+        ?string $expiryDate = null,
+        ?string $manufacturingDate = null
+    ): void {
+        $delta = round($targetQuantity - $currentQuantity, 6);
+        if (abs($delta) < 0.000001) {
+            return;
+        }
+
+        $payload = [
+            'company_id' => $inventory->company_id,
+            'warehouse_id' => $warehouseId,
+            'product_id' => $productId,
+            'batch_number' => null,
+            'expiry_date' => $expiryDate ?: null,
+            'manufacturing_date' => $manufacturingDate ?: null,
+            'reference_type' => PurchaseInventory::class,
+            'reference_id' => $inventory->id,
+        ];
+
+        if ($delta > 0) {
+            $movementService->recordInbound($payload + ['quantity' => $delta]);
+        } else {
+            $movementService->recordOutbound($payload + ['quantity' => abs($delta)]);
         }
     }
 }

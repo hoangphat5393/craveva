@@ -79,7 +79,7 @@ Tài liệu này tập trung vào **thay đổi gây vỡ** và **việc cần l
 
 (Sau đó chạy `composer update laravel/framework froiden/laravel-rest-api laravel/cashier stripe/stripe-php -W` hoặc `composer update -W` toàn phần.)
 
-**`doctrine/dbal` (Craveva — không nên gỡ):** Laravel 11 **không** nhét DBAL vào core, nhưng project này **vẫn cần** package `doctrine/dbal` vì code đã dùng trực tiếp API Doctrine (xem **§2.1.1**). Gỡ sẽ làm lỗi migration / lệnh audit nếu chưa refactor.
+**`doctrine/dbal` (Craveva):** package đã được remove khỏi dependency trực tiếp. Trọng tâm hiện tại là theo dõi/refactor các migration còn `renameColumn`/`change` để đảm bảo tương thích lâu dài trên các driver DB.
 
 ---
 
@@ -93,11 +93,11 @@ Tài liệu này tập trung vào **thay đổi gây vỡ** và **việc cần l
 | `$table->renameColumn(...)`                           | Nhiều file migration (đổi tên cột) — với MySQL, Laravel thường dùng driver native, nhưng **SQLite / một số thao tác** vẫn liên quan tài liệu DBAL; đừng gỡ khi chưa kiểm tra toàn bộ CI/DB. |
 | `$table->...->change()`                               | Sửa kiểu cột — Laravel **khuyến nghị** cài `doctrine/dbal` cho `change()`.                                                                                                                  |
 
-**Kết luận:** Giữ **`"doctrine/dbal": "^3.0"`** (lock hiện **3.10.x**). **Không gỡ** trừ khi:
+**Kết luận (cập nhật 2026-03-24):** `doctrine/dbal` đã được gỡ. Cần tiếp tục:
 
-1. Thay toàn bộ `getDoctrineSchemaManager()` bằng API Laravel / raw SQL tương đương (list FK, drop, v.v.).
-2. Refactor `DatabaseAuditCommand` dùng `Schema::getConnection()->getSchemaBuilder()->getTableListing()` (hoặc truy vấn `information_schema` / `SHOW TABLES` tùy driver).
-3. Chạy lại toàn bộ migration trên DB mục tiêu (MySQL/SQLite) sau khi gỡ — xác nhận không lỗi.
+1. Tiếp tục refactor các migration hotspot còn `renameColumn`/`change`.
+2. Chạy lại validation migration trên DB mục tiêu (MySQL/SQLite) sau khi gỡ.
+3. Duy trì smoke test staging sau mỗi phase.
 
 ---
 

@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -18,24 +19,18 @@ return new class extends Migration
             });
 
             // Update existing records only if we just added the columns
-            `\DB`::table('client_product_pricing')->update([
-                'start_date' => \DB::raw('created_at'),
+            DB::table('client_product_pricing')->update([
+                'start_date' => DB::raw('created_at'),
                 'end_date' => '2099-12-31 23:59:59',
             ]);
 
             // Handle cases where created_at might be null
-            \DB::table('client_product_pricing')->whereNull('start_date')->update([
+            DB::table('client_product_pricing')->whereNull('start_date')->update([
                 'start_date' => now(),
             ]);
         }
 
         Schema::table('client_product_pricing', function (Blueprint $table) {
-            // Ensure columns are not nullable (idempotent change)
-            if (Schema::hasColumn('client_product_pricing', 'start_date')) {
-                $table->dateTime('start_date')->nullable(false)->change();
-                $table->dateTime('end_date')->nullable(false)->change();
-            }
-
             // Drop unique constraint — Laravel 11: không dùng Doctrine; dùng getIndexes()
             $indexNames = array_column(
                 Schema::getConnection()->getSchemaBuilder()->getIndexes('client_product_pricing'),
@@ -54,6 +49,9 @@ return new class extends Migration
                 $table->index(['client_id', 'product_id'], 'client_product_pricing_client_id_product_id_index');
             }
         });
+
+        $this->setDateTimeNotNull('client_product_pricing', 'start_date');
+        $this->setDateTimeNotNull('client_product_pricing', 'end_date');
     }
 
     /**
@@ -66,5 +64,35 @@ return new class extends Migration
             $table->unique(['client_id', 'product_id']);
             $table->dropColumn(['start_date', 'end_date']);
         });
+    }
+
+    private function setDateTimeNotNull(string $table, string $column): void
+    {
+        if (! Schema::hasColumn($table, $column)) {
+            return;
+        }
+
+        $driver = Schema::getConnection()->getDriverName();
+
+        if (in_array($driver, ['mysql', 'mariadb'], true)) {
+            DB::statement("ALTER TABLE `{$table}` MODIFY `{$column}` DATETIME NOT NULL");
+
+            return;
+        }
+
+        if ($driver === 'pgsql') {
+            DB::statement("ALTER TABLE \"{$table}\" ALTER COLUMN \"{$column}\" TYPE TIMESTAMP");
+            DB::statement("ALTER TABLE \"{$table}\" ALTER COLUMN \"{$column}\" SET NOT NULL");
+
+            return;
+        }
+
+        if ($driver === 'sqlsrv') {
+            DB::statement("ALTER TABLE [{$table}] ALTER COLUMN [{$column}] DATETIME2 NOT NULL");
+
+            return;
+        }
+
+        throw new \RuntimeException('change() fallback is disabled to avoid doctrine/dbal dependency in this migration.');
     }
 };

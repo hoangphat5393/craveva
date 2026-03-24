@@ -13,7 +13,7 @@ class PurchaseStockAdjustment extends BaseModel
 
     protected $table = 'purchase_stock_adjustments';
 
-    protected $fillable = ['warehouse_id', 'manufacturing_date', 'expiration_date', 'inventory_id', 'product_id', 'reason_id', 'type', 'date', 'reference_number', 'net_quantity', 'quantity_adjustment', 'description', 'status', 'changed_value', 'adjusted_value'];
+    protected $fillable = ['warehouse_id', 'batch_number', 'manufacturing_date', 'expiration_date', 'inventory_id', 'product_id', 'reason_id', 'type', 'date', 'reference_number', 'net_quantity', 'quantity_adjustment', 'description', 'status', 'changed_value', 'adjusted_value'];
 
     public function reason(): BelongsTo
     {

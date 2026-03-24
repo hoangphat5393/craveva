@@ -4,6 +4,7 @@ use App\Models\SuperAdmin\GlobalCurrency;
 use App\Models\SuperAdmin\SupportTicket;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -808,9 +809,7 @@ return new class extends Migration
             });
         }
 
-        Schema::table('companies', function (Blueprint $table) {
-            $table->string('company_phone')->nullable()->default(null)->change();
-        });
+        $this->setStringNullableWithDefault('companies', 'company_phone', 255, true, null);
 
         if (! Schema::hasTable('front_menu_buttons')) {
             Schema::create('front_menu_buttons', function (Blueprint $table) {
@@ -859,7 +858,6 @@ return new class extends Migration
 
         if (Schema::hasColumn('users', 'super_admin')) {
             Schema::table('users', function (Blueprint $table) {
-                $table->renameColumn('super_admin', 'is_superadmin');
                 $table->text('two_factor_secret')->nullable();
                 $table->text('two_factor_recovery_codes')->nullable();
                 $table->boolean('two_factor_confirmed')->default(false);
@@ -874,6 +872,7 @@ return new class extends Migration
                 $table->boolean('permission_sync')->default(true);
                 $table->boolean('google_calendar_status')->default(true);
             });
+            $this->renameColumnSafely('users', 'super_admin', 'is_superadmin');
         }
 
         if (! Schema::hasTable('razorpay_subscriptions')) {
@@ -902,8 +901,8 @@ return new class extends Migration
             Schema::table('support_tickets', function (Blueprint $table) {
                 $table->unsignedInteger('company_id')->nullable()->after('id');
                 $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
-                $table->unsignedInteger('user_id')->nullable()->change();
             });
+            $this->setUnsignedIntNullable('support_tickets', 'user_id', true);
 
             $tickets = SupportTicket::with('requester')->get();
 
@@ -922,5 +921,97 @@ return new class extends Migration
     public function down()
     {
         Schema::dropIfExists('global_currencies');
+    }
+
+    private function renameColumnSafely(string $table, string $from, string $to): void
+    {
+        if (! Schema::hasColumn($table, $from) || Schema::hasColumn($table, $to)) {
+            return;
+        }
+
+        $driver = Schema::getConnection()->getDriverName();
+
+        if (in_array($driver, ['mysql', 'mariadb'], true)) {
+            DB::statement("ALTER TABLE `{$table}` RENAME COLUMN `{$from}` TO `{$to}`");
+
+            return;
+        }
+
+        if ($driver === 'pgsql') {
+            DB::statement("ALTER TABLE \"{$table}\" RENAME COLUMN \"{$from}\" TO \"{$to}\"");
+
+            return;
+        }
+
+        if ($driver === 'sqlsrv') {
+            DB::statement("EXEC sp_rename '{$table}.{$from}', '{$to}', 'COLUMN'");
+
+            return;
+        }
+
+        throw new \RuntimeException('renameColumn fallback is disabled to avoid doctrine/dbal dependency in this migration.');
+    }
+
+    private function setStringNullableWithDefault(string $table, string $column, int $length, bool $nullable, ?string $default): void
+    {
+        if (! Schema::hasColumn($table, $column)) {
+            return;
+        }
+
+        $driver = Schema::getConnection()->getDriverName();
+        $nullSql = $nullable ? 'NULL' : 'NOT NULL';
+
+        if (in_array($driver, ['mysql', 'mariadb'], true)) {
+            $defaultSql = $default !== null ? " DEFAULT '" . str_replace("'", "''", $default) . "'" : ' DEFAULT NULL';
+            DB::statement("ALTER TABLE `{$table}` MODIFY `{$column}` VARCHAR({$length}) {$nullSql}{$defaultSql}");
+            return;
+        }
+
+        if ($driver === 'pgsql') {
+            DB::statement("ALTER TABLE \"{$table}\" ALTER COLUMN \"{$column}\" TYPE VARCHAR({$length})");
+            DB::statement("ALTER TABLE \"{$table}\" ALTER COLUMN \"{$column}\" " . ($nullable ? 'DROP NOT NULL' : 'SET NOT NULL'));
+            if ($default !== null) {
+                $escapedDefault = str_replace("'", "''", $default);
+                DB::statement("ALTER TABLE \"{$table}\" ALTER COLUMN \"{$column}\" SET DEFAULT '{$escapedDefault}'");
+            } else {
+                DB::statement("ALTER TABLE \"{$table}\" ALTER COLUMN \"{$column}\" DROP DEFAULT");
+            }
+            return;
+        }
+
+        if ($driver === 'sqlsrv') {
+            DB::statement("ALTER TABLE [{$table}] ALTER COLUMN [{$column}] NVARCHAR({$length}) {$nullSql}");
+            return;
+        }
+
+        throw new \RuntimeException('change() fallback is disabled to avoid doctrine/dbal dependency in this migration.');
+    }
+
+    private function setUnsignedIntNullable(string $table, string $column, bool $nullable): void
+    {
+        if (! Schema::hasColumn($table, $column)) {
+            return;
+        }
+
+        $driver = Schema::getConnection()->getDriverName();
+        $nullSql = $nullable ? 'NULL' : 'NOT NULL';
+
+        if (in_array($driver, ['mysql', 'mariadb'], true)) {
+            DB::statement("ALTER TABLE `{$table}` MODIFY `{$column}` INT UNSIGNED {$nullSql}");
+            return;
+        }
+
+        if ($driver === 'pgsql') {
+            DB::statement("ALTER TABLE \"{$table}\" ALTER COLUMN \"{$column}\" TYPE INTEGER");
+            DB::statement("ALTER TABLE \"{$table}\" ALTER COLUMN \"{$column}\" " . ($nullable ? 'DROP NOT NULL' : 'SET NOT NULL'));
+            return;
+        }
+
+        if ($driver === 'sqlsrv') {
+            DB::statement("ALTER TABLE [{$table}] ALTER COLUMN [{$column}] INT {$nullSql}");
+            return;
+        }
+
+        throw new \RuntimeException('change() fallback is disabled to avoid doctrine/dbal dependency in this migration.');
     }
 };

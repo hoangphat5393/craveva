@@ -170,7 +170,6 @@ return new class extends Migration
 
             Schema::table('leads', function (Blueprint $table) {
                 $table->enum('salutation', ['mr', 'mrs', 'miss', 'dr', 'sir', 'madam'])->nullable();
-                $table->string('client_email')->nullable()->change();
                 $table->string('cell')->nullable();
                 $table->string('office')->nullable();
                 $table->unsignedInteger('added_by')->nullable()->index('leads_added_by_foreign');
@@ -179,6 +178,7 @@ return new class extends Migration
                 $table->foreign(['last_updated_by'])->references(['id'])->on('users')->onUpdate('CASCADE')->onDelete('SET NULL');
                 $table->text('hash')->nullable();
             });
+            $this->setStringNullable('leads', 'client_email', 255, true);
 
             Schema::table('lead_sources', function (Blueprint $table) {
                 $table->unsignedInteger('added_by')->nullable()->index();
@@ -422,11 +422,11 @@ return new class extends Migration
             });
 
             Schema::table('pusher_settings', function (Blueprint $table) {
-                $table->renameColumn('taskboard_status', 'taskboard');
-                $table->renameColumn('message_status', 'messages');
                 $table->dropForeign(['company_id']);
                 $table->dropColumn('company_id');
             });
+            $this->renameColumnSafely('pusher_settings', 'taskboard_status', 'taskboard');
+            $this->renameColumnSafely('pusher_settings', 'message_status', 'messages');
 
             Schema::table('sub_task_files', function (Blueprint $table) {
                 $table->dropForeign(['company_id']);
@@ -443,9 +443,9 @@ return new class extends Migration
 
             Schema::table('users', function (Blueprint $table) {
                 DB::statement("ALTER TABLE `users` CHANGE `gender` `gender` ENUM('male', 'female', 'others') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL;");
-                $table->string('email')->nullable()->change();
                 $table->dropColumn(['email_verification_code', 'social_token', 'authorize_id', 'authorize_payment_id', 'card_brand', 'card_last_four']);
             });
+            $this->setStringNullable('users', 'email', 255, true);
         }
 
         if (Schema::hasColumn('payment_gateway_credentials', 'stripe_client_id')) {
@@ -455,13 +455,6 @@ return new class extends Migration
                 $table->string('test_stripe_secret')->nullable()->after('test_stripe_client_id');
                 $table->string('test_stripe_webhook_secret')->nullable()->after('test_stripe_secret');
                 $table->enum('stripe_mode', ['test', 'live'])->default('live')->after('test_stripe_webhook_secret');
-
-                $table->renameColumn('stripe_client_id', 'live_stripe_client_id');
-                $table->renameColumn('stripe_secret', 'live_stripe_secret');
-                $table->renameColumn('stripe_webhook_secret', 'live_stripe_webhook_secret');
-
-                $table->renameColumn('razorpay_key', 'live_razorpay_key');
-                $table->renameColumn('razorpay_secret', 'live_razorpay_secret');
                 $table->string('test_razorpay_webhook_secret')->nullable()->after('razorpay_secret');
 
                 $table->string('test_razorpay_key')->nullable()->after('test_razorpay_webhook_secret');
@@ -469,7 +462,6 @@ return new class extends Migration
                 $table->string('live_razorpay_webhook_secret')->nullable()->after('test_razorpay_secret');
                 $table->enum('razorpay_mode', ['test', 'live'])->default('live')->after('live_razorpay_webhook_secret');
 
-                $table->renameColumn('payfast_salt_passphrase', 'payfast_passphrase');
                 $table->string('sandbox_paypal_client_id')->nullable();
                 $table->string('sandbox_paypal_secret')->nullable();
 
@@ -478,9 +470,6 @@ return new class extends Migration
                 $table->string('test_paystack_secret')->nullable();
                 $table->string('test_paystack_merchant_email')->nullable();
                 $table->enum('paystack_mode', ['sandbox', 'live'])->default('live')->after('test_paystack_merchant_email');
-
-                $table->renameColumn('payfast_key', 'payfast_merchant_id')->nullable();
-                $table->renameColumn('payfast_secret', 'payfast_merchant_key')->nullable();
 
                 $table->string('square_application_id')->nullable();
                 $table->string('square_access_token')->nullable();
@@ -500,6 +489,14 @@ return new class extends Migration
 
                 $table->removeColumn('paystack_client_id');
             });
+            $this->renameColumnSafely('payment_gateway_credentials', 'stripe_client_id', 'live_stripe_client_id');
+            $this->renameColumnSafely('payment_gateway_credentials', 'stripe_secret', 'live_stripe_secret');
+            $this->renameColumnSafely('payment_gateway_credentials', 'stripe_webhook_secret', 'live_stripe_webhook_secret');
+            $this->renameColumnSafely('payment_gateway_credentials', 'razorpay_key', 'live_razorpay_key');
+            $this->renameColumnSafely('payment_gateway_credentials', 'razorpay_secret', 'live_razorpay_secret');
+            $this->renameColumnSafely('payment_gateway_credentials', 'payfast_salt_passphrase', 'payfast_passphrase');
+            $this->renameColumnSafely('payment_gateway_credentials', 'payfast_key', 'payfast_merchant_id');
+            $this->renameColumnSafely('payment_gateway_credentials', 'payfast_secret', 'payfast_merchant_key');
         }
 
         if (! Schema::hasColumn('permission_role', 'permission_type_id')) {
@@ -545,9 +542,7 @@ return new class extends Migration
         }
 
         if (! Schema::hasColumn('file_storage', 'filename')) {
-            Schema::table('file_storage', function (Blueprint $table) {
-                $table->renameColumn('name', 'filename');
-            });
+            $this->renameColumnSafely('file_storage', 'name', 'filename');
         }
 
         if (Schema::hasTable('google_accounts')) {
@@ -628,7 +623,7 @@ return new class extends Migration
         if (! Schema::hasColumn('estimates', 'added_by')) {
             Schema::table('estimates', function (Blueprint $table) {
                 $table->longText('description')->nullable()->after('note');
-                $table->string('estimate_number')->nullable()->change()->after('client_id');
+                $table->string('estimate_number')->nullable()->after('client_id');
                 $table->unsignedInteger('added_by')->nullable()->index('estimates_added_by_foreign');
                 $table->unsignedInteger('last_updated_by')->nullable()->index('estimates_last_updated_by_foreign');
                 $table->foreign(['added_by'])->references(['id'])->on('users')->onUpdate('CASCADE')->onDelete('SET NULL');
@@ -637,6 +632,7 @@ return new class extends Migration
                 $table->enum('calculate_tax', ['after_discount', 'before_discount'])->default('after_discount');
                 $table->removeColumn('deleted_at');
             });
+            $this->setStringNullable('estimates', 'estimate_number', 255, true);
         }
 
         if (! Schema::hasColumn('invoices', 'due_amount')) {
@@ -644,7 +640,7 @@ return new class extends Migration
                 $table->removeColumn('deleted_at');
                 $table->unsignedBigInteger('order_id')->nullable()->index('invoices_order_id_foreign');
 
-                $table->string('invoice_number')->change();
+                $table->string('invoice_number');
                 $table->decimal('due_amount', 8, 2)->default(0);
                 $table->unsignedInteger('parent_id')->nullable()->index('invoices_parent_id_foreign');
                 $table->unsignedInteger('added_by')->nullable()->index('invoices_added_by_foreign');
@@ -658,6 +654,7 @@ return new class extends Migration
                 $table->foreign(['order_id'])->references(['id'])->on('orders')->onUpdate('CASCADE')->onDelete('SET NULL');
                 $table->foreign(['parent_id'])->references(['id'])->on('invoices')->onUpdate('CASCADE')->onDelete('CASCADE');
             });
+            $this->setStringNullable('invoices', 'invoice_number', 255, false);
         }
 
         if (! Schema::hasColumn('payments', 'order_id')) {
@@ -860,15 +857,13 @@ return new class extends Migration
             }
 
             // Change package id to bigInteger
-            Schema::table('packages', function (Blueprint $table) {
-                $table->id()->change();
-            });
+            $this->setBigIncrementsPrimary('packages', 'id');
 
             // Create Foreign Key
             foreach ($tables as $tableName => $foreignKey) {
                 if (Schema::hasTable($tableName)) {
+                    $this->setUnsignedBigIntegerNullable($tableName, $foreignKey, true);
                     Schema::table($tableName, function (Blueprint $table) use ($foreignKey) {
-                        $table->unsignedBigInteger($foreignKey)->nullable()->change();
                         $table->foreign([$foreignKey])->references(['id'])->on('packages')->onUpdate('CASCADE')->onDelete('SET NULL');
                     });
                 }
@@ -879,5 +874,117 @@ return new class extends Migration
     public function listTableForeignKeys($table)
     {
         return array_column(Schema::getConnection()->getSchemaBuilder()->getForeignKeys($table), 'name');
+    }
+
+    private function renameColumnSafely(string $table, string $from, string $to): void
+    {
+        if (! Schema::hasColumn($table, $from) || Schema::hasColumn($table, $to)) {
+            return;
+        }
+
+        $driver = Schema::getConnection()->getDriverName();
+
+        if (in_array($driver, ['mysql', 'mariadb'], true)) {
+            DB::statement("ALTER TABLE `{$table}` RENAME COLUMN `{$from}` TO `{$to}`");
+
+            return;
+        }
+
+        if ($driver === 'pgsql') {
+            DB::statement("ALTER TABLE \"{$table}\" RENAME COLUMN \"{$from}\" TO \"{$to}\"");
+
+            return;
+        }
+
+        if ($driver === 'sqlsrv') {
+            DB::statement("EXEC sp_rename '{$table}.{$from}', '{$to}', 'COLUMN'");
+
+            return;
+        }
+
+        throw new \RuntimeException('renameColumn fallback is disabled to avoid doctrine/dbal dependency in this migration.');
+    }
+
+    private function setStringNullable(string $table, string $column, int $length, bool $nullable): void
+    {
+        if (! Schema::hasColumn($table, $column)) {
+            return;
+        }
+
+        $driver = Schema::getConnection()->getDriverName();
+        $nullSql = $nullable ? 'NULL' : 'NOT NULL';
+
+        if (in_array($driver, ['mysql', 'mariadb'], true)) {
+            DB::statement("ALTER TABLE `{$table}` MODIFY `{$column}` VARCHAR({$length}) {$nullSql}");
+            return;
+        }
+
+        if ($driver === 'pgsql') {
+            DB::statement("ALTER TABLE \"{$table}\" ALTER COLUMN \"{$column}\" TYPE VARCHAR({$length})");
+            DB::statement("ALTER TABLE \"{$table}\" ALTER COLUMN \"{$column}\" " . ($nullable ? 'DROP NOT NULL' : 'SET NOT NULL'));
+            return;
+        }
+
+        if ($driver === 'sqlsrv') {
+            DB::statement("ALTER TABLE [{$table}] ALTER COLUMN [{$column}] NVARCHAR({$length}) {$nullSql}");
+            return;
+        }
+
+        throw new \RuntimeException('change() fallback is disabled to avoid doctrine/dbal dependency in this migration.');
+    }
+
+    private function setBigIncrementsPrimary(string $table, string $column): void
+    {
+        if (! Schema::hasColumn($table, $column)) {
+            return;
+        }
+
+        $driver = Schema::getConnection()->getDriverName();
+
+        if (in_array($driver, ['mysql', 'mariadb'], true)) {
+            DB::statement("ALTER TABLE `{$table}` MODIFY `{$column}` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT");
+            return;
+        }
+
+        if ($driver === 'pgsql') {
+            DB::statement("ALTER TABLE \"{$table}\" ALTER COLUMN \"{$column}\" TYPE BIGINT");
+            DB::statement("ALTER TABLE \"{$table}\" ALTER COLUMN \"{$column}\" ADD GENERATED BY DEFAULT AS IDENTITY");
+            return;
+        }
+
+        if ($driver === 'sqlsrv') {
+            DB::statement("ALTER TABLE [{$table}] ALTER COLUMN [{$column}] BIGINT NOT NULL");
+            return;
+        }
+
+        throw new \RuntimeException('change() fallback is disabled to avoid doctrine/dbal dependency in this migration.');
+    }
+
+    private function setUnsignedBigIntegerNullable(string $table, string $column, bool $nullable): void
+    {
+        if (! Schema::hasColumn($table, $column)) {
+            return;
+        }
+
+        $driver = Schema::getConnection()->getDriverName();
+        $nullSql = $nullable ? 'NULL' : 'NOT NULL';
+
+        if (in_array($driver, ['mysql', 'mariadb'], true)) {
+            DB::statement("ALTER TABLE `{$table}` MODIFY `{$column}` BIGINT UNSIGNED {$nullSql}");
+            return;
+        }
+
+        if ($driver === 'pgsql') {
+            DB::statement("ALTER TABLE \"{$table}\" ALTER COLUMN \"{$column}\" TYPE BIGINT");
+            DB::statement("ALTER TABLE \"{$table}\" ALTER COLUMN \"{$column}\" " . ($nullable ? 'DROP NOT NULL' : 'SET NOT NULL'));
+            return;
+        }
+
+        if ($driver === 'sqlsrv') {
+            DB::statement("ALTER TABLE [{$table}] ALTER COLUMN [{$column}] BIGINT {$nullSql}");
+            return;
+        }
+
+        throw new \RuntimeException('change() fallback is disabled to avoid doctrine/dbal dependency in this migration.');
     }
 };

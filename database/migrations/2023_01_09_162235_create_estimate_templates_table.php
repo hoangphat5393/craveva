@@ -90,9 +90,7 @@ return new class extends Migration
             $table->unsignedInteger('contract_digit')->default(3)->after('contract_number_separator');
         });
 
-        Schema::table('lead_notes', function (Blueprint $table) {
-            $table->longText('details')->change();
-        });
+        $this->setLongTextNullable('lead_notes', 'details', true);
 
         if (! Schema::hasColumn('client_details', 'company_logo')) {
             Schema::table('client_details', function (Blueprint $table) {
@@ -116,7 +114,6 @@ return new class extends Migration
         DB::statement("UPDATE `company_addresses` SET `latitude`=NULL and longitude=NULL where latitude='26.91243360'");
 
         $this->customFieldsContracts();
-
     }
 
     /**
@@ -146,5 +143,33 @@ return new class extends Migration
         }
 
         CustomFieldGroup::insert($customFieldGroup);
+    }
+
+    private function setLongTextNullable(string $table, string $column, bool $nullable): void
+    {
+        if (! Schema::hasColumn($table, $column)) {
+            return;
+        }
+
+        $driver = Schema::getConnection()->getDriverName();
+        $nullSql = $nullable ? 'NULL' : 'NOT NULL';
+
+        if (in_array($driver, ['mysql', 'mariadb'], true)) {
+            DB::statement("ALTER TABLE `{$table}` MODIFY `{$column}` LONGTEXT {$nullSql}");
+            return;
+        }
+
+        if ($driver === 'pgsql') {
+            DB::statement("ALTER TABLE \"{$table}\" ALTER COLUMN \"{$column}\" TYPE TEXT");
+            DB::statement("ALTER TABLE \"{$table}\" ALTER COLUMN \"{$column}\" " . ($nullable ? 'DROP NOT NULL' : 'SET NOT NULL'));
+            return;
+        }
+
+        if ($driver === 'sqlsrv') {
+            DB::statement("ALTER TABLE [{$table}] ALTER COLUMN [{$column}] NVARCHAR(MAX) {$nullSql}");
+            return;
+        }
+
+        throw new \RuntimeException('change() fallback is disabled to avoid doctrine/dbal dependency in this migration.');
     }
 };

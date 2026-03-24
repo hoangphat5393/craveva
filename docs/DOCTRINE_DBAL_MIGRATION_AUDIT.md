@@ -1,12 +1,24 @@
 # Doctrine DBAL Migration Audit
 
-_Generated on 2026-03-24 from current codebase state._
+_Generated on 2026-03-24 and updated after Phase 1 + DBAL removal._
 
-## Counts
+## Baseline Counts (before Phase 1)
 
 - `->change(...)`: **43** files
 - `->renameColumn(...)`: **13** files
 - Unique migration files using at least one of the above: **52**
+
+## Current Counts (after Phase 3 complete - all migration batches)
+
+- `->change(...)`: **0** files
+- `->renameColumn(...)`: **0** files
+- Phase 2 rename hotspots: **completed**
+- Phase 3 (2026 group): **3 files refactored**
+- Phase 3 (2025 group): **5 files refactored**
+- Phase 3 (2024 group): **12 files refactored**
+- Phase 3 (2023 group): **14 files refactored (complete)**
+- Phase 3 (2022 group): **8 files refactored (complete)**
+- Legacy 2018 hotspot: **1 file refactored (complete)**
 
 ## Files
 
@@ -67,7 +79,7 @@ _Generated on 2026-03-24 from current codebase state._
 
 ## Conclusion
 
-With this amount of remaining `change` / `renameColumn` usage, removing `doctrine/dbal` now is high risk. Keep DBAL until these migrations are refactored or validated with a no-DBAL migration strategy.
+`doctrine/dbal` has now been removed from the project dependencies. Remaining migration patterns still need phased refactoring and validation on staging-like databases to avoid cross-driver issues.
 
 ## Next Execution Plan (Safe Order)
 
@@ -107,11 +119,17 @@ Run by newest-to-oldest first for better rollback confidence:
 1. Run migration checks on staging-like DB engine (no data reset).
 2. Smoke test core flows (login, order, invoice, warehouse transfer).
 3. If green, continue next phase.
-4. Only after all phases pass: attempt `composer remove doctrine/dbal`.
+4. After each phase, re-validate migration behavior and app smoke flows.
 
 ## Phase 1 Status
 
-- Status: **implemented in code**, pending staging migration verification.
+- Status: **implemented in code** and validated on staging run.
 - Updated migrations now use a driver-aware raw SQL rename path (`mysql`/`mariadb`/`pgsql`/`sqlsrv`) instead of direct `$table->renameColumn(...)`.
 - `renameColumn(...)` references were removed from all 9 Phase 1 files.
-- Next action: run safe validation on staging-like DB before Phase 2.
+- Next action: start Phase 2 hotspot refactor.
+
+## Current Residual Risk
+
+- Remaining direct `renameColumn(...)` usage: **0 files**.
+- Remaining `change(...)` usage: **0 files**.
+- On MySQL staging this is currently operating, but fresh environment compatibility should still be verified as phases continue.

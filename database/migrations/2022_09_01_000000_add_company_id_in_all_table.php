@@ -56,11 +56,11 @@ return new class extends Migration
 
         if (! Schema::hasColumn('companies', 'status')) {
             Schema::table('companies', function (Blueprint $table) {
-                $table->integer('default_task_status')->unsigned()->nullable()->default(null)->change();
                 $table->enum('status', ['active', 'inactive'])->after('active_theme')->default('active');
                 $table->dateTime('last_login')->nullable();
                 $table->boolean('rtl')->default(false);
             });
+            $this->setUnsignedIntNullable('companies', 'default_task_status', true);
         }
 
         if (! Schema::hasColumn('companies', 'hash')) {
@@ -198,5 +198,34 @@ return new class extends Migration
             });
         } catch (\Exception $e) {
         }
+    }
+
+    private function setUnsignedIntNullable(string $table, string $column, bool $nullable): void
+    {
+        if (! Schema::hasColumn($table, $column)) {
+            return;
+        }
+
+        $driver = Schema::getConnection()->getDriverName();
+        $nullSql = $nullable ? 'NULL' : 'NOT NULL';
+
+        if (in_array($driver, ['mysql', 'mariadb'], true)) {
+            DB::statement("ALTER TABLE `{$table}` MODIFY `{$column}` INT UNSIGNED {$nullSql} DEFAULT NULL");
+            return;
+        }
+
+        if ($driver === 'pgsql') {
+            DB::statement("ALTER TABLE \"{$table}\" ALTER COLUMN \"{$column}\" TYPE INTEGER");
+            DB::statement("ALTER TABLE \"{$table}\" ALTER COLUMN \"{$column}\" " . ($nullable ? 'DROP NOT NULL' : 'SET NOT NULL'));
+            DB::statement("ALTER TABLE \"{$table}\" ALTER COLUMN \"{$column}\" DROP DEFAULT");
+            return;
+        }
+
+        if ($driver === 'sqlsrv') {
+            DB::statement("ALTER TABLE [{$table}] ALTER COLUMN [{$column}] INT {$nullSql}");
+            return;
+        }
+
+        throw new \RuntimeException('change() fallback is disabled to avoid doctrine/dbal dependency in this migration.');
     }
 };

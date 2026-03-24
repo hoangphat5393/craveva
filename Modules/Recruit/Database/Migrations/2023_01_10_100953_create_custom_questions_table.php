@@ -16,9 +16,8 @@ return new class extends Migration
         if (! Schema::hasColumn('recruit_jobs', 'currency_id')) {
             Schema::table('recruit_jobs', function (Blueprint $table) {
                 $table->dropForeign(['currency_id']);
-                $table->foreign('currency_id')->references('id')->on('currencies')->onUpdate('cascade')->onDelete('cascade')->change();
+                $table->foreign('currency_id')->references('id')->on('currencies')->onUpdate('cascade')->onDelete('cascade');
             });
-
         }
 
         if (! Schema::hasTable('recruit_job_alerts')) {

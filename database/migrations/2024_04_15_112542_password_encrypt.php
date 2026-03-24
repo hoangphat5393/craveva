@@ -51,11 +51,9 @@ return new class extends Migration
 
         $columns = $this->getColumns($model);
 
-        Schema::table($model->getTable(), function (Blueprint $table) use ($columns) {
-            foreach ($columns as $column) {
-                $table->text($column)->nullable()->change();
-            }
-        });
+        foreach ($columns as $column) {
+            $this->setTextNullable($model->getTable(), $column, true);
+        }
 
         $dataObject = $model->all();
 
@@ -116,5 +114,33 @@ return new class extends Migration
 
             DB::table($model->getTable())->where('id', $model->id)->update($encryptedValues);
         }
+    }
+
+    private function setTextNullable(string $table, string $column, bool $nullable): void
+    {
+        if (! Schema::hasColumn($table, $column)) {
+            return;
+        }
+
+        $driver = Schema::getConnection()->getDriverName();
+        $nullSql = $nullable ? 'NULL' : 'NOT NULL';
+
+        if (in_array($driver, ['mysql', 'mariadb'], true)) {
+            DB::statement("ALTER TABLE `{$table}` MODIFY `{$column}` TEXT {$nullSql}");
+            return;
+        }
+
+        if ($driver === 'pgsql') {
+            DB::statement("ALTER TABLE \"{$table}\" ALTER COLUMN \"{$column}\" TYPE TEXT");
+            DB::statement("ALTER TABLE \"{$table}\" ALTER COLUMN \"{$column}\" " . ($nullable ? 'DROP NOT NULL' : 'SET NOT NULL'));
+            return;
+        }
+
+        if ($driver === 'sqlsrv') {
+            DB::statement("ALTER TABLE [{$table}] ALTER COLUMN [{$column}] NVARCHAR(MAX) {$nullSql}");
+            return;
+        }
+
+        throw new \RuntimeException('change() fallback is disabled to avoid doctrine/dbal dependency in this migration.');
     }
 };

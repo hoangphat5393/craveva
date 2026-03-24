@@ -4,6 +4,7 @@ use App\Models\Company;
 use Carbon\Carbon;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Modules\Performance\Entities\Objective;
 
@@ -14,10 +15,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('key_results', function (Blueprint $table) {
-            $table->decimal('target_value', 16, 2)->nullable()->change();
-            $table->decimal('current_value', 16, 2)->nullable()->change();
-        });
+        $this->setDecimalNullable('key_results', 'target_value', 16, 2, true);
+        $this->setDecimalNullable('key_results', 'current_value', 16, 2, true);
 
         $companies = Company::all();
 
@@ -33,7 +32,6 @@ return new class extends Migration
                 $objective->keyResults->each->save();
             }
         }
-
     }
 
     /**
@@ -41,10 +39,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('', function (Blueprint $table) {
-            $table->float('target_value')->nullable();
-            $table->float('current_value')->nullable();
-        });
+        // no-op: keep historical values unchanged on rollback
     }
 
     private function checkFrequency($objective)
@@ -182,5 +177,36 @@ return new class extends Migration
         }
 
         return $nextDate;
+    }
+
+    private function setDecimalNullable(string $table, string $column, int $precision, int $scale, bool $nullable): void
+    {
+        if (! Schema::hasColumn($table, $column)) {
+            return;
+        }
+
+        $driver = Schema::getConnection()->getDriverName();
+        $nullSql = $nullable ? 'NULL' : 'NOT NULL';
+
+        if (in_array($driver, ['mysql', 'mariadb'], true)) {
+            DB::statement("ALTER TABLE `{$table}` MODIFY `{$column}` DECIMAL({$precision},{$scale}) {$nullSql}");
+
+            return;
+        }
+
+        if ($driver === 'pgsql') {
+            DB::statement("ALTER TABLE \"{$table}\" ALTER COLUMN \"{$column}\" TYPE NUMERIC({$precision},{$scale})");
+            DB::statement("ALTER TABLE \"{$table}\" ALTER COLUMN \"{$column}\" " . ($nullable ? 'DROP NOT NULL' : 'SET NOT NULL'));
+
+            return;
+        }
+
+        if ($driver === 'sqlsrv') {
+            DB::statement("ALTER TABLE [{$table}] ALTER COLUMN [{$column}] DECIMAL({$precision},{$scale}) {$nullSql}");
+
+            return;
+        }
+
+        throw new \RuntimeException('change() fallback is disabled to avoid doctrine/dbal dependency in this migration.');
     }
 };

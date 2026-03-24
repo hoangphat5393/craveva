@@ -30,9 +30,7 @@ return new class extends Migration
 
         User::whereNull('gender')->update(['gender' => 'male']);
 
-        Schema::table('employee_details', function (Blueprint $table) {
-            $table->string('marital_status')->nullable()->default(MaritalStatus::Single->value)->change();
-        });
+        $this->setMaritalStatusDefault();
 
         EmployeeDetails::whereNull('marital_status')->update(['marital_status' => MaritalStatus::Single]);
     }
@@ -48,5 +46,34 @@ return new class extends Migration
     public function listTableForeignKeys($table)
     {
         return array_column(Schema::getConnection()->getSchemaBuilder()->getForeignKeys($table), 'name');
+    }
+
+    private function setMaritalStatusDefault(): void
+    {
+        if (! Schema::hasColumn('employee_details', 'marital_status')) {
+            return;
+        }
+
+        $driver = Schema::getConnection()->getDriverName();
+        $default = str_replace("'", "''", MaritalStatus::Single->value);
+
+        if (in_array($driver, ['mysql', 'mariadb'], true)) {
+            DB::statement("ALTER TABLE `employee_details` MODIFY `marital_status` VARCHAR(255) NULL DEFAULT '{$default}'");
+            return;
+        }
+
+        if ($driver === 'pgsql') {
+            DB::statement("ALTER TABLE \"employee_details\" ALTER COLUMN \"marital_status\" TYPE VARCHAR(255)");
+            DB::statement("ALTER TABLE \"employee_details\" ALTER COLUMN \"marital_status\" SET DEFAULT '{$default}'");
+            DB::statement("ALTER TABLE \"employee_details\" ALTER COLUMN \"marital_status\" DROP NOT NULL");
+            return;
+        }
+
+        if ($driver === 'sqlsrv') {
+            DB::statement("ALTER TABLE [employee_details] ADD CONSTRAINT DF_employee_details_marital_status DEFAULT ('{$default}') FOR [marital_status]");
+            return;
+        }
+
+        throw new \RuntimeException('change() fallback is disabled to avoid doctrine/dbal dependency in this migration.');
     }
 };

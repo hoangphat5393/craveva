@@ -6,7 +6,7 @@
 
 Tài liệu mô tả luồng route → controller → service → model → CSDL, đồng thời rà soát logic, lỗi tiềm ẩn, hiệu năng và bảo mật. **Không chỉnh sửa mã nguồn** trong phạm vi phân tích này.
 
-> **Tham chiếu:** Bản tiếng Anh gốc: `FUNC_LOGIC/FLOW_Pricing_Module.md`
+> **Ghi chú hợp nhất:** Bản EN đã được gộp vào tài liệu VI này; đây là bản chuẩn để tiếp tục cập nhật.
 
 ---
 

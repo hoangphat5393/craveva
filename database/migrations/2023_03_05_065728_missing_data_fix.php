@@ -13,6 +13,7 @@ use App\Models\SuperAdmin\FrontDetail;
 use App\Models\UnitType;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -27,23 +28,16 @@ return new class extends Migration
 
         // This went with release 5.2.73
         if (Schema::hasColumn('project_notes', 'notes_title')) {
-            Schema::table('project_notes', function (Blueprint $table) {
-                $table->renameColumn('notes_title', 'title');
-                $table->renameColumn('notes_type', 'type');
-
-            });
+            $this->renameColumnSafely('project_notes', 'notes_title', 'title');
+            $this->renameColumnSafely('project_notes', 'notes_type', 'type');
         }
 
         if (Schema::hasColumn('project_notes', 'note_details')) {
-            Schema::table('project_notes', function (Blueprint $table) {
-                $table->renameColumn('note_details', 'details');
-            });
+            $this->renameColumnSafely('project_notes', 'note_details', 'details');
         }
 
         if (Schema::hasColumn('project_user_notes', 'project_notes_id')) {
-            Schema::table('project_user_notes', function (Blueprint $table) {
-                $table->renameColumn('project_notes_id', 'project_note_id');
-            });
+            $this->renameColumnSafely('project_user_notes', 'project_notes_id', 'project_note_id');
         }
 
         if (! Schema::hasTable('lead_products')) {
@@ -67,38 +61,28 @@ return new class extends Migration
         if (! Schema::hasColumn('project_milestones', 'start_date')) {
             Schema::table('project_milestones', function (Blueprint $table) {
                 $table->date('start_date')->nullable();
-                $table->renameColumn('due_date', 'end_date');
             });
+            $this->renameColumnSafely('project_milestones', 'due_date', 'end_date');
         }
 
         if (Schema::hasColumn('project_milestones', 'due_date')) {
-            Schema::table('project_milestones', function (Blueprint $table) {
-                $table->renameColumn('due_date', 'end_date');
-            });
+            $this->renameColumnSafely('project_milestones', 'due_date', 'end_date');
         }
 
         if (Schema::hasColumn('project_notes', 'note_details')) {
-            Schema::table('project_notes', function (Blueprint $table) {
-                $table->renameColumn('note_details', 'details');
-            });
+            $this->renameColumnSafely('project_notes', 'note_details', 'details');
         }
 
         if (Schema::hasColumn('project_notes', 'details')) {
-            Schema::table('project_notes', function (Blueprint $table) {
-                $table->longText('details')->change();
-            });
+            $this->setLongTextNullable('project_notes', 'details', true);
         }
 
         if (Schema::hasColumn('project_notes', 'note_title')) {
-            Schema::table('project_notes', function (Blueprint $table) {
-                $table->renameColumn('note_title', 'title');
-            });
+            $this->renameColumnSafely('project_notes', 'note_title', 'title');
         }
 
         if (Schema::hasColumn('project_notes', 'note_type')) {
-            Schema::table('project_notes', function (Blueprint $table) {
-                $table->renameColumn('note_type', 'type');
-            });
+            $this->renameColumnSafely('project_notes', 'note_type', 'type');
         }
 
         if (! Schema::hasColumn('subscriptions', 'user_id')) {
@@ -186,7 +170,6 @@ return new class extends Migration
 
         $this->fixUnitTypes();
         $this->fixLanguageFrontDetails();
-
     }
 
     /**
@@ -227,7 +210,6 @@ return new class extends Migration
                     }
                 }
             }
-
         }
     }
 
@@ -243,5 +225,62 @@ return new class extends Migration
                 $frontDetail->saveQuietly();
             }
         }
+    }
+
+    private function renameColumnSafely(string $table, string $from, string $to): void
+    {
+        if (! Schema::hasColumn($table, $from) || Schema::hasColumn($table, $to)) {
+            return;
+        }
+
+        $driver = Schema::getConnection()->getDriverName();
+
+        if (in_array($driver, ['mysql', 'mariadb'], true)) {
+            DB::statement("ALTER TABLE `{$table}` RENAME COLUMN `{$from}` TO `{$to}`");
+
+            return;
+        }
+
+        if ($driver === 'pgsql') {
+            DB::statement("ALTER TABLE \"{$table}\" RENAME COLUMN \"{$from}\" TO \"{$to}\"");
+
+            return;
+        }
+
+        if ($driver === 'sqlsrv') {
+            DB::statement("EXEC sp_rename '{$table}.{$from}', '{$to}', 'COLUMN'");
+
+            return;
+        }
+
+        throw new \RuntimeException('renameColumn fallback is disabled to avoid doctrine/dbal dependency in this migration.');
+    }
+
+    private function setLongTextNullable(string $table, string $column, bool $nullable): void
+    {
+        if (! Schema::hasColumn($table, $column)) {
+            return;
+        }
+
+        $driver = Schema::getConnection()->getDriverName();
+        $nullSql = $nullable ? 'NULL' : 'NOT NULL';
+
+        if (in_array($driver, ['mysql', 'mariadb'], true)) {
+            DB::statement("ALTER TABLE `{$table}` MODIFY `{$column}` LONGTEXT {$nullSql}");
+            return;
+        }
+
+        if ($driver === 'pgsql') {
+            DB::statement("ALTER TABLE \"{$table}\" ALTER COLUMN \"{$column}\" TYPE TEXT");
+            DB::statement("ALTER TABLE \"{$table}\" ALTER COLUMN \"{$column}\" " . ($nullable ? 'DROP NOT NULL' : 'SET NOT NULL'));
+            return;
+        }
+
+        if ($driver === 'sqlsrv') {
+            DB::statement("ALTER TABLE [{$table}] ALTER COLUMN [{$column}] NVARCHAR(MAX) {$nullSql}");
+            return;
+        }
+
+        throw new \RuntimeException('change() fallback is disabled to avoid doctrine/dbal dependency in this migration.');
     }
 };

@@ -30,7 +30,7 @@ class PurchaseInventory extends BaseModel
             return $this->default_image;
         }
 
-        return ($this->default_image) ? asset_url_local_s3(PurchaseInventory::FILE_PATH.'/'.$this->default_image) : '';
+        return ($this->default_image) ? asset_url_local_s3(PurchaseInventory::FILE_PATH . '/' . $this->default_image) : '';
     }
 
     public function stocks(): HasMany
@@ -46,6 +46,11 @@ class PurchaseInventory extends BaseModel
     public function reason(): BelongsTo
     {
         return $this->belongsTo(PurchaseStockAdjustmentReason::class);
+    }
+
+    public function warehouse(): BelongsTo
+    {
+        return $this->belongsTo(\Modules\Warehouse\Entities\Warehouse::class, 'warehouse_id');
     }
 
     public function products(): \Illuminate\Database\Eloquent\Relations\BelongsToMany

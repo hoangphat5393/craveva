@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -12,14 +13,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('recruit_jobs', function (Blueprint $table) {
-            $table->unsignedInteger('recruiter_id')->nullable()->change();
             $table->foreign('recruiter_id')
                 ->references('id')
                 ->on('users')
                 ->onUpdate('cascade')
                 ->onDelete('set null');
-
         });
+        $this->setUnsignedIntNullable('recruit_jobs', 'recruiter_id', true);
     }
 
     /**
@@ -29,9 +29,38 @@ return new class extends Migration
     {
         Schema::table('recruit_jobs', function (Blueprint $table) {
             $table->dropForeign(['recruiter_id']);
-
-            // Change the column back to NOT NULL (if needed)
-            $table->unsignedInteger('recruiter_id')->nullable(false)->change();
         });
+        $this->setUnsignedIntNullable('recruit_jobs', 'recruiter_id', false);
+    }
+
+    private function setUnsignedIntNullable(string $table, string $column, bool $nullable): void
+    {
+        if (! Schema::hasColumn($table, $column)) {
+            return;
+        }
+
+        $driver = Schema::getConnection()->getDriverName();
+        $nullSql = $nullable ? 'NULL' : 'NOT NULL';
+
+        if (in_array($driver, ['mysql', 'mariadb'], true)) {
+            DB::statement("ALTER TABLE `{$table}` MODIFY `{$column}` INT UNSIGNED {$nullSql}");
+
+            return;
+        }
+
+        if ($driver === 'pgsql') {
+            DB::statement("ALTER TABLE \"{$table}\" ALTER COLUMN \"{$column}\" TYPE INTEGER");
+            DB::statement("ALTER TABLE \"{$table}\" ALTER COLUMN \"{$column}\" " . ($nullable ? 'DROP NOT NULL' : 'SET NOT NULL'));
+
+            return;
+        }
+
+        if ($driver === 'sqlsrv') {
+            DB::statement("ALTER TABLE [{$table}] ALTER COLUMN [{$column}] INT {$nullSql}");
+
+            return;
+        }
+
+        throw new \RuntimeException('change() fallback is disabled to avoid doctrine/dbal dependency in this migration.');
     }
 };

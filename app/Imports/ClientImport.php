@@ -35,6 +35,8 @@ class ClientImport implements ToArray
             ['id' => 'last_transaction_at', 'name' => __('modules.client.lastTransactionAt'), 'required' => 'No'],
             ['id' => 'payment_terms', 'name' => __('modules.client.paymentTerms'), 'required' => 'No'],
             ['id' => 'business_closure_date', 'name' => __('modules.client.businessClosureDate'), 'required' => 'No'],
+            ['id' => 'designated_warehouse_code', 'name' => 'Designated Warehouse Code', 'required' => 'No'],
+            ['id' => 'designated_warehouse_name', 'name' => 'Designated Warehouse Name', 'required' => 'No'],
         ];
     }
 

@@ -121,6 +121,17 @@
                         </x-forms.input-group>
                     </div>
 
+                    <div class="col-md-3">
+                        <x-forms.select fieldId="default_warehouse_id" fieldLabel="Default Warehouse" fieldName="default_warehouse_id" search="true">
+                            <option value="">--</option>
+                            @foreach ($warehouses ?? collect() as $warehouse)
+                                <option value="{{ $warehouse->id }}">
+                                    {{ $warehouse->name }}{{ $warehouse->code ? ' (' . $warehouse->code . ')' : '' }}
+                                </option>
+                            @endforeach
+                        </x-forms.select>
+                    </div>
+
                     <div class="col-md-4">
                         <div class="form-group my-3">
                             <label class="f-14 text-dark-grey mb-12 w-100 mt-3" for="usr">@lang('modules.client.clientCanLogin')</label>

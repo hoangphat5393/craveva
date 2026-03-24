@@ -23,6 +23,7 @@ class DeliveryOrder extends BaseModel
         'delivery_date',
         'warehouse_id',
         'status',
+        'inbound_stock_applied',
         'erp_shipment_reference',
         'wms_shipment_reference',
         'created_by',

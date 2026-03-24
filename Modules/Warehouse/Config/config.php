@@ -2,4 +2,15 @@
 
 return [
     'name' => 'Warehouse',
+    'allow_negative_stock' => env('WAREHOUSE_ALLOW_NEGATIVE_STOCK', false),
+    /**
+     * Inbound stock when PO delivery_status becomes "delivered" (legacy / default on).
+     * Set false if you only post receiving via Delivery Order (received) to avoid double-counting.
+     */
+    'inbound_from_purchase_order_delivered' => env('WAREHOUSE_INBOUND_FROM_PO_DELIVERED', true),
+    /**
+     * Inbound stock when Delivery Order (type inbound) status becomes "received".
+     * Default false — enable when using DO as canonical GRN.
+     */
+    'inbound_from_delivery_order_received' => env('WAREHOUSE_INBOUND_FROM_DO_RECEIVED', false),
 ];

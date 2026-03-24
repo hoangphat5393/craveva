@@ -8,6 +8,7 @@
 **Phân tích demo vòng lặp hằng ngày (sáng import, tối export):** xem **`FUNC_LOGIC/MAOLIN_DAILY_SYNC_DEMO_ANALYSIS.md`**.
 **Phiên dịch cột tiếng Trung + đối chiếu mapping + thiếu module:** xem **`FUNC_LOGIC/MAOLIN_CHINESE_COLUMNS_MAPPING_AND_GAPS.md`**.
 **Bản tập trung đúng 4 chức năng (Product/Client/Inventory/Tier Pricing):** xem **`FUNC_LOGIC/MAOLIN_FOCUSED_SCOPE_PRODUCT_CLIENT_INVENTORY_TIER.md`**.
+**Phân tích Multi-Warehouse + roadmap triển khai end-to-end:** xem **`FUNC_LOGIC/MAOLIN_MULTI_WAREHOUSE_ANALYSIS_AND_PLAN.md`**.
 
 ---
 

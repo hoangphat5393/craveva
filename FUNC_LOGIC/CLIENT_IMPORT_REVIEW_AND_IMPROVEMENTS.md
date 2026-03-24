@@ -8,15 +8,15 @@
 
 ### 1.1. Luồng thực tế trong code
 
-| Bước | Tài liệu (FLOW_ADD_CLIENT) | Code thực tế | Khớp? |
-|------|----------------------------|--------------|-------|
-| 1 | user_auths (nếu có email) | `UserAuth::createUserAuthCredentials()` trong `ClientImportProcessor::processRow()` | ✅ |
-| 2 | users | `User::save()` | ✅ |
-| 3 | client_details | `ClientDetails::save()` | ✅ |
-| 4 | custom_fields_data | `saveCustomFieldsFromRow()` → `updateCustomFieldData()` | ✅ |
-| 5 | role_user | `$user->attachRole($role->id)` | ✅ |
-| 6 | user_permissions | `$user->assignUserRolePermission($role->id)` | ✅ |
-| 7 | universal_search | `logSearchEntry()` (name, email, company_name) | ✅ |
+| Bước | Tài liệu (FLOW_ADD_CLIENT) | Code thực tế                                                                        | Khớp? |
+| ---- | -------------------------- | ----------------------------------------------------------------------------------- | ----- |
+| 1    | user_auths (nếu có email)  | `UserAuth::createUserAuthCredentials()` trong `ClientImportProcessor::processRow()` | ✅    |
+| 2    | users                      | `User::save()`                                                                      | ✅    |
+| 3    | client_details             | `ClientDetails::save()`                                                             | ✅    |
+| 4    | custom_fields_data         | `saveCustomFieldsFromRow()` → `updateCustomFieldData()`                             | ✅    |
+| 5    | role_user                  | `$user->attachRole($role->id)`                                                      | ✅    |
+| 6    | user_permissions           | `$user->assignUserRolePermission($role->id)`                                        | ✅    |
+| 7    | universal_search           | `logSearchEntry()` (name, email, company_name)                                      | ✅    |
 
 **Kết luận:** Luồng import client trong code **khớp** với FLOW_ADD_CLIENT.md. Mỗi dòng Excel → 1 transaction → đủ 7 bước (user_auths có điều kiện).
 
@@ -35,13 +35,13 @@
 Với **mỗi dòng** client, sau khi tạo User + ClientDetails, code gọi:
 
 - `saveCustomFieldsFromRow()`:
-  - 1 query: `CustomFieldGroup::where('name','Client')->...->first()`
-  - 1 query: `CustomField::where('custom_field_group_id', $group->id)->whereIn('name', $customNames)->get()`
+    - 1 query: `CustomFieldGroup::where('name','Client')->...->first()`
+    - 1 query: `CustomField::where('custom_field_group_id', $group->id)->whereIn('name', $customNames)->get()`
 - Rồi với **mỗi custom field có giá trị** (vd. 4–5 field), gọi `updateCustomFieldData($data)`:
-  - **Mỗi field:** `CustomField::findOrFail($id)` → 1 query  
-  - **Mỗi field:** `DB::table('custom_fields_data')->where(...)->first()` → 1 query  
-  - **Mỗi field:** `insert` hoặc `update` → 1 query  
-  - (Nếu date) có thể thêm xử lý qua Company → thêm query
+    - **Mỗi field:** `CustomField::findOrFail($id)` → 1 query
+    - **Mỗi field:** `DB::table('custom_fields_data')->where(...)->first()` → 1 query
+    - **Mỗi field:** `insert` hoặc `update` → 1 query
+    - (Nếu date) có thể thêm xử lý qua Company → thêm query
 
 **Ước lượng cho 1 chunk 20 dòng, 5 custom field có giá trị:**
 
@@ -52,12 +52,12 @@ Với **mỗi dòng** client, sau khi tạo User + ClientDetails, code gọi:
 
 ### 2.2. So sánh với Product import
 
-| Nội dung | Client import | Product import |
-|----------|----------------|----------------|
-| Custom field khi import | **Có** — ghi qua `updateCustomFieldData` từng dòng | **Không** — không ghi custom_fields_data (buildProductCustomFieldsData = []) |
-| Chunk size mặc định | 20 | 100 |
-| Cache metadata (group + fields) | Load **mỗi dòng** (trong saveCustomFieldsFromRow) | SKU, unit, category cache **1 lần/chunk** |
-| Nguyên nhân chậm chính | Nhiều query custom field/dòng | Đã tối ưu (cache, không custom field) |
+| Nội dung                        | Client import                                      | Product import                                                               |
+| ------------------------------- | -------------------------------------------------- | ---------------------------------------------------------------------------- |
+| Custom field khi import         | **Có** — ghi qua `updateCustomFieldData` từng dòng | **Không** — không ghi custom_fields_data (buildProductCustomFieldsData = []) |
+| Chunk size mặc định             | 20                                                 | 100                                                                          |
+| Cache metadata (group + fields) | Load **mỗi dòng** (trong saveCustomFieldsFromRow)  | SKU, unit, category cache **1 lần/chunk**                                    |
+| Nguyên nhân chậm chính          | Nhiều query custom field/dòng                      | Đã tối ưu (cache, không custom field)                                        |
 
 ---
 
@@ -106,13 +106,13 @@ Nếu chưa làm bulk insert thì bước này vẫn giảm đáng kể query (b
 
 ## 4. So sánh với Product import (FLOW_ADD_PRODUCT, IMPORT_CHUNK_AND_BULK_INSERT §6)
 
-| Hạng mục | Client import (hiện tại) | Product import (đã tối ưu) |
-|----------|--------------------------|----------------------------|
-| Chunk size | 20 | 100 |
-| Custom field khi import | Có, từng dòng từng field (nhiều query) | Không ghi custom_fields_data |
-| Cache metadata | Mỗi dòng (group + fields) | 1 lần/chunk (SKU, unit, category) |
-| Bulk insert custom field | Chưa | Không áp dụng (không ghi) |
-| Cải thiện đề xuất | Bulk insert + cache metadata trong chunk | Đã thực hiện cache + chunk 100 |
+| Hạng mục                 | Client import (hiện tại)                 | Product import (đã tối ưu)        |
+| ------------------------ | ---------------------------------------- | --------------------------------- |
+| Chunk size               | 20                                       | 100                               |
+| Custom field khi import  | Có, từng dòng từng field (nhiều query)   | Không ghi custom_fields_data      |
+| Cache metadata           | Mỗi dòng (group + fields)                | 1 lần/chunk (SKU, unit, category) |
+| Bulk insert custom field | Chưa                                     | Không áp dụng (không ghi)         |
+| Cải thiện đề xuất        | Bulk insert + cache metadata trong chunk | Đã thực hiện cache + chunk 100    |
 
 ---
 
@@ -129,11 +129,11 @@ Nếu chưa làm bulk insert thì bước này vẫn giảm đáng kể query (b
 
 ## 6. Nguồn code tham chiếu
 
-| Thành phần | File / method |
-|------------|----------------|
-| Gọi import chunk | `ClientController::importProcess()` → `importJobProcessChunked(..., ImportClientChunkJob::class, $chunkSize)` |
-| Chunk job | `App\Jobs\ImportClientChunkJob::handle()` |
-| Xử lý 1 dòng | `App\Services\ClientImportProcessor::processRow()` |
-| Custom field từ row | `ClientImportProcessor::saveCustomFieldsFromRow()` → `ClientDetails::updateCustomFieldData()` |
-| Trait custom field | `App\Traits\CustomFieldsTrait::updateCustomFieldData()` (findOrFail, select, insert/update từng field) |
-| Chunk size mặc định | `ClientController::importProcess()` — `$chunkSize = 20` |
+| Thành phần          | File / method                                                                                                 |
+| ------------------- | ------------------------------------------------------------------------------------------------------------- |
+| Gọi import chunk    | `ClientController::importProcess()` → `importJobProcessChunked(..., ImportClientChunkJob::class, $chunkSize)` |
+| Chunk job           | `App\Jobs\ImportClientChunkJob::handle()`                                                                     |
+| Xử lý 1 dòng        | `App\Services\ClientImportProcessor::processRow()`                                                            |
+| Custom field từ row | `ClientImportProcessor::saveCustomFieldsFromRow()` → `ClientDetails::updateCustomFieldData()`                 |
+| Trait custom field  | `App\Traits\CustomFieldsTrait::updateCustomFieldData()` (findOrFail, select, insert/update từng field)        |
+| Chunk size mặc định | `ClientController::importProcess()` — `$chunkSize = 20`                                                       |

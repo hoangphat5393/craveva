@@ -35,7 +35,9 @@ use Modules\Purchase\Listeners\PurchaseInventoryListener;
 use Modules\Purchase\Listeners\UpdateVendorPaymentListener;
 use Modules\Purchase\Listeners\VendorCreditListener;
 use Modules\Purchase\Listeners\VendorCreditPaymentMade;
+use App\Models\DeliveryOrder;
 use Modules\Purchase\Observers\CurrencyObserver;
+use Modules\Purchase\Observers\DeliveryOrderObserver;
 use Modules\Purchase\Observers\PaymentObserver;
 use Modules\Purchase\Observers\PurchaseBillObserver;
 use Modules\Purchase\Observers\PurchaseInventoryFileObserver;
@@ -78,6 +80,7 @@ class EventServiceProvider extends ServiceProvider
         PurchaseInventory::class => [PurchaseInventoryObserver::class],
         PurchaseInventoryFile::class => [PurchaseInventoryFileObserver::class],
         PurchaseOrder::class => [PurchaseOrderObserver::class],
+        DeliveryOrder::class => [DeliveryOrderObserver::class],
         PurchaseItem::class => [PurchaseItemObserver::class],
         PurchaseOrderFile::class => [PurchaseOrderFileObserver::class],
         PurchaseBill::class => [PurchaseBillObserver::class],

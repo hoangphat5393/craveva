@@ -6,6 +6,7 @@ use App\Scopes\ActiveScope;
 use App\Traits\CustomFieldsTrait;
 use App\Traits\HasCompany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Modules\Warehouse\Entities\Warehouse;
 
 /**
  * App\Models\ClientDetails
@@ -87,7 +88,7 @@ class ClientDetails extends BaseModel
 {
     use CustomFieldsTrait, HasCompany;
 
-    protected $fillable = ['company_name', 'user_id', 'address', 'postal_code', 'state', 'city', 'office', 'cell', 'website', 'note', 'skype', 'facebook', 'twitter', 'linkedin', 'tax_name', 'gst_number', 'shipping_address', 'category_id', 'sub_category_id', 'company_logo', 'electronic_address', 'electronic_address_scheme', 'client_code', 'pricing_tier_id'];
+    protected $fillable = ['company_name', 'user_id', 'address', 'postal_code', 'state', 'city', 'office', 'cell', 'website', 'note', 'skype', 'facebook', 'twitter', 'linkedin', 'tax_name', 'gst_number', 'shipping_address', 'category_id', 'sub_category_id', 'company_logo', 'electronic_address', 'electronic_address_scheme', 'client_code', 'pricing_tier_id', 'default_warehouse_id'];
 
     protected $default = ['id', 'company_name', 'address', 'website', 'note', 'skype', 'facebook', 'twitter', 'linkedin', 'tax_name', 'gst_number', 'name', 'email', 'company_logo'];
 
@@ -107,10 +108,15 @@ class ClientDetails extends BaseModel
         return $this->belongsTo(User::class, 'added_by', 'id');
     }
 
+    public function defaultWarehouse(): BelongsTo
+    {
+        return $this->belongsTo(Warehouse::class, 'default_warehouse_id');
+    }
+
     public function getImageUrlAttribute()
     {
         try {
-            return ($this->company_logo) ? asset_url_local_s3('client-logo/'.$this->company_logo) : $this->company->logo_url;
+            return ($this->company_logo) ? asset_url_local_s3('client-logo/' . $this->company_logo) : $this->company->logo_url;
         } catch (\Exception $e) {
             return '';
         }

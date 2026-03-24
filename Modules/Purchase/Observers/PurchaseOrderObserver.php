@@ -11,7 +11,7 @@ use Modules\Purchase\Entities\PurchaseOrder;
 use Modules\Purchase\Entities\PurchaseOrderHistory;
 use Modules\Purchase\Entities\PurchaseStockAdjustment;
 use Modules\Purchase\Events\NewPurchaseOrderEvent;
-use Modules\Warehouse\Entities\WarehouseProductStock;
+use Modules\Warehouse\Services\StockMovementService;
 
 class PurchaseOrderObserver
 {
@@ -107,6 +107,10 @@ class PurchaseOrderObserver
                             $inventory->net_quantity += $quantity[$key];
                             $inventory->save();
                         }
+
+                        if ($order->delivery_status === 'delivered' && $order->warehouse_id && isset($product[$key]) && $product[$key]) {
+                            $this->recordPurchaseOrderInbound($order, (int) $product[$key], (float) $quantity[$key]);
+                        }
                     }
 
                     if (isset(request()->taxes[$key])) {
@@ -125,7 +129,7 @@ class PurchaseOrderObserver
                         $filename = '';
 
                         if (isset($order_item_image[$key])) {
-                            $filename = Files::uploadLocalOrS3($order_item_image[$key], PurchaseItemImage::FILE_PATH.'/'.$orderItem->id.'/');
+                            $filename = Files::uploadLocalOrS3($order_item_image[$key], PurchaseItemImage::FILE_PATH . '/' . $orderItem->id . '/');
                         }
 
                         $var = PurchaseItemImage::create(
@@ -138,7 +142,6 @@ class PurchaseOrderObserver
                             ]
                         );
                     }
-
                 }
             }
 
@@ -177,14 +180,8 @@ class PurchaseOrderObserver
                 $inventory->net_quantity += $item->quantity;
                 $inventory->save();
 
-                // Sync with WarehouseProductStock
-                if ($order->warehouse_id && class_exists('Modules\Warehouse\Entities\WarehouseProductStock')) {
-                    $whStock = \Modules\Warehouse\Entities\WarehouseProductStock::firstOrCreate(
-                        ['warehouse_id' => $order->warehouse_id, 'product_id' => $item->product_id],
-                        ['quantity' => 0]
-                    );
-                    $whStock->quantity += $item->quantity;
-                    $whStock->save();
+                if ($order->warehouse_id && $item->product_id) {
+                    $this->recordPurchaseOrderInbound($order, (int) $item->product_id, (float) $item->quantity);
                 }
             }
         }
@@ -257,17 +254,17 @@ class PurchaseOrderObserver
                     }
 
                     /* order file save here */
-                    if ((isset($order_item_image[$key]) && $request->hasFile('order_item_image.'.$key)) || isset($order_item_image_url[$key])) {
+                    if ((isset($order_item_image[$key]) && $request->hasFile('order_item_image.' . $key)) || isset($order_item_image_url[$key])) {
 
                         /* Delete previous uploaded file if it not a product (because product images cannot be deleted) */
                         if (! isset($order_item_image_url[$key]) && $orderItem && $orderItem->purchaseItemImage) {
-                            Files::deleteFile($orderItem->purchaseItemImage->hashname, PurchaseItemImage::FILE_PATH.'/'.$orderItem->id.'/');
+                            Files::deleteFile($orderItem->purchaseItemImage->hashname, PurchaseItemImage::FILE_PATH . '/' . $orderItem->id . '/');
                         }
 
                         $filename = '';
 
                         if (isset($order_item_image[$key])) {
-                            $filename = Files::uploadLocalOrS3($order_item_image[$key], PurchaseItemImage::FILE_PATH.'/'.$orderItem->id.'/');
+                            $filename = Files::uploadLocalOrS3($order_item_image[$key], PurchaseItemImage::FILE_PATH . '/' . $orderItem->id . '/');
                         }
 
                         PurchaseItemImage::updateOrCreate(
@@ -298,9 +295,38 @@ class PurchaseOrderObserver
 
         if ($orderItems) {
             foreach ($orderItems as $orderItem) {
-                Files::deleteDirectory(PurchaseItemImage::FILE_PATH.'/'.$orderItem->id);
+                Files::deleteDirectory(PurchaseItemImage::FILE_PATH . '/' . $orderItem->id);
             }
         }
+    }
+
+    /**
+     * Physical stock: company + warehouse + product (+ batch/expiry when PO lines carry them later).
+     */
+    private function recordPurchaseOrderInbound(PurchaseOrder $order, int $productId, float $quantity): void
+    {
+        if (! config('warehouse.inbound_from_purchase_order_delivered', true)) {
+            return;
+        }
+
+        if ($quantity <= 0 || ! $order->warehouse_id) {
+            return;
+        }
+
+        if (! class_exists(StockMovementService::class)) {
+            return;
+        }
+
+        app(StockMovementService::class)->recordInbound([
+            'company_id' => $order->company_id,
+            'warehouse_id' => (int) $order->warehouse_id,
+            'product_id' => $productId,
+            'quantity' => $quantity,
+            'batch_number' => null,
+            'expiry_date' => null,
+            'reference_type' => PurchaseOrder::class,
+            'reference_id' => $order->id,
+        ]);
     }
 
     public function logOrderActivity($companyID, $orderID, $vendorID, $userID, $text, $label)

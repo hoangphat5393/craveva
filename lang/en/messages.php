@@ -396,7 +396,7 @@ return [
     ],
     'removeAgentText' => 'Removeagenttext',
     'cantAddFollowup' => 'Cantaddfollowup',
-    'dragDropScreenInfo' => 'Dragdropscreeninfo',
+    'dragDropScreenInfo' => 'Drag and drop will work on desktop devices only.',
     'noLeaveTypeAdded' => 'Noleavetypeadded',
     'deleteLeaveType' => 'Deleteleavetype',
     'unArchiveMessageLeave' => 'Unarchivemessageleave',

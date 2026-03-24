@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Modules\Purchase\Entities\DeliveryOrderItem;
 
 /**
  * App\Models\InvoiceItems
@@ -85,9 +86,9 @@ class InvoiceItems extends BaseModel
             if (! is_null($invoiceItem->taxes)) {
                 foreach (json_decode($invoiceItem->taxes) as $index => $tax) {
                     $tax = $this->taxbyid($tax)->first();
-                    $taxes .= $tax->tax_name.': '.$tax->rate_percent.'%';
+                    $taxes .= $tax->tax_name . ': ' . $tax->rate_percent . '%';
 
-                    $taxes = ($index + 1 != $numItems) ? $taxes.', ' : $taxes;
+                    $taxes = ($index + 1 != $numItems) ? $taxes . ', ' : $taxes;
                 }
             }
         }
@@ -98,5 +99,13 @@ class InvoiceItems extends BaseModel
     public function invoice(): BelongsTo
     {
         return $this->belongsTo(Invoice::class, 'invoice_id');
+    }
+
+    /**
+     * Optional link to fulfillment line (traceability). Does not drive stock by itself.
+     */
+    public function deliveryOrderItem(): BelongsTo
+    {
+        return $this->belongsTo(DeliveryOrderItem::class, 'delivery_order_item_id');
     }
 }

@@ -4,6 +4,7 @@ use App\Models\Company;
 use App\Models\GlobalSetting;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -73,7 +74,6 @@ return new class extends Migration
 
         if (! Schema::hasColumn('global_settings', 'global_app_name')) {
             Schema::table('global_settings', function (Blueprint $table) use ($defaultDriver) {
-                $table->renameColumn('company_name', 'global_app_name');
                 $table->string('sidebar_logo_style')->nullable()->default('square');
                 $table->string('light_logo')->nullable();
                 $table->enum('google_recaptcha_v2_status', ['active', 'deactive'])->default('deactive');
@@ -101,6 +101,7 @@ return new class extends Migration
                 $table->decimal('longitude', 11, 8)->default('75.78727090000007');
                 $table->boolean('rounded_theme');
             });
+            $this->renameColumnSafely('global_settings', 'company_name', 'global_app_name');
             $globalSetting->logo_background_color = '#FFFFFF';
             $globalSetting->allowed_file_types = 'image/*,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/docx,application/pdf,text/plain,application/msword,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/zip,application/x-zip-compressed, application/x-compressed, multipart/x-zip,.xlsx,video/x-flv,video/mp4,application/x-mpegURL,video/MP2T,video/3gpp,video/quicktime,video/x-msvideo,video/x-ms-wmv,application/sla,.stl';
             $globalSetting->saveQuietly();
@@ -222,5 +223,34 @@ return new class extends Migration
     public function down()
     {
         Schema::dropIfExists('global_settings');
+    }
+
+    private function renameColumnSafely(string $table, string $from, string $to): void
+    {
+        if (! Schema::hasColumn($table, $from) || Schema::hasColumn($table, $to)) {
+            return;
+        }
+
+        $driver = Schema::getConnection()->getDriverName();
+
+        if (in_array($driver, ['mysql', 'mariadb'], true)) {
+            DB::statement("ALTER TABLE `{$table}` RENAME COLUMN `{$from}` TO `{$to}`");
+
+            return;
+        }
+
+        if ($driver === 'pgsql') {
+            DB::statement("ALTER TABLE \"{$table}\" RENAME COLUMN \"{$from}\" TO \"{$to}\"");
+
+            return;
+        }
+
+        if ($driver === 'sqlsrv') {
+            DB::statement("EXEC sp_rename '{$table}.{$from}', '{$to}', 'COLUMN'");
+
+            return;
+        }
+
+        throw new \RuntimeException('renameColumn fallback is disabled to avoid doctrine/dbal dependency in this migration.');
     }
 };

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biomixing — Manual mixing 250KG (2025.09.08)</title>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'neutral',
+            flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis' },
+        });
+    </script>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+            padding: 1rem 1.25rem 2rem;
+            background: #f6f7f9;
+            color: #1a1a1a;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin: 0 0 0.35rem;
+        }
+
+        .sub {
+            text-align: center;
+            font-size: 0.85rem;
+            color: #555;
+            margin-bottom: 1rem;
+        }
+
+        .wrap {
+            max-width: 100%;
+            overflow: auto;
+            background: #fff;
+            border: 1px solid #e2e4e8;
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .06);
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+            min-height: 200px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Processing flow — Manual mixing 250KG</h1>
+    <p class="sub">Processing flow chart 2025.09.08 · Open this file in a browser (double-click or drag into
+        Chrome/Edge).</p>
+    <div class="wrap">
+        <div class="mermaid">flowchart TB
+            V9_IN["(9) Personnel &amp; vehicle access control"]
+            ENTRY["Raw materials / packaging inbound (Building A or B)"]
+            INSP{"Raw material &amp; packaging inspection"}
+            V9_IN --> ENTRY --> INSP
+            INSP -->|N| RETURN["Return / reject"]
+            INSP -->|Y| STORE["Receive &amp; store"]
+            KEEP["Record keeping / retention (收存)"]
+            subgraph W1["(1) Material &amp; packaging warehousing"]
+            WH_RM["Raw material warehouse"]
+            WH_TEMP["Temperature-controlled room"]
+            end
+            STORE --> WH_RM
+            STORE --> WH_TEMP
+            FORM_CO["Company standard formula"]
+            FORM_CU["Custom product formula"]
+            WH_RM --> FORM_CO
+            WH_RM --> FORM_CU
+            WH_TEMP --> FORM_CO
+            WH_TEMP --> FORM_CU
+            subgraph P4["(4) Processing steps"]
+            M2["(2) Manual weighing"]
+            CHK{"Confirm weight &amp; materials"}
+            HR{"Handwritten records"}
+            FEED["Manual feeding port"]
+            SCREEN["Raw material sieving — CCP(2)"]
+            MIX["250KG mixer"]
+            MAG["(10) Magnetic separation"]
+            end
+            FORM_CO -.->|Formula| M2
+            FORM_CU -.->|Formula| M2
+            M2 --> CHK
+            CHK -->|N| M2
+            CHK -->|Y| FEED
+            CHK --> HR
+            FEED --> SCREEN --> MIX --> MAG
+            PHY{"Physical inspection"}
+            MAG --> PHY
+            SAMPLE["Sampling"]
+            EXT_LAB["Commissioned testing: National Animal Industry Foundation (NAIF) or Xinhua Livestock Research Institute"]
+            PHY -->|Y| PKG["(6) Packaging"]
+            PHY -->|N| BAD_PHY["Nonconforming (NG)"]
+            PHY --> SAMPLE
+            SAMPLE --> EXT_LAB
+            HR -.-> KEEP
+            EXT_LAB -.-> KEEP
+            FG["(7) Finished goods warehouse"]
+            SHIP["(8) Shipping / transport"]
+            V9_OUT["(9) Personnel &amp; vehicle access control"]
+            REMAIN["Leftover material"]
+            RW["(5) Rework"]
+            PKG --> FG
+            PKG --> REMAIN
+            FG --> SHIP --> V9_OUT
+            REMAIN --> RW --> FEED
+            BAD_PHY --> RW
+            classDef ccp fill:#fff4e6,stroke:#c60,stroke-width:2px;
+            class SCREEN ccp;
+        </div>
+    </div>
+</body>
+
+</html>

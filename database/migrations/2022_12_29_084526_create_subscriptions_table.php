@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -71,8 +72,8 @@ return new class extends Migration
         if (! Schema::hasColumn('subscription_items', 'stripe_price')) {
             Schema::table('subscription_items', function (Blueprint $table) {
                 $table->string('stripe_price');
-                $table->renameColumn('stripe_plan', 'stripe_product');
             });
+            $this->renameColumnSafely('subscription_items', 'stripe_plan', 'stripe_product');
         }
 
         if (! Schema::hasColumn('subscriptions', 'stripe_price')) {
@@ -80,12 +81,40 @@ return new class extends Migration
                 $table->string('stripe_price')->after('stripe_id');
             });
         }
-
     }
 
     public function down()
     {
         Schema::dropIfExists('subscriptions');
         Schema::dropIfExists('subscription_items');
+    }
+
+    private function renameColumnSafely(string $table, string $from, string $to): void
+    {
+        if (! Schema::hasColumn($table, $from) || Schema::hasColumn($table, $to)) {
+            return;
+        }
+
+        $driver = Schema::getConnection()->getDriverName();
+
+        if (in_array($driver, ['mysql', 'mariadb'], true)) {
+            DB::statement("ALTER TABLE `{$table}` RENAME COLUMN `{$from}` TO `{$to}`");
+
+            return;
+        }
+
+        if ($driver === 'pgsql') {
+            DB::statement("ALTER TABLE \"{$table}\" RENAME COLUMN \"{$from}\" TO \"{$to}\"");
+
+            return;
+        }
+
+        if ($driver === 'sqlsrv') {
+            DB::statement("EXEC sp_rename '{$table}.{$from}', '{$to}', 'COLUMN'");
+
+            return;
+        }
+
+        throw new \RuntimeException('renameColumn fallback is disabled to avoid doctrine/dbal dependency in this migration.');
     }
 };

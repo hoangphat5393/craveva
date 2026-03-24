@@ -6,34 +6,34 @@ Tài liệu lưu thư viện (Composer) và tên module dùng trong logic Packag
 
 ## 1. Thư viện chính (Composer) liên quan Package & Module
 
-| Thư viện | Mục đích |
-|----------|----------|
-| `laravel/framework` | Core framework. |
-| `nwidart/laravel-modules` | Quản lý module (Modules/), load route, `Module::disabledModuleArray()`. |
-| `laravel/fortify` | Auth (login flow). |
-| `mitchbred/entrust` | Role/permission. |
-| `yajra/laravel-datatables-oracle` | DataTable (PackageDataTable, danh sách package). |
-| `yajra/laravel-datatables-html` | HTML builder cho DataTable. |
-| `yajra/laravel-datatables-buttons` | Nút export cho DataTable. |
-| `doctrine/dbal` | DB schema/migration. |
+| Thư viện                           | Mục đích                                                                |
+| ---------------------------------- | ----------------------------------------------------------------------- |
+| `laravel/framework`                | Core framework.                                                         |
+| `nwidart/laravel-modules`          | Quản lý module (Modules/), load route, `Module::disabledModuleArray()`. |
+| `laravel/fortify`                  | Auth (login flow).                                                      |
+| `mitchbred/entrust`                | Role/permission.                                                        |
+| `yajra/laravel-datatables-oracle`  | DataTable (PackageDataTable, danh sách package).                        |
+| `yajra/laravel-datatables-html`    | HTML builder cho DataTable.                                             |
+| `yajra/laravel-datatables-buttons` | Nút export cho DataTable.                                               |
+| `doctrine/dbal`                    | DB schema/migration.                                                    |
 
 ---
 
 ## 2. Thư viện khác thường dùng trong dự án
 
-| Thư viện | Ghi chú |
-|----------|--------|
-| `laravel/cashier` | Subscription / thanh toán. |
-| `laravel/sanctum` | API token. |
-| `laravel/socialite` | Đăng nhập social. |
-| `barryvdh/laravel-dompdf` | PDF. |
-| `maatwebsite/excel` | Excel. |
-| `intervention/image` | Xử lý ảnh. |
-| `guzzlehttp/guzzle` | HTTP client. |
-| `spatie/laravel-backup` | Backup. |
-| `froiden/envato` | Envato/plugin. |
-| `froiden/laravel-installer` | Installer. |
-| `froiden/laravel-rest-api` | REST API. |
+| Thư viện                    | Ghi chú                    |
+| --------------------------- | -------------------------- |
+| `laravel/cashier`           | Subscription / thanh toán. |
+| `laravel/sanctum`           | API token.                 |
+| `laravel/socialite`         | Đăng nhập social.          |
+| `barryvdh/laravel-dompdf`   | PDF.                       |
+| `maatwebsite/excel`         | Excel.                     |
+| `intervention/image`        | Xử lý ảnh.                 |
+| `guzzlehttp/guzzle`         | HTTP client.               |
+| `spatie/laravel-backup`     | Backup.                    |
+| `froiden/envato`            | Envato/plugin.             |
+| `froiden/laravel-installer` | Installer.                 |
+| `froiden/laravel-rest-api`  | REST API.                  |
 
 ---
 

@@ -34,16 +34,14 @@ return new class extends Migration
                 $table->dropForeign(['lead_contact_id']);
             });
 
-            Schema::table('lead_contacts', function (Blueprint $table) {
-                $table->renameColumn('name', 'client_name');
-                $table->renameColumn('email', 'client_email');
-            });
+            $this->renameColumnSafely('lead_contacts', 'name', 'client_name');
+            $this->renameColumnSafely('lead_contacts', 'email', 'client_email');
 
             Schema::rename('leads', 'deals');
             Schema::rename('lead_contacts', 'leads');
 
+            $this->renameColumnSafely('lead_notes', 'lead_contact_id', 'lead_id');
             Schema::table('lead_notes', function (Blueprint $table) {
-                $table->renameColumn('lead_contact_id', 'lead_id');
                 $table->foreign('lead_id')->references('id')->on('leads')->onDelete('cascade')->onUpdate('cascade');
             });
 
@@ -54,8 +52,8 @@ return new class extends Migration
             } catch (\Exception $e) {
                 echo "\nForeign key lead_contact_id does not exist in deals\n";
             }
+            $this->renameColumnSafely('deals', 'lead_contact_id', 'lead_id');
             Schema::table('deals', function (Blueprint $table) {
-                $table->renameColumn('lead_contact_id', 'lead_id');
                 $table->foreign('lead_id')->references('id')->on('leads')->onDelete('cascade')->onUpdate('cascade');
             });
 
@@ -63,25 +61,15 @@ return new class extends Migration
             CustomFieldGroup::where('model', 'App\Models\LeadContact')->update(['name' => 'Lead', 'model' => 'App\Models\Lead']); // Change group
             DB::table('custom_fields_data')->where('model', 'App\Models\LeadContact')->update(['model' => 'App\Models\Lead']); // Change model
 
-            Schema::table('deal_notes', function (Blueprint $table) {
-                $table->renameColumn('lead_id', 'deal_id');
-            });
+            $this->renameColumnSafely('deal_notes', 'lead_id', 'deal_id');
 
-            Schema::table('lead_follow_up', function (Blueprint $table) {
-                $table->renameColumn('lead_id', 'deal_id');
-            });
+            $this->renameColumnSafely('lead_follow_up', 'lead_id', 'deal_id');
 
-            Schema::table('lead_products', function (Blueprint $table) {
-                $table->renameColumn('lead_id', 'deal_id');
-            });
+            $this->renameColumnSafely('lead_products', 'lead_id', 'deal_id');
 
-            Schema::table('proposals', function (Blueprint $table) {
-                $table->renameColumn('lead_id', 'deal_id');
-            });
+            $this->renameColumnSafely('proposals', 'lead_id', 'deal_id');
 
-            Schema::table('purpose_consent_leads', function (Blueprint $table) {
-                $table->renameColumn('lead_id', 'deal_id');
-            });
+            $this->renameColumnSafely('purpose_consent_leads', 'lead_id', 'deal_id');
 
             DB::statement("UPDATE permissions SET display_name = REPLACE(display_name, 'Deal', 'Lead') WHERE name IN ('view_lead_files', 'add_lead_files',
                             'delete_lead_files', 'view_lead_follow_up', 'add_lead_follow_up', 'edit_lead_follow_up', 'delete_lead_follow_up',
@@ -95,9 +83,7 @@ return new class extends Migration
                 Permission::where('module_id', $dealModule->id)->update(['module_id' => $leadModule->id, 'is_custom' => 1]);
                 $dealModule->delete();
             }
-
         }
-
     }
 
     /**
@@ -106,5 +92,34 @@ return new class extends Migration
     public function down(): void
     {
         //
+    }
+
+    private function renameColumnSafely(string $table, string $from, string $to): void
+    {
+        if (! Schema::hasColumn($table, $from) || Schema::hasColumn($table, $to)) {
+            return;
+        }
+
+        $driver = Schema::getConnection()->getDriverName();
+
+        if (in_array($driver, ['mysql', 'mariadb'], true)) {
+            DB::statement("ALTER TABLE `{$table}` RENAME COLUMN `{$from}` TO `{$to}`");
+
+            return;
+        }
+
+        if ($driver === 'pgsql') {
+            DB::statement("ALTER TABLE \"{$table}\" RENAME COLUMN \"{$from}\" TO \"{$to}\"");
+
+            return;
+        }
+
+        if ($driver === 'sqlsrv') {
+            DB::statement("EXEC sp_rename '{$table}.{$from}', '{$to}', 'COLUMN'");
+
+            return;
+        }
+
+        throw new \RuntimeException('renameColumn fallback is disabled to avoid doctrine/dbal dependency in this migration.');
     }
 };

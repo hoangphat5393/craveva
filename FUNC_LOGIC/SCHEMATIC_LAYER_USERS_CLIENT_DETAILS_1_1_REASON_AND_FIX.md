@@ -1,6 +1,7 @@
 # Schematic layer báo `users` 1–many `client_details`: Nguyên do & Giải pháp
 
 **Ngày:** 2026-03-15  
+**Kiểm tra DB lại:** 2026-03-24 (local / môi trường dev đang dùng)  
 **Ngữ cảnh:** Khi kết nối AI/schematic tool vào DB, tool suy ra quan hệ `users` → `client_details` là **1–many**, trong khi nghiệp vụ mong muốn **1–1** (mỗi client user có đúng một `client_details`).
 
 ---
@@ -8,11 +9,14 @@
 ## 1. Kết luận nhanh
 
 - **Dữ liệu thực tế hiện tại:** `users` ↔ `client_details` đang là **1–1** (không có `user_id` trùng trong `client_details`).
-- **Schema-level (database constraints):** **chưa** có `UNIQUE` trên `client_details.user_id`, nên các tool suy luận schema thường mặc định `users` **hasMany** `client_details`.
+- **Schema-level (database constraints):** đã có **`UNIQUE`** trên `client_details.user_id` (tên index: `client_details_user_id_unique`), migration `database/migrations/2026_03_15_000000_add_unique_user_id_to_client_details_table.php`. **FK** `client_details_user_id_foreign` (`user_id` → `users.id`) vẫn hiện diện — quan hệ 1–1 được thể hiện đầy đủ ở DB.
+- **Application (Eloquent):** `User::clientDetails()` là `hasOne(ClientDetails::class, 'user_id')`; `ClientDetails::user()` là `belongsTo(User::class, 'user_id')` — khớp 1–1.
 
 ---
 
 ## 2. Nguyên do schematic layer suy ra 1–many
+
+Phần này mô tả **lý do lịch sử** khi schema thiếu `UNIQUE` trên `user_id` hoặc khi tool chỉ đọc dump cũ. DB đã migrate (mục 1) thì constraint đủ để khẳng định 1–1 nếu tool introspect đúng.
 
 ### 2.1 Tool suy luận quan hệ dựa trên constraint, không dựa trên dữ liệu
 
@@ -21,34 +25,38 @@ Phần lớn schematic/ER tools suy luận:
 - Có FK `client_details.user_id` → `users.id` ⇒ `client_details` **belongsTo** `users`
 - Nhưng nếu không có ràng buộc `UNIQUE` trên `client_details.user_id` ⇒ phía `users` có thể có **nhiều** `client_details` (về mặt schema), nên tool kết luận **1–many**.
 
-### 2.2 Schema dump xác nhận chưa có UNIQUE
+### 2.2 File dump vs DB thật
 
-Trong `database/schema/mysql-schema.dump`, `client_details` hiện có:
+File `database/schema/mysql-schema.dump` có thể **lỗi thời** (snapshot cũ). Trong dump đó `client_details` có:
 
 - `KEY client_details_user_id_foreign (user_id)` (index thường)
 - `FOREIGN KEY client_details_user_id_foreign (user_id) REFERENCES users(id)`
-- **Không có** `UNIQUE KEY (...user_id...)`
+- **Không** phản ánh migration sau này thêm `UNIQUE`.
 
-=> Vì vậy, schema-level chưa “khẳng định” 1–1.
+**Trên DB đã migrate (kiểm tra 2026-03-24):** có thêm `UNIQUE` `client_details_user_id_unique` trên `user_id` (đồng thời vẫn có FK như trên). Tool schematic nên đọc **schema live** hoặc regenerate dump sau khi migrate.
 
 ---
 
 ## 3. Kiểm tra thực tế dữ liệu (DB)
 
-Kết quả truy vấn trực tiếp trên DB (local) cho thấy:
+Kết quả truy vấn trực tiếp trên DB (**2026-03-24**, cùng môi trường dev/local):
 
-- `client_details` có **17.565** dòng
-- số `user_id` khác nhau trong `client_details`: **17.565**
-- số `user_id` có > 1 `client_details`: **0**
-- số user role `client`: **17.565**
-- user role `client` nhưng không có `client_details`: **0**
-- `client_details.user_id` không phải user role `client`: **0**
+| Kiểm tra                                                         | Kết quả    |
+| ---------------------------------------------------------------- | ---------- |
+| Số dòng `client_details`                                         | **17.565** |
+| Số `user_id` khác nhau trong `client_details`                    | **17.565** |
+| Nhóm `user_id` có > 1 `client_details`                           | **0**      |
+| User có role `client`                                            | **17.565** |
+| User role `client` nhưng không có dòng `client_details`          | **0**      |
+| `client_details.user_id` trỏ tới user **không** có role `client` | **0**      |
 
-=> **Dữ liệu đang đúng 1–1**, chỉ thiếu constraint để tool suy luận đúng.
+=> **Dữ liệu đúng 1–1 và đồng bộ với role client**; **ràng buộc UNIQUE + FK** đã có ở DB (xem mục 1).
 
 ---
 
 ## 4. Giải pháp khuyến nghị: Thêm UNIQUE cho `client_details.user_id`
+
+_(Trạng thái code: migration đã có trong repo; trên DB kiểm tra 2026-03-24 **đã** áp dụng UNIQUE.)_
 
 ### 4.1 Mục tiêu
 
@@ -120,8 +128,10 @@ Muốn 1 người / 1 email có thể là client của nhiều company thì cầ
 
 ## 7. Checklist triển khai (khi quyết định thêm UNIQUE)
 
-- [ ] Trên staging/prod: kiểm tra duplicates:
+- [x] Migration `unique(client_details.user_id)` — có file `2026_03_15_000000_add_unique_user_id_to_client_details_table.php`
+- [x] Dev/local (2026-03-24): 0 duplicate `user_id`; index `client_details_user_id_unique` tồn tại
+- [ ] **Staging/prod:** trước khi migrate, chạy kiểm tra duplicates (nếu chưa migrate):
     - `select user_id, count(*) from client_details group by user_id having count(*)>1;`
-- [ ] Nếu 0 duplicates: thêm migration `unique(client_details.user_id)`
-- [ ] Chạy migrate
-- [ ] Xác nhận tool schematic/AI suy luận `users` ↔ `client_details` là 1–1
+- [ ] **Staging/prod:** chạy migrate và xác nhận index giống dev
+- [ ] Regenerate `mysql-schema.dump` (hoặc dùng schema introspection live) để tool schematic không đọc file dump cũ
+- [ ] Xác nhận tool schematic/AI suy luận `users` ↔ `client_details` là 1–1 khi trỏ vào DB đã có UNIQUE

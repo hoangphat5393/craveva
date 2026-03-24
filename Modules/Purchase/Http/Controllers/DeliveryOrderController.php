@@ -93,7 +93,7 @@ class DeliveryOrderController extends AccountBaseController
 
     public function create()
     {
-        $this->pageTitle = __('app.add').' '.__('purchase::app.menu.deliveryOrders');
+        $this->pageTitle = __('app.add') . ' ' . __('purchase::app.menu.deliveryOrders');
         $this->purchaseOrders = PurchaseOrder::where('company_id', $this->company ? $this->company->id : null)->get();
 
         $delivery = new DeliveryOrder;
@@ -116,7 +116,7 @@ class DeliveryOrderController extends AccountBaseController
 
     public function edit($id)
     {
-        $this->pageTitle = __('app.edit').' '.__('purchase::app.menu.deliveryOrders');
+        $this->pageTitle = __('app.edit') . ' ' . __('purchase::app.menu.deliveryOrders');
         $this->delivery = DeliveryOrder::with('items', 'items.purchaseItem')->findOrFail($id);
         $this->purchaseOrders = PurchaseOrder::where('company_id', $this->company ? $this->company->id : null)->get();
 
@@ -146,6 +146,9 @@ class DeliveryOrderController extends AccountBaseController
 
         $delivery = DeliveryOrder::findOrFail($id);
         $delivery->purchase_order_id = $request->purchase_order_id;
+        $po = $request->purchase_order_id ? PurchaseOrder::find($request->purchase_order_id) : null;
+        $delivery->warehouse_id = $request->input('warehouse_id') ?? $po?->warehouse_id;
+        $delivery->type = $request->input('type', $delivery->type ?? 'inbound');
         $delivery->delivery_number = $request->delivery_number;
         $delivery->delivery_date = \Carbon\Carbon::createFromFormat(company()->date_format, $request->delivery_date)->format('Y-m-d');
         $delivery->status = $request->status;
@@ -186,6 +189,9 @@ class DeliveryOrderController extends AccountBaseController
         $delivery = new DeliveryOrder;
         $delivery->company_id = $this->company ? $this->company->id : null;
         $delivery->purchase_order_id = $request->purchase_order_id;
+        $po = $request->purchase_order_id ? PurchaseOrder::find($request->purchase_order_id) : null;
+        $delivery->warehouse_id = $request->input('warehouse_id') ?? $po?->warehouse_id;
+        $delivery->type = $request->input('type', 'inbound');
         $delivery->delivery_number = $request->delivery_number;
         $delivery->delivery_date = \Carbon\Carbon::createFromFormat(company()->date_format, $request->delivery_date)->format('Y-m-d');
         $delivery->status = $request->status;
@@ -232,8 +238,8 @@ class DeliveryOrderController extends AccountBaseController
         $canvas = $dom_pdf->getCanvas();
         $canvas->page_text(530, 820, 'Page {PAGE_NUM} of {PAGE_COUNT}', null, 10);
 
-        $filename = 'delivery-order-'.$this->delivery->delivery_number;
+        $filename = 'delivery-order-' . $this->delivery->delivery_number;
 
-        return $pdf->download($filename.'.pdf');
+        return $pdf->download($filename . '.pdf');
     }
 }

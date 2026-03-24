@@ -34,4 +34,14 @@ class Warehouse extends BaseModel
             ->withPivot('quantity')
             ->withTimestamps();
     }
+
+    public function batches(): HasMany
+    {
+        return $this->hasMany(WarehouseProductBatch::class, 'warehouse_id');
+    }
+
+    public function reservations(): HasMany
+    {
+        return $this->hasMany(StockReservation::class, 'warehouse_id');
+    }
 }

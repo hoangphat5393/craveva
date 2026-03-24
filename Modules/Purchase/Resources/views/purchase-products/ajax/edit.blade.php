@@ -162,15 +162,15 @@
                             <div class="col-12 mt-3">
                                 <div class="row">
                                     <div class="col-md-3 col-6">
-                                        <x-forms.number fieldId="wholesale_price" :fieldLabel="__('Wholesale Price')" fieldName="wholesale_price" :fieldPlaceholder="__('0')" :fieldValue="$product->wholesale_price">
+                                        <x-forms.number fieldId="wholesale_price" :fieldLabel="__('Wholesale_Price.Wholesale Price')" fieldName="wholesale_price" :fieldPlaceholder="__('0')" :fieldValue="$product->wholesale_price">
                                         </x-forms.number>
                                     </div>
                                     <div class="col-md-3 col-6">
-                                        <x-forms.number fieldId="price_per_box" :fieldLabel="__('Price Per Box')" fieldName="price_per_box" :fieldPlaceholder="__('0')" :fieldValue="$product->price_per_box">
+                                        <x-forms.number fieldId="price_per_box" :fieldLabel="__('Price_Per_Box.Price Per Box')" fieldName="price_per_box" :fieldPlaceholder="__('0')" :fieldValue="$product->price_per_box">
                                         </x-forms.number>
                                     </div>
                                     <div class="col-md-3 col-6">
-                                        <x-forms.number fieldId="employee_price" :fieldLabel="__('Employee Price')" fieldName="employee_price" :fieldPlaceholder="__('0')" :fieldValue="$product->employee_price">
+                                        <x-forms.number fieldId="employee_price" :fieldLabel="__('Employee_Price.Employee Price')" fieldName="employee_price" :fieldPlaceholder="__('0')" :fieldValue="$product->employee_price">
                                         </x-forms.number>
                                     </div>
                                     <div class="col-md-3 col-6">
@@ -243,7 +243,7 @@
                             <div class="col-md-12 mt-3">
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <x-forms.select fieldId="storage_condition" :fieldLabel="__('Storage Condition')" fieldName="storage_condition" search="true">
+                                        <x-forms.select fieldId="storage_condition" :fieldLabel="__('Storage_Condition.Storage Condition')" fieldName="storage_condition" search="true">
                                             <option value="">--</option>
                                             <option value="Frozen" {{ $product->storage_condition == 'Frozen' ? 'selected' : '' }}>Frozen</option>
                                             <option value="Chilled" {{ $product->storage_condition == 'Chilled' ? 'selected' : '' }}>Chilled</option>
@@ -251,7 +251,7 @@
                                         </x-forms.select>
                                     </div>
                                     <div class="col-md-6">
-                                        <x-forms.text fieldId="certification" :fieldLabel="__('Certification')" fieldName="certification" :fieldPlaceholder="__('Certification')" :fieldValue="$product->certification">
+                                        <x-forms.text fieldId="certification" :fieldLabel="__('Certification.Certification')" fieldName="certification" :fieldPlaceholder="__('Certification.Certification')" :fieldValue="$product->certification">
                                         </x-forms.text>
                                     </div>
                                 </div>
@@ -260,7 +260,7 @@
                             <div class="col-md-12 mt-3">
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <x-forms.text fieldId="inventory_type" :fieldLabel="__('Inventory Type')" fieldName="inventory_type" :fieldPlaceholder="__('Inventory Type')" :fieldValue="$product->inventory_type">
+                                        <x-forms.text fieldId="inventory_type" :fieldLabel="__('Inventory_Type.Inventory Type')" fieldName="inventory_type" :fieldPlaceholder="__('Inventory_Type.Inventory Type')" :fieldValue="$product->inventory_type">
                                         </x-forms.text>
                                     </div>
                                 </div>

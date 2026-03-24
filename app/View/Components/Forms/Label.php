@@ -26,10 +26,42 @@ class Label extends Component
         $fieldLabel = null,
         $popover = null
     ) {
-        $this->fieldLabel = $fieldLabel;
+        $this->fieldLabel = $this->normalizeFieldLabel($fieldLabel);
         $this->fieldId = $fieldId;
-        $this->popover = $popover;
-        $this->fieldRequired = $fieldRequired;
+        $this->popover = is_array($popover) ? null : $popover;
+        $this->fieldRequired = $this->normalizeFieldRequired($fieldRequired);
+    }
+
+    /**
+     * Blade may pass booleans from :fieldRequired="... ? true : false"; bad data can rarely pass arrays.
+     */
+    protected function normalizeFieldRequired(mixed $fieldRequired): string
+    {
+        if (is_array($fieldRequired)) {
+            return 'false';
+        }
+        if (is_bool($fieldRequired)) {
+            return $fieldRequired ? 'true' : 'false';
+        }
+
+        return (string) ($fieldRequired ?: 'false');
+    }
+
+    protected function normalizeFieldLabel(mixed $fieldLabel): ?string
+    {
+        if ($fieldLabel === null) {
+            return null;
+        }
+        if (is_string($fieldLabel)) {
+            return $fieldLabel;
+        }
+        if (is_array($fieldLabel)) {
+            return implode(' ', array_filter(array_map(static function ($v) {
+                return is_scalar($v) || $v === null ? (string) $v : '';
+            }, $fieldLabel)));
+        }
+
+        return is_scalar($fieldLabel) ? (string) $fieldLabel : '';
     }
 
     /**

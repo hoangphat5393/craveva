@@ -30,12 +30,12 @@
                     <p class="f-w-500">{{ __('purchase::app.purchaseInformation') }}</p>
                     <x-cards.data-row :label="__('purchase::app.costPrice')" :value="$product->purchase_price ? currency_format($product->purchase_price) : '--'" />
 
-                    <x-cards.data-row :label="__('Storage Condition')" :value="$product->storage_condition ?? '--'" />
-                    <x-cards.data-row :label="__('Certification')" :value="$product->certification ?? '--'" />
-                    <x-cards.data-row :label="__('Wholesale Price')" :value="$product->wholesale_price ? currency_format($product->wholesale_price) : '--'" />
-                    <x-cards.data-row :label="__('Price Per Box')" :value="$product->price_per_box ? currency_format($product->price_per_box) : '--'" />
-                    <x-cards.data-row :label="__('Employee Price')" :value="$product->employee_price ? currency_format($product->employee_price) : '--'" />
-                    <x-cards.data-row :label="__('Inventory Type')" :value="$product->inventory_type ?? '--'" />
+                    <x-cards.data-row :label="__('Storage_Condition.Storage Condition')" :value="$product->storage_condition ?? '--'" />
+                    <x-cards.data-row :label="__('Certification.Certification')" :value="$product->certification ?? '--'" />
+                    <x-cards.data-row :label="__('Wholesale_Price.Wholesale Price')" :value="$product->wholesale_price ? currency_format($product->wholesale_price) : '--'" />
+                    <x-cards.data-row :label="__('Price_Per_Box.Price Per Box')" :value="$product->price_per_box ? currency_format($product->price_per_box) : '--'" />
+                    <x-cards.data-row :label="__('Employee_Price.Employee Price')" :value="$product->employee_price ? currency_format($product->employee_price) : '--'" />
+                    <x-cards.data-row :label="__('Inventory_Type.Inventory Type')" :value="$product->inventory_type ?? '--'" />
 
                     <!-- Custom fields data -->
                     <x-forms.custom-field-show :fields="$fields" :model="$productData"></x-forms.custom-field-show>

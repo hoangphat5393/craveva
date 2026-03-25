@@ -1,8 +1,8 @@
 <?php
 
-return array (
-  'appreciations' => 
-  array (
+return array(
+  'appreciations' =>
+  array(
     'awardToEmployee' => 'Given To ',
     'awardTo' => 'Given To',
     'appreciationTypeName' => 'Award Name',
@@ -18,8 +18,8 @@ return array (
     'editAppreciation' => 'Edit Appreciation',
     'editAppreciationType' => 'Edit Award',
   ),
-  'projects' => 
-  array (
+  'projects' =>
+  array(
     'projectName' => 'Project Name',
     'members' => 'Members',
     'projectMembers' => 'Project Members',
@@ -114,8 +114,8 @@ return array (
     'visibleRatingToMembers' => 'Visible Rating to Members',
     'employeeWiseTaskReport' => 'Employee Wise Task Report',
   ),
-  'timeLogs' => 
-  array (
+  'timeLogs' =>
+  array(
     'startTimer' => 'Start Timer',
     'pauseTimer' => 'Pause Timer',
     'stopTimer' => 'Stop Timer',
@@ -159,8 +159,8 @@ return array (
     'whenLogged' => 'when Logged',
     'submitTimesheet' => 'Submit Timesheet',
   ),
-  'tasks' => 
-  array (
+  'tasks' =>
+  array(
     'assigned' => 'Assigned',
     'assignTo' => 'Assigned To',
     'totalTaskAssigned' => 'Total Task Assigned',
@@ -270,8 +270,8 @@ return array (
     'completed_tasks_not_rated' => 'Task(s) are completed for this duration but not rated yet',
     'workedHours' => 'Worked Hours',
   ),
-  'employees' => 
-  array (
+  'employees' =>
+  array(
     'hoursLogged' => 'Hours Logged',
     'employeeName' => 'Employee Name',
     'employeeId' => 'Employee ID',
@@ -381,8 +381,8 @@ return array (
     'on_contract' => 'On Contract',
     'internship' => 'Internship',
     'trainee' => 'Trainee',
-    'activities' => 
-    array (
+    'activities' =>
+    array(
       'leave-created' => 'Leave is created',
       'leave-updated' => 'Leave is updated',
       'leave-deleted' => 'Leave is deleted',
@@ -439,8 +439,8 @@ return array (
       'followUp-deleted' => 'Deal Follow Up is deleted',
     ),
   ),
-  'attendance' => 
-  array (
+  'attendance' =>
+  array(
     'present' => 'Present',
     'absent' => 'Absent',
     'extraDays' => 'Extra Working Days',
@@ -528,8 +528,8 @@ return array (
     'scheduleShifts' => 'Schedule Shifts',
     'notScheduled' => 'Not Scheduled',
   ),
-  'bankaccount' => 
-  array (
+  'bankaccount' =>
+  array(
     'bankName' => 'Bank Name',
     'accountName' => 'Account Holder Name',
     'accountType' => 'Account Type',
@@ -585,8 +585,8 @@ return array (
     'insight' => 'Insight',
     'payment-debited' => 'Payment Debited',
   ),
-  'tickets' => 
-  array (
+  'tickets' =>
+  array(
     'type' => 'Type',
     'agent' => 'Agent',
     'ticket' => 'Ticket',
@@ -595,8 +595,8 @@ return array (
     'requestedOn' => 'Requested On',
     'addTicket' => 'Create Ticket',
     'groupName' => 'Group Name',
-    'activity' => 
-    array (
+    'activity' =>
+    array(
       'create' => 'Ticket created',
       'reply' => ':userName replied on ticket',
       'note' => ':userName added a note',
@@ -678,8 +678,8 @@ return array (
     'message' => 'Message',
     'smtpSettings' => 'SMTP Settings',
   ),
-  'gdpr' => 
-  array (
+  'gdpr' =>
+  array(
     'optIn' => 'OPT IN',
     'optOut' => 'OPT OUT',
     'purpose' => 'Purpose',
@@ -712,8 +712,8 @@ return array (
     'dataRemovalDescription' => 'Briefly describe the purpose of removal of data',
     'removalRequestSuccess' => 'Removal request has been sent to the admin. You will be informed once it is approved',
   ),
-  'client' => 
-  array (
+  'client' =>
+  array(
     'noteTitle' => 'Note Title',
     'noteType' => 'Note Type',
     'clientCode' => 'Client Code',
@@ -770,8 +770,8 @@ return array (
     'sendCredentialsMessage' => 'Do you want to send credentials via E-mail to the client ?',
     'assignProject' => 'Assign Project',
   ),
-  'proposal' => 
-  array (
+  'proposal' =>
+  array(
     'publicLink' => 'Public Link',
     'name' => 'Name',
     'createProposal' => 'Create Proposal',
@@ -800,8 +800,8 @@ return array (
     'download' => 'Download',
     'sendProposal' => 'Send Proposal',
   ),
-  'contracts' => 
-  array (
+  'contracts' =>
+  array(
     'contractNumber' => 'Contract Number',
     'summery' => 'Summary',
     'companyLogo' => 'Company Logo',
@@ -840,8 +840,8 @@ return array (
     'streetAddress1' => 'Street Address 1',
     'streetAddress2' => 'Street Address 2',
   ),
-  'estimates' => 
-  array (
+  'estimates' =>
+  array(
     'companysignature' => 'Company Signature',
     'copyLink' => 'Copy Public Link',
     'validTill' => 'Valid Till',
@@ -884,8 +884,8 @@ return array (
     'addEstimateTemplate' => 'Add Estimate Template',
     'estimateTemplates' => 'ESTIMATE TEMPLATE',
   ),
-  'credit-notes' => 
-  array (
+  'credit-notes' =>
+  array(
     'total' => 'Total',
     'creditNoteDate' => 'Credit Note Date',
     'addCreditNote' => 'Add Credit Note',
@@ -918,8 +918,8 @@ return array (
     'partial' => 'Partial',
     'uploadInvoice' => 'Upload Invoice',
   ),
-  'deal' => 
-  array (
+  'deal' =>
+  array(
     'dealName' => 'Deal Name',
     'pipeline' => 'Pipeline',
     'dealValue' => 'Deal Value',
@@ -987,8 +987,8 @@ return array (
     'leadSetting' => 'Lead Setting',
     'ticketSetting' => 'Ticket Setting',
   ),
-  'leadContact' => 
-  array (
+  'leadContact' =>
+  array(
     'leadName' => 'Lead Name',
     'stage' => 'Stage',
     'leadStage' => 'Deal Stage',
@@ -1004,8 +1004,8 @@ return array (
     'leadContactsName' => 'Lead Contact Name',
     'title' => 'Lead Contact',
   ),
-  'lead' => 
-  array (
+  'lead' =>
+  array(
     'companyName' => 'Company Name',
     'email' => 'Email',
     'mobile' => 'Mobile',
@@ -1070,8 +1070,8 @@ return array (
     'addLeadCategory' => 'Add Lead Category',
     'editLeadStatus' => 'Edit Lead Status',
   ),
-  'department' => 
-  array (
+  'department' =>
+  array(
     'parentDepartment' => 'Parent Department',
     'treeView' => 'Hierarchy View',
     'dragAndDrop' => 'Drag & drop to restructure',
@@ -1081,8 +1081,8 @@ return array (
     'title' => 'Department',
     'addDepartment' => 'Add Department',
   ),
-  'discussions' => 
-  array (
+  'discussions' =>
+  array(
     'replied' => 'replied at',
     'posted' => 'posted on',
     'discussionCategory' => 'Discussion Category',
@@ -1092,8 +1092,8 @@ return array (
     'removeBestReply' => 'Remove as Best Reply',
     'goBestReply' => 'Go To Best Reply',
   ),
-  'estimateRequest' => 
-  array (
+  'estimateRequest' =>
+  array(
     'estimateRequest' => 'Estimate Request',
     'estimatedBudget' => 'Estimated Budget',
     'earlyRequirement' => 'Earlyrequirement',
@@ -1106,8 +1106,8 @@ return array (
     'estimateRequests' => 'Estimate Requests',
     'prefix' => 'ESTRQ',
   ),
-  'invoices' => 
-  array (
+  'invoices' =>
+  array(
     'total' => 'Total',
     'notSent' => 'Not Sent',
     'amount' => 'Amount',
@@ -1203,8 +1203,8 @@ return array (
     'to' => 'To',
     'canceled' => 'Canceled',
   ),
-  'events' => 
-  array (
+  'events' =>
+  array(
     'eventName' => 'Event Name',
     'where' => 'Where',
     'attendees' => 'Attendees',
@@ -1230,8 +1230,8 @@ return array (
     'viewAttendees' => 'View Attendees',
   ),
   'status' => 'Status',
-  'expenses' => 
-  array (
+  'expenses' =>
+  array(
     'itemName' => 'Item Name',
     'purchaseFrom' => 'Purchased From',
     'purchaseDate' => 'Purchase Date',
@@ -1246,8 +1246,8 @@ return array (
     'removeBill' => 'Remove Bill',
     'payrollExpenseReport' => 'Payroll Expense Report',
   ),
-  'payments' => 
-  array (
+  'payments' =>
+  array(
     'paidOn' => 'Paid On',
     'addPayment' => 'Add Payment',
     'paymentLink' => 'View Payment Page',
@@ -1308,8 +1308,8 @@ return array (
     'paymentDateMessage' => 'Payment date required.',
     'transactionIdMsg' => 'Transaction id required.',
   ),
-  'holiday' => 
-  array (
+  'holiday' =>
+  array(
     'date' => 'Date',
     'occasion' => 'Occasion',
     'day' => 'Day',
@@ -1325,8 +1325,8 @@ return array (
     'listOf' => 'List Of',
     'viewOnCalendar' => 'View on Calendar',
   ),
-  'recurringInvoice' => 
-  array (
+  'recurringInvoice' =>
+  array(
     'nextInvoice' => 'Next invoice',
     'billingCycle' => 'No. of billing cycle is',
     'week' => 'Week',
@@ -1341,8 +1341,8 @@ return array (
     'completedTotalInvoice' => 'Completed/Total Invoice',
   ),
   'taskCode' => 'Code',
-  'knowledgeBase' => 
-  array (
+  'knowledgeBase' =>
+  array(
     'knowledge' => 'Knowledge',
     'addknowledgebase' => 'Add New Article',
     'knowledgebase' => 'Knowledge Base',
@@ -1355,8 +1355,8 @@ return array (
     'uploadFile' => 'Upload File',
     'knowledgeDetails' => 'Article Details',
   ),
-  'leaves' => 
-  array (
+  'leaves' =>
+  array(
     'overUtilized' => 'Over Utilized',
     'preApproved' => 'Pre-Approved',
     'halfDay' => 'Half Day',
@@ -1434,8 +1434,8 @@ return array (
     'married' => 'Married',
     'unmarried' => 'Single',
   ),
-  'notices' => 
-  array (
+  'notices' =>
+  array(
     'notice' => 'Notice',
     'addNotice' => 'Add New Notice',
     'updateNotice' => 'Update Notice',
@@ -1444,15 +1444,15 @@ return array (
     'noticeHeading' => 'Notice Heading',
     'noticeDetails' => 'Notice Details',
   ),
-  'orders' => 
-  array (
+  'orders' =>
+  array(
     'orderDate' => 'Order Date',
     'createOrder' => 'Create Order',
     'orderNumber' => 'Order Number',
   ),
   'productImage' => 'Product Image',
-  'productCategory' => 
-  array (
+  'productCategory' =>
+  array(
     'productCategory' => 'Product Category',
     'productSubCategory' => 'Product Sub Category',
     'subCategory' => 'Sub Category',
@@ -1460,8 +1460,8 @@ return array (
     'filterByCategory' => 'Filter by category',
     'subCategoryName' => 'Sub Category Name',
   ),
-  'expensesRecurring' => 
-  array (
+  'expensesRecurring' =>
+  array(
     'nextExpense' => 'Next Expense',
     'addExpense' => 'Add Recurring Expense',
     'immediateExpense' => 'Immediate start ( Expense will generate from now )',
@@ -1481,8 +1481,8 @@ return array (
     'lastPaymentDate' => 'Last Payment Date',
   ),
   'invoiceExport' => 'Invoice',
-  'accountSettings' => 
-  array (
+  'accountSettings' =>
+  array(
     'companyName' => 'Company Name',
     'companyAddress' => 'Company Address',
     'dateFormat' => 'Date Format',
@@ -1554,13 +1554,13 @@ return array (
     'commaSeparatedValues' => 'Add comma (,) separated values.',
   ),
   'ticketStatus' => ' Ticket Status',
-  'awards' => 
-  array (
+  'awards' =>
+  array(
     'appreciationType' => 'Award',
     'backgroundColor' => 'Icon Background Color',
   ),
-  'currencySettings' => 
-  array (
+  'currencySettings' =>
+  array(
     'cantDeleteDefault' => 'Cannot delete default currency.',
     'exchangeRate' => 'Exchange Rate',
     'currencyPosition' => 'Currency Position',
@@ -1583,15 +1583,15 @@ return array (
     'usdPriceInfo' => 'Required to calculate earnings.',
     'noOfDecimals' => 'Number Of Decimals',
   ),
-  'emergencyContact' => 
-  array (
+  'emergencyContact' =>
+  array(
     'emergencyContact' => 'Emergency Contacts',
     'addNewEmergencyContact' => 'Add New Emergency Contact',
     'editEmergencyContact' => 'Edit Emergency Contact',
     'viewEmergencyContact' => 'View Emergency Contact',
   ),
-  'dashboard' => 
-  array (
+  'dashboard' =>
+  array(
     'totalExpenses' => 'Total Expenses',
     'totalEarnings' => 'Total Earnings',
     'followUps' => 'Follow Ups',
@@ -1731,13 +1731,13 @@ return array (
     'ticket' => 'Tickets',
     'totalDeals' => 'Total Deals',
   ),
-  'reports' => 
-  array (
+  'reports' =>
+  array(
     'totalCategories' => 'Total Categories',
     'totalExpense' => 'Total Expense',
   ),
-  'languageSettings' => 
-  array (
+  'languageSettings' =>
+  array(
     'fixTranslationSuccess' => 'Translation fixed successfully.',
     'googleTranslationAPI' => 'Google Translation API key',
     'googleTranslationAPIMessage' => 'Enable Cloud Translation API from Google Cloud Console and create API key.',
@@ -1746,8 +1746,8 @@ return array (
     'fixTranslationInfo' => 'Are you sure you want to fix translation? It will remove all the custom translation and replace with default translation.',
     'fixTranslation' => 'Fix Translation',
   ),
-  'authorize' => 
-  array (
+  'authorize' =>
+  array(
     'errorMessage' => 'There were some issues with the payment. Please try again later.',
     'errorNoResponse' => 'No response returned',
     'cardNumber' => 'Card Number',
@@ -1757,28 +1757,28 @@ return array (
     'details' => 'Authorize Payment',
     'nameOnCard' => 'Name on Card',
   ),
-  'flutterwave' => 
-  array (
+  'flutterwave' =>
+  array(
     'somethingWentWrong' => 'Something went wrong please try again later.',
     'client_name' => 'Name',
     'client_email' => 'Email',
     'client_phone' => 'Phone',
     'details' => 'Flutterwave Details',
   ),
-  'payfast' => 
-  array (
+  'payfast' =>
+  array(
     'redirectMessage' => 'You will redirect to Payfast payment page.',
     'client_name' => 'Name',
     'client_email' => 'Email',
     'details' => 'Payfast Details',
   ),
-  'square' => 
-  array (
+  'square' =>
+  array(
     'redirectMessage' => 'You will redirect to Square payment page.',
     'details' => 'Square Payment',
   ),
-  'incrementPromotion' => 
-  array (
+  'incrementPromotion' =>
+  array(
     'addPromotion' => 'Add Promotion',
     'editPromotion' => 'Update Promotion',
     'oldDesignation' => 'Old Designation',
@@ -1793,14 +1793,14 @@ return array (
     'salary' => 'Salary',
     'addNewincrementPromotion' => 'Add New Increment & Promotion',
   ),
-  'sticky' => 
-  array (
+  'sticky' =>
+  array(
     'addNote' => 'Add Note',
     'colors' => 'Color Code',
     'lastUpdated' => 'Updated',
   ),
-  'stripeCustomerAddress' => 
-  array (
+  'stripeCustomerAddress' =>
+  array(
     'city' => 'City',
     'state' => 'State',
     'country' => 'Country',
@@ -1809,13 +1809,13 @@ return array (
     'line1' => 'Address Line',
     'details' => 'Address Details',
   ),
-  'unitType' => 
-  array (
+  'unitType' =>
+  array(
     'unitType' => 'Unit Type',
     'UnitTypeName' => 'Unit Types',
   ),
-  'slackSettings' => 
-  array (
+  'slackSettings' =>
+  array(
     'uploadSlackLogo' => 'Upload Notification Logo',
     'sendTestNotification' => 'Send Test Notification',
     'slackWebhook' => 'Slack Webhook',
@@ -1825,8 +1825,8 @@ return array (
     'notificationSubtitle' => 'Select the events for which a notification should be sent to user.',
   ),
   'addIpAddress' => 'Add IP Address',
-  'permission' => 
-  array (
+  'permission' =>
+  array(
     'selectAll' => 'Select All',
     'deselectAll' => 'Deselect All',
     'permissions' => 'Permissions',
@@ -1841,14 +1841,14 @@ return array (
     'addRoleMember' => 'Manage Role Members',
     'addMembers' => 'Add Members',
   ),
-  'import' => 
-  array (
+  'import' =>
+  array(
     'file' => 'Upload File (file must be a file of type: xls, xlsx, csv)',
     'containsHeadings' => 'File Contains Headings Row',
     'skipFooterRow' => 'Skipfooterrow',
   ),
-  'module' => 
-  array (
+  'module' =>
+  array(
     'clients' => 'Clients',
     'employees' => 'Employees',
     'projects' => 'Projects',
@@ -1902,9 +1902,16 @@ return array (
     'servermanager' => 'Server Manager',
     'biometric' => 'Biometric',
     'pricing' => 'Tier Pricing',
+    'warehouse' => 'Warehouse',
+    'developertools' => 'Developer Tools',
+    'languagepack' => 'Language Pack',
+    'lineintegration' => 'Line Integration',
+    'onboarding' => 'Onboarding',
+    'projectroadmap' => 'Project Roadmap',
+    'einvoice' => 'EInvoice',
   ),
-  'profile' => 
-  array (
+  'profile' =>
+  array(
     'yourPassword' => 'Your Password',
     'profilePicture' => 'Profile Picture',
     'companyLogo' => 'Company Logo',
@@ -1918,8 +1925,8 @@ return array (
     'yourMobileNumber' => 'Your Mobile Number',
     'productimage' => 'Product Image',
   ),
-  'themeSettings' => 
-  array (
+  'themeSettings' =>
+  array(
     'logoSize' => 'Recommended size 250 X 250 (Pixels)',
     'loginBackgroundSize' => 'Recommended size: 1500 X 1056 (Pixels)',
     'sidebarBrandingStyle' => 'Sidebar Branding Style',
@@ -1948,13 +1955,13 @@ return array (
     'useCustomTheme' => 'Use Custom Theme',
     'enableRoundTheme' => 'Enable rounded theme?',
   ),
-  'contacts' => 
-  array (
+  'contacts' =>
+  array(
     'addContact' => 'Add Contact',
     'contactName' => 'Contact Name',
   ),
-  'emailSettings' => 
-  array (
+  'emailSettings' =>
+  array(
     'emailNotifications' => 'Receive email notifications?',
     'mailFrom' => 'Mail From Name',
     'mailFromEmail' => 'Mail From Email',
@@ -1998,14 +2005,14 @@ return array (
     'discussion-reply' => 'Discussion Replies',
   ),
   'ticketForm' => 'Ticket Form',
-  'projectCategory' => 
-  array (
+  'projectCategory' =>
+  array(
     'categoryName' => 'Category Name',
     'addProjectCategory' => 'Add Project Category',
     'editProjectCategory' => 'Edit Project Category',
   ),
-  'invoiceSettings' => 
-  array (
+  'invoiceSettings' =>
+  array(
     'contractPrefix' => 'Contract Prefix',
     'contractNumberSeparator' => 'Contract Number Separator',
     'contractDigit' => 'Contract Number Digits',
@@ -2054,12 +2061,12 @@ return array (
     'oneWaySync' => 'One Way Sync',
     'twoWaySync' => 'Two Way Sync',
   ),
-  'credit-note' => 
-  array (
+  'credit-note' =>
+  array(
     'discount' => 'Discount',
   ),
-  'customFields' => 
-  array (
+  'customFields' =>
+  array(
     'label' => 'Field Label',
     'fieldType' => 'Field Type',
     'showInTable' => 'Show in table view',
@@ -2075,8 +2082,8 @@ return array (
     'required' => 'Required',
     'visible' => 'Visible',
   ),
-  'customLinkSettings' => 
-  array (
+  'customLinkSettings' =>
+  array(
     'linkTitle' => 'Link Title',
     'url' => 'URL',
     'canBeViewedBy' => 'Can Be Viewed By',
@@ -2084,8 +2091,8 @@ return array (
     'addNewCustomLink' => 'Add New Custom Link',
     'editCustomLink' => 'Edit Custom Link',
   ),
-  'moduleSettings' => 
-  array (
+  'moduleSettings' =>
+  array(
     'verifyPurchase' => 'Verify Your Purchase',
     'step1' => 'Step 1',
     'step2' => 'Step 2',
@@ -2098,8 +2105,8 @@ return array (
     'contactAdmin' => 'Contact your admin if you are not the admin to verify the purchase.',
     'findPurchaseCode' => 'Click this link to find your purchase code.',
   ),
-  'update' => 
-  array (
+  'update' =>
+  array(
     'moduleFile' => 'Once the zip file is uploaded, you will see a list of modules available for installation or update. To proceed with the installation or update, simply click on the \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"install\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\" button for the respective module. Please note that after clicking the \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"install\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\" button, you will be logged out. Once the installation is complete, you will be able to see the module on the module list. You can activate or deactivate the module from the list at any time.',
     'install' => 'Install',
     'systemDetails' => 'System Details',
@@ -2114,8 +2121,8 @@ return array (
     'updateFiles' => 'Update Files',
     'downloadUpdateFile' => 'Download Update File',
   ),
-  'checklist' => 
-  array (
+  'checklist' =>
+  array(
     'installation' => 'Installation',
     'installationInfo' => 'Upload files on the server and configure the database.',
     'accountSetup' => 'Account Setup',
@@ -2132,8 +2139,8 @@ return array (
     'profileImage' => 'Add Profile Picture',
     'profileImageInfo' => 'Add your profile picture.',
   ),
-  'databaseBackup' => 
-  array (
+  'databaseBackup' =>
+  array(
     'createDatabaseBackup' => 'Create Database Backup',
     'autobackup' => 'Auto Backup Settings',
     'backup' => 'Backup',
@@ -2143,13 +2150,13 @@ return array (
     'createBackupAfterDay' => 'Create a backup every X days',
     'deleteBackupAfter' => 'Auto delete backups older than X days (set -1 to disable)',
   ),
-  'decrementPromotion' => 
-  array (
+  'decrementPromotion' =>
+  array(
     'demotion' => 'Demotion',
     'decrement' => 'Decrement',
   ),
-  'messages' => 
-  array (
+  'messages' =>
+  array(
     'message' => 'Message',
     'chooseMember' => 'Choose Member',
     'allowClientEmployeeChat' => 'Allow chat between client and employees?',
@@ -2167,8 +2174,8 @@ return array (
     'typeMessage' => 'Type your message here...',
     'chooseAdmin' => 'Choose Admin',
   ),
-  'expenseCategory' => 
-  array (
+  'expenseCategory' =>
+  array(
     'addExpenseCategory' => 'Add Expense Category',
     'assignToRole' => 'Assign To Roles',
     'allowRoles' => 'Allow Roles',
@@ -2176,20 +2183,20 @@ return array (
     'categoryName' => 'Category Name',
   ),
   'taskShortCode' => 'Short Code',
-  'taskCategory' => 
-  array (
+  'taskCategory' =>
+  array(
     'taskCategory' => 'Task Category',
     'addTaskCategory' => 'Add Task Category',
     'categoryName' => 'Category Name',
     'manageTaskCategory' => 'Manage Task Category',
   ),
-  'googleCalendar' => 
-  array (
+  'googleCalendar' =>
+  array(
     'clientId' => 'Client ID',
     'clientSecret' => 'Client Secret',
   ),
-  'offlinePayment' => 
-  array (
+  'offlinePayment' =>
+  array(
     'offlinePayment' => 'Offline Payment',
     'method' => 'Method',
     'description' => 'Description',
@@ -2201,8 +2208,8 @@ return array (
   'makeDefaultImage' => 'Set default',
   'invoiceFiles' => 'Invoice Files',
   'flag' => 'Flag',
-  'projectTemplate' => 
-  array (
+  'projectTemplate' =>
+  array(
     'dropFallbackMessage' => 'Your browser does not support drag\'n\'drop file uploads.',
     'dropFallbackText' => 'Please use the fallback form below to upload your files like in the olden days.',
     'dropFileTooBig' => 'File is too big ({{filesize}} MiB). Max filesize: {{maxFilesize}} MiB.',
@@ -2246,8 +2253,8 @@ return array (
     'clientTaskNotification' => 'Send task notification to the client?',
     'manualTimelog' => 'Allow manual time logs',
   ),
-  'followup' => 
-  array (
+  'followup' =>
+  array(
     'newFollowUp' => 'New Follow Up',
     'updateFollow' => 'Update Follow Up',
     'addNewLead' => 'Add New Proposal',
@@ -2264,8 +2271,8 @@ return array (
     'followUpNotFound' => 'No follow up found',
     'followUpNote' => 'Follow up add and edit functionality will work when leading <b>next follow up</b> is set to <b>YES</b>.',
   ),
-  'logTimeSetting' => 
-  array (
+  'logTimeSetting' =>
+  array(
     'autoStopTimerAfterOfficeTime' => 'Stop timer automatically after shift end time',
     'approvalRequired' => 'Timelog will require approval',
     'trackerReminder' => 'Send time tracker reminders',
@@ -2274,8 +2281,8 @@ return array (
     'project' => 'Project',
     'task' => 'Task',
   ),
-  'pushSettings' => 
-  array (
+  'pushSettings' =>
+  array(
     'oneSignalAppId' => 'One Signal App ID',
     'oneSignalRestApiKey' => 'One Signal Rest API Key',
     'pusherInstanceId' => 'Pusher Instance ID',
@@ -2284,17 +2291,17 @@ return array (
     'notificationTitle' => 'Push Notification Settings',
     'updateTitle' => 'Update Push Notification Settings',
   ),
-  'pusher' => 
-  array (
+  'pusher' =>
+  array(
     'notificationTitle' => 'Enable Pusher For',
     'userNotifications' => 'User Notifications',
   ),
-  'projectSettings' => 
-  array (
+  'projectSettings' =>
+  array(
     'sendNotificationsTo' => 'Send Reminder To',
   ),
-  'statusFields' => 
-  array (
+  'statusFields' =>
+  array(
     'defaultStatus' => 'Default Status',
     'change' => 'You can not change inactive status to Default status',
     'createStatus' => 'Create Project Status',
@@ -2303,43 +2310,43 @@ return array (
     'addCategory' => 'Add Category',
     'editCategory' => 'Edit Category',
   ),
-  'taskLabel' => 
-  array (
+  'taskLabel' =>
+  array(
     'addLabel' => 'Add Label',
     'createLabel' => 'Create Label',
   ),
-  'burndown' => 
-  array (
+  'burndown' =>
+  array(
     'actual' => 'Actual',
     'ideal' => 'Ideal',
   ),
-  'projectLabel' => 
-  array (
+  'projectLabel' =>
+  array(
     'addLabel' => 'Addlabel',
   ),
-  'mollie' => 
-  array (
+  'mollie' =>
+  array(
     'client_name' => 'Name',
     'client_email' => 'Email',
     'details' => 'Mollie Details',
   ),
-  'paystack' => 
-  array (
+  'paystack' =>
+  array(
     'client_name' => 'Name',
     'client_email' => 'Email',
     'details' => 'Paystack Details',
   ),
-  'roles' => 
-  array (
+  'roles' =>
+  array(
     'addRole' => 'Manage Role',
   ),
-  'clients' => 
-  array (
+  'clients' =>
+  array(
     'shippingAddress' => 'Shipping Address',
     'addShippingAddress' => 'Add Shipping Address',
   ),
-  'twofactor' => 
-  array (
+  'twofactor' =>
+  array(
     'twoFaInfo' => 'Increase your account\'s security by enabling Two-Factor Authentication (2FA)',
     'verifySmtp' => 'Email SMTP settings not configured.',
     'setupEmail' => 'Setup Using Email',
@@ -2352,21 +2359,21 @@ return array (
     'userNotifications' => 'User Notifications',
     'both' => 'Both',
   ),
-  'billing' => 
-  array (
+  'billing' =>
+  array(
     'choosePlan' => 'Chooseplan',
   ),
-  'frontCms' => 
-  array (
+  'frontCms' =>
+  array(
     'pickPlan' => 'Pickplan',
     'submitEnquiry' => 'Submitenquiry',
   ),
-  'footer' => 
-  array (
+  'footer' =>
+  array(
     'setting' => 'Setting',
   ),
-  'templateTasks' => 
-  array (
+  'templateTasks' =>
+  array(
     'editBoardColumn' => 'Edit Status Column',
     'newTask' => 'New Template Task',
     'lastCreated' => 'Last Created',
@@ -2388,8 +2395,8 @@ return array (
     'subTask' => 'Sub Template Task',
     'comment' => 'Comment',
   ),
-  'ticketSetting' => 
-  array (
+  'ticketSetting' =>
+  array(
     'ticketVisibilityScope' => 'Scope for Ticket Visibility',
     'allTickets' => 'All Tickets',
     'groupTickets' => 'Tickets in a group',
@@ -2400,12 +2407,12 @@ return array (
     'groupTicketsDescription' => 'Can view and edit tickets in their group(s) and ticket assigned to them.',
     'assignedTicketsDescription' => 'Can view and edit tickets assigned to them.',
   ),
-  'settings' => 
-  array (
+  'settings' =>
+  array(
     'languageSettings' => 'Languagesettings',
   ),
-  'emailNotification' => 
-  array (
+  'emailNotification' =>
+  array(
     'two-factor-code' => 'Two Factor Code',
     'removal-request-reject-user' => 'Removal Request Reject User',
     'removal-request-approved-user' => 'Removal Request Approved User',
@@ -2496,8 +2503,8 @@ return array (
     'shift-assign-notification' => 'Shift Assign Notification',
     'daily-schedule-notification' => 'Daily Schedule Notification',
   ),
-  'issues' => 
-  array (
+  'issues' =>
+  array(
     'pending' => 'Pending',
     'addIssue' => 'Add Issue',
     'updateIssue' => 'Update Issue',
@@ -2506,28 +2513,28 @@ return array (
     'markResolved' => 'Mark Resolved',
     'reportedOn' => 'Reported On',
   ),
-  'taskCalendar' => 
-  array (
+  'taskCalendar' =>
+  array(
     'note' => 'Calendar shows the due tasks on their due dates.',
     'taskDetail' => 'Task Detail',
   ),
-  'taskReport' => 
-  array (
+  'taskReport' =>
+  array(
     'taskToComplete' => 'Total Tasks',
     'completedTasks' => 'Completed Tasks',
     'pendingTasks' => 'Pending Tasks',
     'chartTitle' => 'Pie Chart',
   ),
-  'leaveReport' => 
-  array (
+  'leaveReport' =>
+  array(
     'leaveReport' => 'Leave Report',
   ),
-  'timeLogReport' => 
-  array (
+  'timeLogReport' =>
+  array(
     'chartTitle' => 'Time Log Bar Chart',
   ),
-  'financeReport' => 
-  array (
+  'financeReport' =>
+  array(
     'showAmountIn' => 'Show amount in ',
     'selectCurrency' => 'Select Currency',
     'chartTitle' => 'Earnings Bar Chart',
@@ -2535,20 +2542,20 @@ return array (
     'noteText' => 'The earnings are calculated with the latest exchange rate for different currencies.',
   ),
   'taskDetail' => 'Task Detail',
-  'mobile' => 
-  array (
+  'mobile' =>
+  array(
     'camera' => 'Camera',
     'gallery' => 'Gallery',
     'maximumFileSize' => 'Maximum File Size',
   ),
-  'incomeVsExpenseReport' => 
-  array (
+  'incomeVsExpenseReport' =>
+  array(
     'totalIncome' => 'Total Income',
     'totalExpense' => 'Total Expense',
     'chartTitle' => 'Bar Chart',
   ),
-  'payroll' => 
-  array (
+  'payroll' =>
+  array(
     'addPayroll' => 'Add Payroll',
     'amountPaid' => 'Amount Paid',
     'updatePayroll' => 'Update Payroll',
@@ -2557,8 +2564,8 @@ return array (
   ),
   'timelogAlreadyExist' => 'Time-log already exist for this user.',
   'loginAgain' => 'You will have to login again to see the changes.',
-  'leads' => 
-  array (
+  'leads' =>
+  array(
     'name' => 'Name',
     'client_email' => 'Email',
     'client_name' => 'Name',

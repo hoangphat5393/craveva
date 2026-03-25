@@ -1902,6 +1902,13 @@ return array(
     'servermanager' => 'Server Manager',
     'biometric' => 'Biometric',
     'pricing' => 'Tier Pricing',
+    'warehouse' => 'Warehouse',
+    'developertools' => 'Developer Tools',
+    'languagepack' => 'Language Pack',
+    'lineintegration' => 'Line Integration',
+    'onboarding' => 'Onboarding',
+    'projectroadmap' => 'Project Roadmap',
+    'einvoice' => 'EInvoice',
   ),
   'profile' =>
   array(

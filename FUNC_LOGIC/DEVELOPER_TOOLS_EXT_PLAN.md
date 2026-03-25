@@ -116,3 +116,60 @@ ORDER BY event_time DESC LIMIT 10;
 ---
 
 _Bản kế hoạch này được lưu để phục vụ việc phê duyệt trước khi tiến hành code._
+
+---
+
+## 7. Phụ lục: Full DB Access Demo (AI) – chỉ dùng staging ngắn hạn
+
+> **CẢNH BÁO:** Chỉ dùng cho demo ngắn hạn trên **staging**. Không áp dụng production.  
+> Production nên ưu tiên API-based writes + logging/audit.
+
+### 7.1 Mục tiêu demo
+
+Cho phép user AI do module DeveloperTools tạo ra có thể **INSERT / UPDATE / DELETE** thông qua **gateway DB** để demo (không chỉ read-only).
+
+### 7.2 Nơi cấp quyền DB
+
+File: `Modules/DeveloperTools/Http/Controllers/DeveloperToolsController.php`
+
+Trong `store()` (sau khi tạo MySQL user), code hiện cấp quyền **trên gateway database בלבד**:
+
+- `GRANT ALL PRIVILEGES ON \`$gatewayDbSafe\`.\* TO {userQuoted}@'%'`
+- Có `FLUSH PRIVILEGES`
+
+Đây là điểm kiểm soát chính các DB privileges của user AI được generate.
+
+### 7.3 Cách áp dụng (demo/staging)
+
+- **Cách 1 (khuyến nghị): regenerate credential**
+    - Trong Developer Tools UI: **Revoke** credential cũ
+    - Generate credential mới
+    - User DB mới sẽ có `ALL PRIVILEGES` trên `api_gateway_{company_id}` (không phải global `*.*`)
+
+- **Cách 2: không regenerate được (giữ nguyên username)**
+    - Chạy lệnh dưới quyền MySQL admin:
+
+```sql
+GRANT ALL PRIVILEGES ON `api_gateway_20`.* TO 'api_20_xxxx'@'%';
+FLUSH PRIVILEGES;
+```
+
+Thay `api_gateway_20` và username theo thực tế.
+
+### 7.4 Giới hạn quan trọng (MySQL updatable views)
+
+- Chỉ các **simple views** dạng `SELECT ... FROM main.table WHERE company_id = X` (có thể kèm `WITH CHECK OPTION`) mới updatable.
+- Các view join phức tạp thường **không updatable** (AI vẫn đọc được nhưng không ghi qua view đó).
+- Write luôn đi qua **gateway DB views** (vd: `api_gateway_{company_id}.products`), không expose trực tiếp main DB tables.
+
+### 7.5 Gợi ý prompt vận hành demo
+
+- Cho phép AI dùng `INSERT/UPDATE/DELETE` trên gateway views cho mục tiêu demo.
+- Hạn chế sửa master data (pricing rules, system tables) trừ khi được yêu cầu rõ.
+
+### 7.6 Sau demo (khuyến nghị an toàn)
+
+Revert về **SELECT only** và triển khai một trong các hướng:
+
+- **API layer (khuyến nghị):** endpoint ERP validate + log mọi thay đổi
+- **Queue/command layer:** AI ghi “pending actions” rồi job có rule/apply

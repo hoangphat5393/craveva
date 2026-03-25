@@ -6,9 +6,7 @@
 
 **Mục lục MAOLIN (điểm vào, thứ tự đọc):** **`FUNC_LOGIC/MAOLIN_INDEX.md`**.
 
-**Phân tích tổng thể ERP + B2B + GAP (chức năng, DB, rủi ro, câu hỏi khách):** xem **`FUNC_LOGIC/MAOLIN_ERP_B2B_GAP_ANALYSIS.md`**.  
-**Phân tích demo vòng lặp hằng ngày (sáng import, tối export):** xem **`FUNC_LOGIC/MAOLIN_DAILY_SYNC_DEMO_ANALYSIS.md`**.  
-**Phiên dịch cột tiếng Trung + đối chiếu mapping + thiếu module:** xem **`FUNC_LOGIC/MAOLIN_CHINESE_COLUMNS_MAPPING_AND_GAPS.md`**.  
+**Tài liệu gộp MAOLIN (đọc 1 file là đủ):** xem **`FUNC_LOGIC/MAOLIN_MASTER_GUIDE.md`**.  
 **Tóm tắt phạm vi 4 nhóm + file đã gộp:** xem **`FUNC_LOGIC/MAOLIN_INDEX.md`** (mục 2–3).  
 **Phân tích Multi-Warehouse + roadmap triển khai end-to-end:** xem **`FUNC_LOGIC/WAREHOUSE_ANALYSIS_AND_PLAN.md`**.
 

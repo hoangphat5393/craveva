@@ -2,6 +2,8 @@
 
 **Mục lục MAOLIN:** [`MAOLIN_INDEX.md`](MAOLIN_INDEX.md) — mở file đó nếu không biết bắt đầu từ đâu.
 
+> **Gợi ý đọc:** Bản gộp (dễ đọc, ưu tiên multi-warehouse) nằm ở [`MAOLIN_MASTER_GUIDE.md`](MAOLIN_MASTER_GUIDE.md). File này giữ bảng mapping chi tiết.
+
 Tai lieu nay dung de map cot khi import, theo bo file trong `PROJECT MAOLIN New/`.
 Muc tieu: import nhanh, dung core multi-warehouse, giam phu thuoc custom fields.
 
@@ -24,6 +26,26 @@ Muc tieu: import nhanh, dung core multi-warehouse, giam phu thuoc custom fields.
     - `batch_number`
     - `manufacturing_date`
     - `expiration_date`
+
+---
+
+## 0.1) File `Quote, unit price, inventory.xlsx` — **nhiều sheet** (DigiWin export)
+
+Một workbook, thường có **ít nhất các sheet sau** (tên có thể giữ tiếng Trung):
+
+| Sheet (tên gợi ý) | Mục đích                             | Map vào hệ thống (thực tế import)                                                                                                                                                                                  |
+| ----------------- | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `報價單匯出`      | Báo giá / quotation export           | **Chưa** có importer “báo giá” tương ứng trong luồng chuẩn; chỉ dùng tham chiếu hoặc cần adapter riêng nếu nghiệp vụ bắt buộc.                                                                                     |
+| `產品價格表`      | Bảng giá theo SKU                    | Cập nhật giá sản phẩm (`products.price`, `wholesale_price`, `price_per_box`, `employee_price`) — xem **mục 3**; thường import/update qua **Product** hoặc job cập nhật giá theo SKU (cần map cột giống bảng dưới). |
+| `產品庫存表`      | Tồn theo kho/lô (dạng bảng tổng hợp) | Cùng họ cột với inventory MAOLIN — map sang **Inventory import** (id cố định: `sku`, `warehouse_code`, `ending_inventory`, …) — xem **mục 4**.                                                                     |
+
+**Cách dùng với màn import hiện tại:** Luồng import trong app thường đọc **một sheet / một file** mỗi lần (tùy cấu hình Excel). Thực tế vận hành:
+
+1. **Tách sheet** cần dùng: lưu riêng `產品價格表` → một file `.xlsx` chỉ một sheet, hoặc copy nội dung sheet sang sheet đầu tiên rồi upload.
+2. **Giá:** import/update product theo SKU và cột giá (mục 3).
+3. **Tồn:** dùng sheet `產品庫存表` (hoặc file `Craveva full inventory.xlsx` sheet `庫存明細總表` nếu cần chi tiết lô hơn) — **một lần import inventory** map cột tới `InventoryImport` (mục 4).
+
+**Liên quan bỏ Custom Field Inventory:** Việc gỡ CF **không** làm mất khả năng import **nếu** cột file được map vào **id hệ thống** (`sku`, `warehouse_code`, `expiration_date`, `ending_inventory`, …). Các cột chỉ từng lưu qua CF (kỳ kế toán, v.v.) vẫn như đã mô tả trong [`WAREHOUSE_CUSTOM_FIELDS_RATIONALIZATION.md`](WAREHOUSE_CUSTOM_FIELDS_RATIONALIZATION.md) — không phụ thuộc sheet này hay sheet full inventory.
 
 ---
 
@@ -55,6 +77,24 @@ Muc tieu: import nhanh, dung core multi-warehouse, giam phu thuoc custom fields.
 - Tim kho theo `designated_warehouse_code` truoc.
 - Neu khong co, fallback `designated_warehouse_name`.
 - Neu van khong khop: de `default_warehouse_id = null`, ghi log dong loi de doi soat.
+
+### 1.3 Neu bo het Client custom fields thi sao?
+
+Theo note van hanh trong `PROJECT MAOLIN New/customer do.txt` (sang import, toi export, lap hang ngay; DigiWin la ERP chinh):
+
+- **Van import duoc phan core**: `client_code`, `name`, `gst_number`, `address`, `mobile`, `company_phone`, `default_warehouse_id` (qua designated warehouse code/name).
+- **Khong con cho luu** cac cot dang map custom field: `salesperson`, `department`, `sales_assistant_name`, `customer_grade`, `channel_type`, `business_type`, `last_transaction_at`, `payment_terms`, `business_closure_date`.
+
+Neu muon giam phu thuoc custom fields cho sync hang ngay, uu tien chuan hoa DB:
+
+1. `payment_terms` -> `payment_term_id` (lookup)
+2. `customer_grade` -> `customer_grade_id` (neu dung cho tier pricing)
+3. `channel_type` -> `channel_type_id` (neu dung cho phan khuc/bao cao)
+4. `business_type` -> `business_type_id` (neu dung nhieu trong nghiep vu)
+
+Nhom co the giu custom field neu chi de hien thi/ghi chu:
+
+- `salesperson`, `department`, `sales_assistant_name`, `last_transaction_at`, `business_closure_date`, `region`
 
 ---
 

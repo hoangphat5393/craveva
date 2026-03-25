@@ -1,11 +1,11 @@
 <div class="table-responsive p-20">
 
     <div id="update-area" class="mt-20 mb-20 col-md-12 white-box d-none">
-        {{__('app.loading')}}
+        {{ __('app.loading') }}
     </div>
     <div class="alert alert-danger d-none" id="custom-module-alert"></div>
     {{-- SAAS   --}}
-    @if(session('subdomain_module_activated') == 'activated')
+    @if (session('subdomain_module_activated') == 'activated')
         <div class="alert bg-light-warning border-0 rounded-lg shadow-sm p-4 mb-3">
             <div class="d-flex">
                 <div class="mr-3 pt-1">
@@ -71,24 +71,28 @@
         </x-slot>
 
         @forelse ($allModules as $key=>$module)
-        @php
-            $fetchSetting = null;
-            if (in_array($module, $cravevaPlugins) && config(strtolower($module) . '.setting'))
-            {
-                $fetchSetting = config(strtolower($module) . '.setting')::first();
-            }
-        @endphp
+            @php
+                $moduleName = strtolower((string) $key);
+                $moduleTranslationKey = 'modules.module.' . $moduleName;
+                $moduleLabel = __($moduleTranslationKey);
+                if ($moduleLabel === $moduleTranslationKey) {
+                    // Fallback for module names not present in lang files.
+                    $moduleLabel = ucwords(strtolower(str_replace(['_', '-'], ' ', preg_replace('/(?<!^)[A-Z]/', ' $0', (string) $key))));
+                }
+                $fetchSetting = null;
+                if (in_array($moduleName, $cravevaPlugins) && config($moduleName . '.setting')) {
+                    $fetchSetting = config($moduleName . '.setting')::first();
+                }
+            @endphp
             <tr>
                 <td>
-                    <span>{{ $key }}</span>
+                    <span>{{ $moduleLabel }}</span>
 
                 </td>
 
                 <td>
-                    @if (config(strtolower($module) . '.setting'))
+                    @if (config($moduleName . '.setting'))
                         @include('custom-modules.sections.version')
-
-
                     @endif
 
                 </td>
@@ -96,11 +100,8 @@
 
 
                 <td class="text-right">
-                    <div class="custom-control custom-switch ml-2 d-inline-block"  data-toggle="tooltip"
-                         data-original-title="@lang('app.moduleSwitchMessage', ['name' => $module])">
-                        <input type="checkbox" @if (in_array($module, $cravevaPlugins)) checked
-                               @endif class="custom-control-input change-module-status"
-                               id="module-{{ $key }}" data-module-name="{{ $module }}">
+                    <div class="custom-control custom-switch ml-2 d-inline-block" data-toggle="tooltip" data-original-title="@lang('app.moduleSwitchMessage', ['name' => $moduleName])">
+                        <input type="checkbox" @if (in_array($moduleName, $cravevaPlugins)) checked @endif class="custom-control-input change-module-status" id="module-{{ $key }}" data-module-name="{{ $moduleName }}">
                         <label class="custom-control-label cursor-pointer" for="module-{{ $key }}"></label>
                     </div>
                 </td>
@@ -108,7 +109,7 @@
         @empty
             <tr>
                 <td colspan="5">
-                    <x-cards.no-record icon="calendar" :message="__('messages.noRecordFound')"/>
+                    <x-cards.no-record icon="calendar" :message="__('messages.noRecordFound')" />
                 </td>
             </tr>
         @endforelse
@@ -119,14 +120,14 @@
 </div>
 
 <script>
-    $('body').on('change', '.change-module-status', function () {
+    $('body').on('change', '.change-module-status', function() {
         let moduleStatus;
         const module = $(this).data('module-name');
 
         if ($(this).is(':checked')) {
             moduleStatus = 'active';
 
-            if(module === 'Subdomain') {
+            if (module === 'Subdomain') {
                 Swal.fire({
                     title: '<i class="fas fa-exclamation-triangle text-warning"></i> Important Configuration Required',
                     html: `
@@ -165,7 +166,7 @@
                     cancelButtonColor: '#6c757d', // Changed to Bootstrap gray
                     customClass: {
                         confirmButton: 'btn btn-primary ml-2 mr-2', // Added ml-2 to move activate button to right
-                        cancelButton: 'btn btn-secondary'  // Changed to secondary style
+                        cancelButton: 'btn btn-secondary' // Changed to secondary style
                     },
                     buttonsStyling: false
                 }).then((result) => {
@@ -203,7 +204,7 @@
                 '_method': 'PUT',
                 '_token': '{{ csrf_token() }}'
             },
-            error: function (response) {
+            error: function(response) {
                 if (response.responseJSON) {
                     $('#custom-module-alert').html(response.responseJSON.message).removeClass('d-none');
                     $('#module-' + module).prop('checked', false);
@@ -212,12 +213,11 @@
         });
     }
 
-    $('body').on('click', '.verify-module', function () {
+    $('body').on('click', '.verify-module', function() {
         const module = $(this).data('module');
         let url = "{{ route('custom-modules.show', ':module') }}";
         url = url.replace(':module', module);
         $(MODAL_LG + ' ' + MODAL_HEADING).html('...');
         $.ajaxModal(MODAL_LG, url);
     });
-
 </script>

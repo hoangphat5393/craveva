@@ -316,17 +316,17 @@ Trước đây: nhiều chunk job chạy song song, mỗi dòng gọi `assignUse
 
 ### 8.5. File và tài liệu tham chiếu
 
-| Nội dung                                     | File / tài liệu                                           |
-| -------------------------------------------- | --------------------------------------------------------- |
-| Phân tích chi tiết import chậm + bulk insert | FUNC_LOGIC/CLIENT_IMPORT_REVIEW_AND_IMPROVEMENTS.md       |
-| Chunk vs bulk insert, queue sync/database    | FUNC_LOGIC/IMPORT_CHUNK_AND_BULK_INSERT_ANALYSIS.md       |
-| Cột file Miaolin vs DB/Custom                | FUNC_LOGIC/MIAOLIN_IMPORT_FIELDS_DB_VS_CUSTOM_ANALYSIS.md |
+| Nội dung                                     | File / tài liệu                                                                          |
+| -------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| Phân tích chi tiết import chậm + bulk insert | FUNC_LOGIC/CLIENT_IMPORT_REVIEW_AND_IMPROVEMENTS.md                                      |
+| Chunk vs bulk insert, queue sync/database    | FUNC_LOGIC/IMPORT_CHUNK_AND_BULK_INSERT_ANALYSIS.md                                      |
+| Cột file Miaolin vs DB/Custom                | (đã gộp) xem `FUNC_LOGIC/MAOLIN_MASTER_GUIDE.md` + `FUNC_LOGIC/MAOLIN_IMPORT_MAPPING.md` |
 
 ---
 
 ## 9. Trường import: DB vs Custom (khuyến nghị giữ hiện trạng)
 
-**Áp dụng cho file:** Miaolin Customer / Miaolin Product Customer (cấu trúc cột tương tự). **Tham chiếu:** MIAOLIN_IMPORT_FIELDS_DB_VS_CUSTOM_ANALYSIS.md.
+**Áp dụng cho file:** Miaolin Customer / Miaolin Product Customer (cấu trúc cột tương tự). **Tham chiếu:** `MAOLIN_MASTER_GUIDE.md` và `MAOLIN_IMPORT_MAPPING.md`.
 
 ### 9.1. Trường nên ở DB (đã có – không đổi)
 

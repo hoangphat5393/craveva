@@ -1,7 +1,10 @@
-# Báo cáo cơ sở dữ liệu: Quan hệ bảng `users` và các bảng Client
+# Báo cáo hệ thống: Users/Clients DB + Login Flow
 
 **Ngày lập:** 2026-03-15  
-**Phạm vi:** Cấu trúc bảng và quan hệ (migrations + Eloquent) giữa `users` và các bảng liên quan client.
+**Phạm vi:**
+
+- Cấu trúc bảng và quan hệ (migrations + Eloquent) giữa `users` và các bảng liên quan client
+- Luồng đăng nhập (Fortify + session + cache) và các điểm troubleshoot thường gặp
 
 ---
 
@@ -193,4 +196,107 @@ client_docs (user_id → users.id) ⚠️ Model dùng client_id — cần kiểm
 
 ---
 
+## 11. Bảng dữ liệu ↔ chức năng nghiệp vụ (gộp từ tài liệu business)
+
+| Bảng / thực thể                              | Vai trò nghiệp vụ                                                 | Chức năng/màn hình chính                                   | Ghi chú                                         |
+| -------------------------------------------- | ----------------------------------------------------------------- | ---------------------------------------------------------- | ----------------------------------------------- |
+| `users` (role `client`)                      | Tài khoản đăng nhập của khách hàng theo `company_id`              | Clients (`ClientController`): list/create/edit/show/import | Client gốc là một dòng `users` có role `client` |
+| `client_details`                             | Hồ sơ doanh nghiệp client (địa chỉ, mã khách, tier, kho mặc định) | Form thông tin client; Pricing đọc `pricing_tier_id`       | Nghiệp vụ 1 user client : 1 client_details      |
+| `client_categories`, `client_sub_categories` | Danh mục phân loại client                                         | Chọn category/sub-category trong form client               | Dùng qua FK trên `client_details`               |
+| `client_contacts`                            | Người liên hệ thuộc client                                        | Tab Contacts (`ClientContactController`)                   | 1 client : nhiều contact                        |
+| `users.is_client_contact`                    | Liên kết user login là contact                                    | Portal/login theo contact                                  | Trỏ tới `client_contacts.id`                    |
+| `client_notes`                               | Ghi chú nội bộ cho client                                         | Client notes (`ClientNoteController`)                      | `client_id` trỏ `users.id`                      |
+| `client_user_notes`                          | Pivot user ↔ note                                                 | Luồng note theo user                                       | Không phải 1-1                                  |
+| `client_docs`                                | Tài liệu đính kèm client                                          | Hồ sơ/tài liệu client                                      | Bảng dùng `user_id`; model cần khớp schema      |
+| `client_product_pricing`                     | Giá riêng theo client + sản phẩm + kỳ hiệu lực                    | Pricing module (`PricingService`)                          | Nhiều dòng theo client/product/time             |
+| `employee_details`                           | Hồ sơ nhân viên (không phải client)                               | Employees/Leave/Payroll/Performance                        | Tách biệt nghiệp vụ client                      |
+
+### Bảng giao dịch tham chiếu client qua `users.id`
+
+- `projects` (`client_id`)
+- `contracts` (`client_id`)
+- `invoices` (`client_id`)
+- `estimates` (`client_id`)
+
+Các bảng này là giao dịch, không thay thế `client_details`.
+
+---
+
 _Báo cáo dựa trên migrations và code Eloquent trong repo; không truy vấn database thực tế._
+
+---
+
+## 12. Login Flow (Fortify) – tóm tắt vận hành & troubleshoot
+
+### 12.1 ASCII Visual Flow
+
+```ascii
++---------------------+       +----------------------+       +-------------------------+
+|   User (Browser)    |       |   Laravel Backend    |       |        Database         |
++---------------------+       +----------------------+       +-------------------------+
+          |                              |                                |
+          | 1. Enter Email               |                                |
+          |----------------------------->|                                |
+          | (AJAX POST /check-email)     |                                |
+          |                              | 2. Check users table           |
+          |                              |------------------------------->|
+          |                              | 3. Return: Email Exists?       |
+          |                              |<-------------------------------|
+          | 4. JSON Response             |                                |
+          |<-----------------------------|                                |
+          | (Show Password Field)        |                                |
+          |                              |                                |
+          | 5. Enter Password & Submit   |                                |
+          |----------------------------->|                                |
+          | (AJAX POST /login)           |                                |
+          |                              | 6. Fortify Authentication      |
+          |                              |    (AttemptToAuthenticate)     |
+          |                              | 7. Validate Credentials        |
+          |                              |    (Hash::check)               |
+          |                              |------------------------------->| (user_auths table)
+          |                              | 8. Check Active Status         |
+          |                              |------------------------------->| (users table)
+          |                              | 9. Generate Session            |
+          |                              |    (Write to file/redis)       |
+          | 10. JSON Response            |                                |
+          |<-----------------------------|                                |
+          | 11. Redirect to dashboard    |                                |
++---------+------------------------------+--------------------------------+
+```
+
+### 12.2 Bảng chính liên quan login
+
+- `user_auths`: credentials (email/password hash, 2FA)
+- `users`: profile + status + `company_id`
+- `sessions` (nếu `SESSION_DRIVER=database`): lưu session
+
+### 12.3 Điểm code chính
+
+- Frontend: `resources/views/auth/login.blade.php`
+- Helper AJAX: `public/vendor/helper/helper.js` (`$.easyAjax`)
+- Fortify pipeline: `config/fortify.php`
+- Provider: `app/Providers/FortifyServiceProvider.php`
+- Middleware: `app/Http/Middleware/Authenticate.php`
+- Models: `app/Models/User.php`, `app/Models/UserAuth.php`
+
+### 12.4 Troubleshooting thường gặp
+
+- **Login xong bị đá về trang login ngay**
+    - **Nguyên nhân hay gặp:** cache `user_is_active_{id}` bị `false` (stale cache)
+    - **Fix:**
+
+```bash
+php artisan cache:forget user_is_active_{USER_ID}
+php artisan cache:clear
+```
+
+- **AJAX login lỗi / form không submit đúng**
+    - **Nguyên nhân:** backend trả HTML redirect thay vì JSON làm `$.easyAjax` hiểu sai
+    - **Fix:** đảm bảo backend trả JSON khi `$request->wantsJson()` (đặc biệt với login modal/AJAX)
+
+- **Credentials không khớp**
+    - **Lưu ý:** hệ thống kiểm password dựa trên `user_auths`, không phải chỉ `users`
+
+- **419 Page Expired**
+    - **Nguyên nhân:** CSRF / session domain
+    - **Fix:** kiểm tra CSRF token trong form và `SESSION_DOMAIN` trong `.env`

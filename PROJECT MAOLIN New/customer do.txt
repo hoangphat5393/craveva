@@ -1,0 +1,7 @@
+Miaolin
+
++ buổi sáng sẽ import file vào erp
+
++ buổi tối sẽ export rồi import digiwin
+
+và cứ tiếp tục như vậy môi ngày, họ vẫn xài digiwin như là erp chính

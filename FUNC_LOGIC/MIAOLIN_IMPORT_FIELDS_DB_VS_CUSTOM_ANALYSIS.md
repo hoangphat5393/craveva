@@ -1,5 +1,7 @@
 # Đối chiếu Import với DB vs Custom Field – Miaolin (MAOLIN)
 
+**Cập nhật 2026-03:** Tài liệu này bám **file Excel Miaolin cũ** (mẫu đầu dự án). Phần **kho / lô / map warehouse** đã được thay bằng triển khai đa kho trong code và ghi trong [`MAOLIN_INDEX.md`](MAOLIN_INDEX.md), [`MAOLIN_IMPORT_MAPPING.md`](MAOLIN_IMPORT_MAPPING.md), [`WAREHOUSE_CUSTOM_FIELDS_RATIONALIZATION.md`](WAREHOUSE_CUSTOM_FIELDS_RATIONALIZATION.md). Giữ file này cho **bối cảnh ngành + bảng cột mẫu cũ**.
+
 **Mục đích:** So sánh cột trong file Miaolin Customer.xlsx / Miaolin Product.xlsx với cấu trúc hệ thống (bảng DB + custom field), phân loại **trường bắt buộc (DB)** và **chỉ cần custom field**, đồng thời nêu ngành nghề MAOLIN và vai trò ERP.
 
 **Dữ liệu mẫu đã đọc:** 5 dòng đầu (header + 4 data) từ cả hai file Excel.

@@ -24,7 +24,7 @@ class LanguageSettingController extends AccountBaseController
         parent::__construct();
         $this->pageTitle = 'app.menu.languageSettings';
         $this->activeSettingMenu = 'language_settings';
-        $this->langPath = base_path().'/resources/lang';
+        $this->langPath = base_path() . '/resources/lang';
         $this->middleware(function ($request, $next) {
             abort_403(((user()->permission('manage_language_setting') !== 'all') && GlobalSetting::validateSuperAdmin('manage_superadmin_language_settings')));
 
@@ -71,15 +71,15 @@ class LanguageSettingController extends AccountBaseController
     {
         $setting = LanguageSetting::findOrFail($request->id);
 
-        $oldLangExists = File::exists($this->langPath.'/'.$setting->language_code);
+        $oldLangExists = File::exists($this->langPath . '/' . $setting->language_code);
 
         if ($oldLangExists) {
             // check and create lang folder
-            $langExists = File::exists($this->langPath.'/'.$request->language_code);
+            $langExists = File::exists($this->langPath . '/' . $request->language_code);
 
             if (! $langExists) {
                 // update lang folder name
-                File::move($this->langPath.'/'.$setting->language_code, $this->langPath.'/'.$request->language_code);
+                File::move($this->langPath . '/' . $setting->language_code, $this->langPath . '/' . $request->language_code);
 
                 Translation::where('locale', $setting->language_code)->get()->map(function ($translation) {
                     $translation->delete();
@@ -103,10 +103,10 @@ class LanguageSettingController extends AccountBaseController
     public function store(StoreRequest $request)
     {
         // check and create lang folder
-        $langExists = File::exists($this->langPath.'/'.$request->language_code);
+        $langExists = File::exists($this->langPath . '/' . $request->language_code);
 
         if (! $langExists) {
-            File::makeDirectory($this->langPath.'/'.$request->language_code);
+            File::makeDirectory($this->langPath . '/' . $request->language_code);
         }
 
         $setting = new LanguageSetting;
@@ -178,14 +178,14 @@ class LanguageSettingController extends AccountBaseController
 
         $language->destroy($id);
 
-        $langExists = File::exists($this->langPath.'/'.$language->language_code);
+        $langExists = File::exists($this->langPath . '/' . $language->language_code);
 
         if ($langExists) {
-            File::deleteDirectory($this->langPath.'/'.$language->language_code);
+            File::deleteDirectory($this->langPath . '/' . $language->language_code);
         }
 
         if (Schema::hasTable('ltm_translations')) {
-            DB::statement('DELETE FROM ltm_translations where locale = "'.$language->language_code.'"');
+            DB::statement('DELETE FROM ltm_translations where locale = "' . $language->language_code . '"');
         }
 
         return Reply::success(__('messages.deleteSuccess'));
@@ -201,11 +201,29 @@ class LanguageSettingController extends AccountBaseController
 
     public function createEnLocale()
     {
-        // copy eng folder from resources/lang to resources/lang/en
-        File::copyDirectory($this->langPath.'/eng', $this->langPath.'/en');
+        // Nguồn chuẩn: LanguagePack `Languages/app/en` (locale `eng` đã bỏ khỏi repo).
+        if (! function_exists('languagePackPath')) {
+            return Reply::error('LanguagePack module is required.');
+        }
 
-        // copy eng.json file from resources/lang to resources/lang/en.json
-        File::copy($this->langPath.'/eng.json', $this->langPath.'/en.json');
+        $source = languagePackPath('en');
+        if (! File::isDirectory($source)) {
+            return Reply::error(__('messages.noRecordFound'));
+        }
+
+        $dest = $this->langPath . '/en';
+        if (File::isDirectory($dest)) {
+            File::deleteDirectory($dest);
+        }
+        File::ensureDirectoryExists($this->langPath);
+        File::copyDirectory($source, $dest);
+
+        // Legacy: nếu còn file JSON cũ tên eng.json (máy local / bản cũ)
+        $engJson = $this->langPath . '/eng.json';
+        $enJson = $this->langPath . '/en.json';
+        if (File::exists($engJson) && ! File::exists($enJson)) {
+            File::copy($engJson, $enJson);
+        }
 
         return Reply::success(__('messages.recordSaved'));
     }

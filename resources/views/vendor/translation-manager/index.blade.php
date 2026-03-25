@@ -444,7 +444,7 @@
     </header>
     <div class="container-fluid">
         <div class="alert alert-danger">
-            <strong>Warning!</strong> <i>en</i> locale is the default (ISO 639-1). Use <i>en</i> for English. Legacy <i>eng</i> may be used as fallback in some modules.
+            <strong>Warning!</strong> Default English locale is <i>en</i> (ISO 639-1). Source of truth for strings in repo: <code>Modules/LanguagePack/Languages/.../en</code>; run <code>php artisan languagepack:publish-translation</code> on each environment (published <code>resources/lang</code> is often gitignored).
         </div>
         <p>Warning, translations are not visible until they are exported back to the app/lang file, using <code>php artisan translation:export</code> command or publish button.</p>
         <div class="alert alert-success success-import" style="display:none;">

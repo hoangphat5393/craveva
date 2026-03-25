@@ -42,5 +42,5 @@ package-lock.json
 /.composer-cache
 pnpm-lock.yaml
 
-# Invalid lang file name that breaks git index (delete manually from eng folder if present)
-Modules/LanguagePack/Languages/app/eng/(Added By*
+# Invalid lang file name that breaks git index (delete manually from LanguagePack app/en if present)
+Modules/LanguagePack/Languages/app/en/(Added By*

@@ -20,7 +20,7 @@ class SyncKeysCommand extends Command
     protected $signature = 'languagepack:sync-keys
                             {--paths= : Đường dẫn quét, phân cách bởi dấu phẩy (mặc định: app,resources,Modules)}
                             {--dry-run : Chỉ liệt kê key tìm thấy, không ghi file}
-                            {--locale=en : Locale mặc định để thêm key (en chuẩn, eng fallback)}';
+                            {--locale=en : Locale đích trong LanguagePack (ISO 639-1, ví dụ en)}';
 
     protected $description = 'Quét code tìm key dịch (__(), @lang...) và thêm key thiếu vào LanguagePack';
 
@@ -201,23 +201,15 @@ class SyncKeysCommand extends Command
                     continue;
                 }
                 $targetDir = $this->languagePackPath . '/modules/' . $moduleDir . '/' . $locale;
-                if (! File::isDirectory($targetDir)) {
-                    $targetDir = $this->languagePackPath . '/modules/' . $moduleDir . '/' . ($locale === 'en' ? 'eng' : 'en');
-                }
-                if (! File::isDirectory($targetDir)) {
-                    $targetDir = $this->languagePackPath . '/modules/' . $moduleDir . '/eng';
-                }
-                if (! File::isDirectory($targetDir)) {
-                    continue;
-                }
             } else {
                 $targetDir = $this->languagePackPath . '/app/' . $locale;
-                if (! File::isDirectory($targetDir)) {
-                    $targetDir = $this->languagePackPath . '/app/' . ($locale === 'en' ? 'eng' : 'en');
-                }
-                if (! File::isDirectory($targetDir)) {
+            }
+
+            if (! File::isDirectory($targetDir)) {
+                if ($dryRun) {
                     continue;
                 }
+                File::ensureDirectoryExists($targetDir);
             }
 
             $targetFile = $targetDir . '/' . $file;

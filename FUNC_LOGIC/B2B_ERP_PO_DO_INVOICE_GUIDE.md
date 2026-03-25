@@ -127,4 +127,4 @@ _(Trong codebase có thể dùng `delivery_orders` cho nhiều ngữ cảnh — 
 - Chuyển động: **inbound / outbound / transfer** (ledger).
 - **Invoice** không trực tiếp trừ kho; trừ kho theo **nhận/xuất/chuyển**.
 
-_Tài liệu này là hướng dẫn nghiệp vụ; chi tiết kỹ thuật nằm trong `FUNC_LOGIC/MAOLIN_MULTI_WAREHOUSE_ANALYSIS_AND_PLAN.md`._
+_Tài liệu này là hướng dẫn nghiệp vụ; chi tiết kỹ thuật đa kho nằm trong `FUNC_LOGIC/WAREHOUSE_ANALYSIS_AND_PLAN.md`; mục lục MAOLIN: `FUNC_LOGIC/MAOLIN_INDEX.md`._

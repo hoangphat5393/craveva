@@ -1,4 +1,3 @@
-```markdown
 # Phân tích ERP + B2B + Đa kênh (Maolin / Craveva) — Chức năng, GAP, DB, Rủi ro
 
 **Vai trò:** Tech Lead / BA / System Architect (ERP + B2B thực tế)  
@@ -174,6 +173,7 @@ Tham chiếu chi tiết file: **`FUNC_LOGIC/PROJECT_MAOLIN_NEW_FILES_ANALYSIS.md
 
 | Tài liệu                                                    | Nội dung                                      |
 | ----------------------------------------------------------- | --------------------------------------------- |
+| `FUNC_LOGIC/MAOLIN_INDEX.md`                                | Mục lục gộp MAOLIN (điểm vào)                 |
 | `FUNC_LOGIC/PROJECT_MAOLIN_NEW_FILES_ANALYSIS.md`           | File Excel khách, cột, thiếu/thừa vs hệ thống |
 | `FUNC_LOGIC/MIAOLIN_IMPORT_FIELDS_DB_VS_CUSTOM_ANALYSIS.md` | Import client/product vs DB / custom field    |
 | `FUNC_LOGIC/MIAOLIN_CONTRACT_ANALYSIS_EN.md`                | Hợp đồng / planning (nếu cần)                 |
@@ -182,4 +182,3 @@ Tham chiếu chi tiết file: **`FUNC_LOGIC/PROJECT_MAOLIN_NEW_FILES_ANALYSIS.md
 ---
 
 _Tài liệu này dựa trên khảo sát có chừng mực trên codebase; các mục ghi **Chưa rõ** cần xác minh thêm (grep toàn repo, đọc service Purchase/Warehouse khi xuất/nhập)._
-```

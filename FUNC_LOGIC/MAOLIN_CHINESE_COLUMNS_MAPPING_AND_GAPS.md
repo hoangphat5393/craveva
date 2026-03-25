@@ -1,5 +1,7 @@
 # MAOLIN - Chinese Columns Translation & System Mapping (Import Readiness)
 
+**Mục lục MAOLIN:** [`MAOLIN_INDEX.md`](MAOLIN_INDEX.md).
+
 **Scope files requested:**
 
 - `PROJECT MAOLIN New/Craveva customer.xlsx`

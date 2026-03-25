@@ -94,7 +94,7 @@ php artisan languagepack:sync-keys --locale=en
 Nếu gặp:
 
 ```text
-error: unable to index file 'Modules/LanguagePack/Languages/app/eng/(Added By '
+error: unable to index file 'Modules/LanguagePack/Languages/app/en/(Added By '
 fatal: adding files failed
 ```
 
@@ -102,7 +102,7 @@ fatal: adding files failed
 
 **Cách xử lý thủ công:**
 
-1. Mở thư mục: `F:\web\craveva-staging\Modules\LanguagePack\Languages\app\eng\`
+1. Mở thư mục: `...\Modules\LanguagePack\Languages\app\en\`
 2. Tìm file có tên bắt đầu bằng **`(Added By`**
 3. Xóa đúng file đó (chuột phải → Delete). Không xóa file khác.
 4. Chạy lại `git add .`

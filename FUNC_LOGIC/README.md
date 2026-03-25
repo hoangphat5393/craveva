@@ -38,34 +38,36 @@ Thư mục lưu **ghi chú kỹ thuật**, **flow**, **phân tích MAOLIN/B2B**,
 
 ### MAOLIN / ERP / B2B
 
-| File                                                                                                           | Nội dung                              |
-| -------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
-| [MAOLIN_MULTI_WAREHOUSE_ANALYSIS_AND_PLAN.md](MAOLIN_MULTI_WAREHOUSE_ANALYSIS_AND_PLAN.md)                     | Phân tích & kế hoạch multi-warehouse  |
-| [MULTI_WAREHOUSE_UI_OPERATIONS_GUIDE.md](MULTI_WAREHOUSE_UI_OPERATIONS_GUIDE.md)                               | Hướng dẫn UI / URL / env              |
-| [MULTI_WAREHOUSE_ISSUES_FIXES_AND_NEXT_STEPS.md](MULTI_WAREHOUSE_ISSUES_FIXES_AND_NEXT_STEPS.md)               | Lỗi đã gặp, đã sửa, backlog           |
-| [B2B_ERP_PO_DO_INVOICE_GUIDE.md](B2B_ERP_PO_DO_INVOICE_GUIDE.md)                                               | PO / DO / Invoice B2B                 |
-| [MAOLIN_ERP_B2B_GAP_ANALYSIS.md](MAOLIN_ERP_B2B_GAP_ANALYSIS.md)                                               | Gap ERP B2B                           |
-| [MAOLIN_CHINESE_COLUMNS_MAPPING_AND_GAPS.md](MAOLIN_CHINESE_COLUMNS_MAPPING_AND_GAPS.md)                       | Mapping cột tiếng Trung               |
-| [MAOLIN_FOCUSED_SCOPE_PRODUCT_CLIENT_INVENTORY_TIER.md](MAOLIN_FOCUSED_SCOPE_PRODUCT_CLIENT_INVENTORY_TIER.md) | Phạm vi tier product/client/inventory |
-| [MAOLIN_PM_CLIENT_ONEPAGE.md](MAOLIN_PM_CLIENT_ONEPAGE.md)                                                     | PM client one-pager                   |
-| [MAOLIN_DAILY_SYNC_DEMO_ANALYSIS.md](MAOLIN_DAILY_SYNC_DEMO_ANALYSIS.md)                                       | Daily sync demo                       |
-| [PROJECT_MAOLIN_NEW_FILES_ANALYSIS.md](PROJECT_MAOLIN_NEW_FILES_ANALYSIS.md)                                   | Phân tích file mới MAOLIN             |
-| [ERP_TECH_REVIEW_REPORT_VI.md](ERP_TECH_REVIEW_REPORT_VI.md)                                                   | Tech review (VI)                      |
+**Mục lục gộp MAOLIN (nên mở trước):** [MAOLIN_INDEX.md](MAOLIN_INDEX.md).
+
+| File                                                                                             | Nội dung                                     |
+| ------------------------------------------------------------------------------------------------ | -------------------------------------------- |
+| [WAREHOUSE_ANALYSIS_AND_PLAN.md](WAREHOUSE_ANALYSIS_AND_PLAN.md)                                 | Phân tích & kế hoạch multi-warehouse         |
+| [MULTI_WAREHOUSE_UI_OPERATIONS_GUIDE.md](MULTI_WAREHOUSE_UI_OPERATIONS_GUIDE.md)                 | Hướng dẫn UI / URL / env                     |
+| [MULTI_WAREHOUSE_ISSUES_FIXES_AND_NEXT_STEPS.md](MULTI_WAREHOUSE_ISSUES_FIXES_AND_NEXT_STEPS.md) | Lỗi đã gặp, đã sửa, backlog                  |
+| [WAREHOUSE_CUSTOM_FIELDS_RATIONALIZATION.md](WAREHOUSE_CUSTOM_FIELDS_RATIONALIZATION.md)         | Custom field vs cột DB (sau đa kho)          |
+| [B2B_ERP_PO_DO_INVOICE_GUIDE.md](B2B_ERP_PO_DO_INVOICE_GUIDE.md)                                 | PO / DO / Invoice B2B                        |
+| [MAOLIN_IMPORT_MAPPING.md](MAOLIN_IMPORT_MAPPING.md)                                             | Map cột import MAOLIN (ready to use)         |
+| [MAOLIN_CHINESE_COLUMNS_MAPPING_AND_GAPS.md](MAOLIN_CHINESE_COLUMNS_MAPPING_AND_GAPS.md)         | Mapping cột tiếng Trung + gap                |
+| [MAOLIN_DAILY_SYNC_DEMO_ANALYSIS.md](MAOLIN_DAILY_SYNC_DEMO_ANALYSIS.md)                         | Daily sync demo + tóm tắt PM                 |
+| [MAOLIN_ERP_B2B_GAP_ANALYSIS.md](MAOLIN_ERP_B2B_GAP_ANALYSIS.md)                                 | Gap ERP B2B                                  |
+| [PROJECT_MAOLIN_NEW_FILES_ANALYSIS.md](PROJECT_MAOLIN_NEW_FILES_ANALYSIS.md)                     | Phân tích chi tiết file `PROJECT MAOLIN New` |
+| [ERP_TECH_REVIEW_REPORT_VI.md](ERP_TECH_REVIEW_REPORT_VI.md)                                     | Tech review (VI)                             |
 
 ### Import / client / DB
 
-| File                                                                                                                     | Nội dung                                                |
-| ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------- |
-| [CLIENT_IMPORT_REVIEW_AND_IMPROVEMENTS.md](CLIENT_IMPORT_REVIEW_AND_IMPROVEMENTS.md)                                     | Review import client                                    |
-| [CLIENT_IMPORT_LOG_UX_PROPOSAL.md](CLIENT_IMPORT_LOG_UX_PROPOSAL.md)                                                     | UX log import                                           |
-| [IMPORT_CHUNK_AND_BULK_INSERT_ANALYSIS.md](IMPORT_CHUNK_AND_BULK_INSERT_ANALYSIS.md)                                     | Chunk & bulk insert                                     |
-| [PRODUCT_IMPORT_SLOWNESS_ANALYSIS.md](PRODUCT_IMPORT_SLOWNESS_ANALYSIS.md)                                               | Import chậm                                             |
-| [MIAOLIN_IMPORT_FIELDS_DB_VS_CUSTOM_ANALYSIS.md](MIAOLIN_IMPORT_FIELDS_DB_VS_CUSTOM_ANALYSIS.md)                         | Field DB vs custom                                      |
-| [MIAOLIN_PHASE1_REQUIRED_FILES_EN - FINAL.md](MIAOLIN_PHASE1_REQUIRED_FILES_EN%20-%20FINAL.md)                           | Phase 1 files (EN)                                      |
-| [MIAOLIN_CONTRACT_ANALYSIS_EN.md](MIAOLIN_CONTRACT_ANALYSIS_EN.md)                                                       | Contract analysis                                       |
-| [SYSTEM_DATABASE_OVERVIEW_REPORT_VI.md](SYSTEM_DATABASE_OVERVIEW_REPORT_VI.md)                                           | Báo cáo tổng quan DB (MySQL, miền nghiệp vụ, SQL gợi ý) |
-| [DATABASE_REPORT_USERS_CLIENT_TABLES_RELATIONSHIPS.md](DATABASE_REPORT_USERS_CLIENT_TABLES_RELATIONSHIPS.md)             | Quan hệ users / client                                  |
-| [SCHEMATIC_LAYER_USERS_CLIENT_DETAILS_1_1_REASON_AND_FIX.md](SCHEMATIC_LAYER_USERS_CLIENT_DETAILS_1_1_REASON_AND_FIX.md) | Layer users–client_details                              |
+| File                                                                                                                     | Nội dung                                                                   |
+| ------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------- |
+| [CLIENT_IMPORT_REVIEW_AND_IMPROVEMENTS.md](CLIENT_IMPORT_REVIEW_AND_IMPROVEMENTS.md)                                     | Review import client                                                       |
+| [CLIENT_IMPORT_LOG_UX_PROPOSAL.md](CLIENT_IMPORT_LOG_UX_PROPOSAL.md)                                                     | UX log import                                                              |
+| [IMPORT_CHUNK_AND_BULK_INSERT_ANALYSIS.md](IMPORT_CHUNK_AND_BULK_INSERT_ANALYSIS.md)                                     | Chunk & bulk insert                                                        |
+| [PRODUCT_IMPORT_SLOWNESS_ANALYSIS.md](PRODUCT_IMPORT_SLOWNESS_ANALYSIS.md)                                               | Import chậm                                                                |
+| [MIAOLIN_IMPORT_FIELDS_DB_VS_CUSTOM_ANALYSIS.md](MIAOLIN_IMPORT_FIELDS_DB_VS_CUSTOM_ANALYSIS.md)                         | Field DB vs custom (mẫu Excel cũ — xem [MAOLIN_INDEX.md](MAOLIN_INDEX.md)) |
+| [MIAOLIN_PHASE1_REQUIRED_FILES_EN - FINAL.md](MIAOLIN_PHASE1_REQUIRED_FILES_EN%20-%20FINAL.md)                           | Phase 1 files (EN)                                                         |
+| [MIAOLIN_CONTRACT_ANALYSIS_EN.md](MIAOLIN_CONTRACT_ANALYSIS_EN.md)                                                       | Contract analysis                                                          |
+| [SYSTEM_DATABASE_OVERVIEW_REPORT_VI.md](SYSTEM_DATABASE_OVERVIEW_REPORT_VI.md)                                           | Báo cáo tổng quan DB (MySQL, miền nghiệp vụ, SQL gợi ý)                    |
+| [DATABASE_REPORT_USERS_CLIENT_TABLES_RELATIONSHIPS.md](DATABASE_REPORT_USERS_CLIENT_TABLES_RELATIONSHIPS.md)             | Quan hệ users / client                                                     |
+| [SCHEMATIC_LAYER_USERS_CLIENT_DETAILS_1_1_REASON_AND_FIX.md](SCHEMATIC_LAYER_USERS_CLIENT_DETAILS_1_1_REASON_AND_FIX.md) | Layer users–client_details                                                 |
 
 ### Pricing / dev tools
 

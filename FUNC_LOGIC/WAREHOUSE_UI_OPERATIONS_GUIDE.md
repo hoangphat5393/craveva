@@ -123,4 +123,4 @@ _Nếu vào URL báo 404:_ kiểm tra module Warehouse đã bật trong hệ th�
 
 ---
 
-_Tài liệu đi kèm: `FUNC_LOGIC/B2B_ERP_PO_DO_INVOICE_GUIDE.md` (nghiệp vụ PO/DO/Invoice), `FUNC_LOGIC/MAOLIN_MULTI_WAREHOUSE_ANALYSIS_AND_PLAN.md` (kỹ thuật + trạng thái triển khai)._
+_Tài liệu đi kèm: `FUNC_LOGIC/B2B_ERP_PO_DO_INVOICE_GUIDE.md` (nghiệp vụ PO/DO/Invoice), `FUNC_LOGIC/WAREHOUSE_ANALYSIS_AND_PLAN.md` (kỹ thuật + trạng thái triển khai), `FUNC_LOGIC/MAOLIN_INDEX.md` (mục lục ghi chú MAOLIN)._

@@ -1,5 +1,5 @@
 <?php
 
-return [
-    'quantityOrdered' => 'Quantity ordered',
-];
+return array (
+  'quantityOrdered' => 'Quantityordered',
+);

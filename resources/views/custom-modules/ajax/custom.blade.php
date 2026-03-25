@@ -91,10 +91,9 @@
                 </td>
 
                 <td>
-                    @if (config($moduleName . '.setting'))
+                    @if (\Illuminate\Support\Facades\File::exists($module->getPath() . '/version.txt'))
                         @include('custom-modules.sections.version')
                     @endif
-
                 </td>
 
 

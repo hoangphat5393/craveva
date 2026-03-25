@@ -5,14 +5,14 @@
 </style>
 
 <!-- INVOICE CARD START -->
-@if(!is_null($order->client_id) && !is_null($order->clientDetails))
+@if (!is_null($order->client_id) && !is_null($order->clientDetails))
     @php
         $client = $order->client;
     @endphp
 @endif
 @php
-$editOrderPermission = user()->permission('edit_order');
-$deleteOrderPermission = user()->permission('delete_order');
+    $editOrderPermission = user()->permission('edit_order');
+    $deleteOrderPermission = user()->permission('delete_order');
 @endphp
 
 <div class="card border-0 invoice">
@@ -38,8 +38,7 @@ $deleteOrderPermission = user()->permission('delete_order');
         <div class="invoice-table-wrapper">
             <table width="100%" class="">
                 <tr class="inv-logo-heading">
-                    <td><img src="{{ invoice_setting()->logo_url }}" alt="{{ company()->company_name }}"
-                            id="logo" /></td>
+                    <td><img src="{{ invoice_setting()->logo_url }}" alt="{{ company()->company_name }}" id="logo" /></td>
                     <td align="right" class="font-weight-bold f-21 text-dark text-uppercase mt-4 mt-lg-0 mt-md-0">
                         @lang('app.order')</td>
                 </tr>
@@ -81,7 +80,7 @@ $deleteOrderPermission = user()->permission('delete_order');
                             @lang('modules.invoices.project'):
                             <p class="mb-3">
                                 @if ($order->project)
-                                    {{$order->project->project_name}}
+                                    {{ $order->project->project_name }}
                                 @endif
                             </p>
                         </td>
@@ -90,27 +89,27 @@ $deleteOrderPermission = user()->permission('delete_order');
                 <tr class="inv-unpaid">
 
                     <td class="f-14 text-dark">
-                        <p>@lang("modules.invoices.billedTo"):</p>
+                        <p>@lang('modules.invoices.billedTo'):</p>
                         <p class="mt-3 mb-0">
-                        @if ($order->client->name && $invoiceSetting->show_client_name == 'yes')
-                            {{ $order->client->name_salutation }}<br>
-                        @endif
+                            @if ($order->client->name && $invoiceSetting->show_client_name == 'yes')
+                                {{ $order->client->name_salutation }}<br>
+                            @endif
 
-                        @if ($order->client->email && $invoiceSetting->show_client_email == 'yes')
-                            {{ $order->client->email }}<br>
-                        @endif
+                            @if ($order->client->email && $invoiceSetting->show_client_email == 'yes')
+                                {{ $order->client->email }}<br>
+                            @endif
 
-                        @if ($order->client->mobile && $invoiceSetting->show_client_phone == 'yes')
-                            {{ $order->client->mobile_with_phonecode }}<br>
-                        @endif
+                            @if ($order->client->mobile && $invoiceSetting->show_client_phone == 'yes')
+                                {{ $order->client->mobile_with_phonecode }}<br>
+                            @endif
 
-                        @if ($order->client->clientDetails->company_name && $invoiceSetting->show_client_company_name == 'yes')
-                            {{ $order->client->clientDetails->company_name }}<br>
-                        @endif
+                            @if ($order->client->clientDetails->company_name && $invoiceSetting->show_client_company_name == 'yes')
+                                {{ $order->client->clientDetails->company_name }}<br>
+                            @endif
 
-                        @if ($order->client->clientDetails->address && $invoiceSetting->show_client_company_address == 'yes')
-                            {!! nl2br($order->client->clientDetails->address) !!}
-                        @endif
+                            @if ($order->client->clientDetails->address && $invoiceSetting->show_client_company_address == 'yes')
+                                {!! nl2br($order->client->clientDetails->address) !!}
+                            @endif
                         </p>
                     </td>
 
@@ -118,7 +117,6 @@ $deleteOrderPermission = user()->permission('delete_order');
                         @if ($order->credit_note)
                             <span class="unpaid text-warning border-warning">@lang('app.credit-note')</span>
                         @else
-
                             <span
                                 class="unpaid @switch($order->status)
                                 @case('pending') text-warning border-warning @break
@@ -128,7 +126,7 @@ $deleteOrderPermission = user()->permission('delete_order');
                                 @case('completed') text-success border-success @break
                                 @case('canceled') text-red border-red @break
                                 @case('refunded') text-body border-dark @break
-                                @default @endswitch rounded f-15 ">@lang('modules.invoices.'.$order->status)</span>
+                                @default @endswitch rounded f-15 ">@lang('modules.invoices.' . $order->status)</span>
                         @endif
                     </td>
                 </tr>
@@ -142,8 +140,8 @@ $deleteOrderPermission = user()->permission('delete_order');
                         <table class="inv-detail f-14 table-responsive-sm" width="100%">
                             <tr class="i-d-heading bg-light-grey text-dark-grey font-weight-bold">
                                 <td class="border-right-0" width="35%">@lang('app.description')</td>
-                                @if($invoiceSetting->hsn_sac_code_show)
-                                    <td class="border-right-0 border-left-0" align="right">@lang("app.hsnSac")</td>
+                                @if ($invoiceSetting->hsn_sac_code_show)
+                                    <td class="border-right-0 border-left-0" align="right">@lang('app.hsnSac')</td>
                                 @endif
                                 <td class="border-right-0 border-left-0" align="right">
                                     @lang('modules.invoices.qty')
@@ -152,21 +150,24 @@ $deleteOrderPermission = user()->permission('delete_order');
                                     @lang('app.sku')
                                 </td>
                                 <td class="border-right-0 border-left-0" align="right">
-                                    @lang("modules.invoices.unitPrice") ({{ $order->currency->currency_code }})
+                                    @lang('modules.invoices.unitPrice') ({{ $order->currency->currency_code }})
                                 </td>
-                                <td class="border-right-0 border-left-0" align="right">@lang("modules.invoices.tax")</td>
+                                <td class="border-right-0 border-left-0" align="right">@lang('modules.invoices.tax')</td>
                                 <td class="border-left-0" align="right">
-                                    @lang("modules.invoices.amount")
+                                    @lang('modules.invoices.amount')
                                     ({{ $order->currency->currency_code }})</td>
                             </tr>
 
                             @foreach ($order->items->sortBy('field_order') as $item)
                                 <tr class="text-dark">
                                     <td>{{ $item->item_name }}</td>
-                                    @if($invoiceSetting->hsn_sac_code_show)
+                                    @if ($invoiceSetting->hsn_sac_code_show)
                                         <td align="right">{{ $item->hsn_sac_code }}</td>
                                     @endif
-                                    <td align="right">{{ $item->quantity }}@if($item->unit)<br><span class="f-11 text-dark-grey">{{ $item->unit->unit_type }}</span>@endif</td>
+                                    <td align="right">{{ $item->quantity }}@if ($item->unit)
+                                            <br><span class="f-11 text-dark-grey">{{ $item->unit->unit_type }}</span>
+                                        @endif
+                                    </td>
                                     <td align="right">{{ $item->sku }}</td>
                                     <td align="right">
                                         {{ currency_format($item->unit_price, $order->currency_id, false) }}</td>
@@ -196,7 +197,6 @@ $deleteOrderPermission = user()->permission('delete_order');
                                             </p>
                                         </td>
                                     </tr>
-
                                 @endif
                             @endforeach
 
@@ -207,12 +207,12 @@ $deleteOrderPermission = user()->permission('delete_order');
                                     <table width="100%">
                                         <tr class="text-dark-grey" align="right">
                                             <td class="w-50 border-top-0 border-left-0">
-                                                @lang("modules.invoices.subTotal")</td>
+                                                @lang('modules.invoices.subTotal')</td>
                                         </tr>
                                         @if ($discount != 0 && $discount != '')
                                             <tr class="text-dark-grey" align="right">
                                                 <td class="w-50 border-top-0 border-left-0">
-                                                    @lang("modules.invoices.discount")</td>
+                                                    @lang('modules.invoices.discount')</td>
                                             </tr>
                                         @endif
                                         @foreach ($taxes as $key => $tax)
@@ -223,7 +223,7 @@ $deleteOrderPermission = user()->permission('delete_order');
                                         @endforeach
                                         <tr class="bg-light-grey text-dark f-w-500 f-16" align="right">
                                             <td class="w-50 border-bottom-0 border-left-0">
-                                                @lang("modules.invoices.total")</td>
+                                                @lang('modules.invoices.total')</td>
                                         </tr>
                                     </table>
                                 </td>
@@ -262,7 +262,6 @@ $deleteOrderPermission = user()->permission('delete_order');
 
                 @foreach ($order->items->sortBy('field_order') as $item)
                     @if ($item->type == 'item')
-
                         <tr>
                             <th width="50%" class="bg-light-grey text-dark-grey font-weight-bold">
                                 @lang('app.description')</th>
@@ -296,13 +295,13 @@ $deleteOrderPermission = user()->permission('delete_order');
                         </tr>
                         <tr>
                             <th width="50%" class="bg-light-grey text-dark-grey font-weight-bold">
-                                @lang("modules.invoices.unitPrice")
+                                @lang('modules.invoices.unitPrice')
                                 ({{ $order->currency->currency_code }})</th>
                             <td width="50%">{{ currency_format($item->unit_price, $order->currency_id, false) }}</td>
                         </tr>
                         <tr>
                             <th width="50%" class="bg-light-grey text-dark-grey font-weight-bold">
-                                @lang("modules.invoices.amount")
+                                @lang('modules.invoices.amount')
                                 ({{ $order->currency->currency_code }})</th>
                             <td width="50%">{{ currency_format($item->amount, $order->currency_id, false) }}</td>
                         </tr>
@@ -313,14 +312,14 @@ $deleteOrderPermission = user()->permission('delete_order');
                 @endforeach
 
                 <tr>
-                    <th width="50%" class="text-dark-grey font-weight-normal">@lang("modules.invoices.subTotal")
+                    <th width="50%" class="text-dark-grey font-weight-normal">@lang('modules.invoices.subTotal')
                     </th>
                     <td width="50%" class="text-dark-grey font-weight-normal">
                         {{ currency_format($order->sub_total, $order->currency_id, false) }}</td>
                 </tr>
                 @if ($discount != 0 && $discount != '')
                     <tr>
-                        <th width="50%" class="text-dark-grey font-weight-normal">@lang("modules.invoices.discount")
+                        <th width="50%" class="text-dark-grey font-weight-normal">@lang('modules.invoices.discount')
                         </th>
                         <td width="50%" class="text-dark-grey font-weight-normal">
                             {{ currency_format($discount, $order->currency_id, false) }}</td>
@@ -335,7 +334,7 @@ $deleteOrderPermission = user()->permission('delete_order');
                     </tr>
                 @endforeach
                 <tr>
-                    <th width="50%" class="text-dark-grey font-weight-bold">@lang("modules.invoices.total")</th>
+                    <th width="50%" class="text-dark-grey font-weight-bold">@lang('modules.invoices.total')</th>
                     <td width="50%" class="text-dark-grey font-weight-bold">
                         {{ currency_format($order->total, $order->currency_id, false) }}</td>
                 </tr>
@@ -371,21 +370,17 @@ $deleteOrderPermission = user()->permission('delete_order');
         <div class="d-flex">
 
 
-                <div class="inv-action mr-3 mr-lg-3 mr-md-3 dropup">
-                    <button class="dropdown-toggle btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown"
-                        aria-haspopup="true" aria-expanded="false">@lang('app.action')
-                        <span><i class="fa fa-chevron-up f-15"></i></span>
-                    </button>
-                    <!-- DROPDOWN - INFORMATION -->
-                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton" tabindex="0">
-                        <li><a href="{{ route('orders.download', $order->id) }}" class="dropdown-item"><i class="fa fa-download f-w-500 mr-2 f-11"></i> @lang('app.download')</a></li>
-                        @if(
-                            (in_array('admin', user_roles()) || in_array('employee', user_roles()))
-                        )
+            <div class="inv-action mr-3 mr-lg-3 mr-md-3 dropup">
+                <button class="dropdown-toggle btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@lang('app.action')
+                    <span><i class="fa fa-chevron-up f-15"></i></span>
+                </button>
+                <!-- DROPDOWN - INFORMATION -->
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton" tabindex="0">
+                    <li><a href="{{ route('orders.download', $order->id) }}" class="dropdown-item"><i class="fa fa-download f-w-500 mr-2 f-11"></i> @lang('app.download')</a></li>
+                    @if (in_array('admin', user_roles()) || in_array('employee', user_roles()))
                         @if (($editOrderPermission == 'all' || ($editOrderPermission == 'added' && $order->added_by == user()->id)) && $order->status == 'completed')
                             <li>
-                                <a class="dropdown-item f-14 text-dark orderStatus" data-status="refunded"
-                                href="javascript:;">
+                                <a class="dropdown-item f-14 text-dark orderStatus" data-status="refunded" href="javascript:;">
                                     <i class="fa fa-money-bill f-w-500 mr-2 f-11"></i> @lang('app.refund')
                                 </a>
                             </li>
@@ -393,8 +388,7 @@ $deleteOrderPermission = user()->permission('delete_order');
 
                         @if (($editOrderPermission == 'all' || (in_array($editOrderPermission, ['added', 'both']) && $order->added_by == user()->id)) && in_array($order->status, ['pending', 'on-hold', 'failed', 'processing']))
                             <li>
-                                <a class="dropdown-item f-14 text-dark orderStatus" data-status="completed"
-                                href="javascript:;">
+                                <a class="dropdown-item f-14 text-dark orderStatus" data-status="completed" href="javascript:;">
                                     <i class="fa fa-check f-w-500 mr-2 f-11"></i> @lang('app.orderMarkAsComplete')
                                 </a>
                             </li>
@@ -402,53 +396,45 @@ $deleteOrderPermission = user()->permission('delete_order');
 
                         @if (in_array($order->status, ['completed', 'refunded']) && $order->invoice)
                             <li>
-                                <a class="dropdown-item f-14 text-dark"
-                                href="{{ route('invoices.show', $order->invoice->id) }}">
+                                <a class="dropdown-item f-14 text-dark" href="{{ route('invoices.show', $order->invoice->id) }}">
                                     <i class="fa fa-receipt f-w-500 mr-2 f-11"></i> @lang('app.viewInvoice')
                                 </a>
                             </li>
                         @endif
 
-                        @if (!in_array($order->status, ['completed', 'canceled', 'refunded']) && ($editOrderPermission == 'all'|| ($editOrderPermission == 'both' && ($order->added_by == user()->id || $order->client_id == user()->id)) || ($editOrderPermission == 'added' && $order->added_by == user()->id) || ($editOrderPermission == 'owned' && $order->client_id == user()->id)) && (!is_null($order->project) && is_null($order->project->deleted_at)) )
+                        @if (
+                            !in_array($order->status, ['completed', 'canceled', 'refunded']) &&
+                                ($editOrderPermission == 'all' || ($editOrderPermission == 'both' && ($order->added_by == user()->id || $order->client_id == user()->id)) || ($editOrderPermission == 'added' && $order->added_by == user()->id) || ($editOrderPermission == 'owned' && $order->client_id == user()->id)) &&
+                                (!is_null($order->project) && is_null($order->project->deleted_at)))
                             <li>
-                                <a class="dropdown-item f-14 text-dark openRightModal" href="{{route('orders.edit', $order->id)}}">
+                                <a class="dropdown-item f-14 text-dark openRightModal" href="{{ route('orders.edit', $order->id) }}">
                                     <i class="fa fa-edit f-w-500 mr-2 f-11"></i> @lang('app.edit')
                                 </a>
                             </li>
                         @endif
 
-                        @if (!in_array($order->status, ['completed', 'refunded']) && ($deleteOrderPermission == 'all'|| ($deleteOrderPermission == 'both' && ($order->added_by == user()->id || $order->client_id == user()->id)) || ($deleteOrderPermission == 'added' && $order->added_by == user()->id) || ($deleteOrderPermission == 'owned' && $order->client_id == user()->id)))
+                        @if (!in_array($order->status, ['completed', 'refunded']) && ($deleteOrderPermission == 'all' || ($deleteOrderPermission == 'both' && ($order->added_by == user()->id || $order->client_id == user()->id)) || ($deleteOrderPermission == 'added' && $order->added_by == user()->id) || ($deleteOrderPermission == 'owned' && $order->client_id == user()->id)))
                             <li>
-                                <a class="dropdown-item f-14 text-dark deleteOrder" data-order-id="{{$order->id}}"
-                                href="javascript:;">
+                                <a class="dropdown-item f-14 text-dark deleteOrder" data-order-id="{{ $order->id }}" href="javascript:;">
                                     <i class="fa fa-trash f-w-500 mr-2 f-11"></i> @lang('app.delete')
                                 </a>
                             </li>
                         @endif
-                        @endif
-                    </ul>
-                </div>
+                    @endif
+                </ul>
+            </div>
 
             {{-- PAYMENT GATEWAY --}}
-            @if (
-                in_array('client', user_roles()) &&
-                $order->total > 0 && in_array($order->status, ['pending', 'failed']) &&
-                ($credentials->show_pay || ($methods->count() > 0 && $offlinePayemntDone === 'no')) &&
-                !(!empty($invoice->payment) && isset($invoice->payment[0]->gateway) && $invoice->payment[0]->gateway == 'Offline')
-                && !($payment && $payment->status === 'pending')
-            )
+            @if (in_array('client', user_roles()) && $order->total > 0 && in_array($order->status, ['pending', 'failed']) && ($credentials->show_pay || ($methods->count() > 0 && $offlinePayemntDone === 'no')) && !(!empty($invoice->payment) && isset($invoice->payment[0]->gateway) && $invoice->payment[0]->gateway == 'Offline') && !($payment && $payment->status === 'pending'))
                 <div class="inv-action mr-3 mr-lg-3 mr-md-3 dropup">
-                    <button class="dropdown-toggle btn-primary rounded mr-3 mr-lg-0 mr-md-0 f-15" type="button"
-                        id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
-                        aria-expanded="false">@lang('modules.invoices.payNow')
+                    <button class="dropdown-toggle btn-primary rounded mr-3 mr-lg-0 mr-md-0 f-15" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@lang('modules.invoices.payNow')
                         <span><i class="fa fa-chevron-down f-15"></i></span>
                     </button>
                     <!-- DROPDOWN - INFORMATION -->
                     <ul class="dropdown-menu dropdown-menu-left" aria-labelledby="dropdownMenuButton" tabindex="0">
                         @if ($credentials->stripe_status == 'active')
                             <li>
-                                <a class="dropdown-item f-14 text-dark" href="javascript:;"
-                                    data-order-id="{{ $order->id }}" id="stripeModal">
+                                <a class="dropdown-item f-14 text-dark" href="javascript:;" data-order-id="{{ $order->id }}" id="stripeModal">
                                     <i class="fab fa-stripe-s f-w-500 mr-2 f-11"></i>
                                     @lang('modules.invoices.payStripe')
                                 </a>
@@ -457,20 +443,19 @@ $deleteOrderPermission = user()->permission('delete_order');
 
                         @if ($credentials->paystack_status == 'active')
                             <li>
-                                <a class="dropdown-item f-14 text-dark" href="javascript:void(0);" data-order-id="{{ $order->id }}"  id="paystackModal">
+                                <a class="dropdown-item f-14 text-dark" href="javascript:void(0);" data-order-id="{{ $order->id }}" id="paystackModal">
                                     <img style="height: 15px;" src="https://s3-eu-west-1.amazonaws.com/pstk-integration-logos/paystack.jpg"> @lang('modules.invoices.payPaystack')</a>
                             </li>
                         @endif
                         @if ($credentials->flutterwave_status == 'active')
                             <li>
-                                <a class="dropdown-item f-14 text-dark" href="javascript:void(0);" data-order-id="{{ $order->id }}"  id="flutterwaveModal">
+                                <a class="dropdown-item f-14 text-dark" href="javascript:void(0);" data-order-id="{{ $order->id }}" id="flutterwaveModal">
                                     <img style="height: 15px;" src="{{ asset('img/flutterwave.png') }}"> @lang('modules.invoices.payFlutterwave')</a>
                             </li>
                         @endif
                         @if ($credentials->payfast_status == 'active')
                             <li>
-                                <a class="dropdown-item f-14 text-dark" href="javascript:void(0);"
-                                    id="payfastModal">
+                                <a class="dropdown-item f-14 text-dark" href="javascript:void(0);" id="payfastModal">
                                     <img style="height: 15px;" src="{{ asset('img/payfast.png') }}">
                                     @lang('modules.invoices.payPayfast')</a>
                             </li>
@@ -478,25 +463,23 @@ $deleteOrderPermission = user()->permission('delete_order');
 
                         @if ($credentials->square_status == 'active')
                             <li>
-                                <a class="dropdown-item f-14 text-dark" href="javascript:void(0);"
-                                    id="squareModal">
+                                <a class="dropdown-item f-14 text-dark" href="javascript:void(0);" id="squareModal">
                                     <img style="height: 15px;" src="{{ asset('img/square.svg') }}">
                                     @lang('modules.invoices.paySquare')</a>
                             </li>
                         @endif
 
                         @if ($credentials->authorize_status == 'active')
-                        <li>
-                            <a class="dropdown-item f-14 text-dark" href="javascript:void(0);"
-                                data-order-id="{{ $order->id }}" id="authorizeModal">
-                                <img style="height: 15px;" src="{{ asset('img/authorize.png') }}">
-                                @lang('modules.invoices.payAuthorize')</a>
-                        </li>
+                            <li>
+                                <a class="dropdown-item f-14 text-dark" href="javascript:void(0);" data-order-id="{{ $order->id }}" id="authorizeModal">
+                                    <img style="height: 15px;" src="{{ asset('img/authorize.png') }}">
+                                    @lang('modules.invoices.payAuthorize')</a>
+                            </li>
                         @endif
 
                         @if ($credentials->mollie_status == 'active')
                             <li>
-                                <a class="dropdown-item f-14 text-dark" href="javascript:void(0);" data-order-id="{{ $order->id }}"  id="mollieModal">
+                                <a class="dropdown-item f-14 text-dark" href="javascript:void(0);" data-order-id="{{ $order->id }}" id="mollieModal">
                                     <img style="height: 20px;" src="{{ asset('img/mollie.png') }}"> @lang('modules.invoices.payMollie')</a>
                             </li>
                         @endif
@@ -518,8 +501,7 @@ $deleteOrderPermission = user()->permission('delete_order');
                         @endif
                         @if ($methods->count() > 0 && $offlinePayemntDone === 'no')
                             <li>
-                                <a class="dropdown-item f-14 text-dark" href="javascript:;" id="offlinePaymentModal"
-                                    data-order-id="{{ $order->id }}">
+                                <a class="dropdown-item f-14 text-dark" href="javascript:;" id="offlinePaymentModal" data-order-id="{{ $order->id }}">
                                     <i class="fa fa-money-bill f-w-500 mr-2 f-11"></i>
                                     @lang('modules.invoices.payOffline')
                                 </a>
@@ -552,11 +534,12 @@ $deleteOrderPermission = user()->permission('delete_order');
 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
-@if($bankDetails != null)
+@if ($bankDetails != null)
     <script>
-        var bankAccounts = @json($bankDetails->mapWithKeys(function ($account) {
-            return [$account['id'] => $account['bank_name'] . ' | ' . $account['account_name']];
-        }));
+        var bankAccounts = @json(
+            $bankDetails->mapWithKeys(function ($account) {
+                return [$account['id'] => $account['bank_name'] . ' | ' . $account['account_name']];
+            }));
     </script>
 @else
     <script>
@@ -565,7 +548,6 @@ $deleteOrderPermission = user()->permission('delete_order');
 @endif
 
 <script>
-
     $('body').on('click', '.orderStatus', function() {
         var url = "{{ route('orders.change_status') }}";
         var token = "{{ csrf_token() }}";
@@ -627,51 +609,61 @@ $deleteOrderPermission = user()->permission('delete_order');
                         inputPlaceholder: "@lang('messages.selectBank')",
                         showCancelButton: true,
                         inputValidator: (value) => {
-                                    return new Promise((resolve) => {
-                                        resolve();
-                                    });
+                            return new Promise((resolve) => {
+                                resolve();
+                            });
                         }
                     }).then((result) => {
                         if (result.isConfirmed) {
                             let selectedBankAccount = result.value;
 
-                            $.easyAjax({
-                                url: url,
-                                type: "POST",
-                                container: '.content-wrapper',
-                                blockUI: true,
-                                data: {
-                                    '_token': token,
-                                    orderId: {{ $order->id }},
-                                    status: status,
-                                    bank_account_id: selectedBankAccount
-                                },
-                                success: function(data) {
-                                    if (data.status == 'success') {
-                                        $.unblockUI();
-                                        window.location.reload();
-                                    }
+                            var bodyBank = '_token=' + encodeURIComponent(token) +
+                                '&orderId={{ $order->id }}' +
+                                '&status=' + encodeURIComponent(status) +
+                                '&bank_account_id=' + encodeURIComponent(selectedBankAccount);
+                            $.easyBlockUI('.content-wrapper');
+                            window.apiHttp.postUrlEncoded(url, bodyBank).then(function(data) {
+                                if (data.status == 'success') {
+                                    window.location.reload();
                                 }
+                            }).catch(function(err) {
+                                if (typeof Swal !== 'undefined') {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        text: err.message,
+                                        toast: true,
+                                        position: 'top-end',
+                                        timer: 4000,
+                                        showConfirmButton: false
+                                    });
+                                }
+                            }).finally(function() {
+                                $.easyUnblockUI('.content-wrapper');
                             });
                         }
                     });
                 } else {
-                    $.easyAjax({
-                        url: url,
-                        type: "POST",
-                        container: '.content-wrapper',
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            orderId: {{ $order->id }},
-                            status: status
-                        },
-                        success: function(data) {
-                            if (data.status == 'success') {
-                                $.unblockUI();
-                                window.location.reload();
-                            }
+                    var bodyStatus = '_token=' + encodeURIComponent(token) +
+                        '&orderId={{ $order->id }}' +
+                        '&status=' + encodeURIComponent(status);
+                    $.easyBlockUI('.content-wrapper');
+                    window.apiHttp.postUrlEncoded(url, bodyStatus).then(function(data) {
+                        if (data.status == 'success') {
+                            window.location.reload();
                         }
+                    }).catch(function(err) {
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                text: err.message,
+                                toast: true,
+                                position: 'top-end',
+                                timer: 4000,
+                                showConfirmButton: false
+                            });
+                        }
+                    }).finally(function() {
+                        $.easyUnblockUI('.content-wrapper');
                     });
                 }
             }
@@ -703,19 +695,24 @@ $deleteOrderPermission = user()->permission('delete_order');
 
                 var token = "{{ csrf_token() }}";
 
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    blockUI: true,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
-                        if (response.status == "success") {
-                            window.location.href = "{{ route('orders.index') }}";
-                        }
+                $.easyBlockUI('.content-wrapper');
+                window.apiHttp.delete(url, token).then(function(response) {
+                    if (response.status == "success") {
+                        window.location.href = "{{ route('orders.index') }}";
                     }
+                }).catch(function(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
+                    }
+                }).finally(function() {
+                    $.easyUnblockUI('.content-wrapper');
                 });
             }
         });
@@ -733,8 +730,8 @@ $deleteOrderPermission = user()->permission('delete_order');
 
     $('body').on('click', '#paystackModal', function() {
         let id = $(this).data('order-id');
-        let queryString = "?id="+id+"&type=order";
-        let url = "{{ route('front.paystack_modal') }}"+queryString;
+        let queryString = "?id=" + id + "&type=order";
+        let url = "{{ route('front.paystack_modal') }}" + queryString;
 
         $(MODAL_LG + ' ' + MODAL_HEADING).html('...');
         $.ajaxModal(MODAL_LG, url);
@@ -742,8 +739,8 @@ $deleteOrderPermission = user()->permission('delete_order');
 
     $('body').on('click', '#flutterwaveModal', function() {
         let id = $(this).data('order-id');
-        let queryString = "?id="+id+"&type=order";
-        let url = "{{ route('front.flutterwave_modal') }}"+queryString;
+        let queryString = "?id=" + id + "&type=order";
+        let url = "{{ route('front.flutterwave_modal') }}" + queryString;
 
         $(MODAL_LG + ' ' + MODAL_HEADING).html('...');
         $.ajaxModal(MODAL_LG, url);
@@ -751,8 +748,8 @@ $deleteOrderPermission = user()->permission('delete_order');
 
     $('body').on('click', '#authorizeModal', function() {
         let id = $(this).data('order-id');
-        let queryString = "?id="+id+"&type=order";
-        let url = "{{ route('front.authorize_modal') }}"+queryString;
+        let queryString = "?id=" + id + "&type=order";
+        let url = "{{ route('front.authorize_modal') }}" + queryString;
 
         $(MODAL_LG + ' ' + MODAL_HEADING).html('...');
         $.ajaxModal(MODAL_LG, url);
@@ -760,8 +757,8 @@ $deleteOrderPermission = user()->permission('delete_order');
 
     $('body').on('click', '#mollieModal', function() {
         let id = $(this).data('order-id');
-        let queryString = "?id="+id+"&type=order";
-        let url = "{{ route('front.mollie_modal') }}"+queryString;
+        let queryString = "?id=" + id + "&type=order";
+        let url = "{{ route('front.mollie_modal') }}" + queryString;
 
         $(MODAL_LG + ' ' + MODAL_HEADING).html('...');
         $.ajaxModal(MODAL_LG, url);
@@ -771,21 +768,26 @@ $deleteOrderPermission = user()->permission('delete_order');
         // Block model UI until payment happens
         $.easyBlockUI();
 
-        $.easyAjax({
-            url: "{{ route('payfast_public') }}",
-            type: "POST",
-            blockUI: true,
-            data: {
-                id:'{{$order->id}}',
-                type:'order',
-                _token: '{{ csrf_token() }}'
-            },
-            success: function(response) {
-                if(response.status == 'success'){
-                    $('body').append(response.form);
-                    $('#payfast-pay-form').submit();
-                }
+        var payfastBody = '_token=' + encodeURIComponent('{{ csrf_token() }}') +
+            '&id={{ $order->id }}&type=order';
+        window.apiHttp.postUrlEncoded("{{ route('payfast_public') }}", payfastBody).then(function(response) {
+            if (response.status == 'success') {
+                $('body').append(response.form);
+                $('#payfast-pay-form').submit();
             }
+        }).catch(function(err) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    text: err.message,
+                    toast: true,
+                    position: 'top-end',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            }
+        }).finally(function() {
+            $.easyUnblockUI();
         });
     });
 
@@ -793,15 +795,21 @@ $deleteOrderPermission = user()->permission('delete_order');
         // Block model UI until payment happens
         $.easyBlockUI();
 
-        $.easyAjax({
-            url: "{{route('square_public')}}",
-            type: "POST",
-            blockUI: true,
-            data: {
-                id:'{{$order->id}}',
-                type:'order',
-                _token: '{{ csrf_token() }}'
+        var squareBody = '_token=' + encodeURIComponent('{{ csrf_token() }}') +
+            '&id={{ $order->id }}&type=order';
+        window.apiHttp.postUrlEncoded("{{ route('square_public') }}", squareBody).catch(function(err) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    text: err.message,
+                    toast: true,
+                    position: 'top-end',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
             }
+        }).finally(function() {
+            $.easyUnblockUI();
         });
     });
 
@@ -816,59 +824,60 @@ $deleteOrderPermission = user()->permission('delete_order');
 
     @if ($credentials->razorpay_status == 'active')
         $('body').on('click', '#razorpayPaymentButton', function() {
-        var amount = "{{ number_format((float) $order->total, 2, '.', '') * 100 }}";
-        var orderId = "{{ $order->id }}";
-        var clientEmail = "{{ $user->email }}";
+            var amount = "{{ number_format((float) $order->total, 2, '.', '') * 100 }}";
+            var orderId = "{{ $order->id }}";
+            var clientEmail = "{{ $user->email }}";
 
-        var options = {
-            "key": "{{ $credentials->razorpay_mode == 'test' ? $credentials->test_razorpay_key : $credentials->live_razorpay_key }}",
-            "amount": amount,
-            "currency": '{{ $order->currency->currency_code }}',
-            "name": "{{ $companyName }}",
-            "description": "Invoice Payment",
-            "image": "{{ company()->logo_url }}",
-            "handler": function (response) {
-                confirmRazorpayPayment(response.razorpay_payment_id, orderId);
-            },
-            "payment": {
-                "capture": "automatic",
-                "capture_options": {
-                    "automaticexpiryperiod": 12,
-                    "manualexpiryperiod": 7200,
-                    "refund_speed": "optimum"
+            var options = {
+                "key": "{{ $credentials->razorpay_mode == 'test' ? $credentials->test_razorpay_key : $credentials->live_razorpay_key }}",
+                "amount": amount,
+                "currency": '{{ $order->currency->currency_code }}',
+                "name": "{{ $companyName }}",
+                "description": "Invoice Payment",
+                "image": "{{ company()->logo_url }}",
+                "handler": function(response) {
+                    confirmRazorpayPayment(response.razorpay_payment_id, orderId);
                 },
-            },
-            "modal": {
-            "ondismiss": function () {
-            // On dismiss event
-            }
-            },
-            "prefill": {
-                "email": clientEmail
-            },
-            "notes": {
-                "purchase_id": orderId, //invoice ID
-                "type": "order"
-            }
-        };
-        var rzp1 = new Razorpay(options);
+                "payment": {
+                    "capture": "automatic",
+                    "capture_options": {
+                        "automaticexpiryperiod": 12,
+                        "manualexpiryperiod": 7200,
+                        "refund_speed": "optimum"
+                    },
+                },
+                "modal": {
+                    "ondismiss": function() {
+                        // On dismiss event
+                    }
+                },
+                "prefill": {
+                    "email": clientEmail
+                },
+                "notes": {
+                    "purchase_id": orderId, //invoice ID
+                    "type": "order"
+                }
+            };
+            var rzp1 = new Razorpay(options);
 
-        /* Make an entry to payment table when payment fails */
-        rzp1.on('payment.failed', function (response){
-            /* Response will be like this - code: "BAD_REQUEST_ERROR", reason: "payment_failed"
-                , description: "Payment failed"
-            */
-            url = "{{ route('orders.payment_failed', ':id') }}";
-            url = url.replace(':id', orderId);
+            /* Make an entry to payment table when payment fails */
+            rzp1.on('payment.failed', function(response) {
+                /* Response will be like this - code: "BAD_REQUEST_ERROR", reason: "payment_failed"
+                    , description: "Payment failed"
+                */
+                url = "{{ route('orders.payment_failed', ':id') }}";
+                url = url.replace(':id', orderId);
 
-            $.easyAjax({
-                url: url,
-                type: "POST",
-                data: {errorMessage: response.error, gateway: 'Razorpay',  "_token" : "{{ csrf_token() }}"},
-            })
-        });
+                window.apiHttp.post(url, {
+                    errorMessage: response.error,
+                    gateway: 'Razorpay',
+                    _token: "{{ csrf_token() }}"
+                }).catch(function() {
+                    /* log failure */ });
+            });
 
-        rzp1.open();
+            rzp1.open();
 
         });
 
@@ -877,13 +886,25 @@ $deleteOrderPermission = user()->permission('delete_order');
             // Block UI immediatly after payment modal disappear
             $.easyBlockUI();
 
-            $.easyAjax({
-                type: 'POST',
-                url: "{{ route('pay_with_razorpay',[$order->company->hash]) }}",
-                data: {_token:'{{ csrf_token() }}', paymentId: id, orderId: orderId, type: 'order'}
-            })
+            window.apiHttp.post("{{ route('pay_with_razorpay', [$order->company->hash]) }}", {
+                _token: '{{ csrf_token() }}',
+                paymentId: id,
+                orderId: orderId,
+                type: 'order'
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $.easyUnblockUI();
+            });
         }
-
     @endif
-
 </script>

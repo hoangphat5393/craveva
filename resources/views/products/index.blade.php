@@ -5,7 +5,6 @@
 @endpush
 
 @section('filter-section')
-
     <x-filters.filter-box>
 
         <!-- CATEGORY START -->
@@ -43,7 +42,7 @@
             <div class="select-status d-flex">
                 <select class="form-control select-picker" name="unit_type_id" id="unit_type_id">
                     <option value="all">@lang('app.all')</option>
-                    @foreach ($unitTypes  as $unitType)
+                    @foreach ($unitTypes as $unitType)
                         <option value="{{ $unitType->id }}">{{ $unitType->unit_type }}</option>
                     @endforeach
                 </select>
@@ -61,8 +60,7 @@
                             <i class="fa fa-search f-13 text-dark-grey"></i>
                         </span>
                     </div>
-                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field"
-                        placeholder="@lang('app.startTyping')">
+                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field" placeholder="@lang('app.startTyping')">
                 </div>
             </form>
         </div>
@@ -76,12 +74,11 @@
         </div>
         <!-- RESET END -->
     </x-filters.filter-box>
-
 @endsection
 
 @php
-$addProductPermission = user()->permission('add_product');
-$addOrderPermission = user()->permission('add_order');
+    $addProductPermission = user()->permission('add_product');
+    $addOrderPermission = user()->permission('add_order');
 @endphp
 
 @section('content')
@@ -92,8 +89,7 @@ $addOrderPermission = user()->permission('add_order');
         <div class="d-flex justify-content-between action-bar">
             <div id="table-actions" class="flex-grow-1 align-items-center">
                 @if ($addProductPermission == 'all' || $addProductPermission == 'added')
-                    <x-forms.link-primary :link="route('products.create')" class="mr-3 openRightModal float-left"
-                        icon="plus">
+                    <x-forms.link-primary :link="route('products.create')" class="mr-3 openRightModal float-left" icon="plus">
                         @lang('app.menu.addProducts')
                     </x-forms.link-primary>
                 @endif
@@ -105,15 +101,13 @@ $addOrderPermission = user()->permission('add_order');
                 @endif
             </div>
             <div id="emptyCartBox">
-                <a href="javascript:;" class="f-20 mt-2 text-lightest d-flex align-items-center mr-3 empty-cart fa fa-trash" data-user-id = {{ user()->id }} data-toggle="tooltip" data-original-title="@lang('app.emptyCart')" ><i
-                    ></i></a>
+                <a href="javascript:;" class="f-20 mt-2 text-lightest d-flex align-items-center mr-3 empty-cart fa fa-trash" data-user-id={{ user()->id }} data-toggle="tooltip" data-original-title="@lang('app.emptyCart')"><i></i></a>
             </div>
 
             @if (in_array('client', user_roles()) && $addOrderPermission == 'all')
                 <div class="btn-group" role="group">
                     <x-forms.link-primary :link="route('products.cart')" icon="shopping-bag">
-                        @lang('app.cart') <span
-                            class="badge badge-light ml-2 productCounter">{{ $cartProductCount }}</span>
+                        @lang('app.cart') <span class="badge badge-light ml-2 productCounter">{{ $cartProductCount }}</span>
                     </x-forms.link-primary>
                 </div>
             @endif
@@ -150,17 +144,15 @@ $addOrderPermission = user()->permission('add_order');
         <!-- Task Box End -->
     </div>
     <!-- CONTENT WRAPPER END -->
-
 @endsection
 
 @push('scripts')
     @include('sections.datatable_js')
 
     <script>
-
         $(window).on('load', function() {
-            @if($cartProductCount == 0)
-              $('#emptyCartBox').hide();
+            @if ($cartProductCount == 0)
+                $('#emptyCartBox').hide();
             @endif
         });
 
@@ -178,7 +170,7 @@ $addOrderPermission = user()->permission('add_order');
                 opts += `<option value='${project.id}'>${project.category_name}</option>`
             })
 
-            $('#sub_category').html('<option value="all">@lang("app.all")</option>' + opts)
+            $('#sub_category').html('<option value="all">@lang('app.all')</option>' + opts)
             $("#sub_category").selectpicker("refresh");
         });
 
@@ -186,7 +178,7 @@ $addOrderPermission = user()->permission('add_order');
             var categoryID = $('#category_id').val();
             var subCategoryID = $('#sub_category').val();
             var searchText = $('#search-text-field').val();
-            var unitTypeID  = $('#unit_type_id').val();
+            var unitTypeID = $('#unit_type_id').val();
 
             data['category_id'] = categoryID;
             data['sub_category_id'] = subCategoryID;
@@ -207,7 +199,7 @@ $addOrderPermission = user()->permission('add_order');
             } else if ($('#unit_type_id').val() != "") {
                 $('#reset-filters').removeClass('d-none');
                 showTable();
-            }else{
+            } else {
                 $('#reset-filters').addClass('d-none');
                 showTable();
             }
@@ -226,7 +218,7 @@ $addOrderPermission = user()->permission('add_order');
             $('#category_id').val('all');
             $('.select-picker').val('all');
 
-            $('#sub_category').html('<option value="all">@lang("app.all")</option>');
+            $('#sub_category').html('<option value="all">@lang('app.all')</option>');
 
             $('#unit_type_id').val('all');
 
@@ -292,22 +284,31 @@ $addOrderPermission = user()->permission('add_order');
 
             var url = "{{ route('products.apply_quick_action') }}?row_ids=" + rowdIds;
 
-            $.easyAjax({
-                url: url,
-                container: '#quick-action-form',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#quick-action-apply",
-                data: $('#quick-action-form').serialize(),
-                success: function(response) {
-                    if (response.status == 'success') {
-                        showTable();
-                        resetActionButtons();
-                        deSelectAll();
-                        $('#quick-action-form').hide();
-                    }
+            var $qaBtn = $("#quick-action-apply");
+            $qaBtn.prop('disabled', true);
+            $.easyBlockUI('#quick-action-form');
+            window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize()).then(function(response) {
+                if (response.status == 'success') {
+                    showTable();
+                    resetActionButtons();
+                    deSelectAll();
+                    $('#quick-action-form').hide();
                 }
-            })
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $qaBtn.prop('disabled', false);
+                $.easyUnblockUI('#quick-action-form');
+            });
         };
 
         $('body').on('click', '.productView', function() {
@@ -346,17 +347,20 @@ $addOrderPermission = user()->permission('add_order');
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                showTable();
-                            }
+                    window.apiHttp.delete(url, token).then(function(response) {
+                        if (response.status == "success") {
+                            showTable();
+                        }
+                    }).catch(function(err) {
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                text: err.message,
+                                toast: true,
+                                position: 'top-end',
+                                timer: 4000,
+                                showConfirmButton: false
+                            });
                         }
                     });
                 }
@@ -368,22 +372,24 @@ $addOrderPermission = user()->permission('add_order');
             var productId = $(this).data('product-id');
             let url = "{{ route('products.add_cart_item') }}";
 
-            $.easyAjax({
-                url: url,
-                container: '.content-wrapper',
-                type: "POST",
-                data: {
-                    'productID': productId,
-                    '_token': "{{ csrf_token() }}"
-                },
-                success: function(response) {
-                         $('#emptyCartBox').show();
-                        cartItems = response.cartProduct;
-                        $('.productCounter').html(cartItems);
-                        $('#add-to-cart-btn-' + productId).html("{{ __('app.addedToCart') }}");
-
+            var addBody = 'productID=' + encodeURIComponent(productId) + '&_token=' + encodeURIComponent("{{ csrf_token() }}");
+            window.apiHttp.postUrlEncoded(url, addBody).then(function(response) {
+                $('#emptyCartBox').show();
+                cartItems = response.cartProduct;
+                $('.productCounter').html(cartItems);
+                $('#add-to-cart-btn-' + productId).html("{{ __('app.addedToCart') }}");
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
                 }
-            })
+            });
 
         });
 
@@ -392,24 +398,27 @@ $addOrderPermission = user()->permission('add_order');
 
             var url = "{{ route('products.remove_cart_item', ':id') }}";
             url = url.replace(':id', id);
-            $.easyAjax({
-                url: url,
-                container: '#saveInvoiceForm',
-                type: "POST",
-                blockUI: true,
-                data: {
-                    _token: "{{ csrf_token() }}",
-                    type: "all_data",
-                },
-                success: function(response) {
-                    cartItems = response.productItems;
-                    $('.productCounter').html(cartItems);
-                    $('.add-product').html(`<i class="fa fa-plus mr-1"></i> {{ __('app.addToCart') }}`);
-                    $('#emptyCartBox').hide();
-
+            $.easyBlockUI('.content-wrapper');
+            var emptyBody = '_token=' + encodeURIComponent("{{ csrf_token() }}") + '&type=' + encodeURIComponent('all_data');
+            window.apiHttp.postUrlEncoded(url, emptyBody).then(function(response) {
+                cartItems = response.productItems;
+                $('.productCounter').html(cartItems);
+                $('.add-product').html(`<i class="fa fa-plus mr-1"></i> {{ __('app.addToCart') }}`);
+                $('#emptyCartBox').hide();
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
                 }
+            }).finally(function() {
+                $.easyUnblockUI('.content-wrapper');
             });
         });
-
     </script>
 @endpush

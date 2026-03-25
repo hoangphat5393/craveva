@@ -133,7 +133,7 @@
                             </div>
 
                             <div class="col-lg-4 col-md-6">
-                                <x-forms.text fieldId="sku" :fieldLabel="__('app.sku')" fieldName="sku" :fieldPlaceholder="__('placeholders.sku')">
+                                <x-forms.text fieldId="sku" :fieldLabel="__('app.sku')" fieldName="sku" fieldRequired="true" :fieldPlaceholder="__('placeholders.sku')">
                                 </x-forms.text>
                             </div>
 
@@ -285,24 +285,31 @@
 
             url = (categoryId) ? url.replace(':id', categoryId) : url.replace(':id', null);
 
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                success: function(response) {
-                    if (response.status == 'success') {
-                        var options = [];
-                        var rData = response.data;
-                        $.each(rData, function(index, value) {
-                            var selectData = '<option value="' + value.id + '">' + value.category_name + '</option>';
-                            options.push(selectData);
-                        });
+            window.apiHttp.get(url).then(function(response) {
+                if (response.status == 'success') {
+                    var options = [];
+                    var rData = response.data;
+                    $.each(rData, function(index, value) {
+                        var selectData = '<option value="' + value.id + '">' + value.category_name + '</option>';
+                        options.push(selectData);
+                    });
 
-                        var defaultOption = '<option value="">--</option>';
-                        $('#sub_category_id').html(defaultOption + options.join(''));
-                        $('#sub_category_id').selectpicker('refresh');
-                    }
+                    var defaultOption = '<option value="">--</option>';
+                    $('#sub_category_id').html(defaultOption + options.join(''));
+                    $('#sub_category_id').selectpicker('refresh');
                 }
-            })
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            });
         });
 
         $('#save-more-product').click(function() {
@@ -326,66 +333,80 @@
         });
 
         function saveProduct(data, url, buttonSelector) {
-            $.easyAjax({
-                url: url,
-                container: '#save-product-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: buttonSelector,
-                file: true,
-                data: data,
-                success: function(response) {
-                    if (productDropzone.getQueuedFiles().length > 0) {
-                        productID = response.productID
-                        defaultImage = response.defaultImage;
-                        $('#hiddenProductId').val(productID);
-                        productDropzone.processQueue();
-                    } else if (response.add_more == true) {
+            var $btn = $(buttonSelector);
+            $btn.prop('disabled', true);
+            $.easyBlockUI('#save-product-form');
+            window.apiHttp.postForm(url, document.getElementById('save-product-form')).then(function(response) {
+                if (productDropzone.getQueuedFiles().length > 0) {
+                    productID = response.productID;
+                    defaultImage = response.defaultImage;
+                    $('#hiddenProductId').val(productID);
+                    productDropzone.processQueue();
+                } else if (response.add_more == true) {
 
-                        var right_modal_content = $.trim($(RIGHT_MODAL_CONTENT).html());
+                    var right_modal_content = $.trim($(RIGHT_MODAL_CONTENT).html());
 
-                        if (right_modal_content.length) {
+                    if (right_modal_content.length) {
 
-                            $(RIGHT_MODAL_CONTENT).html(response.html.html);
-                            $('#add_more').val(false);
-                        } else {
-
-                            $('.content-wrapper').html(response.html.html);
-                            init('.content-wrapper');
-                            $('#add_more').val(false);
-                        }
+                        $(RIGHT_MODAL_CONTENT).html(response.html.html);
+                        $('#add_more').val(false);
                     } else {
-                        if (response.redirectUrl == 'no') {
-                            getProductOptions();
-                            closeTaskDetail();
-                        } else if ($(MODAL_XL).hasClass('show')) {
-                            $(MODAL_XL).modal('hide');
-                            window.location.reload();
-                        } else {
-                            window.location.href = response.redirectUrl;
-                        }
-                    }
 
-                    if (typeof showTable !== 'undefined' && typeof showTable === 'function') {
-                        showTable();
+                        $('.content-wrapper').html(response.html.html);
+                        init('.content-wrapper');
+                        $('#add_more').val(false);
                     }
-
+                } else {
+                    if (response.redirectUrl == 'no') {
+                        getProductOptions();
+                        closeTaskDetail();
+                    } else if ($(MODAL_XL).hasClass('show')) {
+                        $(MODAL_XL).modal('hide');
+                        window.location.reload();
+                    } else {
+                        window.location.href = response.redirectUrl;
+                    }
                 }
+
+                if (typeof showTable !== 'undefined' && typeof showTable === 'function') {
+                    showTable();
+                }
+
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $btn.prop('disabled', false);
+                $.easyUnblockUI('#save-product-form');
             });
         }
 
 
         function getProductOptions() {
-            $.easyAjax({
-                url: "{{ route('products.options') }}",
-                type: "GET",
-                success: function(response) {
-                    $('#add-products').html(response.products);
-                    $('#add-products').val('');
-                    $('#add-products').selectpicker('refresh');
+            window.apiHttp.get("{{ route('products.options') }}").then(function(response) {
+                $('#add-products').html(response.products);
+                $('#add-products').val('');
+                $('#add-products').selectpicker('refresh');
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
                 }
-            })
+            });
         }
 
 

@@ -10,150 +10,178 @@
 </div>
 <div class="col-lg-12 col-md-12 text-center mt-2 mb-2">
     <x-forms.button-cancel data-dismiss="modal" class="border-0 mr-3">@lang('app.close')</x-forms.button-cancel>
-    <button type="submit" class="btn-primary rounded f-15" id="card-button" data-secret="{{$intent->client_secret}}">
-            <i class="fa fa-check mr-1"></i> {{ __('app.pay') }}
+    <button type="submit" class="btn-primary rounded f-15" id="card-button" data-secret="{{ $intent->client_secret }}">
+        <i class="fa fa-check mr-1"></i> {{ __('app.pay') }}
     </button>
 </div>
 
 <script>
-    @if($credentials->stripe_status == 'active')
-    // A reference to Stripe.js initialized with your real test publishable API key.
-    var stripe = Stripe('{{ $credentials->stripe_mode == "test" ? $credentials->test_stripe_client_id : $credentials->live_stripe_client_id }}');
+    @if ($credentials->stripe_status == 'active')
+        // A reference to Stripe.js initialized with your real test publishable API key.
+        var stripe = Stripe('{{ $credentials->stripe_mode == 'test' ? $credentials->test_stripe_client_id : $credentials->live_stripe_client_id }}');
 
-    var clientDetails  = {!! json_encode($customerDetail) !!};
+        var clientDetails = {!! json_encode($customerDetail) !!};
 
-    // Disable the button until we have Stripe set up on the page
-    var cardButton = document.getElementById('card-button');
-    cardButton.disabled = true;
-    var elements = stripe.elements();
+        // Disable the button until we have Stripe set up on the page
+        var cardButton = document.getElementById('card-button');
+        cardButton.disabled = true;
+        var elements = stripe.elements();
 
-    function isDarkTheme() {
-        return document.body.classList.contains('dark-theme');
-    }
-
-    if (isDarkTheme()) {
-        var color = "#99A5B5";
-        var placeholderColor = "#99A5B5";
-    } else {
-        var color = "#32325d";
-        var placeholderColor = "#32325d";
-    }
-
-    var style = {
-        base: {
-            color: color,
-            fontFamily: 'Arial, sans-serif',
-            fontSmoothing: "antialiased",
-            fontSize: "16px",
-            "::placeholder": {
-                color: placeholderColor
-            }
-        },
-        invalid: {
-            fontFamily: 'Arial, sans-serif',
-            color: "#fa755a",
-            iconColor: "#fa755a"
+        function isDarkTheme() {
+            return document.body.classList.contains('dark-theme');
         }
-    };
 
-    var card = elements.create("card", { style: style });
-    // Stripe injects an iframe into the DOM
-    card.mount("#card-element");
+        if (isDarkTheme()) {
+            var color = "#99A5B5";
+            var placeholderColor = "#99A5B5";
+        } else {
+            var color = "#32325d";
+            var placeholderColor = "#32325d";
+        }
 
-    card.on("change", function (event) {
-        // Disable the Pay button if there are no card details in the Element
-        cardButton.disabled = event.empty;
-        document.querySelector("#card-error").textContent = event.error ? event.error.message : "";
-    });
+        var style = {
+            base: {
+                color: color,
+                fontFamily: 'Arial, sans-serif',
+                fontSmoothing: "antialiased",
+                fontSize: "16px",
+                "::placeholder": {
+                    color: placeholderColor
+                }
+            },
+            invalid: {
+                fontFamily: 'Arial, sans-serif',
+                color: "#fa755a",
+                iconColor: "#fa755a"
+            }
+        };
 
-    var form = document.getElementById("stripeAddress");
+        var card = elements.create("card", {
+            style: style
+        });
+        // Stripe injects an iframe into the DOM
+        card.mount("#card-element");
 
-    form.addEventListener("submit", function(event) {
-        event.preventDefault();
+        card.on("change", function(event) {
+            // Disable the Pay button if there are no card details in the Element
+            cardButton.disabled = event.empty;
+            document.querySelector("#card-error").textContent = event.error ? event.error.message : "";
+        });
 
-        // Block model UI until payment happens
-        $.easyBlockUI('#stripeAddress');
+        var form = document.getElementById("stripeAddress");
 
-        // Complete payment when the submit button is clicked
-        payWithCard(stripe, card, '{{ $intent->client_secret }}');
-    });
+        form.addEventListener("submit", function(event) {
+            event.preventDefault();
 
-    // Calls stripe.confirmCardPayment
-    // If the card requires authentication Stripe shows a pop-up modal to
-    // prompt the user to enter authentication details without leaving your page.
-    var payWithCard = function(stripe, card, clientSecret) {
-        loading(true);
-        stripe
-            .confirmCardPayment(clientSecret, {
-                payment_method: {
-                    card: card,
-                    billing_details: {
-                        name: clientDetails.name,
-                        email: clientDetails.email,
-                        address: {
-                            line1: clientDetails.line1,
-                            city: clientDetails.city,
-                            state: clientDetails.state,
-                            country: clientDetails.country
+            // Block model UI until payment happens
+            $.easyBlockUI('#stripeAddress');
+
+            // Complete payment when the submit button is clicked
+            payWithCard(stripe, card, '{{ $intent->client_secret }}');
+        });
+
+        // Calls stripe.confirmCardPayment
+        // If the card requires authentication Stripe shows a pop-up modal to
+        // prompt the user to enter authentication details without leaving your page.
+        var payWithCard = function(stripe, card, clientSecret) {
+            loading(true);
+            stripe
+                .confirmCardPayment(clientSecret, {
+                    payment_method: {
+                        card: card,
+                        billing_details: {
+                            name: clientDetails.name,
+                            email: clientDetails.email,
+                            address: {
+                                line1: clientDetails.line1,
+                                city: clientDetails.city,
+                                state: clientDetails.state,
+                                country: clientDetails.country
+                            }
                         }
                     }
-                }
-            })
-            .then(function(result) {
-                if (result.error) {
-                    /* make failed payment entry */
-                    paymentFailed(result);
+                })
+                .then(function(result) {
+                    if (result.error) {
+                        /* make failed payment entry */
+                        paymentFailed(result);
 
-                    // Show error to your customer
-                    showError(result.error.message);
-                } else {
-                    // The payment succeeded!
-                    orderComplete(result.paymentIntent.id);
+                        // Show error to your customer
+                        showError(result.error.message);
+                    } else {
+                        // The payment succeeded!
+                        orderComplete(result.paymentIntent.id);
+                    }
+                });
+        };
+
+        /* ------- UI helpers ------- */
+
+        // Shows a success message when the payment is complete
+        var orderComplete = function(paymentIntentId) {
+            loading(false);
+            cardButton.disabled = true;
+            window.apiHttp.post("{{ route('stripe', [$invoice->id]) }}", {
+                paymentIntentId: paymentIntentId,
+                _token: "{{ csrf_token() }}"
+            }).then(function(response) {
+                if (response.action === 'redirect' && response.url) {
+                    window.location.href = response.url;
+                } else if (response.redirectUrl) {
+                    window.location.href = response.redirectUrl;
+                }
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
                 }
             });
-    };
+        };
 
-    /* ------- UI helpers ------- */
-
-    // Shows a success message when the payment is complete
-    var orderComplete = function(paymentIntentId) {
-        loading(false);
-        cardButton.disabled = true;
-        $.easyAjax({
-            url: "{{route('stripe', [$invoice->id])}}",
-            container: '#invoice_container',
-            type: "POST",
-            redirect: true,
-            data: {paymentIntentId: paymentIntentId, "_token" : "{{ csrf_token() }}" },
-        })
-    };
-
-    var paymentFailed = function (result) {
-        $.easyAjax({
-            url: "{{ route('front.invoice_payment_failed', [$invoice->id]) }}",
-            container: '#invoice_container',
-            type: "POST",
-            redirect: true,
-            data: {errorMessage: result.error, gateway: 'Stripe',  "_token" : "{{ csrf_token() }}"},
-            success: function(response) {
-                // Unblock Modal UI when got error response
+        var paymentFailed = function(result) {
+            window.apiHttp.post("{{ route('front.invoice_payment_failed', [$invoice->id]) }}", {
+                errorMessage: result.error,
+                gateway: 'Stripe',
+                _token: "{{ csrf_token() }}"
+            }).then(function(response) {
+                if (response.action === 'redirect' && response.url) {
+                    window.location.href = response.url;
+                } else if (response.redirectUrl) {
+                    window.location.href = response.redirectUrl;
+                }
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
                 $.easyUnblockUI('#stripeAddress');
-            }
-        })
-    }
+            });
+        }
 
-    // Show the customer the error from Stripe if their card fails to charge
-    var showError = function(errorMsgText) {
-        loading(false);
-        var errorMsg = document.querySelector("#card-error");
-        errorMsg.textContent = errorMsgText;
+        // Show the customer the error from Stripe if their card fails to charge
+        var showError = function(errorMsgText) {
+            loading(false);
+            var errorMsg = document.querySelector("#card-error");
+            errorMsg.textContent = errorMsgText;
 
-    };
+        };
 
-    // Show a spinner on payment submission
-    var loading = function(isLoading) {
-       cardButton.disabled = isLoading ? true : false;
-    };
+        // Show a spinner on payment submission
+        var loading = function(isLoading) {
+            cardButton.disabled = isLoading ? true : false;
+        };
     @endif
-
 </script>

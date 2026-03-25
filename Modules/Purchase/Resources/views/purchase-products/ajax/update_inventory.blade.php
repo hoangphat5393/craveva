@@ -13,11 +13,9 @@
                 </x-forms.label><sup class="text-red f-14 mr-1">*</sup>
                 <div class="form-group">
                     <div class="d-flex">
-                        <x-forms.radio class="quantity" fieldId="quantity" :fieldLabel="__('purchase::modules.product.quantityAdjustment')" fieldValue="quantity"
-                            fieldName="type" :checked="(($adjustment && $adjustment->type == 'quantity') ? 'true' : 'true')"></x-forms.radio>
+                        <x-forms.radio class="quantity" fieldId="quantity" :fieldLabel="__('purchase::modules.product.quantityAdjustment')" fieldValue="quantity" fieldName="type" :checked="$adjustment && $adjustment->type == 'quantity' ? 'true' : 'true'"></x-forms.radio>
 
-                        <x-forms.radio class="value" fieldId="value" :fieldLabel="__('purchase::modules.product.valueAdjustment')" fieldValue="value"
-                            fieldName="type" :checked="(($adjustment && $adjustment->type == 'value') ? 'true' : '')"></x-forms.radio>
+                        <x-forms.radio class="value" fieldId="value" :fieldLabel="__('purchase::modules.product.valueAdjustment')" fieldValue="value" fieldName="type" :checked="$adjustment && $adjustment->type == 'value' ? 'true' : ''"></x-forms.radio>
                     </div>
                 </div>
             </div>
@@ -25,8 +23,7 @@
 
         <div class="row mt-3">
             <div class="col-md-6">
-                <x-forms.text :fieldLabel="__('app.date')" fieldName="date" fieldId="date" :fieldPlaceholder="__('app.date')" :fieldValue=" ($adjustment && $adjustment->date) ? \Carbon\Carbon::parse($adjustment->date)->timezone(company()->timezone)->translatedFormat(company()->date_format) : now(company()->timezone)->translatedFormat(company()->date_format)"
-                    fieldRequired />
+                <x-forms.text :fieldLabel="__('app.date')" fieldName="date" fieldId="date" :fieldPlaceholder="__('app.date')" :fieldValue="$adjustment && $adjustment->date ? \Carbon\Carbon::parse($adjustment->date)->timezone(company()->timezone)->translatedFormat(company()->date_format) : now(company()->timezone)->translatedFormat(company()->date_format)" fieldRequired />
             </div>
             <div class="col-md-6">
                 <x-forms.text fieldId="reference_number" :fieldLabel="__('purchase::modules.product.referenceNumber')" fieldName="reference_number" fieldValue="{{ $adjustment && $adjustment->reference_number ? $adjustment->reference_number : '' }}">
@@ -34,15 +31,14 @@
             </div>
         </div>
 
-        <div class="quantity_div {{ ($adjustment && $adjustment->type == 'value') ? 'd-none' : '' }}">
+        <div class="quantity_div {{ $adjustment && $adjustment->type == 'value' ? 'd-none' : '' }}">
             <div class="row mt-3">
                 <div class="col-md-6">
                     <x-forms.label class="my-3" fieldId="" :fieldLabel="__('purchase::modules.product.availableQuantity')">
                     </x-forms.label>
                 </div>
                 <div class="col-md-6 text-right">
-                    <input type="text" name="available_quantity" id="available_quantity"
-                        class="form-control height-35 f-15 readonly-background text-right" value="{{ ($adjustment && $adjustment->net_quantity) ? $adjustment->net_quantity : '' }}" readonly>
+                    <input type="text" name="available_quantity" id="available_quantity" class="form-control height-35 f-15 readonly-background text-right" value="{{ $adjustment && $adjustment->net_quantity ? $adjustment->net_quantity : '' }}" readonly>
                     <span class="text-dark" id="">{{ $product->unit ? $product->unit->unit_type : $product->name }}</span>
                 </div>
             </div>
@@ -52,10 +48,7 @@
                     </x-forms.label>
                 </div>
                 <div class="col-md-6 text-right">
-                    <input type="number" name="quantity_on_hand" id="quantity_on_hand"
-                        class="form-control height-35 f-15 readonly-background text-right"
-                        placeholder="@lang('purchase::placeholders.changedValue')"
-                        value="{{ ($adjustment && $adjustment->net_quantity) ? $adjustment->net_quantity : '' }}">
+                    <input type="number" name="quantity_on_hand" id="quantity_on_hand" class="form-control height-35 f-15 readonly-background text-right" placeholder="@lang('purchase::placeholders.changedValue')" value="{{ $adjustment && $adjustment->net_quantity ? $adjustment->net_quantity : '' }}">
                 </div>
             </div>
             <div class="row mt-3">
@@ -64,9 +57,7 @@
                     </x-forms.label>
                 </div>
                 <div class="col-md-6 text-right">
-                    <input type="text" name="quantity_adjusted" id="quantity_adjusted"
-                        class="form-control height-35 f-15 readonly-background text-right"
-                        placeholder="@lang('purchase::placeholders.adjustedValue')" value="{{ ($adjustment && $adjustment->quantity_adjustment) ? $adjustment->quantity_adjustment : '' }}" readonly>
+                    <input type="text" name="quantity_adjusted" id="quantity_adjusted" class="form-control height-35 f-15 readonly-background text-right" placeholder="@lang('purchase::placeholders.adjustedValue')" value="{{ $adjustment && $adjustment->quantity_adjustment ? $adjustment->quantity_adjustment : '' }}" readonly>
                 </div>
             </div>
             <div class="row mt-3">
@@ -75,23 +66,19 @@
                     </x-forms.label>
                 </div>
                 <div class="col-md-6 text-right">
-                    <input type="text" name="cost_price" id="cost_price"
-                        class="form-control height-35 f-15 readonly-background text-right"
-                        value="{{ ($adjustment && $adjustment->changed_value) ? $adjustment->changed_value : $product->purchase_price }}">
+                    <input type="text" name="cost_price" id="cost_price" class="form-control height-35 f-15 readonly-background text-right" value="{{ $adjustment && $adjustment->changed_value ? $adjustment->changed_value : $product->purchase_price }}">
                 </div>
             </div>
         </div>
 
-        <div class="value_div {{ ($adjustment && $adjustment->type == 'value') ? '' : 'd-none' }}">
+        <div class="value_div {{ $adjustment && $adjustment->type == 'value' ? '' : 'd-none' }}">
             <div class="row mt-3">
                 <div class="col-md-6">
                     <x-forms.label class="my-3" fieldId="current_value" :fieldLabel="__('purchase::modules.product.currentValue')">
                     </x-forms.label>
                 </div>
                 <div class="col-md-6 text-right">
-                    <input type="number" name="current_value" id="current_value"
-                        class="form-control height-35 f-15 readonly-background text-right" readonly
-                        value="{{ $product->purchase_price }}">
+                    <input type="number" name="current_value" id="current_value" class="form-control height-35 f-15 readonly-background text-right" readonly value="{{ $product->purchase_price }}">
                 </div>
             </div>
             <div class="row mt-3">
@@ -100,9 +87,7 @@
                     </x-forms.label>
                 </div>
                 <div class="col-md-6 text-right">
-                    <input type="number" name="changed_value" id="changed_value"
-                        class="form-control height-35 f-15 readonly-background text-right"
-                        placeholder="@lang('purchase::placeholders.changedValue')" value="{{ ($adjustment && $adjustment->changed_value) ? $adjustment->changed_value : $product->price }}" fieldRequired>
+                    <input type="number" name="changed_value" id="changed_value" class="form-control height-35 f-15 readonly-background text-right" placeholder="@lang('purchase::placeholders.changedValue')" value="{{ $adjustment && $adjustment->changed_value ? $adjustment->changed_value : $product->price }}" fieldRequired>
                 </div>
             </div>
             <div class="row mt-3">
@@ -111,8 +96,7 @@
                     </x-forms.label>
                 </div>
                 <div class="col-md-6 text-right">
-                    <input placeholder="@lang('purchase::placeholders.adjustedValue')" type="text" name="adjusted_value" id="adjusted_value"
-                        class="form-control height-35 f-15 readonly-background text-right" value="{{ ($adjustment && $adjustment->adjusted_value) ? $adjustment->adjusted_value : '' }}" readonly>
+                    <input placeholder="@lang('purchase::placeholders.adjustedValue')" type="text" name="adjusted_value" id="adjusted_value" class="form-control height-35 f-15 readonly-background text-right" value="{{ $adjustment && $adjustment->adjusted_value ? $adjustment->adjusted_value : '' }}" readonly>
                 </div>
             </div>
         </div>
@@ -122,20 +106,17 @@
                 <x-forms.label class="my-3" fieldId="reason" :fieldLabel="__('purchase::modules.product.reason')" fieldRequired>
                 </x-forms.label>
                 <x-forms.input-group>
-                    <select class="form-control select-picker" name="reason_id" id="adjustment_reason_id"
-                        data-live-search="true">
+                    <select class="form-control select-picker" name="reason_id" id="adjustment_reason_id" data-live-search="true">
                         <option value="">--</option>
                         @foreach ($reasons as $reason)
-                            <option value="{{ $reason->id }}" @if($adjustment && ($adjustment->reason_id == $reason->id)) selected @endif>
+                            <option value="{{ $reason->id }}" @if ($adjustment && $adjustment->reason_id == $reason->id) selected @endif>
                                 {{ mb_ucwords($reason->name) }}
                             </option>
                         @endforeach
                     </select>
 
                     <x-slot name="append">
-                        <button id="addReason" type="button" class="btn btn-outline-secondary border-grey"
-                            data-toggle="tooltip"
-                            data-original-title="{{ __('purchase::modules.inventory.addReason') }}">@lang('app.add')</button>
+                        <button id="addReason" type="button" class="btn btn-outline-secondary border-grey" data-toggle="tooltip" data-original-title="{{ __('purchase::modules.inventory.addReason') }}">@lang('app.add')</button>
                     </x-slot>
                 </x-forms.input-group>
             </div>
@@ -146,7 +127,11 @@
                 <div class="form-group">
                     <x-forms.label class="my-3" fieldId="description-text" :fieldLabel="__('app.description')">
                     </x-forms.label>
-                    <textarea name="description" id="description-text" rows="4" class="form-control">@if($adjustment) {!! $adjustment->description !!} @endif</textarea>
+                    <textarea name="description" id="description-text" rows="4" class="form-control">
+@if ($adjustment)
+{!! $adjustment->description !!}
+@endif
+</textarea>
                 </div>
             </div>
         </div>
@@ -222,18 +207,31 @@
 
         $('#save-adjustment').click(function() {
             var url = "{{ route('purchase_products.update_inventory') }}";
-            $.easyAjax({
-                url: url,
-                container: '#adjustStockForm',
-                type: "POST",
-                data: $('#adjustStockForm').serialize(),
-                success: function(response) {
-                    if (response.status == 'success') {
-                        $(MODAL_LG).modal('hide');
-                        window.location.reload();
-                    }
+            var $btn = $('#save-adjustment');
+            var body = $('#adjustStockForm').serialize();
+
+            $btn.prop('disabled', true);
+            $.easyBlockUI('#adjustStockForm');
+            window.apiHttp.postUrlEncoded(url, body).then(function(response) {
+                if (response.status == 'success') {
+                    $(MODAL_LG).modal('hide');
+                    window.location.reload();
                 }
-            })
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $btn.prop('disabled', false);
+                $.easyUnblockUI('#adjustStockForm');
+            });
         });
     });
 </script>

@@ -1,5 +1,5 @@
 @php
-$addInvoicesPermission = user()->permission('add_invoices');
+    $addInvoicesPermission = user()->permission('add_invoices');
 @endphp
 
 <!-- ROW START -->
@@ -8,9 +8,7 @@ $addInvoicesPermission = user()->permission('add_invoices');
         <!-- Add Task Export Buttons Start -->
         <div class="d-flex" id="table-actions">
             @if ($addInvoicesPermission == 'all' || $addInvoicesPermission == 'added')
-                <x-forms.link-primary :link="route('invoices.create').'?client_id='.$client->id"
-                    class="mr-3 float-left openRightModal"
-                    data-redirect-url="{{ route('clients.show', $client->id) . '?tab=invoices' }}" icon="plus">
+                <x-forms.link-primary :link="route('invoices.create') . '?client_id=' . $client->id" class="mr-3 float-left openRightModal" data-redirect-url="{{ route('clients.show', $client->id) . '?tab=invoices' }}" icon="plus">
                     @lang('modules.invoices.addInvoice')
                 </x-forms.link-primary>
             @endif
@@ -22,8 +20,7 @@ $addInvoicesPermission = user()->permission('add_invoices');
                 <!-- STATUS START -->
                 <div class="select-box py-2 px-0 mr-3">
                     <x-forms.label :fieldLabel="__('app.status')" fieldId="status" />
-                    <select class="form-control select-picker" name="status" id="status" data-live-search="true"
-                        data-size="8">
+                    <select class="form-control select-picker" name="status" id="status" data-live-search="true" data-size="8">
                         <option value="all">@lang('app.all')</option>
                         <option value="unpaid">@lang('app.unpaid')</option>
                         <option value="paid">@lang('app.paid')</option>
@@ -42,16 +39,14 @@ $addInvoicesPermission = user()->permission('add_invoices');
                                 <i class="fa fa-search f-13 text-dark-grey"></i>
                             </span>
                         </div>
-                        <input type="text" class="form-control f-14 p-1 height-35 border" id="search-text-field"
-                            placeholder="@lang('app.startTyping')">
+                        <input type="text" class="form-control f-14 p-1 height-35 border" id="search-text-field" placeholder="@lang('app.startTyping')">
                     </div>
                 </div>
                 <!-- SEARCH BY TASK END -->
 
                 <!-- RESET START -->
                 <div class="select-box d-flex py-2 px-lg-2 px-md-2 px-0 mt-4">
-                    <x-forms.button-secondary class="btn-xs d-none height-35" id="reset-filters"
-                        icon="times-circle">
+                    <x-forms.button-secondary class="btn-xs d-none height-35" id="reset-filters" icon="times-circle">
                         @lang('app.clearFilters')
                     </x-forms.button-secondary>
                 </div>
@@ -160,19 +155,24 @@ $addInvoicesPermission = user()->permission('add_invoices');
 
                 var token = "{{ csrf_token() }}";
 
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    blockUI: true,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
-                        if (response.status == "success") {
-                            showTable();
-                        }
+                $.easyBlockUI('#invoices-table');
+                window.apiHttp.delete(url, token).then(function(response) {
+                    if (response.status == "success") {
+                        showTable();
                     }
+                }).catch(function(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
+                    }
+                }).finally(function() {
+                    $.easyUnblockUI('#invoices-table');
                 });
             }
         });
@@ -185,21 +185,29 @@ $addInvoicesPermission = user()->permission('add_invoices');
 
         var url = "{{ route('invoices.apply_quick_action') }}?row_ids=" + rowdIds;
 
-        $.easyAjax({
-            url: url,
-            container: '#quick-action-form',
-            type: "POST",
-            disableButton: true,
-            buttonSelector: "#quick-action-apply",
-            data: $('#quick-action-form').serialize(),
-            blockUI: true,
-            success: function(response) {
-                if (response.status == 'success') {
-                    showTable();
-                    resetActionButtons();
-                }
+        var $qaBtn = $("#quick-action-apply");
+        $qaBtn.prop('disabled', true);
+        $.easyBlockUI('#quick-action-form');
+        window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize()).then(function(response) {
+            if (response.status == 'success') {
+                showTable();
+                resetActionButtons();
             }
-        })
+        }).catch(function(err) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    text: err.message,
+                    toast: true,
+                    position: 'top-end',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            }
+        }).finally(function() {
+            $qaBtn.prop('disabled', false);
+            $.easyUnblockUI('#quick-action-form');
+        });
     };
 
     $('body').on('click', '.sendButton', function() {
@@ -209,19 +217,24 @@ $addInvoicesPermission = user()->permission('add_invoices');
 
         var token = "{{ csrf_token() }}";
 
-        $.easyAjax({
-            type: 'POST',
-            url: url,
-            container: '#invoices-table',
-            blockUI: true,
-            data: {
-                '_token': token
-            },
-            success: function(response) {
-                if (response.status == "success") {
-                    window.LaravelDataTables["invoices-table"].draw(true);
-                }
+        $.easyBlockUI('#invoices-table');
+        window.apiHttp.postUrlEncoded(url, '_token=' + encodeURIComponent(token)).then(function(response) {
+            if (response.status == "success") {
+                window.LaravelDataTables["invoices-table"].draw(true);
             }
+        }).catch(function(err) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    text: err.message,
+                    toast: true,
+                    position: 'top-end',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            }
+        }).finally(function() {
+            $.easyUnblockUI('#invoices-table');
         });
     });
 
@@ -232,17 +245,25 @@ $addInvoicesPermission = user()->permission('add_invoices');
 
         var token = "{{ csrf_token() }}";
 
-        $.easyAjax({
-            type: 'GET',
-            container: '#invoices-table',
-            blockUI: true,
-            url: url,
-            success: function(response) {
-                if (response.status == "success") {
-                    $.unblockUI();
-                    window.LaravelDataTables["invoices-table"].draw(true);
-                }
+        $.easyBlockUI('#invoices-table');
+        window.apiHttp.get(url).then(function(response) {
+            if (response.status == "success") {
+                $.unblockUI();
+                window.LaravelDataTables["invoices-table"].draw(true);
             }
+        }).catch(function(err) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    text: err.message,
+                    toast: true,
+                    position: 'top-end',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            }
+        }).finally(function() {
+            $.easyUnblockUI('#invoices-table');
         });
     });
 
@@ -310,13 +331,20 @@ $addInvoicesPermission = user()->permission('add_invoices');
 
                 var token = "{{ csrf_token() }}";
 
-                $.easyAjax({
-                    type: 'GET',
-                    url: url,
-                    success: function(response) {
-                        if (response.status == "success") {
-                            showTable();
-                        }
+                window.apiHttp.get(url).then(function(response) {
+                    if (response.status == "success") {
+                        showTable();
+                    }
+                }).catch(function(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
                     }
                 });
             }
@@ -355,6 +383,4 @@ $addInvoicesPermission = user()->permission('add_invoices');
         $(MODAL_LG + ' ' + MODAL_HEADING).html('...');
         $.ajaxModal(MODAL_LG, url);
     });
-
-
 </script>

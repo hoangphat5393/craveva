@@ -1,27 +1,22 @@
 <div class="modal-header">
     <h5 class="modal-title" id="modelHeading">@lang('app.viewConsent')</h5>
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-            aria-hidden="true">×</span></button>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
 </div>
 
 <div class="modal-body">
     <x-form id="saveClientConsentForm" method="POST" class="form-horizontal">
         <input type="hidden" name="consent_id" value="{{ $consent->id }}">
-        <input type="hidden" name="status" value="@if($consent->user && $consent->user->status == 'agree') disagree @else agree @endif">
+        <input type="hidden" name="status" value="@if ($consent->user && $consent->user->status == 'agree') disagree @else agree @endif">
 
         <div class="row">
             <div class="col-md-12">
-                <x-forms.textarea class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.gdpr.additionalDescription')"
-                    fieldName="additional_description" fieldRequired="true" fieldId="additional_description"
-                    :fieldPlaceholder="__('placeholders.gdpr.additionDescription')">
+                <x-forms.textarea class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.gdpr.additionalDescription')" fieldName="additional_description" fieldRequired="true" fieldId="additional_description" :fieldPlaceholder="__('placeholders.gdpr.additionDescription')">
                 </x-forms.textarea>
             </div>
 
-            @if(($consent->user && $consent->user->status == 'disagree') || !$consent->user)
+            @if (($consent->user && $consent->user->status == 'disagree') || !$consent->user)
                 <div class="col-md-12">
-                        <x-forms.textarea class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.gdpr.purposeDescription')"
-                        fieldName="consent_description" fieldRequired="true" fieldId="consent_description"
-                        :fieldPlaceholder="__('placeholders.consent_description')" :fieldValue="$consent->description">
+                    <x-forms.textarea class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.gdpr.purposeDescription')" fieldName="consent_description" fieldRequired="true" fieldId="consent_description" :fieldPlaceholder="__('placeholders.consent_description')" :fieldValue="$consent->description">
                     </x-forms.textarea>
                 </div>
             @endif
@@ -42,17 +37,22 @@
 </div>
 
 <script>
-    $(document).on('click', '#save-consent', function(){
-        $.easyAjax({
-            url: "{{route('clients.save_client_consent', $clientId)}}",
-            container: '#saveClientConsentForm',
-            type: "POST",
-            data: $('#saveClientConsentForm').serialize(),
-            success: function(response) {
-                if (response.status == 'success') {
-                    location.reload();
-                }
+    $(document).on('click', '#save-consent', function() {
+        window.apiHttp.postUrlEncoded("{{ route('clients.save_client_consent', $clientId) }}", $('#saveClientConsentForm').serialize()).then(function(response) {
+            if (response.status == 'success') {
+                location.reload();
             }
-        })
+        }).catch(function(err) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    text: err.message,
+                    toast: true,
+                    position: 'top-end',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            }
+        });
     });
 </script>

@@ -74,22 +74,24 @@
             buttonsStyling: false
         }).then((result) => {
             if (result.isConfirmed) {
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
-                        if (response.status === 'success') {
-                            $('#cat-' + id).fadeOut();
-                            $('#product_category_ids').html(response.data);
-                            $('#product_category_ids').selectpicker('refresh');
-                            $('#product_category_id').html(response.data);
-                            $('#product_category_id').selectpicker('refresh');
-                            // $(MODAL_LG).modal('hide');
-                        }
+                window.apiHttp.delete(url, token).then(function(response) {
+                    if (response.status === 'success') {
+                        $('#cat-' + id).fadeOut();
+                        $('#product_category_ids').html(response.data);
+                        $('#product_category_ids').selectpicker('refresh');
+                        $('#product_category_id').html(response.data);
+                        $('#product_category_id').selectpicker('refresh');
+                    }
+                }).catch(function(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
                     }
                 });
             }
@@ -99,33 +101,36 @@
 
     $('#save-category').click(function() {
         const url = "{{ route('productCategory.store') }}";
-        $.easyAjax({
-            url: url,
-            container: '#createProjectCategory',
-            type: "POST",
-            data: $('#createProjectCategory').serialize(),
-            success: function(response) {
-                if (response.status === 'success') {
-                    var options = response.data;
-                    $('#product_category_ids').html(options);
-                    $('#product_category_ids').selectpicker('refresh');
+        window.apiHttp.postUrlEncoded(url, $('#createProjectCategory').serialize()).then(function(response) {
+            if (response.status === 'success') {
+                var options = response.data;
+                $('#product_category_ids').html(options);
+                $('#product_category_ids').selectpicker('refresh');
 
-                    // Update all instances of product_category_id (in case of duplicates in DOM)
-                    var categorySelect = $('select[id="product_category_id"]');
-                    categorySelect.empty();
-                    categorySelect.html(options);
-                    categorySelect.selectpicker('refresh');
+                var categorySelect = $('select[id="product_category_id"]');
+                categorySelect.empty();
+                categorySelect.html(options);
+                categorySelect.selectpicker('refresh');
 
-                    $(MODAL_LG).modal('hide');
+                $(MODAL_LG).modal('hide');
 
-                    // Handle sub-category update if provided (mostly for edits, but safe here)
-                    if (response.subCategoryData) {
-                        $('#sub_category_id').html('<option value="">--</option>' + response.subCategoryData);
-                        $('#sub_category_id').selectpicker('refresh');
-                    }
+                if (response.subCategoryData) {
+                    $('#sub_category_id').html('<option value="">--</option>' + response.subCategoryData);
+                    $('#sub_category_id').selectpicker('refresh');
                 }
             }
-        })
+        }).catch(function(err) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    text: err.message,
+                    toast: true,
+                    position: 'top-end',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            }
+        });
     });
 
     $('[contenteditable=true]').focus(function() {
@@ -140,25 +145,29 @@
 
             const token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#row-' + id,
-                type: "POST",
-                data: {
-                    'category_name': value,
-                    '_token': token,
-                    '_method': 'PUT'
-                },
-                blockUI: true,
-                success: function(response) {
-                    if (response.status == 'success') {
-                        $('#product_category_ids').html(response.data);
-                        $('#product_category_ids').selectpicker('refresh');
-                        $('#product_category_id').html(response.data);
-                        $('#product_category_id').selectpicker('refresh');
-                    }
+            $.easyBlockUI('.modal-body');
+            var putBody = 'category_name=' + encodeURIComponent(value) + '&_token=' + encodeURIComponent(token) + '&_method=PUT';
+            window.apiHttp.postUrlEncoded(url, putBody).then(function(response) {
+                if (response.status == 'success') {
+                    $('#product_category_ids').html(response.data);
+                    $('#product_category_ids').selectpicker('refresh');
+                    $('#product_category_id').html(response.data);
+                    $('#product_category_id').selectpicker('refresh');
                 }
-            })
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $.easyUnblockUI('.modal-body');
+            });
         }
     });
 </script>

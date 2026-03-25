@@ -248,21 +248,23 @@
                             var url = "{{ route('product-files.destroy', ':id') }}";
                             url = url.replace(':id', file.id);
 
-                            $.easyAjax({
-                                type: 'POST',
-                                url: url,
-                                data: {
-                                    '_token': token,
-                                    '_method': 'DELETE'
-                                },
-                                success: function(response) {
-                                    //This will manually removed the file
-                                    file.previewElement.remove();
+                            window.apiHttp.delete(url, token).then(function(response) {
+                                file.previewElement.remove();
 
-                                    if ('{{ $product->default_image }}' == file.hashname) {
-                                        let $radio = $('.custom-control-input');
-                                        $radio[1].checked = true;
-                                    }
+                                if ('{{ $product->default_image }}' == file.hashname) {
+                                    let $radio = $('.custom-control-input');
+                                    $radio[1].checked = true;
+                                }
+                            }).catch(function(err) {
+                                if (typeof Swal !== 'undefined') {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        text: err.message,
+                                        toast: true,
+                                        position: 'top-end',
+                                        timer: 4000,
+                                        showConfirmButton: false
+                                    });
                                 }
                             });
                         }
@@ -359,29 +361,35 @@
 
         $('#save-product-form').click(function() {
             const url = "{{ route('products.update', [$product->id]) }}";
-
-            $.easyAjax({
-                url: url,
-                container: '#save-product-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-product-form",
-                file: true,
-                data: $('#save-product-data-form').serialize(),
-                success: function(response) {
-                    if (productDropzone.getQueuedFiles().length > 0) {
-                        defaultImage = response.defaultImage;
-                        productDropzone.processQueue();
+            var $btn = $('#save-product-form');
+            $btn.prop('disabled', true);
+            $.easyBlockUI('#save-product-data-form');
+            window.apiHttp.postForm(url, document.getElementById('save-product-data-form')).then(function(response) {
+                if (productDropzone.getQueuedFiles().length > 0) {
+                    defaultImage = response.defaultImage;
+                    productDropzone.processQueue();
+                } else {
+                    if ($(MODAL_XL).hasClass('show')) {
+                        $(MODAL_XL).modal('hide');
+                        window.location.reload();
                     } else {
-                        if ($(MODAL_XL).hasClass('show')) {
-                            $(MODAL_XL).modal('hide');
-                            window.location.reload();
-                        } else {
-                            window.location.href = response.redirectUrl;
-                        }
+                        window.location.href = response.redirectUrl;
                     }
                 }
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $btn.prop('disabled', false);
+                $.easyUnblockUI('#save-product-data-form');
             });
         });
 
@@ -391,26 +399,33 @@
             var url = "{{ route('get_product_sub_categories', ':id') }}";
             url = url.replace(':id', categoryId);
 
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                success: function(response) {
-                    if (response.status == 'success') {
-                        var options = [];
-                        var rData = [];
-                        rData = response.data;
-                        $.each(rData, function(index, value) {
-                            var selectData = '';
-                            selectData = '<option value="' + value.id + '">' + value
-                                .category_name + '</option>';
-                            options.push(selectData);
-                        });
+            window.apiHttp.get(url).then(function(response) {
+                if (response.status == 'success') {
+                    var options = [];
+                    var rData = [];
+                    rData = response.data;
+                    $.each(rData, function(index, value) {
+                        var selectData = '';
+                        selectData = '<option value="' + value.id + '">' + value
+                            .category_name + '</option>';
+                        options.push(selectData);
+                    });
 
-                        $('#sub_category_id').html('<option value="">--</option>' + options.join(''));
-                        $('#sub_category_id').selectpicker('refresh');
-                    }
+                    $('#sub_category_id').html('<option value="">--</option>' + options.join(''));
+                    $('#sub_category_id').selectpicker('refresh');
                 }
-            })
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            });
         });
 
         $('#add-category').click(function() {

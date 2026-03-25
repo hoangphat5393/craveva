@@ -80,24 +80,34 @@
 
         $('#save-delivery-order-button').click(function() {
             const url = "{{ route('delivery-orders.store') }}";
-            $.easyAjax({
-                url: url,
-                container: '#save-delivery-order-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-delivery-order-button",
-                data: $('#save-delivery-order-form').serialize(),
-                success: function(response) {
-                    if (response.status == 'success') {
-                        if ($(MODAL_XL).hasClass('show')) {
-                            $(MODAL_XL).modal('hide');
-                            window.location.reload();
-                        } else {
-                            window.location.href = response.redirectUrl;
-                        }
+            var $btn = $('#save-delivery-order-button');
+            var body = $('#save-delivery-order-form').serialize();
+            $btn.prop('disabled', true);
+            $.easyBlockUI('#save-delivery-order-form');
+            window.apiHttp.postUrlEncoded(url, body).then(function(response) {
+                if (response.status == 'success') {
+                    var dest = response.redirectUrl || (response.action === 'redirect' ? response.url : null);
+                    if ($(MODAL_XL).hasClass('show')) {
+                        $(MODAL_XL).modal('hide');
+                        window.location.reload();
+                    } else if (dest) {
+                        window.location.href = dest;
                     }
                 }
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $btn.prop('disabled', false);
+                $.easyUnblockUI('#save-delivery-order-form');
             });
         });
 
@@ -105,17 +115,25 @@
             var id = $(this).val();
             var url = "{{ route('delivery-orders.get-items') }}";
             var token = "{{ csrf_token() }}";
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                data: {
+            window.apiHttp.get(url, {
+                params: {
                     purchase_order_id: id,
                     _token: token
-                },
-                success: function(response) {
-                    if (response.status === 'success') {
-                        $('#items-list').html(response.html);
-                    }
+                }
+            }).then(function(response) {
+                if (response.status === 'success') {
+                    $('#items-list').html(response.html);
+                }
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
                 }
             });
         });

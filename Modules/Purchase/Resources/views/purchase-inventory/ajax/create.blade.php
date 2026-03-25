@@ -236,27 +236,34 @@
 
             url = (categoryId) ? url.replace(':id', categoryId) : url.replace(':id', null);
 
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                success: function(response) {
-                    if (response.status == 'success') {
-                        var options = [];
-                        var rData;
-                        rData = response.data;
-                        $.each(rData, function(index, value) {
-                            var selectData;
-                            selectData = '<option value="' + value.id + '">' + value
-                                .category_name + '</option>';
-                            options.push(selectData);
-                        });
+            window.apiHttp.get(url).then(function(response) {
+                if (response.status == 'success') {
+                    var options = [];
+                    var rData;
+                    rData = response.data;
+                    $.each(rData, function(index, value) {
+                        var selectData;
+                        selectData = '<option value="' + value.id + '">' + value
+                            .category_name + '</option>';
+                        options.push(selectData);
+                    });
 
-                        $('#sub_category_id').html('<option value="">--</option>' +
-                            options);
-                        $('#sub_category_id').selectpicker('refresh');
-                    }
+                    $('#sub_category_id').html('<option value="">--</option>' +
+                        options);
+                    $('#sub_category_id').selectpicker('refresh');
                 }
-            })
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            });
         });
 
         $('#warehouse_id').change(function() {
@@ -266,36 +273,42 @@
 
         $('.save-form').click(function() {
             let formType = $(this).data('type');
-            let buttonSelector = "#save-inventory";
             let data = $('#save-inventory-form').serialize();
             let url = "{{ route('purchase-inventory.store') }}" + "?formType=" + formType;
+            var $saveBtns = $('.save-form');
 
-            $.easyAjax({
-                url: url,
-                container: '#save-inventory-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: buttonSelector,
-                file: true,
-                data: data,
-                success: function(response) {
-                    if (response.status === 'success') {
-                        if (inventoryDropzone.getQueuedFiles().length > 0) {
-                            inventoyID = response.inventoyID
-                            defaultImage = response.defaultImage;
-                            $('#inventory_id').val(inventoyID);
-                            inventoryDropzone.processQueue();
-                        } else {
-                            window.location.href = "{{ route('purchase-inventory.index') }}";
-                        }
+            $saveBtns.prop('disabled', true);
+            $.easyBlockUI('#save-inventory-form');
+            window.apiHttp.postUrlEncoded(url, data).then(function(response) {
+                if (response.status === 'success') {
+                    if (inventoryDropzone.getQueuedFiles().length > 0) {
+                        inventoyID = response.inventoyID
+                        defaultImage = response.defaultImage;
+                        $('#inventory_id').val(inventoyID);
+                        inventoryDropzone.processQueue();
+                    } else {
+                        window.location.href = "{{ route('purchase-inventory.index') }}";
                     }
-
-                    if (typeof showTable !== 'undefined' && typeof showTable === 'function') {
-                        showTable();
-                    }
-
                 }
+
+                if (typeof showTable !== 'undefined' && typeof showTable === 'function') {
+                    showTable();
+                }
+
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $saveBtns.prop('disabled', false);
+                $.easyUnblockUI('#save-inventory-form');
             });
         });
 
@@ -318,38 +331,48 @@
             let adjustmentVal = $('input[name="type"]:checked').val();
             let warehouseId = $('#warehouse_id').val();
 
-            $.easyAjax({
-                url: "{{ route('purchase_inventory.adjust_inventory') }}",
-                type: "GET",
-                data: {
+            $.easyBlockUI('#save-inventory-form');
+            window.apiHttp.get("{{ route('purchase_inventory.adjust_inventory') }}", {
+                params: {
                     id: id,
                     val: adjustmentVal,
                     warehouse_id: warehouseId
-                },
-                blockUI: true,
-                success: function(response) {
+                }
+            }).then(function(response) {
 
-                    if ($('input[name="item_name[]"]').val() == '') {
-                        $("#sortable .item-row").remove();
-                    }
+                if ($('input[name="item_name[]"]').val() == '') {
+                    $("#sortable .item-row").remove();
+                }
 
-                    $(response.view).hide().appendTo("#sortable").fadeIn(500);
-                    $('.selectpicker').selectpicker('refresh');
-                    calculateTotal();
-                    $('.dropify').dropify();
-                    $('#alertMessage').hide().fadeOut(500);
-                    var noOfRows = $(document).find('#sortable .item-row').length;
-                    var i = $(document).find('.item_name').length - 1;
-                    var itemRow = $(document).find('#sortable .item-row:nth-child(' + noOfRows +
-                        ') select.type');
-                    itemRow.attr('id', 'multiselect' + i);
-                    itemRow.attr('name', 'taxes[' + i + '][]');
-                    $(document).find('#multiselect' + i).selectpicker();
+                $(response.view).hide().appendTo("#sortable").fadeIn(500);
+                $('.selectpicker').selectpicker('refresh');
+                calculateTotal();
+                $('.dropify').dropify();
+                $('#alertMessage').hide().fadeOut(500);
+                var noOfRows = $(document).find('#sortable .item-row').length;
+                var i = $(document).find('.item_name').length - 1;
+                var itemRow = $(document).find('#sortable .item-row:nth-child(' + noOfRows +
+                    ') select.type');
+                itemRow.attr('id', 'multiselect' + i);
+                itemRow.attr('name', 'taxes[' + i + '][]');
+                $(document).find('#multiselect' + i).selectpicker();
 
-                    $(document).find('#dropify' + i).dropify({
-                        messages: dropifyMessages
+                $(document).find('#dropify' + i).dropify({
+                    messages: dropifyMessages
+                });
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
                     });
                 }
+            }).finally(function() {
+                $.easyUnblockUI('#save-inventory-form');
             });
         }
 

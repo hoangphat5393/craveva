@@ -5,14 +5,12 @@
 @endpush
 
 @section('filter-section')
-
     <x-filters.filter-box>
         <!-- ACCOUNT TYPE -->
         <div class="select-box d-flex py-2 px-lg-2 px-md-2 px-0 border-right-grey border-right-grey-sm-0">
             <p class="mb-0 pr-3 f-14 text-dark-grey d-flex align-items-center">@lang('qrcode::app.fields.type')</p>
             <div class="select-status">
-                <select class="form-control select-picker" name="type" id="filter_type"
-                data-container="body" data-live-search="true" data-size="8">
+                <select class="form-control select-picker" name="type" id="filter_type" data-container="body" data-live-search="true" data-size="8">
                     <option value="all">@lang('app.all')</option>
                     @foreach (\Modules\QRCode\Enums\Type::cases() as $type)
                         <option value="{{ $type->value }}">{{ $type->label() }}</option>
@@ -31,8 +29,7 @@
                             <i class="fa fa-search f-13 text-dark-grey"></i>
                         </span>
                     </div>
-                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field"
-                        placeholder="@lang('app.startTyping')">
+                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field" placeholder="@lang('app.startTyping')">
                 </div>
             </form>
         </div>
@@ -48,7 +45,6 @@
         <!-- RESET END -->
 
     </x-filters.filter-box>
-
 @endsection
 
 @section('content')
@@ -57,7 +53,7 @@
         <!-- Add Task Export Buttons Start -->
         <div class="d-block d-lg-flex d-md-flex justify-content-between">
             <div id="table-actions" class="flex-grow-1 align-items-center mb-2 mb-lg-0 mb-md-0">
-                @if(user()->permission('add_qrcode') != 'none')
+                @if (user()->permission('add_qrcode') != 'none')
                     <x-forms.link-primary :link="route('qrcode.create')" class="mr-3 float-left mb-2 mb-lg-0 mb-md-0" icon="plus">
                         @lang('qrcode::app.createQrCode')
                     </x-forms.link-primary>
@@ -76,7 +72,6 @@
         <!-- Task Box End -->
     </div>
     <!-- CONTENT WRAPPER END -->
-
 @endsection
 
 @push('scripts')
@@ -97,7 +92,7 @@
                 window.LaravelDataTables["qrcode-table"].draw(true);
             }
 
-            $('#reset-filters,#reset-filters-2').click(function () {
+            $('#reset-filters,#reset-filters-2').click(function() {
                 $('#filter-form')[0].reset();
 
                 $('.filter-box .select-picker').selectpicker("refresh");
@@ -106,18 +101,18 @@
             });
 
             $('#filter_type, #search-text-field')
-            .on('change keyup', function() {
-                        if ($('#filter_type').val() != "all") {
-                            $('#reset-filters').removeClass('d-none');
-                            showTable();
-                        } else if ($('#search-text-field').val() != "") {
-                            $('#reset-filters').removeClass('d-none');
-                            showTable();
-                        } else {
-                            $('#reset-filters').addClass('d-none');
-                            showTable();
-                        }
-            });
+                .on('change keyup', function() {
+                    if ($('#filter_type').val() != "all") {
+                        $('#reset-filters').removeClass('d-none');
+                        showTable();
+                    } else if ($('#search-text-field').val() != "") {
+                        $('#reset-filters').removeClass('d-none');
+                        showTable();
+                    } else {
+                        $('#reset-filters').addClass('d-none');
+                        showTable();
+                    }
+                });
 
             $('body').on('click', '.delete-qr-table-row', function() {
                 var id = $(this).data('qr-id');
@@ -145,24 +140,27 @@
 
                         var token = "{{ csrf_token() }}";
 
-                        $.easyAjax({
-                            type: 'POST',
-                            url: url,
-                            data: {
-                                '_token': token,
-                                '_method': 'DELETE'
-                            },
-                            success: function(response) {
-                                if (response.status == "success") {
-                                    showTable();
-                                }
+                        window.apiHttp.delete(url, token).then(function(response) {
+                            if (response.status == "success") {
+                                showTable();
+                            }
+                        }).catch(function(err) {
+                            if (typeof Swal !== 'undefined') {
+                                Swal.fire({
+                                    icon: 'error',
+                                    text: err.message,
+                                    toast: true,
+                                    position: 'top-end',
+                                    timer: 3000,
+                                    showConfirmButton: false,
+                                });
                             }
                         });
                     }
                 });
             });
 
-            $('body').on('click', '.qr-img-lightbox', function () {
+            $('body').on('click', '.qr-img-lightbox', function() {
                 const id = $(this).data('id');
                 var url = "{{ route('qrcode.show', ':id') }}";
                 url = url.replace(':id', id);

@@ -1,7 +1,6 @@
 <div class="modal-header">
     <h5 class="modal-title" id="modelHeading">@lang('app.addShippingAddress')</h5>
-    <button type="button"  class="close" data-dismiss="modal" aria-label="Close"><span
-            aria-hidden="true">×</span></button>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
 </div>
 <div class="modal-body">
 
@@ -9,10 +8,7 @@
         <div class="row justify-content-between">
             <div class="col-md-12">
                 <div class="form-group my-3">
-                    <x-forms.textarea class="mr-0 mr-lg-2 mr-md-2"
-                        :fieldLabel="__('app.shippingAddress')" fieldName="shipping_address"
-                        fieldId="shipping_address" :fieldPlaceholder="__('placeholders.address')"
-                        fieldValue="" fieldRequired="true">
+                    <x-forms.textarea class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('app.shippingAddress')" fieldName="shipping_address" fieldId="shipping_address" :fieldPlaceholder="__('placeholders.address')" fieldValue="" fieldRequired="true">
                     </x-forms.textarea>
                 </div>
             </div>
@@ -26,24 +22,30 @@
 </div>
 
 <script>
-
     $('#save-shipping-address').click(function() {
         let clientId = '{{ $clientId }}';
 
         let url = "{{ route('invoices.add_shipping_address', [':id']) }}";
         url = url.replace(':id', clientId);
 
-        $.easyAjax({
-            url: url,
-            container: '#shipping-address-form',
-            type: "POST",
-            data: $('#shipping-address-form').serialize(),
-            success: function(response) {
-                if (response.status == 'success') {
-                    window.location.reload();
-                }
+        $.easyBlockUI('#shipping-address-form');
+        window.apiHttp.postUrlEncoded(url, $('#shipping-address-form').serialize()).then(function(response) {
+            if (response.status == 'success') {
+                window.location.reload();
             }
-        })
+        }).catch(function(err) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    text: err.message,
+                    toast: true,
+                    position: 'top-end',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            }
+        }).finally(function() {
+            $.easyUnblockUI('#shipping-address-form');
+        });
     });
-
 </script>

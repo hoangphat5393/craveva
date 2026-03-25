@@ -299,27 +299,34 @@
             var url = "{{ route('get_client_sub_categories', ':id') }}";
             url = url.replace(':id', categoryId);
 
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                success: function(response) {
-                    if (response.status == 'success') {
-                        var options = [];
-                        var rData = [];
-                        rData = response.data;
-                        $.each(rData, function(index, value) {
-                            var selectData = '';
-                            selectData = '<option value="' + value.id + '">' + value
-                                .category_name + '</option>';
-                            options.push(selectData);
-                        });
+            window.apiHttp.get(url).then(function(response) {
+                if (response.status == 'success') {
+                    var options = [];
+                    var rData = [];
+                    rData = response.data;
+                    $.each(rData, function(index, value) {
+                        var selectData = '';
+                        selectData = '<option value="' + value.id + '">' + value
+                            .category_name + '</option>';
+                        options.push(selectData);
+                    });
 
-                        $('#filter_sub_category_id').html('<option value="">--</option>' +
-                            options);
-                        $('#filter_sub_category_id').selectpicker('refresh');
-                    }
+                    $('#filter_sub_category_id').html('<option value="">--</option>' +
+                        options);
+                    $('#filter_sub_category_id').selectpicker('refresh');
                 }
-            })
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            });
 
         });
 
@@ -398,18 +405,21 @@
             const url = "{{ route('clients.change_status') }}";
             const token = "{{ csrf_token() }}";
             if (typeof clientId !== 'undefined') {
-                $.easyAjax({
-                    url: url,
-                    type: "POST",
-                    data: {
-                        _token: token,
-                        client_id: clientId,
-                        status: status
-                    },
-                    success: function(response) {
-                        if (response.status == "success") {
-                            showTable();
-                        }
+                var stBody = '_token=' + encodeURIComponent(token) + '&client_id=' + encodeURIComponent(clientId) + '&status=' + encodeURIComponent(status);
+                window.apiHttp.postUrlEncoded(url, stBody).then(function(response) {
+                    if (response.status == "success") {
+                        showTable();
+                    }
+                }).catch(function(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
                     }
                 });
             }
@@ -441,16 +451,20 @@
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                showTable();
-                            }
+                    window.apiHttp.postUrlEncoded(url, '_token=' + encodeURIComponent(token)).then(function(response) {
+                        if (response.status == "success") {
+                            showTable();
+                        }
+                    }).catch(function(err) {
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                text: err.message,
+                                toast: true,
+                                position: 'top-end',
+                                timer: 4000,
+                                showConfirmButton: false
+                            });
                         }
                     });
                 }
@@ -462,51 +476,62 @@
             var url = "{{ route('clients.finance_count', ':id') }}";
             url = url.replace(':id', id)
             var token = "{{ csrf_token() }}";
-            $.easyAjax({
-                type: 'GET',
-                url: url,
-                data: {
-                    '_token': token
-                },
-                success: function(response) {
-                    if (response.status == "success") {
-                        Swal.fire({
-                            title: "@lang('messages.sweetAlertTitle')",
-                            text: response.deleteClient + "@lang('messages.recoverRecord')",
-                            icon: 'warning',
-                            showCancelButton: true,
-                            focusConfirm: false,
-                            confirmButtonText: "@lang('messages.confirmDelete')",
-                            cancelButtonText: "@lang('app.cancel')",
-                            customClass: {
-                                confirmButton: 'btn btn-primary mr-3',
-                                cancelButton: 'btn btn-secondary'
-                            },
-                            showClass: {
-                                popup: 'swal2-noanimation',
-                                backdrop: 'swal2-noanimation'
-                            },
-                            buttonsStyling: false
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                var url = "{{ route('clients.destroy', ':id') }}";
-                                url = url.replace(':id', id);
-                                $.easyAjax({
-                                    type: 'POST',
-                                    url: url,
-                                    data: {
-                                        '_token': token,
-                                        '_method': 'DELETE'
-                                    },
-                                    success: function(response) {
-                                        if (response.status == "success") {
-                                            showTable();
-                                        }
-                                    }
-                                });
-                            }
-                        });
-                    }
+            window.apiHttp.get(url, {
+                params: {
+                    _token: token
+                }
+            }).then(function(response) {
+                if (response.status == "success") {
+                    Swal.fire({
+                        title: "@lang('messages.sweetAlertTitle')",
+                        text: response.deleteClient + "@lang('messages.recoverRecord')",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        focusConfirm: false,
+                        confirmButtonText: "@lang('messages.confirmDelete')",
+                        cancelButtonText: "@lang('app.cancel')",
+                        customClass: {
+                            confirmButton: 'btn btn-primary mr-3',
+                            cancelButton: 'btn btn-secondary'
+                        },
+                        showClass: {
+                            popup: 'swal2-noanimation',
+                            backdrop: 'swal2-noanimation'
+                        },
+                        buttonsStyling: false
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            var delUrl = "{{ route('clients.destroy', ':id') }}";
+                            delUrl = delUrl.replace(':id', id);
+                            window.apiHttp.delete(delUrl, token).then(function(res) {
+                                if (res.status == "success") {
+                                    showTable();
+                                }
+                            }).catch(function(err) {
+                                if (typeof Swal !== 'undefined') {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        text: err.message,
+                                        toast: true,
+                                        position: 'top-end',
+                                        timer: 4000,
+                                        showConfirmButton: false
+                                    });
+                                }
+                            });
+                        }
+                    });
+                }
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
                 }
             });
         });
@@ -518,22 +543,31 @@
 
             const url = "{{ route('clients.apply_quick_action') }}?row_ids=" + rowdIds;
 
-            $.easyAjax({
-                url: url,
-                container: '#quick-action-form',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#quick-action-apply",
-                data: $('#quick-action-form').serialize(),
-                success: function(response) {
-                    if (response.status == 'success') {
-                        showTable();
-                        resetActionButtons();
-                        deSelectAll();
-                        $('#quick-action-form').hide();
-                    }
+            var $qaBtn = $("#quick-action-apply");
+            $qaBtn.prop('disabled', true);
+            $.easyBlockUI('#quick-action-form');
+            window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize()).then(function(response) {
+                if (response.status == 'success') {
+                    showTable();
+                    resetActionButtons();
+                    deSelectAll();
+                    $('#quick-action-form').hide();
                 }
-            })
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $qaBtn.prop('disabled', false);
+                $.easyUnblockUI('#quick-action-form');
+            });
         };
 
         $('.show-unverified').click(function() {

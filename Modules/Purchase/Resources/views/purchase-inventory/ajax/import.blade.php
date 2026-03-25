@@ -37,21 +37,29 @@
 
         $('body').on('click', '#import-purchase-inventory-form', function() {
             const url = "{{ route('purchase-inventory.import.store') }}";
+            const $btn = $('#import-purchase-inventory-form');
+            const formEl = document.getElementById('import-purchase-inventory-data-form');
 
-            $.easyAjax({
-                url: url,
-                container: '#import-purchase-inventory-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#import-purchase-inventory-form",
-                file: true,
-                data: $('#import-purchase-inventory-data-form').serialize(),
-                success: function(response) {
-                    if (response.status == 'success') {
-                        $('#import_table').html(response.view);
-                    }
+            $btn.prop('disabled', true);
+            $.easyBlockUI('#import_table');
+            window.apiHttp.postForm(url, formEl).then(function(response) {
+                if (response.status == 'success') {
+                    $('#import_table').html(response.view);
                 }
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $btn.prop('disabled', false);
+                $.easyUnblockUI('#import_table');
             });
         });
     });

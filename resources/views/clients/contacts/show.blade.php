@@ -1,6 +1,6 @@
 @php
-$editDepartmentPermission = user()->permission('edit_department');
-$deleteDepartmentPermission = user()->permission('delete_department');
+    $editDepartmentPermission = user()->permission('edit_department');
+    $deleteDepartmentPermission = user()->permission('delete_department');
 @endphp
 
 <div id="department-section">
@@ -14,42 +14,33 @@ $deleteDepartmentPermission = user()->permission('delete_department');
                         </div>
                         <div class="col-md-2 col-2 text-right">
                             <div class="dropdown">
-                                    <button
-                                        class="btn btn-lg f-14 px-2 py-1 text-dark-grey  rounded  dropdown-toggle"
-                                        type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <i class="fa fa-ellipsis-h"></i>
-                                    </button>
-                                    <div class="dropdown-menu dropdown-menu-right border-grey rounded b-shadow-4 p-0"
-                                        aria-labelledby="dropdownMenuLink" tabindex="0">
-                                        @if($editClientPermission == 'all' || ($editClientPermission == 'added' && user()->id == $row->added_by) || ($editClientPermission == 'both' && user()->id == $contact->added_by))
-                                            <a class="dropdown-item openRightModal"
-                                            data-redirect-url="{{ url()->previous() }}"
-                                            href="{{ route('client-contacts.edit', $contact->id) }}">@lang('app.edit')</a>
-                                        @endif
-                                        @if($deleteClientPermission == 'all' || ($deleteClientPermission == 'added' && user()->id == $contact->added_by) || ($deleteClientPermission == 'both' && user()->id == $contact->added_by))
-                                        <a class="dropdown-item delete-table-row" href="javascript:;" data-user-id="{{$contact->id }}">@lang('app.delete')</a>
-                                        @endif
-                                    </div>
+                                <button class="btn btn-lg f-14 px-2 py-1 text-dark-grey  rounded  dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fa fa-ellipsis-h"></i>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-right border-grey rounded b-shadow-4 p-0" aria-labelledby="dropdownMenuLink" tabindex="0">
+                                    @if ($editClientPermission == 'all' || ($editClientPermission == 'added' && user()->id == $row->added_by) || ($editClientPermission == 'both' && user()->id == $contact->added_by))
+                                        <a class="dropdown-item openRightModal" data-redirect-url="{{ url()->previous() }}" href="{{ route('client-contacts.edit', $contact->id) }}">@lang('app.edit')</a>
+                                    @endif
+                                    @if ($deleteClientPermission == 'all' || ($deleteClientPermission == 'added' && user()->id == $contact->added_by) || ($deleteClientPermission == 'both' && user()->id == $contact->added_by))
+                                        <a class="dropdown-item delete-table-row" href="javascript:;" data-user-id="{{ $contact->id }}">@lang('app.delete')</a>
+                                    @endif
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="card-body">
-                    <x-cards.data-row :label="__('app.name')" :value="$contact->contact_name"
-                        html="true" />
-                        <x-cards.data-row :label="__('app.email')" :value="$contact->email"
-                        html="true" />
-                        <x-cards.data-row :label="__('app.phone')" :value="$contact->phone ?? '--'"
-                        html="true" />
-                        <div class="col-12 px-0 pb-3 d-block d-lg-flex d-md-flex">
-                            <p class="mb-0 text-lightest f-14 w-30 d-inline-block ">
-                                @lang('modules.employees.gender')</p>
-                            <p class="mb-0 text-dark-grey f-14 w-70">
-                                <x-gender :gender='$client->gender' />
-                            </p>
-                        </div>
-                        <x-cards.data-row :label="__('modules.accountSettings.companyAddress')" :value="$contact->address"
-                            html="true" />
+                    <x-cards.data-row :label="__('app.name')" :value="$contact->contact_name" html="true" />
+                    <x-cards.data-row :label="__('app.email')" :value="$contact->email" html="true" />
+                    <x-cards.data-row :label="__('app.phone')" :value="$contact->phone ?? '--'" html="true" />
+                    <div class="col-12 px-0 pb-3 d-block d-lg-flex d-md-flex">
+                        <p class="mb-0 text-lightest f-14 w-30 d-inline-block ">
+                            @lang('modules.employees.gender')</p>
+                        <p class="mb-0 text-dark-grey f-14 w-70">
+                            <x-gender :gender='$client->gender' />
+                        </p>
+                    </div>
+                    <x-cards.data-row :label="__('modules.accountSettings.companyAddress')" :value="$contact->address" html="true" />
 
                 </div>
             </div>
@@ -84,17 +75,20 @@ $deleteDepartmentPermission = user()->permission('delete_department');
 
                 var token = "{{ csrf_token() }}";
 
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
-                        if (response.status == "success") {
-                            window.location.href = response.redirectUrl;
-                        }
+                window.apiHttp.delete(url, token).then(function(response) {
+                    if (response.status == "success") {
+                        window.location.href = response.redirectUrl;
+                    }
+                }).catch(function(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
                     }
                 });
             }

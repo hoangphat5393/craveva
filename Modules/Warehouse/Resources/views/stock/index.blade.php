@@ -1,98 +1,128 @@
 @extends('layouts.app')
 
-@section('page-title')
-    <div class="row bg-title">
-        <!-- .page title -->
-        <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
-            <h4 class="page-title"><i class="{{ $pageIcon }}"></i> {{ __($pageTitle) }}</h4>
-        </div>
-        <!-- /.page title -->
-        <!-- .breadcrumb -->
-        <div class="col-lg-9 col-sm-8 col-md-8 col-xs-12">
-            <ol class="breadcrumb">
-                <li><a href="{{ route('dashboard') }}">@lang('app.menu.home')</a></li>
-                <li class="active">{{ __($pageTitle) }}</li>
-            </ol>
-        </div>
-        <!-- /.breadcrumb -->
-    </div>
+@push('datatable-styles')
+    @include('sections.datatable_css')
+@endpush
+
+@php
+    $addStockPerm = user()->permission('add_warehouse_stock');
+    $transferPerm = user()->permission('manage_warehouse_transfer');
+@endphp
+
+@section('filter-section')
+    <form method="GET" action="{{ route('warehouse.stock.index') }}" id="warehouse-stock-filter">
+        <x-filters.filter-box>
+            <div class="select-box d-flex py-2 px-lg-2 px-md-2 px-0 border-right-grey border-right-grey-sm-0">
+                <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('warehouse::app.warehouse')</p>
+                <div class="select-status">
+                    <select class="form-control select-picker" name="warehouse_id" id="warehouse-stock-warehouse" data-container="body" data-size="8">
+                        <option value="">@lang('warehouse::app.allWarehouses')</option>
+                        @foreach ($warehouses as $w)
+                            <option value="{{ $w->id }}" @selected((string) $warehouseId === (string) $w->id)>{{ $w->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+            <div class="task-search d-flex py-1 px-lg-3 px-0 border-right-grey align-items-center">
+                <div class="input-group bg-grey rounded w-100">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text border-0 bg-additional-grey">
+                            <i class="fa fa-search f-13 text-dark-grey"></i>
+                        </span>
+                    </div>
+                    <input type="text" name="search" class="form-control f-14 p-1 border-additional-grey" id="warehouse-stock-search" placeholder="@lang('app.startTyping')" value="{{ request('search') }}">
+                </div>
+            </div>
+            <div class="select-box d-flex py-1 px-lg-2 px-md-2 px-0">
+                <button type="submit" class="btn btn-secondary rounded f-14 p-2">
+                    <i class="fa fa-search mr-1"></i> @lang('app.apply')
+                </button>
+            </div>
+        </x-filters.filter-box>
+    </form>
 @endsection
 
 @section('content')
-    <div class="row">
-        <div class="col-xs-12">
-            <div class="white-box">
-                <div class="row m-b-10">
-                    <div class="col-sm-6">
-                        <div class="form-group">
-                            <a href="{{ route('warehouse.stock.create') }}" class="btn btn-outline btn-success btn-sm">@lang('warehouse::app.addStock') <i class="fa fa-plus" aria-hidden="true"></i></a>
-                            <a href="{{ route('warehouse.transfer.create') }}" class="btn btn-outline btn-info btn-sm m-l-5">@lang('warehouse::app.transferStock') <i class="fa fa-exchange" aria-hidden="true"></i></a>
-                        </div>
-                    </div>
-                    <div class="col-sm-6 text-right">
-                        <form action="{{ route('warehouse.stock.index') }}" method="GET" class="form-inline">
-                            <div class="form-group">
-                                <select name="warehouse_id" class="form-control" onchange="this.form.submit()">
-                                    <option value="">-- @lang('warehouse::app.allWarehouses') --</option>
-                                    @foreach ($warehouses as $warehouse)
-                                        <option value="{{ $warehouse->id }}" {{ $warehouseId == $warehouse->id ? 'selected' : '' }}>{{ $warehouse->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <input type="text" name="search" class="form-control" placeholder="@lang('app.search')..." value="{{ request('search') }}">
-                            </div>
-                            <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
-                        </form>
-                    </div>
-                </div>
-
-                <div class="table-responsive">
-                    <table class="table table-bordered table-hover toggle-circle default footable-loaded footable">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>@lang('warehouse::app.product')</th>
-                                <th>@lang('warehouse::app.warehouse')</th>
-                                <th>@lang('warehouse::app.quantity')</th>
-                                <th>@lang('app.updatedAt')</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($stocks as $key => $stock)
-                                <tr>
-                                    <td>{{ $loop->iteration + ($stocks->currentPage() - 1) * $stocks->perPage() }}</td>
-                                    <td>
-                                        {{ $stock->product->name }} <br>
-                                        <small class="text-muted">{{ $stock->product->sku }}</small>
-                                    </td>
-                                    <td>{{ $stock->warehouse->name }}</td>
-                                    <td>
-                                        <span class="font-bold {{ $stock->quantity > 0 ? 'text-success' : 'text-danger' }}">
-                                            {{ $stock->quantity }}
-                                        </span>
-                                    </td>
-                                    <td>{{ $stock->updated_at->format('d-m-Y H:i') }}</td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="5" class="text-center">
-                                        <div class="empty-space" style="height: 200px;">
-                                            <div class="empty-space-inner">
-                                                <div class="icon" style="font-size: 30px"><i class="fa fa-cubes"></i></div>
-                                                <div class="title" style="font-size: 18px">@lang('warehouse::app.noStockFound')</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-                <div class="text-right">
-                    {{ $stocks->appends(request()->query())->links() }}
-                </div>
+    <div class="content-wrapper">
+        <div class="d-flex justify-content-between action-bar">
+            <div id="table-actions" class="flex-grow-1 align-items-center mt-3">
+                @if ($addStockPerm == 'all' || $addStockPerm == 'added')
+                    <x-forms.link-primary :link="route('warehouse.stock.create')" class="mr-3 float-left" icon="plus">
+                        @lang('warehouse::app.addStock')
+                    </x-forms.link-primary>
+                @endif
+                @if ($transferPerm == 'all' || $transferPerm == 'added')
+                    <x-forms.link-secondary :link="route('warehouse.transfer.create')" class="mr-3 float-left" icon="exchange-alt">
+                        @lang('warehouse::app.transferStock')
+                    </x-forms.link-secondary>
+                @endif
             </div>
         </div>
+
+        <div class="d-flex flex-column w-tables rounded mt-3 bg-white table-responsive">
+            <table class="table table-hover border-0 w-100 mb-0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>@lang('warehouse::app.product')</th>
+                        <th>@lang('warehouse::app.warehouse')</th>
+                        <th>@lang('warehouse::app.quantity')</th>
+                        <th>@lang('app.updatedAt')</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($stocks as $stock)
+                        <tr>
+                            <td>{{ $loop->iteration + ($stocks->currentPage() - 1) * $stocks->perPage() }}</td>
+                            <td>
+                                <span class="font-weight-semibold">{{ $stock->product->name }}</span>
+                                <br><small class="text-lightest">{{ $stock->product->sku }}</small>
+                            </td>
+                            <td>{{ $stock->warehouse->name }}</td>
+                            <td>
+                                <span class="font-weight-semibold {{ $stock->quantity > 0 ? 'text-success' : 'text-danger' }}">{{ $stock->quantity }}</span>
+                            </td>
+                            <td class="text-nowrap">{{ $stock->updated_at->timezone(company()->timezone)->format(company()->date_format . ' H:i') }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" class="p-0">
+                                <div class="p-5">
+                                    <x-cards.no-record icon="cubes" :message="__('warehouse::app.emptyStockOnboardingTitle')" />
+                                    <p class="f-14 text-dark-grey mt-3 mb-2">{{ __('warehouse::app.emptyStockOnboardingIntro') }}</p>
+                                    <ul class="f-14 mb-0 pl-3 text-dark-grey">
+                                        @php
+                                            $poPerm = user()->permission('view_purchase_order');
+                                            $invPerm = user()->permission('view_inventory');
+                                        @endphp
+                                        @if ($poPerm != 'none' && $poPerm != '')
+                                            <li class="mb-1"><a href="{{ route('purchase-order.index') }}">{{ __('warehouse::app.linkPurchaseOrders') }}</a></li>
+                                            <li class="mb-1"><a href="{{ route('delivery-orders.index') }}">{{ __('warehouse::app.linkDeliveryOrders') }}</a></li>
+                                        @endif
+                                        @if ($invPerm != 'none' && $invPerm != '')
+                                            <li class="mb-1"><a href="{{ route('purchase-inventory.index') }}">{{ __('warehouse::app.linkInventory') }}</a></li>
+                                        @endif
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        @if ($stocks->hasPages())
+            <div class="w-100 d-flex justify-content-end mt-3 px-3">
+                {{ $stocks->appends(request()->query())->links() }}
+            </div>
+        @endif
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        $('#warehouse-stock-warehouse').on('changed.bs.select', function() {
+            $('#warehouse-stock-filter').submit();
+        });
+    </script>
+@endpush

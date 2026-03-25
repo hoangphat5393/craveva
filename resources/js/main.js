@@ -1,7 +1,9 @@
+require('./http/apiClient');
+
 /*******************************************************
                 Accordion Sidebar Menu Start
 *******************************************************/
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     var accItem = document.getElementsByClassName('accordionItem');
     var accHD = document.getElementsByClassName('accordionItemHeading');
 
@@ -74,16 +76,14 @@ function closeMoreFilter() {
 }
 
 if (typeof $ !== 'undefined' && $('#more_filter').length > 0) {
-    $(document).on('mouseup', function(e)
-    {
+    $(document).on('mouseup', function (e) {
         var container = $("#more_filter");
         var searchField = $(".bs-searchbox");
         var select2Field = $("#bs-select-2");
         var selectField = $(".bs-container");
 
         // if the target of the click isn't the container nor a descendant of the container
-        if (!container.is(e.target) && container.has(e.target).length === 0 && !searchField.is(e.target) && searchField.has(e.target).length === 0 && !select2Field.is(e.target) && select2Field.has(e.target).length === 0 && selectField.has(e.target).length === 0)
-        {
+        if (!container.is(e.target) && container.has(e.target).length === 0 && !searchField.is(e.target) && searchField.has(e.target).length === 0 && !select2Field.is(e.target) && select2Field.has(e.target).length === 0 && selectField.has(e.target).length === 0) {
             closeMoreFilter()
         }
     });
@@ -201,7 +201,7 @@ if (el) {
     el.addEventListener("click", closeTicketsSidebar);
 }
 
-function closeTicketsSidebar(){
+function closeTicketsSidebar() {
     var cts1 = document.getElementById("ticket-detail-contact");
     cts1.classList.remove("in");
 
@@ -239,7 +239,7 @@ if (el) {
     el.addEventListener("click", closeClientDetail);
 }
 
-function closeClientDetail(){
+function closeClientDetail() {
     var ccds1 = document.getElementById("mob-client-detail");
     ccds1.classList.remove("in");
 

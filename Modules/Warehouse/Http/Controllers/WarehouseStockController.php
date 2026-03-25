@@ -2,7 +2,7 @@
 
 namespace Modules\Warehouse\Http\Controllers;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\AccountBaseController;
 use App\Models\Product;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -11,8 +11,18 @@ use Modules\Warehouse\Entities\Warehouse;
 use Modules\Warehouse\Entities\WarehouseProductStock;
 use Modules\Warehouse\Services\StockMovementService;
 
-class WarehouseStockController extends Controller
+class WarehouseStockController extends AccountBaseController
 {
+    public function __construct()
+    {
+        parent::__construct();
+        $this->middleware(function ($request, $next) {
+            abort_403(! in_array('warehouse', user_modules()));
+
+            return $next($request);
+        });
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -29,13 +39,19 @@ class WarehouseStockController extends Controller
             })
             ->when($search, function ($query) use ($search) {
                 return $query->whereHas('product', function ($q) use ($search) {
-                    $q->where('name', 'like', '%' . $search . '%')
-                        ->orWhere('sku', 'like', '%' . $search . '%');
+                    $q->where('name', 'like', '%'.$search.'%')
+                        ->orWhere('sku', 'like', '%'.$search.'%');
                 });
             })
             ->paginate(20);
 
-        return view('warehouse::stock.index', compact('stocks', 'warehouses', 'warehouseId'));
+        $this->pageTitle = 'warehouse::app.adjustStock';
+        $this->pageIcon = 'ti-layout';
+        $this->stocks = $stocks;
+        $this->warehouses = $warehouses;
+        $this->warehouseId = $warehouseId;
+
+        return view('warehouse::stock.index', $this->data);
     }
 
     /**
@@ -47,7 +63,12 @@ class WarehouseStockController extends Controller
         // Assuming products are global
         $products = Product::select('id', 'name', 'sku')->get();
 
-        return view('warehouse::stock.create', compact('warehouses', 'products'));
+        $this->pageTitle = 'warehouse::app.addStock';
+        $this->pageIcon = 'ti-layout';
+        $this->warehouses = $warehouses;
+        $this->products = $products;
+
+        return view('warehouse::stock.create', $this->data);
     }
 
     /**
@@ -97,9 +118,9 @@ class WarehouseStockController extends Controller
 
             return redirect()->route('warehouse.stock.index')->with('success', 'Stock updated successfully.');
         } catch (\Throwable $e) {
-            Log::error('Stock Adjustment Error: ' . $e->getMessage());
+            Log::error('Stock Adjustment Error: '.$e->getMessage());
 
-            return back()->with('error', 'Something went wrong! ' . $e->getMessage());
+            return back()->with('error', 'Something went wrong! '.$e->getMessage());
         }
     }
 

@@ -17,8 +17,7 @@
         <div class="select-box d-flex pr-2 border-right-grey border-right-grey-sm-0">
             <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('app.duration')</p>
             <div class="select-status d-flex">
-                <input type="text" class="position-relative text-dark form-control border-0 p-2 text-left f-14 f-w-500 border-additional-grey"
-                    id="datatableRange" placeholder="@lang('placeholders.dateRange')">
+                <input type="text" class="position-relative text-dark form-control border-0 p-2 text-left f-14 f-w-500 border-additional-grey" id="datatableRange" placeholder="@lang('placeholders.dateRange')">
             </div>
         </div>
         <!-- DATE END -->
@@ -33,7 +32,7 @@
                             <option value="all">@lang('app.all')</option>
                         @endif
                         @foreach ($clients as $client)
-                                <x-user-option :user="$client" />
+                            <x-user-option :user="$client" />
                             </option>
                         @endforeach
                     </select>
@@ -51,8 +50,7 @@
                             <i class="fa fa-search f-13 text-dark-grey"></i>
                         </span>
                     </div>
-                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field"
-                        placeholder="@lang('app.startTyping')">
+                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field" placeholder="@lang('app.startTyping')">
                 </div>
             </form>
         </div>
@@ -72,8 +70,7 @@
                 <label class="f-14 text-dark-grey mb-12 " for="usr">@lang('app.project')</label>
                 <div class="select-filter mb-4">
                     <div class="select-others">
-                        <select class="form-control select-picker" name="project_id" id="filter_project_id"
-                            data-container="body" data-live-search="true" data-size="8">
+                        <select class="form-control select-picker" name="project_id" id="filter_project_id" data-container="body" data-live-search="true" data-size="8">
                             <option value="all">@lang('app.all')</option>
                             @foreach ($projects as $project)
                                 <option value="{{ $project->id }}">{{ $project->project_name }}</option>
@@ -87,8 +84,7 @@
                 <label class="f-14 text-dark-grey mb-12 " for="usr">@lang('app.status')</label>
                 <div class="select-filter mb-4">
                     <div class="select-others">
-                        <select class="form-control select-picker" name="status" id="status" data-live-search="true"
-                            data-container="body" data-size="8">
+                        <select class="form-control select-picker" name="status" id="status" data-live-search="true" data-container="body" data-size="8">
                             <option value="all">@lang('app.all')</option>
                             <option {{ request('status') == 'pending' ? 'selected' : '' }} value="pending">
                                 @lang('app.pending')</option>
@@ -116,8 +112,8 @@
 @endsection
 
 @php
-$addInvoicesPermission = user()->permission('add_invoices');
-$manageRecurringInvoicesPermission = user()->permission('manage_recurring_invoice');
+    $addInvoicesPermission = user()->permission('add_invoices');
+    $manageRecurringInvoicesPermission = user()->permission('manage_recurring_invoice');
 @endphp
 
 @section('content')
@@ -127,20 +123,17 @@ $manageRecurringInvoicesPermission = user()->permission('manage_recurring_invoic
         <div class="d-block d-lg-flex d-md-flex justify-content-between">
             <div id="table-actions" class="flex-grow-1 align-items-center mb-2 mb-lg-0 mb-md-0">
                 @if ($addInvoicesPermission == 'all')
-                    <x-forms.link-primary :link="route('invoices.create')" class="mr-3 float-left mb-2 mb-lg-0 mb-md-0"
-                        icon="plus">
+                    <x-forms.link-primary :link="route('invoices.create')" class="mr-3 float-left mb-2 mb-lg-0 mb-md-0" icon="plus">
                         @lang('modules.invoices.addInvoice')
                     </x-forms.link-primary>
                 @endif
                 @if ($addInvoicesPermission == 'all' || $manageRecurringInvoicesPermission == 'all')
-                    <x-forms.link-secondary class="mr-3 float-left mb-2 mb-lg-0 mb-md-0" icon="redo"
-                        :link="route('recurring-invoices.index')">
+                    <x-forms.link-secondary class="mr-3 float-left mb-2 mb-lg-0 mb-md-0" icon="redo" :link="route('recurring-invoices.index')">
                         @lang('app.invoiceRecurring')
                     </x-forms.link-secondary>
                 @endif
                 @if ($addInvoicesPermission == 'all' && in_array('projects', user_modules()))
-                    <x-forms.link-secondary class="mr-3 float-left mb-2 mb-lg-0 mb-md-0" icon="plus"
-                        :link="route('invoices.create', ['type' => 'timelog'])">
+                    <x-forms.link-secondary class="mr-3 float-left mb-2 mb-lg-0 mb-md-0" icon="plus" :link="route('invoices.create', ['type' => 'timelog'])">
                         @lang('app.createTimeLogInvoice')
                     </x-forms.link-secondary>
                 @endif
@@ -148,9 +141,7 @@ $manageRecurringInvoicesPermission = user()->permission('manage_recurring_invoic
             </div>
 
             <div class="btn-group mt-3 mt-lg-0 mt-md-0 ml-lg-3 d-none d-lg-block" role="group">
-                <a href="javascript:;" class="img-lightbox btn btn-secondary f-14"
-                data-image-url="{{ asset('img/invoice-lc.png') }}" data-toggle="tooltip"
-                data-original-title="@lang('app.howItWorks')"><i class="side-icon bi bi-question-circle"></i></a>
+                <a href="javascript:;" class="img-lightbox btn btn-secondary f-14" data-image-url="{{ asset('img/invoice-lc.png') }}" data-toggle="tooltip" data-original-title="@lang('app.howItWorks')"><i class="side-icon bi bi-question-circle"></i></a>
             </div>
 
         </div>
@@ -165,7 +156,6 @@ $manageRecurringInvoicesPermission = user()->permission('manage_recurring_invoic
         <!-- Task Box End -->
     </div>
     <!-- CONTENT WRAPPER END -->
-
 @endsection
 
 @push('scripts')
@@ -178,7 +168,7 @@ $manageRecurringInvoicesPermission = user()->permission('manage_recurring_invoic
             clipboard.on('success', function(e) {
                 Swal.fire({
                     icon: 'success',
-                    text: '@lang("app.copied")',
+                    text: '@lang('app.copied')',
                     toast: true,
                     position: 'top-end',
                     timer: 3000,
@@ -254,13 +244,13 @@ $manageRecurringInvoicesPermission = user()->permission('manage_recurring_invoic
             }
         });
 
-            $('#reset-filters,#reset-filters-2').click(function () {
-                $('#filter-form')[0].reset();
+        $('#reset-filters,#reset-filters-2').click(function() {
+            $('#filter-form')[0].reset();
 
-                $('.filter-box .select-picker').selectpicker("refresh");
-                $('#reset-filters').addClass('d-none');
-                showTable();
-            });
+            $('.filter-box .select-picker').selectpicker("refresh");
+            $('#reset-filters').addClass('d-none');
+            showTable();
+        });
 
 
         $('#quick-action-type').change(function() {
@@ -337,19 +327,24 @@ $manageRecurringInvoicesPermission = user()->permission('manage_recurring_invoic
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                showTable();
-                            }
+                    $.easyBlockUI('#invoices-table');
+                    window.apiHttp.delete(url, token).then(function(response) {
+                        if (response.status == "success") {
+                            showTable();
                         }
+                    }).catch(function(err) {
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                text: err.message,
+                                toast: true,
+                                position: 'top-end',
+                                timer: 4000,
+                                showConfirmButton: false
+                            });
+                        }
+                    }).finally(function() {
+                        $.easyUnblockUI('#invoices-table');
                     });
                 }
             });
@@ -392,21 +387,29 @@ $manageRecurringInvoicesPermission = user()->permission('manage_recurring_invoic
 
             var url = "{{ route('invoices.apply_quick_action') }}?row_ids=" + rowdIds;
 
-            $.easyAjax({
-                url: url,
-                container: '#quick-action-form',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#quick-action-apply",
-                data: $('#quick-action-form').serialize(),
-                blockUI: true,
-                success: function(response) {
-                    if (response.status == 'success') {
-                        showTable();
-                        resetActionButtons();
-                    }
+            var $qaBtn = $("#quick-action-apply");
+            $qaBtn.prop('disabled', true);
+            $.easyBlockUI('#quick-action-form');
+            window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize()).then(function(response) {
+                if (response.status == 'success') {
+                    showTable();
+                    resetActionButtons();
                 }
-            })
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $qaBtn.prop('disabled', false);
+                $.easyUnblockUI('#quick-action-form');
+            });
         };
 
         $('body').on('click', '.approveButton', function() {
@@ -415,19 +418,26 @@ $manageRecurringInvoicesPermission = user()->permission('manage_recurring_invoic
             url = url.replace(':id', id);
 
             var token = "{{ csrf_token() }}";
-            $.easyAjax({
-                type: 'POST',
-                url: url,
-                container: '#invoices-table',
-                blockUI: true,
-                data: {
-                    '_token': token
-                },
-                success: function(response) {
-                    if (response.status == "success") {
-                        showTable();
-                    }
+            $.easyBlockUI('#invoices-table');
+            window.apiHttp.post(url, {
+                _token: token
+            }).then(function(response) {
+                if (response.status == "success") {
+                    showTable();
                 }
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $.easyUnblockUI('#invoices-table');
             });
         });
 
@@ -440,62 +450,73 @@ $manageRecurringInvoicesPermission = user()->permission('manage_recurring_invoic
 
             var token = "{{ csrf_token() }}";
 
-            if(invoiceAmt == 0 && invoiceAmt != null)
-            {
+            if (invoiceAmt == 0 && invoiceAmt != null) {
                 Swal.fire({
-                            title: "@lang('messages.sweetAlertTitle')",
-                            text: "@lang('messages.markAsPaid')",
-                            icon: 'warning',
-                            showCancelButton: true,
-                            focusConfirm: false,
-                            confirmButtonText: "@lang('app.yes')",
-                            cancelButtonText: "@lang('app.no')",
-                            customClass: {
-                                confirmButton: 'btn btn-primary mr-3',
-                                cancelButton: 'btn btn-secondary'
-                            },
-                            showClass: {
-                                popup: 'swal2-noanimation',
-                                backdrop: 'swal2-noanimation'
-                            },
-                            buttonsStyling: false
+                    title: "@lang('messages.sweetAlertTitle')",
+                    text: "@lang('messages.markAsPaid')",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    focusConfirm: false,
+                    confirmButtonText: "@lang('app.yes')",
+                    cancelButtonText: "@lang('app.no')",
+                    customClass: {
+                        confirmButton: 'btn btn-primary mr-3',
+                        cancelButton: 'btn btn-secondary'
+                    },
+                    showClass: {
+                        popup: 'swal2-noanimation',
+                        backdrop: 'swal2-noanimation'
+                    },
+                    buttonsStyling: false
                 }).then((result) => {
                     if (result.isConfirmed) {
 
-                        $.easyAjax({
-                            type: 'POST',
-                            url: url,
-                            container: '#invoices-table',
-                            blockUI: true,
-                            data: {
-                                '_token': token,
-                                'data_type' : dataType
-                            },
-                            success: function(response) {
-                                if (response.status == "success") {
-                                    showTable();
-                                }
+                        $.easyBlockUI('#invoices-table');
+                        window.apiHttp.post(url, {
+                            _token: token,
+                            data_type: dataType
+                        }).then(function(response) {
+                            if (response.status == "success") {
+                                showTable();
                             }
+                        }).catch(function(err) {
+                            if (typeof Swal !== 'undefined') {
+                                Swal.fire({
+                                    icon: 'error',
+                                    text: err.message,
+                                    toast: true,
+                                    position: 'top-end',
+                                    timer: 4000,
+                                    showConfirmButton: false
+                                });
+                            }
+                        }).finally(function() {
+                            $.easyUnblockUI('#invoices-table');
                         });
                     }
                 });
-            }
-            else
-            {
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    container: '#invoices-table',
-                    blockUI: true,
-                    data: {
-                        '_token': token,
-                        'data_type' : dataType
-                    },
-                    success: function(response) {
-                        if (response.status == "success") {
-                            showTable();
-                        }
+            } else {
+                $.easyBlockUI('#invoices-table');
+                window.apiHttp.post(url, {
+                    _token: token,
+                    data_type: dataType
+                }).then(function(response) {
+                    if (response.status == "success") {
+                        showTable();
                     }
+                }).catch(function(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
+                    }
+                }).finally(function() {
+                    $.easyUnblockUI('#invoices-table');
                 });
             }
 
@@ -509,17 +530,25 @@ $manageRecurringInvoicesPermission = user()->permission('manage_recurring_invoic
 
             var token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                type: 'GET',
-                container: '#invoices-table',
-                blockUI: true,
-                url: url,
-                success: function(response) {
-                    if (response.status == "success") {
-                        $.unblockUI();
-                        showTable();
-                    }
+            $.easyBlockUI('#invoices-table');
+            window.apiHttp.get(url).then(function(response) {
+                if (response.status == "success") {
+                    $.unblockUI();
+                    showTable();
                 }
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $.easyUnblockUI('#invoices-table');
             });
         });
 
@@ -560,18 +589,24 @@ $manageRecurringInvoicesPermission = user()->permission('manage_recurring_invoic
                     var url = "{{ route('invoices.update_status', ':id') }}";
                     url = url.replace(':id', id);
 
-                    var token = "{{ csrf_token() }}";
-
-                    $.easyAjax({
-                        type: 'GET',
-                        url: url,
-                        container: '#invoices-table',
-                        blockUI: true,
-                        success: function(response) {
-                            if (response.status == "success") {
-                                showTable();
-                            }
+                    $.easyBlockUI('#invoices-table');
+                    window.apiHttp.get(url).then(function(response) {
+                        if (response.status == "success") {
+                            showTable();
                         }
+                    }).catch(function(err) {
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                text: err.message,
+                                toast: true,
+                                position: 'top-end',
+                                timer: 4000,
+                                showConfirmButton: false
+                            });
+                        }
+                    }).finally(function() {
+                        $.easyUnblockUI('#invoices-table');
                     });
                 }
             });
@@ -583,16 +618,24 @@ $manageRecurringInvoicesPermission = user()->permission('manage_recurring_invoic
             let url = "{{ route('invoices.toggle_shipping_address', ':id') }}";
             url = url.replace(':id', invoiceId);
 
-            $.easyAjax({
-                url: url,
-                type: 'GET',
-                container: '#invoices-table',
-                blockUI: true,
-                success: function(response) {
-                    if (response.status === 'success') {
-                        window.LaravelDataTables["invoices-table"].draw(true);
-                    }
+            $.easyBlockUI('#invoices-table');
+            window.apiHttp.get(url).then(function(response) {
+                if (response.status === 'success') {
+                    window.LaravelDataTables["invoices-table"].draw(true);
                 }
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $.easyUnblockUI('#invoices-table');
             });
 
         });
@@ -607,15 +650,14 @@ $manageRecurringInvoicesPermission = user()->permission('manage_recurring_invoic
             $.ajaxModal(MODAL_LG, url);
         });
 
-        $( document ).ready(function() {
+        $(document).ready(function() {
             @if (!is_null(request('start')) && !is_null(request('end')))
-            $('#datatableRange').val('{{ request('start') }}' +
-            ' @lang("app.to") ' + '{{ request('end') }}');
-            $('#datatableRange').data('daterangepicker').setStartDate("{{ request('start') }}");
-            $('#datatableRange').data('daterangepicker').setEndDate("{{ request('end') }}");
+                $('#datatableRange').val('{{ request('start') }}' +
+                    ' @lang('app.to') ' + '{{ request('end') }}');
+                $('#datatableRange').data('daterangepicker').setStartDate("{{ request('start') }}");
+                $('#datatableRange').data('daterangepicker').setEndDate("{{ request('end') }}");
                 showTable();
             @endif
         });
-
     </script>
 @endpush

@@ -1,100 +1,46 @@
 @extends('layouts.app')
 
-@section('page-title')
-    <div class="row bg-title">
-        <!-- .page title -->
-        <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
-            <h4 class="page-title"><i class="{{ $pageIcon }}"></i> {{ __($pageTitle) }}</h4>
-        </div>
-        <!-- /.page title -->
-        <!-- .breadcrumb -->
-        <div class="col-lg-9 col-sm-8 col-md-8 col-xs-12">
-            <ol class="breadcrumb">
-                <li><a href="{{ route('dashboard') }}">@lang('app.menu.home')</a></li>
-                <li><a href="{{ route('warehouse.index') }}">{{ __($pageTitle) }}</a></li>
-                <li class="active">@lang('app.edit')</li>
-            </ol>
-        </div>
-        <!-- /.breadcrumb -->
-    </div>
-@endsection
-
 @section('content')
-
-    <div class="row">
-        <div class="col-xs-12">
-            <div class="panel panel-inverse">
-                <div class="panel-heading"> @lang('warehouse::app.editTitle')</div>
-                <div class="panel-wrapper collapse in" aria-expanded="true">
-                    <div class="panel-body">
-                        <form action="{{ route('warehouse.update', $warehouse->id) }}" id="updateWarehouse" class="form-horizontal" method="POST">
+    <div class="content-wrapper">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="bg-white rounded">
+                    <h4 class="mb-0 p-20 f-21 font-weight-normal border-bottom-grey">
+                        @lang('warehouse::app.editTitle')
+                    </h4>
+                    <div class="p-20">
+                        <form action="{{ route('warehouse.update', $warehouse->id) }}" id="updateWarehouse" method="POST">
+                            @include('sections.password-autocomplete-hide')
                             @csrf
                             @method('PUT')
-                            <div class="form-body">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="control-label col-md-3">@lang('warehouse::app.name')</label>
-                                            <div class="col-md-9">
-                                                <input type="text" name="name" class="form-control" value="{{ $warehouse->name }}">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="control-label col-md-3">@lang('warehouse::app.code')</label>
-                                            <div class="col-md-9">
-                                                <input type="text" name="code" class="form-control" value="{{ $warehouse->code }}">
-                                            </div>
-                                        </div>
-                                    </div>
+                            <div class="row">
+                                <div class="col-lg-6 col-md-6">
+                                    <x-forms.text fieldId="name" :fieldLabel="__('warehouse::app.name')" fieldName="name" fieldRequired="true" :fieldValue="old('name', $warehouse->name)" />
                                 </div>
-
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="control-label col-md-3">@lang('warehouse::app.address')</label>
-                                            <div class="col-md-9">
-                                                <textarea name="address" class="form-control" rows="3">{{ $warehouse->address }}</textarea>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="control-label col-md-3">@lang('warehouse::app.description')</label>
-                                            <div class="col-md-9">
-                                                <textarea name="description" class="form-control" rows="3">{{ $warehouse->description }}</textarea>
-                                            </div>
-                                        </div>
-                                    </div>
+                                <div class="col-lg-6 col-md-6">
+                                    <x-forms.text fieldId="code" :fieldLabel="__('warehouse::app.code')" fieldName="code" :fieldValue="old('code', $warehouse->code)" />
                                 </div>
-
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="control-label col-md-3">@lang('app.status')</label>
-                                            <div class="col-md-9">
-                                                <select class="form-control" name="status">
-                                                    <option value="active" {{ $warehouse->status == 'active' ? 'selected' : '' }}>@lang('app.active')</option>
-                                                    <option value="inactive" {{ $warehouse->status == 'inactive' ? 'selected' : '' }}>@lang('app.inactive')</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <div class="checkbox checkbox-info col-md-offset-3 col-md-9">
-                                                <input id="is_default" name="is_default" type="checkbox" {{ $warehouse->is_default ? 'checked' : '' }}>
-                                                <label for="is_default"> @lang('warehouse::app.isDefault') </label>
-                                            </div>
-                                        </div>
-                                    </div>
+                                <div class="col-lg-6 col-md-6">
+                                    <x-forms.textarea fieldId="address" :fieldLabel="__('warehouse::app.address')" fieldName="address" :fieldValue="old('address', $warehouse->address)" />
                                 </div>
-
+                                <div class="col-lg-6 col-md-6">
+                                    <x-forms.textarea fieldId="description" :fieldLabel="__('warehouse::app.description')" fieldName="description" :fieldValue="old('description', $warehouse->description)" />
+                                </div>
+                                <div class="col-lg-6 col-md-6">
+                                    <x-forms.select fieldName="status" fieldId="status" :fieldLabel="__('app.status')">
+                                        <option value="active" @selected(old('status', $warehouse->status) === 'active')>@lang('app.active')</option>
+                                        <option value="inactive" @selected(old('status', $warehouse->status) === 'inactive')>@lang('app.inactive')</option>
+                                    </x-forms.select>
+                                </div>
+                                <div class="col-lg-6 col-md-6">
+                                    <x-forms.checkbox :fieldLabel="__('warehouse::app.isDefault')" fieldName="is_default" fieldId="is_default" fieldValue="1" :checked="(bool) old('is_default', $warehouse->is_default)" />
+                                </div>
                             </div>
-                            <div class="form-actions">
-                                <button type="submit" id="save-form" class="btn btn-success"> <i class="fa fa-check"></i> @lang('app.update')</button>
-                                <a href="{{ route('warehouse.index') }}" class="btn btn-default">@lang('app.back')</a>
+                            <div class="w-100 border-top-grey d-flex justify-content-start px-4 py-3">
+                                <button type="submit" id="save-form" class="btn btn-primary rounded f-14 p-2">
+                                    <i class="fa fa-check mr-1"></i> @lang('app.update')
+                                </button>
+                                <x-forms.link-secondary :link="route('warehouse.index')" class="ml-2">@lang('app.cancel')</x-forms.link-secondary>
                             </div>
                         </form>
                     </div>
@@ -102,5 +48,4 @@
             </div>
         </div>
     </div>
-
 @endsection

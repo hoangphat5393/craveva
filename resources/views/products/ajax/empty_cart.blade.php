@@ -14,7 +14,6 @@
     .customSequence .dropdown-toggle::after {
         visibility: hidden;
     }
-
 </style>
 
 <!-- CREATE INVOICE START -->
@@ -30,20 +29,20 @@
     <hr class="m-0 border-top-grey">
     <!-- FORM START -->
     <x-form class="c-inv-form" id="saveInvoiceForm">
-            <div class="row px-lg-4 px-md-4 px-3 py-5">
-                <div class="col-sm-12">
-                    <x-alert type="success">@lang('messages.emptyCartMessage')</x-alert>
-                </div>
+        <div class="row px-lg-4 px-md-4 px-3 py-5">
+            <div class="col-sm-12">
+                <x-alert type="success">@lang('messages.emptyCartMessage')</x-alert>
             </div>
-             <!-- CANCEL SAVE SEND START -->
-             <x-form-actions class="c-inv-btns d-block d-lg-flex d-md-flex">
-                <div class="d-flex mb-3 mb-lg-0 mb-md-0">
+        </div>
+        <!-- CANCEL SAVE SEND START -->
+        <x-form-actions class="c-inv-btns d-block d-lg-flex d-md-flex">
+            <div class="d-flex mb-3 mb-lg-0 mb-md-0">
 
-                    <x-forms.button-cancel :link="route('products.index')" class="border-0 mr-3">@lang('app.viewProducts')
-                    </x-forms.button-cancel>
+                <x-forms.button-cancel :link="route('products.index')" class="border-0 mr-3">@lang('app.viewProducts')
+                </x-forms.button-cancel>
 
-                </div>
-            </x-form-actions>
+            </div>
+        </x-form-actions>
     </x-form>
     <!-- FORM END -->
 
@@ -71,24 +70,29 @@
             url = url.replace(':id', id);
             var $this = $(this);
 
-            $.easyAjax({
-                url: url,
-                container: '#saveInvoiceForm',
-                type: "POST",
-                blockUI: true,
-                data: {
-                    _token: "{{ csrf_token() }}"
-                },
-                success: function(response) {
-                    $this.closest('.item-row').fadeOut(300, function() {
-                        $this.remove();
-                        $('select.customSequence').each(function(index) {
-                            $this.attr('name', 'taxes[' + index + '][]');
-                            $this.attr('id', 'multiselect' + index + '');
-                        });
-                        calculateTotal();
+            $.easyBlockUI('#saveInvoiceForm');
+            window.apiHttp.postUrlEncoded(url, '_token=' + encodeURIComponent("{{ csrf_token() }}")).then(function(response) {
+                $this.closest('.item-row').fadeOut(300, function() {
+                    $(this).remove();
+                    $('select.customSequence').each(function(index) {
+                        $(this).attr('name', 'taxes[' + index + '][]');
+                        $(this).attr('id', 'multiselect' + index + '');
+                    });
+                    calculateTotal();
+                });
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
                     });
                 }
+            }).finally(function() {
+                $.easyUnblockUI('#saveInvoiceForm');
             });
         });
 
@@ -124,16 +128,28 @@
                 return false;
             }
 
-            $.easyAjax({
-                url: "{{ route('orders.store') }}",
-                container: '#saveInvoiceForm',
-                type: "POST",
-                blockUI: true,
-                redirect: true,
-                disableButton: true,
-                buttonSelector: ".save-form",
-                data: $('#saveInvoiceForm').serialize() + "&type=send"
-            })
+            var $saveBtns = $(".save-form");
+            $saveBtns.prop('disabled', true);
+            $.easyBlockUI('#saveInvoiceForm');
+            window.apiHttp.postUrlEncoded("{{ route('orders.store') }}", $('#saveInvoiceForm').serialize() + "&type=send").then(function(response) {
+                if (response.status === 'success' && response.action === 'redirect' && response.url) {
+                    window.location.href = response.url;
+                }
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $saveBtns.prop('disabled', false);
+                $.easyUnblockUI('#saveInvoiceForm');
+            });
 
         });
 
@@ -158,25 +174,27 @@
 
             var productID = $(this).closest('.item-row').find('.product_id').val();
 
-            $.easyAjax({
-                url: "{{ route('products.add_cart_item') }}",
-                container: '#saveInvoiceForm',
-                type: "POST",
-                blockUI: true,
-                redirect: true,
-                buttonSelector: ".save-form",
-                data: {
-                    _token: '{{ csrf_token() }}',
-                    productID: productID,
-                    quantity: quantity,
-                    cartType: "1",
-                },
-            })
+            $.easyBlockUI('#saveInvoiceForm');
+            var cartBody = '_token=' + encodeURIComponent('{{ csrf_token() }}') + '&productID=' + encodeURIComponent(productID) + '&quantity=' + encodeURIComponent(quantity) + '&cartType=1';
+            window.apiHttp.postUrlEncoded("{{ route('products.add_cart_item') }}", cartBody).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $.easyUnblockUI('#saveInvoiceForm');
+                calculateTotal();
+            });
 
-            calculateTotal();
         });
 
-        $('#saveInvoiceForm').on('change', '.type, #discount_type','.quantity', function() {
+        $('#saveInvoiceForm').on('change', '.type, #discount_type', '.quantity', function() {
             var quantity = $(this).closest('.item-row').find('.quantity').val();
             var perItemCost = $(this).closest('.item-row').find('.cost_per_item').val();
             var amount = (quantity * perItemCost);
@@ -202,21 +220,24 @@
             let id = $('.userId').val();
             var url = "{{ route('products.remove_cart_item', ':id') }}";
             url = url.replace(':id', id);
-            $.easyAjax({
-                url: url,
-                container: '#saveInvoiceForm',
-                type: "POST",
-                blockUI: true,
-                data: {
-                    _token: "{{ csrf_token() }}",
-                    type: "all_data",
-                },
-                success: function(response) {
-                   if(response.productItems == 0){
-                        $('.cart_empty').hide();
-                    }
-
+            $.easyBlockUI('#saveInvoiceForm');
+            window.apiHttp.postUrlEncoded(url, '_token=' + encodeURIComponent("{{ csrf_token() }}") + '&type=' + encodeURIComponent('all_data')).then(function(response) {
+                if (response.productItems == 0) {
+                    $('.cart_empty').hide();
                 }
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $.easyUnblockUI('#saveInvoiceForm');
             });
         });
 

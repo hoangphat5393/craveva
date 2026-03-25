@@ -1,19 +1,13 @@
 <div class="modal-header">
     <h5 class="modal-title" id="modelHeading">@lang('app.verifyPassword')</h5>
-    <button type="button"  class="close" data-dismiss="modal" aria-label="Close"><span
-            aria-hidden="true">×</span></button>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
 </div>
 <div class="modal-body">
 
     <x-form id="checkForpassword">
         <div class="row">
             <div class="col-sm-12">
-                <x-forms.password
-                    fieldId="password"
-                    :fieldLabel="__('app.password')"
-                    fieldName="password"
-                    :fieldPlaceholder="__('app.password')"
-                    :fieldRequired="true">
+                <x-forms.password fieldId="password" :fieldLabel="__('app.password')" fieldName="password" :fieldPlaceholder="__('app.password')" :fieldRequired="true">
                 </x-forms.password>
             </div>
         </div>
@@ -26,7 +20,6 @@
 </div>
 
 <script>
-
     $('#check-password').click(function() {
         let url = "{{ route('project_notes.check_password') }}";
 
@@ -36,18 +29,23 @@
 
         let noteId = "{{ $note->id }}";
 
-        $.easyAjax({
-            url: url,
-            container: '#checkForpassword',
-            type: "POST",
-            data: { note_id : noteId, '_token': token, password: password },
-            success: function(response) {
-                if (response.status == 'success') {
-                    $(MODAL_LG).modal('hide');
-                    getNoteDetail(noteId);
-                }
+        var body = 'note_id=' + encodeURIComponent(noteId) + '&_token=' + encodeURIComponent(token) + '&password=' + encodeURIComponent(password);
+        window.apiHttp.postUrlEncoded(url, body).then(function(response) {
+            if (response.status == 'success') {
+                $(MODAL_LG).modal('hide');
+                getNoteDetail(noteId);
             }
-        })
+        }).catch(function(err) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    text: err.message,
+                    toast: true,
+                    position: 'top-end',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            }
+        });
     });
-
 </script>

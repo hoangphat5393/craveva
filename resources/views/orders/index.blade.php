@@ -11,8 +11,7 @@
         <div class="select-box d-flex pr-2 border-right-grey border-right-grey-sm-0">
             <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('app.duration')</p>
             <div class="select-status d-flex">
-                <input type="text" class="position-relative text-dark form-control border-0 p-2 text-left f-14 f-w-500 border-additional-grey"
-                    id="datatableRange" placeholder="@lang('placeholders.dateRange')">
+                <input type="text" class="position-relative text-dark form-control border-0 p-2 text-left f-14 f-w-500 border-additional-grey" id="datatableRange" placeholder="@lang('placeholders.dateRange')">
             </div>
         </div>
         <!-- DATE END -->
@@ -42,8 +41,7 @@
                             <i class="fa fa-search f-13 text-dark-grey"></i>
                         </span>
                     </div>
-                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field"
-                        placeholder="@lang('app.startTyping')">
+                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field" placeholder="@lang('app.startTyping')">
                 </div>
             </form>
         </div>
@@ -63,8 +61,7 @@
                 <label class="f-14 text-dark-grey mb-12 " for="usr">@lang('app.project')</label>
                 <div class="select-filter mb-4">
                     <div class="select-others">
-                        <select class="form-control select-picker" name="project_id" id="filter_project_id"
-                            data-container="body" data-live-search="true" data-size="8">
+                        <select class="form-control select-picker" name="project_id" id="filter_project_id" data-container="body" data-live-search="true" data-size="8">
                             <option value="all">@lang('app.all')</option>
                             @foreach ($projects as $project)
                                 <option value="{{ $project->id }}">{{ $project->project_name }}</option>
@@ -78,23 +75,22 @@
                 <label class="f-14 text-dark-grey mb-12 " for="usr">@lang('app.status')</label>
                 <div class="select-filter mb-4">
                     <div class="select-others">
-                        <select class="form-control select-picker" name="status" id="status" data-live-search="true"
-                            data-size="8">
+                        <select class="form-control select-picker" name="status" id="status" data-live-search="true" data-size="8">
                             <option value="all" data-content="@lang('app.all')">@lang('app.all')</option>
 
-                            <option value="pending" {{ request('status') == 'pending' ? 'selected' : ''}} data-content="<i class='fa fa-circle mr-2 text-yellow'></i> @lang('app.pending') ">@lang('app.pending')</option>
+                            <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }} data-content="<i class='fa fa-circle mr-2 text-yellow'></i> @lang('app.pending') ">@lang('app.pending')</option>
 
-                            <option value="on-hold" {{ request('status') == 'on-hold' ? 'selected' : ''}} data-content="<i class='fa fa-circle mr-2 text-info'></i> @lang('app.on-hold') ">@lang('app.on-hold')</option>
+                            <option value="on-hold" {{ request('status') == 'on-hold' ? 'selected' : '' }} data-content="<i class='fa fa-circle mr-2 text-info'></i> @lang('app.on-hold') ">@lang('app.on-hold')</option>
 
-                            <option value="failed" {{ request('status') == 'failed' ? 'selected' : ''}} data-content="<i class='fa fa-circle mr-2 text-muted'></i> @lang('app.failed') ">@lang('app.failed')</option>
+                            <option value="failed" {{ request('status') == 'failed' ? 'selected' : '' }} data-content="<i class='fa fa-circle mr-2 text-muted'></i> @lang('app.failed') ">@lang('app.failed')</option>
 
-                            <option value="processing" {{ request('status') == 'processing' ? 'selected' : ''}} data-content="<i class='fa fa-circle mr-2 text-blue'></i> @lang('app.processing') ">@lang('app.processing')</option>
+                            <option value="processing" {{ request('status') == 'processing' ? 'selected' : '' }} data-content="<i class='fa fa-circle mr-2 text-blue'></i> @lang('app.processing') ">@lang('app.processing')</option>
 
-                            <option value="completed" {{ request('status') == 'completed' ? 'selected' : ''}} data-content="<i class='fa fa-circle mr-2 text-dark-green'></i> @lang('app.completed') ">@lang('app.completed')</option>
+                            <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }} data-content="<i class='fa fa-circle mr-2 text-dark-green'></i> @lang('app.completed') ">@lang('app.completed')</option>
 
-                            <option value="canceled" {{ request('status') == 'canceled' ? 'selected' : ''}} data-content="<i class='fa fa-circle mr-2 text-red'></i> @lang('app.canceled') ">@lang('app.canceled')</option>
+                            <option value="canceled" {{ request('status') == 'canceled' ? 'selected' : '' }} data-content="<i class='fa fa-circle mr-2 text-red'></i> @lang('app.canceled') ">@lang('app.canceled')</option>
 
-                            <option value="refunded" {{ request('status') == 'refunded' ? 'selected' : ''}} data-content="<i class='fa fa-circle mr-2'></i> @lang('app.refunded') ">@lang('app.refunded')</option>
+                            <option value="refunded" {{ request('status') == 'refunded' ? 'selected' : '' }} data-content="<i class='fa fa-circle mr-2'></i> @lang('app.refunded') ">@lang('app.refunded')</option>
                         </select>
                     </div>
                 </div>
@@ -108,8 +104,8 @@
 @endsection
 
 @php
-$addInvoicesPermission = user()->permission('add_invoices');
-$addOrderPermission = user()->permission('add_order');
+    $addInvoicesPermission = user()->permission('add_invoices');
+    $addOrderPermission = user()->permission('add_order');
 @endphp
 
 @section('content')
@@ -118,16 +114,14 @@ $addOrderPermission = user()->permission('add_order');
         <!-- Add Task Export Buttons Start -->
         <div class="d-flex">
             <div id="table-actions" class="flex-grow-1 align-items-center">
-                @if (in_array('client', user_roles()) && in_array('orders', $user->modules) && ($addOrderPermission == 'all' ))
-                    <x-forms.link-primary :link="route('products.index')" class="mr-3 float-left"
-                        icon="plus">
+                @if (in_array('client', user_roles()) && in_array('orders', $user->modules) && $addOrderPermission == 'all')
+                    <x-forms.link-primary :link="route('products.index')" class="mr-3 float-left" icon="plus">
                         @lang('app.addNewOrder')
                     </x-forms.link-primary>
                 @endif
 
                 @if (!in_array('client', user_roles()) && in_array('clients', user_modules()) && ($addOrderPermission == 'all' || $addOrderPermission == 'added'))
-                    <x-forms.link-primary :link="route('orders.create')" class="mr-3 float-left"
-                        icon="plus">
+                    <x-forms.link-primary :link="route('orders.create')" class="mr-3 float-left" icon="plus">
                         @lang('app.addNewOrder')
                     </x-forms.link-primary>
                 @endif
@@ -144,17 +138,17 @@ $addOrderPermission = user()->permission('add_order');
         <!-- Task Box End -->
     </div>
     <!-- CONTENT WRAPPER END -->
-
 @endsection
 
 @push('scripts')
     @include('sections.datatable_js')
 
-    @if($bankDetails != null)
+    @if ($bankDetails != null)
         <script>
-            var bankAccounts = @json($bankDetails->mapWithKeys(function ($account) {
-                return [$account['id'] => $account['bank_name'] . ' | ' . $account['account_name']];
-            }));
+            var bankAccounts = @json(
+                $bankDetails->mapWithKeys(function ($account) {
+                    return [$account['id'] => $account['bank_name'] . ' | ' . $account['account_name']];
+                }));
         </script>
     @else
         <script>
@@ -268,37 +262,49 @@ $addOrderPermission = user()->permission('add_order');
                                 if (result.isConfirmed) {
                                     let selectedBankAccount = result.value;
 
-                                    $.easyAjax({
-                                        url: url,
-                                        type: "POST",
-                                        container: '.content-wrapper',
-                                        blockUI: true,
-                                        data: {
-                                            '_token': token,
-                                            orderId: id,
-                                            status: status,
-                                            bank_account_id: selectedBankAccount
-                                        },
-                                        success: function(data) {
-                                            showTable();
+                                    $.easyBlockUI('.content-wrapper');
+                                    var bodyBank = '_token=' + encodeURIComponent(token) +
+                                        '&orderId=' + encodeURIComponent(id) +
+                                        '&status=' + encodeURIComponent(status) +
+                                        '&bank_account_id=' + encodeURIComponent(selectedBankAccount);
+                                    window.apiHttp.postUrlEncoded(url, bodyBank).then(function() {
+                                        showTable();
+                                    }).catch(function(err) {
+                                        if (typeof Swal !== 'undefined') {
+                                            Swal.fire({
+                                                icon: 'error',
+                                                text: err.message,
+                                                toast: true,
+                                                position: 'top-end',
+                                                timer: 4000,
+                                                showConfirmButton: false
+                                            });
                                         }
+                                    }).finally(function() {
+                                        $.easyUnblockUI('.content-wrapper');
                                     });
                                 }
                             });
                         } else {
-                            $.easyAjax({
-                                url: url,
-                                type: "POST",
-                                container: '.content-wrapper',
-                                blockUI: true,
-                                data: {
-                                    '_token': token,
-                                    orderId: id,
-                                    status: status,
-                                },
-                                success: function(data) {
-                                    showTable();
+                            $.easyBlockUI('.content-wrapper');
+                            var bodyNoBank = '_token=' + encodeURIComponent(token) +
+                                '&orderId=' + encodeURIComponent(id) +
+                                '&status=' + encodeURIComponent(status);
+                            window.apiHttp.postUrlEncoded(url, bodyNoBank).then(function() {
+                                showTable();
+                            }).catch(function(err) {
+                                if (typeof Swal !== 'undefined') {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        text: err.message,
+                                        toast: true,
+                                        position: 'top-end',
+                                        timer: 4000,
+                                        showConfirmButton: false
+                                    });
                                 }
+                            }).finally(function() {
+                                $.easyUnblockUI('.content-wrapper');
                             });
                         }
                     } else {
@@ -428,19 +434,24 @@ $addOrderPermission = user()->permission('add_order');
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                showTable();
-                            }
+                    $.easyBlockUI('.content-wrapper');
+                    window.apiHttp.delete(url, token).then(function(response) {
+                        if (response.status == "success") {
+                            showTable();
                         }
+                    }).catch(function(err) {
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                text: err.message,
+                                toast: true,
+                                position: 'top-end',
+                                timer: 4000,
+                                showConfirmButton: false
+                            });
+                        }
+                    }).finally(function() {
+                        $.easyUnblockUI('.content-wrapper');
                     });
                 }
             });
@@ -482,23 +493,31 @@ $addOrderPermission = user()->permission('add_order');
             }).get();
 
             var url = "{{ route('invoices.apply_quick_action') }}?row_ids=" + rowdIds;
+            var $applyBtn = $('#quick-action-apply');
+            var body = $('#quick-action-form').serialize();
 
-            $.easyAjax({
-                url: url,
-                container: '#quick-action-form',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#quick-action-apply",
-                data: $('#quick-action-form').serialize(),
-                blockUI: true,
-                success: function(response) {
-                    if (response.status == 'success') {
-                        showTable();
-                        resetActionButtons();
-                    }
+            $applyBtn.prop('disabled', true);
+            $.easyBlockUI('.content-wrapper');
+            window.apiHttp.postUrlEncoded(url, body).then(function(response) {
+                if (response.status == 'success') {
+                    showTable();
+                    resetActionButtons();
                 }
-            })
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $applyBtn.prop('disabled', false);
+                $.easyUnblockUI('.content-wrapper');
+            });
         };
-
     </script>
 @endpush

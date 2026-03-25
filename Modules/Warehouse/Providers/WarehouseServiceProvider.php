@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use Modules\Warehouse\Services\StockMovementService;
 use Modules\Warehouse\Services\StockReservationService;
+use Modules\Warehouse\Services\WarehouseQueryService;
 
 class WarehouseServiceProvider extends ServiceProvider
 {
@@ -33,6 +34,7 @@ class WarehouseServiceProvider extends ServiceProvider
     {
         $this->app->singleton(StockMovementService::class);
         $this->app->singleton(StockReservationService::class);
+        $this->app->singleton(WarehouseQueryService::class);
         $this->app->register(RouteServiceProvider::class);
     }
 

@@ -123,6 +123,8 @@
         {{-- Operation --}}
         @includeIf('purchase::sections.sidebar')
 
+        {{-- Warehouse: submenu nằm trong Operations (purchase::sections.sidebar), tránh trùng menu --}}
+
         {{-- Tier Pricing --}}
         @includeIf('pricing::sections.sidebar')
 

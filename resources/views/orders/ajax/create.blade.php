@@ -23,13 +23,9 @@
                     <label class="f-14 text-dark-grey mb-12 " for="usr">@lang('modules.invoices.invoiceNumber')</label>
                     <div class="input-group">
                         <div class="input-group-prepend  height-35 ">
-                            <span class="input-group-text border-grey f-15 bg-additional-grey px-3 text-dark"
-                                id="basic-addon1">{{ $invoiceSetting->invoice_prefix }}{{ $invoiceSetting->invoice_number_separator }}{{ $zero }}</span>
+                            <span class="input-group-text border-grey f-15 bg-additional-grey px-3 text-dark" id="basic-addon1">{{ $invoiceSetting->invoice_prefix }}{{ $invoiceSetting->invoice_number_separator }}{{ $zero }}</span>
                         </div>
-                        <input type="text" name="invoice_number" id="invoice_number"
-                            class="form-control height-35 f-15 readonly-background" readonly
-                            value="@if (is_null($lastInvoice)) 1 @else{{ $lastInvoice }} @endif"
-                            placeholder="0019" aria-label="0019" aria-describedby="basic-addon1">
+                        <input type="text" name="invoice_number" id="invoice_number" class="form-control height-35 f-15 readonly-background" readonly value="@if (is_null($lastInvoice)) 1 @else{{ $lastInvoice }} @endif" placeholder="0019" aria-label="0019" aria-describedby="basic-addon1">
                     </div>
                 </div>
             </div>
@@ -41,10 +37,7 @@
                     <x-forms.label fieldId="due_date" :fieldLabel="__('modules.invoices.invoiceDate')">
                     </x-forms.label>
                     <div class="input-group">
-                        <input type="text" id="invoice_date" name="issue_date"
-                            class="px-6 position-relative text-dark font-weight-normal form-control height-35 rounded p-0 text-left f-15"
-                            placeholder="@lang('placeholders.date')"
-                            value="{{ now(company()->timezone)->format(company()->date_format) }}">
+                        <input type="text" id="invoice_date" name="issue_date" class="px-6 position-relative text-dark font-weight-normal form-control height-35 rounded p-0 text-left f-15" placeholder="@lang('placeholders.date')" value="{{ now(company()->timezone)->format(company()->date_format) }}">
                     </div>
                 </div>
             </div>
@@ -54,10 +47,7 @@
                 <div class="form-group mb-lg-0 mb-md-0 mb-4">
                     <x-forms.label fieldId="due_date" :fieldLabel="__('app.dueDate')"></x-forms.label>
                     <div class="input-group ">
-                        <input type="text" id="due_date" name="due_date"
-                            class="px-6 position-relative text-dark font-weight-normal form-control height-35 rounded p-0 text-left f-15"
-                            placeholder="@lang('placeholders.date')"
-                            value="{{ now(company()->timezone)->addDays($invoiceSetting->due_after)->format(company()->date_format) }}">
+                        <input type="text" id="due_date" name="due_date" class="px-6 position-relative text-dark font-weight-normal form-control height-35 rounded p-0 text-left f-15" placeholder="@lang('placeholders.date')" value="{{ now(company()->timezone)->addDays($invoiceSetting->due_after)->format(company()->date_format) }}">
                     </div>
                 </div>
             </div>
@@ -71,11 +61,9 @@
                     <div class="select-others height-35 rounded">
                         <select class="form-control select-picker" name="currency_id" id="currency_id">
                             @foreach ($currencies as $currency)
-                                <option
-                                    @if (isset($estimate)) @selected($currency->id == $estimate->currency_id)
+                                <option @if (isset($estimate)) @selected($currency->id == $estimate->currency_id)
                                         @else
-                                            @selected($currency->id == company()->currency_id) @endif
-                                    value="{{ $currency->id }}">
+                                            @selected($currency->id == company()->currency_id) @endif value="{{ $currency->id }}">
                                     {{ $currency->currency_code . ' (' . $currency->currency_symbol . ')' }}
                                 </option>
                             @endforeach
@@ -100,16 +88,14 @@
                         </x-forms.label>
                         <div class="input-group">
                             <input type="hidden" name="client_id" id="client_id" value="{{ $client->id }}">
-                            <input type="text" value="{{ $client->name_salutation }}"
-                                class="form-control height-35 f-15 readonly-background" readonly>
+                            <input type="text" value="{{ $client->name_salutation }}" class="form-control height-35 f-15 readonly-background" readonly>
                         </div>
                     </div>
                 @else
                     <x-forms.label fieldId="client_id" :fieldLabel="__('app.client')" fieldRequired="true">
                     </x-forms.label>
                     <div class="form-group c-inv-select mb-4">
-                        <select class="form-control select-picker" data-live-search="true" data-size="8"
-                            name="client_id" id="client_id">
+                        <select class="form-control select-picker" data-live-search="true" data-size="8" name="client_id" id="client_id">
                             <option value="">--</option>
                             @foreach ($clients as $item)
                                 <x-user-option :user="$clientOpt" :selected="isset($estimate) && $item->id == $estimate->client_id" />
@@ -129,8 +115,7 @@
                         </x-forms.label>
                         <div class="input-group">
                             <input type="hidden" name="project_id" id="project_id" value="{{ $project->id }}">
-                            <input type="text" value="{{ $project->project_name }}"
-                                class="form-control height-35 f-15 readonly-background" readonly>
+                            <input type="text" value="{{ $project->project_name }}" class="form-control height-35 f-15 readonly-background" readonly>
                         </div>
                     </div>
                 @else
@@ -138,8 +123,7 @@
                         <x-forms.label fieldId="project_id" :fieldLabel="__('app.project')">
                         </x-forms.label>
                         <div class="select-others height-35 rounded">
-                            <select class="form-control select-picker" data-live-search="true" data-size="8"
-                                name="project_id" id="project_id">
+                            <select class="form-control select-picker" data-live-search="true" data-size="8" name="project_id" id="project_id">
                                 <option value="">--</option>
                                 @if (isset($estimate) && $estimate->client)
                                     @foreach ($estimate->client->projects as $item)
@@ -181,13 +165,11 @@
                         @elseif(isset($client) && $client->clientDetails && $client->clientDetails->shipping_address)
                             {!! nl2br($client->clientDetails->shipping_address) !!}
                         @else
-                            <a href="javascript:;" class="" id="show-shipping-field"><i
-                                    class="f-12 mr-2 fa fa-plus"></i>@lang('app.addShippingAddress')</a>
+                            <a href="javascript:;" class="" id="show-shipping-field"><i class="f-12 mr-2 fa fa-plus"></i>@lang('app.addShippingAddress')</a>
                         @endif
                     </p>
                     <p class="d-none" id="add-shipping-field">
-                        <textarea class="form-control f-14 pt-2" rows="3" placeholder="@lang('placeholders.address')" name="shipping_address"
-                            id="shipping_address">
+                        <textarea class="form-control f-14 pt-2" rows="3" placeholder="@lang('placeholders.address')" name="shipping_address" id="shipping_address">
 @if (isset($estimate) && $estimate->client)
 {!! nl2br($estimate->client->clientDetails->shipping_address) !!}
 @endif
@@ -208,9 +190,7 @@
                 <select class="form-control select-picker" data-live-search="true" data-size="8" id="add-products">
                     <option value="">{{ __('app.menu.addProducts') }}</option>
                     @foreach ($products as $item)
-                        <option
-                            data-content="{{ $item->name }} <a href='javascript:;' class='p-1 badge badge-secondary ml-2'><i class='fa fa-plus mr-1'></i>{{ __('app.add') }}</a>"
-                            value="{{ $item->id }}">{{ $item->name }}</option>
+                        <option data-content="{{ $item->name }} <a href='javascript:;' class='p-1 badge badge-secondary ml-2'><i class='fa fa-plus mr-1'></i>{{ __('app.add') }}</a>" value="{{ $item->id }}">{{ $item->name }}</option>
                     @endforeach
                 </select>
             </div>
@@ -227,8 +207,7 @@
                             <table width="100%">
                                 <tbody>
                                     <tr class="text-dark-grey font-weight-bold f-14">
-                                        <td width="{{ $invoiceSetting->hsn_sac_code_show ? '40%' : '50%' }}"
-                                            class="border-0 inv-desc-mbl btlr">@lang('app.description')</td>
+                                        <td width="{{ $invoiceSetting->hsn_sac_code_show ? '40%' : '50%' }}" class="border-0 inv-desc-mbl btlr">@lang('app.description')</td>
                                         @if ($invoiceSetting->hsn_sac_code_show)
                                             <td width="10%" class="border-0" align="right">@lang('app.hsnSac')</td>
                                         @endif
@@ -244,71 +223,50 @@
                                     </tr>
                                     <tr>
                                         <td class="border-bottom-0 btrr-mbl btlr">
-                                            <input type="text" class="form-control f-14 border-0 w-100 item_name"
-                                                name="item_name[]" placeholder="@lang('modules.expenses.itemName')"
-                                                value="{{ $item->item_name }}">
+                                            <input type="text" class="form-control f-14 border-0 w-100 item_name" name="item_name[]" placeholder="@lang('modules.expenses.itemName')" value="{{ $item->item_name }}">
                                         </td>
                                         <td class="border-bottom-0 d-block d-lg-none d-md-none">
                                             <textarea class="f-14 border-0 w-100 mobile-description" placeholder="@lang('placeholders.invoices.description')" name="item_summary[]">{{ $item->item_summary }}</textarea>
                                         </td>
                                         @if ($invoiceSetting->hsn_sac_code_show)
                                             <td class="border-bottom-0">
-                                                <input type="text"
-                                                    class="form-control f-14 border-0 w-100 text-right hsn_sac_code"
-                                                    value="{{ $item->hsn_sac_code }}" name="hsn_sac_code[]">
+                                                <input type="text" class="form-control f-14 border-0 w-100 text-right hsn_sac_code" value="{{ $item->hsn_sac_code }}" name="hsn_sac_code[]">
                                             </td>
                                         @endif
                                         <td class="border-bottom-0">
-                                            <input type="number" min="1"
-                                                class="form-control f-14 border-0 w-100 text-right quantity"
-                                                value="{{ $item->quantity }}" name="quantity[]">
+                                            <input type="number" min="1" class="form-control f-14 border-0 w-100 text-right quantity" value="{{ $item->quantity }}" name="quantity[]">
                                         </td>
                                         <td class="border-bottom-0">
-                                            <input type="text" min="1"
-                                                class="f-14 border-0 w-100 text-right form-control" placeholder="--"
-                                                value="{{ $item->sku }}" name="sku[]" readonly>
+                                            <input type="text" min="1" class="f-14 border-0 w-100 text-right form-control" placeholder="--" value="{{ $item->sku }}" name="sku[]" readonly>
                                         </td>
                                         <td class="border-bottom-0">
-                                            <input type="number" class="f-14 border-0 w-100 text-right cost_per_item"
-                                                placeholder="0.00" value="{{ $item->unit_price }}"
-                                                name="cost_per_item[]" min="1">
+                                            <input type="number" class="f-14 border-0 w-100 text-right cost_per_item" placeholder="0.00" value="{{ $item->unit_price }}" name="cost_per_item[]" min="1">
                                         </td>
                                         <td class="border-bottom-0">
                                             <div class="select-others height-35 rounded border-0">
-                                                <select id="multiselect" name="taxes[{{ $key }}][]"
-                                                    multiple="multiple"
-                                                    class="select-picker type customSequence border-0" data-size="3">
+                                                <select id="multiselect" name="taxes[{{ $key }}][]" multiple="multiple" class="select-picker type customSequence border-0" data-size="3">
                                                     @foreach ($taxes as $tax)
-                                                        <option data-rate="{{ $tax->rate_percent }}"
-                                                            data-tax-text="{{ $tax->tax_name . ':' . $tax->rate_percent }}%"
-                                                            @if (isset($item->taxes) && array_search($tax->id, json_decode($item->taxes)) !== false) selected @endif
-                                                            value="{{ $tax->id }}">
+                                                        <option data-rate="{{ $tax->rate_percent }}" data-tax-text="{{ $tax->tax_name . ':' . $tax->rate_percent }}%" @if (isset($item->taxes) && array_search($tax->id, json_decode($item->taxes)) !== false) selected @endif value="{{ $tax->id }}">
                                                             {{ $tax->tax_name }}:
                                                             {{ $tax->rate_percent }}%</option>
                                                     @endforeach
                                                 </select>
                                             </div>
                                         </td>
-                                        <td rowspan="2" align="right" valign="top"
-                                            class="bg-amt-grey btrr-bbrr">
-                                            <span
-                                                class="amount-html">{{ number_format((float) $item->amount, 2, '.', '') }}</span>
-                                            <input type="hidden" class="amount" name="amount[]"
-                                                value="{{ $item->amount }}">
+                                        <td rowspan="2" align="right" valign="top" class="bg-amt-grey btrr-bbrr">
+                                            <span class="amount-html">{{ number_format((float) $item->amount, 2, '.', '') }}</span>
+                                            <input type="hidden" class="amount" name="amount[]" value="{{ $item->amount }}">
                                         </td>
                                     </tr>
                                     <tr class="d-none d-md-block d-lg-table-row">
-                                        <td colspan="{{ $invoiceSetting->hsn_sac_code_show ? '5' : '4' }}"
-                                            class="dash-border-top bblr">
+                                        <td colspan="{{ $invoiceSetting->hsn_sac_code_show ? '5' : '4' }}" class="dash-border-top bblr">
                                             <textarea class="f-14 border-0 w-100 desktop-description" name="item_summary[]" placeholder="@lang('placeholders.invoices.description')">{{ $item->item_summary }}</textarea>
                                         </td>
                                     </tr>
                                 </tbody>
                             </table>
 
-                            <a href="javascript:;"
-                                class="d-flex align-items-center justify-content-center ml-3 remove-item"><i
-                                    class="fa fa-times-circle f-20 text-lightest"></i></a>
+                            <a href="javascript:;" class="d-flex align-items-center justify-content-center ml-3 remove-item"><i class="fa fa-times-circle f-20 text-lightest"></i></a>
                         </div>
                     </div>
                     <!-- DESKTOP DESCRIPTION TABLE END -->
@@ -321,8 +279,7 @@
                         <table width="100%">
                             <tbody>
                                 <tr class="text-dark-grey font-weight-bold f-14">
-                                    <td width="{{ $invoiceSetting->hsn_sac_code_show ? '40%' : '50%' }}"
-                                        class="border-0 inv-desc-mbl btlr">@lang('app.description')</td>
+                                    <td width="{{ $invoiceSetting->hsn_sac_code_show ? '40%' : '50%' }}" class="border-0 inv-desc-mbl btlr">@lang('app.description')</td>
                                     @if ($invoiceSetting->hsn_sac_code_show)
                                         <td width="10%" class="border-0" align="right">@lang('app.hsnSac')</td>
                                     @endif
@@ -336,43 +293,30 @@
                                 </tr>
                                 <tr>
                                     <td class="border-bottom-0 btrr-mbl btlr">
-                                        <input type="text" class="form-control f-14 border-0 w-100 item_name"
-                                            name="item_name[]" placeholder="@lang('modules.expenses.itemName')">
+                                        <input type="text" class="form-control f-14 border-0 w-100 item_name" name="item_name[]" placeholder="@lang('modules.expenses.itemName')">
                                     </td>
                                     <td class="border-bottom-0 d-block d-lg-none d-md-none">
-                                        <textarea class="form-control f-14 border-0 w-100 mobile-description" name="item_summary[]"
-                                            placeholder="@lang('placeholders.invoices.description')"></textarea>
+                                        <textarea class="form-control f-14 border-0 w-100 mobile-description" name="item_summary[]" placeholder="@lang('placeholders.invoices.description')"></textarea>
                                     </td>
                                     @if ($invoiceSetting->hsn_sac_code_show)
                                         <td class="border-bottom-0">
-                                            <input type="text"
-                                                class="form-control f-14 border-0 w-100 text-right hsn_sac_code"
-                                                placeholder="" name="hsn_sac_code[]">
+                                            <input type="text" class="form-control f-14 border-0 w-100 text-right hsn_sac_code" placeholder="" name="hsn_sac_code[]">
                                         </td>
                                     @endif
                                     <td class="border-bottom-0">
-                                        <input type="number" min="1"
-                                            class="form-control f-14 border-0 w-100 text-right quantity"
-                                            value="1" name="quantity[]">
+                                        <input type="number" min="1" class="form-control f-14 border-0 w-100 text-right quantity" value="1" name="quantity[]">
                                     </td>
                                     <td class="border-bottom-0">
-                                        <input type="text" min="1"
-                                            class="f-14 border-0 w-100 text-right form-control" placeholder="0.00"
-                                            value="0" name="sku[]" readonly>
+                                        <input type="text" min="1" class="f-14 border-0 w-100 text-right form-control" placeholder="0.00" value="0" name="sku[]" readonly>
                                     </td>
                                     <td class="border-bottom-0">
-                                        <input type="number" min="1"
-                                            class="f-14 border-0 w-100 text-right cost_per_item" placeholder="0.00"
-                                            value="0" name="cost_per_item[]">
+                                        <input type="number" min="1" class="f-14 border-0 w-100 text-right cost_per_item" placeholder="0.00" value="0" name="cost_per_item[]">
                                     </td>
                                     <td class="border-bottom-0">
                                         <div class="select-others height-35 rounded border-0">
-                                            <select id="multiselect" name="taxes[0][]" multiple="multiple"
-                                                class="select-picker type customSequence border-0" data-size="3">
+                                            <select id="multiselect" name="taxes[0][]" multiple="multiple" class="select-picker type customSequence border-0" data-size="3">
                                                 @foreach ($taxes as $tax)
-                                                    <option data-rate="{{ $tax->rate_percent }}"
-                                                        data-tax-text="{{ $tax->tax_name . ':' . $tax->rate_percent }}%"
-                                                        value="{{ $tax->id }}">{{ $tax->tax_name }}:
+                                                    <option data-rate="{{ $tax->rate_percent }}" data-tax-text="{{ $tax->tax_name . ':' . $tax->rate_percent }}%" value="{{ $tax->id }}">{{ $tax->tax_name }}:
                                                         {{ $tax->rate_percent }}%</option>
                                                 @endforeach
                                             </select>
@@ -384,17 +328,14 @@
                                     </td>
                                 </tr>
                                 <tr class="d-none d-md-table-row d-lg-table-row">
-                                    <td colspan="{{ $invoiceSetting->hsn_sac_code_show ? '5' : '4' }}"
-                                        class="dash-border-top bblr">
+                                    <td colspan="{{ $invoiceSetting->hsn_sac_code_show ? '5' : '4' }}" class="dash-border-top bblr">
                                         <textarea class="f-14 border-0 w-100 desktop-description" name="item_summary[]" placeholder="@lang('placeholders.invoices.description')"></textarea>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
 
-                        <a href="javascript:;"
-                            class="d-flex align-items-center justify-content-center ml-3 remove-item"><i
-                                class="fa fa-times-circle f-20 text-lightest"></i></a>
+                        <a href="javascript:;" class="d-flex align-items-center justify-content-center ml-3 remove-item"><i class="fa fa-times-circle f-20 text-lightest"></i></a>
                     </div>
                 </div>
                 <!-- DESKTOP DESCRIPTION TABLE END -->
@@ -404,8 +345,7 @@
         <!--  ADD ITEM START-->
         <div class="row px-lg-4 px-md-4 px-3 pb-3 pt-0 mb-3  mt-2">
             <div class="col-md-12">
-                <a class="f-15 f-w-500" href="javascript:;" id="add-item"><i
-                        class="icons icon-plus font-weight-bold mr-1"></i>@lang('modules.invoices.addItem')</a>
+                <a class="f-15 f-w-500" href="javascript:;" id="add-item"><i class="icons icon-plus font-weight-bold mr-1"></i>@lang('modules.invoices.addItem')</a>
             </div>
         </div>
         <!--  ADD ITEM END-->
@@ -425,8 +365,7 @@
                                         <td colspan="2" class="border-top-0 text-dark-grey">
                                             @lang('modules.invoices.subTotal')</td>
                                         <td width="30%" class="border-top-0 sub-total">0.00</td>
-                                        <input type="hidden" class="sub-total-field" name="sub_total"
-                                            value="0">
+                                        <input type="hidden" class="sub-total-field" name="sub_total" value="0">
                                     </tr>
                                     <tr>
                                         <td width="30%" class="text-dark-grey">@lang('modules.invoices.discount')
@@ -436,22 +375,14 @@
                                                 <tbody>
                                                     <tr>
                                                         <td width="50%" class="c-inv-sub-padding">
-                                                            <input type="number" min="0"
-                                                                name="discount_value"
-                                                                class="form-control f-14 border-0 w-100 text-right discount_value"
-                                                                placeholder="0"
-                                                                value="{{ isset($estimate) ? $estimate->discount : '0' }}">
+                                                            <input type="number" min="0" name="discount_value" class="form-control f-14 border-0 w-100 text-right discount_value" placeholder="0" value="{{ isset($estimate) ? $estimate->discount : '0' }}">
                                                         </td>
                                                         <td width="50%" align="left" class="c-inv-sub-padding">
-                                                            <div
-                                                                class="select-others select-tax height-35 rounded border-0">
-                                                                <select class="form-control select-picker"
-                                                                    id="discount_type" name="discount_type">
-                                                                    <option @selected(isset($estimate) && $estimate->discount_type == 'percent')
-                                                                        value="percent">%
+                                                            <div class="select-others select-tax height-35 rounded border-0">
+                                                                <select class="form-control select-picker" id="discount_type" name="discount_type">
+                                                                    <option @selected(isset($estimate) && $estimate->discount_type == 'percent') value="percent">%
                                                                     </option>
-                                                                    <option @selected(isset($estimate) && $estimate->discount_type == 'fixed')
-                                                                        value="fixed">
+                                                                    <option @selected(isset($estimate) && $estimate->discount_type == 'fixed') value="fixed">
                                                                         @lang('modules.invoices.amount')</option>
                                                                 </select>
                                                             </div>
@@ -460,8 +391,7 @@
                                                 </tbody>
                                             </table>
                                         </td>
-                                        <td><span
-                                                id="discount_amount">{{ isset($estimate) ? number_format((float) $estimate->discount, 2, '.', '') : '0.00' }}</span>
+                                        <td><span id="discount_amount">{{ isset($estimate) ? number_format((float) $estimate->discount, 2, '.', '') : '0.00' }}</span>
                                         </td>
                                     </tr>
                                     <tr>
@@ -511,8 +441,7 @@
             <div class="d-flex">
 
                 <div class="inv-action dropup mr-3">
-                    <button class="btn-primary dropdown-toggle" type="button" data-toggle="dropdown"
-                        aria-haspopup="true" aria-expanded="false">
+                    <button class="btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         @lang('app.save')
                         <span><i class="fa fa-chevron-up f-15 text-white"></i></span>
                     </button>
@@ -524,8 +453,7 @@
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item f-14 text-dark save-form" href="javascript:void(0);"
-                                data-type="send">
+                            <a class="dropdown-item f-14 text-dark save-form" href="javascript:void(0);" data-type="send">
                                 <i class="fa fa-paper-plane f-w-500  mr-2 f-12"></i> @lang('app.saveSend')
                             </a>
                         </li>
@@ -575,62 +503,58 @@
         });
 
         function changeClient(id) {
-            var url = "{{ route('clients.project_list', ':id') }}";
-            url = url.replace(':id', id);
+            var urlProjects = "{{ route('clients.project_list', ':id') }}".replace(':id', id);
+            var urlDetails = "{{ route('clients.ajax_details', ':id') }}".replace(':id', id);
             var token = "{{ csrf_token() }}";
+            var postBody = '_token=' + encodeURIComponent(token);
 
-            $.easyAjax({
-                url: url,
-                container: '#saveInvoiceForm',
-                type: "POST",
-                blockUI: true,
-                data: {
-                    _token: token
-                },
-                success: function(response) {
-                    if (response.status == 'success') {
-                        $('#project_id').html(response.data);
-                        $('#project_id').selectpicker('refresh');
-                    }
+            $.easyBlockUI('#saveInvoiceForm');
+            Promise.all([
+                window.apiHttp.postUrlEncoded(urlProjects, postBody),
+                window.apiHttp.postUrlEncoded(urlDetails, postBody)
+            ]).then(function(results) {
+                var responseProj = results[0];
+                var response = results[1];
+                if (responseProj.status == 'success') {
+                    $('#project_id').html(responseProj.data);
+                    $('#project_id').selectpicker('refresh');
                 }
-            });
+                if (response.status == 'success') {
+                    if (response.data !== null) {
+                        $('#client_billing_address').html(nl2br(response.data.client_details
+                            .address));
+                        $('#add-shipping-field').addClass('d-none');
+                        $('#client_shipping_address').removeClass('d-none');
 
-            var url = "{{ route('clients.ajax_details', ':id') }}";
-            url = url.replace(':id', id);
-
-            $.easyAjax({
-                url: url,
-                container: '#saveInvoiceForm',
-                type: "POST",
-                blockUI: true,
-                data: {
-                    _token: token
-                },
-                success: function(response) {
-                    if (response.status == 'success') {
-                        if (response.data !== null) {
-                            $('#client_billing_address').html(nl2br(response.data.client_details
-                                .address));
-                            $('#add-shipping-field').addClass('d-none');
-                            $('#client_shipping_address').removeClass('d-none');
-
-                            if (response.data.client_details.shipping_address === null) {
-                                var addShippingLink =
-                                    '<a href="javascript:;" class="" id="show-shipping-field"><i class="f-12 mr-2 fa fa-plus"></i>@lang('app.addShippingAddress')</a>';
-                                $('#client_shipping_address').html(addShippingLink);
-                            } else {
-                                $('#client_shipping_address').html(nl2br(response.data
-                                    .client_details
-                                    .shipping_address));
-                            }
-
+                        if (response.data.client_details.shipping_address === null) {
+                            var addShippingLink =
+                                '<a href="javascript:;" class="" id="show-shipping-field"><i class="f-12 mr-2 fa fa-plus"></i>@lang('app.addShippingAddress')</a>';
+                            $('#client_shipping_address').html(addShippingLink);
+                        } else {
+                            $('#client_shipping_address').html(nl2br(response.data
+                                .client_details
+                                .shipping_address));
                         }
-                    } else {
-                        var addShippingLink =
-                            '<a href="javascript:;" class="" id="show-shipping-field"><i class="f-12 mr-2 fa fa-plus"></i>@lang('app.addShippingAddress')</a>';
-                        $('#client_shipping_address').html(addShippingLink);
+
                     }
+                } else {
+                    var addShippingLink =
+                        '<a href="javascript:;" class="" id="show-shipping-field"><i class="f-12 mr-2 fa fa-plus"></i>@lang('app.addShippingAddress')</a>';
+                    $('#client_shipping_address').html(addShippingLink);
                 }
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $.easyUnblockUI('#saveInvoiceForm');
             });
 
         }
@@ -676,29 +600,39 @@
 
             var currencyId = $('#currency_id').val();
 
-            $.easyAjax({
-                url: "{{ route('orders.add_item') }}",
-                type: "GET",
-                data: {
+            $.easyBlockUI('#saveInvoiceForm');
+            window.apiHttp.get("{{ route('orders.add_item') }}", {
+                params: {
                     id: id,
                     currencyId: currencyId
-                },
-                blockUI: true,
-                success: function(response) {
-                    if ($('input[name="item_name[]"]').val() == '') {
-                        $("#sortable .item-row").remove();
-                    }
-                    $(response.view).hide().appendTo("#sortable").fadeIn(500);
-                    calculateTotal();
-
-                    var noOfRows = $(document).find('#sortable .item-row').length;
-                    var i = $(document).find('.item_name').length - 1;
-                    var itemRow = $(document).find('#sortable .item-row:nth-child(' + noOfRows +
-                        ') select.type');
-                    itemRow.attr('id', 'multiselect' + i);
-                    itemRow.attr('name', 'taxes[' + i + '][]');
-                    $(document).find('#multiselect' + i).selectpicker();
                 }
+            }).then(function(response) {
+                if ($('input[name="item_name[]"]').val() == '') {
+                    $("#sortable .item-row").remove();
+                }
+                $(response.view).hide().appendTo("#sortable").fadeIn(500);
+                calculateTotal();
+
+                var noOfRows = $(document).find('#sortable .item-row').length;
+                var i = $(document).find('.item_name').length - 1;
+                var itemRow = $(document).find('#sortable .item-row:nth-child(' + noOfRows +
+                    ') select.type');
+                itemRow.attr('id', 'multiselect' + i);
+                itemRow.attr('name', 'taxes[' + i + '][]');
+                $(document).find('#multiselect' + i).selectpicker();
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $.easyUnblockUI('#saveInvoiceForm');
             });
         }
 
@@ -818,19 +752,33 @@
                 return false;
             }
 
-            $.easyAjax({
-                url: "{{ route('invoices.store') }}" + "?type=" + type,
-                container: '#saveInvoiceForm',
-                type: "POST",
-                blockUI: true,
-                redirect: true,
-                data: $('#saveInvoiceForm').serialize(),
-                success: function(response) {
-                    if (response.status == 'success') {
+            var $saveBtns = $('.save-form');
+            var invBody = $('#saveInvoiceForm').serialize();
+            $saveBtns.prop('disabled', true);
+            $.easyBlockUI('#saveInvoiceForm');
+            window.apiHttp.postUrlEncoded("{{ route('invoices.store') }}" + "?type=" + type, invBody).then(function(response) {
+                if (response.status == 'success') {
+                    if (response.action === 'redirect' && response.url) {
+                        window.location.href = response.url;
+                    } else if (response.redirectUrl) {
                         window.location.href = response.redirectUrl;
                     }
                 }
-            })
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $saveBtns.prop('disabled', false);
+                $.easyUnblockUI('#saveInvoiceForm');
+            });
         });
 
         $('#saveInvoiceForm').on('click', '.remove-item', function() {
@@ -911,25 +859,20 @@
 
         if (items.length === 0) return;
 
-        $.easyAjax({
-            url: "{{ route('discount.calculate') }}",
-            type: "POST",
-            data: {
-                _token: "{{ csrf_token() }}",
-                items: items
-            },
-            success: function(response) {
-                if (response.status == 'success' && response.global_discount) {
-                    if (response.global_discount.value > 0) {
-                        $('#discount_type').val('fixed').selectpicker('refresh');
-                        $('.discount_value').val(response.global_discount.value);
+        window.apiHttp.post("{{ route('discount.calculate') }}", {
+            _token: "{{ csrf_token() }}",
+            items: items
+        }).then(function(response) {
+            if (response.status == 'success' && response.global_discount) {
+                if (response.global_discount.value > 0) {
+                    $('#discount_type').val('fixed').selectpicker('refresh');
+                    $('.discount_value').val(response.global_discount.value);
 
-                        // Recalculate total
-                        calculateTotal();
-                    }
+                    calculateTotal();
                 }
             }
-        });
+        }).catch(function() {
+            /* silent — discount helper */ });
     }
 
     // Trigger on quantity or price change

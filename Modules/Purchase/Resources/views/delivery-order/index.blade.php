@@ -111,17 +111,22 @@
             var status = $(this).val();
             var token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                url: "{{ route('delivery-orders.changeStatus', ':id') }}".replace(':id', id),
-                type: "POST",
-                data: {
-                    '_token': token,
-                    'status': status
-                },
-                success: function(response) {
-                    if (response.status == "success") {
-                        showTable();
-                    }
+            var chUrl = "{{ route('delivery-orders.changeStatus', ':id') }}".replace(':id', id);
+            var chBody = '_token=' + encodeURIComponent(token) + '&status=' + encodeURIComponent(status);
+            window.apiHttp.postUrlEncoded(chUrl, chBody).then(function(response) {
+                if (response.status == "success") {
+                    showTable();
+                }
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
                 }
             });
         });
@@ -152,17 +157,20 @@
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                showTable();
-                            }
+                    window.apiHttp.delete(url, token).then(function(response) {
+                        if (response.status == "success") {
+                            showTable();
+                        }
+                    }).catch(function(err) {
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                text: err.message,
+                                toast: true,
+                                position: 'top-end',
+                                timer: 4000,
+                                showConfirmButton: false
+                            });
                         }
                     });
                 }

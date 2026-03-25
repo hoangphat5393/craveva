@@ -1,5 +1,5 @@
 @php
-$addOrderPermission = user()->permission('add_order');
+    $addOrderPermission = user()->permission('add_order');
 @endphp
 <!-- ROW START -->
 <div class="row pb-5">
@@ -8,8 +8,7 @@ $addOrderPermission = user()->permission('add_order');
         <div class="d-flex" id="table-actions">
 
             @if (!in_array('client', user_roles()) && ($addOrderPermission == 'all' || $addOrderPermission == 'added'))
-                <x-forms.link-primary :link="route('orders.create').'?client_id='.$client->id"
-                    class="mr-3 openRightModal" icon="plus" data-redirect-url="{{ url()->full() }}">
+                <x-forms.link-primary :link="route('orders.create') . '?client_id=' . $client->id" class="mr-3 openRightModal" icon="plus" data-redirect-url="{{ url()->full() }}">
                     @lang('app.addNewOrder')
                 </x-forms.link-primary>
             @endif
@@ -22,23 +21,22 @@ $addOrderPermission = user()->permission('add_order');
                 <!-- STATUS START -->
                 <div class="select-box py-2 px-0 mr-3">
                     <x-forms.label :fieldLabel="__('app.status')" fieldId="status" />
-                    <select class="form-control select-picker" name="status" id="status" data-live-search="true"
-                        data-size="8">
+                    <select class="form-control select-picker" name="status" id="status" data-live-search="true" data-size="8">
                         <option value="all" data-content="@lang('app.all')">@lang('app.all')</option>
 
-                        <option value="pending" {{ request('status') == 'pending' ? 'selected' : ''}} data-content="<i class='fa fa-circle mr-2 text-yellow'></i> @lang('app.pending') ">@lang('app.pending')</option>
+                        <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }} data-content="<i class='fa fa-circle mr-2 text-yellow'></i> @lang('app.pending') ">@lang('app.pending')</option>
 
-                        <option value="on-hold" {{ request('status') == 'on-hold' ? 'selected' : ''}} data-content="<i class='fa fa-circle mr-2 text-info'></i> @lang('app.on-hold') ">@lang('app.on-hold')</option>
+                        <option value="on-hold" {{ request('status') == 'on-hold' ? 'selected' : '' }} data-content="<i class='fa fa-circle mr-2 text-info'></i> @lang('app.on-hold') ">@lang('app.on-hold')</option>
 
-                        <option value="failed" {{ request('status') == 'failed' ? 'selected' : ''}} data-content="<i class='fa fa-circle mr-2 text-muted'></i> @lang('app.failed') ">@lang('app.failed')</option>
+                        <option value="failed" {{ request('status') == 'failed' ? 'selected' : '' }} data-content="<i class='fa fa-circle mr-2 text-muted'></i> @lang('app.failed') ">@lang('app.failed')</option>
 
-                        <option value="processing" {{ request('status') == 'processing' ? 'selected' : ''}} data-content="<i class='fa fa-circle mr-2 text-blue'></i> @lang('app.processing') ">@lang('app.processing')</option>
+                        <option value="processing" {{ request('status') == 'processing' ? 'selected' : '' }} data-content="<i class='fa fa-circle mr-2 text-blue'></i> @lang('app.processing') ">@lang('app.processing')</option>
 
-                        <option value="completed" {{ request('status') == 'completed' ? 'selected' : ''}} data-content="<i class='fa fa-circle mr-2 text-dark-green'></i> @lang('app.completed') ">@lang('app.completed')</option>
+                        <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }} data-content="<i class='fa fa-circle mr-2 text-dark-green'></i> @lang('app.completed') ">@lang('app.completed')</option>
 
-                        <option value="canceled" {{ request('status') == 'canceled' ? 'selected' : ''}} data-content="<i class='fa fa-circle mr-2 text-red'></i> @lang('app.canceled') ">@lang('app.canceled')</option>
+                        <option value="canceled" {{ request('status') == 'canceled' ? 'selected' : '' }} data-content="<i class='fa fa-circle mr-2 text-red'></i> @lang('app.canceled') ">@lang('app.canceled')</option>
 
-                        <option value="refunded" {{ request('status') == 'refunded' ? 'selected' : ''}} data-content="<i class='fa fa-circle mr-2'></i> @lang('app.refunded') ">@lang('app.refunded')</option>
+                        <option value="refunded" {{ request('status') == 'refunded' ? 'selected' : '' }} data-content="<i class='fa fa-circle mr-2'></i> @lang('app.refunded') ">@lang('app.refunded')</option>
                     </select>
                 </div>
                 <!-- STATUS END -->
@@ -52,16 +50,14 @@ $addOrderPermission = user()->permission('add_order');
                                 <i class="fa fa-search f-13 text-dark-grey"></i>
                             </span>
                         </div>
-                        <input type="text" class="form-control f-14 p-1 height-35 border" id="search-text-field"
-                            placeholder="@lang('app.startTyping')">
+                        <input type="text" class="form-control f-14 p-1 height-35 border" id="search-text-field" placeholder="@lang('app.startTyping')">
                     </div>
                 </div>
                 <!-- SEARCH BY TASK END -->
 
                 <!-- RESET START -->
                 <div class="select-box d-flex py-2 px-lg-2 px-md-2 px-0 mt-4">
-                    <x-forms.button-secondary class="btn-xs d-none height-35 mt-2" id="reset-filters"
-                        icon="times-circle">
+                    <x-forms.button-secondary class="btn-xs d-none height-35 mt-2" id="reset-filters" icon="times-circle">
                         @lang('app.clearFilters')
                     </x-forms.button-secondary>
                 </div>
@@ -152,22 +148,25 @@ $addOrderPermission = user()->permission('add_order');
                 buttonsStyling: false
             }).then((result) => {
                 if (result.isConfirmed) {
-                    $.easyAjax({
-                        url: url,
-                        type: "POST",
-                        container: '.content-wrapper',
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            orderId: id,
-                            status: status,
-                        },
-                        success: function(data) {
-                            showTable();
+                    $.easyBlockUI('.content-wrapper');
+                    var ordBody = '_token=' + encodeURIComponent(token) + '&orderId=' + encodeURIComponent(id) + '&status=' + encodeURIComponent(status);
+                    window.apiHttp.postUrlEncoded(url, ordBody).then(function() {
+                        showTable();
+                    }).catch(function(err) {
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                text: err.message,
+                                toast: true,
+                                position: 'top-end',
+                                timer: 4000,
+                                showConfirmButton: false
+                            });
                         }
+                    }).finally(function() {
+                        $.easyUnblockUI('.content-wrapper');
                     });
-                }
-                else {
+                } else {
                     showTable();
                 }
             });
@@ -205,62 +204,64 @@ $addOrderPermission = user()->permission('add_order');
                 }
             });
 
-        $('#search-text-field').on('keyup', function() {
-            if ($('#search-text-field').val() != "") {
-                $('#reset-filters').removeClass('d-none');
-                showTable();
+    $('#search-text-field').on('keyup', function() {
+        if ($('#search-text-field').val() != "") {
+            $('#reset-filters').removeClass('d-none');
+            showTable();
+        }
+    });
+
+    $('#reset-filters,#reset-filters-2').click(function() {
+        $('#filter-form')[0].reset();
+        $('#filter-form #status').val('all');
+        $('#filter-form .select-picker').selectpicker("refresh");
+        $('#reset-filters').addClass('d-none');
+        showTable();
+    });
+
+    $('body').on('click', '.delete-table-row', function() {
+        var id = $(this).data('order-id');
+        Swal.fire({
+            title: "@lang('messages.sweetAlertTitle')",
+            text: "@lang('messages.recoverRecord')",
+            icon: 'warning',
+            showCancelButton: true,
+            focusConfirm: false,
+            confirmButtonText: "@lang('messages.confirmDelete')",
+            cancelButtonText: "@lang('app.cancel')",
+            customClass: {
+                confirmButton: 'btn btn-primary mr-3',
+                cancelButton: 'btn btn-secondary'
+            },
+            showClass: {
+                popup: 'swal2-noanimation',
+                backdrop: 'swal2-noanimation'
+            },
+            buttonsStyling: false
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var url = "{{ route('orders.destroy', ':id') }}";
+                url = url.replace(':id', id);
+
+                var token = "{{ csrf_token() }}";
+
+                window.apiHttp.delete(url, token).then(function(response) {
+                    if (response.status == "success") {
+                        showTable();
+                    }
+                }).catch(function(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
+                    }
+                });
             }
         });
-
-        $('#reset-filters,#reset-filters-2').click(function() {
-            $('#filter-form')[0].reset();
-            $('#filter-form #status').val('all');
-            $('#filter-form .select-picker').selectpicker("refresh");
-            $('#reset-filters').addClass('d-none');
-            showTable();
-        });
-
-        $('body').on('click', '.delete-table-row', function() {
-            var id = $(this).data('order-id');
-            Swal.fire({
-                title: "@lang('messages.sweetAlertTitle')",
-                text: "@lang('messages.recoverRecord')",
-                icon: 'warning',
-                showCancelButton: true,
-                focusConfirm: false,
-                confirmButtonText: "@lang('messages.confirmDelete')",
-                cancelButtonText: "@lang('app.cancel')",
-                customClass: {
-                    confirmButton: 'btn btn-primary mr-3',
-                    cancelButton: 'btn btn-secondary'
-                },
-                showClass: {
-                    popup: 'swal2-noanimation',
-                    backdrop: 'swal2-noanimation'
-                },
-                buttonsStyling: false
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    var url = "{{ route('orders.destroy', ':id') }}";
-                    url = url.replace(':id', id);
-
-                    var token = "{{ csrf_token() }}";
-
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                showTable();
-                            }
-                        }
-                    });
-                }
-            });
-        });
-
+    });
 </script>

@@ -54,17 +54,25 @@
 
             const requestUrl = this.href;
 
-            $.easyAjax({
-                url: requestUrl,
-                blockUI: true,
-                container: ".content-wrapper",
-                historyPush: true,
-                success: function(response) {
-                    if (response.status == "success") {
-                        $('.content-wrapper').html(response.html);
-                        init('.content-wrapper');
-                    }
+            $.easyBlockUI('.content-wrapper');
+            window.apiHttp.get(requestUrl).then(function(response) {
+                if (response.status == "success") {
+                    $('.content-wrapper').html(response.html);
+                    init('.content-wrapper');
                 }
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $.easyUnblockUI('.content-wrapper');
             });
         });
 
@@ -109,20 +117,24 @@
                 if (result.isConfirmed) {
                     let url = "{{ route('purchase_inventory.change_status') }}";
                     let token = "{{ csrf_token() }}";
+                    var statusBody = '_token=' + encodeURIComponent(token) +
+                        '&_method=POST&id=' + encodeURIComponent(id) +
+                        '&status=' + encodeURIComponent(status);
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            'id' : id,
-                            'status' : status,
-                            '_token' : token,
-                            '_method' : 'POST'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                window.location.reload();
-                            }
+                    window.apiHttp.postUrlEncoded(url, statusBody).then(function(response) {
+                        if (response.status == "success") {
+                            window.location.reload();
+                        }
+                    }).catch(function(err) {
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                text: err.message,
+                                toast: true,
+                                position: 'top-end',
+                                timer: 4000,
+                                showConfirmButton: false
+                            });
                         }
                     });
                 }
@@ -155,17 +167,20 @@
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                window.location.href = response.redirectUrl;
-                            }
+                    window.apiHttp.delete(url, token).then(function(response) {
+                        if (response.status == "success") {
+                            window.location.href = response.redirectUrl;
+                        }
+                    }).catch(function(err) {
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                text: err.message,
+                                toast: true,
+                                position: 'top-end',
+                                timer: 4000,
+                                showConfirmButton: false
+                            });
                         }
                     });
                 }

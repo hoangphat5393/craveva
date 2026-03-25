@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Traits\HasCompany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Modules\Purchase\Entities\DeliveryOrderItem;
+use Modules\Warehouse\Entities\Warehouse;
 
 class StockMovement extends BaseModel
 {
@@ -38,5 +39,15 @@ class StockMovement extends BaseModel
     public function deliveryItem(): BelongsTo
     {
         return $this->belongsTo(DeliveryOrderItem::class, 'delivery_order_item_id');
+    }
+
+    public function warehouseFrom(): BelongsTo
+    {
+        return $this->belongsTo(Warehouse::class, 'warehouse_from_id');
+    }
+
+    public function warehouseTo(): BelongsTo
+    {
+        return $this->belongsTo(Warehouse::class, 'warehouse_to_id');
     }
 }

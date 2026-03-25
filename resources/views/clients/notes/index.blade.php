@@ -5,7 +5,6 @@
 @endpush
 
 @section('filter-section')
-
     <x-filters.filter-box>
 
         <!-- SEARCH BY TASK START -->
@@ -18,8 +17,7 @@
                             <i class="fa fa-search f-13 text-dark-grey"></i>
                         </span>
                     </div>
-                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field"
-                        placeholder="@lang('app.startTyping')">
+                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field" placeholder="@lang('app.startTyping')">
                 </div>
             </form>
         </div>
@@ -33,7 +31,6 @@
         </div>
         <!-- RESET END -->
     </x-filters.filter-box>
-
 @endsection
 
 @section('content')
@@ -43,8 +40,7 @@
         <div class="d-flex justify-content-between action-bar">
             <div class="d-flex" id="table-actions">
                 @if ($addClientNotePermission == 'all')
-                    <x-forms.link-primary :link="route('client-notes.create').'?client='.user()->id"
-                        class="mr-3 openRightModal" icon="plus">
+                    <x-forms.link-primary :link="route('client-notes.create') . '?client=' . user()->id" class="mr-3 openRightModal" icon="plus">
                         @lang('modules.client.createNote')
                     </x-forms.link-primary>
                 @endif
@@ -70,7 +66,6 @@
         <!-- Task Box End -->
     </div>
     <!-- CONTENT WRAPPER END -->
-
 @endsection
 
 @push('scripts')
@@ -106,25 +101,55 @@
         });
 
         $('#quick-action-type').change(function() {
-        const actionValue = $(this).val();
-        if (actionValue != '') {
-            $('#quick-action-apply').removeAttr('disabled');
+            const actionValue = $(this).val();
+            if (actionValue != '') {
+                $('#quick-action-apply').removeAttr('disabled');
 
-            if (actionValue == 'change-status') {
-                $('.quick-action-field').addClass('d-none');
-                $('#change-status-action').removeClass('d-none');
+                if (actionValue == 'change-status') {
+                    $('.quick-action-field').addClass('d-none');
+                    $('#change-status-action').removeClass('d-none');
+                } else {
+                    $('.quick-action-field').addClass('d-none');
+                }
             } else {
+                $('#quick-action-apply').attr('disabled', true);
                 $('.quick-action-field').addClass('d-none');
             }
-        } else {
-            $('#quick-action-apply').attr('disabled', true);
-            $('.quick-action-field').addClass('d-none');
-        }
-    });
+        });
 
-    $('#quick-action-apply').click(function() {
-        const actionValue = $('#quick-action-type').val();
-        if (actionValue == 'delete') {
+        $('#quick-action-apply').click(function() {
+            const actionValue = $('#quick-action-type').val();
+            if (actionValue == 'delete') {
+                Swal.fire({
+                    title: "@lang('messages.sweetAlertTitle')",
+                    text: "@lang('messages.recoverRecord')",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    focusConfirm: false,
+                    confirmButtonText: "@lang('messages.confirmDelete')",
+                    cancelButtonText: "@lang('app.cancel')",
+                    customClass: {
+                        confirmButton: 'btn btn-primary mr-3',
+                        cancelButton: 'btn btn-secondary'
+                    },
+                    showClass: {
+                        popup: 'swal2-noanimation',
+                        backdrop: 'swal2-noanimation'
+                    },
+                    buttonsStyling: false
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        applyQuickAction();
+                    }
+                });
+
+            } else {
+                applyQuickAction();
+            }
+        });
+
+        $('body').on('click', '.delete-table-row', function() {
+            var id = $(this).data('user-id');
             Swal.fire({
                 title: "@lang('messages.sweetAlertTitle')",
                 text: "@lang('messages.recoverRecord')",
@@ -144,134 +169,116 @@
                 buttonsStyling: false
             }).then((result) => {
                 if (result.isConfirmed) {
-                    applyQuickAction();
-                }
-            });
+                    var url = "{{ route('client-notes.destroy', ':id') }}";
+                    url = url.replace(':id', id);
 
-        } else {
-            applyQuickAction();
-        }
-    });
+                    var token = "{{ csrf_token() }}";
 
-    $('body').on('click', '.delete-table-row', function() {
-        var id = $(this).data('user-id');
-        Swal.fire({
-            title: "@lang('messages.sweetAlertTitle')",
-            text: "@lang('messages.recoverRecord')",
-            icon: 'warning',
-            showCancelButton: true,
-            focusConfirm: false,
-            confirmButtonText: "@lang('messages.confirmDelete')",
-            cancelButtonText: "@lang('app.cancel')",
-            customClass: {
-                confirmButton: 'btn btn-primary mr-3',
-                cancelButton: 'btn btn-secondary'
-            },
-            showClass: {
-                popup: 'swal2-noanimation',
-                backdrop: 'swal2-noanimation'
-            },
-            buttonsStyling: false
-        }).then((result) => {
-            if (result.isConfirmed) {
-                var url = "{{ route('client-notes.destroy', ':id') }}";
-                url = url.replace(':id', id);
-
-                var token = "{{ csrf_token() }}";
-
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
+                    window.apiHttp.delete(url, token).then(function(response) {
                         if (response.status == "success") {
                             showTable();
                         }
-                    }
-                });
-            }
+                    }).catch(function(err) {
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                text: err.message,
+                                toast: true,
+                                position: 'top-end',
+                                timer: 4000,
+                                showConfirmButton: false
+                            });
+                        }
+                    });
+                }
+            });
         });
-    });
 
-    const applyQuickAction = () => {
-        var rowdIds = $("#client-notes-table input:checkbox:checked").map(function() {
-            return $(this).val();
-        }).get();
+        const applyQuickAction = () => {
+            var rowdIds = $("#client-notes-table input:checkbox:checked").map(function() {
+                return $(this).val();
+            }).get();
 
-        var url = "{{ route('client-notes.apply_quick_action') }}?row_ids=" + rowdIds;
+            var url = "{{ route('client-notes.apply_quick_action') }}?row_ids=" + rowdIds;
 
-        $.easyAjax({
-            url: url,
-            container: '#quick-action-form',
-            type: "POST",
-            disableButton: true,
-            buttonSelector: "#quick-action-apply",
-            data: $('#quick-action-form').serialize(),
-            success: function(response) {
+            var $qaBtn = $("#quick-action-apply");
+            $qaBtn.prop('disabled', true);
+            $.easyBlockUI('#quick-action-form');
+            window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize()).then(function(response) {
                 if (response.status == 'success') {
                     showTable();
                     resetActionButtons();
                     deSelectAll();
                 }
-            }
-        })
-    };
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $qaBtn.prop('disabled', false);
+                $.easyUnblockUI('#quick-action-form');
+            });
+        };
 
-    $('body').on('click', '.ask-for-password', function() {
-        let clientNoteId = $(this).data('client-note-id');
+        $('body').on('click', '.ask-for-password', function() {
+            let clientNoteId = $(this).data('client-note-id');
 
-        var url = "{{ route('client_notes.ask_for_password', ':id') }}";
-        url = url.replace(':id', clientNoteId);
+            var url = "{{ route('client_notes.ask_for_password', ':id') }}";
+            url = url.replace(':id', clientNoteId);
 
-        $(MODAL_LG + ' ' + MODAL_HEADING).html('...');
-        $.ajaxModal(MODAL_LG, url);
+            $(MODAL_LG + ' ' + MODAL_HEADING).html('...');
+            $.ajaxModal(MODAL_LG, url);
 
-    });
+        });
 
-    // show note detail in right modal
-    var getNoteDetail = function(id) {
-        openTaskDetail();
+        // show note detail in right modal
+        var getNoteDetail = function(id) {
+            openTaskDetail();
 
-        var url = "{{ route('client-notes.show_verified', ':id') }}";
-        url = url.replace(':id', id);
-        var token = "{{ csrf_token() }}";
+            var url = "{{ route('client-notes.show_verified', ':id') }}";
+            url = url.replace(':id', id);
+            var token = "{{ csrf_token() }}";
 
-        $.easyAjax({
-            url: url,
-            blockUI: true,
-            type: "POST",
-            container: RIGHT_MODAL,
-            historyPush: true,
-            data: {
-                '_token': token
-            },
-            success: function(response) {
+            $.easyBlockUI(RIGHT_MODAL);
+            window.apiHttp.postUrlEncoded(url, '_token=' + encodeURIComponent(token)).then(function(response) {
                 if (response.status == "success") {
                     $(RIGHT_MODAL_CONTENT).html(response.html);
                     $(RIGHT_MODAL_TITLE).html(response.title);
                 }
-            },
-            error: function(request, status, error) {
-                if (request.status == 403) {
+            }).catch(function(err) {
+                var st = err.status;
+                if (st == 403) {
                     $(RIGHT_MODAL_CONTENT).html(
                         '<div class="align-content-between d-flex justify-content-center mt-105 f-21">403 | Permission Denied</div>'
                     );
-                } else if (request.status == 404) {
+                } else if (st == 404) {
                     $(RIGHT_MODAL_CONTENT).html(
                         '<div class="align-content-between d-flex justify-content-center mt-105 f-21">404 | Not Found</div>'
                     );
-                } else if (request.status == 500) {
+                } else if (st == 500) {
                     $(RIGHT_MODAL_CONTENT).html(
                         '<div class="align-content-between d-flex justify-content-center mt-105 f-21">500 | Something Went Wrong</div>'
                     );
+                } else if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
                 }
-            }
-        });
-    };
-
-
+            }).finally(function() {
+                $.easyUnblockUI(RIGHT_MODAL);
+            });
+        };
     </script>
 @endpush

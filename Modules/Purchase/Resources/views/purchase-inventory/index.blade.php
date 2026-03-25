@@ -148,23 +148,33 @@
             }).get();
 
             var url = "{{ route('purchase_inventory.apply_quick_action') }}?row_ids=" + rowdIds;
+            var $applyBtn = $('#quick-action-apply');
+            var body = $('#quick-action-form').serialize();
 
-            $.easyAjax({
-                url: url,
-                container: '#quick-action-form',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#quick-action-apply",
-                data: $('#quick-action-form').serialize(),
-                success: function(response) {
-                    if (response.status == 'success') {
-                        showTable();
-                        resetActionButtons();
-                        deSelectAll();
-                        $('#quick-action-form').hide();
-                    }
+            $applyBtn.prop('disabled', true);
+            $.easyBlockUI();
+            window.apiHttp.postUrlEncoded(url, body).then(function(response) {
+                if (response.status == 'success') {
+                    showTable();
+                    resetActionButtons();
+                    deSelectAll();
+                    $('#quick-action-form').hide();
                 }
-            })
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $applyBtn.prop('disabled', false);
+                $.easyUnblockUI();
+            });
         };
 
         $('#inventory-table-v5').on('preXhr.dt', function(e, settings, data) {
@@ -254,22 +264,26 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
 
-                        var url = "{{ route('purchase_inventory.change_status') }}?";
+                        var url = "{{ route('purchase_inventory.change_status') }}";
                         var token = "{{ csrf_token() }}";
+                        var changeBody = '_token=' + encodeURIComponent(token) +
+                            '&_method=POST&id=' + encodeURIComponent(id) +
+                            '&status=' + encodeURIComponent(status);
 
-                        $.easyAjax({
-                            type: 'POST',
-                            url: url,
-                            data: {
-                                'id': id,
-                                'status': status,
-                                '_token': token,
-                                '_method': 'POST'
-                            },
-                            success: function(response) {
-                                if (response.status == "success") {
-                                    showTable();
-                                }
+                        window.apiHttp.postUrlEncoded(url, changeBody).then(function(response) {
+                            if (response.status == "success") {
+                                showTable();
+                            }
+                        }).catch(function(err) {
+                            if (typeof Swal !== 'undefined') {
+                                Swal.fire({
+                                    icon: 'error',
+                                    text: err.message,
+                                    toast: true,
+                                    position: 'top-end',
+                                    timer: 4000,
+                                    showConfirmButton: false
+                                });
                             }
                         });
                     }
@@ -303,17 +317,20 @@
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                showTable();
-                            }
+                    window.apiHttp.delete(url, token).then(function(response) {
+                        if (response.status == "success") {
+                            showTable();
+                        }
+                    }).catch(function(err) {
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                text: err.message,
+                                toast: true,
+                                position: 'top-end',
+                                timer: 4000,
+                                showConfirmButton: false
+                            });
                         }
                     });
                 }

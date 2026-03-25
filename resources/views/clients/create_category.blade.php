@@ -1,7 +1,6 @@
 <div class="modal-header">
     <h5 class="modal-title" id="modelHeading">@lang('modules.client.clientCategory')</h5>
-    <button type="button"  class="close" data-dismiss="modal" aria-label="Close"><span
-            aria-hidden="true">×</span></button>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
 </div>
 <div class="modal-body">
     <x-table class="table-bordered client-cat-table" headType="thead-light">
@@ -18,8 +17,7 @@
                 </td>
                 <td class="text-right">
                     @if ($deletePermission == 'all' || $deletePermission == 'added')
-                        <x-forms.button-secondary data-cat-id="{{ $category->id }}" icon="trash"
-                            class="delete-category">
+                        <x-forms.button-secondary data-cat-id="{{ $category->id }}" icon="trash" class="delete-category">
                             @lang('app.delete')
                         </x-forms.button-secondary>
                     @endif
@@ -32,8 +30,7 @@
     <x-form id="createProjectCategory">
         <div class="row border-top-grey ">
             <div class="col-sm-12">
-                <x-forms.text fieldId="category_name" :fieldLabel="__('modules.projectCategory.categoryName')"
-                    fieldName="category_name" fieldRequired="true" :fieldPlaceholder="__('placeholders.categoryName')">
+                <x-forms.text fieldId="category_name" :fieldLabel="__('modules.projectCategory.categoryName')" fieldName="category_name" fieldRequired="true" :fieldPlaceholder="__('placeholders.categoryName')">
                 </x-forms.text>
             </div>
 
@@ -74,32 +71,35 @@
             buttonsStyling: false
         }).then((result) => {
             if (result.isConfirmed) {
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
-                        if (response.status == "success") {
-                            $('#cat-' + id).fadeOut();
-                            var options = [];
-                            var rData = [];
-                            rData = response.data;
-                            $.each(rData, function(index, value) {
-                                var selectData = '';
-                                var isSelected = (value.id == selectedCategory) ? 'selected' : '';
-                                selectData = '<option value="' + value.id + '" ' + isSelected + '>' +
-                                    value
-                                    .category_name + '</option>';
-                                options.push(selectData);
-                            });
+                window.apiHttp.delete(url, token).then(function(response) {
+                    if (response.status == "success") {
+                        $('#cat-' + id).fadeOut();
+                        var options = [];
+                        var rData = [];
+                        rData = response.data;
+                        $.each(rData, function(index, value) {
+                            var selectData = '';
+                            var isSelected = (value.id == selectedCategory) ? 'selected' : '';
+                            selectData = '<option value="' + value.id + '" ' + isSelected + '>' +
+                                value
+                                .category_name + '</option>';
+                            options.push(selectData);
+                        });
 
-                            $('#category_id').html('<option value="">--</option>' +
-                                options);
-                            $('#category_id').selectpicker('refresh');
-                        }
+                        $('#category_id').html('<option value="">--</option>' +
+                            options);
+                        $('#category_id').selectpicker('refresh');
+                    }
+                }).catch(function(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
                     }
                 });
             }
@@ -110,32 +110,35 @@
     $('#save-category').click(function() {
         var url = "{{ route('clientCategory.store') }}";
         let selectedCategory = $('#category_id').val();
-        $.easyAjax({
-            url: url,
-            container: '#createProjectCategory',
-            type: "POST",
-            data: $('#createProjectCategory').serialize(),
-            success: function(response) {
-                if (response.status == 'success') {
-                    if (response.status == 'success') {
-                        var options = [];
-                        var rData = [];
-                        rData = response.data;
-                        $.each(rData, function(index, value) {
-                            var selectData = '';
-                            var isSelected = (value.id == selectedCategory) ? 'selected' : '';
-                            selectData = '<option value="' + value.id + '" ' + isSelected + '>' + value
-                                .category_name + '</option>';
-                            options.push(selectData);
-                        });
+        window.apiHttp.postUrlEncoded(url, $('#createProjectCategory').serialize()).then(function(response) {
+            if (response.status == 'success') {
+                var options = [];
+                var rData = [];
+                rData = response.data;
+                $.each(rData, function(index, value) {
+                    var selectData = '';
+                    var isSelected = (value.id == selectedCategory) ? 'selected' : '';
+                    selectData = '<option value="' + value.id + '" ' + isSelected + '>' + value
+                        .category_name + '</option>';
+                    options.push(selectData);
+                });
 
-                        $('#category_id').html('<option value="">--</option>' + options);
-                        $('#category_id').selectpicker('refresh');
-                        $(MODAL_LG).modal('hide');
-                    }
-                }
+                $('#category_id').html('<option value="">--</option>' + options);
+                $('#category_id').selectpicker('refresh');
+                $(MODAL_LG).modal('hide');
             }
-        })
+        }).catch(function(err) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    text: err.message,
+                    toast: true,
+                    position: 'top-end',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            }
+        });
     });
 
     $('.client-cat-table [contenteditable=true]').focus(function() {
@@ -152,34 +155,38 @@
             let selectedCategory = $('#category_id').val();
             var token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#cat-' + id,
-                type: "POST",
-                data: {
-                    'category_name': value,
-                    '_token': token,
-                    '_method': 'PUT'
-                },
-                blockUI: true,
-                success: function(response) {
-                    if (response.status == 'success') {
-                        var options = [];
-                        var rData = [];
-                        rData = response.data;
-                        $.each(rData, function(index, value) {
-                            var selectData = '';
-                            var isSelected = (value.id == selectedCategory) ? 'selected' : '';
-                            selectData = '<option value="' + value.id + '" ' + isSelected + '>' + value
-                                .category_name + '</option>';
-                            options.push(selectData);
-                        });
+            $.easyBlockUI('.modal-body');
+            var putBody = 'category_name=' + encodeURIComponent(value) + '&_token=' + encodeURIComponent(token) + '&_method=PUT';
+            window.apiHttp.postUrlEncoded(url, putBody).then(function(response) {
+                if (response.status == 'success') {
+                    var options = [];
+                    var rData = [];
+                    rData = response.data;
+                    $.each(rData, function(index, value) {
+                        var selectData = '';
+                        var isSelected = (value.id == selectedCategory) ? 'selected' : '';
+                        selectData = '<option value="' + value.id + '" ' + isSelected + '>' + value
+                            .category_name + '</option>';
+                        options.push(selectData);
+                    });
 
-                        $('#category_id').html('<option value="">--</option>' + options);
-                        $('#category_id').selectpicker('refresh');
-                    }
+                    $('#category_id').html('<option value="">--</option>' + options);
+                    $('#category_id').selectpicker('refresh');
                 }
-            })
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $.easyUnblockUI('.modal-body');
+            });
         }
     });
 </script>

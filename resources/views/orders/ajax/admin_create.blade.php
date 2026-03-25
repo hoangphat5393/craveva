@@ -1,5 +1,5 @@
 @php
-$addProductPermission = user()->permission('add_product');
+    $addProductPermission = user()->permission('add_product');
 @endphp
 
 <!-- for sortable content -->
@@ -25,11 +25,9 @@ $addProductPermission = user()->permission('add_product');
                     </x-forms.label>
                     <x-forms.input-group>
                         <x-slot name="prepend">
-                            <span
-                                class="input-group-text">{{ invoice_setting()->order_prefix }}{{ invoice_setting()->order_number_separator }}{{ $zero }}</span>
+                            <span class="input-group-text">{{ invoice_setting()->order_prefix }}{{ invoice_setting()->order_number_separator }}{{ $zero }}</span>
                         </x-slot>
-                        <input type="text" name="order_number" id="order_number"
-                            class="form-control height-35 f-15" value="{{ is_null($lastOrder) ? 1 : $lastOrder }}">
+                        <input type="text" name="order_number" id="order_number" class="form-control height-35 f-15" value="{{ is_null($lastOrder) ? 1 : $lastOrder }}">
                     </x-forms.input-group>
                 </div>
             </div>
@@ -42,8 +40,7 @@ $addProductPermission = user()->permission('add_product');
                         </x-forms.label>
                         <div class="input-group">
                             <input type="hidden" name="client_id" id="client_id" value="{{ $client->id }}">
-                            <input type="text" value="{{ $client->name_salutation }}"
-                                class="form-control height-35 f-15 readonly-background" readonly>
+                            <input type="text" value="{{ $client->name_salutation }}" class="form-control height-35 f-15 readonly-background" readonly>
                         </div>
                     </div>
                 @else
@@ -54,8 +51,7 @@ $addProductPermission = user()->permission('add_product');
             <!-- BILLING ADDRESS START -->
             <div class="col-md-4 mb-4">
                 <div class="form-group c-inv-select mb-0">
-                    <label class="f-14 text-dark-grey mb-12  w-100"
-                        for="usr">@lang('modules.invoices.billingAddress')</label>
+                    <label class="f-14 text-dark-grey mb-12  w-100" for="usr">@lang('modules.invoices.billingAddress')</label>
                     <p class="f-15" id="client_billing_address">
                         @if (isset($client))
                             {!! nl2br($client->clientDetails->address) !!}
@@ -68,22 +64,22 @@ $addProductPermission = user()->permission('add_product');
             <!-- SHIPPING ADDRESS START -->
             <div class="col-md-4">
                 <div class="form-group c-inv-select mb-lg-0 mb-md-0 mb-4">
-                    <label class="f-14 text-dark-grey mb-12  w-100"
-                        for="usr">@lang('modules.invoices.shippingAddress') </label>
+                    <label class="f-14 text-dark-grey mb-12  w-100" for="usr">@lang('modules.invoices.shippingAddress') </label>
                     <p class="f-15" id="client_shipping_address">
                         @if (isset($estimate) && $estimate->client && $estimate->client->clientDetails->shipping_address)
                             {!! nl2br($estimate->client->clientDetails->shipping_address) !!}
                         @elseif(isset($client) && $client->clientDetails && $client->clientDetails->shipping_address)
                             {!! nl2br($client->clientDetails->shipping_address) !!}
                         @else
-                            <a href="javascript:;" class="" id="show-shipping-field"><i
-                                    class="f-12 mr-2 fa fa-plus"></i>@lang('app.addShippingAddress')</a>
+                            <a href="javascript:;" class="" id="show-shipping-field"><i class="f-12 mr-2 fa fa-plus"></i>@lang('app.addShippingAddress')</a>
                         @endif
                     </p>
                     <p class="d-none" id="add-shipping-field">
-                        <textarea class="form-control f-14 pt-2" rows="3" placeholder="@lang('placeholders.address')"
-                            name="shipping_address"
-                            id="shipping_address">@if (isset($estimate) && $estimate->client) {!! nl2br($estimate->client->clientDetails->shipping_address) !!} @endif</textarea>
+                        <textarea class="form-control f-14 pt-2" rows="3" placeholder="@lang('placeholders.address')" name="shipping_address" id="shipping_address">
+@if (isset($estimate) && $estimate->client)
+{!! nl2br($estimate->client->clientDetails->shipping_address) !!}
+@endif
+</textarea>
                     </p>
                 </div>
             </div>
@@ -91,25 +87,24 @@ $addProductPermission = user()->permission('add_product');
 
             <div class="col-md-4">
                 @if (isset($project) && !is_null($project))
-                <div class="form-group mb-4">
-                    <x-forms.label fieldId="due_date" :fieldLabel="__('app.project')">
-                    </x-forms.label>
-                    <div class="input-group">
-                        <input type="hidden" name="project_id" id="project_id" value="{{ $project->id }}">
-                        <input type="text" value="{{ $project->project_name }}"
-                            class="form-control height-35 f-15 readonly-background" readonly>
+                    <div class="form-group mb-4">
+                        <x-forms.label fieldId="due_date" :fieldLabel="__('app.project')">
+                        </x-forms.label>
+                        <div class="input-group">
+                            <input type="hidden" name="project_id" id="project_id" value="{{ $project->id }}">
+                            <input type="text" value="{{ $project->project_name }}" class="form-control height-35 f-15 readonly-background" readonly>
+                        </div>
                     </div>
-                </div>
                 @else
-                <div class="form-group c-inv-select">
-                    <x-forms.label fieldId="project_id" :fieldLabel="__('app.project')">
-                    </x-forms.label>
-                    <div class="form-group mb-0">
-                        <select name="project_id" id="project_id" data-live-search="true" class="form-control select-picker">
-                            <option value="">--</option>
-                        </select>
+                    <div class="form-group c-inv-select">
+                        <x-forms.label fieldId="project_id" :fieldLabel="__('app.project')">
+                        </x-forms.label>
+                        <div class="form-group mb-0">
+                            <select name="project_id" id="project_id" data-live-search="true" class="form-control select-picker">
+                                <option value="">--</option>
+                            </select>
+                        </div>
                     </div>
-                </div>
                 @endif
             </div>
 
@@ -118,8 +113,7 @@ $addProductPermission = user()->permission('add_product');
                     <x-forms.label fieldId="company_address_id" :fieldLabel="__('modules.invoices.generatedBy')">
                     </x-forms.label>
                     <div class="select-others height-35 rounded">
-                        <select class="form-control select-picker" data-live-search="true" data-size="8"
-                            name="company_address_id" id="company_address_id">
+                        <select class="form-control select-picker" data-live-search="true" data-size="8" name="company_address_id" id="company_address_id">
                             @foreach ($companyAddresses as $item)
                                 <option {{ $item->is_default ? 'selected' : '' }} value="{{ $item->id }}">
                                     {{ $item->location }}</option>
@@ -149,19 +143,20 @@ $addProductPermission = user()->permission('add_product');
                 </select>
             </div>
 
-            @if($linkInvoicePermission == 'all')
+            @if ($linkInvoicePermission == 'all')
                 <div class="col-md-4">
                     <div class="form-group c-inv-select mb-4 d-none">
                         <x-forms.label fieldId="bank_account_id" :fieldLabel="__('app.bankaccount')">
                         </x-forms.label>
                         <div class="select-others height-35 rounded">
-                            <select class="form-control select-picker" data-live-search="true" data-size="8"
-                                    name="bank_account_id" id="bank_account_id">
+                            <select class="form-control select-picker" data-live-search="true" data-size="8" name="bank_account_id" id="bank_account_id">
                                 <option value="">--</option>
-                                @if($viewBankAccountPermission != 'none')
+                                @if ($viewBankAccountPermission != 'none')
                                     @foreach ($bankDetails as $bankDetail)
-                                        <option value="{{ $bankDetail->id }}">@if($bankDetail->type == 'bank')
-                                            {{ $bankDetail->bank_name }} | @endif
+                                        <option value="{{ $bankDetail->id }}">
+                                            @if ($bankDetail->type == 'bank')
+                                                {{ $bankDetail->bank_name }} |
+                                            @endif
                                             {{ $bankDetail->account_name }}
                                         </option>
                                     @endforeach
@@ -182,9 +177,8 @@ $addProductPermission = user()->permission('add_product');
             <div class="col-md-3 d-none product-category-filter">
                 <div class="form-group c-inv-select mb-4">
                     <x-forms.input-group>
-                        <select class="form-control select-picker" name="category_id"
-                                id="product_category_id" data-live-search="true">
-                            <option value="">{{ __('app.select') . ' ' . __('app.product') . ' ' . __('app.category')  }}</option>
+                        <select class="form-control select-picker" name="category_id" id="product_category_id" data-live-search="true">
+                            <option value="">{{ __('app.select') . ' ' . __('app.product') . ' ' . __('app.category') }}</option>
                             @foreach ($categories as $category)
                                 <option value="{{ $category->id }}">
                                     {{ $category->category_name }}</option>
@@ -194,29 +188,25 @@ $addProductPermission = user()->permission('add_product');
                 </div>
             </div>
 
-            @if(in_array('products', user_modules()) || in_array('purchase', user_modules()))
+            @if (in_array('products', user_modules()) || in_array('purchase', user_modules()))
                 <div class="col-md-3">
                     <div class="form-group c-inv-select mb-4">
-                    <x-forms.input-group>
-                        <select class="form-control select-picker" data-live-search="true" data-size="8" id="add-products" title="{{ __('app.menu.selectProduct') }}">
-                            @foreach ($products as $item)
-                                <option data-content="{{ $item->name }}@if($item->sku) ({{ $item->sku }})@endif" value="{{ $item->id }}">
-                                    {{ $item->name }}</option>
-                            @endforeach
-                        </select>
-                        <x-slot name="preappend">
-                            <a href="javascript:;"
-                                class="btn btn-outline-secondary border-grey toggle-product-category"
-                                data-toggle="tooltip" data-original-title="{{ __('modules.productCategory.filterByCategory') }}"><i class="fa fa-filter"></i></a>
-                        </x-slot>
-                        @if ($addProductPermission == 'all' || $addProductPermission == 'added')
-                            <x-slot name="append">
-                                <a href="{{ route('products.create') }}" data-redirect-url="no"
-                                    class="btn btn-outline-secondary border-grey openRightModal"
-                                    data-toggle="tooltip" data-original-title="{{ __('app.add').' '.__('modules.dashboard.newproduct') }}">@lang('app.add')</a>
+                        <x-forms.input-group>
+                            <select class="form-control select-picker" data-live-search="true" data-size="8" id="add-products" title="{{ __('app.menu.selectProduct') }}">
+                                @foreach ($products as $item)
+                                    <option data-content="{{ $item->name }}@if ($item->sku) ({{ $item->sku }}) @endif" value="{{ $item->id }}">
+                                        {{ $item->name }}</option>
+                                @endforeach
+                            </select>
+                            <x-slot name="preappend">
+                                <a href="javascript:;" class="btn btn-outline-secondary border-grey toggle-product-category" data-toggle="tooltip" data-original-title="{{ __('modules.productCategory.filterByCategory') }}"><i class="fa fa-filter"></i></a>
                             </x-slot>
-                        @endif
-                    </x-forms.input-group>
+                            @if ($addProductPermission == 'all' || $addProductPermission == 'added')
+                                <x-slot name="append">
+                                    <a href="{{ route('products.create') }}" data-redirect-url="no" class="btn btn-outline-secondary border-grey openRightModal" data-toggle="tooltip" data-original-title="{{ __('app.add') . ' ' . __('modules.dashboard.newproduct') }}">@lang('app.add')</a>
+                                </x-slot>
+                            @endif
+                        </x-forms.input-group>
                     </div>
                 </div>
             @endif
@@ -251,16 +241,11 @@ $addProductPermission = user()->permission('add_product');
                                                 <tbody>
                                                     <tr>
                                                         <td width="70%" class="c-inv-sub-padding">
-                                                            <input type="number" min="0" name="discount_value"
-                                                                class="form-control f-14 border-0 w-100 text-right discount_value"
-                                                                placeholder="0"
-                                                                value="{{ isset($estimate) ? $estimate->discount : '0' }}">
+                                                            <input type="number" min="0" name="discount_value" class="form-control f-14 border-0 w-100 text-right discount_value" placeholder="0" value="{{ isset($estimate) ? $estimate->discount : '0' }}">
                                                         </td>
                                                         <td width="30%" align="left" class="c-inv-sub-padding">
-                                                            <div
-                                                                class="select-others select-tax height-35 rounded border-0">
-                                                                <select class="form-control select-picker"
-                                                                    id="discount_type" name="discount_type">
+                                                            <div class="select-others select-tax height-35 rounded border-0">
+                                                                <select class="form-control select-picker" id="discount_type" name="discount_type">
                                                                     <option @selected(isset($estimate) && $estimate->discount_type == 'percent') value="percent">%
                                                                     </option>
                                                                     <option @selected(isset($estimate) && $estimate->discount_type == 'fixed') value="fixed">
@@ -272,8 +257,7 @@ $addProductPermission = user()->permission('add_product');
                                                 </tbody>
                                             </table>
                                         </td>
-                                        <td><span
-                                                id="discount_amount">{{ isset($estimate) ? number_format((float) $estimate->discount, 2, '.', '') : '0.00' }}</span>
+                                        <td><span id="discount_amount">{{ isset($estimate) ? number_format((float) $estimate->discount, 2, '.', '') : '0.00' }}</span>
                                         </td>
                                     </tr>
                                     <tr>
@@ -301,18 +285,17 @@ $addProductPermission = user()->permission('add_product');
         </div>
         <!-- TOTAL, DISCOUNT END -->
 
-    <!-- NOTE AND TERMS AND CONDITIONS START -->
-    <div class="d-flex flex-wrap px-lg-4 px-md-4 px-3 py-3">
-        <div class="col-md-6 col-sm-12 c-inv-note-terms p-0 mb-lg-0 mb-md-0 mb-3">
-            <label class="f-14 text-dark-grey mb-12  w-100"
-                for="usr">@lang('app.clientNote')</label>
-            <textarea class="form-control" name="note" id="note" rows="4"></textarea>
+        <!-- NOTE AND TERMS AND CONDITIONS START -->
+        <div class="d-flex flex-wrap px-lg-4 px-md-4 px-3 py-3">
+            <div class="col-md-6 col-sm-12 c-inv-note-terms p-0 mb-lg-0 mb-md-0 mb-3">
+                <label class="f-14 text-dark-grey mb-12  w-100" for="usr">@lang('app.clientNote')</label>
+                <textarea class="form-control" name="note" id="note" rows="4"></textarea>
+            </div>
+
+
         </div>
-
-
-    </div>
-    <x-forms.custom-field :fields="$fields" class="col-md-12"></x-forms.custom-field>
-    <!-- NOTE AND TERMS AND CONDITIONS END -->
+        <x-forms.custom-field :fields="$fields" class="col-md-12"></x-forms.custom-field>
+        <!-- NOTE AND TERMS AND CONDITIONS END -->
         <!-- CANCEL SAVE SEND START -->
         <x-form-actions class="c-inv-btns d-block d-lg-flex d-md-flex">
             <x-forms.button-primary id="createOrder">@lang('app.submit')</x-forms.button-primary>
@@ -331,7 +314,7 @@ $addProductPermission = user()->permission('add_product');
 <script src="{{ asset('vendor/jquery/jquery-ui.min.js') }}"></script>
 
 <script>
-    $(function () {
+    $(function() {
         $("#sortable").sortable();
     });
 
@@ -339,50 +322,58 @@ $addProductPermission = user()->permission('add_product');
 
         $('.toggle-product-category').click(function() {
             $('.product-category-filter').toggleClass('d-none');
-            var url = "{{route('invoices.product_category', ':id')}}";
+            var url = "{{ route('invoices.product_category', ':id') }}";
             url = url.replace(':id', null);
             changeProductCategory(url);
             $('#product_category_id').val('').trigger('change');
             $('#product_category_id').selectpicker('refresh');
         });
 
-        $('#product_category_id').on('change', function(){
+        $('#product_category_id').on('change', function() {
             var categoryId = $(this).val();
-            var url = "{{route('invoices.product_category', ':id')}}";
+            var url = "{{ route('invoices.product_category', ':id') }}";
             url = (categoryId) ? url.replace(':id', categoryId) : url.replace(':id', null);
             changeProductCategory(url);
         });
 
         function changeProductCategory(url) {
-            $.easyAjax({
-                url : url,
-                type : "GET",
-                container: '#saveInvoiceForm',
-                blockUI: true,
-                success: function (response) {
-                    if (response.status == 'success') {
-                        var options = [];
-                        var rData = [];
-                        rData = response.data;
-                        $.each(rData, function(index, value) {
-                            var selectData = '';
-                            selectData = '<option value="' + value.id + '">' + value.name +
-                                '</option>';
-                            options.push(selectData);
-                        });
-                        $('#add-products').html(
-                            '<option value="" class="form-control" >{{  __('app.menu.selectProduct') }}</option>' +
-                            options);
-                        $('#add-products').selectpicker('refresh');
-                    }
+            $.easyBlockUI('#saveInvoiceForm');
+            window.apiHttp.get(url).then(function(response) {
+                if (response.status == 'success') {
+                    var options = [];
+                    var rData = [];
+                    rData = response.data;
+                    $.each(rData, function(index, value) {
+                        var selectData = '';
+                        selectData = '<option value="' + value.id + '">' + value.name +
+                            '</option>';
+                        options.push(selectData);
+                    });
+                    $('#add-products').html(
+                        '<option value="" class="form-control" >{{ __('app.menu.selectProduct') }}</option>' +
+                        options);
+                    $('#add-products').selectpicker('refresh');
                 }
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $.easyUnblockUI('#saveInvoiceForm');
             });
         }
 
         const hsn_status = {{ $invoiceSetting->hsn_sac_code_show }};
 
         $('#status').change(function() {
-            if($(this).val() == 'completed') {
+            if ($(this).val() == 'completed') {
                 $('#bank_account_id').closest('.c-inv-select').removeClass('d-none');
             } else {
                 $('#bank_account_id').closest('.c-inv-select').addClass('d-none');
@@ -406,45 +397,51 @@ $addProductPermission = user()->permission('add_product');
             var url = "{{ route('clients.ajax_details', ':id') }}";
             url = url.replace(':id', id);
 
-            $.easyAjax({
-                url: url,
-                container: '#saveInvoiceForm',
-                type: "POST",
-                blockUI: true,
-                data: {
-                    _token: token
-                },
-                success: function(response) {
-                    if (response.status == 'success') {
-                        if (response.data !== null) {
-                            $('#client_billing_address').html(nl2br(response.data.client_details
-                                .address));
-                            $('#add-shipping-field').addClass('d-none');
-                            $('#client_shipping_address').removeClass('d-none');
-                            $('#project_id').html(response.project);
-                            $('#project_id').selectpicker('refresh');
+            $.easyBlockUI('#saveInvoiceForm');
+            var clientBody = '_token=' + encodeURIComponent(token);
+            window.apiHttp.postUrlEncoded(url, clientBody).then(function(response) {
+                if (response.status == 'success') {
+                    if (response.data !== null) {
+                        $('#client_billing_address').html(nl2br(response.data.client_details
+                            .address));
+                        $('#add-shipping-field').addClass('d-none');
+                        $('#client_shipping_address').removeClass('d-none');
+                        $('#project_id').html(response.project);
+                        $('#project_id').selectpicker('refresh');
 
-                            if (response.data.client_details.shipping_address === null) {
-                                var addShippingLink =
-                                    '<a href="javascript:;" class="" id="show-shipping-field"><i class="f-12 mr-2 fa fa-plus"></i>@lang("app.addShippingAddress")</a>';
-                                $('#client_shipping_address').html(addShippingLink);
-                            } else {
-                                $('#client_shipping_address').html(nl2br(response.data
-                                    .client_details
-                                    .shipping_address));
-                            }
-
+                        if (response.data.client_details.shipping_address === null) {
+                            var addShippingLink =
+                                '<a href="javascript:;" class="" id="show-shipping-field"><i class="f-12 mr-2 fa fa-plus"></i>@lang('app.addShippingAddress')</a>';
+                            $('#client_shipping_address').html(addShippingLink);
                         } else {
-                            $('#client_billing_address').html(
-                                "<span class='text-lightest'>@lang('messages.selectCustomerForBillingAddress')</span>"
-                            );
+                            $('#client_shipping_address').html(nl2br(response.data
+                                .client_details
+                                .shipping_address));
                         }
+
                     } else {
-                        var addShippingLink =
-                            '<a href="javascript:;" class="" id="show-shipping-field"><i class="f-12 mr-2 fa fa-plus"></i>@lang("app.addShippingAddress")</a>';
-                        $('#client_shipping_address').html(addShippingLink);
+                        $('#client_billing_address').html(
+                            "<span class='text-lightest'>@lang('messages.selectCustomerForBillingAddress')</span>"
+                        );
                     }
+                } else {
+                    var addShippingLink =
+                        '<a href="javascript:;" class="" id="show-shipping-field"><i class="f-12 mr-2 fa fa-plus"></i>@lang('app.addShippingAddress')</a>';
+                    $('#client_shipping_address').html(addShippingLink);
                 }
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $.easyUnblockUI('#saveInvoiceForm');
             });
 
         }
@@ -466,7 +463,7 @@ $addProductPermission = user()->permission('add_product');
             }
         });
 
-        function ucWord(str){
+        function ucWord(str) {
             str = str.toLowerCase().replace(/\b[a-z]/g, function(letter) {
                 return letter.toUpperCase();
             });
@@ -495,34 +492,44 @@ $addProductPermission = user()->permission('add_product');
                 return; // Exit the function
             }
 
-            $.easyAjax({
-                url: "{{ route('orders.add_item') }}",
-                type: "GET",
-                data: {
+            $.easyBlockUI('#saveInvoiceForm');
+            window.apiHttp.get("{{ route('orders.add_item') }}", {
+                params: {
                     id: id
-                },
-                blockUI: true,
-                success: function(response) {
-                    if($('input[name="item_name[]"]').val() == ''){
-                        $("#sortable .item-row").remove();
-                    }
-                    $(response.view).hide().appendTo("#sortable").fadeIn(500);
-                    $('.selectpicker').selectpicker('refresh');
-                    calculateTotal();
-                    $('.dropify').dropify();
-                    $('#alertMessage').hide().fadeOut(500);
-                    var noOfRows = $(document).find('#sortable .item-row').length;
-                    var i = $(document).find('.item_name').length - 1;
-                    var itemRow = $(document).find('#sortable .item-row:nth-child(' + noOfRows +
-                        ') select.type');
-                    itemRow.attr('id', 'multiselect' + i);
-                    itemRow.attr('name', 'taxes[' + i + '][]');
-                    $(document).find('#multiselect' + i).selectpicker();
+                }
+            }).then(function(response) {
+                if ($('input[name="item_name[]"]').val() == '') {
+                    $("#sortable .item-row").remove();
+                }
+                $(response.view).hide().appendTo("#sortable").fadeIn(500);
+                $('.selectpicker').selectpicker('refresh');
+                calculateTotal();
+                $('.dropify').dropify();
+                $('#alertMessage').hide().fadeOut(500);
+                var noOfRows = $(document).find('#sortable .item-row').length;
+                var i = $(document).find('.item_name').length - 1;
+                var itemRow = $(document).find('#sortable .item-row:nth-child(' + noOfRows +
+                    ') select.type');
+                itemRow.attr('id', 'multiselect' + i);
+                itemRow.attr('name', 'taxes[' + i + '][]');
+                $(document).find('#multiselect' + i).selectpicker();
 
-                    $(document).find('#dropify' + i).dropify({
-                        messages: dropifyMessages
+                $(document).find('#dropify' + i).dropify({
+                    messages: dropifyMessages
+                });
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
                     });
                 }
+            }).finally(function() {
+                $.easyUnblockUI('#saveInvoiceForm');
             });
         }
 
@@ -535,7 +542,7 @@ $addProductPermission = user()->permission('add_product');
                     $(this).attr('id', 'multiselect' + index + '');
                 });
 
-                if($(document).find('#sortable .item-row').length == 0){
+                if ($(document).find('#sortable .item-row').length == 0) {
                     $('#alertMessage').show().fadeIn(500);
                 }
 
@@ -573,15 +580,33 @@ $addProductPermission = user()->permission('add_product');
                 return false;
             }
 
-            $.easyAjax({
-                url: "{{ route('orders.store') }}",
-                container: '#saveInvoiceForm',
-                type: "POST",
-                blockUI: true,
-                redirect: true,
-                file: true,
-                data: $('#saveInvoiceForm').serialize()
-            })
+            var $createBtn = $('#createOrder');
+            var storeBody = $('#saveInvoiceForm').serialize();
+            $createBtn.prop('disabled', true);
+            $.easyBlockUI('#saveInvoiceForm');
+            window.apiHttp.postUrlEncoded("{{ route('orders.store') }}", storeBody).then(function(response) {
+                if (response.status === 'success') {
+                    if (response.action === 'redirect' && response.url) {
+                        window.location.href = response.url;
+                    } else if (response.redirectUrl) {
+                        window.location.href = response.redirectUrl;
+                    }
+                }
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $createBtn.prop('disabled', false);
+                $.easyUnblockUI('#saveInvoiceForm');
+            });
         });
 
         $('#saveInvoiceForm').on('click', '.remove-item', function() {
@@ -632,5 +657,4 @@ $addProductPermission = user()->permission('add_product');
 
         init(RIGHT_MODAL);
     });
-
 </script>

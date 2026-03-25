@@ -325,27 +325,34 @@
             var url = "{{ route('get_client_sub_categories', ':id') }}";
             url = url.replace(':id', categoryId);
 
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                success: function(response) {
-                    if (response.status == 'success') {
-                        var options = [];
-                        var rData = [];
-                        rData = response.data;
-                        $.each(rData, function(index, value) {
-                            var selectData = '';
-                            selectData = '<option value="' + value.id + '">' + value
-                                .category_name + '</option>';
-                            options.push(selectData);
-                        });
+            window.apiHttp.get(url).then(function(response) {
+                if (response.status == 'success') {
+                    var options = [];
+                    var rData = [];
+                    rData = response.data;
+                    $.each(rData, function(index, value) {
+                        var selectData = '';
+                        selectData = '<option value="' + value.id + '">' + value
+                            .category_name + '</option>';
+                        options.push(selectData);
+                    });
 
-                        $('#sub_category_id').html('<option value="">--</option>' +
-                            options);
-                        $('#sub_category_id').selectpicker('refresh');
-                    }
+                    $('#sub_category_id').html('<option value="">--</option>' +
+                        options);
+                    $('#sub_category_id').selectpicker('refresh');
                 }
-            })
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            });
 
         });
 
@@ -381,43 +388,50 @@
         });
 
         function saveClient(data, url, buttonSelector) {
-            $.easyAjax({
-                url: url,
-                container: '#save-client-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: buttonSelector,
-                file: true,
-                data: data,
-                success: function(response) {
-                    if (response.status == 'success') {
-                        if ($(MODAL_XL).hasClass('show')) {
+            var $btn = $(buttonSelector);
+            $btn.prop('disabled', true);
+            $.easyBlockUI('#save-client-data-form');
+            window.apiHttp.postForm(url, document.getElementById('save-client-data-form')).then(function(response) {
+                if (response.status == 'success') {
+                    if ($(MODAL_XL).hasClass('show')) {
 
-                            $(MODAL_XL).modal('hide');
-                            window.location.reload();
-                        } else if (typeof response.redirectUrl !== 'undefined') {
-                            window.location.href = response.redirectUrl;
-                        } else if (response.add_more == true) {
+                        $(MODAL_XL).modal('hide');
+                        window.location.reload();
+                    } else if (typeof response.redirectUrl !== 'undefined') {
+                        window.location.href = response.redirectUrl;
+                    } else if (response.add_more == true) {
 
-                            var right_modal_content = $.trim($(RIGHT_MODAL_CONTENT).html());
-                            if (right_modal_content.length) {
+                        var right_modal_content = $.trim($(RIGHT_MODAL_CONTENT).html());
+                        if (right_modal_content.length) {
 
-                                $(RIGHT_MODAL_CONTENT).html(response.html.html);
-                                $('#add_more').val(false);
-                            } else {
+                            $(RIGHT_MODAL_CONTENT).html(response.html.html);
+                            $('#add_more').val(false);
+                        } else {
 
-                                $('.content-wrapper').html(response.html.html);
-                                init('.content-wrapper');
-                                $('#add_more').val(false);
-                            }
-                        }
-
-                        if (typeof showTable !== 'undefined' && typeof showTable === 'function') {
-                            showTable();
+                            $('.content-wrapper').html(response.html.html);
+                            init('.content-wrapper');
+                            $('#add_more').val(false);
                         }
                     }
+
+                    if (typeof showTable !== 'undefined' && typeof showTable === 'function') {
+                        showTable();
+                    }
                 }
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $btn.prop('disabled', false);
+                $.easyUnblockUI('#save-client-data-form');
             });
         }
 

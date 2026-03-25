@@ -1,7 +1,6 @@
 <div class="modal-header">
     <h5 class="modal-title" id="modelHeading">@lang('app.editFile')</h5>
-    <button type="button"  class="close" data-dismiss="modal" aria-label="Close"><span
-            aria-hidden="true">×</span></button>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
 </div>
 <div class="modal-body">
 
@@ -9,12 +8,10 @@
         @method('PUT')
         <div class="row">
             <div class="col-md-12">
-                <x-forms.text :fieldLabel="__('modules.projects.fileName')" fieldName="name"
-                    fieldRequired="true" fieldId="name" :fieldValue="$file->name" />
+                <x-forms.text :fieldLabel="__('modules.projects.fileName')" fieldName="name" fieldRequired="true" fieldId="name" :fieldValue="$file->name" />
             </div>
             <div class="col-md-12">
-                <x-forms.file :fieldLabel="__('modules.projects.uploadFile')" fieldName="file"
-                    fieldRequired="true" fieldId="file" allowedFileExtensions="txt pdf doc xls xlsx docx rtf png jpg jpeg svg" :popover="__('messages.fileFormat.multipleImageFile')" :fieldValue="$file->doc_url" />
+                <x-forms.file :fieldLabel="__('modules.projects.uploadFile')" fieldName="file" fieldRequired="true" fieldId="file" allowedFileExtensions="txt pdf doc xls xlsx docx rtf png jpg jpeg svg" :popover="__('messages.fileFormat.multipleImageFile')" :fieldValue="$file->doc_url" />
             </div>
         </div>
     </x-form>
@@ -26,25 +23,30 @@
 </div>
 
 <script>
-
-     $('body').on('click', '#submit-document', function() {
+    $('body').on('click', '#submit-document', function() {
         var url = "{{ route('client-docs.update', $file->id) }}";
-
-        $.easyAjax({
-            url: url,
-            container: '#update-client-file-data-form',
-            type: "POST",
-            file: true,
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#submit-document",
-            data: $('#update-client-file-data-form').serialize(),
-            success: function(response) {
-                if (response.status == 'success') {
-                    window.location.reload();
-                }
+        var $btn = $('#submit-document');
+        $btn.prop('disabled', true);
+        $.easyBlockUI('#update-client-file-data-form');
+        window.apiHttp.postForm(url, document.getElementById('update-client-file-data-form')).then(function(response) {
+            if (response.status == 'success') {
+                window.location.reload();
             }
-        })
+        }).catch(function(err) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    text: err.message,
+                    toast: true,
+                    position: 'top-end',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            }
+        }).finally(function() {
+            $btn.prop('disabled', false);
+            $.easyUnblockUI('#update-client-file-data-form');
+        });
     });
 
     init('#update-client-file-data-form');

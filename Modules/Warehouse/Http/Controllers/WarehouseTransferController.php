@@ -2,7 +2,7 @@
 
 namespace Modules\Warehouse\Http\Controllers;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\AccountBaseController;
 use App\Models\Product;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -10,14 +10,29 @@ use Illuminate\Support\Facades\Log;
 use Modules\Warehouse\Entities\Warehouse;
 use Modules\Warehouse\Services\StockMovementService;
 
-class WarehouseTransferController extends Controller
+class WarehouseTransferController extends AccountBaseController
 {
+    public function __construct()
+    {
+        parent::__construct();
+        $this->middleware(function ($request, $next) {
+            abort_403(! in_array('warehouse', user_modules()));
+
+            return $next($request);
+        });
+    }
+
     public function create()
     {
         $warehouses = Warehouse::where('status', 'active')->get();
         $products = Product::select('id', 'name', 'sku')->get();
 
-        return view('warehouse::transfer.create', compact('warehouses', 'products'));
+        $this->pageTitle = 'warehouse::app.transferStock';
+        $this->pageIcon = 'ti-layout';
+        $this->warehouses = $warehouses;
+        $this->products = $products;
+
+        return view('warehouse::transfer.create', $this->data);
     }
 
     public function store(Request $request): RedirectResponse
@@ -47,9 +62,9 @@ class WarehouseTransferController extends Controller
 
             return redirect()->route('warehouse.stock.index')->with('success', 'Stock transferred successfully.');
         } catch (\Throwable $e) {
-            Log::error('Stock Transfer Error: ' . $e->getMessage());
+            Log::error('Stock Transfer Error: '.$e->getMessage());
 
-            return back()->with('error', 'Something went wrong! ' . $e->getMessage());
+            return back()->with('error', 'Something went wrong! '.$e->getMessage());
         }
     }
 }

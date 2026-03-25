@@ -15,7 +15,7 @@
                     <div class="col-lg-9">
                         <div class="row">
                             <div class="col-md-6">
-                                <x-forms.text :fieldLabel="__('qrcode::app.fields.qrTitle')" fieldName="qrTitle" fieldId="qrTitle" :fieldRequired="true"/>
+                                <x-forms.text :fieldLabel="__('qrcode::app.fields.qrTitle')" fieldName="qrTitle" fieldId="qrTitle" :fieldRequired="true" />
                             </div>
 
                             <div class="col-lg-6">
@@ -52,16 +52,13 @@
 
                 <div class="row px-4 d-none" id="qr-logo">
                     <div class="col-lg-12">
-                        <x-forms.file allowedFileExtensions="png jpg jpeg svg bmp" class="mr-0 mr-lg-2 mr-md-2 cropper"
-                                      :fieldLabel="__('qrcode::app.fields.logo')" fieldName="logo" fieldId="logo"
-                                      fieldHeight="100" />
+                        <x-forms.file allowedFileExtensions="png jpg jpeg svg bmp" class="mr-0 mr-lg-2 mr-md-2 cropper" :fieldLabel="__('qrcode::app.fields.logo')" fieldName="logo" fieldId="logo" fieldHeight="100" />
                     </div>
                     <div class="col-lg-12">
                         <div class="form-group my-3">
-                            <x-forms.label fieldId="logo_size" :fieldLabel="__('qrcode::app.fields.logo_size')"  fieldRequired="true"/>
+                            <x-forms.label fieldId="logo_size" :fieldLabel="__('qrcode::app.fields.logo_size')" fieldRequired="true" />
 
-                            <input type="range" class="form-control-range" id="logo_size" value="100" name="logo_size" min="30"
-                            onInput="$('#logo_size-val').html($(this).val() + '%')">
+                            <input type="range" class="form-control-range" id="logo_size" value="100" name="logo_size" min="30" onInput="$('#logo_size-val').html($(this).val() + '%')">
 
                             <span class="badge badge-light" id="logo_size-val">100%</span>
                         </div>
@@ -78,22 +75,19 @@
                 <div class="row px-4 d-none" id="qr-logo-design">
 
                     <div class="col-lg-6">
-                        <x-forms.number fieldId="size" :fieldLabel="__('qrcode::app.fields.size')" fieldName="size" fieldRequired="true" :fieldPlaceholder="__('qrcode::app.fields.size')" fieldValue="200" minValue="200"/>
+                        <x-forms.number fieldId="size" :fieldLabel="__('qrcode::app.fields.size')" fieldName="size" fieldRequired="true" :fieldPlaceholder="__('qrcode::app.fields.size')" fieldValue="200" minValue="200" />
                     </div>
 
                     <div class="col-lg-6">
-                        <x-forms.number fieldId="margin" :fieldLabel="__('qrcode::app.fields.margin')" fieldName="margin" fieldRequired="true" :fieldPlaceholder="__('qrcode::app.fields.margin')" fieldValue="10" minValue="10"/>
+                        <x-forms.number fieldId="margin" :fieldLabel="__('qrcode::app.fields.margin')" fieldName="margin" fieldRequired="true" :fieldPlaceholder="__('qrcode::app.fields.margin')" fieldValue="10" minValue="10" />
                     </div>
 
                     <div class="col-lg-6">
                         <div class="form-group my-3">
-                            <x-forms.label fieldId="colorselector" fieldRequired="true"
-                                            :fieldLabel="__('qrcode::app.fields.background_color')">
+                            <x-forms.label fieldId="colorselector" fieldRequired="true" :fieldLabel="__('qrcode::app.fields.background_color')">
                             </x-forms.label>
                             <x-forms.input-group class="color-picker">
-                                <input type="text" class="form-control height-35 f-14"
-                                        value="#ffffff"
-                                        placeholder="{{ __('placeholders.colorPicker') }}" name="background_color">
+                                <input type="text" class="form-control height-35 f-14" value="#ffffff" placeholder="{{ __('placeholders.colorPicker') }}" name="background_color">
 
                                 <x-slot name="append">
                                     <span class="input-group-text height-35 colorpicker-input-addon"><i></i></span>
@@ -104,13 +98,10 @@
 
                     <div class="col-lg-6">
                         <div class="form-group my-3">
-                            <x-forms.label fieldId="colorselector" fieldRequired="true"
-                                            :fieldLabel="__('qrcode::app.fields.foreground_color')">
+                            <x-forms.label fieldId="colorselector" fieldRequired="true" :fieldLabel="__('qrcode::app.fields.foreground_color')">
                             </x-forms.label>
                             <x-forms.input-group class="color-picker">
-                                <input type="text" class="form-control height-35 f-14"
-                                        value="#000000"
-                                        placeholder="{{ __('placeholders.colorPicker') }}" name="foreground_color">
+                                <input type="text" class="form-control height-35 f-14" value="#000000" placeholder="{{ __('placeholders.colorPicker') }}" name="foreground_color">
 
                                 <x-slot name="append">
                                     <span class="input-group-text height-35 colorpicker-input-addon"><i></i></span>
@@ -155,17 +146,23 @@
             $('.qr-preview img').attr('src', '');
             displayQrPlaceholder();
 
-            $.easyAjax({
-                url: url,
-                type: 'GET',
-                success: function (response) {
-                    $('#qr-fields').html(response.view);
-                    $('.select-picker').selectpicker('refresh');
-                },
-                complete: function () {
-                    $.easyUnblockUI('.qr-preview');
+            window.apiHttp.get(url).then(function(response) {
+                $('#qr-fields').html(response.view);
+                $('.select-picker').selectpicker('refresh');
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 3000,
+                        showConfirmButton: false
+                    });
                 }
-            })
+            }).finally(function() {
+                $.easyUnblockUI('.qr-preview');
+            });
 
 
         });
@@ -186,17 +183,23 @@
             let form = $('#save-qrcode-data-form');
             clearFromErrors();
 
-            $.easyAjax({
-                url: '{{ route('qrcode.store') }}',
-                type: 'POST',
-                blockUI: true,
-                container: '#save-qrcode-data-form',
-                data: form.serialize(),
-                file: true,
-                success: function (response) {
-                    setQrPerview(response.qr);
-                    window.location.href = '{{ route('qrcode.index') }}';
+            $.easyBlockUI('#save-qrcode-data-form');
+            window.apiHttp.postForm('{{ route('qrcode.store') }}', form[0]).then(function(response) {
+                setQrPerview(response.qr);
+                window.location.href = '{{ route('qrcode.index') }}';
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
                 }
+            }).finally(function() {
+                $.easyUnblockUI('#save-qrcode-data-form');
             });
         });
 
@@ -207,18 +210,21 @@
 
             $.easyBlockUI('.qr-preview');
 
-            $.easyAjax({
-                url: '{{ route('qrcode.preview') }}',
-                type: 'POST',
-                container: '#save-qrcode-data-form',
-                data: form.serialize(),
-                file: true,
-                success: function (response) {
-                    setQrPerview(response.qr);
-                },
-                complete: function () {
-                    $.easyUnblockUI('.qr-preview');
+            window.apiHttp.postForm('{{ route('qrcode.preview') }}', form[0]).then(function(response) {
+                setQrPerview(response.qr);
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
                 }
+            }).finally(function() {
+                $.easyUnblockUI('.qr-preview');
             });
         }
 
@@ -230,7 +236,7 @@
         function clearFromErrors() {
             // Remove all errors
             $('#save-qrcode-data-form').find(".invalid-feedback").remove();
-            $('#save-qrcode-data-form').find(".is-invalid").each(function () {
+            $('#save-qrcode-data-form').find(".is-invalid").each(function() {
                 $(this).removeClass("is-invalid");
             });
         }

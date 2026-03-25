@@ -3,7 +3,7 @@
     <!-- HEADING START -->
     <div class="px-lg-4 px-md-4 px-3 py-3">
         <h4 class="mb-0 f-21 font-weight-normal ">@lang('app.createTimeLogInvoice')
-            </h4>
+        </h4>
     </div>
     <!-- HEADING END -->
     <hr class="m-0 border-top-grey">
@@ -20,11 +20,9 @@
                     </x-forms.label>
                     <x-forms.input-group>
                         <x-slot name="prepend">
-                            <span
-                                class="input-group-text">{{ invoice_setting()->invoice_prefix }}{{ invoice_setting()->invoice_number_separator }}{{ $zero }}</span>
+                            <span class="input-group-text">{{ invoice_setting()->invoice_prefix }}{{ invoice_setting()->invoice_number_separator }}{{ $zero }}</span>
                         </x-slot>
-                        <input type="text" name="invoice_number" id="invoice_number"
-                            class="form-control height-35 f-15" value="{{ is_null($lastInvoice) ? 1 : $lastInvoice }}">
+                        <input type="text" name="invoice_number" id="invoice_number" class="form-control height-35 f-15" value="{{ is_null($lastInvoice) ? 1 : $lastInvoice }}">
                     </x-forms.input-group>
                 </div>
             </div>
@@ -38,8 +36,7 @@
                         </x-forms.label>
                         <div class="input-group">
                             <input type="hidden" name="project_id" id="project_id" value="{{ $project->id }}">
-                            <input type="text" value="{{ $project->project_name }}"
-                                class="form-control height-35 f-15 readonly-background" readonly>
+                            <input type="text" value="{{ $project->project_name }}" class="form-control height-35 f-15 readonly-background" readonly>
                         </div>
                     </div>
                 @else
@@ -47,8 +44,7 @@
                         <x-forms.label fieldId="project_id" :fieldLabel="__('app.project')">
                         </x-forms.label>
                         <div class="select-others height-35 rounded">
-                            <select class="form-control select-picker" data-live-search="true" data-size="8"
-                                name="project_id" id="project_id">
+                            <select class="form-control select-picker" data-live-search="true" data-size="8" name="project_id" id="project_id">
                                 @foreach ($projects as $project)
                                     <option value="{{ $project->id }}">{{ $project->project_name }}
                                     </option>
@@ -66,9 +62,7 @@
                     <x-forms.label fieldId="company_name" :fieldLabel="__('app.client')">
                     </x-forms.label>
                     <div class="input-group" id="client_company_div">
-                        <input type="text" id="company_name" name="company_name"
-                            class="px-6 position-relative text-dark font-weight-normal form-control height-35 rounded p-0 text-left f-15"
-                            placeholder="" value="">
+                        <input type="text" id="company_name" name="company_name" class="px-6 position-relative text-dark font-weight-normal form-control height-35 rounded p-0 text-left f-15" placeholder="" value="">
                     </div>
                 </div>
             </div>
@@ -80,10 +74,7 @@
                     <x-forms.label fieldId="due_date" :fieldLabel="__('modules.invoices.invoiceDate')">
                     </x-forms.label>
                     <div class="input-group">
-                        <input type="text" id="invoice_date" name="issue_date"
-                            class="px-6 position-relative text-dark font-weight-normal form-control height-35 rounded p-0 text-left f-15"
-                            placeholder="@lang('placeholders.date')"
-                            value="{{ now(company()->timezone)->format(company()->date_format) }}">
+                        <input type="text" id="invoice_date" name="issue_date" class="px-6 position-relative text-dark font-weight-normal form-control height-35 rounded p-0 text-left f-15" placeholder="@lang('placeholders.date')" value="{{ now(company()->timezone)->format(company()->date_format) }}">
                     </div>
                 </div>
             </div>
@@ -94,10 +85,7 @@
                 <div class="form-group mb-lg-0 mb-4">
                     <x-forms.label fieldId="due_date" :fieldLabel="__('app.dueDate')"></x-forms.label>
                     <div class="input-group ">
-                        <input type="text" id="due_date" name="due_date"
-                            class="px-6 position-relative text-dark font-weight-normal form-control height-35 rounded p-0 text-left f-15"
-                            placeholder="@lang('placeholders.date')"
-                            value="{{ now(company()->timezone)->addDays($invoiceSetting->due_after)->format(company()->date_format) }}">
+                        <input type="text" id="due_date" name="due_date" class="px-6 position-relative text-dark font-weight-normal form-control height-35 rounded p-0 text-left f-15" placeholder="@lang('placeholders.date')" value="{{ now(company()->timezone)->addDays($invoiceSetting->due_after)->format(company()->date_format) }}">
                     </div>
                 </div>
             </div>
@@ -112,9 +100,7 @@
                     <div class="select-others height-35 rounded" id="select_currency_id">
                         <select class="form-control select-picker" name="currency_id" id="currency_id">
                             @foreach ($currencies as $currency)
-                                <option
-                                    @if (isset($estimate)) @if ($currency->id == $estimate->currency_id) selected @endif
-                                @else @if ($currency->id == company()->currency_id) selected @endif @endif
+                            <option @if (isset($estimate)) @if ($currency->id == $estimate->currency_id) selected @endif @else @if ($currency->id == company()->currency_id) selected @endif @endif
                                     value="{{ $currency->id }}">
                                     {{ $currency->currency_code . ' (' . $currency->currency_symbol . ')' }}
                                 </option>
@@ -127,9 +113,7 @@
             <div class="col-lg-3 col-md-6">
                 <x-forms.label fieldId="exchange_rate" :fieldLabel="__('modules.currencySettings.exchangeRate')" fieldRequired="true">
                 </x-forms.label>
-                <input type="number" id="exchange_rate" name="exchange_rate"
-                    class="px-6 position-relative text-dark font-weight-normal form-control height-35 rounded p-0 text-left f-15"
-                    readonly>
+                <input type="number" id="exchange_rate" name="exchange_rate" class="px-6 position-relative text-dark font-weight-normal form-control height-35 rounded p-0 text-left f-15" readonly>
                 <small id="currency_exchange" class="form-text text-muted"></small>
             </div>
             <!-- TIMELOG FROM START -->
@@ -138,10 +122,7 @@
                     <x-forms.label fieldId="timelog_from" :fieldLabel="__('modules.timeLogs.timeLogFrom')">
                     </x-forms.label>
                     <div class="input-group">
-                        <input type="text" id="timelog_from" name="timelog_from"
-                            class="px-6 position-relative text-dark font-weight-normal form-control height-35 rounded p-0 text-left f-15"
-                            placeholder="@lang('placeholders.date')"
-                            value="{{ $startDate->format(company()->date_format) }}">
+                        <input type="text" id="timelog_from" name="timelog_from" class="px-6 position-relative text-dark font-weight-normal form-control height-35 rounded p-0 text-left f-15" placeholder="@lang('placeholders.date')" value="{{ $startDate->format(company()->date_format) }}">
                     </div>
                 </div>
             </div>
@@ -153,10 +134,7 @@
                     <x-forms.label fieldId="timelog_to" :fieldLabel="__('modules.timeLogs.timeLogTo')">
                     </x-forms.label>
                     <div class="input-group">
-                        <input type="text" id="timelog_to" name="timelog_to"
-                            class="px-6 position-relative text-dark font-weight-normal form-control height-35 rounded p-0 text-left f-15"
-                            placeholder="@lang('placeholders.date')"
-                            value="{{ $endDate->format(company()->date_format) }}">
+                        <input type="text" id="timelog_to" name="timelog_to" class="px-6 position-relative text-dark font-weight-normal form-control height-35 rounded p-0 text-left f-15" placeholder="@lang('placeholders.date')" value="{{ $endDate->format(company()->date_format) }}">
                     </div>
                 </div>
             </div>
@@ -168,8 +146,7 @@
                     <x-forms.label fieldId="calculate_tax" :fieldLabel="__('modules.invoices.calculateTax')">
                     </x-forms.label>
                     <div class="select-others height-35 rounded">
-                        <select class="form-control select-picker" data-live-search="true" data-size="8"
-                            name="calculate_tax" id="calculate_tax">
+                        <select class="form-control select-picker" data-live-search="true" data-size="8" name="calculate_tax" id="calculate_tax">
                             <option value="after_discount">@lang('modules.invoices.afterDiscount')</option>
                             <option value="before_discount">@lang('modules.invoices.beforeDiscount')</option>
                         </select>
@@ -183,8 +160,7 @@
                     <x-forms.label fieldId="company_address_id" :fieldLabel="__('modules.invoices.generatedBy')">
                     </x-forms.label>
                     <div class="select-others height-35 rounded">
-                        <select class="form-control select-picker" data-live-search="true" data-size="8"
-                            name="company_address_id" id="company_address_id">
+                        <select class="form-control select-picker" data-live-search="true" data-size="8" name="company_address_id" id="company_address_id">
                             @foreach ($companyAddresses as $item)
                                 <option {{ $item->is_default ? 'selected' : '' }} value="{{ $item->id }}">
                                     {{ $item->location }}</option>
@@ -220,8 +196,7 @@
                                         <td colspan="2" class="border-top-0 text-dark-grey">
                                             @lang('modules.invoices.subTotal')</td>
                                         <td width="30%" class="border-top-0 sub-total">0.00</td>
-                                        <input type="hidden" class="sub-total-field" name="sub_total"
-                                            value="0">
+                                        <input type="hidden" class="sub-total-field" name="sub_total" value="0">
                                     </tr>
                                     <tr>
                                         <td width="20%" class="text-dark-grey">@lang('modules.invoices.discount')
@@ -231,23 +206,13 @@
                                                 <tbody>
                                                     <tr>
                                                         <td width="70%" class="c-inv-sub-padding">
-                                                            <input type="number" min="0"
-                                                                name="discount_value"
-                                                                class="form-control f-14 border-0 w-100 text-right discount_value"
-                                                                placeholder="0"
-                                                                value="{{ isset($estimate) ? $estimate->discount : '0' }}">
+                                                            <input type="number" min="0" name="discount_value" class="form-control f-14 border-0 w-100 text-right discount_value" placeholder="0" value="{{ isset($estimate) ? $estimate->discount : '0' }}">
                                                         </td>
                                                         <td width="30%" align="left" class="c-inv-sub-padding">
-                                                            <div
-                                                                class="select-others select-tax height-35 rounded border-0">
-                                                                <select class="form-control select-picker"
-                                                                    id="discount_type" name="discount_type">
-                                                                    <option
-                                                                        @if (isset($estimate) && $estimate->discount_type == 'percent') selected @endif
-                                                                        value="percent">%</option>
-                                                                    <option
-                                                                        @if (isset($estimate) && $estimate->discount_type == 'fixed') selected @endif
-                                                                        value="fixed">
+                                                            <div class="select-others select-tax height-35 rounded border-0">
+                                                                <select class="form-control select-picker" id="discount_type" name="discount_type">
+                                                                    <option @if (isset($estimate) && $estimate->discount_type == 'percent') selected @endif value="percent">%</option>
+                                                                    <option @if (isset($estimate) && $estimate->discount_type == 'fixed') selected @endif value="fixed">
                                                                         @lang('modules.invoices.amount')</option>
                                                                 </select>
                                                             </div>
@@ -256,8 +221,7 @@
                                                 </tbody>
                                             </table>
                                         </td>
-                                        <td><span
-                                                id="discount_amount">{{ isset($estimate) ? number_format((float) $estimate->discount, 2, '.', '') : '0.00' }}</span>
+                                        <td><span id="discount_amount">{{ isset($estimate) ? number_format((float) $estimate->discount, 2, '.', '') : '0.00' }}</span>
                                         </td>
                                     </tr>
                                     <tr>
@@ -288,13 +252,11 @@
         <!-- NOTE AND TERMS AND CONDITIONS START -->
         <div class="d-flex flex-wrap px-lg-4 px-md-4 px-3 py-3">
             <div class="col-md-6 col-sm-12 c-inv-note-terms p-0 mb-lg-0 mb-md-0 mb-3">
-                <label class="f-14 text-dark-grey mb-12  w-100"
-                    for="usr">@lang('modules.invoices.note')</label>
+                <label class="f-14 text-dark-grey mb-12  w-100" for="usr">@lang('modules.invoices.note')</label>
                 <textarea class="form-control" name="note" id="note" rows="4" placeholder="@lang('placeholders.invoices.note')"></textarea>
             </div>
             <div class="col-md-6 col-sm-12 p-0 c-inv-note-terms">
-                <label class="f-14 text-dark-grey mb-12  w-100"
-                    for="usr">@lang('modules.invoiceSettings.invoiceTerms')</label>
+                <label class="f-14 text-dark-grey mb-12  w-100" for="usr">@lang('modules.invoiceSettings.invoiceTerms')</label>
                 {!! nl2br($invoiceSetting->invoice_terms) !!}
             </div>
         </div>
@@ -339,10 +301,10 @@
         });
         const dp2 = datepicker('#due_date'
 
-        , {
-            position: 'bl',
-            ...datepickerConfig
-        });
+            , {
+                position: 'bl',
+                ...datepickerConfig
+            });
         const dp3 = datepicker('#timelog_from', {
             position: 'bl',
             onSelect: (instance, date) => {
@@ -397,7 +359,7 @@
 
                     $('#client_company_div').html(data.html);
                     $('#select_currency_id').html(data.currency);
-                    $('#exchange_rate').val(1/data.exchangeRate);
+                    $('#exchange_rate').val(1 / data.exchangeRate);
                     let currencyExchange = (companyCurrencyName != data.currencyName) ? '( ' + data.currencyName + ' @lang('app.to') ' + companyCurrencyName + ' )' : '';
                     $('#currency_exchange').html(currencyExchange);
                     if ($('#show_shipping_address').prop('checked') === true) {
@@ -415,28 +377,34 @@
             var projectId = $('#project_id').val();
             var qtyValue = $('#unit_type_id').find(':selected').data('val');
 
-            $.easyAjax({
-                url: "{{ route('invoices.fetch_timelogs') }}",
-                type: "POST",
-                data: {
-                    '_token': token,
-                    timelogFrom: timelogFrom,
-                    timelogTo: timelogTo,
-                    projectId: projectId,
-                    qtyValue: qtyValue
-                },
-                success: function(response) {
-                    $("#sortable").html(response.html);
-                    var noOfRows = $(document).find('#sortable .item-row').length;
-                    $('#sortable').find(".quantity").each(function(index, element) {
-                        var i = index;
-                        var itemRow = $(this).closest('.item-row').find('select.type');
-                        itemRow.attr('id', 'multiselect' + i);
-                        itemRow.attr('name', 'taxes[' + i + '][]');
-                        $(document).find('#multiselect' + i).selectpicker();
-                    });
+            window.apiHttp.post("{{ route('invoices.fetch_timelogs') }}", {
+                _token: token,
+                timelogFrom: timelogFrom,
+                timelogTo: timelogTo,
+                projectId: projectId,
+                qtyValue: qtyValue
+            }).then(function(response) {
+                $("#sortable").html(response.html);
+                var noOfRows = $(document).find('#sortable .item-row').length;
+                $('#sortable').find(".quantity").each(function(index, element) {
+                    var i = index;
+                    var itemRow = $(this).closest('.item-row').find('select.type');
+                    itemRow.attr('id', 'multiselect' + i);
+                    itemRow.attr('name', 'taxes[' + i + '][]');
+                    $(document).find('#multiselect' + i).selectpicker();
+                });
 
-                    calculateTotal();
+                calculateTotal();
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
                 }
             });
         }
@@ -489,19 +457,28 @@
                 return false;
             }
 
-            $.easyAjax({
-                url: "{{ route('invoices.store') }}",
-                container: '#storePayments',
-                type: "POST",
-                blockUI: true,
-                redirect: true,
-                data: $('#storePayments').serialize(),
-                success: function(response) {
-                    if (response.status == 'success') {
-                        window.location.href = response.redirectUrl;
-                    }
+            $.easyBlockUI('#storePayments');
+            window.apiHttp.postUrlEncoded("{{ route('invoices.store') }}", $('#storePayments').serialize()).then(function(response) {
+                if (response.status == 'success' && response.redirectUrl) {
+                    window.location.href = response.redirectUrl;
                 }
-            })
+                if (response.action === 'redirect' && response.url) {
+                    window.location.href = response.url;
+                }
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $.easyUnblockUI('#storePayments');
+            });
         });
 
         $('#storePayments').on('click', '.remove-item', function() {

@@ -5,14 +5,12 @@
 @endpush
 
 @section('filter-section')
-
     <x-filters.filter-box>
         <!-- DATE START -->
         <div class="select-box d-flex pr-2 border-right-grey border-right-grey-sm-0">
             <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('app.duration')</p>
             <div class="select-status d-flex">
-                <input type="text" class="position-relative text-dark form-control border-0 p-2 text-left f-14 f-w-500 border-additional-grey"
-                    id="datatableRange" placeholder="@lang('placeholders.dateRange')">
+                <input type="text" class="position-relative text-dark form-control border-0 p-2 text-left f-14 f-w-500 border-additional-grey" id="datatableRange" placeholder="@lang('placeholders.dateRange')">
             </div>
         </div>
         <!-- DATE END -->
@@ -38,8 +36,7 @@
                             <i class="fa fa-search f-13 text-dark-grey"></i>
                         </span>
                     </div>
-                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field"
-                        placeholder="@lang('app.startTyping')">
+                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field" placeholder="@lang('app.startTyping')">
                 </div>
             </form>
         </div>
@@ -113,11 +110,10 @@
         <!-- MORE FILTERS END -->
 
     </x-filters.filter-box>
-
 @endsection
 
 @php
-$addBankAccountPermission = user()->permission('add_bankaccount');
+    $addBankAccountPermission = user()->permission('add_bankaccount');
 @endphp
 
 @section('content')
@@ -153,7 +149,6 @@ $addBankAccountPermission = user()->permission('add_bankaccount');
         <!-- Task Box End -->
     </div>
     <!-- CONTENT WRAPPER END -->
-
 @endsection
 
 @push('scripts')
@@ -197,16 +192,16 @@ $addBankAccountPermission = user()->permission('add_bankaccount');
                         showTable();
                     } else if ($('#search-text-field').val() != "") {
                         $('#reset-filters').removeClass('d-none');
-                    }else if ($('#date_filter_on').val() != "start_date") {
+                    } else if ($('#date_filter_on').val() != "start_date") {
                         $('#reset-filters').removeClass('d-none');
-                    }else {
+                    } else {
                         $('#reset-filters').addClass('d-none');
                     }
                     showTable();
                 });
 
 
-        $('body').on('click', '#reset-filters', function () {
+        $('body').on('click', '#reset-filters', function() {
             $('#filter-form')[0].reset();
             $('.filter-box #date_filter_on').val('start_date');
             $('.filter-box .select-picker').selectpicker("refresh");
@@ -214,7 +209,7 @@ $addBankAccountPermission = user()->permission('add_bankaccount');
             showTable();
         });
 
-        $('body').on('click', '#reset-filters-2', function () {
+        $('body').on('click', '#reset-filters-2', function() {
             $('#filter-form')[0].reset();
             $('.filter-box #date_filter_on').val('start_date');
             $('.filter-box .select-picker').selectpicker("refresh");
@@ -270,22 +265,31 @@ $addBankAccountPermission = user()->permission('add_bankaccount');
             }).get();
 
             var url = "{{ route('bankaccounts.apply_quick_action') }}?row_ids=" + rowdIds;
-
-            $.easyAjax({
-                url: url,
-                container: '#quick-action-form',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#quick-action-apply",
-                data: $('#quick-action-form').serialize(),
-                success: function(response) {
-                    if (response.status == 'success') {
-                        showTable();
-                        resetActionButtons();
-                        deSelectAll();
-                    }
+            var $applyBtn = $('#quick-action-apply');
+            var body = $('#quick-action-form').serialize();
+            $applyBtn.prop('disabled', true);
+            $.easyBlockUI('.content-wrapper');
+            window.apiHttp.postUrlEncoded(url, body).then(function(response) {
+                if (response.status == 'success') {
+                    showTable();
+                    resetActionButtons();
+                    deSelectAll();
                 }
-            })
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $applyBtn.prop('disabled', false);
+                $.easyUnblockUI('.content-wrapper');
+            });
         };
 
         $('body').on('click', '.delete-table-row', function() {
@@ -314,17 +318,20 @@ $addBankAccountPermission = user()->permission('add_bankaccount');
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                showTable();
-                            }
+                    window.apiHttp.delete(url, token).then(function(response) {
+                        if (response.status == "success") {
+                            showTable();
+                        }
+                    }).catch(function(err) {
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                text: err.message,
+                                toast: true,
+                                position: 'top-end',
+                                timer: 4000,
+                                showConfirmButton: false
+                            });
                         }
                     });
                 }
@@ -339,20 +346,25 @@ $addBankAccountPermission = user()->permission('add_bankaccount');
 
             var token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                type: 'POST',
-                url: url,
-                container: '#purchase-order-table',
-                blockUI: true,
-                data: {
-                    '_token': token,
-                    'data_type' : dataType
-                },
-                success: function(response) {
-                    if (response.status == "success") {
-                        showTable();
-                    }
+            $.easyBlockUI('#purchase-order-table');
+            var sendBody = '_token=' + encodeURIComponent(token) + '&data_type=' + encodeURIComponent(dataType);
+            window.apiHttp.postUrlEncoded(url, sendBody).then(function(response) {
+                if (response.status == "success") {
+                    showTable();
                 }
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $.easyUnblockUI('#purchase-order-table');
             });
         });
 
@@ -364,21 +376,25 @@ $addBankAccountPermission = user()->permission('add_bankaccount');
             var status = $(this).val();
 
             if (typeof id !== 'undefined') {
-                $.easyAjax({
-                    url: url,
-                    type: "POST",
-                    data: {
-                        '_token': token,
-                        accountId: id,
-                        status: status
-                    },
-
-                    success: function(response) {
-                        if (response.status == "success") {
-                            showTable();
-                            resetActionButtons();
-                            deSelectAll();
-                        }
+                var accBody = '_token=' + encodeURIComponent(token) +
+                    '&accountId=' + encodeURIComponent(id) +
+                    '&status=' + encodeURIComponent(status);
+                window.apiHttp.postUrlEncoded(url, accBody).then(function(response) {
+                    if (response.status == "success") {
+                        showTable();
+                        resetActionButtons();
+                        deSelectAll();
+                    }
+                }).catch(function(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
                     }
                 });
             }
@@ -387,20 +403,29 @@ $addBankAccountPermission = user()->permission('add_bankaccount');
         $('body').on('change', '#delivery-status', function() {
             let id = $(this).data('order-id');
             let value = $(this).val();
-            let url = "{{route('purchase_order.change_status', ':id')}}";
+            let url = "{{ route('purchase_order.change_status', ':id') }}";
             url = url.replace(':id', id);
 
-            $.easyAjax({
-                type:"GET",
-                url:url,
-                data: {delivery_status: value},
-                success: function(response) {
-                    showTable();
-                    resetActionButtons();
-                    deSelectAll();
+            window.apiHttp.get(url, {
+                params: {
+                    delivery_status: value
                 }
-            })
+            }).then(function() {
+                showTable();
+                resetActionButtons();
+                deSelectAll();
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            });
         })
-
     </script>
 @endpush

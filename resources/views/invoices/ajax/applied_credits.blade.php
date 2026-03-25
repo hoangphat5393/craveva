@@ -8,12 +8,10 @@
            <div class="row">
 
                <div class="col-xl-3 col-sm-12">
-                   <x-cards.widget :title="__('modules.invoices.total')"
-                       :value="number_format((float) $invoice->total, 2, '.', '')" icon="file-invoice-dollar" />
+                   <x-cards.widget :title="__('modules.invoices.total')" :value="number_format((float) $invoice->total, 2, '.', '')" icon="file-invoice-dollar" />
                </div>
                <div class="col-xl-3 col-sm-12">
-                   <x-cards.widget :title="__('modules.invoices.total') . ' ' . __('modules.invoices.due')"
-                       :value="number_format((float) $invoice->amountDue(), 2, '.', '')" icon="file-invoice-dollar" widgetId="remainingAmount" />
+                   <x-cards.widget :title="__('modules.invoices.total') . ' ' . __('modules.invoices.due')" :value="number_format((float) $invoice->amountDue(), 2, '.', '')" icon="file-invoice-dollar" widgetId="remainingAmount" />
                </div>
 
            </div>
@@ -31,13 +29,12 @@
                    </x-slot>
 
                    @forelse ($payments as $payment)
-                       <tr id="row{{$payment->id}}">
+                       <tr id="row{{ $payment->id }}">
                            <td>
-                               @if(isset($payment->creditNote))
-                                    <a href="{{ route('creditnotes.show', [$payment->creditNote->id]) }}"
-                                   class="text-dark-grey">{{ $payment->creditNote->cn_number }}</a>
+                               @if (isset($payment->creditNote))
+                                   <a href="{{ route('creditnotes.show', [$payment->creditNote->id]) }}" class="text-dark-grey">{{ $payment->creditNote->cn_number }}</a>
                                @else
-                                    --
+                                   --
                                @endif
                            </td>
                            <td>
@@ -47,20 +44,18 @@
                                {{ \Carbon\Carbon::parse($payment->paid_on)->translatedFormat(company()->date_format) }}
                            </td>
                            <td>
-                            @if ($payment->gateway == 'Offline' && $payment->offlineMethods && $payment->offlineMethods->name)
-                                {{ $payment->gateway ? $payment->gateway.  ' ('. $payment->offlineMethods->name.')' : '--' }}
-                            @else
-                               {{ $payment->gateway ? $payment->gateway : '--' }}
-                            @endif
+                               @if ($payment->gateway == 'Offline' && $payment->offlineMethods && $payment->offlineMethods->name)
+                                   {{ $payment->gateway ? $payment->gateway . ' (' . $payment->offlineMethods->name . ')' : '--' }}
+                               @else
+                                   {{ $payment->gateway ? $payment->gateway : '--' }}
+                               @endif
                            </td>
                            <td class="text-right">
                                {{-- If payment done from payment gateway, then payment cannot be removed.  --}}
                                @if (((is_null($payment->transaction_id) && is_null($payment->payload_id) && !$invoice->credit_note && $payment->gateway) || ($payment->gateway == 'Offline' || $payment->gateway == '')) && !in_array('client', user_roles()))
-                                    <x-forms.button-secondary
-                                        onclick="deleteAppliedCredit({{ $payment->invoice_id }}, {{ $payment->id }})"
-                                        icon="trash">
-                                        @lang('app.remove')
-                                    </x-forms.button-secondary>
+                                   <x-forms.button-secondary onclick="deleteAppliedCredit({{ $payment->invoice_id }}, {{ $payment->id }})" icon="trash">
+                                       @lang('app.remove')
+                                   </x-forms.button-secondary>
                                @endif
                            </td>
                        </tr>
@@ -100,25 +95,30 @@
                    var url = "{{ route('invoices.delete_applied_credit', [':id']) }}";
                    url = url.replace(':id', id);
 
-                   $.easyAjax({
-                       url: url,
-                       type: 'POST',
-                       container: '.content-wrapper',
-                       blockUI: true,
-                       redirect: true,
-                       data: {
-                           invoice_id: invoice_id,
-                           _token: '{{ csrf_token() }}'
-                       },
-                       success: function(response) {
-                            if (response.status == 'success') {
-                                $('#remainingAmount').html(response.remainingAmount);
-                                $('#row'+id).fadeOut(1000);
-                            }
-                        }
-                   })
+                   $.easyBlockUI('.content-wrapper');
+                   window.apiHttp.postUrlEncoded(url, {
+                       invoice_id: String(invoice_id),
+                       _token: '{{ csrf_token() }}'
+                   }).then(function(response) {
+                       if (response.status == 'success') {
+                           $('#remainingAmount').html(response.remainingAmount);
+                           $('#row' + id).fadeOut(1000);
+                       }
+                   }).catch(function(err) {
+                       if (typeof Swal !== 'undefined') {
+                           Swal.fire({
+                               icon: 'error',
+                               text: err.message,
+                               toast: true,
+                               position: 'top-end',
+                               timer: 4000,
+                               showConfirmButton: false
+                           });
+                       }
+                   }).finally(function() {
+                       $.easyUnblockUI('.content-wrapper');
+                   });
                }
            });
        }
-
    </script>

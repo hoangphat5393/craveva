@@ -5,21 +5,16 @@
         <div class="d-flex">
             <div id="table-actions" class="flex-grow-1 align-items-center">
                 @if ($addPermission == 'all' || $addPermission == 'added')
-                    <x-forms.link-primary link="javascript:;" id="add-files" class="mr-3 float-left" icon="plus"
-                        data-inventory-id="{{ $inventory->id }}">
+                    <x-forms.link-primary link="javascript:;" id="add-files" class="mr-3 float-left" icon="plus" data-inventory-id="{{ $inventory->id }}">
                         @lang('purchase::modules.inventory.addFiles')
                     </x-forms.link-primary>
                 @endif
             </div>
 
             <div class="btn-group" role="group">
-                <a id="list-tabs" href="javascript:;" onclick="inventoryFilesView('listview')"
-                    class="btn btn-secondary f-14 layout btn-active" data-toggle="tooltip" data-tab-name="listview"
-                    data-original-title="List View"><i class="side-icon bi bi-list-ul"></i></a>
+                <a id="list-tabs" href="javascript:;" onclick="inventoryFilesView('listview')" class="btn btn-secondary f-14 layout btn-active" data-toggle="tooltip" data-tab-name="listview" data-original-title="List View"><i class="side-icon bi bi-list-ul"></i></a>
 
-                <a id="thumbnail" href="javascript:;" onclick="inventoryFilesView('gridview')"
-                    class="btn btn-secondary f-14 layout" data-toggle="tooltip" data-tab-name="gridview"
-                    data-original-title="Grid View"><i class="side-icon bi bi-grid"></i></a>
+                <a id="thumbnail" href="javascript:;" onclick="inventoryFilesView('gridview')" class="btn btn-secondary f-14 layout" data-toggle="tooltip" data-tab-name="gridview" data-original-title="Grid View"><i class="side-icon bi bi-grid"></i></a>
             </div>
         </div>
 
@@ -42,25 +37,34 @@
         $('#layout').html('');
         var inventoryID = "{{ $inventory->id }}";
         fileLayout = layout;
-        $.easyAjax({
-            type: 'GET',
-            url: "{{ route('purchase_inventory.layout') }}",
-            disableButton: true,
-            blockUI: true,
-            data: {
+        $.easyBlockUI();
+        window.apiHttp.get("{{ route('purchase_inventory.layout') }}", {
+            params: {
                 id: inventoryID,
                 layout: layout
-            },
-            success: function(response) {
-                $('#layout').html(response.html);
-                if (layout == 'gridview') {
-                    $('#list-tabs').removeClass('btn-active');
-                    $('#thumbnail').addClass('btn-active');
-                } else {
-                    $('#list-tabs').addClass('btn-active');
-                    $('#thumbnail').removeClass('btn-active');
-                }
             }
+        }).then(function(response) {
+            $('#layout').html(response.html);
+            if (layout == 'gridview') {
+                $('#list-tabs').removeClass('btn-active');
+                $('#thumbnail').addClass('btn-active');
+            } else {
+                $('#list-tabs').addClass('btn-active');
+                $('#thumbnail').removeClass('btn-active');
+            }
+        }).catch(function(err) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    text: err.message,
+                    toast: true,
+                    position: 'top-end',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            }
+        }).finally(function() {
+            $.easyUnblockUI();
         });
     }
 
@@ -91,19 +95,24 @@
 
                 var token = "{{ csrf_token() }}";
 
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    blockUI: true,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
-                        if (response.status == "success") {
-                            inventoryFilesView(fileLayout);
-                        }
+                $.easyBlockUI('#layout');
+                window.apiHttp.delete(url, token).then(function(response) {
+                    if (response.status == "success") {
+                        inventoryFilesView(fileLayout);
                     }
+                }).catch(function(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
+                    }
+                }).finally(function() {
+                    $.easyUnblockUI();
                 });
             }
         });

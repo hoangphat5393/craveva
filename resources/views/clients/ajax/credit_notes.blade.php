@@ -1,5 +1,5 @@
 @php
-$addInvoicesPermission = user()->permission('add_invoices');
+    $addInvoicesPermission = user()->permission('add_invoices');
 @endphp
 
 <!-- ROW START -->
@@ -106,17 +106,20 @@ $addInvoicesPermission = user()->permission('add_invoices');
 
                 var token = "{{ csrf_token() }}";
 
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
-                        if (response.status == "success") {
-                            showTable();
-                        }
+                window.apiHttp.delete(url, token).then(function(response) {
+                    if (response.status == "success") {
+                        showTable();
+                    }
+                }).catch(function(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
                     }
                 });
             }
@@ -130,20 +133,29 @@ $addInvoicesPermission = user()->permission('add_invoices');
 
         var url = "{{ route('invoices.apply_quick_action') }}?row_ids=" + rowdIds;
 
-        $.easyAjax({
-            url: url,
-            container: '#quick-action-form',
-            type: "POST",
-            disableButton: true,
-            buttonSelector: "#quick-action-apply",
-            data: $('#quick-action-form').serialize(),
-            success: function(response) {
-                if (response.status == 'success') {
-                    showTable();
-                    resetActionButtons();
-                }
+        var $qaBtn = $("#quick-action-apply");
+        $qaBtn.prop('disabled', true);
+        $.easyBlockUI('#quick-action-form');
+        window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize()).then(function(response) {
+            if (response.status == 'success') {
+                showTable();
+                resetActionButtons();
             }
-        })
+        }).catch(function(err) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    text: err.message,
+                    toast: true,
+                    position: 'top-end',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            }
+        }).finally(function() {
+            $qaBtn.prop('disabled', false);
+            $.easyUnblockUI('#quick-action-form');
+        });
     };
 
     $('body').on('click', '.sendButton', function() {
@@ -153,19 +165,24 @@ $addInvoicesPermission = user()->permission('add_invoices');
 
         var token = "{{ csrf_token() }}";
 
-        $.easyAjax({
-            type: 'POST',
-            url: url,
-            container: '#invoices-table',
-            blockUI: true,
-            data: {
-                '_token': token
-            },
-            success: function(response) {
-                if (response.status == "success") {
-                    window.LaravelDataTables["invoices-table"].draw(true);
-                }
+        $.easyBlockUI('#invoices-table');
+        window.apiHttp.postUrlEncoded(url, '_token=' + encodeURIComponent(token)).then(function(response) {
+            if (response.status == "success") {
+                window.LaravelDataTables["invoices-table"].draw(true);
             }
+        }).catch(function(err) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    text: err.message,
+                    toast: true,
+                    position: 'top-end',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            }
+        }).finally(function() {
+            $.easyUnblockUI('#invoices-table');
         });
     });
 
@@ -176,25 +193,32 @@ $addInvoicesPermission = user()->permission('add_invoices');
 
         var token = "{{ csrf_token() }}";
 
-        $.easyAjax({
-            type: 'GET',
-            container: '#invoices-table',
-            blockUI: true,
-            url: url,
-            success: function(response) {
-                if (response.status == "success") {
-                    $.unblockUI();
-                    window.LaravelDataTables["invoices-table"].draw(true);
-                }
+        $.easyBlockUI('#invoices-table');
+        window.apiHttp.get(url).then(function(response) {
+            if (response.status == "success") {
+                $.unblockUI();
+                window.LaravelDataTables["invoices-table"].draw(true);
             }
+        }).catch(function(err) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    text: err.message,
+                    toast: true,
+                    position: 'top-end',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            }
+        }).finally(function() {
+            $.easyUnblockUI('#invoices-table');
         });
     });
 
-    $('body').on('click', '.credit-notes-upload', function () {
+    $('body').on('click', '.credit-notes-upload', function() {
         var creditNoteId = $(this).data('credit-notes-id');
-        const url = "{{ route('creditnotes.file_upload') }}?credit_note="+creditNoteId;
+        const url = "{{ route('creditnotes.file_upload') }}?credit_note=" + creditNoteId;
         $(MODAL_LG + ' ' + MODAL_HEADING).html('...');
         $.ajaxModal(MODAL_LG, url);
     });
-
 </script>

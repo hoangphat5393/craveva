@@ -6,9 +6,25 @@
     $purchaseViewInventoryPermission = user()->permission('view_inventory');
     $purchaseViewOrderReportPermission = user()->permission('view_order_report');
     $purchaseViewPaymentPermission = user()->permission('view_vendor_payment');
+    // Warehouse module: migration chỉ gán quyền vào role "admin"; employee thường chưa có view_warehouses → hiển thị kèm quyền Inventory.
+    $viewWarehouses = user()->permission('view_warehouses');
+    $addWarehouses = user()->permission('add_warehouses');
+    $viewWarehouseStock = user()->permission('view_warehouse_stock');
+    $addWarehouseStock = user()->permission('add_warehouse_stock');
+    $manageWarehouseTransfer = user()->permission('manage_warehouse_transfer');
+    $canSeeWarehouseMaster = ($viewWarehouses && $viewWarehouses != 'none') || ($purchaseViewInventoryPermission != 'none' && $purchaseViewInventoryPermission != '');
+    $canSeeWarehouseStockUi = ($viewWarehouseStock && $viewWarehouseStock != 'none') || ($purchaseViewInventoryPermission != 'none' && $purchaseViewInventoryPermission != '');
 @endphp
 @if (in_array(\Modules\Purchase\Entities\PurchaseManagementSetting::MODULE_NAME, user_modules()) &&
-        ($purchaseViewVendorPermission != 'none' || $purchaseViewOrderPermission != 'none' || $purchaseViewBillPermission != 'none' || $purchaseViewCreditPermission != 'none' || $purchaseViewInventoryPermission != 'none' || $purchaseViewOrderReportPermission != 'none' || $purchaseViewPaymentPermission != 'none' || (in_array('products', user_modules()) && $sidebarUserPermissions['view_product'] != 'none') || (in_array('orders', user_modules()) && $sidebarUserPermissions['view_order'] != 'none')))
+        ($purchaseViewVendorPermission != 'none' ||
+            $purchaseViewOrderPermission != 'none' ||
+            $purchaseViewBillPermission != 'none' ||
+            $purchaseViewCreditPermission != 'none' ||
+            $purchaseViewInventoryPermission != 'none' ||
+            $purchaseViewOrderReportPermission != 'none' ||
+            $purchaseViewPaymentPermission != 'none' ||
+            (in_array('products', user_modules()) && $sidebarUserPermissions['view_product'] != 'none') ||
+            (in_array('orders', user_modules()) && $sidebarUserPermissions['view_order'] != 'none')))
 
     <x-menu-item icon="wallet" :text="__('app.menu.operations')" :addon="App::environment('demo')">
         <x-slot name="iconPath">
@@ -45,6 +61,26 @@
 
             <!-- NAV ITEM - INVENTORY -->
             <x-sub-menu-item :link="route('purchase-inventory.index')" :text="__('purchase::app.menu.inventory')" :permission="$purchaseViewInventoryPermission != 'none' && $purchaseViewInventoryPermission != ''" />
+
+            <!-- NAV ITEM - WAREHOUSE (master + stock; module warehouse + quyền Inventory hoặc quyền warehouse riêng) -->
+            @if (in_array('warehouse', user_modules()) && $canSeeWarehouseMaster)
+                <x-sub-menu-item :link="route('warehouse.index')" :text="__('warehouse::app.allWarehouses')" :permission="true" />
+            @endif
+            @if (in_array('warehouse', user_modules()) && $addWarehouses && $addWarehouses != 'none')
+                <x-sub-menu-item :link="route('warehouse.create')" :text="__('warehouse::app.addNew')" :permission="true" />
+            @endif
+            @if (in_array('warehouse', user_modules()) && $canSeeWarehouseStockUi)
+                <x-sub-menu-item :link="route('warehouse.stock.index')" :text="__('warehouse::app.adjustStock')" :permission="true" />
+            @endif
+            @if (in_array('warehouse', user_modules()) && $canSeeWarehouseStockUi)
+                <x-sub-menu-item :link="route('warehouse.movements.index')" :text="__('warehouse::app.stockMovements')" :permission="true" />
+            @endif
+            @if (in_array('warehouse', user_modules()) && $addWarehouseStock && $addWarehouseStock != 'none')
+                <x-sub-menu-item :link="route('warehouse.stock.create')" :text="__('warehouse::app.addStock')" :permission="true" />
+            @endif
+            @if (in_array('warehouse', user_modules()) && $manageWarehouseTransfer && $manageWarehouseTransfer != 'none')
+                <x-sub-menu-item :link="route('warehouse.transfer.create')" :text="__('warehouse::app.transferStock')" :permission="true" />
+            @endif
 
             <x-sub-menu-item :link="route('reports.index')" :text="__('purchase::app.menu.reports')" :permission="$purchaseViewOrderReportPermission != 'none' && $purchaseViewOrderReportPermission != '' && false" />
 

@@ -1,5 +1,5 @@
 @php
-$addClientPermission = user()->permission('add_client_contacts');
+    $addClientPermission = user()->permission('add_client_contacts');
 @endphp
 
 <!-- ROW START -->
@@ -9,8 +9,7 @@ $addClientPermission = user()->permission('add_client_contacts');
         <div class="d-flex justify-content-between action-bar">
             <div id="table-actions" class="d-flex align-items-center">
                 @if ($addClientPermission == 'all' || $addClientPermission == 'added' || $addClientPermission == 'both')
-                    <x-forms.link-primary :link="route('client-contacts.create').'?client='.$client->id"
-                        class="mr-3 openRightModal" icon="plus">
+                    <x-forms.link-primary :link="route('client-contacts.create') . '?client=' . $client->id" class="mr-3 openRightModal" icon="plus">
                         @lang('modules.contacts.addContact')
                     </x-forms.link-primary>
                 @endif
@@ -123,17 +122,20 @@ $addClientPermission = user()->permission('add_client_contacts');
 
                 var token = "{{ csrf_token() }}";
 
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
-                        if (response.status == "success") {
-                            showTable();
-                        }
+                window.apiHttp.delete(url, token).then(function(response) {
+                    if (response.status == "success") {
+                        showTable();
+                    }
+                }).catch(function(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
                     }
                 });
             }
@@ -147,20 +149,29 @@ $addClientPermission = user()->permission('add_client_contacts');
 
         var url = "{{ route('client-contacts.apply_quick_action') }}?row_ids=" + rowdIds;
 
-        $.easyAjax({
-            url: url,
-            container: '#quick-action-form',
-            type: "POST",
-            disableButton: true,
-            buttonSelector: "#quick-action-apply",
-            data: $('#quick-action-form').serialize(),
-            success: function(response) {
-                if (response.status == 'success') {
-                    showTable();
-                    resetActionButtons();
-                    deSelectAll();
-                }
+        var $qaBtn = $("#quick-action-apply");
+        $qaBtn.prop('disabled', true);
+        $.easyBlockUI('#quick-action-form');
+        window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize()).then(function(response) {
+            if (response.status == 'success') {
+                showTable();
+                resetActionButtons();
+                deSelectAll();
             }
-        })
+        }).catch(function(err) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    text: err.message,
+                    toast: true,
+                    position: 'top-end',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            }
+        }).finally(function() {
+            $qaBtn.prop('disabled', false);
+            $.easyUnblockUI('#quick-action-form');
+        });
     };
 </script>

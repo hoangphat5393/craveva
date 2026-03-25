@@ -1,5 +1,5 @@
 @php
-$addClientNotePermission = user()->permission('add_client_note');
+    $addClientNotePermission = user()->permission('add_client_note');
 @endphp
 
 <!-- ROW START -->
@@ -9,8 +9,7 @@ $addClientNotePermission = user()->permission('add_client_note');
         <div class="d-flex justify-content-between action-bar">
             <div id="table-actions" class="d-flex align-items-center">
                 @if ($addClientNotePermission == 'all' || $addClientNotePermission == 'added' || $addClientNotePermission == 'both')
-                    <x-forms.link-primary :link="route('client-notes.create').'?client='.$client->id"
-                        class="mr-3 openRightModal" icon="plus">
+                    <x-forms.link-primary :link="route('client-notes.create') . '?client=' . $client->id" class="mr-3 openRightModal" icon="plus">
                         @lang('modules.client.createNote')
                     </x-forms.link-primary>
                 @endif
@@ -123,17 +122,20 @@ $addClientNotePermission = user()->permission('add_client_note');
 
                 var token = "{{ csrf_token() }}";
 
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
-                        if (response.status == "success") {
-                            showTable();
-                        }
+                window.apiHttp.delete(url, token).then(function(response) {
+                    if (response.status == "success") {
+                        showTable();
+                    }
+                }).catch(function(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
                     }
                 });
             }
@@ -147,21 +149,30 @@ $addClientNotePermission = user()->permission('add_client_note');
 
         var url = "{{ route('client-notes.apply_quick_action') }}?row_ids=" + rowdIds;
 
-        $.easyAjax({
-            url: url,
-            container: '#quick-action-form',
-            type: "POST",
-            disableButton: true,
-            buttonSelector: "#quick-action-apply",
-            data: $('#quick-action-form').serialize(),
-            success: function(response) {
-                if (response.status == 'success') {
-                    showTable();
-                    resetActionButtons();
-                    deSelectAll();
-                }
+        var $qaBtn = $("#quick-action-apply");
+        $qaBtn.prop('disabled', true);
+        $.easyBlockUI('#quick-action-form');
+        window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize()).then(function(response) {
+            if (response.status == 'success') {
+                showTable();
+                resetActionButtons();
+                deSelectAll();
             }
-        })
+        }).catch(function(err) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    text: err.message,
+                    toast: true,
+                    position: 'top-end',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            }
+        }).finally(function() {
+            $qaBtn.prop('disabled', false);
+            $.easyUnblockUI('#quick-action-form');
+        });
     };
 
     $('body').on('click', '.ask-for-password', function() {
@@ -183,37 +194,38 @@ $addClientNotePermission = user()->permission('add_client_note');
         url = url.replace(':id', id);
         var token = "{{ csrf_token() }}";
 
-        $.easyAjax({
-            url: url,
-            blockUI: true,
-            type: "POST",
-            container: RIGHT_MODAL,
-            historyPush: true,
-            data: {
-                '_token': token
-            },
-            success: function(response) {
-                if (response.status == "success") {
-                    $(RIGHT_MODAL_CONTENT).html(response.html);
-                    $(RIGHT_MODAL_TITLE).html(response.title);
-                }
-            },
-            error: function(request, status, error) {
-                if (request.status == 403) {
-                    $(RIGHT_MODAL_CONTENT).html(
-                        '<div class="align-content-between d-flex justify-content-center mt-105 f-21">403 | Permission Denied</div>'
-                    );
-                } else if (request.status == 404) {
-                    $(RIGHT_MODAL_CONTENT).html(
-                        '<div class="align-content-between d-flex justify-content-center mt-105 f-21">404 | Not Found</div>'
-                    );
-                } else if (request.status == 500) {
-                    $(RIGHT_MODAL_CONTENT).html(
-                        '<div class="align-content-between d-flex justify-content-center mt-105 f-21">500 | Something Went Wrong</div>'
-                    );
-                }
+        $.easyBlockUI(RIGHT_MODAL);
+        window.apiHttp.postUrlEncoded(url, '_token=' + encodeURIComponent(token)).then(function(response) {
+            if (response.status == "success") {
+                $(RIGHT_MODAL_CONTENT).html(response.html);
+                $(RIGHT_MODAL_TITLE).html(response.title);
             }
+        }).catch(function(err) {
+            var st = err.status;
+            if (st == 403) {
+                $(RIGHT_MODAL_CONTENT).html(
+                    '<div class="align-content-between d-flex justify-content-center mt-105 f-21">403 | Permission Denied</div>'
+                );
+            } else if (st == 404) {
+                $(RIGHT_MODAL_CONTENT).html(
+                    '<div class="align-content-between d-flex justify-content-center mt-105 f-21">404 | Not Found</div>'
+                );
+            } else if (st == 500) {
+                $(RIGHT_MODAL_CONTENT).html(
+                    '<div class="align-content-between d-flex justify-content-center mt-105 f-21">500 | Something Went Wrong</div>'
+                );
+            } else if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    text: err.message,
+                    toast: true,
+                    position: 'top-end',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            }
+        }).finally(function() {
+            $.easyUnblockUI(RIGHT_MODAL);
         });
     };
-
 </script>

@@ -1,7 +1,6 @@
 <div class="modal-header">
     <h5 class="modal-title" id="modelHeading">@lang('modules.client.clientSubCategory')</h5>
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-            aria-hidden="true">×</span></button>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
 </div>
 <div class="modal-body">
     <x-table class="table-bordered client-subcat-table" headType="thead-light">
@@ -21,24 +20,21 @@
 
                 <td class="text-right">
                     @if ($deletePermission == 'all' || $deletePermission == 'added')
-                        <x-forms.button-secondary data-cat-id="{{ $subcategory->id }}" icon="trash"
-                            class="delete-category">
+                        <x-forms.button-secondary data-cat-id="{{ $subcategory->id }}" icon="trash" class="delete-category">
                             @lang('app.delete')
                         </x-forms.button-secondary>
                     @endif
                 </td>
             </tr>
         @empty
-            <x-cards.no-record-found-list colspan="4"/>
-
+            <x-cards.no-record-found-list colspan="4" />
         @endforelse
     </x-table>
 
     <x-form id="createProjectCategory">
         <div class="row border-top-grey ">
             <div class="col-sm-12 col-md-6">
-                <x-forms.select fieldId="create_category_id" :fieldLabel="__('modules.client.clientCategory')"
-                    fieldName="category_id" search="true" fieldRequired="true">
+                <x-forms.select fieldId="create_category_id" :fieldLabel="__('modules.client.clientCategory')" fieldName="category_id" search="true" fieldRequired="true">
                     @forelse($categories as $category)
                         <option value="{{ $category->id }}">{{ $category->category_name }}</option>
                     @empty
@@ -47,8 +43,7 @@
                 </x-forms.select>
             </div>
             <div class="col-sm-12 col-md-6">
-                <x-forms.text fieldId="category_name" :fieldLabel="__('modules.projectCategory.categoryName')"
-                    fieldName="category_name" fieldRequired="true" :fieldPlaceholder="__('placeholders.categoryName')">
+                <x-forms.text fieldId="category_name" :fieldLabel="__('modules.projectCategory.categoryName')" fieldName="category_name" fieldRequired="true" :fieldPlaceholder="__('placeholders.categoryName')">
                 </x-forms.text>
             </div>
             <input type="hidden" name="selected_category" id="selected_category" value="">
@@ -91,34 +86,37 @@
             buttonsStyling: false
         }).then((result) => {
             if (result.isConfirmed) {
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE',
-                        'selectedCategory': selectedCategory
-                    },
-                    success: function(response) {
-                        if (response.status == "success") {
-                            $('#cat-' + id).fadeOut();
-                            var options = [];
-                            var rData = [];
-                            rData = response.data;
-                            $.each(rData, function(index, value) {
-                                var selectData = '';
-                                var isSelected = (value.id == selectedSubCategory) ? 'selected' : '';
-                                selectData = '<option value="' + value.id + '" ' + isSelected + '>' +
-                                    value
-                                    .category_name + '</option>';
-                                options.push(selectData);
-                            });
+                var delBody = '_token=' + encodeURIComponent(token) + '&_method=DELETE&selectedCategory=' + encodeURIComponent(selectedCategory);
+                window.apiHttp.postUrlEncoded(url, delBody).then(function(response) {
+                    if (response.status == "success") {
+                        $('#cat-' + id).fadeOut();
+                        var options = [];
+                        var rData = [];
+                        rData = response.data;
+                        $.each(rData, function(index, value) {
+                            var selectData = '';
+                            var isSelected = (value.id == selectedSubCategory) ? 'selected' : '';
+                            selectData = '<option value="' + value.id + '" ' + isSelected + '>' +
+                                value
+                                .category_name + '</option>';
+                            options.push(selectData);
+                        });
 
-                            $('#category_id').val(selectedCategory);
-                            $('#sub_category_id').html('<option value="">--</option>' +
-                                options);
-                            $('#sub_category_id').selectpicker('refresh');
-                        }
+                        $('#category_id').val(selectedCategory);
+                        $('#sub_category_id').html('<option value="">--</option>' +
+                            options);
+                        $('#sub_category_id').selectpicker('refresh');
+                    }
+                }).catch(function(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
                     }
                 });
             }
@@ -131,32 +129,37 @@
         let selectedCategory = $('#category_id').val();
         let selectedSubCategory = $('#sub_category_id').val();
         $('#selected_category').val(selectedCategory);
-        $.easyAjax({
-            url: url,
-            container: '#createProjectCategory',
-            type: "POST",
-            data: $('#createProjectCategory').serialize(),
-            success: function(response) {
-                if (response.status == 'success') {
-                    var options = [];
-                    var rData = [];
-                    rData = response.data;
-                    $.each(rData, function(index, value) {
-                        var selectData = '';
-                        var isSelected = (value.id == selectedSubCategory) ? 'selected' : '';
-                        selectData = '<option value="' + value.id + '" ' + isSelected + '>' + value
-                            .category_name + '</option>';
-                        options.push(selectData);
-                    });
+        window.apiHttp.postUrlEncoded(url, $('#createProjectCategory').serialize()).then(function(response) {
+            if (response.status == 'success') {
+                var options = [];
+                var rData = [];
+                rData = response.data;
+                $.each(rData, function(index, value) {
+                    var selectData = '';
+                    var isSelected = (value.id == selectedSubCategory) ? 'selected' : '';
+                    selectData = '<option value="' + value.id + '" ' + isSelected + '>' + value
+                        .category_name + '</option>';
+                    options.push(selectData);
+                });
 
-                    $('#category_id').val(selectedCategory);
+                $('#category_id').val(selectedCategory);
 
-                    $('#sub_category_id').html('<option value="">--</option>' + options);
-                    $('#sub_category_id').selectpicker('refresh');
-                    $(MODAL_LG).modal('hide');
-                }
+                $('#sub_category_id').html('<option value="">--</option>' + options);
+                $('#sub_category_id').selectpicker('refresh');
+                $(MODAL_LG).modal('hide');
             }
-        })
+        }).catch(function(err) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    text: err.message,
+                    toast: true,
+                    position: 'top-end',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            }
+        });
     });
 
     $('.client-subcat-table [contenteditable=true]').focus(function() {
@@ -174,36 +177,39 @@
             let selectedSubCategory = $('#sub_category_id').val();
             var token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#cat-' + id,
-                type: "POST",
-                data: {
-                    'category_name': value,
-                    '_token': token,
-                    '_method': 'PUT',
-                    'selectedCategory': selectedCategory
-                },
-                blockUI: true,
-                success: function(response) {
-                    if (response.status == 'success') {
-                        var options = [];
-                        var rData = [];
-                        rData = response.data;
-                        $.each(rData, function(index, value) {
-                            var selectData = '';
-                            var isSelected = (value.id == selectedSubCategory) ? 'selected' : '';
-                            selectData = '<option value="' + value.id + '" ' + isSelected + '>' + value
-                                .category_name + '</option>';
-                            options.push(selectData);
-                        });
+            $.easyBlockUI('.modal-body');
+            var putBody = 'category_name=' + encodeURIComponent(value) + '&_token=' + encodeURIComponent(token) + '&_method=PUT&selectedCategory=' + encodeURIComponent(selectedCategory);
+            window.apiHttp.postUrlEncoded(url, putBody).then(function(response) {
+                if (response.status == 'success') {
+                    var options = [];
+                    var rData = [];
+                    rData = response.data;
+                    $.each(rData, function(index, value) {
+                        var selectData = '';
+                        var isSelected = (value.id == selectedSubCategory) ? 'selected' : '';
+                        selectData = '<option value="' + value.id + '" ' + isSelected + '>' + value
+                            .category_name + '</option>';
+                        options.push(selectData);
+                    });
 
-                        $('#category_id').val(selectedCategory);
-                        $('#sub_category_id').html('<option value="">--</option>' + options);
-                        $('#sub_category_id').selectpicker('refresh');
-                    }
+                    $('#category_id').val(selectedCategory);
+                    $('#sub_category_id').html('<option value="">--</option>' + options);
+                    $('#sub_category_id').selectpicker('refresh');
                 }
-            })
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $.easyUnblockUI('.modal-body');
+            });
         }
     });
 </script>

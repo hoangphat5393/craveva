@@ -29,6 +29,7 @@ class StoreProductRequest extends CoreRequest
         $rules = [
             'name' => 'required',
             'price' => 'required|numeric',
+            'sku' => 'required|string|max:255',
             'downloadable_file' => 'required_if:downloadable,true|file',
         ];
 

@@ -6,7 +6,10 @@ use App\DataTables\BaseDataTable;
 use App\Models\CustomField;
 use App\Models\CustomFieldGroup;
 use App\Models\Product;
+use Illuminate\Database\Eloquent\Builder;
+use Modules\Pricing\Services\PricingService;
 use Modules\Purchase\Entities\PurchaseProduct;
+use Yajra\DataTables\DataTableAbstract;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
 
@@ -30,7 +33,7 @@ class PurchaseProductsDataTable extends BaseDataTable
      * Build DataTable class.
      *
      * @param  mixed  $query  Results from query() method.
-     * @return \Yajra\DataTables\DataTableAbstract
+     * @return DataTableAbstract
      */
     public function dataTable($query)
     {
@@ -180,9 +183,9 @@ class PurchaseProductsDataTable extends BaseDataTable
         $datatables->editColumn('price', function ($row) {
             $price = $row->price;
 
-            if (in_array('client', user_roles()) && class_exists(\Modules\Pricing\Services\PricingService::class)) {
+            if (in_array('client', user_roles()) && class_exists(PricingService::class)) {
                 try {
-                    $pricingService = new \Modules\Pricing\Services\PricingService;
+                    $pricingService = new PricingService;
                     $calculated = $pricingService->calculate($row->id, user()->id, 1);
                     $price = $calculated['unit_price'];
                 } catch (\Exception $e) {
@@ -235,7 +238,7 @@ class PurchaseProductsDataTable extends BaseDataTable
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function query(PurchaseProduct $model)
     {
@@ -305,9 +308,19 @@ class PurchaseProductsDataTable extends BaseDataTable
                 }',
             ]);
 
+        $buttons = [
+            Button::make([
+                'extend' => 'colvis',
+                'text' => '<i class="fa fa-columns"></i> '.trans('app.columns'),
+                'columns' => ':not(:first):not(:last)',
+            ]),
+        ];
+
         if (canDataTableExport()) {
-            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
+            array_unshift($buttons, Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
         }
+
+        $dataTable->buttons($buttons);
 
         return $dataTable;
     }

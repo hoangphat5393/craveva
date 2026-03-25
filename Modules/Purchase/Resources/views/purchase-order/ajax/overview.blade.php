@@ -419,21 +419,27 @@
         var url = "{{ route('purchase_order.send_order', ':id') }}";
         url = url.replace(':id', id);
 
-        $.easyAjax({
-            type: 'POST',
-            url: url,
-            container: '.content-wrapper',
-            blockUI: true,
-            data: {
-                '_token': token,
-                'data_type': type,
-                'type': 'send'
-            },
-            success: function(response) {
-                if (response.status == "success") {
-                    window.location.reload();
-                }
+        $.easyBlockUI('.content-wrapper');
+        var ovSendBody = '_token=' + encodeURIComponent(token) +
+            '&data_type=' + encodeURIComponent(type) +
+            '&type=send';
+        window.apiHttp.postUrlEncoded(url, ovSendBody).then(function(response) {
+            if (response.status == "success") {
+                window.location.reload();
             }
+        }).catch(function(err) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    text: err.message,
+                    toast: true,
+                    position: 'top-end',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            }
+        }).finally(function() {
+            $.easyUnblockUI('.content-wrapper');
         });
     });
 
@@ -444,16 +450,24 @@
         var url = "{{ route('invoices.payment_reminder', ':id') }}";
         url = url.replace(':id', id);
 
-        $.easyAjax({
-            type: 'GET',
-            container: '#invoices-table',
-            blockUI: true,
-            url: url,
-            success: function(response) {
-                if (response.status == "success") {
-                    $.unblockUI();
-                }
+        $.easyBlockUI('#invoices-table');
+        window.apiHttp.get(url).then(function(response) {
+            if (response.status == "success") {
+                $.unblockUI();
             }
+        }).catch(function(err) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    text: err.message,
+                    toast: true,
+                    position: 'top-end',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            }
+        }).finally(function() {
+            $.easyUnblockUI('#invoices-table');
         });
     });
 
@@ -483,16 +497,24 @@
                 var url = "{{ route('invoices.update_status', ':id') }}";
                 url = url.replace(':id', id);
 
-                $.easyAjax({
-                    type: 'GET',
-                    url: url,
-                    container: '#invoices-table',
-                    blockUI: true,
-                    success: function(response) {
-                        if (response.status == "success") {
-                            window.location.reload();
-                        }
+                $.easyBlockUI('#invoices-table');
+                window.apiHttp.get(url).then(function(response) {
+                    if (response.status == "success") {
+                        window.location.reload();
                     }
+                }).catch(function(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
+                    }
+                }).finally(function() {
+                    $.easyUnblockUI('#invoices-table');
                 });
             }
         });
@@ -524,19 +546,24 @@
                 var url = "{{ route('purchase-order.destroy', ':id') }}";
                 url = url.replace(':id', id);
 
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    blockUI: true,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
-                        if (response.status == "success") {
-                            window.location.href = "{{ route('purchase-order.index') }}";
-                        }
+                $.easyBlockUI('.content-wrapper');
+                window.apiHttp.delete(url, token).then(function(response) {
+                    if (response.status == "success") {
+                        window.location.href = "{{ route('purchase-order.index') }}";
                     }
+                }).catch(function(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
+                    }
+                }).finally(function() {
+                    $.easyUnblockUI('.content-wrapper');
                 });
             }
         });
@@ -548,16 +575,24 @@
         let url = "{{ route('invoices.toggle_shipping_address', ':id') }}";
         url = url.replace(':id', invoiceId);
 
-        $.easyAjax({
-            url: url,
-            type: 'GET',
-            container: '#invoices-table',
-            blockUI: true,
-            success: function(response) {
-                if (response.status === 'success') {
-                    window.location.reload();
-                }
+        $.easyBlockUI('#invoices-table');
+        window.apiHttp.get(url).then(function(response) {
+            if (response.status === 'success') {
+                window.location.reload();
             }
+        }).catch(function(err) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    text: err.message,
+                    toast: true,
+                    position: 'top-end',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            }
+        }).finally(function() {
+            $.easyUnblockUI('#invoices-table');
         });
     });
 
@@ -604,17 +639,20 @@
 
                 var token = "{{ csrf_token() }}";
 
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
-                        if (response.status == "success") {
-                            $('#invoice-file-list').html(response.view);
-                        }
+                window.apiHttp.delete(url, token).then(function(response) {
+                    if (response.status == "success") {
+                        $('#invoice-file-list').html(response.view);
+                    }
+                }).catch(function(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
                     }
                 });
             }

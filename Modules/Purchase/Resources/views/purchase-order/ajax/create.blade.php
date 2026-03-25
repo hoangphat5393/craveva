@@ -357,28 +357,36 @@
             var categoryId = $(this).val();
             var url = "{{ route('invoices.product_category', ':id') }}",
                 url = (categoryId) ? url.replace(':id', categoryId) : url.replace(':id', null);
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                container: '#saveOrderForm',
-                blockUI: true,
-                success: function(response) {
-                    if (response.status == 'success') {
-                        var options = [];
-                        var rData = [];
-                        rData = response.data;
-                        $.each(rData, function(index, value) {
-                            var selectData = '';
-                            selectData = '<option value="' + value.id + '">' + value.name +
-                                '</option>';
-                            options.push(selectData);
-                        });
-                        $('#add-products').html(
-                            '<option value="" class="form-control" >{{ __('app.select') . ' ' . __('app.product') }}</option>' +
-                            options);
-                        $('#add-products').selectpicker('refresh');
-                    }
+            $.easyBlockUI('#saveOrderForm');
+            window.apiHttp.get(url).then(function(response) {
+                if (response.status == 'success') {
+                    var options = [];
+                    var rData = [];
+                    rData = response.data;
+                    $.each(rData, function(index, value) {
+                        var selectData = '';
+                        selectData = '<option value="' + value.id + '">' + value.name +
+                            '</option>';
+                        options.push(selectData);
+                    });
+                    $('#add-products').html(
+                        '<option value="" class="form-control" >{{ __('app.select') . ' ' . __('app.product') }}</option>' +
+                        options);
+                    $('#add-products').selectpicker('refresh');
                 }
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $.easyUnblockUI('#saveOrderForm');
             });
         });
 
@@ -489,35 +497,45 @@
         function addProduct(id) {
             var currencyId = $('#currency_id').val();
 
-            $.easyAjax({
-                url: "{{ route('purchase_order.add_item') }}",
-                type: "GET",
-                data: {
+            $.easyBlockUI('#saveOrderForm');
+            window.apiHttp.get("{{ route('purchase_order.add_item') }}", {
+                params: {
                     id: id,
                     currencyId: currencyId
-                },
-                blockUI: true,
-                success: function(response) {
-                    if ($('input[name="item_name[]"]').val() == '') {
-                        $("#sortable .item-row").remove();
-                    }
-                    $(response.view).hide().appendTo("#sortable").fadeIn(500);
-                    $('#total-table').removeClass('d-none');
+                }
+            }).then(function(response) {
+                if ($('input[name="item_name[]"]').val() == '') {
+                    $("#sortable .item-row").remove();
+                }
+                $(response.view).hide().appendTo("#sortable").fadeIn(500);
+                $('#total-table').removeClass('d-none');
 
-                    calculateTotal();
+                calculateTotal();
 
-                    var noOfRows = $(document).find('#sortable .item-row').length;
-                    var i = $(document).find('.item_name').length - 1;
-                    var itemRow = $(document).find('#sortable .item-row:nth-child(' + noOfRows +
-                        ') select.type');
-                    itemRow.attr('id', 'multiselect' + i);
-                    itemRow.attr('name', 'taxes[' + i + '][]');
-                    $(document).find('#multiselect' + i).selectpicker();
+                var noOfRows = $(document).find('#sortable .item-row').length;
+                var i = $(document).find('.item_name').length - 1;
+                var itemRow = $(document).find('#sortable .item-row:nth-child(' + noOfRows +
+                    ') select.type');
+                itemRow.attr('id', 'multiselect' + i);
+                itemRow.attr('name', 'taxes[' + i + '][]');
+                $(document).find('#multiselect' + i).selectpicker();
 
-                    $(document).find('#dropify' + i).dropify({
-                        messages: dropifyMessages
+                $(document).find('#dropify' + i).dropify({
+                    messages: dropifyMessages
+                });
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
                     });
                 }
+            }).finally(function() {
+                $.easyUnblockUI('#saveOrderForm');
             });
         }
 
@@ -649,28 +667,37 @@
                 return false;
             }
 
-            $.easyAjax({
-                url: "{{ route('purchase-order.store') }}" + "?type=" + type,
-                container: '#saveOrderForm',
-                type: "POST",
-                blockUI: true,
-                redirect: true,
-                file: true, // Commented so that we dot get error of Input variables exceeded 1000
-                data: $('#saveOrderForm').serialize(),
-                success: function(response) {
-
-                    if (response.status === 'success') {
-                        if (typeof orderDropzone !== 'undefined' && orderDropzone.getQueuedFiles().length > 0) {
-                            orderID = response.orderID;
-                            $('#orderID').val(response.orderID);
-                            (response.add_more == true) ? localStorage.setItem("redirect_order", window.location.href): localStorage.setItem("redirect_order", response.redirectUrl);
-                            orderDropzone.processQueue();
-                        } else {
-                            window.location.href = response.redirectUrl;
-                        }
+            var $saveBtns = $('.save-form');
+            var storeBody = $('#saveOrderForm').serialize();
+            $saveBtns.prop('disabled', true);
+            $.easyBlockUI('#saveOrderForm');
+            window.apiHttp.postUrlEncoded("{{ route('purchase-order.store') }}" + "?type=" + type, storeBody).then(function(response) {
+                if (response.status === 'success') {
+                    var redirectTarget = response.redirectUrl || (response.action === 'redirect' ? response.url : null);
+                    if (typeof orderDropzone !== 'undefined' && orderDropzone.getQueuedFiles().length > 0) {
+                        orderID = response.orderID;
+                        $('#orderID').val(response.orderID);
+                        (response.add_more == true) ? localStorage.setItem("redirect_order", window.location.href): localStorage.setItem("redirect_order", redirectTarget);
+                        orderDropzone.processQueue();
+                    } else if (redirectTarget) {
+                        window.location.href = redirectTarget;
                     }
                 }
-            })
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $saveBtns.prop('disabled', false);
+                $.easyUnblockUI('#saveOrderForm');
+            });
         });
 
         $('#saveOrderForm').on('keyup', '.quantity,.cost_per_item,.item_name, .discount_value', function() {
@@ -739,23 +766,32 @@
         }
         var token = "{{ csrf_token() }}";
 
-        $.easyAjax({
-            url: "{{ route('payments.account_list') }}",
-            container: '#saveOrderForm',
-            type: "GET",
-            blockUI: true,
-            data: {
-                'curId': curId,
+        $.easyBlockUI('#saveOrderForm');
+        window.apiHttp.get("{{ route('payments.account_list') }}", {
+            params: {
+                curId: curId,
                 _token: token
-            },
-            success: function(response) {
-                if (response.status == 'success') {
-                    $('#bank_account_id').html(response.data);
-                    $('#bank_account_id').selectpicker('refresh');
-                    $('#exchange_rate').val(response.exchangeRate);
-                    $('#currency_exchange').html('( ' + companyCurrencyName + ' @lang('app.to') ' + currentCurrencyName + ' )');
-                }
             }
+        }).then(function(response) {
+            if (response.status == 'success') {
+                $('#bank_account_id').html(response.data);
+                $('#bank_account_id').selectpicker('refresh');
+                $('#exchange_rate').val(response.exchangeRate);
+                $('#currency_exchange').html('( ' + companyCurrencyName + ' @lang('app.to') ' + currentCurrencyName + ' )');
+            }
+        }).catch(function(err) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    text: err.message,
+                    toast: true,
+                    position: 'top-end',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            }
+        }).finally(function() {
+            $.easyUnblockUI('#saveOrderForm');
         });
     });
 
@@ -774,27 +810,35 @@
         }
         var url = "{{ route('purchase_order.vendor_currency') }}" + "?id=" + vendorId;
 
-        $.easyAjax({
-            url: url,
-            container: '#saveOrderForm',
-            type: "GET",
-            blockUI: true,
-            success: function(response) {
-                if (response.data == null) {
-                    $('#currency_id').html('<option>' + ' -- ' + '</option>');
-                    $('#currency_id').selectpicker('refresh');
-                    $('#exchange_rate').val(companyCurrency);
-                    $('#exchange_rate').selectpicker('refresh');
-                    $('#currency').html('<span>' + companyCurrencyCode + '</span>');
-                    $('#currency').selectpicker('refresh');
-                } else {
-                    $('#currency_id').html('<option value="' + response.data.id + '">' + response.data.currency_code + ' (' + response.data.currency_symbol + ')' + '</option>');
-                    $('#currency_id').selectpicker('refresh');
-                    $('#currency').html('<span>' + response.data.currency_code + '</span>')
-                    $('#exchange_rate').val(response.data.exchange_rate);
-                    $('#exchange_rate').selectpicker('refresh');
-                }
+        $.easyBlockUI('#saveOrderForm');
+        window.apiHttp.get(url).then(function(response) {
+            if (response.data == null) {
+                $('#currency_id').html('<option>' + ' -- ' + '</option>');
+                $('#currency_id').selectpicker('refresh');
+                $('#exchange_rate').val(companyCurrency);
+                $('#exchange_rate').selectpicker('refresh');
+                $('#currency').html('<span>' + companyCurrencyCode + '</span>');
+                $('#currency').selectpicker('refresh');
+            } else {
+                $('#currency_id').html('<option value="' + response.data.id + '">' + response.data.currency_code + ' (' + response.data.currency_symbol + ')' + '</option>');
+                $('#currency_id').selectpicker('refresh');
+                $('#currency').html('<span>' + response.data.currency_code + '</span>')
+                $('#exchange_rate').val(response.data.exchange_rate);
+                $('#exchange_rate').selectpicker('refresh');
             }
+        }).catch(function(err) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    text: err.message,
+                    toast: true,
+                    position: 'top-end',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            }
+        }).finally(function() {
+            $.easyUnblockUI('#saveOrderForm');
         });
     }
 

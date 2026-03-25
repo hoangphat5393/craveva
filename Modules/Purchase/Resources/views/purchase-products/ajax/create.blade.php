@@ -57,7 +57,7 @@
                             </div>
 
                             <div class="col-lg-4 col-md-6" id="sku_id">
-                                <x-forms.text fieldId="sku" :fieldLabel="__('purchase::app.sku')" fieldName="sku" :fieldValue="$product ? $product->sku : ''" :fieldPlaceholder="__('placeholders.hsnSac')">
+                                <x-forms.text fieldId="sku" :fieldLabel="__('purchase::app.sku')" fieldName="sku" fieldRequired="true" :fieldValue="$product ? $product->sku : ''" :fieldPlaceholder="__('placeholders.hsnSac')">
                                 </x-forms.text>
                             </div>
 

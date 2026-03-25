@@ -2,23 +2,50 @@
 
 namespace Modules\Warehouse\Http\Controllers;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\AccountBaseController;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Modules\Warehouse\Entities\Warehouse;
 
-class WarehouseController extends Controller
+class WarehouseController extends AccountBaseController
 {
+    public function __construct()
+    {
+        parent::__construct();
+        $this->middleware(function ($request, $next) {
+            abort_403(! in_array('warehouse', user_modules()));
+
+            return $next($request);
+        });
+    }
+
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $warehouses = Warehouse::orderBy('id', 'desc')->paginate(10);
+        $query = Warehouse::query()->orderByDesc('id');
 
-        return view('warehouse::index', compact('warehouses'));
+        if ($request->filled('status') && $request->status !== 'all') {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('search')) {
+            $term = '%'.$request->search.'%';
+            $query->where(function ($q) use ($term) {
+                $q->where('name', 'like', $term)
+                    ->orWhere('code', 'like', $term)
+                    ->orWhere('address', 'like', $term);
+            });
+        }
+
+        $this->pageTitle = 'warehouse::app.allWarehouses';
+        $this->pageIcon = 'ti-layout';
+        $this->warehouses = $query->paginate(10)->withQueryString();
+
+        return view('warehouse::index', $this->data);
     }
 
     /**
@@ -26,7 +53,10 @@ class WarehouseController extends Controller
      */
     public function create()
     {
-        return view('warehouse::create');
+        $this->pageTitle = 'warehouse::app.createTitle';
+        $this->pageIcon = 'ti-layout';
+
+        return view('warehouse::create', $this->data);
     }
 
     /**
@@ -77,9 +107,11 @@ class WarehouseController extends Controller
      */
     public function show($id)
     {
-        $warehouse = Warehouse::findOrFail($id);
+        $this->warehouse = Warehouse::findOrFail($id);
+        $this->pageTitle = 'warehouse::app.warehouse';
+        $this->pageIcon = 'ti-layout';
 
-        return view('warehouse::show', compact('warehouse'));
+        return view('warehouse::show', $this->data);
     }
 
     /**
@@ -87,9 +119,11 @@ class WarehouseController extends Controller
      */
     public function edit($id)
     {
-        $warehouse = Warehouse::findOrFail($id);
+        $this->warehouse = Warehouse::findOrFail($id);
+        $this->pageTitle = 'warehouse::app.editTitle';
+        $this->pageIcon = 'ti-layout';
 
-        return view('warehouse::edit', compact('warehouse'));
+        return view('warehouse::edit', $this->data);
     }
 
     /**

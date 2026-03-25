@@ -33,7 +33,6 @@
 </div>
 
 <script>
-
     $(document).ready(function() {
 
         $("#client_import").dropify({
@@ -42,21 +41,27 @@
 
         $('body').on('click', '#import-client-form', function() {
             const url = "{{ route('clients.import.store') }}";
-
-            $.easyAjax({
-                url: url,
-                container: '#import-client-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#import-client-form",
-                file: true,
-                data: $('#import-client-data-form').serialize(),
-                success: function(response) {
-                    if (response.status == 'success') {
-                        $('#import_table').html(response.view);
-                    }
+            const $btn = $('#import-client-form');
+            $btn.prop('disabled', true);
+            $.easyBlockUI('#import-client-data-form');
+            window.apiHttp.postForm(url, document.getElementById('import-client-data-form')).then(function(response) {
+                if (response.status == 'success') {
+                    $('#import_table').html(response.view);
                 }
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $btn.prop('disabled', false);
+                $.easyUnblockUI('#import-client-data-form');
             });
         });
     });

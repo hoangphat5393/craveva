@@ -326,23 +326,30 @@
             var url = "{{ route('get_client_sub_categories', ':id') }}";
             url = url.replace(':id', categoryId);
 
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                success: function(response) {
-                    if (response.status == 'success') {
-                        var options = [];
-                        var rData = response.data;
+            window.apiHttp.get(url).then(function(response) {
+                if (response.status == 'success') {
+                    var options = [];
+                    var rData = response.data;
 
-                        $.each(rData, function(index, value) {
-                            var isSelected = selectedSubCategoryId && selectedSubCategoryId == value.id ? 'selected' : '';
-                            var selectData = '<option value="' + value.id + '" ' + isSelected + '>' + value.category_name + '</option>';
-                            options.push(selectData);
-                        });
+                    $.each(rData, function(index, value) {
+                        var isSelected = selectedSubCategoryId && selectedSubCategoryId == value.id ? 'selected' : '';
+                        var selectData = '<option value="' + value.id + '" ' + isSelected + '>' + value.category_name + '</option>';
+                        options.push(selectData);
+                    });
 
-                        $('#sub_category_id').html('<option value="">--</option>' + options);
-                        $('#sub_category_id').selectpicker('refresh');
-                    }
+                    $('#sub_category_id').html('<option value="">--</option>' + options);
+                    $('#sub_category_id').selectpicker('refresh');
+                }
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
                 }
             });
         }
@@ -362,22 +369,28 @@
 
         $('#save-form').click(function() {
             const url = "{{ route('clients.update', $client->id) }}";
-
-            $.easyAjax({
-                url: url,
-                container: '#save-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                file: true,
-                buttonSelector: "#save-form",
-                data: $('#save-data-form').serialize(),
-                success: function(response) {
-                    if (response.status == 'success') {
-                        window.location.href = response.redirectUrl;
-                    }
+            var $btn = $('#save-form');
+            $btn.prop('disabled', true);
+            $.easyBlockUI('#save-data-form');
+            window.apiHttp.postForm(url, document.getElementById('save-data-form')).then(function(response) {
+                if (response.status == 'success') {
+                    window.location.href = response.redirectUrl;
                 }
-            })
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $btn.prop('disabled', false);
+                $.easyUnblockUI('#save-data-form');
+            });
         });
 
         $('#addClientCategory').click(function() {

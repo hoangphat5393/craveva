@@ -22,11 +22,12 @@
 
 ## 1) Nên đọc theo thứ tự này (khi cần đào sâu)
 
-| Thứ tự | File                                                                               | Khi nào mở                                                                            |
-| ------ | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| **1**  | **[`MAOLIN_MASTER_GUIDE.md`](MAOLIN_MASTER_GUIDE.md)**                             | Đọc 1 file là đủ: multi-warehouse + mapping + checklist.                              |
-| **2**  | **[`MAOLIN_IMPORT_MAPPING.md`](MAOLIN_IMPORT_MAPPING.md)**                         | Map cột Excel → field import / core DB (vận hành import ngay).                        |
-| **4**  | **[`PROJECT_MAOLIN_NEW_FILES_ANALYSIS.md`](PROJECT_MAOLIN_NEW_FILES_ANALYSIS.md)** | Phân tích chi tiết từng sheet/cột file trong `PROJECT MAOLIN New/` (bản đầy đủ nhất). |
+| Thứ tự | File                                                                                     | Khi nào mở                                                                            |
+| ------ | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| **1**  | **[`MAOLIN_MASTER_GUIDE.md`](MAOLIN_MASTER_GUIDE.md)**                                   | Đọc 1 file là đủ: multi-warehouse + mapping + checklist.                              |
+| **2**  | **[`MAOLIN_IMPORT_MAPPING.md`](MAOLIN_IMPORT_MAPPING.md)**                               | Map cột Excel → field import / core DB (vận hành import ngay).                        |
+| **3**  | **[`MAOLIN_IMPORT_READINESS_AND_SEQUENCE.md`](MAOLIN_IMPORT_READINESS_AND_SEQUENCE.md)** | Kiểm tra “đủ/chưa đủ để import” + thứ tự import theo B2B guide.                       |
+| **4**  | **[`PROJECT_MAOLIN_NEW_FILES_ANALYSIS.md`](PROJECT_MAOLIN_NEW_FILES_ANALYSIS.md)**       | Phân tích chi tiết từng sheet/cột file trong `PROJECT MAOLIN New/` (bản đầy đủ nhất). |
 
 **Ghi chú:** Các file phân tích chi tiết/legacy/contract đã được **gộp** vào `MAOLIN_MASTER_GUIDE.md` và đã xóa khỏi repo để giảm số lượng file.
 

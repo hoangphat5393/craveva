@@ -645,30 +645,38 @@
             });
 
             function changeProductCategory(url) {
-                $.easyAjax({
-                    url: url,
-                    type: "GET",
-                    container: '#saveInvoiceForm',
-                    blockUI: true,
-                    success: function(response) {
-                        if (response.status == 'success') {
-                            var options = [];
-                            var rData = [];
-                            rData = response.data;
-                            $.each(rData, function(index, value) {
-                                var selectData = '';
-                                {{-- if (value.opening_stock > 0) { --}}
-                                selectData = '<option value="' + value.id + '">' + value.name +
-                                    '</option>';
-                                options.push(selectData);
-                                {{-- } --}}
-                            });
-                            $('#add-products').html(
-                                '<option value="" class="form-control" >{{ __('app.menu.selectProduct') }}</option>' +
-                                options);
-                            $('#add-products').selectpicker('refresh');
-                        }
+                $.easyBlockUI('#saveInvoiceForm');
+                window.apiHttp.get(url).then(function(response) {
+                    if (response.status == 'success') {
+                        var options = [];
+                        var rData = [];
+                        rData = response.data;
+                        $.each(rData, function(index, value) {
+                            var selectData = '';
+                            {{-- if (value.opening_stock > 0) { --}}
+                            selectData = '<option value="' + value.id + '">' + value.name +
+                                '</option>';
+                            options.push(selectData);
+                            {{-- } --}}
+                        });
+                        $('#add-products').html(
+                            '<option value="" class="form-control" >{{ __('app.menu.selectProduct') }}</option>' +
+                            options);
+                        $('#add-products').selectpicker('refresh');
                     }
+                }).catch(function(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
+                    }
+                }).finally(function() {
+                    $.easyUnblockUI('#saveInvoiceForm');
                 });
             }
 
@@ -759,20 +767,30 @@
                         var url = "{{ route('invoices.delete_image') }}";
                         var token = "{{ csrf_token() }}";
 
-                        $.easyAjax({
-                            type: 'get',
-                            url: url,
-                            blockUI: true,
-                            data: {
-                                '_token': token,
-                                'invoice_item_id': invoice_item_id,
-                                'file_path': file_path
-                            },
-                            success: function(response) {
-                                if (response.status == "success") {
-                                    element.resetPreview();
-                                }
+                        $.easyBlockUI();
+                        window.apiHttp.get(url, {
+                            params: {
+                                _token: token,
+                                invoice_item_id: invoice_item_id,
+                                file_path: file_path
                             }
+                        }).then(function(response) {
+                            if (response.status == "success") {
+                                element.resetPreview();
+                            }
+                        }).catch(function(err) {
+                            if (typeof Swal !== 'undefined') {
+                                Swal.fire({
+                                    icon: 'error',
+                                    text: err.message,
+                                    toast: true,
+                                    position: 'top-end',
+                                    timer: 4000,
+                                    showConfirmButton: false
+                                });
+                            }
+                        }).finally(function() {
+                            $.easyUnblockUI();
                         });
                     }
                 });
@@ -804,70 +822,84 @@
                 url = url.replace(':id', id);
                 var token = "{{ csrf_token() }}";
 
-                $.easyAjax({
-                    url: url,
-                    container: '#saveInvoiceForm',
-                    type: "POST",
-                    blockUI: true,
-                    data: {
-                        _token: token
-                    },
-                    success: function(response) {
-                        if (response.status == 'success') {
-                            $('#project_id').html(response.data);
-                            $('#project_id').selectpicker('refresh');
-                        }
+                $.easyBlockUI('#saveInvoiceForm');
+                window.apiHttp.post(url, {
+                    _token: token
+                }).then(function(response) {
+                    if (response.status == 'success') {
+                        $('#project_id').html(response.data);
+                        $('#project_id').selectpicker('refresh');
                     }
+                }).catch(function(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
+                    }
+                }).finally(function() {
+                    $.easyUnblockUI('#saveInvoiceForm');
                 });
 
                 var url = "{{ route('clients.ajax_details', ':id') }}";
                 url = url.replace(':id', id);
 
-                $.easyAjax({
-                    url: url,
-                    container: '#saveInvoiceForm',
-                    type: "POST",
-                    blockUI: true,
-                    data: {
-                        _token: token
-                    },
-                    success: function(response) {
+                $.easyBlockUI('#saveInvoiceForm');
+                window.apiHttp.post(url, {
+                    _token: token
+                }).then(function(response) {
 
-                        if (response.status == 'success') {
-                            if (response.data !== null) {
-                                $('#client_billing_address').html(nl2br(response.data.client_details
-                                    .address));
-                                $('#add-shipping-field').addClass('d-none');
-                                $('#client_shipping_address').removeClass('d-none');
+                    if (response.status == 'success') {
+                        if (response.data !== null) {
+                            $('#client_billing_address').html(nl2br(response.data.client_details
+                                .address));
+                            $('#add-shipping-field').addClass('d-none');
+                            $('#client_shipping_address').removeClass('d-none');
 
-                                if (response.data.client_details.address) {
-                                    $('#client_billing_address').html(nl2br(response.data.client_details.address)).removeClass('d-none');
-                                    $('#client_billing_address_editable').addClass('d-none');
-                                } else {
-                                    $('#client_billing_address').html(
-                                        "<span class='text-lightest'>@lang('messages.selectCustomerForBillingAddress')</span>"
-                                    );
-                                    $('#client_billing_address_editable').addClass('d-none');
-                                }
-
-                                if (response.data.clientDetails.shipping_address === null) {
-                                    var addShippingLink =
-                                        `<a href="javascript:;" class="" id="show-shipping-field"><i class="f-12 mr-2 fa fa-plus"></i>
-                                        @lang('app.addShippingAddress')</a>`;
-                                    $('#client_shipping_address').html(addShippingLink);
-                                } else {
-                                    $('#client_shipping_address').html(nl2br(response.data
-                                        .clientDetails
-                                        .shipping_address));
-                                }
+                            if (response.data.client_details.address) {
+                                $('#client_billing_address').html(nl2br(response.data.client_details.address)).removeClass('d-none');
+                                $('#client_billing_address_editable').addClass('d-none');
                             } else {
                                 $('#client_billing_address').html(
                                     "<span class='text-lightest'>@lang('messages.selectCustomerForBillingAddress')</span>"
-                                ).removeClass('d-none');
+                                );
                                 $('#client_billing_address_editable').addClass('d-none');
                             }
+
+                            if (response.data.clientDetails.shipping_address === null) {
+                                var addShippingLink =
+                                    `<a href="javascript:;" class="" id="show-shipping-field"><i class="f-12 mr-2 fa fa-plus"></i>
+                                    @lang('app.addShippingAddress')</a>`;
+                                $('#client_shipping_address').html(addShippingLink);
+                            } else {
+                                $('#client_shipping_address').html(nl2br(response.data
+                                    .clientDetails
+                                    .shipping_address));
+                            }
+                        } else {
+                            $('#client_billing_address').html(
+                                "<span class='text-lightest'>@lang('messages.selectCustomerForBillingAddress')</span>"
+                            ).removeClass('d-none');
+                            $('#client_billing_address_editable').addClass('d-none');
                         }
                     }
+                }).catch(function(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
+                    }
+                }).finally(function() {
+                    $.easyUnblockUI('#saveInvoiceForm');
                 });
 
             });
@@ -915,30 +947,40 @@
 
                 var currencyId = $('#currency_id').val();
                 var exchangeRate = $('#exchange_rate').val();
-                $.easyAjax({
-                    url: "{{ route('invoices.add_item') }}",
-                    type: "GET",
-                    data: {
+                $.easyBlockUI('#saveInvoiceForm');
+                window.apiHttp.get("{{ route('invoices.add_item') }}", {
+                    params: {
                         id: id,
                         currencyId: currencyId,
                         exchangeRate: exchangeRate
-                    },
-                    blockUI: true,
-                    success: function(response) {
-                        if ($('input[name="item_name[]"]').val() == '') {
-                            $("#sortable .item-row").remove();
-                        }
-                        $(response.view).hide().appendTo("#sortable").fadeIn(500);
-                        calculateTotal();
-
-                        var noOfRows = $(document).find('#sortable .item-row').length;
-                        var i = $(document).find('.item_name').length - 1;
-                        var itemRow = $(document).find('#sortable .item-row:nth-child(' + noOfRows +
-                            ') select.type');
-                        itemRow.attr('id', 'multiselect' + i);
-                        itemRow.attr('name', 'taxes[' + i + '][]');
-                        $(document).find('#multiselect' + i).selectpicker();
                     }
+                }).then(function(response) {
+                    if ($('input[name="item_name[]"]').val() == '') {
+                        $("#sortable .item-row").remove();
+                    }
+                    $(response.view).hide().appendTo("#sortable").fadeIn(500);
+                    calculateTotal();
+
+                    var noOfRows = $(document).find('#sortable .item-row').length;
+                    var i = $(document).find('.item_name').length - 1;
+                    var itemRow = $(document).find('#sortable .item-row:nth-child(' + noOfRows +
+                        ') select.type');
+                    itemRow.attr('id', 'multiselect' + i);
+                    itemRow.attr('name', 'taxes[' + i + '][]');
+                    $(document).find('#multiselect' + i).selectpicker();
+                }).catch(function(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
+                    }
+                }).finally(function() {
+                    $.easyUnblockUI('#saveInvoiceForm');
                 });
             }
 
@@ -1120,7 +1162,7 @@
                 $('input[type=hidden][name="' + elementName + '"]').val('');
             });
 
-                init(RIGHT_MODAL);
+            init(RIGHT_MODAL);
 
         });
 
@@ -1144,24 +1186,33 @@
             }
             var token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                url: "{{ route('payments.account_list') }}",
-                container: '#saveInvoiceForm',
-                type: "GET",
-                blockUI: true,
-                data: {
-                    'curId': curId,
+            $.easyBlockUI('#saveInvoiceForm');
+            window.apiHttp.get("{{ route('payments.account_list') }}", {
+                params: {
+                    curId: curId,
                     _token: token
-                },
-                success: function(response) {
-                    if (response.status == 'success') {
-                        $('#bank_account_id').html(response.data);
-                        $('#bank_account_id').selectpicker('refresh');
-                        $('#exchange_rate').val(response.exchangeRate);
-                        let currencyExchange = (companyCurrencyName != currentCurrencyName) ? '( ' + currentCurrencyName + ' @lang('app.to') ' + companyCurrencyName + ' )' : '';
-                        $('#currency_exchange').html(currencyExchange);
-                    }
                 }
+            }).then(function(response) {
+                if (response.status == 'success') {
+                    $('#bank_account_id').html(response.data);
+                    $('#bank_account_id').selectpicker('refresh');
+                    $('#exchange_rate').val(response.exchangeRate);
+                    let currencyExchange = (companyCurrencyName != currentCurrencyName) ? '( ' + currentCurrencyName + ' @lang('app.to') ' + companyCurrencyName + ' )' : '';
+                    $('#currency_exchange').html(currencyExchange);
+                }
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $.easyUnblockUI('#saveInvoiceForm');
             });
         });
 
@@ -1185,26 +1236,33 @@
 
             if (val == 'Offline') {
                 var url = "{{ route('offline.methods') }}"
-                $.easyAjax({
-                    url: url,
-                    type: "GET",
-                    success: function(response) {
-                        if (response.status == 'success') {
-                            $('#add_offline').removeClass('d-none');
-                            var options = [];
-                            var rData = [];
-                            rData = response.data;
-                            $.each(rData, function(index, value) {
-                                var selectData = '';
-                                if (value.status == 'yes') {
-                                    selectData = '<option value="' + value.id + '">' + value.name + '</option>';
-                                }
-                                options.push(selectData);
-                            });
-                            $('#add_offline_methods').html(
-                                options);
-                            $('#add_offline_methods').selectpicker('refresh');
-                        }
+                window.apiHttp.get(url).then(function(response) {
+                    if (response.status == 'success') {
+                        $('#add_offline').removeClass('d-none');
+                        var options = [];
+                        var rData = [];
+                        rData = response.data;
+                        $.each(rData, function(index, value) {
+                            var selectData = '';
+                            if (value.status == 'yes') {
+                                selectData = '<option value="' + value.id + '">' + value.name + '</option>';
+                            }
+                            options.push(selectData);
+                        });
+                        $('#add_offline_methods').html(
+                            options);
+                        $('#add_offline_methods').selectpicker('refresh');
+                    }
+                }).catch(function(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
                     }
                 });
             } else {
@@ -1244,37 +1302,44 @@
                 return false;
             }
 
-            $.easyAjax({
-                url: "{{ route('invoices.update', $invoice->id) }}" + "?type=" + type,
-                container: '#saveInvoiceForm',
-                type: "POST",
-                blockUI: true,
-                redirect: true,
-                file: true, // Commented so that we dot get error of Input variables exceeded 1000
-                data: $('#saveInvoiceForm').serialize(),
-                success: function(response) {
-                    $(MODAL_DEFAULT).modal('hide');
+            var updateUrl = "{{ route('invoices.update', $invoice->id) }}" + "?type=" + type;
+            var saveFormEl = document.getElementById('saveInvoiceForm');
+            $.easyBlockUI('#saveInvoiceForm');
+            window.apiHttp.postForm(updateUrl, saveFormEl).then(function(response) {
+                $(MODAL_DEFAULT).modal('hide');
 
-                    if (response.status == 'error' && response.showValue === true && exceed == 'direct') {
-                        const productIDs = response.data;
-                        $('#do_it_later').val('true');
-                        const url = "{{ route('invoices.committed_modal') }}" + "?products=" + productIDs + "&type=" + type;
+                if (response.status == 'error' && response.showValue === true && exceed == 'direct') {
+                    const productIDs = response.data;
+                    $('#do_it_later').val('true');
+                    const committedUrl = "{{ route('invoices.committed_modal') }}" + "?products=" + productIDs + "&type=" + type;
 
-                        $(MODAL_DEFAULT + ' ' + MODAL_HEADING).html('...');
-                        $.ajaxModal(MODAL_DEFAULT, url);
-                    }
+                    $(MODAL_DEFAULT + ' ' + MODAL_HEADING).html('...');
+                    $.ajaxModal(MODAL_DEFAULT, committedUrl);
+                }
 
-                    if (response.status === 'success') {
-                        if (typeof invoiceDropzone !== 'undefined' && invoiceDropzone.getQueuedFiles().length > 0) {
-                            invoiceID = response.invoiceID;
-                            $('#invoiceID').val(response.invoiceID);
-                            invoiceDropzone.processQueue();
-                        } else {
-                            window.location.href = response.redirectUrl;
-                        }
+                if (response.status === 'success') {
+                    if (typeof invoiceDropzone !== 'undefined' && invoiceDropzone.getQueuedFiles().length > 0) {
+                        invoiceID = response.invoiceID;
+                        $('#invoiceID').val(response.invoiceID);
+                        invoiceDropzone.processQueue();
+                    } else {
+                        window.location.href = response.redirectUrl;
                     }
                 }
-            })
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $.easyUnblockUI('#saveInvoiceForm');
+            });
         }
     </script>
 

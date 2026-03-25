@@ -24,7 +24,9 @@ class StorePurchaseProductRequest extends CoreRequest
                 'required',
                 Rule::unique('products')->where(function ($query) use ($companyId) {
                     return $query->where('company_id', $companyId);
-                })],
+                }),
+            ],
+            'sku' => 'required|string|max:255',
             'track_inventory' => 'sometimes',
             'type' => 'required|in:goods,service',
             'selling_price' => 'required|numeric',

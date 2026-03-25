@@ -1,6 +1,6 @@
 @php
-$addClientCategoryPermission = user()->permission('manage_client_category');
-$addClientSubCategoryPermission = user()->permission('manage_client_subcategory');
+    $addClientCategoryPermission = user()->permission('manage_client_category');
+    $addClientSubCategoryPermission = user()->permission('manage_client_subcategory');
 @endphp
 
 <div class="row">
@@ -9,20 +9,18 @@ $addClientSubCategoryPermission = user()->permission('manage_client_subcategory'
             <div class="add-client bg-white rounded">
                 <h4 class="mb-0 p-20 f-21 font-weight-normal  border-bottom-grey">
                     @lang('modules.employees.accountDetails')</h4>
-                    <input type="hidden" name="is_client_contact" value="{{ $clientId }}">
-                    <input type="hidden" name="client_contact_id" value="{{ $contact->id }}">
+                <input type="hidden" name="is_client_contact" value="{{ $clientId }}">
+                <input type="hidden" name="client_contact_id" value="{{ $contact->id }}">
                 <div class="row p-20">
                     <div class="col-lg-9">
                         <div class="row">
                             <div class="col-md-4">
-                                <x-forms.text fieldId="title" :fieldLabel="__('app.title')" fieldName="title"
-                                    :fieldPlaceholder="__('placeholders.title')" :fieldValue="$contact->title">
-                                    </x-forms.text>
+                                <x-forms.text fieldId="title" :fieldLabel="__('app.title')" fieldName="title" :fieldPlaceholder="__('placeholders.title')" :fieldValue="$contact->title">
+                                </x-forms.text>
                             </div>
 
                             <div class="col-md-4">
-                                <x-forms.select fieldId="salutation" fieldName="salutation"
-                                    :fieldLabel="__('modules.client.salutation')">
+                                <x-forms.select fieldId="salutation" fieldName="salutation" :fieldLabel="__('modules.client.salutation')">
                                     <option value="">--</option>
                                     @foreach ($salutations as $salutation)
                                         <option value="{{ $salutation->value }}" @selected($client->salutation == $salutation)>{{ $salutation->label() }}</option>
@@ -33,90 +31,64 @@ $addClientSubCategoryPermission = user()->permission('manage_client_subcategory'
 
 
                             <div class="col-lg-4 col-md-6">
-                                <x-forms.text fieldId="name" :fieldLabel="__('modules.contacts.contactName')" fieldName="name"
-                                    fieldRequired="true" :fieldPlaceholder="__('placeholders.name')"
-                                    :fieldValue="$client->name">
+                                <x-forms.text fieldId="name" :fieldLabel="__('modules.contacts.contactName')" fieldName="name" fieldRequired="true" :fieldPlaceholder="__('placeholders.name')" :fieldValue="$client->name">
                                 </x-forms.text>
                             </div>
                             <div class="col-lg-4 col-md-6">
-                                <x-forms.email fieldId="email" :fieldLabel="__('app.email')" fieldName="email"
-                                    :popover="__('modules.client.emailNote')" :fieldPlaceholder="__('placeholders.email')"
-                                    :fieldValue="$client->email" fieldReadOnly="true">
+                                <x-forms.email fieldId="email" :fieldLabel="__('app.email')" fieldName="email" :popover="__('modules.client.emailNote')" :fieldPlaceholder="__('placeholders.email')" :fieldValue="$client->email" fieldReadOnly="true">
                                 </x-forms.email>
                             </div>
                             <div class="col-lg-4 col-md-6">
-                                <x-forms.label class="mt-3" fieldId="password" :fieldLabel="__('app.password')"
-                                    :popover="__('messages.requiredForLogin')">
+                                <x-forms.label class="mt-3" fieldId="password" :fieldLabel="__('app.password')" :popover="__('messages.requiredForLogin')">
                                 </x-forms.label>
                                 <x-forms.input-group>
-                                    <input type="password" name="password" id="password" autocomplete="off"
-                                        class="form-control height-35 f-14">
+                                    <input type="password" name="password" id="password" autocomplete="off" class="form-control height-35 f-14">
                                     <x-slot name="preappend">
-                                        <button type="button" data-toggle="tooltip"
-                                            data-original-title="@lang('app.viewPassword')"
-                                            class="btn btn-outline-secondary border-grey height-35 toggle-password"><i
-                                                class="fa fa-eye"></i></button>
+                                        <button type="button" data-toggle="tooltip" data-original-title="@lang('app.viewPassword')" class="btn btn-outline-secondary border-grey height-35 toggle-password"><i class="fa fa-eye"></i></button>
                                     </x-slot>
                                     <x-slot name="append">
-                                        <button id="random_password" type="button" data-toggle="tooltip"
-                                            data-original-title="@lang('modules.client.generateRandomPassword')"
-                                            class="btn btn-outline-secondary border-grey height-35"><i
-                                                class="fa fa-random"></i></button>
+                                        <button id="random_password" type="button" data-toggle="tooltip" data-original-title="@lang('modules.client.generateRandomPassword')" class="btn btn-outline-secondary border-grey height-35"><i class="fa fa-random"></i></button>
                                     </x-slot>
                                 </x-forms.input-group>
                                 <small class="form-text text-muted">@lang('modules.client.passwordUpdateNote')</small>
                             </div>
                             <div class="col-md-4">
-                                <x-forms.select fieldId="country" :fieldLabel="__('app.country')" fieldName="country"
-                                search="true">
-                                <option value="">--</option>
-                                @foreach ($countries as $item)
-                                    <option @selected($client->country_id == $item->id) data-mobile="{{ $client->mobile }}" data-tokens="{{ $item->iso3 }}" data-phonecode="{{ $item->phonecode }}" data-content="<span
-                                        class='flag-icon flag-icon-{{ strtolower($item->iso) }} flag-icon-squared'></span>
-                                        {{ $item->nicename }}" data-iso="{{ $item->iso }}" value="{{ $item->id }}">{{ $item->nicename }}</option>
-                                @endforeach
-                            </x-forms.select>
-                        </div>
-                        <div class="col-md-4">
-                            <x-forms.label class="my-3" fieldId="mobile"
-                                :fieldLabel="__('app.mobile')"></x-forms.label>
-                            <x-forms.input-group style="margin-top:-4px">
-                                <x-forms.select fieldId="country_phonecode" fieldName="country_phonecode"
-                                    search="true">
+                                <x-forms.select fieldId="country" :fieldLabel="__('app.country')" fieldName="country" search="true">
+                                    <option value="">--</option>
                                     @foreach ($countries as $item)
-                                        <option @selected($client->country_phonecode == $item->phonecode && !is_null($item->numcode))
-                                                data-tokens="{{ $item->name }}" data-country-iso="{{ $item->iso }}"
-                                                data-content="{{$item->flagSpanCountryCode()}}"
-                                                value="{{ $item->phonecode }}">
-                                        </option>
+                                        <option @selected($client->country_id == $item->id) data-mobile="{{ $client->mobile }}" data-tokens="{{ $item->iso3 }}" data-phonecode="{{ $item->phonecode }}" data-content="<span
+                                        class='flag-icon flag-icon-{{ strtolower($item->iso) }} flag-icon-squared'></span>
+                                        {{ $item->nicename }}"
+                                            data-iso="{{ $item->iso }}" value="{{ $item->id }}">{{ $item->nicename }}</option>
                                     @endforeach
                                 </x-forms.select>
-                                <input type="tel" class="form-control height-35 f-14" placeholder="@lang('placeholders.mobile')"
-                                    name="mobile" id="mobile" value="{{ $client->mobile }}">
-                            </x-forms.input-group>
+                            </div>
+                            <div class="col-md-4">
+                                <x-forms.label class="my-3" fieldId="mobile" :fieldLabel="__('app.mobile')"></x-forms.label>
+                                <x-forms.input-group style="margin-top:-4px">
+                                    <x-forms.select fieldId="country_phonecode" fieldName="country_phonecode" search="true">
+                                        @foreach ($countries as $item)
+                                            <option @selected($client->country_phonecode == $item->phonecode && !is_null($item->numcode)) data-tokens="{{ $item->name }}" data-country-iso="{{ $item->iso }}" data-content="{{ $item->flagSpanCountryCode() }}" value="{{ $item->phonecode }}">
+                                            </option>
+                                        @endforeach
+                                    </x-forms.select>
+                                    <input type="tel" class="form-control height-35 f-14" placeholder="@lang('placeholders.mobile')" name="mobile" id="mobile" value="{{ $client->mobile }}">
+                                </x-forms.input-group>
                             </div>
                         </div>
                     </div>
                     <div class="col-lg-3">
 
-                        <x-forms.file allowedFileExtensions="png jpg jpeg svg bmp" class="mr-0 mr-lg-2 mr-md-2 cropper"
-                            :fieldLabel="__('modules.profile.profilePicture')"
-                            :fieldValue="$client->image_url" fieldName="image"
-                            fieldId="image" fieldHeight="119" :popover="__('messages.fileFormat.ImageFile')" />
+                        <x-forms.file allowedFileExtensions="png jpg jpeg svg bmp" class="mr-0 mr-lg-2 mr-md-2 cropper" :fieldLabel="__('modules.profile.profilePicture')" :fieldValue="$client->image_url" fieldName="image" fieldId="image" fieldHeight="119" :popover="__('messages.fileFormat.ImageFile')" />
                     </div>
 
                     <div class="col-md-6">
-                        <x-forms.textarea class="mr-0 mr-lg-2 mr-md-2"
-                            :fieldLabel="__('modules.accountSettings.companyAddress')" fieldName="address"
-                            fieldId="address" :fieldPlaceholder="__('placeholders.address')"
-                            :fieldValue="$contact->address"
-                        >
+                        <x-forms.textarea class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.accountSettings.companyAddress')" fieldName="address" fieldId="address" :fieldPlaceholder="__('placeholders.address')" :fieldValue="$contact->address">
                         </x-forms.textarea>
                     </div>
 
                     <div class="col-lg-3 col-md-6">
-                        <x-forms.select fieldId="gender" :fieldLabel="__('modules.employees.gender')"
-                            fieldName="gender">
+                        <x-forms.select fieldId="gender" :fieldLabel="__('modules.employees.gender')" fieldName="gender">
                             <option value="male" {{ $client->gender == 'male' ? 'selected' : '' }}>@lang('app.male')
                             </option>
                             <option value="female" {{ $client->gender == 'female' ? 'selected' : '' }}>
@@ -127,26 +99,20 @@ $addClientSubCategoryPermission = user()->permission('manage_client_subcategory'
                     </div>
 
                     <div class="col-md-3">
-                        <x-forms.select fieldId="locale" :fieldLabel="__('modules.accountSettings.changeLanguage')"
-                            fieldName="locale" search="true">
+                        <x-forms.select fieldId="locale" :fieldLabel="__('modules.accountSettings.changeLanguage')" fieldName="locale" search="true">
                             @foreach ($languages as $language)
-                                <option @selected($client->locale == $language->language_code)
-                                data-content="<span class='flag-icon flag-icon-{{ ($language->flag_code == 'en') ? 'gb' : $language->flag_code }} flag-icon-squared'></span> {{ $language->language_name }}"
-                                value="{{ $language->language_code }}">{{ $language->language_name }}</option>
+                                <option @selected($client->locale == $language->language_code) data-content="<span class='flag-icon flag-icon-{{ $language->flag_code == 'en' ? 'gb' : $language->flag_code }} flag-icon-squared'></span> {{ $language->language_name }}" value="{{ $language->language_code }}">{{ $language->language_name }}</option>
                             @endforeach
                         </x-forms.select>
                     </div>
 
                     <div class="col-lg-3 col-md-6">
                         <div class="form-group my-3">
-                            <label class="f-14 text-dark-grey mb-12 w-100 mt-3"
-                                for="usr">@lang('modules.client.clientCanLogin')</label>
+                            <label class="f-14 text-dark-grey mb-12 w-100 mt-3" for="usr">@lang('modules.client.clientCanLogin')</label>
                             <div class="d-flex">
-                                <x-forms.radio fieldId="login-yes" :fieldLabel="__('app.yes')" fieldName="login"
-                                    fieldValue="enable" :checked="($client->login == 'enable') ? 'checked' : ''">
+                                <x-forms.radio fieldId="login-yes" :fieldLabel="__('app.yes')" fieldName="login" fieldValue="enable" :checked="$client->login == 'enable' ? 'checked' : ''">
                                 </x-forms.radio>
-                                <x-forms.radio fieldId="login-no" :fieldLabel="__('app.no')" fieldValue="disable"
-                                    fieldName="login" :checked="($client->login == 'disable') ? 'checked' : ''">
+                                <x-forms.radio fieldId="login-no" :fieldLabel="__('app.no')" fieldValue="disable" fieldName="login" :checked="$client->login == 'disable' ? 'checked' : ''">
                                 </x-forms.radio>
                             </div>
                         </div>
@@ -156,13 +122,9 @@ $addClientSubCategoryPermission = user()->permission('manage_client_subcategory'
                         <div class="form-group my-3">
                             <label class="f-14 text-dark-grey mb-12 w-100 mt-3" for="usr">@lang('app.status')</label>
                             <div class="d-flex">
-                                <x-forms.radio fieldId="status-active" :fieldLabel="__('app.active')"
-                                    fieldValue="active" fieldName="status"
-                                    checked="($client->status == 'active') ? 'checked' : ''">
+                                <x-forms.radio fieldId="status-active" :fieldLabel="__('app.active')" fieldValue="active" fieldName="status" checked="($client->status == 'active') ? 'checked' : ''">
                                 </x-forms.radio>
-                                <x-forms.radio fieldId="status-inactive" :fieldLabel="__('app.inactive')"
-                                    fieldValue="deactive" fieldName="status"
-                                    :checked="($client->status == 'deactive') ? 'checked' : ''">
+                                <x-forms.radio fieldId="status-inactive" :fieldLabel="__('app.inactive')" fieldValue="deactive" fieldName="status" :checked="$client->status == 'deactive' ? 'checked' : ''">
                                 </x-forms.radio>
                             </div>
                         </div>
@@ -216,7 +178,7 @@ $addClientSubCategoryPermission = user()->permission('manage_client_subcategory'
         }
         updatePhoneCode();
 
-        $('#country').change(function(){
+        $('#country').change(function() {
             updatePhoneCode();
             $('.select-picker').selectpicker('refresh');
         });
@@ -234,23 +196,30 @@ $addClientSubCategoryPermission = user()->permission('manage_client_subcategory'
             var url = "{{ route('get_client_sub_categories', ':id') }}";
             url = url.replace(':id', categoryId);
 
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                success: function(response) {
-                    if (response.status == 'success') {
-                        var options = [];
-                        var rData = response.data;
+            window.apiHttp.get(url).then(function(response) {
+                if (response.status == 'success') {
+                    var options = [];
+                    var rData = response.data;
 
-                        $.each(rData, function(index, value) {
-                            var isSelected = selectedSubCategoryId && selectedSubCategoryId == value.id ? 'selected' : '';
-                            var selectData = '<option value="' + value.id + '" ' + isSelected + '>' + value.category_name + '</option>';
-                            options.push(selectData);
-                        });
+                    $.each(rData, function(index, value) {
+                        var isSelected = selectedSubCategoryId && selectedSubCategoryId == value.id ? 'selected' : '';
+                        var selectData = '<option value="' + value.id + '" ' + isSelected + '>' + value.category_name + '</option>';
+                        options.push(selectData);
+                    });
 
-                        $('#sub_category_id').html('<option value="">--</option>' + options);
-                        $('#sub_category_id').selectpicker('refresh');
-                    }
+                    $('#sub_category_id').html('<option value="">--</option>' + options);
+                    $('#sub_category_id').selectpicker('refresh');
+                }
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
                 }
             });
         }
@@ -270,22 +239,28 @@ $addClientSubCategoryPermission = user()->permission('manage_client_subcategory'
 
         $('#save-form').click(function() {
             const url = "{{ route('clients.update', $client->id) }}";
-
-            $.easyAjax({
-                url: url,
-                container: '#save-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                file: true,
-                buttonSelector: "#save-form",
-                data: $('#save-data-form').serialize(),
-                success: function(response) {
-                    if (response.status == 'success') {
-                        window.location.href = response.redirectUrl;
-                    }
+            var $btn = $('#save-form');
+            $btn.prop('disabled', true);
+            $.easyBlockUI('#save-data-form');
+            window.apiHttp.postForm(url, document.getElementById('save-data-form')).then(function(response) {
+                if (response.status == 'success') {
+                    window.location.href = response.redirectUrl;
                 }
-            })
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $btn.prop('disabled', false);
+                $.easyUnblockUI('#save-data-form');
+            });
         });
 
         $('#addClientCategory').click(function() {
@@ -317,7 +292,7 @@ $addClientSubCategoryPermission = user()->permission('manage_client_subcategory'
         clipboard.on('success', function(e) {
             Swal.fire({
                 icon: 'success',
-                text: '@lang("app.urlCopied")',
+                text: '@lang('app.urlCopied')',
                 toast: true,
                 position: 'top-end',
                 timer: 3000,

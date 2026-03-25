@@ -40,21 +40,27 @@
 
         $('body').on('click', '#import-product-form', function() {
             const url = "{{ route('products.import.store') }}";
-
-            $.easyAjax({
-                url: url,
-                container: '#import-product-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#import-product-form",
-                file: true,
-                data: $('#import-product-data-form').serialize(),
-                success: function(response) {
-                    if (response.status == 'success') {
-                        $('#import_table').html(response.view);
-                    }
+            const $btn = $('#import-product-form');
+            $btn.prop('disabled', true);
+            $.easyBlockUI('#import-product-data-form');
+            window.apiHttp.postForm(url, document.getElementById('import-product-data-form')).then(function(response) {
+                if (response.status == 'success') {
+                    $('#import_table').html(response.view);
                 }
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $btn.prop('disabled', false);
+                $.easyUnblockUI('#import-product-data-form');
             });
         });
     });

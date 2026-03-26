@@ -22,6 +22,7 @@ use App\Models\Tax;
 use App\Models\UnitType;
 use App\Traits\ImportExcel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Modules\Pricing\Services\PricingService;
 
 class ProductController extends AccountBaseController
@@ -530,6 +531,16 @@ class ProductController extends AccountBaseController
         $chunkSize = $request->filled('chunk_size') ? (int) $request->chunk_size : 100;
         $options = ['default_unit_id' => $request->input('default_unit_id') ? (int) $request->input('default_unit_id') : null];
         $batch = $this->importJobProcessChunked($request, ProductImport::class, ImportProductChunkJob::class, $chunkSize, $options);
+        $batchId = data_get($batch, 'id');
+        if ($batchId) {
+            Cache::put('import_metrics_' . $batchId, [
+                'created' => 0,
+                'updated' => 0,
+                'skipped' => 0,
+                'skipped_missing_required' => 0,
+                'invalid_status' => 0,
+            ], now()->addHours(12));
+        }
 
         return Reply::successWithData(__('messages.importProcessStart'), ['batch' => $batch]);
     }

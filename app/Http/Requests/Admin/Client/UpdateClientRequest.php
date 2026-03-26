@@ -4,6 +4,7 @@ namespace App\Http\Requests\Admin\Client;
 
 use App\Http\Requests\CoreRequest;
 use App\Traits\CustomFieldsRequestTrait;
+use Illuminate\Validation\Rule;
 
 class UpdateClientRequest extends CoreRequest
 {
@@ -29,11 +30,18 @@ class UpdateClientRequest extends CoreRequest
         $rules = [
             'slack_username' => 'nullable|unique',
             'name' => 'required',
-            'email' => 'nullable|email:rfc,strict|required_if:login,enable|unique:users,email,' . $this->route('client') . ',id,company_id,' . company()->id,
+            'email' => [
+                'nullable',
+                'email:rfc,strict',
+                Rule::requiredIf(function () {
+                    return in_array((string) $this->login, ['enable', 'yes'], true);
+                }),
+                'unique:users,email,' . $this->route('client') . ',id,company_id,' . company()->id,
+            ],
             'website' => 'nullable|url',
             'country' => 'required_with:mobile',
             'password' => 'nullable|min:8',
-            'client_code' => ['nullable', \Illuminate\Validation\Rule::unique('client_details', 'client_code')->where('company_id', company()->id)->ignore($this->route('client'), 'user_id')],
+            'client_code' => ['nullable', Rule::unique('client_details', 'client_code')->where('company_id', company()->id)->ignore($this->route('client'), 'user_id')],
             'mobile' => 'nullable|numeric',
             'default_warehouse_id' => 'nullable|integer|exists:warehouses,id',
         ];
@@ -41,6 +49,15 @@ class UpdateClientRequest extends CoreRequest
         $rules = $this->customFieldRules($rules);
 
         return $rules;
+    }
+
+    public function messages()
+    {
+        return [
+            'name.required' => 'The client name field is required.',
+            'email.required' => 'Email is required when client login is enabled.',
+            'website.url' => 'The website format is invalid. Add https:// or http to url',
+        ];
     }
 
     public function attributes()

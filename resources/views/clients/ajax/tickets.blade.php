@@ -149,16 +149,7 @@
                         showTable();
                     }
                 }).catch(function(err) {
-                    if (typeof Swal !== 'undefined') {
-                        Swal.fire({
-                            icon: 'error',
-                            text: err.message,
-                            toast: true,
-                            position: 'top-end',
-                            timer: 4000,
-                            showConfirmButton: false
-                        });
-                    }
+                    $.handleApiFormError(err);
                 });
             }
         });
@@ -181,16 +172,7 @@
                 deSelectAll();
             }
         }).catch(function(err) {
-            if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    icon: 'error',
-                    text: err.message,
-                    toast: true,
-                    position: 'top-end',
-                    timer: 4000,
-                    showConfirmButton: false
-                });
-            }
+            $.handleApiFormError(err);
         }).finally(function() {
             $qaBtn.prop('disabled', false);
             $.easyUnblockUI('#quick-action-form');
@@ -238,16 +220,7 @@
             $('#pendingTickets').html(response.pendingTickets);
             $('#resolvedTickets').html(response.resolvedTickets);
         }).catch(function(err) {
-            if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    icon: 'error',
-                    text: err.message,
-                    toast: true,
-                    position: 'top-end',
-                    timer: 4000,
-                    showConfirmButton: false
-                });
-            }
+            $.handleApiFormError(err);
         });
     }
 

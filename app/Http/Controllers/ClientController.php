@@ -50,6 +50,7 @@ use App\Scopes\CompanyScope;
 use App\Traits\EmployeeActivityTrait;
 use App\Traits\ImportExcel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -1032,6 +1033,16 @@ class ClientController extends AccountBaseController
         // Override via request chunk_size if needed (e.g. 20 for easier error location when debugging).
         $chunkSize = $request->filled('chunk_size') ? (int) $request->chunk_size : 100;
         $batch = $this->importJobProcessChunked($request, ClientImport::class, ImportClientChunkJob::class, $chunkSize);
+        $batchId = data_get($batch, 'id');
+        if ($batchId) {
+            Cache::put('import_metrics_' . $batchId, [
+                'created' => 0,
+                'updated' => 0,
+                'skipped' => 0,
+                'skipped_missing_required' => 0,
+                'invalid_status' => 0,
+            ], now()->addHours(12));
+        }
 
         return Reply::successWithData(__('messages.importProcessStart'), ['batch' => $batch]);
     }

@@ -6,6 +6,7 @@ use App\Helper\Reply;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
 class ImportController extends Controller
@@ -42,7 +43,16 @@ class ImportController extends Controller
             $progress = $totalJobs > 0 ? round((($processedJobs + $failedJobs) / $totalJobs) * 100, 2) : 0;
         }
 
-        return Reply::dataOnly(['progress' => $progress, 'failedJobs' => $failedJobs, 'processedJobs' => $processedJobs, 'pendingJobs' => $pendingJobs, 'totalJobs' => $totalJobs]);
+        $metrics = Cache::get('import_metrics_' . $id);
+
+        return Reply::dataOnly([
+            'progress' => $progress,
+            'failedJobs' => $failedJobs,
+            'processedJobs' => $processedJobs,
+            'pendingJobs' => $pendingJobs,
+            'totalJobs' => $totalJobs,
+            'metrics' => $metrics,
+        ]);
     }
 
     public function getQueueException($name)

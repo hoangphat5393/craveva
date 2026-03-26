@@ -16,6 +16,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -78,6 +79,9 @@ class ImportProductChunkJob implements ShouldQueue
         }
 
         $failures = [];
+        $createdCount = 0;
+        $updatedCount = 0;
+        $skippedCount = 0;
 
         foreach ($this->rows as $index => $row) {
             try {
@@ -86,13 +90,23 @@ class ImportProductChunkJob implements ShouldQueue
                     return $this->processRow($normalizedRow, $this->chunkStartIndex + $index);
                 });
                 if (! $created) {
+                    $skippedCount++;
                     continue;
                 }
+                $createdCount++;
             } catch (Exception $e) {
                 $fileRow = $this->chunkStartIndex + $index + 2; // +2: 1-based and header row
                 $failures[] = 'Row ' . $fileRow . ': ' . $e->getMessage();
             }
         }
+
+        $this->storeBatchMetrics([
+            'created' => $createdCount,
+            'updated' => $updatedCount,
+            'skipped' => $skippedCount,
+            'skipped_missing_required' => 0,
+            'invalid_status' => 0,
+        ]);
 
         if ($failures !== []) {
             $msg = implode("\n", array_slice($failures, 0, 50));
@@ -388,5 +402,29 @@ class ImportProductChunkJob implements ShouldQueue
         } catch (\Throwable $e) {
             return '';
         }
+    }
+
+    private function storeBatchMetrics(array $delta): void
+    {
+        if (! $this->batchId) {
+            return;
+        }
+
+        $cacheKey = 'import_metrics_' . $this->batchId;
+        $current = Cache::get($cacheKey, [
+            'created' => 0,
+            'updated' => 0,
+            'skipped' => 0,
+            'skipped_missing_required' => 0,
+            'invalid_status' => 0,
+        ]);
+
+        $current['created'] += (int) ($delta['created'] ?? 0);
+        $current['updated'] += (int) ($delta['updated'] ?? 0);
+        $current['skipped'] += (int) ($delta['skipped'] ?? 0);
+        $current['skipped_missing_required'] += (int) ($delta['skipped_missing_required'] ?? 0);
+        $current['invalid_status'] += (int) ($delta['invalid_status'] ?? 0);
+
+        Cache::put($cacheKey, $current, now()->addHours(12));
     }
 }

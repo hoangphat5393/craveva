@@ -4,18 +4,24 @@ namespace Modules\Warehouse\Http\Controllers;
 
 use App\Helper\Reply;
 use App\Http\Controllers\AccountBaseController;
+use App\Http\Requests\Admin\Employee\ImportProcessRequest;
+use App\Http\Requests\Admin\Employee\ImportRequest;
 use App\Models\StockMovement;
+use App\Traits\ImportExcel;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Modules\Warehouse\Imports\WarehouseImport;
+use Modules\Warehouse\Jobs\ImportWarehouseChunkJob;
 use Modules\Warehouse\Entities\Warehouse;
 use Modules\Warehouse\Http\Controllers\Concerns\HandlesWarehouseErrors;
 
 class WarehouseController extends AccountBaseController
 {
-    use HandlesWarehouseErrors;
+    use HandlesWarehouseErrors, ImportExcel;
 
     private function hasSortOrderColumn(): bool
     {
@@ -40,10 +46,15 @@ class WarehouseController extends AccountBaseController
         $viewPermission = user()->permission('view_warehouses');
         abort_if(! in_array($viewPermission, ['all', 'added', 'owned', 'both'], true), 403, __('warehouse::app.err_permission_denied'));
 
-        $allowedSortColumns = ['name', 'code', 'address', 'status', 'is_default'];
+        $allowedSortColumns = ['id', 'name', 'code', 'address', 'status', 'is_default'];
         $sortBy = $request->get('sort_by');
         $sortDir = strtolower((string) $request->get('sort_dir', 'asc')) === 'desc' ? 'desc' : 'asc';
         $hasColumnSort = in_array($sortBy, $allowedSortColumns, true);
+
+        $perPage = (int) $request->get('per_page', 25);
+        if (! in_array($perPage, [10, 25, 50, 100], true)) {
+            $perPage = 25;
+        }
 
         $query = Warehouse::query();
 
@@ -66,11 +77,12 @@ class WarehouseController extends AccountBaseController
             });
         }
 
-        $this->pageTitle = 'warehouse::app.allWarehouses';
+        $this->pageTitle = 'warehouse::app.warehouses';
         $this->pageIcon = 'ti-layout';
         $this->warehouseSortBy = $hasColumnSort ? $sortBy : null;
         $this->warehouseSortDir = $sortDir;
-        $this->warehouses = $query->paginate(20)->withQueryString();
+        $this->warehousePerPage = $perPage;
+        $this->warehouses = $query->paginate($perPage)->withQueryString();
 
         return view('warehouse::index', $this->data);
     }
@@ -150,6 +162,74 @@ class WarehouseController extends AccountBaseController
         }
 
         return view('warehouse::create', $this->data);
+    }
+
+    /**
+     * Show import warehouse screen.
+     */
+    public function importWarehouse()
+    {
+        $addPermission = user()->permission('add_warehouses');
+        abort_if(! in_array($addPermission, ['all', 'added'], true), 403, __('warehouse::app.err_permission_denied'));
+
+        $this->pageTitle = __('app.importExcel') . ' ' . __('warehouse::app.warehouse');
+        $this->view = 'warehouse::ajax.import';
+
+        if (request()->ajax()) {
+            $html = view($this->view, $this->data)->render();
+
+            return response()->json(Reply::dataOnly([
+                'status' => 'success',
+                'html' => $html,
+                'title' => $this->pageTitle,
+            ]));
+        }
+
+        return view('warehouse::import', $this->data);
+    }
+
+    /**
+     * Handle uploaded import file and show mapping.
+     */
+    public function importStore(ImportRequest $request)
+    {
+        $addPermission = user()->permission('add_warehouses');
+        abort_if(! in_array($addPermission, ['all', 'added'], true), 403, __('warehouse::app.err_permission_denied'));
+
+        $result = $this->importFileProcess($request, WarehouseImport::class);
+
+        if ($result === 'abort') {
+            return Reply::error(__('messages.abortAction'));
+        }
+
+        $this->data['originalImportFilename'] = $request->import_file->getClientOriginalName();
+        $view = view('warehouse::ajax.import_progress', $this->data)->render();
+
+        return Reply::successWithData(__('messages.importUploadSuccess'), ['view' => $view]);
+    }
+
+    /**
+     * Dispatch import jobs in chunks.
+     */
+    public function importProcess(ImportProcessRequest $request)
+    {
+        $addPermission = user()->permission('add_warehouses');
+        abort_if(! in_array($addPermission, ['all', 'added'], true), 403, __('warehouse::app.err_permission_denied'));
+
+        $chunkSize = $request->filled('chunk_size') ? (int) $request->chunk_size : 100;
+        $batch = $this->importJobProcessChunked($request, WarehouseImport::class, ImportWarehouseChunkJob::class, $chunkSize);
+        $batchId = data_get($batch, 'id');
+        if ($batchId) {
+            Cache::put('import_metrics_' . $batchId, [
+                'created' => 0,
+                'updated' => 0,
+                'skipped' => 0,
+                'skipped_missing_required' => 0,
+                'invalid_status' => 0,
+            ], now()->addHours(12));
+        }
+
+        return Reply::successWithData(__('messages.importProcessStart'), ['batch' => $batch]);
     }
 
     /**
@@ -291,6 +371,111 @@ class WarehouseController extends AccountBaseController
     }
 
     /**
+     * Quick change warehouse status from index table.
+     */
+    public function changeStatus(Request $request): JsonResponse
+    {
+        $editPermission = user()->permission('edit_warehouses');
+        abort_if(! in_array($editPermission, ['all', 'added'], true), 403, __('warehouse::app.err_permission_denied'));
+
+        $validated = $request->validate([
+            'warehouseId' => 'required|integer|exists:warehouses,id',
+            'status' => 'required|in:active,inactive',
+        ]);
+
+        try {
+            $warehouse = Warehouse::findOrFail((int) $validated['warehouseId']);
+            $warehouse->status = $validated['status'];
+            $warehouse->save();
+
+            return response()->json(Reply::success(__('messages.updateSuccess')));
+        } catch (\Throwable $e) {
+            $response = $this->handleWarehouseThrowable($request, 'Warehouse changeStatus', $e, $validated);
+
+            if ($response instanceof JsonResponse) {
+                return $response;
+            }
+
+            return response()->json(Reply::error(__('warehouse::app.err_unexpected_try_again')), 422);
+        }
+    }
+
+    public function applyQuickAction(Request $request): JsonResponse
+    {
+        $request->validate([
+            'action_type' => 'required|in:change-status,delete',
+            'row_ids' => 'required|string',
+            'status' => 'nullable|in:active,inactive',
+        ]);
+
+        $rowIds = array_values(array_unique(array_filter(array_map('intval', explode(',', (string) $request->row_ids)))));
+        if ($rowIds === []) {
+            return response()->json(Reply::error(__('messages.selectItem')), 422);
+        }
+
+        if ($request->action_type === 'change-status') {
+            $editPermission = user()->permission('edit_warehouses');
+            abort_if(! in_array($editPermission, ['all', 'added'], true), 403, __('warehouse::app.err_permission_denied'));
+
+            $status = $request->status;
+            if (! in_array($status, ['active', 'inactive'], true)) {
+                return response()->json(Reply::error(__('messages.invalidData')), 422);
+            }
+
+            Warehouse::whereIn('id', $rowIds)->update(['status' => $status]);
+
+            return response()->json(Reply::success(__('messages.updateSuccess')));
+        }
+
+        $deletePermission = user()->permission('delete_warehouses');
+        abort_if(! in_array($deletePermission, ['all', 'added'], true), 403, __('warehouse::app.err_permission_denied'));
+
+        $warehouses = Warehouse::whereIn('id', $rowIds)->get();
+        if ($warehouses->isEmpty()) {
+            return response()->json(Reply::error(__('messages.invalidData')), 422);
+        }
+
+        foreach ($warehouses as $warehouse) {
+            $blockMessage = $this->deleteBlockedMessage($warehouse);
+            if ($blockMessage !== null) {
+                return response()->json(Reply::error($warehouse->name . ': ' . $blockMessage), 422);
+            }
+        }
+
+        Warehouse::whereIn('id', $rowIds)->delete();
+
+        return response()->json(Reply::success(__('messages.deleteSuccess')));
+    }
+
+    private function deleteBlockedMessage(Warehouse $warehouse): ?string
+    {
+        if ($warehouse->batches()->where('quantity', '>', 0)->exists()) {
+            return __('warehouse::app.err_delete_warehouse_has_batch_stock');
+        }
+
+        if ($warehouse->stocks()->where('quantity', '>', 0)->exists()) {
+            return __('warehouse::app.err_delete_warehouse_has_stock');
+        }
+
+        $hasMovements = StockMovement::query()
+            ->where(function ($q) use ($warehouse) {
+                $q->where('warehouse_from_id', $warehouse->id)
+                    ->orWhere('warehouse_to_id', $warehouse->id);
+            })
+            ->exists();
+
+        if ($hasMovements) {
+            return __('warehouse::app.err_delete_warehouse_has_movements');
+        }
+
+        if ($warehouse->reservations()->where('status', 'active')->where('reserved_quantity', '>', 0)->exists()) {
+            return __('warehouse::app.err_delete_warehouse_has_reservations');
+        }
+
+        return null;
+    }
+
+    /**
      * Remove the specified resource from storage.
      */
     public function destroy($id)
@@ -301,26 +486,9 @@ class WarehouseController extends AccountBaseController
         try {
             $warehouse = Warehouse::findOrFail($id);
 
-            if ($warehouse->batches()->where('quantity', '>', 0)->exists()) {
-                return back()->with('error', __('warehouse::app.err_delete_warehouse_has_batch_stock'));
-            }
-
-            if ($warehouse->stocks()->where('quantity', '>', 0)->exists()) {
-                return back()->with('error', __('warehouse::app.err_delete_warehouse_has_stock'));
-            }
-
-            $hasMovements = StockMovement::query()
-                ->where(function ($q) use ($id) {
-                    $q->where('warehouse_from_id', $id)->orWhere('warehouse_to_id', $id);
-                })
-                ->exists();
-
-            if ($hasMovements) {
-                return back()->with('error', __('warehouse::app.err_delete_warehouse_has_movements'));
-            }
-
-            if ($warehouse->reservations()->where('status', 'active')->where('reserved_quantity', '>', 0)->exists()) {
-                return back()->with('error', __('warehouse::app.err_delete_warehouse_has_reservations'));
+            $blockMessage = $this->deleteBlockedMessage($warehouse);
+            if ($blockMessage !== null) {
+                return back()->with('error', $blockMessage);
             }
 
             $warehouse->delete();

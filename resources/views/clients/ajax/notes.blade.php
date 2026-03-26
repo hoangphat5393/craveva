@@ -127,16 +127,7 @@
                         showTable();
                     }
                 }).catch(function(err) {
-                    if (typeof Swal !== 'undefined') {
-                        Swal.fire({
-                            icon: 'error',
-                            text: err.message,
-                            toast: true,
-                            position: 'top-end',
-                            timer: 4000,
-                            showConfirmButton: false
-                        });
-                    }
+                    $.handleApiFormError(err);
                 });
             }
         });
@@ -159,16 +150,7 @@
                 deSelectAll();
             }
         }).catch(function(err) {
-            if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    icon: 'error',
-                    text: err.message,
-                    toast: true,
-                    position: 'top-end',
-                    timer: 4000,
-                    showConfirmButton: false
-                });
-            }
+            $.handleApiFormError(err);
         }).finally(function() {
             $qaBtn.prop('disabled', false);
             $.easyUnblockUI('#quick-action-form');
@@ -214,7 +196,9 @@
                 $(RIGHT_MODAL_CONTENT).html(
                     '<div class="align-content-between d-flex justify-content-center mt-105 f-21">500 | Something Went Wrong</div>'
                 );
-            } else if (typeof Swal !== 'undefined') {
+            } else if (!$.handleApiFormError(err, {
+                    showToast: false
+                }) && typeof Swal !== 'undefined') {
                 Swal.fire({
                     icon: 'error',
                     text: err.message,

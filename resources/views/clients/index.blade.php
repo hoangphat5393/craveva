@@ -316,16 +316,7 @@
                     $('#filter_sub_category_id').selectpicker('refresh');
                 }
             }).catch(function(err) {
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        icon: 'error',
-                        text: err.message,
-                        toast: true,
-                        position: 'top-end',
-                        timer: 4000,
-                        showConfirmButton: false
-                    });
-                }
+                $.handleApiFormError(err);
             });
 
         });
@@ -411,16 +402,7 @@
                         showTable();
                     }
                 }).catch(function(err) {
-                    if (typeof Swal !== 'undefined') {
-                        Swal.fire({
-                            icon: 'error',
-                            text: err.message,
-                            toast: true,
-                            position: 'top-end',
-                            timer: 4000,
-                            showConfirmButton: false
-                        });
-                    }
+                    $.handleApiFormError(err);
                 });
             }
         });
@@ -456,16 +438,7 @@
                             showTable();
                         }
                     }).catch(function(err) {
-                        if (typeof Swal !== 'undefined') {
-                            Swal.fire({
-                                icon: 'error',
-                                text: err.message,
-                                toast: true,
-                                position: 'top-end',
-                                timer: 4000,
-                                showConfirmButton: false
-                            });
-                        }
+                        $.handleApiFormError(err);
                     });
                 }
             });
@@ -508,31 +481,13 @@
                                     showTable();
                                 }
                             }).catch(function(err) {
-                                if (typeof Swal !== 'undefined') {
-                                    Swal.fire({
-                                        icon: 'error',
-                                        text: err.message,
-                                        toast: true,
-                                        position: 'top-end',
-                                        timer: 4000,
-                                        showConfirmButton: false
-                                    });
-                                }
+                                $.handleApiFormError(err);
                             });
                         }
                     });
                 }
             }).catch(function(err) {
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        icon: 'error',
-                        text: err.message,
-                        toast: true,
-                        position: 'top-end',
-                        timer: 4000,
-                        showConfirmButton: false
-                    });
-                }
+                $.handleApiFormError(err);
             });
         });
 
@@ -554,16 +509,7 @@
                     $('#quick-action-form').hide();
                 }
             }).catch(function(err) {
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        icon: 'error',
-                        text: err.message,
-                        toast: true,
-                        position: 'top-end',
-                        timer: 4000,
-                        showConfirmButton: false
-                    });
-                }
+                $.handleApiFormError(err);
             }).finally(function() {
                 $qaBtn.prop('disabled', false);
                 $.easyUnblockUI('#quick-action-form');

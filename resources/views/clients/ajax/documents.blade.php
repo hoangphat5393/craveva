@@ -152,16 +152,7 @@
                 $('.invalid-feedback').addClass('d-none');
             }
         }).catch(function(err) {
-            if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    icon: 'error',
-                    text: err.message,
-                    toast: true,
-                    position: 'top-end',
-                    timer: 4000,
-                    showConfirmButton: false
-                });
-            }
+            $.handleApiFormError(err);
         }).finally(function() {
             $btn.prop('disabled', false);
             $.easyUnblockUI('#save-client-file-data-form');
@@ -199,16 +190,7 @@
                         $('#task-file-list').html(response.view);
                     }
                 }).catch(function(err) {
-                    if (typeof Swal !== 'undefined') {
-                        Swal.fire({
-                            icon: 'error',
-                            text: err.message,
-                            toast: true,
-                            position: 'top-end',
-                            timer: 4000,
-                            showConfirmButton: false
-                        });
-                    }
+                    $.handleApiFormError(err);
                 });
             }
         });

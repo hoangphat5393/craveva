@@ -1845,7 +1845,7 @@ return array(
   array(
     'file' => 'Upload File (file must be a file of type: xls, xlsx, csv)',
     'containsHeadings' => 'File Contains Headings Row',
-    'skipFooterRow' => 'Skipfooterrow',
+    'skipFooterRow' => 'File Contains Footers Row',
   ),
   'module' =>
   array(
@@ -2581,3 +2581,4 @@ return array(
     'postal_code' => 'Postal Code',
   ),
 );
+

@@ -1,0 +1,27 @@
+<?php
+
+return [
+    'employeeNotFound' => 'Employee Not Found',
+    'onboardingAlreadyInProgress' => 'Onboarding Already In Progress',
+    'noOnboardingTasksConfigured' => 'No Onboarding Tasks Configured',
+    'onboardingStarted' => 'Onboarding Started',
+    'completeOnboardingFirst' => 'Complete Onboarding First',
+    'offboardingAlreadyInProgress' => 'Offboarding Already In Progress',
+    'noOffboardingTasksConfigured' => 'No Offboarding Tasks Configured',
+    'offboardingStarted' => 'Offboarding Started',
+    'requestCanceled' => 'Request Canceled',
+    'offboardingStartMailSubject' => 'Offboarding Start Mail Subject',
+    'onboardingStartMailText' => 'Onboarding Start Mail Text',
+    'onboardingStartMailSubject' => 'Onboarding Start Mail Subject',
+    'noOnboardingCompletedUsers' => 'No Onboarding Completed Users',
+    'noOffboardingCompletedUsers' => 'No Offboarding Completed Users',
+    'markAllAsComplete' => 'Mark All As Complete',
+    'cancelOffBoarding' => 'Cancel Off Boarding',
+    'confirmCancel' => 'Confirm Cancel',
+    'markAllAsCompleteConfirm' => 'Mark All As Complete Confirm',
+    'cancelOnBoarding' => 'Cancel On Boarding',
+    'confirmOffboardingText' => 'Confirm Offboarding Text',
+    'confirmOffboarding' => 'Confirm Offboarding',
+    'confirmOnboardingText' => 'Confirm Onboarding Text',
+    'confirmOnboarding' => 'Confirm Onboarding',
+];

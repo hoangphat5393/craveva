@@ -33,16 +33,7 @@
                 window.location.reload();
             }
         }).catch(function(err) {
-            if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    icon: 'error',
-                    text: err.message,
-                    toast: true,
-                    position: 'top-end',
-                    timer: 4000,
-                    showConfirmButton: false
-                });
-            }
+            $.handleApiFormError(err);
         }).finally(function() {
             $btn.prop('disabled', false);
             $.easyUnblockUI('#update-client-file-data-form');

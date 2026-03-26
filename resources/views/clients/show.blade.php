@@ -131,16 +131,7 @@
                     init('.content-wrapper');
                 }
             }).catch(function(err) {
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        icon: 'error',
-                        text: err.message,
-                        toast: true,
-                        position: 'top-end',
-                        timer: 4000,
-                        showConfirmButton: false
-                    });
-                }
+                $.handleApiFormError(err);
             }).finally(function() {
                 $.easyUnblockUI('.content-wrapper');
             });
@@ -152,8 +143,8 @@
     </script>
     <script>
         /*******************************************************
-                     More btn in projects menu Start
-            *******************************************************/
+                         More btn in projects menu Start
+                *******************************************************/
 
         const container = document.querySelector('.tabs');
         const primary = container.querySelector('.-primary');

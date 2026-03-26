@@ -11,7 +11,7 @@
                 <x-forms.link-primary :link="route('invoices.create') . '?client_id=' . $client->id" class="mr-3 float-left openRightModal" data-redirect-url="{{ route('clients.show', $client->id) . '?tab=invoices' }}" icon="plus">
                     @lang('modules.invoices.addInvoice')
                 </x-forms.link-primary>
-            @endif
+@endif
         </div>
         <!-- Add Task Export Buttons End -->
 
@@ -20,48 +20,48 @@
                 <!-- STATUS START -->
                 <div class="select-box py-2 px-0 mr-3">
                     <x-forms.label :fieldLabel="__('app.status')" fieldId="status" />
-                    <select class="form-control select-picker" name="status" id="status" data-live-search="true" data-size="8">
-                        <option value="all">@lang('app.all')</option>
-                        <option value="unpaid">@lang('app.unpaid')</option>
-                        <option value="paid">@lang('app.paid')</option>
-                        <option value="partial">@lang('app.partial')</option>
-                        <option value="canceled">@lang('app.canceled')</option>
-                    </select>
-                </div>
-                <!-- STATUS END -->
-
-                <!-- SEARCH BY TASK START -->
-                <div class="select-box py-2 px-lg-2 px-md-2 px-0 mr-3">
-                    <x-forms.label fieldId="status" />
-                    <div class="input-group bg-grey rounded">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text bg-additional-grey">
-                                <i class="fa fa-search f-13 text-dark-grey"></i>
-                            </span>
-                        </div>
-                        <input type="text" class="form-control f-14 p-1 height-35 border" id="search-text-field" placeholder="@lang('app.startTyping')">
-                    </div>
-                </div>
-                <!-- SEARCH BY TASK END -->
-
-                <!-- RESET START -->
-                <div class="select-box d-flex py-2 px-lg-2 px-md-2 px-0 mt-4">
-                    <x-forms.button-secondary class="btn-xs d-none height-35" id="reset-filters" icon="times-circle">
-                        @lang('app.clearFilters')
-                    </x-forms.button-secondary>
-                </div>
-                <!-- RESET END -->
-            </div>
-        </form>
-
-        <!-- Task Box Start -->
-        <div class="d-flex flex-column w-tables rounded mt-3 bg-white">
-
-            {!! $dataTable->table(['class' => 'table table-hover border-0 w-100']) !!}
-
+                <select class="form-control select-picker" name="status" id="status" data-live-search="true" data-size="8">
+                    <option value="all">@lang('app.all')</option>
+                    <option value="unpaid">@lang('app.unpaid')</option>
+                    <option value="paid">@lang('app.paid')</option>
+                    <option value="partial">@lang('app.partial')</option>
+                    <option value="canceled">@lang('app.canceled')</option>
+                </select>
         </div>
-        <!-- Task Box End -->
+        <!-- STATUS END -->
+
+        <!-- SEARCH BY TASK START -->
+        <div class="select-box py-2 px-lg-2 px-md-2 px-0 mr-3">
+            <x-forms.label fieldId="status" />
+            <div class="input-group bg-grey rounded">
+                <div class="input-group-prepend">
+                    <span class="input-group-text bg-additional-grey">
+                        <i class="fa fa-search f-13 text-dark-grey"></i>
+                    </span>
+                </div>
+                <input type="text" class="form-control f-14 p-1 height-35 border" id="search-text-field" placeholder="@lang('app.startTyping')">
+            </div>
+        </div>
+        <!-- SEARCH BY TASK END -->
+
+        <!-- RESET START -->
+        <div class="select-box d-flex py-2 px-lg-2 px-md-2 px-0 mt-4">
+            <x-forms.button-secondary class="btn-xs d-none height-35" id="reset-filters" icon="times-circle">
+                @lang('app.clearFilters')
+            </x-forms.button-secondary>
+        </div>
+        <!-- RESET END -->
     </div>
+    </form>
+
+    <!-- Task Box Start -->
+    <div class="d-flex flex-column w-tables rounded mt-3 bg-white">
+
+        {!! $dataTable->table(['class' => 'table table-hover border-0 w-100']) !!}
+
+    </div>
+    <!-- Task Box End -->
+</div>
 </div>
 
 @include('sections.datatable_js')
@@ -161,16 +161,7 @@
                         showTable();
                     }
                 }).catch(function(err) {
-                    if (typeof Swal !== 'undefined') {
-                        Swal.fire({
-                            icon: 'error',
-                            text: err.message,
-                            toast: true,
-                            position: 'top-end',
-                            timer: 4000,
-                            showConfirmButton: false
-                        });
-                    }
+                    $.handleApiFormError(err);
                 }).finally(function() {
                     $.easyUnblockUI('#invoices-table');
                 });
@@ -194,16 +185,7 @@
                 resetActionButtons();
             }
         }).catch(function(err) {
-            if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    icon: 'error',
-                    text: err.message,
-                    toast: true,
-                    position: 'top-end',
-                    timer: 4000,
-                    showConfirmButton: false
-                });
-            }
+            $.handleApiFormError(err);
         }).finally(function() {
             $qaBtn.prop('disabled', false);
             $.easyUnblockUI('#quick-action-form');
@@ -223,16 +205,7 @@
                 window.LaravelDataTables["invoices-table"].draw(true);
             }
         }).catch(function(err) {
-            if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    icon: 'error',
-                    text: err.message,
-                    toast: true,
-                    position: 'top-end',
-                    timer: 4000,
-                    showConfirmButton: false
-                });
-            }
+            $.handleApiFormError(err);
         }).finally(function() {
             $.easyUnblockUI('#invoices-table');
         });
@@ -252,16 +225,7 @@
                 window.LaravelDataTables["invoices-table"].draw(true);
             }
         }).catch(function(err) {
-            if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    icon: 'error',
-                    text: err.message,
-                    toast: true,
-                    position: 'top-end',
-                    timer: 4000,
-                    showConfirmButton: false
-                });
-            }
+            $.handleApiFormError(err);
         }).finally(function() {
             $.easyUnblockUI('#invoices-table');
         });
@@ -336,16 +300,7 @@
                         showTable();
                     }
                 }).catch(function(err) {
-                    if (typeof Swal !== 'undefined') {
-                        Swal.fire({
-                            icon: 'error',
-                            text: err.message,
-                            toast: true,
-                            position: 'top-end',
-                            timer: 4000,
-                            showConfirmButton: false
-                        });
-                    }
+                    $.handleApiFormError(err);
                 });
             }
         });

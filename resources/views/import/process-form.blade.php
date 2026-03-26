@@ -138,6 +138,8 @@
         </div>
         <div class="alert alert-danger" role="alert" id="failedJobsCount" style="display:none">
         </div>
+        <div class="alert alert-info" role="alert" id="importMetricsSummary" style="display:none">
+        </div>
         <div id="progressError" style="display:none"></div>
         <div id="progress">
             <p class="mb-1">@lang('app.importInProgress') <strong id="progressAmount">@lang('app.pleaseWait')</strong></p>
@@ -444,6 +446,7 @@
                     var processedJobs = response.processedJobs || 0;
                     progress = response.progress || 0;
                     var totalJobs = response.totalJobs || 0;
+                    var metrics = response.metrics || null;
 
                     $('#processingBarStatus').width(progress + '%');
                     $('#processingBarStatus').html(progress + '%');
@@ -466,6 +469,15 @@
                         processedMsg = processedMsg.replace(':processedJobs', processedJobs).replace(':totalJobs', totalJobs);
                         $('#progressSuccess').html(processedMsg);
                         $('#progressSuccess').show();
+                    }
+
+                    if (metrics && $('#importMetricsSummary').length) {
+                        var metricsMsg = 'Created: ' + (metrics.created || 0) +
+                            ' | Updated: ' + (metrics.updated || 0) +
+                            ' | Skipped: ' + (metrics.skipped || 0) +
+                            ' | Skipped missing required: ' + (metrics.skipped_missing_required || 0) +
+                            ' | Invalid status: ' + (metrics.invalid_status || 0);
+                        $('#importMetricsSummary').html(metricsMsg).show();
                     }
 
                     if (totalJobs != (failedJobs + processedJobs)) {

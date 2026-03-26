@@ -212,7 +212,7 @@ Chỉnh tồn có chọn kho:
 - Warehouse stock: `/warehouse-stock` (và `/warehouse-stock/create`)
 - Transfer: `/warehouse-transfer`
 
-Chi tiết thao tác: `WAREHOUSE_UI_OPERATIONS_GUIDE.md`.
+Chi tiết thao tác: `WAREHOUSE_MASTER_GUIDE.md`.
 
 ---
 
@@ -254,5 +254,4 @@ Chi tiết thao tác: `WAREHOUSE_UI_OPERATIONS_GUIDE.md`.
 
 - Import mapping (ready-to-use): `MAOLIN_IMPORT_MAPPING.md`
 - File-by-file analysis: `PROJECT_MAOLIN_NEW_FILES_ANALYSIS.md`
-- Warehouse UI operations: `WAREHOUSE_UI_OPERATIONS_GUIDE.md`
-- CF rationalization: `WAREHOUSE_CUSTOM_FIELDS_RATIONALIZATION.md`
+- Warehouse docs (UI + CF + runbook): `WAREHOUSE_MASTER_GUIDE.md`

@@ -13,6 +13,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -50,6 +51,9 @@ class ImportClientChunkJob implements ShouldQueue
     {
         $failures = [];
         $companyId = $this->company?->id;
+        $createdCount = 0;
+        $updatedCount = 0;
+        $skippedCount = 0;
 
         // Load once per chunk: custom field map, role (client), role permissions (for bulk insert)
         $fieldMap = ClientImportProcessor::getClientCustomFieldMap($companyId);
@@ -92,7 +96,14 @@ class ImportClientChunkJob implements ShouldQueue
                 }
 
                 if ($user === null) {
+                    $skippedCount++;
                     continue;
+                }
+
+                if ($user->wasRecentlyCreated) {
+                    $createdCount++;
+                } else {
+                    $updatedCount++;
                 }
 
                 $user->load('clientDetails');
@@ -183,6 +194,14 @@ class ImportClientChunkJob implements ShouldQueue
             }
         }
 
+        $this->storeBatchMetrics([
+            'created' => $createdCount,
+            'updated' => $updatedCount,
+            'skipped' => $skippedCount,
+            'skipped_missing_required' => 0,
+            'invalid_status' => 0,
+        ]);
+
         if ($failures !== []) {
             $this->fail(implode("\n", array_slice($failures, 0, 50)) . (count($failures) > 50 ? "\n… and " . (count($failures) - 50) . ' more' : ''));
         }
@@ -244,5 +263,29 @@ class ImportClientChunkJob implements ShouldQueue
         } catch (\Throwable $e) {
             return '';
         }
+    }
+
+    private function storeBatchMetrics(array $delta): void
+    {
+        if (! $this->batchId) {
+            return;
+        }
+
+        $cacheKey = 'import_metrics_' . $this->batchId;
+        $current = Cache::get($cacheKey, [
+            'created' => 0,
+            'updated' => 0,
+            'skipped' => 0,
+            'skipped_missing_required' => 0,
+            'invalid_status' => 0,
+        ]);
+
+        $current['created'] += (int) ($delta['created'] ?? 0);
+        $current['updated'] += (int) ($delta['updated'] ?? 0);
+        $current['skipped'] += (int) ($delta['skipped'] ?? 0);
+        $current['skipped_missing_required'] += (int) ($delta['skipped_missing_required'] ?? 0);
+        $current['invalid_status'] += (int) ($delta['invalid_status'] ?? 0);
+
+        Cache::put($cacheKey, $current, now()->addHours(12));
     }
 }

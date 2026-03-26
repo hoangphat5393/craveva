@@ -18,7 +18,15 @@ use Modules\Warehouse\Http\Controllers\WarehouseTransferController;
 */
 
 Route::group([], function () {
+    Route::group(['prefix' => 'warehouse'], function () {
+        Route::get('import', [WarehouseController::class, 'importWarehouse'])->name('warehouse.import');
+        Route::post('import', [WarehouseController::class, 'importStore'])->name('warehouse.import.store');
+        Route::post('import/process', [WarehouseController::class, 'importProcess'])->name('warehouse.import.process');
+    });
+
     Route::post('warehouse/update-order', [WarehouseController::class, 'updateOrder'])->name('warehouse.update-order');
+    Route::post('warehouse/change-status', [WarehouseController::class, 'changeStatus'])->name('warehouse.change_status');
+    Route::post('warehouse/apply-quick-action', [WarehouseController::class, 'applyQuickAction'])->name('warehouse.apply_quick_action');
     Route::resource('warehouse', WarehouseController::class)->names('warehouse');
     Route::get('warehouse-movements', [WarehouseMovementController::class, 'index'])->name('warehouse.movements.index');
     Route::resource('warehouse-stock', WarehouseStockController::class)->names('warehouse.stock');

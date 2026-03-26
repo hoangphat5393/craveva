@@ -12,6 +12,50 @@ Muc tieu:
 
 ---
 
+## 0) Danh sach file trong `PROJECT MAOLIN New` + cong dung
+
+## 0.1 Nhom file du lieu import truc tiep (CSV/XLSX)
+
+| File                                         | Cong dung chinh                                          | Module map                    |
+| -------------------------------------------- | -------------------------------------------------------- | ----------------------------- |
+| `Craveva customer.csv`                       | Master khach hang                                        | Client                        |
+| `Craveva_product__商品.csv`                  | Master san pham (SKU, ten, quy cach, don vi...)          | Product                       |
+| `Craveva_product__商品價格.csv`              | Bang gia san pham theo SKU                               | Product/Pricing               |
+| `Quote_unit_price_inventory__產品價格表.csv` | Bang gia theo SKU (co them employee price)               | Product/Pricing               |
+| `Quote_unit_price_inventory__產品庫存表.csv` | Ton kho da kho + batch + han su dung (co warehouse code) | Inventory/Warehouse           |
+| `Craveva full inventory.csv`                 | Tong hop ton theo lo-han-kho (chu yeu doi soat)          | Inventory/Warehouse           |
+| `Quote_unit_price_inventory__報價單匯出.csv` | Du lieu bao gia / chung tu kinh doanh                    | Tham chieu hoac adapter rieng |
+| `Last_year_net_sales__2024-01.csv`           | Lich su doanh thu rong ky 2024-01                        | Reporting/Snapshot            |
+| `Last_year_net_sales__2025-03.csv`           | Lich su doanh thu rong ky 2025-03                        | Reporting/Snapshot            |
+| `Last_year_net_sales__2025-04.csv`           | Lich su doanh thu rong ky 2025-04                        | Reporting/Snapshot            |
+
+## 0.2 Nhom file workbook nhieu sheet (can luu y)
+
+1. `Craveva product.xlsx`
+
+- Sheet `商品 | merchandise`: Product master
+- Sheet `商品價格 | commodity prices`: Pricing
+
+2. `Quote, unit price, inventory.xlsx`
+
+- Sheet `報價單匯出`: quotation export (khong phai import chuan PO/DO/Invoice hien tai)
+- Sheet `產品價格表`: Pricing
+- Sheet `產品庫存表`: Inventory (multi-warehouse)
+
+3. `Last year net sales.xlsx`
+
+- Du lieu theo ky/thang (thuc te da tach ra CSV theo ky: 2024-01, 2025-03, 2025-04)
+
+## 0.3 Nhom file tai lieu nghiep vu / hop dong (khong import data)
+
+- `[BRD] Backend Miaolin x Craveva Sales Process Integration Requirements Planning.docx`
+- `Miaolin Industrial Co., Ltd. B2B AI Smart Distribution Platform Planning Document.docx`
+- `[Contract] Miaolin Industrial Co., Ltd. B2B AI Smart Distribution Platform Planning Document.pdf`
+- Cac ban tieng Trung trong thu muc `chinese/` (tuong ung noi dung, khong phai file import data)
+- `customer do.txt` (ghi chu van hanh/yeu cau trao doi)
+
+---
+
 ## 1) Ket luan nhanh
 
 - He thong **da co the import duoc** nhom du lieu cot loi: `Client`, `Product`, `Pricing`, `Inventory`.
@@ -170,6 +214,14 @@ Theo bo file Maolin hien tai:
 
 Nguyen tac: **master & khoa ngoai truoc, snapshot sau**; **vat ly kho (ton/movement)** tach khoi **lich su ban (net sales)**.
 
+### 4.0 Luu y workbook nhieu sheet truoc khi import
+
+- `Craveva product.xlsx` va `Quote, unit price, inventory.xlsx` la file nhieu sheet.
+- Neu import qua UI hien tai, nen:
+    1. Tach moi sheet can import thanh file rieng (CSV UTF-8), hoac
+    2. Dam bao sheet can import la sheet duoc chon/dung trong luong import.
+- Khong import nguyen workbook nhieu sheet neu module khong ho tro chon sheet ro rang.
+
 ### 4.1 Chuoi bat buoc (master + ton)
 
 | Buoc  | Noi dung             | Phu thuoc            | Ghi chu ngan                                                                                        |
@@ -227,3 +279,114 @@ Nguyen tac: **master & khoa ngoai truoc, snapshot sau**; **vat ly kho (ton/movem
 - Inventory import lan dau: chi dung file co `warehouse_code`.
 - `Craveva full inventory.csv` dung de doi soat batch/expiry/so luong, khong dung lam nguon duy nhat.
 - File `報價單匯出.csv`: tam thoi xem la tai lieu tham chieu, chua coi la file import chung tu chuan.
+
+---
+
+## 7) Tinh huong hien tai: chua co file Warehouse master
+
+Van de:
+
+- Thu tu chuan yeu cau `Warehouse master` truoc Inventory.
+- Bo file Maolin hien tai chua co file danh muc kho rieng (warehouse master list).
+
+## 7.1 Co nen yeu cau khach bo sung khong?
+
+**Co - nen yeu cau bo sung** de chay on dinh va giam sai map.
+
+File de nghi khach cung cap:
+
+- `warehouse_master.csv` (hoac xlsx)
+
+Cot toi thieu:
+
+- `warehouse_code` (bat buoc, unique)
+- `warehouse_name` (bat buoc)
+- `status` (active/inactive, tuy chon)
+- `region` (tuy chon)
+- `address` (tuy chon)
+
+Rule:
+
+- 1 code chi map 1 kho duy nhat.
+- Khong dung ten kho lam khoa chinh.
+
+## 7.2 Phuong an tam thoi neu khach chua bo sung kip
+
+### Phuong an A (khuyen nghi cho demo): tao warehouse master tu chinh file Inventory
+
+Nguon:
+
+- `Quote_unit_price_inventory__產品庫存表.csv` (co `庫別` + `庫別名稱`)
+
+Lam tam:
+
+1. Trich distinct cap `warehouse_code + warehouse_name` tu file inventory.
+2. Tao danh muc kho trong he thong tu danh sach nay.
+3. Chot danh sach kho voi khach (xac nhan code/name) truoc khi import full.
+4. Moi import Inventory.
+
+Rui ro:
+
+- Neu file inventory khong day du tat ca kho dang hoat dong, danh muc kho se thieu.
+- Neu code/name sai chinh ta, se tao kho sai.
+
+### Phuong an B (chi dung khi qua gap): map theo warehouse_name
+
+Nguon:
+
+- `Craveva full inventory.csv` (chi co `warehouse_name`)
+
+Lam tam:
+
+- Tao kho theo ten, khong co code.
+
+Rui ro cao:
+
+- De trung ten / lech ten / doi ten theo thoi gian.
+- Sau nay bo sung code se ton cong backfill.
+
+=> **Khong uu tien**, chi dung neu can demo gap va kho it.
+
+## 7.3 Khuyen nghi van hanh thuc te cho dot nay
+
+1. Van giu thu tu import:
+    - Warehouse master -> Client -> Product -> Pricing -> Inventory
+2. Trong dot nay, dung **Phuong an A** de tao warehouse master tam tu `產品庫存表`.
+3. Song song gui yeu cau khach bo sung file warehouse chuan hoa.
+4. Sau khi nhan file chuan:
+    - doi chieu code/name
+    - merge/chinh master
+    - khoa quy tac import: uu tien `warehouse_code`, ten chi fallback
+
+## 7.4 Mau noi dung gui khach (de copy)
+
+> De dam bao import ton kho da kho chinh xac, vui long gui them file Warehouse Master voi toi thieu cac cot: `warehouse_code`, `warehouse_name` (bat buoc), va neu co them `status`, `region`, `address`.
+> Tam thoi ben em co the khoi tao danh muc kho tu file ton kho hien tai (`庫別` + `庫別名稱`) de demo, nhung de di production can file master chuan de tranh map sai kho.
+
+---
+
+## 8) Cap nhat moi: da bo sung chuc nang Import Warehouse (UI giong Product/Inventory)
+
+Trang thai: **Da bo sung luong import Warehouse** theo mau upload -> map cot -> progress -> process chunk.
+
+File nguon tam thoi co the dung:
+
+- `PROJECT MAOLIN New/Quote_inventory.csv`
+- map cot:
+    - `庫別` -> `warehouse_code`
+    - `庫別名稱` -> `warehouse_name`
+
+Rule dang ap dung:
+
+- Upsert uu tien theo `(company_id, warehouse_code)`.
+- Neu thieu `warehouse_code`, fallback theo `(company_id, warehouse_name)` va ghi warning.
+- Bo qua dong rong.
+- Validate `status` chi nhan `active|inactive` (neu co map cot status).
+- Chan duplicate trong cung chunk import:
+    - duplicate `warehouse_code`
+    - hoac duplicate `warehouse_name` khi khong co code.
+
+Luu y van hanh:
+
+- Vi file tam thoi la inventory snapshot, danh muc kho co the chua day du 100%.
+- Van nen yeu cau khach gui them `warehouse_master.csv` de chot production.

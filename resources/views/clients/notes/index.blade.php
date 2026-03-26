@@ -43,7 +43,7 @@
                     <x-forms.link-primary :link="route('client-notes.create') . '?client=' . user()->id" class="mr-3 openRightModal" icon="plus">
                         @lang('modules.client.createNote')
                     </x-forms.link-primary>
-                @endif
+@endif
             </div>
 
             <x-datatable.actions>
@@ -71,55 +71,85 @@
 @push('scripts')
     @include('sections.datatable_js')
 
-    <script>
-        $('#client-notes-table').on('preXhr.dt', function(e, settings, data) {
-            var searchText = $('#search-text-field').val();
-            var clientId = '{{ user()->id }}';
+        <script>
+            $('#client-notes-table').on('preXhr.dt', function(e, settings, data) {
+                var searchText = $('#search-text-field').val();
+                var clientId = '{{ user()->id }}';
 
-            data['clientID'] = clientId;
-            data['searchText'] = searchText;
-        });
+                data['clientID'] = clientId;
+                data['searchText'] = searchText;
+            });
 
-        const showTable = () => {
-            window.LaravelDataTables["client-notes-table"].draw(true);
-        }
+            const showTable = () => {
+                window.LaravelDataTables["client-notes-table"].draw(true);
+            }
 
-        $('#search-text-field').on('change keyup', function() {
-            if ($('#search-text-field').val() != "") {
-                $('#reset-filters').removeClass('d-none');
-                showTable();
-            } else {
+            $('#search-text-field').on('change keyup', function() {
+                if ($('#search-text-field').val() != "") {
+                    $('#reset-filters').removeClass('d-none');
+                    showTable();
+                } else {
+                    $('#reset-filters').addClass('d-none');
+                    showTable();
+                }
+            });
+
+            $('#reset-filters').click(function() {
+                $('#filter-form')[0].reset();
                 $('#reset-filters').addClass('d-none');
                 showTable();
-            }
-        });
+            });
 
-        $('#reset-filters').click(function() {
-            $('#filter-form')[0].reset();
-            $('#reset-filters').addClass('d-none');
-            showTable();
-        });
+            $('#quick-action-type').change(function() {
+                const actionValue = $(this).val();
+                if (actionValue != '') {
+                    $('#quick-action-apply').removeAttr('disabled');
 
-        $('#quick-action-type').change(function() {
-            const actionValue = $(this).val();
-            if (actionValue != '') {
-                $('#quick-action-apply').removeAttr('disabled');
-
-                if (actionValue == 'change-status') {
-                    $('.quick-action-field').addClass('d-none');
-                    $('#change-status-action').removeClass('d-none');
+                    if (actionValue == 'change-status') {
+                        $('.quick-action-field').addClass('d-none');
+                        $('#change-status-action').removeClass('d-none');
+                    } else {
+                        $('.quick-action-field').addClass('d-none');
+                    }
                 } else {
+                    $('#quick-action-apply').attr('disabled', true);
                     $('.quick-action-field').addClass('d-none');
                 }
-            } else {
-                $('#quick-action-apply').attr('disabled', true);
-                $('.quick-action-field').addClass('d-none');
-            }
-        });
+            });
 
-        $('#quick-action-apply').click(function() {
-            const actionValue = $('#quick-action-type').val();
-            if (actionValue == 'delete') {
+            $('#quick-action-apply').click(function() {
+                const actionValue = $('#quick-action-type').val();
+                if (actionValue == 'delete') {
+                    Swal.fire({
+                        title: "@lang('messages.sweetAlertTitle')",
+                        text: "@lang('messages.recoverRecord')",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        focusConfirm: false,
+                        confirmButtonText: "@lang('messages.confirmDelete')",
+                        cancelButtonText: "@lang('app.cancel')",
+                        customClass: {
+                            confirmButton: 'btn btn-primary mr-3',
+                            cancelButton: 'btn btn-secondary'
+                        },
+                        showClass: {
+                            popup: 'swal2-noanimation',
+                            backdrop: 'swal2-noanimation'
+                        },
+                        buttonsStyling: false
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            applyQuickAction();
+                        }
+                    });
+
+                } else {
+                    applyQuickAction();
+                }
+            });
+
+            $('body').on('click', '.delete-table-row', function() {
+                var id = $(this).data('user-id');
                 Swal.fire({
                     title: "@lang('messages.sweetAlertTitle')",
                     text: "@lang('messages.recoverRecord')",
@@ -139,146 +169,100 @@
                     buttonsStyling: false
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        applyQuickAction();
+                        var url = "{{ route('client-notes.destroy', ':id') }}";
+                        url = url.replace(':id', id);
+
+                        var token = "{{ csrf_token() }}";
+
+                        window.apiHttp.delete(url, token).then(function(response) {
+                            if (response.status == "success") {
+                                showTable();
+                            }
+                        }).catch(function(err) {
+                            $.handleApiFormError(err);
+                        });
                     }
                 });
-
-            } else {
-                applyQuickAction();
-            }
-        });
-
-        $('body').on('click', '.delete-table-row', function() {
-            var id = $(this).data('user-id');
-            Swal.fire({
-                title: "@lang('messages.sweetAlertTitle')",
-                text: "@lang('messages.recoverRecord')",
-                icon: 'warning',
-                showCancelButton: true,
-                focusConfirm: false,
-                confirmButtonText: "@lang('messages.confirmDelete')",
-                cancelButtonText: "@lang('app.cancel')",
-                customClass: {
-                    confirmButton: 'btn btn-primary mr-3',
-                    cancelButton: 'btn btn-secondary'
-                },
-                showClass: {
-                    popup: 'swal2-noanimation',
-                    backdrop: 'swal2-noanimation'
-                },
-                buttonsStyling: false
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    var url = "{{ route('client-notes.destroy', ':id') }}";
-                    url = url.replace(':id', id);
-
-                    var token = "{{ csrf_token() }}";
-
-                    window.apiHttp.delete(url, token).then(function(response) {
-                        if (response.status == "success") {
-                            showTable();
-                        }
-                    }).catch(function(err) {
-                        if (typeof Swal !== 'undefined') {
-                            Swal.fire({
-                                icon: 'error',
-                                text: err.message,
-                                toast: true,
-                                position: 'top-end',
-                                timer: 4000,
-                                showConfirmButton: false
-                            });
-                        }
-                    });
-                }
             });
-        });
 
-        const applyQuickAction = () => {
-            var rowdIds = $("#client-notes-table input:checkbox:checked").map(function() {
-                return $(this).val();
-            }).get();
+            const applyQuickAction = () => {
+                var rowdIds = $("#client-notes-table input:checkbox:checked").map(function() {
+                    return $(this).val();
+                }).get();
 
-            var url = "{{ route('client-notes.apply_quick_action') }}?row_ids=" + rowdIds;
+                var url = "{{ route('client-notes.apply_quick_action') }}?row_ids=" + rowdIds;
 
-            var $qaBtn = $("#quick-action-apply");
-            $qaBtn.prop('disabled', true);
-            $.easyBlockUI('#quick-action-form');
-            window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize()).then(function(response) {
-                if (response.status == 'success') {
-                    showTable();
-                    resetActionButtons();
-                    deSelectAll();
-                }
-            }).catch(function(err) {
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        icon: 'error',
-                        text: err.message,
-                        toast: true,
-                        position: 'top-end',
-                        timer: 4000,
-                        showConfirmButton: false
-                    });
-                }
-            }).finally(function() {
-                $qaBtn.prop('disabled', false);
-                $.easyUnblockUI('#quick-action-form');
+                var $qaBtn = $("#quick-action-apply");
+                $qaBtn.prop('disabled', true);
+                $.easyBlockUI('#quick-action-form');
+                window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize()).then(function(response) {
+                    if (response.status == 'success') {
+                        showTable();
+                        resetActionButtons();
+                        deSelectAll();
+                    }
+                }).catch(function(err) {
+                    $.handleApiFormError(err);
+                }).finally(function() {
+                    $qaBtn.prop('disabled', false);
+                    $.easyUnblockUI('#quick-action-form');
+                });
+            };
+
+            $('body').on('click', '.ask-for-password', function() {
+                let clientNoteId = $(this).data('client-note-id');
+
+                var url = "{{ route('client_notes.ask_for_password', ':id') }}";
+                url = url.replace(':id', clientNoteId);
+
+                $(MODAL_LG + ' ' + MODAL_HEADING).html('...');
+                $.ajaxModal(MODAL_LG, url);
+
             });
-        };
 
-        $('body').on('click', '.ask-for-password', function() {
-            let clientNoteId = $(this).data('client-note-id');
+            // show note detail in right modal
+            var getNoteDetail = function(id) {
+                openTaskDetail();
 
-            var url = "{{ route('client_notes.ask_for_password', ':id') }}";
-            url = url.replace(':id', clientNoteId);
+                var url = "{{ route('client-notes.show_verified', ':id') }}";
+                url = url.replace(':id', id);
+                var token = "{{ csrf_token() }}";
 
-            $(MODAL_LG + ' ' + MODAL_HEADING).html('...');
-            $.ajaxModal(MODAL_LG, url);
-
-        });
-
-        // show note detail in right modal
-        var getNoteDetail = function(id) {
-            openTaskDetail();
-
-            var url = "{{ route('client-notes.show_verified', ':id') }}";
-            url = url.replace(':id', id);
-            var token = "{{ csrf_token() }}";
-
-            $.easyBlockUI(RIGHT_MODAL);
-            window.apiHttp.postUrlEncoded(url, '_token=' + encodeURIComponent(token)).then(function(response) {
-                if (response.status == "success") {
-                    $(RIGHT_MODAL_CONTENT).html(response.html);
-                    $(RIGHT_MODAL_TITLE).html(response.title);
-                }
-            }).catch(function(err) {
-                var st = err.status;
-                if (st == 403) {
-                    $(RIGHT_MODAL_CONTENT).html(
-                        '<div class="align-content-between d-flex justify-content-center mt-105 f-21">403 | Permission Denied</div>'
-                    );
-                } else if (st == 404) {
-                    $(RIGHT_MODAL_CONTENT).html(
-                        '<div class="align-content-between d-flex justify-content-center mt-105 f-21">404 | Not Found</div>'
-                    );
-                } else if (st == 500) {
-                    $(RIGHT_MODAL_CONTENT).html(
-                        '<div class="align-content-between d-flex justify-content-center mt-105 f-21">500 | Something Went Wrong</div>'
-                    );
-                } else if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        icon: 'error',
-                        text: err.message,
-                        toast: true,
-                        position: 'top-end',
-                        timer: 4000,
-                        showConfirmButton: false
-                    });
-                }
-            }).finally(function() {
-                $.easyUnblockUI(RIGHT_MODAL);
-            });
-        };
-    </script>
+                $.easyBlockUI(RIGHT_MODAL);
+                window.apiHttp.postUrlEncoded(url, '_token=' + encodeURIComponent(token)).then(function(response) {
+                    if (response.status == "success") {
+                        $(RIGHT_MODAL_CONTENT).html(response.html);
+                        $(RIGHT_MODAL_TITLE).html(response.title);
+                    }
+                }).catch(function(err) {
+                    var st = err.status;
+                    if (st == 403) {
+                        $(RIGHT_MODAL_CONTENT).html(
+                            '<div class="align-content-between d-flex justify-content-center mt-105 f-21">403 | Permission Denied</div>'
+                        );
+                    } else if (st == 404) {
+                        $(RIGHT_MODAL_CONTENT).html(
+                            '<div class="align-content-between d-flex justify-content-center mt-105 f-21">404 | Not Found</div>'
+                        );
+                    } else if (st == 500) {
+                        $(RIGHT_MODAL_CONTENT).html(
+                            '<div class="align-content-between d-flex justify-content-center mt-105 f-21">500 | Something Went Wrong</div>'
+                        );
+                    } else if (!$.handleApiFormError(err, {
+                            showToast: false
+                        }) && typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
+                    }
+                }).finally(function() {
+                    $.easyUnblockUI(RIGHT_MODAL);
+                });
+            };
+        </script>
 @endpush

@@ -17,15 +17,15 @@
 
         <div class="accordionItemContent pb-2">
             @if ($viewWarehouses && $viewWarehouses != 'none')
-                <x-sub-menu-item :link="route('warehouse.index')" :text="__('warehouse::app.allWarehouses')" :permission="true" />
+                <x-sub-menu-item :link="route('warehouse.index')" :text="__('warehouse::app.warehouses')" :permission="true" :active="request()->routeIs('warehouse.index', 'warehouse.show', 'warehouse.edit', 'warehouse.create')" />
             @endif
 
             @if ($viewWarehouseStock && $viewWarehouseStock != 'none')
-                <x-sub-menu-item :link="route('warehouse.stock.index')" :text="__('warehouse::app.adjustStock')" :permission="true" />
+                <x-sub-menu-item :link="route('warehouse.stock.index')" :text="__('warehouse::app.adjustStock')" :permission="true" :active="request()->routeIs('warehouse.stock.*', 'warehouse.transfer.*')" />
             @endif
 
             @if ($viewWarehouseStock && $viewWarehouseStock != 'none')
-                <x-sub-menu-item :link="route('warehouse.movements.index')" :text="__('warehouse::app.stockMovements')" :permission="true" />
+                <x-sub-menu-item :link="route('warehouse.movements.index')" :text="__('warehouse::app.stockMovements')" :permission="true" :active="request()->routeIs('warehouse.movements.*')" />
             @endif
 
         </div>

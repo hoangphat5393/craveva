@@ -8,7 +8,7 @@
 
 **Tài liệu gộp MAOLIN (đọc 1 file là đủ):** xem **`FUNC_LOGIC/MAOLIN_MASTER_GUIDE.md`**.  
 **Tóm tắt phạm vi 4 nhóm + file đã gộp:** xem **`FUNC_LOGIC/MAOLIN_INDEX.md`** (mục 2–3).  
-**Phân tích Multi-Warehouse + roadmap triển khai end-to-end:** xem **`FUNC_LOGIC/WAREHOUSE_ANALYSIS_AND_PLAN.md`**.
+**Phân tích Multi-Warehouse + roadmap triển khai end-to-end:** xem **`FUNC_LOGIC/WAREHOUSE_MASTER_GUIDE.md`**.
 
 ---
 

@@ -65,13 +65,13 @@
 
             <!-- NAV ITEM - WAREHOUSE (master + stock; module warehouse + quyền Inventory hoặc quyền warehouse riêng) -->
             @if (in_array('warehouse', user_modules()) && $canSeeWarehouseMaster)
-                <x-sub-menu-item :link="route('warehouse.index')" :text="__('warehouse::app.allWarehouses')" :permission="true" />
+                <x-sub-menu-item :link="route('warehouse.index')" :text="__('warehouse::app.warehouses')" :permission="true" :active="request()->routeIs('warehouse.index', 'warehouse.show', 'warehouse.edit', 'warehouse.create')" />
             @endif
             @if (in_array('warehouse', user_modules()) && $canSeeWarehouseStockUi)
-                <x-sub-menu-item :link="route('warehouse.stock.index')" :text="__('warehouse::app.adjustStock')" :permission="true" />
+                <x-sub-menu-item :link="route('warehouse.stock.index')" :text="__('warehouse::app.adjustStock')" :permission="true" :active="request()->routeIs('warehouse.stock.*', 'warehouse.transfer.*')" />
             @endif
             @if (in_array('warehouse', user_modules()) && $canSeeWarehouseStockUi)
-                <x-sub-menu-item :link="route('warehouse.movements.index')" :text="__('warehouse::app.stockMovements')" :permission="true" />
+                <x-sub-menu-item :link="route('warehouse.movements.index')" :text="__('warehouse::app.stockMovements')" :permission="true" :active="request()->routeIs('warehouse.movements.*')" />
             @endif
             <x-sub-menu-item :link="route('reports.index')" :text="__('purchase::app.menu.reports')" :permission="$purchaseViewOrderReportPermission != 'none' && $purchaseViewOrderReportPermission != '' && false" />
 

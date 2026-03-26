@@ -40,17 +40,14 @@ Thư mục lưu **ghi chú kỹ thuật**, **flow**, **phân tích MAOLIN/B2B**,
 
 **Mục lục gộp MAOLIN (nên mở trước):** [MAOLIN_INDEX.md](MAOLIN_INDEX.md).
 
-| File                                                                                             | Nội dung                                     |
-| ------------------------------------------------------------------------------------------------ | -------------------------------------------- |
-| [WAREHOUSE_ANALYSIS_AND_PLAN.md](WAREHOUSE_ANALYSIS_AND_PLAN.md)                                 | Phân tích & kế hoạch multi-warehouse         |
-| [MULTI_WAREHOUSE_UI_OPERATIONS_GUIDE.md](MULTI_WAREHOUSE_UI_OPERATIONS_GUIDE.md)                 | Hướng dẫn UI / URL / env                     |
-| [MULTI_WAREHOUSE_ISSUES_FIXES_AND_NEXT_STEPS.md](MULTI_WAREHOUSE_ISSUES_FIXES_AND_NEXT_STEPS.md) | Lỗi đã gặp, đã sửa, backlog                  |
-| [WAREHOUSE_CUSTOM_FIELDS_RATIONALIZATION.md](WAREHOUSE_CUSTOM_FIELDS_RATIONALIZATION.md)         | Custom field vs cột DB (sau đa kho)          |
-| [B2B_ERP_PO_DO_INVOICE_GUIDE.md](B2B_ERP_PO_DO_INVOICE_GUIDE.md)                                 | PO / DO / Invoice B2B                        |
-| [MAOLIN_MASTER_GUIDE.md](MAOLIN_MASTER_GUIDE.md)                                                 | **Bản gộp MAOLIN** (đọc 1 file là đủ)        |
-| [MAOLIN_IMPORT_MAPPING.md](MAOLIN_IMPORT_MAPPING.md)                                             | Map cột import MAOLIN (ready to use)         |
-| [PROJECT_MAOLIN_NEW_FILES_ANALYSIS.md](PROJECT_MAOLIN_NEW_FILES_ANALYSIS.md)                     | Phân tích chi tiết file `PROJECT MAOLIN New` |
-| [ERP_TECH_REVIEW_REPORT_VI.md](ERP_TECH_REVIEW_REPORT_VI.md)                                     | Tech review (VI)                             |
+| File                                                                         | Nội dung                                     |
+| ---------------------------------------------------------------------------- | -------------------------------------------- |
+| [WAREHOUSE_MASTER_GUIDE.md](WAREHOUSE_MASTER_GUIDE.md)                       | Tài liệu Warehouse gộp (analysis + UI + DB)  |
+| [B2B_ERP_PO_DO_INVOICE_GUIDE.md](B2B_ERP_PO_DO_INVOICE_GUIDE.md)             | PO / DO / Invoice B2B                        |
+| [MAOLIN_MASTER_GUIDE.md](MAOLIN_MASTER_GUIDE.md)                             | **Bản gộp MAOLIN** (đọc 1 file là đủ)        |
+| [MAOLIN_IMPORT_MAPPING.md](MAOLIN_IMPORT_MAPPING.md)                         | Map cột import MAOLIN (ready to use)         |
+| [PROJECT_MAOLIN_NEW_FILES_ANALYSIS.md](PROJECT_MAOLIN_NEW_FILES_ANALYSIS.md) | Phân tích chi tiết file `PROJECT MAOLIN New` |
+| [ERP_TECH_REVIEW_REPORT_VI.md](ERP_TECH_REVIEW_REPORT_VI.md)                 | Tech review (VI)                             |
 
 ### Import / client / DB
 

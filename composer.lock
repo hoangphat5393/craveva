@@ -219,16 +219,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.373.9",
+            "version": "3.374.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "a73e12fe5d010f3c6cda2f6f020b5a475444487d"
+                "reference": "fa9801583e679aecc95660838708acfd98aa28e7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/a73e12fe5d010f3c6cda2f6f020b5a475444487d",
-                "reference": "a73e12fe5d010f3c6cda2f6f020b5a475444487d",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/fa9801583e679aecc95660838708acfd98aa28e7",
+                "reference": "fa9801583e679aecc95660838708acfd98aa28e7",
                 "shasum": ""
             },
             "require": {
@@ -310,9 +310,9 @@
             "support": {
                 "forum": "https://github.com/aws/aws-sdk-php/discussions",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.373.9"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.374.1"
             },
-            "time": "2026-03-24T18:06:07+00:00"
+            "time": "2026-03-26T18:06:13+00:00"
         },
         {
             "name": "azjezz/psl",
@@ -2205,16 +2205,16 @@
         },
         {
             "name": "froiden/envato",
-            "version": "5.2.1",
+            "version": "5.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Froiden/froiden-verify.git",
-                "reference": "6096410916534cc2ca7ba1ae9b4b5acaeea1a997"
+                "reference": "95c354656ec37ca28051cd5427fc29d7ed6e8612"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Froiden/froiden-verify/zipball/6096410916534cc2ca7ba1ae9b4b5acaeea1a997",
-                "reference": "6096410916534cc2ca7ba1ae9b4b5acaeea1a997",
+                "url": "https://api.github.com/repos/Froiden/froiden-verify/zipball/95c354656ec37ca28051cd5427fc29d7ed6e8612",
+                "reference": "95c354656ec37ca28051cd5427fc29d7ed6e8612",
                 "shasum": ""
             },
             "type": "library",
@@ -2240,9 +2240,9 @@
             "description": "Package for checking licencnse key and update for envato project.",
             "support": {
                 "issues": "https://github.com/Froiden/froiden-verify/issues",
-                "source": "https://github.com/Froiden/froiden-verify/tree/5.2.1"
+                "source": "https://github.com/Froiden/froiden-verify/tree/5.3.0"
             },
-            "time": "2026-03-06T13:21:58+00:00"
+            "time": "2026-03-25T09:03:05+00:00"
         },
         {
             "name": "froiden/laravel-installer",
@@ -3371,20 +3371,20 @@
         },
         {
             "name": "grpc/grpc",
-            "version": "1.74.0",
+            "version": "1.78.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/grpc/grpc-php.git",
-                "reference": "32bf4dba256d60d395582fb6e4e8d3936bcdb713"
+                "reference": "9891a9aa0de41c4ceb07a50dbb5a3aa96c229082"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/grpc/grpc-php/zipball/32bf4dba256d60d395582fb6e4e8d3936bcdb713",
-                "reference": "32bf4dba256d60d395582fb6e4e8d3936bcdb713",
+                "url": "https://api.github.com/repos/grpc/grpc-php/zipball/9891a9aa0de41c4ceb07a50dbb5a3aa96c229082",
+                "reference": "9891a9aa0de41c4ceb07a50dbb5a3aa96c229082",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.0.0"
+                "php": ">=7.1.0"
             },
             "require-dev": {
                 "google/auth": "^v1.3.0"
@@ -3409,9 +3409,9 @@
                 "rpc"
             ],
             "support": {
-                "source": "https://github.com/grpc/grpc-php/tree/v1.74.0"
+                "source": "https://github.com/grpc/grpc-php/tree/v1.78.0"
             },
-            "time": "2025-07-24T20:02:16+00:00"
+            "time": "2026-03-25T08:47:43+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -4920,16 +4920,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v11.50.0",
+            "version": "v11.51.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "c761f591209b45f56c1317ecbff0b04c89cf7ba2"
+                "reference": "c8f9a04594b7044a189a3194cfb3594251eb74e5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/c761f591209b45f56c1317ecbff0b04c89cf7ba2",
-                "reference": "c761f591209b45f56c1317ecbff0b04c89cf7ba2",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/c8f9a04594b7044a189a3194cfb3594251eb74e5",
+                "reference": "c8f9a04594b7044a189a3194cfb3594251eb74e5",
                 "shasum": ""
             },
             "require": {
@@ -5131,7 +5131,7 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2026-03-17T19:35:22+00:00"
+            "time": "2026-03-26T14:54:53+00:00"
         },
         {
             "name": "laravel/helpers",

@@ -117,7 +117,7 @@ class CustomField extends BaseModel
                 $orderCol = $orderColumnMap[$orderIndex] ?? $defaultOrderCol;
             }
             $idsQueryClone = (clone $idsQuery)
-                ->select(DB::raw($modelIdColumn.' as _model_id'))
+                ->select(DB::raw($modelIdColumn . ' as _model_id'))
                 ->skip($start)
                 ->take($length);
             $idsQueryClone->orderBy($orderCol, $orderDir);
@@ -163,7 +163,7 @@ class CustomField extends BaseModel
 
                             return $formattedDate;
                         } catch (\Exception $e) {
-                            return '<span class="text-danger">'.__('Invalid Date').'</span>';
+                            return '<span class="text-danger">' . __('Invalid Date') . '</span>';
                         }
                     }
 
@@ -171,7 +171,7 @@ class CustomField extends BaseModel
                 }
 
                 if ($customField->type == 'file') {
-                    return $finalData ? '<a href="'.asset_url_local_s3('custom_fields/'.$finalData->value).'" target="__blank" class="text-dark-grey">'.__('app.storageSetting.viewFile').'</a>' : '--';
+                    return $finalData ? '<a href="' . asset_url_local_s3('custom_fields/' . $finalData->value) . '" target="__blank" class="text-dark-grey">' . __('app.storageSetting.viewFile') . '</a>' : '--';
                 }
 
                 return $finalData ? $finalData->value : '--';
@@ -181,7 +181,6 @@ class CustomField extends BaseModel
             if ($customField->type == 'file') {
                 $customFieldNames[] = $customField->name;
             }
-
         }
 
         return $customFieldNames;
@@ -195,14 +194,13 @@ class CustomField extends BaseModel
         if ($count > 0) {
             $i = 1;
 
-            while (CustomField::where('name', $slug.'-'.$i)->where('custom_field_group_id', $moduleId)->count() > 0) {
+            while (CustomField::where('name', $slug . '-' . $i)->where('custom_field_group_id', $moduleId)->count() > 0) {
                 $i++;
             }
 
-            $slug .= '-'.$i;
+            $slug .= '-' . $i;
         }
 
         return $slug;
-
     }
 }

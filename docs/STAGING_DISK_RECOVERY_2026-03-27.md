@@ -158,7 +158,7 @@ Notes:
 
 ## 9) Lesson learned (vendor)
 
-**Do not** run bulk deletion of `vendor/**/.git` to free disk. That breaks Composer when packages were installed from source, causing errors like *The .git directory is missing from vendor/laravel/framework*.
+**Do not** run bulk deletion of `vendor/**/.git` to free disk. That breaks Composer when packages were installed from source, causing errors like _The .git directory is missing from vendor/laravel/framework_.
 
 **Recovery:** `rm -rf vendor` then `APP_ENV=production composer install --no-dev --optimize-autoloader --prefer-dist` (never `composer update` on staging).
 

@@ -70,7 +70,7 @@ ssh craveva-staging "
 "
 ```
 
-**Không** xóa thư mục `.git` lồng trong `vendor/**` để giải phóng dĩa. Việc này làm Composer báo lỗi *commit-deps* / thiếu `.git` khi `composer install`, và có thể phá cài đặt kiểu source.
+**Không** xóa thư mục `.git` lồng trong `vendor/**` để giải phóng dĩa. Việc này làm Composer báo lỗi _commit-deps_ / thiếu `.git` khi `composer install`, và có thể phá cài đặt kiểu source.
 
 Nếu đã lỡ xóa hoặc `vendor` hỏng: cài lại sạch theo `composer.lock` (không dùng `composer update`):
 

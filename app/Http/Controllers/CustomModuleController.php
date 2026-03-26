@@ -38,7 +38,7 @@ class CustomModuleController extends AccountBaseController
     public function index()
     {
         $this->type = 'custom';
-        $this->updateFilePath = storage_path().'/app';
+        $this->updateFilePath = storage_path() . '/app';
         /** @phpstan-ignore-next-line */
         $this->allModules = Module::toCollection();
 
@@ -64,7 +64,7 @@ class CustomModuleController extends AccountBaseController
     {
         $this->pageTitle = 'app.menu.moduleSettingsInstall';
         $this->type = 'custom';
-        $this->updateFilePath = storage_path().'/app';
+        $this->updateFilePath = storage_path() . '/app';
 
         return view('custom-modules.install', $this->data);
     }
@@ -80,12 +80,12 @@ class CustomModuleController extends AccountBaseController
             return Reply::error('<b>PHP-ZIP</b> extension is missing on your server. Please install the extension.');
         }
 
-        File::put(public_path().'/install-version.txt', 'complete');
+        File::put(public_path() . '/install-version.txt', 'complete');
 
         $filePath = $request->filePath;
 
         $this->removeGitkeepFilesFromZip($filePath);
-        $modulesTempPath = storage_path('app').'/Modules';
+        $modulesTempPath = storage_path('app') . '/Modules';
 
         if (File::isDirectory($modulesTempPath)) {
             File::deleteDirectory($modulesTempPath);
@@ -120,7 +120,7 @@ class CustomModuleController extends AccountBaseController
             // Return first 5 files found to help debug
             $fileList = implode(', ', array_slice($foundFiles, 0, 5));
 
-            return Reply::error('Config/config.php not found in the zip file. Found files: '.$fileList);
+            return Reply::error('Config/config.php not found in the zip file. Found files: ' . $fileList);
         }
 
         $config = require $configPath;
@@ -131,7 +131,7 @@ class CustomModuleController extends AccountBaseController
         }
 
         $currentModuleRoot = dirname(dirname($configPath));
-        $targetModuleRoot = $modulesTempPath.'/'.$moduleName;
+        $targetModuleRoot = $modulesTempPath . '/' . $moduleName;
 
         if ($currentModuleRoot === $modulesTempPath) {
             // Files are at root level of extraction
@@ -140,13 +140,13 @@ class CustomModuleController extends AccountBaseController
             // Move directories
             foreach (File::directories($modulesTempPath) as $dir) {
                 if ($dir !== $targetModuleRoot) {
-                    File::moveDirectory($dir, $targetModuleRoot.'/'.basename($dir), true);
+                    File::moveDirectory($dir, $targetModuleRoot . '/' . basename($dir), true);
                 }
             }
 
             // Move files
             foreach (File::files($modulesTempPath) as $file) {
-                File::move($file->getPathname(), $targetModuleRoot.'/'.$file->getFilename());
+                File::move($file->getPathname(), $targetModuleRoot . '/' . $file->getFilename());
             }
         } elseif ($currentModuleRoot !== $targetModuleRoot) {
             if (File::exists($targetModuleRoot)) {
@@ -159,12 +159,12 @@ class CustomModuleController extends AccountBaseController
 
         if ($validateModule['status'] == true) {
             // Move files to Modules if modules belongs to this product
-            File::moveDirectory(storage_path('app').'/Modules/'.$moduleName, base_path().'/Modules/'.$moduleName, true);
+            File::moveDirectory(storage_path('app') . '/Modules/' . $moduleName, base_path() . '/Modules/' . $moduleName, true);
 
             cache()->forget('laravel-modules');
 
             // Delete Modules Directory after moving files
-            File::deleteDirectory(storage_path('app').'/Modules/');
+            File::deleteDirectory(storage_path('app') . '/Modules/');
 
             if (module_enabled($moduleName)) {
                 $this->updateVersion($moduleName);
@@ -198,7 +198,7 @@ class CustomModuleController extends AccountBaseController
     public function validateModule($moduleName)
     {
         $appName = str_replace('-new', '', config('craveva.product_name'));
-        $wrongMessage = 'The zip that you are trying to install is not compatible with '.$appName.' version';
+        $wrongMessage = 'The zip that you are trying to install is not compatible with ' . $appName . ' version';
 
         // Check if PHP-ZIP extension is missing
         if (! extension_loaded('zip')) {
@@ -208,7 +208,7 @@ class CustomModuleController extends AccountBaseController
             ];
         }
 
-        $configPath = storage_path('app').'/Modules/'.$moduleName.'/Config/config.php';
+        $configPath = storage_path('app') . '/Modules/' . $moduleName . '/Config/config.php';
 
         // Check if module configuration file exists
         if (! file_exists($configPath)) {
@@ -222,7 +222,7 @@ class CustomModuleController extends AccountBaseController
 
         // Check if parent_min_version is defined
         if (! isset($config['parent_min_version'])) {
-            $errorMessage = 'Minimum version of <b>'.$appName.' main application</b> is not defined in the Module.';
+            $errorMessage = 'Minimum version of <b>' . $appName . ' main application</b> is not defined in the Module.';
 
             return [
                 'status' => false,
@@ -234,7 +234,7 @@ class CustomModuleController extends AccountBaseController
         if ($config['parent_min_version'] >= File::get('version.txt')) {
             return [
                 'status' => false,
-                'message' => 'Minimum version of <b>'.$appName.' main application</b> should be greater than or equal to <b>'.$config['parent_min_version'].'</b>. Your application version is <b>'.File::get('version.txt').'</b>',
+                'message' => 'Minimum version of <b>' . $appName . ' main application</b> should be greater than or equal to <b>' . $config['parent_min_version'] . '</b>. Your application version is <b>' . File::get('version.txt') . '</b>',
             ];
         }
 
@@ -309,7 +309,7 @@ class CustomModuleController extends AccountBaseController
             session(['languagepack_module_activated' => 'activated']);
         }
 
-        return Reply::redirect(route('custom-modules.index').'?tab=custom', 'Status Changed. Reloading');
+        return Reply::redirect(route('custom-modules.index') . '?tab=custom', 'Status Changed. Reloading');
     }
 
     public function verifyingModulePurchase(Request $request)
@@ -338,7 +338,7 @@ class CustomModuleController extends AccountBaseController
     private function updateVersion($moduleName)
     {
         try {
-            $config = require base_path().'/Modules/'.$moduleName.'/Config/config.php';
+            $config = require base_path() . '/Modules/' . $moduleName . '/Config/config.php';
             $setting = (new $config['setting'])::first();
 
             // When module migrations are not run
@@ -353,12 +353,16 @@ class CustomModuleController extends AccountBaseController
 
     private function runModuleMigrateCommand($moduleName)
     {
-        Artisan::call('module:migrate', [$moduleName, '--force' => true]);
+        // nwidart v11: argument name is `module`. Positional/numeric keys do not bind; empty args trigger a Prompts multiselect and fail in HTTP (NonInteractiveValidationException).
+        Artisan::call('module:migrate', [
+            'module' => $moduleName,
+            '--force' => true,
+        ]);
     }
 
     private function runActivateCommand($moduleName)
     {
-        $command = $moduleName.':activate';
+        $command = $moduleName . ':activate';
 
         $artisanCommands = Artisan::all();
 

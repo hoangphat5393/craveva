@@ -3,7 +3,6 @@
 namespace App\Providers;
 
 use App\Models\Company;
-use Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider;
 use Carbon\CarbonInterval;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\URL;
@@ -26,7 +25,11 @@ class AppServiceProvider extends ServiceProvider
         }
 
         if (app()->environment(['development', 'local', 'craveva'])) {
-            $this->app->register(IdeHelperServiceProvider::class);
+            $ideHelperProvider = \Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class;
+
+            if (class_exists($ideHelperProvider)) {
+                $this->app->register($ideHelperProvider);
+            }
         }
     }
 

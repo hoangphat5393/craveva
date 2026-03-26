@@ -206,34 +206,41 @@ class CompanyDataTable extends BaseDataTable
         $datatables->addIndexColumn();
         $datatables->smart(false);
         $datatables->setRowId(fn ($row) => 'row-'.$row->id);
-        $customFieldColumns = CustomField::customFieldData($datatables, Company::CUSTOM_FIELD_MODEL);
+
+        // Column index => SQL column for ordering ID slice (must match getColumns order + DataTables order.0.column)
+        $companyOrderMap = [
+            1 => 'companies.id',
+            2 => 'companies.company_name',
+            3 => 'companies.package_id',
+            11 => 'companies.last_login',
+            12 => 'companies.status',
+        ];
+
+        $customFieldColumns = CustomField::customFieldData(
+            $datatables,
+            Company::CUSTOM_FIELD_MODEL,
+            null,
+            $this->companyListBaseQuery($query->getModel()),
+            'companies.id',
+            $companyOrderMap
+        );
         $datatables->rawColumns(array_merge(['company_name', 'action', 'status', 'package', 'details', 'nextpaymentdate'], $customFieldColumns));
 
         return $datatables;
     }
 
     /**
-     * @return Company|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder
+     * Filters only (no with/withCount). Used so CustomField::customFieldData loads rows for the current page only.
+     *
+     * @return \Illuminate\Database\Eloquent\Builder<\App\Models\Company>
      */
-    public function query(Company $model)
+    protected function companyListBaseQuery(Company $model)
     {
         $request = $this->request();
         $startDate = $this->parseDate($request->startDate);
         $endDate = $this->parseDate($request->endDate);
 
-        $companies = $model->newQuery()
-            ->with(['package', 'user', 'user.role', 'globalInvoices' => function ($query) {
-                $query->latest()->limit(1);
-            }])
-            ->withCount([
-                'users',
-                'users as totalEmployees' => function ($q) {
-                    $q->whereHas('employeeDetail');
-                },
-                'users as totalClient' => function ($q) {
-                    $q->whereHas('clientDetails');
-                },
-            ])
+        return $model->newQuery()
             ->when($request->package && $request->package !== 'all', function ($query) use ($request) {
                 return $query->where('package_id', $request->package);
             })
@@ -256,14 +263,31 @@ class CompanyDataTable extends BaseDataTable
                         ->orWhere('company_email', 'like', $searchText)
                         ->orWhere('company_phone', 'like', $searchText);
 
-                    // Search with Subdomain
                     if (module_enabled('Subdomain')) {
                         $query->orWhere('sub_domain', 'like', $searchText);
                     }
                 });
             });
+    }
 
-        return $companies;
+    /**
+     * @return Company|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder
+     */
+    public function query(Company $model)
+    {
+        return $this->companyListBaseQuery($model)
+            ->with(['package', 'user', 'user.role', 'globalInvoices' => function ($query) {
+                $query->latest()->limit(1);
+            }])
+            ->withCount([
+                'users',
+                'users as totalEmployees' => function ($q) {
+                    $q->whereHas('employeeDetail');
+                },
+                'users as totalClient' => function ($q) {
+                    $q->whereHas('clientDetails');
+                },
+            ]);
     }
 
     protected function parseDate($date): ?string

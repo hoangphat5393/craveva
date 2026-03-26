@@ -108,12 +108,13 @@ class CustomField extends BaseModel
             $start = (int) request()->input('start', 0);
             $length = (int) request()->input('length', 10);
             $length = min(max($length, 1), 500);
-            $orderCol = 'users.id';
+            $defaultOrderCol = $modelIdColumn ?: 'users.id';
+            $orderCol = $defaultOrderCol;
             $orderDir = 'asc';
             if (is_array($orderColumnMap) && ! empty($orderColumnMap)) {
                 $orderIndex = (int) request()->input('order.0.column', 2);
                 $orderDir = strtolower((string) request()->input('order.0.dir', 'asc')) === 'desc' ? 'desc' : 'asc';
-                $orderCol = $orderColumnMap[$orderIndex] ?? 'users.id';
+                $orderCol = $orderColumnMap[$orderIndex] ?? $defaultOrderCol;
             }
             $idsQueryClone = (clone $idsQuery)
                 ->select(DB::raw($modelIdColumn.' as _model_id'))

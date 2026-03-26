@@ -21,6 +21,7 @@ class Warehouse extends BaseModel
         'description',
         'is_default',
         'status',
+        'sort_order',
     ];
 
     public function stocks(): HasMany

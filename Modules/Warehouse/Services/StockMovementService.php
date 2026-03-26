@@ -2,13 +2,16 @@
 
 namespace Modules\Warehouse\Services;
 
+use App\Models\Product;
 use App\Models\StockMovement;
+use App\Scopes\CompanyScope;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Modules\Warehouse\Concerns\ScopesWarehouseProductBatchQuery;
+use Modules\Warehouse\Entities\Warehouse;
 use Modules\Warehouse\Entities\WarehouseProductBatch;
 use Modules\Warehouse\Entities\WarehouseProductStock;
-use RuntimeException;
+use Modules\Warehouse\Exceptions\WarehouseBusinessException;
 
 class StockMovementService
 {
@@ -46,8 +49,14 @@ class StockMovementService
     {
         $qty = (float) ($payload['quantity'] ?? 0);
         if ($qty <= 0) {
-            throw new RuntimeException('Inbound quantity must be greater than 0.');
+            throw new WarehouseBusinessException(__('warehouse::app.err_quantity_must_be_positive'), [
+                'quantity' => $qty,
+            ]);
         }
+
+        $companyId = $this->requireCompanyId($payload);
+        $this->assertWarehouseBelongsToCompany((int) $payload['warehouse_id'], $companyId);
+        $this->assertProductBelongsToCompany((int) $payload['product_id'], $companyId);
 
         $batch = $this->lockOrCreateBatchRow($payload);
         $batch->quantity = (float) $batch->quantity + $qty;
@@ -71,8 +80,14 @@ class StockMovementService
     {
         $requested = (float) ($payload['quantity'] ?? 0);
         if ($requested <= 0) {
-            throw new RuntimeException('Outbound quantity must be greater than 0.');
+            throw new WarehouseBusinessException(__('warehouse::app.err_quantity_must_be_positive'), [
+                'quantity' => $requested,
+            ]);
         }
+
+        $companyId = $this->requireCompanyId($payload);
+        $this->assertWarehouseBelongsToCompany((int) $payload['warehouse_id'], $companyId);
+        $this->assertProductBelongsToCompany((int) $payload['product_id'], $companyId);
 
         $rows = $this->resolveOutboundRows($payload);
         $available = (float) $rows->sum('quantity');
@@ -107,12 +122,19 @@ class StockMovementService
     public function recordTransfer(array $payload, ?bool $allowNegativeStock = null): void
     {
         if (empty($payload['warehouse_from_id']) || empty($payload['warehouse_to_id'])) {
-            throw new RuntimeException('Transfer requires warehouse_from_id and warehouse_to_id.');
+            throw new WarehouseBusinessException(__('warehouse::app.err_transfer_missing_warehouses'), [
+                'payload_keys' => array_keys($payload),
+            ]);
         }
 
         if ((int) $payload['warehouse_from_id'] === (int) $payload['warehouse_to_id']) {
-            throw new RuntimeException('Transfer warehouses must be different.');
+            throw new WarehouseBusinessException(__('warehouse::app.err_transfer_same_warehouse'));
         }
+
+        $companyId = $this->requireCompanyId($payload);
+        $this->assertWarehouseBelongsToCompany((int) $payload['warehouse_from_id'], $companyId);
+        $this->assertWarehouseBelongsToCompany((int) $payload['warehouse_to_id'], $companyId);
+        $this->assertProductBelongsToCompany((int) $payload['product_id'], $companyId);
 
         DB::transaction(function () use ($payload, $allowNegativeStock) {
             $outboundPayload = [
@@ -160,8 +182,69 @@ class StockMovementService
         }
 
         if ($requested > $available) {
-            throw new RuntimeException('Insufficient stock for outbound movement.');
+            throw new WarehouseBusinessException(
+                __('warehouse::app.err_insufficient_stock', [
+                    'available' => $this->formatQuantityForMessage($available),
+                    'requested' => $this->formatQuantityForMessage($requested),
+                ]),
+                [
+                    'available' => $available,
+                    'requested' => $requested,
+                ]
+            );
         }
+    }
+
+    /**
+     * @param  array<string, mixed>  $payload
+     */
+    protected function requireCompanyId(array $payload): int
+    {
+        $companyId = isset($payload['company_id']) ? (int) $payload['company_id'] : 0;
+
+        if ($companyId <= 0) {
+            throw new WarehouseBusinessException(__('warehouse::app.err_company_context_missing'));
+        }
+
+        return $companyId;
+    }
+
+    protected function assertWarehouseBelongsToCompany(int $warehouseId, int $companyId): void
+    {
+        $exists = Warehouse::query()
+            ->where('id', $warehouseId)
+            ->where('company_id', $companyId)
+            ->exists();
+
+        if (! $exists) {
+            throw new WarehouseBusinessException(__('warehouse::app.err_warehouse_not_in_company'), [
+                'warehouse_id' => $warehouseId,
+                'company_id' => $companyId,
+            ]);
+        }
+    }
+
+    protected function assertProductBelongsToCompany(int $productId, int $companyId): void
+    {
+        $exists = Product::withoutGlobalScope(CompanyScope::class)
+            ->where('id', $productId)
+            ->where('company_id', $companyId)
+            ->exists();
+
+        if (! $exists) {
+            throw new WarehouseBusinessException(__('warehouse::app.err_product_not_in_company'), [
+                'product_id' => $productId,
+                'company_id' => $companyId,
+            ]);
+        }
+    }
+
+    protected function formatQuantityForMessage(float $value): string
+    {
+        $formatted = number_format($value, 4, '.', '');
+        $rtrim = rtrim(rtrim($formatted, '0'), '.');
+
+        return $rtrim === '' ? '0' : $rtrim;
     }
 
     public function sortForFefo(Collection $rows): Collection

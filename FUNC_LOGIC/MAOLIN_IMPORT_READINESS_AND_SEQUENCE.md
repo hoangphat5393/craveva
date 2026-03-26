@@ -16,12 +16,14 @@ Muc tieu:
 
 - He thong **da co the import duoc** nhom du lieu cot loi: `Client`, `Product`, `Pricing`, `Inventory`.
 - He thong **chua du full** cho nhom file bao gia/quotation (`報價單匯出`) de di truc tiep vao luong `PO/DO/Invoice`.
-- De chay on dinh theo nghiep vu B2B trong guide, nen import theo trinh tu:
+- De chay on dinh theo nghiep vu B2B trong guide, nen import theo trinh tu (chi tiet muc 4):
     1. Warehouse master
     2. Client
     3. Product master
     4. Pricing
     5. Inventory (uu tien file co `warehouse_code`)
+    6. Lich su giao dich ban hang / **Last year net sales** (sau khi da co Client + Product de match `client_code` + `sku`)
+    7. Tai lieu **bao gia** (`報價單匯出`) — chi tham chieu hoac qua adapter rieng; khong xep vao chuoi import chuan
 
 ---
 
@@ -119,6 +121,26 @@ Danh gia theo guide:
 
 Trang thai: **CHUA du de import truc tiep vao PO/DO/Invoice** (can adapter mapping rieng neu bat buoc).
 
+## 2.6 Lich su giao dich ban hang (Last year net sales)
+
+File lien quan:
+
+- `Last year net sales.xlsx` (nhieu sheet theo thang / ky)
+
+Ban chat theo PN / `MAOLIN_MASTER_GUIDE.md`:
+
+- **Khong phai ton kho**; la **lich su giao dich (sales transactions)** Miaolin/DigiWin xuat ra: ngay, ma khach, SKU, so luong, tien net, v.v.
+- Muc dich: doi soat voi ERP goc, bao cao, goi y mua lai — thuong import vao **lop reporting / bang snapshot** (khong bat buoc trung voi bang `orders` cua Craveva neu chua map 1-1).
+
+Dieu kien thu tu:
+
+- **Sau buoc Client + Product master** (de resolve `client_code` → khach, `sku` → san pham khi he thong ho tro).
+- **Doc lap** voi buoc Inventory: co the import song song hoac sau Inventory, nhung **khong thay the** file ton kho.
+
+Trang thai he thong (cap nhat theo code):
+
+- **Importer chuyen dung** co the chua co; khi co, van giu thu tu: sau Client + Product (xem muc 4 buoc 6).
+
 ---
 
 ## 3) He thong da du chuc nang chua?
@@ -135,6 +157,7 @@ Theo bo file Maolin hien tai:
 2. Chua du full:
 
 - Quotation -> PO/DO/Invoice auto flow tu file `報價單匯出.csv`.
+- (Tuy chon) Import **Last year net sales** vao bang lich su giao dich / reporting — xem `MAOLIN_MASTER_GUIDE.md`.
 
 => Ket luan tong:
 
@@ -145,26 +168,42 @@ Theo bo file Maolin hien tai:
 
 ## 4) Thu tu import de dung quy trinh ERP/B2B
 
-Thu tu de nghi:
+Nguyen tac: **master & khoa ngoai truoc, snapshot sau**; **vat ly kho (ton/movement)** tach khoi **lich su ban (net sales)**.
 
-1. **Warehouse master** (bat buoc truoc Inventory)
-    - Dam bao kho da co `warehouse_code` + `warehouse_name`.
+### 4.1 Chuoi bat buoc (master + ton)
 
-2. **Client**
-    - Tao khach hang + map kho mac dinh (neu co designated warehouse).
+| Buoc  | Noi dung             | Phu thuoc            | Ghi chu ngan                                                                                        |
+| ----- | -------------------- | -------------------- | --------------------------------------------------------------------------------------------------- |
+| **1** | **Warehouse master** | —                    | Bat buoc truoc Inventory va truoc Client neu map `designated_warehouse_*` → `default_warehouse_id`. |
+| **2** | **Client**           | Buoc 1 (khuyen nghi) | Import `Craveva customer`; map ma/ten kho chi dinh.                                                 |
+| **3** | **Product master**   | —                    | Import SKU + thuoc tinh; bat buoc truoc Pricing & Inventory.                                        |
+| **4** | **Pricing**          | Buoc 3               | Mot nguon gia chinh (`產品價格表` hoac `商品價格`) de tranh ghi de.                                 |
+| **5** | **Inventory**        | Buoc 1 + 3           | Uu tien file co `warehouse_code`; full inventory chi bo sung / doi soat.                            |
 
-3. **Product master**
-    - Tao SKU truoc de pricing/inventory co khoa doi chieu.
+### 4.2 Chuoi khuyen nghi sau master (lich su & van hanh)
 
-4. **Pricing**
-    - Cap nhat gia sau khi Product da ton tai.
+6. **Lich su giao dich ban hang — Last year net sales**
+    - **Sau buoc 2 va 3** (Client + Product) de match `client_code`, `sku` khi importer ho tro.
+    - **Khong** xen giua Pricing va Inventory; co the lam **sau buoc 5** neu muon on dinh ton kho truoc khi nap lich su.
+    - Ban chat: transaction history Miaolin/DigiWin, khong thay the file ton (`MAOLIN_MASTER_GUIDE.md`).
 
-5. **Inventory**
-    - Uu tien `Quote_unit_price_inventory__產品庫存表.csv`.
-    - Sau do neu can, import/doi soat them tu `Craveva full inventory.csv`.
+7. **PO / DO / Invoice (luong B2B trong app)**
+    - Tao tren UI hoac luong mua hang chuan (`B2B_ERP_PO_DO_INVOICE_GUIDE.md`) **sau** khi master da day du.
+    - **Khong** co buoc import file quotation (`報價單匯出`) vao PO/DO/Invoice cho den khi co adapter.
 
-6. **Quotation/Order docs** (neu can)
-    - Chua import truc tiep vao PO/DO/Invoice cho den khi co adapter rieng.
+8. **Bao gia / quotation (file `報價單匯出`)**
+    - **Ngoai chuoi import chuan** — chi tham chieu, hoac xu ly rieng neu PM chot adapter.
+
+### 4.3 Thu tu tom tat (mot dong)
+
+`Warehouse → Client → Product → Pricing → Inventory → [Last year net sales] → [PO/DO/Invoice thu cong / luong app]`
+
+- Dau `[]`: buoc nghiep vu hoac tinh nang co the lam sau, khong chan buoc 1–5.
+
+### 4.4 (Tuy chon) Truoc dot import lon
+
+- Chuan bi **custom field** (vi du `region` / cac CF Client) **truoc** buoc 2 neu PM yeu cau day du cot file customer.
+- **Trial** 20–50 dong moi loai file truoc khi chay full (xem muc 5).
 
 ---
 
@@ -178,6 +217,8 @@ Thu tu de nghi:
     - warehouse: `warehouse_code`
 - [ ] Da test trial 20-50 dong cho moi module
 - [ ] Da chot quy tac khi khong map duoc kho (skip + log)
+- [ ] (Neu nap Last year net sales) Da xong buoc Client + Product; da chot key doi soat (`ngay + client_code + sku` hoac theo spec DigiWin)
+- [ ] (Neu can cot customer them) Da tao/map custom field (vi du `region`) truoc import Client
 
 ---
 

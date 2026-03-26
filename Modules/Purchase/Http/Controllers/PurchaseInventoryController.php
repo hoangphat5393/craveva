@@ -103,7 +103,14 @@ class PurchaseInventoryController extends AccountBaseController
         $this->warehouses = collect();
 
         if (class_exists(\Modules\Warehouse\Entities\Warehouse::class) && Schema::hasTable('warehouses')) {
-            $this->warehouses = \Modules\Warehouse\Entities\Warehouse::where('status', 'active')->get();
+            $warehouseTable = (new \Modules\Warehouse\Entities\Warehouse)->getTable();
+            $this->warehouses = \Modules\Warehouse\Entities\Warehouse::where('status', 'active')
+                ->when(Schema::hasColumn($warehouseTable, 'sort_order'), function ($query) {
+                    $query->orderBy('sort_order')->orderBy('name');
+                }, function ($query) {
+                    $query->orderBy('name');
+                })
+                ->get();
         }
 
         $inventory = new PurchaseInventory;

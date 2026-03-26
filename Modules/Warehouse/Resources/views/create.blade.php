@@ -48,3 +48,13 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        $(function() {
+            if (typeof $.fn.selectpicker === 'function') {
+                $('.select-picker').selectpicker('refresh');
+            }
+        });
+    </script>
+@endpush

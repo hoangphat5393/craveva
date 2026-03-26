@@ -20,10 +20,6 @@
                 <x-sub-menu-item :link="route('warehouse.index')" :text="__('warehouse::app.allWarehouses')" :permission="true" />
             @endif
 
-            @if ($addWarehouses && $addWarehouses != 'none')
-                <x-sub-menu-item :link="route('warehouse.create')" :text="__('warehouse::app.addNew')" :permission="true" />
-            @endif
-
             @if ($viewWarehouseStock && $viewWarehouseStock != 'none')
                 <x-sub-menu-item :link="route('warehouse.stock.index')" :text="__('warehouse::app.adjustStock')" :permission="true" />
             @endif
@@ -32,13 +28,6 @@
                 <x-sub-menu-item :link="route('warehouse.movements.index')" :text="__('warehouse::app.stockMovements')" :permission="true" />
             @endif
 
-            @if ($addWarehouseStock && $addWarehouseStock != 'none')
-                <x-sub-menu-item :link="route('warehouse.stock.create')" :text="__('warehouse::app.addStock')" :permission="true" />
-            @endif
-
-            @if ($manageWarehouseTransfer && $manageWarehouseTransfer != 'none')
-                <x-sub-menu-item :link="route('warehouse.transfer.create')" :text="__('warehouse::app.transferStock')" :permission="true" />
-            @endif
         </div>
     </x-menu-item>
 

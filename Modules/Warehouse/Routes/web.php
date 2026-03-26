@@ -18,6 +18,7 @@ use Modules\Warehouse\Http\Controllers\WarehouseTransferController;
 */
 
 Route::group([], function () {
+    Route::post('warehouse/update-order', [WarehouseController::class, 'updateOrder'])->name('warehouse.update-order');
     Route::resource('warehouse', WarehouseController::class)->names('warehouse');
     Route::get('warehouse-movements', [WarehouseMovementController::class, 'index'])->name('warehouse.movements.index');
     Route::resource('warehouse-stock', WarehouseStockController::class)->names('warehouse.stock');

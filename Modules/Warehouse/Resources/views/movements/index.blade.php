@@ -13,7 +13,9 @@
                     <select class="form-control select-picker" name="warehouse_id" id="warehouse-movements-warehouse" data-container="body" data-size="8">
                         <option value="">@lang('warehouse::app.allWarehouses')</option>
                         @foreach ($warehouses as $w)
-                            <option value="{{ $w->id }}" @selected((string) ($warehouseId ?? '') === (string) $w->id)>{{ $w->name }}</option>
+                            <option value="{{ $w->id }}" @selected((string) ($warehouseId ?? '') === (string) $w->id)>
+                                {{ $w->name }}{{ $w->code ? ' (' . $w->code . ')' : '' }}{{ $w->is_default ? ' - ' . __('warehouse::app.isDefault') : '' }}
+                            </option>
                         @endforeach
                     </select>
                 </div>
@@ -42,6 +44,11 @@
                 <button type="submit" class="btn btn-secondary rounded f-14 p-2">
                     <i class="fa fa-search mr-1"></i> @lang('app.apply')
                 </button>
+            </div>
+            <div class="select-box d-flex py-1 px-lg-2 px-md-2 px-0">
+                <x-forms.button-secondary type="button" class="btn-xs {{ request()->filled('search') || request()->filled('warehouse_id') || request()->filled('movement_type') ? '' : 'd-none' }}" id="warehouse-movements-reset-filters" icon="times-circle">
+                    @lang('app.clearFilters')
+                </x-forms.button-secondary>
             </div>
         </x-filters.filter-box>
     </form>
@@ -90,8 +97,20 @@
                                     —
                                 @endif
                             </td>
-                            <td>{{ $movement->warehouseFrom->name ?? '—' }}</td>
-                            <td>{{ $movement->warehouseTo->name ?? '—' }}</td>
+                            <td>
+                                @if ($movement->warehouseFrom)
+                                    {{ $movement->warehouseFrom->name }}{{ $movement->warehouseFrom->code ? ' (' . $movement->warehouseFrom->code . ')' : '' }}
+                                @else
+                                    —
+                                @endif
+                            </td>
+                            <td>
+                                @if ($movement->warehouseTo)
+                                    {{ $movement->warehouseTo->name }}{{ $movement->warehouseTo->code ? ' (' . $movement->warehouseTo->code . ')' : '' }}
+                                @else
+                                    —
+                                @endif
+                            </td>
                             <td class="text-right font-weight-semibold">{{ $movement->quantity }}</td>
                             <td><span class="text-dark-grey">{{ $movement->batch_number ?: '—' }}</span></td>
                             <td>
@@ -124,6 +143,10 @@
     <script>
         $('#warehouse-movements-warehouse, #warehouse-movements-type').on('changed.bs.select', function() {
             $('#warehouse-movements-filter').submit();
+        });
+
+        $('#warehouse-movements-reset-filters').click(function() {
+            window.location.href = '{{ route('warehouse.movements.index') }}';
         });
     </script>
 @endpush

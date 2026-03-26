@@ -43,7 +43,7 @@
                                         <option value="">--</option>
                                         @foreach ($warehouses as $warehouse)
                                             <option value="{{ $warehouse->id }}">
-                                                {{ mb_ucwords($warehouse->name) }}
+                                                {{ mb_ucwords($warehouse->name) }}{{ $warehouse->code ? ' (' . $warehouse->code . ')' : '' }}{{ $warehouse->is_default ? ' - ' . __('warehouse::app.isDefault') : '' }}
                                             </option>
                                         @endforeach
                                     </select>

@@ -2,21 +2,27 @@
 
 namespace Modules\Warehouse\Http\Controllers;
 
+use App\Helper\Reply;
 use App\Http\Controllers\AccountBaseController;
 use App\Models\Product;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Validation\Rule;
 use Modules\Warehouse\Entities\Warehouse;
+use Modules\Warehouse\Http\Controllers\Concerns\HandlesWarehouseErrors;
 use Modules\Warehouse\Services\StockMovementService;
 
 class WarehouseTransferController extends AccountBaseController
 {
+    use HandlesWarehouseErrors;
+
     public function __construct()
     {
         parent::__construct();
         $this->middleware(function ($request, $next) {
-            abort_403(! in_array('warehouse', user_modules()));
+            abort_if(! in_array('warehouse', user_modules()), 403, __('warehouse::app.err_module_not_warehouse'));
 
             return $next($request);
         });
@@ -24,7 +30,17 @@ class WarehouseTransferController extends AccountBaseController
 
     public function create()
     {
-        $warehouses = Warehouse::where('status', 'active')->get();
+        $transferPermission = user()->permission('manage_warehouse_transfer');
+        abort_if(! in_array($transferPermission, ['all', 'added'], true), 403, __('warehouse::app.err_permission_denied'));
+
+        $warehouseTable = (new Warehouse)->getTable();
+        $warehouses = Warehouse::where('status', 'active')
+            ->when(Schema::hasColumn($warehouseTable, 'sort_order'), function ($query) {
+                $query->orderBy('sort_order')->orderBy('name');
+            }, function ($query) {
+                $query->orderBy('name');
+            })
+            ->get();
         $products = Product::select('id', 'name', 'sku')->get();
 
         $this->pageTitle = 'warehouse::app.transferStock';
@@ -32,22 +48,45 @@ class WarehouseTransferController extends AccountBaseController
         $this->warehouses = $warehouses;
         $this->products = $products;
 
+        if (request()->ajax()) {
+            $html = view('warehouse::transfer.ajax.create', $this->data)->render();
+
+            return response()->json(Reply::dataOnly([
+                'status' => 'success',
+                'html' => $html,
+                'title' => __('warehouse::app.transferStock'),
+            ]));
+        }
+
         return view('warehouse::transfer.create', $this->data);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request): RedirectResponse|JsonResponse
     {
+        $transferPermission = user()->permission('manage_warehouse_transfer');
+        abort_if(! in_array($transferPermission, ['all', 'added'], true), 403, __('warehouse::app.err_permission_denied'));
+
+        $companyId = $this->warehouseCompanyId();
+        if (! $companyId) {
+            return $this->warehouseFailResponse($request, __('warehouse::app.err_company_context_missing'));
+        }
+
         $request->validate([
-            'warehouse_from_id' => 'required|exists:warehouses,id|different:warehouse_to_id',
-            'warehouse_to_id' => 'required|exists:warehouses,id',
-            'product_id' => 'required|exists:products,id',
+            'warehouse_from_id' => [
+                'required',
+                'integer',
+                Rule::exists('warehouses', 'id')->where('company_id', $companyId),
+                'different:warehouse_to_id',
+            ],
+            'warehouse_to_id' => ['required', 'integer', Rule::exists('warehouses', 'id')->where('company_id', $companyId)],
+            'product_id' => ['required', 'integer', Rule::exists('products', 'id')->where('company_id', $companyId)],
             'quantity' => 'required|numeric|min:0.01',
             'description' => 'nullable|string|max:255',
+        ], [
+            'warehouse_from_id.different' => __('warehouse::app.err_transfer_same_warehouse'),
         ]);
 
         try {
-            $companyId = auth()->user()->company_id ?? null;
-
             app(StockMovementService::class)->recordTransfer([
                 'company_id' => $companyId,
                 'warehouse_from_id' => (int) $request->warehouse_from_id,
@@ -57,14 +96,18 @@ class WarehouseTransferController extends AccountBaseController
                 'batch_number' => null,
                 'expiry_date' => null,
                 'reference_type' => 'manual_transfer',
-                'reference_id' => auth()->id(),
+                'reference_id' => user()?->id,
             ]);
 
-            return redirect()->route('warehouse.stock.index')->with('success', 'Stock transferred successfully.');
-        } catch (\Throwable $e) {
-            Log::error('Stock Transfer Error: '.$e->getMessage());
+            if ($request->ajax()) {
+                session()->flash('success', __('messages.recordSaved'));
 
-            return back()->with('error', 'Something went wrong! '.$e->getMessage());
+                return response()->json(Reply::redirect(route('warehouse.stock.index')));
+            }
+
+            return redirect()->route('warehouse.stock.index')->with('success', __('messages.recordSaved'));
+        } catch (\Throwable $e) {
+            return $this->handleWarehouseThrowable($request, 'Warehouse transfer store', $e, $request->except(['_token']));
         }
     }
 }

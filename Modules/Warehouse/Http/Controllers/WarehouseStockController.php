@@ -2,22 +2,28 @@
 
 namespace Modules\Warehouse\Http\Controllers;
 
+use App\Helper\Reply;
 use App\Http\Controllers\AccountBaseController;
 use App\Models\Product;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Validation\Rule;
 use Modules\Warehouse\Entities\Warehouse;
 use Modules\Warehouse\Entities\WarehouseProductStock;
+use Modules\Warehouse\Http\Controllers\Concerns\HandlesWarehouseErrors;
 use Modules\Warehouse\Services\StockMovementService;
 
 class WarehouseStockController extends AccountBaseController
 {
+    use HandlesWarehouseErrors;
+
     public function __construct()
     {
         parent::__construct();
         $this->middleware(function ($request, $next) {
-            abort_403(! in_array('warehouse', user_modules()));
+            abort_if(! in_array('warehouse', user_modules()), 403, __('warehouse::app.err_module_not_warehouse'));
 
             return $next($request);
         });
@@ -28,10 +34,20 @@ class WarehouseStockController extends AccountBaseController
      */
     public function index(Request $request)
     {
+        $viewPermission = user()->permission('view_warehouse_stock');
+        abort_if($viewPermission === 'none', 403, __('warehouse::app.err_permission_denied'));
+
         $warehouseId = $request->get('warehouse_id');
         $search = $request->get('search');
 
-        $warehouses = Warehouse::where('status', 'active')->get();
+        $warehouseTable = (new Warehouse)->getTable();
+        $warehouses = Warehouse::where('status', 'active')
+            ->when(Schema::hasColumn($warehouseTable, 'sort_order'), function ($query) {
+                $query->orderBy('sort_order')->orderBy('name');
+            }, function ($query) {
+                $query->orderBy('name');
+            })
+            ->get();
 
         $stocks = WarehouseProductStock::with(['product', 'warehouse'])
             ->when($warehouseId, function ($query) use ($warehouseId) {
@@ -39,8 +55,8 @@ class WarehouseStockController extends AccountBaseController
             })
             ->when($search, function ($query) use ($search) {
                 return $query->whereHas('product', function ($q) use ($search) {
-                    $q->where('name', 'like', '%'.$search.'%')
-                        ->orWhere('sku', 'like', '%'.$search.'%');
+                    $q->where('name', 'like', '%' . $search . '%')
+                        ->orWhere('sku', 'like', '%' . $search . '%');
                 });
             })
             ->paginate(20);
@@ -59,8 +75,17 @@ class WarehouseStockController extends AccountBaseController
      */
     public function create()
     {
-        $warehouses = Warehouse::where('status', 'active')->get();
-        // Assuming products are global
+        $addPermission = user()->permission('add_warehouse_stock');
+        abort_if(! in_array($addPermission, ['all', 'added'], true), 403, __('warehouse::app.err_permission_denied'));
+
+        $warehouseTable = (new Warehouse)->getTable();
+        $warehouses = Warehouse::where('status', 'active')
+            ->when(Schema::hasColumn($warehouseTable, 'sort_order'), function ($query) {
+                $query->orderBy('sort_order')->orderBy('name');
+            }, function ($query) {
+                $query->orderBy('name');
+            })
+            ->get();
         $products = Product::select('id', 'name', 'sku')->get();
 
         $this->pageTitle = 'warehouse::app.addStock';
@@ -68,17 +93,35 @@ class WarehouseStockController extends AccountBaseController
         $this->warehouses = $warehouses;
         $this->products = $products;
 
+        if (request()->ajax()) {
+            $html = view('warehouse::stock.ajax.create', $this->data)->render();
+
+            return response()->json(Reply::dataOnly([
+                'status' => 'success',
+                'html' => $html,
+                'title' => __('warehouse::app.addStock'),
+            ]));
+        }
+
         return view('warehouse::stock.create', $this->data);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request): RedirectResponse|JsonResponse
     {
+        $addPermission = user()->permission('add_warehouse_stock');
+        abort_if(! in_array($addPermission, ['all', 'added'], true), 403, __('warehouse::app.err_permission_denied'));
+
+        $companyId = $this->warehouseCompanyId();
+        if (! $companyId) {
+            return $this->warehouseFailResponse($request, __('warehouse::app.err_company_context_missing'));
+        }
+
         $request->validate([
-            'warehouse_id' => 'required|exists:warehouses,id',
-            'product_id' => 'required|exists:products,id',
+            'warehouse_id' => ['required', 'integer', Rule::exists('warehouses', 'id')->where('company_id', $companyId)],
+            'product_id' => ['required', 'integer', Rule::exists('products', 'id')->where('company_id', $companyId)],
             'type' => 'required|in:inbound,outbound,adjustment',
             'quantity' => 'required|numeric|min:0.01',
             'action' => 'nullable|in:add,remove',
@@ -87,7 +130,6 @@ class WarehouseStockController extends AccountBaseController
 
         try {
             $service = app(StockMovementService::class);
-            $companyId = auth()->user()->company_id ?? null;
             $warehouseId = (int) $request->warehouse_id;
             $productId = (int) $request->product_id;
             $quantity = (float) $request->quantity;
@@ -100,7 +142,7 @@ class WarehouseStockController extends AccountBaseController
                 'batch_number' => null,
                 'expiry_date' => null,
                 'reference_type' => 'manual_warehouse_stock',
-                'reference_id' => auth()->id(),
+                'reference_id' => user()?->id,
             ];
 
             if ($request->type === 'inbound') {
@@ -116,11 +158,15 @@ class WarehouseStockController extends AccountBaseController
                 }
             }
 
-            return redirect()->route('warehouse.stock.index')->with('success', 'Stock updated successfully.');
-        } catch (\Throwable $e) {
-            Log::error('Stock Adjustment Error: '.$e->getMessage());
+            if ($request->ajax()) {
+                session()->flash('success', __('messages.recordSaved'));
 
-            return back()->with('error', 'Something went wrong! '.$e->getMessage());
+                return response()->json(Reply::redirect(route('warehouse.stock.index')));
+            }
+
+            return redirect()->route('warehouse.stock.index')->with('success', __('messages.recordSaved'));
+        } catch (\Throwable $e) {
+            return $this->handleWarehouseThrowable($request, 'Warehouse stock store', $e, $request->except(['_token']));
         }
     }
 

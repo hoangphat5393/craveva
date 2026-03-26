@@ -5,9 +5,16 @@
 @endpush
 
 @php
+    $viewWarehousePermission = user()->permission('view_warehouses');
     $addWarehousePermission = user()->permission('add_warehouses');
     $editWarehousePermission = user()->permission('edit_warehouses');
     $deleteWarehousePermission = user()->permission('delete_warehouses');
+    $canViewWarehouse = $viewWarehousePermission !== 'none' && $viewWarehousePermission !== '';
+    $currentSortBy = $warehouseSortBy ?? request('sort_by');
+    $currentSortDir = strtolower((string) ($warehouseSortDir ?? request('sort_dir', 'asc')));
+    $nextSortDir = static function (string $column) use ($currentSortBy, $currentSortDir): string {
+        return $currentSortBy === $column && $currentSortDir === 'asc' ? 'desc' : 'asc';
+    };
 @endphp
 
 @section('filter-section')
@@ -55,7 +62,7 @@
         <div class="d-flex justify-content-between action-bar">
             <div id="table-actions" class="flex-grow-1 align-items-center mt-3">
                 @if ($addWarehousePermission == 'all' || $addWarehousePermission == 'added')
-                    <x-forms.link-primary :link="route('warehouse.create')" class="mr-3 float-left" icon="plus">
+                    <x-forms.link-primary :link="route('warehouse.create')" class="mr-3 float-left openRightModal" icon="plus" data-redirect-url="{{ route('warehouse.index') }}">
                         @lang('warehouse::app.addNew')
                     </x-forms.link-primary>
                 @endif
@@ -63,15 +70,35 @@
         </div>
 
         <div class="d-flex flex-column w-tables rounded mt-3 bg-white table-responsive">
-            <table class="table table-hover border-0 w-100 mb-0">
+            <table class="table table-hover border-0 w-100 mb-0" id="warehouse-table">
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>@lang('warehouse::app.name')</th>
-                        <th>@lang('warehouse::app.code')</th>
-                        <th>@lang('warehouse::app.address')</th>
-                        <th>@lang('app.status')</th>
-                        <th>@lang('warehouse::app.isDefault')</th>
+                        <th>
+                            <a class="text-dark-grey" href="{{ route('warehouse.index', array_merge(request()->except('page'), ['sort_by' => 'name', 'sort_dir' => $nextSortDir('name')])) }}">
+                                @lang('warehouse::app.name')
+                            </a>
+                        </th>
+                        <th>
+                            <a class="text-dark-grey" href="{{ route('warehouse.index', array_merge(request()->except('page'), ['sort_by' => 'code', 'sort_dir' => $nextSortDir('code')])) }}">
+                                @lang('warehouse::app.code')
+                            </a>
+                        </th>
+                        <th>
+                            <a class="text-dark-grey" href="{{ route('warehouse.index', array_merge(request()->except('page'), ['sort_by' => 'address', 'sort_dir' => $nextSortDir('address')])) }}">
+                                @lang('warehouse::app.address')
+                            </a>
+                        </th>
+                        <th>
+                            <a class="text-dark-grey" href="{{ route('warehouse.index', array_merge(request()->except('page'), ['sort_by' => 'status', 'sort_dir' => $nextSortDir('status')])) }}">
+                                @lang('app.status')
+                            </a>
+                        </th>
+                        <th>
+                            <a class="text-dark-grey" href="{{ route('warehouse.index', array_merge(request()->except('page'), ['sort_by' => 'is_default', 'sort_dir' => $nextSortDir('is_default')])) }}">
+                                @lang('warehouse::app.isDefault')
+                            </a>
+                        </th>
                         <th class="text-right">@lang('app.action')</th>
                     </tr>
                 </thead>
@@ -84,35 +111,41 @@
                             <td><span class="text-dark-grey">{{ \Illuminate\Support\Str::limit($warehouse->address, 60) ?: '—' }}</span></td>
                             <td>
                                 @if ($warehouse->status === 'active')
-                                    <span class="badge badge-success">@lang('app.active')</span>
+                                    <span class="badge badge-success"><i class="fa fa-check mr-1"></i>@lang('app.active')</span>
                                 @else
-                                    <span class="badge badge-secondary">@lang('app.inactive')</span>
+                                    <span class="badge badge-secondary"><i class="fa fa-pause mr-1"></i>@lang('app.inactive')</span>
                                 @endif
                             </td>
                             <td>
                                 @if ($warehouse->is_default)
-                                    <i class="fa fa-check-circle text-success"></i>
+                                    <i class="fa fa-check-circle text-success f-16" title="@lang('warehouse::app.isDefault')"></i>
                                 @else
                                     <span class="text-lightest">—</span>
                                 @endif
                             </td>
                             <td class="text-right">
-                                @if ($editWarehousePermission == 'all' || $editWarehousePermission == 'added' || ($deleteWarehousePermission == 'all' || $deleteWarehousePermission == 'added'))
-                                    <div class="dropdown">
-                                        <button class="btn btn-secondary rounded f-14 px-2 py-1" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            <i class="fa fa-ellipsis-h"></i>
-                                        </button>
-                                        <div class="dropdown-menu dropdown-menu-right border-grey rounded b-shadow-4 p-0" aria-labelledby="dropdownMenuBtn">
-                                            @if ($editWarehousePermission == 'all' || $editWarehousePermission == 'added')
-                                                <a class="dropdown-item" href="{{ route('warehouse.edit', $warehouse->id) }}">@lang('app.edit')</a>
-                                            @endif
-                                            @if ($deleteWarehousePermission == 'all' || $deleteWarehousePermission == 'added')
-                                                <a class="dropdown-item delete-warehouse" href="javascript:;" data-warehouse-id="{{ $warehouse->id }}">@lang('app.delete')</a>
-                                                <form action="{{ route('warehouse.destroy', $warehouse->id) }}" method="POST" id="delete-warehouse-{{ $warehouse->id }}" class="d-none">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                </form>
-                                            @endif
+                                @if ($canViewWarehouse || $editWarehousePermission == 'all' || $editWarehousePermission == 'added' || ($deleteWarehousePermission == 'all' || $deleteWarehousePermission == 'added'))
+                                    @php($useDropUp = $loop->remaining < 2)
+                                    <div class="task_view">
+                                        <div class="dropdown {{ $useDropUp ? 'dropup' : '' }}">
+                                            <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" type="link" id="warehouse-actions-{{ $warehouse->id }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <i class="icon-options-vertical icons"></i>
+                                            </a>
+                                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="warehouse-actions-{{ $warehouse->id }}" tabindex="0">
+                                                @if ($canViewWarehouse)
+                                                    <a class="dropdown-item" href="{{ route('warehouse.show', $warehouse->id) }}"><i class="fa fa-eye mr-2 text-dark-grey"></i>@lang('app.view')</a>
+                                                @endif
+                                                @if ($editWarehousePermission == 'all' || $editWarehousePermission == 'added')
+                                                    <a class="dropdown-item" href="{{ route('warehouse.edit', $warehouse->id) }}"><i class="fa fa-edit mr-2 text-dark-grey"></i>@lang('app.edit')</a>
+                                                @endif
+                                                @if ($deleteWarehousePermission == 'all' || $deleteWarehousePermission == 'added')
+                                                    <a class="dropdown-item delete-warehouse" href="javascript:;" data-warehouse-id="{{ $warehouse->id }}"><i class="fa fa-trash-alt mr-2 text-dark-grey"></i>@lang('app.delete')</a>
+                                                    <form action="{{ route('warehouse.destroy', $warehouse->id) }}" method="POST" id="delete-warehouse-{{ $warehouse->id }}" class="d-none">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                    </form>
+                                                @endif
+                                            </div>
                                         </div>
                                     </div>
                                 @else
@@ -131,9 +164,9 @@
             </table>
         </div>
 
-        @if ($warehouses->hasPages())
+        @if ($warehouses instanceof \Illuminate\Pagination\AbstractPaginator && $warehouses->hasPages())
             <div class="w-100 d-flex justify-content-end mt-3 px-3">
-                {{ $warehouses->links() }}
+                {{ $warehouses->appends(request()->query())->links() }}
             </div>
         @endif
     </div>

@@ -75,12 +75,11 @@
 
 ### 2.6 Các lỗ hổng khác (rút gọn)
 
-| Hạng mục                                                          | Mức độ                                                             |
-| ----------------------------------------------------------------- | ------------------------------------------------------------------ |
-| Production batch record điện tử (operator, timestamp, actual qty) | Thiếu                                                              |
-| PRP: log người/xe (ISO 22000 prerequisite)                        | Thiếu                                                              |
-| Location: phòng nhiệt độ ổn định, tách A棟/B棟                    | Thiếu / một phần (multi-warehouse hoặc location)                   |
-| AI API (ước lượng margin, check tồn theo BOM)                     | Theo `BIOMIXING_GAP_ANALYSIS.md` — Critical cho gói Biomixing + AI |
+| Hạng mục                                                          | Mức độ                                           |
+| ----------------------------------------------------------------- | ------------------------------------------------ |
+| Production batch record điện tử (operator, timestamp, actual qty) | Thiếu                                            |
+| PRP: log người/xe (ISO 22000 prerequisite)                        | Thiếu                                            |
+| Location: phòng nhiệt độ ổn định, tách A棟/B棟                    | Thiếu / một phần (multi-warehouse hoặc location) |
 
 ---
 
@@ -134,14 +133,13 @@
 | **Rework**                  | Luồng rework có duyệt, link batch nguồn; điều chỉnh tồn có kiểm soát.                           |
 | **Quality Lock (shipping)** | Validation DO: task QC / cờ QA release / tùy chọn COA (theo mức Phase 3).                       |
 
-### Phase 3 — Medium (vận hành & AI)
+### Phase 3 — Medium (vận hành mở rộng)
 
-| Hạng mục                          | Đầu ra                                                                                |
-| --------------------------------- | ------------------------------------------------------------------------------------- |
-| **Sampling + COA**                | Lấy mẫu, upload PDF, điều kiện release.                                               |
-| **Auto Project / template task**  | Observer từ Order → tạo Project hoặc Production Order + task mặc định.                |
-| **AI API**                        | Endpoint inventory/BOM/estimate history cho agent (theo `BIOMIXING_GAP_ANALYSIS.md`). |
-| **Storage conditions / location** | Custom field hoặc location type (nhiệt độ).                                           |
+| Hạng mục                          | Đầu ra                                                                 |
+| --------------------------------- | ---------------------------------------------------------------------- |
+| **Sampling + COA**                | Lấy mẫu, upload PDF, điều kiện release.                                |
+| **Auto Project / template task**  | Observer từ Order → tạo Project hoặc Production Order + task mặc định. |
+| **Storage conditions / location** | Custom field hoặc location type (nhiệt độ).                            |
 
 ### Phase 4 — Nâng cao (compliance & tối ưu)
 
@@ -160,6 +158,40 @@
 - **Gap chính:** BOM, batch end-to-end, CCP/rework, receiving QC, sampling/COA.
 - **Kiến trúm:** Nên **module Production** (domain riêng), **mở rộng Warehouse/Purchase**, **Quality** tách lớp mỏng; Projects có thể đồng tồn tại làm lớp PM.
 - **Roadmap:** Critical → High → Medium → Advanced — ưu tiên **BOM + batch + production batch record** trước khi làm UI phức tạp sampling/PRP.
+
+---
+
+## 6. Ước lượng thời gian & Go-live Hub (cho PM)
+
+**Giả định:** đã có **multi-warehouse** (giảm thời gian làm “tách kho A/B” thuần cấu hình); 1 nhóm **1–2 dev backend full-time** + **0.5 QA** + PM; không tính song song nhiều dự án lớn; deploy **Hub** sau UAT trên staging.
+
+| Mốc         | Nội dung (theo §4)                                   | Ước lượng (lịch) | Ghi chú                                                                         |
+| ----------- | ---------------------------------------------------- | ---------------- | ------------------------------------------------------------------------------- |
+| **Phase 0** | Chuẩn bị, ERD, pilot flow                            | **1–2 tuần**     | Song song với dev chuẩn bị skeleton module                                      |
+| **Phase 1** | BOM, batch MVP, Production order/batch, tích hợp kho | **6–10 tuần**    | Phần nặng nhất; phụ thuộc độ sẵn có của `warehouse_product_batches` + API stock |
+| **Phase 2** | CCP, Receiving QC, Rework, Quality lock DO           | **5–8 tuần**     | Nhiều luồng nghiệp vụ + test hồi quy Warehouse/Purchase                         |
+| **Phase 3** | Sampling/COA, auto project, storage field            | **3–6 tuần**     | Tùy scope sampling/COA; có thể tách wave                                        |
+| **Phase 4** | PRP, audit export, email approve…                    | **3–6 tuần**     | Tùy bắt buộc ISO; có thể làm wave 2                                             |
+
+**Tổng hợp lịch (wall-clock):**
+
+| Kịch bản                          | Phạm vi go-live Hub                                                                                 | Thời gian phát triển + tích hợp (ước lượng) | + UAT / fix / deploy (buffer) | **Tổng đến go-live**                                          |
+| --------------------------------- | --------------------------------------------------------------------------------------------------- | ------------------------------------------- | ----------------------------- | ------------------------------------------------------------- |
+| **MVP Production**                | Phase 0 + 1 (BOM + batch + production order + nhập/xuất RM/FG theo batch, **chưa** CCP cứng đầy đủ) | **~8–12 tuần**                              | **+2–3 tuần**                 | **~10–15 tuần** (~2.5–4 tháng)                                |
+| **HACCP-ready (Biomixing pilot)** | Phase 0 + 1 + 2 (thêm CCP gate, receiving QC, rework, quality lock DO)                              | **~14–22 tuần**                             | **+3–4 tuần**                 | **~17–26 tuần** (~4–6.5 tháng)                                |
+| **Đầy đủ theo roadmap §4**        | Thêm Phase 3 (+ Phase 4 tùy)                                                                        | **+7–13 tuần** sau Phase 2                  | **+2–4 tuần**                 | **~6–9 tháng** từ kickoff đến go-live “đủ tính năng nâng cao” |
+
+**Điều chỉnh khi đã có multi-warehouse:** tiết kiệm khoảng **1–2 tuần** so với ước lượng “từ zero” (ít việc migration kho / ít spike tích hợp warehouse_id); **không** giảm đáng kể Phase 1–2 vì BOM, production batch, CCP vẫn là code mới.
+
+**Mốc go-live gợi ý cho PM:**
+
+1. **Go-live 1 (Hub):** sau **MVP Production** — dùng nội bộ / pilot 1 xưởng, thu thập dữ liệu batch thật.
+2. **Go-live 2 (Hub):** sau **Phase 2** — coi là “production module chính thức” cho khách cần HACCP gate + QC đầu vào.
+3. **Go-live 3 (tùy):** Phase 3–4 — sampling/COA, PRP, audit export (theo nhu cầu).
+
+**Rủi ro làm trễ:** đổi scope BOM/CCP giữa chừng; master data sản phẩm lộn xộn; thiếu tài liệu nghiệp vụ từ xưởng; một tenant Hub cần migration dữ liệu lô cũ.
+
+**Điều chỉnh scope (cho PM):** Hoãn Phase 3–4 (sampling/COA, PRP…) sang wave sau khi đã go-live MVP/Phase 2 — **rút lịch** so với làm một lần đủ. **Scope và flow đã chốt** (ví dụ `manual_mixing_250kg_flowchart`) giúp **tránh làm lại** — tiết kiệm không cố định, thường **1–3 tuần** nếu trước đó hay đổi yêu cầu.
 
 ---
 

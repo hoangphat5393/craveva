@@ -18,7 +18,9 @@
                     <select class="form-control select-picker" name="warehouse_id" id="warehouse-stock-warehouse" data-container="body" data-size="8">
                         <option value="">@lang('warehouse::app.allWarehouses')</option>
                         @foreach ($warehouses as $w)
-                            <option value="{{ $w->id }}" @selected((string) $warehouseId === (string) $w->id)>{{ $w->name }}</option>
+                            <option value="{{ $w->id }}" @selected((string) $warehouseId === (string) $w->id)>
+                                {{ $w->name }}{{ $w->code ? ' (' . $w->code . ')' : '' }}{{ $w->is_default ? ' - ' . __('warehouse::app.isDefault') : '' }}
+                            </option>
                         @endforeach
                     </select>
                 </div>
@@ -38,6 +40,11 @@
                     <i class="fa fa-search mr-1"></i> @lang('app.apply')
                 </button>
             </div>
+            <div class="select-box d-flex py-1 px-lg-2 px-md-2 px-0">
+                <x-forms.button-secondary type="button" class="btn-xs {{ request()->filled('search') || request()->filled('warehouse_id') ? '' : 'd-none' }}" id="warehouse-stock-reset-filters" icon="times-circle">
+                    @lang('app.clearFilters')
+                </x-forms.button-secondary>
+            </div>
         </x-filters.filter-box>
     </form>
 @endsection
@@ -47,12 +54,12 @@
         <div class="d-flex justify-content-between action-bar">
             <div id="table-actions" class="flex-grow-1 align-items-center mt-3">
                 @if ($addStockPerm == 'all' || $addStockPerm == 'added')
-                    <x-forms.link-primary :link="route('warehouse.stock.create')" class="mr-3 float-left" icon="plus">
+                    <x-forms.link-primary :link="route('warehouse.stock.create')" class="mr-3 float-left openRightModal" icon="plus" data-redirect-url="{{ route('warehouse.stock.index') }}">
                         @lang('warehouse::app.addStock')
                     </x-forms.link-primary>
                 @endif
                 @if ($transferPerm == 'all' || $transferPerm == 'added')
-                    <x-forms.link-secondary :link="route('warehouse.transfer.create')" class="mr-3 float-left" icon="exchange-alt">
+                    <x-forms.link-secondary :link="route('warehouse.transfer.create')" class="mr-3 float-left openRightModal" icon="exchange-alt" data-redirect-url="{{ route('warehouse.stock.index') }}">
                         @lang('warehouse::app.transferStock')
                     </x-forms.link-secondary>
                 @endif
@@ -78,7 +85,12 @@
                                 <span class="font-weight-semibold">{{ $stock->product->name }}</span>
                                 <br><small class="text-lightest">{{ $stock->product->sku }}</small>
                             </td>
-                            <td>{{ $stock->warehouse->name }}</td>
+                            <td>
+                                {{ $stock->warehouse->name }}{{ $stock->warehouse->code ? ' (' . $stock->warehouse->code . ')' : '' }}
+                                @if ($stock->warehouse->is_default)
+                                    <span class="badge badge-light ml-1">@lang('warehouse::app.isDefault')</span>
+                                @endif
+                            </td>
                             <td>
                                 <span class="font-weight-semibold {{ $stock->quantity > 0 ? 'text-success' : 'text-danger' }}">{{ $stock->quantity }}</span>
                             </td>
@@ -123,6 +135,10 @@
     <script>
         $('#warehouse-stock-warehouse').on('changed.bs.select', function() {
             $('#warehouse-stock-filter').submit();
+        });
+
+        $('#warehouse-stock-reset-filters').click(function() {
+            window.location.href = '{{ route('warehouse.stock.index') }}';
         });
     </script>
 @endpush

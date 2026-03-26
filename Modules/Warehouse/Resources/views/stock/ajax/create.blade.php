@@ -1,0 +1,75 @@
+<div class="row">
+    <div class="col-sm-12">
+        <x-form id="save-stock-data-form">
+            <div class="add-client bg-white rounded">
+                <h4 class="mb-0 p-20 f-21 font-weight-normal border-bottom-grey">
+                    @lang('warehouse::app.addStock')
+                </h4>
+
+                <div class="p-20">
+                    <div id="alert"></div>
+                    <div class="row">
+                        <div class="col-lg-6 col-md-6">
+                            <x-forms.select fieldId="warehouse_id" :fieldLabel="__('warehouse::app.warehouse')" fieldName="warehouse_id" fieldRequired="true">
+                                @foreach ($warehouses as $warehouse)
+                                    <option value="{{ $warehouse->id }}">
+                                        {{ $warehouse->name }}{{ $warehouse->code ? ' (' . $warehouse->code . ')' : '' }}{{ $warehouse->is_default ? ' - ' . __('warehouse::app.isDefault') : '' }}
+                                    </option>
+                                @endforeach
+                            </x-forms.select>
+                        </div>
+
+                        <div class="col-lg-6 col-md-6">
+                            <x-forms.select fieldId="product_id" :fieldLabel="__('warehouse::app.product')" fieldName="product_id" fieldRequired="true" search="true">
+                                @foreach ($products as $product)
+                                    <option value="{{ $product->id }}">{{ $product->name }} ({{ $product->sku }})</option>
+                                @endforeach
+                            </x-forms.select>
+                        </div>
+
+                        <div class="col-lg-6 col-md-6">
+                            <x-forms.label class="mt-3" fieldId="stock_action" :fieldLabel="__('warehouse::app.action')" fieldRequired="true"></x-forms.label>
+                            <div class="form-group mb-0 d-flex align-items-center">
+                                <x-forms.radio class="mr-4" fieldId="action_add" :fieldLabel="__('warehouse::app.addStock')" fieldValue="add" fieldName="action" :checked="true"></x-forms.radio>
+                                <x-forms.radio class="" fieldId="action_remove" :fieldLabel="__('warehouse::app.removeStock')" fieldValue="remove" fieldName="action"></x-forms.radio>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6 col-md-6">
+                            <x-forms.number fieldId="quantity" :fieldLabel="__('warehouse::app.quantity')" fieldName="quantity" fieldRequired="true" minValue="0.01" step="0.01" :fieldValue="old('quantity')" />
+                        </div>
+
+                        <div class="col-lg-12">
+                            <x-forms.textarea fieldId="reason" :fieldLabel="__('warehouse::app.reason')" fieldName="reason" :fieldValue="old('reason')" />
+                        </div>
+                    </div>
+                    <input type="hidden" name="type" value="adjustment">
+                </div>
+
+                <div class="w-100 border-top-grey d-flex justify-content-start px-4 py-3">
+                    <x-forms.button-primary id="save-stock-form" class="mr-3" icon="check">@lang('app.save')</x-forms.button-primary>
+                    <x-forms.button-cancel :link="route('warehouse.stock.index')" class="border-0">@lang('app.cancel')</x-forms.button-cancel>
+                </div>
+            </div>
+        </x-form>
+    </div>
+</div>
+
+<script>
+    $('#save-stock-form').click(function() {
+        $.easyAjax({
+            url: "{{ route('warehouse.stock.store') }}",
+            container: '#save-stock-data-form',
+            type: "POST",
+            disableButton: true,
+            blockUI: true,
+            buttonSelector: "#save-stock-form",
+            data: $('#save-stock-data-form').serialize(),
+            success: function(response) {
+                if (response.status === 'success' && response.action === 'redirect') {
+                    window.location.href = response.url;
+                }
+            }
+        });
+    });
+</script>

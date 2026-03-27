@@ -4,7 +4,7 @@
 
 - [ ] Not Started
 - [ ] In Progress
-- [x] Completed (N/A — no `$.easyAjax` in module views)
+- [x] Completed — AJAX create flows use `window.apiHttp`
 
 ## Scope
 
@@ -12,19 +12,28 @@
 
 ## Features
 
-| Feature                                                              | easyAjax Found | Migrated to Axios | Status                                                           |
-| -------------------------------------------------------------------- | -------------- | ----------------- | ---------------------------------------------------------------- |
-| All Blade views (`index`, `create`, `edit`, `stock/*`, `transfer/*`) | No             | N/A               | Done — uses full form POST / SweetAlert v1 submit, no `easyAjax` |
+| Feature                                                      | easyAjax Found | Migrated to Axios                 | Status    |
+| ------------------------------------------------------------ | -------------- | --------------------------------- | --------- |
+| Warehouse create (`ajax/create.blade.php`)                   | Was            | Yes (`postUrlEncoded` + block UI) | Done      |
+| Stock adjustment create (`stock/ajax/create.blade.php`)      | Was            | Yes                               | Done      |
+| Stock transfer create (`transfer/ajax/create.blade.php`)     | Was            | Yes                               | Done      |
+| Other views (index, full page forms, delete via form submit) | No             | N/A                               | Unchanged |
 
 ## API mapping
 
-- Traditional HTML forms (`route('warehouse.*')`, `warehouse.stock.*`, `warehouse.transfer.*`) and `document.getElementById('delete-warehouse-' + id).submit()` for delete.
+| Pattern             | Helper                                                |
+| ------------------- | ----------------------------------------------------- |
+| POST form (no file) | `apiHttp.postUrlEncoded(url, $('#form').serialize())` |
+| Errors              | `catch` → `$.handleApiFormError(err)`                 |
+| Block UI            | `$.easyBlockUI` / `$.easyUnblockUI` on form container |
+
+Traditional HTML forms and `document.getElementById('delete-warehouse-' + id).submit()` for delete remain as before.
 
 ## Notes
 
-- `rg 'easyAjax' Modules/Warehouse` returns no matches; nothing to migrate for axios track.
-- If JS is added later (Vue/API), use `window.apiHttp` from `public/js/main.js`.
+- `window.apiHttp` from `public/js/main.js` (auth layouts).
 
 ## Changes log
 
-- 2026-03-25 — Confirmed no `$.easyAjax` in `Modules/Warehouse`; tracker closed as N/A.
+- 2026-03-25 — Initial scan reported no `easyAjax`; scan missed inline scripts in ajax partials.
+- 2026-03-27 — Migrated `$.easyAjax` → `apiHttp` in three create partials (`ajax/create`, `stock/ajax/create`, `transfer/ajax/create`).

@@ -40,13 +40,14 @@ class ImportController extends Controller
     {
         $this->assertAllowedImportQueueName($name);
 
-        // Đảm bảo request đủ lâu để xử lý nhiều job (web server thường dùng php.ini khác CLI)
-        set_time_limit(300);
-
-        // Xử lý nhiều job mỗi lần poll để import 50–100 dòng không bị chậm (tránh phải poll 10–20 lần)
-        $execution_jobs = 50;
-
-        Artisan::call('queue:work database --max-jobs=' . $execution_jobs . ' --queue=' . $name . ' --stop-when-empty');
+        // Staging/production: do NOT run queue:work inside HTTP — nginx/php-fpm often times out (60s),
+        // breaking JSON polling (empty progress). Use Supervisor: `php artisan queue:work database --queue=ClientImport`.
+        // Local dev: default runs worker per poll unless IMPORT_PROGRESS_RUN_QUEUE_WORKER=false.
+        if ($this->shouldRunQueueWorkerDuringImportProgressPoll()) {
+            set_time_limit(300);
+            $execution_jobs = 50;
+            Artisan::call('queue:work database --max-jobs=' . $execution_jobs . ' --queue=' . $name . ' --stop-when-empty');
+        }
 
         $batch = Bus::findBatch($id);
         $this->assertBatchBelongsToImportQueue($batch, $name);
@@ -242,6 +243,21 @@ class ImportController extends Controller
         if (! in_array($name, self::ALLOWED_IMPORT_QUEUE_NAMES, true)) {
             abort(403);
         }
+    }
+
+    /**
+     * Legacy: poll endpoint used to run queue:work so imports worked without a daemon. That breaks behind
+     * reverse proxies with short timeouts. Default: only on APP_ENV=local when env is unset.
+     */
+    private function shouldRunQueueWorkerDuringImportProgressPoll(): bool
+    {
+        $configured = config('app.import_progress_run_queue_worker');
+
+        if ($configured === null || $configured === '') {
+            return app()->environment('local');
+        }
+
+        return filter_var($configured, FILTER_VALIDATE_BOOLEAN);
     }
 
     private function assertBatchBelongsToImportQueue($batch, string $queueName): void

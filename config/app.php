@@ -54,6 +54,13 @@ return [
     'extra_company_seed_count' => env('EXTRA_COMPANY_SEED_COUNT', 0),
     'main_application_subdomain' => env('MAIN_APPLICATION_SUBDOMAIN'),
     'short_domain_name' => env('SHORT_DOMAIN_NAME', false),
+
+    /*
+    | Import progress polling: optional queue:work inside HTTP (legacy). Staging/production should use
+    | Supervisor and leave this unset — nginx/php-fpm timeouts break JSON polling otherwise.
+    */
+    'import_progress_run_queue_worker' => env('IMPORT_PROGRESS_RUN_QUEUE_WORKER'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment

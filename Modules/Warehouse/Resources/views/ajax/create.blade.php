@@ -54,19 +54,21 @@
     });
 
     $('#save-warehouse-form').click(function() {
-        $.easyAjax({
-            url: "{{ route('warehouse.store') }}",
-            container: '#save-warehouse-data-form',
-            type: "POST",
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-warehouse-form",
-            data: $('#save-warehouse-data-form').serialize(),
-            success: function(response) {
+        const $btn = $('#save-warehouse-form');
+        $btn.prop('disabled', true);
+        $.easyBlockUI('#save-warehouse-data-form');
+        window.apiHttp.postUrlEncoded("{{ route('warehouse.store') }}", $('#save-warehouse-data-form').serialize())
+            .then(function(response) {
                 if (response.status === 'success' && response.action === 'redirect') {
                     window.location.href = response.url;
                 }
-            }
-        });
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $btn.prop('disabled', false);
+                $.easyUnblockUI('#save-warehouse-data-form');
+            });
     });
 </script>

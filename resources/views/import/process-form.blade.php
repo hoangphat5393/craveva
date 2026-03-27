@@ -437,65 +437,60 @@
         var delay = isFirstPoll ? 0 : 2000;
         if (isFirstPoll) isFirstPoll = false;
         setTimeout(function() {
-            $.easyAjax({
-                type: 'GET',
-                url: url,
-                success: function(response) {
-                    var failedJobs = response.failedJobs || 0;
-                    var pendingJobs = response.pendingJobs || 0;
-                    var processedJobs = response.processedJobs || 0;
-                    progress = response.progress || 0;
-                    var totalJobs = response.totalJobs || 0;
-                    var metrics = response.metrics || null;
+            window.apiHttp.get(url).then(function(response) {
+                var failedJobs = response.failedJobs || 0;
+                var pendingJobs = response.pendingJobs || 0;
+                var processedJobs = response.processedJobs || 0;
+                progress = response.progress || 0;
+                var totalJobs = response.totalJobs || 0;
+                var metrics = response.metrics || null;
 
-                    $('#processingBarStatus').width(progress + '%');
-                    $('#processingBarStatus').html(progress + '%');
-                    $('#progressAmount').html(progress + '%');
-                    if (totalJobs > 0 && $('#progressCountLine').length) {
-                        $('#progressCountLine').html((processedJobs + failedJobs) + ' / ' + totalJobs).show();
-                    } else if ($('#progressCountLine').length) {
-                        $('#progressCountLine').html(processedJobs > 0 ? (processedJobs + ' …') : '…').show();
-                    }
+                $('#processingBarStatus').width(progress + '%');
+                $('#processingBarStatus').html(progress + '%');
+                $('#progressAmount').html(progress + '%');
+                if (totalJobs > 0 && $('#progressCountLine').length) {
+                    $('#progressCountLine').html((processedJobs + failedJobs) + ' / ' + totalJobs).show();
+                } else if ($('#progressCountLine').length) {
+                    $('#progressCountLine').html(processedJobs > 0 ? (processedJobs + ' …') : '…').show();
+                }
 
-                    if (failedJobs > 0) {
-                        var failedMsg = `@lang('app.importFailedJobs')`;
-                        failedMsg = failedMsg.replace(':failedJobs', failedJobs).replace(':totalJobs', totalJobs);
-                        $('#failedJobsCount').html(failedMsg);
-                        $('#failedJobsCount').show();
-                        getQueueException(batchId);
-                    }
-                    if (processedJobs > 0) {
-                        var processedMsg = `@lang('app.importProcessedJobs')`;
-                        processedMsg = processedMsg.replace(':processedJobs', processedJobs).replace(':totalJobs', totalJobs);
-                        $('#progressSuccess').html(processedMsg);
-                        $('#progressSuccess').show();
-                    }
+                if (failedJobs > 0) {
+                    var failedMsg = `@lang('app.importFailedJobs')`;
+                    failedMsg = failedMsg.replace(':failedJobs', failedJobs).replace(':totalJobs', totalJobs);
+                    $('#failedJobsCount').html(failedMsg);
+                    $('#failedJobsCount').show();
+                    getQueueException(batchId);
+                }
+                if (processedJobs > 0) {
+                    var processedMsg = `@lang('app.importProcessedJobs')`;
+                    processedMsg = processedMsg.replace(':processedJobs', processedJobs).replace(':totalJobs', totalJobs);
+                    $('#progressSuccess').html(processedMsg);
+                    $('#progressSuccess').show();
+                }
 
-                    if (metrics && $('#importMetricsSummary').length) {
-                        var metricsMsg = 'Created: ' + (metrics.created || 0) +
-                            ' | Updated: ' + (metrics.updated || 0) +
-                            ' | Skipped: ' + (metrics.skipped || 0) +
-                            ' | Skipped missing required: ' + (metrics.skipped_missing_required || 0) +
-                            ' | Invalid status: ' + (metrics.invalid_status || 0);
-                        $('#importMetricsSummary').html(metricsMsg).show();
-                    }
+                if (metrics && $('#importMetricsSummary').length) {
+                    var metricsMsg = 'Created: ' + (metrics.created || 0) +
+                        ' | Updated: ' + (metrics.updated || 0) +
+                        ' | Skipped: ' + (metrics.skipped || 0) +
+                        ' | Skipped missing required: ' + (metrics.skipped_missing_required || 0) +
+                        ' | Invalid status: ' + (metrics.invalid_status || 0);
+                    $('#importMetricsSummary').html(metricsMsg).show();
+                }
 
-                    if (totalJobs != (failedJobs + processedJobs)) {
-                        getProgress(batchId);
-                    } else {
-                        $('#importSuccess').html(`@lang('app.importCompleted')`);
-                        $('#process-warning').hide();
-                        $('#importSuccess').show();
-                        $('#progress').hide();
-                        $('#afterProcessing').removeClass('d-none');
-                        $('#afterProcessing').addClass('d-lg-flex d-md-flex d-block');
-                        getQueueException(batchId);
-                    }
-                },
-                error: function(response) {
-                    if (progress != 100) {
-                        getProgress(batchId);
-                    }
+                if (totalJobs != (failedJobs + processedJobs)) {
+                    getProgress(batchId);
+                } else {
+                    $('#importSuccess').html(`@lang('app.importCompleted')`);
+                    $('#process-warning').hide();
+                    $('#importSuccess').show();
+                    $('#progress').hide();
+                    $('#afterProcessing').removeClass('d-none');
+                    $('#afterProcessing').addClass('d-lg-flex d-md-flex d-block');
+                    getQueueException(batchId);
+                }
+            }).catch(function() {
+                if (progress != 100) {
+                    getProgress(batchId);
                 }
             });
         }, delay);
@@ -507,14 +502,10 @@
             url += '?batch_id=' + batchId;
         }
 
-        $.easyAjax({
-            type: 'GET',
-            url: url,
-            success: function(response) {
-                if (response.view) {
-                    $('#exceptionTable').html(response.view);
-                    $('#exceptionTable').show();
-                }
+        window.apiHttp.get(url).then(function(response) {
+            if (response.view) {
+                $('#exceptionTable').html(response.view);
+                $('#exceptionTable').show();
             }
         });
     }
@@ -544,20 +535,19 @@
 
         $('body').on('click', '#process-{{ $importClassName }}-form', function() {
             const url = "{{ $processRoute }}";
-
-            $.easyAjax({
-                url: url,
-                container: '#process-{{ $importClassName }}-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#process-{{ $importClassName }}-form",
-                data: $('#process-{{ $importClassName }}-data-form').serialize(),
-                success: function(response) {
-                    if (response.status == 'success') {
-                        getProgress(response.batch.id);
-                    }
+            const $btn = $('#process-{{ $importClassName }}-form');
+            const formSelector = '#process-{{ $importClassName }}-data-form';
+            $btn.prop('disabled', true);
+            $.easyBlockUI(formSelector);
+            window.apiHttp.postUrlEncoded(url, $(formSelector).serialize()).then(function(response) {
+                if (response.status == 'success') {
+                    getProgress(response.batch.id);
                 }
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $btn.prop('disabled', false);
+                $.easyUnblockUI(formSelector);
             });
         });
     });

@@ -57,19 +57,21 @@
 
 <script>
     $('#save-stock-form').click(function() {
-        $.easyAjax({
-            url: "{{ route('warehouse.stock.store') }}",
-            container: '#save-stock-data-form',
-            type: "POST",
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-stock-form",
-            data: $('#save-stock-data-form').serialize(),
-            success: function(response) {
+        const $btn = $('#save-stock-form');
+        $btn.prop('disabled', true);
+        $.easyBlockUI('#save-stock-data-form');
+        window.apiHttp.postUrlEncoded("{{ route('warehouse.stock.store') }}", $('#save-stock-data-form').serialize())
+            .then(function(response) {
                 if (response.status === 'success' && response.action === 'redirect') {
                     window.location.href = response.url;
                 }
-            }
-        });
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $btn.prop('disabled', false);
+                $.easyUnblockUI('#save-stock-data-form');
+            });
     });
 </script>

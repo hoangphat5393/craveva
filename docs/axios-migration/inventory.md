@@ -13,7 +13,7 @@ There is no single `resources/views/inventory/` tree in this project. **Inventor
 - **Purchase inventory** — `Modules/Purchase/Resources/views/purchase-inventory/**` (list, show/tabs, create, import, files).
 - **Product inventory adjustment (modal)** — `Modules/Purchase/Resources/views/purchase-products/ajax/update_inventory.blade.php`.
 - Stock / cart behaviour on **products** — already covered under **product.md** (`resources/views/products/**`).
-- **Warehouse** module — no `$.easyAjax` in `Modules/Warehouse/**` at time of scan; track under **warehouse.md** when that area is migrated.
+- **Warehouse** module — create/stock/transfer AJAX partials migrated to `apiHttp`; see **warehouse.md**.
 
 ## Features
 

@@ -58,19 +58,21 @@
 
 <script>
     $('#save-transfer-form').click(function() {
-        $.easyAjax({
-            url: "{{ route('warehouse.transfer.store') }}",
-            container: '#save-transfer-data-form',
-            type: "POST",
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-transfer-form",
-            data: $('#save-transfer-data-form').serialize(),
-            success: function(response) {
+        const $btn = $('#save-transfer-form');
+        $btn.prop('disabled', true);
+        $.easyBlockUI('#save-transfer-data-form');
+        window.apiHttp.postUrlEncoded("{{ route('warehouse.transfer.store') }}", $('#save-transfer-data-form').serialize())
+            .then(function(response) {
                 if (response.status === 'success' && response.action === 'redirect') {
                     window.location.href = response.url;
                 }
-            }
-        });
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $btn.prop('disabled', false);
+                $.easyUnblockUI('#save-transfer-data-form');
+            });
     });
 </script>

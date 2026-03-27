@@ -74,22 +74,16 @@
             buttonsStyling: false
         }).then((result) => {
             if (result.isConfirmed) {
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
-                        if (response.status == 'success') {
-                            $('#cat-' + id).fadeOut();
-                            $('#category-' + id).fadeOut();
+                window.apiHttp.delete(url, token).then(function(response) {
+                    if (response.status == 'success') {
+                        $('#cat-' + id).fadeOut();
+                        $('#category-' + id).fadeOut();
 
-                            $('#category_id').html(response.data);
-                            $('#category_id').selectpicker('refresh');
-                        }
+                        $('#category_id').html(response.data);
+                        $('#category_id').selectpicker('refresh');
                     }
+                }).catch(function(err) {
+                    $.handleApiFormError(err);
                 });
             }
         });
@@ -98,23 +92,19 @@
 
     $('#save-category').click(function() {
         var url = "{{ route('superadmin.faqCategory.store') }}";
-        $.easyAjax({
-            url: url,
-            container: '#createCategory',
-            type: "POST",
-            data: $('#createCategory').serialize(),
-            success: function(response) {
-                if (response.status == 'success') {
-                    // If form submitted from index page reload the page to show that on sidebar
-                    if (window.location.pathname === '/account/faqs') {
-                        window.location.reload();
-                    }
-
-                    $('#category_id').html(response.data);
-                    $('#category_id').selectpicker('refresh');
-                    $(MODAL_LG).modal('hide');
+        window.apiHttp.postUrlEncoded(url, $('#createCategory').serialize()).then(function(response) {
+            if (response.status == 'success') {
+                // If form submitted from index page reload the page to show that on sidebar
+                if (window.location.pathname === '/account/faqs') {
+                    window.location.reload();
                 }
+
+                $('#category_id').html(response.data);
+                $('#category_id').selectpicker('refresh');
+                $(MODAL_LG).modal('hide');
             }
+        }).catch(function(err) {
+            $.handleApiFormError(err);
         })
     });
 
@@ -131,25 +121,23 @@
 
             var token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#row-' + id,
-                type: "POST",
-                data: {
-                    'name': value,
-                    '_token': token,
-                    '_method': 'PUT'
-                },
-                blockUI: true,
-                success: function(response) {
-                    if (response.status == 'success') {
-                        $('#category_id').html(response.data);
-                        $('#category_id').selectpicker('refresh');
+            $.easyBlockUI('#row-' + id);
+            window.apiHttp.postUrlEncoded(url, {
+                'name': value,
+                '_token': token,
+                '_method': 'PUT'
+            }).then(function(response) {
+                if (response.status == 'success') {
+                    $('#category_id').html(response.data);
+                    $('#category_id').selectpicker('refresh');
 
-                        // Update on index page
-                        $(`#category-${id}>a`).html(value);
-                    }
+                    // Update on index page
+                    $(`#category-${id}>a`).html(value);
                 }
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI('#row-' + id);
             })
         }
     });

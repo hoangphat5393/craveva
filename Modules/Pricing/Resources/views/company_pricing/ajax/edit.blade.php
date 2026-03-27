@@ -65,13 +65,9 @@
 <script>
     $('#update-company-pricing').on('click', function(e) {
         e.preventDefault();
-        $.easyAjax({
-            url: "{{ route('pricing.company_pricing.update', $pricing->id) }}",
-            container: '#edit-company-pricing-form',
-            type: 'POST',
-            blockUI: true,
-            data: $('#edit-company-pricing-form').serialize(),
-            success: function(response) {
+        $.easyBlockUI('#edit-company-pricing-form');
+        window.apiHttp.postUrlEncoded("{{ route('pricing.company_pricing.update', $pricing->id) }}", $('#edit-company-pricing-form').serialize())
+            .then(function(response) {
                 if (response.status === 'success') {
                     if ($(RIGHT_MODAL).hasClass('show')) {
                         document.getElementById('close-task-detail').click();
@@ -80,8 +76,13 @@
                         window.location.href = response.redirectUrl;
                     }
                 }
-            }
-        });
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $.easyUnblockUI('#edit-company-pricing-form');
+            });
     });
     $(document).ready(function() {
         init(RIGHT_MODAL);

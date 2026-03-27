@@ -186,19 +186,13 @@ $deleteFaqPermission = user()->permission('delete_admin_faq');
             var token = "{{ csrf_token() }}";
             var categoryId = "{{ request()->id }}";
 
-            $.easyAjax({
-                type: 'GET',
-                url: url,
-                data: {
-                    '_token': token,
-                    'categoryId': categoryId
-                },
-                success: function(response) {
+            window.apiHttp.get(url, { params: { '_token': token, 'categoryId': categoryId } })
+                .then(function(response) {
                     if (response.status == "success") {
                         $("#know_data").html(response.html);
                     }
-                }
-            });
+                })
+                .catch(function (err) { $.handleApiFormError(err); });
         }
 
         $('#search-text-field').on('change keyup', function() {
@@ -241,19 +235,13 @@ $deleteFaqPermission = user()->permission('delete_admin_faq');
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
+                    window.apiHttp.delete(url, token)
+                        .then(function(response) {
                             if (response.status == "success") {
                                 window.location.reload();
                             }
-                        }
-                    });
+                        })
+                        .catch(function (err) { $.handleApiFormError(err); });
                 }
             });
         });

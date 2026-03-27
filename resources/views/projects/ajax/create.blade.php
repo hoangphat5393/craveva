@@ -557,26 +557,30 @@
                 document.getElementById('notes-text').value = note;
             }
             const url = "{{ route('projects.store') }}";
-            var data = $('#save-project-data-form').serialize() + "&projectID={{$project ? $project->id : ''}}";
-
-            $.easyAjax({
-                url: url,
-                container: '#save-project-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                file: true,
-                buttonSelector: "#save-project-form",
-                data: data,
-                success: function (response) {
-                    if ((add_project_files === "all") &&
-                        myDropzone.getQueuedFiles().length > 0) {
-                        $('#projectID').val(response.projectID);
-                        myDropzone.processQueue();
-                    } else if (typeof response.redirectUrl !== 'undefined') {
-                        window.location.href = response.redirectUrl;
-                    }
+            var mergeStr = $('#save-project-data-form').serialize() + "&projectID={{$project ? $project->id : ''}}";
+            var formEl = document.getElementById('save-project-data-form');
+            var fd = new FormData(formEl);
+            var mergeParams = new URLSearchParams(mergeStr);
+            mergeParams.forEach(function (value, key) {
+                fd.set(key, value);
+            });
+            var $btn = $('#save-project-form');
+            var prev = $btn.html();
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+            $.easyBlockUI('#save-project-data-form');
+            window.apiHttp.postForm(url, fd).then(function (response) {
+                if ((add_project_files === "all") &&
+                    myDropzone.getQueuedFiles().length > 0) {
+                    $('#projectID').val(response.projectID);
+                    myDropzone.processQueue();
+                } else if (typeof response.redirectUrl !== 'undefined') {
+                    window.location.href = response.redirectUrl;
                 }
+            }).catch(function (err) {
+                $.handleApiFormError(err);
+            }).finally(function () {
+                $.easyUnblockUI('#save-project-data-form');
+                $btn.prop('disabled', false).html(prev);
             });
         });
 
@@ -650,17 +654,17 @@
 
             const url = "{{ route('employees.create') }}";
 
-            $.easyAjax({
-                url: url,
-                blockUI: true,
-                container: MODAL_XL,
-                success: function (response) {
-                    if (response.status === "success") {
-                        $(MODAL_XL + ' .modal-body').html(response.html);
-                        $(MODAL_XL + ' .modal-title').html(response.title);
-                        init(MODAL_XL);
-                    }
+            $.easyBlockUI(MODAL_XL);
+            window.apiHttp.get(url).then(function (response) {
+                if (response.status === "success") {
+                    $(MODAL_XL + ' .modal-body').html(response.html);
+                    $(MODAL_XL + ' .modal-title').html(response.title);
+                    init(MODAL_XL);
                 }
+            }).catch(function (err) {
+                $.handleApiFormError(err);
+            }).finally(function () {
+                $.easyUnblockUI(MODAL_XL);
             });
         });
 
@@ -679,20 +683,18 @@
         }
         url = url.replace(':id', id);
 
-        $.easyAjax({
-            url: url,
-            type: "GET",
-            container: '#save-project-data-form',
-            blockUI: true,
-            redirect: true,
-            success: function (data) {
-                var atValues = data.userData;
-                destory_editor('#project_summary');
-                quillMention(atValues, '#project_summary');
-                $('#selectEmployee').html(data.data);
-                $('#selectEmployee').selectpicker('refresh');
-            }
-        })
+        $.easyBlockUI('#save-project-data-form');
+        window.apiHttp.get(url).then(function (data) {
+            var atValues = data.userData;
+            destory_editor('#project_summary');
+            quillMention(atValues, '#project_summary');
+            $('#selectEmployee').html(data.data);
+            $('#selectEmployee').selectpicker('refresh');
+        }).catch(function (err) {
+            $.handleApiFormError(err);
+        }).finally(function () {
+            $.easyUnblockUI('#save-project-data-form');
+        });
     });
 
 </script>

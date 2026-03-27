@@ -198,17 +198,13 @@
 
         $('#save-form').click(function () {
             document.getElementById('message_text').value = document.getElementById('message').children[0].innerHTML;
-            $.easyAjax({
-                url: "{{ route('superadmin.front-settings.sign-up-setting.update', 1) }}",
-                container: '#editSettings',
-                blockUI: true,
-                type: "POST",
-                data: $('#editSettings').serialize(),
-                success: function (response) {
-                    // This will add green-circle icon
+            $.easyBlockUI('#editSettings');
+            window.apiHttp.postUrlEncoded("{{ route('superadmin.front-settings.sign-up-setting.update', 1) }}", $('#editSettings').serialize())
+                .then(function (response) {
                     addBadge(response);
-                }
-            })
+                })
+                .catch(function (err) { $.handleApiFormError(err); })
+                .finally(function () { $.easyUnblockUI('#editSettings'); });
         });
 
         function addBadge(response) {
@@ -348,20 +344,19 @@
 
             const requestUrl = this.href;
 
-            $.easyAjax({
-                url: requestUrl,
-                blockUI: true,
-                container: "#nav-tabContent",
-                historyPush: true,
-                success: function (response) {
+            window.history.pushState({ id: requestUrl }, '', requestUrl);
+            $.easyBlockUI("#nav-tabContent");
+            window.apiHttp.get(requestUrl)
+                .then(function (response) {
                     if (response.status === "success") {
                         $('#language-section').html(response.html);
                         $('#language_setting_id').val(response.language_setting_id);
                         init('.settings-box');
                         init('#F');
                     }
-                }
-            });
+                })
+                .catch(function (err) { $.handleApiFormError(err); })
+                .finally(function () { $.easyUnblockUI("#nav-tabContent"); });
         });
 
 

@@ -40,19 +40,14 @@
     $(".select-picker").selectpicker();
     // save channel
     $('#save-manage-employee').click(function () {
-        $.easyAjax({
-            url: "{{route('salary_groups.manage_employee')}}",
-            container: '#manageEmployee',
-            type: "POST",
-            blockUI: true,
-            disableButton: true,
-            buttonSelector: "#save-manage-employee",
-            data: $('#manageEmployee').serialize(),
-            success: function (response) {
+        window.apiHttp.postUrlEncoded("{{route('salary_groups.manage_employee')}}", $('#manageEmployee').serialize())
+            .then(function (response) {
                 if (response.status == "success") {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch(function (err) {
+                $.handleApiFormError(err);
+            });
     });
 </script>

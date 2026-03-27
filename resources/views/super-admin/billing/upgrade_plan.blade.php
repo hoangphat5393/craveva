@@ -671,17 +671,12 @@
         $('body').on('change', '#currency', function () {
             let currencyId = $(this).val();
             let url = '{{ route('billing.upgrade_plan') }}';
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                data: {
-                    'currencyId':currencyId
-                },
-                success: function (response) {
+            window.apiHttp.get(url, { params: { 'currencyId': currencyId } })
+                .then(function (response) {
                     $('#price-plan').html(response.view);
                     $('.monthly').trigger('click');
-                }
-            })
+                })
+                .catch(function (err) { $.handleApiFormError(err); });
 
         });
     </script>

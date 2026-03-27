@@ -173,21 +173,15 @@ $addReferralPermission = user()->permission('add_referrals');
                     var url = "{{ route('referral.destroy', ':id') }}";
                     url = url.replace(':id', id);
 
-                    var token = "{{ csrf_token() }}";
-
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
+                    window.apiHttp.delete(url, "{{ csrf_token() }}")
+                        .then(function(response) {
                             if (response.status == "success") {
                                 showTable();
                             }
-                        }
-                    });
+                        })
+                        .catch(function(err) {
+                            $.handleApiFormError(err);
+                        });
                 }
             });
         });

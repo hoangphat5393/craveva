@@ -12,8 +12,7 @@
         <div class="select-box d-flex pr-2 border-right-grey border-right-grey-sm-0">
             <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('app.duration')</p>
             <div class="select-status d-flex">
-                <input type="text" class="position-relative text-dark form-control border-0 p-2 text-left f-14 f-w-500 border-additional-grey"
-                       id="datatableRange2" placeholder="@lang('placeholders.dateRange')">
+                <input type="text" class="position-relative text-dark form-control border-0 p-2 text-left f-14 f-w-500 border-additional-grey" id="datatableRange2" placeholder="@lang('placeholders.dateRange')">
             </div>
         </div>
         <!-- DATE END -->
@@ -36,28 +35,23 @@
             <div class="row mb-4">
                 <div class="col-lg-3">
                     <a href="{{ route('job-appboard.index') }}" data-status="pending" class="widget-filter-status">
-                        <x-cards.widget :title="__('recruit::app.report.jobapplication')" value="{{ $jobApplication }}"
-                                        icon="coins" widgetId="jobApp"/>
+                        <x-cards.widget :title="__('recruit::app.report.jobapplication')" value="{{ $jobApplication }}" icon="coins" widgetId="jobApp" />
                     </a>
                 </div>
 
                 <div class="col-lg-3">
                     <a href="{{ route('jobs.index') }}" data-status="pending" class="widget-filter-status">
-                        <x-cards.widget :title="__('recruit::app.report.jobposted')" value="{{ $job }}"
-                                        icon="coins" widgetId="jobPosted"/>
+                        <x-cards.widget :title="__('recruit::app.report.jobposted')" value="{{ $job }}" icon="coins" widgetId="jobPosted" />
                     </a>
                 </div>
                 <div class="col-lg-3">
                     <a href="{{ route('job-appboard.index') }}" data-status="pending" class="widget-filter-status">
-                        <x-cards.widget :title="__('recruit::app.report.candidatehired')" value="{{ $candidatesHired }}"
-                                        icon="coins" widgetId="candidateHired"/>
+                        <x-cards.widget :title="__('recruit::app.report.candidatehired')" value="{{ $candidatesHired }}" icon="coins" widgetId="candidateHired" />
                     </a>
                 </div>
                 <div class="col-lg-3">
-                    <a href="{{ route('interview-schedule.index') }}" data-status="pending"
-                       class="widget-filter-status">
-                        <x-cards.widget :title="__('recruit::app.report.interviewschedule')"
-                                        value="{{ $interviewScheduled }}" icon="coins" widgetId="interview"/>
+                    <a href="{{ route('interview-schedule.index') }}" data-status="pending" class="widget-filter-status">
+                        <x-cards.widget :title="__('recruit::app.report.interviewschedule')" value="{{ $interviewScheduled }}" icon="coins" widgetId="interview" />
                     </a>
                 </div>
             </div>
@@ -80,14 +74,14 @@
     @include('sections.daterange_js')
 
     <script type="text/javascript">
-        $(function () {
+        $(function() {
 
             var start = moment().clone().startOf('month');
             var end = moment();
 
             function cb(start, end) {
                 $('#datatableRange2').val(start.format('{{ $company->moment_format }}') +
-                    ' @lang("app.to") ' + end.format(
+                    ' @lang('app.to') ' + end.format(
                         '{{ $company->moment_format }}'));
                 $('#reset-filters').removeClass('d-none');
             }
@@ -101,12 +95,12 @@
             }, cb);
 
 
-            $('#datatableRange2').on('apply.daterangepicker', function (ev, picker) {
+            $('#datatableRange2').on('apply.daterangepicker', function(ev, picker) {
                 pieChart();
             });
 
 
-            $('body').on('click', '#reset-filters', function () {
+            $('body').on('click', '#reset-filters', function() {
                 $('#filter-form')[0].reset();
 
                 $('.filter-box .select-picker').selectpicker("refresh");
@@ -131,35 +125,31 @@
 
                 var url = "{{ route('jobreport.chart') }}";
 
-                $.easyAjax({
-                    url: url,
-                    container: '#task-chart-card',
-                    blockUI: true,
-                    type: "POST",
-                    data: {
+                window.apiHttp.postUrlEncoded(url, {
                         _token: '{{ csrf_token() }}',
                         startDate: startDate,
                         endDate: endDate
-                    },
-                    success: function (response) {
+                    })
+                    .then(function(response) {
                         $('#task-chart-card').html(response.html);
                         $('#jobApp').html(response.jobApp);
                         $('#jobPosted').html(response.jobPosted);
                         $('#candidateHired').html(response.candidateHired);
                         $('#interview').html(response.interview);
                         console.log(response);
-                    }
-                });
+                    })
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    });
             }
 
             @if (request('start') && request('end'))
-            $('#datatableRange2').data('daterangepicker').setStartDate("{{ request('start') }}");
-            $('#datatableRange2').data('daterangepicker').setEndDate("{{ request('end') }}");
+                $('#datatableRange2').data('daterangepicker').setStartDate("{{ request('start') }}");
+                $('#datatableRange2').data('daterangepicker').setEndDate("{{ request('end') }}");
             @endif
 
 
             pieChart();
         });
     </script>
-
 @endpush

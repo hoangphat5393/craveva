@@ -5,7 +5,6 @@
 @endpush
 
 @section('filter-section')
-
     <x-filters.filter-box>
 
         <!-- DESIGNATION START -->
@@ -15,7 +14,7 @@
                 <select class="form-control select-picker" name="designation" id="designation" data-live-search="true">
                     <option value="all">@lang('app.all')</option>
                     @foreach ($designations as $designation)
-                        <option value="{{ $designation->id }}">{{ ($designation->name) }}</option>
+                        <option value="{{ $designation->id }}">{{ $designation->name }}</option>
                     @endforeach
                 </select>
             </div>
@@ -29,7 +28,7 @@
                 <select class="form-control select-picker" name="department" id="department" data-live-search="true">
                     <option value="all">@lang('app.all')</option>
                     @foreach ($departments as $department)
-                        <option value="{{ $department->id }}">{{ ($department->team_name) }}</option>
+                        <option value="{{ $department->id }}">{{ $department->team_name }}</option>
                     @endforeach
                 </select>
             </div>
@@ -46,8 +45,7 @@
                             <i class="fa fa-search f-13 text-dark-grey"></i>
                         </span>
                     </div>
-                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field"
-                           placeholder="@lang('app.startTyping')">
+                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field" placeholder="@lang('app.startTyping')">
                 </div>
             </form>
         </div>
@@ -61,7 +59,6 @@
         </div>
         <!-- RESET END -->
     </x-filters.filter-box>
-
 @endsection
 
 @section('content')
@@ -81,14 +78,13 @@
         <!-- Task Box End -->
     </div>
     <!-- CONTENT WRAPPER END -->
-
 @endsection
 
 @push('scripts')
     @include('sections.datatable_js')
 
     <script>
-        $('#employee-salary-table').on('preXhr.dt', function (e, settings, data) {
+        $('#employee-salary-table').on('preXhr.dt', function(e, settings, data) {
 
             const designation = $('#designation').val();
             const department = $('#department').val();
@@ -102,7 +98,7 @@
         }
 
         $('#designation, #department, #search-text-field').on('change keyup',
-            function () {
+            function() {
                 if ($('#designation').val() !== "all") {
                     $('#reset-filters').removeClass('d-none');
                 } else if ($('#department').val() !== "all") {
@@ -116,7 +112,7 @@
                 showTable();
             });
 
-        $('#reset-filters').click(function () {
+        $('#reset-filters').click(function() {
             $('#filter-form')[0].reset();
 
             $('.filter-box .select-picker').selectpicker("refresh");
@@ -124,84 +120,89 @@
             showTable();
         });
 
-        $('body').on('click', '.save-initial-salary', function () {
+        $('body').on('click', '.save-initial-salary', function() {
             const id = $(this).data('user-id');
             const amount = $('#initial-salary-' + id).val();
             const token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                url: "{{ route('employee-salary.store') }}",
-                container: '#employee-salary-table',
-                type: "POST",
-                blockUI: true,
-                disableButton: true,
-                buttonSelector: "#save-initial-salary",
-                data: {user_id: id, amount: amount, _token: token, type: 'initial'},
-                success: function (response) {
+            window.apiHttp.postUrlEncoded("{{ route('employee-salary.store') }}", {
+                    user_id: id,
+                    amount: amount,
+                    _token: token,
+                    type: 'initial'
+                })
+                .then(function(response) {
                     if (response.status === "success") {
                         showTable();
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                });
 
         });
 
-        $('body').on('click', '.salary-history', function () {
+        $('body').on('click', '.salary-history', function() {
             const userId = $(this).data('user-id');
-            let url = '{{ route("employee-salary.show", ":id")}}';
+            let url = '{{ route('employee-salary.show', ':id') }}';
             url = url.replace(':id', userId);
 
             $(MODAL_LG + ' ' + MODAL_HEADING).html('...');
             $.ajaxModal(MODAL_LG, url);
         });
 
-        $('body').on('click', '.update-salary', function () {
+        $('body').on('click', '.update-salary', function() {
             const userId = $(this).data('user-id');
-            let url = '{{ route("employee-salary.edit", ":id")}}';
+            let url = '{{ route('employee-salary.edit', ':id') }}';
             url = url.replace(':id', userId);
 
             $(MODAL_LG + ' ' + MODAL_HEADING).html('...');
             $.ajaxModal(MODAL_LG, url);
         });
 
-        $('body').on('change', '.salary-cycle', function () {
+        $('body').on('change', '.salary-cycle', function() {
             const id = $(this).data('user-id');
             const cycle = $(this).val();
             const token = "{{ csrf_token() }}";
             if (id !== undefined && id !== '') {
-                $.easyAjax({
-                    url: '{{route("employee-salary.payroll-cycle")}}',
-                    type: "POST",
-                    data: {user_id: id, cycle: cycle, _token: token},
-                    success: function (response) {
+                window.apiHttp.postUrlEncoded('{{ route('employee-salary.payroll-cycle') }}', {
+                        user_id: id,
+                        cycle: cycle,
+                        _token: token
+                    })
+                    .then(function(response) {
                         if (response.status == "success") {
                             showTable();
                         }
-                    }
-                })
+                    })
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    });
             }
 
 
         });
 
-        $('body').on('change', '.payroll-status', function () {
+        $('body').on('change', '.payroll-status', function() {
             const id = $(this).data('user-id');
             const status = $(this).val();
             const token = "{{ csrf_token() }}";
             if (id !== undefined && id != '') {
-                $.easyAjax({
-                    url: '{{route("employee-salary.payroll-status")}}',
-                    type: "POST",
-                    data: {user_id: id, status: status, _token: token},
-                    success: function (response) {
+                window.apiHttp.postUrlEncoded('{{ route('employee-salary.payroll-status') }}', {
+                        user_id: id,
+                        status: status,
+                        _token: token
+                    })
+                    .then(function(response) {
                         if (response.status === "success") {
                             showTable();
                         }
-                    }
-                })
+                    })
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    });
             }
 
         });
-
     </script>
 @endpush

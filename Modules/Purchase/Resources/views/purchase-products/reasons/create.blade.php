@@ -3,15 +3,14 @@
 @endphp
 
 <style>
-    #myModalDefault{
+    #myModalDefault {
         z-index: 1060;
     }
 </style>
 
 <div class="modal-header">
     <h5 class="modal-title" id="modelHeading">@lang('purchase::modules.inventory.adjustmentReason')</h5>
-    <button type="button"  class="close" data-dismiss="modal" aria-label="Close"><span
-            aria-hidden="true">×</span></button>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
 </div>
 <div class="modal-body">
     <x-table class="table-bordered" headType="thead-light">
@@ -40,8 +39,7 @@
     <x-form id="createReasonName">
         <div class="row border-top-grey ">
             <div class="col-sm-12">
-                <x-forms.text fieldId="reason_name" :fieldLabel="__('purchase::modules.inventory.reasonName')"
-                    fieldName="reason_name" fieldRequired="true" :fieldPlaceholder="__('purchase::placeholders.reasonName')">
+                <x-forms.text fieldId="reason_name" :fieldLabel="__('purchase::modules.inventory.reasonName')" fieldName="reason_name" fieldRequired="true" :fieldPlaceholder="__('purchase::placeholders.reasonName')">
                 </x-forms.text>
             </div>
 
@@ -85,21 +83,17 @@
             buttonsStyling: false
         }).then((result) => {
             if (result.isConfirmed) {
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
+                window.apiHttp.delete(url, token)
+                    .then(function(response) {
                         if (response.status == 'success') {
                             $('#reason-' + id).fadeOut();
                             $('#adjustment_reason_id').html(response.data);
                             $('#adjustment_reason_id').selectpicker('refresh');
                         }
-                    }
-                });
+                    })
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    });
             }
         });
 
@@ -107,20 +101,18 @@
 
     $('#save-reason').click(function() {
         var url = "{{ route('adjustment-reasons.store') }}";
-        $.easyAjax({
-            url: url,
-            container: '#createReasonName',
-            type: "POST",
-            data: $('#createReasonName').serialize(),
-            success: function(response) {
+        window.apiHttp.postUrlEncoded(url, $('#createReasonName').serialize())
+            .then(function(response) {
                 if (response.status == 'success') {
                     $('#adjustment_reason_id').html(response.data);
                     $('#adjustment_reason_id').selectpicker('refresh');
                     $(MODAL_DEFAULT).modal('hide');
                     $('#myModal').css('overflow', 'auto');
                 }
-            }
-        })
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            });
     });
 
     $('[contenteditable=true]').focus(function() {
@@ -136,24 +128,20 @@
 
             var token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#row-' + id,
-                type: "POST",
-                data: {
-                    'reason_name': value,
-                    '_token': token,
-                    '_method': 'PUT'
-                },
-                blockUI: true,
-                success: function(response) {
+            window.apiHttp.postUrlEncoded(url, {
+                    reason_name: value,
+                    _token: token,
+                    _method: 'PUT'
+                })
+                .then(function(response) {
                     if (response.status == 'success') {
                         $('#adjustment_reason_id').html(response.data);
                         $('#adjustment_reason_id').selectpicker('refresh');
                     }
-                }
-            })
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                });
         }
     });
-
 </script>

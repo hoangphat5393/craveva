@@ -125,35 +125,31 @@
 
             const requestUrl = this.href;
 
-            $.easyAjax({
-                url: requestUrl,
-                blockUI: true,
-                container: "#nav-tabContent",
-                historyPush: true,
-                success: function (response) {
+            window.history.pushState({ id: requestUrl }, '', requestUrl);
+            $.easyBlockUI("#nav-tabContent");
+            window.apiHttp.get(requestUrl)
+                .then(function (response) {
                     if (response.status === "success") {
                         $('#nav-tabContent').html(response.html);
                         init('.settings-box');
                         init('#F');
                     }
-                }
-            });
+                })
+                .catch(function (err) { $.handleApiFormError(err); })
+                .finally(function () { $.easyUnblockUI("#nav-tabContent"); });
         });
 
 
         function updateLang(url, file = false) {
-            $.easyAjax({
-                url: url,
-                container: '#editSettings',
-                type: "POST",
-                blockUI: true,
-                file: file,
-                data: $('#editSettings').serialize(),
-                success: function (response) {
-                    // This will add green-circle icon
+            $.easyBlockUI('#editSettings');
+            var req = file
+                ? window.apiHttp.postForm(url, document.getElementById('editSettings'))
+                : window.apiHttp.postUrlEncoded(url, $('#editSettings').serialize());
+            req.then(function (response) {
                     addBadge(response);
-                }
-            })
+                })
+                .catch(function (err) { $.handleApiFormError(err); })
+                .finally(function () { $.easyUnblockUI('#editSettings'); });
         }
 
 

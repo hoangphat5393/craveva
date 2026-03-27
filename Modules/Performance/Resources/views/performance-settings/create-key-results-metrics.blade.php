@@ -26,21 +26,18 @@
 <script>
     // save prefix setting
     $('#save-key-result').click(function() {
-        $.easyAjax({
-            url: "{{ route('key-results-metrics.store') }}",
-            container: '#addKeyResultsForm',
-            type: "POST",
-            redirect: true,
-            file: true,
-            data: $('#addKeyResultsForm').serialize(),
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-prefix-form",
-            success: function (response) {
+        $.easyBlockUI('#addKeyResultsForm');
+        window.apiHttp.postUrlEncoded("{{ route('key-results-metrics.store') }}", $('#addKeyResultsForm').serialize())
+            .then(function (response) {
                 if (response.status == "success") {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch(function (err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function () {
+                $.easyUnblockUI('#addKeyResultsForm');
+            })
     });
 </script>

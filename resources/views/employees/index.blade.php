@@ -5,19 +5,17 @@
 @endpush
 
 @section('filter-section')
-
     <x-filters.filter-box>
         <!-- CLIENT START -->
         <div class="select-box py-2 d-flex pr-2 border-right-grey border-right-grey-sm-0">
             <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('app.employee')</p>
             <div class="select-status">
-                <select class="form-control select-picker" name="employee" id="employee" data-live-search="true"
-                        data-size="8">
+                <select class="form-control select-picker" name="employee" id="employee" data-live-search="true" data-size="8">
                     @if ($employees->count() > 1 || in_array('admin', user_roles()))
                         <option value="all">@lang('app.all')</option>
                     @endif
                     @foreach ($employees as $employee)
-                        <x-user-option :user="$employee"/>
+                        <x-user-option :user="$employee" />
                     @endforeach
                 </select>
             </div>
@@ -49,8 +47,7 @@
                             <i class="fa fa-search f-13 text-dark-grey"></i>
                         </span>
                     </div>
-                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field"
-                           placeholder="@lang('app.startTyping')">
+                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field" placeholder="@lang('app.startTyping')">
                 </div>
             </form>
         </div>
@@ -70,8 +67,7 @@
                 <label class="f-14 text-dark-grey mb-12 " for="usr">@lang('app.department')</label>
                 <div class="select-filter mb-4">
                     <div class="select-others">
-                        <select class="form-control select-picker" name="department" data-container="body"
-                                id="department">
+                        <select class="form-control select-picker" name="department" data-container="body" id="department">
                             <option value="all">@lang('app.all')</option>
                             @foreach ($departments as $department)
                                 <option value="{{ $department->id }}">{{ $department->team_name }}</option>
@@ -85,13 +81,12 @@
                 <label class="f-14 text-dark-grey mb-12 " for="usr">@lang('modules.employees.reportingTo')</label>
                 <div class="select-filter mb-4">
                     <div class="select-others">
-                        <select class="form-control select-picker" name="reporting_employee" id="reporting_employee" data-live-search="true"
-                                data-size="8">
+                        <select class="form-control select-picker" name="reporting_employee" id="reporting_employee" data-live-search="true" data-size="8">
                             @if ($employees->count() > 1 || in_array('admin', user_roles()))
                                 <option value="all">@lang('app.all')</option>
                             @endif
                             @foreach ($employees as $employee)
-                                <x-user-option :user="$employee"/>
+                                <x-user-option :user="$employee" />
                             @endforeach
                         </select>
                     </div>
@@ -99,14 +94,13 @@
             </div>
 
             <div class="more-filter-items">
-                <label class="f-14 text-dark-grey mb-12 "
-                       for="usr">@lang('modules.employees.role')</label>
+                <label class="f-14 text-dark-grey mb-12 " for="usr">@lang('modules.employees.role')</label>
                 <div class="select-filter mb-4">
                     <div class="select-others">
                         <select class="form-control select-picker" name="role" id="role" data-container="body">
                             <option value="all">@lang('app.all')</option>
                             @foreach ($roles as $role)
-                                    <option value="{{ $role->id }}">{{ $role->display_name }}</option>
+                                <option value="{{ $role->id }}">{{ $role->display_name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -160,7 +154,6 @@
         </x-filters.more-filter-box>
         <!-- MORE FILTERS END -->
     </x-filters.filter-box>
-
 @endsection
 
 @php
@@ -177,22 +170,21 @@
 
             <div id="table-actions" class="d-block d-lg-flex align-items-center">
                 @if (checkCompanyCanAddMoreEmployees(user()->company_id))
-                @if ($addEmployeePermission == 'all')
-                    <x-forms.link-primary :link="route('employees.create')" class="mr-3 openRightModal" icon="plus">
-                        @lang('app.addEmployee')
-                    </x-forms.link-primary>
+                    @if ($addEmployeePermission == 'all')
+                        <x-forms.link-primary :link="route('employees.create')" class="mr-3 openRightModal" icon="plus">
+                            @lang('app.addEmployee')
+                        </x-forms.link-primary>
 
-                    <x-forms.button-secondary class="mr-3 invite-member mb-2 mb-lg-0" icon="plus">
-                        @lang('app.inviteEmployee')
-                    </x-forms.button-secondary>
-                @endif
+                        <x-forms.button-secondary class="mr-3 invite-member mb-2 mb-lg-0" icon="plus">
+                            @lang('app.inviteEmployee')
+                        </x-forms.button-secondary>
+                    @endif
 
-                @if ($addEmployeePermission == 'all')
-                    <x-forms.link-secondary :link="route('employees.import')" class="mr-3 openRightModal mb-2 mb-lg-0 d-none d-lg-block"
-                                            icon="file-upload">
-                        @lang('app.importExcel')
-                    </x-forms.link-secondary>
-                @endif
+                    @if ($addEmployeePermission == 'all')
+                        <x-forms.link-secondary :link="route('employees.import')" class="mr-3 openRightModal mb-2 mb-lg-0 d-none d-lg-block" icon="file-upload">
+                            @lang('app.importExcel')
+                        </x-forms.link-secondary>
+                    @endif
                 @endif
             </div>
 
@@ -230,23 +222,22 @@
     @include('sections.datatable_js')
 
     <script>
-
         var startDate = null;
         var endDate = null;
         var lastStartDate = null;
         var lastEndDate = null;
 
-        @if(request('startDate') != '' && request('endDate') != '' )
-            startDate = '{{ request("startDate") }}';
-        endDate = '{{ request("endDate") }}';
+        @if (request('startDate') != '' && request('endDate') != '')
+            startDate = '{{ request('startDate') }}';
+            endDate = '{{ request('endDate') }}';
         @endif
 
-            @if(request('lastStartDate') !=='' && request('lastEndDate') !=='' )
-            lastStartDate = '{{ request("lastStartDate") }}';
-        lastEndDate = '{{ request("lastEndDate") }}';
+        @if (request('lastStartDate') !== '' && request('lastEndDate') !== '')
+            lastStartDate = '{{ request('lastStartDate') }}';
+            lastEndDate = '{{ request('lastEndDate') }}';
         @endif
 
-        $('#employees-table').on('preXhr.dt', function (e, settings, data) {
+        $('#employees-table').on('preXhr.dt', function(e, settings, data) {
             const status = $('#status').val();
             const employee = $('#employee').val();
             const role = $('#role').val();
@@ -283,7 +274,7 @@
         }
 
         $('#employee, #status, #role, #gender, #skill, #designation, #department, #employmentType, #reporting_employee').on('change keyup',
-            function () {
+            function() {
                 if ($('#status').val() != "all") {
                     $('#reset-filters').removeClass('d-none');
                 } else if ($('#employee').val() != "all") {
@@ -298,7 +289,7 @@
                     $('#reset-filters').removeClass('d-none');
                 } else if ($('#department').val() != "all") {
                     $('#reset-filters').removeClass('d-none');
-                }else if ($('#employmentType').val() != "all") {
+                } else if ($('#employmentType').val() != "all") {
                     $('#reset-filters').removeClass('d-none');
                 } else {
                     $('#reset-filters').addClass('d-none');
@@ -306,14 +297,14 @@
                 showTable();
             });
 
-        $('#search-text-field').on('keyup', function () {
+        $('#search-text-field').on('keyup', function() {
             if ($('#search-text-field').val() != "") {
                 $('#reset-filters').removeClass('d-none');
                 showTable();
             }
         });
 
-        $('#reset-filters, #reset-filters-2').click(function () {
+        $('#reset-filters, #reset-filters-2').click(function() {
             $('#filter-form')[0].reset();
             $('.filter-box .select-picker').selectpicker("refresh");
             $('#reset-filters').addClass('d-none');
@@ -321,7 +312,7 @@
         });
 
 
-        $('#quick-action-type').change(function () {
+        $('#quick-action-type').change(function() {
             const actionValue = $(this).val();
             if (actionValue != '') {
                 $('#quick-action-apply').removeAttr('disabled');
@@ -338,7 +329,7 @@
             }
         });
 
-        $('#quick-action-apply').click(function () {
+        $('#quick-action-apply').click(function() {
             const actionValue = $('#quick-action-type').val();
             if (actionValue == 'delete') {
                 Swal.fire({
@@ -369,7 +360,7 @@
             }
         });
 
-        $('body').on('click', '.delete-table-row', function () {
+        $('body').on('click', '.delete-table-row', function() {
             var id = $(this).data('user-id');
             Swal.fire({
                 title: "@lang('messages.sweetAlertTitle')",
@@ -395,84 +386,104 @@
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function (response) {
-                            if (response.status == "success") {
-                                showTable();
-                            }
+                    $.easyBlockUI();
+                    window.apiHttp.delete(url, token).then(function(response) {
+                        if (response.status == "success") {
+                            showTable();
                         }
+                    }).catch(function(err) {
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                text: err.message,
+                                toast: true,
+                                position: 'top-end',
+                                timer: 4000,
+                                showConfirmButton: false
+                            });
+                        }
+                    }).finally(function() {
+                        $.easyUnblockUI();
                     });
                 }
             });
         });
 
         const applyQuickAction = () => {
-            var rowdIds = $("#employees-table input:checkbox:checked").map(function () {
+            var rowdIds = $("#employees-table input:checkbox:checked").map(function() {
                 return $(this).val();
             }).get();
 
             var url = "{{ route('employees.apply_quick_action') }}?row_ids=" + rowdIds;
 
-            $.easyAjax({
-                url: url,
-                container: '#quick-action-form',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#quick-action-apply",
-                data: $('#quick-action-form').serialize(),
-                blockUI: true,
-                success: function (response) {
-                    if (response.status == 'success') {
-                        showTable();
-                        resetActionButtons();
-                        deSelectAll();
-                        $('#quick-action-form').hide();
-                    }
+            var $qaApply = $('#quick-action-apply');
+            $qaApply.prop('disabled', true);
+            $.easyBlockUI('#quick-action-form');
+            window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize()).then(function(response) {
+                if (response.status == 'success') {
+                    showTable();
+                    resetActionButtons();
+                    deSelectAll();
+                    $('#quick-action-form').hide();
                 }
-            })
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $qaApply.prop('disabled', false);
+                $.easyUnblockUI('#quick-action-form');
+            });
         };
 
 
-        $('body').on('change', '.assign_role', function () {
+        $('body').on('change', '.assign_role', function() {
             var id = $(this).data('user-id');
             var role = $(this).val();
             var token = "{{ csrf_token() }}";
 
             if (typeof id !== 'undefined') {
-                $.easyAjax({
-                    url: "{{ route('employees.assign_role') }}",
-                    type: "POST",
-                    blockUI: true,
-                    container: '#employees-table',
-                    data: {
-                        role: role,
-                        userId: id,
-                        _token: token
-                    },
-                    success: function (response) {
-                        if (response.status == "success") {
-                            window.LaravelDataTables["employees-table"].draw(true);
-                        }
+                $.easyBlockUI('#employees-table');
+                window.apiHttp.postUrlEncoded("{{ route('employees.assign_role') }}", {
+                    role: role,
+                    userId: id,
+                    _token: token
+                }).then(function(response) {
+                    if (response.status == "success") {
+                        window.LaravelDataTables["employees-table"].draw(true);
                     }
-                })
+                }).catch(function(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
+                    }
+                }).finally(function() {
+                    $.easyUnblockUI('#employees-table');
+                });
             }
 
         });
 
-        $('#designation-setting').click(function () {
+        $('#designation-setting').click(function() {
             const url = "{{ route('designations.create') }}";
             $(MODAL_LG + ' ' + MODAL_HEADING).html('...');
             $.ajaxModal(MODAL_LG, url);
         })
 
-        $('.department-setting').click(function () {
+        $('.department-setting').click(function() {
             const url = "{{ route('departments.create') }}";
             $(MODAL_LG + ' ' + MODAL_HEADING).html('...');
             $.ajaxModal(MODAL_LG, url);

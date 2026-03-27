@@ -26,22 +26,15 @@
 
 <script>
     $('body').on('click', '#save-client-form', function() {
-        $.easyAjax({
-            url: "{{ route('einvoice.client_save', $clientDetails?->id) }}",
-            container: '#editClinetSettings',
-            type: "POST",
-            redirect: true,
-            file: true,
-            data: $('#editClinetSettings').serialize(),
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-client-form",
-            success: function(response) {
+        window.apiHttp.postUrlEncoded("{{ route('einvoice.client_save', $clientDetails?->id) }}", $('#editClinetSettings').serialize())
+            .then(function(response) {
                 if (response.status == 'success') {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch(function (err) {
+                $.handleApiFormError(err);
+            });
     });
 </script>
 

@@ -5,12 +5,10 @@
         .attendance-total {
             width: 10%;
         }
-
     </style>
 @endpush
 
 @section('filter-section')
-
     <x-filters.filter-box>
         <div class="select-box d-flex py-2 px-lg-2 px-md-2 px-0 border-right-grey border-right-grey-sm-0">
             <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('app.employee')</p>
@@ -27,7 +25,7 @@
             <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('app.month')</p>
             <div class="select-status">
                 <select class="form-control select-picker" name="month" id="month" data-live-search="true" data-size="8">
-                    <x-forms.months :selectedMonth="$month" fieldRequired="true"/>
+                    <x-forms.months :selectedMonth="$month" fieldRequired="true" />
                 </select>
             </div>
         </div>
@@ -53,11 +51,10 @@
         <!-- RESET END -->
 
     </x-filters.filter-box>
-
 @endsection
 
 @php
-$addAttendancePermission = user()->permission('add_attendance');
+    $addAttendancePermission = user()->permission('add_attendance');
 @endphp
 
 @section('content')
@@ -68,12 +65,9 @@ $addAttendancePermission = user()->permission('add_attendance');
 
             <div id="table-actions" class="flex-grow-1 align-items-center">
                 @if ($addAttendancePermission == 'all' || $addAttendancePermission == 'added')
-                    <x-forms.link-primary :link="route('attendances.create')"
-                        data-redirect-url="{{ route('attendances.by_member') }}" class="mr-3 openRightModal float-left"
-                        icon="plus">
+                    <x-forms.link-primary :link="route('attendances.create')" data-redirect-url="{{ route('attendances.by_member') }}" class="mr-3 openRightModal float-left" icon="plus">
                         @lang('modules.attendance.markAttendance')
                     </x-forms.link-primary>
-
                 @endif
                 @if (canDataTableExport())
                     <x-forms.button-secondary id="export-bymember" class="mr-3 mb-2 mb-lg-0" icon="file-export">
@@ -82,28 +76,21 @@ $addAttendancePermission = user()->permission('add_attendance');
                 @endif
 
                 @if ($addAttendancePermission == 'all' || $addAttendancePermission == 'added')
-                    <x-forms.link-secondary :link="route('attendances.import')" class="mr-3 openRightModal float-left d-none d-lg-block"
-                        icon="file-upload">
+                    <x-forms.link-secondary :link="route('attendances.import')" class="mr-3 openRightModal float-left d-none d-lg-block" icon="file-upload">
                         @lang('app.importExcel')
                     </x-forms.link-secondary>
                 @endif
             </div>
 
             <div class="btn-group mt-2 mt-lg-0 mt-md-0 ml-0 ml-lg-3 ml-md-3" role="group">
-                <a href="{{ route('attendances.index') }}" class="btn btn-secondary f-14" data-toggle="tooltip"
-                    data-original-title="@lang('app.summary')"><i class="side-icon bi bi-list-ul"></i></a>
+                <a href="{{ route('attendances.index') }}" class="btn btn-secondary f-14" data-toggle="tooltip" data-original-title="@lang('app.summary')"><i class="side-icon bi bi-list-ul"></i></a>
 
-                <a href="{{ route('attendances.by_member') }}" class="btn btn-secondary f-14 btn-active"
-                    data-toggle="tooltip" data-original-title="@lang('modules.attendance.attendanceByMember')"><i
-                        class="side-icon bi bi-person"></i></a>
+                <a href="{{ route('attendances.by_member') }}" class="btn btn-secondary f-14 btn-active" data-toggle="tooltip" data-original-title="@lang('modules.attendance.attendanceByMember')"><i class="side-icon bi bi-person"></i></a>
 
-                <a href="{{ route('attendances.by_hour') }}" class="btn btn-secondary f-14" data-toggle="tooltip"
-                    data-original-title="@lang('modules.attendance.attendanceByHour')"><i class="fa fa-clock"></i></a>
+                <a href="{{ route('attendances.by_hour') }}" class="btn btn-secondary f-14" data-toggle="tooltip" data-original-title="@lang('modules.attendance.attendanceByHour')"><i class="fa fa-clock"></i></a>
 
                 @if (attendance_setting()->save_current_location)
-                    <a href="{{ route('attendances.by_map_location') }}" class="btn btn-secondary f-14"
-                        data-toggle="tooltip" data-original-title="@lang('modules.attendance.attendanceByLocation')"><i
-                            class="fa fa-map-marked-alt"></i></a>
+                    <a href="{{ route('attendances.by_map_location') }}" class="btn btn-secondary f-14" data-toggle="tooltip" data-original-title="@lang('modules.attendance.attendanceByLocation')"><i class="fa fa-map-marked-alt"></i></a>
                 @endif
 
             </div>
@@ -113,13 +100,11 @@ $addAttendancePermission = user()->permission('add_attendance');
         <div class="row my-3">
 
             <div class="col-lg-4 col-xl-2 col-md-6 col-sm-12 mb-4 mb-lg-0 mb-md-0">
-                <x-cards.widget :title="__('modules.attendance.totalWorkingDays')" value="0" icon="calendar"
-                    widgetId="totalWorkingDays" />
+                <x-cards.widget :title="__('modules.attendance.totalWorkingDays')" value="0" icon="calendar" widgetId="totalWorkingDays" />
             </div>
 
             <div class="col-lg-4 col-xl-2 col-md-6 col-sm-12">
-                <x-cards.widget :title="__('modules.attendance.daysPresent')" value="0" icon="calendar"
-                    widgetId="daysPresent" />
+                <x-cards.widget :title="__('modules.attendance.daysPresent')" value="0" icon="calendar" widgetId="daysPresent" />
             </div>
 
             <div class="col-lg-4 col-xl-2 col-md-6 col-sm-12">
@@ -135,8 +120,7 @@ $addAttendancePermission = user()->permission('add_attendance');
             </div>
 
             <div class="col-lg-4 col-xl-2 col-md-6 col-sm-12">
-                <x-cards.widget :title="__('modules.attendance.holidays')" value="0" icon="calendar"
-                    widgetId="holidayDays" />
+                <x-cards.widget :title="__('modules.attendance.holidays')" value="0" icon="calendar" widgetId="holidayDays" />
             </div>
         </div>
 
@@ -166,11 +150,9 @@ $addAttendancePermission = user()->permission('add_attendance');
         <!-- Task Box End -->
     </div>
     <!-- CONTENT WRAPPER END -->
-
 @endsection
 
 @push('scripts')
-
     <script>
         $('#user_id, #department, #month, #year, #late')
             .on('change',
@@ -214,28 +196,35 @@ $addAttendancePermission = user()->permission('add_attendance');
             var url = "{{ route('attendances.employee_data') }}";
             var token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                type: 'POST',
-                data: {
-                    '_token': token,
-                    year: year,
-                    month: month,
-                    department: department,
-                    late: late,
-                    userId: userId
-                },
-                url: url,
-                blockUI: true,
-                container: '.content-wrapper',
-                success: function(response) {
-                    $('#attendance-data').html(response.data);
-                    $('#daysPresent').html(response.daysPresent);
-                    $('#daysLate').html(response.daysLate);
-                    $('#halfDays').html(response.halfDays);
-                    $('#totalWorkingDays').html(response.totalWorkingDays);
-                    $('#absentDays').html(response.absentDays);
-                    $('#holidayDays').html(response.holidays);
+            $.easyBlockUI('.content-wrapper');
+            window.apiHttp.postUrlEncoded(url, {
+                _token: token,
+                year: year,
+                month: month,
+                department: department,
+                late: late,
+                userId: userId
+            }).then(function(response) {
+                $('#attendance-data').html(response.data);
+                $('#daysPresent').html(response.daysPresent);
+                $('#daysLate').html(response.daysLate);
+                $('#halfDays').html(response.halfDays);
+                $('#totalWorkingDays').html(response.totalWorkingDays);
+                $('#absentDays').html(response.absentDays);
+                $('#holidayDays').html(response.holidays);
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
                 }
+            }).finally(function() {
+                $.easyUnblockUI('.content-wrapper');
             });
         }
         @if (canDataTableExport())
@@ -247,7 +236,7 @@ $addAttendancePermission = user()->permission('add_attendance');
 
                 var url = "{{ route('attendances.export_attendance', [':year', ':month', ':userId']) }}";
                 url = url.replace(':year', year).replace(':month', month).replace(':userId', userId);
-                window.location.href=url;
+                window.location.href = url;
             });
         @endif
         $('#attendance-data').on('click', '.view-attendance', function() {
@@ -286,5 +275,4 @@ $addAttendancePermission = user()->permission('add_attendance');
 
         showTable();
     </script>
-
 @endpush

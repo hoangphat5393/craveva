@@ -15,47 +15,39 @@
 
                         <div class="row">
                             <div class="col-md-6 col-sm-6">
-                                <x-forms.label class="my-3" fieldId="old_designation_id"
-                                    :fieldLabel="__('modules.incrementPromotion.oldDesignation')"></x-forms.label>
-                                    <span class="input-group-text" id="old_designation_id">{{ $currentDesignation->name }}</span>
+                                <x-forms.label class="my-3" fieldId="old_designation_id" :fieldLabel="__('modules.incrementPromotion.oldDesignation')"></x-forms.label>
+                                <span class="input-group-text" id="old_designation_id">{{ $currentDesignation->name }}</span>
                             </div>
                             <div class="col-md-6 col-sm-6">
-                                <x-forms.label class="my-3" fieldId="old_department_id"
-                                    :fieldLabel="__('modules.incrementPromotion.oldDepartment')"></x-forms.label>
-                                    <span class="input-group-text" id="old_department_id">{{ $currentDepartment->team_name }}</span>
+                                <x-forms.label class="my-3" fieldId="old_department_id" :fieldLabel="__('modules.incrementPromotion.oldDepartment')"></x-forms.label>
+                                <span class="input-group-text" id="old_department_id">{{ $currentDepartment->team_name }}</span>
                             </div>
                             <div class="col-md-6 col-sm-6">
-                                <x-forms.select fieldId="current_designation_id" :fieldLabel="__('modules.incrementPromotion.newDesignation')" fieldName="current_designation_id" search="true"
-                                    fieldRequired="true" class="select-picker">
+                                <x-forms.select fieldId="current_designation_id" :fieldLabel="__('modules.incrementPromotion.newDesignation')" fieldName="current_designation_id" search="true" fieldRequired="true" class="select-picker">
                                     @foreach ($designations as $designation)
-                                    <option value="{{ $designation->id }}">{{ $designation->name }}</option>
+                                        <option value="{{ $designation->id }}">{{ $designation->name }}</option>
                                     @endforeach
                                 </x-forms.select>
                             </div>
                             <div class="col-md-6 col-sm-6">
-                                <x-forms.select fieldId="current_department_id" :fieldLabel="__('modules.incrementPromotion.newDepartment')" fieldName="current_department_id" search="true"
-                                    fieldRequired="true" class="select-picker">
+                                <x-forms.select fieldId="current_department_id" :fieldLabel="__('modules.incrementPromotion.newDepartment')" fieldName="current_department_id" search="true" fieldRequired="true" class="select-picker">
                                     @foreach ($departments as $department)
-                                    <option value="{{ $department->id }}" @if($department->id == $employeeDetail->department_id) selected @endif>{{ $department->team_name }}</option>
+                                        <option value="{{ $department->id }}" @if ($department->id == $employeeDetail->department_id) selected @endif>{{ $department->team_name }}</option>
                                     @endforeach
                                 </x-forms.select>
                             </div>
                             <div class="col-md-6">
-                                <x-forms.text :fieldLabel="__('app.date')" fieldName="date" fieldId="date" :fieldPlaceholder="__('app.date')"
-                                    :fieldValue="now(company()->timezone)->translatedFormat(company()->date_format)" fieldRequired />
+                                <x-forms.text :fieldLabel="__('app.date')" fieldName="date" fieldId="date" :fieldPlaceholder="__('app.date')" :fieldValue="now(company()->timezone)->translatedFormat(company()->date_format)" fieldRequired />
                             </div>
 
                             <div class="col-md-3 mt-5">
-                                <x-forms.checkbox class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('app.sendNotification')"
-                                    fieldName="send_notification" fieldId="send_notification" fieldValue="yes"
-                                    fieldRequired="true" :checked='true'/>
+                                <x-forms.checkbox class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('app.sendNotification')" fieldName="send_notification" fieldId="send_notification" fieldValue="yes" fieldRequired="true" :checked='true' />
                             </div>
 
                             <div class="col-md-3 mt-5">
                                 <div class="form-group d-flex align-items-center">
                                     <div class="custom-control custom-switch">
-                                        <input type="checkbox" name="promotion" @checked(1) class="custom-control-input"
-                                               id="promotion">
+                                        <input type="checkbox" name="promotion" @checked(1) class="custom-control-input" id="promotion">
                                         <label class="custom-control-label cursor-pointer f-14" for="promotion"></label>
                                     </div>
                                     <span class="f-14 text-dark-grey" id="promotion-text">{{ __('modules.incrementPromotion.promotion') }}</span>
@@ -86,9 +78,9 @@
 
         if ($toggle.length && $promotionText.length) {
             function updateLabelText() {
-                const text = $toggle.is(':checked')
-                    ? '{{ __("modules.incrementPromotion.promotion") }}'
-                    : '{{ __("modules.incrementPromotion.demotion") }}';
+                const text = $toggle.is(':checked') ?
+                    '{{ __('modules.incrementPromotion.promotion') }}' :
+                    '{{ __('modules.incrementPromotion.demotion') }}';
                 $promotionText.text(text);
             }
 
@@ -118,19 +110,27 @@
     $('#save-promotion').click(function() {
         const url = "{{ route('promotions.store') }}";
 
-        $.easyAjax({
-            url: url,
-            container: '#save-promotion-form',
-            type: "POST",
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-promotion",
-            data: $('#save-promotion-form').serialize(),
-            success: function(response) {
-                if (response.status === 'success') {
-                    window.location.reload();
-                }
+        var $saveProm = $('#save-promotion');
+        $saveProm.prop('disabled', true);
+        $.easyBlockUI('#save-promotion-form');
+        window.apiHttp.postUrlEncoded(url, $('#save-promotion-form').serialize()).then(function(response) {
+            if (response.status === 'success') {
+                window.location.reload();
             }
-        })
+        }).catch(function(err) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    text: err.message,
+                    toast: true,
+                    position: 'top-end',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            }
+        }).finally(function() {
+            $saveProm.prop('disabled', false);
+            $.easyUnblockUI('#save-promotion-form');
+        });
     });
 </script>

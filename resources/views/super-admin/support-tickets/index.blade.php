@@ -360,18 +360,12 @@ $addSuperAdminTicketPermission = user()->permission('add_superadmin_ticket');
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                showTable();
-                            }
+                    window.apiHttp.delete(url, token).then(function(response) {
+                        if (response.status == "success") {
+                            showTable();
                         }
+                    }).catch(function(err) {
+                        $.handleApiFormError(err);
                     });
                 }
             });
@@ -384,20 +378,21 @@ $addSuperAdminTicketPermission = user()->permission('add_superadmin_ticket');
 
             var url = "{{ route('superadmin.support-tickets.apply_quick_action') }}?row_ids=" + rowdIds;
 
-            $.easyAjax({
-                url: url,
-                container: '#quick-action-form',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#quick-action-apply",
-                data: $('#quick-action-form').serialize(),
-                success: function(response) {
-                    if (response.status == 'success') {
-                        showTable();
-                        resetActionButtons();
-                        deSelectAll();
-                    }
+            var $qaBtn = $('#quick-action-apply');
+            var prev = $qaBtn.html();
+            $.easyBlockUI('#quick-action-form');
+            $qaBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+            window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize()).then(function(response) {
+                if (response.status == 'success') {
+                    showTable();
+                    resetActionButtons();
+                    deSelectAll();
                 }
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI('#quick-action-form');
+                $qaBtn.prop('disabled', false).html(prev);
             })
         };
         @endif

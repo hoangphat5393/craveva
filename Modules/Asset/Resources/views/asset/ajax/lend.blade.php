@@ -62,15 +62,11 @@
         $(".select-picker").selectpicker();
         // save land
         $('#save-land-to').click(function () {
-            $.easyAjax({
-                url: "{{ route('history.store', $asset->id) }}",
-                container: '#lendTo',
-                type: "POST",
-                blockUI: true,
-                disableButton: true,
-                buttonSelector: "#save-land-to",
-                data: $('#lendTo').serialize(),
-                success: function (response) {
+            const $btn = $('#save-land-to');
+            $btn.prop('disabled', true);
+            $.easyBlockUI('#lendTo');
+            window.apiHttp.postUrlEncoded("{{ route('history.store', $asset->id) }}", $('#lendTo').serialize())
+                .then(function (response) {
                     if (response.status == "success") {
                         if ($('#assets-table').length > 0) {
                             window.LaravelDataTables["assets-table"].draw(true);
@@ -79,8 +75,14 @@
                             window.location.reload();
                         }
                     }
-                }
-            })
+                })
+                .catch(function (err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function () {
+                    $btn.prop('disabled', false);
+                    $.easyUnblockUI('#lendTo');
+                });
         });
     });
 </script>

@@ -593,22 +593,16 @@
                 // Approve task
                 $('.approve-offboard-task').on('click', function() {
                     var taskId = $(this).data('task-id');
-                    var token = "{{ csrf_token() }}";
                     var url = "{{ route('onboarding-approve-task') }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
+                    window.apiHttp.postUrlEncoded(url, {
+                            '_token': "{{ csrf_token() }}",
                             'task_id': taskId
-                        },
-                        success: function(response) {
+                    }).then(function(response) {
                             if (response.status == "success") {
                                 window.location.reload();
                             }
-                        }
-                    });
+                    }).catch(function (err) { $.handleApiFormError(err); });
                 });
 
                 // Reject task
@@ -640,23 +634,17 @@
                         }
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            var token = "{{ csrf_token() }}";
                             var url = "{{ route('onboarding-reject-task') }}";
 
-                            $.easyAjax({
-                                type: 'POST',
-                                url: url,
-                                data: {
-                                    '_token': token,
+                            window.apiHttp.postUrlEncoded(url, {
+                                    '_token': "{{ csrf_token() }}",
                                     'task_id': taskId,
                                     'rejection_reason': result.value
-                                },
-                                success: function(response) {
+                            }).then(function(response) {
                                     if (response.status == "success") {
                                         window.location.reload();
                                     }
-                                }
-                            });
+                            }).catch(function (err) { $.handleApiFormError(err); });
                         }
                     });
                 });
@@ -684,22 +672,16 @@
                         buttonsStyling: false
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            var token = "{{ csrf_token() }}";
                             var url = "{{ route('onboarding-cancel-task') }}";
 
-                            $.easyAjax({
-                                type: 'POST',
-                                url: url,
-                                data: {
-                                    '_token': token,
+                            window.apiHttp.postUrlEncoded(url, {
+                                    '_token': "{{ csrf_token() }}",
                                     'task_id': taskId
-                                },
-                                success: function(response) {
+                            }).then(function(response) {
                                     if (response.status == "success") {
                                         window.location.reload();
                                     }
-                                }
-                            });
+                            }).catch(function (err) { $.handleApiFormError(err); });
                         }
                     });
                 });
@@ -736,23 +718,17 @@
                     }).then((result) => {
                         if (result.isConfirmed) {
                             var empId = {{ $employee->id }};
-                            var token = "{{ csrf_token() }}";
                             var url = "{{ route('onboarding-cancel-request') }}";
 
-                            $.easyAjax({
-                                type: 'POST',
-                                url: url,
-                                data: {
-                                    '_token': token,
+                            window.apiHttp.postUrlEncoded(url, {
+                                    '_token': "{{ csrf_token() }}",
                                     'type': 'offboard',
                                     'empId': empId
-                                },
-                                success: function(response) {
+                            }).then(function(response) {
                                     if (response.status == "success") {
                                         window.location.reload();
                                     }
-                                }
-                            });
+                            }).catch(function (err) { $.handleApiFormError(err); });
                         }
                     });
                 });
@@ -779,23 +755,17 @@
                     }).then((result) => {
                         if (result.isConfirmed) {
                             var empId = {{ $employee->id }};
-                            var token = "{{ csrf_token() }}";
                             var url = "{{ route('onboarding-completealloffboarding-request') }}";
 
-                            $.easyAjax({
-                                type: 'POST',
-                                url: url,
-                                data: {
-                                    '_token': token,
+                            window.apiHttp.postUrlEncoded(url, {
+                                    '_token': "{{ csrf_token() }}",
                                     'type': 'offboard',
                                     'empId': empId
-                                },
-                                success: function(response) {
+                            }).then(function(response) {
                                     if (response.status == "success") {
                                         window.location.reload();
                                     }
-                                }
-                            });
+                            }).catch(function (err) { $.handleApiFormError(err); });
                         }
                     });
                 });

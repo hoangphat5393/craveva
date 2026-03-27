@@ -23,19 +23,17 @@
 <script>
 
     $('#save-blacklist-ip').click(function () {
-        $.easyAjax({
-            container: '#blacklist-ip-form',
-            type: "POST",
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-blacklist-ip",
-            url: "{{ route('cybersecurity.blacklist-ip.store') }}",
-            data: $('#blacklist-ip-form').serialize(),
-            success: function (response) {
+        window.apiHttp.postUrlEncoded(
+            "{{ route('cybersecurity.blacklist-ip.store') }}",
+            $('#blacklist-ip-form').serialize()
+        )
+            .then(function (response) {
                 if (response.status === 'success') {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch(function (err) {
+                $.handleApiFormError(err);
+            });
     });
 </script>

@@ -72,22 +72,19 @@
     $(document).ready(function () {
 
         $('body').on('click', '#save-payout-form', function () {
-            $.easyAjax({
-                url: "{{ route('payout.store') }}",
-                container: '#payout-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                file: true,
-                buttonSelector: "#save-payout-form",
-                data: $('#payout-form').serialize(),
-                redirect: true,
-                success: function (response) {
+            $.easyBlockUI('#payout-form');
+            window.apiHttp.postUrlEncoded("{{ route('payout.store') }}", $('#payout-form').serialize())
+                .then(function (response) {
                     if (response.status == 'success') {
                         window.location.href = '{{ route('payout.index') }}';
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#payout-form');
+                });
         });
 
         $('body').on('change', '#payment_method', function () {

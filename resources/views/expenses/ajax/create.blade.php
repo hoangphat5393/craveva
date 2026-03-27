@@ -1,5 +1,5 @@
 @php
-$addExpenseCategoryPermission = user()->permission('manage_expense_category');
+    $addExpenseCategoryPermission = user()->permission('manage_expense_category');
 @endphp
 
 <div class="row">
@@ -11,21 +11,18 @@ $addExpenseCategoryPermission = user()->permission('manage_expense_category');
                     @lang('app.expenseDetails')</h4>
                 <div class="row p-20">
                     <div class="col-md-6 col-lg-3">
-                        <x-forms.text class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.expenses.itemName')"
-                            fieldName="item_name" fieldRequired="true" fieldId="item_name"
-                            :fieldPlaceholder="__('placeholders.expense.item')" />
+                        <x-forms.text class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.expenses.itemName')" fieldName="item_name" fieldRequired="true" fieldId="item_name" :fieldPlaceholder="__('placeholders.expense.item')" />
                     </div>
 
                     <div class="col-md-6 col-lg-3">
-                        @if(isset($projectName))
-                            <input type="hidden" id="currency_id" name="currency_id" value="{{ $project->currency_id}}">
+                        @if (isset($projectName))
+                            <input type="hidden" id="currency_id" name="currency_id" value="{{ $project->currency_id }}">
                             <x-forms.text :fieldLabel="__('modules.invoices.currency')" fieldName="project-currency" fieldId="project-currency" :fieldValue="$project->currency->currency_name" fieldReadOnly="true" />
                         @else
-                            <input type="hidden" id="currency_id" name="currency_id" value="{{company()->currency_id}}">
-                            <x-forms.select :fieldLabel="__('modules.invoices.currency')" fieldName="currency"
-                                fieldRequired="true" fieldId="currency">
+                            <input type="hidden" id="currency_id" name="currency_id" value="{{ company()->currency_id }}">
+                            <x-forms.select :fieldLabel="__('modules.invoices.currency')" fieldName="currency" fieldRequired="true" fieldId="currency">
                                 @foreach ($currencies as $currency)
-                                    <option @selected ($currency->id == company()->currency_id)  value="{{ $currency->id }}" data-currency-name="{{$currency->currency_code}}">
+                                    <option @selected($currency->id == company()->currency_id) value="{{ $currency->id }}" data-currency-name="{{ $currency->currency_code }}">
                                         {{ $currency->currency_code }} ({{ $currency->currency_symbol }})
                                     </option>
                                 @endforeach
@@ -34,22 +31,16 @@ $addExpenseCategoryPermission = user()->permission('manage_expense_category');
                     </div>
 
                     <div class="col-md-6 col-lg-3">
-                        <x-forms.number fieldId="exchange_rate" :fieldLabel="__('modules.currencySettings.exchangeRate')"
-                        fieldName="exchange_rate" fieldRequired="true" :fieldValue="(isset($projectName) ? $project->currency->exchange_rate : $companyCurrency->exchange_rate)" fieldReadOnly="true"
-                        :fieldHelp="' '"/>
+                        <x-forms.number fieldId="exchange_rate" :fieldLabel="__('modules.currencySettings.exchangeRate')" fieldName="exchange_rate" fieldRequired="true" :fieldValue="isset($projectName) ? $project->currency->exchange_rate : $companyCurrency->exchange_rate" fieldReadOnly="true" :fieldHelp="' '" />
                     </div>
 
                     <div class="col-md-6 col-lg-3">
-                        <x-forms.number class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('app.price')" fieldName="price"
-                            fieldRequired="true" fieldId="price" :fieldPlaceholder="__('placeholders.price')" />
+                        <x-forms.number class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('app.price')" fieldName="price" fieldRequired="true" fieldId="price" :fieldPlaceholder="__('placeholders.price')" />
 
                     </div>
 
                     <div class="col-md-6 col-lg-4">
-                        <x-forms.datepicker fieldId="purchase_date" fieldRequired="true"
-                            :fieldLabel="__('modules.expenses.purchaseDate')" fieldName="purchase_date"
-                            :fieldPlaceholder="__('placeholders.date')"
-                            :fieldValue="\Carbon\Carbon::today()->format(company()->date_format)" />
+                        <x-forms.datepicker fieldId="purchase_date" fieldRequired="true" :fieldLabel="__('modules.expenses.purchaseDate')" fieldName="purchase_date" :fieldPlaceholder="__('placeholders.date')" :fieldValue="\Carbon\Carbon::today()->format(company()->date_format)" />
                     </div>
 
                     @if (user()->permission('add_expenses') == 'all')
@@ -57,8 +48,7 @@ $addExpenseCategoryPermission = user()->permission('manage_expense_category');
                             <x-forms.label class="mt-3" fieldId="user_id" :fieldLabel="__('app.employee')">
                             </x-forms.label>
                             <x-forms.input-group>
-                                <select class="form-control select-picker" name="user_id" id="user_id"
-                                    data-live-search="true" data-size="8">
+                                <select class="form-control select-picker" name="user_id" id="user_id" data-live-search="true" data-size="8">
                                     <option value="">--</option>
                                     @foreach ($employees as $item)
                                         <x-user-option :user="$item" />
@@ -71,15 +61,14 @@ $addExpenseCategoryPermission = user()->permission('manage_expense_category');
                     @endif
 
                     <div class="col-md-6 col-lg-4">
-                        @if(isset($projectName))
+                        @if (isset($projectName))
                             <input type="hidden" name="project_id" id="project_id" value="{{ $projectId }}">
                             <x-forms.text :fieldLabel="__('app.project')" fieldName="projectName" fieldId="projectName" :fieldValue="$projectName" fieldReadOnly="true" />
                         @else
-                            <x-forms.select fieldId="project_id" fieldName="project_id" :fieldLabel="__('app.project')"
-                                search="true">
+                            <x-forms.select fieldId="project_id" fieldName="project_id" :fieldLabel="__('app.project')" search="true">
                                 <option value="">--</option>
                                 @foreach ($projects as $project)
-                                    <option data-currency-id="{{ $project->currency_id }}" @selected ($projectId == $project->id) value="{{ $project->id }}">
+                                    <option data-currency-id="{{ $project->currency_id }}" @selected($projectId == $project->id) value="{{ $project->id }}">
                                         {{ $project->project_name }}
                                     </option>
                                 @endforeach
@@ -88,12 +77,10 @@ $addExpenseCategoryPermission = user()->permission('manage_expense_category');
                     </div>
 
                     <div class="col-md-4">
-                        <x-forms.label class="mt-3" fieldId="category_id"
-                            :fieldLabel="__('modules.expenses.expenseCategory')">
+                        <x-forms.label class="mt-3" fieldId="category_id" :fieldLabel="__('modules.expenses.expenseCategory')">
                         </x-forms.label>
                         <x-forms.input-group>
-                            <select class="form-control select-picker" name="category_id" id="expense_category_id"
-                                data-live-search="true">
+                            <select class="form-control select-picker" name="category_id" id="expense_category_id" data-live-search="true">
                                 <option value="">--</option>
                                 @foreach ($categories as $category)
                                     <option value="{{ $category->id }}">{{ $category->category_name }}
@@ -103,28 +90,26 @@ $addExpenseCategoryPermission = user()->permission('manage_expense_category');
 
                             @if ($addExpenseCategoryPermission == 'all' || $addExpenseCategoryPermission == 'added')
                                 <x-slot name="append">
-                                    <button id="addExpenseCategory" type="button"
-                                        class="btn btn-outline-secondary border-grey"
-                                        data-toggle="tooltip" data-original-title="{{__('modules.expenseCategory.addExpenseCategory') }}">@lang('app.add')</button>
+                                    <button id="addExpenseCategory" type="button" class="btn btn-outline-secondary border-grey" data-toggle="tooltip" data-original-title="{{ __('modules.expenseCategory.addExpenseCategory') }}">@lang('app.add')</button>
                                 </x-slot>
                             @endif
                         </x-forms.input-group>
                     </div>
 
                     <div class="col-md-4">
-                        <x-forms.text :fieldLabel="__('modules.expenses.purchaseFrom')" fieldName="purchase_from"
-                            fieldId="purchase_from" :fieldPlaceholder="__('placeholders.expense.vendor')" />
+                        <x-forms.text :fieldLabel="__('modules.expenses.purchaseFrom')" fieldName="purchase_from" fieldId="purchase_from" :fieldPlaceholder="__('placeholders.expense.vendor')" />
                     </div>
 
-                    @if($linkExpensePermission == 'all')
+                    @if ($linkExpensePermission == 'all')
                         <div class="col-md-4">
-                            <x-forms.select fieldId="bank_account_id" :fieldLabel="__('app.menu.bankaccount')" fieldName="bank_account_id"
-                                search="true">
+                            <x-forms.select fieldId="bank_account_id" :fieldLabel="__('app.menu.bankaccount')" fieldName="bank_account_id" search="true">
                                 <option value="">--</option>
-                                @if($viewBankAccountPermission != 'none')
+                                @if ($viewBankAccountPermission != 'none')
                                     @foreach ($bankDetails as $bankDetail)
-                                        <option value="{{ $bankDetail->id }}">@if($bankDetail->type == 'bank')
-                                            {{ $bankDetail->bank_name }} | @endif {{ $bankDetail->account_name }}
+                                        <option value="{{ $bankDetail->id }}">
+                                            @if ($bankDetail->type == 'bank')
+                                                {{ $bankDetail->bank_name }} |
+                                            @endif {{ $bankDetail->account_name }}
                                         </option>
                                     @endforeach
                                 @endif
@@ -182,70 +167,98 @@ $addExpenseCategoryPermission = user()->permission('manage_expense_category');
         $('#save-expense-form').click(function() {
             let note = document.getElementById('description').children[0].innerHTML;
             document.getElementById('description-text').value = note;
-            var mention_user_id = $('#description span[data-id]').map(function(){
-                            return $(this).attr('data-id')
-                        }).get();
+            var mention_user_id = $('#description span[data-id]').map(function() {
+                return $(this).attr('data-id')
+            }).get();
             $('#mentionUserId').val(mention_user_id.join(','));
             const url = "{{ route('expenses.store') }}";
-            var data = $('#save-expense-data-form').serialize();
-
-            $.easyAjax({
-                url: url,
-                container: '#save-expense-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-expense-form",
-                data: data,
-                file: true,
-                success: function(response) {
+            var $saveBtn = $('#save-expense-form');
+            $saveBtn.prop('disabled', true);
+            $.easyBlockUI('#save-expense-data-form');
+            window.apiHttp.postForm(url, document.getElementById('save-expense-data-form')).then(function(response) {
+                if (response.redirectUrl) {
                     window.location.href = response.redirectUrl;
                 }
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $saveBtn.prop('disabled', false);
+                $.easyUnblockUI('#save-expense-data-form');
             });
         });
 
         $('#addExpenseCategory').click(function() {
             let userId = $('#user_id').val();
-            const url = "{{ route('expenseCategory.create') }}?user_id="+userId;
+            const url = "{{ route('expenseCategory.create') }}?user_id=" + userId;
             $(MODAL_LG + ' ' + MODAL_HEADING).html('...');
             $.ajaxModal(MODAL_LG, url);
         });
 
-        $('body').on('change', '#user_id', function(){
+        $('body').on('change', '#user_id', function() {
             let userId = $(this).val();
             let categoryId = $('#expense_category_id').val();
 
             const url = "{{ route('expenses.get_employee_projects') }}";
-            let data = $('#save-expense-data-form').serialize();
 
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                data: {'userId' : userId, 'categoryId' : categoryId},
-                success: function(response) {
-                    $('#project_id').html('<option value="">--</option>'+response.data);
-                    $('#project_id').selectpicker('refresh')
-                    $('#expense_category_id').html('<option value="">--</option>'+response.category);
-                    $('#expense_category_id').selectpicker('refresh')
+            window.apiHttp.get(url, {
+                params: {
+                    userId: userId,
+                    categoryId: categoryId
+                }
+            }).then(function(response) {
+                $('#project_id').html('<option value="">--</option>' + response.data);
+                $('#project_id').selectpicker('refresh')
+                $('#expense_category_id').html('<option value="">--</option>' + response.category);
+                $('#expense_category_id').selectpicker('refresh')
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
                 }
             });
 
         });
 
-        $('body').on('change', '#expense_category_id', function(){
+        $('body').on('change', '#expense_category_id', function() {
             let categoryId = $(this).val();
             let userId = $('#user_id').val();
 
             const url = "{{ route('expenses.get_category_employees') }}";
             let data = $('#save-expense-data-form').serialize();
 
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                data: {'categoryId' : categoryId, 'userId' : userId},
-                success: function(response) {
-                    $('#user_id').html('<option value="">--</option>'+response.employees);
-                    $('#user_id').selectpicker('refresh')
+            window.apiHttp.get(url, {
+                params: {
+                    categoryId: categoryId,
+                    userId: userId
+                }
+            }).then(function(response) {
+                $('#user_id').html('<option value="">--</option>' + response.employees);
+                $('#user_id').selectpicker('refresh')
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
                 }
             });
         });
@@ -271,44 +284,57 @@ $addExpenseCategoryPermission = user()->permission('manage_expense_category');
         $('#currency_id').val(id);
         var currencyId = $('#currency_id').val();
 
-        var companyCurrencyName = "{{$companyCurrency->currency_code}}";
+        var companyCurrencyName = "{{ $companyCurrency->currency_code }}";
         var currentCurrencyName = $('#currency option:selected').attr('data-currency-name');
         var companyCurrency = '{{ $companyCurrency->id }}';
 
-        if(currencyId == companyCurrency){
+        if (currencyId == companyCurrency) {
             $('#exchange_rate').prop('readonly', true);
-        } else{
+        } else {
             $('#exchange_rate').prop('readonly', false);
         }
 
         var token = "{{ csrf_token() }}";
 
-        $.easyAjax({
-            url: "{{ route('payments.account_list') }}",
-            type: "GET",
-            blockUI: true,
-            data: { 'curId' : currencyId , _token: token},
-            success: function(response) {
-                if (response.status == 'success') {
-                    $('#bank_account_id').html(response.data);
-                    $('#bank_account_id').selectpicker('refresh');
-                    $('#exchange_rate').val(response.exchangeRate);
-                    let currencyExchange = (companyCurrencyName != currentCurrencyName) ? '( '+currentCurrencyName+' @lang('app.to') '+companyCurrencyName+' )' : '';
-                    $('#exchange_rateHelp').html(currencyExchange);
-                }
+        $.easyBlockUI('#save-expense-data-form');
+        window.apiHttp.get("{{ route('payments.account_list') }}", {
+            params: {
+                curId: currencyId,
+                _token: token
             }
+        }).then(function(response) {
+            if (response.status == 'success') {
+                $('#bank_account_id').html(response.data);
+                $('#bank_account_id').selectpicker('refresh');
+                $('#exchange_rate').val(response.exchangeRate);
+                let currencyExchange = (companyCurrencyName != currentCurrencyName) ? '( ' + currentCurrencyName + ' @lang('app.to') ' + companyCurrencyName + ' )' : '';
+                $('#exchange_rateHelp').html(currencyExchange);
+            }
+        }).catch(function(err) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    text: err.message,
+                    toast: true,
+                    position: 'top-end',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            }
+        }).finally(function() {
+            $.easyUnblockUI('#save-expense-data-form');
         });
     });
 
-    @if(isset($projectName))
+    @if (isset($projectName))
         setExchangeRateHelp();
-        function setExchangeRateHelp(){
+
+        function setExchangeRateHelp() {
             $('#exchange_rate').prop('readonly', false);
-            var companyCurrencyName = "{{$companyCurrency->currency_name}}";
-            var currentCurrencyName = `{{ $project->currency->currency_name }}` ;
-            let currencyExchange = (companyCurrencyName != currentCurrencyName) ? '( '+currentCurrencyName+' @lang('app.to') '+currentCurrencyName+' )' : '';
+            var companyCurrencyName = "{{ $companyCurrency->currency_name }}";
+            var currentCurrencyName = `{{ $project->currency->currency_name }}`;
+            let currencyExchange = (companyCurrencyName != currentCurrencyName) ? '( ' + currentCurrencyName + ' @lang('app.to') ' + currentCurrencyName + ' )' : '';
             $('#exchange_rateHelp').html(currencyExchange);
         }
     @endif
-
 </script>

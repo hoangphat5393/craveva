@@ -13,13 +13,10 @@
             <div class="row">
 
                 <div class="col-xl-3 col-sm-12 mb-4">
-                    <x-cards.widget :title="__('modules.invoices.total')"
-                        :value="number_format((float) $creditNote->total, 2, '.', '')" icon="file-invoice-dollar" />
+                    <x-cards.widget :title="__('modules.invoices.total')" :value="number_format((float) $creditNote->total, 2, '.', '')" icon="file-invoice-dollar" />
                 </div>
                 <div class="col-xl-3 col-sm-12 mb-4">
-                    <x-cards.widget :title="__('modules.credit-notes.creditAmountRemaining')"
-                        :value="number_format((float) $creditNote->creditAmountRemaining(), 2, '.', '')"
-                        icon="file-invoice-dollar" />
+                    <x-cards.widget :title="__('modules.credit-notes.creditAmountRemaining')" :value="number_format((float) $creditNote->creditAmountRemaining(), 2, '.', '')" icon="file-invoice-dollar" />
                 </div>
                 <div class="col-xl-6 col-sm-12 mb-4">
                     <x-cards.user :image="$creditNote->client->image_url">
@@ -48,7 +45,7 @@
 
 
             <h4 class="mt-5 mb-3 f-21  font-weight-bold">@lang('app.clientUnpaidInvoices')
-               </h4>
+            </h4>
 
             <x-cards.data padding="false">
                 <div class="table-responsive">
@@ -68,8 +65,7 @@
                             @if ($amountDue > 0)
                                 <tr>
                                     <td>
-                                        <a class="text-darkest-grey"
-                                            href="{{ route('invoices.show', [$invoice->id]) }}">{{ $invoice->invoice_number }}</a>
+                                        <a class="text-darkest-grey" href="{{ route('invoices.show', [$invoice->id]) }}">{{ $invoice->invoice_number }}</a>
                                     </td>
                                     <td>
                                         {{ $invoice->issue_date->translatedFormat(company()->date_format) }}
@@ -81,10 +77,7 @@
                                         {{ currency_format($amountDue, $invoice->currency->id) }}
                                     </td>
                                     <td class="border-left">
-                                        <input data-invoice-id="{{ $invoice->id }}"
-                                            data-balance-due='{{ $amountDue }}' type="number"
-                                            max="{{ min($creditNote->total, $amountDue) }}" min="0" value="0"
-                                            step="1.00" class="form-control height-35 f-14 amt-to-credit">
+                                        <input data-invoice-id="{{ $invoice->id }}" data-balance-due='{{ $amountDue }}' type="number" max="{{ min($creditNote->total, $amountDue) }}" min="0" value="0" step="1.00" class="form-control height-35 f-14 amt-to-credit">
                                     </td>
                                 </tr>
                             @endif
@@ -162,9 +155,9 @@
         evt = (evt) ? evt : window.event;
         let charCode = (evt.which) ? evt.which : evt.keyCode;
         if ((charCode > 31 && (charCode < 48 || charCode > 57)) && charCode !== 46) {
-        evt.preventDefault();
+            evt.preventDefault();
         } else {
-        return true;
+            return true;
         }
     }
 
@@ -190,7 +183,7 @@
         let amount = getTotalAmountToCredit();
         let remainingAmount = creditBalance - amount;
 
-        if(remainingAmount < 0) {
+        if (remainingAmount < 0) {
             $(this).val(0);
             return false;
         }
@@ -234,18 +227,30 @@
         let url = "{{ route('creditnotes.apply_invoice_credit', [':id']) }}";
         url = url.replace(':id', '{{ $creditNote->id }}');
 
-        $.easyAjax({
-            url: url,
-            type: 'POST',
-            container: '.content-wrapper',
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#apply-invoice",
-            redirect: true,
-            data: {
-                ...data,
-                _token: '{{ csrf_token() }}'
+        var $applyBtn = $('#apply-invoice');
+        $applyBtn.prop('disabled', true);
+        $.easyBlockUI('.content-wrapper');
+        window.apiHttp.post(url, {
+            ...data,
+            _token: '{{ csrf_token() }}'
+        }).then(function(response) {
+            if (response.redirectUrl) {
+                window.location.href = response.redirectUrl;
             }
+        }).catch(function(err) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    text: err.message,
+                    toast: true,
+                    position: 'top-end',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            }
+        }).finally(function() {
+            $applyBtn.prop('disabled', false);
+            $.easyUnblockUI('.content-wrapper');
         });
     });
 </script>

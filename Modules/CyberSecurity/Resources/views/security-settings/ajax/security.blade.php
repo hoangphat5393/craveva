@@ -88,18 +88,13 @@
     $('body').on('click', '#save-form', function () {
         var url = "{{ route('cybersecurity.update', 1) }}?page=security";
 
-        $.easyAjax({
-            url: url,
-            container: '#editSettings',
-            type: "POST",
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-form",
-            data: $('#editSettings').serialize(),
-            success: function () {
+        window.apiHttp.postUrlEncoded(url, $('#editSettings').serialize())
+            .then(function () {
                 window.location.reload();
-            }
-        })
+            })
+            .catch(function (err) {
+                $.handleApiFormError(err);
+            });
     });
 
     // have a from that id save-form i want to triger a function updateInfo when any input value is change in the from

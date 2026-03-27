@@ -5,7 +5,6 @@
 @endpush
 
 @section('filter-section')
-
     <x-filters.filter-box>
 
         <!-- SEARCH BY TASK START -->
@@ -17,8 +16,7 @@
                             <i class="fa fa-search f-13 text-dark-grey"></i>
                         </span>
                     </div>
-                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field"
-                           placeholder="@lang('app.startTyping')">
+                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field" placeholder="@lang('app.startTyping')">
                 </div>
             </form>
         </div>
@@ -33,7 +31,6 @@
         <!-- RESET END -->
 
     </x-filters.filter-box>
-
 @endsection
 
 @section('content')
@@ -69,21 +66,20 @@
         <!-- Task Box End -->
     </div>
     <!-- CONTENT WRAPPER END -->
-
 @endsection
 
 @push('scripts')
     @include('sections.datatable_js')
 
     <script>
-        $('#skills-table').on('preXhr.dt', function (e, settings, data) {
+        $('#skills-table').on('preXhr.dt', function(e, settings, data) {
             var searchText = $('#search-text-field').val();
 
             data['searchText'] = searchText;
         });
 
         $('#search-text-field').on('change keyup',
-            function () {
+            function() {
                 if ($('#search-text-field').val() != "") {
                     $('#reset-filters').removeClass('d-none');
                 } else {
@@ -93,7 +89,7 @@
                 showTable();
             });
 
-        $('body').on('click', '#reset-filters', function () {
+        $('body').on('click', '#reset-filters', function() {
             $('#filter-form')[0].reset();
             $('.filter-box .select-picker').selectpicker("refresh");
             $('#reset-filters').addClass('d-none');
@@ -105,7 +101,7 @@
             window.LaravelDataTables["skills-table"].draw(true);
         }
 
-        $('#quick-action-type').change(function () {
+        $('#quick-action-type').change(function() {
             const actionValue = $(this).val();
 
             if (actionValue != '') {
@@ -116,7 +112,7 @@
             }
         });
 
-        $('body').on('click', '#quick-action-apply', function () {
+        $('body').on('click', '#quick-action-apply', function() {
 
             const actionValue = $('#quick-action-type').val();
             if (actionValue == 'delete') {
@@ -148,7 +144,7 @@
             }
         });
 
-        $('body').on('click', '.delete-table-row', function () {
+        $('body').on('click', '.delete-table-row', function() {
             var id = $(this).data('user-id');
             Swal.fire({
                 title: "@lang('messages.sweetAlertTitle')",
@@ -172,48 +168,37 @@
                     var url = "{{ route('job-skills.destroy', ':id') }}";
                     url = url.replace(':id', id);
 
-                    var token = "{{ csrf_token() }}";
-
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function (response) {
-                            if (response.status == "success") {
-                                showTable();
-                            }
+                    window.apiHttp.delete(url, {
+                        _token: "{{ csrf_token() }}"
+                    }).then(function(response) {
+                        if (response.data.status == "success") {
+                            showTable();
                         }
+                    }).catch(function(err) {
+                        $.handleApiFormError(err);
                     });
                 }
             });
         });
 
         const applyQuickAction = () => {
-            var rowdIds = $("#skills-table input:checkbox:checked").map(function () {
+            var rowdIds = $("#skills-table input:checkbox:checked").map(function() {
                 return $(this).val();
             }).get();
             console.log(rowdIds);
 
             var url = "{{ route('job-skills.apply_quick_action') }}?row_ids=" + rowdIds;
-            $.easyAjax({
-                url: url,
-                container: '#quick-action-form',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#quick-action-apply",
-                data: $('#quick-action-form').serialize(),
-                success: function (response) {
-                    if (response.status == 'success') {
+            window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize())
+                .then(function(response) {
+                    if (response.data.status == 'success') {
                         showTable();
                         resetActionButtons();
                         deSelectAll();
                     }
-                }
-            })
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                });
         };
     </script>
 @endpush

@@ -38,22 +38,20 @@
         $('#edit-save-subtask').click(function() {
 
             const url = "{{ route('sub-tasks.update', $subTask->id) }}";
-
-            $.easyAjax({
-                url: url,
-                container: '#edit-save-subtask-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#edit-save-subtask",
-                data: $('#edit-save-subtask-data-form').serialize(),
-                success: function(response) {
-                    if (response.status == "success") {
-                        $('#sub-task-list').html(response.view);
-                        $(MODAL_LG).modal('hide');
-                    }
-
+            var $btn = $('#edit-save-subtask');
+            var prev = $btn.html();
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+            $.easyBlockUI('#edit-save-subtask-data-form');
+            window.apiHttp.postUrlEncoded(url, $('#edit-save-subtask-data-form').serialize()).then(function(response) {
+                if (response.status == "success") {
+                    $('#sub-task-list').html(response.view);
+                    $(MODAL_LG).modal('hide');
                 }
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI('#edit-save-subtask-data-form');
+                $btn.prop('disabled', false).html(prev);
             });
         });
 

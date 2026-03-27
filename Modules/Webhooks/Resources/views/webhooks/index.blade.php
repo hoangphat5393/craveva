@@ -152,45 +152,31 @@
 
             var url = "{{ route('webhooks.apply_quick_action') }}?row_ids=" + rowIds.join(',');
 
-            $.easyAjax({
-                url: url,
-                container: '#quick-action-form',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#quick-action-apply",
-                data: $('#quick-action-form').serialize(),
-                success: function(response) {
-                    if (response.status == 'success') {
-                        showTable();
-                        if (typeof resetActionButtons === 'function') resetActionButtons();
-                        if (typeof deSelectAll === 'function') deSelectAll();
-                        $('#quick-action-form').hide();
-                    }
+            window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize()).then(function(response) {
+                if (response.status == 'success') {
+                    showTable();
+                    if (typeof resetActionButtons === 'function') resetActionButtons();
+                    if (typeof deSelectAll === 'function') deSelectAll();
+                    $('#quick-action-form').hide();
                 }
-            });
+            }).catch(function(err) { $.handleApiFormError(err); });
         };
 
         $('body').on('change', '.quick-action-apply', function() {
             let id = $(this).data('webhook-id');
             let type = $(this).data('action-type');
             let url = "{{ route('webhooks.apply_quick_action') }}";
-            let token = "{{ csrf_token() }}";
             let value = $(this).val();
 
             if (value) {
-                let data = { '_token': token, id: id, type: type };
+                let data = { '_token': "{{ csrf_token() }}", id: id, type: type };
                 data[type === 'webhook_for' ? 'webhook_for' : 'status'] = value;
 
-                $.easyAjax({
-                    url: url,
-                    type: "POST",
-                    data: data,
-                    success: function(response) {
-                        if (response.status == "success") {
-                            showTable();
-                        }
+                window.apiHttp.postUrlEncoded(url, data).then(function(response) {
+                    if (response.status == "success") {
+                        showTable();
                     }
-                });
+                }).catch(function(err) { $.handleApiFormError(err); });
             }
         });
 
@@ -198,18 +184,12 @@
             var id = $(this).data('webhook-id');
             var url = "{{ route('webhooks.duplicate', ':id') }}";
             url = url.replace(':id', id);
-            var token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                type: 'POST',
-                url: url,
-                data: { '_token': token },
-                success: function(response) {
-                    if (response.status == "success") {
-                        showTable();
-                    }
+            window.apiHttp.postUrlEncoded(url, { '_token': "{{ csrf_token() }}" }).then(function(response) {
+                if (response.status == "success") {
+                    showTable();
                 }
-            });
+            }).catch(function(err) { $.handleApiFormError(err); });
         });
 
         $('body').on('click', '.delete-table-row', function() {
@@ -236,21 +216,11 @@
                     var url = "{{ route('webhooks.destroy', ':id') }}";
                     url = url.replace(':id', id);
 
-                    var token = "{{ csrf_token() }}";
-
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                showTable();
-                            }
+                    window.apiHttp.delete(url, "{{ csrf_token() }}").then(function(response) {
+                        if (response.status == "success") {
+                            showTable();
                         }
-                    });
+                    }).catch(function(err) { $.handleApiFormError(err); });
                 }
             });
         });

@@ -85,17 +85,12 @@
 
         $('#save-form').click(function () {
 
-            $.easyAjax({
-                url: "{{route('front.contact-us')}}",
-                container: '#contactUs',
-                type: "POST",
-                data: $('#contactUs').serialize(),
-                messagePosition: "inline",
-                success: function (response) {
-                    if(response.status == 'success'){
-                        $('#contactUsBox').remove();
-                    }
+            window.apiHttp.postUrlEncoded("{{route('front.contact-us')}}", $('#contactUs').serialize()).then(function (response) {
+                if(response.status == 'success'){
+                    $('#contactUsBox').remove();
                 }
+            }).catch(function (err) {
+                $.handleApiFormError(err);
             })
         });
 
@@ -103,15 +98,10 @@
         $('body').on('change', '#currency', function () {
             let currencyId = $(this).val();
             let url = '{{ route('front.pricing_plan') }}';
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                data: {
-                    'currencyId':currencyId
-                },
-                success: function (response) {
-                    $('#price-plan').html(response.view);
-                }
+            window.apiHttp.get(url, { params: { currencyId: currencyId } }).then(function (response) {
+                $('#price-plan').html(response.view);
+            }).catch(function (err) {
+                $.handleApiFormError(err);
             })
 
         });

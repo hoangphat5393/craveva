@@ -98,20 +98,15 @@
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
+                    $.easyBlockUI();
+                    window.apiHttp.delete(url, token)
+                        .then(function(response) {
                             if (response.status == "success") {
                                 $('.row' + id).fadeOut(100);
                             }
-                        }
-                    });
+                        })
+                        .catch(function (err) { $.handleApiFormError(err); })
+                        .finally(function () { $.easyUnblockUI(); });
                 }
             });
         });

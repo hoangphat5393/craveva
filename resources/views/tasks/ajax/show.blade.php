@@ -640,23 +640,31 @@
                         var url = "{{ route('tasks.send_approval', ':id') }}";
                         url = url.replace(':id', id);
 
-                        var token = "{{ csrf_token() }}";
                         var isApproval = $(this).data('send-approval');
-                        $.easyAjax({
-                            type: 'POST',
-                            url: url,
-                            data: {
-                                '_token': token,
-                                taskId: id,
-                                isApproval: isApproval,
-                                '_method': 'POST'
-                            },
-                            success: function (response) {
-                                console.log(response);
-                                if (response.status == "success") {
-                                    window.location.reload();
+                        window.apiHttp.postUrlEncoded(url, {
+                            '_token': "{{ csrf_token() }}",
+                            taskId: id,
+                            isApproval: isApproval
+                        }).then(function (response) {
+                            console.log(response);
+                            if (response.status == "success") {
+                                if (typeof response.message !== 'undefined' && response.message) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        text: response.message,
+                                        toast: true,
+                                        position: 'top-end',
+                                        timer: 3000,
+                                        timerProgressBar: true,
+                                        showConfirmButton: false,
+                                        customClass: { confirmButton: 'btn btn-primary' },
+                                        showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                                    });
                                 }
+                                window.location.reload();
                             }
+                        }).catch(function (err) {
+                            $.handleApiFormError(err);
                         });
                     }
                 });
@@ -673,15 +681,23 @@
                     checkUrl = checkUrl.replace(':id', id);
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        url: checkUrl,
-                        type: "POST",
-                        blockUI: true,
-                        container: '#task-detail-section',
-                        data: {
-                            '_token': token
-                        },
-                        success: function (data) {
+                    $.easyBlockUI('#task-detail-section');
+                    window.apiHttp.postUrlEncoded(checkUrl, {
+                        '_token': token
+                    }).then(function (data) {
+                        if (typeof data.message !== 'undefined' && data.message && data.status === 'success') {
+                            Swal.fire({
+                                icon: 'success',
+                                text: data.message,
+                                toast: true,
+                                position: 'top-end',
+                                timer: 3000,
+                                timerProgressBar: true,
+                                showConfirmButton: false,
+                                customClass: { confirmButton: 'btn btn-primary' },
+                                showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                            });
+                        }
                             if (data.taskCount > 0) {
                                 Swal.fire({
                                     title: "@lang('messages.sweetAlertTitle')",
@@ -710,7 +726,10 @@
                                 updateTask(id, status)
                             }
 
-                        }
+                    }).catch(function (err) {
+                        $.handleApiFormError(err);
+                    }).finally(function () {
+                        $.easyUnblockUI('#task-detail-section');
                     });
                 } else {
                     updateTask(id, status)
@@ -747,20 +766,29 @@
                             var url = "{{ route('tasks.destroy_pin', ':id') }}";
                             url = url.replace(':id', id);
 
-                            var token = "{{ csrf_token() }}";
-                            $.easyAjax({
-                                type: 'POST',
-                                url: url,
-                                data: {
-                                    '_token': token,
-                                    'type': pinType
-                                },
-                                success: function (response) {
-                                    if (response.status == "success") {
-                                        window.location.reload();
+                            window.apiHttp.postUrlEncoded(url, {
+                                '_token': "{{ csrf_token() }}",
+                                'type': pinType
+                            }).then(function (response) {
+                                if (response.status == "success") {
+                                    if (typeof response.message !== 'undefined' && response.message) {
+                                        Swal.fire({
+                                            icon: 'success',
+                                            text: response.message,
+                                            toast: true,
+                                            position: 'top-end',
+                                            timer: 3000,
+                                            timerProgressBar: true,
+                                            showConfirmButton: false,
+                                            customClass: { confirmButton: 'btn btn-primary' },
+                                            showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                                        });
                                     }
+                                    window.location.reload();
                                 }
-                            })
+                            }).catch(function (err) {
+                                $.handleApiFormError(err);
+                            });
                         }
                     });
 
@@ -785,19 +813,28 @@
                         if (result.isConfirmed) {
                             var url = "{{ route('tasks.store_pin') }}?type=" + pinType;
 
-                            var token = "{{ csrf_token() }}";
-                            $.easyAjax({
-                                type: 'POST',
-                                url: url,
-                                data: {
-                                    '_token': token,
-                                    'task_id': id
-                                },
-                                success: function (response) {
-                                    if (response.status == "success") {
-                                        window.location.reload();
+                            window.apiHttp.postUrlEncoded(url, {
+                                '_token': "{{ csrf_token() }}",
+                                'task_id': id
+                            }).then(function (response) {
+                                if (response.status == "success") {
+                                    if (typeof response.message !== 'undefined' && response.message) {
+                                        Swal.fire({
+                                            icon: 'success',
+                                            text: response.message,
+                                            toast: true,
+                                            position: 'top-end',
+                                            timer: 3000,
+                                            timerProgressBar: true,
+                                            showConfirmButton: false,
+                                            customClass: { confirmButton: 'btn btn-primary' },
+                                            showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                                        });
                                     }
+                                    window.location.reload();
                                 }
+                            }).catch(function (err) {
+                                $.handleApiFormError(err);
                             });
                         }
                     });
@@ -815,21 +852,37 @@
 
                 const requestUrl = this.href;
 
-                $.easyAjax({
-                    url: requestUrl,
-                    blockUI: true,
-                    container: "#nav-tabContent",
-                    historyPush: ($(RIGHT_MODAL).hasClass('in') ? false : true),
-                    data: {
+                if (!$(RIGHT_MODAL).hasClass('in')) {
+                    historyPush(requestUrl);
+                }
+                $.easyBlockUI("#nav-tabContent");
+                window.apiHttp.get(requestUrl, {
+                    params: {
                         'json': true
-                    },
-                    success: function (response) {
-                        if (response.status == "success") {
-                            $('#nav-tabContent').html(response.html);
-                            // Re-initialize components after content is loaded
-                            init(RIGHT_MODAL);
-                        }
                     }
+                }).then(function (response) {
+                    if (response.status == "success") {
+                        if (typeof response.message !== 'undefined' && response.message) {
+                            Swal.fire({
+                                icon: 'success',
+                                text: response.message,
+                                toast: true,
+                                position: 'top-end',
+                                timer: 3000,
+                                timerProgressBar: true,
+                                showConfirmButton: false,
+                                customClass: { confirmButton: 'btn btn-primary' },
+                                showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                            });
+                        }
+                        $('#nav-tabContent').html(response.html);
+                        // Re-initialize components after content is loaded
+                        init(RIGHT_MODAL);
+                    }
+                }).catch(function (err) {
+                    $.handleApiFormError(err);
+                }).finally(function () {
+                    $.easyUnblockUI("#nav-tabContent");
                 });
             });
 
@@ -837,20 +890,29 @@
             function updateTask(id, status) {
                 var url = "{{ route('tasks.change_status') }}";
                 var token = "{{ csrf_token() }}";
-                $.easyAjax({
-                    url: url,
-                    type: "POST",
-                    async: false,
-                    data: {
-                        '_token': token,
-                        taskId: id,
-                        status: status,
-                        sortBy: 'id'
-                    },
-                    success: function (data) {
-                        window.location.reload();
+                window.apiHttp.postUrlEncoded(url, {
+                    '_token': token,
+                    taskId: id,
+                    status: status,
+                    sortBy: 'id'
+                }).then(function (data) {
+                    if (typeof data.message !== 'undefined' && data.message) {
+                        Swal.fire({
+                            icon: 'success',
+                            text: data.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 3000,
+                            timerProgressBar: true,
+                            showConfirmButton: false,
+                            customClass: { confirmButton: 'btn btn-primary' },
+                            showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                        });
                     }
-                })
+                    window.location.reload();
+                }).catch(function (err) {
+                    $.handleApiFormError(err);
+                });
             }
 
 
@@ -878,20 +940,25 @@
                         var url = "{{ route('taskComment.destroy', ':id') }}";
                         url = url.replace(':id', id);
 
-                        var token = "{{ csrf_token() }}";
-
-                        $.easyAjax({
-                            type: 'POST',
-                            url: url,
-                            data: {
-                                '_token': token,
-                                '_method': 'DELETE'
-                            },
-                            success: function (response) {
-                                if (response.status == "success") {
-                                    $('#comment-list').html(response.view);
+                        window.apiHttp.delete(url, "{{ csrf_token() }}").then(function (response) {
+                            if (response.status == "success") {
+                                if (typeof response.message !== 'undefined' && response.message) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        text: response.message,
+                                        toast: true,
+                                        position: 'top-end',
+                                        timer: 3000,
+                                        timerProgressBar: true,
+                                        showConfirmButton: false,
+                                        customClass: { confirmButton: 'btn btn-primary' },
+                                        showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                                    });
                                 }
+                                $('#comment-list').html(response.view);
                             }
+                        }).catch(function (err) {
+                            $.handleApiFormError(err);
                         });
                     }
                 });
@@ -929,20 +996,25 @@
                         var url = "{{ route('sub-tasks.destroy', ':id') }}";
                         url = url.replace(':id', id);
 
-                        var token = "{{ csrf_token() }}";
-
-                        $.easyAjax({
-                            type: 'POST',
-                            url: url,
-                            data: {
-                                '_token': token,
-                                '_method': 'DELETE'
-                            },
-                            success: function (response) {
-                                if (response.status == "success") {
-                                    $('#sub-task-list').html(response.view);
+                        window.apiHttp.delete(url, "{{ csrf_token() }}").then(function (response) {
+                            if (response.status == "success") {
+                                if (typeof response.message !== 'undefined' && response.message) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        text: response.message,
+                                        toast: true,
+                                        position: 'top-end',
+                                        timer: 3000,
+                                        timerProgressBar: true,
+                                        showConfirmButton: false,
+                                        customClass: { confirmButton: 'btn btn-primary' },
+                                        showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                                    });
                                 }
+                                $('#sub-task-list').html(response.view);
                             }
+                        }).catch(function (err) {
+                            $.handleApiFormError(err);
                         });
                     }
                 });
@@ -967,22 +1039,31 @@
                 var url = "{{ route('sub_tasks.change_status') }}";
                 var token = "{{ csrf_token() }}";
 
-                $.easyAjax({
-                    url: url,
-                    type: "POST",
-                    data: {
-                        '_token': token,
-                        subTaskId: id,
-                        status: status
-                    },
-                    success: function (response) {
-                        if (response.status == "success") {
-
-                            $('#sub-task-list').html(response.view);
-
+                window.apiHttp.postUrlEncoded(url, {
+                    '_token': token,
+                    subTaskId: id,
+                    status: status
+                }).then(function (response) {
+                    if (response.status == "success") {
+                        if (typeof response.message !== 'undefined' && response.message) {
+                            Swal.fire({
+                                icon: 'success',
+                                text: response.message,
+                                toast: true,
+                                position: 'top-end',
+                                timer: 3000,
+                                timerProgressBar: true,
+                                showConfirmButton: false,
+                                customClass: { confirmButton: 'btn btn-primary' },
+                                showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                            });
                         }
+                        $('#sub-task-list').html(response.view);
+
                     }
-                })
+                }).catch(function (err) {
+                    $.handleApiFormError(err);
+                });
             });
 
             $('body').on('click', '.delete-file', function () {
@@ -1009,20 +1090,25 @@
                         var url = "{{ route('task-files.destroy', ':id') }}";
                         url = url.replace(':id', id);
 
-                        var token = "{{ csrf_token() }}";
-
-                        $.easyAjax({
-                            type: 'POST',
-                            url: url,
-                            data: {
-                                '_token': token,
-                                '_method': 'DELETE'
-                            },
-                            success: function (response) {
-                                if (response.status == "success") {
-                                    $('#task-file-list').html(response.view);
+                        window.apiHttp.delete(url, "{{ csrf_token() }}").then(function (response) {
+                            if (response.status == "success") {
+                                if (typeof response.message !== 'undefined' && response.message) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        text: response.message,
+                                        toast: true,
+                                        position: 'top-end',
+                                        timer: 3000,
+                                        timerProgressBar: true,
+                                        showConfirmButton: false,
+                                        customClass: { confirmButton: 'btn btn-primary' },
+                                        showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                                    });
                                 }
+                                $('#task-file-list').html(response.view);
                             }
+                        }).catch(function (err) {
+                            $.handleApiFormError(err);
                         });
                     }
                 });
@@ -1052,20 +1138,25 @@
                         var url = "{{ route('task-note.destroy', ':id') }}";
                         url = url.replace(':id', id);
 
-                        var token = "{{ csrf_token() }}";
-
-                        $.easyAjax({
-                            type: 'POST',
-                            url: url,
-                            data: {
-                                '_token': token,
-                                '_method': 'DELETE'
-                            },
-                            success: function (response) {
-                                if (response.status == "success") {
-                                    $('#note-list').html(response.view);
+                        window.apiHttp.delete(url, "{{ csrf_token() }}").then(function (response) {
+                            if (response.status == "success") {
+                                if (typeof response.message !== 'undefined' && response.message) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        text: response.message,
+                                        toast: true,
+                                        position: 'top-end',
+                                        timer: 3000,
+                                        timerProgressBar: true,
+                                        showConfirmButton: false,
+                                        customClass: { confirmButton: 'btn btn-primary' },
+                                        showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                                    });
                                 }
+                                $('#note-list').html(response.view);
                             }
+                        }).catch(function (err) {
+                            $.handleApiFormError(err);
                         });
                     }
                 });
@@ -1089,23 +1180,35 @@
                 var memo = "{{ $task->heading }}";
                 var token = "{{ csrf_token() }}";
 
-                $.easyAjax({
-                    url: "{{ route('timelogs.start_timer') }}",
-                    blockUI: true,
-                    type: "POST",
-                    data: {
-                        task_id: task_id,
-                        project_id: project_id,
-                        memo: memo,
-                        '_token': token,
-                        user_id: user_id
-                    },
-                    success: function (response) {
-                        if (response.status == 'success') {
-                            window.location.reload();
+                $.easyBlockUI('body');
+                window.apiHttp.postUrlEncoded("{{ route('timelogs.start_timer') }}", {
+                    task_id: task_id,
+                    project_id: project_id,
+                    memo: memo,
+                    '_token': token,
+                    user_id: user_id
+                }).then(function (response) {
+                    if (response.status == 'success') {
+                        if (typeof response.message !== 'undefined' && response.message) {
+                            Swal.fire({
+                                icon: 'success',
+                                text: response.message,
+                                toast: true,
+                                position: 'top-end',
+                                timer: 3000,
+                                timerProgressBar: true,
+                                showConfirmButton: false,
+                                customClass: { confirmButton: 'btn btn-primary' },
+                                showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                            });
                         }
+                        window.location.reload();
                     }
-                })
+                }).catch(function (err) {
+                    $.handleApiFormError(err);
+                }).finally(function () {
+                    $.easyUnblockUI('body');
+                });
             });
 
             $('body').on('click', '#reminderButton', function () {
@@ -1131,14 +1234,28 @@
                         var url = "{{ route('tasks.reminder') }}";
                         var token = "{{ csrf_token() }}";
 
-                        $.easyAjax({
-                            type: 'POST',
-                            blockUI: true,
-                            url: url,
-                            data: {
-                                'id': "{{ $task->id }}",
-                                '_token': token
+                        $.easyBlockUI('body');
+                        window.apiHttp.postUrlEncoded(url, {
+                            'id': "{{ $task->id }}",
+                            '_token': token
+                        }).then(function (response) {
+                            if (typeof response.message !== 'undefined' && response.message && response.status === 'success') {
+                                Swal.fire({
+                                    icon: 'success',
+                                    text: response.message,
+                                    toast: true,
+                                    position: 'top-end',
+                                    timer: 3000,
+                                    timerProgressBar: true,
+                                    showConfirmButton: false,
+                                    customClass: { confirmButton: 'btn btn-primary' },
+                                    showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                                });
                             }
+                        }).catch(function (err) {
+                            $.handleApiFormError(err);
+                        }).finally(function () {
+                            $.easyUnblockUI('body');
                         });
                     }
                 });
@@ -1150,23 +1267,33 @@
                 var token = '{{ csrf_token() }}';
                 const url = "{{ route('taskComment.save_comment_like') }}";
 
-                $.easyAjax({
-                    url: url,
-                    type: "POST",
-                    container: '#comment-list',
-                    disableButton: true,
-                    blockUI: true,
-                    data: {
-                        '_token': token,
-                        'commentId': commentId,
-                        'emojiName': emojiName
-                    },
-                    success: function (response) {
-                        if (response.status == "success") {
-                            $("#emoji-" + commentId).html(response.view);
+                $.easyBlockUI('#comment-list');
+                window.apiHttp.postUrlEncoded(url, {
+                    '_token': token,
+                    'commentId': commentId,
+                    'emojiName': emojiName
+                }).then(function (response) {
+                    if (response.status == "success") {
+                        if (typeof response.message !== 'undefined' && response.message) {
+                            Swal.fire({
+                                icon: 'success',
+                                text: response.message,
+                                toast: true,
+                                position: 'top-end',
+                                timer: 3000,
+                                timerProgressBar: true,
+                                showConfirmButton: false,
+                                customClass: { confirmButton: 'btn btn-primary' },
+                                showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                            });
                         }
-
+                        $("#emoji-" + commentId).html(response.view);
                     }
+
+                }).catch(function (err) {
+                    $.handleApiFormError(err);
+                }).finally(function () {
+                    $.easyUnblockUI('#comment-list');
                 });
             });
 

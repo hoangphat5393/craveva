@@ -1,7 +1,6 @@
 <div class="modal-header">
     <h5 class="modal-title" id="modelHeading">@lang('app.add') @lang('modules.lead.followUp')</h5>
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-            aria-hidden="true">×</span></button>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
 </div>
 
 <div class="modal-body">
@@ -15,33 +14,24 @@
                     </div>
 
                     <div class="col-md-6">
-                        <x-forms.datepicker fieldId="next_follow_up_date" fieldRequired="true"
-                            :fieldLabel="__('modules.lead.leadFollowUp')" fieldName="next_follow_up_date"
-                            :fieldValue="now(company()->timezone)->format(company()->date_format)"
-                            :fieldPlaceholder="__('placeholders.date')" />
+                        <x-forms.datepicker fieldId="next_follow_up_date" fieldRequired="true" :fieldLabel="__('modules.lead.leadFollowUp')" fieldName="next_follow_up_date" :fieldValue="now(company()->timezone)->format(company()->date_format)" :fieldPlaceholder="__('placeholders.date')" />
                     </div>
                     <div class="col-md-6">
                         <div class="bootstrap-timepicker timepicker">
-                            <x-forms.text :fieldLabel="__('modules.timeLogs.startTime')" :fieldPlaceholder="__('placeholders.hours')"
-                                fieldName="start_time" fieldId="start_time" fieldRequired="true"
-                                :fieldValue="now(company()->timezone)->format(company()->time_format)" />
+                            <x-forms.text :fieldLabel="__('modules.timeLogs.startTime')" :fieldPlaceholder="__('placeholders.hours')" fieldName="start_time" fieldId="start_time" fieldRequired="true" :fieldValue="now(company()->timezone)->format(company()->time_format)" />
                         </div>
                     </div>
                     <div class="col-lg-12 my-3">
-                        <x-forms.checkbox :fieldLabel="__('modules.tasks.reminder')" fieldName="send_reminder"
-                            fieldId="send_reminder" fieldValue="yes" fieldRequired="true" />
+                        <x-forms.checkbox :fieldLabel="__('modules.tasks.reminder')" fieldName="send_reminder" fieldId="send_reminder" fieldValue="yes" fieldRequired="true" />
                     </div>
 
                     <div class="col-lg-12 send_reminder_div d-none">
                         <div class="row">
                             <div class="col-lg-6 mt-1">
-                                <x-forms.number class="mr-0 mr-lg-2 mr-md-2"
-                                    :fieldLabel="__('modules.events.remindBefore')" fieldName="remind_time"
-                                    fieldId="remind_time" fieldValue="" fieldRequired="true" />
+                                <x-forms.number class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.events.remindBefore')" fieldName="remind_time" fieldId="remind_time" fieldValue="" fieldRequired="true" />
                             </div>
                             <div class="col-md-6 mt-3">
-                                <x-forms.select fieldId="remind_type" fieldLabel="" fieldName="remind_type"
-                                    search="true">
+                                <x-forms.select fieldId="remind_type" fieldLabel="" fieldName="remind_type" search="true">
                                     <option value="day">@lang('app.day')</option>
                                     <option value="hour">@lang('app.hour')</option>
                                     <option value="minute">@lang('app.minute')</option>
@@ -51,8 +41,7 @@
                     </div>
                     <div class="col-md-12">
                         <div class="form-group my-3">
-                            <x-forms.textarea class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.lead.remark')"
-                                fieldName="remark" fieldId="remark" fieldPlaceholder="">
+                            <x-forms.textarea class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.lead.remark')" fieldName="remark" fieldId="remark" fieldPlaceholder="">
                             </x-forms.textarea>
                         </div>
                     </div>
@@ -92,13 +81,8 @@
 
         // save channel
         $('#save-followup').click(function() {
-            $.easyAjax({
-                url: "{{ route('candidate-follow-up.store') }}",
-                container: '#followUpForm',
-                type: "POST",
-                blockUI: true,
-                data: $('#followUpForm').serialize(),
-                success: function(response) {
+            window.apiHttp.postUrlEncoded("{{ route('candidate-follow-up.store') }}", $('#followUpForm').serialize())
+                .then(function(response) {
                     if (response.status == "success") {
                         if (response.requestFromDatatable == "false") {
                             document.getElementById('follow-up-table').innerHTML = response.view;
@@ -132,21 +116,17 @@
 
                                         var token = "{{ csrf_token() }}";
 
-                                        $.easyAjax({
-                                            type: 'DELETE',
-                                            url: url,
-                                            blockUI: true,
-                                            data: {
-                                                '_token': token,
-                                            },
-                                            success: function(response) {
+                                        window.apiHttp.delete(url, token)
+                                            .then(function(response) {
                                                 if (response.status == "success") {
                                                     document.getElementById('follow-up-table').innerHTML = response.view;
                                                     $(MODAL_LG).modal('hide');
                                                     $(".select-picker").selectpicker();
                                                 }
-                                            }
-                                        });
+                                            })
+                                            .catch(function(err) {
+                                                $.handleApiFormError(err);
+                                            });
                                     }
                                 });
                             });
@@ -173,8 +153,10 @@
                         }
 
                     }
-                }
-            })
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                });
         });
     });
 </script>

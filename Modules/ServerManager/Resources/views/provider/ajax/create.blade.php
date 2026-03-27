@@ -61,15 +61,8 @@
 <script>
     $('#save-provider').click(function() {
         var url = "{{ route('provider.store') }}";
-        $.easyAjax({
-            url: url,
-            container: '#save-provider-data-form',
-            type: "POST",
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-provider",
-            data: $('#save-provider-data-form').serialize(),
-            success: function(response) {
+        window.apiHttp.postUrlEncoded(url, $('#save-provider-data-form').serialize())
+            .then(function (response) {
                 if (response.status == 'success') {
                     if (response.redirectUrl) {
                         window.location.href = response.redirectUrl;
@@ -78,8 +71,10 @@
                         showTable();
                     }
                 }
-            }
-        })
+            })
+            .catch(function (err) {
+                $.handleApiFormError(err);
+            });
     });
 
     init(RIGHT_MODAL);

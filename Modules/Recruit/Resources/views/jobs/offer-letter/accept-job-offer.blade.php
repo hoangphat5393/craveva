@@ -1,8 +1,6 @@
-
 <div class="modal-header">
     <h5 class="modal-title" id="modelHeading">@lang('modules.estimates.signatureAndConfirmation')</h5>
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-            aria-hidden="true">×</span></button>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
 </div>
 <div class="modal-body">
 
@@ -13,16 +11,14 @@
                 <x-recruit::cards.custom-question-field :fields="$fields" :values="$values" />
             </div>
             <div class="col-sm-12 bg-grey p-4 signature">
-                <x-forms.label fieldId="signature-pad" fieldRequired=""
-                               :fieldLabel="__('modules.estimates.signature')"/>
+                <x-forms.label fieldId="signature-pad" fieldRequired="" :fieldLabel="__('modules.estimates.signature')" />
                 <div class="signature_wrap wrapper border-0 form-control">
                     <canvas id="signature-pad" class="signature-pad rounded" width=400 height=150></canvas>
                 </div>
             </div>
             <div class="col-sm-12 mt-3">
                 <x-forms.button-secondary id="undo-signature">@lang('modules.estimates.undo')</x-forms.button-secondary>
-                <x-forms.button-secondary class="ml-2"
-                                          id="clear-signature">@lang('modules.estimates.clear')</x-forms.button-secondary>
+                <x-forms.button-secondary class="ml-2" id="clear-signature">@lang('modules.estimates.clear')</x-forms.button-secondary>
             </div>
 
         </div>
@@ -30,12 +26,12 @@
 </div>
 <div class="modal-footer">
     <x-forms.button-cancel data-dismiss="modal" class="border-0 mr-3">@lang('app.cancel')</x-forms.button-cancel>
-    <x-forms.button-primary id="save-signature"
-                            icon="check">@lang('recruit::modules.joboffer.submit')</x-forms.button-primary>
+    <x-forms.button-primary id="save-signature" icon="check">@lang('recruit::modules.joboffer.submit')</x-forms.button-primary>
 </div>
 
 <script>
     init(MODAL_LG);
+
     function checkboxChange(parentClass, id) {
         var checkedData = '';
         $('.' + parentClass).find("input[type= 'checkbox']:checked").each(function() {
@@ -47,16 +43,15 @@
     datepicker('.custom-date-picker', {
         position: 'bl',
         formatter: (input, date, instance) => {
-        input.value = moment(date).format('{{ $company->moment_date_format }}')
-    },
-    showAllDates: true,
-        customDays: {!!  json_encode(\App\Models\GlobalSetting::getDaysOfWeek())!!},
-        customMonths: {!!  json_encode(\App\Models\GlobalSetting::getMonthsOfYear())!!},
-        customOverlayMonths: {!!  json_encode(\App\Models\GlobalSetting::getMonthsOfYear())!!},
+            input.value = moment(date).format('{{ $company->moment_date_format }}')
+        },
+        showAllDates: true,
+        customDays: {!! json_encode(\App\Models\GlobalSetting::getDaysOfWeek()) !!},
+        customMonths: {!! json_encode(\App\Models\GlobalSetting::getMonthsOfYear()) !!},
+        customOverlayMonths: {!! json_encode(\App\Models\GlobalSetting::getMonthsOfYear()) !!},
         overlayButton: "@lang('app.submit')",
         overlayPlaceholder: "@lang('app.enterYear')",
     });
-
 </script>
 
 <script src="{{ asset('vendor/jquery/signature_pad.min.js') }}"></script>
@@ -66,9 +61,9 @@
             input.value = moment(date).format('{{ $company->moment_date_format }}')
         },
         showAllDates: true,
-        customDays: {!!  json_encode(\App\Models\GlobalSetting::getDaysOfWeek())!!},
-        customMonths: {!!  json_encode(\App\Models\GlobalSetting::getMonthsOfYear())!!},
-        customOverlayMonths: {!!  json_encode(\App\Models\GlobalSetting::getMonthsOfYear())!!},
+        customDays: {!! json_encode(\App\Models\GlobalSetting::getDaysOfWeek()) !!},
+        customMonths: {!! json_encode(\App\Models\GlobalSetting::getMonthsOfYear()) !!},
+        customOverlayMonths: {!! json_encode(\App\Models\GlobalSetting::getMonthsOfYear()) !!},
         overlayButton: "@lang('app.submit')",
         overlayPlaceholder: "@lang('app.enterYear')",
         startDay: parseInt("{{ attendance_setting()->week_start_from }}")
@@ -93,12 +88,12 @@
         backgroundColor: 'rgb(255, 255, 255)' // necessary for saving image as JPEG; can be removed is only saving as PNG or SVG
     });
 
-    document.getElementById('clear-signature').addEventListener('click', function (e) {
+    document.getElementById('clear-signature').addEventListener('click', function(e) {
         e.preventDefault();
         signaturePad.clear();
     });
 
-    document.getElementById('undo-signature').addEventListener('click', function (e) {
+    document.getElementById('undo-signature').addEventListener('click', function(e) {
         e.preventDefault();
         var data = signaturePad.toData();
         if (data) {
@@ -107,14 +102,14 @@
         }
     });
 
-    $('body').on('click', '.img-lightbox', function () {
+    $('body').on('click', '.img-lightbox', function() {
         var imageUrl = $(this).data('image-url');
         const url = "{{ route('front.public.show_image') . '?image_url=' }}" + imageUrl;
         $(MODAL_LG + ' ' + MODAL_HEADING).html('...');
         $.ajaxModal(MODAL_LG, url);
     });
 
-    $('body').on('click', '#save-signature', function () {
+    $('body').on('click', '#save-signature', function() {
         var status = 'accept';
         var signature = signaturePad.toDataURL('image/png');
         var signatureReq = '{{ $jobOffer->sign_require }}';
@@ -136,25 +131,14 @@
             return false;
         }
 
-        $.easyAjax({
-            url: "{{ route('front.job-offer.accept', $jobOffer->id) }}",
-            container: '#accept',
-            type: "POST",
-            disableButton: true,
-            blockUI: true,
-            file: true,
-            redirect: true,
-            data:{
-                signature: signature,
-            },
-            success: function (response) {
-                if (response.status == 'success') {
-                    window.location.reload();
-                }
+        window.apiHttp.postUrlEncoded("{{ route('front.job-offer.accept', $jobOffer->id) }}", {
+            signature: signature
+        }).then(function(response) {
+            if (response.data.status == 'success') {
+                window.location.reload();
             }
-        })
+        }).catch(function(err) {
+            $.handleApiFormError(err);
+        });
     });
-
 </script>
-
-

@@ -51,19 +51,20 @@
             document.getElementById('description-text3').value = note;
         }
 
-        $.easyAjax({
-            url: "{{route('tickets.update_detail', $ticket->id)}}",
-            container: '#editTicketDetail',
-            type: "POST",
-            blockUI: true,
-            data: $('#editTicketDetail').serialize(),
-            success: function (response) {
-                if(response.status == 'success'){
-                    window.location.reload();
-                }else{
-                    $('#description3-text').html(`<div class="alert alert-danger">${response.message}</div>`);
-                }
+        $.easyBlockUI('#editTicketDetail');
+        window.apiHttp.postUrlEncoded("{{route('tickets.update_detail', $ticket->id)}}", $('#editTicketDetail').serialize()).then(function (response) {
+            if(response.status == 'success'){
+                window.location.reload();
             }
-        })
+        }).catch(function (err) {
+            if (err.payload && err.payload.message) {
+                $('#description3-text').html(`<div class="alert alert-danger">${err.payload.message}</div>`);
+                $.handleApiFormError(err, { showToast: false });
+            } else {
+                $.handleApiFormError(err);
+            }
+        }).finally(function () {
+            $.easyUnblockUI('#editTicketDetail');
+        });
     });
 </script>

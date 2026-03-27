@@ -99,21 +99,22 @@
 
         $('#save-device').click(function() {
             const url = "{{ route('biometric-devices.store') }}";
-
-            $.easyAjax({
-                url: url,
-                container: '#save-device-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-device",
-                data: $('#save-device-form').serialize(),
-                success: function(response) {
+            const $btn = $('#save-device');
+            $btn.prop('disabled', true);
+            $.easyBlockUI('#save-device-form');
+            window.apiHttp.postUrlEncoded(url, $('#save-device-form').serialize())
+                .then(function(response) {
                     if (response.status == "success") {
                         window.location.href = response.redirectUrl;
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $btn.prop('disabled', false);
+                    $.easyUnblockUI('#save-device-form');
+                });
         });
 
         init(RIGHT_MODAL);

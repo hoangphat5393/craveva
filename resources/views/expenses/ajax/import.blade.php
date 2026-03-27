@@ -13,19 +13,14 @@
                     <div class="col-md-12">
                         <x-forms.link-secondary :link="asset('sample-import/expense-sample.xlsx')" icon="download">@lang('app.downloadSampleImport')</x-forms.link-secondary>
 
-                        <x-forms.file :fieldLabel="__('modules.import.file')" fieldName="import_file"
-                                      fieldId="expense_import"/>
+                        <x-forms.file :fieldLabel="__('modules.import.file')" fieldName="import_file" fieldId="expense_import" />
                     </div>
                     <div class="col-md-12">
-                        <x-forms.toggle-switch class="mr-0 mr-lg-12"
-                                               :fieldLabel="__('modules.import.containsHeadings')"
-                                               fieldName="heading"
-                                               fieldId="heading"/>
+                        <x-forms.toggle-switch class="mr-0 mr-lg-12" :fieldLabel="__('modules.import.containsHeadings')" fieldName="heading" fieldId="heading" />
                     </div>
                 </div>
                 <x-form-actions>
-                    <x-forms.button-primary id="import-expense-form" class="mr-3"
-                                            icon="arrow-right">@lang('app.uploadNext')
+                    <x-forms.button-primary id="import-expense-form" class="mr-3" icon="arrow-right">@lang('app.uploadNext')
                     </x-forms.button-primary>
                     <x-forms.button-cancel :link="route('expenses.index')" class="border-0">@lang('app.back')
                     </x-forms.button-cancel>
@@ -38,30 +33,36 @@
 </div>
 
 <script>
-
-    $(document).ready(function () {
+    $(document).ready(function() {
 
         $("#expense_import").dropify({
             messages: dropifyMessages
         });
 
-        $('body').on('click', '#import-expense-form', function () {
+        $('body').on('click', '#import-expense-form', function() {
             const url = "{{ route('expenses.import.store') }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#import-expense-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#import-expense-form",
-                file: true,
-                data: $('#import-expense-data-form').serialize(),
-                success: function (response) {
-                    if (response.status == 'success') {
-                        $('#import_table').html(response.view);
-                    }
+            var $impBtn = $('#import-expense-form');
+            $impBtn.prop('disabled', true);
+            $.easyBlockUI('#import-expense-data-form');
+            window.apiHttp.postForm(url, document.getElementById('import-expense-data-form')).then(function(response) {
+                if (response.status == 'success') {
+                    $('#import_table').html(response.view);
                 }
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $impBtn.prop('disabled', false);
+                $.easyUnblockUI('#import-expense-data-form');
             });
         });
     });

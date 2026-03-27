@@ -278,20 +278,15 @@ $deleteCompanyPermission = user()->permission('delete_companies');
 
                         var token = "{{ csrf_token() }}";
 
-                        $.easyAjax({
-                            type: 'POST',
-                            url: url,
-                            blockUI: true,
-                            data: {
-                                '_token': token,
-                                '_method': 'DELETE'
-                            },
-                            success: function (response) {
+                        $.easyBlockUI();
+                        window.apiHttp.delete(url, token)
+                            .then(function (response) {
                                 if (response.status === "success") {
                                     showTable();
                                 }
-                            }
-                        });
+                            })
+                            .catch(function (err) { $.handleApiFormError(err); })
+                            .finally(function () { $.easyUnblockUI(); });
                     }
                 });
             });
@@ -323,13 +318,10 @@ $deleteCompanyPermission = user()->permission('delete_companies');
                 if (result.isConfirmed) {
                     const token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        container: '#companies-table',
-                        blockUI: true,
-                        url: "{{route('notify.domain')}}",
-                        data: {'_token': token, 'company_id': company_id},
-                    });
+                    $.easyBlockUI('#companies-table');
+                    window.apiHttp.postUrlEncoded("{{route('notify.domain')}}", {'_token': token, 'company_id': company_id})
+                        .catch(function (err) { $.handleApiFormError(err); })
+                        .finally(function () { $.easyUnblockUI('#companies-table'); });
                 }
             });
 
@@ -348,16 +340,13 @@ $deleteCompanyPermission = user()->permission('delete_companies');
 
             var token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                url: url,
-                type: "POST",
-                data: {'_token': token},
-                success: function (response) {
+            window.apiHttp.postUrlEncoded(url, {'_token': token})
+                .then(function (response) {
                     if (response.status == "success") {
                         window.location.href = "{{ route('dashboard') }}";
                     }
-                }
-            });
+                })
+                .catch(function (err) { $.handleApiFormError(err); });
         });
     </script>
 @endpush

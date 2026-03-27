@@ -109,19 +109,18 @@
                     $('input[name="sort_order[]"]').each(function(index, value) {
                         sortedValues[index] = $(this).val();
                     });
-                    $.easyAjax({
-                        url: "{{ route('ticket-form.sort_fields') }}",
-                        type: "POST",
-                        blockUI: true,
-                        data: {
-                            'sortedValues': sortedValues,
-                            '_token': '{{ csrf_token() }}'
-                        },
-                        success: function(response) {
-                            var iframe = document.getElementById('previewIframe');
-                            iframe.src = iframe.src;
-                        }
-                    })
+                    $.easyBlockUI('body');
+                    window.apiHttp.postUrlEncoded("{{ route('ticket-form.sort_fields') }}", $.param({
+                        'sortedValues': sortedValues,
+                        '_token': '{{ csrf_token() }}'
+                    })).then(function(response) {
+                        var iframe = document.getElementById('previewIframe');
+                        iframe.src = iframe.src;
+                    }).catch(function(err) {
+                        $.handleApiFormError(err);
+                    }).finally(function() {
+                        $.easyUnblockUI('body');
+                    });
                 }
             });
         });
@@ -132,21 +131,20 @@
 
             var url = "{{ route('ticket-form.update', ':id') }}";
             url = url.replace(':id', id);
-            $.easyAjax({
-                url: url,
-                type: "POST",
-                blockUI: true,
-                data: {
-                    'id': id,
-                    'status': sendEmail,
-                    '_method': 'PUT',
-                    '_token': '{{ csrf_token() }}'
-                },
-                success: function(response) {
-                    var iframe = document.getElementById('previewIframe');
-                    iframe.src = iframe.src;
-                }
-            })
+            $.easyBlockUI('body');
+            window.apiHttp.postUrlEncoded(url, $.param({
+                'id': id,
+                'status': sendEmail,
+                '_method': 'PUT',
+                '_token': '{{ csrf_token() }}'
+            })).then(function(response) {
+                var iframe = document.getElementById('previewIframe');
+                iframe.src = iframe.src;
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI('body');
+            });
         });
 
         function resizeIframe(obj) {

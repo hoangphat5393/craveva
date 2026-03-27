@@ -941,90 +941,86 @@ $canEditTicket = ($editTicketPermission == 'all' || ($editTicketPermission == 'o
 
             const url = "{{ route('tickets.update', $ticket->id) }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#note-section',
-                type: "POST",
-                blockUI: true,
-                data: $('#updateTicket2').serialize(),
-                success: function(response) {
-                    if (response.status == 'success') {
-                        if (ticketDropzone.getQueuedFiles().length > 0) {
-                            $('#ticket_reply_id').val(response.reply_id);
-                            ticketDropzone.processQueue();
-                        } else if (ticketNoteDropzone.getQueuedFiles().length > 0) {
-                            $('#ticket_reply_id').val(response.reply_id);
-                            ticketNoteDropzone.processQueue();
-                        } else {
-                            window.location.href = "{{ route('tickets.show', $ticket->ticket_number) }}";
-                        }
+            $.easyBlockUI('#note-section');
+            window.apiHttp.postUrlEncoded(url, $('#updateTicket2').serialize()).then(function(response) {
+                if (response.status == 'success') {
+                    if (ticketDropzone.getQueuedFiles().length > 0) {
+                        $('#ticket_reply_id').val(response.reply_id);
+                        ticketDropzone.processQueue();
+                    } else if (ticketNoteDropzone.getQueuedFiles().length > 0) {
+                        $('#ticket_reply_id').val(response.reply_id);
+                        ticketNoteDropzone.processQueue();
+                    } else {
+                        window.location.href = "{{ route('tickets.show', $ticket->ticket_number) }}";
                     }
                 }
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI('#note-section');
             });
         });
 
         $('.submit-ticket-2').click(function() {
 
-            $.easyAjax({
-                url: "{{ route('tickets.update_other_data', $ticket->id) }}",
-                container: '#updateTicket1',
-                type: "POST",
-                blockUI: true,
-                disableButton: true,
-                buttonSelector: ".submit-ticket-2",
-                data: $('#updateTicket1').serialize(),
-                success: function(response) {
-                    if (response.status == 'success') {
-                        var status = $('#ticket-status').val();
+            var $btn2 = $('#updateTicket1').find('.submit-ticket-2');
+            var btn2Prev = $btn2.html();
+            $btn2.attr('data-prev-text', btn2Prev);
+            $btn2.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+            $.easyBlockUI('#updateTicket1');
+            window.apiHttp.postUrlEncoded("{{ route('tickets.update_other_data', $ticket->id) }}", $('#updateTicket1').serialize()).then(function(response) {
+                if (response.status == 'success') {
+                    var status = $('#ticket-status').val();
 
-                        ($('#ticket-status').val() != 'closed') ? $('#ticket-closed').show() :  $('#ticket-closed').hide();
+                    ($('#ticket-status').val() != 'closed') ? $('#ticket-closed').show() :  $('#ticket-closed').hide();
 
-                        // switch (status) {
-                        //     case 'open':
-                        //         var statusHtml =
-                        //             '<i class="fa fa-circle mr-2 text-red"></i>@lang("app.open")';
-                        //         break;
-                        //     case 'pending':
-                        //         var statusHtml =
-                        //             '<i class="fa fa-circle mr-2 text-yellow"></i>@lang("app.pending")';
-                        //         break;
-                        //     case 'resolved':
-                        //         var statusHtml =
-                        //             '<i class="fa fa-circle mr-2 text-dark-green"></i>@lang("app.resolved")';
-                        //         break;
-                        //     case 'closed':
-                        //         var statusHtml =
-                        //             '<i class="fa fa-circle mr-2 text-blue"></i>@lang("app.closed")';
-                        //         break;
+                    // switch (status) {
+                    //     case 'open':
+                    //         var statusHtml =
+                    //             '<i class="fa fa-circle mr-2 text-red"></i>@lang("app.open")';
+                    //         break;
+                    //     case 'pending':
+                    //         var statusHtml =
+                    //             '<i class="fa fa-circle mr-2 text-yellow"></i>@lang("app.pending")';
+                    //         break;
+                    //     case 'resolved':
+                    //         var statusHtml =
+                    //             '<i class="fa fa-circle mr-2 text-dark-green"></i>@lang("app.resolved")';
+                    //         break;
+                    //     case 'closed':
+                    //         var statusHtml =
+                    //             '<i class="fa fa-circle mr-2 text-blue"></i>@lang("app.closed")';
+                    //         break;
 
-                        //     default:
-                        //         var statusHtml =
-                        //             '<i class="fa fa-circle mr-2 text-red"></i>@lang("app.open")';
-                        //         break;
-                        // }
-                        // $('#ticketStatusBadge').html(statusHtml);
-                    }
+                    //     default:
+                    //         var statusHtml =
+                    //             '<i class="fa fa-circle mr-2 text-red"></i>@lang("app.open")';
+                    //         break;
+                    // }
+                    // $('#ticketStatusBadge').html(statusHtml);
                 }
-            })
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI('#updateTicket1');
+                $btn2.html($btn2.attr('data-prev-text'));
+                $btn2.prop('disabled', false);
+            });
         });
 
 
         $('.apply-template').click(function() {
             var templateId = $(this).data('template-id');
 
-            $.easyAjax({
-                url: "{{ route('replyTemplates.fetchTemplate') }}",
-                data: {
-                    templateId: templateId
-                },
-                success: function(response) {
-                    if (response.status == "success") {
-                        var container = $('#description').get(0);
-                        var quill = new Quill(container);
-                        quill.clipboard.dangerouslyPasteHTML(0, response.replyText);
-                    }
+            window.apiHttp.get("{{ route('replyTemplates.fetchTemplate') }}", { params: { templateId: templateId } }).then(function(response) {
+                if (response.status == "success") {
+                    var container = $('#description').get(0);
+                    var quill = new Quill(container);
+                    quill.clipboard.dangerouslyPasteHTML(0, response.replyText);
                 }
-            })
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            });
         })
 
         $('body').on('click', '#cancel-notes', function() {
@@ -1119,36 +1115,36 @@ $canEditTicket = ($editTicketPermission == 'all' || ($editTicketPermission == 'o
 
             var token = '{{ csrf_token() }}';
 
-            $.easyAjax({
-                type: 'POST',
-                container: formId,
-                url: url,
-                disableButton: true,
-                blockUI: true,
-                file: true,
-                buttonSelector: "#save-notes",
-                data: {
-                    '_token': token,
-                    'messageId': messageId,
-                    'editedMessage': editedMessage,
-                    'id': id,
-                },
-                success: function(response) {
-                    if (response.status == "success") {
-                        if (editNoteDropzone.getQueuedFiles().length > 0) {
-                            $('#ticket_reply_id').val(id);
-                            editNoteDropzone.processQueue();
-                        }
+            var formEl = document.getElementById('text-' + id);
+            var fd = (formEl && formEl.tagName === 'FORM') ? new FormData(formEl) : new FormData();
+            fd.append('_token', token);
+            fd.append('messageId', messageId);
+            fd.append('editedMessage', editedMessage);
+            fd.append('id', id);
 
-                        $('#text-'+id+'').addClass('d-none');
-                        $('#' + messageId + ' .notified-message').removeClass('d-none');
-                        $('#' + messageId + ' .note-message').children('span').html(editedMessage);
-                        $('#' + messageId + ' .note-message').removeClass('d-none');
+            var $saveBtn = $('#' + formId).find('#save-notes');
+            var savePrev = $saveBtn.html();
+            $saveBtn.attr('data-prev-text', savePrev);
+            $saveBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+            $.easyBlockUI('#' + formId);
+            window.apiHttp.postForm(url, fd).then(function(response) {
+                if (response.status == "success") {
+                    if (editNoteDropzone.getQueuedFiles().length > 0) {
+                        $('#ticket_reply_id').val(id);
+                        editNoteDropzone.processQueue();
                     }
-                },
-                error: function(xhr, status, error) {
-                    // Handle errors if any
+
+                    $('#text-'+id+'').addClass('d-none');
+                    $('#' + messageId + ' .notified-message').removeClass('d-none');
+                    $('#' + messageId + ' .note-message').children('span').html(editedMessage);
+                    $('#' + messageId + ' .note-message').removeClass('d-none');
                 }
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI('#' + formId);
+                $saveBtn.html($saveBtn.attr('data-prev-text'));
+                $saveBtn.prop('disabled', false);
             });
         });
 
@@ -1177,20 +1173,12 @@ $canEditTicket = ($editTicketPermission == 'all' || ($editTicketPermission == 'o
                     var url = "{{ route('ticket-files.destroy', ':id') }}";
                     url = url.replace(':id', id);
 
-                    var token = "{{ csrf_token() }}";
-
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                replyFile.closest('.card').remove();
-                            }
+                    window.apiHttp.delete(url, "{{ csrf_token() }}").then(function(response) {
+                        if (response.status == "success") {
+                            replyFile.closest('.card').remove();
                         }
+                    }).catch(function(err) {
+                        $.handleApiFormError(err);
                     });
                 }
             });
@@ -1218,21 +1206,13 @@ $canEditTicket = ($editTicketPermission == 'all' || ($editTicketPermission == 'o
                 if (result.isConfirmed) {
                     var url = "{{ route('tickets.destroy', $ticket->id) }}";
 
-                    var token = "{{ csrf_token() }}";
-
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                window.location.href =
-                                    "{{ route('tickets.index') }}";
-                            }
+                    window.apiHttp.delete(url, "{{ csrf_token() }}").then(function(response) {
+                        if (response.status == "success") {
+                            window.location.href =
+                                "{{ route('tickets.index') }}";
                         }
+                    }).catch(function(err) {
+                        $.handleApiFormError(err);
                     });
                 }
             });
@@ -1262,20 +1242,12 @@ $canEditTicket = ($editTicketPermission == 'all' || ($editTicketPermission == 'o
                     var url = "{{ route('ticket-replies.destroy', ':id') }}";
                     url = url.replace(':id', id);
 
-                    var token = "{{ csrf_token() }}";
-
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                $('#message-' + id).remove();
-                            }
+                    window.apiHttp.delete(url, "{{ csrf_token() }}").then(function(response) {
+                        if (response.status == "success") {
+                            $('#message-' + id).remove();
                         }
+                    }).catch(function(err) {
+                        $.handleApiFormError(err);
                     });
                 }
             });
@@ -1316,29 +1288,26 @@ $canEditTicket = ($editTicketPermission == 'all' || ($editTicketPermission == 'o
             url = url.replace(':id', groupId);
             url = url.replace(':exceptThis', exceptThis);
 
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                // data: ticket_number,
-                success: function(response)
+            window.apiHttp.get(url).then(function(response)
+            {
+                var options = [];
+                var rData = [];
+                if($.isArray(response.data))
                 {
-                    var options = [];
-                    var rData = [];
-                    if($.isArray(response.data))
-                    {
-                        rData = response.data;
-                        $.each(rData, function(index, value) {
-                            var selectData = '';
-                            options.push(value);
-                        });
-                        $('#agent_id').html('<option value="">--</option>' + options);
-                    }
-                    else
-                    {
-                        $('#agent_id').html(response.data);
-                    }
-                    $('#agent_id').selectpicker('refresh');
+                    rData = response.data;
+                    $.each(rData, function(index, value) {
+                        var selectData = '';
+                        options.push(value);
+                    });
+                    $('#agent_id').html('<option value="">--</option>' + options);
                 }
+                else
+                {
+                    $('#agent_id').html(response.data);
+                }
+                $('#agent_id').selectpicker('refresh');
+            }).catch(function(err) {
+                $.handleApiFormError(err);
             });
         }
 

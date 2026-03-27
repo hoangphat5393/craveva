@@ -69,20 +69,19 @@
 
             const url = "{{ route('superadmin.offline-plan.changePlan') }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#request-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-request",
-                data: $('#request-data-form').serialize(),
-                success: function(response) {
-                    if (response.status == "success") {
-                        window.location.reload();
-                    }
-
+            var $btn = $('#save-request');
+            var prev = $btn.html();
+            $.easyBlockUI('#request-data-form');
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+            window.apiHttp.postUrlEncoded(url, $('#request-data-form').serialize()).then(function(response) {
+                if (response.status == "success") {
+                    window.location.reload();
                 }
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI('#request-data-form');
+                $btn.prop('disabled', false).html(prev);
             });
         });
 

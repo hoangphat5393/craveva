@@ -29,19 +29,14 @@
 <script>
     // save source
     $('#save-payment-method').click(function () {
-        $.easyAjax({
-            url: "{{ route('payment-methods.store') }}",
-            container: '#addPaymentMethod',
-            type: "POST",
-            blockUI: true,
-            disableButton: true,
-            buttonSelector: "#save-payment-method",
-            data: $('#addPaymentMethod').serialize(),
-            success: function (response) {
+        window.apiHttp.postUrlEncoded("{{ route('payment-methods.store') }}", $('#addPaymentMethod').serialize())
+            .then(function (response) {
                 if (response.status == "success") {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch(function (err) {
+                $.handleApiFormError(err);
+            });
     });
 </script>

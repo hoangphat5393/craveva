@@ -112,20 +112,22 @@
     });
 
     $('#update-custom-field').click(function () {
-        $.easyAjax({
-            url: "{{route('superadmin.settings.global-custom-fields.update', $field->id)}}",
-            container: '#editForm',
-            type: "POST",
-            data: $('#editForm').serialize(),
-            file:true,
-            blockUI: true,
-            buttonSelector: "#update-custom-field",
-            success: function (response) {
+        const url = "{{route('superadmin.settings.global-custom-fields.update', $field->id)}}";
+        const $btn = $('#update-custom-field');
+        const prev = $btn.html();
+        $.easyBlockUI('#editForm');
+        $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+        window.apiHttp.postForm(url, document.getElementById('editForm'))
+            .then(function (response) {
                 if(response.status == 'success'){
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch(function (err) { $.handleApiFormError(err); })
+            .finally(function () {
+                $.easyUnblockUI('#editForm');
+                $btn.prop('disabled', false).html(prev);
+            });
     });
 
 </script>

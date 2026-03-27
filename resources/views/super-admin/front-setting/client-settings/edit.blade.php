@@ -33,19 +33,17 @@
     $(".select-picker").selectpicker();
 
     $('#save-front-client').click(function() {
-        $.easyAjax({
-            url: "{{ route('superadmin.front-settings.client-settings.update', $client->id) }}",
-            container: '#editFrontClient',
-            type: "POST",
-            blockUI: true,
-            file: true,
-            success: function(response) {
+        const url = "{{ route('superadmin.front-settings.client-settings.update', $client->id) }}";
+        $.easyBlockUI('#editFrontClient');
+        window.apiHttp.postForm(url, document.getElementById('editFrontClient'))
+            .then(function(response) {
                 if (response.status == "success") {
                     $('#example').html(response.html);
                     $(MODAL_LG).modal('hide');
                 }
-            }
-        })
+            })
+            .catch(function (err) { $.handleApiFormError(err); })
+            .finally(function () { $.easyUnblockUI('#editFrontClient'); });
     });
 
     init('#editFrontClient');

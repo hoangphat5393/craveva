@@ -38,14 +38,9 @@
     $('body').on('click', '#save-session-form', function () {
         var url = "{{ route('cybersecurity.update', 1) }}?page=single-session";
 
-        $.easyAjax({
-            url: url,
-            container: '#editSettings',
-            type: "POST",
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-session-form",
-            data: $('#editSettings').serialize(),
-        })
+        window.apiHttp.postUrlEncoded(url, $('#editSettings').serialize())
+            .catch(function (err) {
+                $.handleApiFormError(err);
+            });
     });
 </script>

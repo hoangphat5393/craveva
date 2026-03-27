@@ -31,22 +31,21 @@
         var url = "{{ route('biolinks.update', ':id') }}";
         url = url.replace(':id', '{{ $biolink->id }}');
 
-        $.easyAjax({
-            url: url,
-            container: '#edit-biolinks',
-            type: "PUT",
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-biolinks",
-            data: $('#edit-biolinks').serialize(),
-            success: function(response) {
+        $.easyBlockUI('#edit-biolinks');
+        window.apiHttp.postUrlEncoded(url, $('#edit-biolinks').serialize())
+            .then(function(response) {
                 if (response.status == 'success') {
                     let id = response.id;
                     let editUrl = "{{ route('biolinks.edit', ':id') }}";
                     editUrl = editUrl.replace(':id', id);
                     window.location.href = editUrl;
                 }
-            }
-        });
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $.easyUnblockUI('#edit-biolinks');
+            });
     });
 </script>

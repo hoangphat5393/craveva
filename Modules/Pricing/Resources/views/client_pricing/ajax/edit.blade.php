@@ -92,13 +92,9 @@
 
         var url = "{{ route('pricing.client_pricing.update', $pricing->id) }}";
 
-        $.easyAjax({
-            url: url,
-            container: '#edit-client-pricing-form',
-            type: 'POST',
-            blockUI: true,
-            data: $('#edit-client-pricing-form').serialize(),
-            success: function(response) {
+        $.easyBlockUI('#edit-client-pricing-form');
+        window.apiHttp.postUrlEncoded(url, $('#edit-client-pricing-form').serialize())
+            .then(function(response) {
                 if (response.status === 'success') {
                     if ($(RIGHT_MODAL).hasClass('show')) {
                         document.getElementById('close-task-detail').click();
@@ -107,8 +103,13 @@
                         window.location.href = response.redirectUrl;
                     }
                 }
-            }
-        });
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $.easyUnblockUI('#edit-client-pricing-form');
+            });
     });
 
     $(document).ready(function() {

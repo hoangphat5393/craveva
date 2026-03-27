@@ -55,8 +55,6 @@
         var url = "{{ route('taskCategory.destroy', ':id') }}";
         url = url.replace(':id', id);
 
-        var token = "{{ csrf_token() }}";
-
         Swal.fire({
             title: "@lang('messages.sweetAlertTitle')",
             text: "@lang('messages.recoverRecord')",
@@ -76,20 +74,27 @@
             buttonsStyling: false
         }).then((result) => {
             if (result.isConfirmed) {
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
-                        if (response.status == 'success') {
-                            $('#task_category_id').html(response.data);
-                            $('#task_category_id').selectpicker('refresh');
-                            $(MODAL_LG).modal('hide');
+                window.apiHttp.delete(url, "{{ csrf_token() }}").then(function(response) {
+                    if (response.status == 'success') {
+                        if (typeof response.message !== 'undefined' && response.message) {
+                            Swal.fire({
+                                icon: 'success',
+                                text: response.message,
+                                toast: true,
+                                position: 'top-end',
+                                timer: 3000,
+                                timerProgressBar: true,
+                                showConfirmButton: false,
+                                customClass: { confirmButton: 'btn btn-primary' },
+                                showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                            });
                         }
+                        $('#task_category_id').html(response.data);
+                        $('#task_category_id').selectpicker('refresh');
+                        $(MODAL_LG).modal('hide');
                     }
+                }).catch(function(err) {
+                    $.handleApiFormError(err);
                 });
             }
         });
@@ -98,22 +103,37 @@
 
     $('#save-category').click(function() {
         var url = "{{ route('taskCategory.store') }}";
-        $.easyAjax({
-            url: url,
-            container: '#createTaskCategory',
-            type: "POST",
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-category",
-            data: $('#createTaskCategory').serialize(),
-            success: function(response) {
-                if (response.status == 'success') {
-                    $('#task_category_id').html(response.data);
-                    $('#task_category_id').selectpicker('refresh');
-                    $(MODAL_LG).modal('hide');
+        var $btn = $('#createTaskCategory').find('#save-category');
+        var btnPrev = $btn.html();
+        $btn.attr('data-prev-text', btnPrev);
+        $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+        $.easyBlockUI('#createTaskCategory');
+        window.apiHttp.postUrlEncoded(url, $('#createTaskCategory').serialize()).then(function(response) {
+            if (response.status == 'success') {
+                if (typeof response.message !== 'undefined' && response.message) {
+                    Swal.fire({
+                        icon: 'success',
+                        text: response.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 3000,
+                        timerProgressBar: true,
+                        showConfirmButton: false,
+                        customClass: { confirmButton: 'btn btn-primary' },
+                        showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                    });
                 }
+                $('#task_category_id').html(response.data);
+                $('#task_category_id').selectpicker('refresh');
+                $(MODAL_LG).modal('hide');
             }
-        })
+        }).catch(function(err) {
+            $.handleApiFormError(err);
+        }).finally(function() {
+            $.easyUnblockUI('#createTaskCategory');
+            $btn.html($btn.attr('data-prev-text'));
+            $btn.prop('disabled', false);
+        });
     });
 
     $('[contenteditable=true]').focus(function() {
@@ -131,25 +151,34 @@
             var url = "{{ route('taskCategory.update', ':id') }}";
             url = url.replace(':id', id);
 
-            var token = "{{ csrf_token() }}";
-
-            $.easyAjax({
-                url: url,
-                container: '#row-' + id,
-                type: "POST",
-                data: {
-                    'category_name': value,
-                    '_token': token,
-                    '_method': 'PUT'
-                },
-                blockUI: true,
-                success: function(response) {
-                    if (response.status == 'success') {
-                        $('#task_category_id').html(response.data);
-                        $('#task_category_id').selectpicker('refresh');
+            $.easyBlockUI('#row-' + id);
+            window.apiHttp.postUrlEncoded(url, {
+                'category_name': value,
+                '_token': "{{ csrf_token() }}",
+                '_method': 'PUT'
+            }).then(function(response) {
+                if (response.status == 'success') {
+                    if (typeof response.message !== 'undefined' && response.message) {
+                        Swal.fire({
+                            icon: 'success',
+                            text: response.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 3000,
+                            timerProgressBar: true,
+                            showConfirmButton: false,
+                            customClass: { confirmButton: 'btn btn-primary' },
+                            showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                        });
                     }
+                    $('#task_category_id').html(response.data);
+                    $('#task_category_id').selectpicker('refresh');
                 }
-            })
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI('#row-' + id);
+            });
         }
     });
 

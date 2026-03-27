@@ -115,21 +115,15 @@
                 url = url.replace(':historyId', historyId);
                 url = url.replace(':assetId', assetId);
 
-                var token = "{{ csrf_token() }}";
-
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function (response) {
+                window.apiHttp.delete(url, "{{ csrf_token() }}")
+                    .then(function (response) {
                         if (response.status == "success") {
                             $('#history').html(response.view);
                         }
-                    }
-                });
+                    })
+                    .catch(function (err) {
+                        $.handleApiFormError(err);
+                    });
             }
         });
     });

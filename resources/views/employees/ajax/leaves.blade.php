@@ -1,5 +1,5 @@
 @php
-$addLeavePermission = user()->permission('add_leave');
+    $addLeavePermission = user()->permission('add_leave');
 @endphp
 
 <!-- ROW START -->
@@ -22,8 +22,7 @@ $addLeavePermission = user()->permission('add_leave');
                 <!-- STATUS START -->
                 <div class="select-box py-2 px-0 mr-3">
                     <x-forms.label :fieldLabel="__('modules.leaves.leaveType')" fieldId="leave_type" />
-                    <select class="form-control select-picker" name="leave_type" id="leave_type" data-live-search="true"
-                        data-size="8">
+                    <select class="form-control select-picker" name="leave_type" id="leave_type" data-live-search="true" data-size="8">
                         <option value="all">@lang('app.all')</option>
                         @foreach ($leaveTypes as $leaveType)
                             <option value="{{ $leaveType->id }}">{{ $leaveType->type_name }}</option>
@@ -34,8 +33,7 @@ $addLeavePermission = user()->permission('add_leave');
                 <!-- STATUS START -->
                 <div class="select-box py-2 px-0 mr-3">
                     <x-forms.label :fieldLabel="__('app.status')" fieldId="status" />
-                    <select class="form-control select-picker" name="status" id="status" data-live-search="true"
-                        data-size="8">
+                    <select class="form-control select-picker" name="status" id="status" data-live-search="true" data-size="8">
                         <option value="all">@lang('app.all')</option>
                         <option value="approved">@lang('app.approved')</option>
                         <option value="pending">@lang('app.pending')</option>
@@ -53,8 +51,7 @@ $addLeavePermission = user()->permission('add_leave');
                                 <i class="fa fa-search f-13 text-dark-grey"></i>
                             </span>
                         </div>
-                        <input type="text" class="form-control f-14 p-1 height-35 border" id="search-text-field"
-                            placeholder="@lang('app.startTyping')">
+                        <input type="text" class="form-control f-14 p-1 height-35 border" id="search-text-field" placeholder="@lang('app.startTyping')">
                     </div>
                 </div>
                 <!-- SEARCH BY TASK END -->
@@ -74,8 +71,7 @@ $addLeavePermission = user()->permission('add_leave');
         <div class="d-flex justify-content-between action-bar">
             <div id="table-actions" class="align-items-center">
                 @if ($addLeavePermission == 'all' || ($addLeavePermission == 'added' && user()->id == $employee->id))
-                    <x-forms.link-primary :link="route('leaves.create').'?default_assign='.$employee->id"
-                        class="mr-3 openRightModal float-left" data-redirect-url="{{ url()->full() }}" icon="plus">
+                    <x-forms.link-primary :link="route('leaves.create') . '?default_assign=' . $employee->id" class="mr-3 openRightModal float-left" data-redirect-url="{{ url()->full() }}" icon="plus">
                         @lang('modules.leaves.addLeave')
                     </x-forms.link-primary>
                 @endif
@@ -244,25 +240,33 @@ $addLeavePermission = user()->permission('add_leave');
 
                 var token = "{{ csrf_token() }}";
 
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    blockUI: true,
-                    data: {
-                        'uniId': uniId,
-                        'duration': duration,
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
-                        if (response.status == "success") {
-                            if(type == 'multiple-leave'){
-                                window.location.reload();
-                            } else{
-                                showTable();
-                            }
+                $.easyBlockUI();
+                window.apiHttp.postUrlEncoded(url, {
+                    'uniId': uniId,
+                    'duration': duration,
+                    '_token': token,
+                    '_method': 'DELETE'
+                }).then(function(response) {
+                    if (response.status == "success") {
+                        if (type == 'multiple-leave') {
+                            window.location.reload();
+                        } else {
+                            showTable();
                         }
                     }
+                }).catch(function(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
+                    }
+                }).finally(function() {
+                    $.easyUnblockUI();
                 });
             }
         });
@@ -275,20 +279,29 @@ $addLeavePermission = user()->permission('add_leave');
 
         var url = "{{ route('leaves.apply_quick_action') }}?row_ids=" + rowdIds;
 
-        $.easyAjax({
-            url: url,
-            container: '#quick-action-form',
-            type: "POST",
-            disableButton: true,
-            buttonSelector: "#quick-action-apply",
-            data: $('#quick-action-form').serialize(),
-            success: function(response) {
-                if (response.status == 'success') {
-                    showTable();
-                    resetActionButtons();
-                }
+        var $qaApply = $('#quick-action-apply');
+        $qaApply.prop('disabled', true);
+        $.easyBlockUI('#quick-action-form');
+        window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize()).then(function(response) {
+            if (response.status == 'success') {
+                showTable();
+                resetActionButtons();
             }
-        })
+        }).catch(function(err) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    text: err.message,
+                    toast: true,
+                    position: 'top-end',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            }
+        }).finally(function() {
+            $qaApply.prop('disabled', false);
+            $.easyUnblockUI('#quick-action-form');
+        });
     };
 
     $('body').on('click', '.show-leave', function() {
@@ -325,20 +338,28 @@ $addLeavePermission = user()->permission('add_leave');
             buttonsStyling: false
         }).then((result) => {
             if (result.isConfirmed) {
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    blockUI: true,
-                    data: {
-                        'action': action,
-                        'leaveId': leaveId,
-                        '_token': '{{ csrf_token() }}'
-                    },
-                    success: function(response) {
-                        if (response.status == 'success') {
-                            window.LaravelDataTables["leaves-table"].draw(true);
-                        }
+                $.easyBlockUI();
+                window.apiHttp.postUrlEncoded(url, {
+                    'action': action,
+                    'leaveId': leaveId,
+                    '_token': '{{ csrf_token() }}'
+                }).then(function(response) {
+                    if (response.status == 'success') {
+                        window.LaravelDataTables["leaves-table"].draw(true);
                     }
+                }).catch(function(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
+                    }
+                }).finally(function() {
+                    $.easyUnblockUI();
                 });
             }
         });
@@ -346,26 +367,26 @@ $addLeavePermission = user()->permission('add_leave');
     });
 
     $('body').on('click', '.leave-action-approved', function() {
-            let action = $(this).data('leave-action');
-            let leaveId = $(this).data('leave-id');
-            var type = $(this).data('type');
-            if(type == undefined){
-                var type = 'single';
-            }
-            let searchQuery = "?leave_action=" + action + "&leave_id=" + leaveId + "&type=" + type;
-            let url = "{{ route('leaves.show_approved_modal') }}" + searchQuery;
+        let action = $(this).data('leave-action');
+        let leaveId = $(this).data('leave-id');
+        var type = $(this).data('type');
+        if (type == undefined) {
+            var type = 'single';
+        }
+        let searchQuery = "?leave_action=" + action + "&leave_id=" + leaveId + "&type=" + type;
+        let url = "{{ route('leaves.show_approved_modal') }}" + searchQuery;
 
-            $(MODAL_LG + ' ' + MODAL_HEADING).html('...');
-            $.ajaxModal(MODAL_LG, url);
-        });
+        $(MODAL_LG + ' ' + MODAL_HEADING).html('...');
+        $.ajaxModal(MODAL_LG, url);
+    });
 
     $('body').on('click', '.leave-action-reject', function() {
         let action = $(this).data('leave-action');
         let leaveId = $(this).data('leave-id');
         var type = $(this).data('type');
-            if(type == undefined){
-                var type = 'single';
-            }
+        if (type == undefined) {
+            var type = 'single';
+        }
         let searchQuery = "?leave_action=" + action + "&leave_id=" + leaveId + "&type=" + type;
         let url = "{{ route('leaves.show_reject_modal') }}" + searchQuery;
 
@@ -377,7 +398,7 @@ $addLeavePermission = user()->permission('add_leave');
         var leaveId = $(this).data('leave-id');
         var uniqueId = $(this).data('unique-id');
 
-        var url = "{{ route('leaves.view_related_leave', ':id') }}?uniqueId="+uniqueId;
+        var url = "{{ route('leaves.view_related_leave', ':id') }}?uniqueId=" + uniqueId;
         url = url.replace(':id', leaveId);
 
         $(MODAL_LG + ' ' + MODAL_HEADING).html('...');

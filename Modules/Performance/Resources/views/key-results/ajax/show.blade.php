@@ -146,25 +146,22 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 var id = $(this).data('key-results-id');
-                var token = "{{ csrf_token() }}";
-
                 var url = "{{ route('key-results.destroy', ':id') }}";
                 url = url.replace(':id', id);
 
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    blockUI: true,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
+                $.easyBlockUI('body');
+                window.apiHttp.delete(url, "{{ csrf_token() }}")
+                    .then(function(response) {
                         if (response.status == "success") {
                             window.location.href = "{{ route('objectives.index') }}";
                         }
-                    }
-                });
+                    })
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    })
+                    .finally(function() {
+                        $.easyUnblockUI('body');
+                    });
             }
         });
     });

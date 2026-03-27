@@ -11,25 +11,18 @@
                 <i class="fa fa-times"></i>
             </a>
 
-            <x-tab :href="route('job-offer-letter.show', $jobOffer->id)" :text="__('recruit::app.menu.details')"
-                   class="letter"/>
+            <x-tab :href="route('job-offer-letter.show', $jobOffer->id)" :text="__('recruit::app.menu.details')" class="letter" />
 
-            <x-tab :href="route('job-offer-letter.show', $jobOffer->id).'?tab=custom'"
-                   :text="__('recruit::modules.jobApplication.additionalInfo')"
-                   class="custom"/>
+            <x-tab :href="route('job-offer-letter.show', $jobOffer->id) . '?tab=custom'" :text="__('recruit::modules.jobApplication.additionalInfo')" class="custom" />
 
-            <x-tab :href="route('job-offer-letter.show', $jobOffer->id).'?tab=history'"
-                   :text="__('recruit::modules.job.history')"
-                   class="history"/>
+            <x-tab :href="route('job-offer-letter.show', $jobOffer->id) . '?tab=history'" :text="__('recruit::modules.job.history')" class="history" />
 
         </div>
 
-        <a class="mb-0 d-block d-lg-none text-dark-grey ml-auto mr-2 border-left-grey"
-           onclick="openClientDetailSidebar()"><i class="fa fa-ellipsis-v "></i></a>
+        <a class="mb-0 d-block d-lg-none text-dark-grey ml-auto mr-2 border-left-grey" onclick="openClientDetailSidebar()"><i class="fa fa-ellipsis-v "></i></a>
 
     </div>
     <!-- OFFER HEADER END -->
-
 @endsection
 
 @push('styles')
@@ -37,16 +30,14 @@
 @endpush
 
 @section('content')
-
     <div class="content-wrapper pt-0 border-top-0 client-detail-wrapper mt-4">
         @include($view)
     </div>
-
 @endsection
 
 @push('scripts')
     <script>
-        $("body").on("click", ".project-menu .ajax-tab", function (event) {
+        $("body").on("click", ".project-menu .ajax-tab", function(event) {
             event.preventDefault();
 
             $('.project-menu .p-sub-menu').removeClass('active');
@@ -54,19 +45,19 @@
 
             const requestUrl = this.href;
 
-            $.easyAjax({
-                url: requestUrl,
-                blockUI: true,
-                container: ".content-wrapper",
-                historyPush: true,
-                blockUI: true,
-                success: function (response) {
-                    if (response.status == "success") {
-                        $('.content-wrapper').html(response.html);
+            window.apiHttp.get(requestUrl)
+                .then(function(response) {
+                    if (response.data.status == "success") {
+                        $('.content-wrapper').html(response.data.html);
                         init('.content-wrapper');
+                        window.history.pushState({
+                            url: requestUrl
+                        }, '', requestUrl);
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                });
         });
     </script>
     <script>

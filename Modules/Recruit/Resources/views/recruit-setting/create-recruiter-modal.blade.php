@@ -7,10 +7,9 @@
         <x-form id="createMethods" method="POST" class="ajax-form">
             <div class="row">
                 <div class="col-md-12">
-                    <x-forms.select fieldId="user_id" :fieldLabel="__('recruit::modules.setting.recruiter')"
-                                    fieldName="user_id[]" search="true" fieldRequired="true" multiple="true">
+                    <x-forms.select fieldId="user_id" :fieldLabel="__('recruit::modules.setting.recruiter')" fieldName="user_id[]" search="true" fieldRequired="true" multiple="true">
                         @foreach ($employees as $emp)
-                            @if(!in_array($emp->id, $selectedRecruiter))
+                            @if (!in_array($emp->id, $selectedRecruiter))
                                 <x-user-option :user="$emp" />
                             @endif
                         @endforeach
@@ -30,19 +29,16 @@
     $(".select-picker").selectpicker();
 
     // save recruiter
-    $('body').off('click', "#save-recruiter").on('click', '#save-recruiter', function () {
+    $('body').off('click', "#save-recruiter").on('click', '#save-recruiter', function() {
 
-        $.easyAjax({
-            url: "{{ route('recruiter.store') }}",
-            container: '#createMethods',
-            type: "POST",
-            blockUI: true,
-            data: $('#createMethods').serialize(),
-            success: function (response) {
-                if (response.status == "success") {
+        window.apiHttp.postUrlEncoded("{{ route('recruiter.store') }}", $('#createMethods').serialize())
+            .then(function(response) {
+                if (response.data.status == "success") {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            });
     });
 </script>

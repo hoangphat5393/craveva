@@ -219,19 +219,18 @@ $viewLeadFollowupPermission = user()->permission('view_lead_follow_up');
 
                 const requestUrl = this.href;
 
-                $.easyAjax({
-                    url: requestUrl,
-                    blockUI: true,
-                    container: "#nav-tabContent",
-                    historyPush: ($(RIGHT_MODAL).hasClass('in') ? false : true),
-                    data: {
-                        'json': true
-                    },
-                    success: function (response) {
-                        if (response.status == "success") {
-                            $('#nav-tabContent').html(response.html);
-                        }
+                if (!$(RIGHT_MODAL).hasClass('in') && typeof historyPush === 'function') {
+                    historyPush(requestUrl);
+                }
+                $.easyBlockUI("#nav-tabContent");
+                window.apiHttp.get(requestUrl, { params: { json: true } }).then(function (response) {
+                    if (response.status == "success") {
+                        $('#nav-tabContent').html(response.html);
                     }
+                }).catch(function(err) {
+                    $.handleApiFormError(err);
+                }).finally(function() {
+                    $.easyUnblockUI("#nav-tabContent");
                 });
             });
 
@@ -244,25 +243,20 @@ $viewLeadFollowupPermission = user()->permission('view_lead_follow_up');
             $('#layout').html('');
             var leadID = "{{ $deal->id }}";
             fileLayout = layout;
-            $.easyAjax({
-                type: 'GET',
-                url: "{{ route('deal-files.layout') }}",
-                disableButton: true,
-                blockUI: true,
-                data: {
-                    id: leadID,
-                    layout: layout
-                },
-                success: function(response) {
-                    $('#layout').html(response.html);
-                    if (layout == 'gridview') {
-                        $('#list-tabs').removeClass('btn-active');
-                        $('#thumbnail').addClass('btn-active');
-                    } else {
-                        $('#list-tabs').addClass('btn-active');
-                        $('#thumbnail').removeClass('btn-active');
-                    }
+            $.easyBlockUI('body');
+            window.apiHttp.get("{{ route('deal-files.layout') }}", { params: { id: leadID, layout: layout } }).then(function(response) {
+                $('#layout').html(response.html);
+                if (layout == 'gridview') {
+                    $('#list-tabs').removeClass('btn-active');
+                    $('#thumbnail').addClass('btn-active');
+                } else {
+                    $('#list-tabs').addClass('btn-active');
+                    $('#thumbnail').removeClass('btn-active');
                 }
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI('body');
             });
         }
 
@@ -292,21 +286,15 @@ $viewLeadFollowupPermission = user()->permission('view_lead_follow_up');
                     var url = "{{ route('deal-files.destroy', ':id') }}";
                     url = url.replace(':id', id);
 
-                    var token = "{{ csrf_token() }}";
-
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                leadFilesView(fileLayout);
-                            }
+                    $.easyBlockUI('body');
+                    window.apiHttp.delete(url, "{{ csrf_token() }}").then(function(response) {
+                        if (response.status == "success") {
+                            leadFilesView(fileLayout);
                         }
+                    }).catch(function(err) {
+                        $.handleApiFormError(err);
+                    }).finally(function() {
+                        $.easyUnblockUI('body');
                     });
                 }
             });
@@ -358,19 +346,14 @@ $viewLeadFollowupPermission = user()->permission('view_lead_follow_up');
                     var url = "{{ route('deals.follow_up_delete', ':id') }}";
                     url = url.replace(':id', id);
 
-                    var token = "{{ csrf_token() }}";
-
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                location.reload();
-                            }
+                    window.apiHttp.postUrlEncoded(url, $.param({
+                        '_token': "{{ csrf_token() }}"
+                    })).then(function(response) {
+                        if (response.status == "success") {
+                            location.reload();
                         }
+                    }).catch(function(err) {
+                        $.handleApiFormError(err);
                     });
                 }
             });
@@ -399,20 +382,13 @@ $viewLeadFollowupPermission = user()->permission('view_lead_follow_up');
                 if (result.isConfirmed) {
                     var url = "{{ route('deals.destroy', ':id') }}";
                     url = url.replace(':id', id);
-                    var token = "{{ csrf_token() }}";
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                let dealsIndexUrl = "{{ route('deals.index') }}";
-                                window.location.href = dealsIndexUrl;
-                            }
+                    window.apiHttp.delete(url, "{{ csrf_token() }}").then(function(response) {
+                        if (response.status == "success") {
+                            let dealsIndexUrl = "{{ route('deals.index') }}";
+                            window.location.href = dealsIndexUrl;
                         }
+                    }).catch(function(err) {
+                        $.handleApiFormError(err);
                     });
                 }
             });
@@ -445,20 +421,12 @@ $viewLeadFollowupPermission = user()->permission('view_lead_follow_up');
                 if (result.isConfirmed) {
                     var url = "{{ route('deal-notes.destroy', ':id') }}";
                     url = url.replace(':id', id);
-                    var token = "{{ csrf_token() }}";
-
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                window.location.reload();
-                            }
+                    window.apiHttp.delete(url, "{{ csrf_token() }}").then(function(response) {
+                        if (response.status == "success") {
+                            window.location.reload();
                         }
+                    }).catch(function(err) {
+                        $.handleApiFormError(err);
                     });
                 }
             });
@@ -493,20 +461,12 @@ $viewLeadFollowupPermission = user()->permission('view_lead_follow_up');
                     var url = "{{ route('proposals.destroy', ':id') }}";
                     url = url.replace(':id', id);
 
-                    var token = "{{ csrf_token() }}";
-
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                window.location.reload();
-                            }
+                    window.apiHttp.delete(url, "{{ csrf_token() }}").then(function(response) {
+                        if (response.status == "success") {
+                            window.location.reload();
                         }
+                    }).catch(function(err) {
+                        $.handleApiFormError(err);
                     });
                 }
             });
@@ -517,21 +477,17 @@ $viewLeadFollowupPermission = user()->permission('view_lead_follow_up');
             var url = "{{ route('proposals.send_proposal', ':id') }}";
             url = url.replace(':id', id);
 
-            var token = "{{ csrf_token() }}";
-
-            $.easyAjax({
-                type: 'POST',
-                url: url,
-                container: '#invoices-table',
-                blockUI: true,
-                data: {
-                    '_token': token
-                },
-                success: function(response) {
-                    if (response.status == "success") {
-                        window.location.reload();
-                    }
+            $.easyBlockUI('#invoices-table');
+            window.apiHttp.postUrlEncoded(url, $.param({
+                '_token': "{{ csrf_token() }}"
+            })).then(function(response) {
+                if (response.status == "success") {
+                    window.location.reload();
                 }
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI('#invoices-table');
             });
         });
 

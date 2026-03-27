@@ -502,15 +502,10 @@
         $('#save-form').click(function () {
             var url = "{{ route('sms-setting.update', '1') }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#editSettings',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-form",
-                data: $('#editSettings').serialize(),
-            })
+            window.apiHttp.postUrlEncoded(url, $('#editSettings').serialize())
+                .catch(function (err) {
+                    $.handleApiFormError(err);
+                });
         });
 
         @if (user()->is_superadmin)

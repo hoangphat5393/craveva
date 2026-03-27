@@ -106,17 +106,11 @@
 
         $('#save-asset').click(function () {
             const url = "{{ route('assets.store') }}";
-
-            $.easyAjax({
-                url: url,
-                container: '#save-asset-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-asset",
-                file: true,
-                data: $('#save-asset-form').serialize(),
-                success: function (response) {
+            const $btn = $('#save-asset');
+            $btn.prop('disabled', true);
+            $.easyBlockUI('#save-asset-form');
+            window.apiHttp.postForm(url, document.getElementById('save-asset-form'))
+                .then(function (response) {
                     if (response.status == 'success') {
                         if ($(MODAL_XL).hasClass('show')) {
                             $(MODAL_XL).modal('hide');
@@ -125,8 +119,14 @@
                             window.location.href = response.redirectUrl;
                         }
                     }
-                }
-            });
+                })
+                .catch(function (err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function () {
+                    $btn.prop('disabled', false);
+                    $.easyUnblockUI('#save-asset-form');
+                });
         });
 
         $('#asset-type-setting').click(function () {

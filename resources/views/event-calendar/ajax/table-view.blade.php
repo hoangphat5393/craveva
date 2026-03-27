@@ -301,19 +301,11 @@
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function (response) {
-                            if (response.status == "success") {
-                                showTable();
-                            }
+                    window.apiHttp.delete(url, token).then(function(response) {
+                        if (response.status == "success") {
+                            showTable();
                         }
-                    });
+                    }).catch(function(err){ $.handleApiFormError(err); });
                 }
             });
         });
@@ -325,22 +317,17 @@
 
             var url = "{{ route('events.apply_quick_action') }}?row_ids=" + rowdIds;
 
-            $.easyAjax({
-                url: url,
-                container: '#quick-action-form',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#quick-action-apply",
-                data: $('#quick-action-form').serialize(),
-                success: function (response) {
-                    if (response.status == 'success') {
-                        showTable();
-                        resetActionButtons();
-                        deSelectAll();
-                        $('#quick-action-form').hide();
-                    }
+            $.easyBtnLoader("#quick-action-apply");
+            window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize()).then(function(response) {
+                if (response.status == 'success') {
+                    showTable();
+                    resetActionButtons();
+                    deSelectAll();
+                    $('#quick-action-form').hide();
                 }
-            })
+            }).catch(function(err){ $.handleApiFormError(err); }).finally(function() {
+                $.easyBtnReset("#quick-action-apply");
+            });
         };
 
         $('body').on('click', '.show-event', function () {

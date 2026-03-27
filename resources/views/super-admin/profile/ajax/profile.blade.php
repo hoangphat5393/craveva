@@ -152,20 +152,21 @@
 
         $('#save-form').on('click', function(e) {
             var url = "{{ route('profile.update', [$user->id]) }}";
-            $.easyAjax({
-                url: url,
-                container: '#editSettings',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#save-form",
-                file: true,
-                data: $('#editSettings').serialize(),
-                success : function (response) {
+            const $btn = $('#save-form');
+            const prev = $btn.html();
+            $.easyBlockUI('#editSettings');
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+            window.apiHttp.postForm(url, document.getElementById('editSettings'))
+                .then(function (response) {
                     if (response.status == 'success') {
                         window.location = response.redirectUrl;
                     }
-                }
-            });
+                })
+                .catch(function (err) { $.handleApiFormError(err); })
+                .finally(function () {
+                    $.easyUnblockUI('#editSettings');
+                    $btn.prop('disabled', false).html(prev);
+                });
         });
 
         $('.cropper').on('dropify.fileReady', function(e) {

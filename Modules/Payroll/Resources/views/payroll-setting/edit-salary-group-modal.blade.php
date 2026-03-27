@@ -45,19 +45,14 @@
     $(".select-picker").selectpicker();
     // save channel
     $('#save-salary-group').click(function () {
-        $.easyAjax({
-            url: "{{route('salary-groups.update', $salaryGroup->id)}}",
-            container: '#editSalaryGroup',
-            type: "POST",
-            blockUI: true,
-            disableButton: true,
-            buttonSelector: "#save-salary-group",
-            data: $('#editSalaryGroup').serialize(),
-            success: function (response) {
+        window.apiHttp.postUrlEncoded("{{route('salary-groups.update', $salaryGroup->id)}}", $('#editSalaryGroup').serialize())
+            .then(function (response) {
                 if (response.status == "success") {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch(function (err) {
+                $.handleApiFormError(err);
+            });
     });
 </script>

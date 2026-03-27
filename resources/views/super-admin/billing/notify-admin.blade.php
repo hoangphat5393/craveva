@@ -24,15 +24,29 @@
             $(document).ready(function () {
 
                 $('#submit-notify-admin').click(function () {
-                    $.easyAjax({
-                        url: "{{ route('superadmin.notify.admin.submit') }}",
-                        container: '.login_box',
-                        disableButton: true,
-                        buttonSelector: "#submit-notify-admin",
-                        type: "POST",
-                        blockUI: true,
-                        data: $('#notify-admin').serialize(),
-                        messagePosition: "inline",
+                    var $btn = $('#submit-notify-admin');
+                    var prev = $btn.html();
+                    $.easyBlockUI('.login_box');
+                    $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+                    window.apiHttp.postUrlEncoded("{{ route('superadmin.notify.admin.submit') }}", $('#notify-admin').serialize()).then(function (response) {
+                        if (response.status === 'success') {
+                            if (response.action === 'redirect' && response.url) {
+                                window.location.href = response.url;
+                            } else if (typeof response.message !== 'undefined') {
+                                var ele = $('.login_box').find('#alert');
+                                var html = '<div class="alert alert-success">' + response.message + '</div>';
+                                if (ele.length === 0) {
+                                    $('.login_box').find('.form-group:first').before('<div id="alert">' + html + '</div>');
+                                } else {
+                                    ele.html(html);
+                                }
+                            }
+                        }
+                    }).catch(function (err) {
+                        $.handleApiFormError(err);
+                    }).finally(function () {
+                        $.easyUnblockUI('.login_box');
+                        $btn.prop('disabled', false).html(prev);
                     });
                 });
 

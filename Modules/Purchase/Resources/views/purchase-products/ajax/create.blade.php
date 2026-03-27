@@ -365,48 +365,36 @@
 
             const url = "{{ route('purchase-products.store') }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#save-product-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-product",
-                file: true,
-                data: $('#save-product-form').serialize(),
-                success: function(response) {
+            window.apiHttp.postUrlEncoded(url, $('#save-product-form').serialize())
+                .then(function(response) {
                     if (productDropzone.getQueuedFiles().length > 0) {
                         $('#hiddenProductId').val(response.productID);
                         productDropzone.processQueue();
                     } else {
                         window.location.href = response.redirectUrl;
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                });
         });
 
         $('#save-more-product').click(function() {
             const url = "{{ route('purchase-products.store') }}";
             $('#add_more').val(true);
 
-            $.easyAjax({
-                url: url,
-                container: '#save-product-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-more-product",
-                file: true,
-                data: $('#save-product-form').serialize(),
-                success: function(response) {
+            window.apiHttp.postUrlEncoded(url, $('#save-product-form').serialize())
+                .then(function(response) {
                     if (productDropzone.getQueuedFiles().length > 0) {
                         $('#hiddenProductId').val(response.productID);
                         productDropzone.processQueue();
                     } else {
                         window.location.reload();
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                });
         });
 
         $(".product_type").click(function() {
@@ -448,10 +436,8 @@
             let url = "{{ route('get_product_sub_categories', ':id') }}";
             url = (categoryId) ? url.replace(':id', categoryId) : url.replace(':id', null);
 
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                success: function(response) {
+            window.apiHttp.get(url)
+                .then(function(response) {
                     if (response.status == 'success') {
                         var options = [];
                         var rData = response.data;
@@ -468,8 +454,10 @@
                         $('#sub_category_id').html(defaultOption + options.join(''));
                         $('#sub_category_id').selectpicker('refresh');
                     }
-                }
-            })
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                });
         });
 
         $('#add-tax').click(function() {

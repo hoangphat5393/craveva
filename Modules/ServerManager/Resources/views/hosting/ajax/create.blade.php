@@ -342,15 +342,8 @@
         $('#save-hosting-form').click(function() {
             const url = "{{ route('hosting.store') }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#save-hosting-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-hosting-form",
-                data: $('#save-hosting-data-form').serialize(),
-                success: function(response) {
+            window.apiHttp.postUrlEncoded(url, $('#save-hosting-data-form').serialize())
+                .then(function (response) {
                     if (response.status == 'success') {
                         if ($(MODAL_XL).hasClass('show')) {
                             $(MODAL_XL).modal('hide');
@@ -359,8 +352,10 @@
                             window.location.href = response.redirectUrl;
                         }
                     }
-                }
-            });
+                })
+                .catch(function (err) {
+                    $.handleApiFormError(err);
+                });
         });
 
         // Handle expiry notification checkbox

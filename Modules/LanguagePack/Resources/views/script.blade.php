@@ -29,22 +29,19 @@
             if (result.isConfirmed) {
 
                 var url = "{{ route('language-pack.publish') }}";
-
-                var token = "{{ csrf_token() }}";
-
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        'languageCode': languageCode,
-                        'isRepublish': isRepublish,
-                    },
-                    blockUI: true,
-                    success: function(response) {
-                        window.location.reload();
-                    }
-                });
+                window.apiHttp.postUrlEncoded(url, {
+                    '_token': "{{ csrf_token() }}",
+                    'languageCode': languageCode,
+                    'isRepublish': isRepublish,
+                })
+                    .then(function(response) {
+                        if (response.status == "success") {
+                            window.location.reload();
+                        }
+                    })
+                    .catch(function (err) {
+                        $.handleApiFormError(err);
+                    });
             }
         });
     });
@@ -74,33 +71,25 @@
             if (result.isConfirmed) {
 
                 var url = "{{ route('language-pack.publish-all') }}";
-
-                var token = "{{ csrf_token() }}";
-
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                    },
-                    blockUI: true,
-                    success: function(response) {
-                        window.location.reload();
-                    }
-                });
+                window.apiHttp.postUrlEncoded(url, {
+                    '_token': "{{ csrf_token() }}",
+                })
+                    .then(function(response) {
+                        if (response.status == "success") {
+                            window.location.reload();
+                        }
+                    })
+                    .catch(function (err) {
+                        $.handleApiFormError(err);
+                    });
             }
         });
     });
 
     $('body').on('click', '#languagePackSyncKeys', function() {
         var url = "{{ route('language-pack.sync-keys') }}";
-        var token = "{{ csrf_token() }}";
-        $.easyAjax({
-            type: 'POST',
-            url: url,
-            data: { '_token': token },
-            blockUI: true,
-            success: function(response) {
+        window.apiHttp.postUrlEncoded(url, { '_token': "{{ csrf_token() }}" })
+            .then(function(response) {
                 if (response.message) {
                     Swal.fire({
                         icon: 'success',
@@ -109,7 +98,9 @@
                         customClass: { confirmButton: 'btn btn-primary' }
                     });
                 }
-            }
-        });
+            })
+            .catch(function (err) {
+                $.handleApiFormError(err);
+            });
     });
 </script>

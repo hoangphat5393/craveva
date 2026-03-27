@@ -427,15 +427,8 @@
         });
 
         function saveInterview(data, url, buttonSelector) {
-            $.easyAjax({
-                url: url,
-                container: '#save-event-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: buttonSelector,
-                data: data,
-                success: function(response) {
+            window.apiHttp.postUrlEncoded(url, data)
+                .then(function(response) {
                     if (response.status == 'success') {
                         if (response.add_more == true) {
                             $(RIGHT_MODAL_CONTENT).html(response.html.html);
@@ -446,8 +439,10 @@
                             window.location.href = response.redirectUrl;
                         }
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                });
         };
 
         $('#jobName').change(function() {
@@ -455,15 +450,10 @@
             const jobId = $(this).val();
             const url = "{{ route('job-offer-letter.fetch-job-application') }}";
 
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                disableButton: true,
-                blockUI: true,
-                data: {
+            window.apiHttp.get(url, {
                     job_id: jobId
-                },
-                success: function(response) {
+                })
+                .then(function(response) {
                     if (response.status == 'success') {
                         var options = [];
                         var rData = [];
@@ -496,8 +486,10 @@
                             options);
                         $('#jobStage').selectpicker('refresh');
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                });
         });
         init(RIGHT_MODAL);
 

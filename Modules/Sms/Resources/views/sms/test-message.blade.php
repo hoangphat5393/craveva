@@ -57,19 +57,14 @@
     $(".select-picker").selectpicker();
     // save source
     $('#send-test-message').click(function () {
-        $.easyAjax({
-            url: "{{ route('sms-setting.send_test_message') }}",
-            container: '#testSms',
-            type: "POST",
-            blockUI: true,
-            disableButton: true,
-            buttonSelector: "#send-test-message",
-            data: $('#testSms').serialize(),
-            success: function (response) {
+        window.apiHttp.postUrlEncoded("{{ route('sms-setting.send_test_message') }}", $('#testSms').serialize())
+            .then(function (response) {
                 if (response.status == "success") {
                     $(MODAL_LG).modal('hide');
                 }
-            }
-        })
+            })
+            .catch(function (err) {
+                $.handleApiFormError(err);
+            });
     });
 </script>

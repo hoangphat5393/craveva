@@ -30,22 +30,24 @@
 
     $('#save-asset-type').click(function () {
         var url = "{{ route('asset-type.store') }}";
-        $.easyAjax({
-            url: url,
-            container: '#create-asset-type',
-            type: "POST",
-            data: $('#create-asset-type').serialize(),
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-asset-type",
-            success: function (response) {
+        const $btn = $('#save-asset-type');
+        $btn.prop('disabled', true);
+        $.easyBlockUI('#create-asset-type');
+        window.apiHttp.postUrlEncoded(url, $('#create-asset-type').serialize())
+            .then(function (response) {
                 if (response.status == 'success') {
                     $('#asset_type_id').html(response.data);
                     $('#asset_type_id').selectpicker('refresh');
                     $(MODAL_LG).modal('hide');
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch(function (err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function () {
+                $btn.prop('disabled', false);
+                $.easyUnblockUI('#create-asset-type');
+            });
     });
 </script>

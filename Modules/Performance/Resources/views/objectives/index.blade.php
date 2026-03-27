@@ -120,27 +120,28 @@
             let status = $('#status').val();
             let project = $('#project').val();
 
-            $.easyAjax({
-                url: "{{ route('objectives.index') }}",
-                method: "GET",
-                disableButton: true,
-                blockUI: true,
-                data: {
+            $.easyBlockUI('body');
+            window.apiHttp.get("{{ route('objectives.index') }}", {
+                params: {
                     'searchText': searchText,
                     'department': department,
                     'owner': owner,
                     'status': status,
                     'project': project
-                },
-                success: function(response) {
+                }
+            })
+                .then(function(response) {
                     if (response.status == "success") {
                         $('#objecctive-table').html(response.html);
                     }
-                },
-                error: function(xhr) {
-                    console.error("An error occurred: " + xhr.status + " " + xhr.statusText);
-                }
-            });
+                })
+                .catch(function(err) {
+                    console.error("An error occurred: " + (err.status || '') + " " + (err.message || ''));
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('body');
+                });
         }
 
         $('#search-text-field').on('keyup', function() {
@@ -198,22 +199,19 @@
                     var url = "{{ route('objectives.destroy', ':id') }}";
                     url = url.replace(':id', id);
 
-                    var token = "{{ csrf_token() }}";
-
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
+                    $.easyBlockUI('body');
+                    window.apiHttp.delete(url, "{{ csrf_token() }}")
+                        .then(function(response) {
                             if (response.status == "success") {
                                 location.reload();
                             }
-                        }
-                    });
+                        })
+                        .catch(function(err) {
+                            $.handleApiFormError(err);
+                        })
+                        .finally(function() {
+                            $.easyUnblockUI('body');
+                        });
                 }
             });
         });
@@ -239,25 +237,23 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     var id = $(this).data('key-results-id');
-                    var token = "{{ csrf_token() }}";
 
                     var url = "{{ route('key-results.destroy', ':id') }}";
                     url = url.replace(':id', id);
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
+                    $.easyBlockUI('body');
+                    window.apiHttp.delete(url, "{{ csrf_token() }}")
+                        .then(function(response) {
                             if (response.status == "success") {
                                 window.location.reload();
                             }
-                        }
-                    });
+                        })
+                        .catch(function(err) {
+                            $.handleApiFormError(err);
+                        })
+                        .finally(function() {
+                            $.easyUnblockUI('body');
+                        });
                 }
             });
         });

@@ -59,18 +59,17 @@
 
             const requestUrl = this.href;
 
-            $.easyAjax({
-                url: requestUrl,
-                blockUI: true,
-                container: ".content-wrapper",
-                historyPush: true,
-                success: function(response) {
+            window.apiHttp.get(requestUrl)
+                .then(function(response) {
                     if (response.status == "success") {
+                        window.history.pushState({}, '', requestUrl);
                         $('.content-wrapper').html(response.html);
                         init('.content-wrapper');
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                });
         });
 
         const activeTab = "{{ $activeTab }}";
@@ -115,20 +114,15 @@
                     url = url.replace(':id', id);
 
                     var token = "{{ csrf_token() }}";
-
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
+                    window.apiHttp.delete(url, token)
+                        .then(function(response) {
                             if (response.status == "success") {
                                 window.location.href = response.redirectUrl;
                             }
-                        }
-                    });
+                        })
+                        .catch(function(err) {
+                            $.handleApiFormError(err);
+                        });
                 }
             });
         });

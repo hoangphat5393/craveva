@@ -1,7 +1,6 @@
 <div class="modal-header">
     <h5 class="modal-title" id="modelHeading">@lang('recruit::app.job.workexperience')</h5>
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-            aria-hidden="true">×</span></button>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
 </div>
 <div class="modal-body" id="work-experience-table">
     <x-table class="table-bordered" headType="thead-light">
@@ -28,8 +27,7 @@
     <x-form id="createProjectCategory">
         <div class="row border-top-grey ">
             <div class="col-sm-12">
-                <x-forms.text fieldId="work_experience" :fieldLabel="__('app.name')" fieldName="work_experience"
-                              fieldRequired="true" fieldPlaceholder="e.g: Fresher">
+                <x-forms.text fieldId="work_experience" :fieldLabel="__('app.name')" fieldName="work_experience" fieldRequired="true" fieldPlaceholder="e.g: Fresher">
                 </x-forms.text>
             </div>
         </div>
@@ -41,12 +39,10 @@
 </div>
 
 <script>
-    $('body').on('click', '.delete-row', function () {
+    $('body').on('click', '.delete-row', function() {
         var id = $(this).data('row-id');
         var url = "{{ route('work-experience.destroy', ':id') }}";
         url = url.replace(':id', id);
-
-        var token = "{{ csrf_token() }}";
 
         Swal.fire({
             title: "@lang('messages.sweetAlertTitle')",
@@ -67,53 +63,42 @@
             buttonsStyling: false
         }).then((result) => {
             if (result.isConfirmed) {
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function (response) {
-                        if (response.status == "success") {
-                            $('#row-' + id).fadeOut();
-                            $('#work_experience_1').html(response.data);
-                            $('#work_experience_1').selectpicker('refresh');
-                        }
+                window.apiHttp.delete(url, {
+                    _token: "{{ csrf_token() }}"
+                }).then(function(response) {
+                    if (response.data.status == "success") {
+                        $('#row-' + id).fadeOut();
+                        $('#work_experience_1').html(response.data.data);
+                        $('#work_experience_1').selectpicker('refresh');
                     }
+                }).catch(function(err) {
+                    $.handleApiFormError(err);
                 });
             }
         });
 
     });
 
-    $('body').off('click', "#save-category").on('click', '#save-category', function () {
+    $('body').off('click', "#save-category").on('click', '#save-category', function() {
         var url = "{{ route('work-experience.store') }}";
-        $.easyAjax({
-            url: url,
-            container: '#createProjectCategory',
-            type: "POST",
-            data: $('#createProjectCategory').serialize(),
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-category",
-            success: function (response) {
-                if (response.status == 'success') {
-                    if (response.status == 'success') {
-                        $('#work_experience_1').html(response.data);
-                        $('#work_experience_1').selectpicker('refresh');
-                        $(MODAL_LG).modal('hide');
-                    }
+        window.apiHttp.postUrlEncoded(url, $('#createProjectCategory').serialize())
+            .then(function(response) {
+                if (response.data.status == 'success') {
+                    $('#work_experience_1').html(response.data.data);
+                    $('#work_experience_1').selectpicker('refresh');
+                    $(MODAL_LG).modal('hide');
                 }
-            }
-        })
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            });
     });
 
 
-    $('#work-experience-table [contenteditable=true]').focus(function () {
+    $('#work-experience-table [contenteditable=true]').focus(function() {
         $(this).data("initialText", $(this).html());
         let rowId = $(this).data('row-id');
-    }).blur(function () {
+    }).blur(function() {
         // ...if content is different...
         if ($(this).data("initialText") !== $(this).html()) {
             let id = $(this).data('row-id');
@@ -122,26 +107,18 @@
             var url = "{{ route('work-experience.update', ':id') }}";
             url = url.replace(':id', id);
 
-            var token = "{{ csrf_token() }}";
-
-            $.easyAjax({
-                url: url,
-                container: '#row-' + id,
-                type: "POST",
-                data: {
-                    'work_experience': value,
-                    '_token': token,
-                    '_method': 'PUT'
-                },
-                blockUI: true,
-                success: function (response) {
-                    if (response.status == 'success') {
-                        $('#work_experience_1').html(response.data);
-                        $('#work_experience_1').selectpicker('refresh');
-                    }
+            window.apiHttp.postUrlEncoded(url, {
+                work_experience: value,
+                _token: "{{ csrf_token() }}",
+                _method: 'PUT'
+            }).then(function(response) {
+                if (response.data.status == 'success') {
+                    $('#work_experience_1').html(response.data.data);
+                    $('#work_experience_1').selectpicker('refresh');
                 }
-            })
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            });
         }
     });
-
 </script>

@@ -116,15 +116,10 @@
     $('body').on('change', '#currency', function () {
         let currencyId = $(this).val();
         let url = '{{ route('front.pricing') }}';
-        $.easyAjax({
-            url: url,
-            type: "GET",
-            data: {
-                'currencyId':currencyId
-            },
-            success: function (response) {
-                $('#price-plan').html(response.view);
-            }
+        window.apiHttp.get(url, { params: { currencyId: currencyId } }).then(function (response) {
+            $('#price-plan').html(response.view);
+        }).catch(function (err) {
+            $.handleApiFormError(err);
         })
 
     });

@@ -234,18 +234,18 @@
 
             const requestUrl = this.href;
 
-            $.easyAjax({
-                url: requestUrl,
-                blockUI: true,
-                container: "#nav-tabContent",
-                historyPush: true,
-                success: function (response) {
-                    if (response.status === "success") {
-                        $('#nav-tabContent').html(response.html);
-                        init('.settings-box');
-                        init('#F');
-                    }
+            window.history.pushState({ id: requestUrl }, requestUrl, requestUrl);
+            $.easyBlockUI("#nav-tabContent");
+            window.apiHttp.get(requestUrl).then(function (response) {
+                if (response.status === "success") {
+                    $('#nav-tabContent').html(response.html);
+                    init('.settings-box');
+                    init('#F');
                 }
+            }).catch(function (err) {
+                $.handleApiFormError(err);
+            }).finally(function () {
+                $.easyUnblockUI("#nav-tabContent");
             });
         });
 
@@ -307,18 +307,18 @@
 
         // Save paypal, stripe and razorpay credentials
         $("body").on("click", "#save_paypal_data, #save_stripe_data, #save_razorpay_data, #save_paystack_data, #save_flutterwave_data, #save_mollie_data, #save_payfast_data, #save_authorize_data, #save_square_data", function (event) {
-            $.easyAjax({
-                url: "{{ route('superadmin.settings.global-payment-gateway-settings.update', [$credentials->id]) }}",
-                container: '#editSettings',
-                type: "POST",
-                redirect: true,
-                disableButton: true,
-                blockUI: true,
-                data: $('#editSettings').serialize(),
-                success: function () {
-                    window.location.reload();
-                }
-            })
+            var $btn = $(this);
+            var prev = $btn.html();
+            $.easyBlockUI('#editSettings');
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+            window.apiHttp.postUrlEncoded("{{ route('superadmin.settings.global-payment-gateway-settings.update', [$credentials->id]) }}", $('#editSettings').serialize()).then(function () {
+                window.location.reload();
+            }).catch(function (err) {
+                $.handleApiFormError(err);
+            }).finally(function () {
+                $.easyUnblockUI('#editSettings');
+                $btn.prop('disabled', false).html(prev);
+            });
         });
 
         // Edit new offline payment method
@@ -366,19 +366,15 @@
 
                     const token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function (response) {
-                            if (response.status === "success") {
-                                $('.row' + id).fadeOut();
-                            }
+                    $.easyBlockUI('body');
+                    window.apiHttp.delete(url, token).then(function (response) {
+                        if (response.status === "success") {
+                            $('.row' + id).fadeOut();
                         }
+                    }).catch(function (err) {
+                        $.handleApiFormError(err);
+                    }).finally(function () {
+                        $.easyUnblockUI('body');
                     });
                 }
             });

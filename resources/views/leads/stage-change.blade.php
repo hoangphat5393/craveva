@@ -58,18 +58,14 @@
     $('#save-deal-stage').click(function() {
         var url = "{{ route('deals.save_stage_change') }}";
 
-        $.easyAjax({
-            url: url,
-            container: '#changeDealStage',
-            type: "POST",
-            data: $('#changeDealStage').serialize(),
-            success: function(response) {
-                if (response.status == 'success') {
-                    $(MODAL_LG).modal('hide');
-                }
-                showTable();
+        window.apiHttp.postUrlEncoded(url, $('#changeDealStage').serialize()).then(function(response) {
+            if (response.status == 'success') {
+                $(MODAL_LG).modal('hide');
             }
-        })
+            showTable();
+        }).catch(function(err) {
+            $.handleApiFormError(err);
+        });
     });
 
 </script>

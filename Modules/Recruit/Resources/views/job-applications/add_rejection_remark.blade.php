@@ -26,15 +26,8 @@
 
     $('body').on('click', '#save-rejection-remark', function () {
         var url = "{{ route('job-appboard.rejected_remark_store', $applicationID) }}";
-        $.easyAjax({
-            url: url,
-            container: '#addRejectionRemark',
-            type: "POST",
-            data: $('#addRejectionRemark').serialize(),
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-rejection-remark",
-            success: function (response) {
+        window.apiHttp.postUrlEncoded(url, $('#addRejectionRemark').serialize())
+            .then(function (response) {
                 if (response.status == 'success') {
                     $(MODAL_DEFAULT).modal('hide');
                     if(response.board == 0){
@@ -43,8 +36,10 @@
                         loadData();
                     }
                 }
-            }
-        })
+            })
+            .catch(function (err) {
+                $.handleApiFormError(err);
+            });
     });
 
 </script>

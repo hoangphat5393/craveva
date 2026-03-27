@@ -110,21 +110,20 @@
             let ele = $('#monthlyOn');
             let url = '{{ route('meetings.monthly_on') }}';
             setTimeout(() => {
-                $.easyAjax({
-                    url: url,
-                    type: "POST",
-                    data: {
+                window.apiHttp.postUrlEncoded(url, {
                         _token: "{{ csrf_token() }}",
                         date: $('#meeting_date').val()
-                    },
-                    success: function(response) {
+                    })
+                    .then(function(response) {
                         @if (App::environment('development'))
                             $('#event_name').val(response.message);
                         @endif
                         ele.html(response.message);
                         $('#repeat_type').selectpicker('refresh');
-                    }
-                });
+                    })
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    });
             }, 100);
         }
 
@@ -163,15 +162,9 @@
 
         // Submit Meeting Form
         $('#save-meeting-form').click(function() {
-            $.easyAjax({
-                url: "{{ route('meetings.store') }}",
-                container: '#save-meeting-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-meeting-form",
-                data: $('#save-meeting-data-form').serialize(),
-                success: function(response) {
+            $.easyBlockUI('#save-meeting-data-form');
+            window.apiHttp.postUrlEncoded("{{ route('meetings.store') }}", $('#save-meeting-data-form').serialize())
+                .then(function(response) {
                     if (response.status == 'success') {
                         const meetingId = response.meeting_id;
                         const tab = response.tab;
@@ -179,8 +172,13 @@
                         let redirectUrl = "{{ route('agenda.create') }}?meetingId="+meetingId+"&tab="+tab;
                         window.location.href = redirectUrl;
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#save-meeting-data-form');
+                });
         });
 
         monthlyOn();

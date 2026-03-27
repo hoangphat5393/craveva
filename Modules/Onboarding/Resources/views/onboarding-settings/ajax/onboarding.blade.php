@@ -106,22 +106,17 @@
 
     $('body').on('click', '.default_status', function() {
         var statusID = $(this).data('status-id');
-        var token = "{{ csrf_token() }}";
 
-        $.easyAjax({
-            url: "{{ route('project-settings.setDefault', ':id') }}",
-            type: "POST",
-            data: {
+        var defaultUrl = "{{ route('project-settings.setDefault', ':id') }}";
+        defaultUrl = defaultUrl.replace(':id', statusID);
+        window.apiHttp.postUrlEncoded(defaultUrl, {
                 id: statusID,
-                _token: token
-            },
-            blockUI: true,
-            success: function(response) {
+                _token: "{{ csrf_token() }}"
+        }).then(function(response) {
                 if (response.status == "success") {
                     window.location.reload();
                 }
-            }
-        });
+        }).catch(function (err) { $.handleApiFormError(err); });
     });
 
 
@@ -164,22 +159,11 @@
                 var url = "{{ route('onboarding-settings.destroy', ':id') }}";
                 url = url.replace(':id', id);
 
-                var token = "{{ csrf_token() }}";
-
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    blockUI: true,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
+                window.apiHttp.delete(url, "{{ csrf_token() }}").then(function(response) {
                         if (response.status == "success") {
                             $('#status-' + id).fadeOut();
                         }
-                    }
-                });
+                }).catch(function (err) { $.handleApiFormError(err); });
             }
         });
     });

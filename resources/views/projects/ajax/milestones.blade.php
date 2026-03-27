@@ -142,8 +142,6 @@ $statuses = ['complete', 'incomplete']; // Define all your possible statuses her
         var url = "{{ route('milestones.destroy', ':id') }}";
         url = url.replace(':id', id);
 
-        var token = "{{ csrf_token() }}";
-
         Swal.fire({
             title: "@lang('messages.sweetAlertTitle')",
             text: "@lang('messages.recoverRecord')",
@@ -163,18 +161,12 @@ $statuses = ['complete', 'incomplete']; // Define all your possible statuses her
             buttonsStyling: false
         }).then((result) => {
             if (result.isConfirmed) {
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
-                        if (response.status == "success") {
-                            $('#row-' + id).fadeOut();
-                        }
+                window.apiHttp.delete(url, "{{ csrf_token() }}").then(function(response) {
+                    if (response.status == "success") {
+                        $('#row-' + id).fadeOut();
                     }
+                }).catch(function(err) {
+                    $.handleApiFormError(err);
                 });
             }
         });
@@ -188,22 +180,17 @@ $statuses = ['complete', 'incomplete']; // Define all your possible statuses her
             var url = "{{ route('milestones.updateStatus', ':id') }}";
             url = url.replace(':id', milestoneId);
 
-            var token = "{{ csrf_token() }}";
-
-            $.easyAjax({
-                type: 'POST',
-                url: url,
-                data: {
-                    '_token': token,
-                    'status': newStatus,
-                    '_method': 'POST'
-                },
-                success: function(response) {
-                    if(response.status == 'success') {
-                        // Optionally, display a success message or update the UI
-                        console.log('Status updated successfully');
-                    }
+            window.apiHttp.postUrlEncoded(url, {
+                _token: "{{ csrf_token() }}",
+                status: newStatus,
+                _method: 'POST'
+            }).then(function(response) {
+                if(response.status == 'success') {
+                    // Optionally, display a success message or update the UI
+                    console.log('Status updated successfully');
                 }
+            }).catch(function(err) {
+                $.handleApiFormError(err);
             });
         });
     });

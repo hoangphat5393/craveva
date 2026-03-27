@@ -18,34 +18,29 @@
             <nav class="tabs">
                 <ul class="-primary">
 
-                <x-tab :href="route('bills.show', $purchaseBill->id)" :text="__('purchase::modules.vendorPayment.overView')" class="overview" />
+                    <x-tab :href="route('bills.show', $purchaseBill->id)" :text="__('purchase::modules.vendorPayment.overView')" class="overview" />
 
-                <x-tab :href="route('bills.show', $purchaseBill->id). '?tab=history'" :text="__('purchase::modules.vendorPayment.history')" ajax="false"
-                    class="history" />
+                    <x-tab :href="route('bills.show', $purchaseBill->id) . '?tab=history'" :text="__('purchase::modules.vendorPayment.history')" ajax="false" class="history" />
 
                 </ul>
-            <nav>
+                <nav>
         </div>
 
-        <a class="mb-0 d-block d-lg-none text-dark-grey ml-auto mr-2 border-left-grey"
-            onclick="openClientDetailSidebar()"><i class="fa fa-ellipsis-v "></i></a>
+        <a class="mb-0 d-block d-lg-none text-dark-grey ml-auto mr-2 border-left-grey" onclick="openClientDetailSidebar()"><i class="fa fa-ellipsis-v "></i></a>
 
     </div>
     <!-- FILTER END -->
     <!-- PROJECT HEADER END -->
-
 @endsection
 
 @push('styles')
-<script src="{{ asset('vendor/jquery/Chart.min.js') }}"></script>
+    <script src="{{ asset('vendor/jquery/Chart.min.js') }}"></script>
 @endpush
 
 @section('content')
-
     <div class="content-wrapper border-top-0 client-detail-wrapper">
         @include($view)
     </div>
-
 @endsection
 
 @push('scripts')
@@ -59,24 +54,21 @@
 
             const requestUrl = this.href;
 
-            $.easyAjax({
-                url: requestUrl,
-                blockUI: true,
-                container: ".content-wrapper",
-                historyPush: true,
-                success: function(response) {
+            window.apiHttp.get(requestUrl)
+                .then(function(response) {
                     if (response.status == "success") {
+                        window.history.pushState({}, '', requestUrl);
                         $('.content-wrapper').html(response.html);
                         init('.content-wrapper');
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                });
         });
-
     </script>
     <script>
         const activeTab = "{{ $activeTab }}";
         $('.project-menu .' + activeTab).addClass('active');
-
     </script>
 @endpush

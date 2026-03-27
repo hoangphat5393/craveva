@@ -5,14 +5,12 @@
 @endpush
 
 @section('filter-section')
-
     <x-filters.filter-box>
         <!-- DATE START -->
         <div class="select-box d-flex pr-2 border-right-grey border-right-grey-sm-0">
             <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('app.duration')</p>
             <div class="select-status d-flex">
-                <input type="text" class="positiozn-relative text-dark form-control border-0 p-2 text-left f-14 f-w-500"
-                    id="datatableRange" placeholder="@lang('placeholders.dateRange')">
+                <input type="text" class="positiozn-relative text-dark form-control border-0 p-2 text-left f-14 f-w-500" id="datatableRange" placeholder="@lang('placeholders.dateRange')">
             </div>
         </div>
         <!-- DATE END -->
@@ -41,8 +39,7 @@
                             <i class="fa fa-search f-13 text-dark-grey"></i>
                         </span>
                     </div>
-                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field"
-                        placeholder="@lang('app.startTyping')">
+                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field" placeholder="@lang('app.startTyping')">
                 </div>
             </form>
         </div>
@@ -57,13 +54,12 @@
         <!-- RESET END -->
 
     </x-filters.filter-box>
-
 @endsection
 
 @php
-$addEstimatePermission = user()->permission('add_estimates');
-$addEstimateRequestPermission = user()->permission('add_estimate_request');
-$viewEstimateRequestPermission = user()->permission('view_estimate_request');
+    $addEstimatePermission = user()->permission('add_estimates');
+    $addEstimateRequestPermission = user()->permission('add_estimate_request');
+    $viewEstimateRequestPermission = user()->permission('view_estimate_request');
 @endphp
 
 @section('content')
@@ -77,9 +73,8 @@ $viewEstimateRequestPermission = user()->permission('view_estimate_request');
                         @lang('modules.estimates.createEstimate')
                     </x-forms.link-primary>
 
-                    <x-forms.link-secondary :link="route('estimate-template.index')"
-                    class="mr-3 mb-2 mb-lg-0 mb-md-0 float-left mb-2 mb-lg-0 mb-md-0" icon="layer-group">
-                    @lang('modules.estimates.estimateTemplate')
+                    <x-forms.link-secondary :link="route('estimate-template.index')" class="mr-3 mb-2 mb-lg-0 mb-md-0 float-left mb-2 mb-lg-0 mb-md-0" icon="layer-group">
+                        @lang('modules.estimates.estimateTemplate')
                     </x-forms.link-secondary>
                 @endif
                 @if (in_array('client', user_roles()) && ($addEstimateRequestPermission == 'all' || $addEstimateRequestPermission == 'added'))
@@ -91,14 +86,11 @@ $viewEstimateRequestPermission = user()->permission('view_estimate_request');
 
             <div class="btn-group mt-2 mt-lg-0 mt-md-0 ml-0 ml-lg-3 ml-md-3" role="group">
                 @if (in_array($viewEstimateRequestPermission, ['all', 'added', 'owned', 'both']))
-                    <a href="{{ route('estimate-request.index') }}" class=" btn btn-secondary f-14"
-                    data-toggle="tooltip" data-original-title="@lang('modules.estimateRequest.estimateRequests')">
-                    <i class="side-icon fa fa-file-invoice-dollar"></i></a>
+                    <a href="{{ route('estimate-request.index') }}" class=" btn btn-secondary f-14" data-toggle="tooltip" data-original-title="@lang('modules.estimateRequest.estimateRequests')">
+                        <i class="side-icon fa fa-file-invoice-dollar"></i></a>
                 @endif
 
-                <a href="javascript:;" class="img-lightbox btn btn-secondary f-14"
-                data-image-url="{{ asset('img/estimate-lc.png') }}" data-toggle="tooltip"
-                data-original-title="@lang('app.howItWorks')"><i class="side-icon bi bi-question-circle"></i></a>
+                <a href="javascript:;" class="img-lightbox btn btn-secondary f-14" data-image-url="{{ asset('img/estimate-lc.png') }}" data-toggle="tooltip" data-original-title="@lang('app.howItWorks')"><i class="side-icon bi bi-question-circle"></i></a>
             </div>
 
         </div>
@@ -113,7 +105,6 @@ $viewEstimateRequestPermission = user()->permission('view_estimate_request');
         <!-- Task Box End -->
     </div>
     <!-- CONTENT WRAPPER END -->
-
 @endsection
 
 @push('scripts')
@@ -125,7 +116,7 @@ $viewEstimateRequestPermission = user()->permission('view_estimate_request');
         clipboard.on('success', function(e) {
             Swal.fire({
                 icon: 'success',
-                text: '@lang("app.copied")',
+                text: '@lang('app.copied')',
                 toast: true,
                 position: 'top-end',
                 timer: 3000,
@@ -265,18 +256,24 @@ $viewEstimateRequestPermission = user()->permission('view_estimate_request');
                     var url = "{{ route('estimates.change_status', ':id') }}";
                     url = url.replace(':id', id);
 
-                    var token = "{{ csrf_token() }}";
-
-                    $.easyAjax({
-                        type: 'GET',
-                        url: url,
-                        container: '#invoices-table',
-                        blockUI: true,
-                        success: function(response) {
-                            if (response.status == "success") {
-                                window.LaravelDataTables["invoices-table"].draw(true);
-                            }
+                    $.easyBlockUI('#invoices-table');
+                    window.apiHttp.get(url).then(function(response) {
+                        if (response.status == "success") {
+                            window.LaravelDataTables["invoices-table"].draw(true);
                         }
+                    }).catch(function(err) {
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                text: err.message,
+                                toast: true,
+                                position: 'top-end',
+                                timer: 4000,
+                                showConfirmButton: false
+                            });
+                        }
+                    }).finally(function() {
+                        $.easyUnblockUI('#invoices-table');
                     });
                 }
             });
@@ -308,19 +305,24 @@ $viewEstimateRequestPermission = user()->permission('view_estimate_request');
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                showTable();
-                            }
+                    $.easyBlockUI('#invoices-table');
+                    window.apiHttp.delete(url, token).then(function(response) {
+                        if (response.status == "success") {
+                            showTable();
                         }
+                    }).catch(function(err) {
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                text: err.message,
+                                toast: true,
+                                position: 'top-end',
+                                timer: 4000,
+                                showConfirmButton: false
+                            });
+                        }
+                    }).finally(function() {
+                        $.easyUnblockUI('#invoices-table');
                     });
                 }
             });
@@ -333,21 +335,29 @@ $viewEstimateRequestPermission = user()->permission('view_estimate_request');
 
             var url = "{{ route('invoices.apply_quick_action') }}?row_ids=" + rowdIds;
 
-            $.easyAjax({
-                url: url,
-                container: '#quick-action-form',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#quick-action-apply",
-                data: $('#quick-action-form').serialize(),
-                blockUI: true,
-                success: function(response) {
-                    if (response.status == 'success') {
-                        showTable();
-                        resetActionButtons();
-                    }
+            var $qaBtn = $("#quick-action-apply");
+            $qaBtn.prop('disabled', true);
+            $.easyBlockUI('.content-wrapper');
+            window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize()).then(function(response) {
+                if (response.status == 'success') {
+                    showTable();
+                    resetActionButtons();
                 }
-            })
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $qaBtn.prop('disabled', false);
+                $.easyUnblockUI('.content-wrapper');
+            });
         };
 
         $('body').on('click', '.sendButton', function() {
@@ -357,21 +367,27 @@ $viewEstimateRequestPermission = user()->permission('view_estimate_request');
 
             var token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                type: 'POST',
-                url: url,
-                container: '#invoices-table',
-                blockUI: true,
-                data: {
-                    '_token': token
-                },
-                success: function(response) {
-                    if (response.status == "success") {
-                        window.LaravelDataTables["invoices-table"].draw(true);
-                    }
+            $.easyBlockUI('#invoices-table');
+            window.apiHttp.postUrlEncoded(url, {
+                _token: token
+            }).then(function(response) {
+                if (response.status == "success") {
+                    window.LaravelDataTables["invoices-table"].draw(true);
                 }
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $.easyUnblockUI('#invoices-table');
             });
         });
-
     </script>
 @endpush

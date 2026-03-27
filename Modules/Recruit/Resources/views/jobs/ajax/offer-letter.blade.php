@@ -5,14 +5,12 @@
 @endpush
 
 @section('filter-section')
-
     <x-filters.filter-box>
         <!-- DATE START -->
         <div class="select-box d-flex pr-2 border-right-grey border-right-grey-sm-0">
             <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('app.duration')</p>
             <div class="select-status d-flex">
-                <input type="text" class="position-relative text-dark form-control border-0 p-2 text-left f-14 f-w-500 border-additional-grey"
-                       id="datatableRange" placeholder="@lang('placeholders.dateRange')">
+                <input type="text" class="position-relative text-dark form-control border-0 p-2 text-left f-14 f-w-500 border-additional-grey" id="datatableRange" placeholder="@lang('placeholders.dateRange')">
             </div>
         </div>
         <!-- DATE END -->
@@ -21,19 +19,13 @@
         <div class="select-box d-flex py-2 px-lg-2 px-md-2 px-0 border-right-grey border-right-grey-sm-0">
             <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('app.status')</p>
             <div class="select-status">
-                <select class="form-control select-picker" name="status" id="status" data-live-search="true"
-                        data-size="8">
+                <select class="form-control select-picker" name="status" id="status" data-live-search="true" data-size="8">
                     <option {{ request('status') == 'all' ? 'selected' : '' }} value="all">@lang('app.all')</option>
-                    <option value="pending"
-                            data-content="<i class='fa fa-circle mr-2' style='color: yellow'></i> {{ __('recruit::app.job.pending') }}"></option>
-                    <option value="draft"
-                            data-content="<i class='fa fa-circle mr-2' style='color: brown'></i> {{ __('recruit::app.job.draft') }}"></option>
-                    <option value="withdraw"
-                            data-content="<i class='fa fa-circle mr-2' style='color: blue'></i> {{ __('recruit::app.job.withdraw') }}"></option>
-                    <option value="accept"
-                            data-content="<i class='fa fa-circle mr-2' style='color: green'></i> {{ __('recruit::modules.joboffer.accpet') }}"></option>
-                    <option value="decline"
-                            data-content="<i class='fa fa-circle mr-2' style='color: red'></i> {{ __('recruit::modules.joboffer.declined') }}"></option>
+                    <option value="pending" data-content="<i class='fa fa-circle mr-2' style='color: yellow'></i> {{ __('recruit::app.job.pending') }}"></option>
+                    <option value="draft" data-content="<i class='fa fa-circle mr-2' style='color: brown'></i> {{ __('recruit::app.job.draft') }}"></option>
+                    <option value="withdraw" data-content="<i class='fa fa-circle mr-2' style='color: blue'></i> {{ __('recruit::app.job.withdraw') }}"></option>
+                    <option value="accept" data-content="<i class='fa fa-circle mr-2' style='color: green'></i> {{ __('recruit::modules.joboffer.accpet') }}"></option>
+                    <option value="decline" data-content="<i class='fa fa-circle mr-2' style='color: red'></i> {{ __('recruit::modules.joboffer.declined') }}"></option>
 
                 </select>
             </div>
@@ -49,8 +41,7 @@
                             <i class="fa fa-search f-13 text-dark-grey"></i>
                         </span>
                     </div>
-                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field"
-                           placeholder="@lang('app.startTyping')">
+                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field" placeholder="@lang('app.startTyping')">
                 </div>
             </form>
         </div>
@@ -67,14 +58,13 @@
         <!-- MORE FILTERS START -->
         <x-filters.more-filter-box>
             <div class="more-filter-items">
-                <label class="f-14 text-dark-grey mb-12 "
-                       for="usr">@lang('recruit::modules.job.job')</label>
+                <label class="f-14 text-dark-grey mb-12 " for="usr">@lang('recruit::modules.job.job')</label>
                 <div class="select-filter mb-4">
                     <div class="select-others">
                         <select class="form-control select-picker" name="job" data-container="body" id="job">
                             <option value="all">@lang('app.all')</option>
                             @foreach ($jobs as $job)
-                                <option value="{{ $job->id }}">{{ ($job->title) }}</option>
+                                <option value="{{ $job->id }}">{{ $job->title }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -84,7 +74,6 @@
         </x-filters.more-filter-box>
         <!-- MORE FILTERS END -->
     </x-filters.filter-box>
-
 @endsection
 
 @php
@@ -99,8 +88,7 @@
 
             <div id="table-actions" class="d-block d-lg-flex align-items-center">
                 @if ($addPermission == 'all' || $addPermission == 'added')
-                    <x-forms.link-primary :link="route('job-offer-letter.create')" class="mr-3 openRightModal"
-                                          icon="plus">
+                    <x-forms.link-primary :link="route('job-offer-letter.create')" class="mr-3 openRightModal" icon="plus">
                         @lang('recruit::modules.joboffer.addjoboffer')
                     </x-forms.link-primary>
                 @endif
@@ -118,14 +106,10 @@
                     <div class="select-status mr-3 d-none quick-action-field" id="change-status-action">
                         <select name="status" class="form-control select-picker">
                             <option value="pending" data-content="{{ __('recruit::app.job.pending') }}"></option>
-                            <option value="accept"
-                                    data-content="{{ __('app.accept') }}">{{ __('app.accept') }}</option>
-                            <option value="decline"
-                                    data-content="{{ __('app.decline') }}">{{ __('app.decline') }}</option>
-                            <option value="draft"
-                                    data-content="{{ __('recruit::app.job.draft') }}">{{ __('recruit::app.job.draft') }}</option>
-                            <option value="withdraw"
-                                    data-content="{{ __('recruit::app.job.withdraw') }}">{{ __('recruit::app.job.withdraw') }}</option>
+                            <option value="accept" data-content="{{ __('app.accept') }}">{{ __('app.accept') }}</option>
+                            <option value="decline" data-content="{{ __('app.decline') }}">{{ __('app.decline') }}</option>
+                            <option value="draft" data-content="{{ __('recruit::app.job.draft') }}">{{ __('recruit::app.job.draft') }}</option>
+                            <option value="withdraw" data-content="{{ __('recruit::app.job.withdraw') }}">{{ __('recruit::app.job.withdraw') }}</option>
                         </select>
                     </div>
                 </x-datatable.actions>
@@ -141,14 +125,13 @@
         <!-- Task Box End -->
     </div>
     <!-- CONTENT WRAPPER END -->
-
 @endsection
 
 @push('scripts')
     @include('sections.datatable_js')
 
     <script>
-        $('#offer-table').on('preXhr.dt', function (e, settings, data) {
+        $('#offer-table').on('preXhr.dt', function(e, settings, data) {
             const dateRangePicker = $('#datatableRange').data('daterangepicker');
             let startDate = $('#datatableRange').val();
 
@@ -181,7 +164,7 @@
         }
 
         $('#search-text-field, #status, #location, #job')
-            .on('change keyup', function () {
+            .on('change keyup', function() {
                 if ($('#search-text-field').val() !== "") {
                     $('#reset-filters').removeClass('d-none');
                 } else if ($('#status').val() != "all") {
@@ -196,20 +179,20 @@
                 showTable();
             });
 
-        $('body').on('click', '#reset-filters', function () {
+        $('body').on('click', '#reset-filters', function() {
             $('#filter-form')[0].reset();
             $('.filter-box #status').val('not finished');
             $('.filter-box .select-picker').selectpicker("refresh");
             $('#reset-filters').addClass('d-none');
             showTable();
         });
-        $('body').on('click', '#reset-filters-2', function () {
+        $('body').on('click', '#reset-filters-2', function() {
             $('#filter-form')[0].reset();
             $('.filter-box .select-picker').selectpicker("refresh");
             $('#reset-filters').addClass('d-none');
             showTable();
         });
-        $('#quick-action-type').change(function () {
+        $('#quick-action-type').change(function() {
             const actionValue = $(this).val();
             if (actionValue != '') {
                 $('#quick-action-apply').removeAttr('disabled');
@@ -225,7 +208,7 @@
                 $('.quick-action-field').addClass('d-none');
             }
         });
-        $('body').on('click', '#quick-action-apply', function () {
+        $('body').on('click', '#quick-action-apply', function() {
             const actionValue = $('#quick-action-type').val();
             if (actionValue == 'delete') {
                 Swal.fire({
@@ -256,30 +239,26 @@
             }
         });
         const applyQuickAction = () => {
-            var rowdIds = $("#offer-table input:checkbox:checked").map(function () {
+            var rowdIds = $("#offer-table input:checkbox:checked").map(function() {
                 return $(this).val();
             }).get();
 
             const url = "{{ route('job-offer-letter.apply_quick_action') }}?row_ids=" + rowdIds;
 
-            $.easyAjax({
-                url: url,
-                container: '#quick-action-form',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#quick-action-apply",
-                data: $('#quick-action-form').serialize(),
-                success: function (response) {
-                    if (response.status == 'success') {
+            window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize())
+                .then(function(response) {
+                    if (response.data.status == 'success') {
                         showTable();
                         resetActionButtons();
                         deSelectAll();
                         $('#quick-action-form').hide();
                     }
-                }
-            })
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                });
         };
-        $('body').on('click', '.delete-table-row', function () {
+        $('body').on('click', '.delete-table-row', function() {
             var id = $(this).data('offer-id');
             Swal.fire({
                 title: "@lang('messages.sweetAlertTitle')",
@@ -302,75 +281,57 @@
                 if (result.isConfirmed) {
                     var url = "{{ route('job-offer-letter.destroy', ':id') }}";
                     url = url.replace(':id', id);
-                    var token = "{{ csrf_token() }}";
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function (response) {
-                            if (response.status == "success") {
-                                showTable();
-                            }
+                    window.apiHttp.delete(url, {
+                        _token: "{{ csrf_token() }}"
+                    }).then(function(response) {
+                        if (response.data.status == "success") {
+                            showTable();
                         }
+                    }).catch(function(err) {
+                        $.handleApiFormError(err);
                     });
                 }
             });
         });
 
-        $('#offer-table').on('change', '.change-status', function () {
+        $('#offer-table').on('change', '.change-status', function() {
 
             var url = "{{ route('job-applications.change_status') }}";
-            var token = "{{ csrf_token() }}";
             var id = $(this).data('status-id');
             var status = $(this).val();
 
             if (id != "" && status != "") {
-                $.easyAjax({
-                    url: url,
-                    type: "POST",
-                    container: '.content-wrapper',
-                    blockUI: true,
-                    data: {
-                        '_token': token,
-                        row_ids: id,
-                        status: status,
-                        sortBy: 'id'
-                    },
-                    success: function (data) {
-                        window.LaravelDataTables["offer-table"].draw(true);
-                    }
+                window.apiHttp.postUrlEncoded(url, {
+                    _token: "{{ csrf_token() }}",
+                    row_ids: id,
+                    status: status,
+                    sortBy: 'id'
+                }).then(function() {
+                    window.LaravelDataTables["offer-table"].draw(true);
+                }).catch(function(err) {
+                    $.handleApiFormError(err);
                 });
 
             }
         });
 
-        $('body').on('click', '.send-offer-letter', function () {
+        $('body').on('click', '.send-offer-letter', function() {
 
             var url = "{{ route('job-offer-letter.send-offer-letter') }}";
-            var token = "{{ csrf_token() }}";
             var id = $(this).data('send-id');
 
-            $.easyAjax({
-                url: url,
-                type: "POST",
-                container: '.content-wrapper',
-                blockUI: true,
-                data: {
-                    '_token': token,
-                    jobOfferId: id,
-                },
-                success: function (response) {
-                    window.LaravelDataTables["offer-table"].draw(true);
-                }
+            window.apiHttp.postUrlEncoded(url, {
+                _token: "{{ csrf_token() }}",
+                jobOfferId: id
+            }).then(function() {
+                window.LaravelDataTables["offer-table"].draw(true);
+            }).catch(function(err) {
+                $.handleApiFormError(err);
             });
 
         });
 
-        $('body').on('click', '.create-employee', function () {
+        $('body').on('click', '.create-employee', function() {
             var id = $(this).data('offer-id');
             var url = "{{ route('job-offer-letter.create_employee', ':id') }}";
             url = url.replace(':id', id);
@@ -379,52 +340,41 @@
             $.ajaxModal(MODAL_XL, url);
         });
 
-        $('body').on('click', '.withdraw-offer-letter', function () {
+        $('body').on('click', '.withdraw-offer-letter', function() {
 
             var url = "{{ route('job-offer-letter.withdraw-offer-letter') }}";
-            var token = "{{ csrf_token() }}";
             var id = $(this).data('withdraw-id');
 
-            $.easyAjax({
-                url: url,
-                type: "POST",
-                container: '.content-wrapper',
-                blockUI: true,
-                data: {
-                    '_token': token,
-                    id: id,
-                },
-                success: function (response) {
-                    window.LaravelDataTables["offer-table"].draw(true);
-                }
+            window.apiHttp.postUrlEncoded(url, {
+                _token: "{{ csrf_token() }}",
+                id: id
+            }).then(function() {
+                window.LaravelDataTables["offer-table"].draw(true);
+            }).catch(function(err) {
+                $.handleApiFormError(err);
             });
 
         });
 
-        $('body').on('change', '.change-letter-status', function () {
+        $('body').on('change', '.change-letter-status', function() {
             var id = $(this).data('letter-id');
             var url = "{{ route('job-offer-letter.change_letter_status') }}";
 
-            var token = "{{ csrf_token() }}";
             var status = $(this).val();
 
             if (typeof id !== 'undefined') {
-                $.easyAjax({
-                    url: "{{ route('job-offer-letter.change_letter_status') }}",
-                    type: "POST",
-                    data: {
-                        '_token': token,
-                        letterId: id,
-                        status: status
-                    },
-
-                    success: function (response) {
-                        if (response.status == "success") {
-                            showTable();
-                            resetActionButtons();
-                            deSelectAll();
-                        }
+                window.apiHttp.postUrlEncoded("{{ route('job-offer-letter.change_letter_status') }}", {
+                    _token: "{{ csrf_token() }}",
+                    letterId: id,
+                    status: status
+                }).then(function(response) {
+                    if (response.data.status == "success") {
+                        showTable();
+                        resetActionButtons();
+                        deSelectAll();
                     }
+                }).catch(function(err) {
+                    $.handleApiFormError(err);
                 });
             }
         });

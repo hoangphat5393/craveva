@@ -51,16 +51,30 @@
 
     $('#save-form').click(function () {
         var url = "{{ route('salary-settings.update', $payrollSetting->id) }}";
-        $.easyAjax({
-            url: url,
-            container: '#editSettings',
-            type: "POST",
-            redirect: true,
-            disableButton: true,
-            blockUI: true,
-            data: $('#editSettings').serialize(),
-            buttonSelector: "#save-form",
-        })
+        window.apiHttp.postUrlEncoded(url, $('#editSettings').serialize())
+            .then(function (response) {
+                if (response.status == 'success' && typeof response.message !== 'undefined') {
+                    Swal.fire({
+                        icon: 'success',
+                        text: response.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 3000,
+                        timerProgressBar: true,
+                        showConfirmButton: false,
+                        customClass: {
+                            confirmButton: 'btn btn-primary',
+                        },
+                        showClass: {
+                            popup: 'swal2-noanimation',
+                            backdrop: 'swal2-noanimation',
+                        },
+                    });
+                }
+            })
+            .catch(function (err) {
+                $.handleApiFormError(err);
+            });
     });
 
     setTimeout(function () {

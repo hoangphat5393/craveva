@@ -156,15 +156,12 @@
             var note = document.getElementById('description').children[0].innerHTML;
             document.getElementById('description-text').value = note;
 
-            $.easyAjax({
-                url: "{{ route('superadmin.faqs.update', $faq->id) }}",
-                container: '#save-faq-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-faq-form",
-                data: $('#save-faq-data-form').serialize(),
-                success: function(response) {
+            const $faqBtn = $('#save-faq-form');
+            const faqPrev = $faqBtn.html();
+            $.easyBlockUI('#save-faq-data-form');
+            $faqBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+            window.apiHttp.postUrlEncoded("{{ route('superadmin.faqs.update', $faq->id) }}", $('#save-faq-data-form').serialize())
+                .then(function(response) {
                     if (myDropzone.getQueuedFiles().length > 0) {
                         $('#faqID').val(response.faqID);
                         myDropzone.processQueue();
@@ -173,8 +170,12 @@
                     } else {
                         window.location.href = "{{ route('superadmin.faqs.index') }}";
                     }
-                }
-            });
+                })
+                .catch(function (err) { $.handleApiFormError(err); })
+                .finally(function () {
+                    $.easyUnblockUI('#save-faq-data-form');
+                    $faqBtn.prop('disabled', false).html(faqPrev);
+                });
         });
 
 
@@ -205,16 +206,13 @@
 
                 var token = "{{ csrf_token() }}";
 
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {'_token': token},
-                    success: function (response) {
+                window.apiHttp.postUrlEncoded(url, {'_token': token})
+                    .then(function (response) {
                         if (response.status == "success") {
                             $('#task-file-'+id).remove();
                         }
-                    }
-                });
+                    })
+                    .catch(function (err) { $.handleApiFormError(err); });
             }
         });
     });

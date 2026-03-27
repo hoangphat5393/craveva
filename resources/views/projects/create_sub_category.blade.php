@@ -70,7 +70,6 @@
         url = url.replace(':id', id);
         let selectedCategory = $('#project_category_id').val();
         let selectedSubCategory = $('#sub_category_id').val();
-        var token = "{{ csrf_token() }}";
 
         Swal.fire({
             title: "@lang('messages.sweetAlertTitle')",
@@ -91,35 +90,29 @@
             buttonsStyling: false
         }).then((result) => {
             if (result.isConfirmed) {
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE',
-                        'selectedCategory': selectedCategory
-                    },
-                    success: function(response) {
-                        if (response.status == "success") {
-                            $('#cat-' + id).fadeOut();
-                            var options = [];
-                            var rData = [];
-                            rData = response.data;
-                            $.each(rData, function(index, value) {
-                                var selectData = '';
-                                var isSelected = (value.id == selectedSubCategory) ? 'selected' : '';
-                                selectData = '<option value="' + value.id + '" ' + isSelected + '>' +
-                                    value
-                                    .category_name + '</option>';
-                                options.push(selectData);
-                            });
+                var delBody = '_token=' + encodeURIComponent("{{ csrf_token() }}") + '&_method=DELETE&selectedCategory=' + encodeURIComponent(selectedCategory);
+                window.apiHttp.postUrlEncoded(url, delBody).then(function(response) {
+                    if (response.status == "success") {
+                        $('#cat-' + id).fadeOut();
+                        var options = [];
+                        var rData = [];
+                        rData = response.data;
+                        $.each(rData, function(index, value) {
+                            var selectData = '';
+                            var isSelected = (value.id == selectedSubCategory) ? 'selected' : '';
+                            selectData = '<option value="' + value.id + '" ' + isSelected + '>' +
+                                value
+                                .category_name + '</option>';
+                            options.push(selectData);
+                        });
 
-                            $('#project_category_id').val(selectedCategory);
-                            $('#sub_category_id').html('<option value="">--</option>' +
-                                options);
-                            $('#sub_category_id').selectpicker('refresh');
-                        }
+                        $('#project_category_id').val(selectedCategory);
+                        $('#sub_category_id').html('<option value="">--</option>' +
+                            options);
+                        $('#sub_category_id').selectpicker('refresh');
                     }
+                }).catch(function(err) {
+                    $.handleApiFormError(err);
                 });
             }
         });
@@ -131,33 +124,29 @@
         let selectedCategory = $('#project_category_id').val();
         let selectedSubCategory = $('#sub_category_id').val();
         $('#selected_category').val(selectedCategory);
-        $.easyAjax({
-            url: url,
-            container: '#createProjectCategory',
-            type: "POST",
-            data: $('#createProjectCategory').serialize(),
-            success: function(response) {
-                if (response.status == 'success') {
-                    var options = [];
-                    var rData = [];
-                    rData = response.data;
-                    console.log(rData);
-                    $.each(rData, function(index, value) {
-                        var selectData = '';
-                        var isSelected = (value.id == selectedSubCategory) ? 'selected' : '';
-                        selectData = '<option value="' + value.id + '" ' + isSelected + '>' + value
-                            .category_name + '</option>';
-                        options.push(selectData);
-                    });
+        window.apiHttp.postUrlEncoded(url, $('#createProjectCategory').serialize()).then(function(response) {
+            if (response.status == 'success') {
+                var options = [];
+                var rData = [];
+                rData = response.data;
+                console.log(rData);
+                $.each(rData, function(index, value) {
+                    var selectData = '';
+                    var isSelected = (value.id == selectedSubCategory) ? 'selected' : '';
+                    selectData = '<option value="' + value.id + '" ' + isSelected + '>' + value
+                        .category_name + '</option>';
+                    options.push(selectData);
+                });
 
-                    $('#project_category_id').val(selectedCategory);
-                    console.log(options);
-                    $('#sub_category_id').html('<option value="">--</option>' + options);
-                    $('#sub_category_id').selectpicker('refresh');
-                    $(MODAL_LG).modal('hide');
-                }
+                $('#project_category_id').val(selectedCategory);
+                console.log(options);
+                $('#sub_category_id').html('<option value="">--</option>' + options);
+                $('#sub_category_id').selectpicker('refresh');
+                $(MODAL_LG).modal('hide');
             }
-        })
+        }).catch(function(err) {
+            $.handleApiFormError(err);
+        });
     });
 
     $('.client-subcat-table [contenteditable=true]').focus(function() {
@@ -173,37 +162,34 @@
             url = url.replace(':id', id);
             let selectedCategory = $('#project_category_id').val();
             let selectedSubCategory = $('#sub_category_id').val();
-            var token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#cat-' + id,
-                type: "POST",
-                data: {
-                    'category_name': value,
-                    '_token': token,
-                    '_method': 'PUT',
-                    'selectedCategory': selectedCategory
-                },
-                blockUI: true,
-                success: function(response) {
-                    if (response.status == 'success') {
-                        var options = [];
-                        var rData = [];
-                        rData = response.data;
-                        $.each(rData, function(index, value) {
-                            var selectData = '';
-                            var isSelected = (value.id == selectedSubCategory) ? 'selected' : '';
-                            selectData = '<option value="' + value.id + '" ' + isSelected + '>' + value
-                                .category_name + '</option>';
-                            options.push(selectData);
-                        });
+            $.easyBlockUI('#cat-' + id);
+            window.apiHttp.postUrlEncoded(url, {
+                category_name: value,
+                _token: "{{ csrf_token() }}",
+                _method: 'PUT',
+                selectedCategory: selectedCategory
+            }).then(function(response) {
+                if (response.status == 'success') {
+                    var options = [];
+                    var rData = [];
+                    rData = response.data;
+                    $.each(rData, function(index, value) {
+                        var selectData = '';
+                        var isSelected = (value.id == selectedSubCategory) ? 'selected' : '';
+                        selectData = '<option value="' + value.id + '" ' + isSelected + '>' + value
+                            .category_name + '</option>';
+                        options.push(selectData);
+                    });
 
-                        $('#project_category_id').val(selectedCategory);
-                        $('#sub_category_id').html('<option value="">--</option>' + options);
-                        $('#sub_category_id').selectpicker('refresh');
-                    }
+                    $('#project_category_id').val(selectedCategory);
+                    $('#sub_category_id').html('<option value="">--</option>' + options);
+                    $('#sub_category_id').selectpicker('refresh');
                 }
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI('#cat-' + id);
             })
         }
     });

@@ -8,14 +8,12 @@
             <div class="form-body">
                 <div class="row">
                     <div class="col-lg-6">
-                        <x-forms.text fieldId="name" :fieldLabel="__('payroll::modules.payroll.payCodeName')"
-                            fieldName="name" fieldRequired="true" :fieldPlaceholder="__('payroll::modules.payroll.payCodeName')">
+                        <x-forms.text fieldId="name" :fieldLabel="__('payroll::modules.payroll.payCodeName')" fieldName="name" fieldRequired="true" :fieldPlaceholder="__('payroll::modules.payroll.payCodeName')">
                         </x-forms.text>
                     </div>
 
                     <div class="col-lg-6">
-                        <x-forms.text fieldId="code" :fieldLabel="__('payroll::modules.payroll.payCode')"
-                            fieldName="code" fieldRequired="true" :fieldPlaceholder="__('payroll::modules.payroll.payCode')">
+                        <x-forms.text fieldId="code" :fieldLabel="__('payroll::modules.payroll.payCode')" fieldName="code" fieldRequired="true" :fieldPlaceholder="__('payroll::modules.payroll.payCode')">
                         </x-forms.text>
                     </div>
 
@@ -55,14 +53,12 @@
                                                 {{ company()->currency->currency_symbol }}
                                             </span>
                                         </div>
-                                        <input type="number" class="form-control height-35 f-14" id="regular_fixed_amount"
-                                            name="regular_fixed_amount" value="0" placeholder="@lang('payroll::modules.payroll.amount')" />
+                                        <input type="number" class="form-control height-35 f-14" id="regular_fixed_amount" name="regular_fixed_amount" value="0" placeholder="@lang('payroll::modules.payroll.amount')" />
                                     </div>
                                 </div>
                                 <div class="time-rate w-100">
                                     <div class="input-group">
-                                        <input type="number" class="form-control height-35 f-14" id="regular_time_rate"
-                                            name="regular_time_rate" value="1.0" placeholder="@lang('payroll::modules.payroll.timeRate')" />
+                                        <input type="number" class="form-control height-35 f-14" id="regular_time_rate" name="regular_time_rate" value="1.0" placeholder="@lang('payroll::modules.payroll.timeRate')" />
                                         <div class="input-group-append">
                                             <span class="input-group-text height-35">
                                                 @lang('payroll::modules.payroll.times')
@@ -87,14 +83,12 @@
                                                 {{ company()->currency->currency_symbol }}
                                             </span>
                                         </div>
-                                        <input type="number" class="form-control height-35 f-14" id="holiday_fixed_amount"
-                                            name="holiday_fixed_amount" value="0" placeholder="@lang('payroll::modules.payroll.amount')" />
+                                        <input type="number" class="form-control height-35 f-14" id="holiday_fixed_amount" name="holiday_fixed_amount" value="0" placeholder="@lang('payroll::modules.payroll.amount')" />
                                     </div>
                                 </div>
                                 <div class="time-rate w-100">
                                     <div class="input-group">
-                                        <input type="number" class="form-control height-35 f-14" id="holiday_time_rate"
-                                            name="holiday_time_rate" value="2.0" placeholder="@lang('payroll::modules.payroll.timeRate')" />
+                                        <input type="number" class="form-control height-35 f-14" id="holiday_time_rate" name="holiday_time_rate" value="2.0" placeholder="@lang('payroll::modules.payroll.timeRate')" />
                                         <div class="input-group-append">
                                             <span class="input-group-text height-35">
                                                 @lang('payroll::modules.payroll.times')
@@ -119,14 +113,12 @@
                                                 {{ company()->currency->currency_symbol }}
                                             </span>
                                         </div>
-                                        <input type="number" class="form-control height-35 f-14" id="day_off_fixed_amount"
-                                            name="day_off_fixed_amount" value="0" placeholder="@lang('payroll::modules.payroll.amount')" />
+                                        <input type="number" class="form-control height-35 f-14" id="day_off_fixed_amount" name="day_off_fixed_amount" value="0" placeholder="@lang('payroll::modules.payroll.amount')" />
                                     </div>
                                 </div>
                                 <div class="time-rate w-100 ">
                                     <div class="input-group">
-                                        <input type="number" class="form-control height-35 f-14" id="day_off_time_rate"
-                                            name="day_off_time_rate" value="1.75" placeholder="@lang('payroll::modules.payroll.timeRate')" />
+                                        <input type="number" class="form-control height-35 f-14" id="day_off_time_rate" name="day_off_time_rate" value="1.75" placeholder="@lang('payroll::modules.payroll.timeRate')" />
                                         <div class="input-group-append">
                                             <span class="input-group-text height-35">
                                                 @lang('payroll::modules.payroll.times')
@@ -142,7 +134,7 @@
                         <x-forms.textarea fieldId="description" :fieldLabel="__('app.description')" fieldName="description">
                         </x-forms.textarea>
                     </div>
-                </div>   `
+                </div> `
             </div>
         </x-form>
     </div>
@@ -186,7 +178,7 @@
             var labelText = $(this).text();
             var amount = "{{ __('app.amount') }}";
             var rate = "{{ __('payroll::app.rate') }}";
-            if(isTime) {
+            if (isTime) {
                 labelText = labelText.replace(amount, rate);
             } else {
                 labelText = labelText.replace(rate, amount);
@@ -197,16 +189,14 @@
 
     $('#save-pay-code').click(function() {
         var url = "{{ route('pay-codes.store') }}";
-        $.easyAjax({
-            url: url,
-            container: '#createPayCode',
-            type: "POST",
-            data: $('#createPayCode').serialize(),
-            success: function(response) {
+        window.apiHttp.postUrlEncoded(url, $('#createPayCode').serialize())
+            .then(function(response) {
                 if (response.status == 'success') {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            });
     });
 </script>

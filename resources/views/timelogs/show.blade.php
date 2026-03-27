@@ -13,18 +13,15 @@
             </a>
 
             <x-tab :href="route('employees.show', $employee->id)" :text="__('modules.employees.profile')" class="profile" />
-            <x-tab :href="route('employees.show', $employee->id).'?tab=projects'" :text="__('app.menu.projects')"
-                class="projects" />
+            <x-tab :href="route('employees.show', $employee->id) . '?tab=projects'" :text="__('app.menu.projects')" class="projects" />
 
         </div>
 
-        <a class="mb-0 d-block d-lg-none text-dark-grey ml-auto mr-2 border-left-grey"
-            onclick="openClientDetailSidebar()"><i class="fa fa-ellipsis-v "></i></a>
+        <a class="mb-0 d-block d-lg-none text-dark-grey ml-auto mr-2 border-left-grey" onclick="openClientDetailSidebar()"><i class="fa fa-ellipsis-v "></i></a>
 
     </div>
     <!-- FILTER END -->
     <!-- PROJECT HEADER END -->
-
 @endsection
 
 @push('styles')
@@ -32,11 +29,9 @@
 @endpush
 
 @section('content')
-
     <div class="content-wrapper pt-0 border-top-0 client-detail-wrapper">
         @include($view)
     </div>
-
 @endsection
 
 @push('scripts')
@@ -49,25 +44,30 @@
 
             const requestUrl = this.href;
 
-            $.easyAjax({
-                url: requestUrl,
-                blockUI: true,
-                container: ".content-wrapper",
-                historyPush: true,
-                blockUI: true,
-                success: function(response) {
-                    if (response.status == "success") {
-                        $('.content-wrapper').html(response.html);
-                        init('.content-wrapper');
-                    }
+            $.easyBlockUI('.content-wrapper');
+            window.apiHttp.get(requestUrl).then(function(response) {
+                if (response.status == "success") {
+                    $('.content-wrapper').html(response.html);
+                    init('.content-wrapper');
                 }
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $.easyUnblockUI('.content-wrapper');
             });
         });
-
     </script>
     <script>
         const activeTab = "{{ $activeTab }}";
         $('.project-menu .' + activeTab).addClass('active');
-
     </script>
 @endpush

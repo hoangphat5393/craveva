@@ -332,18 +332,20 @@
             });
             var uncheckedValuesString = uncheckedValues.join(',');
             $('#unchecked_value').val(uncheckedValuesString);
-            $.easyAjax({
-                url: "{{ route('superadmin.packages.update', [$package->id]) }}",
-                container: '#update-package-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#update-package-form",
-                data: $('#update-package-data-form').serialize(),
-                success: function() {
+            const pkgUrl = "{{ route('superadmin.packages.update', [$package->id]) }}";
+            const $pkgBtn = $('#update-package-form');
+            const pkgPrev = $pkgBtn.html();
+            $.easyBlockUI('#update-package-data-form');
+            $pkgBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+            window.apiHttp.postUrlEncoded(pkgUrl, $('#update-package-data-form').serialize())
+                .then(function() {
                     showTable();
-                }
-            });
+                })
+                .catch(function (err) { $.handleApiFormError(err); })
+                .finally(function () {
+                    $.easyUnblockUI('#update-package-data-form');
+                    $pkgBtn.prop('disabled', false).html(pkgPrev);
+                });
         });
 
         const showTable = () => {

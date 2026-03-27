@@ -27,24 +27,23 @@
         url = url.replace(':id', id);
 
         if (url) {
-            $.easyAjax({
-                url: url,
-                container: '#update-action-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                data: $('#update-action-form').serialize(),
-                success: function(response) {
+            $.easyBlockUI('#update-action-form');
+            window.apiHttp.postUrlEncoded(url, $('#update-action-form').serialize())
+                .then(function(response) {
                     if (response.status == "success") {
 
                         $('#nav-tabContent').html('');
                         $('#nav-tabContent').html(response.html);
 
-                        $.easyUnblockUI();
                         $(MODAL_LG).modal('hide');
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#update-action-form');
+                });
         }
     });
 </script>

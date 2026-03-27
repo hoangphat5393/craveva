@@ -75,13 +75,9 @@
 
     $('#save-volume-rule').on('click', function(e) {
         e.preventDefault();
-        $.easyAjax({
-            url: "{{ route('pricing.volume_rules.store') }}",
-            container: '#create-volume-rule-form',
-            type: 'POST',
-            blockUI: true,
-            data: $('#create-volume-rule-form').serialize(),
-            success: function(response) {
+        $.easyBlockUI('#create-volume-rule-form');
+        window.apiHttp.postUrlEncoded("{{ route('pricing.volume_rules.store') }}", $('#create-volume-rule-form').serialize())
+            .then(function(response) {
                 if (response.status === 'success') {
                     if ($(RIGHT_MODAL).hasClass('show')) {
                         document.getElementById('close-task-detail').click();
@@ -90,8 +86,13 @@
                         window.location.href = response.redirectUrl;
                     }
                 }
-            }
-        });
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $.easyUnblockUI('#create-volume-rule-form');
+            });
     });
 
     $(document).ready(function() {

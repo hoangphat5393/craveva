@@ -126,15 +126,8 @@
 
             const url = "{{ route('interview-schedule.reschedule.store') }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#save-reschedule-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-reschedule-form",
-                data: $('#save-reschedule-data-form').serialize(),
-                success: function (response) {
+            window.apiHttp.postUrlEncoded(url, $('#save-reschedule-data-form').serialize())
+                .then(function (response) {
                     if (response.status == 'success') {
                         if ($(MODAL_XL).hasClass('show')) {
                             $(MODAL_XL).modal('hide');
@@ -143,8 +136,10 @@
                             window.location.href = response.redirectUrl;
                         }
                     }
-                }
-            });
+                })
+                .catch(function (err) {
+                    $.handleApiFormError(err);
+                });
         });
 
     });

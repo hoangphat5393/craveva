@@ -31,20 +31,15 @@
 
         var url = "{{ route('source-setting.update', $source->id) }}";
 
-        $.easyAjax({
-            url: url,
-            container: '#updateTaskBoardColumn',
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#update-board-column",
-            type: "POST",
-            data: $('#updateTaskBoardColumn').serialize(),
-            success: function (response) {
+        window.apiHttp.postUrlEncoded(url, $('#updateTaskBoardColumn').serialize())
+            .then(function (response) {
                 if (response.status == 'success') {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch(function (err) {
+                $.handleApiFormError(err);
+            });
     });
 
   

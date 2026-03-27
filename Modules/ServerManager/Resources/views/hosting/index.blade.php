@@ -370,21 +370,15 @@
                 if (result.isConfirmed) {
                     var url = "{{ route('hosting.destroy', ':id') }}";
                     url = url.replace(':id', id);
-                    var token = "{{ csrf_token() }}";
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
+                    window.apiHttp.delete(url, "{{ csrf_token() }}")
+                        .then(function (response) {
                             if (response.status == "success") {
                                 window.location.reload();
                             }
-                        }
-                    });
+                        })
+                        .catch(function (err) {
+                            $.handleApiFormError(err);
+                        });
                 }
             });
         });
@@ -444,22 +438,18 @@
 
             var url = "{{ route('server-manager.hosting.apply_quick_action') }}?row_ids=" + rowdIds;
 
-            $.easyAjax({
-                url: url,
-                container: '#quick-action-form',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#quick-action-apply",
-                data: $('#quick-action-form').serialize(),
-                success: function(response) {
+            window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize())
+                .then(function (response) {
                     if (response.status == 'success') {
                         showTable();
                         resetActionButtons();
                         deSelectAll();
                         $('#quick-action-form').hide();
                     }
-                }
-            })
+                })
+                .catch(function (err) {
+                    $.handleApiFormError(err);
+                });
         };
 
         @if (canDataTableExport())
@@ -501,24 +491,20 @@
 
         $('#hosting-table').on('change', '.change-status', function() {
             var url = "{{ route('server-manager.hosting.change_status') }}";
-            var token = "{{ csrf_token() }}";
             var id = $(this).data('hosting-id');
             var status = $(this).val();
-            $.easyAjax({
-                url: url,
-                type: "POST",
-                container: '.content-wrapper',
-                blockUI: true,
-                data: {
-                    '_token': token,
-                    hostingId: id,
-                    status: status,
-                    sortBy: 'id'
-                },
-                success: function(response) {
+            window.apiHttp.postUrlEncoded(url, {
+                '_token': "{{ csrf_token() }}",
+                hostingId: id,
+                status: status,
+                sortBy: 'id'
+            })
+                .then(function () {
                     window.LaravelDataTables["hosting-table"].draw(true);
-                }
-            });
+                })
+                .catch(function (err) {
+                    $.handleApiFormError(err);
+                });
         });
     </script>
 @endpush

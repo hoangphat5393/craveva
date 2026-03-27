@@ -90,19 +90,15 @@
 
                 $('#save-form').on('click', function (e) {
                     e.preventDefault();
-                    $.easyAjax({
-                        url: '{{route('front.submit-forgot-password')}}',
-                        container: '#login-form',
-                        type: "POST",
-                        blockUI: true,
-                        data: $('#login-form').serialize(),
-                        messagePosition: "inline",
-                        success: function (response) {
+                    window.apiHttp.postUrlEncoded("{{route('front.submit-forgot-password')}}", $('#login-form').serialize())
+                        .then(function (response) {
                             if (response.status === 'success') {
                                 $('.removeable').remove();
                             }
-                        },
-                    })
+                        })
+                        .catch(function (err) {
+                            $.handleApiFormError(err);
+                        });
                 });
 
                 @if (session('message'))

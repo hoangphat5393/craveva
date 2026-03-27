@@ -124,15 +124,12 @@ $manageFaqCategoryPermission = user()->permission('manage_faq_category');
             var note = document.getElementById('description').children[0].innerHTML;
             document.getElementById('description-text').value = note;
 
-            $.easyAjax({
-                url: "{{ route('superadmin.faqs.store') }}",
-                container: '#save-faq-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-faq-form",
-                data: $('#save-faq-data-form').serialize(),
-                success: function(response) {
+            const $faqBtn = $('#save-faq-form');
+            const faqPrev = $faqBtn.html();
+            $.easyBlockUI('#save-faq-data-form');
+            $faqBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+            window.apiHttp.postUrlEncoded("{{ route('superadmin.faqs.store') }}", $('#save-faq-data-form').serialize())
+                .then(function(response) {
                     if (myDropzone.getQueuedFiles().length > 0) {
                         $('#faqID').val(response.faqID);
                         myDropzone.processQueue();
@@ -141,8 +138,12 @@ $manageFaqCategoryPermission = user()->permission('manage_faq_category');
                     } else {
                         window.location.href = "{{ route('superadmin.faqs.index') }}";
                     }
-                }
-            });
+                })
+                .catch(function (err) { $.handleApiFormError(err); })
+                .finally(function () {
+                    $.easyUnblockUI('#save-faq-data-form');
+                    $faqBtn.prop('disabled', false).html(faqPrev);
+                });
         });
 
         init(RIGHT_MODAL);

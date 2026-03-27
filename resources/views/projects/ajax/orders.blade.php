@@ -159,19 +159,17 @@ $addOrderPermission = user()->permission('add_order');
                 buttonsStyling: false
             }).then((result) => {
                 if (result.isConfirmed) {
-                    $.easyAjax({
-                        url: url,
-                        type: "POST",
-                        container: '.content-wrapper',
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            orderId: id,
-                            status: status,
-                        },
-                        success: function(data) {
-                            showTable();
-                        }
+                    $.easyBlockUI('.content-wrapper');
+                    window.apiHttp.postUrlEncoded(url, {
+                        _token: token,
+                        orderId: id,
+                        status: status,
+                    }).then(function(data) {
+                        showTable();
+                    }).catch(function(err) {
+                        $.handleApiFormError(err);
+                    }).finally(function() {
+                        $.easyUnblockUI('.content-wrapper');
                     });
                 }
                 else {
@@ -254,20 +252,12 @@ $addOrderPermission = user()->permission('add_order');
                     var url = "{{ route('orders.destroy', ':id') }}";
                     url = url.replace(':id', id);
 
-                    var token = "{{ csrf_token() }}";
-
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                showTable();
-                            }
+                    window.apiHttp.delete(url, "{{ csrf_token() }}").then(function(response) {
+                        if (response.status == "success") {
+                            showTable();
                         }
+                    }).catch(function(err) {
+                        $.handleApiFormError(err);
                     });
                 }
             });

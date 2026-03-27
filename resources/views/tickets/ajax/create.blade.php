@@ -314,32 +314,30 @@
             url = url.replace(':id', groupId);
             url = url.replace(':exceptThis', exceptThis);
 
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                success: function(response)
+            window.apiHttp.get(url).then(function(response)
+            {
+                var userValues = (response.groupData);
+                destory_editor('#description');
+                quillMention(userValues, '#description');
+                var options = [];
+                var rData = [];
+                if($.isArray(response.data))
                 {
-                    var userValues = (response.groupData);
-                    destory_editor('#description');
-                    quillMention(userValues, '#description');
-                    var options = [];
-                    var rData = [];
-                    if($.isArray(response.data))
-                    {
-                        rData = response.data;
-                        $.each(rData, function(index, value) {
-                            var selectData = '';
-                            options.push(value);
-                        });
+                    rData = response.data;
+                    $.each(rData, function(index, value) {
+                        var selectData = '';
+                        options.push(value);
+                    });
 
-                        $('#ticket_agent_id').html('<option value="">--</option>' + options);
-                    }
-                    else
-                    {
-                        $('#ticket_agent_id').html(response.data);
-                    }
-                    $('#ticket_agent_id').selectpicker('refresh');
+                    $('#ticket_agent_id').html('<option value="">--</option>' + options);
                 }
+                else
+                {
+                    $('#ticket_agent_id').html(response.data);
+                }
+                $('#ticket_agent_id').selectpicker('refresh');
+            }).catch(function(err) {
+                $.handleApiFormError(err);
             });
         }
 
@@ -463,26 +461,27 @@
 
             const url = "{{ route('tickets.store') }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#save-ticket-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                file: true,
-                buttonSelector: "#save-ticket-form",
-                data: $('#save-ticket-data-form').serialize(),
-                success: function (response) {
-                    if (response.status == 'success') {
-                        if (ticketDropzone.getQueuedFiles().length > 0) {
-                            $('#replyID').val(response.replyID);
-                            ticketDropzone.processQueue();
-                        } else {
-                            window.location.href = response.redirectUrl;
-                        }
+            var $btn = $('#save-ticket-data-form').find('#save-ticket-form');
+            var btnPrev = $btn.html();
+            $btn.attr('data-prev-text', btnPrev);
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+            $.easyBlockUI('#save-ticket-data-form');
+            window.apiHttp.postForm(url, document.getElementById('save-ticket-data-form')).then(function (response) {
+                if (response.status == 'success') {
+                    if (ticketDropzone.getQueuedFiles().length > 0) {
+                        $('#replyID').val(response.replyID);
+                        ticketDropzone.processQueue();
+                    } else {
+                        window.location.href = response.redirectUrl;
                     }
-
                 }
+
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI('#save-ticket-data-form');
+                $btn.html($btn.attr('data-prev-text'));
+                $btn.prop('disabled', false);
             });
         });
 
@@ -530,17 +529,17 @@
 
             const url = "{{ route('projects.create') }}";
 
-            $.easyAjax({
-                url: url,
-                blockUI: true,
-                container: MODAL_XL,
-                success: function (response) {
-                    if (response.status == "success") {
-                        $(MODAL_XL + ' .modal-body').html(response.html);
-                        $(MODAL_XL + ' .modal-title').html(response.title);
-                        init(MODAL_XL);
-                    }
+            $.easyBlockUI(MODAL_XL);
+            window.apiHttp.get(url).then(function (response) {
+                if (response.status == "success") {
+                    $(MODAL_XL + ' .modal-body').html(response.html);
+                    $(MODAL_XL + ' .modal-title').html(response.title);
+                    init(MODAL_XL);
                 }
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI(MODAL_XL);
             });
         });
 
@@ -549,17 +548,17 @@
 
             const url = "{{ route('employees.create') }}";
 
-            $.easyAjax({
-                url: url,
-                blockUI: true,
-                container: MODAL_XL,
-                success: function (response) {
-                    if (response.status == "success") {
-                        $(MODAL_XL + ' .modal-body').html(response.html);
-                        $(MODAL_XL + ' .modal-title').html(response.title);
-                        init(MODAL_XL);
-                    }
+            $.easyBlockUI(MODAL_XL);
+            window.apiHttp.get(url).then(function (response) {
+                if (response.status == "success") {
+                    $(MODAL_XL + ' .modal-body').html(response.html);
+                    $(MODAL_XL + ' .modal-title').html(response.title);
+                    init(MODAL_XL);
                 }
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI(MODAL_XL);
             });
         });
 
@@ -589,29 +588,28 @@
 
             if ((requester_type == 'client' && client_id) || (requester_type == 'employee' && user_id)) {
                 let url = "{{ route('get.projects') }}";
-                $.easyAjax({
-                    url: url,
-                    type: "GET",
-                    data: {
+                window.apiHttp.get(url, {
+                    params: {
                         "requesterType": requester_type,
                         "clientId": client_id,
                         "userId": user_id
-                    },
-                    success: function(response) {
-                        let options = [];
-                        let rData = [];
-                        rData = response.projects;
-                        $.each(rData, function(index, value) {
-                            let selectData = '';
-                            selectData = '<option value="' + value.id + '">' + value.project_name + '</option>';
-                            options.push(selectData);
-                        });
-
-                        $('#project_id').html('<option value="">--</option>' +
-                            options);
-                        $('#project_id').selectpicker('refresh');
                     }
-                })
+                }).then(function(response) {
+                    let options = [];
+                    let rData = [];
+                    rData = response.projects;
+                    $.each(rData, function(index, value) {
+                        let selectData = '';
+                        selectData = '<option value="' + value.id + '">' + value.project_name + '</option>';
+                        options.push(selectData);
+                    });
+
+                    $('#project_id').html('<option value="">--</option>' +
+                        options);
+                    $('#project_id').selectpicker('refresh');
+                }).catch(function(err) {
+                    $.handleApiFormError(err);
+                });
             } else {
                 $('#project_id').html('<option value="">--</option>');
                 $('#project_id').selectpicker('refresh');
@@ -629,28 +627,27 @@
 
             if ((requester_type == 'client' && client_id)) {
                 let url = "{{ route('get.contacts') }}";
-                $.easyAjax({
-                    url: url,
-                    type: "GET",
-                    data: {
+                window.apiHttp.get(url, {
+                    params: {
                         "requesterType": requester_type,
                         "clientId": client_id
-                    },
-                    success: function(response) {
-                        let options = [];
-                        let rData = [];
-                        rData = response.contacts;
-                        $.each(rData, function(index, value) {
-                            let selectData = '';
-                            selectData = '<option value="' + value.client_id + '">' + value.contact_name + '</option>';
-                            options.push(selectData);
-                        });
-
-                        $('#client_contact_id').html('<option value="">--</option>' +
-                            options);
-                        $('#client_contact_id').selectpicker('refresh');
                     }
-                })
+                }).then(function(response) {
+                    let options = [];
+                    let rData = [];
+                    rData = response.contacts;
+                    $.each(rData, function(index, value) {
+                        let selectData = '';
+                        selectData = '<option value="' + value.client_id + '">' + value.contact_name + '</option>';
+                        options.push(selectData);
+                    });
+
+                    $('#client_contact_id').html('<option value="">--</option>' +
+                        options);
+                    $('#client_contact_id').selectpicker('refresh');
+                }).catch(function(err) {
+                    $.handleApiFormError(err);
+                });
             } else {
                 $('#client_contact_id').html('<option value="">--</option>');
                 $('#client_contact_id').selectpicker('refresh');

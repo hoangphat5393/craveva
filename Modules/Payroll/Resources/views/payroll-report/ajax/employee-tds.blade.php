@@ -44,16 +44,16 @@
             var url = "{{ route('payroll-reports.fetch_tds', ':id') }}";
             url = url.replace(':id', userId);
 
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                success: function (response) {
+            window.apiHttp.get(url)
+                .then(function (response) {
                     if (response.status == 'success') {
                         console.log(response);
                         $('#full-tds').html(response.html);
                     }
-                }
-            })
+                })
+                .catch(function (err) {
+                    $.handleApiFormError(err);
+                });
         });
     </script>
 @endpush

@@ -306,20 +306,15 @@
         $('#save-domain-form').click(function() {
             const url = "{{ route('domain.store') }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#save-domain-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-domain-form",
-                data: $('#save-domain-data-form').serialize(),
-                success: function(response) {
+            window.apiHttp.postUrlEncoded(url, $('#save-domain-data-form').serialize())
+                .then(function (response) {
                     if (response.status == 'success') {
                         window.location.href = response.redirectUrl;
                     }
-                }
-            });
+                })
+                .catch(function (err) {
+                    $.handleApiFormError(err);
+                });
         });
 
         // Handle expiry notification checkbox

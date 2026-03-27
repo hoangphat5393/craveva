@@ -171,24 +171,33 @@
 
                     const url = "{{ route('front.signup.store') }}";
 
-                    $.easyAjax({
-                        url: url,
-                        container: '.login_box',
-                        disableButton: true,
-                        buttonSelector: "#submit-register",
-                        type: "POST",
-                        blockUI: true,
-                        data: $('#login-form').serialize(),
-                        messagePosition: "inline",
-                        success: function (response) {
-                            if (response.status == 'success') {
-                                $('#form-box').remove();
-                            } else if (response.status === 'fail') {
-                                @if($global->google_recaptcha_status)
-                                grecaptcha.reset();
-                                @endif
+                    var $btn = $('#submit-register');
+                    var prev = $btn.html();
+                    $.easyBlockUI('.login_box');
+                    $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+                    window.apiHttp.postUrlEncoded(url, $('#login-form').serialize()).then(function (response) {
+                        if (response.status == 'success') {
+                            $('#form-box').remove();
+                            if (response.action === 'redirect' && response.url) {
+                                window.location.href = response.url;
+                            } else if (typeof response.message !== 'undefined') {
+                                var ele = $('.login_box').find('#alert');
+                                var html = '<div class="alert alert-success">' + response.message + '</div>';
+                                if (ele.length === 0) {
+                                    $('.login_box').find('.form-group:first').before('<div id="alert">' + html + '</div>');
+                                } else {
+                                    ele.html(html);
+                                }
                             }
                         }
+                    }).catch(function (err) {
+                        $.handleApiFormError(err);
+                        @if($global->google_recaptcha_status)
+                        grecaptcha.reset();
+                        @endif
+                    }).finally(function () {
+                        $.easyUnblockUI('.login_box');
+                        $btn.prop('disabled', false).html(prev);
                     });
                     @if($global->google_recaptcha_status)
                     grecaptcha.reset();

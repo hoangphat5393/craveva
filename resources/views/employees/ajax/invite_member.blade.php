@@ -8,8 +8,7 @@
 
 <div class="modal-header">
     <h5 class="modal-title" id="modelHeading">@lang('app.inviteMember') {{ $companyName }}</h5>
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-            aria-hidden="true">×</span></button>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
 </div>
 <div class="modal-body">
     <div class="row">
@@ -17,20 +16,16 @@
 
             <nav class="tabs border-bottom-grey">
                 <div class="nav" id="myTabs" role="tablist">
-                    <a class="nav-item nav-link f-15 active" href="#inviteEmail" data-toggle="tab" id="inviteEmail-tab"
-                       role="tab" aria-controls="inviteEmail"
-                       aria-selected="true">@lang('modules.employees.inviteEmail')
+                    <a class="nav-item nav-link f-15 active" href="#inviteEmail" data-toggle="tab" id="inviteEmail-tab" role="tab" aria-controls="inviteEmail" aria-selected="true">@lang('modules.employees.inviteEmail')
                     </a>
 
-                    <a class="nav-item nav-link f-15" href="#inviteLink" role="tab" data-toggle="tab"
-                       id="inviteLink-tab" aria-controls="inviteLink" aria-selected="false">
+                    <a class="nav-item nav-link f-15" href="#inviteLink" role="tab" data-toggle="tab" id="inviteLink-tab" aria-controls="inviteLink" aria-selected="false">
                         @lang('modules.employees.inviteLink')
                     </a>
                 </div>
             </nav>
             <div class="tab-content" id="myTabContent">
-                <div class="tab-pane fade show active" id="inviteEmail" role="tabpanel"
-                     aria-labelledby="inviteEmail-tab">
+                <div class="tab-pane fade show active" id="inviteEmail" role="tabpanel" aria-labelledby="inviteEmail-tab">
                     <p>
                         <x-alert type="secondary" icon="info-circle">@lang('messages.inviteInfo')</x-alert>
                     </p>
@@ -38,13 +33,9 @@
                     <x-form id="inviteEmailForm">
                         <div class="row">
                             <div class="col-sm-12">
-                                <x-forms.text class="tagify_tags" fieldId="invitee_email" :fieldLabel="__('app.email')"
-                                              fieldName="email"
-                                              :fieldRequired="true" :fieldPlaceholder="__('placeholders.email')">
+                                <x-forms.text class="tagify_tags" fieldId="invitee_email" :fieldLabel="__('app.email')" fieldName="email" :fieldRequired="true" :fieldPlaceholder="__('placeholders.email')">
                                 </x-forms.text>
-                                <x-forms.textarea fieldId="message" :fieldLabel="__('modules.messages.message')"
-                                                  fieldName="message"
-                                                  :fieldPlaceholder="__('modules.employees.message')">
+                                <x-forms.textarea fieldId="message" :fieldLabel="__('modules.messages.message')" fieldName="message" :fieldPlaceholder="__('modules.employees.message')">
                                 </x-forms.textarea>
                             </div>
                         </div>
@@ -62,18 +53,13 @@
                         <div class="row py-3">
                             <div class="col-sm-12">
                                 <div class="form-group">
-                                    <x-forms.label fieldId="createLinkLabel"
-                                                   :fieldLabel="__('modules.employees.createLinkLabel')"></x-forms.label>
-                                    <x-forms.radio fieldId="allowAnyEmail" checked="true"
-                                                   :fieldLabel="__('modules.employees.allowAnyEmail')"
-                                                   fieldName="allow_email"
-                                                   fieldValue="any">
+                                    <x-forms.label fieldId="createLinkLabel" :fieldLabel="__('modules.employees.createLinkLabel')"></x-forms.label>
+                                    <x-forms.radio fieldId="allowAnyEmail" checked="true" :fieldLabel="__('modules.employees.allowAnyEmail')" fieldName="allow_email" fieldValue="any">
                                     </x-forms.radio>
 
 
                                     <div class="form-check-inline custom-control custom-radio my-3 mr-3">
-                                        <input type="radio" value="selected" class="custom-control-input"
-                                               id="onlyAllowEmail" name="allow_email">
+                                        <input type="radio" value="selected" class="custom-control-input" id="onlyAllowEmail" name="allow_email">
                                         <label class="custom-control-label cursor-pointer" for="onlyAllowEmail">
                                             @lang('modules.employees.onlyAllow')
 
@@ -84,10 +70,7 @@
                                                 @php
                                                     $companyDomain = explode('@', company()->company_email);
                                                 @endphp
-                                                <input type="text" name="email_domain" id="email_domain"
-                                                       placeholder="@lang('placeholders.emailDomain')"
-                                                       value="{{ $companyDomain[1] }}"
-                                                       class="form-control height-35 f-14">
+                                                <input type="text" name="email_domain" id="email_domain" placeholder="@lang('placeholders.emailDomain')" value="{{ $companyDomain[1] }}" class="form-control height-35 f-14">
                                             </x-forms.input-group>
                                         </label>
                                     </div>
@@ -107,8 +90,7 @@
                             <div class="col-sm-12" id="invite-link-section">
                             </div>
                             <div class="col-sm-12">
-                                <button type="button" data-clipboard-target="#invitation-link-text"
-                                        class="btn-copy btn btn-sm btn-secondary d-none">
+                                <button type="button" data-clipboard-target="#invitation-link-text" class="btn-copy btn btn-sm btn-secondary d-none">
                                     <i class="fa fa-copy"></i> @lang('app.copyAboveLink')
                                 </button>
                             </div>
@@ -138,49 +120,65 @@
             }
         });
 
-    $('#send-invite').click(function () {
+    $('#send-invite').click(function() {
         var url = "{{ route('employees.send_invite') }}";
-        $.easyAjax({
-            url: url,
-            container: '#inviteEmailForm',
-            type: "POST",
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#send-invite",
-            data: $('#inviteEmailForm').serialize(),
-            success: function (response) {
-                if (response.status == 'success') {
-                    $(MODAL_LG).modal('hide');
-                }
+        var $sendInv = $('#send-invite');
+        $sendInv.prop('disabled', true);
+        $.easyBlockUI('#inviteEmailForm');
+        window.apiHttp.postUrlEncoded(url, $('#inviteEmailForm').serialize()).then(function(response) {
+            if (response.status == 'success') {
+                $(MODAL_LG).modal('hide');
             }
-        })
+        }).catch(function(err) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    text: err.message,
+                    toast: true,
+                    position: 'top-end',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            }
+        }).finally(function() {
+            $sendInv.prop('disabled', false);
+            $.easyUnblockUI('#inviteEmailForm');
+        });
     });
 
-    $('#create-link').click(function () {
+    $('#create-link').click(function() {
         var url = "{{ route('employees.create_link') }}";
-        $.easyAjax({
-            url: url,
-            container: '#inviteLinkForm',
-            type: "POST",
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#create-link",
-            data: $('#inviteLinkForm').serialize(),
-            success: function (response) {
-                if (response.status == 'success') {
-                    var inviteLink =
-                        "<h5 class='mt-4'>{{ __('messages.inviteLinkSuccess') }}</h5>" +
-                        "<p><em id='invitation-link-text'>" + response.link + "</em></p>";
-                    $('#invite-link-section').html(inviteLink);
-                    $('.btn-copy').removeClass('d-none');
-                }
+        var $createLink = $('#create-link');
+        $createLink.prop('disabled', true);
+        $.easyBlockUI('#inviteLinkForm');
+        window.apiHttp.postUrlEncoded(url, $('#inviteLinkForm').serialize()).then(function(response) {
+            if (response.status == 'success') {
+                var inviteLink =
+                    "<h5 class='mt-4'>{{ __('messages.inviteLinkSuccess') }}</h5>" +
+                    "<p><em id='invitation-link-text'>" + response.link + "</em></p>";
+                $('#invite-link-section').html(inviteLink);
+                $('.btn-copy').removeClass('d-none');
             }
-        })
+        }).catch(function(err) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    text: err.message,
+                    toast: true,
+                    position: 'top-end',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            }
+        }).finally(function() {
+            $createLink.prop('disabled', false);
+            $.easyUnblockUI('#inviteLinkForm');
+        });
     });
 
     var clipboard = new ClipboardJS('.btn-copy');
 
-    clipboard.on('success', function (e) {
+    clipboard.on('success', function(e) {
         Swal.fire({
             icon: 'success',
             text: "{{ __('messages.inviteLinkCopied') }}",
@@ -198,5 +196,4 @@
             },
         })
     });
-
 </script>

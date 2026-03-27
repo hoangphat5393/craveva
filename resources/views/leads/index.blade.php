@@ -214,19 +214,12 @@ $addLeadCustomFormPermission = user()->permission('manage_lead_custom_forms');
                 if (result.isConfirmed) {
                     var url = "{{ route('deals.destroy', ':id') }}";
                     url = url.replace(':id', id);
-                    var token = "{{ csrf_token() }}";
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                showTable();
-                            }
+                    window.apiHttp.delete(url, "{{ csrf_token() }}").then(function(response) {
+                        if (response.status == "success") {
+                            showTable();
                         }
+                    }).catch(function(err) {
+                        $.handleApiFormError(err);
                     });
                 }
             });
@@ -236,55 +229,54 @@ $addLeadCustomFormPermission = user()->permission('manage_lead_custom_forms');
                 return $(this).val();
             }).get();
             var url = "{{ route('deals.apply_quick_action') }}?row_ids=" + rowdIds;
-            $.easyAjax({
-                url: url,
-                container: '#quick-action-form',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#quick-action-apply",
-                data: $('#quick-action-form').serialize(),
-                success: function(response) {
-                    if (response.status == 'success') {
-                        showTable();
-                        resetActionButtons();
-                        deSelectAll();
-                        $('#quick-action-form').hide();
-                    }
+            var $qaBtn = $('#quick-action-form').find('#quick-action-apply');
+            var qaPrev = $qaBtn.html();
+            $qaBtn.attr('data-prev-text', qaPrev);
+            $qaBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+            $.easyBlockUI('#quick-action-form');
+            window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize()).then(function(response) {
+                if (response.status == 'success') {
+                    showTable();
+                    resetActionButtons();
+                    deSelectAll();
+                    $('#quick-action-form').hide();
                 }
-            })
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI('#quick-action-form');
+                $qaBtn.html($qaBtn.attr('data-prev-text'));
+                $qaBtn.prop('disabled', false);
+            });
         };
        function changeStage(leadID, elem) {
             var statusID = $(elem).find(':selected').attr('data-id');
             var statusSlug = $(elem).find(':selected').attr('data-slug');
 
             var url = "{{ route('deals.change_stage') }}";
-            var token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                type: 'POST',
-                url: url,
-                data: {
-                    '_token': token,
-                    'leadID': leadID,
-                    'statusID': statusID
-                },
-                success: function(response) {
-                    if (response.status == "success") {
+            window.apiHttp.postUrlEncoded(url, $.param({
+                '_token': "{{ csrf_token() }}",
+                'leadID': leadID,
+                'statusID': statusID
+            })).then(function(response) {
+                if (response.status == "success") {
 
-                        if (statusSlug === 'win' || statusSlug === 'lost') {
-                            var modalUrl = "{{ route('deals.stage_change', ':id')}}?via=deal&leadID=" + leadID + "&statusID=" + statusID;
-                            modalUrl = modalUrl.replace(':id', leadID);
-                            $(MODAL_LG + ' ' + MODAL_HEADING).html('...');
-                            $.ajaxModal(MODAL_LG, modalUrl);
-                            return;
-                        }
-                        $.easyBlockUI('#leads-table');
-                        $.easyUnblockUI('#leads-table');
-                        showTable();
-                        resetActionButtons();
-                        deSelectAll();
+                    if (statusSlug === 'win' || statusSlug === 'lost') {
+                        var modalUrl = "{{ route('deals.stage_change', ':id')}}?via=deal&leadID=" + leadID + "&statusID=" + statusID;
+                        modalUrl = modalUrl.replace(':id', leadID);
+                        $(MODAL_LG + ' ' + MODAL_HEADING).html('...');
+                        $.ajaxModal(MODAL_LG, modalUrl);
+                        return;
                     }
+                    $.easyBlockUI('#leads-table');
+                    $.easyUnblockUI('#leads-table');
+                    showTable();
+                    resetActionButtons();
+                    deSelectAll();
                 }
+            }).catch(function(err) {
+                $.handleApiFormError(err);
             });
         }
         function followUp(leadID) {

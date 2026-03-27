@@ -69,17 +69,19 @@ $viewLeadFollowupPermission = user()->permission('view_lead_follow_up');
 
             const requestUrl = this.href;
 
-            $.easyAjax({
-                url: requestUrl,
-                blockUI: true,
-                container: ".content-wrapper",
-                historyPush: true,
-                success: function(response) {
-                    if (response.status == "success") {
-                        $('.content-wrapper').html(response.html);
-                        init('.content-wrapper');
-                    }
+            if (typeof historyPush === 'function') {
+                historyPush(requestUrl);
+            }
+            $.easyBlockUI('.content-wrapper');
+            window.apiHttp.get(requestUrl).then(function(response) {
+                if (response.status == "success") {
+                    $('.content-wrapper').html(response.html);
+                    init('.content-wrapper');
                 }
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI('.content-wrapper');
             });
         });
 
@@ -118,20 +120,12 @@ $viewLeadFollowupPermission = user()->permission('view_lead_follow_up');
                     var url = "{{ route('deals.destroy', ':id') }}";
                     url = url.replace(':id', id);
 
-                    var token = "{{ csrf_token() }}";
-
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                window.location.href = "{{ route('deals.index')}}";
-                            }
+                    window.apiHttp.delete(url, "{{ csrf_token() }}").then(function(response) {
+                        if (response.status == "success") {
+                            window.location.href = "{{ route('deals.index')}}";
                         }
+                    }).catch(function(err) {
+                        $.handleApiFormError(err);
                     });
                 }
             });

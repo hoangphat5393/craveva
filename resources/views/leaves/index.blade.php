@@ -6,14 +6,13 @@
         .filter-box {
             z-index: 2;
         }
-
     </style>
 @endpush
 
 
 @php
-$addLeavePermission = user()->permission('add_leave');
-$approveRejectPermission = user()->permission('approve_or_reject_leaves');
+    $addLeavePermission = user()->permission('add_leave');
+    $approveRejectPermission = user()->permission('approve_or_reject_leaves');
 @endphp
 
 @section('filter-section')
@@ -22,9 +21,7 @@ $approveRejectPermission = user()->permission('approve_or_reject_leaves');
         <div class="select-box d-flex pr-2 border-right-grey border-right-grey-sm-0">
             <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('app.duration')</p>
             <div class="select-status d-flex">
-                <input type="text" class="position-relative text-dark form-control border-0 p-2 text-left f-14 f-w-500 border-additional-grey"
-                    id="datatableRange" placeholder="@lang('placeholders.dateRange')"
-                    value="{{ request('start') && request('end') ? request('start') . ' ' . __('app.to') . ' ' . request('end') : '' }}">
+                <input type="text" class="position-relative text-dark form-control border-0 p-2 text-left f-14 f-w-500 border-additional-grey" id="datatableRange" placeholder="@lang('placeholders.dateRange')" value="{{ request('start') && request('end') ? request('start') . ' ' . __('app.to') . ' ' . request('end') : '' }}">
             </div>
         </div>
         <!-- DATE END -->
@@ -38,8 +35,7 @@ $approveRejectPermission = user()->permission('approve_or_reject_leaves');
                             <i class="fa fa-search f-13 text-dark-grey"></i>
                         </span>
                     </div>
-                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field"
-                        placeholder="@lang('app.startTyping')">
+                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field" placeholder="@lang('app.startTyping')">
                 </div>
             </form>
         </div>
@@ -60,13 +56,12 @@ $approveRejectPermission = user()->permission('approve_or_reject_leaves');
                 <label class="f-14 text-dark-grey mb-12 " for="usr">@lang('app.employee')</label>
                 <div class="select-filter mb-4">
                     <div class="select-others">
-                        <select class="form-control select-picker" name="employee_id" id="employee_id"
-                            data-live-search="true" data-container="body" data-size="8">
+                        <select class="form-control select-picker" name="employee_id" id="employee_id" data-live-search="true" data-container="body" data-size="8">
                             @if ($employees->count() > 1 || in_array('admin', user_roles()))
                                 <option value="all">@lang('app.all')</option>
                             @endif
                             @foreach ($employees as $employee)
-                                    <x-user-option :user="$employee" />
+                                <x-user-option :user="$employee" />
                             @endforeach
                         </select>
                     </div>
@@ -77,8 +72,7 @@ $approveRejectPermission = user()->permission('approve_or_reject_leaves');
                 <label class="f-14 text-dark-grey mb-12 " for="usr">@lang('modules.leaves.leaveType')</label>
                 <div class="select-filter mb-4">
                     <div class="select-others">
-                        <select class="form-control select-picker" name="leave_type" id="leave_type" data-live-search="true"
-                            data-container="body" data-size="8">
+                        <select class="form-control select-picker" name="leave_type" id="leave_type" data-live-search="true" data-container="body" data-size="8">
                             <option value="all">@lang('app.all')</option>
                             @foreach ($leaveTypes as $leaveType)
                                 <option value="{{ $leaveType->id }}">{{ $leaveType->type_name }}</option>
@@ -93,8 +87,7 @@ $approveRejectPermission = user()->permission('approve_or_reject_leaves');
                     <label class="f-14 text-dark-grey mb-12 " for="usr">@lang('app.status')</label>
                     <div class="select-filter mb-4">
                         <div class="select-others">
-                            <select class="form-control select-picker" name="status" id="status" data-live-search="true"
-                                data-container="body" data-size="8">
+                            <select class="form-control select-picker" name="status" id="status" data-live-search="true" data-container="body" data-size="8">
                                 <option value="all">@lang('app.all')</option>
                                 <option {{ request('status') == 'approved' ? 'selected' : '' }} value="approved">
                                     @lang('app.approved')</option>
@@ -154,14 +147,11 @@ $approveRejectPermission = user()->permission('approve_or_reject_leaves');
 
 
             <div class="btn-group mt-2 mt-lg-0 mt-md-0 ml-0 ml-lg-3 ml-md-3" role="group" aria-label="Basic example">
-                <a href="{{ route('leaves.index') }}" class="btn btn-secondary f-14 btn-active" data-toggle="tooltip"
-                    data-original-title="@lang('modules.leaves.tableView')"><i class="side-icon bi bi-list-ul"></i></a>
+                <a href="{{ route('leaves.index') }}" class="btn btn-secondary f-14 btn-active" data-toggle="tooltip" data-original-title="@lang('modules.leaves.tableView')"><i class="side-icon bi bi-list-ul"></i></a>
 
-                <a href="{{ route('leaves.calendar') }}" class="btn btn-secondary f-14" data-toggle="tooltip"
-                    data-original-title="@lang('app.menu.calendar')"><i class="side-icon bi bi-calendar"></i></a>
+                <a href="{{ route('leaves.calendar') }}" class="btn btn-secondary f-14" data-toggle="tooltip" data-original-title="@lang('app.menu.calendar')"><i class="side-icon bi bi-calendar"></i></a>
 
-                <a href="{{ route('leaves.personal') }}" class="btn btn-secondary f-14" data-toggle="tooltip"
-                    data-original-title="@lang('modules.leaves.myLeaves')"><i class="side-icon bi bi-person"></i></a>
+                <a href="{{ route('leaves.personal') }}" class="btn btn-secondary f-14" data-toggle="tooltip" data-original-title="@lang('modules.leaves.myLeaves')"><i class="side-icon bi bi-person"></i></a>
             </div>
         </div>
 
@@ -175,11 +165,9 @@ $approveRejectPermission = user()->permission('approve_or_reject_leaves');
 
     </div>
     <!-- CONTENT WRAPPER END -->
-
 @endsection
 
 @push('scripts')
-
     @include('sections.datatable_js')
 
     <script>
@@ -222,7 +210,7 @@ $approveRejectPermission = user()->permission('approve_or_reject_leaves');
         }
 
         @if (canDataTableExport())
-            $('#export-all').click(function () {
+            $('#export-all').click(function() {
 
                 @if (request('start') && request('end'))
                     $('#datatableRange').data('daterangepicker').setStartDate("{{ request('start') }}");
@@ -380,25 +368,33 @@ $approveRejectPermission = user()->permission('approve_or_reject_leaves');
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            'uniId': uniId,
-                            'duration': duration,
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                if(type == 'multiple-leave'){
-                                    window.location.reload();
-                                } else{
-                                    showTable();
-                                }
+                    $.easyBlockUI('#leaves-table');
+                    window.apiHttp.postUrlEncoded(url, {
+                        uniId: uniId,
+                        duration: duration,
+                        _token: token,
+                        _method: 'DELETE'
+                    }).then(function(response) {
+                        if (response.status == "success") {
+                            if (type == 'multiple-leave') {
+                                window.location.reload();
+                            } else {
+                                showTable();
                             }
                         }
+                    }).catch(function(err) {
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                text: err.message,
+                                toast: true,
+                                position: 'top-end',
+                                timer: 4000,
+                                showConfirmButton: false
+                            });
+                        }
+                    }).finally(function() {
+                        $.easyUnblockUI('#leaves-table');
                     });
                 }
             });
@@ -411,22 +407,31 @@ $approveRejectPermission = user()->permission('approve_or_reject_leaves');
 
             var url = "{{ route('leaves.apply_quick_action') }}?row_ids=" + rowdIds;
 
-            $.easyAjax({
-                url: url,
-                container: '#quick-action-form',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#quick-action-apply",
-                data: $('#quick-action-form').serialize(),
-                success: function(response) {
-                    if (response.status == 'success') {
-                        showTable();
-                        resetActionButtons();
-                        deSelectAll();
-                        $('#quick-action-form').hide();
-                    }
+            var $qaApply = $('#quick-action-apply');
+            $qaApply.prop('disabled', true);
+            $.easyBlockUI('#quick-action-form');
+            window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize()).then(function(response) {
+                if (response.status == 'success') {
+                    showTable();
+                    resetActionButtons();
+                    deSelectAll();
+                    $('#quick-action-form').hide();
                 }
-            })
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $qaApply.prop('disabled', false);
+                $.easyUnblockUI('#quick-action-form');
+            });
         };
 
         $('body').on('click', '.show-leave', function() {
@@ -443,7 +448,7 @@ $approveRejectPermission = user()->permission('approve_or_reject_leaves');
             let action = $(this).data('leave-action');
             let leaveId = $(this).data('leave-id');
             var type = $(this).data('type');
-            if(type == undefined){
+            if (type == undefined) {
                 var type = 'single';
             }
             let searchQuery = "?leave_action=" + action + "&leave_id=" + leaveId + "&type=" + type;
@@ -457,7 +462,7 @@ $approveRejectPermission = user()->permission('approve_or_reject_leaves');
             let action = $(this).data('leave-action');
             let leaveId = $(this).data('leave-id');
             var type = $(this).data('type');
-            if(type == undefined){
+            if (type == undefined) {
                 var type = 'single';
             }
             let searchQuery = "?leave_action=" + action + "&leave_id=" + leaveId + "&type=" + type;
@@ -472,7 +477,7 @@ $approveRejectPermission = user()->permission('approve_or_reject_leaves');
             var leaveId = $(this).data('leave-id');
             var leaveUId = $(this).data('leave-uid');
             leaveUId = (leaveUId == null) ? null : leaveUId;
-            
+
             var url = "{{ route('leaves.pre_approve_leave') }}";
 
             Swal.fire({
@@ -494,24 +499,32 @@ $approveRejectPermission = user()->permission('approve_or_reject_leaves');
                 buttonsStyling: false
             }).then((result) => {
                 if (result.isConfirmed) {
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            'action': action,
-                            'leaveId': leaveId,
-                            'leaveUId': leaveUId,
-                            '_token': '{{ csrf_token() }}'
-                        },
-                        success: function(response) {
-                            if (response.status == 'success') {
-                                showTable();
-                                resetActionButtons();
-                                deSelectAll();
-                                window.location.reload(); 
-                            }
+                    $.easyBlockUI('#leaves-table');
+                    window.apiHttp.postUrlEncoded(url, {
+                        action: action,
+                        leaveId: leaveId,
+                        leaveUId: leaveUId,
+                        _token: '{{ csrf_token() }}'
+                    }).then(function(response) {
+                        if (response.status == 'success') {
+                            showTable();
+                            resetActionButtons();
+                            deSelectAll();
+                            window.location.reload();
                         }
+                    }).catch(function(err) {
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                text: err.message,
+                                toast: true,
+                                position: 'top-end',
+                                timer: 4000,
+                                showConfirmButton: false
+                            });
+                        }
+                    }).finally(function() {
+                        $.easyUnblockUI('#leaves-table');
                     });
                 }
             });
@@ -521,12 +534,11 @@ $approveRejectPermission = user()->permission('approve_or_reject_leaves');
             var leaveId = $(this).data('leave-id');
             var uniqueId = $(this).data('unique-id');
 
-            var url = "{{ route('leaves.view_related_leave', ':id') }}?uniqueId="+uniqueId;
+            var url = "{{ route('leaves.view_related_leave', ':id') }}?uniqueId=" + uniqueId;
             url = url.replace(':id', leaveId);
 
             $(MODAL_LG + ' ' + MODAL_HEADING).html('...');
             $.ajaxModal(MODAL_LG, url);
         });
-
     </script>
 @endpush

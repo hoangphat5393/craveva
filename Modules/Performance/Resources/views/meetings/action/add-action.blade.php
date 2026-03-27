@@ -29,23 +29,22 @@
         var data = $('#save-action-form').serialize();
 
         if (url) {
-            $.easyAjax({
-                url: url,
-                container: '#save-action-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                data: data,
-                success: function(response) {
+            $.easyBlockUI('#save-action-form');
+            window.apiHttp.postUrlEncoded(url, data)
+                .then(function(response) {
                     if (response.status == "success") {
                         $('#nav-tabContent').html('');
                         $('#nav-tabContent').html(response.html);
 
-                        $.easyUnblockUI();
                         $(MODAL_LG).modal('hide');
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#save-action-form');
+                });
         }
     });
 </script>

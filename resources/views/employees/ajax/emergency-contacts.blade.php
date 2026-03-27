@@ -5,12 +5,9 @@
 <!-- TAB CONTENT START -->
 <div class="tab-pane fade show active mt-5" role="tabpanel" aria-labelledby="nav-email-tab">
 
-    @if ($managePermission == 'all' || ($employee->id == user()->id))
+    @if ($managePermission == 'all' || $employee->id == user()->id)
         <div class="d-flex justify-content-between action-bar mb-3">
-            <x-forms.link-primary
-                class="mr-3 float-left emergency-contacts-btn"
-                link="javascript:;"
-                icon="plus">
+            <x-forms.link-primary class="mr-3 float-left emergency-contacts-btn" link="javascript:;" icon="plus">
                 @lang('app.createNew')
             </x-forms.link-primary>
         </div>
@@ -29,7 +26,7 @@
                 </x-slot>
 
                 @forelse ($employee->emergencyContacts as $count => $contact)
-                    <tr class="tableRow{{$contact->id}}">
+                    <tr class="tableRow{{ $contact->id }}">
                         <td>{{ $contact->name }}</td>
                         <td>{{ $contact->email }}</td>
                         <td>{{ $contact->mobile }}</td>
@@ -39,28 +36,20 @@
                             <div class="task_view">
 
                                 <div class="dropdown">
-                                    <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle"
-                                       type="link"
-                                       id="dropdownMenuLink-{{$count}}" data-toggle="dropdown" aria-haspopup="true"
-                                       aria-expanded="false" data-boundary="viewport">
+                                    <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" type="link" id="dropdownMenuLink-{{ $count }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-boundary="viewport">
                                         <i class="icon-options-vertical icons"></i>
                                     </a>
-                                    <div class="dropdown-menu dropdown-menu-right"
-                                         aria-labelledby="dropdownMenuLink-{{$count}}" tabindex="0">
+                                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-{{ $count }}" tabindex="0">
 
                                         @if ($managePermission == 'all')
-                                            <a href="javascript:;" class="dropdown-item show-contact"
-                                               data-contact-id="{{ $contact->id }}"><i
-                                                    class="fa fa-eye mr-2"></i>@lang('app.view')</a>
+                                            <a href="javascript:;" class="dropdown-item show-contact" data-contact-id="{{ $contact->id }}"><i class="fa fa-eye mr-2"></i>@lang('app.view')</a>
 
-                                            <a class="dropdown-item edit-contact" href="javascript:;"
-                                               data-contact-id="{{ $contact->id }}">
+                                            <a class="dropdown-item edit-contact" href="javascript:;" data-contact-id="{{ $contact->id }}">
                                                 <i class="fa fa-edit mr-2"></i>
                                                 @lang('app.edit')
                                             </a>
 
-                                            <a class="dropdown-item delete-table-row" href="javascript:;"
-                                               data-row-id="{{ $contact->id }}">
+                                            <a class="dropdown-item delete-table-row" href="javascript:;" data-row-id="{{ $contact->id }}">
                                                 <i class="fa fa-trash mr-2"></i>
                                                 @lang('app.delete')
                                             </a>
@@ -81,8 +70,7 @@
 <!-- TAB CONTENT END -->
 
 <script>
-
-    $('body').on('click', '.delete-table-row', function () {
+    $('body').on('click', '.delete-table-row', function() {
         const id = $(this).data('row-id');
         Swal.fire({
             title: "@lang('messages.sweetAlertTitle')",
@@ -108,26 +96,31 @@
 
                 const token = "{{ csrf_token() }}";
 
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    blockUI: true,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function (response) {
-                        if (response.status == "success") {
-                            $('.tableRow' + id).hide();
-                        }
+                $.easyBlockUI();
+                window.apiHttp.delete(url, token).then(function(response) {
+                    if (response.status == "success") {
+                        $('.tableRow' + id).hide();
                     }
+                }).catch(function(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
+                    }
+                }).finally(function() {
+                    $.easyUnblockUI();
                 });
             }
         });
     });
 
     // Add new emergency contact modal
-    $('body').on('click', '.emergency-contacts-btn', function () {
+    $('body').on('click', '.emergency-contacts-btn', function() {
         var url = "{{ route('emergency-contacts.create') }}?user_id=" + "{{ $employee->id }}";
 
         $(MODAL_LG + ' ' + MODAL_HEADING).html('...');
@@ -135,7 +128,7 @@
     });
 
     // Edit emergency contact modal
-    $('body').on('click', '.edit-contact', function () {
+    $('body').on('click', '.edit-contact', function() {
         var id = $(this).data('contact-id');
 
         var url = "{{ route('emergency-contacts.edit', ':id') }}";
@@ -146,7 +139,7 @@
     });
 
     // Show emergency contact modal
-    $('body').on('click', '.show-contact', function () {
+    $('body').on('click', '.show-contact', function() {
         const id = $(this).data('contact-id');
 
         let url = "{{ route('emergency-contacts.show', ':id') }}";
@@ -156,11 +149,11 @@
         $.ajaxModal(MODAL_LG, url);
     });
 
-    $('.table-responsive').on('show.bs.dropdown', function () {
+    $('.table-responsive').on('show.bs.dropdown', function() {
         $('.table-responsive').css("overflow", "inherit");
     });
 
-    $('.table-responsive').on('hide.bs.dropdown', function () {
+    $('.table-responsive').on('hide.bs.dropdown', function() {
         $('.table-responsive').css("overflow", "auto");
     })
 </script>

@@ -7,6 +7,7 @@
         .table h5 {
             font-size: 12px;
         }
+
         .shift-request-change-count {
             left: 28px;
             top: -9px !important;
@@ -16,7 +17,8 @@
             padding: 1rem 0.25rem !important;
         }
 
-        #week-end-date, #week-start-date {
+        #week-end-date,
+        #week-start-date {
             z-index: 0;
         }
 
@@ -33,7 +35,7 @@
             width: 240px !important;
         }
 
-        .employee-td:hover > .work-setting-icon {
+        .employee-td:hover>.work-setting-icon {
             display: inline-block;
         }
 
@@ -55,14 +57,12 @@
                 position: sticky;
                 left: 0;
                 /* z-index: 1; Ensures the sticky column is above horizontally scrolled content */
-                box-shadow: 4px 0 5px -2px rgba(0,0,0,0.2); /* Adds shadow to the right side */
+                box-shadow: 4px 0 5px -2px rgba(0, 0, 0, 0.2);
+                /* Adds shadow to the right side */
                 z-index: 10;
             }
         }
-
     </style>
-
-
 @endpush
 
 
@@ -74,20 +74,15 @@
 
 
         <div class="d-lg-flex d-md-flex d-block my-3 justify-content-between action-bar">
-            
+
             <div class="d-flex align-items-center">
                 <h4 class="mb-0">@lang('modules.timeLogs.addWeeklyTimesheet')</h4>
                 {{-- Either user has a team or he is admin --}}
-                @if (
-                        $teamMembersCount > 0 || 
-                        in_array('admin', user_roles())
-                    )
-                    <x-forms.link-secondary :link="route('weekly-timesheets.index').'?view=pending_approval'" class="ml-3" >
+                @if ($teamMembersCount > 0 || in_array('admin', user_roles()))
+                    <x-forms.link-secondary :link="route('weekly-timesheets.index') . '?view=pending_approval'" class="ml-3">
                         @lang('modules.timeLogs.approveTimesheet')
                         <span class="badge badge-warning ml-1">{{ $pendingApproval }}</span>
                     </x-forms.link-secondary>
-
-                    
                 @endif
             </div>
 
@@ -116,7 +111,6 @@
 
 @push('scripts')
     <script>
-
         $('#user_id, #department, #view_type').on('change', function() {
             if ($('#user_id').val() != "all") {
                 $('#reset-filters').removeClass('d-none');
@@ -177,25 +171,36 @@
 
             var token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                data: {
-                    '_token': token,
-                    year: year,
-                    month: month,
-                    department: department,
-                    userId: userId,
-                    view_type: viewType,
-                    week_start_date: weekStartDate,
-                },
-                url: url,
-                blockUI: loading,
-                container: '.content-wrapper',
-                success: function(response) {
-                   // Call functions to fetch data for all employees and departments
-                    $('#attendance-data').html(response.data);
-                    $('#attendance-data #change-year').selectpicker("refresh");
-                    $('#attendance-data #change-month').selectpicker("refresh");
-                    $('#attendance-data .select-picker').selectpicker('refresh');
+            if (loading) {
+                $.easyBlockUI('.content-wrapper');
+            }
+            window.apiHttp.postUrlEncoded(url, {
+                _token: token,
+                year: year,
+                month: month,
+                department: department,
+                userId: userId,
+                view_type: viewType,
+                week_start_date: weekStartDate,
+            }).then(function(response) {
+                $('#attendance-data').html(response.data);
+                $('#attendance-data #change-year').selectpicker("refresh");
+                $('#attendance-data #change-month').selectpicker("refresh");
+                $('#attendance-data .select-picker').selectpicker('refresh');
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                if (loading) {
+                    $.easyUnblockUI('.content-wrapper');
                 }
             });
 
@@ -210,8 +215,5 @@
             $('#reset-filters').addClass('d-none');
 
         });
-
-
-
     </script>
 @endpush

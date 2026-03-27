@@ -107,16 +107,14 @@
         $('#save-form').on('click', function(e) {
             var url = "{{ route('affiliate-settings.update', [$settings->id]) }}";
             $('#commission_type').prop('disabled', false);
-            $.easyAjax({
-                url: url,
-                container: '#editSettings',
-                type: "POST",
-                blockUI: true,
-                disableButton: true,
-                buttonSelector: "#save-form",
-                file: true,
-                data: $('#editSettings').serialize(),
-            });
+            $.easyBlockUI('#editSettings');
+            window.apiHttp.postUrlEncoded(url, $('#editSettings').serialize())
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#editSettings');
+                });
         });
     </script>
 @endpush

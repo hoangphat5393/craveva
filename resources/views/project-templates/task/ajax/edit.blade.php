@@ -166,28 +166,26 @@
             document.getElementById('description-text').value = note;
 
             const url = "{{ route('project-template-task.update', $task->id) }}";
-
-            $.easyAjax({
-                url: url,
-                container: '#save-task-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-task-form",
-                data: $('#save-task-data-form').serialize(),
-                success: function(response) {
-                    if ($(RIGHT_MODAL).hasClass('in')) {
-                        document.getElementById('close-task-detail').click();
-                        if ($('#allTasks-table').length) {
-                            window.LaravelDataTables["allTasks-table"].draw(true);
-                        } else {
-                            window.location.href = response.redirectUrl;
-                        }
+            var $btn = $('#save-task-form');
+            var prev = $btn.html();
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+            $.easyBlockUI('#save-task-data-form');
+            window.apiHttp.postUrlEncoded(url, $('#save-task-data-form').serialize()).then(function(response) {
+                if ($(RIGHT_MODAL).hasClass('in')) {
+                    document.getElementById('close-task-detail').click();
+                    if ($('#allTasks-table').length) {
+                        window.LaravelDataTables["allTasks-table"].draw(true);
                     } else {
                         window.location.href = response.redirectUrl;
                     }
-
+                } else {
+                    window.location.href = response.redirectUrl;
                 }
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI('#save-task-data-form');
+                $btn.prop('disabled', false).html(prev);
             });
         });
 
@@ -208,17 +206,17 @@
 
             const url = "{{ route('employees.create') }}";
 
-            $.easyAjax({
-                url: url,
-                blockUI: true,
-                container: MODAL_XL,
-                success: function(response) {
-                    if (response.status == "success") {
-                        $(MODAL_XL + ' .modal-body').html(response.html);
-                        $(MODAL_XL + ' .modal-title').html(response.title);
-                        init(MODAL_XL);
-                    }
+            $.easyBlockUI(MODAL_XL);
+            window.apiHttp.get(url).then(function(response) {
+                if (response.status == "success") {
+                    $(MODAL_XL + ' .modal-body').html(response.html);
+                    $(MODAL_XL + ' .modal-title').html(response.title);
+                    init(MODAL_XL);
                 }
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI(MODAL_XL);
             });
         });
 

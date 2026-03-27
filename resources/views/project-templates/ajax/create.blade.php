@@ -123,19 +123,17 @@ $addProjectCategoryPermission = user()->permission('manage_project_category');
             document.getElementById('notes-text').value = note;
 
             const url = "{{ route('project-template.store') }}";
-            var data = $('#save-project-data-form').serialize();
-
-            $.easyAjax({
-                url: url,
-                container: '#save-project-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-project-form",
-                data: data,
-                success: function(response) {
-                    window.location.href = "{{ route('project-template.index') }}";
-                }
+            var $btn = $('#save-project-form');
+            var prev = $btn.html();
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+            $.easyBlockUI('#save-project-data-form');
+            window.apiHttp.postUrlEncoded(url, $('#save-project-data-form').serialize()).then(function(response) {
+                window.location.href = "{{ route('project-template.index') }}";
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI('#save-project-data-form');
+                $btn.prop('disabled', false).html(prev);
             });
         });
 
@@ -153,30 +151,28 @@ $addProjectCategoryPermission = user()->permission('manage_project_category');
             var url = "{{ route('project.get_project_sub_category', ':id') }}";
             url = url.replace(':id', categoryId);
 
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                success: function(response) {
-                    console.log('categoryId');
+            window.apiHttp.get(url).then(function(response) {
+                console.log('categoryId');
+                console.log(categoryId);
+                if (response.status == 'success') {
                     console.log(categoryId);
-                    if (response.status == 'success') {
-                        console.log(categoryId);
-                        var options = [];
-                        var rData = [];
-                        rData = response.data;
-                        $.each(rData, function(index, value) {
-                            var selectData = '';
-                            selectData = '<option value="' + value.id + '">' + value
-                                .category_name + '</option>';
-                            options.push(selectData);
-                        });
+                    var options = [];
+                    var rData = [];
+                    rData = response.data;
+                    $.each(rData, function(index, value) {
+                        var selectData = '';
+                        selectData = '<option value="' + value.id + '">' + value
+                            .category_name + '</option>';
+                        options.push(selectData);
+                    });
 
-                        $('#sub_category_id').html('<option value="">--</option>' +
-                            options);
-                        $('#sub_category_id').selectpicker('refresh');
-                    }
+                    $('#sub_category_id').html('<option value="">--</option>' +
+                        options);
+                    $('#sub_category_id').selectpicker('refresh');
                 }
-            })
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            });
 
         });
 

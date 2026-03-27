@@ -290,17 +290,15 @@
 
                 var url = "{{ route('pricing.tiers.apply_quick_action') }}";
 
-                $.easyAjax({
-                    url: url,
-                    container: '#quick-action-form',
-                    type: "POST",
-                    data: $('#quick-action-form').serialize() + "&row_ids=" + rowdIds.join(','),
-                    success: function(response) {
+                window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize() + "&row_ids=" + rowdIds.join(','))
+                    .then(function(response) {
                         if (response.status == 'success') {
                             window.location.reload();
                         }
-                    }
-                });
+                    })
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    });
             }
         });
 
@@ -311,20 +309,19 @@
             var status = $(this).val();
 
             if (typeof id !== 'undefined') {
-                $.easyAjax({
-                    url: url,
-                    type: "POST",
-                    data: {
-                        '_token': token,
-                        tierId: id,
-                        status: status
-                    },
-                    success: function(response) {
+                window.apiHttp.postUrlEncoded(url, {
+                    '_token': token,
+                    tierId: id,
+                    status: status
+                })
+                    .then(function(response) {
                         if (response.status == "success") {
                             // window.location.reload();
                         }
-                    }
-                });
+                    })
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    });
             }
         });
 
@@ -352,21 +349,15 @@
                     var url = "{{ route('pricing.tiers.destroy', ':id') }}";
                     url = url.replace(':id', id);
 
-                    var token = "{{ csrf_token() }}";
-
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
+                    window.apiHttp.delete(url, "{{ csrf_token() }}")
+                        .then(function(response) {
                             if (response.status == "success") {
                                 window.location.reload();
                             }
-                        }
-                    });
+                        })
+                        .catch(function(err) {
+                            $.handleApiFormError(err);
+                        });
                 }
             });
         });

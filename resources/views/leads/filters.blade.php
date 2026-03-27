@@ -241,27 +241,25 @@
             var url = "{{ route('deals.get-stage', ':id') }}";
             url = url.replace(':id', pipelineId);
 
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                success: function (response) {
-                    if (response.status == 'success') {
-                        var options = [];
-                        var rData = [];
-                        rData = response.data;
-                        $.each(rData, function (index, value) {
-                            var selectData = '';
-                            selectData = '<option value="' + value.id + '">' + value
-                                .name + '</option>';
-                            options.push(selectData);
-                        });
+            window.apiHttp.get(url).then(function (response) {
+                if (response.status == 'success') {
+                    var options = [];
+                    var rData = [];
+                    rData = response.data;
+                    $.each(rData, function (index, value) {
+                        var selectData = '';
+                        selectData = '<option value="' + value.id + '">' + value
+                            .name + '</option>';
+                        options.push(selectData);
+                    });
 
-                        $('#filter_status_id').html('<option value="all">@lang('modules.lead.all')</option>' +
-                            options);
-                        $('#filter_status_id').selectpicker('refresh');
-                    }
+                    $('#filter_status_id').html('<option value="all">@lang('modules.lead.all')</option>' +
+                        options);
+                    $('#filter_status_id').selectpicker('refresh');
                 }
-            })
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            });
 
         });
         @endif
@@ -274,26 +272,24 @@
                     var url = "{{ route('deals.get-stage', ':id') }}";
                     url = url.replace(':id', pipelineId);
 
-                    $.easyAjax({
-                        url: url,
-                        type: "GET",
-                        success: function (response) {
-                            if (response.status == 'success') {
-                                var options = [];
-                                var rData = [];
-                                rData = response.data;
-                                $.each(rData, function (index, value) {
-                                    var selectData = '';
-                                    var contect = `data-content="<i class='fa fa-circle' style='color:`+value.label_color+`'></i> `+value.name+`"`;
-                                    selectData = `<option `+contect+` value="` + value.id + `">' + value
-                                        .name + '</option>`;
-                                    options.push(selectData);
-                                });
+                    window.apiHttp.get(url).then(function (response) {
+                        if (response.status == 'success') {
+                            var options = [];
+                            var rData = [];
+                            rData = response.data;
+                            $.each(rData, function (index, value) {
+                                var selectData = '';
+                                var contect = `data-content="<i class='fa fa-circle' style='color:`+value.label_color+`'></i> `+value.name+`"`;
+                                selectData = `<option `+contect+` value="` + value.id + `">' + value
+                                    .name + '</option>`;
+                                options.push(selectData);
+                            });
 
-                                $('#change-stage-action').html(options);
-                                $('#change-stage-action').selectpicker('refresh');
-                            }
+                            $('#change-stage-action').html(options);
+                            $('#change-stage-action').selectpicker('refresh');
                         }
+                    }).catch(function(err) {
+                        $.handleApiFormError(err);
                     });
 
                 }

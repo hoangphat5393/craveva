@@ -54,26 +54,13 @@
             $('#onboarding_task_id').val(onboardingtaskid);
             var formData = new FormData($('#createOnboarding')[0]);
 
-            $.easyAjax({
-                container: '#createOnboarding',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                file: true,
-                processData: false,
-                contentType: false,
-                data: formData,
-                buttonSelector: "#save-onboarding-setting",
-                url: "{{ route('onboarding-dashboard.store') }}",
-                success: function(response) {
+            window.apiHttp.postForm("{{ route('onboarding-dashboard.store') }}", formData).then(function(response) {
                     if (response.status === 'success') {
 
                         $('#onboardTask' + onboardingtaskid).prop('disabled', true);
                         window.location.reload();
                     }
-                },
-
-            })
+            }).catch(function (err) { $.handleApiFormError(err); })
         });
 
 
@@ -109,14 +96,10 @@
             let ele = $('#monthlyOn');
             let url = '{{ route('events.monthly_on') }}';
             setTimeout(() => {
-                $.easyAjax({
-                    url: url,
-                    type: "POST",
-                    data: {
+                window.apiHttp.postUrlEncoded(url, {
                         _token: "{{ csrf_token() }}",
                         date: $('#completed_on').val()
-                    },
-                    success: function(response) {
+                }).then(function(response) {
                         @if (App::environment('development'))
                             $('#event_name').val(response.message);
                             $('#selectAssignee').val({{ user()->id }});
@@ -124,8 +107,7 @@
                         @endif
                         ele.html(response.message);
                         $('#repeat_type').selectpicker('refresh');
-                    }
-                });
+                }).catch(function (err) { $.handleApiFormError(err); });
             }, 100);
 
         }

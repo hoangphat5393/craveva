@@ -58,8 +58,6 @@
         let url = "{{ route('zoom-categories.destroy', ':id') }}";
         url = url.replace(':id', id);
 
-        const token = "{{ csrf_token() }}";
-
         Swal.fire({
             title: "@lang('messages.sweetAlertTitle')",
             text: "@lang('messages.recoverRecord')",
@@ -79,21 +77,13 @@
             buttonsStyling: false
         }).then((result) => {
             if (result.isConfirmed) {
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function (response) {
+                window.apiHttp.delete(url, "{{ csrf_token() }}").then(function (response) {
                         if (response.status == 'success') {
                             $('#zoom_category_id').html(response.data);
                             $('#zoom_category_id').selectpicker('refresh');
                             $(MODAL_LG).modal('hide');
                         }
-                    }
-                });
+                }).catch(function (err) { $.handleApiFormError(err); });
             }
         });
 
@@ -101,22 +91,13 @@
 
     $('#save-category').click(function () {
         var url = "{{ route('zoom-categories.store') }}";
-        $.easyAjax({
-            url: url,
-            container: '#createTaskCategory',
-            type: "POST",
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-category",
-            data: $('#createTaskCategory').serialize(),
-            success: function (response) {
+        window.apiHttp.postUrlEncoded(url, $('#createTaskCategory').serialize()).then(function (response) {
                 if (response.status == 'success') {
                     $('#zoom_category_id').html(response.data);
                     $('#zoom_category_id').selectpicker('refresh');
                     $(MODAL_LG).modal('hide');
                 }
-            }
-        })
+        }).catch(function (err) { $.handleApiFormError(err); })
     });
 
     $('[contenteditable=true]').focus(function () {
@@ -130,25 +111,16 @@
             let url = "{{ route('zoom-categories.update', ':id') }}";
             url = url.replace(':id', id);
 
-            const token = "{{ csrf_token() }}";
-
-            $.easyAjax({
-                url: url,
-                container: '#row-' + id,
-                type: "POST",
-                data: {
+            window.apiHttp.postUrlEncoded(url, {
                     'category_name': value,
-                    '_token': token,
+                    '_token': "{{ csrf_token() }}",
                     '_method': 'PUT'
-                },
-                blockUI: true,
-                success: function (response) {
+            }).then(function (response) {
                     if (response.status === 'success') {
                         $('#zoom_category_id').html(response.data);
                         $('#zoom_category_id').selectpicker('refresh');
                     }
-                }
-            })
+            }).catch(function (err) { $.handleApiFormError(err); })
         }
     });
 

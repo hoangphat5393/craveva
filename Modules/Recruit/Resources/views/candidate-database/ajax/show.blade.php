@@ -9,8 +9,7 @@
                                 {{ $application->full_name }}</h1>
                         </div>
                         <div class="col-lg-4 col-2 text-right">
-                            <x-forms.button-primary data-status="completed"
-                                                    class="change-task-status mr-3" id="retrive_job">
+                            <x-forms.button-primary data-status="completed" class="change-task-status mr-3" id="retrive_job">
                                 @lang('recruit::modules.job.retrive')
                             </x-forms.button-primary>
                         </div>
@@ -32,7 +31,7 @@
                                     @lang('recruit::modules.jobApplication.applicantEmail')
                                 </p>
                                 <p class="mb-0 text-dark-grey f-14 w-70">
-                                    {{ ($application->email ?? '--') }}
+                                    {{ $application->email ?? '--' }}
                                 </p>
                             </div>
                             <div class="col-12 px-0 pb-3 d-block d-lg-flex d-md-flex">
@@ -60,7 +59,7 @@
                                         @lang('recruit::modules.jobApplication.gender')
                                     </p>
                                     <p class="mb-0 text-dark-grey f-14 w-70">
-                                        {{ ($application->gender ?? '--') }}
+                                        {{ $application->gender ?? '--' }}
                                     </p>
                                 </div>
                             @endif
@@ -87,7 +86,7 @@
                                         @lang('recruit::modules.jobApplication.currentLocation')
                                     </p>
                                     <p class="mb-0 text-dark-grey f-14 w-70">
-                                        {{ ($application->current_location ?? '--') }}
+                                        {{ $application->current_location ?? '--' }}
                                     </p>
                                 </div>
                             @endif
@@ -146,21 +145,21 @@
                                     {{ $application->created_at->format($company->date_format) }}
                                 </p>
                             </div>
-                            @if($application->remark)
+                            @if ($application->remark)
                                 <div class="col-12 px-0 pb-3 d-block d-lg-flex d-md-flex">
                                     <p class="mb-0 text-lightest f-14 w-30 d-inline-block ">
                                         @lang('app.remark')</p>
                                     <p class="mb-0 text-dark-grey f-14 w-70">
-                                        {{ ($application->remark) ?? '--' }}
+                                        {{ $application->remark ?? '--' }}
                                     </p>
                                 </div>
                             @endif
-                            @if($application->rejection_remark)
+                            @if ($application->rejection_remark)
                                 <div class="col-12 px-0 pb-3 d-block d-lg-flex d-md-flex">
                                     <p class="mb-0 text-lightest f-14 w-30 d-inline-block ">
                                         @lang('app.remark')</p>
                                     <p class="mb-0 text-dark-grey f-14 w-70">
-                                        {{ ($application->rejection_remark) ?? '--' }}
+                                        {{ $application->rejection_remark ?? '--' }}
                                     </p>
                                 </div>
                             @endif
@@ -200,7 +199,7 @@
                                 <p class="mb-0 text-lightest f-14 w-30 d-inline-block ">
                                     @lang('recruit::app.jobApplication.resume')</p>
                                 <div class="row w-70">
-                                    @if($application->files->count() > 0)
+                                    @if ($application->files->count() > 0)
                                         @forelse($application->files as $file)
                                             <x-file-card :fileName="$file->filename" :dateAdded="$file->created_at->diffForHumans()">
                                                 @if ($file->icon == 'images')
@@ -211,25 +210,21 @@
 
                                                 <x-slot name="action">
                                                     <div class="dropdown ml-auto file-action">
-                                                        <button class="btn btn-lg f-14 p-0 text-lightest  rounded  dropdown-toggle"
-                                                                type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        <button class="btn btn-lg f-14 p-0 text-lightest  rounded  dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                             <i class="fa fa-ellipsis-h"></i>
                                                         </button>
-                                                        <div class="dropdown-menu dropdown-menu-right border-grey rounded b-shadow-4 p-0"
-                                                            aria-labelledby="dropdownMenuLink">
-                                                                @if ($file->icon != 'images')
-                                                                    <a class="cursor-pointer d-block text-dark-grey f-13 pt-3 px-3 " target="_blank"
-                                                                    href="{{ $file->file_url }}">@lang('app.view')</a>
-                                                                    @endif
-                                                                <a class="cursor-pointer d-block text-dark-grey f-13 py-3 px-3 "
-                                                                href="{{ route('application-file.download', md5($file->id)) }}">@lang('app.download')</a>
+                                                        <div class="dropdown-menu dropdown-menu-right border-grey rounded b-shadow-4 p-0" aria-labelledby="dropdownMenuLink">
+                                                            @if ($file->icon != 'images')
+                                                                <a class="cursor-pointer d-block text-dark-grey f-13 pt-3 px-3 " target="_blank" href="{{ $file->file_url }}">@lang('app.view')</a>
+                                                            @endif
+                                                            <a class="cursor-pointer d-block text-dark-grey f-13 py-3 px-3 " href="{{ route('application-file.download', md5($file->id)) }}">@lang('app.download')</a>
                                                         </div>
                                                     </div>
                                                 </x-slot>
 
                                             </x-file-card>
                                         @empty
-                                            <x-cards.no-record :message="__('messages.noFileUploaded')" icon="file"/>
+                                            <x-cards.no-record :message="__('messages.noFileUploaded')" icon="file" />
                                         @endforelse
                                     @endif
                                 </div>
@@ -249,9 +244,8 @@
     </div>
 </div>
 <script>
-
-    $(document).ready(function () {
-        $("body").on("click", ".ajax-tab", function (event) {
+    $(document).ready(function() {
+        $("body").on("click", ".ajax-tab", function(event) {
             event.preventDefault();
 
             $('.task-tabs .ajax-tab').removeClass('active');
@@ -259,19 +253,19 @@
 
             const requestUrl = this.href;
 
-            $.easyAjax({
-                url: requestUrl,
-                blockUI: true,
-                container: "#nav-tabContent",
-                historyPush: ($(RIGHT_MODAL).hasClass('in') ? false : true),
-                data: {
-                    'json': true
-                },
-                success: function (response) {
-                    if (response.status == "success") {
-                        $('#nav-tabContent').html(response.html);
+            window.apiHttp.get(requestUrl, {
+                json: true
+            }).then(function(response) {
+                if (response.data.status == "success") {
+                    $('#nav-tabContent').html(response.data.html);
+                    if (!$(RIGHT_MODAL).hasClass('in')) {
+                        window.history.pushState({
+                            url: requestUrl
+                        }, '', requestUrl);
                     }
                 }
+            }).catch(function(err) {
+                $.handleApiFormError(err);
             });
         });
 
@@ -282,35 +276,27 @@
             deselectAllText: "{{ __('modules.permission.deselectAll') }}",
             multipleSeparator: " ",
             selectedTextFormat: "count > 8",
-            countSelectedText: function (selected, total) {
+            countSelectedText: function(selected, total) {
                 return selected + " {{ __('app.membersSelected') }} ";
             }
         });
     });
 
-    $('#retrive_job').on('click', function () {
+    $('#retrive_job').on('click', function() {
 
-        var url = "{{ route('candidate-database.update',$database->id) }}";
-        var token = "{{ csrf_token() }}";
+        var url = "{{ route('candidate-database.update', $database->id) }}";
 
-        $.easyAjax({
-            url: url,
-            container: '#task-detail-section',
-            type: "PUT",
-            disableButton: true,
-            blockUI: true,
-            data: {
-                '_token': token,
-                'job_app_id': "{{ $database->job_application_id }}"
-            },
-            success: function (response) {
-                if (response.status == 'success') {
-                    setTimeout(() => {
-                        window.location.href = "{{ route('job-applications.index') }}"
-                    }, 500);
-                }
+        window.apiHttp.put(url, {
+            _token: "{{ csrf_token() }}",
+            job_app_id: "{{ $database->job_application_id }}"
+        }).then(function(response) {
+            if (response.data.status == 'success') {
+                setTimeout(() => {
+                    window.location.href = "{{ route('job-applications.index') }}"
+                }, 500);
             }
+        }).catch(function(err) {
+            $.handleApiFormError(err);
         });
     });
 </script>
-

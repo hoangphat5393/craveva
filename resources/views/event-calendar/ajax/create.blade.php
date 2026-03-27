@@ -224,20 +224,16 @@
         }
         url = url.replace(':id', departmentIds);
 
-        $.easyAjax({
-            url: url,
-            type: "GET",
-            container: '#save-project-data-form',
-            blockUI: true,
-            redirect: true,
-            success: function (data) {
-                if (data.data && data.data.length > 0) {
-                $('#selectAssignee').html(data.data);
-                } else {
-                    $('#selectAssignee').html('<option>No employees found</option>');
-                }
-                $('#selectAssignee').selectpicker('refresh');
+        $.easyBlockUI('#save-project-data-form');
+        window.apiHttp.get(url).then(function(data) {
+            if (data.data && data.data.length > 0) {
+            $('#selectAssignee').html(data.data);
+            } else {
+                $('#selectAssignee').html('<option>No employees found</option>');
             }
+            $('#selectAssignee').selectpicker('refresh');
+        }).catch(function(err){ $.handleApiFormError(err); }).finally(function() {
+            $.easyUnblockUI('#save-project-data-form');
         });
     });
 
@@ -245,21 +241,16 @@
         let ele = $('#monthlyOn');
         let url = '{{ route('events.monthly_on') }}';
         setTimeout(() => {
-            $.easyAjax({
-                url: url,
-                type: "POST",
-                data: {
-                    _token: "{{ csrf_token() }}",
-                    date: $('#start_date').val()
-                },
-                success: function(response) {
-                    @if (App::environment('development'))
-                        $('#event_name').val(response.message);
-                    @endif
-                    ele.html(response.message);
-                    $('#repeat_type').selectpicker('refresh');
-                }
-            });
+            window.apiHttp.postUrlEncoded(url, {
+                _token: "{{ csrf_token() }}",
+                date: $('#start_date').val()
+            }).then(function(response) {
+                @if (App::environment('development'))
+                    $('#event_name').val(response.message);
+                @endif
+                ele.html(response.message);
+                $('#repeat_type').selectpicker('refresh');
+            }).catch(function(err){ $.handleApiFormError(err); });
         }, 100);
 
     }
@@ -386,29 +377,25 @@
 
             const url = "{{ route('events.store') }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#save-event-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-event-form",
-                data: $('#save-event-data-form').serialize(),
-                success: function(response) {
-                    if (response.status == 'success') {
-                        if (eventDropzone.getQueuedFiles().length > 0) {
-                        eventId = response.eventId
-                        $('#eventId').val(eventId);
-                        eventDropzone.processQueue();
-                        }
-                        if ($(MODAL_XL).hasClass('show')) {
-                            $(MODAL_XL).modal('hide');
-                            window.location.reload();
-                        } else {
-                            window.location.href = response.redirectUrl;
-                        }
+            $.easyBtnLoader("#save-event-form");
+            $.easyBlockUI('#save-event-data-form');
+            window.apiHttp.postUrlEncoded(url, $('#save-event-data-form').serialize()).then(function(response) {
+                if (response.status == 'success') {
+                    if (eventDropzone.getQueuedFiles().length > 0) {
+                    eventId = response.eventId
+                    $('#eventId').val(eventId);
+                    eventDropzone.processQueue();
+                    }
+                    if ($(MODAL_XL).hasClass('show')) {
+                        $(MODAL_XL).modal('hide');
+                        window.location.reload();
+                    } else {
+                        window.location.href = response.redirectUrl;
                     }
                 }
+            }).catch(function(err){ $.handleApiFormError(err); }).finally(function() {
+                $.easyBtnReset("#save-event-form");
+                $.easyUnblockUI('#save-event-data-form');
             });
         });
 

@@ -57,15 +57,9 @@
         $('#save-pricing-tier-form').click(function() {
             const url = "{{ route('pricing.tiers.update', $pricingTier->id) }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#save-pricing-tier-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-pricing-tier-form",
-                data: $('#save-pricing-tier-data-form').serialize(),
-                success: function(response) {
+            $.easyBlockUI('#save-pricing-tier-data-form');
+            window.apiHttp.postUrlEncoded(url, $('#save-pricing-tier-data-form').serialize())
+                .then(function(response) {
                     if (response.status == 'success') {
                         if ($(RIGHT_MODAL).hasClass('show')) {
                             document.getElementById('close-task-detail').click();
@@ -74,8 +68,13 @@
                             window.location.href = response.redirectUrl;
                         }
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#save-pricing-tier-data-form');
+                });
         });
 
         init(RIGHT_MODAL);

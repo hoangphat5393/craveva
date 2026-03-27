@@ -29,7 +29,6 @@
                 margin-left: 510px;
                 width: calc(100% - 510px)
             }
-
         </style>
     @endisset
 
@@ -55,7 +54,6 @@
         .fc a[data-navlink] {
             color: #99a5b5;
         }
-
     </style>
     <style>
         #logo {
@@ -98,7 +96,6 @@
             width: 400px;
             height: 150px;
         }
-
     </style>
 
 
@@ -134,13 +131,11 @@
                         <div class="invoice-table-wrapper">
                             <table width="100%" class="">
                                 <tr class=" inv-logo-heading">
-                                    <td><img src="{{ $company->logo_url }}"
-                                            alt="{{ $company->company_name }}" id="logo"/></td>
+                                    <td><img src="{{ $company->logo_url }}" alt="{{ $company->company_name }}" id="logo" /></td>
 
-                                    <td align="right"
-                                        class=" f-21 text-dark mt-4 mt-lg-0 mt-md-0">
+                                    <td align="right" class=" f-21 text-dark mt-4 mt-lg-0 mt-md-0">
 
-                                        @if ($jobOffer->status != 'expired' ||$jobOffer->status != 'draft')
+                                        @if ($jobOffer->status != 'expired' || $jobOffer->status != 'draft')
                                             <span class="{{ $label_class }}">{{ $msg }}</span>
                                         @endif
                                         <x-forms.link-secondary class="ml-3" icon="download" :link="route('jobOffer.download', [$jobOffer->id, $company->hash])">@lang('app.download')</x-forms.link-secondary>
@@ -164,9 +159,7 @@
                                                     @if (!is_null($jobOffer->jobApplication->photo))
                                                         <div class="jobApplicationImg mr-1">
                                                             <div class="imgnew">
-                                                                <img data-toggle="tooltip" class="new"
-                                                                    data-original-title="{{ $jobOffer->jobApplication->name }}"
-                                                                    src="{{ $jobOffer->jobApplication->image_url }}">
+                                                                <img data-toggle="tooltip" class="new" data-original-title="{{ $jobOffer->jobApplication->name }}" src="{{ $jobOffer->jobApplication->image_url }}">
                                                             </div>
                                                         </div>
                                                     @endif
@@ -191,14 +184,14 @@
                                     <p class="mb-0 text-lightest f-14 w-30 d-inline-block ">
                                         @lang('recruit::modules.jobApplication.name')</p>
                                     <p class="mb-0 text-dark-grey f-14 w-70">
-                                        {{ ($jobOffer->jobApplication->full_name) }}
+                                        {{ $jobOffer->jobApplication->full_name }}
                                     </p>
                                 </div>
                                 <div class="col-sm-12 pb-2 d-block d-lg-flex d-md-flex">
                                     <p class="mb-0 text-lightest f-14 w-30 d-inline-block ">
                                         @lang('recruit::modules.jobApplication.email')</p>
                                     <p class="mb-0 text-dark-grey f-14 w-70">
-                                        {{ ($jobOffer->jobApplication->email) }}
+                                        {{ $jobOffer->jobApplication->email }}
                                     </p>
                                 </div>
                             </div>
@@ -214,7 +207,7 @@
                                     <p class="mb-0 text-lightest f-14 w-30 d-inline-block ">
                                         @lang('recruit::modules.job.jobTitle')</p>
                                     <p class="mb-0 text-dark-grey f-14 w-70">
-                                        {{ ($jobOffer->job->title) }}
+                                        {{ $jobOffer->job->title }}
                                     </p>
                                 </div>
 
@@ -250,12 +243,12 @@
                                         {{ $jobOffer->job->team->team_name }}
                                     </p>
                                 </div>
-                                @if(is_null($salaryStructure))
+                                @if (is_null($salaryStructure))
                                     <div class="col-sm-12 pb-2 d-block d-lg-flex d-md-flex">
                                         <p class="mb-0 text-lightest f-14 w-30 d-inline-block ">
                                             @lang('recruit::modules.joboffer.offerPer')</p>
                                         <p class="mb-0 text-dark-grey f-14 w-70">
-                                            @if($jobOffer->comp_amount)
+                                            @if ($jobOffer->comp_amount)
                                                 {{ currency_format($jobOffer->comp_amount, $company->currency->id) }}@lang('recruit::modules.joboffer.per') {{ $jobOffer->job->pay_according }}
                                             @else
                                                 @lang('recruit::app.menu.notDisclosed')
@@ -286,7 +279,7 @@
                                 </div>
                             </div>
 
-                            @if(!is_null($salaryStructure))
+                            @if (!is_null($salaryStructure))
                                 <h5 class="heading-h4 text-grey ">@lang('recruit::modules.joboffer.salaryStructure')</h5>
                                 <div class="row">
                                     <div class="col-6">
@@ -301,19 +294,19 @@
                                                 <tr>
                                                     <td>@lang('recruit::modules.joboffer.basicPay')</td>
                                                     <td class="text-right text-uppercase">
-                                                        {{ currency_format($salaryStructure->basic_salary, ($currency ? $currency->id : company()->currency->id )) }}</td>
+                                                        {{ currency_format($salaryStructure->basic_salary, $currency ? $currency->id : company()->currency->id) }}</td>
                                                 </tr>
                                                 @foreach ($selectedEarningsComponent as $item)
                                                     <tr>
-                                                        <td>{{ ($item->component_name) }}</td>
-                                                        <td class="text-right">{{ currency_format($item->component_value, ($currency ? $currency->id : company()->currency->id ))  }}</td>
+                                                        <td>{{ $item->component_name }}</td>
+                                                        <td class="text-right">{{ currency_format($item->component_value, $currency ? $currency->id : company()->currency->id) }}</td>
                                                     </tr>
                                                 @endforeach
 
                                                 <tr>
                                                     <td>@lang('recruit::modules.joboffer.fixedAllowance')</td>
                                                     <td class="text-right text-uppercase">
-                                                        {{ currency_format($fixedAllowance, ($currency ? $currency->id : company()->currency->id )) }}</td>
+                                                        {{ currency_format($fixedAllowance, $currency ? $currency->id : company()->currency->id) }}</td>
                                                 </tr>
 
                                             </x-table>
@@ -330,8 +323,8 @@
 
                                                 @foreach ($selectedDeductionsComponent as $item)
                                                     <tr>
-                                                        <td>{{ ($item->component_name) }}</td>
-                                                        <td class="text-right">{{ currency_format($item->component_value, ($currency ? $currency->id : company()->currency->id ))  }}</td>
+                                                        <td>{{ $item->component_name }}</td>
+                                                        <td class="text-right">{{ currency_format($item->component_value, $currency ? $currency->id : company()->currency->id) }}</td>
                                                     </tr>
                                                 @endforeach
                                             </x-table>
@@ -342,20 +335,20 @@
                                         <h5 class="heading-h5 ml-3">@lang('recruit::modules.joboffer.grossEarning')</h5>
                                     </div>
                                     <div class="col-3 text-right">
-                                        <h5 class="heading-h5">{{ currency_format($grossSalary, ($currency ? $currency->id : company()->currency->id )) }}</h5>
+                                        <h5 class="heading-h5">{{ currency_format($grossSalary, $currency ? $currency->id : company()->currency->id) }}</h5>
                                     </div>
 
                                     <div class="col-3">
                                         <h5 class="heading-h5">@lang('recruit::modules.joboffer.totalDeductions')</h5>
                                     </div>
                                     <div class="col-3 text-right">
-                                        <h5 class="heading-h5">{{ currency_format($totalDeduction, ($currency ? $currency->id : company()->currency->id )) }}</h5>
+                                        <h5 class="heading-h5">{{ currency_format($totalDeduction, $currency ? $currency->id : company()->currency->id) }}</h5>
                                     </div>
 
                                     <div class="col-12 p-20 mt-3">
                                         <h3 class="text-center heading-h3">
                                             <span class="text-uppercase mr-3">@lang('recruit::modules.joboffer.netSalary'):</span>
-                                            {{ currency_format(sprintf('%0.2f', $netSalary), ($currency ? $currency->id : company()->currency->id )) }}
+                                            {{ currency_format(sprintf('%0.2f', $netSalary), $currency ? $currency->id : company()->currency->id) }}
                                         </h3>
                                         <h5 class="text-center text-lightest">@lang('recruit::modules.joboffer.netSalary') =
                                             @lang('recruit::modules.joboffer.grossEarning') -
@@ -372,9 +365,8 @@
                                 </div>
                             @endif
                             <div class="d-flex flex-wrap p-20" id="aplication-file-list">
-                                @foreach($jobOffer->files as $file)
-                                    <x-file-card :fileName="$file->filename"
-                                                :dateAdded="$file->created_at->diffForHumans()">
+                                @foreach ($jobOffer->files as $file)
+                                    <x-file-card :fileName="$file->filename" :dateAdded="$file->created_at->diffForHumans()">
                                         @if ($file->icon == 'images')
                                             <img src="{{ $file->file_url }}">
                                         @else
@@ -382,23 +374,15 @@
                                         @endif
                                         <x-slot name="action">
                                             <div class="dropdown ml-auto file-action">
-                                                <button
-                                                    class="btn btn-lg f-14 p-0 text-lightest  rounded  dropdown-toggle"
-                                                    type="button" data-toggle="dropdown" aria-haspopup="true"
-                                                    aria-expanded="false">
+                                                <button class="btn btn-lg f-14 p-0 text-lightest  rounded  dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                     <i class="fa fa-ellipsis-h"></i>
                                                 </button>
 
-                                                <div
-                                                    class="dropdown-menu dropdown-menu-right border-grey rounded b-shadow-4 p-0"
-                                                    aria-labelledby="dropdownMenuLink" tabindex="0">
+                                                <div class="dropdown-menu dropdown-menu-right border-grey rounded b-shadow-4 p-0" aria-labelledby="dropdownMenuLink" tabindex="0">
                                                     @if ($file->icon != 'images')
-                                                        <a class="cursor-pointer d-block text-dark-grey f-13 pt-3 px-3 "
-                                                        target="_blank"
-                                                        href="{{ $file->file_url }}">@lang('app.view')</a>
+                                                        <a class="cursor-pointer d-block text-dark-grey f-13 pt-3 px-3 " target="_blank" href="{{ $file->file_url }}">@lang('app.view')</a>
                                                     @endif
-                                                    <a class="cursor-pointer d-block text-dark-grey f-13 py-3 px-3 "
-                                                    href="{{ route('job-offer-file.download', md5($file->id)) }}">@lang('app.download')</a>
+                                                    <a class="cursor-pointer d-block text-dark-grey f-13 py-3 px-3 " href="{{ route('job-offer-file.download', md5($file->id)) }}">@lang('app.download')</a>
 
 
                                                 </div>
@@ -413,8 +397,8 @@
                                         <h6>@lang('recruit::modules.interviewSchedule.candidate') @lang('modules.estimates.signature')</h6>
                                         <img src="{{ $jobOffer->file_url }}" style="width: 200px;">
                                         <p>({{ $jobOffer->jobApplication->full_name }}
-                                            @lang("recruit::app.menu.signedOffer")
-                                            {{$jobOffer->offer_accept_at->format($company->date_format)}})</p>
+                                            @lang('recruit::app.menu.signedOffer')
+                                            {{ $jobOffer->offer_accept_at->format($company->date_format) }})</p>
                                     </div>
                                 </div>
                             @endif
@@ -422,19 +406,15 @@
                     </div>
                     <!-- CARD BODY END -->
                     <!-- CARD FOOTER START -->
-                    <div
-                        class="card-footer bg-white border-1  py-0 py-lg-4 py-md-4 mb-4 mb-lg-3 mb-md-3 ">
+                    <div class="card-footer bg-white border-1  py-0 py-lg-4 py-md-4 mb-4 mb-lg-3 mb-md-3 ">
 
-                            @if ($jobOffer->status == 'pending' && $job_not_expired == true)
+                        @if ($jobOffer->status == 'pending' && $job_not_expired == true)
+                            <x-forms.button-primary id="signature-modal" icon="check">@lang('app.accept')</x-forms.button-primary>
 
-                                <x-forms.button-primary id="signature-modal" icon="check">@lang('app.accept')</x-forms.button-primary>
-
-                                <a class="f-14 btn btn-danger ml-3" data-toggle="modal"
-                                data-target="#reason-modal" href="javascript:;">
-                                    <i class="fa fa-times f-w-500 mr-2"></i> @lang('app.decline')
-                                </a>
-
-                            @endif
+                            <a class="f-14 btn btn-danger ml-3" data-toggle="modal" data-target="#reason-modal" href="javascript:;">
+                                <i class="fa fa-times f-w-500 mr-2"></i> @lang('app.decline')
+                            </a>
+                        @endif
                     </div>
                     <!-- CARD FOOTER END -->
                 </div>
@@ -453,13 +433,12 @@
     </div>
 
     <!-- also the modal itself -->
-    <div class="modal fade bs-modal-md in" id="addJobAlert" role="dialog" aria-labelledby="myModalLabel"              aria-hidden="true">
+    <div class="modal fade bs-modal-md in" id="addJobAlert" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg" id="modal-data-application">
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title"><i class="icon-plus"></i> @lang('recruit::app.interviewSchedule.stages')</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i
-                            class="fa fa-times"></i></button>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
                 </div>
                 <div class="modal-body">
                     Loading...
@@ -476,30 +455,26 @@
     <script src="{{ asset('js/main.js') }}"></script>
 
     <script>
-
         const MODAL_LG = '#myModal';
         const MODAL_HEADING = '#modelHeading';
         const dropifyMessages = {
-            default: '@lang("app.dragDrop")',
-            replace: '@lang("app.dragDropReplace")',
-            remove: '@lang("app.remove")',
-            error: '@lang("app.largeFile")'
+            default: '@lang('app.dragDrop')',
+            replace: '@lang('app.dragDropReplace')',
+            remove: '@lang('app.remove')',
+            error: '@lang('app.largeFile')'
         };
 
-        $(window).on('load', function () {
+        $(window).on('load', function() {
             // Animate loader off screen
             init();
-            $(".preloader-container").fadeOut("slow", function () {
+            $(".preloader-container").fadeOut("slow", function() {
                 $(this).removeClass("d-flex");
             });
         });
-
     </script>
 
     <script>
-
-
-        $('body').on('click', '#decline-offer-letter', function () {
+        $('body').on('click', '#decline-offer-letter', function() {
             var status = 'decline';
             var decline_reason = $('#reason').val();
 
@@ -521,45 +496,34 @@
                 return false;
             }
 
-            $.easyAjax({
-                url: "{{ route('front.job-offer.accept', $jobOffer->id) }}",
-                container: '#decline',
-                type: "POST",
-                blockUI: true,
-                data: {
-                    status: status,
-                    reason: decline_reason,
-                    _token: '{{ csrf_token() }}'
-                },
-                success: function (response) {
-                    if (response.status == 'success') {
-                        window.location.reload();
-                    }
+            window.apiHttp.postUrlEncoded("{{ route('front.job-offer.accept', $jobOffer->id) }}", {
+                status: status,
+                reason: decline_reason,
+                _token: '{{ csrf_token() }}'
+            }).then(function(response) {
+                if (response.data.status == 'success') {
+                    window.location.reload();
                 }
-            })
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            });
         });
 
-        $('body').off('click', "#accept-letter").on('click', '#accept-letter', function () {
+        $('body').off('click', "#accept-letter").on('click', '#accept-letter', function() {
             var status = 'accept';
 
-            $.easyAjax({
-                url: "{{ route('front.job-offer.accept', $jobOffer->id) }}",
-                container: '#accept',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                file: true,
-                redirect: true,
-                data: $('#accept').serialize(),
-                success: function (response) {
-                    if (response.status == 'success') {
+            window.apiHttp.postUrlEncoded("{{ route('front.job-offer.accept', $jobOffer->id) }}", $('#accept').serialize())
+                .then(function(response) {
+                    if (response.data.status == 'success') {
                         window.location.reload();
                     }
-                }
-            })
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                });
         });
 
-        $('body').on('click', '#signature-modal', function () {
+        $('body').on('click', '#signature-modal', function() {
             var url = "{{ route('front.accept_offer', $jobOffer->id) }}";
             $('.modal-title').html("@lang('recruit::modules.front.createJobAlert')");
             $.ajaxModal('#addJobAlert', url);

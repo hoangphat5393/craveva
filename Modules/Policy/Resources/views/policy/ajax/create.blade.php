@@ -192,21 +192,11 @@ $addProductPermission = user()->permission('add_product');
             var saveAs = $(this).data('type');
             const url = "{{ route('policy.store') }}" + "?saveAs=" + saveAs;
 
-            $.easyAjax({
-                url: url,
-                container: '#savePolicyForm',
-                type: "POST",
-                disableButton: true,
-                file:true,
-                blockUI: true,
-                buttonSelector: "#save-form",
-                data: $('#savePolicyForm').serialize(),
-                success: function(response) {
-                    if (response.status === 'success') {
-                        window.location.href = response.redirectUrl;
-                    }
+            window.apiHttp.postForm(url, document.getElementById('savePolicyForm')).then(function(response) {
+                if (response.status === 'success') {
+                    window.location.href = response.redirectUrl;
                 }
-            })
+            }).catch(function(err) { $.handleApiFormError(err); })
         });
 
         $('#show-file').click(function(){

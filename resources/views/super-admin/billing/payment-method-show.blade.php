@@ -369,17 +369,34 @@
 
     function selectFreePlan() {
         var plan_id = '{{ $package->id }}';
-        $.easyAjax({
-            url: '{{ route('billing.free-plan') }}',
-            type: "POST",
-            redirect: true,
-            blockUI: true,
-            data: {
-                'package_id': plan_id,
-                'type': '{{ $type }}',
-                '_token': '{{ csrf_token() }}'
+        $.easyBlockUI('body');
+        window.apiHttp.postUrlEncoded('{{ route('billing.free-plan') }}', {
+            'package_id': plan_id,
+            'type': '{{ $type }}',
+            '_token': '{{ csrf_token() }}'
+        }).then(function (response) {
+            if (response.status === 'success') {
+                if (response.action === 'redirect' && response.url) {
+                    window.location.href = response.url;
+                } else if (typeof response.message !== 'undefined') {
+                    Swal.fire({
+                        icon: 'success',
+                        text: response.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 3000,
+                        timerProgressBar: true,
+                        showConfirmButton: false,
+                        customClass: { confirmButton: 'btn btn-primary' },
+                        showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                    });
+                }
             }
-        })
+        }).catch(function (err) {
+            $.handleApiFormError(err);
+        }).finally(function () {
+            $.easyUnblockUI('body');
+        });
     }
 </script>
 @if(!$free)
@@ -388,72 +405,45 @@
 
     <script>
         $('#authorize-button').click(function () {
-            $.easyAjax({
-                url: '{{ route('billing.authorize') }}',
-                type: "POST",
-                data: $('#authorize-form').serialize(),
-                container: '.modal-content',
-                messagePosition: "inline",
-                disableButton: true,
-                buttonSelector: "#authorize-button",
-                success: function (response) {
-                    if (response.status == 'success') {
-                        $('#authorize-form').remove();
-                        setInterval(checkWebhook, 20000)
-                    }
+            var $btn = $('#authorize-button');
+            var prev = $btn.html();
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+            window.apiHttp.postUrlEncoded('{{ route('billing.authorize') }}', $('#authorize-form').serialize()).then(function (response) {
+                if (response.status == 'success') {
+                    $('#authorize-form').remove();
+                    setInterval(checkWebhook, 20000);
                 }
-
-            })
+            }).catch(function (err) {
+                $.handleApiFormError(err);
+            }).finally(function () {
+                $btn.prop('disabled', false).html(prev);
+            });
         })
 
         function checkWebhook() {
-            $.easyAjax({
-                url: '{{ route('billing.check-authorize-subscription') }}',
-                type: "POST",
-                data: {package_id: '{{ $package->id }}', type: '{{ $type }}', '_token': '{{ csrf_token() }}'},
-                container: '.modal-content',
-                success: function (response) {
-                    if (response.status == 'success' && response.webhook) {
-                        window.location.reload();
-                    }
+            window.apiHttp.postUrlEncoded('{{ route('billing.check-authorize-subscription') }}', {package_id: '{{ $package->id }}', type: '{{ $type }}', '_token': '{{ csrf_token() }}'}).then(function (response) {
+                if (response.status == 'success' && response.webhook) {
+                    window.location.reload();
                 }
-
-            })
+            }).catch(function (err) {
+                $.handleApiFormError(err);
+            });
         }
     </script>
     <script>
-        // $('#save-stripe-detail').on('click', function () {
-        //     let packageType = '{{ $package->package_type }}'; // Pass package type from Blade to JS
-        //     let url = (packageType === 'lifetime') ? '{{ route('billing.lifetime') }}' : '{{ route('billing.stripe-validate') }}';
-
-        //     $.easyAjax({
-        //         url: url,
-        //         type: "POST",
-        //         blockUI: true,
-        //         disableButton: true,
-        //         buttonSelector: "#save-stripe-detail",
-        //         data: $('#stripe-payment-form').serialize(),
-        //         container: '.modal-content',
-        //         success: function (response) {
-        //             $('.modal-footer #stripeButton').html(response.buttonView);
-        //             $('#stripe-payment-form').html(response.view);
-        //         }
-        //     });
-        // });
          $('#save-stripe-detail').on('click', function () {
-            $.easyAjax({
-                url: '{{ route('billing.stripe-validate') }}',
-                type: "POST",
-                blockUI: true,
-                disableButton: true,
-                buttonSelector: "#save-stripe-detail",
-                data: $('#stripe-payment-form').serialize(),
-                container: '.modal-content',
-                success: function (response) {
-                    $('.modal-footer #stripeButton').html(response.buttonView);
-                    $('#stripe-payment-form').html(response.view);
-                }
-
+            var $btn = $('#save-stripe-detail');
+            var prev = $btn.html();
+            $.easyBlockUI('.modal-content');
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+            window.apiHttp.postUrlEncoded('{{ route('billing.stripe-validate') }}', $('#stripe-payment-form').serialize()).then(function (response) {
+                $('.modal-footer #stripeButton').html(response.buttonView);
+                $('#stripe-payment-form').html(response.view);
+            }).catch(function (err) {
+                $.handleApiFormError(err);
+            }).finally(function () {
+                $.easyUnblockUI('.modal-content');
+                $btn.prop('disabled', false).html(prev);
             });
         });
 
@@ -552,33 +542,29 @@
                 rzp1.on('payment.failed', function (response) {
                     const url = "{{ route('front.invoice_payment_failed', ':id') }}".replace(':id', invoiceId);
 
-                    $.easyAjax({
-                        url: url,
-                        type: "POST",
-                        data: {
-                            errorMessage: response.error,
-                            gateway: 'Razorpay',
-                            _token: csrfToken
-                        }
+                    window.apiHttp.postUrlEncoded(url, {
+                        errorMessage: response.error,
+                        gateway: 'Razorpay',
+                        _token: csrfToken
+                    }).catch(function (err) {
+                        $.handleApiFormError(err);
                     });
                 });
 
                 rzp1.open(); // Open Razorpay modal
             } else {
                 // Subscription-based payment
-                $.easyAjax({
-                    type: 'POST',
-                    blockUI: true,
-                    container: '.modal-content',
-                    url: '{{ route('billing.razorpay-subscription') }}',
-                    data: { plan_id: planId, type: type, _token: csrfToken },
-                    success: function (response) {
-                        if (response.subscriprion) {
-                            razorpayPaymentCheckout(response.subscriprion);
-                        } else {
-                            console.error('Subscription creation failed');
-                        }
+                $.easyBlockUI('.modal-content');
+                window.apiHttp.postUrlEncoded('{{ route('billing.razorpay-subscription') }}', { plan_id: planId, type: type, _token: csrfToken }).then(function (response) {
+                    if (response.subscriprion) {
+                        razorpayPaymentCheckout(response.subscriprion);
+                    } else {
+                        console.error('Subscription creation failed');
                     }
+                }).catch(function (err) {
+                    $.handleApiFormError(err);
+                }).finally(function () {
+                    $.easyUnblockUI('.modal-content');
                 });
             }
         }
@@ -619,20 +605,22 @@
             var subscription_id = response.razorpay_subscription_id;
             var razorpay_signature = response.razorpay_signature;
             console.log([plan_id, type, payment_id, subscription_id, razorpay_signature]);
-            $.easyAjax({
-                type: 'POST',
-                blockUI: true,
-                container: '.modal-content',
-                url: '{{route('billing.razorpay-payment')}}',
-                data: {
-                    paymentId: payment_id,
-                    plan_id: plan_id,
-                    subscription_id: subscription_id,
-                    type: type,
-                    razorpay_signature: razorpay_signature,
-                    _token: '{{csrf_token()}}'
-                },
-                redirect: true,
+            $.easyBlockUI('.modal-content');
+            window.apiHttp.postUrlEncoded('{{route('billing.razorpay-payment')}}', {
+                paymentId: payment_id,
+                plan_id: plan_id,
+                subscription_id: subscription_id,
+                type: type,
+                razorpay_signature: razorpay_signature,
+                _token: '{{csrf_token()}}'
+            }).then(function (response) {
+                if (response.status === 'success' && response.action === 'redirect' && response.url) {
+                    window.location.href = response.url;
+                }
+            }).catch(function (err) {
+                $.handleApiFormError(err);
+            }).finally(function () {
+                $.easyUnblockUI('.modal-content');
             })
         }
         @endif

@@ -64,18 +64,17 @@
 
         var url = "{{ route('biolink-blocks.update', [':blockId']) }}";
         url = url.replace(':blockId', blockId);
-        $.easyAjax({
-            url: url,
-            container: '#edit-block-'+blockId,
-            type: "POST",
-            data: $('#edit-block-'+blockId).serialize(),
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-block-"+blockId,
-            success: function (response) {
+        $.easyBlockUI('#edit-block-' + blockId);
+        window.apiHttp.postUrlEncoded(url, $('#edit-block-'+blockId).serialize())
+            .then(function (response) {
                 if (response.status == 'success') {
                 }
-            }
-        })
+            })
+            .catch(function (err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function () {
+                $.easyUnblockUI('#edit-block-' + blockId);
+            })
     });
 </script>

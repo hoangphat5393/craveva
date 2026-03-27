@@ -10,9 +10,7 @@
         <div class="select-box d-flex pr-2 border-right-grey border-right-grey-sm-0">
             <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('app.duration')</p>
             <div class="select-status d-flex">
-                <input type="text"
-                    class="position-relative text-dark form-control border-0 p-2 text-left f-14 f-w-500 border-additional-grey"
-                    id="datatableRange" placeholder="@lang('placeholders.dateRange')">
+                <input type="text" class="position-relative text-dark form-control border-0 p-2 text-left f-14 f-w-500 border-additional-grey" id="datatableRange" placeholder="@lang('placeholders.dateRange')">
             </div>
         </div>
         <!-- DATE END -->
@@ -20,8 +18,7 @@
         <div class="select-box d-flex py-2 px-lg-2 px-md-2 px-0 border-right-grey border-right-grey-sm-0">
             <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('recruit::app.job.recruiter')</p>
             <div class="select-status">
-                <select class="form-control select-picker" name="recruiter" id="recruiter" data-live-search="true"
-                    data-size="8">
+                <select class="form-control select-picker" name="recruiter" id="recruiter" data-live-search="true" data-size="8">
                     <option value="all">@lang('app.all')</option>
                     @foreach ($employees as $employee)
                         @if (!is_null($employee->user))
@@ -41,8 +38,7 @@
                             <i class="fa fa-search f-13 text-dark-grey"></i>
                         </span>
                     </div>
-                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field"
-                        placeholder="@lang('app.startTyping')">
+                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field" placeholder="@lang('app.startTyping')">
                 </div>
             </form>
         </div>
@@ -71,8 +67,7 @@
                 <label class="f-14 text-dark-grey mb-12 " for="usr">@lang('app.department')</label>
                 <div class="select-filter mb-4">
                     <div class="select-others">
-                        <select class="form-control select-picker" name="department_id" data-container="body"
-                            id="department_id">
+                        <select class="form-control select-picker" name="department_id" data-container="body" id="department_id">
                             <option value="all">@lang('app.all')</option>
                             @foreach ($departments as $department)
                                 <option value="{{ $department->id }}">{{ $department->team_name }}</option>
@@ -104,12 +99,8 @@
                         <select class="form-control select-picker" name="location" data-container="body" id="location">
                             <option value="all">@lang('app.all')</option>
                             @foreach ($locations as $location)
-                            <option
-                                data-content="{{ ($location->location) }}"
-                                @if(isset($jobLocation) && in_array($location->id, $jobLocation)) selected
-                                @endif
-                                value="{{ $location->id }}">{{ ($location->location) }}</option>
-                        @endforeach
+                                <option data-content="{{ $location->location }}" @if (isset($jobLocation) && in_array($location->id, $jobLocation)) selected @endif value="{{ $location->id }}">{{ $location->location }}</option>
+                            @endforeach
                         </select>
                     </div>
                 </div>
@@ -232,9 +223,9 @@
                     $('#reset-filters').removeClass('d-none');
                 } else if ($('#location').val() != "all") {
                     $('#reset-filters').removeClass('d-none');
-                } else if($('#work_type').val() != "all") {
+                } else if ($('#work_type').val() != "all") {
                     $('#reset-filters').removeClass('d-none');
-                }else if ($('#department_id').val() != "all") {
+                } else if ($('#department_id').val() != "all") {
                     $('#reset-filters').removeClass('d-none');
                 } else if ($('#date_filter_on').val() != "start_date") {
                     $('#reset-filters').removeClass('d-none');
@@ -312,22 +303,18 @@
 
             const url = "{{ route('jobs.apply_quick_action') }}?row_ids=" + rowdIds;
 
-            $.easyAjax({
-                url: url,
-                container: '#quick-action-form',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#quick-action-apply",
-                data: $('#quick-action-form').serialize(),
-                success: function(response) {
+            window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize())
+                .then(function(response) {
                     if (response.status == 'success') {
                         showTable();
                         resetActionButtons();
                         deSelectAll();
                         $('#quick-action-form').hide();
                     }
-                }
-            })
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                });
         };
         $('body').on('click', '.delete-table-row', function() {
             var id = $(this).data('job-id');
@@ -353,20 +340,15 @@
                     var url = "{{ route('jobs.destroy', ':id') }}";
                     url = url.replace(':id', id);
                     var token = "{{ csrf_token() }}";
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
+                    window.apiHttp.delete(url, token)
+                        .then(function(response) {
                             if (response.status == "success") {
                                 showTable();
                             }
-                        }
-                    });
+                        })
+                        .catch(function(err) {
+                            $.handleApiFormError(err);
+                        });
                 }
             });
         });
@@ -379,24 +361,21 @@
             var status = $(this).val();
 
             if (typeof id !== 'undefined') {
-                $.easyAjax({
-                    url: "{{ route('jobs.change_job_status') }}",
-                    type: "POST",
-                    blockUI: true,
-                    data: {
-                        '_token': token,
+                window.apiHttp.postUrlEncoded("{{ route('jobs.change_job_status') }}", {
+                        _token: token,
                         jobId: id,
                         status: status
-                    },
-
-                    success: function(response) {
+                    })
+                    .then(function(response) {
                         if (response.status == "success") {
                             showTable();
                             resetActionButtons();
                             deSelectAll();
                         }
-                    }
-                });
+                    })
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    });
             }
         });
     </script>

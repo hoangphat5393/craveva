@@ -10,8 +10,7 @@
                                 <x-employee :user="$employee" />
                             </div>
                             <div class="col-md-2">
-                                <x-forms.label class="my-3" fieldId=""
-                                               :fieldLabel="__('payroll::modules.payroll.salary')" fieldRequired="true">
+                                <x-forms.label class="my-3" fieldId="" :fieldLabel="__('payroll::modules.payroll.salary')" fieldRequired="true">
                                 </x-forms.label>
 
 
@@ -24,13 +23,10 @@
                                 <x-forms.input-group class="mt-2">
 
                                     <x-slot name="prepend" id="currency">
-                                        <span
-                                            class="input-group-text f-14 bg-white-shade">{{ ($currency->currency ? $currency->currency->currency_symbol : company()->currency->currency_symbol ) }}</span>
+                                        <span class="input-group-text f-14 bg-white-shade">{{ $currency->currency ? $currency->currency->currency_symbol : company()->currency->currency_symbol }}</span>
                                     </x-slot>
 
-                                    <input type="number" class="form-control height-35 f-14" name="annual_salary"
-                                           onkeyup="changeClc()"
-                                           id="annual_salary" value="">
+                                    <input type="number" class="form-control height-35 f-14" name="annual_salary" onkeyup="changeClc()" id="annual_salary" value="">
                                 </x-forms.input-group>
 
                             </div>
@@ -68,20 +64,18 @@
                             <div class="col-md-12">
                                 <div class="row mb-2">
                                     <div class="col-md-3">
-                                        <x-forms.label fieldId=""
-                                                    :fieldLabel="__('payroll::modules.payroll.basicPay')">
+                                        <x-forms.label fieldId="" :fieldLabel="__('payroll::modules.payroll.basicPay')">
                                         </x-forms.label>
                                     </div>
                                     <div class="col-md-3">
 
                                         <x-forms.input-group>
-                                            <input type="number" value="50" onmouseout="changeClc()" name="basic_salary" id="basic_value"
-                                                class="form-control height-35 f-15" style="width:30%">
+                                            <input type="number" value="50" onmouseout="changeClc()" name="basic_salary" id="basic_value" class="form-control height-35 f-15" style="width:30%">
 
-                                        <select name="basic_value" id="basic-type" onchange="selectType(this.value)" class="form-control select-picker" data-size="8">
-                                            <option value="ctc_percent">@lang('payroll::modules.payroll.percentOfCTC')</option>
-                                            <option value="fixed">@lang('payroll::modules.payroll.fixed')</option>
-                                        </select>
+                                            <select name="basic_value" id="basic-type" onchange="selectType(this.value)" class="form-control select-picker" data-size="8">
+                                                <option value="ctc_percent">@lang('payroll::modules.payroll.percentOfCTC')</option>
+                                                <option value="fixed">@lang('payroll::modules.payroll.fixed')</option>
+                                            </select>
                                         </x-forms.input-group>
 
                                     </div>
@@ -89,28 +83,20 @@
                                         <x-forms.input-group>
 
                                             <x-slot name="prepend" id="currency">
-                                                <span
-                                                    class="input-group-text f-14 bg-white-shade">{{ ($currency->currency ? $currency->currency->currency_symbol : company()->currency->currency_symbol ) }}</span>
+                                                <span class="input-group-text f-14 bg-white-shade">{{ $currency->currency ? $currency->currency->currency_symbol : company()->currency->currency_symbol }}</span>
                                             </x-slot>
 
-                                            <input type="text" class="form-control height-35 f-14"
-                                                id=""
-                                                value="{{ $payrollController->currencyFormatterCustom(0) }}"
-                                                readonly>
+                                            <input type="text" class="form-control height-35 f-14" id="" value="{{ $payrollController->currencyFormatterCustom(0) }}" readonly>
 
                                         </x-forms.input-group>
                                     </div>
                                     <div class="col-md-3">
                                         <x-forms.input-group>
                                             <x-slot name="prepend" id="currency">
-                                                <span
-                                                    class="input-group-text f-14 bg-white-shade">{{ ($currency->currency ? $currency->currency->currency_symbol : company()->currency->currency_symbol ) }}</span>
+                                                <span class="input-group-text f-14 bg-white-shade">{{ $currency->currency ? $currency->currency->currency_symbol : company()->currency->currency_symbol }}</span>
                                             </x-slot>
 
-                                            <input type="text" class="form-control height-35 f-14"
-                                                id=""
-                                                value="{{ $payrollController->currencyFormatterCustom(0) }}"
-                                                readonly>
+                                            <input type="text" class="form-control height-35 f-14" id="" value="{{ $payrollController->currencyFormatterCustom(0) }}" readonly>
                                         </x-forms.input-group>
 
                                     </div>
@@ -123,55 +109,39 @@
                                         <div class="row">
                                             @if ($component->component->component_type == 'earning')
                                                 <div class="col-md-3">
-                                                    <x-forms.label fieldId=""
-                                                    :fieldLabel="$component->component->component_name" />
+                                                    <x-forms.label fieldId="" :fieldLabel="$component->component->component_name" />
                                                 </div>
                                                 <div class="col-md-3">
                                                     @if ($component->component->value_type == 'basic_percent')
-                                                    <x-forms.label fieldId=""
-                                                        :fieldLabel="($component->component->component_value.' '.__('payroll::modules.payroll.percentOfBasic'))" />
+                                                        <x-forms.label fieldId="" :fieldLabel="$component->component->component_value . ' ' . __('payroll::modules.payroll.percentOfBasic')" />
                                                     @else
-                                                    <x-forms.label fieldId=""
-                                                        :fieldLabel="$component->component->value_type ?? '--'" />
+                                                        <x-forms.label fieldId="" :fieldLabel="$component->component->value_type ?? '--'" />
                                                     @endif
                                                 </div>
                                                 <div class="col-md-3">
                                                     @if ($component->component->value_type == 'variable')
                                                         <x-forms.input-group>
                                                             <x-slot name="prepend" id="currency">
-                                                            <span
-                                                                class="input-group-text f-14 bg-white-shade">{{ ($currency->currency ? $currency->currency->currency_symbol : company()->currency->currency_symbol ) }}</span>
+                                                                <span class="input-group-text f-14 bg-white-shade">{{ $currency->currency ? $currency->currency->currency_symbol : company()->currency->currency_symbol }}</span>
                                                             </x-slot>
-                                                            <input type="text" class="form-control height-35 f-14"
-                                                                 id=""
-                                                                value="{{ $payrollController->currencyFormatterCustom(0) }}">
+                                                            <input type="text" class="form-control height-35 f-14" id="" value="{{ $payrollController->currencyFormatterCustom(0) }}">
                                                         </x-forms.input-group>
-
                                                     @else
                                                         <x-forms.input-group>
                                                             <x-slot name="prepend" id="currency">
-                                                            <span
-                                                                class="input-group-text f-14 bg-white-shade">{{ ($currency->currency ? $currency->currency->currency_symbol : company()->currency->currency_symbol ) }}</span>
+                                                                <span class="input-group-text f-14 bg-white-shade">{{ $currency->currency ? $currency->currency->currency_symbol : company()->currency->currency_symbol }}</span>
                                                             </x-slot>
-                                                            <input type="text" class="form-control height-35 f-14"
-                                                                 id=""
-                                                                value="{{ $payrollController->currencyFormatterCustom(0) }}"
-                                                                readonly>
+                                                            <input type="text" class="form-control height-35 f-14" id="" value="{{ $payrollController->currencyFormatterCustom(0) }}" readonly>
                                                         </x-forms.input-group>
-
                                                     @endif
                                                 </div>
 
                                                 <div class="col-md-3">
                                                     <x-forms.input-group>
                                                         <x-slot name="prepend" id="currency">
-                                                            <span
-                                                                class="input-group-text f-14 bg-white-shade">{{ ($currency->currency ? $currency->currency->currency_symbol : company()->currency->currency_symbol ) }}</span>
+                                                            <span class="input-group-text f-14 bg-white-shade">{{ $currency->currency ? $currency->currency->currency_symbol : company()->currency->currency_symbol }}</span>
                                                         </x-slot>
-                                                        <input type="text" class="form-control height-35 f-14"
-                                                             id=""
-                                                            value="{{ $payrollController->currencyFormatterCustom(0) }}"
-                                                            readonly>
+                                                        <input type="text" class="form-control height-35 f-14" id="" value="{{ $payrollController->currencyFormatterCustom(0) }}" readonly>
                                                     </x-forms.input-group>
 
 
@@ -184,9 +154,7 @@
                             <div class="col-md-12">
                                 <div class="row my-3">
                                     <div class="col-md-3">
-                                        <x-forms.label fieldId="" :popover="__('payroll::messages.fixedAllowanceMessage')"
-                                                    :fieldLabel="__('payroll::modules.payroll.fixedAllowance')"
-                                                    fieldRequired="">
+                                        <x-forms.label fieldId="" :popover="__('payroll::messages.fixedAllowanceMessage')" :fieldLabel="__('payroll::modules.payroll.fixedAllowance')" fieldRequired="">
                                         </x-forms.label>
                                         <p class="f-11 text-grey">@lang('payroll::modules.payroll.extraPay')</p>
                                     </div>
@@ -196,12 +164,12 @@
 
                                     </div>
                                     <div class="col-md-3">
-                                        <x-forms.label fieldId="" :fieldLabel="currency_format(0, ($currency->currency ? $currency->currency->id : company()->currency->id ))" />
+                                        <x-forms.label fieldId="" :fieldLabel="currency_format(0, $currency->currency ? $currency->currency->id : company()->currency->id)" />
                                     </div>
 
                                     <div class="col-md-3">
 
-                                        <x-forms.label fieldId="" :fieldLabel="currency_format(0, ($currency->currency ? $currency->currency->id : company()->currency->id ))" />
+                                        <x-forms.label fieldId="" :fieldLabel="currency_format(0, $currency->currency ? $currency->currency->id : company()->currency->id)" />
                                     </div>
                                 </div>
                             </div>
@@ -215,11 +183,11 @@
                                     </div>
                                     <div class="col-md-3">
                                         <h3 class="heading-h3 mb-0 py-4">
-                                            {{ currency_format(0, ($currency->currency ? $currency->currency->id : company()->currency->id )) }}</h3>
+                                            {{ currency_format(0, $currency->currency ? $currency->currency->id : company()->currency->id) }}</h3>
                                     </div>
                                     <div class="col-md-3">
                                         <h3 class="heading-h3 mb-0 py-4">
-                                            {{ currency_format(0, ($currency->currency ? $currency->currency->id : company()->currency->id )) }}</h3>
+                                            {{ currency_format(0, $currency->currency ? $currency->currency->id : company()->currency->id) }}</h3>
                                     </div>
                                 </div>
 
@@ -240,8 +208,7 @@
     </div>
 </div>
 <script>
-
-    $("#annual_salary").on("keyup change", function (e) {
+    $("#annual_salary").on("keyup change", function(e) {
         var annualSalary = $(this).val();
         var monthlySalary = annualSalary / 12;
         let netMonthlySalary = number_format(monthlySalary.toFixed(2));
@@ -250,10 +217,10 @@
 
     function changeClc() {
         var basicSalary = $('#basic_value').val();
-        if($('#basic-type').val() == 'ctc_percent' && basicSalary > 100){
+        if ($('#basic-type').val() == 'ctc_percent' && basicSalary > 100) {
             $('#basic_value').val(100);
         }
-        if(basicSalary > 0){
+        if (basicSalary > 0) {
             getBasicCalculations();
         }
     }
@@ -270,34 +237,24 @@
         var userId = $('#user_id').val();
 
         const url = "{{ route('employee-salary.get-salary') }}";
-        $.easyAjax({
-            url: url,
-            type: "GET",
-            disableButton: true,
-            blockUI: true,
-            data: {
+        window.apiHttp.get(url, {
                 basicType: basicType,
                 basicValue: basicValue,
                 annualSalary: annualSalary,
                 userId: userId
-            },
-            success: function (response) {
+            })
+            .then(function(response) {
                 $('#components').html(response.component)
-            }
-        })
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            });
     }
 
-    $('body').on('click', '#save-initial-salary', function () {
+    $('body').on('click', '#save-initial-salary', function() {
 
-        $.easyAjax({
-            url: "{{ route('employee-salary.store') }}",
-            container: '#save-salary-form',
-            type: "POST",
-            blockUI: true,
-            disableButton: true,
-            buttonSelector: "#save-initial-salary",
-            data: $('#save-salary-form').serialize(),
-            success: function (response) {
+        window.apiHttp.postUrlEncoded("{{ route('employee-salary.store') }}", $('#save-salary-form').serialize())
+            .then(function(response) {
                 if (response.status == 'success') {
                     if ($(MODAL_XL).hasClass('show')) {
                         $(MODAL_XL).modal('hide');
@@ -306,8 +263,10 @@
                         window.location.href = response.redirectUrl;
                     }
                 }
-            }
-        });
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            });
 
     });
 
@@ -319,14 +278,14 @@
         // Strip all characters but numerical ones.
         number = (number + '').replace(/[^0-9+\-Ee.]/g, '');
 
-        var currency_symbol = '{{ ($currency->currency ? $currency->currency->currency_symbol : company()->currency->currency_symbol ) }}';
+        var currency_symbol = '{{ $currency->currency ? $currency->currency->currency_symbol : company()->currency->currency_symbol }}';
 
         var n = !isFinite(+number) ? 0 : +number,
             prec = !isFinite(+decimals) ? 0 : Math.abs(decimals),
             sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep,
             dec = (typeof dec_point === 'undefined') ? '.' : dec_point,
             s = '',
-            toFixedFix = function (n, prec) {
+            toFixedFix = function(n, prec) {
                 var k = Math.pow(10, prec);
                 return '' + Math.round(n * k) / k;
             };
@@ -368,5 +327,4 @@
         lastValue = $(e.target).val();
         lastValue = lastValue.replace(/[,]/g, '');
     });
-
 </script>

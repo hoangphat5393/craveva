@@ -111,15 +111,7 @@
 
             const url = "{{ route('zoom-meetings.update_occurrence', $event->id) }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#save-event-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-event-form",
-                data: $('#save-event-data-form').serialize(),
-                success: function (response) {
+            window.apiHttp.postUrlEncoded(url, $('#save-event-data-form').serialize()).then(function (response) {
                     if (response.status == 'success') {
                         if ($(MODAL_XL).hasClass('show')) {
                             $(MODAL_XL).modal('hide');
@@ -128,8 +120,7 @@
                             window.location.href = response.redirectUrl;
                         }
                     }
-                }
-            });
+            }).catch(function (err) { $.handleApiFormError(err); });
         });
 
         init(RIGHT_MODAL);

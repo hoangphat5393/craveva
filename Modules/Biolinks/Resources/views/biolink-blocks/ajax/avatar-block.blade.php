@@ -53,24 +53,22 @@
     $('.select-picker').selectpicker();
     $('#save-block').on('click', function () {
             var url = "{{ route('biolink-blocks.store') }}";
-            $.easyAjax({
-                url: url,
-                container: '#create-block',
-                type: "POST",
-                data: $('#create-block').serialize(),
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-block",
-                file: true,
-                success: function (response) {
+            $.easyBlockUI('#create-block');
+            window.apiHttp.postForm(url, document.getElementById('create-block'))
+                .then(function (response) {
                     if (response.status == 'success') {
                         $(MODAL_LG).modal('hide');
                         $(RIGHT_MODAL).modal('hide');
                         localStorage.setItem('activeTab', 'blocks');
                         window.location.href= response.redirectUrl;
                     }
-                }
-            })
+                })
+                .catch(function (err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function () {
+                    $.easyUnblockUI('#create-block');
+                })
     });
 </script>
 

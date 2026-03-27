@@ -141,18 +141,17 @@
                     $('input[name="sort_order[]"]').each(function(index, value) {
                         sortedValues[index] = $(this).val();
                     });
-                    $.easyAjax({
-                        url: "{{ route('biolink-blocks.sortFields') }}",
-                        type: "POST",
-                        blockUI: true,
-                        data: {
-                            'sortedValues': sortedValues,
-                            '_token': '{{ csrf_token() }}'
-                        },
-                        success: function(response) {
+                    $.easyBlockUI('body');
+                    window.apiHttp.postUrlEncoded("{{ route('biolink-blocks.sortFields') }}", $.param({ sortedValues: sortedValues, _token: '{{ csrf_token() }}' }))
+                        .then(function(response) {
                             iframePreview();
-                        }
-                    })
+                        })
+                        .catch(function(err) {
+                            $.handleApiFormError(err);
+                        })
+                        .finally(function() {
+                            $.easyUnblockUI('body');
+                        })
                 }
             });
         });
@@ -271,25 +270,21 @@
                     var url = "{{ route('biolink-blocks.destroy', ':id') }}";
                     url = url.replace(':id', blockId);
 
-                    var token = "{{ csrf_token() }}";
-
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        container: '#heading-' + blockId,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
+                    $.easyBlockUI('#heading-' + blockId);
+                    window.apiHttp.delete(url, "{{ csrf_token() }}")
+                        .then(function(response) {
                             if (response.status == "success") {
                                 console.log($('#heading-' + blockId).parent());
                                 $('#heading-' + blockId).parent().remove();
                                 $('#livePreview').contents().find(`[data-block-id="${blockId}"]`).remove();
                             }
-                        }
-                    });
+                        })
+                        .catch(function(err) {
+                            $.handleApiFormError(err);
+                        })
+                        .finally(function() {
+                            $.easyUnblockUI('#heading-' + blockId);
+                        });
                 }
             });
         });
@@ -300,23 +295,22 @@
             var url = "{{ route('biolink-blocks.duplicate', ':duplicateId') }}";
             url = url.replace(':duplicateId', blockId);
 
-            var token = "{{ csrf_token() }}";
-
-            $.easyAjax({
-                type: 'POST',
-                url: url,
-                container: '#heading-' + blockId,
-                blockUI: true,
-                data: {
-                    '_token': token,
-                    '_method': 'GET'
-                },
-                success: function(response) {
+            $.easyBlockUI('#heading-' + blockId);
+            window.apiHttp.postUrlEncoded(url, {
+                _token: '{{ csrf_token() }}',
+                _method: 'GET'
+            })
+                .then(function(response) {
                     if (response.status == "success") {
                         window.location.reload();
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#heading-' + blockId);
+                });
         });
 
     </script>

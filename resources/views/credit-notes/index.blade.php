@@ -11,8 +11,7 @@
         <div class="select-box d-flex pr-2 border-right-grey border-right-grey-sm-0">
             <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('app.duration')</p>
             <div class="select-status d-flex">
-                <input type="text" class="position-relative text-dark form-control border-0 p-2 text-left f-14 f-w-500 border-additional-grey"
-                    id="datatableRange" placeholder="@lang('placeholders.dateRange')">
+                <input type="text" class="position-relative text-dark form-control border-0 p-2 text-left f-14 f-w-500 border-additional-grey" id="datatableRange" placeholder="@lang('placeholders.dateRange')">
             </div>
         </div>
         <!-- DATE END -->
@@ -42,8 +41,7 @@
                             <i class="fa fa-search f-13 text-dark-grey"></i>
                         </span>
                     </div>
-                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field"
-                        placeholder="@lang('app.startTyping')">
+                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field" placeholder="@lang('app.startTyping')">
                 </div>
             </form>
         </div>
@@ -103,9 +101,7 @@
             </div>
 
             <div class="btn-group mt-3 mt-lg-0 mt-md-0 ml-lg-3" role="group">
-                <a href="javascript:;" class="img-lightbox btn btn-secondary f-14"
-                data-image-url="{{ asset('img/credit-note-lc.png') }}" data-toggle="tooltip"
-                data-original-title="@lang('app.howItWorks')"><i class="side-icon bi bi-question-circle"></i></a>
+                <a href="javascript:;" class="img-lightbox btn btn-secondary f-14" data-image-url="{{ asset('img/credit-note-lc.png') }}" data-toggle="tooltip" data-original-title="@lang('app.howItWorks')"><i class="side-icon bi bi-question-circle"></i></a>
             </div>
 
         </div>
@@ -120,7 +116,6 @@
         <!-- Task Box End -->
     </div>
     <!-- CONTENT WRAPPER END -->
-
 @endsection
 
 @push('scripts')
@@ -267,18 +262,24 @@
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                showTable();
-                            }
+                    $.easyBlockUI('#invoices-table');
+                    window.apiHttp.delete(url, token).then(function(response) {
+                        if (response.status == "success") {
+                            showTable();
                         }
+                    }).catch(function(err) {
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                text: err.message,
+                                toast: true,
+                                position: 'top-end',
+                                timer: 4000,
+                                showConfirmButton: false
+                            });
+                        }
+                    }).finally(function() {
+                        $.easyUnblockUI('#invoices-table');
                     });
                 }
             });
@@ -291,20 +292,29 @@
 
             var url = "{{ route('invoices.apply_quick_action') }}?row_ids=" + rowdIds;
 
-            $.easyAjax({
-                url: url,
-                container: '#quick-action-form',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#quick-action-apply",
-                data: $('#quick-action-form').serialize(),
-                success: function(response) {
-                    if (response.status == 'success') {
-                        showTable();
-                        resetActionButtons();
-                    }
+            var $qaBtn = $("#quick-action-apply");
+            $qaBtn.prop('disabled', true);
+            $.easyBlockUI('.content-wrapper');
+            window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize()).then(function(response) {
+                if (response.status == 'success') {
+                    showTable();
+                    resetActionButtons();
                 }
-            })
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $qaBtn.prop('disabled', false);
+                $.easyUnblockUI('.content-wrapper');
+            });
         };
 
         $('body').on('click', '.sendButton', function() {
@@ -314,19 +324,26 @@
 
             var token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                type: 'POST',
-                url: url,
-                container: '#invoices-table',
-                blockUI: true,
-                data: {
-                    '_token': token
-                },
-                success: function(response) {
-                    if (response.status == "success") {
-                        window.LaravelDataTables["invoices-table"].draw(true);
-                    }
+            $.easyBlockUI('#invoices-table');
+            window.apiHttp.postUrlEncoded(url, {
+                _token: token
+            }).then(function(response) {
+                if (response.status == "success") {
+                    window.LaravelDataTables["invoices-table"].draw(true);
                 }
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $.easyUnblockUI('#invoices-table');
             });
         });
 
@@ -337,17 +354,25 @@
 
             var token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                type: 'GET',
-                container: '#invoices-table',
-                blockUI: true,
-                url: url,
-                success: function(response) {
-                    if (response.status == "success") {
-                        $.unblockUI();
-                        window.LaravelDataTables["invoices-table"].draw(true);
-                    }
+            $.easyBlockUI('#invoices-table');
+            window.apiHttp.get(url).then(function(response) {
+                if (response.status == "success") {
+                    $.unblockUI();
+                    window.LaravelDataTables["invoices-table"].draw(true);
                 }
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $.easyUnblockUI('#invoices-table');
             });
         });
 
@@ -357,6 +382,5 @@
             $(MODAL_LG + ' ' + MODAL_HEADING).html('...');
             $.ajaxModal(MODAL_LG, url);
         });
-
     </script>
 @endpush

@@ -42,19 +42,16 @@
     $('#save-faq').click(function() {
         document.getElementById('answer_text').value = document.getElementById('answer').children[0].innerHTML;
 
-        $.easyAjax({
-            url: "{{ route('superadmin.front-settings.faq-settings.store') }}",
-            container: '#createFAQ',
-            type: "POST",
-            blockUI: true,
-            data: $('#createFAQ').serialize(),
-            success: function(response) {
+        $.easyBlockUI('#createFAQ');
+        window.apiHttp.postUrlEncoded("{{ route('superadmin.front-settings.faq-settings.store') }}", $('#createFAQ').serialize())
+            .then(function(response) {
                 if (response.status == "success") {
                     $('#example').html(response.html);
                     $(MODAL_LG).modal('hide');
                 }
-            }
-        })
+            })
+            .catch(function (err) { $.handleApiFormError(err); })
+            .finally(function () { $.easyUnblockUI('#createFAQ'); });
     });
 
     init('#createFAQ');

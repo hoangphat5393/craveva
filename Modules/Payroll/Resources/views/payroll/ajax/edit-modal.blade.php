@@ -289,19 +289,14 @@
 
             const url = "{{route('payroll.update', $salarySlip->id)}}";
 
-            $.easyAjax({
-                url: url,
-                container: '#save-payroll-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-payroll",
-                data: $('#save-payroll-form').serialize(),
-                success: function (response) {
+            window.apiHttp.postUrlEncoded(url, $('#save-payroll-form').serialize())
+                .then(function (response) {
                     console.log(response);
                     window.location.href = response.url;
-                }
-            });
+                })
+                .catch(function (err) {
+                    $.handleApiFormError(err);
+                });
         });
 
         init(RIGHT_MODAL);

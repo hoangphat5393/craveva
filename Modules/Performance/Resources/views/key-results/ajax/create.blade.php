@@ -99,20 +99,19 @@
             var data = $('#save-key-results-form').serialize();
 
             if (url) {
-                $.easyAjax({
-                    url: url,
-                    container: '#save-key-results-form',
-                    type: "POST",
-                    disableButton: true,
-                    blockUI: true,
-                    file: true,
-                    data: data,
-                    success: function(response) {
+                $.easyBlockUI('#save-key-results-form');
+                window.apiHttp.postUrlEncoded(url, data)
+                    .then(function(response) {
                         if (response.status == "success") {
                             window.location.href = "{{ $currentUrl }}";
                         }
-                    }
-                });
+                    })
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    })
+                    .finally(function() {
+                        $.easyUnblockUI('#save-key-results-form');
+                    });
             }
         });
 

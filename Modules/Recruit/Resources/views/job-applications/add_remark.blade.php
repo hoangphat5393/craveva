@@ -27,15 +27,8 @@
     $('body').on('click', '#save-category', function () {
         const board = {{ $board }};
         var url = "{{ route('job-appboard.application_remark_store', $applicationID) }}";
-        $.easyAjax({
-            url: url,
-            container: '#addRemark',
-            type: "POST",
-            data: $('#addRemark').serialize(),
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-category",
-            success: function (response) {
+        window.apiHttp.postUrlEncoded(url, $('#addRemark').serialize())
+            .then(function (response) {
                 if (response.status == 'success') {
                     $(MODAL_DEFAULT).modal('hide');
                     if(response.board == 0){
@@ -44,8 +37,10 @@
                         loadData();
                     }
                 }
-            }
-        })
+            })
+            .catch(function (err) {
+                $.handleApiFormError(err);
+            });
     });
 
 </script>

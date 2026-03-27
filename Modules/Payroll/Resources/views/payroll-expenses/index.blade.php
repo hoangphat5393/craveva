@@ -5,14 +5,12 @@
 @endpush
 
 @section('filter-section')
-
     <x-filters.filter-box>
         <!-- DATE START -->
         <div class="select-box d-flex pr-2 border-right-grey border-right-grey-sm-0">
             <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('app.duration')</p>
             <div class="select-status d-flex">
-                <input type="text" class="position-relative text-dark form-control border-0 p-2 text-left f-14 f-w-500 border-additional-grey"
-                    id="datatableRange" placeholder="@lang('placeholders.dateRange')">
+                <input type="text" class="position-relative text-dark form-control border-0 p-2 text-left f-14 f-w-500 border-additional-grey" id="datatableRange" placeholder="@lang('placeholders.dateRange')">
             </div>
         </div>
         <!-- DATE END -->
@@ -26,8 +24,7 @@
                             <i class="fa fa-search f-13 text-dark-grey"></i>
                         </span>
                     </div>
-                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field"
-                        placeholder="@lang('app.startTyping')">
+                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field" placeholder="@lang('app.startTyping')">
                 </div>
             </form>
         </div>
@@ -43,12 +40,11 @@
 
 
     </x-filters.filter-box>
-
 @endsection
 
 @php
-$addExpensesPermission = user()->permission('add_expenses');
-$recurringExpensesPermission = user()->permission('manage_recurring_expense');
+    $addExpensesPermission = user()->permission('add_expenses');
+    $recurringExpensesPermission = user()->permission('manage_recurring_expense');
 @endphp
 
 @section('content')
@@ -87,7 +83,6 @@ $recurringExpensesPermission = user()->permission('manage_recurring_expense');
         <!-- Task Box End -->
     </div>
     <!-- CONTENT WRAPPER END -->
-
 @endsection
 
 @push('scripts')
@@ -218,23 +213,21 @@ $recurringExpensesPermission = user()->permission('manage_recurring_expense');
             var status = $(this).val();
 
             if (typeof id !== 'undefined') {
-                $.easyAjax({
-                    url: "{{ route('expenses.change_status') }}",
-                    type: "POST",
-                    data: {
-                        '_token': token,
+                window.apiHttp.postUrlEncoded("{{ route('expenses.change_status') }}", {
+                        _token: token,
                         expenseId: id,
                         status: status
-                    },
-
-                    success: function(response) {
+                    })
+                    .then(function(response) {
                         if (response.status == "success") {
                             showTable();
                             resetActionButtons();
                             deSelectAll();
                         }
-                    }
-                });
+                    })
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    });
             }
         });
 
@@ -264,19 +257,15 @@ $recurringExpensesPermission = user()->permission('manage_recurring_expense');
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
+                    window.apiHttp.delete(url, token)
+                        .then(function(response) {
                             if (response.status == "success") {
                                 showTable();
                             }
-                        }
-                    });
+                        })
+                        .catch(function(err) {
+                            $.handleApiFormError(err);
+                        });
                 }
             });
         });
@@ -288,22 +277,18 @@ $recurringExpensesPermission = user()->permission('manage_recurring_expense');
 
             var url = "{{ route('expenses.apply_quick_action') }}?row_ids=" + rowdIds;
 
-            $.easyAjax({
-                url: url,
-                container: '#quick-action-form',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#quick-action-apply",
-                data: $('#quick-action-form').serialize(),
-                success: function(response) {
+            window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize())
+                .then(function(response) {
                     if (response.status == 'success') {
                         showTable();
                         resetActionButtons();
                         deSelectAll();
                         $('#quick-action-form').hide();
                     }
-                }
-            })
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                });
         };
     </script>
 @endpush

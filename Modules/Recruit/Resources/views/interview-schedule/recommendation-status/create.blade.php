@@ -73,21 +73,17 @@
             buttonsStyling: false
         }).then((result) => {
             if (result.isConfirmed) {
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function (response) {
+                window.apiHttp.delete(url, token)
+                    .then(function (response) {
                         if (response.status == "success") {
                             $('#row-' + id).fadeOut();
                             $('#recomm_status').html(response.data);
                             $('#recomm_status').selectpicker('refresh');
                         }
-                    }
-                });
+                    })
+                    .catch(function (err) {
+                        $.handleApiFormError(err);
+                    });
             }
         });
 
@@ -96,15 +92,8 @@
     $('body').off('click', "#save-status").on('click', '#save-status', function () {
 
         var url = "{{ route('recommendation-status.store') }}";
-        $.easyAjax({
-            url: url,
-            container: '#createRecommStatus',
-            type: "POST",
-            data: $('#createRecommStatus').serialize(),
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-status",
-            success: function (response) {
+        window.apiHttp.postUrlEncoded(url, $('#createRecommStatus').serialize())
+            .then(function (response) {
                 if (response.status == 'success') {
                     if (response.status == 'success') {
                         $('#recomm_status').html(response.data);
@@ -112,8 +101,10 @@
                         $(MODAL_LG).modal('hide');
                     }
                 }
-            }
-        })
+            })
+            .catch(function (err) {
+                $.handleApiFormError(err);
+            });
     });
 
 
@@ -130,23 +121,20 @@
 
             var token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#row-' + id,
-                type: "POST",
-                data: {
-                    'status': value,
-                    '_token': token,
-                    '_method': 'PUT'
-                },
-                blockUI: true,
-                success: function (response) {
+            window.apiHttp.postUrlEncoded(url, {
+                    status: value,
+                    _token: token,
+                    _method: 'PUT'
+                })
+                .then(function (response) {
                     if (response.status == 'success') {
                         $('#recomm_status').html(response.data);
                         $('#recomm_status').selectpicker('refresh');
                     }
-                }
-            })
+                })
+                .catch(function (err) {
+                    $.handleApiFormError(err);
+                });
         }
     });
 

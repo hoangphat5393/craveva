@@ -85,19 +85,17 @@
         }
 
         $('body').on('click', '#save-payout-form', function () {
-            url = "{{ route('payout.update', ':id') }}"
-            url = url.replace(':id', {{ $payout->id }}),
+            var url = "{{ route('payout.update', ':id') }}";
+            url = url.replace(':id', {{ $payout->id }});
 
-            $.easyAjax({
-                url: url,
-                container: '#payout-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                file: true,
-                buttonSelector: "#save-payout-form",
-                data: $('#payout-form').serialize(),
-            });
+            $.easyBlockUI('#payout-form');
+            window.apiHttp.postUrlEncoded(url, $('#payout-form').serialize())
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#payout-form');
+                });
         });
 
         $('body').on('change', '#payment_method', function () {

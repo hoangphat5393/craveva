@@ -5,81 +5,77 @@
 @endpush
 
 @section('filter-section')
-<x-filters.filter-box>
+    <x-filters.filter-box>
 
-    <!-- DESIGNATION START -->
-    <div class="select-box d-flex py-2 pr-lg-3 pr-md-3 px-0 border-right-grey border-right-grey-sm-0">
-        <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center"> @lang('app.designation')</p>
-        <div class="select-status">
-            <select class="form-control select-picker" name="designation" id="designation" data-live-search="true">
-                <option value="all">@lang('app.all')</option>
-                @foreach ($departments as $department)
-                <option value="{{ $department->id }}">{{ ($department->team_name) }}</option>
-            @endforeach
-            </select>
-        </div>
-    </div>
-    <!-- DESIGNATION END -->
-    <div class="select-box d-flex py-2 px-lg-3 px-md-3 px-0 border-right-grey border-right-grey-sm-0">
-        <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center"> @lang('app.department')</p>
-        <div class="select-status">
-            <select class="form-control select-picker" name="department" id="department" data-live-search="true">
-                <option value="all">@lang('app.all')</option>
-                @foreach ($departments as $department)
-                        <option value="{{ $department->id }}">{{ ($department->team_name) }}</option>
+        <!-- DESIGNATION START -->
+        <div class="select-box d-flex py-2 pr-lg-3 pr-md-3 px-0 border-right-grey border-right-grey-sm-0">
+            <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center"> @lang('app.designation')</p>
+            <div class="select-status">
+                <select class="form-control select-picker" name="designation" id="designation" data-live-search="true">
+                    <option value="all">@lang('app.all')</option>
+                    @foreach ($departments as $department)
+                        <option value="{{ $department->id }}">{{ $department->team_name }}</option>
                     @endforeach
-            </select>
+                </select>
+            </div>
         </div>
-    </div>
-
-    <div class="select-box d-flex py-2 px-lg-3 px-md-3 px-0 border-right-grey border-right-grey-sm-0">
-        <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center"
-           id="select-label">@lang('payroll::app.employee')</p>
-        <div class="select-status">
-            <select class="form-control select-picker" name="employee_id"  id="selectEmployee" data-live-search="true">
-            <option value="all">@lang('app.all')</option>
-                @foreach ($employees as $item)
-                <x-user-option :user="$item" :pill="true" />
-            @endforeach
-            </select>
+        <!-- DESIGNATION END -->
+        <div class="select-box d-flex py-2 px-lg-3 px-md-3 px-0 border-right-grey border-right-grey-sm-0">
+            <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center"> @lang('app.department')</p>
+            <div class="select-status">
+                <select class="form-control select-picker" name="department" id="department" data-live-search="true">
+                    <option value="all">@lang('app.all')</option>
+                    @foreach ($departments as $department)
+                        <option value="{{ $department->id }}">{{ $department->team_name }}</option>
+                    @endforeach
+                </select>
+            </div>
         </div>
-    </div>
-    <div class="select-box d-flex py-2 pr-lg-3 pr-md-3 px-0 border-right-grey border-right-grey-sm-0">
-        <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('app.select') @lang('app.year')</p>
-        <div class="select-status">
-            <select class="form-control select-picker" name="year" id="year">
-                @for($i = $year; $i >= ($year-4); $i--)
-                    <option @if($i == $year) selected @endif value="{{ $i }}">{{ $i }}</option>
-                @endfor
-            </select>
+
+        <div class="select-box d-flex py-2 px-lg-3 px-md-3 px-0 border-right-grey border-right-grey-sm-0">
+            <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center" id="select-label">@lang('payroll::app.employee')</p>
+            <div class="select-status">
+                <select class="form-control select-picker" name="employee_id" id="selectEmployee" data-live-search="true">
+                    <option value="all">@lang('app.all')</option>
+                    @foreach ($employees as $item)
+                        <x-user-option :user="$item" :pill="true" />
+                    @endforeach
+                </select>
+            </div>
         </div>
-    </div>
-
-    <div class="select-box d-flex py-2 px-lg-3 px-md-3 px-0 border-right-grey border-right-grey-sm-0">
-        <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center"
-           id="select-label">@lang('app.select') @lang('app.month')</p>
-        <div class="select-status">
-            <select class="form-control select-picker" name="month" id="month" data-live-search="true">
-                @foreach($months as $key => $monthName)
-                    <option value="{{ ($key + 1)}}" @if($month == ($key + 1)) selected @endif> {{ __('app.months.'.ucfirst($monthName) )}}</option>
-                @endforeach
-            </select>
+        <div class="select-box d-flex py-2 pr-lg-3 pr-md-3 px-0 border-right-grey border-right-grey-sm-0">
+            <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('app.select') @lang('app.year')</p>
+            <div class="select-status">
+                <select class="form-control select-picker" name="year" id="year">
+                    @for ($i = $year; $i >= $year - 4; $i--)
+                        <option @if ($i == $year) selected @endif value="{{ $i }}">{{ $i }}</option>
+                    @endfor
+                </select>
+            </div>
         </div>
-    </div>
 
-    <!-- SEARCH BY TASK END -->
+        <div class="select-box d-flex py-2 px-lg-3 px-md-3 px-0 border-right-grey border-right-grey-sm-0">
+            <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center" id="select-label">@lang('app.select') @lang('app.month')</p>
+            <div class="select-status">
+                <select class="form-control select-picker" name="month" id="month" data-live-search="true">
+                    @foreach ($months as $key => $monthName)
+                        <option value="{{ $key + 1 }}" @if ($month == $key + 1) selected @endif> {{ __('app.months.' . ucfirst($monthName)) }}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
 
-    <!-- RESET START -->
-    <div class="select-box d-flex py-1 px-lg-2 px-md-2 px-0">
-        <x-forms.button-secondary class="btn-xs d-none" id="reset-filters" icon="times-circle">
-            @lang('app.clearFilters')
-        </x-forms.button-secondary>
-    </div>
-    <!-- RESET END -->
+        <!-- SEARCH BY TASK END -->
 
-</x-filters.filter-box>
+        <!-- RESET START -->
+        <div class="select-box d-flex py-1 px-lg-2 px-md-2 px-0">
+            <x-forms.button-secondary class="btn-xs d-none" id="reset-filters" icon="times-circle">
+                @lang('app.clearFilters')
+            </x-forms.button-secondary>
+        </div>
+        <!-- RESET END -->
 
-
+    </x-filters.filter-box>
 @endsection
 
 @section('content')
@@ -89,8 +85,7 @@
 
         <div class="row">
             <div class="col-md-6 mb-3">
-                <div
-                    class="bg-white p-20 rounded b-shadow-4 d-flex justify-content-between align-items-center mt-3 mt-lg-0 mt-md-0">
+                <div class="bg-white p-20 rounded b-shadow-4 d-flex justify-content-between align-items-center mt-3 mt-lg-0 mt-md-0">
                     <div class="d-block ">
                         <h5 class="f-15 f-w-500 mb-20 text-darkest-grey"> @lang('payroll::modules.payroll.approvedStatus') </h5>
                         <div class="d-flex">
@@ -120,8 +115,7 @@
                 </div>
             </div>
             <div class="col-md-6 mb-3">
-                <div
-                    class="bg-white p-20 rounded b-shadow-4 d-flex justify-content-between align-items-center mt-3 mt-lg-0 mt-md-0">
+                <div class="bg-white p-20 rounded b-shadow-4 d-flex justify-content-between align-items-center mt-3 mt-lg-0 mt-md-0">
                     <div class="d-block ">
                         <h5 class="f-15 f-w-500 mb-20 text-darkest-grey"> @lang('payroll::modules.payroll.overtimeHoursSummery') </h5>
                         <div class="d-flex">
@@ -146,10 +140,8 @@
 
         <div class="d-flex" id="table-actions">
 
-            @if(($userData->employeeDetail->overtime_hourly_rate > 0 && !is_null($userPolicy)) || $userData->hasRole('admin'))
-
-                <x-forms.link-primary link="javascript:;" class="mr-3 float-left mb-2 mb-lg-0 mb-md-0 add-request"
-                icon="plus">
+            @if (($userData->employeeDetail->overtime_hourly_rate > 0 && !is_null($userPolicy)) || $userData->hasRole('admin'))
+                <x-forms.link-primary link="javascript:;" class="mr-3 float-left mb-2 mb-lg-0 mb-md-0 add-request" icon="plus">
                     @lang('payroll::modules.payroll.addRequest')
                 </x-forms.link-primary>
             @endif
@@ -164,7 +156,6 @@
         <!-- Task Box End -->
     </div>
     <!-- CONTENT WRAPPER END -->
-
 @endsection
 
 @push('scripts')
@@ -173,7 +164,7 @@
     <script>
         getOvertimeData();
 
-        $('#overtime-request').on('preXhr.dt', function (e, settings, data) {
+        $('#overtime-request').on('preXhr.dt', function(e, settings, data) {
 
             const designation = $('#designation').val();
             const department = $('#department').val();
@@ -200,12 +191,10 @@
             const month = $('#month').val();
             const employee = $('#selectEmployee').val();
 
-            var url = "{{ route('overtime-request-data') }}?designation="+designation+"&department="+department+"&year="+year+"&month="+month+"&employee="+employee;
+            var url = "{{ route('overtime-request-data') }}?designation=" + designation + "&department=" + department + "&year=" + year + "&month=" + month + "&employee=" + employee;
 
-            $.easyAjax({
-                type: 'GET',
-                url: url,
-                success: function (response) {
+            window.apiHttp.get(url)
+                .then(function(response) {
                     console.log(response.overtimeData);
                     $('#requested').html(response.overtimeData.requested);
                     $('#approved').html(response.overtimeData.approved);
@@ -213,12 +202,14 @@
                     $('#pending').html(response.overtimeData.pending);
                     $('#overtimeHours').html(response.overtimeData.overtimeHours);
                     $('#compensation').html(response.overtimeData.compensation);
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                });
         }
 
         $('#designation, #department, #selectEmployee, #year, #month').on('change keyup',
-            function () {
+            function() {
                 if ($('#designation').val() !== "all") {
                     $('#reset-filters').removeClass('d-none');
                 } else if ($('#department').val() !== "all") {
@@ -232,40 +223,40 @@
                 showTable();
             });
 
-        $('#reset-filters').click(function () {
+        $('#reset-filters').click(function() {
             $('#filter-form')[0].reset();
             $('.filter-box .select-picker').selectpicker("refresh");
             $('#reset-filters').addClass('d-none');
             showTable();
         });
 
-        $('body').on('click', '.add-request', function () {
-            let url = '{{ route("overtime-requests.create")}}';
+        $('body').on('click', '.add-request', function() {
+            let url = '{{ route('overtime-requests.create') }}';
             $(MODAL_LG + ' ' + MODAL_HEADING).html('...');
             $.ajaxModal(MODAL_LG, url);
         });
 
 
-        $('body').on('click', '.editRequest', function () {
+        $('body').on('click', '.editRequest', function() {
             const requestId = $(this).data('request-id');
-            let url = '{{ route("overtime-requests.edit", ":id")}}';
+            let url = '{{ route('overtime-requests.edit', ':id') }}';
             url = url.replace(':id', requestId);
 
             $(MODAL_LG + ' ' + MODAL_HEADING).html('...');
             $.ajaxModal(MODAL_LG, url);
         });
 
-        $('body').on('click', '.showRequest', function () {
+        $('body').on('click', '.showRequest', function() {
             const requestId = $(this).data('request-id');
-            let url = '{{ route("overtime-requests.show", ":id")}}';
+            let url = '{{ route('overtime-requests.show', ':id') }}';
             url = url.replace(':id', requestId);
 
             $(MODAL_LG + ' ' + MODAL_HEADING).html('...');
             $.ajaxModal(MODAL_LG, url);
         });
 
-         /* delete overtime request */
-         $('#overtime-request').on('click', '.delete-request-table-row', function () {
+        /* delete overtime request */
+        $('#overtime-request').on('click', '.delete-request-table-row', function() {
             let obj = $(this).closest('tr');
             var id = $(this).data('request-id');
             Swal.fire({
@@ -293,21 +284,16 @@
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function (response) {
+                    window.apiHttp.delete(url, token)
+                        .then(function(response) {
                             if (response.status == "success") {
                                 obj.remove();
                                 showTable();
                             }
-                        }
-                    });
+                        })
+                        .catch(function(err) {
+                            $.handleApiFormError(err);
+                        });
                 }
             });
         });
@@ -316,12 +302,12 @@
 
 
         /* delete overtime request */
-         $('#overtime-request').on('click', '.acceptButton', function () {
+        $('#overtime-request').on('click', '.acceptButton', function() {
             var id = $(this).data('request-id');
             var type = $(this).data('type');
 
             var butonText = "@lang('payroll::messages.confirmAccept')";
-            if(type != 'accept'){
+            if (type != 'accept') {
                 butonText = "@lang('payroll::messages.confirmReject')";
             }
             Swal.fire({
@@ -344,42 +330,43 @@
             }).then((result) => {
                 if (result.isConfirmed) {
 
-                    var url = "{{ route('overtime-request-accept', ':id') }}?type="+type;
+                    var url = "{{ route('overtime-request-accept', ':id') }}?type=" + type;
                     url = url.replace(':id', id);
 
-                    $.easyAjax({
-                        type: 'GET',
-                        url: url,
-                        blockUI: true,
-                        success: function (response) {
+                    window.apiHttp.get(url)
+                        .then(function(response) {
                             if (response.status == "success") {
                                 showTable();
                             }
-                        }
-                    });
+                        })
+                        .catch(function(err) {
+                            $.handleApiFormError(err);
+                        });
                 }
             });
         });
         /* PAYROLL SALARY SCRIPTS */
 
-        $('#overtime-request').on('change', '.change-status', function (e) {
+        $('#overtime-request').on('change', '.change-status', function(e) {
             e.preventDefault();
             const id = $(this).data('request-id');
             const status = $(this).val();
             const token = "{{ csrf_token() }}";
             if (id !== undefined && id != '') {
-                $.easyAjax({
-                    url: '{{route("overtime-change-status")}}',
-                    type: "POST",
-                    data: {request_id: id, status: status, _token: token},
-                    success: function (response) {
+                window.apiHttp.postUrlEncoded('{{ route('overtime-change-status') }}', {
+                        request_id: id,
+                        status: status,
+                        _token: token
+                    })
+                    .then(function(response) {
                         if (response.status === "success") {
                             showTable();
                         }
-                    }
-                })
+                    })
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    });
             }
         });
-
     </script>
 @endpush

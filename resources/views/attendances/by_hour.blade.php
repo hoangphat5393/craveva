@@ -5,7 +5,6 @@
         .attendance-total {
             width: 10%;
         }
-
     </style>
 @endpush
 
@@ -18,7 +17,7 @@
                 <select class="form-control select-picker" name="user_id" id="user_id" data-live-search="true" data-size="8">
                     <option value="all">@lang('app.all')</option>
                     @foreach ($employees as $item)
-                        <x-user-option :user="$item" :selected="request('employee_id') == $item->id"/>
+                        <x-user-option :user="$item" :selected="request('employee_id') == $item->id" />
                     @endforeach
                 </select>
             </div>
@@ -31,8 +30,7 @@
             <div class="select-box d-flex py-2 px-lg-2 px-md-2 px-0 border-right-grey border-right-grey-sm-0">
                 <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('app.department')</p>
                 <div class="select-status">
-                    <select class="form-control select-picker" name="department" id="department" data-live-search="true"
-                        data-size="8">
+                    <select class="form-control select-picker" name="department" id="department" data-live-search="true" data-size="8">
                         <option value="all">@lang('app.all')</option>
                         @foreach ($departments as $department)
                             <option value="{{ $department->id }}">{{ $department->team_name }}</option>
@@ -43,8 +41,7 @@
             <div class="select-box d-flex py-2 px-lg-2 px-md-2 px-0 border-right-grey border-right-grey-sm-0">
                 <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('app.designation')</p>
                 <div class="select-status">
-                    <select class="form-control select-picker" name="designation" id="designation" data-live-search="true"
-                            data-size="8">
+                    <select class="form-control select-picker" name="designation" id="designation" data-live-search="true" data-size="8">
                         <option value="all">@lang('app.all')</option>
                         @foreach ($designations as $designation)
                             <option value="{{ $designation->id }}">{{ $designation->name }}</option>
@@ -60,7 +57,7 @@
 
 
                 <select class="form-control select-picker" name="month" id="month" data-live-search="true" data-size="8">
-                    <x-forms.months :selectedMonth="$month"  fieldRequired="true"/>
+                    <x-forms.months :selectedMonth="$month" fieldRequired="true" />
                 </select>
             </div>
         </div>
@@ -89,7 +86,7 @@
 @endsection
 
 @php
-$addAttendancePermission = user()->permission('add_attendance');
+    $addAttendancePermission = user()->permission('add_attendance');
 @endphp
 
 @section('content')
@@ -100,9 +97,7 @@ $addAttendancePermission = user()->permission('add_attendance');
 
             <div id="table-actions" class="flex-grow-1 align-items-center">
                 @if ($addAttendancePermission == 'all' || $addAttendancePermission == 'added')
-                    <x-forms.link-primary :link="route('attendances.create')"
-                        data-redirect-url="{{ route('attendances.by_member') }}" class="mr-3 openRightModal float-left"
-                        icon="plus">
+                    <x-forms.link-primary :link="route('attendances.create')" data-redirect-url="{{ route('attendances.by_member') }}" class="mr-3 openRightModal float-left" icon="plus">
                         @lang('modules.attendance.markAttendance')
                     </x-forms.link-primary>
                     @if (canDataTableExport())
@@ -113,29 +108,21 @@ $addAttendancePermission = user()->permission('add_attendance');
                 @endif
 
                 @if ($addAttendancePermission == 'all' || $addAttendancePermission == 'added')
-                    <x-forms.link-secondary :link="route('attendances.import')" class="mr-3 openRightModal float-left d-none d-lg-block"
-                        icon="file-upload">
+                    <x-forms.link-secondary :link="route('attendances.import')" class="mr-3 openRightModal float-left d-none d-lg-block" icon="file-upload">
                         @lang('app.importExcel')
                     </x-forms.link-secondary>
                 @endif
             </div>
 
             <div class="btn-group mt-2 mt-lg-0 mt-md-0 ml-0 ml-lg-3 ml-md-3" role="group">
-                <a href="{{ route('attendances.index') }}" class="btn btn-secondary f-14" data-toggle="tooltip"
-                    data-original-title="@lang('app.summary')"><i class="side-icon bi bi-list-ul"></i></a>
+                <a href="{{ route('attendances.index') }}" class="btn btn-secondary f-14" data-toggle="tooltip" data-original-title="@lang('app.summary')"><i class="side-icon bi bi-list-ul"></i></a>
 
-                <a href="{{ route('attendances.by_member') }}" class="btn btn-secondary f-14" data-toggle="tooltip"
-                    data-original-title="@lang('modules.attendance.attendanceByMember')"><i
-                        class="side-icon bi bi-person"></i></a>
+                <a href="{{ route('attendances.by_member') }}" class="btn btn-secondary f-14" data-toggle="tooltip" data-original-title="@lang('modules.attendance.attendanceByMember')"><i class="side-icon bi bi-person"></i></a>
 
-                <a href="{{ route('attendances.by_hour') }}" class="btn btn-secondary f-14 btn-active"
-                    data-toggle="tooltip" data-original-title="@lang('modules.attendance.attendanceByHour')"><i
-                        class="fa fa-clock"></i></a>
+                <a href="{{ route('attendances.by_hour') }}" class="btn btn-secondary f-14 btn-active" data-toggle="tooltip" data-original-title="@lang('modules.attendance.attendanceByHour')"><i class="fa fa-clock"></i></a>
 
                 @if (attendance_setting()->save_current_location)
-                    <a href="{{ route('attendances.by_map_location') }}" class="btn btn-secondary f-14"
-                        data-toggle="tooltip" data-original-title="@lang('modules.attendance.attendanceByLocation')"><i
-                            class="fa fa-map-marked-alt"></i></a>
+                    <a href="{{ route('attendances.by_map_location') }}" class="btn btn-secondary f-14" data-toggle="tooltip" data-original-title="@lang('modules.attendance.attendanceByLocation')"><i class="fa fa-map-marked-alt"></i></a>
                 @endif
 
             </div>
@@ -145,11 +132,8 @@ $addAttendancePermission = user()->permission('add_attendance');
         <x-cards.data class="mt-2">
             <div class="row">
                 <div class="col-md-12">
-                    <span class="f-w-500 mr-1">@lang('app.note'):</span> <i class="fa fa-star text-warning"></i> <i
-                        class="fa fa-arrow-right text-lightest f-11 mx-1"></i> @lang('app.menu.holiday') &nbsp;|&nbsp;<i
-                        class="fa fa-calendar-week text-red"></i> <i class="fa fa-arrow-right text-lightest f-11 mx-1"></i>
-                    @lang('modules.attendance.dayOff') &nbsp;|&nbsp; <i
-                        class="fa fa-times text-lightest"></i> <i class="fa fa-arrow-right text-lightest f-11 mx-1"></i>
+                    <span class="f-w-500 mr-1">@lang('app.note'):</span> <i class="fa fa-star text-warning"></i> <i class="fa fa-arrow-right text-lightest f-11 mx-1"></i> @lang('app.menu.holiday') &nbsp;|&nbsp;<i class="fa fa-calendar-week text-red"></i> <i class="fa fa-arrow-right text-lightest f-11 mx-1"></i>
+                    @lang('modules.attendance.dayOff') &nbsp;|&nbsp; <i class="fa fa-times text-lightest"></i> <i class="fa fa-arrow-right text-lightest f-11 mx-1"></i>
                     @lang('modules.attendance.absent')
                 </div>
             </div>
@@ -173,7 +157,7 @@ $addAttendancePermission = user()->permission('add_attendance');
             } else if ($('#department').val() != "all") {
                 $('#reset-filters').removeClass('d-none');
                 showTable();
-            }  else if ($('#designation').val() != "all") {
+            } else if ($('#designation').val() != "all") {
                 $('#reset-filters').removeClass('d-none');
                 showTable();
             } else if ($('#month').val() != "all") {
@@ -209,20 +193,32 @@ $addAttendancePermission = user()->permission('add_attendance');
 
             var token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                data: {
-                    '_token': token,
-                    year: year,
-                    month: month,
-                    department: department,
-                    designation: designation,
-                    userId: userId
-                },
-                url: url,
-                blockUI: loading,
-                container: '.content-wrapper',
-                success: function(response) {
-                    $('#attendance-data').html(response.data);
+            if (loading) {
+                $.easyBlockUI('.content-wrapper');
+            }
+            window.apiHttp.postUrlEncoded(url, {
+                _token: token,
+                year: year,
+                month: month,
+                department: department,
+                designation: designation,
+                userId: userId
+            }).then(function(response) {
+                $('#attendance-data').html(response.data);
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                if (loading) {
+                    $.easyUnblockUI('.content-wrapper');
                 }
             });
 

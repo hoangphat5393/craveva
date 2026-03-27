@@ -133,19 +133,15 @@
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                showTable();
-                            }
+                    $.easyBlockUI('body');
+                    window.apiHttp.delete(url, token).then(function(response) {
+                        if (response.status == "success") {
+                            showTable();
                         }
+                    }).catch(function(err) {
+                        $.handleApiFormError(err);
+                    }).finally(function() {
+                        $.easyUnblockUI('body');
                     });
                 }
             });
@@ -157,21 +153,19 @@
             var token = "{{ csrf_token() }}";
 
             if (typeof id !== 'undefined') {
-                $.easyAjax({
-                    url: "{{ route('superadmin.superadmin.assign_role') }}",
-                    type: "POST",
-                    blockUI: true,
-                    container: '#superadmin-table',
-                    data: {
-                        role: role,
-                        userId: id,
-                        _token: token
-                    },
-                    success: function (response) {
-                        if (response.status == "success") {
-                            window.LaravelDataTables["superadmin-table"].draw(true);
-                        }
+                $.easyBlockUI('#superadmin-table');
+                window.apiHttp.postUrlEncoded("{{ route('superadmin.superadmin.assign_role') }}", {
+                    role: role,
+                    userId: id,
+                    _token: token
+                }).then(function (response) {
+                    if (response.status == "success") {
+                        window.LaravelDataTables["superadmin-table"].draw(true);
                     }
+                }).catch(function (err) {
+                    $.handleApiFormError(err);
+                }).finally(function () {
+                    $.easyUnblockUI('#superadmin-table');
                 })
             }
 

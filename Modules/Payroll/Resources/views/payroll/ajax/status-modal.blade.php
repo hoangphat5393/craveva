@@ -155,24 +155,20 @@
         }
         let month = $('#month :selected').text();
         let year = $('#year :selected').text();
-        var token = "{{ csrf_token() }}";
 
         var url = "{{ route('payroll.get_expense_title') }}";
-        url = url.replace(':id',);
-        $.easyAjax({
-            url: url,
-            type: "POST",
-            disableButton: true,
-            data: {
-                '_token': token, 'status': add_expenses, 'month': month, 'year': year
-            },
-            success: function (response) {
+        window.apiHttp.postUrlEncoded(url, {
+                '_token': "{{ csrf_token() }}", 'status': add_expenses, 'month': month, 'year': year
+            })
+            .then(function (response) {
                 console.log(response);
                 if (response.status == 'success') {
                     $('#expense_title').val(response.expenseTitle);
                 }
-            }
-        })
+            })
+            .catch(function (err) {
+                $.handleApiFormError(err);
+            });
 
 
     })

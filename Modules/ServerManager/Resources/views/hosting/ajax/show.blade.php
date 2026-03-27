@@ -171,21 +171,15 @@ function addDomain() {
                 if (result.isConfirmed) {
                     var url = "{{ route('hosting.destroy', ':id') }}";
                     url = url.replace(':id', id);
-                    var token = "{{ csrf_token() }}";
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
+                    window.apiHttp.delete(url, "{{ csrf_token() }}")
+                        .then(function (response) {
                             if (response.status == "success") {
                                 window.location = response.redirectUrl;
                             }
-                        }
-                    });
+                        })
+                        .catch(function (err) {
+                            $.handleApiFormError(err);
+                        });
                 }
             });
         });

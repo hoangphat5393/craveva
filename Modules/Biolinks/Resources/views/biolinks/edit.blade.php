@@ -131,17 +131,15 @@
             let url = "{{ route('biolinks.show-preview', ':id') }}";
             url = url.replace(':id', id);
 
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                disableButton: true,
-                buttonSelector: '#save-biolink-setting',
-                success: function(response) {
+            window.apiHttp.get(url)
+                .then(function(response) {
                     if (response.status == 'success') {
                         $('#livePreview').attr('srcdoc', response.html);
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                });
         }
 
         iframePreview();
@@ -171,21 +169,15 @@
                     var url = "{{ route('lead-contact.destroy', ':id') }}";
                     url = url.replace(':id', id);
 
-                    var token = "{{ csrf_token() }}";
-
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
+                    window.apiHttp.delete(url, "{{ csrf_token() }}")
+                        .then(function(response) {
                             if (response.status == "success") {
                                 window.location.href = "{{ route('lead-contact.index') }}";
                             }
-                        }
-                    });
+                        })
+                        .catch(function(err) {
+                            $.handleApiFormError(err);
+                        });
                 }
             });
         });

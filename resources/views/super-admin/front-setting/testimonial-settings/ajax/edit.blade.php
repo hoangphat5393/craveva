@@ -42,14 +42,34 @@
         $(".select-picker").selectpicker();
 
         $('#save-testimonial').click(function (event) {
-            $.easyAjax({
-                url: "{{ route('superadmin.front-settings.testimonial-settings.update', $testimonial->id) }}",
-                container: '#createMethods',
-                type: "POST",
-                redirect: true,
-                disableButton: true,
-                blockUI: true,
-                data: $('#createMethods').serialize()
-            })
+            const $btn = $('#save-testimonial');
+            const prev = $btn.html();
+            $.easyBlockUI('#createMethods');
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+            window.apiHttp.postUrlEncoded("{{ route('superadmin.front-settings.testimonial-settings.update', $testimonial->id) }}", $('#createMethods').serialize())
+                .then(function (response) {
+                    if (response.status === 'success') {
+                        if (response.action === 'redirect' && response.url) {
+                            window.location.href = response.url;
+                        } else if (typeof response.message !== 'undefined') {
+                            Swal.fire({
+                                icon: 'success',
+                                text: response.message,
+                                toast: true,
+                                position: 'top-end',
+                                timer: 3000,
+                                timerProgressBar: true,
+                                showConfirmButton: false,
+                                customClass: { confirmButton: 'btn btn-primary' },
+                                showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                            });
+                        }
+                    }
+                })
+                .catch(function (err) { $.handleApiFormError(err); })
+                .finally(function () {
+                    $.easyUnblockUI('#createMethods');
+                    $btn.prop('disabled', false).html(prev);
+                });
         });
     </script>

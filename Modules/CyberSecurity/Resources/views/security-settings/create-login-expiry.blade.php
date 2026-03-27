@@ -59,19 +59,17 @@
     });
 
     $('#save-login-expiry').click(function () {
-        $.easyAjax({
-            container: '#login-expiry-form',
-            type: "POST",
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-login-expiry",
-            url: "{{ route('cybersecurity.login-expiry.store') }}",
-            data: $('#login-expiry-form').serialize(),
-            success: function (response) {
+        window.apiHttp.postUrlEncoded(
+            "{{ route('cybersecurity.login-expiry.store') }}",
+            $('#login-expiry-form').serialize()
+        )
+            .then(function (response) {
                 if (response.status === 'success') {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch(function (err) {
+                $.handleApiFormError(err);
+            });
     });
 </script>

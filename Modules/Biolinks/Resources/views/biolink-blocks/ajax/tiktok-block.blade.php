@@ -26,22 +26,21 @@
 
     $('#save-block').on('click', function () {
         var url = "{{ route('biolink-blocks.store') }}";
-        $.easyAjax({
-            url: url,
-            container: '#create-block',
-            type: "POST",
-            data: $('#create-block').serialize(),
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-block",
-            success: function (response) {
+        $.easyBlockUI('#create-block');
+        window.apiHttp.postUrlEncoded(url, $('#create-block').serialize())
+            .then(function (response) {
                 if (response.status == 'success') {
                     $(MODAL_LG).modal('hide');
                     $(RIGHT_MODAL).modal('hide');
                     localStorage.setItem('activeTab', 'blocks');
                     window.location.href= response.redirectUrl;
                 }
-            }
-        })
+            })
+            .catch(function (err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function () {
+                $.easyUnblockUI('#create-block');
+            })
     });
 </script>

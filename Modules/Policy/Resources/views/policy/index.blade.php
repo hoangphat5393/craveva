@@ -246,21 +246,11 @@
                     var url = "{{ route('policy.destroy', ':id') }}";
                     url = url.replace(':id', id);
 
-                    var token = "{{ csrf_token() }}";
-
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                showTable();
-                            }
+                    window.apiHttp.delete(url, "{{ csrf_token() }}").then(function(response) {
+                        if (response.status == "success") {
+                            showTable();
                         }
-                    });
+                    }).catch(function(err) { $.handleApiFormError(err); });
                 }
             });
         });
@@ -289,22 +279,13 @@
                     var url = "{{ route('policy.archive_delete', ':id') }}";
                     url = url.replace(':id', id);
 
-                    var token = "{{ csrf_token() }}";
-
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        container: '.content-wrapper',
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                showTable();
-                            }
+                    window.apiHttp.postUrlEncoded(url, {
+                        '_token': "{{ csrf_token() }}"
+                    }).then(function(response) {
+                        if (response.status == "success") {
+                            showTable();
                         }
-                    });
+                    }).catch(function(err) { $.handleApiFormError(err); });
                 }
             });
         });
@@ -314,20 +295,13 @@
             var url = "{{ route('policy.publish', ':id') }}";
             url = url.replace(':id', id);
 
-            var token = "{{ csrf_token() }}";
-
-            $.easyAjax({
-                type: 'POST',
-                url: url,
-                data: {
-                    '_token': token,
-                },
-                success: function(response) {
-                    if (response.status == "success") {
-                        showTable();
-                    }
+            window.apiHttp.postUrlEncoded(url, {
+                '_token': "{{ csrf_token() }}"
+            }).then(function(response) {
+                if (response.status == "success") {
+                    showTable();
                 }
-            });
+            }).catch(function(err) { $.handleApiFormError(err); });
         });
     </script>
 @endpush

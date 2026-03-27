@@ -251,21 +251,11 @@
             if (result.isConfirmed) {
                 var url = "{{ route('policy.destroy', $policy->id) }}";
 
-                var token = "{{ csrf_token() }}";
-
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE',
-                    },
-                    success: function(response) {
-                        if (response.status == "success") {
-                            window.location.href = response.redirectUrl;
-                        }
+                window.apiHttp.delete(url, "{{ csrf_token() }}").then(function(response) {
+                    if (response.status == "success") {
+                        window.location.href = response.redirectUrl;
                     }
-                });
+                }).catch(function(err) { $.handleApiFormError(err); });
             }
         });
     });
@@ -294,21 +284,11 @@
                 var url = "{{ route('policy-file.destroy', ':id') }}";
                 url = url.replace(':id', id);
 
-                var token = "{{ csrf_token() }}";
-
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
-                        if (response.status == "success") {
-                            $('#policy-file-list').html(response.view);
-                        }
+                window.apiHttp.delete(url, "{{ csrf_token() }}").then(function(response) {
+                    if (response.status == "success") {
+                        $('#policy-file-list').html(response.view);
                     }
-                });
+                }).catch(function(err) { $.handleApiFormError(err); });
             }
         });
     });
@@ -344,23 +324,13 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     const url = "{{route('policy.acknowledge', $policy->id)}}"
-                    let token = "{{ csrf_token() }}";
-                    $.easyAjax({
-                        url: url,
-                        container: '#savePolicyForm',
-                        type: "POST",
-                        data: {
-                        '_token': token
-                        },
-                        disableButton: true,
-                        blockUI: true,
-                        buttonSelector: "#acknowledge",
-                        success: function(response) {
-                            if (response.status == 'success') {
-                                    window.location.reload();
-                            }
+                    window.apiHttp.postUrlEncoded(url, {
+                        '_token': "{{ csrf_token() }}"
+                    }).then(function(response) {
+                        if (response.status == 'success') {
+                            window.location.reload();
                         }
-                    });
+                    }).catch(function(err) { $.handleApiFormError(err); });
                 }
             });
         }
@@ -371,19 +341,12 @@
         var url = "{{ route('policy.publish', ':id') }}";
         url = url.replace(':id', id);
 
-        var token = "{{ csrf_token() }}";
-
-        $.easyAjax({
-            type: 'POST',
-            url: url,
-            data: {
-                '_token': token,
-            },
-            success: function(response) {
-                if (response.status == "success") {
-                    window.location.reload();
-                }
+        window.apiHttp.postUrlEncoded(url, {
+            '_token': "{{ csrf_token() }}"
+        }).then(function(response) {
+            if (response.status == "success") {
+                window.location.reload();
             }
-        });
+        }).catch(function(err) { $.handleApiFormError(err); });
     });
 </script>

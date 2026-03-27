@@ -39,16 +39,30 @@
 </x-form>
 <script>
     $('#save-offline-payment').click(function () {
-        $.easyAjax({
-            url: "{{ route('billing.offline-payment-submit') }}",
-            type: "POST",
-            messagePosition: 'inline',
-            file: true,
-            blockUI:true,
-            disableButton: true,
-            buttonSelector: "#save-offline-payment",
-            container: '#saveDetailPayment',
-        })
+        var $btn = $('#save-offline-payment');
+        var prev = $btn.html();
+        $.easyBlockUI('#saveDetailPayment');
+        $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+        window.apiHttp.postForm("{{ route('billing.offline-payment-submit') }}", document.getElementById('saveDetailPayment')).then(function (response) {
+            if (response.status === 'success') {
+                if (response.action === 'redirect' && response.url) {
+                    window.location.href = response.url;
+                } else if (typeof response.message !== 'undefined') {
+                    var ele = $('#saveDetailPayment').find('#alert');
+                    var html = '<div class="alert alert-success">' + response.message + '</div>';
+                    if (ele.length === 0) {
+                        $('#saveDetailPayment').find('.modal-body .row:first').prepend('<div id="alert" class="col-12">' + html + '</div>');
+                    } else {
+                        ele.html(html);
+                    }
+                }
+            }
+        }).catch(function (err) {
+            $.handleApiFormError(err);
+        }).finally(function () {
+            $.easyUnblockUI('#saveDetailPayment');
+            $btn.prop('disabled', false).html(prev);
+        });
     });
     init(MODAL_LG);
 </script>

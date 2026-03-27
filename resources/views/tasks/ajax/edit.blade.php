@@ -606,15 +606,14 @@
 
             let url = "{{ route('tasks.clientDetail') }}";
 
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                data: {
+            window.apiHttp.get(url, {
+                params: {
                     id: id,
-                },
-                success: function(response) {
-                    $('#clientDetails').html(response.data);
                 }
+            }).then(function(response) {
+                $('#clientDetails').html(response.data);
+            }).catch(function(err) {
+                $.handleApiFormError(err);
             });
         }
 
@@ -714,31 +713,30 @@
                 var startDate = $('#task_start_date').val();
                 var userId = $('#selectAssignee').val();
 
-                $.easyAjax({
-                    url: "{{ route('tasks.checkLeaves') }}",
-                    type: 'GET',
-                    data: {
+                window.apiHttp.get("{{ route('tasks.checkLeaves') }}", {
+                    params: {
                         due_date: dueDate,
                         start_date: startDate,
                         user_id: userId
-                    },
-                    success: function(response) {
-                        $('.show-leave').removeClass('d-none');
-                        var rData = [];
-                        var leaveData = [];
-                        rData = response.data;
-                        $.each(rData, function(index, value) {
-                            var data = '';
-                            data = index +
-                                " {{ __('modules.tasks.leaveOn') }} " + value +
-                                "\n";
-                            leaveData.push(data);
-                            var label =
-                                '<label id="leave-date"> {{ __('modules.tasks.leaveMessage') }} <i class="fa fa-question-circle" title="' +
-                                leaveData + '" id="leave-tooltip"></i></label>'
-                            $(".show-leave").html(label);
-                        });
                     }
+                }).then(function(response) {
+                    $('.show-leave').removeClass('d-none');
+                    var rData = [];
+                    var leaveData = [];
+                    rData = response.data;
+                    $.each(rData, function(index, value) {
+                        var data = '';
+                        data = index +
+                            " {{ __('modules.tasks.leaveOn') }} " + value +
+                            "\n";
+                        leaveData.push(data);
+                        var label =
+                            '<label id="leave-date"> {{ __('modules.tasks.leaveMessage') }} <i class="fa fa-question-circle" title="' +
+                            leaveData + '" id="leave-tooltip"></i></label>'
+                        $(".show-leave").html(label);
+                    });
+                }).catch(function(err) {
+                    $.handleApiFormError(err);
                 });
             },
             ...datepickerConfig
@@ -756,31 +754,30 @@
                 var startDate = $('#task_start_date').val();
                 var userId = $('#selectAssignee').val();
 
-                $.easyAjax({
-                    url: "{{ route('tasks.checkLeaves') }}",
-                    type: 'GET',
-                    data: {
+                window.apiHttp.get("{{ route('tasks.checkLeaves') }}", {
+                    params: {
                         start_date: startDate,
                         due_date: dueDate,
                         user_id: userId
-                    },
-                    success: function(response) {
-                        $('.show-leave').removeClass('d-none');
-                        var rData = [];
-                        var leaveData = [];
-                        rData = response.data;
-                        $.each(rData, function(index, value) {
-                            var data = '';
-                            data = index +
-                                " {{ __('modules.tasks.leaveOn') }} " + value +
-                                "\n";
-                            leaveData.push(data);
-                            var label =
-                                '<label id="leave-date"> {{ __('modules.tasks.leaveMessage') }} <i class="fa fa-question-circle" title="' +
-                                leaveData + '" id="leave-tooltip"></i></label>'
-                            $(".show-leave").html(label);
-                        });
                     }
+                }).then(function(response) {
+                    $('.show-leave').removeClass('d-none');
+                    var rData = [];
+                    var leaveData = [];
+                    rData = response.data;
+                    $.each(rData, function(index, value) {
+                        var data = '';
+                        data = index +
+                            " {{ __('modules.tasks.leaveOn') }} " + value +
+                            "\n";
+                        leaveData.push(data);
+                        var label =
+                            '<label id="leave-date"> {{ __('modules.tasks.leaveMessage') }} <i class="fa fa-question-circle" title="' +
+                            leaveData + '" id="leave-tooltip"></i></label>'
+                        $(".show-leave").html(label);
+                    });
+                }).catch(function(err) {
+                    $.handleApiFormError(err);
                 });
             },
             ...datepickerConfig
@@ -791,30 +788,29 @@
             var startDate = $('#task_start_date').val();
             var userId = $('#selectAssignee').val();
 
-            $.easyAjax({
-                url: "{{ route('tasks.checkLeaves') }}",
-                type: 'GET',
-                data: {
+            window.apiHttp.get("{{ route('tasks.checkLeaves') }}", {
+                params: {
                     start_date: startDate,
                     due_date: dueDate,
                     user_id: userId
-                },
-                success: function(response) {
-                    $('.show-leave').removeClass('d-none');
-                    var rData = [];
-                    var leaveData = [];
-                    rData = response.data;
-                    $.each(rData, function(index, value) {
-                        var data = '';
-                        data = index + " {{ __('modules.tasks.leaveOn') }} " +
-                            value + "\n";
-                        leaveData.push(data);
-                        var label =
-                            '<label id="leave-date"> {{ __('modules.tasks.leaveMessage') }} <i class="fa fa-question-circle" title="' +
-                            leaveData + '" id="leave-tooltip"></i></label>'
-                        $(".show-leave").html(label);
-                    });
                 }
+            }).then(function(response) {
+                $('.show-leave').removeClass('d-none');
+                var rData = [];
+                var leaveData = [];
+                rData = response.data;
+                $.each(rData, function(index, value) {
+                    var data = '';
+                    data = index + " {{ __('modules.tasks.leaveOn') }} " +
+                        value + "\n";
+                    leaveData.push(data);
+                    var label =
+                        '<label id="leave-date"> {{ __('modules.tasks.leaveMessage') }} <i class="fa fa-question-circle" title="' +
+                        leaveData + '" id="leave-tooltip"></i></label>'
+                    $(".show-leave").html(label);
+                });
+            }).catch(function(err) {
+                $.handleApiFormError(err);
             });
         })
 
@@ -831,41 +827,63 @@
 
             var taskData = $('#save-task-data-form').serialize();
 
-            var data = taskData += '&mention_user_id=' + mention_user_id;
+            var data = taskData + '&mention_user_id=' + mention_user_id;
 
             const url = "{{ route('recurring-task.update', $task->id) }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#save-task-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                file: true,
-                buttonSelector: "#save-task-form",
-                data: data,
-                success: function(response) {
-                    if ((add_task_files == "all" || add_task_files == "added") &&
-                        taskDropzone.getQueuedFiles().length > 0) {
-                        taskDropzone.processQueue();
-                    } else if ($(RIGHT_MODAL).hasClass('in')) {
-                        document.getElementById('close-task-detail').click();
-                        if ($('#unassigned-task').length) {
-                            @if (isset($task->project->id))
-                                window.location.href =
-                                    "{{ route('projects.show', $task->project->id) }}" +
-                                    "?tab=tasks";
-                            @endif
-                        } else if ($('#allTasks-table').length) {
-                            window.LaravelDataTables["allTasks-table"].draw(true);
-                        } else {
-                            window.location.href = response.redirectUrl;
-                        }
+            var container = $('#save-task-data-form');
+            var formEl = container[0];
+            var fd = new FormData(formEl);
+            var qs = data.indexOf('?') >= 0 ? data.substring(data.indexOf('?') + 1) : data;
+            var params = new URLSearchParams(qs);
+            params.forEach(function(value, key) {
+                fd.set(key, value);
+            });
+            var $saveBtn = container.find('#save-task-form');
+            var prevHtml = $saveBtn.html();
+            $saveBtn.attr('data-prev-text', prevHtml);
+            $saveBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+            $.easyBlockUI('#save-task-data-form');
+            window.apiHttp.postForm(url, fd).then(function(response) {
+                if (typeof response.message !== 'undefined' && response.message) {
+                    Swal.fire({
+                        icon: 'success',
+                        text: response.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 3000,
+                        timerProgressBar: true,
+                        showConfirmButton: false,
+                        customClass: { confirmButton: 'btn btn-primary' },
+                        showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                    });
+                }
+                if ((add_task_files == "all" || add_task_files == "added") &&
+                    taskDropzone.getQueuedFiles().length > 0) {
+                    taskDropzone.processQueue();
+                } else if ($(RIGHT_MODAL).hasClass('in')) {
+                    document.getElementById('close-task-detail').click();
+                    if ($('#unassigned-task').length) {
+                        @if (isset($task->project->id))
+                            window.location.href =
+                                "{{ route('projects.show', $task->project->id) }}" +
+                                "?tab=tasks";
+                        @endif
+                    } else if ($('#allTasks-table').length) {
+                        window.LaravelDataTables["allTasks-table"].draw(true);
                     } else {
                         window.location.href = response.redirectUrl;
                     }
-
+                } else {
+                    window.location.href = response.redirectUrl;
                 }
+
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI('#save-task-data-form');
+                $saveBtn.html($saveBtn.attr('data-prev-text'));
+                $saveBtn.prop('disabled', false);
             });
         });
 
@@ -910,17 +928,29 @@
             var url = "{{ route('milestones.by_project', ':id') }}";
             url = url.replace(':id', id);
 
-            $.easyAjax({
-                url: url,
-                container: '#save-task-data-form',
-                type: "GET",
-                blockUI: true,
-                success: function(response) {
-                    if (response.status == 'success') {
-                        $('#milestone-id').html(response.data);
-                        $('#milestone-id').selectpicker('refresh');
+            $.easyBlockUI('#save-task-data-form');
+            window.apiHttp.get(url).then(function(response) {
+                if (response.status == 'success') {
+                    if (typeof response.message !== 'undefined' && response.message) {
+                        Swal.fire({
+                            icon: 'success',
+                            text: response.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 3000,
+                            timerProgressBar: true,
+                            showConfirmButton: false,
+                            customClass: { confirmButton: 'btn btn-primary' },
+                            showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                        });
                     }
+                    $('#milestone-id').html(response.data);
+                    $('#milestone-id').selectpicker('refresh');
                 }
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI('#save-task-data-form');
             });
         });
 
@@ -931,18 +961,29 @@
             }
             let url = "{{ route('projects.members', ':id') }}";
             url = url.replace(':id', id);
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                container: '#save-task-data-form',
-                blockUI: true,
-                redirect: true,
-                success: function(data) {
-                    $('#selectAssignee').html(data.data);
-                    $('.projectId').text(data.unique_id);
-                    $('#selectAssignee').selectpicker('refresh');
+            $.easyBlockUI('#save-task-data-form');
+            window.apiHttp.get(url).then(function(data) {
+                if (typeof data.message !== 'undefined' && data.message && data.status === 'success') {
+                    Swal.fire({
+                        icon: 'success',
+                        text: data.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 3000,
+                        timerProgressBar: true,
+                        showConfirmButton: false,
+                        customClass: { confirmButton: 'btn btn-primary' },
+                        showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                    });
                 }
-            })
+                $('#selectAssignee').html(data.data);
+                $('.projectId').text(data.unique_id);
+                $('#selectAssignee').selectpicker('refresh');
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI('#save-task-data-form');
+            });
         });
 
         $('#project-id').change(function() {
@@ -952,18 +993,29 @@
             }
             let url = "{{ route('tasks.project_tasks', ':id') }}";
             url = url.replace(':id', id);
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                container: '#save-task-data-form',
-                blockUI: true,
-                redirect: true,
-                success: function(data) {
-                    $('#dependent_task_id').html(data.data);
-                    $('.projectId').text(data.unique_id);
-                    $('#dependent_task_id').selectpicker('refresh');
+            $.easyBlockUI('#save-task-data-form');
+            window.apiHttp.get(url).then(function(data) {
+                if (typeof data.message !== 'undefined' && data.message && data.status === 'success') {
+                    Swal.fire({
+                        icon: 'success',
+                        text: data.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 3000,
+                        timerProgressBar: true,
+                        showConfirmButton: false,
+                        customClass: { confirmButton: 'btn btn-primary' },
+                        showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                    });
                 }
-            })
+                $('#dependent_task_id').html(data.data);
+                $('.projectId').text(data.unique_id);
+                $('#dependent_task_id').selectpicker('refresh');
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI('#save-task-data-form');
+            });
         });
 
         $('#save-task-data-form').on('change', '#project_id', function() {
@@ -973,22 +1025,33 @@
             }
             let url = "{{ route('projects.labels', ':id') }}";
             url = url.replace(':id', id);
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                container: '#save-task-data-form',
-                blockUI: true,
-                redirect: true,
-                success: function(data) {
-                    var atValues = data.userData;
-                    destory_editor('#description')
-                    if (typeof quillMention === 'function') {
-                        quillMention(atValues, '#description');
-                    }
-                    $('#task_labels').html(data.data);
-                    $('#task_labels').selectpicker('refresh');
+            $.easyBlockUI('#save-task-data-form');
+            window.apiHttp.get(url).then(function(data) {
+                if (typeof data.message !== 'undefined' && data.message && data.status === 'success') {
+                    Swal.fire({
+                        icon: 'success',
+                        text: data.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 3000,
+                        timerProgressBar: true,
+                        showConfirmButton: false,
+                        customClass: { confirmButton: 'btn btn-primary' },
+                        showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                    });
                 }
-            })
+                var atValues = data.userData;
+                destory_editor('#description')
+                if (typeof quillMention === 'function') {
+                    quillMention(atValues, '#description');
+                }
+                $('#task_labels').html(data.data);
+                $('#task_labels').selectpicker('refresh');
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI('#save-task-data-form');
+            });
         });
 
         let projectId = document.getElementById('project-id').value;
@@ -1008,17 +1071,30 @@
 
             const url = "{{ route('projects.create') }}";
 
-            $.easyAjax({
-                url: url,
-                blockUI: true,
-                container: MODAL_XL,
-                success: function(response) {
-                    if (response.status == "success") {
-                        $(MODAL_XL + ' .modal-body').html(response.html);
-                        $(MODAL_XL + ' .modal-title').html(response.title);
-                        init(MODAL_XL);
+            $.easyBlockUI(MODAL_XL);
+            window.apiHttp.get(url).then(function(response) {
+                if (response.status == "success") {
+                    if (typeof response.message !== 'undefined' && response.message) {
+                        Swal.fire({
+                            icon: 'success',
+                            text: response.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 3000,
+                            timerProgressBar: true,
+                            showConfirmButton: false,
+                            customClass: { confirmButton: 'btn btn-primary' },
+                            showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                        });
                     }
+                    $(MODAL_XL + ' .modal-body').html(response.html);
+                    $(MODAL_XL + ' .modal-title').html(response.title);
+                    init(MODAL_XL);
                 }
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI(MODAL_XL);
             });
         });
 
@@ -1027,17 +1103,30 @@
 
             const url = "{{ route('employees.create') }}";
 
-            $.easyAjax({
-                url: url,
-                blockUI: true,
-                container: MODAL_XL,
-                success: function(response) {
-                    if (response.status == "success") {
-                        $(MODAL_XL + ' .modal-body').html(response.html);
-                        $(MODAL_XL + ' .modal-title').html(response.title);
-                        init(MODAL_XL);
+            $.easyBlockUI(MODAL_XL);
+            window.apiHttp.get(url).then(function(response) {
+                if (response.status == "success") {
+                    if (typeof response.message !== 'undefined' && response.message) {
+                        Swal.fire({
+                            icon: 'success',
+                            text: response.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 3000,
+                            timerProgressBar: true,
+                            showConfirmButton: false,
+                            customClass: { confirmButton: 'btn btn-primary' },
+                            showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                        });
                     }
+                    $(MODAL_XL + ' .modal-body').html(response.html);
+                    $(MODAL_XL + ' .modal-title').html(response.title);
+                    init(MODAL_XL);
                 }
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI(MODAL_XL);
             });
         });
 

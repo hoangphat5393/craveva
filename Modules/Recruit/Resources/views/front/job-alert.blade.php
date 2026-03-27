@@ -72,18 +72,13 @@
        $('body').off('click', "#save-alert").on('click', '#save-alert', function () {
 
         const url = "{{ route('front.job_alert_store') }}";
-            $.easyAjax({
-                url: url,
-                container: '#createJobAlert',
-                type: "POST",
-                data: $('#createJobAlert').serialize(),
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-alert",
-                success: function (response) {
+            window.apiHttp.postUrlEncoded(url, $('#createJobAlert').serialize())
+                .then(function (response) {
                     $('#addJobAlert').modal('hide');
-                }
-            });
+                })
+                .catch(function (err) {
+                    $.handleApiFormError(err);
+                });
         });
 
     </script>

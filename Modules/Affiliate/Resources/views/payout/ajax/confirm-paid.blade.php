@@ -28,22 +28,17 @@
 "use strict";  // Enforces strict mode for the entire script
     $('body').on('click', '#save-confirm_paid', function () {
         var url = "{{ route('payouts.change_status') }}";
-        let token = "{{ csrf_token() }}";
         let status = 'paid';
 
-        $.easyAjax({
-            url: url,
-            type: "POST",
-            disableButton: true,
-            blockUI: true,
-            data: {
-                '_token': token,
-                id: {{ $payout->id }},
-                status: status,
-                transaction_id: $('#transaction_id').val(),
-                memo: $('#memo').val()
-            },
-            success: function(response) {
+        $.easyBlockUI('body');
+        window.apiHttp.postUrlEncoded(url, {
+            '_token': "{{ csrf_token() }}",
+            id: {{ $payout->id }},
+            status: status,
+            transaction_id: $('#transaction_id').val(),
+            memo: $('#memo').val()
+        })
+            .then(function(response) {
 
                 if (response.status == "success") {
                     if ($(MODAL_LG).hasClass('show')) {
@@ -52,7 +47,12 @@
                     }
                     showTable();
                 }
-            }
-        })
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $.easyUnblockUI('body');
+            })
     });
 </script>

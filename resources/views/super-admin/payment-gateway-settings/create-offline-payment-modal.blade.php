@@ -30,17 +30,17 @@
 <script>
     //  save offline payments
     $('#save-method').click(function () {
-        $.easyAjax({
-            url: "{{route('superadmin.settings.global-offline-payment-setting.store')}}",
-            container: '#createMethods',
-            type: "POST",
-            disableButton: true,
-            buttonSelector: "#save-method",
-            blockUI: true,
-            data: $('#createMethods').serialize(),
-            success: function (response) {
-                window.location.reload();
-            }
+        var $btn = $('#save-method');
+        var prev = $btn.html();
+        $.easyBlockUI('#createMethods');
+        $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+        window.apiHttp.postUrlEncoded("{{route('superadmin.settings.global-offline-payment-setting.store')}}", $('#createMethods').serialize()).then(function (response) {
+            window.location.reload();
+        }).catch(function (err) {
+            $.handleApiFormError(err);
+        }).finally(function () {
+            $.easyUnblockUI('#createMethods');
+            $btn.prop('disabled', false).html(prev);
         })
     });
 </script>

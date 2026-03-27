@@ -119,15 +119,9 @@
 
         // Submit Meeting Form
         $('#save-agenda-form').click(function() {
-            $.easyAjax({
-                url: "{{ route('agenda.store') }}",
-                container: '#save-agenda-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-agenda-form",
-                data: $('#save-agenda-data-form').serialize(),
-                success: function(response) {
+            $.easyBlockUI('#save-agenda-data-form');
+            window.apiHttp.postUrlEncoded("{{ route('agenda.store') }}", $('#save-agenda-data-form').serialize())
+                .then(function(response) {
                     if (response.status == 'success') {
                         let tab = response.tab;
 
@@ -138,8 +132,13 @@
                             window.location.href = "{{ route('meetings.calendar_view') }}";
                         }
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#save-agenda-data-form');
+                });
         });
     });
 

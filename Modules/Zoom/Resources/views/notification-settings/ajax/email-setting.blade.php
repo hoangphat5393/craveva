@@ -32,18 +32,10 @@
     var emailSettingId = {{$emailSetting->id}};
     $('body').on('click', '#save-email-forms', function () {
         var notification_value = $('#send_email' + emailSettingId + ':checked').val();
-        $.easyAjax({
-            type: 'POST',
-            url: "{{ route('zoom-settings.zoom-smtp-settings', $smtpSetting->id) }}",
-            container: "#editSettings",
-            data: {
+        window.apiHttp.postUrlEncoded("{{ route('zoom-settings.zoom-smtp-settings', $smtpSetting->id) }}", {
                 send_email: notification_value,
                 _token: '{{ csrf_token() }}',
-            },
-            disableButton: true,
-            blockUI: true,
-            // buttonSelector: "#save-email-forms",
-        })
+        }).catch(function (err) { $.handleApiFormError(err); })
     });
 </script>
 

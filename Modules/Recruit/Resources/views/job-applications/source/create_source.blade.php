@@ -29,20 +29,15 @@
 
     $('body').on('click', '#save-board-status-column', function () {
         var url = "{{ route('source-setting.store') }}";
-        $.easyAjax({
-            url: url,
-            container: '#createJobBoardColumn',
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-board-status-column",
-            type: "POST",
-            data: $('#createJobBoardColumn').serialize(),
-            success: function (response) {
+        window.apiHttp.postUrlEncoded(url, $('#createJobBoardColumn').serialize())
+            .then(function (response) {
                 if (response.status == 'success') {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch(function (err) {
+                $.handleApiFormError(err);
+            });
     });
     $(".select-picker").selectpicker();
 </script>

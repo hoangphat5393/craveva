@@ -168,20 +168,12 @@
                 var url = "{{ route('client-notes.destroy', ':id') }}";
                 url = url.replace(':id', id);
 
-                var token = "{{ csrf_token() }}";
-
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
-                        if (response.status == "success") {
-                            showTable();
-                        }
+                window.apiHttp.delete(url, "{{ csrf_token() }}").then(function(response) {
+                    if (response.status == "success") {
+                        showTable();
                     }
+                }).catch(function(err) {
+                    $.handleApiFormError(err);
                 });
             }
         });
@@ -194,21 +186,24 @@
 
         var url = "{{ route('client-notes.apply_quick_action') }}?row_ids=" + rowdIds;
 
-        $.easyAjax({
-            url: url,
-            container: '#quick-action-form',
-            type: "POST",
-            disableButton: true,
-            buttonSelector: "#quick-action-apply",
-            data: $('#quick-action-form').serialize(),
-            success: function(response) {
-                if (response.status == 'success') {
-                    showTable();
-                    resetActionButtons();
-                    deSelectAll();
-                }
+        var $qaBtn = $('#quick-action-form').find('#quick-action-apply');
+        var qaPrev = $qaBtn.html();
+        $qaBtn.attr('data-prev-text', qaPrev);
+        $qaBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+        $.easyBlockUI('#quick-action-form');
+        window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize()).then(function(response) {
+            if (response.status == 'success') {
+                showTable();
+                resetActionButtons();
+                deSelectAll();
             }
-        })
+        }).catch(function(err) {
+            $.handleApiFormError(err);
+        }).finally(function() {
+            $.easyUnblockUI('#quick-action-form');
+            $qaBtn.html($qaBtn.attr('data-prev-text'));
+            $qaBtn.prop('disabled', false);
+        });
     };
 
     $('body').on('click', '.ask-for-password', function() {
@@ -229,32 +224,33 @@
         var url = "{{ route('client-notes.show', ':id') }}";
         url = url.replace(':id', id);
 
-        $.easyAjax({
-            url: url,
-            blockUI: true,
-            container: RIGHT_MODAL,
-            historyPush: true,
-            success: function(response) {
-                if (response.status == "success") {
-                    $(RIGHT_MODAL_CONTENT).html(response.html);
-                    $(RIGHT_MODAL_TITLE).html(response.title);
-                }
-            },
-            error: function(request, status, error) {
-                if (request.status == 403) {
-                    $(RIGHT_MODAL_CONTENT).html(
-                        '<div class="align-content-between d-flex justify-content-center mt-105 f-21">403 | Permission Denied</div>'
-                    );
-                } else if (request.status == 404) {
-                    $(RIGHT_MODAL_CONTENT).html(
-                        '<div class="align-content-between d-flex justify-content-center mt-105 f-21">404 | Not Found</div>'
-                    );
-                } else if (request.status == 500) {
-                    $(RIGHT_MODAL_CONTENT).html(
-                        '<div class="align-content-between d-flex justify-content-center mt-105 f-21">500 | Something Went Wrong</div>'
-                    );
-                }
+        if (typeof historyPush === 'function') {
+            historyPush(url);
+        }
+        $.easyBlockUI(RIGHT_MODAL);
+        window.apiHttp.get(url).then(function(response) {
+            if (response.status == "success") {
+                $(RIGHT_MODAL_CONTENT).html(response.html);
+                $(RIGHT_MODAL_TITLE).html(response.title);
             }
+        }).catch(function(err) {
+            if (err.status === 403) {
+                $(RIGHT_MODAL_CONTENT).html(
+                    '<div class="align-content-between d-flex justify-content-center mt-105 f-21">403 | Permission Denied</div>'
+                );
+            } else if (err.status === 404) {
+                $(RIGHT_MODAL_CONTENT).html(
+                    '<div class="align-content-between d-flex justify-content-center mt-105 f-21">404 | Not Found</div>'
+                );
+            } else if (err.status === 500) {
+                $(RIGHT_MODAL_CONTENT).html(
+                    '<div class="align-content-between d-flex justify-content-center mt-105 f-21">500 | Something Went Wrong</div>'
+                );
+            } else {
+                $.handleApiFormError(err);
+            }
+        }).finally(function() {
+            $.easyUnblockUI(RIGHT_MODAL);
         });
     };
 

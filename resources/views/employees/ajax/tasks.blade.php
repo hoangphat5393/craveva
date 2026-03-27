@@ -1,5 +1,5 @@
 @php
-$addTaskPermission = user()->permission('add_tasks');
+    $addTaskPermission = user()->permission('add_tasks');
 @endphp
 
 <!-- ROW START -->
@@ -29,8 +29,7 @@ $addTaskPermission = user()->permission('add_tasks');
                                 <i class="fa fa-search f-13 text-dark-grey"></i>
                             </span>
                         </div>
-                        <input type="text" class="form-control f-14 p-1 height-35 border" id="search-text-field"
-                            placeholder="@lang('app.startTyping')">
+                        <input type="text" class="form-control f-14 p-1 height-35 border" id="search-text-field" placeholder="@lang('app.startTyping')">
                     </div>
                 </div>
                 <!-- SEARCH BY TASK END -->
@@ -49,8 +48,7 @@ $addTaskPermission = user()->permission('add_tasks');
         <div class="d-flex justify-content-between action-bar">
             <div id="table-actions" class="align-items-center">
                 @if ($addTaskPermission == 'all' || $addTaskPermission == 'added')
-                    <x-forms.link-primary :link="route('tasks.create').'?default_assign='.$employee->id"
-                        class="mr-3 openRightModal float-left" data-redirect-url="{{ url()->full() }}" icon="plus">
+                    <x-forms.link-primary :link="route('tasks.create') . '?default_assign=' . $employee->id" class="mr-3 openRightModal float-left" data-redirect-url="{{ url()->full() }}" icon="plus">
                         @lang('app.addTask')
                     </x-forms.link-primary>
                 @endif
@@ -202,17 +200,20 @@ $addTaskPermission = user()->permission('add_tasks');
 
                 var token = "{{ csrf_token() }}";
 
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
-                        if (response.status == "success") {
-                            showTable();
-                        }
+                window.apiHttp.delete(url, token).then(function(response) {
+                    if (response.status == "success") {
+                        showTable();
+                    }
+                }).catch(function(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
                     }
                 });
             }
@@ -226,20 +227,29 @@ $addTaskPermission = user()->permission('add_tasks');
 
         var url = "{{ route('tasks.apply_quick_action') }}?row_ids=" + rowdIds;
 
-        $.easyAjax({
-            url: url,
-            container: '#quick-action-form',
-            type: "POST",
-            disableButton: true,
-            buttonSelector: "#quick-action-apply",
-            data: $('#quick-action-form').serialize(),
-            success: function(response) {
-                if (response.status == 'success') {
-                    showTable();
-                    resetActionButtons();
-                }
+        var $qaApply = $('#quick-action-apply');
+        $qaApply.prop('disabled', true);
+        $.easyBlockUI('#quick-action-form');
+        window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize()).then(function(response) {
+            if (response.status == 'success') {
+                showTable();
+                resetActionButtons();
             }
-        })
+        }).catch(function(err) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    text: err.message,
+                    toast: true,
+                    position: 'top-end',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            }
+        }).finally(function() {
+            $qaApply.prop('disabled', false);
+            $.easyUnblockUI('#quick-action-form');
+        });
     };
 
     $('#allTasks-table').on('change', '.change-status', function() {
@@ -249,17 +259,23 @@ $addTaskPermission = user()->permission('add_tasks');
         var status = $(this).val();
 
         if (id != "" && status != "") {
-            $.easyAjax({
-                url: url,
-                type: "POST",
-                data: {
-                    '_token': token,
-                    taskId: id,
-                    status: status,
-                    sortBy: 'id'
-                },
-                success: function(data) {
-                    window.LaravelDataTables["allTasks-table"].draw(true);
+            window.apiHttp.postUrlEncoded(url, {
+                '_token': token,
+                taskId: id,
+                status: status,
+                sortBy: 'id'
+            }).then(function() {
+                window.LaravelDataTables["allTasks-table"].draw(true);
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
                 }
             });
 
@@ -273,32 +289,39 @@ $addTaskPermission = user()->permission('add_tasks');
         var task_id = $(this).data('task-id');
         var memo = "{{ __('app.task') }}#" + $(this).data('task-id');
 
-        $.easyAjax({
-            url: url,
-            container: '#allTasks-table',
-            type: "POST",
-            blockUI: true,
-            data: {
-                task_id: task_id,
-                memo: memo,
-                '_token': token,
-                user_id: user_id
-            },
-            success: function(response) {
-                if (response.status == 'success') {
-                    if (response.activeTimerCount > 0) {
-                        $('#show-active-timer .active-timer-count').html(response.activeTimerCount);
-                    } else {
-                        $('#show-active-timer .active-timer-count').addClass('d-none');
-                    }
+        $.easyBlockUI('#allTasks-table');
+        window.apiHttp.postUrlEncoded(url, {
+            task_id: task_id,
+            memo: memo,
+            '_token': token,
+            user_id: user_id
+        }).then(function(response) {
+            if (response.status == 'success') {
+                if (response.activeTimerCount > 0) {
+                    $('#show-active-timer .active-timer-count').html(response.activeTimerCount);
+                } else {
+                    $('#show-active-timer .active-timer-count').addClass('d-none');
+                }
 
-                    $('#timer-clock').html(response.clockHtml);
-                    if ($('#allTasks-table').length) {
-                        window.LaravelDataTables["allTasks-table"].draw(true);
-                    }
+                $('#timer-clock').html(response.clockHtml);
+                if ($('#allTasks-table').length) {
+                    window.LaravelDataTables["allTasks-table"].draw(true);
                 }
             }
-        })
+        }).catch(function(err) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    text: err.message,
+                    toast: true,
+                    position: 'top-end',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            }
+        }).finally(function() {
+            $.easyUnblockUI('#allTasks-table');
+        });
     });
 
     $('#allTasks-table').on('click', '.stop-timer', function() {
@@ -306,28 +329,35 @@ $addTaskPermission = user()->permission('add_tasks');
         var url = "{{ route('timelogs.stop_timer', ':id') }}";
         url = url.replace(':id', id);
         var token = '{{ csrf_token() }}';
-        $.easyAjax({
-            url: url,
-            blockUI: true,
-            container: '#allTasks-table',
-            type: "POST",
-            data: {
-                timeId: id,
-                _token: token
-            },
-            success: function(response) {
-                if (response.activeTimerCount > 0) {
-                    $('#show-active-timer .active-timer-count').html(response.activeTimerCount);
-                } else {
-                    $('#show-active-timer .active-timer-count').addClass('d-none');
-                }
-
-                $('#timer-clock').html('');
-                if ($('#allTasks-table').length) {
-                    window.LaravelDataTables["allTasks-table"].draw(true);
-                }
+        $.easyBlockUI('#allTasks-table');
+        window.apiHttp.postUrlEncoded(url, {
+            timeId: id,
+            _token: token
+        }).then(function(response) {
+            if (response.activeTimerCount > 0) {
+                $('#show-active-timer .active-timer-count').html(response.activeTimerCount);
+            } else {
+                $('#show-active-timer .active-timer-count').addClass('d-none');
             }
-        })
+
+            $('#timer-clock').html('');
+            if ($('#allTasks-table').length) {
+                window.LaravelDataTables["allTasks-table"].draw(true);
+            }
+        }).catch(function(err) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    text: err.message,
+                    toast: true,
+                    position: 'top-end',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            }
+        }).finally(function() {
+            $.easyUnblockUI('#allTasks-table');
+        });
     });
 
     $('#allTasks-table').on('click', '.resume-timer', function() {
@@ -335,29 +365,37 @@ $addTaskPermission = user()->permission('add_tasks');
         var url = "{{ route('timelogs.resume_timer', ':id') }}";
         url = url.replace(':id', id);
         var token = '{{ csrf_token() }}';
-        $.easyAjax({
-            url: url,
-            blockUI: true,
-            type: "POST",
-            data: {
-                timeId: id,
-                _token: token
-            },
-            success: function(response) {
-                if (response.status == 'success') {
-                    if (response.activeTimerCount > 0) {
-                        $('#show-active-timer .active-timer-count').html(response.activeTimerCount);
-                    } else {
-                        $('#show-active-timer .active-timer-count').addClass('d-none');
-                    }
+        $.easyBlockUI('#allTasks-table');
+        window.apiHttp.postUrlEncoded(url, {
+            timeId: id,
+            _token: token
+        }).then(function(response) {
+            if (response.status == 'success') {
+                if (response.activeTimerCount > 0) {
+                    $('#show-active-timer .active-timer-count').html(response.activeTimerCount);
+                } else {
+                    $('#show-active-timer .active-timer-count').addClass('d-none');
+                }
 
-                    $('#timer-clock').html(response.clockHtml);
-                    if ($('#allTasks-table').length) {
-                        window.LaravelDataTables["allTasks-table"].draw(true);
-                    }
+                $('#timer-clock').html(response.clockHtml);
+                if ($('#allTasks-table').length) {
+                    window.LaravelDataTables["allTasks-table"].draw(true);
                 }
             }
-        })
+        }).catch(function(err) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    text: err.message,
+                    toast: true,
+                    position: 'top-end',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            }
+        }).finally(function() {
+            $.easyUnblockUI('#allTasks-table');
+        });
     });
 
     $('#allTasks-table').on('click', '.pause-timer', function() {
@@ -365,30 +403,36 @@ $addTaskPermission = user()->permission('add_tasks');
         var url = "{{ route('timelogs.pause_timer', ':id') }}";
         url = url.replace(':id', id);
         var token = '{{ csrf_token() }}';
-        $.easyAjax({
-            url: url,
-            blockUI: true,
-            type: "POST",
-            disableButton: true,
-            buttonSelector: "#pause-timer-btn",
-            data: {
-                timeId: id,
-                _token: token
-            },
-            success: function(response) {
-                if (response.status == 'success') {
-                    if (response.activeTimerCount > 0) {
-                        $('#show-active-timer .active-timer-count').html(response.activeTimerCount);
-                    } else {
-                        $('#show-active-timer .active-timer-count').addClass('d-none');
-                    }
+        $.easyBlockUI('#allTasks-table');
+        window.apiHttp.postUrlEncoded(url, {
+            timeId: id,
+            _token: token
+        }).then(function(response) {
+            if (response.status == 'success') {
+                if (response.activeTimerCount > 0) {
+                    $('#show-active-timer .active-timer-count').html(response.activeTimerCount);
+                } else {
+                    $('#show-active-timer .active-timer-count').addClass('d-none');
+                }
 
-                    $('#timer-clock').html(response.clockHtml);
-                    if ($('#allTasks-table').length) {
-                        window.LaravelDataTables["allTasks-table"].draw(true);
-                    }
+                $('#timer-clock').html(response.clockHtml);
+                if ($('#allTasks-table').length) {
+                    window.LaravelDataTables["allTasks-table"].draw(true);
                 }
             }
-        })
+        }).catch(function(err) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    text: err.message,
+                    toast: true,
+                    position: 'top-end',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            }
+        }).finally(function() {
+            $.easyUnblockUI('#allTasks-table');
+        });
     });
 </script>

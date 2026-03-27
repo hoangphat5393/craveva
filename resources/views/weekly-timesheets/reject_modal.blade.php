@@ -1,7 +1,6 @@
 <div class="modal-header">
     <h5 class="modal-title" id="modelHeading">@lang('app.timesheetRejectReason')</h5>
-    <button type="button"  class="close" data-dismiss="modal" aria-label="Close"><span
-            aria-hidden="true">×</span></button>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
 </div>
 <div class="modal-body">
     <div class="portlet-body">
@@ -10,8 +9,7 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="form-group my-3">
-                            <x-forms.textarea class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('app.reason')"
-                                fieldName="reason" fieldId="reason" fieldRequired="true">
+                            <x-forms.textarea class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('app.reason')" fieldName="reason" fieldId="reason" fieldRequired="true">
                             </x-forms.textarea>
                         </div>
                     </div>
@@ -52,21 +50,29 @@
             buttonsStyling: false
         }).then((result) => {
             if (result.isConfirmed) {
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    blockUI: true,
-                    data: {
-                        'status': status,
-                        'timesheetId': timesheetId,
-                        '_token': '{{ csrf_token() }}',
-                        'reason': reason
-                    },
-                    success: function(response) {
-                        if (response.status == 'success') {
-                            window.location.reload(); 
-                        }
+                $.easyBlockUI('.content-wrapper');
+                window.apiHttp.postUrlEncoded(url, {
+                    status: status,
+                    timesheetId: timesheetId,
+                    _token: '{{ csrf_token() }}',
+                    reason: reason
+                }).then(function(response) {
+                    if (response.status == 'success') {
+                        window.location.reload();
                     }
+                }).catch(function(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
+                    }
+                }).finally(function() {
+                    $.easyUnblockUI('.content-wrapper');
                 });
             }
         });

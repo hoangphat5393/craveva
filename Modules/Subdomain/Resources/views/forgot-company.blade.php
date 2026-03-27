@@ -64,18 +64,15 @@
 @push('footer-script')
     <script>
         function confirm() {
-            $.easyAjax({
-                url: '{{route('front.submit-forgot-password')}}',
-                container: '.form-section',
-                type: "POST",
-                data: $('#register').serialize(),
-                messagePosition: "inline",
-                success: function (response) {
+            window.apiHttp.postUrlEncoded("{{route('front.submit-forgot-password')}}", $('#register').serialize())
+                .then(function (response) {
                     if (response.status == 'success') {
                         $('.removeable').remove();
                     }
-                }
-            })
+                })
+                .catch(function (err) {
+                    $.handleApiFormError(err);
+                });
         }
     </script>
 @endpush

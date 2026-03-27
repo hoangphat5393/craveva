@@ -190,19 +190,16 @@
         document.getElementById('description_text').value = document.getElementById('description').children[0]
             .innerHTML;
 
-        $.easyAjax({
-            url: "{{ route('superadmin.front-settings.footer-settings.update', $footer->id) }}",
-            container: '#editFooter',
-            type: "POST",
-            blockUI: true,
-            data: $('#editFooter').serialize(),
-            success: function(response) {
+        $.easyBlockUI('#editFooter');
+        window.apiHttp.postUrlEncoded("{{ route('superadmin.front-settings.footer-settings.update', $footer->id) }}", $('#editFooter').serialize())
+            .then(function(response) {
                 if (response.status == "success") {
                     $('#example').html(response.html);
                     $(MODAL_LG).modal('hide');
                 }
-            }
-        })
+            })
+            .catch(function (err) { $.handleApiFormError(err); })
+            .finally(function () { $.easyUnblockUI('#editFooter'); });
     });
 
     init('#editFooter');

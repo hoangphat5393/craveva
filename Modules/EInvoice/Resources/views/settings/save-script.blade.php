@@ -1,20 +1,13 @@
 <script>
     $('body').on('click', '#save-form', function() {
-        $.easyAjax({
-            url: "{{ route('einvoice.settings.save') }}",
-            container: '#editSettings',
-            type: "POST",
-            redirect: true,
-            file: true,
-            data: $('#editSettings').serialize(),
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-form",
-            success: function(response) {
+        window.apiHttp.postUrlEncoded("{{ route('einvoice.settings.save') }}", $('#editSettings').serialize())
+            .then(function(response) {
                 if (response.status == 'success') {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch(function (err) {
+                $.handleApiFormError(err);
+            });
     });
 </script>

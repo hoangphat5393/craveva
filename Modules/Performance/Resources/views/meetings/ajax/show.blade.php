@@ -173,21 +173,27 @@
 
             const requestUrl = this.href;
 
-            $.easyAjax({
-                url: requestUrl,
-                blockUI: true,
-                container: "#nav-tabContent",
-                historyPush: ($(RIGHT_MODAL).hasClass('in') ? false : true),
-                data: {
+            if (!$(RIGHT_MODAL).hasClass('in')) {
+                historyPush(requestUrl);
+            }
+            $.easyBlockUI('#nav-tabContent');
+            window.apiHttp.get(requestUrl, {
+                params: {
                     'json': true
-                },
-                success: function(response) {
+                }
+            })
+                .then(function(response) {
                     if (response.status == "success") {
                         showBtn(response.activeTab);
                         $('#nav-tabContent').html(response.html);
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#nav-tabContent');
+                });
         });
 
         $('body').on('click', '#markAsComplete', function() {
@@ -211,15 +217,11 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     var url = "{{ route('meetings.mark_as_complete', $meeting->id) }}";
-                    var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                        },
-                        success: function(response) {
+                    window.apiHttp.postUrlEncoded(url, {
+                            '_token': "{{ csrf_token() }}",
+                        })
+                        .then(function(response) {
                             if (response.status == "success") {
                                 $('#nav-tabContent').html('');
                                 $('#markAsComplete').addClass('d-none');
@@ -239,8 +241,10 @@
                                 $.easyUnblockUI();
                                 $(MODAL_LG).modal('hide');
                             }
-                        }
-                    });
+                        })
+                        .catch(function(err) {
+                            $.handleApiFormError(err);
+                        });
                 }
             });
         });
@@ -266,15 +270,11 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     var url = "{{ route('meetings.mark_as_cancelled', $meeting->id) }}";
-                    var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                        },
-                        success: function(response) {
+                    window.apiHttp.postUrlEncoded(url, {
+                            '_token': "{{ csrf_token() }}",
+                        })
+                        .then(function(response) {
                             if (response.status == "success") {
                                 $('#nav-tabContent').html('');
                                 $('#markAsCancel').addClass('d-none');
@@ -292,8 +292,10 @@
                                 $.easyUnblockUI();
                                 $(MODAL_LG).modal('hide');
                             }
-                        }
-                    });
+                        })
+                        .catch(function(err) {
+                            $.handleApiFormError(err);
+                        });
                 }
             });
         });
@@ -302,18 +304,14 @@
             var url = "{{ route('meetings.send_reminder', $meeting->id) }}";
 
             if (url) {
-                $.easyAjax({
-                    url: url,
-                    type: "GET",
-                    buttonSelector: "#sendReminder",
-                    blockUI: true,
-                    disableButton: true,
-                    success: function(response) {
-                        if (response.status == "success") {
-                            $.easyUnblockUI();
-                        }
-                    }
-                });
+                $.easyBlockUI();
+                window.apiHttp.get(url)
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    })
+                    .finally(function() {
+                        $.easyUnblockUI();
+                    });
             }
         });
 
@@ -347,24 +345,23 @@
                 if (result.isConfirmed) {
                     var url = "{{ route('meetings.destroy', $meeting->id) }}";
 
-                    var token = "{{ csrf_token() }}";
+                    var destroyPayload = {
+                        '_token': "{{ csrf_token() }}",
+                        '_method': 'DELETE',
+                        @if ($meeting->parent_id)
+                            'delete': result.value,
+                        @endif
+                    };
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE',
-                            @if ($meeting->parent_id)
-                                'delete': result.value,
-                            @endif
-                        },
-                        success: function(response) {
+                    window.apiHttp.postUrlEncoded(url, destroyPayload)
+                        .then(function(response) {
                             if (response.status == "success") {
                                 window.location.href = response.redirectUrl;
                             }
-                        }
-                    });
+                        })
+                        .catch(function(err) {
+                            $.handleApiFormError(err);
+                        });
                 }
             });
         });

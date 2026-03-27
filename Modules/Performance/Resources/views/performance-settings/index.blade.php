@@ -70,19 +70,22 @@
 
             const requestUrl = this.href;
 
-            $.easyAjax({
-                url: requestUrl,
-                blockUI: true,
-                container: "#nav-tabContent",
-                historyPush: true,
-                success: function(response) {
+            historyPush(requestUrl);
+            $.easyBlockUI('#nav-tabContent');
+            window.apiHttp.get(requestUrl)
+                .then(function(response) {
                     if (response.status == "success") {
                         showBtn(response.activeTab);
                         $('#nav-tabContent').html(response.html);
                         init('#nav-tabContent');
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#nav-tabContent');
+                });
         });
 
         function showBtn(activeTab) {
@@ -144,22 +147,19 @@
                     var url = "{{ route('key-results-metrics.destroy', ':id') }}";
                     url = url.replace(':id', id);
 
-                    var token = "{{ csrf_token() }}";
-
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function (response) {
+                    $.easyBlockUI('body');
+                    window.apiHttp.delete(url, "{{ csrf_token() }}")
+                        .then(function (response) {
                             if (response.status == "success") {
                                 obj.remove();
                             }
-                        }
-                    });
+                        })
+                        .catch(function (err) {
+                            $.handleApiFormError(err);
+                        })
+                        .finally(function () {
+                            $.easyUnblockUI('body');
+                        });
                 }
             });
         });
@@ -175,17 +175,19 @@
             var url = "{{ route('performance-settings.update', ':id') }}";
             url = url.replace(':id', id);
 
-            $.easyAjax({
-                type: 'PUT',
-                url: url,
-                container: '.settings-box',
-                blockUI: true,
-                data: {
-                    '_token': token,
-                    'status': status,
-                    'type': type,
-                }
-            });
+            $.easyBlockUI('.settings-box');
+            window.apiHttp.postUrlEncoded(url, {
+                '_token': token,
+                'status': status,
+                'type': type,
+                '_method': 'PUT'
+            })
+                .catch(function (err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function () {
+                    $.easyUnblockUI('.settings-box');
+                });
         });
 
         /* Meeting setting */
@@ -206,18 +208,14 @@
             let url = "{{ route('performance-settings.meeting-setting', ':id') }}";
             url = url.replace(':id', id);
 
-            $.easyAjax({
-                url: url,
-                type: "POST",
-                redirect: true,
-                disableButton: true,
-                blockUI: true,
-                container: '#editSettings',
-                data: $('#editSettings').serialize(),
-                success: function(response) {
-                    $.easyUnblockUI();
-                }
-            });
+            $.easyBlockUI('#editSettings');
+            window.apiHttp.postUrlEncoded(url, $('#editSettings').serialize())
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#editSettings');
+                });
         });
 
     </script>

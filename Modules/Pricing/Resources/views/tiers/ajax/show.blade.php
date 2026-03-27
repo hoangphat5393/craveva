@@ -190,18 +190,19 @@
         // Save Item
         $('body').on('click', '#save-item-btn', function(e) {
             e.preventDefault();
-            $.easyAjax({
-                url: "{{ route('pricing.tiers.items.store', $pricingTier->id) }}",
-                container: '#add-item-form',
-                type: "POST",
-                blockUI: true,
-                data: $('#add-item-form').serialize(),
-                success: function(response) {
+            $.easyBlockUI('#add-item-form');
+            window.apiHttp.postUrlEncoded("{{ route('pricing.tiers.items.store', $pricingTier->id) }}", $('#add-item-form').serialize())
+                .then(function(response) {
                     if (response.status == 'success') {
                         window.location.reload();
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#add-item-form');
+                });
         });
 
         // Delete Item
@@ -229,21 +230,15 @@
                     var url = "{{ route('pricing.tiers.items.destroy', ':id') }}";
                     url = url.replace(':id', id);
 
-                    var token = "{{ csrf_token() }}";
-
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
+                    window.apiHttp.delete(url, "{{ csrf_token() }}")
+                        .then(function(response) {
                             if (response.status == "success") {
                                 $('#item-row-' + id).remove();
                             }
-                        }
-                    });
+                        })
+                        .catch(function(err) {
+                            $.handleApiFormError(err);
+                        });
                 }
             });
         });
@@ -299,20 +294,19 @@
                     buttonsStyling: false
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        $.easyAjax({
-                            url: "{{ route('pricing.tiers.items.apply_quick_action') }}",
-                            type: 'POST',
-                            data: {
-                                '_token': "{{ csrf_token() }}",
-                                action_type: 'delete',
-                                row_ids: rowIds.join(',')
-                            },
-                            success: function(response) {
+                        window.apiHttp.postUrlEncoded("{{ route('pricing.tiers.items.apply_quick_action') }}", {
+                            '_token': "{{ csrf_token() }}",
+                            action_type: 'delete',
+                            row_ids: rowIds.join(',')
+                        })
+                            .then(function(response) {
                                 if (response.status == 'success') {
                                     window.location.reload();
                                 }
-                            }
-                        });
+                            })
+                            .catch(function(err) {
+                                $.handleApiFormError(err);
+                            });
                     }
                 });
             }

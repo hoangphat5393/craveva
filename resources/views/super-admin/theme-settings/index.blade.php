@@ -253,13 +253,29 @@
                 buttonsStyling: false
             }).then((result) => {
                 if (result.isConfirmed) {
-                    $.easyAjax({
-                        url: "{{ route('superadmin.settings.super-admin-theme-settings.store') }}",
-                        container: '#editSettings',
-                        blockUI: true,
-                        type: "POST",
-                        data: $('#editSettings').serialize()
-                    });
+                    $.easyBlockUI('#editSettings');
+                    window.apiHttp.postUrlEncoded("{{ route('superadmin.settings.super-admin-theme-settings.store') }}", $('#editSettings').serialize())
+                        .then(function (response) {
+                            if (response.status === 'success') {
+                                if (response.action === 'redirect' && response.url) {
+                                    window.location.href = response.url;
+                                } else if (typeof response.message !== 'undefined') {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        text: response.message,
+                                        toast: true,
+                                        position: 'top-end',
+                                        timer: 3000,
+                                        timerProgressBar: true,
+                                        showConfirmButton: false,
+                                        customClass: { confirmButton: 'btn btn-primary' },
+                                        showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                                    });
+                                }
+                            }
+                        })
+                        .catch(function (err) { $.handleApiFormError(err); })
+                        .finally(function () { $.easyUnblockUI('#editSettings'); });
                 }
             });
 
@@ -267,14 +283,29 @@
         });
 
         $('#save-form').click(function() {
-            $.easyAjax({
-                url: "{{ route('superadmin.settings.super-admin-theme-settings.store') }}",
-                container: '#editSettings',
-                blockUI: true,
-                type: "POST",
-                file: true,
-                data: $('#editSettings').serialize()
-            })
+            $.easyBlockUI('#editSettings');
+            window.apiHttp.postForm("{{ route('superadmin.settings.super-admin-theme-settings.store') }}", document.getElementById('editSettings'))
+                .then(function (response) {
+                    if (response.status === 'success') {
+                        if (response.action === 'redirect' && response.url) {
+                            window.location.href = response.url;
+                        } else if (typeof response.message !== 'undefined') {
+                            Swal.fire({
+                                icon: 'success',
+                                text: response.message,
+                                toast: true,
+                                position: 'top-end',
+                                timer: 3000,
+                                timerProgressBar: true,
+                                showConfirmButton: false,
+                                customClass: { confirmButton: 'btn btn-primary' },
+                                showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                            });
+                        }
+                    }
+                })
+                .catch(function (err) { $.handleApiFormError(err); })
+                .finally(function () { $.easyUnblockUI('#editSettings'); });
         });
 
         $('.cropper').on('dropify.fileReady', function(e) {

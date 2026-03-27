@@ -216,20 +216,19 @@
                 var url = "{{ route('pricing.volume_rules.change_status') }}";
                 var token = "{{ csrf_token() }}";
 
-                $.easyAjax({
-                    url: url,
-                    type: "POST",
-                    data: {
-                        '_token': token,
-                        id: id,
-                        status: status
-                    },
-                    success: function(data) {
+                window.apiHttp.postUrlEncoded(url, {
+                    '_token': token,
+                    id: id,
+                    status: status
+                })
+                    .then(function(data) {
                         if (data.status == "success") {
                             // Optional: show toast
                         }
-                    }
-                })
+                    })
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    })
             });
 
             // Individual Delete
@@ -257,19 +256,15 @@
                         var url = "{{ route('pricing.volume_rules.destroy', ':id') }}";
                         url = url.replace(':id', id);
 
-                        $.easyAjax({
-                            type: 'POST',
-                            url: url,
-                            data: {
-                                _token: "{{ csrf_token() }}",
-                                _method: 'DELETE'
-                            },
-                            success: function(response) {
+                        window.apiHttp.delete(url, "{{ csrf_token() }}")
+                            .then(function(response) {
                                 if (response.status === 'success') {
                                     window.location.reload();
                                 }
-                            }
-                        });
+                            })
+                            .catch(function(err) {
+                                $.handleApiFormError(err);
+                            });
                     }
                 });
             });
@@ -330,19 +325,15 @@
 
                 var url = "{{ route('pricing.volume_rules.apply_quick_action') }}?row_ids=" + rowdIds;
 
-                $.easyAjax({
-                    url: url,
-                    container: '#quick-action-form',
-                    type: "POST",
-                    disableButton: true,
-                    buttonSelector: "#quick-action-apply",
-                    data: $('#quick-action-form').serialize(),
-                    success: function(response) {
+                window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize())
+                    .then(function(response) {
                         if (response.status == 'success') {
                             window.location.reload();
                         }
-                    }
-                })
+                    })
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    })
             };
 
             $('#quick-action-apply').click(function() {

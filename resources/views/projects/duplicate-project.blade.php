@@ -223,20 +223,21 @@
 
     $('#save-copy-project').click(function() {
         var url = "{{ route('projects.store') }}";
-        $.easyAjax({
-            url: url,
-            container: '#createDuplicateProject',
-            type: "POST",
-            blockUI: true,
-            disableButton: true,
-            data: $('#createDuplicateProject').serialize(),
-            success: function(response) {
-                if (response.status == 'success') {
-                    $(MODAL_LG).modal('hide');
-                    showTable();
-                }
+        var $btn = $('#save-copy-project');
+        var prev = $btn.html();
+        $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+        $.easyBlockUI('#createDuplicateProject');
+        window.apiHttp.postUrlEncoded(url, $('#createDuplicateProject').serialize()).then(function(response) {
+            if (response.status == 'success') {
+                $(MODAL_LG).modal('hide');
+                showTable();
             }
-        })
+        }).catch(function(err) {
+            $.handleApiFormError(err);
+        }).finally(function() {
+            $.easyUnblockUI('#createDuplicateProject');
+            $btn.prop('disabled', false).html(prev);
+        });
     });
 
     $("#selectEmployee").selectpicker({
@@ -271,16 +272,14 @@
         let url = "{{ route('departments.members', ':id') }}?userId="+userId;
         url = url.replace(':id', id);
 
-        $.easyAjax({
-            url: url,
-            type: "GET",
-            container: '#save-project-data-form',
-            blockUI: true,
-            redirect: true,
-            success: function (data) {
-                $('#selectEmployee').html(data.data);
-                $('#selectEmployee').selectpicker('refresh');
-            }
-        })
+        $.easyBlockUI('#save-project-data-form');
+        window.apiHttp.get(url).then(function (data) {
+            $('#selectEmployee').html(data.data);
+            $('#selectEmployee').selectpicker('refresh');
+        }).catch(function(err) {
+            $.handleApiFormError(err);
+        }).finally(function() {
+            $.easyUnblockUI('#save-project-data-form');
+        });
     });
 </script>

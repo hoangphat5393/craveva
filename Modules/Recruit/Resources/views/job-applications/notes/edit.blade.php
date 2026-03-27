@@ -34,15 +34,8 @@
 
             const url = "{{ route('applicant-note.update', $note->id) }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#edit-comment-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-edit-comment",
-                data: $('#edit-comment-data-form').serialize(),
-                success: function (response) {
+            window.apiHttp.postUrlEncoded(url, $('#edit-comment-data-form').serialize())
+                .then(function (response) {
                     if (response.status == "success") {
                         document.getElementById('comment-list').innerHTML = response.view;
                         $(MODAL_LG).modal('hide');
@@ -56,8 +49,10 @@
                         });
                     }
 
-                }
-            });
+                })
+                .catch(function (err) {
+                    $.handleApiFormError(err);
+                });
         });
     });
 

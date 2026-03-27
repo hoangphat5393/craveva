@@ -5,20 +5,18 @@
 @endpush
 
 @section('filter-section')
-
     <x-filters.filter-box>
 
         <!-- EMPLOYEE FILTER START -->
         <div class="select-box d-flex py-2 px-lg-2 px-md-2 px-0 border-right-grey border-right-grey-sm-0">
             <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('app.employee')</p>
             <div class="select-status">
-                <select class="form-control select-picker" name="employee_id" id="employee_id" data-live-search="true"
-                    data-size="8">
+                <select class="form-control select-picker" name="employee_id" id="employee_id" data-live-search="true" data-size="8">
                     @if ($employees->count() > 1 || in_array('admin', user_roles()))
                         <option value="all">@lang('app.all')</option>
                     @endif
                     @foreach ($employees as $employee)
-                            <x-user-option :user="$employee" />
+                        <x-user-option :user="$employee" />
                     @endforeach
                 </select>
             </div>
@@ -29,8 +27,7 @@
         <div class="select-box d-flex py-2 px-lg-2 px-md-2 px-0 border-right-grey border-right-grey-sm-0">
             <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('modules.leaves.leaveType')</p>
             <div class="select-status">
-                <select class="form-control select-picker" name="leave_type" id="leave_type" data-live-search="true"
-                    data-size="8">
+                <select class="form-control select-picker" name="leave_type" id="leave_type" data-live-search="true" data-size="8">
                     <option value="all">@lang('app.all')</option>
                     @foreach ($leaveTypes as $leaveType)
                         <option value="{{ $leaveType->id }}">{{ $leaveType->type_name }}</option>
@@ -64,8 +61,7 @@
                             <i class="fa fa-search f-13 text-dark-grey"></i>
                         </span>
                     </div>
-                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field"
-                        placeholder="@lang('app.startTyping')">
+                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field" placeholder="@lang('app.startTyping')">
                 </div>
             </form>
         </div>
@@ -81,11 +77,10 @@
 
         <!-- MORE FILTERS END -->
     </x-filters.filter-box>
-
 @endsection
 
 @php
-$addLeavePermission = user()->permission('add_leave');
+    $addLeavePermission = user()->permission('add_leave');
 @endphp
 
 @section('content')
@@ -95,23 +90,18 @@ $addLeavePermission = user()->permission('add_leave');
         <div class="d-grid d-lg-flex d-md-flex action-bar">
             <div id="table-actions" class="flex-grow-1 align-items-center">
                 @if ($addLeavePermission == 'all' || $addLeavePermission == 'added')
-                    <x-forms.link-primary :link="route('leaves.create')"
-                        data-redirect-url="{{ route('leaves.calendar') }}"
-                        class="mr-3 openRightModal float-left" icon="plus">
+                    <x-forms.link-primary :link="route('leaves.create')" data-redirect-url="{{ route('leaves.calendar') }}" class="mr-3 openRightModal float-left" icon="plus">
                         @lang('modules.leaves.addLeave')
                     </x-forms.link-primary>
                 @endif
             </div>
 
             <div class="btn-group mt-2 mt-lg-0 mt-md-0 ml-0 ml-lg-3 ml-md-3" role="group" aria-label="Basic example">
-                <a href="{{ route('leaves.index') }}" class="btn btn-secondary f-14" data-toggle="tooltip"
-                    data-original-title="@lang('modules.leaves.tableView')"><i class="side-icon bi bi-list-ul"></i></a>
+                <a href="{{ route('leaves.index') }}" class="btn btn-secondary f-14" data-toggle="tooltip" data-original-title="@lang('modules.leaves.tableView')"><i class="side-icon bi bi-list-ul"></i></a>
 
-                <a href="{{ route('leaves.calendar') }}" class="btn btn-secondary f-14 btn-active"
-                    data-toggle="tooltip" data-original-title="@lang('app.menu.calendar')"><i class="side-icon bi bi-calendar"></i></a>
+                <a href="{{ route('leaves.calendar') }}" class="btn btn-secondary f-14 btn-active" data-toggle="tooltip" data-original-title="@lang('app.menu.calendar')"><i class="side-icon bi bi-calendar"></i></a>
 
-                <a href="{{ route('leaves.personal') }}" class="btn btn-secondary f-14" data-toggle="tooltip"
-                    data-original-title="@lang('modules.leaves.myLeaves')"><i class="side-icon bi bi-person"></i></a>
+                <a href="{{ route('leaves.personal') }}" class="btn btn-secondary f-14" data-toggle="tooltip" data-original-title="@lang('modules.leaves.myLeaves')"><i class="side-icon bi bi-person"></i></a>
             </div>
         </div>
 
@@ -125,7 +115,6 @@ $addLeavePermission = user()->permission('add_leave');
 
     </div>
     <!-- CONTENT WRAPPER END -->
-
 @endsection
 
 @push('scripts')
@@ -221,32 +210,38 @@ $addLeavePermission = user()->permission('add_leave');
             var url = "{{ route('leaves.show', ':id') }}";
             url = url.replace(':id', id);
 
-            $.easyAjax({
-                url: url,
-                blockUI: true,
-                container: RIGHT_MODAL,
-                historyPush: true,
-                success: function(response) {
-                    if (response.status == "success") {
-                        $(RIGHT_MODAL_CONTENT).html(response.html);
-                        $(RIGHT_MODAL_TITLE).html(response.title);
-                    }
-                },
-                error: function(request, status, error) {
-                    if (request.status == 403) {
-                        $(RIGHT_MODAL_CONTENT).html(
-                            '<div class="align-content-between d-flex justify-content-center mt-105 f-21">403 | Permission Denied</div>'
-                        );
-                    } else if (request.status == 404) {
-                        $(RIGHT_MODAL_CONTENT).html(
-                            '<div class="align-content-between d-flex justify-content-center mt-105 f-21">404 | Not Found</div>'
-                        );
-                    } else if (request.status == 500) {
-                        $(RIGHT_MODAL_CONTENT).html(
-                            '<div class="align-content-between d-flex justify-content-center mt-105 f-21">500 | Something Went Wrong</div>'
-                        );
-                    }
+            $.easyBlockUI(RIGHT_MODAL);
+            window.apiHttp.get(url).then(function(response) {
+                if (response.status == "success") {
+                    $(RIGHT_MODAL_CONTENT).html(response.html);
+                    $(RIGHT_MODAL_TITLE).html(response.title);
                 }
+            }).catch(function(err) {
+                var st = err.status || (err.response && err.response.status);
+                if (st == 403) {
+                    $(RIGHT_MODAL_CONTENT).html(
+                        '<div class="align-content-between d-flex justify-content-center mt-105 f-21">403 | Permission Denied</div>'
+                    );
+                } else if (st == 404) {
+                    $(RIGHT_MODAL_CONTENT).html(
+                        '<div class="align-content-between d-flex justify-content-center mt-105 f-21">404 | Not Found</div>'
+                    );
+                } else if (st == 500) {
+                    $(RIGHT_MODAL_CONTENT).html(
+                        '<div class="align-content-between d-flex justify-content-center mt-105 f-21">500 | Something Went Wrong</div>'
+                    );
+                } else if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $.easyUnblockUI(RIGHT_MODAL);
             });
         }
     </script>

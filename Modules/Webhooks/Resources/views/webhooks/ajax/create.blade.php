@@ -180,18 +180,13 @@
         let url = "{{ route('webhooks.webhooks_for_variable', ':webhookFor') }}";
         url = url.replace(':webhookFor', webhookFor);
 
-        $.easyAjax({
-            type: 'GET',
-            url: url,
-            blockUI: false,
-            success: function(response) {
-                let dataList = $('#bodyValues');
-                dataList.empty();
-                $.each(response.options, function(index, value) {
-                    dataList.append(`<option value="${value}">`);
-                });
-            }
-        });
+        window.apiHttp.get(url).then(function(response) {
+            let dataList = $('#bodyValues');
+            dataList.empty();
+            $.each(response.options, function(index, value) {
+                dataList.append(`<option value="${value}">`);
+            });
+        }).catch(function(err) { $.handleApiFormError(err); });
     }
     $(document).ready(function() {
 
@@ -261,21 +256,12 @@
             var data = $('#save-webhook-form').serialize();
 
             if (url) {
-                $.easyAjax({
-                    url: url,
-                    container: '#save-webhook-form',
-                    type: "POST",
-                    disableButton: true,
-                    blockUI: true,
-                    file: true,
-                    data: data,
-                    success: function(response) {
-                        if (response.status == "success") {
-                            const redirectUrl = "{{ route('webhooks.index') }}";
-                            window.location.href = redirectUrl;
-                        }
+                window.apiHttp.postUrlEncoded(url, data).then(function(response) {
+                    if (response.status == "success") {
+                        const redirectUrl = "{{ route('webhooks.index') }}";
+                        window.location.href = redirectUrl;
                     }
-                });
+                }).catch(function(err) { $.handleApiFormError(err); });
             }
         });
 

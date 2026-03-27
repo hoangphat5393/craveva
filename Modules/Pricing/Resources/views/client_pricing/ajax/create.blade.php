@@ -141,13 +141,9 @@
             return;
         }
 
-        $.easyAjax({
-            url: "{{ route('pricing.client_pricing.store') }}",
-            container: '#create-client-pricing-form',
-            type: 'POST',
-            blockUI: true,
-            data: $('#create-client-pricing-form').serialize(),
-            success: function(response) {
+        $.easyBlockUI('#create-client-pricing-form');
+        window.apiHttp.postUrlEncoded("{{ route('pricing.client_pricing.store') }}", $('#create-client-pricing-form').serialize())
+            .then(function(response) {
                 if (response.status === 'success') {
                     if ($(RIGHT_MODAL).hasClass('show')) {
                         document.getElementById('close-task-detail').click();
@@ -156,8 +152,13 @@
                         window.location.href = response.redirectUrl;
                     }
                 }
-            }
-        });
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $.easyUnblockUI('#create-client-pricing-form');
+            });
     });
 
     $(document).ready(function() {

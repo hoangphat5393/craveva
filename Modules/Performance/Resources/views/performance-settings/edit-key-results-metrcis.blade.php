@@ -29,21 +29,18 @@
 
     // save edited key result
     $('#save-key-result').click(function() {
-        $.easyAjax({
-            url: "{{ route('key-results-metrics.update', $keyResults->id) }}",
-            container: '#editKeyResultsForm',
-            type: "POST",
-            redirect: true,
-            file: true,
-            data: $('#editKeyResultsForm').serialize(),
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-key-result",
-            success: function (response) {
+        $.easyBlockUI('#editKeyResultsForm');
+        window.apiHttp.postUrlEncoded("{{ route('key-results-metrics.update', $keyResults->id) }}", $('#editKeyResultsForm').serialize())
+            .then(function (response) {
                 if (response.status == "success") {
                     window.location.reload();
                 }
-            }
-        });
+            })
+            .catch(function (err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function () {
+                $.easyUnblockUI('#editKeyResultsForm');
+            });
     });
 </script>

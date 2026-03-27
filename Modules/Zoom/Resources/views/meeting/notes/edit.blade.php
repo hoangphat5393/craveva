@@ -38,31 +38,20 @@
             var note = document.getElementById('task-edit-note').children[0].innerHTML;
             document.getElementById('task-edit-note-text').value = note;
 
-            var token = '{{ csrf_token() }}';
-
             const url = "{{ route('meeting-note.update', $note->id) }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#edit-note-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-edit-note",
-                data: {
-                    '_token': token,
+            window.apiHttp.postUrlEncoded(url, {
+                    '_token': '{{ csrf_token() }}',
                     note: note,
                     '_method': 'PUT',
                     taskId: '{{ $note->meeting->id }}'
-                },
-                success: function(response) {
+            }).then(function(response) {
                     if (response.status == "success") {
                         document.getElementById('note-list').innerHTML = response.view;
                         $(MODAL_LG).modal('hide');
                     }
 
-                }
-            });
+            }).catch(function (err) { $.handleApiFormError(err); });
         });
 
     });

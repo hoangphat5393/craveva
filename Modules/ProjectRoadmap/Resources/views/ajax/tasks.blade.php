@@ -182,20 +182,12 @@ $projectArchived = $project->trashed();
                 var url = "{{ route('tasks.destroy', ':id') }}";
                 url = url.replace(':id', id);
 
-                var token = "{{ csrf_token() }}";
-
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
-                        if (response.status == "success") {
-                            showTable();
-                        }
+                window.apiHttp.delete(url, "{{ csrf_token() }}").then(function(response) {
+                    if (response.status == "success") {
+                        showTable();
                     }
+                }).catch(function(err) {
+                    $.handleApiFormError(err);
                 });
             }
         });
@@ -208,18 +200,11 @@ $projectArchived = $project->trashed();
         var status = $(this).val();
 
         if (id != "" && status != "") {
-            $.easyAjax({
-                url: url,
-                type: "POST",
-                data: {
-                    '_token': token,
-                    taskId: id,
-                    status: status,
-                    sortBy: 'id'
-                },
-                success: function(data) {
-                    window.LaravelDataTables["allTasks-table"].draw(true);
-                }
+            var chBody = '_token=' + encodeURIComponent(token) + '&taskId=' + encodeURIComponent(id) + '&status=' + encodeURIComponent(status) + '&sortBy=id';
+            window.apiHttp.postUrlEncoded(url, chBody).then(function() {
+                window.LaravelDataTables["allTasks-table"].draw(true);
+            }).catch(function(err) {
+                $.handleApiFormError(err);
             });
 
         }
@@ -281,21 +266,21 @@ $projectArchived = $project->trashed();
 
         var url = "{{ route('tasks.apply_quick_action') }}?row_ids=" + rowdIds;
 
-        $.easyAjax({
-            url: url,
-            container: '#quick-action-form',
-            type: "POST",
-            disableButton: true,
-            buttonSelector: "#quick-action-apply",
-            data: $('#quick-action-form').serialize(),
-            success: function(response) {
-                if (response.status == 'success') {
-                    showTable();
-                    resetActionButtons();
-                    deSelectAll();
-                }
+        var $qaBtn = $("#quick-action-apply");
+        $qaBtn.prop('disabled', true);
+        $.easyBlockUI('#quick-action-form');
+        window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize()).then(function(response) {
+            if (response.status == 'success') {
+                showTable();
+                resetActionButtons();
+                deSelectAll();
             }
-        })
+        }).catch(function(err) {
+            $.handleApiFormError(err);
+        }).finally(function() {
+            $qaBtn.prop('disabled', false);
+            $.easyUnblockUI('#quick-action-form');
+        });
     };
 
     $('#allTasks-table').on('click', '.start-timer', function() {
@@ -305,32 +290,26 @@ $projectArchived = $project->trashed();
         var task_id = $(this).data('task-id');
         var memo = "{{ __('app.task') }}#" + $(this).data('task-id');
 
-        $.easyAjax({
-            url: url,
-            container: '#allTasks-table',
-            type: "POST",
-            blockUI: true,
-            data: {
-                task_id: task_id,
-                memo: memo,
-                '_token': token,
-                user_id: user_id
-            },
-            success: function(response) {
-                if (response.status == 'success') {
-                    if (response.activeTimerCount > 0) {
-                        $('#show-active-timer .active-timer-count').html(response.activeTimerCount);
-                    } else {
-                        $('#show-active-timer .active-timer-count').addClass('d-none');
-                    }
+        $.easyBlockUI('#allTasks-table');
+        var startBody = '_token=' + encodeURIComponent(token) + '&task_id=' + encodeURIComponent(task_id) + '&memo=' + encodeURIComponent(memo) + '&user_id=' + encodeURIComponent(user_id);
+        window.apiHttp.postUrlEncoded(url, startBody).then(function(response) {
+            if (response.status == 'success') {
+                if (response.activeTimerCount > 0) {
+                    $('#show-active-timer .active-timer-count').html(response.activeTimerCount);
+                } else {
+                    $('#show-active-timer .active-timer-count').addClass('d-none');
+                }
 
-                    $('#timer-clock').html(response.clockHtml);
-                    if ($('#allTasks-table').length) {
-                        window.LaravelDataTables["allTasks-table"].draw(true);
-                    }
+                $('#timer-clock').html(response.clockHtml);
+                if ($('#allTasks-table').length) {
+                    window.LaravelDataTables["allTasks-table"].draw(true);
                 }
             }
-        })
+        }).catch(function(err) {
+            $.handleApiFormError(err);
+        }).finally(function() {
+            $.easyUnblockUI('#allTasks-table');
+        });
     });
 
     $('#allTasks-table').on('click', '.stop-timer', function() {
@@ -338,28 +317,24 @@ $projectArchived = $project->trashed();
         var url = "{{ route('timelogs.stop_timer', ':id') }}";
         url = url.replace(':id', id);
         var token = '{{ csrf_token() }}';
-        $.easyAjax({
-            url: url,
-            blockUI: true,
-            container: '#allTasks-table',
-            type: "POST",
-            data: {
-                timeId: id,
-                _token: token
-            },
-            success: function(response) {
-                if (response.activeTimerCount > 0) {
-                    $('#show-active-timer .active-timer-count').html(response.activeTimerCount);
-                } else {
-                    $('#show-active-timer .active-timer-count').addClass('d-none');
-                }
-
-                $('#timer-clock').html('');
-                if ($('#allTasks-table').length) {
-                    window.LaravelDataTables["allTasks-table"].draw(true);
-                }
+        $.easyBlockUI('#allTasks-table');
+        var stopBody = 'timeId=' + encodeURIComponent(id) + '&_token=' + encodeURIComponent(token);
+        window.apiHttp.postUrlEncoded(url, stopBody).then(function(response) {
+            if (response.activeTimerCount > 0) {
+                $('#show-active-timer .active-timer-count').html(response.activeTimerCount);
+            } else {
+                $('#show-active-timer .active-timer-count').addClass('d-none');
             }
-        })
+
+            $('#timer-clock').html('');
+            if ($('#allTasks-table').length) {
+                window.LaravelDataTables["allTasks-table"].draw(true);
+            }
+        }).catch(function(err) {
+            $.handleApiFormError(err);
+        }).finally(function() {
+            $.easyUnblockUI('#allTasks-table');
+        });
     });
 
     $('#allTasks-table').on('click', '.resume-timer', function() {
@@ -367,29 +342,26 @@ $projectArchived = $project->trashed();
         var url = "{{ route('timelogs.resume_timer', ':id') }}";
         url = url.replace(':id', id);
         var token = '{{ csrf_token() }}';
-        $.easyAjax({
-            url: url,
-            blockUI: true,
-            type: "POST",
-            data: {
-                timeId: id,
-                _token: token
-            },
-            success: function(response) {
-                if (response.status == 'success') {
-                    if (response.activeTimerCount > 0) {
-                        $('#show-active-timer .active-timer-count').html(response.activeTimerCount);
-                    } else {
-                        $('#show-active-timer .active-timer-count').addClass('d-none');
-                    }
+        $.easyBlockUI('#allTasks-table');
+        var resumeBody = 'timeId=' + encodeURIComponent(id) + '&_token=' + encodeURIComponent(token);
+        window.apiHttp.postUrlEncoded(url, resumeBody).then(function(response) {
+            if (response.status == 'success') {
+                if (response.activeTimerCount > 0) {
+                    $('#show-active-timer .active-timer-count').html(response.activeTimerCount);
+                } else {
+                    $('#show-active-timer .active-timer-count').addClass('d-none');
+                }
 
-                    $('#timer-clock').html(response.clockHtml);
-                    if ($('#allTasks-table').length) {
-                        window.LaravelDataTables["allTasks-table"].draw(true);
-                    }
+                $('#timer-clock').html(response.clockHtml);
+                if ($('#allTasks-table').length) {
+                    window.LaravelDataTables["allTasks-table"].draw(true);
                 }
             }
-        })
+        }).catch(function(err) {
+            $.handleApiFormError(err);
+        }).finally(function() {
+            $.easyUnblockUI('#allTasks-table');
+        });
     });
 
     $('#allTasks-table').on('click', '.pause-timer', function() {
@@ -397,30 +369,28 @@ $projectArchived = $project->trashed();
         var url = "{{ route('timelogs.pause_timer', ':id') }}";
         url = url.replace(':id', id);
         var token = '{{ csrf_token() }}';
-        $.easyAjax({
-            url: url,
-            blockUI: true,
-            type: "POST",
-            disableButton: true,
-            buttonSelector: "#pause-timer-btn",
-            data: {
-                timeId: id,
-                _token: token
-            },
-            success: function(response) {
-                if (response.status == 'success') {
-                    if (response.activeTimerCount > 0) {
-                        $('#show-active-timer .active-timer-count').html(response.activeTimerCount);
-                    } else {
-                        $('#show-active-timer .active-timer-count').addClass('d-none');
-                    }
+        var $pauseBtn = $('#pause-timer-btn');
+        $pauseBtn.prop('disabled', true);
+        $.easyBlockUI('#allTasks-table');
+        var pauseBody = 'timeId=' + encodeURIComponent(id) + '&_token=' + encodeURIComponent(token);
+        window.apiHttp.postUrlEncoded(url, pauseBody).then(function(response) {
+            if (response.status == 'success') {
+                if (response.activeTimerCount > 0) {
+                    $('#show-active-timer .active-timer-count').html(response.activeTimerCount);
+                } else {
+                    $('#show-active-timer .active-timer-count').addClass('d-none');
+                }
 
-                    $('#timer-clock').html(response.clockHtml);
-                    if ($('#allTasks-table').length) {
-                        window.LaravelDataTables["allTasks-table"].draw(true);
-                    }
+                $('#timer-clock').html(response.clockHtml);
+                if ($('#allTasks-table').length) {
+                    window.LaravelDataTables["allTasks-table"].draw(true);
                 }
             }
-        })
+        }).catch(function(err) {
+            $.handleApiFormError(err);
+        }).finally(function() {
+            $pauseBtn.prop('disabled', false);
+            $.easyUnblockUI('#allTasks-table');
+        });
     });
 </script>

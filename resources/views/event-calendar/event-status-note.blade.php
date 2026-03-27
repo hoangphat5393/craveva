@@ -29,19 +29,14 @@
 
 $('#save-event-status').click(function() {
         var url = "{{ route('events.update_status', $event->id) }}";
-        $.easyAjax({
-            url: url,
-            container: '#eventStatusNote',
-            type: "POST",
-            disableButton: true,
-            blockUI: true,
-            data: $('#eventStatusNote').serialize(),
-            success: function(response) {
-                if (response.status == 'success') {
-                    window.location.reload();
-                }
+        $.easyBlockUI('#eventStatusNote');
+        window.apiHttp.postUrlEncoded(url, $('#eventStatusNote').serialize()).then(function(response) {
+            if (response.status == 'success') {
+                window.location.reload();
             }
-        })
+        }).catch(function(err){ $.handleApiFormError(err); }).finally(function() {
+            $.easyUnblockUI('#eventStatusNote');
+        });
     });
 
 </script>

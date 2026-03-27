@@ -81,18 +81,17 @@
 
         const requestUrl = this.href;
 
-        $.easyAjax({
-            url: requestUrl,
-            blockUI: true,
-            container: "#nav-tabContent",
-            historyPush: true,
-            success: function(response) {
+        window.history.pushState({ id: requestUrl }, '', requestUrl);
+        $.easyBlockUI("#nav-tabContent");
+        window.apiHttp.get(requestUrl)
+            .then(function(response) {
                 if (response.status == "success") {
                     $('#nav-tabContent').html(response.html);
                     init('#nav-tabContent');
                 }
-            }
-        });
+            })
+            .catch(function (err) { $.handleApiFormError(err); })
+            .finally(function () { $.easyUnblockUI("#nav-tabContent"); });
     });
 
     // Delete currency
@@ -122,20 +121,15 @@
 
                 const token = "{{ csrf_token() }}";
 
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    blockUI: true,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
+                $.easyBlockUI();
+                window.apiHttp.delete(url, token)
+                    .then(function(response) {
                         if (response.status === "success") {
                             $('.row'+id).fadeOut();
                         }
-                    }
-                });
+                    })
+                    .catch(function (err) { $.handleApiFormError(err); })
+                    .finally(function () { $.easyUnblockUI(); });
             }
         });
     });
@@ -143,17 +137,16 @@
     // update exchange rates
     $('#update-exchange-rates').click(function() {
         var url = "{{ route('superadmin.settings.currency_settings.update_exchange_rates') }}";
-        $.easyAjax({
-            url: url,
-            type: "GET",
-            blockUI: true,
-            success: function(response) {
+        $.easyBlockUI();
+        window.apiHttp.get(url)
+            .then(function(response) {
                 if (response.status == "success") {
                     $.unblockUI();
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch(function (err) { $.handleApiFormError(err); })
+            .finally(function () { $.easyUnblockUI(); });
     });
 
     // Currency code converter modal open script
@@ -163,17 +156,39 @@
         $.ajaxModal(MODAL_LG, url);
     });
 
-    $("body").on("click", "#save-currency-format", function() {
-        $.easyAjax({
-            url: "{{route('superadmin.settings.currency_settings.update_currency_format')}}",
-            container: '#editSettings',
-            type: "GET",
-            blockUI: true,
-            disableButton: true,
-            redirect: true,
-            buttonSelector: "#save-currency-format",
-            data: $('#editSettings').serialize()
-        })
+        $("body").on("click", "#save-currency-format", function() {
+        const fmtUrl = "{{route('superadmin.settings.currency_settings.update_currency_format')}}";
+        const qs = $('#editSettings').serialize();
+        const sep = fmtUrl.indexOf('?') >= 0 ? '&' : '?';
+        const $fmtBtn = $('#save-currency-format');
+        const fmtPrev = $fmtBtn.html();
+        $.easyBlockUI('#editSettings');
+        $fmtBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+        window.apiHttp.get(fmtUrl + sep + qs)
+            .then(function (response) {
+                if (response.status === 'success') {
+                    if (response.action === 'redirect' && response.url) {
+                        window.location.href = response.url;
+                    } else if (typeof response.message !== 'undefined') {
+                        Swal.fire({
+                            icon: 'success',
+                            text: response.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 3000,
+                            timerProgressBar: true,
+                            showConfirmButton: false,
+                            customClass: { confirmButton: 'btn btn-primary' },
+                            showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                        });
+                    }
+                }
+            })
+            .catch(function (err) { $.handleApiFormError(err); })
+            .finally(function () {
+                $.easyUnblockUI('#editSettings');
+                $fmtBtn.prop('disabled', false).html(fmtPrev);
+            });
     });
 
 </script>

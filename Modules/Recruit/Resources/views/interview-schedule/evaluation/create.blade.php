@@ -62,16 +62,8 @@
         $('body').off('click', "#save-evaluation-form").on('click', '#save-evaluation-form', function () {
 
             const url = "{{ route('evaluation.store') }}";
-            $.easyAjax({
-                url: url,
-                container: '#save-evaluation-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                file: true,
-                buttonSelector: "#save-evaluation-form",
-                data: $('#save-evaluation-data-form').serialize(),
-                success: function (response) {
+            window.apiHttp.postUrlEncoded(url, $('#save-evaluation-data-form').serialize())
+                .then(function (response) {
                     if (response.status == 'success') {
                         if ($(MODAL_XL).hasClass('show')) {
                             $(MODAL_XL).modal('hide');
@@ -80,8 +72,10 @@
                             window.location.href = response.redirectUrl;
                         }
                     }
-                }
-            });
+                })
+                .catch(function (err) {
+                    $.handleApiFormError(err);
+                });
         });
 
         $('body').off('click', ".status-setting").on('click', '.status-setting', function () {

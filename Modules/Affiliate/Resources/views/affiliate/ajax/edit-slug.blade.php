@@ -32,19 +32,18 @@
         var url = "{{ route('affiliate-dashboard.update', ':id') }}";
         url = url.replace(':id', '{{ $affiliate->id }}');
 
-        $.easyAjax({
-            url: url,
-            container: '#edit-affiliate',
-            type: "PUT",
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-affiliate",
-            data: $('#edit-affiliate').serialize(),
-            success: function(response) {
+        $.easyBlockUI('#edit-affiliate');
+        window.apiHttp.postUrlEncoded(url, $('#edit-affiliate').serialize() + '&_method=PUT')
+            .then(function(response) {
                 if (response.status == 'success') {
                     window.location.reload();
                 }
-            }
-        });
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $.easyUnblockUI('#edit-affiliate');
+            });
     });
 </script>

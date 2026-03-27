@@ -109,13 +109,27 @@
     var orderComplete = function(paymentIntentId) {
         loading(false);
         cardButton.disabled = true;
-        $.easyAjax({
-            url: '{{route('client.stripe-public', [$invoice->id])}}',
-            container: '#invoice_container',
-            type: "POST",
-            redirect: true,
-            data: {token: paymentIntentId, "_token" : "{{ csrf_token() }}" },
-        })
+        window.apiHttp.postUrlEncoded('{{route('client.stripe-public', [$invoice->id])}}', {token: paymentIntentId, "_token" : "{{ csrf_token() }}" })
+            .then(function (response) {
+                if (response.status === 'success') {
+                    if (response.action === 'redirect' && response.url) {
+                        window.location.href = response.url;
+                    } else if (typeof response.message !== 'undefined') {
+                        Swal.fire({
+                            icon: 'success',
+                            text: response.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 3000,
+                            timerProgressBar: true,
+                            showConfirmButton: false,
+                            customClass: { confirmButton: 'btn btn-primary' },
+                            showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                        });
+                    }
+                }
+            })
+            .catch(function (err) { $.handleApiFormError(err); });
     };
 
     // Show the customer the error from Stripe if their card fails to charge

@@ -419,17 +419,14 @@
 
                     var url = "{{ route('billing.unsubscribe') }}";
                     var token = "{{ csrf_token() }}";
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {'_token': token, '_method': 'POST', 'type': type},
-                        success: function (response) {
-                            if (response.status == "success") {
-                                $.unblockUI();
+                    window.apiHttp.postUrlEncoded(url, {'_token': token, '_method': 'POST', 'type': type}).then(function (response) {
+                        if (response.status == "success") {
+                            $.unblockUI();
 //                                    swal("Deleted!", response.message, "success");
-                                table._fnDraw();
-                            }
+                            table._fnDraw();
                         }
+                    }).catch(function (err) {
+                        $.handleApiFormError(err);
                     });
                 }
             });

@@ -29,21 +29,19 @@
         var userId = $(this).data('user-id');
         var companyId = $(this).data('company-id');
 
-        $.easyAjax({
-            url: url,
-            container: '#body',
-            type: "POST",
-            blockUI: true,
-            data: {
-                user_id : userId,
-                company_id : companyId,
-                _token: token
-            },
-            success: function(response) {
-                if (response.status == 'success') {
-                    window.location.href = response.redirect_url;
-                }
+        $.easyBlockUI('#body');
+        window.apiHttp.postUrlEncoded(url, {
+            user_id : userId,
+            company_id : companyId,
+            _token: token
+        }).then(function(response) {
+            if (response.status == 'success') {
+                window.location.href = response.redirect_url;
             }
+        }).catch(function(err) {
+            $.handleApiFormError(err);
+        }).finally(function() {
+            $.easyUnblockUI('#body');
         })
     });
 </script>

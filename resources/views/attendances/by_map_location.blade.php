@@ -9,15 +9,12 @@
 @endpush
 
 @section('filter-section')
-
     <x-filters.filter-box>
 
         <div class="select-box d-flex py-2 pr-2 border-right-grey border-right-grey-sm-0">
             <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('app.date')</p>
             <div class="select-status">
-                <input type="text" class="position-relative text-dark form-control border-0 p-2 text-left f-14 f-w-500 border-additional-grey"
-                    id="attendance_date" placeholder="@lang('placeholders.date')"
-                    value="{{ now(company()->timezone)->translatedFormat(company()->date_format) }}">
+                <input type="text" class="position-relative text-dark form-control border-0 p-2 text-left f-14 f-w-500 border-additional-grey" id="attendance_date" placeholder="@lang('placeholders.date')" value="{{ now(company()->timezone)->translatedFormat(company()->date_format) }}">
             </div>
         </div>
 
@@ -36,8 +33,7 @@
         <div class="select-box d-flex py-2 px-lg-2 px-md-2 px-0 border-right-grey border-right-grey-sm-0">
             <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('app.department')</p>
             <div class="select-status d-flex align-self-center">
-                <select class="form-control select-picker" name="department" id="department" data-live-search="true"
-                    data-size="8">
+                <select class="form-control select-picker" name="department" id="department" data-live-search="true" data-size="8">
                     <option value="all">@lang('app.all')</option>
                     @foreach ($departments as $department)
                         <option value="{{ $department->id }}">{{ $department->team_name }}</option>
@@ -51,9 +47,7 @@
             <div class="select-status d-flex align-self-center">
                 <select class="form-control select-picker" name="late" id="late">
                     <option value="all">@lang('app.all')</option>
-                    <option @if (request('late') == 'yes')
-                        selected
-                        @endif value="yes">@lang('app.yes')</option>
+                    <option @if (request('late') == 'yes') selected @endif value="yes">@lang('app.yes')</option>
                     <option value="no">@lang('app.no')</option>
                 </select>
             </div>
@@ -69,7 +63,6 @@
         <!-- RESET END -->
 
     </x-filters.filter-box>
-
 @endsection
 
 @section('content')
@@ -79,20 +72,14 @@
         <div class="d-flex justify-content-end">
 
             <div class="btn-group" role="group">
-                <a href="{{ route('attendances.index') }}" class="btn btn-secondary f-14" data-toggle="tooltip"
-                    data-original-title="@lang('app.summary')"><i class="side-icon bi bi-list-ul"></i></a>
+                <a href="{{ route('attendances.index') }}" class="btn btn-secondary f-14" data-toggle="tooltip" data-original-title="@lang('app.summary')"><i class="side-icon bi bi-list-ul"></i></a>
 
-                <a href="{{ route('attendances.by_member') }}" class="btn btn-secondary f-14" data-toggle="tooltip"
-                    data-original-title="@lang('modules.attendance.attendanceByMember')"><i
-                        class="side-icon bi bi-person"></i></a>
+                <a href="{{ route('attendances.by_member') }}" class="btn btn-secondary f-14" data-toggle="tooltip" data-original-title="@lang('modules.attendance.attendanceByMember')"><i class="side-icon bi bi-person"></i></a>
 
-                <a href="{{ route('attendances.by_hour') }}" class="btn btn-secondary f-14" data-toggle="tooltip"
-                    data-original-title="@lang('modules.attendance.attendanceByHour')"><i class="fa fa-clock"></i></a>
+                <a href="{{ route('attendances.by_hour') }}" class="btn btn-secondary f-14" data-toggle="tooltip" data-original-title="@lang('modules.attendance.attendanceByHour')"><i class="fa fa-clock"></i></a>
 
                 @if (attendance_setting()->save_current_location)
-                    <a href="{{ route('attendances.by_map_location') }}" class="btn btn-secondary f-14 btn-active"
-                        data-toggle="tooltip" data-original-title="@lang('modules.attendance.attendanceByLocation')"><i
-                            class="fa fa-map-marked-alt"></i></a>
+                    <a href="{{ route('attendances.by_map_location') }}" class="btn btn-secondary f-14 btn-active" data-toggle="tooltip" data-original-title="@lang('modules.attendance.attendanceByLocation')"><i class="fa fa-map-marked-alt"></i></a>
                 @endif
 
             </div>
@@ -102,22 +89,19 @@
         <x-cards.data class="mt-3">
 
             <div class="row">
-                <div class="col-sm-12 my-2"><h4><i
-                    class="fa fa-map-marked-alt"></i> @lang('modules.attendance.attendanceByLocation')</h4></div>
+                <div class="col-sm-12 my-2">
+                    <h4><i class="fa fa-map-marked-alt"></i> @lang('modules.attendance.attendanceByLocation')</h4>
+                </div>
                 <div class="col-md-12" id="attendance-data"></div>
             </div>
         </x-cards.data>
         <!-- Task Box End -->
     </div>
     <!-- CONTENT WRAPPER END -->
-
 @endsection
 
 @push('scripts')
-
-    <script src="https://maps.googleapis.com/maps/api/js?key={{ global_setting()->google_map_key }}&callback=showTable"
-        async>
-    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ global_setting()->google_map_key }}&callback=showTable" async></script>
     <script>
         $('#user_id, #department, #late').on('change', function() {
             if ($('#user_id').val() != "all") {
@@ -155,19 +139,31 @@
 
             var token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                data: {
-                    '_token': token,
-                    attendance_date: attendance_date,
-                    department: department,
-                    late: late,
-                    userId: userId
-                },
-                url: url,
-                blockUI: loading,
-                container: '.content-wrapper',
-                success: function(response) {
-                    $('#attendance-data').html(response.data);
+            if (loading) {
+                $.easyBlockUI('.content-wrapper');
+            }
+            window.apiHttp.postUrlEncoded(url, {
+                _token: token,
+                attendance_date: attendance_date,
+                department: department,
+                late: late,
+                userId: userId
+            }).then(function(response) {
+                $('#attendance-data').html(response.data);
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                if (loading) {
+                    $.easyUnblockUI('.content-wrapper');
                 }
             });
 
@@ -191,5 +187,4 @@
             ...datepickerConfig
         });
     </script>
-
 @endpush

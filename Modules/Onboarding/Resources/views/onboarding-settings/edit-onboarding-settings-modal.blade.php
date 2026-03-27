@@ -76,20 +76,11 @@
         $('#update-onboarding-setting').click(function () {
             $('#type').val('onboard');
 
-            $.easyAjax({
-                container: '#editOnboarding',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#update-onboarding-setting",
-                url: "{{ route('onboarding-settings.update', $onboardingSetting->id) }}",
-                data: $('#editOnboarding').serialize(),
-                success: function (response) {
+            window.apiHttp.postUrlEncoded("{{ route('onboarding-settings.update', $onboardingSetting->id) }}", $('#editOnboarding').serialize()).then(function (response) {
                     if (response.status === 'success') {
                         window.location.reload();
                     }
-                }
-            })
+            }).catch(function (err) { $.handleApiFormError(err); })
         });
     });
 </script>

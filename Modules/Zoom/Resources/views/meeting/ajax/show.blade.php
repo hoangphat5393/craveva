@@ -170,20 +170,13 @@
 
                 const requestUrl = this.href;
 
-                $.easyAjax({
-                    url: requestUrl,
-                    blockUI: true,
-                    container: "#nav-tabContent",
-                    historyPush: ($(RIGHT_MODAL).hasClass('in') ? false : true),
-                    data: {
-                        'json': true
-                    },
-                    success: function(response) {
+                window.apiHttp.get(requestUrl, {
+                    params: { json: true }
+                }).then(function(response) {
                         if (response.status == "success") {
                             $('#nav-tabContent').html(response.html);
                         }
-                    }
-                });
+                }).catch(function (err) { $.handleApiFormError(err); });
             });
             $('body').on('click', '.delete-note', function() {
                 var id = $(this).data('row-id');
@@ -209,21 +202,11 @@
                         var url = "{{ route('meeting-note.destroy', ':id') }}";
                         url = url.replace(':id', id);
 
-                        var token = "{{ csrf_token() }}";
-
-                        $.easyAjax({
-                            type: 'POST',
-                            url: url,
-                            data: {
-                                '_token': token,
-                                '_method': 'DELETE'
-                            },
-                            success: function(response) {
+                        window.apiHttp.delete(url, "{{ csrf_token() }}").then(function(response) {
                                 if (response.status == "success") {
                                     $('#note-list').html(response.view);
                                 }
-                            }
-                        });
+                        }).catch(function (err) { $.handleApiFormError(err); });
                     }
                 });
             });

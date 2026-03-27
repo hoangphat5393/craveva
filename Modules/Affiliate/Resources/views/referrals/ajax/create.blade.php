@@ -46,16 +46,14 @@
     $(document).ready(function() {
 
         $('body').on('click', '#save-referral-form', function () {
-            $.easyAjax({
-                url: "{{ route('referral.store') }}",
-                container: '#save-referral-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                file: true,
-                buttonSelector: "#save-referral-form",
-                data: $('#save-referral-data-form').serialize(),
-            });
+            $.easyBlockUI('#save-referral-data-form');
+            window.apiHttp.postUrlEncoded("{{ route('referral.store') }}", $('#save-referral-data-form').serialize())
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#save-referral-data-form');
+                });
         });
 
         $('body').on('change', '#company_id', function () {
@@ -63,10 +61,8 @@
             var url = "{{ route('affiliates.get_affiliates', ':company') }}";
             url = url.replace(':company', $(this).val());
 
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                success: function(response) {
+            window.apiHttp.get(url)
+                .then(function(response) {
                     if (response.status == 'success') {
                         var options = [];
                         var rData = [];
@@ -80,8 +76,10 @@
                         $('#affiliate_id').html(options);
                         $('#affiliate_id').selectpicker('refresh');
                     }
-                }
-            })
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
 
         });
 

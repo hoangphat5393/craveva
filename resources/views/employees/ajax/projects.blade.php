@@ -1,5 +1,5 @@
 @php
-$addProjectPermission = user()->permission('add_projects');
+    $addProjectPermission = user()->permission('add_projects');
 @endphp
 
 <!-- ROW START -->
@@ -11,8 +11,7 @@ $addProjectPermission = user()->permission('add_projects');
             <div id="table-actions" class="d-flex align-items-center">
 
                 @if ($addProjectPermission == 'all' || $addProjectPermission == 'added')
-                    <x-forms.link-primary :link="route('projects.create').'?default_assign='.$employee->id"
-                        class="mr-3 openRightModal" icon="plus" data-redirect-url="{{ url()->full() }}">
+                    <x-forms.link-primary :link="route('projects.create') . '?default_assign=' . $employee->id" class="mr-3 openRightModal" icon="plus" data-redirect-url="{{ url()->full() }}">
                         @lang('app.addProject')
                     </x-forms.link-primary>
                 @endif
@@ -81,30 +80,37 @@ $addProjectPermission = user()->permission('add_projects');
     });
 
     $('#projects-table').on('change', '.change-status', function() {
-            var url = "{{ route('projects.change_status') }}";
-            var token = "{{ csrf_token() }}";
-            var id = $(this).data('project-id');
-            var status = $(this).val();
+        var url = "{{ route('projects.change_status') }}";
+        var token = "{{ csrf_token() }}";
+        var id = $(this).data('project-id');
+        var status = $(this).val();
 
-            if (id != "" && status != "") {
-                $.easyAjax({
-                    url: url,
-                    type: "POST",
-                    container: '.content-wrapper',
-                    blockUI: true,
-                    data: {
-                        '_token': token,
-                        projectId: id,
-                        statusId: status,
-                        sortBy: 'id'
-                    },
-                    success: function(data) {
-                        window.LaravelDataTables["projects-table"].draw(true);
-                    }
-                });
+        if (id != "" && status != "") {
+            $.easyBlockUI('.content-wrapper');
+            window.apiHttp.postUrlEncoded(url, {
+                '_token': token,
+                projectId: id,
+                statusId: status,
+                sortBy: 'id'
+            }).then(function() {
+                window.LaravelDataTables["projects-table"].draw(true);
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $.easyUnblockUI('.content-wrapper');
+            });
 
-            }
-        });
+        }
+    });
 
     $('#quick-action-apply').click(function() {
         const actionValue = $('#quick-action-type').val();
@@ -163,17 +169,20 @@ $addProjectPermission = user()->permission('add_projects');
 
                 var token = "{{ csrf_token() }}";
 
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
-                        if (response.status == "success") {
-                            showTable();
-                        }
+                window.apiHttp.delete(url, token).then(function(response) {
+                    if (response.status == "success") {
+                        showTable();
+                    }
+                }).catch(function(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
                     }
                 });
             }
@@ -207,16 +216,22 @@ $addProjectPermission = user()->permission('add_projects');
 
                 var token = "{{ csrf_token() }}";
 
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                    },
-                    success: function(response) {
-                        if (response.status == "success") {
-                            window.LaravelDataTables["projects-table"].draw(true);
-                        }
+                window.apiHttp.postUrlEncoded(url, {
+                    '_token': token,
+                }).then(function(response) {
+                    if (response.status == "success") {
+                        window.LaravelDataTables["projects-table"].draw(true);
+                    }
+                }).catch(function(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
                     }
                 });
             }
@@ -230,20 +245,29 @@ $addProjectPermission = user()->permission('add_projects');
 
         var url = "{{ route('projects.apply_quick_action') }}?row_ids=" + rowdIds;
 
-        $.easyAjax({
-            url: url,
-            container: '#quick-action-form',
-            type: "POST",
-            disableButton: true,
-            buttonSelector: "#quick-action-apply",
-            data: $('#quick-action-form').serialize(),
-            success: function(response) {
-                if (response.status == 'success') {
-                    showTable();
-                    resetActionButtons();
-                    deSelectAll();
-                }
+        var $qaApply = $('#quick-action-apply');
+        $qaApply.prop('disabled', true);
+        $.easyBlockUI('#quick-action-form');
+        window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize()).then(function(response) {
+            if (response.status == 'success') {
+                showTable();
+                resetActionButtons();
+                deSelectAll();
             }
-        })
+        }).catch(function(err) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    text: err.message,
+                    toast: true,
+                    position: 'top-end',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            }
+        }).finally(function() {
+            $qaApply.prop('disabled', false);
+            $.easyUnblockUI('#quick-action-form');
+        });
     };
 </script>

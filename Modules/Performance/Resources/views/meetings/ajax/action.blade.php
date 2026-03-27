@@ -162,16 +162,11 @@
                     var url = "{{ route('action.mark_as_actioned') }}";
                     url = url.replace(':id', id);
 
-                    var token = "{{ csrf_token() }}";
-
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
+                    window.apiHttp.postUrlEncoded(url, {
+                            '_token': "{{ csrf_token() }}",
                             'id': id,
-                        },
-                        success: function(response) {
+                        })
+                        .then(function(response) {
                             if (response.status == "success") {
                                 $('#nav-tabContent').html('');
                                 $('#nav-tabContent').html(response.html);
@@ -179,8 +174,10 @@
                                 $.easyUnblockUI();
                                 $(MODAL_LG).modal('hide');
                             }
-                        }
-                    });
+                        })
+                        .catch(function(err) {
+                            $.handleApiFormError(err);
+                        });
                 }
             });
         });
@@ -209,17 +206,9 @@
                     var url = "{{ route('action.destroy', ':id') }}";
                     url = url.replace(':id', id);
 
-                    var token = "{{ csrf_token() }}";
-
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
+                    $.easyBlockUI('body');
+                    window.apiHttp.delete(url, "{{ csrf_token() }}")
+                        .then(function(response) {
                             if (response.status == "success") {
                                 $('#nav-tabContent').html('');
                                 $('#nav-tabContent').html(response.html);
@@ -227,8 +216,13 @@
                                 $.easyUnblockUI();
                                 $(MODAL_LG).modal('hide');
                             }
-                        }
-                    });
+                        })
+                        .catch(function(err) {
+                            $.handleApiFormError(err);
+                        })
+                        .finally(function() {
+                            $.easyUnblockUI('body');
+                        });
                 }
             });
         });

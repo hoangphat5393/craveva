@@ -43,16 +43,14 @@
                 <td class="text-right">
                     <div class="task_view">
                         @if ($editPermission == 'all')
-                            <a href="javascript:;" data-status-id="{{ $status->id }}"
-                               class="edit-status task_view_more d-flex align-items-center justify-content-center">
+                            <a href="javascript:;" data-status-id="{{ $status->id }}" class="edit-status task_view_more d-flex align-items-center justify-content-center">
                                 <i class="fa fa-edit icons mr-1"></i> @lang('app.edit')
                             </a>
                         @endif
                     </div>
-                    @if($deletePermission == 'all' && $status->id != 1 && $status->id != 2 && $status->id != 3 && $status->id != 4 && $status->id != 5)
+                    @if ($deletePermission == 'all' && $status->id != 1 && $status->id != 2 && $status->id != 3 && $status->id != 4 && $status->id != 5)
                         <div class="task_view">
-                            <a href="javascript:;" data-status-id="{{ $status->id }}"
-                               class="delete-status task_view_more d-flex align-items-center justify-content-center dropdown-toggle">
+                            <a href="javascript:;" data-status-id="{{ $status->id }}" class="delete-status task_view_more d-flex align-items-center justify-content-center dropdown-toggle">
                                 <i class="fa fa-trash icons mr-2"></i> @lang('app.delete')
                             </a>
                         </div>
@@ -62,7 +60,7 @@
         @empty
             <tr>
                 <td colspan="4">
-                    <x-cards.no-record icon="user" :message="__('messages.noRecordFound')"/>
+                    <x-cards.no-record icon="user" :message="__('messages.noRecordFound')" />
                 </td>
             </tr>
         @endforelse
@@ -71,7 +69,7 @@
 
 <script>
     /* delete status */
-    $('body').on('click', '.delete-status', function () {
+    $('body').on('click', '.delete-status', function() {
         var id = $(this).data('status-id');
         var url = "{{ route('job-appboard.destroy', ':id') }}";
         url = url.replace(':id', id);
@@ -95,25 +93,21 @@
             buttonsStyling: false
         }).then((result) => {
             if (result.isConfirmed) {
-                $.easyAjax({
-                    url: url,
-                    type: 'POST',
-                    data: {
-                        '_token': '{{ csrf_token() }}',
-                        '_method': 'DELETE'
-                    },
-                    success: function (response) {
-                        if (response.status == 'success') {
-                            window.location.reload();
-                        }
+                window.apiHttp.delete(url, {
+                    _token: '{{ csrf_token() }}'
+                }).then(function(response) {
+                    if (response.data.status == 'success') {
+                        window.location.reload();
                     }
+                }).catch(function(err) {
+                    $.handleApiFormError(err);
                 });
             }
         });
 
     });
 
-    $('body').on('click', '.edit-status', function () {
+    $('body').on('click', '.edit-status', function() {
         var id = $(this).data('status-id');
         var url = "{{ route('job-appboard.edit', ':id') }}";
         url = url.replace(':id', id);
@@ -123,7 +117,7 @@
     });
 
     /* open add status modal */
-     $('body').on('click', '#add-column', function () {
+    $('body').on('click', '#add-column', function() {
         const url = "{{ route('job-appboard.create') }}";
         $(MODAL_LG + ' ' + MODAL_HEADING).html('...');
         $.ajaxModal(MODAL_LG, url);

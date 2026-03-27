@@ -240,21 +240,11 @@ $addProductPermission = user()->permission('add_product');
                 content == '' ? description = '' : document.getElementById('description-text').value = description;
             }
 
-            $.easyAjax({
-                url: url,
-                container: '#savePolicyForm',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                file: true,
-                buttonSelector: "#save-form",
-                data: $('#savePolicyForm').serialize(),
-                success: function(response) {
-                    if (response.status == 'success') {
-                        window.location.href = response.redirectUrl;
-                    }
+            window.apiHttp.postForm(url, document.getElementById('savePolicyForm')).then(function(response) {
+                if (response.status == 'success') {
+                    window.location.href = response.redirectUrl;
                 }
-            })
+            }).catch(function(err) { $.handleApiFormError(err); })
         });
 
         $('body').on('click', '.delete-file', function() {
@@ -281,21 +271,11 @@ $addProductPermission = user()->permission('add_product');
                         var url = "{{ route('policy-file.destroy', ':id') }}";
                         url = url.replace(':id', id);
 
-                        var token = "{{ csrf_token() }}";
-
-                        $.easyAjax({
-                            type: 'POST',
-                            url: url,
-                            data: {
-                                '_token': token,
-                                '_method': 'DELETE'
-                            },
-                            success: function(response) {
-                                if (response.status == "success") {
-                                    $('#policy-file-list').html(response.view);
-                                }
+                        window.apiHttp.delete(url, "{{ csrf_token() }}").then(function(response) {
+                            if (response.status == "success") {
+                                $('#policy-file-list').html(response.view);
                             }
-                        });
+                        }).catch(function(err) { $.handleApiFormError(err); });
                     }
                 });
         });

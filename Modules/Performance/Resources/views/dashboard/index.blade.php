@@ -97,17 +97,13 @@
 
             var url = "{{ route('performance-dashboard.chart') }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#progress',
-                blockUI: true,
-                type: "POST",
-                data: {
+            $.easyBlockUI('#progress');
+            window.apiHttp.postUrlEncoded(url, {
                     startDate: startDate,
                     endDate: endDate,
                     _token: '{{ csrf_token() }}'
-                },
-                success: function(response) {
+                })
+                .then(function(response) {
                     $('#progress .card-body').html(response.html);
                     $('#objective-chart-card').html(response.html2);
                     $('#pending-checkins-card').html(response.checkins);
@@ -120,8 +116,13 @@
                     }
 
                     return;
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#progress');
+                });
         }
 
         lineChart();
@@ -164,22 +165,19 @@
             url = url.replace(':id', objectiveId);
 
             if (url) {
-                $.easyAjax({
-                    url: url,
-                    type: "GET",
-                    buttonSelector: $(this),
-                    blockUI: true,
-                    disableButton: true,
-                    data: {
+                $.easyBlockUI();
+                window.apiHttp.get(url, {
+                    params: {
                         type: type,
                         _token: '{{ csrf_token() }}',
-                    },
-                    success: function(response) {
-                        if (response.status == "success") {
-                            $.easyUnblockUI();
-                        }
                     }
-                });
+                })
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    })
+                    .finally(function() {
+                        $.easyUnblockUI();
+                    });
             }
         });
 
@@ -189,22 +187,19 @@
             var url = "{{ route('meetings.send_reminder') }}";
 
             if (url) {
-                $.easyAjax({
-                    url: url,
-                    type: "GET",
-                    buttonSelector: $(this),
-                    blockUI: true,
-                    disableButton: true,
-                    data: {
+                $.easyBlockUI();
+                window.apiHttp.get(url, {
+                    params: {
                         meetingIds: meetingIds,
                         _token: '{{ csrf_token() }}',
-                    },
-                    success: function(response) {
-                        if (response.status == "success") {
-                            $.easyUnblockUI();
-                        }
                     }
-                });
+                })
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    })
+                    .finally(function() {
+                        $.easyUnblockUI();
+                    });
             }
         });
 

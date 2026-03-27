@@ -26,19 +26,17 @@
 <script>
     // save type
     $('#save-ticket-type').click(function() {
-        $.easyAjax({
-            url: "{{ route('superadmin.support-ticketTypes.store') }}",
-            container: '#createTicket',
-            type: "POST",
-            blockUI: true,
-            data: $('#createTicket').serialize(),
-            success: function(response) {
-                if (response.status == "success") {
-                    $('#ticket_type_id').html(response.optionData);
-                    $('#ticket_type_id').selectpicker('refresh');
-                    $(MODAL_LG).modal('hide');
-                }
+        $.easyBlockUI('#createTicket');
+        window.apiHttp.postUrlEncoded("{{ route('superadmin.support-ticketTypes.store') }}", $('#createTicket').serialize()).then(function(response) {
+            if (response.status == "success") {
+                $('#ticket_type_id').html(response.optionData);
+                $('#ticket_type_id').selectpicker('refresh');
+                $(MODAL_LG).modal('hide');
             }
+        }).catch(function(err) {
+            $.handleApiFormError(err);
+        }).finally(function() {
+            $.easyUnblockUI('#createTicket');
         })
     });
 

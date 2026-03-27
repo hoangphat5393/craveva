@@ -181,23 +181,15 @@
     $('#save-form').click(function () {
 
 
-        $.easyAjax({
-            url: '{{route('front.signup.store')}}',
-            container: '.form-section',
-            type: "POST",
-            data: $('#register').serialize(),
-            messagePosition: "inline",
-            success: function (response) {
-                if(response.status == 'success'){
-                    $('#form-box').remove();
-                }else if (response.status == 'fail')
-                {
-                    @if($global->google_recaptcha_status)
-                            grecaptcha.reset();
-                    @endif
-
-                }
+        window.apiHttp.postUrlEncoded('{{route('front.signup.store')}}', $('#register').serialize()).then(function (response) {
+            if(response.status == 'success'){
+                $('#form-box').remove();
             }
+        }).catch(function (err) {
+            $.handleApiFormError(err);
+            @if($global->google_recaptcha_status)
+            grecaptcha.reset();
+            @endif
         })
     });
 </script>

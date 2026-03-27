@@ -202,16 +202,35 @@
 
         $('#update-company-package').click(function() {
             const url = "{{ route('superadmin.companies.update_package', [$company->id]) }}";
-
-            $.easyAjax({
-                url: url,
-                container: '#update-company-package-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#update-company-package",
-                data: $('#update-company-package-form').serialize()
-            })
+            const $btn = $('#update-company-package');
+            const prev = $btn.html();
+            $.easyBlockUI('#update-company-package-form');
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+            window.apiHttp.postUrlEncoded(url, $('#update-company-package-form').serialize())
+                .then(function (response) {
+                    if (response.status === 'success') {
+                        if (response.action === 'redirect' && response.url) {
+                            window.location.href = response.url;
+                        } else if (typeof response.message !== 'undefined') {
+                            Swal.fire({
+                                icon: 'success',
+                                text: response.message,
+                                toast: true,
+                                position: 'top-end',
+                                timer: 3000,
+                                timerProgressBar: true,
+                                showConfirmButton: false,
+                                customClass: { confirmButton: 'btn btn-primary' },
+                                showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                            });
+                        }
+                    }
+                })
+                .catch(function (err) { $.handleApiFormError(err); })
+                .finally(function () {
+                    $.easyUnblockUI('#update-company-package-form');
+                    $btn.prop('disabled', false).html(prev);
+                });
         });
 
         $('#package').change(function() {

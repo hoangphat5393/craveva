@@ -31,32 +31,29 @@
                 </td>
                 <td>
                     @if ($addPermission == 'all')
-                        <select class="change-footer-status form-control select-picker"
-                                data-footer-id="{{ $link->id }}">
+                        <select class="change-footer-status form-control select-picker" data-footer-id="{{ $link->id }}">
                             <option @if ($link->status == 'active') selected @endif>@lang('app.active')</option>
                             <option @if ($link->status == 'inactive') selected @endif>@lang('app.inactive')</option>
                         </select>
                     @else
                         @if ($link->status == 'active')
-                            <i class="fa fa-circle mr-1 text-light-green f-10"></i>@lang(($link->status))
+                            <i class="fa fa-circle mr-1 text-light-green f-10"></i>@lang($link->status)
                         @else
-                            <i class="fa fa-circle mr-1 text-red f-10"></i>@lang(($link->status))
+                            <i class="fa fa-circle mr-1 text-red f-10"></i>@lang($link->status)
                         @endif
                     @endif
                 </td>
                 <td class="text-right col-md-2">
                     <div class="task_view">
                         @if ($editPermission == 'all')
-                            <a href="javascript:;" data-footer-id="{{ $link->id }}"
-                               class="editLink task_view_more d-flex align-items-center justify-content-center">
+                            <a href="javascript:;" data-footer-id="{{ $link->id }}" class="editLink task_view_more d-flex align-items-center justify-content-center">
                                 <i class="fa fa-edit icons mr-1"></i> @lang('app.edit')
                             </a>
                         @endif
                     </div>
                     <div class="task_view">
                         @if ($deletePermission == 'all')
-                            <a href="javascript:;" data-footer-id="{{ $link->id }}"
-                               class="delete-footer task_view_more d-flex align-items-center justify-content-center dropdown-toggle">
+                            <a href="javascript:;" data-footer-id="{{ $link->id }}" class="delete-footer task_view_more d-flex align-items-center justify-content-center dropdown-toggle">
                                 <i class="fa fa-trash icons mr-2"></i> @lang('app.delete')
                             </a>
                         @endif
@@ -71,7 +68,7 @@
 
 <script>
     /* delete link */
-    $('body').off('click', ".delete-footer").on('click', '.delete-footer', function () {
+    $('body').off('click', ".delete-footer").on('click', '.delete-footer', function() {
 
         var id = $(this).data('footer-id');
         Swal.fire({
@@ -96,57 +93,46 @@
                 var url = "{{ route('footer-settings.destroy', ':id') }}";
                 url = url.replace(':id', id);
 
-                var token = "{{ csrf_token() }}";
-
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    blockUI: true,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function (response) {
-                        if (response.status == "success") {
-                            $('.row' + id).fadeOut(100);
-                            location.reload();
-                        }
+                window.apiHttp.delete(url, {
+                    _token: "{{ csrf_token() }}"
+                }).then(function(response) {
+                    if (response.data.status == "success") {
+                        $('.row' + id).fadeOut(100);
+                        location.reload();
                     }
+                }).catch(function(err) {
+                    $.handleApiFormError(err);
                 });
             }
         });
     });
 
     /* change links status */
-    $('body').on('change', '.change-footer-status', function () {
+    $('body').on('change', '.change-footer-status', function() {
         var agentId = $(this).data('footer-id');
         var status = $(this).val();
-        var token = '{{ csrf_token() }}';
         var url = "{{ route('footer-settings.change_status', ':id') }}";
         url = url.replace(':id', agentId);
 
         if (typeof agentId !== 'undefined') {
-            $.easyAjax({
-                type: 'POST',
-                url: url,
-                blockUI: true,
-                data: {
-                    '_token': token,
-                    'status': status
-                }
+            window.apiHttp.postUrlEncoded(url, {
+                _token: '{{ csrf_token() }}',
+                status: status
+            }).catch(function(err) {
+                $.handleApiFormError(err);
             });
         }
     });
 
     /* open add agent modal */
-    $('body').off('click', "#addlink").on('click', '#addlink', function () {
+    $('body').off('click', "#addlink").on('click', '#addlink', function() {
         var url = "{{ route('footer-settings.create') }}";
         $(MODAL_LG + ' ' + MODAL_HEADING).html('...');
         $.ajaxModal(MODAL_LG, url);
     });
 
     // add new leave type
-    $('body').off('click', ".editLink").on('click', '.editLink', function () {
+    $('body').off('click', ".editLink").on('click', '.editLink', function() {
 
         var id = $(this).data('footer-id');
 
@@ -156,5 +142,4 @@
         $(MODAL_LG + ' ' + MODAL_HEADING).html('...');
         $.ajaxModal(MODAL_LG, url);
     });
-
 </script>

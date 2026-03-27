@@ -116,19 +116,13 @@
 
                 var token = "{{ csrf_token() }}";
 
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
+                window.apiHttp.delete(url, token)
+                    .then(function(response) {
                         if (response.status == "success") {
                             window.location.href = response.redirectUrl;
                         }
-                    }
-                });
+                    })
+                    .catch(function (err) { $.handleApiFormError(err); });
             }
         });
     });
@@ -160,18 +154,15 @@
 
                 var token = "{{ csrf_token() }}";
 
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
+                window.apiHttp.postUrlEncoded(url, {
                         '_token': token
-                    },
-                    success: function(response) {
+                    })
+                    .then(function(response) {
                         if (response.status == "success") {
                             $('#knowledgebase-file-list').html(response.view);
                         }
-                    }
-                });
+                    })
+                    .catch(function (err) { $.handleApiFormError(err); });
             }
         });
     });

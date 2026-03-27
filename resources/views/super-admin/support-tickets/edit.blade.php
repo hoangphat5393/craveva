@@ -478,13 +478,9 @@
 
             const url = "{{ route('superadmin.support-tickets.update', $ticket->id) }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#ticketMsg',
-                type: "POST",
-                blockUI: true,
-                data: $('#updateTicket2').serialize(),
-                success: function (response) {
+            $.easyBlockUI('#ticketMsg');
+            window.apiHttp.postUrlEncoded(url, $('#updateTicket2').serialize())
+                .then(function (response) {
 
                     if (response.status == 'success') {
                         if (taskDropzone.getQueuedFiles().length > 0) {
@@ -494,22 +490,20 @@
                             window.location.href = "{{ route('superadmin.support-tickets.show', $ticket->id) }}";
                         }
                     }
-                }
-            });
+                })
+                .catch(function (err) { $.handleApiFormError(err); })
+                .finally(function () { $.easyUnblockUI('#ticketMsg'); });
         });
 
         @if (user()->is_superadmin)
         $('.submit-ticket-2').click(function () {
 
-            $.easyAjax({
-                url: "{{ route('superadmin.support-tickets.update_other_data', $ticket->id) }}",
-                container: '#updateTicket1',
-                type: "POST",
-                blockUI: true,
-                disableButton: true,
-                buttonSelector: ".submit-ticket-2",
-                data: $('#updateTicket1').serialize(),
-                success: function (response) {
+            const $st2 = $('.submit-ticket-2');
+            const st2Prev = $st2.html();
+            $.easyBlockUI('#updateTicket1');
+            $st2.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+            window.apiHttp.postUrlEncoded("{{ route('superadmin.support-tickets.update_other_data', $ticket->id) }}", $('#updateTicket1').serialize())
+                .then(function (response) {
                     if (response.status == 'success') {
                         var status = $('#ticket-status').val();
 
@@ -538,8 +532,12 @@
                         }
                         $('.ticket-status').html(statusHtml);
                     }
-                }
-            })
+                })
+                .catch(function (err) { $.handleApiFormError(err); })
+                .finally(function () {
+                    $.easyUnblockUI('#updateTicket1');
+                    $st2.prop('disabled', false).html(st2Prev);
+                });
         });
         @endif
 
@@ -570,19 +568,13 @@
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function (response) {
+                    window.apiHttp.delete(url, token)
+                        .then(function (response) {
                             if (response.status == "success") {
                                 replyFile.closest('.card').remove();
                             }
-                        }
-                    });
+                        })
+                        .catch(function (err) { $.handleApiFormError(err); });
                 }
             });
         });
@@ -611,20 +603,14 @@
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function (response) {
+                    window.apiHttp.delete(url, token)
+                        .then(function (response) {
                             if (response.status == "success") {
                                 window.location.href =
                                     "{{ route('superadmin.support-tickets.index') }}";
                             }
-                        }
-                    });
+                        })
+                        .catch(function (err) { $.handleApiFormError(err); });
                 }
             });
         });
@@ -655,19 +641,13 @@
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function (response) {
+                    window.apiHttp.delete(url, token)
+                        .then(function (response) {
                             if (response.status == "success") {
                                 $('#message-' + id).remove();
                             }
-                        }
-                    });
+                        })
+                        .catch(function (err) { $.handleApiFormError(err); });
                 }
             });
         });

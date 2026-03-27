@@ -49,13 +49,9 @@
 <script>
     $('#save-pricing-tier').on('click', function(e) {
         e.preventDefault();
-        $.easyAjax({
-            url: "{{ route('pricing.tiers.store') }}",
-            container: '#create-pricing-tier-form',
-            type: 'POST',
-            blockUI: true,
-            data: $('#create-pricing-tier-form').serialize(),
-            success: function(response) {
+        $.easyBlockUI('#create-pricing-tier-form');
+        window.apiHttp.postUrlEncoded("{{ route('pricing.tiers.store') }}", $('#create-pricing-tier-form').serialize())
+            .then(function(response) {
                 if (response.status === 'success') {
                     if ($(RIGHT_MODAL).hasClass('show')) {
                         document.getElementById('close-task-detail').click();
@@ -64,8 +60,13 @@
                         window.location.href = response.redirectUrl;
                     }
                 }
-            }
-        });
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $.easyUnblockUI('#create-pricing-tier-form');
+            });
     });
 
     $(document).ready(function() {

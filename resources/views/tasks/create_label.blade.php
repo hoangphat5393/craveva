@@ -145,8 +145,6 @@
         var url = "{{ route('task-label.destroy', ':id') }}";
         url = url.replace(':id', id);
 
-        var token = "{{ csrf_token() }}";
-
         Swal.fire({
             title: "@lang('messages.sweetAlertTitle')",
             text: "@lang('messages.recoverRecord')",
@@ -166,22 +164,32 @@
             buttonsStyling: false
         }).then((result) => {
             if (result.isConfirmed) {
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        'taskId': taskId,
-                        'projectTemplateTaskId': projectTemplateTaskId,
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
-                        if (response.status == 'success') {
-                            $('#label-'+id).remove();
-                            $('#task_labels').html(response.data);
-                            $('#task_labels').selectpicker('refresh');
+                window.apiHttp.postUrlEncoded(url, {
+                    'taskId': taskId,
+                    'projectTemplateTaskId': projectTemplateTaskId,
+                    '_token': "{{ csrf_token() }}",
+                    '_method': 'DELETE'
+                }).then(function(response) {
+                    if (response.status == 'success') {
+                        if (typeof response.message !== 'undefined' && response.message) {
+                            Swal.fire({
+                                icon: 'success',
+                                text: response.message,
+                                toast: true,
+                                position: 'top-end',
+                                timer: 3000,
+                                timerProgressBar: true,
+                                showConfirmButton: false,
+                                customClass: { confirmButton: 'btn btn-primary' },
+                                showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                            });
                         }
+                        $('#label-'+id).remove();
+                        $('#task_labels').html(response.data);
+                        $('#task_labels').selectpicker('refresh');
                     }
+                }).catch(function(err) {
+                    $.handleApiFormError(err);
                 });
             }
         });
@@ -190,19 +198,28 @@
 
     $('#save-label').click(function() {
         var url = "{{ route('task-label.store') }}";
-        $.easyAjax({
-            url: url,
-            container: '#createTaskLabelForm',
-            type: "POST",
-            data: $('#createTaskLabelForm').serialize(),
-            success: function(response) {
-                if (response.status == 'success') {
-                    $('#task_labels').html(response.data);
-                    $(MODAL_XL).modal('hide');
-                    $('#task_labels').selectpicker('refresh');
+        window.apiHttp.postUrlEncoded(url, $('#createTaskLabelForm').serialize()).then(function(response) {
+            if (response.status == 'success') {
+                if (typeof response.message !== 'undefined' && response.message) {
+                    Swal.fire({
+                        icon: 'success',
+                        text: response.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 3000,
+                        timerProgressBar: true,
+                        showConfirmButton: false,
+                        customClass: { confirmButton: 'btn btn-primary' },
+                        showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                    });
                 }
+                $('#task_labels').html(response.data);
+                $(MODAL_XL).modal('hide');
+                $('#task_labels').selectpicker('refresh');
             }
-        })
+        }).catch(function(err) {
+            $.handleApiFormError(err);
+        });
     });
 
     $('[contenteditable=true]').focus(function() {
@@ -216,7 +233,6 @@
             if(id){
                 var url = "{{ route('task-label.update', ':id') }}";
                 url = url.replace(':id', id);
-                var token = "{{ csrf_token() }}";
                 var projectId = "{{ $projectId }}";
                 let selectedLabels = $('#task_labels').val();
 
@@ -225,29 +241,40 @@
                     let labelColor =  $(this).find("td:nth-child(3)").html();
                     let description =  $(this).find("td:nth-child(4)").html();
 
-                    $.easyAjax({
-                        url: url,
-                        container: '#row-' + id,
-                        type: "POST",
-                        data: {
-                            'label_name': labelName,
-                            'color': labelColor,
-                            'description': description,
-                            'parent_project_id': projectId,
-                            '_token': token,
-                            '_method': 'PUT'
-                        },
-                        blockUI: true,
-                        success: function(response) {
-                            if (response.status == 'success') {
-                                $('#task_labels').selectpicker('refresh');
-                                $('#task_labels').html(response.data);
-                                $('#task_labels').val(selectedLabels);
-                                $('#task_labels').selectpicker('refresh');
-
+                    $.easyBlockUI('#row-' + id);
+                    window.apiHttp.postUrlEncoded(url, {
+                        'label_name': labelName,
+                        'color': labelColor,
+                        'description': description,
+                        'parent_project_id': projectId,
+                        '_token': "{{ csrf_token() }}",
+                        '_method': 'PUT'
+                    }).then(function(response) {
+                        if (response.status == 'success') {
+                            if (typeof response.message !== 'undefined' && response.message) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    text: response.message,
+                                    toast: true,
+                                    position: 'top-end',
+                                    timer: 3000,
+                                    timerProgressBar: true,
+                                    showConfirmButton: false,
+                                    customClass: { confirmButton: 'btn btn-primary' },
+                                    showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                                });
                             }
+                            $('#task_labels').selectpicker('refresh');
+                            $('#task_labels').html(response.data);
+                            $('#task_labels').val(selectedLabels);
+                            $('#task_labels').selectpicker('refresh');
+
                         }
-                    })
+                    }).catch(function(err) {
+                        $.handleApiFormError(err);
+                    }).finally(function() {
+                        $.easyUnblockUI('#row-' + id);
+                    });
 
                 });
             }
@@ -263,18 +290,29 @@
         }
         let url = "{{ route('projects.labels', ':id') }}";
         url = url.replace(':id', id);
-        $.easyAjax({
-            url: url,
-            type: "GET",
-            container: '#save-task-data-form',
-            blockUI: true,
-            redirect: true,
-            success: function (data) {
-                $('#task_labels').html(data.data);
-                $('#task_labels').val(selectedLabels);
-                $('#task_labels').selectpicker('refresh');
+        $.easyBlockUI('#save-task-data-form');
+        window.apiHttp.get(url).then(function (data) {
+            if (typeof data.message !== 'undefined' && data.message && data.status === 'success') {
+                Swal.fire({
+                    icon: 'success',
+                    text: data.message,
+                    toast: true,
+                    position: 'top-end',
+                    timer: 3000,
+                    timerProgressBar: true,
+                    showConfirmButton: false,
+                    customClass: { confirmButton: 'btn btn-primary' },
+                    showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                });
             }
-        })
+            $('#task_labels').html(data.data);
+            $('#task_labels').val(selectedLabels);
+            $('#task_labels').selectpicker('refresh');
+        }).catch(function(err) {
+            $.handleApiFormError(err);
+        }).finally(function() {
+            $.easyUnblockUI('#save-task-data-form');
+        });
     }
 
     $('#example').on('change keyup', '#project_id',function() {
@@ -283,7 +321,6 @@
         if(id){
             var url = "{{ route('task-label.update', ':id') }}";
             url = url.replace(':id', id);
-            var token = "{{ csrf_token() }}";
             var projectId = $(this).val();
             var taskId = $('#task_id').val();
             var labelId = $('#label_id').val();
@@ -291,29 +328,40 @@
             let selectedLabels = $('#task_labels').val();
 
             if (id != "") {
-                $.easyAjax({
-                    url: url,
-                    container: '#row-' + id,
-                    type: "POST",
-                    data: {
-                        'task_id': taskId,
-                        'label_id': id,
-                        'project_id': projectId,
-                        'parent_project_id': parentProjectId,
-                        '_token': token,
-                        '_method': 'PUT'
-                    },
-                    blockUI: true,
-                    success: function(response) {
-                        if (response.status == 'success') {
-                            $('#task_labels').selectpicker('refresh');
-                            $('#task_labels').html(response.data);
-                            $('#task_labels').val(selectedLabels);
-                            $('#task_labels').selectpicker('refresh');
-                            $.fn.projectLabel(parentProjectId, selectedLabels);
+                $.easyBlockUI('#row-' + id);
+                window.apiHttp.postUrlEncoded(url, {
+                    'task_id': taskId,
+                    'label_id': id,
+                    'project_id': projectId,
+                    'parent_project_id': parentProjectId,
+                    '_token': "{{ csrf_token() }}",
+                    '_method': 'PUT'
+                }).then(function(response) {
+                    if (response.status == 'success') {
+                        if (typeof response.message !== 'undefined' && response.message) {
+                            Swal.fire({
+                                icon: 'success',
+                                text: response.message,
+                                toast: true,
+                                position: 'top-end',
+                                timer: 3000,
+                                timerProgressBar: true,
+                                showConfirmButton: false,
+                                customClass: { confirmButton: 'btn btn-primary' },
+                                showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                            });
                         }
+                        $('#task_labels').selectpicker('refresh');
+                        $('#task_labels').html(response.data);
+                        $('#task_labels').val(selectedLabels);
+                        $('#task_labels').selectpicker('refresh');
+                        $.fn.projectLabel(parentProjectId, selectedLabels);
                     }
-                })
+                }).catch(function(err) {
+                    $.handleApiFormError(err);
+                }).finally(function() {
+                    $.easyUnblockUI('#row-' + id);
+                });
             }
         }
 

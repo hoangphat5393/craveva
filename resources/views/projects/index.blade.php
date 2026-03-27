@@ -435,20 +435,31 @@ $deleteProjectPermission = user()->permission('delete_projects');
             var status = $(this).val();
 
             if (id != "" && status != "") {
-                $.easyAjax({
-                    url: url,
-                    type: "POST",
-                    container: '.content-wrapper',
-                    blockUI: true,
-                    data: {
-                        '_token': token,
-                        projectId: id,
-                        statusId: status,
-                        sortBy: 'id'
-                    },
-                    success: function(data) {
-                        window.LaravelDataTables["projects-table"].draw(true);
+                $.easyBlockUI('.content-wrapper');
+                window.apiHttp.postUrlEncoded(url, {
+                    '_token': token,
+                    projectId: id,
+                    statusId: status,
+                    sortBy: 'id'
+                }).then(function(data) {
+                    if (typeof data.message !== 'undefined' && data.message) {
+                        Swal.fire({
+                            icon: 'success',
+                            text: data.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 3000,
+                            timerProgressBar: true,
+                            showConfirmButton: false,
+                            customClass: { confirmButton: 'btn btn-primary' },
+                            showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                        });
                     }
+                    window.LaravelDataTables["projects-table"].draw(true);
+                }).catch(function(err) {
+                    $.handleApiFormError(err);
+                }).finally(function() {
+                    $.easyUnblockUI('.content-wrapper');
                 });
 
             }
@@ -526,22 +537,28 @@ $deleteProjectPermission = user()->permission('delete_projects');
                     var url = "{{ route('projects.destroy', ':id') }}";
                     url = url.replace(':id', id);
 
-                    var token = "{{ csrf_token() }}";
-
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        container: '.content-wrapper',
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                showTable();
+                    $.easyBlockUI('.content-wrapper');
+                    window.apiHttp.delete(url, "{{ csrf_token() }}").then(function(response) {
+                        if (response.status == "success") {
+                            if (typeof response.message !== 'undefined' && response.message) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    text: response.message,
+                                    toast: true,
+                                    position: 'top-end',
+                                    timer: 3000,
+                                    timerProgressBar: true,
+                                    showConfirmButton: false,
+                                    customClass: { confirmButton: 'btn btn-primary' },
+                                    showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                                });
                             }
+                            showTable();
                         }
+                    }).catch(function(err) {
+                        $.handleApiFormError(err);
+                    }).finally(function() {
+                        $.easyUnblockUI('.content-wrapper');
                     });
                 }
             });
@@ -571,21 +588,30 @@ $deleteProjectPermission = user()->permission('delete_projects');
                     var url = "{{ route('projects.archive_delete', ':id') }}";
                     url = url.replace(':id', id);
 
-                    var token = "{{ csrf_token() }}";
-
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        container: '.content-wrapper',
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                window.LaravelDataTables["projects-table"].draw(true);
+                    $.easyBlockUI('.content-wrapper');
+                    window.apiHttp.postUrlEncoded(url, {
+                        '_token': "{{ csrf_token() }}",
+                    }).then(function(response) {
+                        if (response.status == "success") {
+                            if (typeof response.message !== 'undefined' && response.message) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    text: response.message,
+                                    toast: true,
+                                    position: 'top-end',
+                                    timer: 3000,
+                                    timerProgressBar: true,
+                                    showConfirmButton: false,
+                                    customClass: { confirmButton: 'btn btn-primary' },
+                                    showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                                });
                             }
+                            window.LaravelDataTables["projects-table"].draw(true);
                         }
+                    }).catch(function(err) {
+                        $.handleApiFormError(err);
+                    }).finally(function() {
+                        $.easyUnblockUI('.content-wrapper');
                     });
                 }
             });
@@ -598,24 +624,40 @@ $deleteProjectPermission = user()->permission('delete_projects');
 
             var url = "{{ route('projects.apply_quick_action') }}?row_ids=" + rowdIds;
 
-            $.easyAjax({
-                url: url,
-                container: '#quick-action-form',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#quick-action-apply",
-                data: $('#quick-action-form').serialize(),
-                success: function(response) {
-                    if (response.status == 'success') {
-                        showTable();
-                        resetActionButtons();
-                        deSelectAll();
-                        $('#quick-action-apply').attr('disabled', 'disabled');
-                        $('#change-status-action').addClass('d-none');
-                        $('#quick-action-form').hide();
+            var $qaBtn = $('#quick-action-form').find('#quick-action-apply');
+            var qaPrev = $qaBtn.html();
+            $qaBtn.attr('data-prev-text', qaPrev);
+            $qaBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+            $.easyBlockUI('#quick-action-form');
+            window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize()).then(function(response) {
+                if (response.status == 'success') {
+                    if (typeof response.message !== 'undefined' && response.message) {
+                        Swal.fire({
+                            icon: 'success',
+                            text: response.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 3000,
+                            timerProgressBar: true,
+                            showConfirmButton: false,
+                            customClass: { confirmButton: 'btn btn-primary' },
+                            showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                        });
                     }
+                    showTable();
+                    resetActionButtons();
+                    deSelectAll();
+                    $('#quick-action-apply').attr('disabled', 'disabled');
+                    $('#change-status-action').addClass('d-none');
+                    $('#quick-action-form').hide();
                 }
-            })
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI('#quick-action-form');
+                $qaBtn.html($qaBtn.attr('data-prev-text'));
+                $qaBtn.prop('disabled', false);
+            });
         };
 
 
@@ -656,20 +698,29 @@ $deleteProjectPermission = user()->permission('delete_projects');
                         var url = "{{ route('projects.destroy_pin', ':id') }}";
                         url = url.replace(':id', id);
 
-                        var token = "{{ csrf_token() }}";
-                        $.easyAjax({
-                            type: 'POST',
-                            url: url,
-                            data: {
-                                '_token': token,
-                                'type': pinType
-                            },
-                            success: function(response) {
-                                if (response.status == "success") {
-                                    window.location.reload();
+                        window.apiHttp.postUrlEncoded(url, {
+                            '_token': "{{ csrf_token() }}",
+                            'type': pinType
+                        }).then(function(response) {
+                            if (response.status == "success") {
+                                if (typeof response.message !== 'undefined' && response.message) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        text: response.message,
+                                        toast: true,
+                                        position: 'top-end',
+                                        timer: 3000,
+                                        timerProgressBar: true,
+                                        showConfirmButton: false,
+                                        customClass: { confirmButton: 'btn btn-primary' },
+                                        showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                                    });
                                 }
+                                window.location.reload();
                             }
-                        })
+                        }).catch(function(err) {
+                            $.handleApiFormError(err);
+                        });
                     }
                 });
 
@@ -694,19 +745,28 @@ $deleteProjectPermission = user()->permission('delete_projects');
                     if (result.isConfirmed) {
                         var url = "{{ route('projects.store_pin') }}?type=" + pinType;
 
-                        var token = "{{ csrf_token() }}";
-                        $.easyAjax({
-                            type: 'POST',
-                            url: url,
-                            data: {
-                                '_token': token,
-                                'project_id': id
-                            },
-                            success: function(response) {
-                                if (response.status == "success") {
-                                    window.location.reload();
+                        window.apiHttp.postUrlEncoded(url, {
+                            '_token': "{{ csrf_token() }}",
+                            'project_id': id
+                        }).then(function(response) {
+                            if (response.status == "success") {
+                                if (typeof response.message !== 'undefined' && response.message) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        text: response.message,
+                                        toast: true,
+                                        position: 'top-end',
+                                        timer: 3000,
+                                        timerProgressBar: true,
+                                        showConfirmButton: false,
+                                        customClass: { confirmButton: 'btn btn-primary' },
+                                        showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                                    });
                                 }
+                                window.location.reload();
                             }
+                        }).catch(function(err) {
+                            $.handleApiFormError(err);
                         });
                     }
                 });

@@ -2,16 +2,17 @@
 
 <style>
     .disabled {
-            background-color: #F9D6D6; /* light red for disabled */
-            color: #ccc; /* grey text for disabled */
-            pointer-events: none; /* prevent click */
-        }
-
+        background-color: #F9D6D6;
+        /* light red for disabled */
+        color: #ccc;
+        /* grey text for disabled */
+        pointer-events: none;
+        /* prevent click */
+    }
 </style>
 <div class="modal-header">
     <h5 class="modal-title" id="modelHeading">@lang('payroll::modules.payroll.addRequest')</h5>
-    <button type="button" onclick="removeOpenModal()" class="close" data-dismiss="modal" aria-label="Close"><span
-            aria-hidden="true">×</span></button>
+    <button type="button" onclick="removeOpenModal()" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
 </div>
 <div class="modal-body">
     <x-form id="overtimeHoursForm" method="POST">
@@ -21,26 +22,23 @@
                 <div class="col-lg-8">
                     @if (user()->hasRole('admin'))
 
-                    <x-forms.label fieldId="employee" :fieldLabel="__('app.employee')" :fieldRequired="true"
-                    class="mt-3"> </x-forms.label>
-                    <i class="fa fa-question-circle" data-toggle="tooltip" data-original-title="{{__('payroll::messages.onlyEmployeesShow')}}"></i>
+                        <x-forms.label fieldId="employee" :fieldLabel="__('app.employee')" :fieldRequired="true" class="mt-3"> </x-forms.label>
+                        <i class="fa fa-question-circle" data-toggle="tooltip" data-original-title="{{ __('payroll::messages.onlyEmployeesShow') }}"></i>
 
-                    <select name="employee" id="employee" data-live-search="true" class="form-control select-picker" data-size="8">
-                         <option value="">--</option>
+                        <select name="employee" id="employee" data-live-search="true" class="form-control select-picker" data-size="8">
+                            <option value="">--</option>
                             @foreach ($employees as $employee)
-                                <x-user-option :user="$employee" :selected="request()->has('default_assign') &&
-                                    request('default_assign') == $employee->id" />
+                                <x-user-option :user="$employee" :selected="request()->has('default_assign') && request('default_assign') == $employee->id" />
                             @endforeach
-                    </select>
-
+                        </select>
                     @else
-                        <x-employee :user="user()"/>
+                        <x-employee :user="user()" />
                         <input type="hidden" value="{{ user()->id }}" name="employee" id="employee">
                     @endif
                 </div>
             </div>
 
-                {{-- <div class="pt-20 pr-20 row">
+            {{-- <div class="pt-20 pr-20 row">
                     <div class="col-lg-3">
                         <x-forms.text class="date-picker" :fieldLabel="__('app.date')" fieldName="date[]"
                             fieldId="dateField1" :fieldPlaceholder="__('app.date')" fieldValue=""
@@ -79,95 +77,71 @@
 
 
                 </div> --}}
-                <div class="row pt-5 pb-3">
-                    <!-- Date Field -->
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label class="f-14 text-dark-grey mb-1">
-                                @lang('app.date') <span class="text-danger">*</span>
-                            </label>
-                            <input type="text"
-                                   class="form-control height-35 f-14 date-picker"
-                                   name="date[]"
-                                   id="dateField1"
-                                   placeholder="@lang('app.date')"
-                                   value=""
-                                   autocomplete="off">
-                        </div>
+            <div class="row pt-5 pb-3">
+                <!-- Date Field -->
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label class="f-14 text-dark-grey mb-1">
+                            @lang('app.date') <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" class="form-control height-35 f-14 date-picker" name="date[]" id="dateField1" placeholder="@lang('app.date')" value="" autocomplete="off">
                     </div>
+                </div>
 
-                    <!-- Overtime Type Field -->
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label class="f-14 text-dark-grey mb-1">
-                                @lang('payroll::modules.payroll.overtimeType') <span class="text-danger">*</span>
-                            </label>
-                            <select name="type[]"
-                                    id="type"
-                                    data-live-search="true"
-                                    class="form-control select-picker"
-                                    data-size="8">
+                <!-- Overtime Type Field -->
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label class="f-14 text-dark-grey mb-1">
+                            @lang('payroll::modules.payroll.overtimeType') <span class="text-danger">*</span>
+                        </label>
+                        <select name="type[]" id="type" data-live-search="true" class="form-control select-picker" data-size="8">
 
-                            </select>
-                        </div>
+                        </select>
                     </div>
+                </div>
 
-                    <!-- Duration Fields -->
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label class="f-14 text-dark-grey mb-1">
-                                @lang('app.duration') <span class="text-danger">*</span>
-                            </label>
-                            <div class="d-flex align-items-center">
-                                <input type="number"
-                                       min="0"
-                                       class="form-control height-35 f-14 mr-2"
-                                       name="overtime_hours[]"
-                                       placeholder="00">
-                                <span class="mr-2">hrs</span>
-                                <input type="number"
-                                       min="0"
-                                       max="59"
-                                       class="form-control height-35 f-14"
-                                       name="minutes[]"
-                                       placeholder="00">
-                                <span class="ml-2">mins</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Reason Field -->
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label class="f-14 text-dark-grey mb-1">
-                                @lang('app.reason')
-                            </label>
-                            <input type="text"
-                                   class="form-control height-35 f-14"
-                                   name="overtime_reasons[]"
-                                   placeholder="@lang('app.reason')"
-                                   value="">
+                <!-- Duration Fields -->
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label class="f-14 text-dark-grey mb-1">
+                            @lang('app.duration') <span class="text-danger">*</span>
+                        </label>
+                        <div class="d-flex align-items-center">
+                            <input type="number" min="0" class="form-control height-35 f-14 mr-2" name="overtime_hours[]" placeholder="00">
+                            <span class="mr-2">hrs</span>
+                            <input type="number" min="0" max="59" class="form-control height-35 f-14" name="minutes[]" placeholder="00">
+                            <span class="ml-2">mins</span>
                         </div>
                     </div>
                 </div>
 
+                <!-- Reason Field -->
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label class="f-14 text-dark-grey mb-1">
+                            @lang('app.reason')
+                        </label>
+                        <input type="text" class="form-control height-35 f-14" name="overtime_reasons[]" placeholder="@lang('app.reason')" value="">
+                    </div>
+                </div>
+            </div>
 
 
-                <div id="insertBefore"></div>
 
-                <!--  ADD ITEM START-->
+            <div id="insertBefore"></div>
+
+            <!--  ADD ITEM START-->
 
             <input type="hidden" name="start_date" id="start_date" value="">
             <input type="hidden" name="end_date" id="end_date" value="">
 
             <div class="col-md-12 pl-0">
-                <a class="f-15 f-w-500" href="javascript:;" id="add-item"><i
-                        class="mr-1 icons icon-plus font-weight-bold"></i> @lang('app.add')</a>
+                <a class="f-15 f-w-500" href="javascript:;" id="add-item"><i class="mr-1 icons icon-plus font-weight-bold"></i> @lang('app.add')</a>
             </div>
 
         </div>
     </x-form>
-    </div>
+</div>
 </div>
 <div class="modal-footer">
     <x-forms.button-cancel data-dismiss="modal" class="border-0 mr-3">@lang('app.close')</x-forms.button-cancel>
@@ -177,11 +151,11 @@
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 
 <script>
-      var applyDate = new Date();
-      var lastDate = new Date();
-      var typeOptionData = '';
+    var applyDate = new Date();
+    var lastDate = new Date();
+    var typeOptionData = '';
 
-    $(document).ready(function () {
+    $(document).ready(function() {
 
         $(".select-picker").selectpicker();
 
@@ -192,7 +166,7 @@
         @if (!user()->hasRole('admin'))
             getPolicy({{ user()->id }})
         @endif
-        $('#employee').change(function () {
+        $('#employee').change(function() {
             var id = $(this).val();
             getPolicy(id)
         });
@@ -283,52 +257,39 @@
 
     // Function to initialize a date picker with disabled dates
     function initializeDatePicker(selector) {
-            if ($(selector).length > 0) {
-                datepicker(selector, {
-                    position: 'bl',
-                    minDate: applyDate,
-                    maxDate: lastDate,
-                    ...datepickerConfig
-                });
-            }
+        if ($(selector).length > 0) {
+            datepicker(selector, {
+                position: 'bl',
+                minDate: applyDate,
+                maxDate: lastDate,
+                ...datepickerConfig
+            });
         }
+    }
 
     // save request
-    $('#save-request').click(function (e) {
+    $('#save-request').click(function(e) {
         e.preventDefault();
 
-        $.easyAjax({
-            url: "{{ route('overtime-requests.store') }}",
-            container: '#overtimeHoursForm',
-            type: "POST",
-            blockUI: true,
-            disableButton: true,
-            buttonSelector: "#save-request",
-            data: $('#overtimeHoursForm').serialize(),
-            success: function (response) {
+        window.apiHttp.postUrlEncoded("{{ route('overtime-requests.store') }}", $('#overtimeHoursForm').serialize())
+            .then(function(response) {
                 if (response.status == "success") {
                     $(MODAL_LG).modal('hide');
                 }
                 showTable();
-            }
-        })
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            });
     });
 
     // save request
-    function getPolicy(id){
-        if(id != '' && id != undefined)
-        {
+    function getPolicy(id) {
+        if (id != '' && id != undefined) {
             var url = "{{ route('overtime-request-policy', ':id') }}";
             url = url.replace(':id', id);
-            $.easyAjax({
-                url: url,
-                container: '#overtimeHoursForm',
-                type: "GET",
-                blockUI: true,
-                disableButton: true,
-                buttonSelector: "#save-request",
-                data: $('#overtimeHoursForm').serialize(),
-                success: function (response) {
+            window.apiHttp.get(url)
+                .then(function(response) {
                     applyDate = new Date(response.applyDate);
                     lastDate = new Date(response.currentMonthDate);
                     $('#start_date').val(moment(applyDate).format('YYYY-MM-DD'));
@@ -338,10 +299,11 @@
                     console.log(typeOptionData);
                     $('#type').html(typeOptionData);
                     $("#type").selectpicker('refresh');
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                });
         }
 
     }
-
 </script>

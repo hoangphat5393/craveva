@@ -1,7 +1,6 @@
 <div class="modal-header">
     <h5 class="modal-title" id="modelHeading">@lang('recruit::app.menu.jobType')</h5>
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-            aria-hidden="true">×</span></button>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
 </div>
 <div class="modal-body" id="job-type-table">
     <x-table class="table-bordered" headType="thead-light">
@@ -27,8 +26,7 @@
     <x-form id="createProjectCategory">
         <div class="row border-top-grey ">
             <div class="col-sm-12">
-                <x-forms.text fieldId="department_name" :fieldLabel="__('app.name')" fieldName="job_type"
-                              fieldRequired="true" :fieldPlaceholder="__('recruit::modules.message.fullTime')">
+                <x-forms.text fieldId="department_name" :fieldLabel="__('app.name')" fieldName="job_type" fieldRequired="true" :fieldPlaceholder="__('recruit::modules.message.fullTime')">
                 </x-forms.text>
             </div>
         </div>
@@ -39,13 +37,11 @@
     <x-forms.button-primary id="save-category" icon="check">@lang('app.save')</x-forms.button-primary>
 </div>
 <script>
-    $('body').on('click', '.delete-row', function () {
+    $('body').on('click', '.delete-row', function() {
 
         var id = $(this).data('row-id');
         var url = "{{ route('job-type.destroy', ':id') }}";
         url = url.replace(':id', id);
-
-        var token = "{{ csrf_token() }}";
 
         Swal.fire({
             title: "@lang('messages.sweetAlertTitle')",
@@ -66,51 +62,40 @@
             buttonsStyling: false
         }).then((result) => {
             if (result.isConfirmed) {
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function (response) {
-                        if (response.status == "success") {
-                            $('#row-' + id).fadeOut();
-                            $('#job-type').html(response.data);
-                            $('#job-type').selectpicker('refresh');
-                        }
+                window.apiHttp.delete(url, {
+                    _token: "{{ csrf_token() }}"
+                }).then(function(response) {
+                    if (response.data.status == "success") {
+                        $('#row-' + id).fadeOut();
+                        $('#job-type').html(response.data.data);
+                        $('#job-type').selectpicker('refresh');
                     }
+                }).catch(function(err) {
+                    $.handleApiFormError(err);
                 });
             }
         });
 
     });
 
-    $('body').off('click', "#save-category").on('click', '#save-category', function () {
+    $('body').off('click', "#save-category").on('click', '#save-category', function() {
         var url = "{{ route('job-type.store') }}";
-        $.easyAjax({
-            url: url,
-            container: '#createProjectCategory',
-            type: "POST",
-            data: $('#createProjectCategory').serialize(),
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-category",
-            success: function (response) {
-                if (response.status == 'success') {
-                    if (response.status == 'success') {
-                        $('#job-type').html(response.data);
-                        $('#job-type').selectpicker('refresh');
-                        $(MODAL_LG).modal('hide');
-                    }
+        window.apiHttp.postUrlEncoded(url, $('#createProjectCategory').serialize())
+            .then(function(response) {
+                if (response.data.status == 'success') {
+                    $('#job-type').html(response.data.data);
+                    $('#job-type').selectpicker('refresh');
+                    $(MODAL_LG).modal('hide');
                 }
-            }
-        })
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            });
     });
-    $('#job-type-table [contenteditable=true]').focus(function () {
+    $('#job-type-table [contenteditable=true]').focus(function() {
         $(this).data("initialText", $(this).html());
         let rowId = $(this).data('row-id');
-    }).blur(function () {
+    }).blur(function() {
         // ...if content is different...
         if ($(this).data("initialText") !== $(this).html()) {
             let id = $(this).data('row-id');
@@ -119,27 +104,18 @@
             var url = "{{ route('job-type.update', ':id') }}";
             url = url.replace(':id', id);
 
-            var token = "{{ csrf_token() }}";
-
-            $.easyAjax({
-                url: url,
-                container: '#row-' + id,
-                type: "POST",
-                data: {
-                    'job_type': value,
-                    '_token': token,
-                    '_method': 'PUT'
-                },
-                blockUI: true,
-                success: function (response) {
-                    if (response.status == 'success') {
-                        $('#job-type').html(response.data);
-                        $('#job-type').selectpicker('refresh');
-                    }
+            window.apiHttp.postUrlEncoded(url, {
+                job_type: value,
+                _token: "{{ csrf_token() }}",
+                _method: 'PUT'
+            }).then(function(response) {
+                if (response.data.status == 'success') {
+                    $('#job-type').html(response.data.data);
+                    $('#job-type').selectpicker('refresh');
                 }
-            })
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            });
         }
     });
-
-
 </script>

@@ -66,18 +66,21 @@
             var selectedOption = $(this).find('option:selected');
             var editUrl = selectedOption.data('edit-url');
             if (editUrl && typeof RIGHT_MODAL_CONTENT !== 'undefined') {
-                $.easyAjax({
-                    url: editUrl,
-                    blockUI: true,
-                    container: RIGHT_MODAL,
-                    success: function(response) {
+                $.easyBlockUI(RIGHT_MODAL);
+                window.apiHttp.get(editUrl)
+                    .then(function(response) {
                         if (response.status === 'success') {
                             $(RIGHT_MODAL_CONTENT).html(response.html);
                             if (response.title) $(RIGHT_MODAL_TITLE).html(response.title);
                             init(RIGHT_MODAL);
                         }
-                    }
-                });
+                    })
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    })
+                    .finally(function() {
+                        $.easyUnblockUI(RIGHT_MODAL);
+                    });
             } else if (editUrl) {
                 window.location.href = editUrl;
             }
@@ -85,13 +88,9 @@
     });
 
     $('body').on('click', '#save-client-tier', function() {
-        $.easyAjax({
-            url: "{{ route('pricing.client_tiers.update', $client->id) }}",
-            container: '#edit-client-tier-form',
-            type: "POST",
-            blockUI: true,
-            data: $('#edit-client-tier-form').serialize(),
-            success: function(response) {
+        $.easyBlockUI('#edit-client-tier-form');
+        window.apiHttp.postUrlEncoded("{{ route('pricing.client_tiers.update', $client->id) }}", $('#edit-client-tier-form').serialize())
+            .then(function(response) {
                 if (response.status == 'success') {
                     if ($(RIGHT_MODAL).hasClass('show')) {
                         document.getElementById('close-task-detail').click();
@@ -100,7 +99,12 @@
                         window.location.reload();
                     }
                 }
-            }
-        })
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $.easyUnblockUI('#edit-client-tier-form');
+            })
     });
 </script>

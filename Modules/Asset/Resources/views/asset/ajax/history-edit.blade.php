@@ -76,21 +76,23 @@
         $(".select-picker").selectpicker();
         // save land
         $('#update-history').click(function () {
-            $.easyAjax({
-                url: "{{ route('history.update', [$history->asset_id, $history->id]) }}",
-                container: '#edit-history-form',
-                type: "POST",
-                blockUI: true,
-                disableButton: true,
-                buttonSelector: "#update-history",
-                data: $('#edit-history-form').serialize(),
-                success: function (response) {
+            const $btn = $('#update-history');
+            $btn.prop('disabled', true);
+            $.easyBlockUI('#edit-history-form');
+            window.apiHttp.postUrlEncoded("{{ route('history.update', [$history->asset_id, $history->id]) }}", $('#edit-history-form').serialize())
+                .then(function (response) {
                     if (response.status == "success") {
                         $('#history').html(response.view);
                         $(MODAL_LG).modal('hide');
                     }
-                }
-            })
+                })
+                .catch(function (err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function () {
+                    $btn.prop('disabled', false);
+                    $.easyUnblockUI('#edit-history-form');
+                });
         });
     });
 </script>

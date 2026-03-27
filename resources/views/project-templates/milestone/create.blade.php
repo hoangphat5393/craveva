@@ -91,19 +91,19 @@ $(document).ready(function() {
     });
     $('#save-project-milestone').click(function() {
         var url = "{{ route('project-template-milestone.store') }}";
-        $.easyAjax({
-            url: url,
-            container: '#addProjectMilestoneForm',
-            type: "POST",
-            blockUI: true,
-            disableButton: true,
-            buttonSelector: '#save-project-milestone',
-            data: $('#addProjectMilestoneForm').serialize(),
-            success: function(response) {
-                if (response.status == 'success') {
-                    window.location.reload();
-                }
+        var $btn = $('#save-project-milestone');
+        var prev = $btn.html();
+        $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+        $.easyBlockUI('#addProjectMilestoneForm');
+        window.apiHttp.postUrlEncoded(url, $('#addProjectMilestoneForm').serialize()).then(function(response) {
+            if (response.status == 'success') {
+                window.location.reload();
             }
-        })
+        }).catch(function(err) {
+            $.handleApiFormError(err);
+        }).finally(function() {
+            $.easyUnblockUI('#addProjectMilestoneForm');
+            $btn.prop('disabled', false).html(prev);
+        });
     });
 </script>

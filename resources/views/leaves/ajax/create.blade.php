@@ -21,15 +21,12 @@
                             <x-forms.label class="mt-3" fieldId="" :fieldLabel="__('app.name')" fieldRequired="true">
                             </x-forms.label>
                             <input type="hidden" name="user_id" id="user_id" value="{{ $defaultAssign->id }}">
-                            <input type="text" value="{{ $defaultAssign->name }}"
-                                class="form-control height-35 f-15 readonly-background" readonly>
+                            <input type="text" value="{{ $defaultAssign->name }}" class="form-control height-35 f-15 readonly-background" readonly>
                         @else
-                            <x-forms.select fieldId="user_id" :fieldLabel="__('modules.messages.chooseMember')" fieldName="user_id" search="true"
-                                fieldRequired="true">
+                            <x-forms.select fieldId="user_id" :fieldLabel="__('modules.messages.chooseMember')" fieldName="user_id" search="true" fieldRequired="true">
                                 <option value="">--</option>
                                 @foreach ($employees as $employee)
-                                    <x-user-option :user="$employee" :selected="request()->has('default_assign') &&
-                                        request('default_assign') == $employee->id" />
+                                    <x-user-option :user="$employee" :selected="request()->has('default_assign') && request('default_assign') == $employee->id" />
                                 @endforeach
                             </x-forms.select>
                         @endif
@@ -39,8 +36,7 @@
                         <x-forms.label class="mt-3" fieldId="" :fieldLabel="__('modules.leaves.leaveType')" fieldRequired="true">
                         </x-forms.label>
                         <x-forms.input-group>
-                            <select class="form-control select-picker" name="leave_type_id" id="leave_type_id"
-                                data-live-search="true">
+                            <select class="form-control select-picker" name="leave_type_id" id="leave_type_id" data-live-search="true">
                                 <option value="">--</option>
                                 @if (isset($leaveTypes))
                                     @foreach ($leaveTypes as $leaveType)
@@ -54,10 +50,7 @@
 
                                 @if (isset($leaveQuotas))
                                     @foreach ($leaveQuotas as $leaveQuota)
-                                        @if (
-                                            $leaveQuota->leaveType &&
-                                                $leaveQuota->leaveType->leaveTypeCondition($leaveQuota->leaveType, $defaultAssign) &&
-                                                $leaveQuota->leaveType->deleted_at == null)
+                                        @if ($leaveQuota->leaveType && $leaveQuota->leaveType->leaveTypeCondition($leaveQuota->leaveType, $defaultAssign) && $leaveQuota->leaveType->deleted_at == null)
                                             <option value="{{ $leaveQuota->leaveType->id }}">
                                                 {{ $leaveQuota->leaveType->type_name }}
                                                 ({{ $leaveQuota->leaves_remaining }})
@@ -69,9 +62,7 @@
 
                             @if ($addLeadAgentPermission == 'all' || $addLeadAgentPermission == 'added')
                                 <x-slot name="append">
-                                    <button type="button" class="btn btn-outline-secondary border-grey add-lead-type2"
-                                        data-toggle="tooltip"
-                                        data-original-title="{{ __('modules.leaves.addLeaveType') }}">@lang('app.add')</button>
+                                    <button type="button" class="btn btn-outline-secondary border-grey add-lead-type2" data-toggle="tooltip" data-original-title="{{ __('modules.leaves.addLeaveType') }}">@lang('app.add')</button>
                                 </x-slot>
                             @endif
                         </x-forms.input-group>
@@ -90,29 +81,23 @@
                         <div class="form-group my-3">
                             <label class="f-14 text-dark-grey mb-12 w-100" for="usr">@lang('modules.leaves.selectDuration')</label>
                             <div class="d-block d-lg-flex d-md-flex">
-                                <x-forms.radio fieldId="duration_single" :fieldLabel="__('modules.leaves.single')" fieldName="duration"
-                                    fieldValue="single" checked="true">
+                                <x-forms.radio fieldId="duration_single" :fieldLabel="__('modules.leaves.single')" fieldName="duration" fieldValue="single" checked="true">
                                 </x-forms.radio>
-                                <x-forms.radio fieldId="duration_multiple" :fieldLabel="__('modules.leaves.multiple')" fieldValue="multiple"
-                                    fieldName="duration"></x-forms.radio>
+                                <x-forms.radio fieldId="duration_multiple" :fieldLabel="__('modules.leaves.multiple')" fieldValue="multiple" fieldName="duration"></x-forms.radio>
 
-                                <x-forms.radio fieldId="half_day_first" :fieldLabel="__('modules.leaves.firstHalf')" fieldName="duration"
-                                    fieldValue="first_half">
+                                <x-forms.radio fieldId="half_day_first" :fieldLabel="__('modules.leaves.firstHalf')" fieldName="duration" fieldValue="first_half">
                                 </x-forms.radio>
-                                <x-forms.radio fieldId="half_day_second" :fieldLabel="__('modules.leaves.secondHalf')" fieldValue="second_half"
-                                    fieldName="duration"></x-forms.radio>
+                                <x-forms.radio fieldId="half_day_second" :fieldLabel="__('modules.leaves.secondHalf')" fieldValue="second_half" fieldName="duration"></x-forms.radio>
                             </div>
                         </div>
                     </div>
 
                     <div class="col-lg-4 col-md-6 single_date_div">
-                        <x-forms.text :fieldLabel="__('app.date')" fieldName="leave_date" fieldId="single_date" :fieldPlaceholder="__('app.date')"
-                            :fieldValue="now(company()->timezone)->translatedFormat(company()->date_format)" />
+                        <x-forms.text :fieldLabel="__('app.date')" fieldName="leave_date" fieldId="single_date" :fieldPlaceholder="__('app.date')" :fieldValue="now(company()->timezone)->translatedFormat(company()->date_format)" />
                     </div>
 
                     <div class="col-lg-4 col-md-6 d-none multi_date_div">
-                        <x-forms.text :fieldLabel="__('messages.selectMultipleDates')" fieldName="multi_date" fieldId="multi_date" :fieldPlaceholder="__('messages.selectMultipleDates')"
-                            :fieldValue="now(company()->timezone)->translatedFormat(company()->date_format)" />
+                        <x-forms.text :fieldLabel="__('messages.selectMultipleDates')" fieldName="multi_date" fieldId="multi_date" :fieldPlaceholder="__('messages.selectMultipleDates')" :fieldValue="now(company()->timezone)->translatedFormat(company()->date_format)" />
                     </div>
                     <div class="col-lg-4 col-md-6 date-range-days mt-5">
                         <p id="users" class="mt-2 badge badge-secondary"></p>
@@ -120,15 +105,13 @@
                     </div>
                     <div class="col-md-12">
                         <div class="form-group my-3">
-                            <x-forms.textarea class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.leaves.reason')" fieldName="reason"
-                                fieldId="reason" fieldRequired="true" :fieldPlaceholder="__('placeholders.leave.reason')">
+                            <x-forms.textarea class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('modules.leaves.reason')" fieldName="reason" fieldId="reason" fieldRequired="true" :fieldPlaceholder="__('placeholders.leave.reason')">
                             </x-forms.textarea>
                         </div>
                     </div>
 
                     <div class="col-lg-12">
-                        <x-forms.file-multiple class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('app.menu.addFile')" fieldName="file"
-                            :popover="__('messages.leaveFileMessage')" fieldId="leave-file-upload-dropzone" />
+                        <x-forms.file-multiple class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('app.menu.addFile')" fieldName="file" :popover="__('messages.leaveFileMessage')" fieldId="leave-file-upload-dropzone" />
                         <input type="hidden" name="leaveIds[]" id="leaveID">
                     </div>
 
@@ -316,50 +299,58 @@
             const url = "{{ route('leaves.store') }}";
 
             function sendAjaxRequest() {
-                $.easyAjax({
-                    url: url,
-                    container: '#save-lead-data-form',
-                    type: "POST",
-                    disableButton: true,
-                    blockUI: true,
-                    buttonSelector: "#save-leave-form",
-                    data: $('#save-lead-data-form').serialize() + '&multiStartDate=' +
-                        startDate + '&multiEndDate=' + endDate + '&markLeave=' + markleave,
-                    success: function(response) {
-                        if (response.status == 'success') {
-                            $('#leaveID').val(response.leaveIds);
-                            myDropzone.processQueue();
-                            window.location.href = response.redirectUrl;
-                        }
-
-                        if (response.status == 'attendanceMarked') {
-
-                            Swal.fire({
-                                title: "@lang('messages.sweetAlertTitle')",
-                                text: "@lang('messages.attendanceIsMarked')",
-                                icon: 'warning',
-                                showCancelButton: true,
-                                focusConfirm: false,
-                                confirmButtonText: "@lang('app.apply')",
-                                cancelButtonText: "@lang('app.cancel')",
-                                customClass: {
-                                    confirmButton: 'btn btn-primary mr-3',
-                                    cancelButton: 'btn btn-secondary'
-                                },
-                                showClass: {
-                                    popup: 'swal2-noanimation',
-                                    backdrop: 'swal2-noanimation'
-                                },
-                                buttonsStyling: false
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    markleave = 'yes';
-                                    sendAjaxRequest();
-                                }
-                            });
-                        }
-
+                var $saveBtn = $('#save-leave-form');
+                $saveBtn.prop('disabled', true);
+                $.easyBlockUI('#save-lead-data-form');
+                window.apiHttp.postUrlEncoded(url, $('#save-lead-data-form').serialize() + '&multiStartDate=' +
+                    startDate + '&multiEndDate=' + endDate + '&markLeave=' + markleave).then(function(response) {
+                    if (response.status == 'success') {
+                        $('#leaveID').val(response.leaveIds);
+                        myDropzone.processQueue();
+                        window.location.href = response.redirectUrl;
                     }
+
+                    if (response.status == 'attendanceMarked') {
+
+                        Swal.fire({
+                            title: "@lang('messages.sweetAlertTitle')",
+                            text: "@lang('messages.attendanceIsMarked')",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            focusConfirm: false,
+                            confirmButtonText: "@lang('app.apply')",
+                            cancelButtonText: "@lang('app.cancel')",
+                            customClass: {
+                                confirmButton: 'btn btn-primary mr-3',
+                                cancelButton: 'btn btn-secondary'
+                            },
+                            showClass: {
+                                popup: 'swal2-noanimation',
+                                backdrop: 'swal2-noanimation'
+                            },
+                            buttonsStyling: false
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                markleave = 'yes';
+                                sendAjaxRequest();
+                            }
+                        });
+                    }
+
+                }).catch(function(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
+                    }
+                }).finally(function() {
+                    $saveBtn.prop('disabled', false);
+                    $.easyUnblockUI('#save-lead-data-form');
                 });
             }
 
@@ -388,62 +379,78 @@
             }
             var url = "{{ route('employee-leaves.employee_leave_types', ':id') }}";
             url = url.replace(':id', id);
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                container: '#save-lead-data-form',
-                blockUI: true,
-                success: function(data) {
-                    $('#leave_type_id').html(data.data);
-                    $('#leave_type_id').selectpicker('refresh');
-                    $('#save-leave-form').prop('disabled', (data.data.trim() === ''));
+            $.easyBlockUI('#save-lead-data-form');
+            window.apiHttp.get(url).then(function(data) {
+                $('#leave_type_id').html(data.data);
+                $('#leave_type_id').selectpicker('refresh');
+                $('#save-leave-form').prop('disabled', (data.data.trim() === ''));
 
-                    if (data.message && (data.eligible === false || data.profile_missing ===
-                            true)) {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: "@lang('messages.sweetAlertTitle')",
-                            text: data.message,
-                            confirmButtonText: "@lang('app.ok')",
-                            customClass: {
-                                confirmButton: 'btn btn-primary'
-                            },
-                            buttonsStyling: false
-                        });
-                    }
+                if (data.message && (data.eligible === false || data.profile_missing ===
+                        true)) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: "@lang('messages.sweetAlertTitle')",
+                        text: data.message,
+                        confirmButtonText: "@lang('app.ok')",
+                        customClass: {
+                            confirmButton: 'btn btn-primary'
+                        },
+                        buttonsStyling: false
+                    });
                 }
-            })
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $.easyUnblockUI('#save-lead-data-form');
+            });
         });
 
         if ($('#user_id').val() && $('#user_id').val() != '') {
             var initId = $('#user_id').val();
             var initUrl = "{{ route('employee-leaves.employee_leave_types', ':id') }}";
             initUrl = initUrl.replace(':id', initId);
-            $.easyAjax({
-                url: initUrl,
-                type: "GET",
-                container: '#save-lead-data-form',
-                blockUI: true,
-                success: function(data) {
-                    $('#leave_type_id').html(data.data);
-                    $('#leave_type_id').selectpicker('refresh');
-                    $('#save-leave-form').prop('disabled', (data.data.trim() === ''));
+            $.easyBlockUI('#save-lead-data-form');
+            window.apiHttp.get(initUrl).then(function(data) {
+                $('#leave_type_id').html(data.data);
+                $('#leave_type_id').selectpicker('refresh');
+                $('#save-leave-form').prop('disabled', (data.data.trim() === ''));
 
-                    if (data.message && (data.eligible === false || data.profile_missing ===
-                            true)) {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: "@lang('messages.sweetAlertTitle')",
-                            text: data.message,
-                            confirmButtonText: "@lang('app.ok')",
-                            customClass: {
-                                confirmButton: 'btn btn-primary'
-                            },
-                            buttonsStyling: false
-                        });
-                    }
+                if (data.message && (data.eligible === false || data.profile_missing ===
+                        true)) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: "@lang('messages.sweetAlertTitle')",
+                        text: data.message,
+                        confirmButtonText: "@lang('app.ok')",
+                        customClass: {
+                            confirmButton: 'btn btn-primary'
+                        },
+                        buttonsStyling: false
+                    });
                 }
-            })
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $.easyUnblockUI('#save-lead-data-form');
+            });
         }
 
         function getDate(value) {
@@ -454,23 +461,30 @@
                 date = '';
             }
 
-            $.easyAjax({
-                type: 'GET',
-                url: url,
-                container: '#save-lead-data-form',
-                data: {
-                    'date': date
-                },
-                success: function(response) {
-                    if (response.status == 'success') {
-                        if (response.users > 0 && response.users < 2) {
-                            $('#users').text(response.users + ` @lang('modules.leaves.employeeOnLeave')`);
-                        } else if (response.users > 0) {
-                            $('#users').text(response.users + ` @lang('modules.leaves.employeesOnLeave')`);
-                        } else {
-                            $('#users').text('');
-                        }
+            window.apiHttp.get(url, {
+                params: {
+                    date: date
+                }
+            }).then(function(response) {
+                if (response.status == 'success') {
+                    if (response.users > 0 && response.users < 2) {
+                        $('#users').text(response.users + ` @lang('modules.leaves.employeeOnLeave')`);
+                    } else if (response.users > 0) {
+                        $('#users').text(response.users + ` @lang('modules.leaves.employeesOnLeave')`);
+                    } else {
+                        $('#users').text('');
                     }
+                }
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
                 }
             });
         };

@@ -122,23 +122,19 @@
 
                 let url = "{{ route('payout.store') }}";
 
-                $.easyAjax({
-                    url: url,
-                    container: '#save-request-data-form',
-                    type: "POST",
-                    disableButton: true,
-                    blockUI: true,
-                    file: true,
-                    buttonSelector: "#save-payout-request-form",
-                    data: $('#save-request-data-form').serialize(),
-                    redirect: true,
-                    success: function(response) {
+                $.easyBlockUI('#save-request-data-form');
+                window.apiHttp.postUrlEncoded(url, $('#save-request-data-form').serialize())
+                    .then(function(response) {
                         if (response.status == 'success') {
                             window.location.href = '{{ route('affiliate-dashboard.index', ['tab' => 'payouts']) }}';
                         }
-                    }
-
-                });
+                    })
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    })
+                    .finally(function() {
+                        $.easyUnblockUI('#save-request-data-form');
+                    });
             });
 
             $('body').on('change', '#payment_method', function () {

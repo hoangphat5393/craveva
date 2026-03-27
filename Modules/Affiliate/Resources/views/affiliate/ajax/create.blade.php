@@ -56,17 +56,14 @@
     $(document).ready(function () {
 
         $('body').on('click', '#save-affiliates-form', function () {
-            $.easyAjax({
-                url: "{{ route('affiliate.store') }}",
-                container: '#affiliates-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                file: true,
-                buttonSelector: "#save-affiliates-form",
-                data: $('#affiliates-form').serialize(),
-
-            });
+            $.easyBlockUI('#affiliates-form');
+            window.apiHttp.postUrlEncoded("{{ route('affiliate.store') }}", $('#affiliates-form').serialize())
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#affiliates-form');
+                });
         });
 
 

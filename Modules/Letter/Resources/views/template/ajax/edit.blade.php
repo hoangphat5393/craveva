@@ -69,17 +69,13 @@
         $('#save-letter').click(function() {
             var url = "{{ route('letter.template.update', $letter->id) }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#editLetter',
-                type: "put",
-                data: $('#editLetter').serialize(),
-                success: function(response) {
-                    if (response.status == 'success') {
-                        window.location.href = response.redirectUrl;
-                    }
+            window.apiHttp.postUrlEncoded(url, $('#editLetter').serialize()).then(function(response) {
+                if (response.status == 'success') {
+                    window.location.href = response.redirectUrl;
                 }
-            })
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            });
         });
 
         const clipboard = new ClipboardJS('.btn-copy');

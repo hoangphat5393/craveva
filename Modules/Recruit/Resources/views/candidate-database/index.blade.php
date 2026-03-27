@@ -5,14 +5,12 @@
 @endpush
 
 @section('filter-section')
-
     <x-filters.filter-box>
         <!-- DATE START -->
         <div class="select-box d-flex pr-2 border-right-grey border-right-grey-sm-0">
             <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('app.duration')</p>
             <div class="select-status d-flex">
-                <input type="text" class="position-relative text-dark form-control border-0 p-2 text-left f-14 f-w-500 border-additional-grey"
-                       id="datatableRange" placeholder="@lang('placeholders.dateRange')">
+                <input type="text" class="position-relative text-dark form-control border-0 p-2 text-left f-14 f-w-500 border-additional-grey" id="datatableRange" placeholder="@lang('placeholders.dateRange')">
             </div>
         </div>
         <!-- DATE END -->
@@ -20,8 +18,7 @@
         <div class="select-box d-flex py-2 px-lg-2 px-md-2 px-0 border-right-grey border-right-grey-sm-0">
             <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('recruit::modules.jobApplication.skills')</p>
             <div class="select-status">
-                <select class="form-control select-picker" name="skills" id="skills" data-live-search="true"
-                    data-size="8">
+                <select class="form-control select-picker" name="skills" id="skills" data-live-search="true" data-size="8">
                     <option value="all">@lang('app.all')</option>
                     @foreach ($skills as $skill)
                         <option value="{{ $skill->id }}">{{ $skill->name }}</option>
@@ -39,8 +36,7 @@
                             <i class="fa fa-search f-13 text-dark-grey"></i>
                         </span>
                     </div>
-                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field"
-                           placeholder="@lang('app.startTyping')">
+                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field" placeholder="@lang('app.startTyping')">
                 </div>
             </form>
         </div>
@@ -57,8 +53,7 @@
         <!-- MORE FILTERS START -->
         <x-filters.more-filter-box>
             <div class="more-filter-items">
-                <label class="f-14 text-dark-grey mb-12 "
-                       for="usr">@lang('recruit::modules.job.job')</label>
+                <label class="f-14 text-dark-grey mb-12 " for="usr">@lang('recruit::modules.job.job')</label>
                 <div class="select-filter mb-4">
                     <div class="select-others">
                         <select class="form-control select-picker" name="job" data-container="body" id="job">
@@ -72,8 +67,7 @@
             </div>
 
             <div class="more-filter-items">
-                <label class="f-14 text-dark-grey mb-12 "
-                       for="usr">@lang('recruit::modules.jobApplication.location')</label>
+                <label class="f-14 text-dark-grey mb-12 " for="usr">@lang('recruit::modules.jobApplication.location')</label>
                 <div class="select-filter mb-4">
                     <div class="select-others">
                         <select class="form-control select-picker" name="location" data-container="body" id="location">
@@ -89,7 +83,6 @@
         </x-filters.more-filter-box>
         <!-- MORE FILTERS END -->
     </x-filters.filter-box>
-
 @endsection
 
 @php
@@ -136,14 +129,13 @@
         <!-- Box End -->
     </div>
     <!-- CONTENT WRAPPER END -->
-
 @endsection
 
 @push('scripts')
     @include('sections.datatable_js')
 
     <script>
-        $('#candidate-database-table').on('preXhr.dt', function (e, settings, data) {
+        $('#candidate-database-table').on('preXhr.dt', function(e, settings, data) {
             const dateRangePicker = $('#datatableRange').data('daterangepicker');
             let startDate = $('#datatableRange').val();
 
@@ -180,7 +172,7 @@
         }
 
         $('#search-text-field, #status, #location, #job, #skills, #name')
-            .on('change keyup', function () {
+            .on('change keyup', function() {
                 if ($('#search-text-field').val() !== "") {
                     $('#reset-filters').removeClass('d-none');
                 } else if ($('#status').val() != "all") {
@@ -204,20 +196,20 @@
                 showTable();
             });
 
-        $('body').on('click', '#reset-filters', function () {
+        $('body').on('click', '#reset-filters', function() {
             $('#filter-form')[0].reset();
             $('.filter-box #status').val('not finished');
             $('.filter-box .select-picker').selectpicker("refresh");
             $('#reset-filters').addClass('d-none');
             showTable();
         });
-        $('body').on('click', '#reset-filters-2', function () {
+        $('body').on('click', '#reset-filters-2', function() {
             $('#filter-form')[0].reset();
             $('.filter-box .select-picker').selectpicker("refresh");
             $('#reset-filters').addClass('d-none');
             showTable();
         });
-        $('#quick-action-type').change(function () {
+        $('#quick-action-type').change(function() {
             const actionValue = $(this).val();
             if (actionValue !== '') {
                 $('#quick-action-apply').removeAttr('disabled');
@@ -233,7 +225,7 @@
                 $('.quick-action-field').addClass('d-none');
             }
         });
-        $('body').on('click', '#quick-action-apply', function () {
+        $('body').on('click', '#quick-action-apply', function() {
             const actionValue = $('#quick-action-type').val();
             if (actionValue == 'delete') {
                 Swal.fire({
@@ -264,29 +256,25 @@
             }
         });
         const applyQuickAction = () => {
-            var rowdIds = $("#candidate-database-table input:checkbox:checked").map(function () {
+            var rowdIds = $("#candidate-database-table input:checkbox:checked").map(function() {
                 return $(this).val();
             }).get();
 
             const url = "{{ route('job-applications.apply_quick_action') }}?row_ids=" + rowdIds;
 
-            $.easyAjax({
-                url: url,
-                container: '#quick-action-form',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#quick-action-apply",
-                data: $('#quick-action-form').serialize(),
-                success: function (response) {
-                    if (response.status == 'success') {
+            window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize())
+                .then(function(response) {
+                    if (response.data.status == 'success') {
                         showTable();
                         resetActionButtons();
                         deSelectAll();
                     }
-                }
-            })
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                });
         };
-        $('body').on('click', '.delete-table-row', function () {
+        $('body').on('click', '.delete-table-row', function() {
             var id = $(this).data('application-id');
             Swal.fire({
                 title: "@lang('messages.sweetAlertTitle')",
@@ -309,51 +297,38 @@
                 if (result.isConfirmed) {
                     var url = "{{ route('job-applications.destroy', ':id') }}";
                     url = url.replace(':id', id);
-                    var token = "{{ csrf_token() }}";
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function (response) {
-                            if (response.status == "success") {
-                                showTable();
-                            }
+                    window.apiHttp.delete(url, {
+                        _token: "{{ csrf_token() }}"
+                    }).then(function(response) {
+                        if (response.data.status == "success") {
+                            showTable();
                         }
+                    }).catch(function(err) {
+                        $.handleApiFormError(err);
                     });
                 }
             });
         });
 
-        $('#candidate-database-table').on('change', '.change-status', function () {
+        $('#candidate-database-table').on('change', '.change-status', function() {
 
             var url = "{{ route('job-applications.change_status') }}";
-            var token = "{{ csrf_token() }}";
             var id = $(this).data('status-id');
             var status = $(this).val();
 
             if (id != "" && status != "") {
-                $.easyAjax({
-                    url: url,
-                    type: "POST",
-                    container: '.content-wrapper',
-                    blockUI: true,
-                    data: {
-                        '_token': token,
-                        row_ids: id,
-                        status: status,
-                        sortBy: 'id'
-                    },
-                    success: function (data) {
-                        window.LaravelDataTables["candidate-database-table"].draw(true);
-                    }
+                window.apiHttp.postUrlEncoded(url, {
+                    _token: "{{ csrf_token() }}",
+                    row_ids: id,
+                    status: status,
+                    sortBy: 'id'
+                }).then(function() {
+                    window.LaravelDataTables["candidate-database-table"].draw(true);
+                }).catch(function(err) {
+                    $.handleApiFormError(err);
                 });
 
             }
         });
-
     </script>
 @endpush

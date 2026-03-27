@@ -1,14 +1,14 @@
-# Area: Purchase vendors (Purchase module)
+# Area: Purchase module views
 
 ## Status
 
 - [ ] Not Started
 - [ ] In Progress
-- [x] Completed (views under `vendors/**`)
+- [x] Completed (all views under `Modules/Purchase/Resources/views/**`)
 
 ## Scope
 
-`Modules/Purchase/Resources/views/vendors/**`
+`Modules/Purchase/Resources/views/**`
 
 ## Features
 
@@ -24,6 +24,12 @@
 | Bills tab (`vendors/ajax/bills.blade.php`)                                          | Yes            | Yes               | Done   |
 | Payments tab (`vendors/ajax/payments.blade.php`)                                    | Yes            | Yes               | Done   |
 | Category modal (`vendors/ajax/create_category.blade.php`)                           | Yes            | Yes               | Done   |
+| Vendor credits (`vendor-credits/**`)                                                | Yes            | Yes               | Done   |
+| Vendor payments (`vendor-payments/**`)                                              | Yes            | Yes               | Done   |
+| Bills (`bills/**`)                                                                  | Yes            | Yes               | Done   |
+| Purchase products (`purchase-products/**`)                                          | Yes            | Yes               | Done   |
+| Purchase settings (`purchase-settings/**`)                                          | Yes            | Yes               | Done   |
+| Purchase reports (`reports/index.blade.php`)                                        | Yes            | Yes               | Done   |
 
 ## API mapping
 
@@ -43,3 +49,4 @@
 
 - 2026-03-27 — Migrated all `$.easyAjax` usages in `Modules/Purchase/Resources/views/vendors/**` to `window.apiHttp` and rebuilt assets.
 - 2026-03-27 — Follow-up wave migrated `Modules/Purchase/Resources/views/vendor-credits/**` and `Modules/Purchase/Resources/views/vendor-payments/**` to `window.apiHttp` (kept same UX flow for blockUI, redirects, and datatable refresh).
+- 2026-03-27 — Final wave migrated all remaining Purchase views (`bills/**`, `purchase-products/**`, `purchase-settings/**`, `reports/index.blade.php`, and modal reasons) so `Modules/Purchase/Resources/views/**` no longer contains `$.easyAjax`.

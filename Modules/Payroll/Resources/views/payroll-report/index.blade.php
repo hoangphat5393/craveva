@@ -16,21 +16,20 @@
             <nav class="tabs">
                 <ul class="-primary">
                     <li>
-                        <x-tab :href="route('payroll-reports.index')" :text="__('payroll::modules.payroll.export')" class="salary-report" ajax="false"/>
+                        <x-tab :href="route('payroll-reports.index')" :text="__('payroll::modules.payroll.export')" class="salary-report" ajax="false" />
                     </li>
                     <li>
-                        <x-tab :href="route('payroll-reports.index').'?tab=company-tds'" :text="__('payroll::modules.payroll.companyTdsReport')" class="company-tds" ajax="false"/>
+                        <x-tab :href="route('payroll-reports.index') . '?tab=company-tds'" :text="__('payroll::modules.payroll.companyTdsReport')" class="company-tds" ajax="false" />
                     </li>
 
                     <li>
-                        <x-tab :href="route('payroll-reports.index').'?tab=employee-tds'" :text="__('payroll::modules.payroll.employeeTdsReport')" class="employee-tds" ajax="false"/>
+                        <x-tab :href="route('payroll-reports.index') . '?tab=employee-tds'" :text="__('payroll::modules.payroll.employeeTdsReport')" class="employee-tds" ajax="false" />
                     </li>
 
                 </ul>
             </nav>
         </div>
     </div>
-
 @endsection
 
 @section('content')
@@ -41,9 +40,7 @@
 
 
 @push('scripts')
-
     <script>
-
         $("body").on("click", ".project-menu .ajax-tab", function(event) {
             event.preventDefault();
 
@@ -52,26 +49,22 @@
 
             const requestUrl = this.href;
 
-            $.easyAjax({
-                url: requestUrl,
-                blockUI: true,
-                container: ".content-wrapper",
-                historyPush: true,
-                success: function(response) {
+            window.apiHttp.get(requestUrl)
+                .then(function(response) {
                     if (response.status == "success") {
+                        window.history.pushState({}, '', requestUrl);
                         $('.content-wrapper').html(response.html);
                         init('.content-wrapper');
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                });
         });
     </script>
 
     <script>
-
         const activeTab = "{{ $activeTab }}";
         $('.project-menu .' + activeTab).addClass('active');
-
     </script>
-
 @endpush

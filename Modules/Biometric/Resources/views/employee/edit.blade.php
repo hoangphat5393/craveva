@@ -492,19 +492,20 @@
             const form = $(this);
             const url = "{{ route('biometric-employees.store') }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#save-biometric-form',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "button[type=submit]",
-                data: form.serialize(),
-                success: function(response) {
+            const $submitBtn = form.find("button[type=submit]");
+            $submitBtn.prop('disabled', true);
+            window.apiHttp.postUrlEncoded(url, form.serialize())
+                .then(function(response) {
                     if (response.status === 'success') {
                         window.location.reload();
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $submitBtn.prop('disabled', false);
+                });
         });
     });
 
@@ -605,19 +606,19 @@
         $button.prop('disabled', true);
         $button.find('i').removeClass('fa-download').addClass('fa-refresh refresh-spin');
 
-        $.easyAjax({
-            url: `{{ route('biometric-employees.fetch-biometric-data', '') }}/${employeeId}`,
-            type: 'GET',
-            success: function(response) {
+        window.apiHttp.get(`{{ route('biometric-employees.fetch-biometric-data', '') }}/${employeeId}`)
+            .then(function(response) {
                 if (response.status === 'success') {
                     window.location.reload();
                 }
-            },
-            complete: function() {
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
                 $button.prop('disabled', false);
                 $button.find('i').removeClass('fa-refresh refresh-spin').addClass('fa-download');
-            }
-        });
+            });
     }
 
     function removeFromDevice(employeeId) {
@@ -635,18 +636,15 @@
             buttonsStyling: false
         }).then((result) => {
             if (result.isConfirmed) {
-                $.easyAjax({
-                    url: `{{ route('biometric-employees.remove-from-device',['id' => ':id']) }}`.replace(':id', employeeId),
-                    type: 'DELETE',
-                    data: {
-                        '_token': '{{ csrf_token() }}'
-                    },
-                    success: function(response) {
+                window.apiHttp.delete(`{{ route('biometric-employees.remove-from-device',['id' => ':id']) }}`.replace(':id', employeeId), '{{ csrf_token() }}')
+                    .then(function(response) {
                         if (response.status === 'success') {
                             window.location.reload();
                         }
-                    }
-                });
+                    })
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    });
             }
         });
     }
@@ -670,19 +668,19 @@
                 $button.prop('disabled', true);
                 $button.find('i').removeClass('fa-download').addClass('fa-refresh refresh-spin');
 
-                $.easyAjax({
-                    url: "{{ route('biometric-employees.fetch-biometric-data') }}",
-                    type: 'GET',
-                    success: function(response) {
+                window.apiHttp.get("{{ route('biometric-employees.fetch-biometric-data') }}")
+                    .then(function(response) {
                         if (response.status === 'success') {
                             window.location.reload();
                         }
-                    },
-                    complete: function() {
+                    })
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    })
+                    .finally(function() {
                         $button.prop('disabled', false);
                         $button.find('i').removeClass('fa-refresh refresh-spin').addClass('fa-download');
-                    }
-                });
+                    });
             }
         });
     }

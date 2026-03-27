@@ -1,4 +1,3 @@
-
 @php
     $viewEstimatePermission = user()->permission('view_estimates');
     $addEstimatePermission = user()->permission('add_estimates');
@@ -29,7 +28,6 @@
         width: 400px;
         height: 150px;
     }
-
 </style>
 
 @if (!in_array('client', user_roles()))
@@ -52,8 +50,7 @@
         <div class="invoice-table-wrapper">
             <table width="100%" class="">
                 <tr class="inv-logo-heading">
-                    <td><img src="{{ invoice_setting()->logo_url }}" alt="{{ company()->company_name }}"
-                            id="logo" /></td>
+                    <td><img src="{{ invoice_setting()->logo_url }}" alt="{{ company()->company_name }}" id="logo" /></td>
                     <td align="right" class="font-weight-bold f-21 text-dark text-uppercase mt-4 mt-lg-0 mt-md-0">
                         @lang('app.estimate')</td>
                 </tr>
@@ -102,41 +99,38 @@
                 <tr class="inv-unpaid">
                     <td class="f-14 text-dark">
                         @if ($invoice->client || $invoice->clientDetails)
-                        <p class="mb-0 text-left">
-                            <span class="text-dark-grey ">
-                                @lang("modules.invoices.billedTo")
-                            </span><br>
+                            <p class="mb-0 text-left">
+                                <span class="text-dark-grey ">
+                                    @lang('modules.invoices.billedTo')
+                                </span><br>
 
-                            @if ($invoice->client && $invoice->client->name && invoice_setting()->show_client_name == 'yes')
-                                {{ $invoice->client->name_salutation }}<br>
-                            @endif
-                            @if ($invoice->client && $invoice->client->email && invoice_setting()->show_client_email == 'yes')
-                                {{ $invoice->client->email }}<br>
-                            @endif
-                            @if ($invoice->client && $invoice->client->mobile && invoice_setting()->show_client_phone == 'yes')
-                                {{ $invoice->client->mobile_with_phonecode }}<br>
-                            @endif
-                            @if ($invoice->clientDetails && $invoice->clientDetails->company_name && invoice_setting()->show_client_company_name == 'yes')
-                                {{ $invoice->clientDetails->company_name }}<br>
-                            @endif
-                            @if ($invoice->clientDetails && $invoice->clientDetails->address && invoice_setting()->show_client_company_address == 'yes')
-                                {!! nl2br($invoice->clientDetails->address) !!}<br><br>
-                            @endif
-                            @if ($invoice->clientDetails && $invoice->clientDetails->gst_number && invoice_setting()->show_gst == 'yes')
-                                {{ $invoice->clientDetails->tax_name }}: {{ $invoice->clientDetails->gst_number }}<br>
-                            @endif
-                        </p>
+                                @if ($invoice->client && $invoice->client->name && invoice_setting()->show_client_name == 'yes')
+                                    {{ $invoice->client->name_salutation }}<br>
+                                @endif
+                                @if ($invoice->client && $invoice->client->email && invoice_setting()->show_client_email == 'yes')
+                                    {{ $invoice->client->email }}<br>
+                                @endif
+                                @if ($invoice->client && $invoice->client->mobile && invoice_setting()->show_client_phone == 'yes')
+                                    {{ $invoice->client->mobile_with_phonecode }}<br>
+                                @endif
+                                @if ($invoice->clientDetails && $invoice->clientDetails->company_name && invoice_setting()->show_client_company_name == 'yes')
+                                    {{ $invoice->clientDetails->company_name }}<br>
+                                @endif
+                                @if ($invoice->clientDetails && $invoice->clientDetails->address && invoice_setting()->show_client_company_address == 'yes')
+                                    {!! nl2br($invoice->clientDetails->address) !!}<br><br>
+                                @endif
+                                @if ($invoice->clientDetails && $invoice->clientDetails->gst_number && invoice_setting()->show_gst == 'yes')
+                                    {{ $invoice->clientDetails->tax_name }}: {{ $invoice->clientDetails->gst_number }}<br>
+                                @endif
+                            </p>
                         @endif
                     </td>
                     <td align="right" class="mt-2 mt-lg-0 mt-md-0">
                         @if ($invoice->clientDetails->company_logo)
-                            <img src="{{ $invoice->clientDetails->image_url }}"
-                                alt="{{ $invoice->clientDetails->company_name }}" class="logo"
-                                style="height:50px;" />
+                            <img src="{{ $invoice->clientDetails->image_url }}" alt="{{ $invoice->clientDetails->company_name }}" class="logo" style="height:50px;" />
                             <br><br><br>
                         @endif
-                        <span
-                            class="unpaid {{ $invoice->status == 'draft' ? 'text-primary border-primary' : '' }} {{ $invoice->status == 'accepted' ? 'text-success border-success' : '' }} rounded f-15 ">@lang('modules.estimates.' . $invoice->status)</span>
+                        <span class="unpaid {{ $invoice->status == 'draft' ? 'text-primary border-primary' : '' }} {{ $invoice->status == 'accepted' ? 'text-success border-success' : '' }} rounded f-15 ">@lang('modules.estimates.' . $invoice->status)</span>
                     </td>
                 </tr>
                 <tr>
@@ -162,7 +156,7 @@
                                     <td class="border-right-0 border-left-0" align="right">@lang('app.hsnSac')</td>
                                 @endif
                                 <td class="border-right-0 border-left-0" align="right">
-                                @lang('modules.invoices.qty')
+                                    @lang('modules.invoices.qty')
                                 </td>
                                 <td class="border-right-0 border-left-0" align="right">
                                     @lang('modules.invoices.unitPrice') ({{ $invoice->currency->currency_code }})
@@ -181,7 +175,10 @@
                                             <td align="right">{{ $item->hsn_sac_code ? $item->hsn_sac_code : '--' }}
                                             </td>
                                         @endif
-                                        <td align="right">{{ $item->quantity }} @if($item->unit)<br><span class="f-11 text-dark-grey">{{ $item->unit->unit_type }}</span>@endif</td>
+                                        <td align="right">{{ $item->quantity }} @if ($item->unit)
+                                                <br><span class="f-11 text-dark-grey">{{ $item->unit->unit_type }}</span>
+                                            @endif
+                                        </td>
                                         <td align="right"> {{ currency_format($item->unit_price, $invoice->currency_id, false) }}</td>
                                         <td align="right"> {{ $item->tax_list }} </td>
                                         <td align="right">{{ currency_format($item->amount, $invoice->currency_id, false) }}</td>
@@ -192,10 +189,8 @@
                                                 {!! nl2br(strip_tags($item->item_summary)) !!}
                                                 @if ($item->estimateItemImage)
                                                     <p class="mt-2">
-                                                        <a href="javascript:;" class="img-lightbox"
-                                                            data-image-url="{{ $item->estimateItemImage->file_url }}">
-                                                            <img src="{{ $item->estimateItemImage->file_url }}"
-                                                                width="80" height="80" class="img-thumbnail">
+                                                        <a href="javascript:;" class="img-lightbox" data-image-url="{{ $item->estimateItemImage->file_url }}">
+                                                            <img src="{{ $item->estimateItemImage->file_url }}" width="80" height="80" class="img-thumbnail">
                                                         </a>
                                                     </p>
                                                 @endif
@@ -206,8 +201,7 @@
                             @endforeach
 
                             <tr>
-                                <td colspan="{{ $invoiceSetting->hsn_sac_code_show ? '4' : '3' }}"
-                                    class="blank-td border-bottom-0 border-left-0 border-right-0"></td>
+                                <td colspan="{{ $invoiceSetting->hsn_sac_code_show ? '4' : '3' }}" class="blank-td border-bottom-0 border-left-0 border-right-0"></td>
                                 <td class="p-0 border-right-0" align="right">
                                     <table width="100%">
                                         <tr class="text-dark-grey" align="right">
@@ -217,7 +211,7 @@
                                         @if ($discount != 0 && $discount != '')
                                             <tr class="text-dark-grey" align="right">
                                                 <td class="w-50 border-top-0 border-left-0">
-                                                    @lang('modules.invoices.discount'): {{ $discountType}} </td>
+                                                    @lang('modules.invoices.discount'): {{ $discountType }} </td>
                                             </tr>
                                         @endif
                                         @foreach ($taxes as $key => $tax)
@@ -283,10 +277,8 @@
                                                 {!! nl2br(strip_tags($item->item_summary)) !!}
                                                 @if ($item->estimateItemImage)
                                                     <p class="mt-2">
-                                                        <a href="javascript:;" class="img-lightbox"
-                                                            data-image-url="{{ $item->estimateItemImage->file_url }}">
-                                                            <img src="{{ $item->estimateItemImage->file_url }}"
-                                                                width="80" height="80" class="img-thumbnail">
+                                                        <a href="javascript:;" class="img-lightbox" data-image-url="{{ $item->estimateItemImage->file_url }}">
+                                                            <img src="{{ $item->estimateItemImage->file_url }}" width="80" height="80" class="img-thumbnail">
                                                         </a>
                                                     </p>
                                                 @endif
@@ -299,7 +291,10 @@
                         <tr>
                             <th width="50%" class="bg-light-grey text-dark-grey font-weight-bold">
                                 @lang('modules.invoices.qty')</th>
-                            <td width="50%">{{ $item->quantity }} @if($item->unit)<br><span class="f-11 text-dark-grey">{{ $item->unit->unit_type }}</span>@endif</td>
+                            <td width="50%">{{ $item->quantity }} @if ($item->unit)
+                                    <br><span class="f-11 text-dark-grey">{{ $item->unit->unit_type }}</span>
+                                @endif
+                            </td>
                         </tr>
                         <tr>
                             <th width="50%" class="bg-light-grey text-dark-grey font-weight-bold">
@@ -415,16 +410,14 @@
 
         <div class="d-flex">
             <div class="inv-action dropup">
-                <button class="dropdown-toggle btn-secondary" type="button" id="dropdownMenuButton"
-                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@lang('app.action')
+                <button class="dropdown-toggle btn-secondary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@lang('app.action')
                     <span><i class="fa fa-chevron-up f-15 text-dark-grey"></i></span>
                 </button>
                 <!-- DROPDOWN - INFORMATION -->
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton" tabindex="0">
                     @if ($invoice->status == 'waiting' && $invoice->client_id == user()->id)
                         <li>
-                            <a class="dropdown-item f-14 text-dark" data-toggle="modal"
-                                data-target="#signature-modal" href="javascript:;">
+                            <a class="dropdown-item f-14 text-dark" data-toggle="modal" data-target="#signature-modal" href="javascript:;">
                                 <i class="fa fa-check f-w-500 mr-2 f-11"></i> @lang('app.accept')
                             </a>
                         </li>
@@ -435,44 +428,35 @@
                         </li>
                     @endif
                     @if ($invoice->status == 'waiting' || $invoice->status == 'draft')
-                        @if (
-                            $editEstimatePermission == 'all' ||
-                                ($editEstimatePermission == 'added' && $invoice->added_by == user()->id) ||
-                                ($editEstimatePermission == 'owned' && $invoice->client_id == user()->id) ||
-                                ($editEstimatePermission == 'both' && ($invoice->client_id == user()->id || $invoice->added_by == user()->id)))
+                        @if ($editEstimatePermission == 'all' || ($editEstimatePermission == 'added' && $invoice->added_by == user()->id) || ($editEstimatePermission == 'owned' && $invoice->client_id == user()->id) || ($editEstimatePermission == 'both' && ($invoice->client_id == user()->id || $invoice->added_by == user()->id)))
                             <li>
-                                <a class="dropdown-item openRightModal"
-                                    href="{{ route('estimates.edit', [$invoice->id]) }}">
+                                <a class="dropdown-item openRightModal" href="{{ route('estimates.edit', [$invoice->id]) }}">
                                     <i class="fa fa-edit f-w-500 mr-2 f-11"></i> @lang('app.edit')
                                 </a>
                             </li>
                         @endif
-                        @if($invoice->send_status)
+                        @if ($invoice->send_status)
                             <li>
-                                <a class="dropdown-item btn-copy"
-                                    data-clipboard-text="{{ url()->temporarySignedRoute('front.estimate.show', now()->addDays(\App\Models\GlobalSetting::SIGNED_ROUTE_EXPIRY), $invoice->hash) }}">
+                                <a class="dropdown-item btn-copy" data-clipboard-text="{{ url()->temporarySignedRoute('front.estimate.show', now()->addDays(\App\Models\GlobalSetting::SIGNED_ROUTE_EXPIRY), $invoice->hash) }}">
                                     <i class="fa fa-copy mr-2"></i> @lang('modules.estimates.copyLink')</a>
                             </li>
                         @endif
                         @if ($invoice->status != 'canceled' && $invoice->status != 'accepted' && !in_array('client', user_roles()))
                             <li>
-                                <a href="javascript:;" data-toggle="tooltip" data-estimate-id="{{ $invoice->id }}"
-                                    class="dropdown-item sendButton"><i class="fa fa-paper-plane mr-2"></i>
+                                <a href="javascript:;" data-toggle="tooltip" data-estimate-id="{{ $invoice->id }}" class="dropdown-item sendButton"><i class="fa fa-paper-plane mr-2"></i>
                                     @lang('app.send')</a>
                             </li>
                         @endif
                         <li>
 
-                            <a class="dropdown-item f-14 text-dark"
-                                href="{{ route('estimates.download', [$invoice->id]) }}">
+                            <a class="dropdown-item f-14 text-dark" href="{{ route('estimates.download', [$invoice->id]) }}">
                                 <i class="fa fa-download f-w-500 mr-2 f-11"></i> @lang('app.download')
                             </a>
                         </li>
                         @if ($invoice->status == 'waiting')
                             @if ($addInvoicePermission == 'all' || $addInvoicePermission == 'added')
                                 <li>
-                                    <a class="dropdown-item"
-                                        href="{{ route('invoices.create') . '?estimate=' . $invoice->id }}">
+                                    <a class="dropdown-item" href="{{ route('invoices.create') . '?estimate=' . $invoice->id }}">
                                         <i class="fa fa-plus f-w-500 mr-2 f-11"></i> @lang('app.create')
                                         @lang('app.invoice')
                                     </a>
@@ -481,8 +465,7 @@
 
                             @if ($editEstimatePermission == 'all' || ($editEstimatePermission == 'added' && $invoice->added_by == user()->id))
                                 <li>
-                                    <a class="dropdown-item change-status" href="javascript:;"
-                                        data-estimate-id="{{ $invoice->id }}">
+                                    <a class="dropdown-item change-status" href="javascript:;" data-estimate-id="{{ $invoice->id }}">
                                         <i class="fa fa-times f-w-500 mr-2 f-11"></i> @lang('app.cancelEstimate')
                                     </a>
                                 </li>
@@ -491,21 +474,14 @@
                     @endif
                     @if ($addEstimatePermission == 'all' || $addEstimatePermission == 'added')
                         <li>
-                            <a href="{{ route('estimates.create') . '?estimate=' . $invoice->id }}"
-                                class="dropdown-item"><i class="fa fa-copy mr-2"></i> @lang('app.createDuplicate')
-                                </a>
+                            <a href="{{ route('estimates.create') . '?estimate=' . $invoice->id }}" class="dropdown-item"><i class="fa fa-copy mr-2"></i> @lang('app.createDuplicate')
+                            </a>
                         </li>
                     @endif
                     @if ($firstEstimate->id == $invoice->id)
-                        @if (
-                            $deleteEstimatePermission == 'all' ||
-                                ($deleteEstimatePermission == 'added' && $invoice->added_by == user()->id) ||
-                                ($deleteEstimatePermission == 'owned' && $invoice->client_id == user()->id) ||
-                                ($deleteEstimatePermission == 'both' &&
-                                    ($invoice->client_id == user()->id || $invoice->added_by == user()->id)))
+                        @if ($deleteEstimatePermission == 'all' || ($deleteEstimatePermission == 'added' && $invoice->added_by == user()->id) || ($deleteEstimatePermission == 'owned' && $invoice->client_id == user()->id) || ($deleteEstimatePermission == 'both' && ($invoice->client_id == user()->id || $invoice->added_by == user()->id)))
                             <li>
-                                <a class="dropdown-item delete-table-row" href="javascript:;"
-                                    data-estimate-id="{{ $invoice->id }}">
+                                <a class="dropdown-item delete-table-row" href="javascript:;" data-estimate-id="{{ $invoice->id }}">
                                     <i class="fa fa-trash mr-2"></i>@lang('app.delete')
                                 </a>
                             </li>
@@ -595,35 +571,51 @@
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'GET',
-                        url: url,
-                        container: '#invoices-table',
-                        blockUI: true,
-                        success: function(response) {
-                            if (response.status == "success") {
-                                window.location.reload();
-                            }
+                    $.easyBlockUI('.content-wrapper');
+                    window.apiHttp.get(url).then(function(response) {
+                        if (response.status == "success") {
+                            window.location.reload();
                         }
+                    }).catch(function(err) {
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                text: err.message,
+                                toast: true,
+                                position: 'top-end',
+                                timer: 4000,
+                                showConfirmButton: false
+                            });
+                        }
+                    }).finally(function() {
+                        $.easyUnblockUI('.content-wrapper');
                     });
                 }
             });
         });
 
         $('#decline-estimate').click(function() {
-            $.easyAjax({
-                type: 'POST',
-                url: "{{ route('estimates.decline', $invoice->id) }}",
-                blockUI: true,
-                data: {
-                    _token: '{{ csrf_token() }}'
-                },
-                success: function(response) {
-                    if (response.status == 'success') {
-                        window.location.reload();
-                    }
+            $.easyBlockUI('.content-wrapper');
+            window.apiHttp.postUrlEncoded("{{ route('estimates.decline', $invoice->id) }}", {
+                _token: '{{ csrf_token() }}'
+            }).then(function(response) {
+                if (response.status == 'success') {
+                    window.location.reload();
                 }
-            })
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $.easyUnblockUI('.content-wrapper');
+            });
         });
 
         $('#toggle-pad-uploader').click(function() {
@@ -665,24 +657,43 @@
             }
 
 
-            $.easyAjax({
-                url: "{{ route('estimates.accept', $invoice->id) }}",
-                container: '#acceptEstimate',
-                type: "POST",
-                blockUI: true,
-                file: true,
-                disableButton: true,
-                buttonSelector: '#save-signature',
-                data: {
-                    first_name: first_name,
-                    last_name: last_name,
-                    email: email,
-                    signature: signature,
-                    image: image,
-                    signature_type: signature_type,
-                    _token: '{{ csrf_token() }}'
-                },
-            })
+            var acceptFd = new FormData();
+            acceptFd.append('first_name', first_name);
+            acceptFd.append('last_name', last_name);
+            acceptFd.append('email', email);
+            acceptFd.append('signature', signature);
+            acceptFd.append('signature_type', signature_type);
+            acceptFd.append('_token', '{{ csrf_token() }}');
+            var imageInput = document.getElementById('image');
+            if (imageInput && imageInput.files && imageInput.files[0]) {
+                acceptFd.append('image', imageInput.files[0]);
+            } else if (image) {
+                acceptFd.append('image', image);
+            }
+            var $sigBtn = $('#save-signature');
+            $sigBtn.prop('disabled', true);
+            $.easyBlockUI('#acceptEstimate');
+            window.apiHttp.postForm("{{ route('estimates.accept', $invoice->id) }}", acceptFd).then(function(response) {
+                if (response.status == 'success' && response.redirectUrl) {
+                    window.location.href = response.redirectUrl;
+                } else if (response.status == 'success') {
+                    window.location.reload();
+                }
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $sigBtn.prop('disabled', false);
+                $.easyUnblockUI('#acceptEstimate');
+            });
         });
 
         $('body').on('click', '.sendButton', function() {
@@ -692,19 +703,26 @@
 
             var token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                type: 'POST',
-                url: url,
-                container: '#invoices-table',
-                blockUI: true,
-                data: {
-                    '_token': token
-                },
-                success: function(response) {
-                    if (response.status == "success") {
-                        window.LaravelDataTables["invoices-table"].draw(true);
-                    }
+            $.easyBlockUI('#invoices-table');
+            window.apiHttp.postUrlEncoded(url, {
+                _token: token
+            }).then(function(response) {
+                if (response.status == "success") {
+                    window.LaravelDataTables["invoices-table"].draw(true);
                 }
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $.easyUnblockUI('#invoices-table');
             });
         });
 
@@ -756,19 +774,24 @@
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                window.location.href = "{{ route('estimates.index') }}";
-                            }
+                    $.easyBlockUI('.content-wrapper');
+                    window.apiHttp.delete(url, token).then(function(response) {
+                        if (response.status == "success") {
+                            window.location.href = "{{ route('estimates.index') }}";
                         }
+                    }).catch(function(err) {
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                text: err.message,
+                                toast: true,
+                                position: 'top-end',
+                                timer: 4000,
+                                showConfirmButton: false
+                            });
+                        }
+                    }).finally(function() {
+                        $.easyUnblockUI('.content-wrapper');
                     });
                 }
             });

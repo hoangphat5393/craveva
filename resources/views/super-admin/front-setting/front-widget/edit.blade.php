@@ -54,16 +54,35 @@
     });
 
     $('#update-front-widget').click(function () {
-        $.easyAjax({
-            url: "{{ route('superadmin.front-settings.front-widgets.update', $frontWidget->id) }}",
-            container: '#updateFrontWidget',
-            type: "POST",
-            redirect: true,
-            disableButton: true,
-            blockUI: true,
-            file: true,
-            data: $('#updateFrontWidget').serialize()
-        })
+        const $btn = $('#update-front-widget');
+        const prev = $btn.html();
+        $.easyBlockUI('#updateFrontWidget');
+        $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+        window.apiHttp.postForm("{{ route('superadmin.front-settings.front-widgets.update', $frontWidget->id) }}", document.getElementById('updateFrontWidget'))
+            .then(function (response) {
+                if (response.status === 'success') {
+                    if (response.action === 'redirect' && response.url) {
+                        window.location.href = response.url;
+                    } else if (typeof response.message !== 'undefined') {
+                        Swal.fire({
+                            icon: 'success',
+                            text: response.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 3000,
+                            timerProgressBar: true,
+                            showConfirmButton: false,
+                            customClass: { confirmButton: 'btn btn-primary' },
+                            showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                        });
+                    }
+                }
+            })
+            .catch(function (err) { $.handleApiFormError(err); })
+            .finally(function () {
+                $.easyUnblockUI('#updateFrontWidget');
+                $btn.prop('disabled', false).html(prev);
+            });
     });
 </script>
 

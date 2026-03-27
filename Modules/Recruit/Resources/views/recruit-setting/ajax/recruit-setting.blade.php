@@ -23,29 +23,26 @@
         @forelse($recruiters as $recruiter)
             <tr class="row{{ $recruiter->user_id }}">
                 <td>
-                    <x-employee :user="$recruiter->user"/>
+                    <x-employee :user="$recruiter->user" />
                 </td>
                 <td>
                     @if ($editPermission == 'all')
-                        <select class="change-recruiter-status form-control select-picker"
-                                data-recruiter-id="{{ $recruiter->id }}">
+                        <select class="change-recruiter-status form-control select-picker" data-recruiter-id="{{ $recruiter->id }}">
                             <option @if ($recruiter->status == 'enabled') selected @endif>@lang('app.enabled')</option>
-                            <option
-                                @if ($recruiter->status == 'disabled') selected @endif>@lang('app.disabled')</option>
+                            <option @if ($recruiter->status == 'disabled') selected @endif>@lang('app.disabled')</option>
                         </select>
                     @else
                         @if ($recruiter->status == 'enabled')
-                            @lang(($recruiter->status))
+                            @lang($recruiter->status)
                         @else
-                            @lang(($recruiter->status))
+                            @lang($recruiter->status)
                         @endif
                     @endif
                 </td>
                 <td class="text-right">
                     <div class="task_view">
                         @if ($deletePermission == 'all')
-                            <a href="javascript:;" data-recruiter-id="{{ $recruiter->id }}"
-                               class="delete-recruiter task_view_more d-flex align-items-center justify-content-center dropdown-toggle">
+                            <a href="javascript:;" data-recruiter-id="{{ $recruiter->id }}" class="delete-recruiter task_view_more d-flex align-items-center justify-content-center dropdown-toggle">
                                 <i class="fa fa-trash icons mr-2"></i> @lang('app.delete')
                             </a>
                         @endif
@@ -60,7 +57,7 @@
 
 <script>
     /* delete recruiter */
-    $('body').on('click', '.delete-recruiter', function () {
+    $('body').on('click', '.delete-recruiter', function() {
         var id = $(this).data('recruiter-id');
         Swal.fire({
             title: "@lang('messages.sweetAlertTitle')",
@@ -84,52 +81,41 @@
                 var url = "{{ route('recruiter.destroy', ':id') }}";
                 url = url.replace(':id', id);
 
-                var token = "{{ csrf_token() }}";
-
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    blockUI: true,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function (response) {
-                        if (response.status == "success") {
-                            $('.row' + id).fadeOut(100);
-                            location.reload();
-                        }
+                window.apiHttp.delete(url, {
+                    _token: "{{ csrf_token() }}"
+                }).then(function(response) {
+                    if (response.data.status == "success") {
+                        $('.row' + id).fadeOut(100);
+                        location.reload();
                     }
+                }).catch(function(err) {
+                    $.handleApiFormError(err);
                 });
             }
         });
     });
 
     /* change recruiter status */
-    $('body').on('change', '.change-recruiter-status', function () {
+    $('body').on('change', '.change-recruiter-status', function() {
 
         var agentId = $(this).data('recruiter-id');
         var status = $(this).val();
 
-        var token = '{{ csrf_token() }}';
         var url = "{{ route('recruiter.update', ':id') }}";
         url = url.replace(':id', agentId);
 
         if (typeof agentId !== 'undefined') {
-            $.easyAjax({
-                type: 'PUT',
-                url: url,
-                blockUI: true,
-                data: {
-                    '_token': token,
-                    'status': status
-                }
+            window.apiHttp.put(url, {
+                _token: '{{ csrf_token() }}',
+                status: status
+            }).catch(function(err) {
+                $.handleApiFormError(err);
             });
         }
     });
 
     /* open add agent modal */
-    $('body').off('click', "#addRecruiter").on('click', '#addRecruiter', function () {
+    $('body').off('click', "#addRecruiter").on('click', '#addRecruiter', function() {
         var url = "{{ route('recruiter.create') }}";
         $(MODAL_DEFAULT + ' ' + MODAL_HEADING).html('...');
         $.ajaxModal(MODAL_DEFAULT, url);

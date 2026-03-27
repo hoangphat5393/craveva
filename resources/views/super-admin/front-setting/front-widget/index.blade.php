@@ -114,15 +114,9 @@
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function (response) {
+                    $.easyBlockUI();
+                    window.apiHttp.delete(url, token)
+                        .then(function (response) {
                             if (response.status == "success") {
                                 $('.dataRow' + id).fadeOut('normal', function () {
                                     $(this).remove();
@@ -132,22 +126,43 @@
                                     }
                                 });
                             }
-                        }
-                    });
+                        })
+                        .catch(function (err) { $.handleApiFormError(err); })
+                        .finally(function () { $.easyUnblockUI(); });
                 }
             });
         });
 
         $("body").on("click", "#save-front-widget", function (event) {
-            $.easyAjax({
-                url: "{{ route('superadmin.front-settings.front-widgets.store') }}",
-                container: '#createFrontWidget',
-                type: "POST",
-                redirect: true,
-                disableButton: true,
-                blockUI: true,
-                data: $('#createFrontWidget').serialize()
-            })
+            const $btn = $('#save-front-widget');
+            const prev = $btn.html();
+            $.easyBlockUI('#createFrontWidget');
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+            window.apiHttp.postUrlEncoded("{{ route('superadmin.front-settings.front-widgets.store') }}", $('#createFrontWidget').serialize())
+                .then(function (response) {
+                    if (response.status === 'success') {
+                        if (response.action === 'redirect' && response.url) {
+                            window.location.href = response.url;
+                        } else if (typeof response.message !== 'undefined') {
+                            Swal.fire({
+                                icon: 'success',
+                                text: response.message,
+                                toast: true,
+                                position: 'top-end',
+                                timer: 3000,
+                                timerProgressBar: true,
+                                showConfirmButton: false,
+                                customClass: { confirmButton: 'btn btn-primary' },
+                                showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                            });
+                        }
+                    }
+                })
+                .catch(function (err) { $.handleApiFormError(err); })
+                .finally(function () {
+                    $.easyUnblockUI('#createFrontWidget');
+                    $btn.prop('disabled', false).html(prev);
+                });
         });
 
     </script>

@@ -9,9 +9,7 @@
             <div id="table-actions" class="flex-grow-1 align-items-center">
 
                 @if ($addTicketPermission == 'all' || $addTicketPermission == 'added')
-                    <x-forms.link-primary :link="route('tickets.create').'?default_assign='.$employee->id"
-                                          class="mr-3 openRightModal float-left" data-redirect-url="{{ url()->full() }}"
-                                          icon="plus">
+                    <x-forms.link-primary :link="route('tickets.create') . '?default_assign=' . $employee->id" class="mr-3 openRightModal float-left" data-redirect-url="{{ url()->full() }}" icon="plus">
                         @lang('modules.tickets.addTicket')
                     </x-forms.link-primary>
                 @endif
@@ -62,7 +60,7 @@
 <script>
     var ticketFilterStatus = "{{ request('ticketStatus') }}";
 
-    $('#ticket-table').on('preXhr.dt', function (e, settings, data) {
+    $('#ticket-table').on('preXhr.dt', function(e, settings, data) {
 
         var agentId = $('#agent_id').val();
         if (agentId == "") {
@@ -79,7 +77,7 @@
         window.LaravelDataTables["ticket-table"].draw(true);
     }
 
-    $('#quick-action-type').change(function () {
+    $('#quick-action-type').change(function() {
         const actionValue = $(this).val();
         if (actionValue != '') {
             $('#quick-action-apply').removeAttr('disabled');
@@ -96,7 +94,7 @@
         }
     });
 
-    $('#quick-action-apply').click(function () {
+    $('#quick-action-apply').click(function() {
         const actionValue = $('#quick-action-type').val();
         if (actionValue == 'delete') {
             Swal.fire({
@@ -127,7 +125,7 @@
         }
     });
 
-    $('body').on('click', '.delete-table-row', function () {
+    $('body').on('click', '.delete-table-row', function() {
         var id = $(this).data('ticket-id');
         Swal.fire({
             title: "@lang('messages.sweetAlertTitle')",
@@ -153,17 +151,20 @@
 
                 var token = "{{ csrf_token() }}";
 
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function (response) {
-                        if (response.status == "success") {
-                            showTable();
-                        }
+                window.apiHttp.delete(url, token).then(function(response) {
+                    if (response.status == "success") {
+                        showTable();
+                    }
+                }).catch(function(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
                     }
                 });
             }
@@ -171,30 +172,39 @@
     });
 
     const applyQuickAction = () => {
-        var rowdIds = $("#ticket-table input:checkbox:checked").map(function () {
+        var rowdIds = $("#ticket-table input:checkbox:checked").map(function() {
             return $(this).val();
         }).get();
 
         var url = "{{ route('tickets.apply_quick_action') }}?row_ids=" + rowdIds;
 
-        $.easyAjax({
-            url: url,
-            container: '#quick-action-form',
-            type: "POST",
-            disableButton: true,
-            buttonSelector: "#quick-action-apply",
-            data: $('#quick-action-form').serialize(),
-            success: function (response) {
-                if (response.status == 'success') {
-                    showTable();
-                    resetActionButtons();
-                    deSelectAll();
-                }
+        var $qaApply = $('#quick-action-apply');
+        $qaApply.prop('disabled', true);
+        $.easyBlockUI('#quick-action-form');
+        window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize()).then(function(response) {
+            if (response.status == 'success') {
+                showTable();
+                resetActionButtons();
+                deSelectAll();
             }
-        })
+        }).catch(function(err) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    text: err.message,
+                    toast: true,
+                    position: 'top-end',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            }
+        }).finally(function() {
+            $qaApply.prop('disabled', false);
+            $.easyUnblockUI('#quick-action-form');
+        });
     };
 
-    $('body').on('click', '#add-ticket', function () {
+    $('body').on('click', '#add-ticket', function() {
         window.location.href = "{{ route('ticket-form.index') }}";
     });
 
@@ -227,30 +237,36 @@
         }
 
         var url = "{{ route('tickets.refresh_count') }}";
-        $.easyAjax({
-            type: 'POST',
-            url: url,
-            data: {
-                'agentId': agentId,
-                'ticketStatus': status,
-                'priority': priority,
-                'channelId': channelId,
-                'typeId': typeId,
-                '_token': '{{ csrf_token() }}'
-            },
-            success: function (response) {
-                $('#totalTickets').html(response.totalTickets);
-                $('#closedTickets').html(response.closedTickets);
-                $('#openTickets').html(response.openTickets);
-                $('#pendingTickets').html(response.pendingTickets);
-                $('#resolvedTickets').html(response.resolvedTickets);
+        window.apiHttp.postUrlEncoded(url, {
+            'agentId': agentId,
+            'ticketStatus': status,
+            'priority': priority,
+            'channelId': channelId,
+            'typeId': typeId,
+            '_token': '{{ csrf_token() }}'
+        }).then(function(response) {
+            $('#totalTickets').html(response.totalTickets);
+            $('#closedTickets').html(response.closedTickets);
+            $('#openTickets').html(response.openTickets);
+            $('#pendingTickets').html(response.pendingTickets);
+            $('#resolvedTickets').html(response.resolvedTickets);
+        }).catch(function(err) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    text: err.message,
+                    toast: true,
+                    position: 'top-end',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
             }
         });
     }
 
     refreshCount();
 
-    $('body').on('click', '#add-ticket', function () {
+    $('body').on('click', '#add-ticket', function() {
         window.location.href = "{{ route('ticket-form.index') }}";
     });
 </script>

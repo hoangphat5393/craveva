@@ -125,19 +125,17 @@
     $('#save-salary-component').click(function (e) {
         e.preventDefault();
         $('#save-salary-component').attr('disabled', true);
-        $.easyAjax({
-            url: "{{ route('salary-components.store') }}",
-            container: '#addSalaryComponent',
-            type: "POST",
-            blockUI: true,
-            disableButton: true,
-            buttonSelector: "#save-salary-component",
-            data: $('#addSalaryComponent').serialize(),
-            success: function (response) {
+        window.apiHttp.postUrlEncoded("{{ route('salary-components.store') }}", $('#addSalaryComponent').serialize())
+            .then(function (response) {
                 if (response.status == "success") {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch(function (err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function () {
+                $('#save-salary-component').attr('disabled', false);
+            });
     });
 </script>

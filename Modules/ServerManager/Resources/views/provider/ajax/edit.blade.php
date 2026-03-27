@@ -62,15 +62,8 @@
 <script>
     $('#update-provider').click(function() {
         var url = "{{ route('provider.update', $provider->id) }}";
-        $.easyAjax({
-            url: url,
-            container: '#save-provider-data-form',
-            type: "POST",
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#update-provider",
-            data: $('#save-provider-data-form').serialize(),
-            success: function(response) {
+        window.apiHttp.postUrlEncoded(url, $('#save-provider-data-form').serialize())
+            .then(function (response) {
                 if (response.status == 'success') {
                     if (response.redirectUrl) {
                         window.location.href = response.redirectUrl;
@@ -79,8 +72,10 @@
                         showTable();
                     }
                 }
-            }
-        })
+            })
+            .catch(function (err) {
+                $.handleApiFormError(err);
+            });
     });
 
     init(RIGHT_MODAL);

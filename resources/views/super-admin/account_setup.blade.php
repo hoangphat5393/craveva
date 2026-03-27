@@ -57,18 +57,17 @@
             $('#submit-login').click(function() {
 
                 var url = "{{ route('setup_account') }}";
-                $.easyAjax({
-                    url: url,
-                    container: '#login-form',
-                    disableButton: true,
-                    buttonSelector: "#submit-login",
-                    type: "POST",
-                    data: $('#login-form').serialize(),
-                    success: function(response) {
-                        if (response.status === 'success') {
-                            window.location.href = "{{ route('superadmin.checklist') }}";
-                        }
+                var $btn = $('#submit-login');
+                var prev = $btn.html();
+                $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+                window.apiHttp.postUrlEncoded(url, $('#login-form').serialize()).then(function(response) {
+                    if (response.status === 'success') {
+                        window.location.href = "{{ route('superadmin.checklist') }}";
                     }
+                }).catch(function(err) {
+                    $.handleApiFormError(err);
+                }).finally(function() {
+                    $btn.prop('disabled', false).html(prev);
                 })
             });
         </script>

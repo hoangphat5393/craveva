@@ -357,23 +357,20 @@
             let id = $('#biolink-setting-id').val();
             let url = "{{ route('biolink-settings.update', ':id') }}";
             url = url.replace(':id', id);
-            let data = $('#save-biolink-setting-form').serialize();
 
-            $.easyAjax({
-                url: url,
-                container: '#save-biolink-setting-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: '#save-biolink-setting',
-                file: true,
-                data: data,
-                success: function (response) {
+            $.easyBlockUI('#save-biolink-setting-form');
+            window.apiHttp.postForm(url, document.getElementById('save-biolink-setting-form'))
+                .then(function (response) {
                     if (response.status == 'success') {
                         //
                     }
-                }
-            });
+                })
+                .catch(function (err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function () {
+                    $.easyUnblockUI('#save-biolink-setting-form');
+                });
         });
     </script>
 @endpush

@@ -1,35 +1,34 @@
 @php
-$editAttendancePermission = user()->permission('add_attendance');
-$deleteAttendancePermission = user()->permission('delete_attendance');
+    $editAttendancePermission = user()->permission('add_attendance');
+    $deleteAttendancePermission = user()->permission('delete_attendance');
 @endphp
 <div class="modal-header">
     <h5 class="modal-title" id="modelHeading">
         @if ($type == 'edit')
             @lang('app.attendanceDetails')
         @else
-        @lang('modules.attendance.markAttendance')
+            @lang('modules.attendance.markAttendance')
         @endif
     </h5>
-    <button type="button"  class="close" data-dismiss="modal" aria-label="Close"><span
-        aria-hidden="true">×</span></button>
-    </div>
-    <div class="modal-body">
-        <div class="row">
-            <div class="col-md-12 mb-4">
-                <x-employee :user="$attendanceUser" />
-            </div>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+</div>
+<div class="modal-body">
+    <div class="row">
+        <div class="col-md-12 mb-4">
+            <x-employee :user="$attendanceUser" />
         </div>
-        <div class="row">
-            <div class="col-sm-12">
-                <h5 class="f-w-500 f-15 d-flex justify-content-between">{{ __('app.date').' - '.\Carbon\Carbon::parse($date)->translatedFormat(company()->date_format) }}
-                    @if ($attendanceSettings->shift_name != 'Day Off')
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <h5 class="f-w-500 f-15 d-flex justify-content-between">{{ __('app.date') . ' - ' . \Carbon\Carbon::parse($date)->translatedFormat(company()->date_format) }}
+                @if ($attendanceSettings->shift_name != 'Day Off')
                     <span class="badge badge-info ml-2" style="background-color: {{ $attendanceSettings->color }}">{{ $attendanceSettings->shift_name }}</span>
-                    @else
+                @else
                     <span class="badge badge-secondary ml-2">{{ __('modules.attendance.' . str($attendanceSettings->shift_name)->camel()) }}</span>
                 @endif
             </h5>
 
-            @if($type == 'add' && $checkTodayHoliday)
+            @if ($type == 'add' && $checkTodayHoliday)
                 <x-alert type="info" icon="info-circle">
                     @lang('messages.holidayAlertMsg')
                 </x-alert>
@@ -47,23 +46,17 @@ $deleteAttendancePermission = user()->permission('delete_attendance');
 
                         <div class="col-lg-4 col-md-6">
                             <div class="bootstrap-timepicker timepicker">
-                                <x-forms.text class="a-timepicker" :fieldLabel="__('modules.attendance.clock_in')"
-                                    :fieldPlaceholder="__('placeholders.hours')" fieldName="clock_in_time"
-                                    fieldId="clock-in-time" fieldRequired="true"
-                                    :fieldValue="(!is_null($row->clock_in_time)) ? \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $row->clock_in_time)->timezone(company()->timezone)->translatedFormat(company()->time_format) : ''" />
+                                <x-forms.text class="a-timepicker" :fieldLabel="__('modules.attendance.clock_in')" :fieldPlaceholder="__('placeholders.hours')" fieldName="clock_in_time" fieldId="clock-in-time" fieldRequired="true" :fieldValue="!is_null($row->clock_in_time) ? \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $row->clock_in_time)->timezone(company()->timezone)->translatedFormat(company()->time_format) : ''" />
                             </div>
                         </div>
 
                         <div class="col-lg-3 col-md-6">
-                            <x-forms.text class="a-timepicker" :fieldLabel="__('modules.attendance.clock_in_ip')"
-                                :fieldPlaceholder="__('placeholders.hours')" fieldName="clock_in_ip"
-                                fieldId="clock-in-ip" :fieldValue="$row->clock_in_ip ?? request()->ip()" />
+                            <x-forms.text class="a-timepicker" :fieldLabel="__('modules.attendance.clock_in_ip')" :fieldPlaceholder="__('placeholders.hours')" fieldName="clock_in_ip" fieldId="clock-in-ip" :fieldValue="$row->clock_in_ip ?? request()->ip()" />
                         </div>
 
                         @if ($row->total_clock_in == 0)
                             <div class="col-lg-4 col-md-6">
-                                <x-forms.toggle-switch class="mr-0 mr-lg-2 mr-md-2" :checked="($row->late == 'yes')"
-                                    :fieldLabel="__('modules.attendance.late')" fieldName="late" fieldId="lateday" />
+                                <x-forms.toggle-switch class="mr-0 mr-lg-2 mr-md-2" :checked="$row->late == 'yes'" :fieldLabel="__('modules.attendance.late')" fieldName="late" fieldId="lateday" />
                             </div>
                         @elseif ($row->late == 'yes')
                             <div class="col-lg-2 col-md-6 mt-5">
@@ -75,18 +68,16 @@ $deleteAttendancePermission = user()->permission('delete_attendance');
 
                     <div class="row">
                         <div class="col-lg-4 col-md-6">
-                            <x-forms.select fieldId="location" :fieldLabel="__('app.location')" fieldName="location"
-                            search="true">
+                            <x-forms.select fieldId="location" :fieldLabel="__('app.location')" fieldName="location" search="true">
                                 @foreach ($location as $locations)
-                                    <option @if (($row->location_id == $locations->id) || (is_null($row->location_id) && $locations->is_default == 1)) selected @endif value="{{ $locations->id }}">
+                                    <option @if ($row->location_id == $locations->id || (is_null($row->location_id) && $locations->is_default == 1)) selected @endif value="{{ $locations->id }}">
                                         {{ $locations->location }}</option>
                                 @endforeach
                             </x-forms.select>
                         </div>
 
                         <div class="col-lg-4 col-md-6">
-                            <x-forms.select fieldId="work_from_type" :fieldLabel="__('modules.attendance.working_from')" fieldName="work_from_type" fieldRequired="true"
-                            search="true" >
+                            <x-forms.select fieldId="work_from_type" :fieldLabel="__('modules.attendance.working_from')" fieldName="work_from_type" fieldRequired="true" search="true">
                                 <option @if ($row->work_from_type == 'office') selected @endif value="office">@lang('modules.attendance.office')</option>
                                 <option @if ($row->work_from_type == 'home') selected @endif value="home">@lang('modules.attendance.home')</option>
                                 <option @if ($row->work_from_type == 'other') selected @endif value="other">@lang('modules.attendance.other')</option>
@@ -96,8 +87,8 @@ $deleteAttendancePermission = user()->permission('delete_attendance');
                     </div>
 
                     <div class="row">
-                        <div class="col-lg-4 col-md-6"  id="otherPlace" @if ($row->work_from_type != 'other') style="display:none" @endif >
-                            <x-forms.text fieldId="working_from" :fieldLabel="__('modules.attendance.otherPlace')" fieldName="working_from" fieldRequired="true" :fieldValue="$row->working_from" >
+                        <div class="col-lg-4 col-md-6" id="otherPlace" @if ($row->work_from_type != 'other') style="display:none" @endif>
+                            <x-forms.text fieldId="working_from" :fieldLabel="__('modules.attendance.otherPlace')" fieldName="working_from" fieldRequired="true" :fieldValue="$row->working_from">
                             </x-forms.text>
                         </div>
                     </div>
@@ -106,25 +97,17 @@ $deleteAttendancePermission = user()->permission('delete_attendance');
 
                         <div class="col-lg-4 col-md-6">
                             <div class="bootstrap-timepicker timepicker">
-                                <x-forms.text :fieldLabel="__('modules.attendance.clock_out')"
-                                    :fieldPlaceholder="__('placeholders.hours')" fieldName="clock_out_time"
-                                    fieldId="clock-out"
-                                    :fieldValue="(!is_null($row->clock_out_time)) ? \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $row->clock_out_time)->timezone(company()->timezone)->translatedFormat(company()->time_format) : ''" />
+                                <x-forms.text :fieldLabel="__('modules.attendance.clock_out')" :fieldPlaceholder="__('placeholders.hours')" fieldName="clock_out_time" fieldId="clock-out" :fieldValue="!is_null($row->clock_out_time) ? \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $row->clock_out_time)->timezone(company()->timezone)->translatedFormat(company()->time_format) : ''" />
                             </div>
                         </div>
 
                         <div class="col-lg-3 col-md-4">
-                            <x-forms.text :fieldLabel="__('modules.attendance.clock_out_ip')"
-                                :fieldPlaceholder="__('placeholders.hours')" fieldName="clock_out_ip"
-                                :fieldId="'clock-out-ip-'.$row->id"
-                                :fieldValue="$row->clock_out_ip ?? request()->ip()" />
+                            <x-forms.text :fieldLabel="__('modules.attendance.clock_out_ip')" :fieldPlaceholder="__('placeholders.hours')" fieldName="clock_out_ip" :fieldId="'clock-out-ip-' . $row->id" :fieldValue="$row->clock_out_ip ?? request()->ip()" />
                         </div>
 
                         @if ($row->total_clock_in == 0)
                             <div class="col-lg-2 col-md-6">
-                                <x-forms.toggle-switch class="mr-0 mr-lg-2 mr-md-2" :checked="($row->half_day == 'yes')"
-                                    :fieldLabel="__('modules.attendance.halfDay')" fieldName="halfday"
-                                    fieldId="halfday" />
+                                <x-forms.toggle-switch class="mr-0 mr-lg-2 mr-md-2" :checked="$row->half_day == 'yes'" :fieldLabel="__('modules.attendance.halfDay')" fieldName="halfday" fieldId="halfday" />
                             </div>
                         @elseif ($row->half_day == 'yes')
                             <div class="col-lg-2 col-md-6 mt-5">
@@ -139,11 +122,9 @@ $deleteAttendancePermission = user()->permission('delete_attendance');
                                 <x-forms.label fieldId="duration" :fieldLabel="__('modules.leaves.selectDuration')">
                                 </x-forms.label>
                                 <div class="d-flex">
-                                    <x-forms.radio fieldId="first_half_day_yes" :fieldLabel="__('modules.leaves.firstHalf')" fieldName="half_day_duration"
-                                        fieldValue="first_half" :checked="$row->half_day_type == 'first_half'"  checked="true">
+                                    <x-forms.radio fieldId="first_half_day_yes" :fieldLabel="__('modules.leaves.firstHalf')" fieldName="half_day_duration" fieldValue="first_half" :checked="$row->half_day_type == 'first_half'" checked="true">
                                     </x-forms.radio>
-                                    <x-forms.radio fieldId="first_half_day_no" :fieldLabel="__('modules.leaves.secondHalf')" fieldValue="second_half"
-                                        fieldName="half_day_duration" :checked="$row->half_day_type == 'second_half'"></x-forms.radio>
+                                    <x-forms.radio fieldId="first_half_day_no" :fieldLabel="__('modules.leaves.secondHalf')" fieldValue="second_half" fieldName="half_day_duration" :checked="$row->half_day_type == 'second_half'"></x-forms.radio>
                                 </div>
                             </div>
                         </div>
@@ -152,18 +133,16 @@ $deleteAttendancePermission = user()->permission('delete_attendance');
                     <div class="row">
 
                         <div class="col-lg-4 col-md-6">
-                            <x-forms.select fieldId="clock_out_time_location_id" :fieldLabel="__('app.location')" fieldName="clock_out_time_location_id"
-                            search="true">
+                            <x-forms.select fieldId="clock_out_time_location_id" :fieldLabel="__('app.location')" fieldName="clock_out_time_location_id" search="true">
                                 @foreach ($location as $locations)
-                                    <option @if (($row->clock_out_time_location_id == $locations->id) || (is_null($row->clock_out_time_location_id) && $locations->is_default == 1)) selected @endif value="{{ $locations->id }}">
+                                    <option @if ($row->clock_out_time_location_id == $locations->id || (is_null($row->clock_out_time_location_id) && $locations->is_default == 1)) selected @endif value="{{ $locations->id }}">
                                         {{ $locations->location }}</option>
                                 @endforeach
                             </x-forms.select>
                         </div>
 
                         <div class="col-lg-4 col-md-6">
-                            <x-forms.select fieldId="clock_out_time_work_from_type" :fieldLabel="__('modules.attendance.working_from')" fieldName="clock_out_time_work_from_type" fieldRequired="true"
-                            search="true" >
+                            <x-forms.select fieldId="clock_out_time_work_from_type" :fieldLabel="__('modules.attendance.working_from')" fieldName="clock_out_time_work_from_type" fieldRequired="true" search="true">
                                 <option @if ($row->clock_out_time_work_from_type == 'office') selected @endif value="office">@lang('modules.attendance.office')</option>
                                 <option @if ($row->clock_out_time_work_from_type == 'home') selected @endif value="home">@lang('modules.attendance.home')</option>
                                 <option @if ($row->clock_out_time_work_from_type == 'other') selected @endif value="other">@lang('modules.attendance.other')</option>
@@ -173,8 +152,8 @@ $deleteAttendancePermission = user()->permission('delete_attendance');
                     </div>
 
                     <div class="row">
-                        <div class="col-lg-4 col-md-6"  id="clock_out_otherPlace" @if ($row->clock_out_time_work_from_type != 'other') style="display:none" @endif >
-                            <x-forms.text fieldId="clock_out_time_working_from" :popover="__('messages.clockOutOtherLocation')" :fieldLabel="__('modules.attendance.otherPlace')" fieldName="clock_out_time_working_from" fieldRequired="true" :fieldValue="$row->clock_out_time_working_from" >
+                        <div class="col-lg-4 col-md-6" id="clock_out_otherPlace" @if ($row->clock_out_time_work_from_type != 'other') style="display:none" @endif>
+                            <x-forms.text fieldId="clock_out_time_working_from" :popover="__('messages.clockOutOtherLocation')" :fieldLabel="__('modules.attendance.otherPlace')" fieldName="clock_out_time_working_from" fieldRequired="true" :fieldValue="$row->clock_out_time_working_from">
                             </x-forms.text>
                         </div>
                     </div>
@@ -212,8 +191,8 @@ $deleteAttendancePermission = user()->permission('delete_attendance');
         });
 
         $('#clock-in-time').timepicker({
-            @if(company()->time_format == 'H:i')
-            showMeridian: false,
+            @if (company()->time_format == 'H:i')
+                showMeridian: false,
             @endif
             minuteStep: 1
         });
@@ -222,116 +201,133 @@ $deleteAttendancePermission = user()->permission('delete_attendance');
 
         // Initialize timepicker
         $('#clock-out').timepicker({
-            @if(company()->time_format == 'H:i')
-            showMeridian: false,
+            @if (company()->time_format == 'H:i')
+                showMeridian: false,
             @endif
             minuteStep: 1,
             defaultTime: false
         });
 
-        $('#work_from_type').change(function(){
-            ($(this).val() == 'other') ? $('#otherPlace').show() : $('#otherPlace').hide();
+        $('#work_from_type').change(function() {
+            ($(this).val() == 'other') ? $('#otherPlace').show(): $('#otherPlace').hide();
         });
 
 
-        $('#clock_out_time_work_from_type').change(function(){
-            ($(this).val() == 'other') ? $('#clock_out_otherPlace').show() : $('#clock_out_otherPlace').hide();
+        $('#clock_out_time_work_from_type').change(function() {
+            ($(this).val() == 'other') ? $('#clock_out_otherPlace').show(): $('#clock_out_otherPlace').hide();
         });
 
         const saveAttendanceForm = (url) => {
-            $.easyAjax({
-                url: url,
-                type: "POST",
-                container: '#attendance-container',
-                blockUI: true,
-                disableButton: true,
-                buttonSelector: "#save-attendance",
-                data: $('#attendance-container').serialize(),
-                data: $('#attendance-container').serialize(),
-                success: function (response) {
-                    if(response.status == 'success'){
-                        showTable();
-                        $("[data-dismiss=modal]").trigger({ type: "click" });
+            var $saveBtn = $('#save-attendance');
+            $saveBtn.prop('disabled', true);
+            $.easyBlockUI('#attendance-container');
+            window.apiHttp.postUrlEncoded(url, $('#attendance-container').serialize()).then(function(response) {
+                if (response.status == 'success') {
+                    showTable();
+                    $("[data-dismiss=modal]").trigger({
+                        type: "click"
+                    });
 
-                    }
                 }
-            })
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $saveBtn.prop('disabled', false);
+                $.easyUnblockUI('#attendance-container');
+            });
         }
 
-        $('#save-attendance').click(function () {
-            @if($type == 'edit')
-                var url = "{{route('attendances.update', $row->id)}}";
+        $('#save-attendance').click(function() {
+            @if ($type == 'edit')
+                var url = "{{ route('attendances.update', $row->id) }}";
                 saveAttendanceForm(url);
             @else
                 var url = "{{ route('attendances.check_half_day') }}";
-                $.easyAjax({
-                    url: url,
-                    type: "POST",
-                    container: '#attendance-container',
-                    blockUI: true,
-                    disableButton: true,
-                    buttonSelector: "#save-attendance",
-                    data: $('#attendance-container').serialize(),
-                    success: function (response) {
-                        url = "{{route('attendances.store')}}";
-                        if (response.halfDayExist == true && response.requestedHalfDay == 'no' && response.halfDayDurEnd == 'no' && (response.attendanceDuration === response.leaveDuration)) {
-                            Swal.fire({
-                                title: "@lang('messages.sweetAlertTitle')",
-                                text: "@lang('messages.halfDayAlreadyApplied')",
-                                icon: 'warning',
-                                showCancelButton: true,
-                                focusConfirm: false,
-                                confirmButtonText: "@lang('messages.rejectIt')",
-                                cancelButtonText: "@lang('app.cancel')",
-                                customClass: {
-                                    confirmButton: 'btn btn-primary mr-3',
-                                    cancelButton: 'btn btn-secondary'
-                                },
-                                showClass: {
-                                    popup: 'swal2-noanimation',
-                                    backdrop: 'swal2-noanimation'
-                                },
-                                buttonsStyling: false
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    saveAttendanceForm(url);
-                                }
-                            });
+                var $saveAtt2 = $('#save-attendance');
+                $saveAtt2.prop('disabled', true);
+                $.easyBlockUI('#attendance-container');
+                window.apiHttp.postUrlEncoded(url, $('#attendance-container').serialize()).then(function(response) {
+                    url = "{{ route('attendances.store') }}";
+                    if (response.halfDayExist == true && response.requestedHalfDay == 'no' && response.halfDayDurEnd == 'no' && (response.attendanceDuration === response.leaveDuration)) {
+                        Swal.fire({
+                            title: "@lang('messages.sweetAlertTitle')",
+                            text: "@lang('messages.halfDayAlreadyApplied')",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            focusConfirm: false,
+                            confirmButtonText: "@lang('messages.rejectIt')",
+                            cancelButtonText: "@lang('app.cancel')",
+                            customClass: {
+                                confirmButton: 'btn btn-primary mr-3',
+                                cancelButton: 'btn btn-secondary'
+                            },
+                            showClass: {
+                                popup: 'swal2-noanimation',
+                                backdrop: 'swal2-noanimation'
+                            },
+                            buttonsStyling: false
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                saveAttendanceForm(url);
+                            }
+                        });
 
-                        } else if (response.fullDayExist == true && response.requestedFullDay == 'no') {
-                            Swal.fire({
-                                title: "@lang('messages.sweetAlertTitle')",
-                                text: "@lang('messages.fullDayAlreadyApplied')",
-                                icon: 'warning',
-                                showCancelButton: true,
-                                focusConfirm: false,
-                                confirmButtonText: "@lang('messages.rejectIt')",
-                                cancelButtonText: "@lang('app.cancel')",
-                                customClass: {
-                                    confirmButton: 'btn btn-primary mr-3',
-                                    cancelButton: 'btn btn-secondary'
-                                },
-                                showClass: {
-                                    popup: 'swal2-noanimation',
-                                    backdrop: 'swal2-noanimation'
-                                },
-                                buttonsStyling: false
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    saveAttendanceForm();
-                                }
-                            });
-                        }else {
-                            saveAttendanceForm(url);
-                        }
+                    } else if (response.fullDayExist == true && response.requestedFullDay == 'no') {
+                        Swal.fire({
+                            title: "@lang('messages.sweetAlertTitle')",
+                            text: "@lang('messages.fullDayAlreadyApplied')",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            focusConfirm: false,
+                            confirmButtonText: "@lang('messages.rejectIt')",
+                            cancelButtonText: "@lang('app.cancel')",
+                            customClass: {
+                                confirmButton: 'btn btn-primary mr-3',
+                                cancelButton: 'btn btn-secondary'
+                            },
+                            showClass: {
+                                popup: 'swal2-noanimation',
+                                backdrop: 'swal2-noanimation'
+                            },
+                            buttonsStyling: false
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                saveAttendanceForm(url);
+                            }
+                        });
+                    } else {
+                        saveAttendanceForm(url);
                     }
+                }).catch(function(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
+                    }
+                }).finally(function() {
+                    $saveAtt2.prop('disabled', false);
+                    $.easyUnblockUI('#attendance-container');
                 });
             @endif
         });
     });
 
-    $(document).ready(function () {
-        setTimeout(function () {
+    $(document).ready(function() {
+        setTimeout(function() {
             $('[data-toggle="popover"]').popover();
         }, 500);
     });

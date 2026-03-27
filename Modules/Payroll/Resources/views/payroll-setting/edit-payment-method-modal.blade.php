@@ -29,19 +29,14 @@
 <script>
     // save channel
     $('#save-payment-method').click(function () {
-        $.easyAjax({
-            url: "{{route('payment-methods.update', $paymentMethod->id)}}",
-            container: '#editPaymentMethod',
-            type: "POST",
-            blockUI: true,
-            disableButton: true,
-            buttonSelector: "#save-payment-method",
-            data: $('#editPaymentMethod').serialize(),
-            success: function (response) {
+        window.apiHttp.postUrlEncoded("{{route('payment-methods.update', $paymentMethod->id)}}", $('#editPaymentMethod').serialize())
+            .then(function (response) {
                 if (response.status == "success") {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch(function (err) {
+                $.handleApiFormError(err);
+            });
     });
 </script>

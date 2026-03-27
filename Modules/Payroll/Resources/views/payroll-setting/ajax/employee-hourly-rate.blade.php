@@ -82,19 +82,13 @@
 
     $(document).ready(function() {
         $('#save-hourly-rate').click(function () {
-            var token = "{{ csrf_token() }}";
-            $.easyAjax({
-                url: "{{ route('employee-hourly-rate-settings.store') }}",
-                container: '#employee-hourly-rate',
-                type: "POST",
-                blockUI: true,
-                disableButton: true,
-                buttonSelector: "#save-hourly-rate",
-                data: $('#editSettings').serialize(),
-                success: function (response) {
+            window.apiHttp.postUrlEncoded("{{ route('employee-hourly-rate-settings.store') }}", $('#editSettings').serialize())
+                .then(function () {
                     showTable();
-                }
-            })
+                })
+                .catch(function (err) {
+                    $.handleApiFormError(err);
+                });
         });
      });
 

@@ -105,31 +105,20 @@
             var note = document.getElementById('task-note').children[0].innerHTML;
             document.getElementById('task-note-text').value = note;
 
-            var token = '{{ csrf_token() }}';
-
             const url = "{{ route('meeting-note.store') }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#save-note-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#submit-note",
-                data: {
-                    '_token': token,
-                    note: note,
-                    meetingID: '{{ $event->id }}'
-                },
-                success: function (response) {
+            window.apiHttp.postUrlEncoded(url, {
+                '_token': '{{ csrf_token() }}',
+                note: note,
+                meetingID: '{{ $event->id }}'
+            }).then(function (response) {
                     if (response.status == "success") {
                         $('#note-list').html(response.view);
                         document.getElementById('task-note').children[0].innerHTML = "";
                         $('#task-note-text').val('');
                     }
 
-                }
-            });
+            }).catch(function (err) { $.handleApiFormError(err); });
         });
 
     });

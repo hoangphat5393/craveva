@@ -312,21 +312,20 @@
         })
 
         $('#save-form').click(function () {
-            $.easyAjax({
-                url: "{{ route('superadmin.front-settings.front_theme_update') }}",
-                container: '#editSettings',
-                blockUI: true,
-                type: "POST",
-                file: true,
-                disableButton: true,
-                buttonSelector: "#save-form",
-                data: $('#editSettings').serialize(),
-                success: function (response) {
-                    if (response.status == 'success') {
-                        window.location.href = response.redirectUrl;
-                    }
+            var $btn = $('#save-form');
+            var prev = $btn.html();
+            $.easyBlockUI('#editSettings');
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+            window.apiHttp.postForm("{{ route('superadmin.front-settings.front_theme_update') }}", document.getElementById('editSettings')).then(function (response) {
+                if (response.status == 'success') {
+                    window.location.href = response.redirectUrl;
                 }
-            })
+            }).catch(function (err) {
+                $.handleApiFormError(err);
+            }).finally(function () {
+                $.easyUnblockUI('#editSettings');
+                $btn.prop('disabled', false).html(prev);
+            });
         });
     </script>
 @endpush

@@ -35,19 +35,10 @@
 
         $('body').on('click', '#save-slack-form', function () {
             var notification_value = $('#send_slack' + slackSettingId + ':checked').val();
-            $.easyAjax({
-                type: 'POST',
-                url: "{{ route('zoom-settings.zoom-slack-settings', slack_setting()->id) }}",
-                container: "#editSettings",
-                data: {
+            window.apiHttp.postUrlEncoded("{{ route('zoom-settings.zoom-slack-settings', slack_setting()->id) }}", {
                     send_slack: notification_value,
                     _token: '{{ csrf_token() }}',
-
-                },
-                disableButton: true,
-                blockUI: true,
-                // buttonSelector: "#save-slack-form",
-            })
+            }).catch(function (err) { $.handleApiFormError(err); })
         });
 
         // init('#slack-row');

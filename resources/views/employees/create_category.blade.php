@@ -4,8 +4,7 @@
 
 <div class="modal-header">
     <h5 class="modal-title" id="modelHeading">@lang('modules.client.clientCategory')</h5>
-    <button type="button"  class="close" data-dismiss="modal" aria-label="Close"><span
-            aria-hidden="true">×</span></button>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
 </div>
 <div class="modal-body">
     <x-table class="table-bordered" headType="thead-light">
@@ -34,8 +33,7 @@
     <x-form id="createProjectCategory">
         <div class="row border-top-grey ">
             <div class="col-sm-12">
-                <x-forms.text fieldId="category_name" :fieldLabel="__('modules.projectCategory.categoryName')"
-                    fieldName="category_name" fieldRequired="true" :fieldPlaceholder="__('placeholders.category')">
+                <x-forms.text fieldId="category_name" :fieldLabel="__('modules.projectCategory.categoryName')" fieldName="category_name" fieldRequired="true" :fieldPlaceholder="__('placeholders.category')">
                 </x-forms.text>
             </div>
 
@@ -75,32 +73,37 @@
             buttonsStyling: false
         }).then((result) => {
             if (result.isConfirmed) {
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    blockUI: true,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
-                        if (response.status == "success") {
-                            $('#cat-' + id).fadeOut();
-                            var options = [];
-                            var rData = [];
-                            rData = response.data;
-                            $.each(rData, function(index, value) {
-                                var selectData = '';
-                                selectData = '<option value="' + value.id + '">' +
-                                    value
-                                    .category_name + '</option>';
-                                options.push(selectData);
-                            });
+                $.easyBlockUI();
+                window.apiHttp.delete(url, token).then(function(response) {
+                    if (response.status == "success") {
+                        $('#cat-' + id).fadeOut();
+                        var options = [];
+                        var rData = [];
+                        rData = response.data;
+                        $.each(rData, function(index, value) {
+                            var selectData = '';
+                            selectData = '<option value="' + value.id + '">' +
+                                value
+                                .category_name + '</option>';
+                            options.push(selectData);
+                        });
 
-                            $('#category_id').html(options);
-                            $('#category_id').selectpicker('refresh');
-                        }
+                        $('#category_id').html(options);
+                        $('#category_id').selectpicker('refresh');
                     }
+                }).catch(function(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
+                    }
+                }).finally(function() {
+                    $.easyUnblockUI();
                 });
             }
         });
@@ -109,34 +112,41 @@
 
     $('#save-category').click(function() {
         var url = "{{ route('clientCategory.store') }}";
-        $.easyAjax({
-            url: url,
-            container: '#createProjectCategory',
-            type: "POST",
-            data: $('#createProjectCategory').serialize(),
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-category",
-            success: function(response) {
+        var $saveCat = $('#save-category');
+        $saveCat.prop('disabled', true);
+        $.easyBlockUI('#createProjectCategory');
+        window.apiHttp.postUrlEncoded(url, $('#createProjectCategory').serialize()).then(function(response) {
+            if (response.status == 'success') {
                 if (response.status == 'success') {
-                    if (response.status == 'success') {
-                        var options = [];
-                        var rData = [];
-                        rData = response.data;
-                        $.each(rData, function(index, value) {
-                            var selectData = '';
-                            selectData = '<option value="' + value.id + '">' + value
-                                .category_name + '</option>';
-                            options.push(selectData);
-                        });
+                    var options = [];
+                    var rData = [];
+                    rData = response.data;
+                    $.each(rData, function(index, value) {
+                        var selectData = '';
+                        selectData = '<option value="' + value.id + '">' + value
+                            .category_name + '</option>';
+                        options.push(selectData);
+                    });
 
-                        $('#category_id').html(options);
-                        $('#category_id').selectpicker('refresh');
-                        $(MODAL_LG).modal('hide');
-                    }
+                    $('#category_id').html(options);
+                    $('#category_id').selectpicker('refresh');
+                    $(MODAL_LG).modal('hide');
                 }
             }
-        })
+        }).catch(function(err) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    text: err.message,
+                    toast: true,
+                    position: 'top-end',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            }
+        }).finally(function() {
+            $saveCat.prop('disabled', false);
+            $.easyUnblockUI('#createProjectCategory');
+        });
     });
-
 </script>

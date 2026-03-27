@@ -76,15 +76,11 @@
         $(".select-picker").selectpicker();
         // save source
         $('#update-return-to').click(function () {
-            $.easyAjax({
-                url: "{{ route('history.update', [$history->asset_id, $history->id]) }}",
-                container: '#returnTo',
-                type: "POST",
-                blockUI: true,
-                disableButton: true,
-                buttonSelector: "#update-return-to",
-                data: $('#returnTo').serialize(),
-                success: function (response) {
+            const $btn = $('#update-return-to');
+            $btn.prop('disabled', true);
+            $.easyBlockUI('#returnTo');
+            window.apiHttp.postUrlEncoded("{{ route('history.update', [$history->asset_id, $history->id]) }}", $('#returnTo').serialize())
+                .then(function (response) {
                     if (response.status == "success") {
                         if ($('#assets-table').length > 0) {
                             window.LaravelDataTables["assets-table"].draw(true);
@@ -93,8 +89,14 @@
                             window.location.reload();
                         }
                     }
-                }
-            })
+                })
+                .catch(function (err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function () {
+                    $btn.prop('disabled', false);
+                    $.easyUnblockUI('#returnTo');
+                });
         });
     });
 </script>

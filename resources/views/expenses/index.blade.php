@@ -5,14 +5,12 @@
 @endpush
 
 @section('filter-section')
-
     <x-filters.filter-box>
         <!-- DATE START -->
         <div class="select-box d-flex pr-2 border-right-grey border-right-grey-sm-0">
             <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('app.duration')</p>
             <div class="select-status d-flex">
-                <input type="text" class="position-relative text-dark form-control border-0 p-2 text-left f-14 f-w-500 border-additional-grey"
-                    id="datatableRange" placeholder="@lang('placeholders.dateRange')">
+                <input type="text" class="position-relative text-dark form-control border-0 p-2 text-left f-14 f-w-500 border-additional-grey" id="datatableRange" placeholder="@lang('placeholders.dateRange')">
             </div>
         </div>
         <!-- DATE END -->
@@ -40,8 +38,7 @@
                             <i class="fa fa-search f-13 text-dark-grey"></i>
                         </span>
                     </div>
-                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field"
-                        placeholder="@lang('app.startTyping')">
+                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field" placeholder="@lang('app.startTyping')">
                 </div>
             </form>
         </div>
@@ -62,9 +59,9 @@
                 <div class="select-filter mb-4">
                     <div class="select-others">
                         <select class="form-control select-picker" id="employee2" data-live-search="true" data-container="body" data-size="8">
-                                <option value="all">@lang('app.all')</option>
+                            <option value="all">@lang('app.all')</option>
                             @foreach ($employees as $item)
-                                    <x-user-option :user="$item" />
+                                <x-user-option :user="$item" />
                             @endforeach
                         </select>
                     </div>
@@ -90,7 +87,7 @@
                     <div class="select-others">
                         <select class="form-control select-picker" name="category_id" id="category_id" data-container="body" data-live-search="true" data-size="8">
                             <option value="all">@lang('app.all')</option>
-                            @foreach($categories as $category)
+                            @foreach ($categories as $category)
                                 <option value="{{ $category->id }}">{{ $category->category_name }}</option>
                             @endforeach
                         </select>
@@ -102,12 +99,11 @@
         <!-- MORE FILTERS END -->
 
     </x-filters.filter-box>
-
 @endsection
 
 @php
-$addExpensesPermission = user()->permission('add_expenses');
-$recurringExpensesPermission = user()->permission('manage_recurring_expense');
+    $addExpensesPermission = user()->permission('add_expenses');
+    $recurringExpensesPermission = user()->permission('manage_recurring_expense');
 @endphp
 
 @section('content')
@@ -117,20 +113,17 @@ $recurringExpensesPermission = user()->permission('manage_recurring_expense');
         <div class="d-flex justify-content-between action-bar">
             <div id="table-actions" class="flex-grow-1 align-items-center">
                 @if ($addExpensesPermission == 'all' || $addExpensesPermission == 'added')
-                    <x-forms.link-primary :link="route('expenses.create')" class="mr-3 float-left openRightModal"
-                        icon="plus">
+                    <x-forms.link-primary :link="route('expenses.create')" class="mr-3 float-left openRightModal" icon="plus">
                         @lang('modules.expenses.addExpense')
                     </x-forms.link-primary>
                 @endif
                 @if ($recurringExpensesPermission == 'all')
-                    <x-forms.link-secondary :link="route('recurring-expenses.index')" class="mr-3 float-left"
-                        icon="sync">
+                    <x-forms.link-secondary :link="route('recurring-expenses.index')" class="mr-3 float-left" icon="sync">
                         @lang('app.menu.expensesRecurring')
                     </x-forms.link-secondary>
                 @endif
                 @if ($addExpensesPermission == 'all' || $addExpensesPermission == 'added')
-                    <x-forms.link-secondary :link="route('expenses.import')" class="mr-3 float-left openRightModal"
-                                            icon="file-upload">
+                    <x-forms.link-secondary :link="route('expenses.import')" class="mr-3 float-left openRightModal" icon="file-upload">
                         @lang('app.importExcel')
                     </x-forms.link-secondary>
                 @endif
@@ -165,7 +158,6 @@ $recurringExpensesPermission = user()->permission('manage_recurring_expense');
         <!-- Task Box End -->
     </div>
     <!-- CONTENT WRAPPER END -->
-
 @endsection
 
 @push('scripts')
@@ -296,21 +288,26 @@ $recurringExpensesPermission = user()->permission('manage_recurring_expense');
             var status = $(this).val();
 
             if (typeof id !== 'undefined') {
-                $.easyAjax({
-                    url: "{{ route('expenses.change_status') }}",
-                    type: "POST",
-                    data: {
-                        '_token': token,
-                        expenseId: id,
-                        status: status
-                    },
-
-                    success: function(response) {
-                        if (response.status == "success") {
-                            showTable();
-                            resetActionButtons();
-                            deSelectAll();
-                        }
+                window.apiHttp.postUrlEncoded("{{ route('expenses.change_status') }}", {
+                    _token: token,
+                    expenseId: id,
+                    status: status
+                }).then(function(response) {
+                    if (response.status == "success") {
+                        showTable();
+                        resetActionButtons();
+                        deSelectAll();
+                    }
+                }).catch(function(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
                     }
                 });
             }
@@ -342,18 +339,24 @@ $recurringExpensesPermission = user()->permission('manage_recurring_expense');
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                showTable();
-                            }
+                    $.easyBlockUI('#expenses-table');
+                    window.apiHttp.delete(url, token).then(function(response) {
+                        if (response.status == "success") {
+                            showTable();
                         }
+                    }).catch(function(err) {
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                text: err.message,
+                                toast: true,
+                                position: 'top-end',
+                                timer: 4000,
+                                showConfirmButton: false
+                            });
+                        }
+                    }).finally(function() {
+                        $.easyUnblockUI('#expenses-table');
                     });
                 }
             });
@@ -366,22 +369,31 @@ $recurringExpensesPermission = user()->permission('manage_recurring_expense');
 
             var url = "{{ route('expenses.apply_quick_action') }}?row_ids=" + rowdIds;
 
-            $.easyAjax({
-                url: url,
-                container: '#quick-action-form',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#quick-action-apply",
-                data: $('#quick-action-form').serialize(),
-                success: function(response) {
-                    if (response.status == 'success') {
-                        showTable();
-                        resetActionButtons();
-                        deSelectAll();
-                        $('#quick-action-form').hide();
-                    }
+            var $qaBtn = $("#quick-action-apply");
+            $qaBtn.prop('disabled', true);
+            $.easyBlockUI('.content-wrapper');
+            window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize()).then(function(response) {
+                if (response.status == 'success') {
+                    showTable();
+                    resetActionButtons();
+                    deSelectAll();
+                    $('#quick-action-form').hide();
                 }
-            })
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $qaBtn.prop('disabled', false);
+                $.easyUnblockUI('.content-wrapper');
+            });
         };
     </script>
 @endpush

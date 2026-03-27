@@ -251,22 +251,18 @@
 
             const url = "{{ route('interview-schedule.apply_quick_action') }}?row_ids=" + rowdIds;
 
-            $.easyAjax({
-                url: url,
-                container: '#quick-action-form',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#quick-action-apply",
-                data: $('#quick-action-form').serialize(),
-                success: function(response) {
+            window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize())
+                .then(function(response) {
                     if (response.status == 'success') {
                         showTable();
                         resetActionButtons();
                         deSelectAll();
                         $('#quick-action-form').hide();
                     }
-                }
-            })
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                });
         };
         $('body').on('click', '.delete-table-row', function() {
             var id = $(this).data('user-id');
@@ -292,20 +288,15 @@
                     var url = "{{ route('interview-schedule.destroy', ':id') }}";
                     url = url.replace(':id', id);
                     var token = "{{ csrf_token() }}";
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
+                    window.apiHttp.delete(url, token)
+                        .then(function(response) {
                             if (response.status == "success") {
                                 showTable();
                             }
-                        }
-                    });
+                        })
+                        .catch(function(err) {
+                            $.handleApiFormError(err);
+                        });
                 }
             });
 
@@ -326,23 +317,21 @@
             var status = $(this).val();
 
             if (typeof id !== 'undefined') {
-                $.easyAjax({
-                    url: "{{ route('interview-schedule.change_interview_status') }}",
-                    type: "POST",
-                    data: {
-                        '_token': token,
+                window.apiHttp.postUrlEncoded("{{ route('interview-schedule.change_interview_status') }}", {
+                        _token: token,
                         interviewId: id,
                         status: status
-                    },
-
-                    success: function(response) {
+                    })
+                    .then(function(response) {
                         if (response.status == "success") {
                             showTable();
                             resetActionButtons();
                             deSelectAll();
                         }
-                    }
-                });
+                    })
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    });
             }
         });
 
@@ -377,24 +366,22 @@
                 buttonsStyling: false
             }).then((result) => {
                 if (result.isConfirmed) {
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            'action': action,
-                            'userId': userId,
-                            'interviewId': interviewId,
-                            '_token': '{{ csrf_token() }}'
-                        },
-                        success: function(response) {
+                    window.apiHttp.postUrlEncoded(url, {
+                            action: action,
+                            userId: userId,
+                            interviewId: interviewId,
+                            _token: '{{ csrf_token() }}'
+                        })
+                        .then(function(response) {
                             if (response.status == 'success') {
                                 showTable();
                                 resetActionButtons();
                                 deSelectAll();
                             }
-                        }
-                    });
+                        })
+                        .catch(function(err) {
+                            $.handleApiFormError(err);
+                        });
                 }
             });
 

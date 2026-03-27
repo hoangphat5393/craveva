@@ -151,21 +151,25 @@
 
         // Save form data
         $('#save-form').click(function() {
-            $.easyAjax({
-                url: "{{ route('superadmin.settings.global-currency-settings.store') }}",
-                container: '#addCurrency',
-                type: "POST",
-                blockUI: true,
-                redirect: true,
-                disableButton: true,
-                buttonSelector: "#save-form",
-                data: $('#addCurrency').serialize(),
-                success: function (response) {
+            const $btn = $('#save-form');
+            const prev = $btn.html();
+            $.easyBlockUI('#addCurrency');
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+            window.apiHttp.postUrlEncoded("{{ route('superadmin.settings.global-currency-settings.store') }}", $('#addCurrency').serialize())
+                .then(function (response) {
                     if (response.status == 'success') {
-                        window.location.reload();
+                        if (response.action === 'redirect' && response.url) {
+                            window.location.href = response.url;
+                        } else {
+                            window.location.reload();
+                        }
                     }
-                }
-            })
+                })
+                .catch(function (err) { $.handleApiFormError(err); })
+                .finally(function () {
+                    $.easyUnblockUI('#addCurrency');
+                    $btn.prop('disabled', false).html(prev);
+                });
         });
 
         $('.fetch-exchange-rate').click(function() {
@@ -181,18 +185,19 @@
             let url = "{{ route('superadmin.settings.currency_settings.exchange_rate', '#cc') }}";
             url = url.replace('#cc', currencyCode);
 
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                data: {
-                    currencyCode: currencyCode
-                },
-                disableButton: true,
-                blockUI: true,
-                success: function(response) {
+            const $fetchBtn = $(this);
+            const fetchPrev = $fetchBtn.html();
+            $.easyBlockUI('#addCurrency');
+            $fetchBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+            window.apiHttp.get(url, { params: { currencyCode: currencyCode } })
+                .then(function(response) {
                     $('#exchange_rate').val(response.value);
-                }
-            })
+                })
+                .catch(function (err) { $.handleApiFormError(err); })
+                .finally(function () {
+                    $.easyUnblockUI('#addCurrency');
+                    $fetchBtn.prop('disabled', false).html(fetchPrev);
+                });
         });
 
         function addCurrencyExchangeKey() {

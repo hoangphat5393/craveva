@@ -229,19 +229,14 @@
                 var url = "{{ route('job-opening.fetch_job', ':company') }}";
                 url = url.replace(':company', company);
 
-                $.easyAjax({
-                    url: url,
-                    type: "GET",
-                    disableButton: true,
-                    blockUI: true,
-                    data: {
+                window.apiHttp.get(url, {
                         department_id: departmentId,
                         job_type_id: jobTypeId,
                         job_category_id: jobCategoryId,
                         work_experience_id: workExperienceId,
                         remote_job: remoteJob
-                    },
-                    success: function (response) {
+                    })
+                    .then(function (response) {
                         if (response.status == 'success') {
                             $('#location').html(response.html);
                             $('.firstjob').html(response.firstjob);
@@ -255,8 +250,10 @@
                             });
 
                         }
-                    }
-                });
+                    })
+                    .catch(function (err) {
+                        $.handleApiFormError(err);
+                    });
             });
 
             @if ($locations->count() > 0 &&  $locations[0]->job != null){
@@ -283,16 +280,15 @@
                 url = url.replace(':locationId', locationId);
                 url = url.replace(':company', company);
 
-                $.easyAjax({
-                    url: url,
-                    type: "GET",
-                    blockUI: true,
-                    success: function (response) {
+                window.apiHttp.get(url)
+                    .then(function (response) {
                         if (response.status == "success") {
                             $('.jobDetail').html(response.html);
                         }
-                    }
-                })
+                    })
+                    .catch(function (err) {
+                        $.handleApiFormError(err);
+                    });
             }
 
             $('body').on('click', '#fetch-job', function () {
@@ -306,19 +302,14 @@
                 var url = "{{ route('job-opening.fetch_job', ':company') }}";
                 url = url.replace(':company', company);
 
-                $.easyAjax({
-                    url: url,
-                    type: "GET",
-                    disableButton: true,
-                    blockUI: true,
-                    data: {
+                window.apiHttp.get(url, {
                         department_id: departmentId,
                         job_type_id: jobTypeId,
                         job_category_id: jobCategoryId,
                         work_experience_id: workExperienceId,
                         remote_job: remoteJob
-                    },
-                    success: function (response) {
+                    })
+                    .then(function (response) {
                         if (response.status == 'success') {
                             $('#location').html(response.html);
                             $('.firstjob').html(response.firstjob);
@@ -331,8 +322,10 @@
                                 });
                             });
                         }
-                    }
-                });
+                    })
+                    .catch(function (err) {
+                        $.handleApiFormError(err);
+                    });
             });
 
 

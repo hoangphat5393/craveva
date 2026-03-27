@@ -25,11 +25,7 @@
     $showFullProfile = false;
     $employeeDetail = $employee->employeeDetail;
 
-    if ($viewPermission == 'all'
-        || ($viewPermission == 'added' && $employeeDetail->added_by == user()->id)
-        || ($viewPermission == 'owned' && $employeeDetail->user_id == user()->id)
-        || ($viewPermission == 'both' && ($employeeDetail->user_id == user()->id || $employeeDetail->added_by == user()->id))
-    ) {
+    if ($viewPermission == 'all' || ($viewPermission == 'added' && $employeeDetail->added_by == user()->id) || ($viewPermission == 'owned' && $employeeDetail->user_id == user()->id) || ($viewPermission == 'both' && ($employeeDetail->user_id == user()->id || $employeeDetail->added_by == user()->id))) {
         $showFullProfile = true;
     }
 @endphp
@@ -45,7 +41,8 @@
         .table h5 {
             font-size: 12px;
         }
-        .mw-250{
+
+        .mw-250 {
             min-width: 125px;
         }
     </style>
@@ -82,14 +79,14 @@
                         </li>
                     @endif
 
-                    @if (in_array('leaves', user_modules()) && ($viewLeavePermission == 'all' || ($viewLeavePermission == 'owned' || $viewLeavePermission == 'both') && $employee->id == user()->id ))
+                    @if (in_array('leaves', user_modules()) && ($viewLeavePermission == 'all' || (($viewLeavePermission == 'owned' || $viewLeavePermission == 'both') && $employee->id == user()->id)))
                         <li>
                             <x-tab :href="route('employees.show', $employee->id) . '?tab=leaves'" :text="__('app.menu.leaves')" ajax="false" class="leaves" />
                         </li>
 
-                    <li>
-                        <x-tab :href="route('employees.show', $employee->id) . '?tab=leaves-quota'" :text="__('app.menu.leavesQuota')" class="leaves-quota" />
-                    </li>
+                        <li>
+                            <x-tab :href="route('employees.show', $employee->id) . '?tab=leaves-quota'" :text="__('app.menu.leavesQuota')" class="leaves-quota" />
+                        </li>
                     @endif
 
                     @if ($viewEmployeeTimelogs == 'all' && in_array('timelogs', user_modules()))
@@ -146,7 +143,7 @@
                         </li>
                     @endif
 
-                    @if($viewImmigrationPermission == 'all' ||  (in_array($viewImmigrationPermission, ['added', 'owned', 'both']) && user()->id == $employee->id))
+                    @if ($viewImmigrationPermission == 'all' || (in_array($viewImmigrationPermission, ['added', 'owned', 'both']) && user()->id == $employee->id))
                         <li>
                             <x-tab :href="route('employees.show', $employee->id) . '?tab=immigration'" :text="__('modules.employees.immigration')" class="immigration" />
                         </li>
@@ -175,9 +172,8 @@
                 <!-- STATUS END -->
                 <div class="select-box py-2 px-0 mr-3">
                     <x-forms.label :fieldLabel="__('app.month')" fieldId="month" />
-                    <select class="form-control select-picker" name="month" id="month" data-live-search="true"
-                        data-size="8">
-                        <x-forms.months :selectedMonth="$month" fieldRequired="true"/>
+                    <select class="form-control select-picker" name="month" id="month" data-live-search="true" data-size="8">
+                        <x-forms.months :selectedMonth="$month" fieldRequired="true" />
                     </select>
                 </div>
 
@@ -195,8 +191,7 @@
         <div class="d-flex justify-content-between action-bar">
             <div id="table-actions" class="align-items-center">
                 @if ($addAttendancePermission == 'all' || $addAttendancePermission == 'added')
-                    <x-forms.link-primary :link="route('attendances.create').'?default_assign='.$employee->id" class="mr-3 openRightModal float-left"
-                                       data-redirect-url="{{ url()->full() }}" icon="plus">
+                    <x-forms.link-primary :link="route('attendances.create') . '?default_assign=' . $employee->id" class="mr-3 openRightModal float-left" data-redirect-url="{{ url()->full() }}" icon="plus">
                         @lang('modules.attendance.markAttendance')
                     </x-forms.link-primary>
                 @endif
@@ -207,19 +202,13 @@
         <x-cards.data class="mt-3">
             <div class="row">
                 <div class="col-md-12">
-                    <span class="f-w-500 mr-1">@lang('app.note'):</span> <i class="fa fa-star text-warning"></i> <i
-                        class="fa fa-arrow-right text-lightest f-11 mx-1"></i> @lang('app.menu.holiday') &nbsp;|&nbsp;<i
-                        class="fa fa-calendar-week text-red"></i> <i class="fa fa-arrow-right text-lightest f-11 mx-1"></i>
+                    <span class="f-w-500 mr-1">@lang('app.note'):</span> <i class="fa fa-star text-warning"></i> <i class="fa fa-arrow-right text-lightest f-11 mx-1"></i> @lang('app.menu.holiday') &nbsp;|&nbsp;<i class="fa fa-calendar-week text-red"></i> <i class="fa fa-arrow-right text-lightest f-11 mx-1"></i>
                     @lang('modules.attendance.dayOff') &nbsp;|&nbsp;
                     <i class="fa fa-check text-success"></i> <i class="fa fa-arrow-right text-lightest f-11 mx-1"></i>
-                    @lang('modules.attendance.present') &nbsp;|&nbsp; <i class="fa fa-star-half-alt text-red"></i> <i
-                        class="fa fa-arrow-right text-lightest f-11 mx-1"></i>
-                    @lang('modules.attendance.halfDay') &nbsp;|&nbsp; <i class="fa fa-exclamation-circle text-warning"></i> <i
-                        class="fa fa-arrow-right text-lightest f-11 mx-1"></i>
-                    @lang('modules.attendance.late') &nbsp;|&nbsp; <i class="fa fa-times text-lightest"></i> <i
-                        class="fa fa-arrow-right text-lightest f-11 mx-1"></i>
-                    @lang('modules.attendance.absent') &nbsp;|&nbsp; <i class="fa fa-plane-departure text-danger"></i> <i
-                        class="fa fa-arrow-right text-lightest f-11 mx-1"></i>
+                    @lang('modules.attendance.present') &nbsp;|&nbsp; <i class="fa fa-star-half-alt text-red"></i> <i class="fa fa-arrow-right text-lightest f-11 mx-1"></i>
+                    @lang('modules.attendance.halfDay') &nbsp;|&nbsp; <i class="fa fa-exclamation-circle text-warning"></i> <i class="fa fa-arrow-right text-lightest f-11 mx-1"></i>
+                    @lang('modules.attendance.late') &nbsp;|&nbsp; <i class="fa fa-times text-lightest"></i> <i class="fa fa-arrow-right text-lightest f-11 mx-1"></i>
+                    @lang('modules.attendance.absent') &nbsp;|&nbsp; <i class="fa fa-plane-departure text-danger"></i> <i class="fa fa-arrow-right text-lightest f-11 mx-1"></i>
                     @lang('modules.attendance.leave')
                 </div>
             </div>
@@ -231,24 +220,34 @@
 @endsection
 
 @push('scripts')
-
     <script>
         $("body").on("click", ".project-menu .ajax-tab", function(event) {
             event.preventDefault();
             $('.project-menu .p-sub-menu').removeClass('active');
             $(this).addClass('active');
             const requestUrl = this.href;
-            $.easyAjax({
-                url: requestUrl,
-                blockUI: true,
-                container: ".content-wrapper",
-                historyPush: true,
-                success: function(response) {
-                    if (response.status == "success") {
-                        $('.content-wrapper').html(response.html);
-                        init('.content-wrapper');
-                    }
+            historyPush(requestUrl);
+            $.easyBlockUI('.content-wrapper');
+            window.apiHttp.get(requestUrl).then(function(response) {
+                if (response.status == "success") {
+                    $('.content-wrapper').html(response.html);
+                    init('.content-wrapper');
                 }
+            }).catch(function(err) {
+                if (typeof $.handleApiFormError === 'function') {
+                    $.handleApiFormError(err);
+                } else if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $.easyUnblockUI('.content-wrapper');
             });
         });
     </script>
@@ -260,8 +259,8 @@
 
     <script>
         /*******************************************************
-                 More btn in projects menu Start
-        *******************************************************/
+                     More btn in projects menu Start
+            *******************************************************/
 
         const container = document.querySelector('.tabs');
         const primary = container.querySelector('.-primary');
@@ -271,7 +270,7 @@
         primary.insertAdjacentHTML('beforeend', `
         <li class="-more">
             <button type="button" class="px-4 h-100 bg-grey d-none d-lg-flex align-items-center" aria-haspopup="true" aria-expanded="false">
-            {{__('app.more')}} <span>&darr;</span>
+            {{ __('app.more') }} <span>&darr;</span>
             </button>
             <ul class="-secondary" id="hide-project-menues">
             ${primary.innerHTML}
@@ -345,8 +344,7 @@
     </script>
 
     <script>
-
-        $('#user_id, #department, #designation, #month, #year').on('change', function () {
+        $('#user_id, #department, #designation, #month, #year').on('change', function() {
             if ($('#user_id').val() != "all") {
                 $('#reset-filters').removeClass('d-none');
                 showTable();
@@ -368,7 +366,7 @@
             }
         });
 
-        $('#reset-filters').click(function () {
+        $('#reset-filters').click(function() {
             $('#filter-form')[0].reset();
             $('.filter-box .select-picker').selectpicker("refresh");
             $('#filter-form .select-picker').selectpicker("refresh");
@@ -389,26 +387,38 @@
 
             var token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                data: {
-                    '_token': token,
-                    year: year,
-                    month: month,
-                    department: department,
-                    designation: designation,
-                    userId: userId
-                },
-                url: url,
-                blockUI: loading,
-                container: '.content-wrapper',
-                success: function (response) {
-                    $('#attendance-data').html(response.data);
+            if (loading) {
+                $.easyBlockUI('.content-wrapper');
+            }
+            window.apiHttp.postUrlEncoded(url, {
+                '_token': token,
+                year: year,
+                month: month,
+                department: department,
+                designation: designation,
+                userId: userId
+            }).then(function(response) {
+                $('#attendance-data').html(response.data);
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                if (loading) {
+                    $.easyUnblockUI('.content-wrapper');
                 }
             });
 
         }
 
-        $('#attendance-data').on('click', '.view-attendance', function () {
+        $('#attendance-data').on('click', '.view-attendance', function() {
             var attendanceID = $(this).data('attendance-id');
             var url = "{{ route('attendances.show', ':attendanceID') }}";
             url = url.replace(':attendanceID', attendanceID);
@@ -417,7 +427,7 @@
             $.ajaxModal(MODAL_XL, url);
         });
 
-        $('#attendance-data').on('click', '.edit-attendance', function (event) {
+        $('#attendance-data').on('click', '.edit-attendance', function(event) {
             var attendanceDate = $(this).data('attendance-date');
             var userData = $(this).closest('tr').children('td:first');
             var userID = "{{ $employee->id }}";
@@ -463,5 +473,4 @@
 
         showTable(false);
     </script>
-
 @endpush

@@ -100,19 +100,18 @@
 
             const requestUrl = this.href;
 
-            $.easyAjax({
-                url: requestUrl,
-                blockUI: true,
-                container: "#nav-tabContent",
-                historyPush: true,
-                success: function(response) {
+            window.apiHttp.get(requestUrl)
+                .then(function (response) {
                     showBtn(response.activeTab);
                     if (response.status == "success") {
+                        window.history.pushState({}, '', requestUrl);
                         $('#nav-tabContent').html(response.html);
                         init('#nav-tabContent');
                     }
-                }
-            });
+                })
+                .catch(function (err) {
+                    $.handleApiFormError(err);
+                });
         });
 
         function showBtn(activeTab) {

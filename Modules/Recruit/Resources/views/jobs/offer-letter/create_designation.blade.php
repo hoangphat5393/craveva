@@ -6,19 +6,17 @@
 <div class="modal-body">
     <x-form id="save-designation-data-form">
         <div class="add-client bg-white rounded">
-             
+
             <div class="row p-20">
                 <div class="col-md-6">
-                    <x-forms.text fieldId="designation_name" :fieldLabel="__('app.name')" fieldName="name" fieldRequired="true"
-                        :fieldPlaceholder="__('placeholders.designation')">
+                    <x-forms.text fieldId="designation_name" :fieldLabel="__('app.name')" fieldName="name" fieldRequired="true" :fieldPlaceholder="__('placeholders.designation')">
                     </x-forms.text>
                 </div>
                 <div class="col-md-6">
                     <x-forms.label class="mt-3" fieldId="parent_label" :fieldLabel="__('app.menu.parent_id')" fieldName="parent_label">
                     </x-forms.label>
                     <x-forms.input-group>
-                        <select class="form-control select-picker" name="parent_id" id="parent_id"
-                            data-live-search="true">
+                        <select class="form-control select-picker" name="parent_id" id="parent_id" data-live-search="true">
                             <option value="">--</option>
                             @foreach ($designations as $designation)
                                 <option value="{{ $designation->id }}">{{ $designation->name }}</option>
@@ -44,26 +42,20 @@
 
             const url = "{{ route('job-offer-letter.store-designation') }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#save-designation-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-designation-form",
-                data: $('#save-designation-data-form').serialize(),
-                success: function(response) {
-                    $('#employee_designation').html(response.data);
+            window.apiHttp.postUrlEncoded(url, $('#save-designation-data-form').serialize())
+                .then(function(response) {
+                    $('#employee_designation').html(response.data.data);
                     $('#employee_designation').selectpicker('refresh');
-                    var selected = response.selected;
+                    var selected = response.data.selected;
                     if (selected) {
                         $('#employee_designation').selectpicker('val', selected);
                     }
 
                     $(MODAL_LG).modal('hide');
-
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                });
         });
 
         $(".select-picker").selectpicker();

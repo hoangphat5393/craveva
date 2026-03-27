@@ -558,20 +558,25 @@ $createPublicProjectPermission = user()->permission('create_public_project');
             $('#mentionUserId').val(mention_user_id.join(','));
             const url = "{{ route('projects.update', $project->id) }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#save-project-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                file:true,
-                buttonSelector: "#save-project-form",
-                data: $('#save-project-data-form').serialize(),
-                success: function(response) {
-                    if (response.status == 'success') {
-                        window.location.href = response.redirectUrl;
-                    }
+            var formEl = document.getElementById('save-project-data-form');
+            var fd = new FormData(formEl);
+            var mergeParams = new URLSearchParams($('#save-project-data-form').serialize());
+            mergeParams.forEach(function (value, key) {
+                fd.set(key, value);
+            });
+            var $btn = $('#save-project-form');
+            var prev = $btn.html();
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+            $.easyBlockUI('#save-project-data-form');
+            window.apiHttp.postForm(url, fd).then(function(response) {
+                if (response.status == 'success') {
+                    window.location.href = response.redirectUrl;
                 }
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI('#save-project-data-form');
+                $btn.prop('disabled', false).html(prev);
             });
         });
 
@@ -610,17 +615,17 @@ $createPublicProjectPermission = user()->permission('create_public_project');
 
             const url = "{{ route('clients.create') }}";
 
-            $.easyAjax({
-                url: url,
-                blockUI: true,
-                container: MODAL_XL,
-                success: function(response) {
-                    if (response.status == "success") {
-                        $(MODAL_XL + ' .modal-body').html(response.html);
-                        $(MODAL_XL + ' .modal-title').html(response.title);
-                        init(MODAL_XL);
-                    }
+            $.easyBlockUI(MODAL_XL);
+            window.apiHttp.get(url).then(function(response) {
+                if (response.status == "success") {
+                    $(MODAL_XL + ' .modal-body').html(response.html);
+                    $(MODAL_XL + ' .modal-title').html(response.title);
+                    init(MODAL_XL);
                 }
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI(MODAL_XL);
             });
         });
 
@@ -629,17 +634,17 @@ $createPublicProjectPermission = user()->permission('create_public_project');
 
             const url = "{{ route('employees.create') }}";
 
-            $.easyAjax({
-                url: url,
-                blockUI: true,
-                container: MODAL_XL,
-                success: function(response) {
-                    if (response.status == "success") {
-                        $(MODAL_XL + ' .modal-body').html(response.html);
-                        $(MODAL_XL + ' .modal-title').html(response.title);
-                        init(MODAL_XL);
-                    }
+            $.easyBlockUI(MODAL_XL);
+            window.apiHttp.get(url).then(function(response) {
+                if (response.status == "success") {
+                    $(MODAL_XL + ' .modal-body').html(response.html);
+                    $(MODAL_XL + ' .modal-title').html(response.title);
+                    init(MODAL_XL);
                 }
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI(MODAL_XL);
             });
         });
 
@@ -702,17 +707,15 @@ $createPublicProjectPermission = user()->permission('create_public_project');
             let url = "{{ route('departments.members', ':id') }}?userId="+userId;
             url = url.replace(':id', id);
 
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                container: '#save-project-data-form',
-                blockUI: true,
-                redirect: true,
-                success: function (data) {
-                    $('#selectEmployee').html(data.data);
-                    $('#selectEmployee').selectpicker('refresh');
-                }
-            })
+            $.easyBlockUI('#save-project-data-form');
+            window.apiHttp.get(url).then(function (data) {
+                $('#selectEmployee').html(data.data);
+                $('#selectEmployee').selectpicker('refresh');
+            }).catch(function (err) {
+                $.handleApiFormError(err);
+            }).finally(function () {
+                $.easyUnblockUI('#save-project-data-form');
+            });
         });
 
 </script>

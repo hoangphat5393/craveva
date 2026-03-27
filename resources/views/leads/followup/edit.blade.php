@@ -111,18 +111,16 @@
 
     // save followup
     $('#save-followup').click(function() {
-        $.easyAjax({
-            url: "{{ route('deals.follow_up_update') }}",
-            container: '#followUpForm',
-            type: "POST",
-            blockUI: true,
-            data: $('#followUpForm').serialize(),
-            success: function(response) {
-                if (response.status == "success") {
-                    window.location.reload();
-                }
+        $.easyBlockUI('#followUpForm');
+        window.apiHttp.postUrlEncoded("{{ route('deals.follow_up_update') }}", $('#followUpForm').serialize()).then(function(response) {
+            if (response.status == "success") {
+                window.location.reload();
             }
-        })
+        }).catch(function(err) {
+            $.handleApiFormError(err);
+        }).finally(function() {
+            $.easyUnblockUI('#followUpForm');
+        });
     });
 
 </script>

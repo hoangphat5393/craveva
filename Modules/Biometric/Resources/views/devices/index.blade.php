@@ -385,10 +385,8 @@
                 $('#syncEmployeesModal').modal('show');
 
                 // Fetch employees list
-                $.easyAjax({
-                    url: "{{ route('biometric-employees.get-employees-to-sync') }}",
-                    type: "GET",
-                    success: function(response) {
+                window.apiHttp.get("{{ route('biometric-employees.get-employees-to-sync') }}")
+                    .then(function(response) {
                         let html = '';
                         if (response.data.length === 0) {
                             html = `<tr><td colspan="5" class="text-center">@lang('biometric::app.noEmployeesToSync')</td></tr>`;
@@ -435,8 +433,10 @@
                                 $('#select-all-employees').prop('checked', true);
                             }
                         });
-                    }
-                });
+                    })
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    });
             });
 
             // Handle confirm sync
@@ -473,16 +473,13 @@
                     if (result.isConfirmed) {
 
 
-                        $.easyAjax({
-                            url: "{{ route('biometric-devices.sync-employees') }}",
-                            type: "POST",
-                            data: {
-                                '_token': "{{ csrf_token() }}",
-                                'employee_ids': selectedIds
-                            },
-                            blockUI: true,
-                            messagePosition: 'inline',
-                            success: function(response) {
+                        var syncBody = '_token=' + encodeURIComponent("{{ csrf_token() }}");
+                        selectedIds.forEach(function(id) {
+                            syncBody += '&employee_ids[]=' + encodeURIComponent(id);
+                        });
+                        $.easyBlockUI('body');
+                        window.apiHttp.postUrlEncoded("{{ route('biometric-devices.sync-employees') }}", syncBody)
+                            .then(function(response) {
                                 if (response.status == "success") {
                                     // Hide table/alerts immediately, show success message after AJAX
                                     $('#sync-info-alert, #sync-warning-alert, #sync-employees-table-container').hide();
@@ -499,8 +496,13 @@
                                         text: response.message
                                     });
                                 }
-                            },
-                        });
+                            })
+                            .catch(function(err) {
+                                $.handleApiFormError(err);
+                            })
+                            .finally(function() {
+                                $.easyUnblockUI('body');
+                            });
                     }
                 });
             });
@@ -699,18 +701,9 @@
                     var url = "{{ route('biometric-devices.destroy', ':id') }}";
                     url = url.replace(':id', id);
 
-                    var token = "{{ csrf_token() }}";
-
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
+                    $.easyBlockUI('body');
+                    window.apiHttp.delete(url, "{{ csrf_token() }}")
+                        .then(function(response) {
                             if (response.status == "success") {
                                 row.fadeOut(300, function() {
                                     $(this).remove();
@@ -722,8 +715,13 @@
                                     updatePendingDeviceAlert();
                                 });
                             }
-                        }
-                    });
+                        })
+                        .catch(function(err) {
+                            $.handleApiFormError(err);
+                        })
+                        .finally(function() {
+                            $.easyUnblockUI('body');
+                        });
                 }
             });
         });

@@ -605,25 +605,22 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     var id = $(this).data('check-id');
-                    var token = "{{ csrf_token() }}";
-
                     var url = "{{ route('check-ins.destroy', ':id') }}";
                     url = url.replace(':id', id);
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function (response) {
+                    $.easyBlockUI('body');
+                    window.apiHttp.delete(url, "{{ csrf_token() }}")
+                        .then(function (response) {
                             if (response.status == "success") {
                                 window.location.reload();
                             }
-                        }
-                    });
+                        })
+                        .catch(function (err) {
+                            $.handleApiFormError(err);
+                        })
+                        .finally(function () {
+                            $.easyUnblockUI('body');
+                        });
                 }
             });
         });
@@ -634,18 +631,14 @@
             url = url.replace(':id', keyId);
 
             if (url) {
-                $.easyAjax({
-                    url: url,
-                    type: "GET",
-                    buttonSelector: $(this),
-                    blockUI: true,
-                    disableButton: true,
-                    success: function(response) {
-                        if (response.status == "success") {
-                            $.easyUnblockUI();
-                        }
-                    }
-                });
+                $.easyBlockUI();
+                window.apiHttp.get(url)
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    })
+                    .finally(function() {
+                        $.easyUnblockUI();
+                    });
             }
         });
     });

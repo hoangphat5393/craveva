@@ -326,17 +326,16 @@ $viewTasksPermission = user()->permission('view_tasks');
         $('.change-status').change(function() {
             var status = $(this).val();
             var url = "{{ route('projects.update_status', $project->id) }}";
-            var token = '{{ csrf_token() }}'
+            var token = '{{ csrf_token() }}';
 
-            $.easyAjax({
-                url: url,
-                type: "POST",
-                container: '.content-wrapper',
-                blockUI: true,
-                data: {
-                    status: status,
-                    _token: token
-                }
+            $.easyBlockUI('.content-wrapper');
+            window.apiHttp.postUrlEncoded(url, {
+                status: status,
+                _token: token
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI('.content-wrapper');
             });
         });
 
@@ -368,19 +367,15 @@ $viewTasksPermission = user()->permission('view_tasks');
                         var url = "{{ route('projects.destroy_pin', ':id') }}";
                         url = url.replace(':id', id);
 
-                        var token = "{{ csrf_token() }}";
-                        $.easyAjax({
-                            type: 'POST',
-                            url: url,
-                            data: {
-                                '_token': token,
-                                'type': pinType
-                            },
-                            success: function(response) {
-                                if (response.status == "success") {
-                                    window.location.reload();
-                                }
+                        window.apiHttp.postUrlEncoded(url, {
+                            _token: "{{ csrf_token() }}",
+                            type: pinType
+                        }).then(function(response) {
+                            if (response.status == "success") {
+                                window.location.reload();
                             }
+                        }).catch(function(err) {
+                            $.handleApiFormError(err);
                         })
                     }
                 });
@@ -406,19 +401,15 @@ $viewTasksPermission = user()->permission('view_tasks');
                     if (result.isConfirmed) {
                         var url = "{{ route('projects.store_pin') }}?type=" + pinType;
 
-                        var token = "{{ csrf_token() }}";
-                        $.easyAjax({
-                            type: 'POST',
-                            url: url,
-                            data: {
-                                '_token': token,
-                                'project_id': id
-                            },
-                            success: function(response) {
-                                if (response.status == "success") {
-                                    window.location.reload();
-                                }
+                        window.apiHttp.postUrlEncoded(url, {
+                            _token: "{{ csrf_token() }}",
+                            project_id: id
+                        }).then(function(response) {
+                            if (response.status == "success") {
+                                window.location.reload();
                             }
+                        }).catch(function(err) {
+                            $.handleApiFormError(err);
                         });
                     }
                 });
@@ -447,19 +438,12 @@ $viewTasksPermission = user()->permission('view_tasks');
                 if (result.isConfirmed) {
                     var url = "{{ route('projects.archive_restore', $project->id) }}";
 
-                    var token = "{{ csrf_token() }}";
-
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                window.location.reload();
-                            }
+                    window.apiHttp.postUrlEncoded(url, '_token=' + encodeURIComponent("{{ csrf_token() }}")).then(function(response) {
+                        if (response.status == "success") {
+                            window.location.reload();
                         }
+                    }).catch(function(err) {
+                        $.handleApiFormError(err);
                     });
                 }
             });

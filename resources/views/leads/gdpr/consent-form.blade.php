@@ -42,16 +42,12 @@
 
 <script>
     $(document).on('click', '#save-consent', function(){
-        $.easyAjax({
-            url: "{{route('deals.save_lead_consent', $leadId)}}",
-            container: '#saveLeadConsentForm',
-            type: "POST",
-            data: $('#saveLeadConsentForm').serialize(),
-            success: function(response) {
-                if (response.status == 'success') {
-                    location.reload();
-                }
+        window.apiHttp.postUrlEncoded("{{route('deals.save_lead_consent', $leadId)}}", $('#saveLeadConsentForm').serialize()).then(function(response) {
+            if (response.status == 'success') {
+                location.reload();
             }
-        })
+        }).catch(function(err) {
+            $.handleApiFormError(err);
+        });
     });
 </script>

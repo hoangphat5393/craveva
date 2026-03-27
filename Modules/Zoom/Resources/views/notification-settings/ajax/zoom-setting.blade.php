@@ -189,13 +189,7 @@
                     CHANGE_DETECTED = false;
 
                     const url = "{{ route('zoom-settings.update', $zoom->id) }}";
-                    $.easyAjax({
-                        url: url,
-                        container: '#editSettings',
-                        type: "POST",
-                        blockUI: true,
-                        data: $('#editSettings').serialize(),
-                        success: function (response) {
+                    window.apiHttp.postUrlEncoded(url, $('#editSettings').serialize()).then(function (response) {
                             if (response.status === 'error') {
                                 $('#alert').prepend(
                                     '<div class="alert alert-danger">{{ __('messages.smtpError') }}</div>'
@@ -203,8 +197,7 @@
                             } else {
                                 $('#alert').show();
                             }
-                        }
-                    })
+                    }).catch(function (err) { $.handleApiFormError(err); })
                 });
     </script>
 

@@ -7,10 +7,7 @@
                 <div class="row pl-20 pr-20 pt-20">
                     <div class="col-lg-5">
                         <div class="form-group my-3">
-                            <x-forms.text :fieldLabel="__('recruit::app.menu.skill')" fieldName="names[]"
-                                          fieldId="names0" :fieldPlaceholder="__('recruit::modules.skill.skillname')"
-                                          fieldValue=""
-                                          fieldRequired="true"/>
+                            <x-forms.text :fieldLabel="__('recruit::app.menu.skill')" fieldName="names[]" fieldId="names0" :fieldPlaceholder="__('recruit::modules.skill.skillname')" fieldValue="" fieldRequired="true" />
                         </div>
                     </div>
                 </div>
@@ -19,8 +16,7 @@
                 <!--  ADD ITEM START-->
                 <div class="row px-lg-4 px-md-4 px-3 pb-3 pt-0 mb-3  mt-2">
                     <div class="col-md-12">
-                        <a class="f-15 f-w-500" href="javascript:;" id="add-item"><i
-                                class="icons icon-plus font-weight-bold mr-1 "></i> @lang('app.add') @lang('app.more')
+                        <a class="f-15 f-w-500" href="javascript:;" id="add-item"><i class="icons icon-plus font-weight-bold mr-1 "></i> @lang('app.add') @lang('app.more')
                         </a>
                     </div>
                 </div>
@@ -38,63 +34,56 @@
 </div>
 
 <script>
-
-    $(document).ready(function () {
+    $(document).ready(function() {
         var $insertBefore = $('#insertBefore');
         var i = 0;
 
         // Add More Inputs
-        $('body').on('click', '#add-item', function () {
+        $('body').on('click', '#add-item', function() {
 
             i += 1;
 
-            $(`<div id="addMoreBox${i}" class="row pl-20 pr-20 skill-name"><div class="col-md-5"> <div id="nameBox${i}" class="form-group"><input class="form-control name_new height-35 f-14" name="names[]" id="names${i}" placeholder="@lang('recruit::modules.skill.skillname')" value="" required="true" /></div></div><div class="col-md-1"><div class="task_view mt-1"><a href="javascript:;" class="task_view_more d-flex align-items-center justify-content-center remove-item" data-item-id="${i}"><i class="fa fa-trash icons mr-2 text-lightest"></i>@lang('recruit::app.menu.delete')</a></div> </div></div>`).insertBefore($insertBefore);
+            $(`<div id="addMoreBox${i}" class="row pl-20 pr-20 skill-name"><div class="col-md-5"> <div id="nameBox${i}" class="form-group"><input class="form-control name_new height-35 f-14" name="names[]" id="names${i}" placeholder="@lang('recruit::modules.skill.skillname')" value="" required="true" /></div></div><div class="col-md-1"><div class="task_view mt-1"><a href="javascript:;" class="task_view_more d-flex align-items-center justify-content-center remove-item" data-item-id="${i}"><i class="fa fa-trash icons mr-2 text-lightest"></i>@lang('recruit::app.menu.delete')</a></div> </div></div>`)
+                .insertBefore($insertBefore);
 
         });
 
         // Remove fields
-        $('body').on('click', '.remove-item', function () {
+        $('body').on('click', '.remove-item', function() {
             var index = $(this).data('item-id');
             $('#addMoreBox' + index).remove();
         });
 
-        $('body').on('click', '#save-skill-form', function () {
-            $.easyAjax({
-                url: '{{ route('job-skills.store') }}',
-                container: '#save-skill-data-form',
-                type: "POST",
-                redirect: true,
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-skill-form",
-                data: $('#save-skill-data-form').serialize(),
-                success: function (response) {
-                    if (response.status == 'success') {
-                        window.location.href = response.redirectUrl;
+        $('body').on('click', '#save-skill-form', function() {
+            window.apiHttp.postUrlEncoded('{{ route('job-skills.store') }}', $('#save-skill-data-form').serialize())
+                .then(function(response) {
+                    if (response.data.status == 'success') {
+                        window.location.href = response.data.redirectUrl;
                     }
-                },
-                error: function (response) {
-                    if (response.status == '422') {
+                })
+                .catch(function(err) {
+                    if (err.response && err.response.status == 422) {
                         $('.invalid-feedback').html('');
 
-                        $.each(response.responseJSON.errors, function (key, value) {
+                        $.each(err.response.data.errors, function(key, value) {
                             var result = key.split('.');
-                            var message = response.responseJSON.errors[key][0];
+                            var message = err.response.data.errors[key][0];
                             var taken_message = 'already';
                             var already_message = "@lang('recruit::modules.message.alreadyExist')"
 
                             if (message.includes(taken_message) == true) {
                                 $('<div class="invalid-feedback">' + already_message + '</div>').insertAfter('#names' + result[1]);
                             } else {
-                                $('<div class="invalid-feedback">' + response.responseJSON.errors[key][0] + '</div>').insertAfter('#names' + result[1]);
+                                $('<div class="invalid-feedback">' + err.response.data.errors[key][0] + '</div>').insertAfter('#names' + result[1]);
                             }
 
                             $('#names' + result[1]).addClass('is-invalid');
 
                         });
+                        return;
                     }
-                }
-            })
+                    $.handleApiFormError(err);
+                });
         });
         init(RIGHT_MODAL);
     });

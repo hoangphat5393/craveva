@@ -116,20 +116,12 @@ $manageCategoryPermission = user()->permission('manage_discussion_category');
                 var url = "{{ route('discussion.destroy', ':id') }}";
                 url = url.replace(':id', id);
 
-                var token = "{{ csrf_token() }}";
-
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
-                        if (response.status == "success") {
-                            window.LaravelDataTables["discussion-table"].draw(true);
-                        }
+                window.apiHttp.delete(url, "{{ csrf_token() }}").then(function(response) {
+                    if (response.status == "success") {
+                        window.LaravelDataTables["discussion-table"].draw(true);
                     }
+                }).catch(function(err) {
+                    $.handleApiFormError(err);
                 });
             }
         });
@@ -183,22 +175,20 @@ $manageCategoryPermission = user()->permission('manage_discussion_category');
         var url = "{{ route('discussion.set_best_answer') }}";
         var token = "{{ csrf_token() }}";
 
-        $.easyAjax({
-            type: 'POST',
-            url: url,
-            container: '#right-modal-content',
-            blockUI: true,
-            data: {
-                '_token': token,
-                '_method': 'POST',
-                'replyId': replyId,
-                'type': type
-            },
-            success: function(response) {
-                if (response.status == "success") {
-                    $('#right-modal-content').html(response.html);
-                }
+        $.easyBlockUI('#right-modal-content');
+        window.apiHttp.postUrlEncoded(url, {
+            _token: token,
+            _method: 'POST',
+            replyId: replyId,
+            type: type
+        }).then(function(response) {
+            if (response.status == "success") {
+                $('#right-modal-content').html(response.html);
             }
+        }).catch(function(err) {
+            $.handleApiFormError(err);
+        }).finally(function() {
+            $.easyUnblockUI('#right-modal-content');
         });
     });
 
@@ -208,22 +198,20 @@ $manageCategoryPermission = user()->permission('manage_discussion_category');
         var url = "{{ route('discussion.set_best_answer') }}";
         var token = "{{ csrf_token() }}";
 
-        $.easyAjax({
-            type: 'POST',
-            url: url,
-            container: '#right-modal-content',
-            blockUI: true,
-            data: {
-                '_token': token,
-                '_method': 'POST',
-                'replyId': replyId,
-                'type': type
-            },
-            success: function(response) {
-                if (response.status == "success") {
-                    $('#right-modal-content').html(response.html);
-                }
+        $.easyBlockUI('#right-modal-content');
+        window.apiHttp.postUrlEncoded(url, {
+            _token: token,
+            _method: 'POST',
+            replyId: replyId,
+            type: type
+        }).then(function(response) {
+            if (response.status == "success") {
+                $('#right-modal-content').html(response.html);
             }
+        }).catch(function(err) {
+            $.handleApiFormError(err);
+        }).finally(function() {
+            $.easyUnblockUI('#right-modal-content');
         });
     });
 
@@ -251,22 +239,15 @@ $manageCategoryPermission = user()->permission('manage_discussion_category');
                 var url = "{{ route('discussion-reply.destroy', ':id') }}";
                 url = url.replace(':id', id);
 
-                var token = "{{ csrf_token() }}";
-
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    container: '#right-modal-content',
-                    blockUI: true,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
-                        if (response.status == "success") {
-                            $('#right-modal-content').html(response.html);
-                        }
+                $.easyBlockUI('#right-modal-content');
+                window.apiHttp.delete(url, "{{ csrf_token() }}").then(function(response) {
+                    if (response.status == "success") {
+                        $('#right-modal-content').html(response.html);
                     }
+                }).catch(function(err) {
+                    $.handleApiFormError(err);
+                }).finally(function() {
+                    $.easyUnblockUI('#right-modal-content');
                 });
             }
         });

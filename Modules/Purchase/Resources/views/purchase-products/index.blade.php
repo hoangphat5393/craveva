@@ -318,14 +318,8 @@
 
             var url = "{{ route('purchase_products.apply_quick_action') }}?row_ids=" + rowdIds;
 
-            $.easyAjax({
-                url: url,
-                container: '#quick-action-form',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#quick-action-apply",
-                data: $('#quick-action-form').serialize(),
-                success: function(response) {
+            window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize())
+                .then(function(response) {
                     if (response.status == 'success') {
                         showTable();
                         resetActionButtons();
@@ -333,8 +327,10 @@
                         $('#quick-action-form').hide();
                         $('.quick-action-field').addClass('d-none');
                     }
-                }
-            })
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                });
         };
 
         const changeProductStatus = () => {
@@ -344,14 +340,8 @@
 
             var url = "{{ route('purchase_products.apply_quick_action') }}?row_ids=" + rowdIds;
 
-            $.easyAjax({
-                url: url,
-                container: '#quick-action-form',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#quick-action-apply",
-                data: $('#quick-action-form').serialize(),
-                success: function(response) {
+            window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize())
+                .then(function(response) {
                     if (response.status == 'success') {
                         showTable();
                         resetActionButtons();
@@ -359,8 +349,10 @@
                         $('#quick-action-form').hide();
                         $('.status-quick-action').addClass('d-none');
                     }
-                }
-            })
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                });
         };
 
         $('body').on('click', '.productView', function() {
@@ -398,20 +390,15 @@
                     url = url.replace(':id', id);
 
                     var token = "{{ csrf_token() }}";
-
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
+                    window.apiHttp.delete(url, token)
+                        .then(function(response) {
                             if (response.status == "success") {
                                 showTable();
                             }
-                        }
-                    });
+                        })
+                        .catch(function(err) {
+                            $.handleApiFormError(err);
+                        });
                 }
             });
         });
@@ -424,23 +411,21 @@
             var status = $(this).val();
 
             if (typeof id !== 'undefined') {
-                $.easyAjax({
-                    url: url,
-                    type: "POST",
-                    data: {
-                        '_token': token,
+                window.apiHttp.postUrlEncoded(url, {
+                        _token: token,
                         productId: id,
                         status: status
-                    },
-
-                    success: function(response) {
+                    })
+                    .then(function(response) {
                         if (response.status == "success") {
                             showTable();
                             resetActionButtons();
                             deSelectAll();
                         }
-                    }
-                });
+                    })
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    });
             }
         });
 
@@ -452,23 +437,21 @@
             var status = $(this).val();
 
             if (typeof id !== 'undefined') {
-                $.easyAjax({
-                    url: url,
-                    type: "POST",
-                    data: {
-                        '_token': token,
+                window.apiHttp.postUrlEncoded(url, {
+                        _token: token,
                         productId: id,
                         status: status
-                    },
-
-                    success: function(response) {
+                    })
+                    .then(function(response) {
                         if (response.status == "success") {
                             showTable();
                             resetActionButtons();
                             deSelectAll();
                         }
-                    }
-                });
+                    })
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    });
             }
         });
 
@@ -477,21 +460,19 @@
             var productId = $(this).data('product-id');
             let url = "{{ route('products.add_cart_item') }}";
 
-            $.easyAjax({
-                url: url,
-                container: '.content-wrapper',
-                type: "POST",
-                data: {
-                    'productID': productId,
-                    '_token': "{{ csrf_token() }}"
-                },
-                success: function(response) {
+            window.apiHttp.postUrlEncoded(url, {
+                    productID: productId,
+                    _token: "{{ csrf_token() }}"
+                })
+                .then(function(response) {
                     $('#emptyCartBox').show();
                     cartItems = response.cartProduct;
                     $('.productCounter').html(cartItems);
 
-                }
-            })
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                });
 
         });
 
@@ -500,22 +481,19 @@
 
             var url = "{{ route('products.remove_cart_item', ':id') }}";
             url = url.replace(':id', id);
-            $.easyAjax({
-                url: url,
-                container: '#saveInvoiceForm',
-                type: "POST",
-                blockUI: true,
-                data: {
+            window.apiHttp.postUrlEncoded(url, {
                     _token: "{{ csrf_token() }}",
                     type: "all_data",
-                },
-                success: function(response) {
+                })
+                .then(function(response) {
                     cartItems = response.productItems;
                     $('.productCounter').html(cartItems);
                     $('#emptyCartBox').hide();
 
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                });
         });
     </script>
 @endpush

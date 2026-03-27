@@ -30,24 +30,22 @@
     $('#check-password').click(function() {
         let url = "{{ route('project_notes.check_password') }}";
 
-        let token = "{{ csrf_token() }}";
-
         let password = $('#password').val();
 
         let noteId = "{{ $note->id }}";
 
-        $.easyAjax({
-            url: url,
-            container: '#checkForpassword',
-            type: "POST",
-            data: { note_id : noteId, '_token': token, password: password },
-            success: function(response) {
-                if (response.status == 'success') {
-                    $(MODAL_LG).modal('hide');
-                    getNoteDetail(noteId);
-                }
+        window.apiHttp.postUrlEncoded(url, $.param({
+            note_id: noteId,
+            '_token': "{{ csrf_token() }}",
+            password: password
+        })).then(function(response) {
+            if (response.status == 'success') {
+                $(MODAL_LG).modal('hide');
+                getNoteDetail(noteId);
             }
-        })
+        }).catch(function(err) {
+            $.handleApiFormError(err);
+        });
     });
 
 </script>

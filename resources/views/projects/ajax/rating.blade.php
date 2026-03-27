@@ -243,23 +243,20 @@
                 }
 
                 if (ratingValue !== 0) {
-                    $.easyAjax({
-                        url: url,
-                        container: "#save-project-rating-form",
-                        type: "POST",
-                        blockUI: true,
-                        redirect: true,
-                        data: {
-                            'rating': ratingValue,
-                            'project_id': {{ $project->id }},
-                            'comment': $('#comment').val(),
-                            '_token': token,
-                            '_method': method
-                        },
-                        success: function () {
-                            window.location.reload();
-                        }
-                    })
+                    $.easyBlockUI("#save-project-rating-form");
+                    window.apiHttp.postUrlEncoded(url, {
+                        rating: ratingValue,
+                        project_id: {{ $project->id }},
+                        comment: $('#comment').val(),
+                        _token: token,
+                        _method: method
+                    }).then(function () {
+                        window.location.reload();
+                    }).catch(function(err) {
+                        $.handleApiFormError(err);
+                    }).finally(function() {
+                        $.easyUnblockUI("#save-project-rating-form");
+                    });
                 }
             });
 
@@ -274,21 +271,18 @@
                     url = url.replace(':id', ratingID);
                 }
 
-                $.easyAjax({
-                    url: url,
-                    container: "#save-project-rating-form",
-                    type: "POST",
-                    blockUI: true,
-                    redirect: true,
-                    data: {
-                        'ratingID': ratingID,
-                        '_token': token,
-                        '_method': method
-                    },
-                    success: function () {
-                        window.location.reload();
-                    }
-                })
+                $.easyBlockUI("#save-project-rating-form");
+                window.apiHttp.postUrlEncoded(url, {
+                    ratingID: ratingID,
+                    _token: token,
+                    _method: method
+                }).then(function () {
+                    window.location.reload();
+                }).catch(function(err) {
+                    $.handleApiFormError(err);
+                }).finally(function() {
+                    $.easyUnblockUI("#save-project-rating-form");
+                });
             });
 
             $('.edit-rating').click(function() {

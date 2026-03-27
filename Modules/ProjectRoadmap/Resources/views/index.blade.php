@@ -332,20 +332,14 @@ $deleteProjectPermission = user()->permission('delete_projects');
             var status = $(this).val();
 
             if (id != "" && status != "") {
-                $.easyAjax({
-                    url: url,
-                    type: "POST",
-                    container: '.content-wrapper',
-                    blockUI: true,
-                    data: {
-                        '_token': token,
-                        projectId: id,
-                        statusId: status,
-                        sortBy: 'id'
-                    },
-                    success: function(data) {
-                        window.LaravelDataTables["projects-table"].draw(true);
-                    }
+                $.easyBlockUI('.content-wrapper');
+                var prBody = '_token=' + encodeURIComponent(token) + '&projectId=' + encodeURIComponent(id) + '&statusId=' + encodeURIComponent(status) + '&sortBy=id';
+                window.apiHttp.postUrlEncoded(url, prBody).then(function() {
+                    window.LaravelDataTables["projects-table"].draw(true);
+                }).catch(function(err) {
+                    $.handleApiFormError(err);
+                }).finally(function() {
+                    $.easyUnblockUI('.content-wrapper');
                 });
 
             }
@@ -423,22 +417,15 @@ $deleteProjectPermission = user()->permission('delete_projects');
                     var url = "{{ route('projects.destroy', ':id') }}";
                     url = url.replace(':id', id);
 
-                    var token = "{{ csrf_token() }}";
-
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        container: '.content-wrapper',
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                showTable();
-                            }
+                    $.easyBlockUI('.content-wrapper');
+                    window.apiHttp.delete(url, "{{ csrf_token() }}").then(function(response) {
+                        if (response.status == "success") {
+                            showTable();
                         }
+                    }).catch(function(err) {
+                        $.handleApiFormError(err);
+                    }).finally(function() {
+                        $.easyUnblockUI('.content-wrapper');
                     });
                 }
             });
@@ -468,21 +455,15 @@ $deleteProjectPermission = user()->permission('delete_projects');
                     var url = "{{ route('projects.archive_delete', ':id') }}";
                     url = url.replace(':id', id);
 
-                    var token = "{{ csrf_token() }}";
-
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        container: '.content-wrapper',
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                window.LaravelDataTables["projects-table"].draw(true);
-                            }
+                    $.easyBlockUI('.content-wrapper');
+                    window.apiHttp.postUrlEncoded(url, '_token=' + encodeURIComponent("{{ csrf_token() }}")).then(function(response) {
+                        if (response.status == "success") {
+                            window.LaravelDataTables["projects-table"].draw(true);
                         }
+                    }).catch(function(err) {
+                        $.handleApiFormError(err);
+                    }).finally(function() {
+                        $.easyUnblockUI('.content-wrapper');
                     });
                 }
             });
@@ -495,24 +476,24 @@ $deleteProjectPermission = user()->permission('delete_projects');
 
             var url = "{{ route('projects.apply_quick_action') }}?row_ids=" + rowdIds;
 
-            $.easyAjax({
-                url: url,
-                container: '#quick-action-form',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#quick-action-apply",
-                data: $('#quick-action-form').serialize(),
-                success: function(response) {
-                    if (response.status == 'success') {
-                        showTable();
-                        resetActionButtons();
-                        deSelectAll();
-                        $('#quick-action-apply').attr('disabled', 'disabled');
-                        $('#change-status-action').addClass('d-none');
-                        $('#quick-action-form').hide();
-                    }
+            var $qaBtn = $("#quick-action-apply");
+            $qaBtn.prop('disabled', true);
+            $.easyBlockUI('#quick-action-form');
+            window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize()).then(function(response) {
+                if (response.status == 'success') {
+                    showTable();
+                    resetActionButtons();
+                    deSelectAll();
+                    $('#quick-action-apply').attr('disabled', 'disabled');
+                    $('#change-status-action').addClass('d-none');
+                    $('#quick-action-form').hide();
                 }
-            })
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $qaBtn.prop('disabled', false);
+                $.easyUnblockUI('#quick-action-form');
+            });
         };
 
 

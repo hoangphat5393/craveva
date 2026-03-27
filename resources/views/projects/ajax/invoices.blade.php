@@ -164,20 +164,12 @@ $addInvoicePermission = user()->permission('add_invoices');
                 var url = "{{ route('invoices.destroy', ':id') }}";
                 url = url.replace(':id', id);
 
-                var token = "{{ csrf_token() }}";
-
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
-                        if (response.status == "success") {
-                            showTable();
-                        }
+                window.apiHttp.delete(url, "{{ csrf_token() }}").then(function(response) {
+                    if (response.status == "success") {
+                        showTable();
                     }
+                }).catch(function(err) {
+                    $.handleApiFormError(err);
                 });
             }
         });
@@ -219,21 +211,15 @@ $addInvoicePermission = user()->permission('add_invoices');
         var url = "{{ route('invoices.send_invoice', ':id') }}";
         url = url.replace(':id', id);
 
-        var token = "{{ csrf_token() }}";
-
-        $.easyAjax({
-            type: 'POST',
-            url: url,
-            container: '#invoices-table',
-            blockUI: true,
-            data: {
-                '_token': token
-            },
-            success: function(response) {
-                if (response.status == "success") {
-                    window.LaravelDataTables["invoices-table"].draw(true);
-                }
+        $.easyBlockUI('#invoices-table');
+        window.apiHttp.postUrlEncoded(url, '_token=' + encodeURIComponent("{{ csrf_token() }}")).then(function(response) {
+            if (response.status == "success") {
+                window.LaravelDataTables["invoices-table"].draw(true);
             }
+        }).catch(function(err) {
+            $.handleApiFormError(err);
+        }).finally(function() {
+            $.easyUnblockUI('#invoices-table');
         });
     });
 
@@ -242,19 +228,15 @@ $addInvoicePermission = user()->permission('add_invoices');
         var url = "{{ route('invoices.payment_reminder', ':id') }}";
         url = url.replace(':id', id);
 
-        var token = "{{ csrf_token() }}";
-
-        $.easyAjax({
-            type: 'GET',
-            container: '#invoices-table',
-            blockUI: true,
-            url: url,
-            success: function(response) {
-                if (response.status == "success") {
-                    $.unblockUI();
-                    window.LaravelDataTables["invoices-table"].draw(true);
-                }
+        $.easyBlockUI('#invoices-table');
+        window.apiHttp.get(url).then(function(response) {
+            if (response.status == "success") {
+                window.LaravelDataTables["invoices-table"].draw(true);
             }
+        }).catch(function(err) {
+            $.handleApiFormError(err);
+        }).finally(function() {
+            $.easyUnblockUI('#invoices-table');
         });
     });
 
@@ -298,16 +280,12 @@ $addInvoicePermission = user()->permission('add_invoices');
                 var url = "{{ route('invoices.update_status', ':id') }}";
                 url = url.replace(':id', id);
 
-                var token = "{{ csrf_token() }}";
-
-                $.easyAjax({
-                    type: 'GET',
-                    url: url,
-                    success: function(response) {
-                        if (response.status == "success") {
-                            showTable();
-                        }
+                window.apiHttp.get(url).then(function(response) {
+                    if (response.status == "success") {
+                        showTable();
                     }
+                }).catch(function(err) {
+                    $.handleApiFormError(err);
                 });
             }
         });

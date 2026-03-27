@@ -30,22 +30,21 @@
     $('#save-biolinks').on('click', function() {
         var url = "{{ route('biolinks.store') }}";
 
-        $.easyAjax({
-            url: url,
-            container: '#create-biolinks',
-            type: "POST",
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-biolinks",
-            data: $('#create-biolinks').serialize(),
-            success: function(response) {
+        $.easyBlockUI('#create-biolinks');
+        window.apiHttp.postUrlEncoded(url, $('#create-biolinks').serialize())
+            .then(function(response) {
                 if (response.status == 'success') {
                     let id = response.id;
                     let editUrl = "{{ route('biolinks.edit', ':id') }}";
                     editUrl = editUrl.replace(':id', id);
                     window.location.href = editUrl;
                 }
-            }
-        });
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $.easyUnblockUI('#create-biolinks');
+            });
     });
 </script>

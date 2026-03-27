@@ -111,16 +111,13 @@ $viewLeadPermission = user()->permission('view_deals');
                 agent + '&category_id=' + category_id + '&source_id=' + source_id +' &deal_watcher_id=' + deal_watcher_id + '&lead_agent_id=' + lead_agent_id +
                 '&searchText=' + searchText  + '&min=' + min + '&max=' + max + '&date_filter_on=' + date_filter_on + '&status_id=' + status_id + '&pipeline=' + pipeline+ '&product=' + product;
 
-            $.easyAjax({
-                url: url,
-                container: '#taskboard-columns',
-                type: "GET",
-                success: function(response) {
-                    $('#taskboard-columns').html(response.view);
-                    $("body").tooltip({
-                        selector: '[data-toggle="tooltip"]'
-                    });
-                }
+            window.apiHttp.get(url).then(function(response) {
+                $('#taskboard-columns').html(response.view);
+                $("body").tooltip({
+                    selector: '[data-toggle="tooltip"]'
+                });
+            }).catch(function(err) {
+                $.handleApiFormError(err);
             });
         }
 
@@ -157,25 +154,24 @@ $viewLeadPermission = user()->permission('view_deals');
                 '&searchText=' + searchText + '&columnId=' + columnId + '&currentTotalTasks=' + currentTotalTasks +
                 '&totalTasks=' + totalTasks + '&min=' + min + '&max=' + max + '&date_filter_on=' + date_filter_on + '&pipeline=' + pipeline+ '&product=' + product;
 
-            $.easyAjax({
-                url: url,
-                container: '#drag-container-' + columnId,
-                blockUI: true,
-                type: "GET",
-                success: function(response) {
-                    $('#drag-container-' + columnId).append(response.view);
-                    if (response.load_more == 'show') {
-                        $('#drag-container-' + columnId).closest('.b-p-body').find('.load-more-tasks');
+            $.easyBlockUI('#drag-container-' + columnId);
+            window.apiHttp.get(url).then(function(response) {
+                $('#drag-container-' + columnId).append(response.view);
+                if (response.load_more == 'show') {
+                    $('#drag-container-' + columnId).closest('.b-p-body').find('.load-more-tasks');
 
-                    } else {
-                        $('#drag-container-' + columnId).closest('.b-p-body').find('.load-more-tasks')
-                            .remove();
-                    }
-
-                    $("body").tooltip({
-                        selector: '[data-toggle="tooltip"]'
-                    });
+                } else {
+                    $('#drag-container-' + columnId).closest('.b-p-body').find('.load-more-tasks')
+                        .remove();
                 }
+
+                $("body").tooltip({
+                    selector: '[data-toggle="tooltip"]'
+                });
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI('#drag-container-' + columnId);
             });
 
         });
@@ -237,18 +233,12 @@ $viewLeadPermission = user()->permission('view_deals');
                 buttonsStyling: false
             }).then((result) => {
                 if (result.isConfirmed) {
-                    $.easyAjax({
-                        url: url,
-                        type: 'POST',
-                        data: {
-                            '_token': '{{ csrf_token() }}',
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == 'success') {
-                                window.location.reload();
-                            }
+                    window.apiHttp.delete(url, "{{ csrf_token() }}").then(function(response) {
+                        if (response.status == 'success') {
+                            window.location.reload();
                         }
+                    }).catch(function(err) {
+                        $.handleApiFormError(err);
                     });
                 }
             });
@@ -260,21 +250,19 @@ $viewLeadPermission = user()->permission('view_deals');
             var boardColumnId = $(this).data('column-id');
             var type = $(this).data('type');
 
-            $.easyAjax({
-                url: "{{ route('leadboards.collapse_column') }}",
-                type: 'POST',
-                container: '#taskboard-columns',
-                blockUI: true,
-                data: {
-                    boardColumnId: boardColumnId,
-                    type: type,
-                    '_token': '{{ csrf_token() }}'
-                },
-                success: function(response) {
-                    if (response.status == 'success') {
-                        showTable();
-                    }
+            $.easyBlockUI('#taskboard-columns');
+            window.apiHttp.postUrlEncoded("{{ route('leadboards.collapse_column') }}", $.param({
+                boardColumnId: boardColumnId,
+                type: type,
+                '_token': '{{ csrf_token() }}'
+            })).then(function(response) {
+                if (response.status == 'success') {
+                    showTable();
                 }
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI('#taskboard-columns');
             });
         });
 
@@ -302,20 +290,12 @@ $viewLeadPermission = user()->permission('view_deals');
                     var url = "{{ route('deals.destroy', ':id') }}";
                     url = url.replace(':id', id);
 
-                    var token = "{{ csrf_token() }}";
-
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                window.location.href = "{{ route('leadboards.index')}}";
-                            }
+                    window.apiHttp.delete(url, "{{ csrf_token() }}").then(function(response) {
+                        if (response.status == "success") {
+                            window.location.href = "{{ route('leadboards.index')}}";
                         }
+                    }).catch(function(err) {
+                        $.handleApiFormError(err);
                     });
                 }
             });

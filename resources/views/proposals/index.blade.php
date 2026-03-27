@@ -11,8 +11,7 @@
         <div class="select-box d-flex pr-2 border-right-grey border-right-grey-sm-0">
             <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('app.duration')</p>
             <div class="select-status d-flex">
-                <input type="text" class="position-relative text-dark form-control border-0 p-2 text-left f-14 f-w-500 border-additional-grey"
-                    id="datatableRange" placeholder="@lang('placeholders.dateRange')">
+                <input type="text" class="position-relative text-dark form-control border-0 p-2 text-left f-14 f-w-500 border-additional-grey" id="datatableRange" placeholder="@lang('placeholders.dateRange')">
             </div>
         </div>
         <!-- DATE END -->
@@ -44,8 +43,7 @@
                             <i class="fa fa-search f-13 text-dark-grey"></i>
                         </span>
                     </div>
-                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field"
-                        placeholder="@lang('app.startTyping')">
+                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field" placeholder="@lang('app.startTyping')">
                 </div>
             </form>
         </div>
@@ -66,8 +64,7 @@
                 <label class="f-14 text-dark-grey mb-12 " for="usr">@lang('app.status')</label>
                 <div class="select-filter mb-4">
                     <div class="select-others">
-                        <select class="form-control select-picker" name="status" id="proposal_status" data-live-search="true"
-                            data-container="body" data-size="8">
+                        <select class="form-control select-picker" name="status" id="proposal_status" data-live-search="true" data-container="body" data-size="8">
                             <option value="all">@lang('app.all')</option>
                             <option value="accepted">
                                 @lang('modules.proposal.accepted')</option>
@@ -89,8 +86,8 @@
 @endsection
 
 @php
-$addProposalPermission = user()->permission('add_lead_proposals');
-$addProposalTemplatePermission = user()->permission('manage_proposal_template');
+    $addProposalPermission = user()->permission('add_lead_proposals');
+    $addProposalTemplatePermission = user()->permission('manage_proposal_template');
 @endphp
 
 @section('content')
@@ -105,15 +102,13 @@ $addProposalTemplatePermission = user()->permission('manage_proposal_template');
         <div class="d-block d-lg-flex d-md-flex">
             <div id="table-actions" class="flex-grow-1 align-items-center mb-2 mb-lg-0 mb-md-0">
                 @if ($addProposalPermission == 'all' || $addProposalPermission == 'added')
-                    <x-forms.link-primary :link="route('proposals.create')" class="mr-3 float-left mb-2 mb-lg-0 mb-md-0"
-                        icon="plus">
+                    <x-forms.link-primary :link="route('proposals.create')" class="mr-3 float-left mb-2 mb-lg-0 mb-md-0" icon="plus">
                         @lang('modules.proposal.createProposal')
                     </x-forms.link-primary>
                 @endif
 
-                @if ($addProposalTemplatePermission == 'all'  || $addProposalTemplatePermission == 'added')
-                   <x-forms.link-secondary :link="route('proposal-template.index')"
-                        class="mr-3 mb-2 mb-lg-0 mb-md-0 float-left" icon="layer-group">
+                @if ($addProposalTemplatePermission == 'all' || $addProposalTemplatePermission == 'added')
+                    <x-forms.link-secondary :link="route('proposal-template.index')" class="mr-3 mb-2 mb-lg-0 mb-md-0 float-left" icon="layer-group">
                         @lang('modules.proposal.proposalTemplate')
                     </x-forms.link-secondary>
                 @endif
@@ -132,7 +127,6 @@ $addProposalTemplatePermission = user()->permission('manage_proposal_template');
         <!-- Task Box End -->
     </div>
     <!-- CONTENT WRAPPER END -->
-
 @endsection
 
 @push('scripts')
@@ -144,7 +138,7 @@ $addProposalTemplatePermission = user()->permission('manage_proposal_template');
         clipboard.on('success', function(e) {
             Swal.fire({
                 icon: 'success',
-                text: '@lang("app.copied")',
+                text: '@lang('app.copied')',
                 toast: true,
                 position: 'top-end',
                 timer: 3000,
@@ -249,18 +243,24 @@ $addProposalTemplatePermission = user()->permission('manage_proposal_template');
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                showTable();
-                            }
+                    $.easyBlockUI('#invoices-table');
+                    window.apiHttp.delete(url, token).then(function(response) {
+                        if (response.status == "success") {
+                            showTable();
                         }
+                    }).catch(function(err) {
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                text: err.message,
+                                toast: true,
+                                position: 'top-end',
+                                timer: 4000,
+                                showConfirmButton: false
+                            });
+                        }
+                    }).finally(function() {
+                        $.easyUnblockUI('#invoices-table');
                     });
                 }
             });
@@ -274,20 +274,27 @@ $addProposalTemplatePermission = user()->permission('manage_proposal_template');
 
             var token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                type: 'POST',
-                url: url,
-                container: '#invoices-table',
-                blockUI: true,
-                data: {
-                    '_token': token,
-                    'data_type' : dataType
-                },
-                success: function(response) {
-                    if (response.status == "success") {
-                        window.LaravelDataTables["invoices-table"].draw(true);
-                    }
+            $.easyBlockUI('#invoices-table');
+            window.apiHttp.postUrlEncoded(url, {
+                _token: token,
+                data_type: dataType
+            }).then(function(response) {
+                if (response.status == "success") {
+                    window.LaravelDataTables["invoices-table"].draw(true);
                 }
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $.easyUnblockUI('#invoices-table');
             });
         });
     </script>

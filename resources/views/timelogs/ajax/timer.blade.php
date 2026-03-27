@@ -1,18 +1,16 @@
 @php
-$addTaskPermission = user()->permission('add_tasks');
+    $addTaskPermission = user()->permission('add_tasks');
 @endphp
 <div class="modal-header">
     <h5 class="modal-title" id="modelHeading">@lang('modules.timeLogs.startTimer')</h5>
-    <button type="button"  class="close" data-dismiss="modal" aria-label="Close"><span
-            aria-hidden="true">×</span></button>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
 </div>
 <div class="modal-body">
     <x-form id="startTimerForm">
         <input type="hidden" name="user_id[]" value="{{ user()->id }}">
         <div class="row">
             <div class="col">
-                <x-forms.select fieldId="project_id" fieldName="project_id" :fieldLabel="__('app.project')"
-                                search="true">
+                <x-forms.select fieldId="project_id" fieldName="project_id" :fieldLabel="__('app.project')" search="true">
                     <option value="">--</option>
                     @foreach ($projects as $data)
                         <option value="{{ $data->id }}">
@@ -33,16 +31,14 @@ $addTaskPermission = user()->permission('add_tasks');
                 <div class="col">
                     <div class="form-group">
                         <div class="d-flex mt-3">
-                            <x-forms.checkbox :fieldLabel="__('app.create') . ' ' . __('modules.tasks.newTask')"
-                                fieldName="create_task" fieldId="create_task" />
+                            <x-forms.checkbox :fieldLabel="__('app.create') . ' ' . __('modules.tasks.newTask')" fieldName="create_task" fieldId="create_task" />
                         </div>
                     </div>
                 </div>
             @endif
 
             <div class="col-12">
-                <x-forms.text fieldId="memo" fieldName="memo" :fieldLabel="__('modules.timeLogs.memo')"
-                    fieldRequired="true" />
+                <x-forms.text fieldId="memo" fieldName="memo" :fieldLabel="__('modules.timeLogs.memo')" fieldRequired="true" />
             </div>
         </div>
 
@@ -56,37 +52,45 @@ $addTaskPermission = user()->permission('add_tasks');
 <script>
     $('#start-timer-btn').click(function() {
         var url = "{{ route('timelogs.start_timer') }}";
-        $.easyAjax({
-            url: url,
-            container: '#startTimerForm',
-            type: "POST",
-            blockUI: true,
-            disableButton: true,
-            buttonSelector: "#start-timer-btn",
-            data: $('#startTimerForm').serialize(),
-            success: function(response) {
-                if (response.status == 'success') {
+        var $btn = $('#start-timer-btn');
+        $btn.prop('disabled', true);
+        $.easyBlockUI('#startTimerForm');
+        window.apiHttp.postUrlEncoded(url, $('#startTimerForm').serialize()).then(function(response) {
+            if (response.status == 'success') {
 
-                    if (response.activeTimerCount > 0) {
-                        $('#show-active-timer .active-timer-count').html(response.activeTimerCount);
-                        $('#show-active-timer .active-timer-count').removeClass('d-none');
-                    } else {
-                        $('#show-active-timer .active-timer-count').addClass('d-none');
-                    }
-
-                    $('#timer-clock').html(response.clockHtml);
-
-                    $(MODAL_XL).modal('hide');
+                if (response.activeTimerCount > 0) {
+                    $('#show-active-timer .active-timer-count').html(response.activeTimerCount);
+                    $('#show-active-timer .active-timer-count').removeClass('d-none');
+                } else {
+                    $('#show-active-timer .active-timer-count').addClass('d-none');
                 }
+
+                $('#timer-clock').html(response.clockHtml);
+
+                $(MODAL_XL).modal('hide');
             }
-        })
+        }).catch(function(err) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    text: err.message,
+                    toast: true,
+                    position: 'top-end',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            }
+        }).finally(function() {
+            $btn.prop('disabled', false);
+            $.easyUnblockUI('#startTimerForm');
+        });
     });
 
     $("input[name=create_task]").click(function() {
         $('#task_div').toggleClass('d-none');
     });
 
-    $('#startTimerForm').on('change', '#project_id', function () {
+    $('#startTimerForm').on('change', '#project_id', function() {
         let id = $(this).val();
         if (id === '') {
             id = 0;
@@ -94,20 +98,27 @@ $addTaskPermission = user()->permission('add_tasks');
         let url = "{{ route('projects.pendingTasks', ':id') }}";
         url = url.replace(':id', id);
 
-        $.easyAjax({
-            url: url,
-            container: '#startTimerForm',
-            type: "GET",
-            blockUI: true,
-            success: function (response) {
-                if (response.status == 'success') {
-                    $('#timer_task_id').html(response.data);
-                    $('#timer_task_id').selectpicker('refresh');
-                }
+        $.easyBlockUI('#startTimerForm');
+        window.apiHttp.get(url).then(function(response) {
+            if (response.status == 'success') {
+                $('#timer_task_id').html(response.data);
+                $('#timer_task_id').selectpicker('refresh');
             }
+        }).catch(function(err) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    text: err.message,
+                    toast: true,
+                    position: 'top-end',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            }
+        }).finally(function() {
+            $.easyUnblockUI('#startTimerForm');
         });
     });
 
     init(MODAL_XL);
-
 </script>

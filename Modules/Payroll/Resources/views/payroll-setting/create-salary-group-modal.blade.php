@@ -39,19 +39,14 @@
     $(".select-picker").selectpicker();
     // save source
     $('#save-salary-group').click(function () {
-        $.easyAjax({
-            url: "{{ route('salary-groups.store') }}",
-            container: '#addSalaryGroup',
-            type: "POST",
-            blockUI: true,
-            disableButton: true,
-            buttonSelector: "#save-salary-group",
-            data: $('#addSalaryGroup').serialize(),
-            success: function (response) {
+        window.apiHttp.postUrlEncoded("{{ route('salary-groups.store') }}", $('#addSalaryGroup').serialize())
+            .then(function (response) {
                 if (response.status == "success") {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch(function (err) {
+                $.handleApiFormError(err);
+            });
     });
 </script>

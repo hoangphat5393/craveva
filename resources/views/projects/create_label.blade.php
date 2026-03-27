@@ -118,8 +118,6 @@
         var url = "{{ route('project-label.destroy', ':id') }}";
         url = url.replace(':id', id);
 
-        var token = "{{ csrf_token() }}";
-
         Swal.fire({
             title: "@lang('messages.sweetAlertTitle')",
             text: "@lang('messages.recoverRecord')",
@@ -139,22 +137,19 @@
             buttonsStyling: false
         }).then((result) => {
             if (result.isConfirmed) {
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        'projectId': projectId,
-                        'projectTemplateProjectId': projectTemplateProjectId,
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
-                        if (response.status == 'success') {
-                            $('#label-'+id).remove();
-                            $('#project_labels').html(response.data);
-                            $('#project_labels').selectpicker('refresh');
-                        }
+                window.apiHttp.postUrlEncoded(url, {
+                    projectId: projectId,
+                    projectTemplateProjectId: projectTemplateProjectId,
+                    _token: "{{ csrf_token() }}",
+                    _method: 'DELETE'
+                }).then(function(response) {
+                    if (response.status == 'success') {
+                        $('#label-'+id).remove();
+                        $('#project_labels').html(response.data);
+                        $('#project_labels').selectpicker('refresh');
                     }
+                }).catch(function(err) {
+                    $.handleApiFormError(err);
                 });
             }
         });
@@ -163,19 +158,15 @@
 
     $('#save-label').click(function() {
         var url = "{{ route('project-label.store') }}";
-        $.easyAjax({
-            url: url,
-            container: '#createProjectLabelForm',
-            type: "POST",
-            data: $('#createProjectLabelForm').serialize(),
-            success: function(response) {
-                if (response.status == 'success') {
-                    $('#project_labels').html(response.data);
-                    $(MODAL_XL).modal('hide');
-                    $('#project_labels').selectpicker('refresh');
-                }
+        window.apiHttp.postUrlEncoded(url, $('#createProjectLabelForm').serialize()).then(function(response) {
+            if (response.status == 'success') {
+                $('#project_labels').html(response.data);
+                $(MODAL_XL).modal('hide');
+                $('#project_labels').selectpicker('refresh');
             }
-        })
+        }).catch(function(err) {
+            $.handleApiFormError(err);
+        });
     });
 
     $('[contenteditable=true]').focus(function() {
@@ -189,7 +180,6 @@
             if(id){
                 var url = "{{ route('project-label.update', ':id') }}";
                 url = url.replace(':id', id);
-                var token = "{{ csrf_token() }}";
                 var projectId = "{{ $projectId }}";
                 let selectedLabels = $('#project_labels').val();
 
@@ -198,29 +188,27 @@
                     let labelColor =  $(this).find("td:nth-child(3)").html();
                     let description =  $(this).find("td:nth-child(4)").html();
 
-                    $.easyAjax({
-                        url: url,
-                        container: '#row-' + id,
-                        type: "POST",
-                        data: {
-                            'label_name': labelName,
-                            'color': labelColor,
-                            'description': description,
-                            'parent_project_id': projectId,
-                            '_token': token,
-                            '_method': 'PUT'
-                        },
-                        blockUI: true,
-                        success: function(response) {
-                            if (response.status == 'success') {
-                                $('#project_labels').selectpicker('refresh');
-                                $('#project_labels').html(response.data);
-                                $('#project_labels').val(selectedLabels);
-                                $('#project_labels').selectpicker('refresh');
+                    $.easyBlockUI('#row-' + id);
+                    window.apiHttp.postUrlEncoded(url, {
+                        label_name: labelName,
+                        color: labelColor,
+                        description: description,
+                        parent_project_id: projectId,
+                        _token: "{{ csrf_token() }}",
+                        _method: 'PUT'
+                    }).then(function(response) {
+                        if (response.status == 'success') {
+                            $('#project_labels').selectpicker('refresh');
+                            $('#project_labels').html(response.data);
+                            $('#project_labels').val(selectedLabels);
+                            $('#project_labels').selectpicker('refresh');
 
-                            }
                         }
-                    })
+                    }).catch(function(err) {
+                        $.handleApiFormError(err);
+                    }).finally(function() {
+                        $.easyUnblockUI('#row-' + id);
+                    });
 
                 });
             }
@@ -236,18 +224,16 @@
         }
         let url = "{{ route('project-label.edit', ':id') }}";
         url = url.replace(':id', id);
-        $.easyAjax({
-            url: url,
-            type: "GET",
-            container: '#save-project-data-form',
-            blockUI: true,
-            redirect: true,
-            success: function (data) {
-                $('#project_labels').html(data.data);
-                $('#project_labels').val(selectedLabels);
-                $('#project_labels').selectpicker('refresh');
-            }
-        })
+        $.easyBlockUI('#save-project-data-form');
+        window.apiHttp.get(url).then(function (data) {
+            $('#project_labels').html(data.data);
+            $('#project_labels').val(selectedLabels);
+            $('#project_labels').selectpicker('refresh');
+        }).catch(function(err) {
+            $.handleApiFormError(err);
+        }).finally(function() {
+            $.easyUnblockUI('#save-project-data-form');
+        });
     }
 
 </script>

@@ -5,21 +5,16 @@
         <div class="d-flex">
             <div id="table-actions" class="flex-grow-1 align-items-center">
                 @if ($addPermission == 'all' || $addPermission == 'added')
-                    <x-forms.link-primary link="javascript:;" id="add-files" class="mr-3 float-left" icon="plus"
-                        data-product-id="{{ $product->id }}">
+                    <x-forms.link-primary link="javascript:;" id="add-files" class="mr-3 float-left" icon="plus" data-product-id="{{ $product->id }}">
                         @lang('purchase::modules.product.addImages')
                     </x-forms.link-primary>
                 @endif
             </div>
 
             <div class="btn-group" role="group">
-                <a id="list-tabs" href="javascript:;" onclick="productFilesView('listview')"
-                    class="btn btn-secondary f-14 layout btn-active" data-toggle="tooltip" data-tab-name="listview"
-                    data-original-title="List View"><i class="side-icon bi bi-list-ul"></i></a>
+                <a id="list-tabs" href="javascript:;" onclick="productFilesView('listview')" class="btn btn-secondary f-14 layout btn-active" data-toggle="tooltip" data-tab-name="listview" data-original-title="List View"><i class="side-icon bi bi-list-ul"></i></a>
 
-                <a id="thumbnail" href="javascript:;" onclick="productFilesView('gridview')"
-                    class="btn btn-secondary f-14 layout" data-toggle="tooltip" data-tab-name="gridview"
-                    data-original-title="Grid View"><i class="side-icon bi bi-grid"></i></a>
+                <a id="thumbnail" href="javascript:;" onclick="productFilesView('gridview')" class="btn btn-secondary f-14 layout" data-toggle="tooltip" data-tab-name="gridview" data-original-title="Grid View"><i class="side-icon bi bi-grid"></i></a>
             </div>
         </div>
 
@@ -37,21 +32,18 @@
 
 <script>
     var fileLayout = 'listview';
-    
+
     function productFilesView(layout) {
         $('#layout').html('');
         var productID = "{{ $product->id }}";
         fileLayout = layout;
-        $.easyAjax({
-            type: 'GET',
-            url: "{{ route('purchase_products.layout') }}",
-            disableButton: true,
-            blockUI: true,
-            data: {
-                id: productID,
-                layout: layout
-            },
-            success: function(response) {
+        window.apiHttp.get("{{ route('purchase_products.layout') }}", {
+                params: {
+                    id: productID,
+                    layout: layout
+                }
+            })
+            .then(function(response) {
                 $('#layout').html(response.html);
                 if (layout == 'gridview') {
                     $('#list-tabs').removeClass('btn-active');
@@ -60,8 +52,10 @@
                     $('#list-tabs').addClass('btn-active');
                     $('#thumbnail').removeClass('btn-active');
                 }
-            }
-        });
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            });
     }
 
     $('body').on('click', '.delete-product-file', function() {
@@ -90,21 +84,15 @@
                 url = url.replace(':id', id);
 
                 var token = "{{ csrf_token() }}";
-
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    blockUI: true,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
+                window.apiHttp.delete(url, token)
+                    .then(function(response) {
                         if (response.status == "success") {
                             productFilesView(fileLayout);
                         }
-                    }
-                });
+                    })
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    });
             }
         });
     });

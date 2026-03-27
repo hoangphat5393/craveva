@@ -187,19 +187,21 @@
             var url = "{{ route('employees.by_department', ':id') }}";
             url = url.replace(':id', id);
 
-            $.easyAjax({
-                url: url,
-                container: '#save-objective-form',
-                type: "GET",
-                blockUI: true,
-                data: $('#save-objective-form').serialize(),
-                success: function(response) {
+            var qs = $('#save-objective-form').serialize();
+            $.easyBlockUI('#save-objective-form');
+            window.apiHttp.get(url + (url.indexOf('?') === -1 ? '?' : '&') + qs)
+                .then(function(response) {
                     if (response.status == 'success') {
                         $('#selectAssignee').html(response.data);
                         $('#selectAssignee').selectpicker('refresh');
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#save-objective-form');
+                });
         });
 
         $('#save-objective').click(function() {
@@ -208,21 +210,20 @@
             var data = $('#edit-objective-form').serialize();
 
             if (url) {
-                $.easyAjax({
-                    url: url,
-                    container: '#edit-objective-form',
-                    type: "POST",
-                    disableButton: true,
-                    blockUI: true,
-                    file: true,
-                    data: data,
-                    success: function(response) {
+                $.easyBlockUI('#edit-objective-form');
+                window.apiHttp.postUrlEncoded(url, data)
+                    .then(function(response) {
                         if (response.status == "success") {
                             const redirectUrl = "{{ route('objectives.index') }}";
                             window.location.href = redirectUrl;
                         }
-                    }
-                });
+                    })
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    })
+                    .finally(function() {
+                        $.easyUnblockUI('#edit-objective-form');
+                    });
             }
         });
 

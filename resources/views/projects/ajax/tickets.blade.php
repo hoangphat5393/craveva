@@ -209,20 +209,12 @@
                     var url = "{{ route('tickets.destroy', ':id') }}";
                     url = url.replace(':id', id);
 
-                    var token = "{{ csrf_token() }}";
-
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                showTable();
-                            }
+                    window.apiHttp.delete(url, "{{ csrf_token() }}").then(function(response) {
+                        if (response.status == "success") {
+                            showTable();
                         }
+                    }).catch(function(err) {
+                        $.handleApiFormError(err);
                     });
                 }
             });
@@ -235,19 +227,17 @@
             var status = $(this).val();
 
             if (id != "" && status != "") {
-                $.easyAjax({
-                    url: url,
-                    type: "POST",
-                    container: '.content-wrapper',
-                    blockUI: true,
-                    data: {
-                        '_token': token,
-                        ticketId: id,
-                        status: status,
-                    },
-                    success: function(data) {
-                        showTable();
-                    }
+                $.easyBlockUI('.content-wrapper');
+                window.apiHttp.postUrlEncoded(url, {
+                    _token: token,
+                    ticketId: id,
+                    status: status,
+                }).then(function(data) {
+                    showTable();
+                }).catch(function(err) {
+                    $.handleApiFormError(err);
+                }).finally(function() {
+                    $.easyUnblockUI('.content-wrapper');
                 });
 
             }
@@ -260,22 +250,25 @@
 
             var url = "{{ route('tickets.apply_quick_action') }}?row_ids=" + rowdIds;
 
-            $.easyAjax({
-                url: url,
-                container: '#quick-action-form',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#quick-action-apply",
-                data: $('#quick-action-form').serialize(),
-                success: function(response) {
-                    if (response.status == 'success') {
-                        showTable();
-                        resetActionButtons();
-                        deSelectAll();
-                        $('#quick-action-form').hide();
-                    }
+            var $qaBtn = $('#quick-action-form').find('#quick-action-apply');
+            var qaPrev = $qaBtn.html();
+            $qaBtn.attr('data-prev-text', qaPrev);
+            $qaBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+            $.easyBlockUI('#quick-action-form');
+            window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize()).then(function(response) {
+                if (response.status == 'success') {
+                    showTable();
+                    resetActionButtons();
+                    deSelectAll();
+                    $('#quick-action-form').hide();
                 }
-            })
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI('#quick-action-form');
+                $qaBtn.html($qaBtn.attr('data-prev-text'));
+                $qaBtn.prop('disabled', false);
+            });
         };
 
 </script>

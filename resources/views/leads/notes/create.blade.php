@@ -53,20 +53,22 @@
 
             const url = "{{ route('deal-notes.store') }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#save-lead-note-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-lead-note-form",
-                data: $('#save-lead-note-data-form').serialize(),
-                success: function(response) {
-                    if (response.status == 'success') {
-                        window.location.href = response.redirectUrl;
-                    }
+            var $btn = $('#save-lead-note-data-form').find('#save-lead-note-form');
+            var btnPrev = $btn.html();
+            $btn.attr('data-prev-text', btnPrev);
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+            $.easyBlockUI('#save-lead-note-data-form');
+            window.apiHttp.postUrlEncoded(url, $('#save-lead-note-data-form').serialize()).then(function(response) {
+                if (response.status == 'success') {
+                    window.location.href = response.redirectUrl;
                 }
-            })
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI('#save-lead-note-data-form');
+                $btn.html($btn.attr('data-prev-text'));
+                $btn.prop('disabled', false);
+            });
         });
 
 

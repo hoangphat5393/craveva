@@ -56,13 +56,30 @@
     <script>
 
         $('#save-form').click(function() {
-            $.easyAjax({
-                url: "{{ route('superadmin.front-settings.contact_settings') }}",
-                container: '#editSettings',
-                blockUI: true,
-                type: "POST",
-                data: $('#editSettings').serialize()
-            })
+            $.easyBlockUI('#editSettings');
+            window.apiHttp.postUrlEncoded("{{ route('superadmin.front-settings.contact_settings') }}", $('#editSettings').serialize()).then(function(response) {
+                if (response.status === 'success') {
+                    if (response.action === 'redirect' && response.url) {
+                        window.location.href = response.url;
+                    } else if (typeof response.message !== 'undefined') {
+                        Swal.fire({
+                            icon: 'success',
+                            text: response.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 3000,
+                            timerProgressBar: true,
+                            showConfirmButton: false,
+                            customClass: { confirmButton: 'btn btn-primary' },
+                            showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                        });
+                    }
+                }
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI('#editSettings');
+            });
         });
     </script>
 @endpush

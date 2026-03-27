@@ -91,20 +91,16 @@
                 .innerHTML;
         @endif
 
-        $.easyAjax({
-            url: "{{ route('superadmin.front-settings.features-settings.update', $feature->id) }}",
-            container: '#editFeature',
-            type: "POST",
-            blockUI: true,
-            file: true,
-            data: $('#editFeature').serialize(),
-            success: function(response) {
+        $.easyBlockUI('#editFeature');
+        window.apiHttp.postForm("{{ route('superadmin.front-settings.features-settings.update', $feature->id) }}", document.getElementById('editFeature'))
+            .then(function(response) {
                 if (response.status == "success") {
                     $('#table-view').html(response.html);
                     $(MODAL_LG).modal('hide');
                 }
-            }
-        })
+            })
+            .catch(function (err) { $.handleApiFormError(err); })
+            .finally(function () { $.easyUnblockUI('#editFeature'); });
     });
 
     @if($type == 'icon')

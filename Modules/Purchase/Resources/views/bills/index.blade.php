@@ -9,15 +9,13 @@
 @endphp
 
 @section('filter-section')
-
     <x-filters.filter-box>
 
         <!-- DATE START -->
         <div class="select-box d-flex pr-2 border-right-grey border-right-grey-sm-0">
             <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('app.duration')</p>
             <div class="select-status d-flex">
-                <input type="text" class="position-relative text-dark form-control border-0 p-2 text-left f-14 f-w-500 border-additional-grey"
-                       id="datatableRange" placeholder="@lang('placeholders.dateRange')">
+                <input type="text" class="position-relative text-dark form-control border-0 p-2 text-left f-14 f-w-500 border-additional-grey" id="datatableRange" placeholder="@lang('placeholders.dateRange')">
             </div>
         </div>
         <!-- DATE END -->
@@ -31,8 +29,7 @@
                             <i class="fa fa-search f-13 text-dark-grey"></i>
                         </span>
                     </div>
-                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field"
-                           placeholder="@lang('app.startTyping')">
+                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field" placeholder="@lang('app.startTyping')">
                 </div>
             </form>
         </div>
@@ -52,8 +49,7 @@
                 <label class="f-14 text-dark-grey mb-12 " for="usr">@lang('purchase::app.menu.vendor')</label>
                 <div class="select-filter mb-4">
                     <div class="select-others">
-                        <select class="form-control select-picker" name="vendor_id" id="filter_vendor_id"
-                            data-container="body" data-live-search="true" data-size="8">
+                        <select class="form-control select-picker" name="vendor_id" id="filter_vendor_id" data-container="body" data-live-search="true" data-size="8">
                             <option value="all">@lang('app.all')</option>
                             @foreach ($vendors as $vendor)
                                 <option value="{{ $vendor->id }}">{{ mb_ucwords($vendor->primary_name) }}</option>
@@ -67,8 +63,7 @@
                 <label class="f-14 text-dark-grey mb-12 " for="usr">@lang('app.status')</label>
                 <div class="select-filter mb-4">
                     <div class="select-others">
-                        <select class="form-control select-picker" name="status" id="status" data-live-search="true"
-                            data-container="body" data-size="8">
+                        <select class="form-control select-picker" name="status" id="status" data-live-search="true" data-container="body" data-size="8">
                             <option value="all">@lang('app.all')</option>
                             <option {{ request('status') == 'open' ? 'selected' : '' }} value="open">
                                 @lang('purchase::modules.purchaseOrder.open')</option>
@@ -88,10 +83,8 @@
         <!-- MORE FILTERS END -->
 
     </x-filters.filter-box>
-
 @endsection
 @section('content')
-
     <!-- CONTENT WRAPPER START -->
     <div class="content-wrapper">
         <!-- Add Task Export Buttons Start -->
@@ -132,13 +125,12 @@
         <!-- Task Box End -->
     </div>
     <!-- CONTENT WRAPPER END -->
-
 @endsection
 @push('scripts')
     @include('sections.datatable_js')
 
     <script>
-        $('#purchasebills-table').on('preXhr.dt', function (e, settings, data) {
+        $('#purchasebills-table').on('preXhr.dt', function(e, settings, data) {
             const dateRangePicker = $('#datatableRange').data('daterangepicker');
             let startDate = $('#datatableRange').val();
 
@@ -171,7 +163,7 @@
         }
 
         $('#search-text-field, #date_filter_on, #status, #filter_vendor_id')
-            .on('change keyup', function () {
+            .on('change keyup', function() {
                 if ($('#search-text-field').val() !== "") {
                     $('#reset-filters').removeClass('d-none');
                 } else if ($('#date_filter_on').val() != "start_date") {
@@ -182,14 +174,13 @@
                 } else if ($('#filter_vendor_id').val() != "all") {
                     $('#reset-filters').removeClass('d-none');
                     showTable();
-                }
-                else {
+                } else {
                     $('#reset-filters').addClass('d-none');
                 }
                 showTable();
             });
 
-        $('body').on('click', '#reset-filters', function () {
+        $('body').on('click', '#reset-filters', function() {
             $('#filter-form')[0].reset();
             $('.filter-box #date_filter_on').val('start_date');
             $('.filter-box #status').val('not finished');
@@ -197,7 +188,7 @@
             $('#reset-filters').addClass('d-none');
             showTable();
         });
-        $('body').on('click', '#reset-filters-2', function () {
+        $('body').on('click', '#reset-filters-2', function() {
             $('#filter-form')[0].reset();
             $('.filter-box #date_filter_on').val('start_date');
             $('.filter-box .select-picker').selectpicker("refresh");
@@ -230,21 +221,15 @@
                     url = url.replace(':id', id);
 
                     var token = "{{ csrf_token() }}";
-
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
+                    window.apiHttp.delete(url, token)
+                        .then(function(response) {
                             if (response.status == "success") {
                                 showTable();
                             }
-                        }
-                    });
+                        })
+                        .catch(function(err) {
+                            $.handleApiFormError(err);
+                        });
                 }
             });
         });
@@ -255,22 +240,17 @@
             url = url.replace(':id', id);
 
             var token = "{{ csrf_token() }}";
-
-            $.easyAjax({
-                type: 'POST',
-                url: url,
-                container: '#purchasebills-table',
-                blockUI: true,
-                data: {
-                    '_token': token,
-                },
-                success: function(response) {
+            window.apiHttp.postUrlEncoded(url, {
+                    _token: token
+                })
+                .then(function(response) {
                     if (response.status == "success") {
                         showTable();
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                });
         });
-
     </script>
 @endpush

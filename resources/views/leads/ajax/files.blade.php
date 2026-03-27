@@ -35,25 +35,20 @@ $addLeadFilePermission = user()->permission('add_lead_files');
         $('#layout').html('');
         var leadID = "{{ $deal->id }}";
         fileLayout = layout;
-        $.easyAjax({
-            type: 'GET',
-            url: "{{ route('deal-files.layout') }}",
-            disableButton: true,
-            blockUI: true,
-            data: {
-                id: leadID,
-                layout: layout
-            },
-            success: function(response) {
-                $('#layout').html(response.html);
-                if (layout == 'gridview') {
-                    $('#list-tabs').removeClass('btn-active');
-                    $('#thumbnail').addClass('btn-active');
-                } else {
-                    $('#list-tabs').addClass('btn-active');
-                    $('#thumbnail').removeClass('btn-active');
-                }
+        $.easyBlockUI('body');
+        window.apiHttp.get("{{ route('deal-files.layout') }}", { params: { id: leadID, layout: layout } }).then(function(response) {
+            $('#layout').html(response.html);
+            if (layout == 'gridview') {
+                $('#list-tabs').removeClass('btn-active');
+                $('#thumbnail').addClass('btn-active');
+            } else {
+                $('#list-tabs').addClass('btn-active');
+                $('#thumbnail').removeClass('btn-active');
             }
+        }).catch(function(err) {
+            $.handleApiFormError(err);
+        }).finally(function() {
+            $.easyUnblockUI('body');
         });
     }
 
@@ -82,21 +77,15 @@ $addLeadFilePermission = user()->permission('add_lead_files');
                 var url = "{{ route('deal-files.destroy', ':id') }}";
                 url = url.replace(':id', id);
 
-                var token = "{{ csrf_token() }}";
-
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    blockUI: true,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
-                        if (response.status == "success") {
-                            leadFilesView(fileLayout);
-                        }
+                $.easyBlockUI('body');
+                window.apiHttp.delete(url, "{{ csrf_token() }}").then(function(response) {
+                    if (response.status == "success") {
+                        leadFilesView(fileLayout);
                     }
+                }).catch(function(err) {
+                    $.handleApiFormError(err);
+                }).finally(function() {
+                    $.easyUnblockUI('body');
                 });
             }
         });

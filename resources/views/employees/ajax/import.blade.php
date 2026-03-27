@@ -13,19 +13,14 @@
                     <div class="col-md-12">
                         <x-forms.link-secondary :link="asset('sample-import/employees-sample.xlsx')" icon="download">@lang('app.downloadSampleImport')</x-forms.link-secondary>
 
-                        <x-forms.file :fieldLabel="__('modules.import.file')" fieldName="import_file"
-                                      fieldId="employee_import"/>
+                        <x-forms.file :fieldLabel="__('modules.import.file')" fieldName="import_file" fieldId="employee_import" />
                     </div>
                     <div class="col-md-12">
-                        <x-forms.toggle-switch class="mr-0 mr-lg-12"
-                                               :fieldLabel="__('modules.import.containsHeadings')"
-                                               fieldName="heading"
-                                               fieldId="heading"/>
+                        <x-forms.toggle-switch class="mr-0 mr-lg-12" :fieldLabel="__('modules.import.containsHeadings')" fieldName="heading" fieldId="heading" />
                     </div>
                 </div>
                 <x-form-actions>
-                    <x-forms.button-primary id="import-employee-form" class="mr-3"
-                                            icon="arrow-right">@lang('app.uploadNext')
+                    <x-forms.button-primary id="import-employee-form" class="mr-3" icon="arrow-right">@lang('app.uploadNext')
                     </x-forms.button-primary>
                     <x-forms.button-cancel :link="route('employees.index')" class="border-0">@lang('app.back')
                     </x-forms.button-cancel>
@@ -38,30 +33,36 @@
 </div>
 
 <script>
-
-    $(document).ready(function () {
+    $(document).ready(function() {
 
         $("#employee_import").dropify({
             messages: dropifyMessages
         });
 
-        $('body').on('click', '#import-employee-form', function () {
+        $('body').on('click', '#import-employee-form', function() {
             const url = "{{ route('employees.import.store') }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#import-employee-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#import-employee-form",
-                file: true,
-                data: $('#import-employee-data-form').serialize(),
-                success: function (response) {
-                    if (response.status == 'success') {
-                        $('#import_table').html(response.view);
-                    }
+            var $importBtn = $('#import-employee-form');
+            $importBtn.prop('disabled', true);
+            $.easyBlockUI('#import-employee-data-form');
+            window.apiHttp.postForm(url, document.getElementById('import-employee-data-form')).then(function(response) {
+                if (response.status == 'success') {
+                    $('#import_table').html(response.view);
                 }
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $importBtn.prop('disabled', false);
+                $.easyUnblockUI('#import-employee-data-form');
             });
         });
     });

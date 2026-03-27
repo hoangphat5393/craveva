@@ -272,17 +272,20 @@ $approveRejectPermission = user()->permission('approve_or_reject_leaves');
 
                         var token = "{{ csrf_token() }}";
 
-                        $.easyAjax({
-                            type: 'POST',
-                            url: url,
-                            data: {
-                                '_token': token,
-                                '_method': 'DELETE'
-                            },
-                            success: function(response) {
-                                if (response.status == "success") {
-                                    $('#leave-file-list').html(response.view);
-                                }
+                        window.apiHttp.delete(url, token).then(function(response) {
+                            if (response.status == "success") {
+                                $('#leave-file-list').html(response.view);
+                            }
+                        }).catch(function(err) {
+                            if (typeof Swal !== 'undefined') {
+                                Swal.fire({
+                                    icon: 'error',
+                                    text: err.message,
+                                    toast: true,
+                                    position: 'top-end',
+                                    timer: 4000,
+                                    showConfirmButton: false
+                                });
                             }
                         });
                     }
@@ -294,15 +297,10 @@ $approveRejectPermission = user()->permission('approve_or_reject_leaves');
             const url = "{{ route('leaves.update', $leave->id) }}";
 
             function sendeditAjaxRequest(){
-                $.easyAjax({
-                    url: url,
-                    container: '#save-lead-data-form',
-                    type: "POST",
-                    disableButton: true,
-                    blockUI: true,
-                    buttonSelector: "#save-leave-form",
-                    data: $('#save-lead-data-form').serialize()+ '&markLeave='+markleave,
-                    success: function(response) {
+                var $saveLeave = $('#save-leave-form');
+                $saveLeave.prop('disabled', true);
+                $.easyBlockUI('#save-lead-data-form');
+                window.apiHttp.postUrlEncoded(url, $('#save-lead-data-form').serialize()+ '&markLeave='+markleave).then(function(response) {
 
                         if (response.status == 'success') {
                                 if(leaveDropzone.getQueuedFiles().length > 0) {
@@ -337,7 +335,20 @@ $approveRejectPermission = user()->permission('approve_or_reject_leaves');
                                 }
                             });
                         }
+                }).catch(function(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
                     }
+                }).finally(function() {
+                    $saveLeave.prop('disabled', false);
+                    $.easyUnblockUI('#save-lead-data-form');
                 });
             }
 
@@ -357,16 +368,24 @@ $approveRejectPermission = user()->permission('approve_or_reject_leaves');
             }
             var url = "{{ route('employee-leaves.employee_leave_types', ':id') }}";
             url = url.replace(':id', id);
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                container: '#save-lead-data-form',
-                blockUI: true,
-                success: function(data) {
-                    $('#leave_type_id').html(data.data);
-                    $('#leave_type_id').selectpicker('refresh');
+            $.easyBlockUI('#save-lead-data-form');
+            window.apiHttp.get(url).then(function(data) {
+                $('#leave_type_id').html(data.data);
+                $('#leave_type_id').selectpicker('refresh');
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
                 }
-            })
+            }).finally(function() {
+                $.easyUnblockUI('#save-lead-data-form');
+            });
         });
 
         init(RIGHT_MODAL);

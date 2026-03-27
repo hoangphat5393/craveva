@@ -185,15 +185,12 @@
 
             const url = "{{ route('superadmin.support-tickets.store') }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#save-ticket-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-ticket-form",
-                data: $('#save-ticket-data-form').serialize(),
-                success: function (response) {
+            const $st = $('#save-ticket-form');
+            const stPrev = $st.html();
+            $.easyBlockUI('#save-ticket-data-form');
+            $st.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+            window.apiHttp.postUrlEncoded(url, $('#save-ticket-data-form').serialize())
+                .then(function (response) {
                     if (response.status == 'success') {
                         if (taskDropzone.getQueuedFiles().length > 0) {
                             $('#replyID').val(response.replyID);
@@ -203,8 +200,12 @@
                         }
                     }
 
-                }
-            });
+                })
+                .catch(function (err) { $.handleApiFormError(err); })
+                .finally(function () {
+                    $.easyUnblockUI('#save-ticket-data-form');
+                    $st.prop('disabled', false).html(stPrev);
+                });
         });
 
         $('.toggle-other-details').click(function () {

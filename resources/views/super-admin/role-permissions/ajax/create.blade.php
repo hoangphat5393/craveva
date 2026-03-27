@@ -95,14 +95,11 @@
             buttonsStyling: false
             }).then((result) => {
                 if (result.isConfirmed) {
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
+                    window.apiHttp.postUrlEncoded(url, {
                             '_token': token,
                             'roleId': id
-                        },
-                        success: function(response) {
+                        })
+                        .then(function(response) {
                             if (response.status == "success") {
                                 $('#cat-' + id).fadeOut();
                                 var options = [];
@@ -123,8 +120,8 @@
                                 $('#sub_category_id').html('<option value="">--</option>');
                                 $('#sub_category_id').selectpicker('refresh');
                             }
-                        }
-                    });
+                        })
+                        .catch(function (err) { $.handleApiFormError(err); });
                 }
             });
         }
@@ -153,17 +150,13 @@
 
     $('#save-category').click(function() {
         var url = "{{ route('superadmin.settings.superadmin-permissions.store_role') }}";
-        $.easyAjax({
-            url: url,
-            container: '#createProjectCategory',
-            type: "POST",
-            data: $('#createProjectCategory').serialize(),
-            success: function(response) {
+        window.apiHttp.postUrlEncoded(url, $('#createProjectCategory').serialize())
+            .then(function(response) {
                 if (response.status == 'success') {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch(function (err) { $.handleApiFormError(err); });
     });
 
     $('[contenteditable=true]').focus(function() {
@@ -182,17 +175,13 @@
 
             var token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#cat-' + id,
-                type: "POST",
-                data: {
+            $.easyBlockUI('#cat-' + id);
+            window.apiHttp.postUrlEncoded(url, {
                     'role_name': value,
                     '_token': token,
                     '_method': 'PUT'
-                },
-                blockUI: true,
-                success: function(response) {
+                })
+                .then(function(response) {
                     if (response.status == 'success') {
                         var options = [];
                         var rData = [];
@@ -213,8 +202,9 @@
                     else{
                         $('#cat-' + id).find("td:eq(1)").addClass("edit-error");
                     }
-                }
-            })
+                })
+                .catch(function (err) { $.handleApiFormError(err); })
+                .finally(function () { $.easyUnblockUI('#cat-' + id); });
         }
     });
 

@@ -338,42 +338,48 @@
 
             const url = "{{ route('sub-tasks.store') }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#save-subtask-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-subtask",
-                data: $('#save-subtask-data-form').serialize(),
-                success: function(response) {
-                    if (response.status == 'success') {
-                        if (taskDropzone.getQueuedFiles().length > 0) {
-                            subTaskID = response.subTaskID;
-                            $('#subTaskID').val(response.subTaskID);
-                            taskDropzone.processQueue();
-                        } else if ($(RIGHT_MODAL).hasClass('in')) {
-                            // document.getElementById('close-task-detail').click();
-                            // if ($('#allTasks-table').length) {
-                            // window.LaravelDataTables["allTasks-table"].draw(true);
-                            // window.location.reload();
-                            // } else {
-                            // window.location.href = response.redirectUrl;
-                            // }
-
-                            $('#sub-task-list').html(response.view);
-                            $form = $('#save-subtask-data-form');
-                            $form.removeClass('d-none');
-                            $form[0].reset();
-                            $form.find('.select-picker').val('').selectpicker('refresh');
-                            $form.find('.is-invalid').removeClass('is-invalid');
-                            $form.find('.invalid-feedback, .text-danger').remove();
-                        } else {
-                            window.location.reload();
-                            // window.location.href = response.redirectUrl;
-                        }
+            var $saveBtn = $('#save-subtask-data-form').find('#save-subtask');
+            var savePrev = $saveBtn.html();
+            $saveBtn.attr('data-prev-text', savePrev);
+            $saveBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+            $.easyBlockUI('#save-subtask-data-form');
+            window.apiHttp.postUrlEncoded(url, $('#save-subtask-data-form').serialize()).then(function(response) {
+                if (response.status == 'success') {
+                    if (typeof response.message !== 'undefined' && response.message) {
+                        Swal.fire({
+                            icon: 'success',
+                            text: response.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 3000,
+                            timerProgressBar: true,
+                            showConfirmButton: false,
+                            customClass: { confirmButton: 'btn btn-primary' },
+                            showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                        });
+                    }
+                    if (taskDropzone.getQueuedFiles().length > 0) {
+                        subTaskID = response.subTaskID;
+                        $('#subTaskID').val(response.subTaskID);
+                        taskDropzone.processQueue();
+                    } else if ($(RIGHT_MODAL).hasClass('in')) {
+                        $('#sub-task-list').html(response.view);
+                        $form = $('#save-subtask-data-form');
+                        $form.removeClass('d-none');
+                        $form[0].reset();
+                        $form.find('.select-picker').val('').selectpicker('refresh');
+                        $form.find('.is-invalid').removeClass('is-invalid');
+                        $form.find('.invalid-feedback, .text-danger').remove();
+                    } else {
+                        window.location.reload();
                     }
                 }
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI('#save-subtask-data-form');
+                $saveBtn.html($saveBtn.attr('data-prev-text'));
+                $saveBtn.prop('disabled', false);
             });
         });
 
@@ -407,20 +413,25 @@
                     var url = "{{ route('sub-task-files.destroy', ':id') }}";
                     url = url.replace(':id', id);
 
-                    var token = "{{ csrf_token() }}";
-
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                $('.subTask' + id).remove();
+                    window.apiHttp.delete(url, "{{ csrf_token() }}").then(function(response) {
+                        if (response.status == "success") {
+                            if (typeof response.message !== 'undefined' && response.message) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    text: response.message,
+                                    toast: true,
+                                    position: 'top-end',
+                                    timer: 3000,
+                                    timerProgressBar: true,
+                                    showConfirmButton: false,
+                                    customClass: { confirmButton: 'btn btn-primary' },
+                                    showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                                });
                             }
+                            $('.subTask' + id).remove();
                         }
+                    }).catch(function(err) {
+                        $.handleApiFormError(err);
                     });
                 }
             });

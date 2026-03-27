@@ -115,8 +115,6 @@ $isClient = in_array('client', user_roles()) ? true : null;
         var url = "{{ route('project-members.destroy', ':id') }}";
         url = url.replace(':id', id);
 
-        var token = "{{ csrf_token() }}";
-
         Swal.fire({
             title: "@lang('messages.sweetAlertTitle')",
             text: "@lang('messages.recoverRecord')",
@@ -136,18 +134,12 @@ $isClient = in_array('client', user_roles()) ? true : null;
             buttonsStyling: false
         }).then((result) => {
             if (result.isConfirmed) {
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
-                        if (response.status == "success") {
-                            $('#row-' + id).fadeOut();
-                        }
+                window.apiHttp.delete(url, "{{ csrf_token() }}").then(function(response) {
+                    if (response.status == "success") {
+                        $('#row-' + id).fadeOut();
                     }
+                }).catch(function(err) {
+                    $.handleApiFormError(err);
                 });
             }
         });
@@ -162,18 +154,15 @@ $isClient = in_array('client', user_roles()) ? true : null;
         var url = "{{ route('project-members.update', ':id') }}";
         url = url.replace(':id', id);
 
-        var token = "{{ csrf_token() }}";
-
-        $.easyAjax({
-            url: url,
-            container: '#row-' + id,
-            type: "POST",
-            blockUI: true,
-            data: {
-                'hourly_rate': value,
-                '_token': token,
-                '_method': 'PUT'
-            }
+        $.easyBlockUI('#row-' + id);
+        window.apiHttp.postUrlEncoded(url, {
+            hourly_rate: value,
+            _token: "{{ csrf_token() }}",
+            _method: 'PUT'
+        }).catch(function(err) {
+            $.handleApiFormError(err);
+        }).finally(function() {
+            $.easyUnblockUI('#row-' + id);
         });
     });
 
@@ -181,44 +170,36 @@ $isClient = in_array('client', user_roles()) ? true : null;
     $('body').on('click', '.assign_role', function() {
         var userId = $(this).data('user-id');
         var projectId = '{{ $project->id }}';
-        var token = "{{ csrf_token() }}";
-
-        $.easyAjax({
-            url: "{{ route('projects.assign_project_admin') }}",
-            type: "POST",
-            data: {
-                userId: userId,
-                projectId: projectId,
-                _token: token
-            },
-            blockUI: true,
-            container: '.admin-dash-table',
-            success: function(response) {
-                if (response.status == "success") {
-                    window.location.reload();
-                }
+        $.easyBlockUI('.admin-dash-table');
+        window.apiHttp.postUrlEncoded("{{ route('projects.assign_project_admin') }}", {
+            userId: userId,
+            projectId: projectId,
+            _token: "{{ csrf_token() }}"
+        }).then(function(response) {
+            if (response.status == "success") {
+                window.location.reload();
             }
+        }).catch(function(err) {
+            $.handleApiFormError(err);
+        }).finally(function() {
+            $.easyUnblockUI('.admin-dash-table');
         });
     });
 
     $('body').on('click', '.remove-admin', function() {
         var userId = null;
         var projectId = '{{ $project->id }}';
-        var token = "{{ csrf_token() }}";
 
-        $.easyAjax({
-            url: "{{ route('projects.assign_project_admin') }}",
-            type: "POST",
-            data: {
-                userId: userId,
-                projectId: projectId,
-                _token: token
-            },
-            success: function(response) {
-                if (response.status == "success") {
-                    window.location.reload();
-                }
+        window.apiHttp.postUrlEncoded("{{ route('projects.assign_project_admin') }}", {
+            userId: userId,
+            projectId: projectId,
+            _token: "{{ csrf_token() }}"
+        }).then(function(response) {
+            if (response.status == "success") {
+                window.location.reload();
             }
+        }).catch(function(err) {
+            $.handleApiFormError(err);
         });
 
     });

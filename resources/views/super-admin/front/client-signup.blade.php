@@ -100,18 +100,21 @@
 
                             const url = "{{ route('front.client-register', $company->hash) }}";
 
-                            $.easyAjax({
-                                url: url,
-                                container: '.login_box',
-                                disableButton: true,
-                                buttonSelector: "#submit-register",
-                                type: "POST",
-                                blockUI: true,
-                                data: $('#login-form').serialize(),
-                                success: function (response) {
-                                    window.location.href = "{{ route('dashboard') }}";
-                                }
-                            })
+                            const $regBtn = $('#submit-register');
+                            const regPrev = $regBtn.html();
+                            $.easyBlockUI('.login_box');
+                            $regBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+                            window.apiHttp.postUrlEncoded(url, $('#login-form').serialize())
+                                .then(function (response) {
+                                    if (response.status === 'success') {
+                                        window.location.href = "{{ route('dashboard') }}";
+                                    }
+                                })
+                                .catch(function (err) { $.handleApiFormError(err); })
+                                .finally(function () {
+                                    $.easyUnblockUI('.login_box');
+                                    $regBtn.prop('disabled', false).html(regPrev);
+                                });
                         });
 
                         @if (session('message'))

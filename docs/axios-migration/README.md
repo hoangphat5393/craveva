@@ -20,6 +20,22 @@ This folder tracks **per-module** migration from `$.easyAjax` (see `public/vendo
 - **Errors**: `catch` receives a normalized `Error` with `status`, `errors` (validation map when present), `payload` (raw body when JSON).
 - **UI blocking**: keep `$.easyBlockUI` / `$.easyUnblockUI` where already used until a shared non-jQuery overlay exists.
 
+### After full migration: shorter, DRY code (future phase)
+
+Do **not** start this during active migration waves — wait until `resources/views/**` has no `$.easyAjax`, builds are green, and key flows are smoke-tested. Then you can reduce repetition without risking behavior drift.
+
+| Direction                | Idea                                                                                                                                                                                                                         |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **One-line errors**      | Add a tiny global helper, e.g. `showApiToastError(err)`, that wraps the normalized `Error` from `apiHttp` + Swal toast (same options as today). Use it in `.catch` instead of pasting the same `Swal.fire` block everywhere. |
+| **Block UI + request**   | Wrap `apiHttp` + `$.easyBlockUI` / `$.easyUnblockUI` in a helper, e.g. `withBlockUI(selector, () => apiHttp.postUrlEncoded(...))`, so `try/finally` always unblocks.                                                         |
+| **Validation on modals** | Standardize on `$.handleApiFormError` (or extend it once) for 422 + `$.showErrors`, instead of duplicating `catch` branches per Blade file.                                                                                  |
+| **Leave inline scripts** | Move repeated patterns into `resources/js/**` (imported from `main.js` or a small `http/ui.js` module), use `async/await` for readability — Blade only passes route URLs and selectors.                                      |
+| **Interceptors**         | Use sparingly: only for truly global behavior (e.g. session expiry redirect). Keep per-page `catch` when UX differs (modal vs toast vs redirect).                                                                            |
+| **Overlay**              | Later, replace jQuery block UI with a single overlay component or CSS-only loading state if you reduce jQuery dependency.                                                                                                    |
+| **Guardrails**           | Add an ESLint rule or a VS Code snippet for the approved `apiHttp` + block + catch pattern so new code stays short _and_ consistent.                                                                                         |
+
+**Avoid:** rebuilding a second “god” helper that hides all behavior like legacy `easyAjax` — keep wrappers **thin** and composable.
+
 ### Safe refactor rules
 
 1. Change **only** the module (or view) in scope; do not rewrite `helper.js` globally in the same pass.
@@ -59,4 +75,40 @@ Work these **before** optional nwidart modules (Sms, Letter, QRCode pilot, …):
 
 Secondary / later waves: remaining `Modules/*`, super-admin-only views, integrations — lower priority than the table above unless blocking.
 
-Latest secondary wave completed: **Purchase vendors** (`Modules/Purchase/Resources/views/vendors/**`) — see [vendor.md](./vendor.md).
+Latest core waves completed:
+
+- **Tasks** (`resources/views/tasks/**`) — migrated to `window.apiHttp`
+- **Projects** (`resources/views/projects/**`) — migrated to `window.apiHttp`
+- **Project templates** (`resources/views/project-templates/**`) — migrated to `window.apiHttp`
+- **Leads** (`resources/views/leads/**`) — see [leads.md](./leads.md)
+- **Tickets** (`resources/views/tickets/**`) — see [tickets.md](./tickets.md)
+- **Event calendar** (`resources/views/event-calendar/**`) — see [event-calendar.md](./event-calendar.md)
+- **Super-admin** (`resources/views/super-admin/**`) — see [super-admin.md](./super-admin.md)
+
+Latest secondary waves completed:
+
+- **Purchase vendors** (`Modules/Purchase/Resources/views/vendors/**`) — see [vendor.md](./vendor.md)
+- **Sms** (`Modules/Sms/Resources/views/**`) — see [sms.md](./sms.md)
+- **EInvoice** (`Modules/EInvoice/Resources/views/**`) — see [einvoice.md](./einvoice.md)
+- **LanguagePack** (`Modules/LanguagePack/Resources/views/**`) — see [languagepack.md](./languagepack.md)
+- **Subdomain** (`Modules/Subdomain/Resources/views/**`) — see [subdomain.md](./subdomain.md)
+- **Policy** (`Modules/Policy/Resources/views/**`) — see [policy.md](./policy.md)
+- **Webhooks** (`Modules/Webhooks/Resources/views/**`) — see [webhooks.md](./webhooks.md)
+- **Asset** (`Modules/Asset/Resources/views/**`) — see [asset.md](./asset.md)
+- **Biometric** (`Modules/Biometric/Resources/views/**`) — see [biometric.md](./biometric.md)
+- **Affiliate** (`Modules/Affiliate/Resources/views/**`) — see [affiliate.md](./affiliate.md)
+- **Pricing** (`Modules/Pricing/Resources/views/**`) — see [pricing.md](./pricing.md)
+- **CyberSecurity** (`Modules/CyberSecurity/Resources/views/**`) — see [cybersecurity.md](./cybersecurity.md)
+- **ServerManager** (`Modules/ServerManager/Resources/views/**`) — see [servermanager.md](./servermanager.md)
+- **Zoom** (`Modules/Zoom/Resources/views/**`) — see [zoom.md](./zoom.md)
+- **Onboarding** (`Modules/Onboarding/Resources/views/**`) — see [onboarding.md](./onboarding.md)
+- **Letter** (`Modules/Letter/Resources/views/**`) — see [letter.md](./letter.md)
+- **ProjectRoadmap** (`Modules/ProjectRoadmap/Resources/views/**`) — see [projectroadmap.md](./projectroadmap.md)
+- **Biolinks** (`Modules/Biolinks/Resources/views/**`) — see [biolinks.md](./biolinks.md)
+- **Performance** (`Modules/Performance/Resources/views/**`) — see [performance.md](./performance.md)
+  Latest completed waves:
+
+- **Finance core** (`resources/views/invoices/**`, `estimates/**`, `proposals/**`, `credit-notes/**`, `expenses/**`) — completed, see [finance-core.md](./finance-core.md)
+- **HR / attendance / leave** (`resources/views/employees/**`, `attendances/**`, `timelogs/**`, `leaves/**`, `weekly-timesheets/**`) — completed, see [hr-attendance-leave.md](./hr-attendance-leave.md)
+- **Payroll** (`Modules/Payroll/Resources/views/**`) — completed, see [payroll.md](./payroll.md)
+- **Recruit** (`Modules/Recruit/Resources/views/**`) — completed, see [recruit.md](./recruit.md)

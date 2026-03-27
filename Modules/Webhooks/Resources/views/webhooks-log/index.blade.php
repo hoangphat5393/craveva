@@ -149,21 +149,12 @@
                 if (result.isConfirmed) {
                     var url = "{{ route('webhooks-log.destroy', ':id') }}";
                     url = url.replace(':id', id);
-                    var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                showTable();
-                            }
+                    window.apiHttp.delete(url, "{{ csrf_token() }}").then(function(response) {
+                        if (response.status == "success") {
+                            showTable();
                         }
-                    });
+                    }).catch(function(err) { $.handleApiFormError(err); });
                 }
             });
         });
@@ -179,22 +170,14 @@
 
             var url = "{{ route('webhooks-log.apply_quick_action') }}?row_ids=" + rowIds.join(',');
 
-            $.easyAjax({
-                url: url,
-                container: '#quick-action-form',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#quick-action-apply",
-                data: $('#quick-action-form').serialize(),
-                success: function(response) {
-                    if (response.status == 'success') {
-                        showTable();
-                        if (typeof resetActionButtons === 'function') resetActionButtons();
-                        if (typeof deSelectAll === 'function') deSelectAll();
-                        $('#quick-action-form').hide();
-                    }
+            window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize()).then(function(response) {
+                if (response.status == 'success') {
+                    showTable();
+                    if (typeof resetActionButtons === 'function') resetActionButtons();
+                    if (typeof deSelectAll === 'function') deSelectAll();
+                    $('#quick-action-form').hide();
                 }
-            });
+            }).catch(function(err) { $.handleApiFormError(err); });
         };
 
         // Copy button for webhook log detail (works in modal)

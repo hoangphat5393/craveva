@@ -186,19 +186,15 @@
 
                 var url = "{{ route('pricing.client_pricing.apply_quick_action') }}?row_ids=" + rowdIds;
 
-                $.easyAjax({
-                    url: url,
-                    container: '#quick-action-form',
-                    type: "POST",
-                    disableButton: true,
-                    buttonSelector: "#quick-action-apply",
-                    data: $('#quick-action-form').serialize(),
-                    success: function(response) {
+                window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize())
+                    .then(function(response) {
                         if (response.status == 'success') {
                             window.location.reload();
                         }
-                    }
-                })
+                    })
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    })
             };
 
             $('#quick-action-apply').click(function() {
@@ -238,20 +234,19 @@
             var url = "{{ route('pricing.client_pricing.change_status') }}";
             var token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                url: url,
-                type: "POST",
-                data: {
-                    '_token': token,
-                    'id': id,
-                    'status': status
-                },
-                success: function(response) {
+            window.apiHttp.postUrlEncoded(url, {
+                '_token': token,
+                'id': id,
+                'status': status
+            })
+                .then(function(response) {
                     if (response.status == "success") {
-                        // Nothing to do, toast already shown by easyAjax
+                        // Nothing to do, toast already shown
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                });
         });
 
         $('body').on('click', '.delete-client-pricing', function() {
@@ -280,19 +275,15 @@
                 buttonsStyling: false
             }).then((result) => {
                 if (result.isConfirmed) {
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
+                    window.apiHttp.delete(url, token)
+                        .then(function(response) {
                             if (response.status == 'success') {
                                 $('#row-' + id).fadeOut();
                             }
-                        }
-                    });
+                        })
+                        .catch(function(err) {
+                            $.handleApiFormError(err);
+                        });
                 }
             });
         });

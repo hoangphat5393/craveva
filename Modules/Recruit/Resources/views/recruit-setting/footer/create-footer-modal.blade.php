@@ -16,33 +16,25 @@
         <x-form id="createMethods" method="POST" class="ajax-form">
             <div class="row">
                 <div class="col-md-4">
-                    <x-forms.text fieldId="title" :fieldLabel="__('recruit::modules.footerlinks.linktitle')"
-                                  fieldName="title" fieldRequired="true"
-                                  :fieldPlaceholder="__('recruit::modules.footerlinks.linktitle')">
+                    <x-forms.text fieldId="title" :fieldLabel="__('recruit::modules.footerlinks.linktitle')" fieldName="title" fieldRequired="true" :fieldPlaceholder="__('recruit::modules.footerlinks.linktitle')">
                     </x-forms.text>
                 </div>
                 <div class="col-md-4">
-                    <x-forms.text fieldId="slug" :fieldLabel="__('recruit::modules.footerlinks.slug')"
-                                  fieldName="slug" fieldRequired="true"
-                                  :fieldPlaceholder="__('recruit::modules.footerlinks.slug')">
+                    <x-forms.text fieldId="slug" :fieldLabel="__('recruit::modules.footerlinks.slug')" fieldName="slug" fieldRequired="true" :fieldPlaceholder="__('recruit::modules.footerlinks.slug')">
                     </x-forms.text>
                 </div>
 
                 <div class="col-md-4">
-                    <x-forms.select fieldId="status" :fieldLabel="__('app.status')" fieldName="status"
-                                    search="true">
-                        <option value="active"
-                                data-content="<i class='fa fa-circle mr-2 green-dot'></i> @lang('app.active')"></option>
-                        <option value="inactive"
-                                data-content="<i class='fa fa-circle mr-2 red-dot'></i> @lang('app.inactive')"></option>
+                    <x-forms.select fieldId="status" :fieldLabel="__('app.status')" fieldName="status" search="true">
+                        <option value="active" data-content="<i class='fa fa-circle mr-2 green-dot'></i> @lang('app.active')"></option>
+                        <option value="inactive" data-content="<i class='fa fa-circle mr-2 red-dot'></i> @lang('app.inactive')"></option>
                     </x-forms.select>
                 </div>
 
 
                 <div class="col-md-12">
                     <div class="form-group my-3">
-                        <x-forms.label class="my-3" fieldId="description"
-                                       :fieldLabel="__('recruit::modules.footerlinks.description')">
+                        <x-forms.label class="my-3" fieldId="description" :fieldLabel="__('recruit::modules.footerlinks.description')">
                         </x-forms.label>
                         <div id="job_description"></div>
                         <textarea name="description" id="description-text" class="d-none"></textarea>
@@ -61,25 +53,22 @@
     $(".select-picker").selectpicker();
 
     // save recruiter
-    $('body').off('click', "#save-footer").on('click', '#save-footer', function () {
+    $('body').off('click', "#save-footer").on('click', '#save-footer', function() {
         var jobDescription = document.getElementById('job_description').children[0].innerHTML;
         document.getElementById('description-text').value = jobDescription;
 
-        $.easyAjax({
-            url: "{{ route('footer-settings.store') }}",
-            container: '#createMethods',
-            type: "POST",
-            blockUI: true,
-            data: $('#createMethods').serialize(),
-            success: function (response) {
-                if (response.status == "success") {
+        window.apiHttp.postUrlEncoded("{{ route('footer-settings.store') }}", $('#createMethods').serialize())
+            .then(function(response) {
+                if (response.data.status == "success") {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            });
     });
 
-    $(document).ready(function () {
+    $(document).ready(function() {
 
         function createSlug(value) {
             value = value.replace(/\s\s+/g, ' ');
@@ -88,11 +77,11 @@
             $('#slug').val(slug);
         }
 
-        $('#title').keyup(function (e) {
+        $('#title').keyup(function(e) {
             createSlug($(this).val());
         });
 
-        $('#slug').keyup(function (e) {
+        $('#slug').keyup(function(e) {
             createSlug($(this).val());
         });
 

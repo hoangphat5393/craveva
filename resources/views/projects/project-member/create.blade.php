@@ -71,36 +71,38 @@
 
     $('#save-project-member').click(function() {
         var url = "{{ route('project-members.store') }}";
-        $.easyAjax({
-            url: url,
-            container: '#addProjectMemberForm',
-            type: "POST",
-            blockUI: true,
-            disableButton: true,
-            buttonSelector: "#save-project-member",
-            data: $('#addProjectMemberForm').serialize(),
-            success: function(response) {
-                if (response.status == 'success') {
-                    window.location.reload();
-                }
+        var $btn = $('#save-project-member');
+        var prev = $btn.html();
+        $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+        $.easyBlockUI('#addProjectMemberForm');
+        window.apiHttp.postUrlEncoded(url, $('#addProjectMemberForm').serialize()).then(function(response) {
+            if (response.status == 'success') {
+                window.location.reload();
             }
-        })
+        }).catch(function(err) {
+            $.handleApiFormError(err);
+        }).finally(function() {
+            $.easyUnblockUI('#addProjectMemberForm');
+            $btn.prop('disabled', false).html(prev);
+        });
     });
 
     $('#save-project-department').click(function() {
         var url = "{{ route('project-members.store_group') }}";
-        $.easyAjax({
-            url: url,
-            container: '#addProjectMemberForm',
-            blockUI: true,
-            type: "POST",
-            data: $('#addProjectMemberForm').serialize(),
-            success: function(response) {
-                if (response.status == 'success') {
-                    window.location.reload();
-                }
+        var $btn = $('#save-project-department');
+        var prev = $btn.html();
+        $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+        $.easyBlockUI('#addProjectMemberForm');
+        window.apiHttp.postUrlEncoded(url, $('#addProjectMemberForm').serialize()).then(function(response) {
+            if (response.status == 'success') {
+                window.location.reload();
             }
-        })
+        }).catch(function(err) {
+            $.handleApiFormError(err);
+        }).finally(function() {
+            $.easyUnblockUI('#addProjectMemberForm');
+            $btn.prop('disabled', false).html(prev);
+        });
     });
 
     $("#addProjectMemberForm .multiple-users").selectpicker({

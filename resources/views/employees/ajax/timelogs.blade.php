@@ -1,5 +1,5 @@
 @php
-$addTimelogPermission = user()->permission('add_timelogs');
+    $addTimelogPermission = user()->permission('add_timelogs');
 @endphp
 
 <!-- ROW START -->
@@ -11,8 +11,7 @@ $addTimelogPermission = user()->permission('add_timelogs');
                 <!-- STATUS START -->
                 <div class="select-box py-2 px-0 mr-3">
                     <x-forms.label :fieldLabel="__('app.status')" fieldId="status" />
-                    <select class="form-control select-picker" name="status" id="status" data-live-search="true"
-                        data-size="8">
+                    <select class="form-control select-picker" name="status" id="status" data-live-search="true" data-size="8">
                         <option value="all">@lang('app.all')</option>
                         <option value="1">@lang('app.approved')</option>
                         <option value="0">@lang('app.pending')</option>
@@ -23,8 +22,7 @@ $addTimelogPermission = user()->permission('add_timelogs');
                 <!-- STATUS START -->
                 <div class="select-box py-2 px-0 mr-3">
                     <x-forms.label :fieldLabel="__('app.invoiceGenerate')" fieldId="leave_type" />
-                    <select class="form-control select-picker" name="invoice_generate" id="invoice_generate"
-                        data-live-search="true" data-size="8">
+                    <select class="form-control select-picker" name="invoice_generate" id="invoice_generate" data-live-search="true" data-size="8">
                         <option value="all">@lang('app.all')</option>
                         <option value="1">@lang('app.yes')</option>
                         <option value="0">@lang('app.no')</option>
@@ -41,8 +39,7 @@ $addTimelogPermission = user()->permission('add_timelogs');
                                 <i class="fa fa-search f-13 text-dark-grey"></i>
                             </span>
                         </div>
-                        <input type="text" class="form-control f-14 p-1 height-35 border" id="search-text-field"
-                            placeholder="@lang('app.startTyping')">
+                        <input type="text" class="form-control f-14 p-1 height-35 border" id="search-text-field" placeholder="@lang('app.startTyping')">
                     </div>
                 </div>
                 <!-- SEARCH BY TASK END -->
@@ -61,8 +58,7 @@ $addTimelogPermission = user()->permission('add_timelogs');
         <div class="d-flex justify-content-between action-bar">
             <div id="table-actions" class="align-items-center">
                 @if ($addTimelogPermission == 'all' || $addTimelogPermission == 'added')
-                    <x-forms.link-primary :link="route('timelogs.create').'?default_assign='.$employee->id"
-                        class="mr-3 openRightModal float-left" icon="plus">
+                    <x-forms.link-primary :link="route('timelogs.create') . '?default_assign=' . $employee->id" class="mr-3 openRightModal float-left" icon="plus">
                         @lang('modules.timeLogs.logTime')
                     </x-forms.link-primary>
                 @endif
@@ -219,19 +215,24 @@ $addTimelogPermission = user()->permission('add_timelogs');
 
                 var token = "{{ csrf_token() }}";
 
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    blockUI: true,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
-                        if (response.status == "success") {
-                            showTable();
-                        }
+                $.easyBlockUI();
+                window.apiHttp.delete(url, token).then(function(response) {
+                    if (response.status == "success") {
+                        showTable();
                     }
+                }).catch(function(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
+                    }
+                }).finally(function() {
+                    $.easyUnblockUI();
                 });
             }
         });
@@ -242,17 +243,23 @@ $addTimelogPermission = user()->permission('add_timelogs');
         var url = "{{ route('timelogs.stop_timer', ':id') }}";
         url = url.replace(':id', id);
         var token = '{{ csrf_token() }}';
-        $.easyAjax({
-            url: url,
-            type: "POST",
-            data: {
-                timeId: id,
-                _token: token
-            },
-            success: function(data) {
-                showTable();
+        window.apiHttp.postUrlEncoded(url, {
+            timeId: id,
+            _token: token
+        }).then(function() {
+            showTable();
+        }).catch(function(err) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    text: err.message,
+                    toast: true,
+                    position: 'top-end',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
             }
-        })
+        });
 
     });
 
@@ -261,17 +268,23 @@ $addTimelogPermission = user()->permission('add_timelogs');
         var url = "{{ route('timelogs.approve_timelog', ':id') }}";
         url = url.replace(':id', id);
         var token = '{{ csrf_token() }}';
-        $.easyAjax({
-            url: url,
-            type: "POST",
-            data: {
-                id: id,
-                _token: token
-            },
-            success: function(data) {
-                showTable();
+        window.apiHttp.postUrlEncoded(url, {
+            id: id,
+            _token: token
+        }).then(function() {
+            showTable();
+        }).catch(function(err) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    text: err.message,
+                    toast: true,
+                    position: 'top-end',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
             }
-        })
+        });
 
     });
 
@@ -280,15 +293,15 @@ $addTimelogPermission = user()->permission('add_timelogs');
         let url = "{{ route('timelogs.revert_to_pending', ':id') }}";
         url = url.replace(':id', id);
         const token = '{{ csrf_token() }}';
-        
+
         Swal.fire({
-            title: '@lang("messages.sweetAlertTitle")',
-            text: '@lang("messages.revertTimelogToPending")',
+            title: '@lang('messages.sweetAlertTitle')',
+            text: '@lang('messages.revertTimelogToPending')',
             icon: 'warning',
             showCancelButton: true,
             focusConfirm: false,
-            confirmButtonText: '@lang("messages.confirm")',
-            cancelButtonText: '@lang("app.cancel")',
+            confirmButtonText: '@lang('messages.confirm')',
+            cancelButtonText: '@lang('app.cancel')',
             buttonsStyling: false,
             customClass: {
                 confirmButton: 'btn btn-primary mr-3',
@@ -296,15 +309,21 @@ $addTimelogPermission = user()->permission('add_timelogs');
             }
         }).then((result) => {
             if (result.isConfirmed) {
-                $.easyAjax({
-                    url: url,
-                    type: "POST",
-                    data: {
-                        id: id,
-                        _token: token
-                    },
-                    success: function (data) {
-                        showTable();
+                window.apiHttp.postUrlEncoded(url, {
+                    id: id,
+                    _token: token
+                }).then(function() {
+                    showTable();
+                }).catch(function(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
                     }
                 });
             }
@@ -318,21 +337,29 @@ $addTimelogPermission = user()->permission('add_timelogs');
 
         var url = "{{ route('timelogs.apply_quick_action') }}?row_ids=" + rowdIds;
 
-        $.easyAjax({
-            url: url,
-            container: '#quick-action-form',
-            type: "POST",
-            disableButton: true,
-            buttonSelector: "#quick-action-apply",
-            data: $('#quick-action-form').serialize(),
-            blockUI: true,
-            success: function(response) {
-                if (response.status == 'success') {
-                    showTable();
-                    resetActionButtons();
-                    deSelectAll();
-                }
+        var $qaApply = $('#quick-action-apply');
+        $qaApply.prop('disabled', true);
+        $.easyBlockUI('#quick-action-form');
+        window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize()).then(function(response) {
+            if (response.status == 'success') {
+                showTable();
+                resetActionButtons();
+                deSelectAll();
             }
-        })
+        }).catch(function(err) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    text: err.message,
+                    toast: true,
+                    position: 'top-end',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            }
+        }).finally(function() {
+            $qaApply.prop('disabled', false);
+            $.easyUnblockUI('#quick-action-form');
+        });
     };
 </script>

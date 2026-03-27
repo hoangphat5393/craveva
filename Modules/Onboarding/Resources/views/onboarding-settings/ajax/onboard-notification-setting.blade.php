@@ -27,19 +27,11 @@
     $('body').off('click', "#save-email-form").on('click', '#save-email-form', function () {
         var url = "{{ route('onboarding-settings-notification','$emailSettings->id') }}";
 
-        $.easyAjax({
-            url: url,
-            type: "POST",
-            container: '#editSettings',
-            blockUI: true,
-            messagePosition: "inline",
-            data: $('#editSettings').serialize(),
-            success: function (response) {
+        window.apiHttp.postUrlEncoded(url, $('#editSettings').serialize()).then(function (response) {
                 if (response.status == 'success') {
                     location.reload();
                 }
-            }
-        })
+        }).catch(function (err) { $.handleApiFormError(err); })
     });
 
 </script>

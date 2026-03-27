@@ -71,15 +71,9 @@
 
         // Submit Meeting Form
         $('#save-action-form').click(function() {
-            $.easyAjax({
-                url: "{{ route('action.store') }}",
-                container: '#save-action-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-action-form",
-                data: $('#save-action-data-form').serialize(),
-                success: function(response) {
+            $.easyBlockUI('#save-action-data-form');
+            window.apiHttp.postUrlEncoded("{{ route('action.store') }}", $('#save-action-data-form').serialize())
+                .then(function(response) {
                     if (response.status == 'success') {
                         let tab = response.tab;
 
@@ -90,8 +84,13 @@
                             window.location.href = "{{ route('meetings.calendar_view') }}";
                         }
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#save-action-data-form');
+                });
         });
     });
 

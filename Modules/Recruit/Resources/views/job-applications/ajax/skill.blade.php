@@ -65,20 +65,15 @@
 
         $('body').off('click', "#submit-skill").on('click', '#submit-skill', function () {
             const url = "{{ route('job-appboard.add-skills') }}";
-            $.easyAjax({
-                url: url,
-                container: '#save-skill-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#submit-skill",
-                data: $('#save-skill-data-form').serialize(),
-                success: function (response) {
+            window.apiHttp.postUrlEncoded(url, $('#save-skill-data-form').serialize())
+                .then(function (response) {
                     if (response.status == "success") {
 
                     }
-                }
-            });
+                })
+                .catch(function (err) {
+                    $.handleApiFormError(err);
+                });
         });
     });
 

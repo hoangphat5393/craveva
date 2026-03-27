@@ -32,7 +32,8 @@ Select-String -Path "resources\views\**\*.blade.php","Modules\**\*.blade.php" -P
 
 ## 3. Core app — `resources/views/`
 
-- **`$.easyAjax`:** Rất nhiều file (ước lượng **hàng trăm** blade) — gồm `super-admin/**`, `tasks/**`, `projects/**`, `leads/**`, `invoices/**`, `dashboard/**`, `import/process-form.blade.php`, v.v.
+- **`$.easyAjax`:** Vẫn còn nhiều file (ước lượng **hàng trăm** blade) — tập trung ở `invoices/**`, `dashboard/**`, `auth/**`, `settings/**`, v.v.
+  _Đã dọn sạch trong các wave core gần nhất: `tasks/**`, `projects/**`, `project-templates/**`, `leads/**`, `tickets/**`, `event-calendar/**`, `super-admin/**`._
 - **`apiHttp`:** Đã dùng ở nhiều view **clients**, **products**, **orders**, **invoices**, **payments**, **warehouse**, **purchase** (một phần), **QRCode**, v.v. — xem `docs/axios-migration/client.md`, `product.md`, …
 
 **File import dùng chung (quan trọng):**
@@ -53,30 +54,30 @@ Có mặt rải rác trong `resources/views` và `Modules/**` (ví dụ hierarch
 Các module **có `module.json`** trong repo: 25.  
 Quét **`$\.easyAjax`** trong `Modules/<Name>/Resources/views/**/*.blade.php`:
 
-| Module             | Ghi chú                                        |
-| ------------------ | ---------------------------------------------- |
-| **Affiliate**      | Có                                             |
-| **Asset**          | Có                                             |
-| **Biometric**      | Có                                             |
-| **Biolinks**       | Có (nhiều block)                               |
-| **CyberSecurity**  | Có                                             |
-| **EInvoice**       | Có (ít)                                        |
-| **LanguagePack**   | Có (script)                                    |
-| **Letter**         | Có                                             |
-| **Onboarding**     | Có                                             |
-| **Payroll**        | Có (nhiều)                                     |
-| **Performance**    | Có (nhiều)                                     |
-| **Policy**         | Có                                             |
-| **Pricing**        | Có                                             |
-| **ProjectRoadmap** | Có                                             |
-| **Purchase**       | Có (nhiều)                                     |
-| **Recruit**        | Có (rất nhiều; có `import/process-form` riêng) |
-| **ServerManager**  | Có                                             |
-| **Sms**            | Có                                             |
-| **Subdomain**      | Có                                             |
-| **Warehouse**      | Có (ít)                                        |
-| **Webhooks**       | Có                                             |
-| **Zoom**           | Có                                             |
+| Module             | Ghi chú                                                                                                                                                                                                                                             |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Affiliate**      | Không còn `$.easyAjax` trong `Modules/Affiliate/Resources/views/**`                                                                                                                                                                                 |
+| **Asset**          | Không còn `$.easyAjax` trong `Modules/Asset/Resources/views/**`                                                                                                                                                                                     |
+| **Biometric**      | Không còn `$.easyAjax` trong `Modules/Biometric/Resources/views/**`                                                                                                                                                                                 |
+| **Biolinks**       | Không còn `$.easyAjax` trong `Modules/Biolinks/Resources/views/**`                                                                                                                                                                                  |
+| **CyberSecurity**  | Không còn `$.easyAjax` trong `Modules/CyberSecurity/Resources/views/**`                                                                                                                                                                             |
+| **EInvoice**       | Không còn `$.easyAjax` trong `Modules/EInvoice/Resources/views/**`                                                                                                                                                                                  |
+| **LanguagePack**   | Không còn `$.easyAjax` trong `Modules/LanguagePack/Resources/views/**`                                                                                                                                                                              |
+| **Letter**         | Không còn `$.easyAjax` trong `Modules/Letter/Resources/views/**`                                                                                                                                                                                    |
+| **Onboarding**     | Không còn `$.easyAjax` trong `Modules/Onboarding/Resources/views/**`                                                                                                                                                                                |
+| **Payroll**        | Không còn `$.easyAjax` trong `Modules/Payroll/Resources/views/**` (đã hoàn tất wave 1-3: tất cả `payroll-setting/**`, `payroll/**`, `payroll-report/**`, `overtime-setting/**`, `overtime-request/**`, `employee-salary/**`, `payroll-expenses/**`) |
+| **Performance**    | Không còn `$.easyAjax` trong `Modules/Performance/Resources/views/**`                                                                                                                                                                               |
+| **Policy**         | Không còn `$.easyAjax` trong `Modules/Policy/Resources/views/**`                                                                                                                                                                                    |
+| **Pricing**        | Không còn `$.easyAjax` trong `Modules/Pricing/Resources/views/**`                                                                                                                                                                                   |
+| **ProjectRoadmap** | Không còn `$.easyAjax` trong `Modules/ProjectRoadmap/Resources/views/**`                                                                                                                                                                            |
+| **Purchase**       | Không còn `$.easyAjax` trong `Resources/views/**`                                                                                                                                                                                                   |
+| **Recruit**        | Không còn `$.easyAjax` trong `Modules/Recruit/Resources/views/**` (đã hoàn tất wave 1-3: `recruit-setting/**`, `report/**`, `jobs/**`, `job-applications/**`, `interview-schedule/**`, `front/**`, `skills/**`, `candidate-database/**`)            |
+| **ServerManager**  | Không còn `$.easyAjax` trong `Modules/ServerManager/Resources/views/**`                                                                                                                                                                             |
+| **Sms**            | Không còn `$.easyAjax` trong `Modules/Sms/Resources/views/**`                                                                                                                                                                                       |
+| **Subdomain**      | Không còn `$.easyAjax` trong `Modules/Subdomain/Resources/views/**`                                                                                                                                                                                 |
+| **Warehouse**      | Không còn `$.easyAjax` trong `Modules/Warehouse/Resources/views/**`                                                                                                                                                                                 |
+| **Webhooks**       | Không còn `$.easyAjax` trong `Modules/Webhooks/Resources/views/**`                                                                                                                                                                                  |
+| **Zoom**           | Không còn `$.easyAjax` trong `Modules/Zoom/Resources/views/**`                                                                                                                                                                                      |
 
 **Không thấy `$.easyAjax` trong Blade** (tại thời điểm audit):
 

@@ -73,22 +73,19 @@
 
                 var token = "{{ csrf_token() }}";
 
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    blockUI: true,
-                    data: {
+                $.easyBlockUI();
+                window.apiHttp.postUrlEncoded(url, {
                         'current_language_id' : lang,
                         '_token': token,
                         '_method': 'DELETE'
-                    },
-                    success: function(response) {
+                    })
+                    .then(function(response) {
                         if (response.status == "success") {
                             $('#example').html(response.html);
-                            // $('.row'+id).fadeOut();
                         }
-                    }
-                });
+                    })
+                    .catch(function (err) { $.handleApiFormError(err); })
+                    .finally(function () { $.easyUnblockUI(); });
             }
         });
     });

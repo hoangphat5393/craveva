@@ -1,5 +1,5 @@
 @php
-$updateLeaveQuotaPermission = user()->permission('update_leaves_quota');
+    $updateLeaveQuotaPermission = user()->permission('update_leaves_quota');
 @endphp
 
 <!-- TAB CONTENT START -->
@@ -21,8 +21,7 @@ $updateLeaveQuotaPermission = user()->permission('update_leaves_quota');
 
             <div class="row">
                 <div class="col-md-12">
-                    <a class="f-15 f-w-500" href="javascript:;" id="renew-contract"><i
-                            class="icons icon-settings font-weight-bold mr-1"></i>
+                    <a class="f-15 f-w-500" href="javascript:;" id="renew-contract"><i class="icons icon-settings font-weight-bold mr-1"></i>
                         @lang('app.manage')</a>
                 </div>
             </div>
@@ -40,27 +39,20 @@ $updateLeaveQuotaPermission = user()->permission('update_leaves_quota');
                             </x-slot>
 
                             @foreach ($employeeLeavesQuotas as $key => $leavesQuota)
-                                @if($leavesQuota->leaveType && $leavesQuota->leaveType->leaveTypeCondition($leavesQuota->leaveType,  $employee)
-                                        && ($leavesQuota->leaveType->deleted_at == null || $leavesQuota->leaves_used > 0)
-                                    )
+                                @if ($leavesQuota->leaveType && $leavesQuota->leaveType->leaveTypeCondition($leavesQuota->leaveType, $employee) && ($leavesQuota->leaveType->deleted_at == null || $leavesQuota->leaves_used > 0))
                                     <tr>
                                         <td>
-                                            <x-status :value="$leavesQuota->leaveType->type_name" :style="'color:'.$leavesQuota->leaveType->color" />
+                                            <x-status :value="$leavesQuota->leaveType->type_name" :style="'color:' . $leavesQuota->leaveType->color" />
                                         </td>
-                                        <td> <input type="number" min="0" value="{{ $leavesQuota?->no_of_leaves ?: 0 }}"
-                                                class="form-control height-35 f-14 leave-count-{{ $leavesQuota->id }}">
+                                        <td> <input type="number" min="0" value="{{ $leavesQuota?->no_of_leaves ?: 0 }}" class="form-control height-35 f-14 leave-count-{{ $leavesQuota->id }}">
                                         </td>
-                                        <td >
+                                        <td>
                                             <div class="form-check float-right">
-                                            <x-forms.checkbox :fieldLabel="__('modules.leaves.leaveTypeImpacttrue')"
-                                                    fieldName="allowed_impact" fieldId="allowed_probation-{{ $leavesQuota->id }}" fieldValue="0" fieldRequired="false"
-                                                    :checked="$leavesQuota->leave_type_impact == 1"
-                                                    :popover="__('modules.leaves.leavemanageimpact')"/>
+                                                <x-forms.checkbox :fieldLabel="__('modules.leaves.leaveTypeImpacttrue')" fieldName="allowed_impact" fieldId="allowed_probation-{{ $leavesQuota->id }}" fieldValue="0" fieldRequired="false" :checked="$leavesQuota->leave_type_impact == 1" :popover="__('modules.leaves.leavemanageimpact')" />
                                             </div>
                                         </td>
                                         <td class="text-right">
-                                            <button type="button" data-type-id="{{ $leavesQuota->id }}"
-                                                class="btn btn-sm btn-primary btn-outline update-category">
+                                            <button type="button" data-type-id="{{ $leavesQuota->id }}" class="btn btn-sm btn-primary btn-outline update-category">
                                                 <i class="fa fa-check"></i>
                                             </button>
                                         </td>
@@ -96,7 +88,7 @@ $updateLeaveQuotaPermission = user()->permission('update_leaves_quota');
 
 <script>
     $(document).ready(function() {
-        
+
         $(document).on('keydown', 'input', function(event) {
             if (event.key === 'Enter') {
                 event.preventDefault();
@@ -104,8 +96,8 @@ $updateLeaveQuotaPermission = user()->permission('update_leaves_quota');
             }
         });
 
-        setTimeout(function(){
-            $('[data-toggle="popover"]').popover(); 
+        setTimeout(function() {
+            $('[data-toggle="popover"]').popover();
         }, 300);
 
         $('#renew-contract').click(function() {
@@ -134,23 +126,28 @@ $updateLeaveQuotaPermission = user()->permission('update_leaves_quota');
 
             var token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                type: 'POST',
-                url: url,
-                data: {
-                    '_method': 'PUT',
-                    '_token': token,
-                    'leaves': leaves,
-                    'leaveimpact' : editLeaveimpact,
-                },
-                success: function(response) {
-                    if (response.status == "success") {
-                        window.location.reload();
-                    }
+            window.apiHttp.postUrlEncoded(url, {
+                '_method': 'PUT',
+                '_token': token,
+                'leaves': leaves,
+                'leaveimpact': editLeaveimpact,
+            }).then(function(response) {
+                if (response.status == "success") {
+                    window.location.reload();
+                }
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
                 }
             });
         });
 
     });
-
 </script>

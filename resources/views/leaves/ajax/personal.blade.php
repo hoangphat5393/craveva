@@ -1,14 +1,11 @@
 <div class="d-grid d-lg-flex d-md-flex action-bar justify-content-end">
 
     <div class="btn-group mt-2 mt-lg-0 mt-md-0 ml-3" role="group" aria-label="Basic example">
-        <a href="{{ route('leaves.index') }}" class="btn btn-secondary f-14" data-toggle="tooltip"
-            data-original-title="@lang('modules.leaves.tableView')"><i class="side-icon bi bi-list-ul"></i></a>
+        <a href="{{ route('leaves.index') }}" class="btn btn-secondary f-14" data-toggle="tooltip" data-original-title="@lang('modules.leaves.tableView')"><i class="side-icon bi bi-list-ul"></i></a>
 
-        <a href="{{ route('leaves.calendar') }}" class="btn btn-secondary f-14" data-toggle="tooltip"
-            data-original-title="@lang('app.menu.calendar')"><i class="side-icon bi bi-calendar"></i></a>
+        <a href="{{ route('leaves.calendar') }}" class="btn btn-secondary f-14" data-toggle="tooltip" data-original-title="@lang('app.menu.calendar')"><i class="side-icon bi bi-calendar"></i></a>
 
-        <a href="{{ route('leaves.personal') }}" class="btn btn-secondary f-14 btn-active" data-toggle="tooltip"
-            data-original-title="@lang('modules.leaves.myLeaves')"><i class="side-icon bi bi-person"></i></a>
+        <a href="{{ route('leaves.personal') }}" class="btn btn-secondary f-14 btn-active" data-toggle="tooltip" data-original-title="@lang('modules.leaves.myLeaves')"><i class="side-icon bi bi-person"></i></a>
     </div>
 </div>
 
@@ -45,7 +42,6 @@
                             --
                         @endif
                     </p>
-
                 @else
                     <p class="card-text f-12 text-lightest">
                         <x-status :value="__('app.inactive')" color="red" />
@@ -91,22 +87,27 @@
 
             var token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                type: 'POST',
-                url: url,
-                data: {
-                    '_method': 'PUT',
-                    '_token': token,
-                    'leaves': leaves
-                },
-                success: function(response) {
-                    if (response.status == "success") {
-                        window.location.reload();
-                    }
+            window.apiHttp.postUrlEncoded(url, {
+                _method: 'PUT',
+                _token: token,
+                leaves: leaves
+            }).then(function(response) {
+                if (response.status == "success") {
+                    window.location.reload();
+                }
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
                 }
             });
         });
 
     });
-
 </script>

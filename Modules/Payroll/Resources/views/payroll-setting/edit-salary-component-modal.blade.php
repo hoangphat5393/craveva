@@ -142,19 +142,14 @@
     $(".select-picker").selectpicker();
     // save channel
     $('#save-salary-component').click(function () {
-        $.easyAjax({
-            url: "{{route('salary-components.update', $salaryComponent->id)}}",
-            container: '#editSalaryComponents',
-            type: "POST",
-            blockUI: true,
-            disableButton: true,
-            buttonSelector: "#save-salary-component",
-            data: $('#editSalaryComponents').serialize(),
-            success: function (response) {
+        window.apiHttp.postUrlEncoded("{{route('salary-components.update', $salaryComponent->id)}}", $('#editSalaryComponents').serialize())
+            .then(function (response) {
                 if (response.status == "success") {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch(function (err) {
+                $.handleApiFormError(err);
+            });
     });
 </script>

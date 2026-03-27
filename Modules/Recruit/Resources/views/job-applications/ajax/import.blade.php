@@ -55,21 +55,15 @@
         $('body').on('click', '#import-job-application-form', function() {
             const url = "{{ route('job-applications.import.store') }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#import-job-application-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#import-job-application-form",
-                file: true,
-                data: $('#import-job-application-data-form').serialize(),
-                success: function(response) {
+            window.apiHttp.postUrlEncoded(url, $('#import-job-application-data-form').serialize())
+                .then(function(response) {
                     if (response.status == 'success') {
                         $('#import_table').html(response.view);
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                });
         });
     });
 </script>

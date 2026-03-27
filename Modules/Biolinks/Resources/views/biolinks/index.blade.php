@@ -109,20 +109,19 @@ $addBiolinkPermission = user()->permission('add_biolink');
             let status = $(this).val();
 
             if (status) {
-                $.easyAjax({
-                    url: url,
-                    type: "POST",
-                    data: {
-                        '_token': token,
-                        id: id,
-                        status: status
-                    },
-                    success: function(response) {
+                window.apiHttp.postUrlEncoded(url, {
+                    '_token': token,
+                    id: id,
+                    status: status
+                })
+                    .then(function(response) {
                         if (response.status == "success") {
                             showTable();
                         }
-                    }
-                });
+                    })
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    });
             }
         });
 
@@ -151,21 +150,15 @@ $addBiolinkPermission = user()->permission('add_biolink');
                         var url = "{{ route('biolinks.destroy', ':id') }}";
                         url = url.replace(':id', id);
 
-                        var token = "{{ csrf_token() }}";
-
-                        $.easyAjax({
-                            type: 'POST',
-                            url: url,
-                            data: {
-                                '_token': token,
-                                '_method': 'DELETE'
-                            },
-                            success: function(response) {
+                        window.apiHttp.delete(url, "{{ csrf_token() }}")
+                            .then(function(response) {
                                 if (response.status == "success") {
                                     showTable();
                                 }
-                            }
-                        });
+                            })
+                            .catch(function(err) {
+                                $.handleApiFormError(err);
+                            });
                     }
                 });
             });

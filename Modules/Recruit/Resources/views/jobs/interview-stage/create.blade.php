@@ -1,8 +1,6 @@
 <div class="modal-header">
-    <h5 class="modal-title"
-        id="modelHeading">@lang('recruit::app.menu.add') @lang('recruit::app.interviewSchedule.stages') </h5>
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-            aria-hidden="true">×</span></button>
+    <h5 class="modal-title" id="modelHeading">@lang('recruit::app.menu.add') @lang('recruit::app.interviewSchedule.stages') </h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
 </div>
 <div class="modal-body" id="stage-table">
     <x-table class="table-bordered" headType="thead-light">
@@ -29,9 +27,7 @@
             <div class="col-sm-12">
                 <input type="hidden" value="{{ $selectedStages }}" name="selectedStages">
 
-                <x-forms.text fieldId="name" :fieldLabel="__('recruit::app.interviewSchedule.stages')" fieldName="name"
-                              fieldRequired="true"
-                              :fieldPlaceholder="__('recruit::app.interviewSchedule.stages') . ' ' . __('app.name') ">
+                <x-forms.text fieldId="name" :fieldLabel="__('recruit::app.interviewSchedule.stages')" fieldName="name" fieldRequired="true" :fieldPlaceholder="__('recruit::app.interviewSchedule.stages') . ' ' . __('app.name')">
                 </x-forms.text>
             </div>
         </div>
@@ -43,14 +39,11 @@
 </div>
 
 <script>
-
-    $('body').on('click', '.delete-row', function () {
+    $('body').on('click', '.delete-row', function() {
 
         const id = $(this).data('row-id');
         let url = "{{ route('interview-stages.destroy', ':id') }}";
         url = url.replace(':id', id);
-
-        const token = "{{ csrf_token() }}";
 
         Swal.fire({
             title: "@lang('messages.sweetAlertTitle')",
@@ -71,75 +64,59 @@
             buttonsStyling: false
         }).then((result) => {
             if (result.isConfirmed) {
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function (response) {
-                        if (response.status == "success") {
-                            $('#row-' + id).fadeOut();
-                            $('#selectStages').html(response.data);
-                            $('#selectStages').selectpicker('refresh');
-                        }
+                window.apiHttp.delete(url, {
+                    _token: "{{ csrf_token() }}"
+                }).then(function(response) {
+                    if (response.data.status == "success") {
+                        $('#row-' + id).fadeOut();
+                        $('#selectStages').html(response.data.data);
+                        $('#selectStages').selectpicker('refresh');
                     }
+                }).catch(function(err) {
+                    $.handleApiFormError(err);
                 });
             }
         });
     });
 
-    $('body').off('click', "#save-stage").on('click', '#save-stage', function () {
+    $('body').off('click', "#save-stage").on('click', '#save-stage', function() {
 
         const url = "{{ route('interview-stages.store') }}";
-        $.easyAjax({
-            url: url,
-            container: '#createStages',
-            type: "POST",
-            data: $('#createStages').serialize(),
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-stage",
-            success: function (response) {
-                if (response.status == 'success') {
-                    $('#selectStages').html(response.data);
+        window.apiHttp.postUrlEncoded(url, $('#createStages').serialize())
+            .then(function(response) {
+                if (response.data.status == 'success') {
+                    $('#selectStages').html(response.data.data);
                     $('#selectStages').selectpicker('refresh');
                     $(MODAL_LG).modal('hide');
                 }
-            }
-        })
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            });
     });
 
-    $('#stage-table [contenteditable=true]').focus(function () {
+    $('#stage-table [contenteditable=true]').focus(function() {
         $(this).data("initialText", $(this).html());
-    }).blur(function () {
+    }).blur(function() {
         // ...if content is different...
         if ($(this).data("initialText") !== $(this).html()) {
             let id = $(this).data('row-id');
             let value = $(this).html();
             let url = "{{ route('interview-stages.update', ':id') }}";
             url = url.replace(':id', id);
-            const token = "{{ csrf_token() }}";
             const selectedStages = "{{ $selectedStages }}";
-            $.easyAjax({
-                url: url,
-                container: '#row-' + id,
-                type: "PUT",
-                data: {
-                    'name': value,
-                    '_token': token,
-                    'selectedStages': selectedStages
-                },
-                blockUI: true,
-                success: function (response) {
-                    if (response.status === 'success') {
-                        $('#selectStages').html(response.data);
-                        $('#selectStages').selectpicker('refresh');
-                    }
+            window.apiHttp.put(url, {
+                name: value,
+                _token: "{{ csrf_token() }}",
+                selectedStages: selectedStages
+            }).then(function(response) {
+                if (response.data.status === 'success') {
+                    $('#selectStages').html(response.data.data);
+                    $('#selectStages').selectpicker('refresh');
                 }
-            })
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            });
         }
     });
-
 </script>

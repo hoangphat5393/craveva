@@ -258,18 +258,13 @@
         let url = "{{ route('webhooks.webhooks_for_variable', ':webhookFor') }}";
         url = url.replace(':webhookFor', webhookFor);
 
-        $.easyAjax({
-            type: 'GET',
-            url: url,
-            blockUI: false,
-            success: function(response) {
-                let dataList = $('#bodyValues');
-                dataList.empty();
-                $.each(response.options, function(index, value) {
-                    dataList.append(`<option value="${value}">`);
-                });
-            }
-        });
+        window.apiHttp.get(url).then(function(response) {
+            let dataList = $('#bodyValues');
+            dataList.empty();
+            $.each(response.options, function(index, value) {
+                dataList.append(`<option value="${value}">`);
+            });
+        }).catch(function(err) { $.handleApiFormError(err); });
     }
     $(document).ready(function() {
 
@@ -336,20 +331,10 @@
         $('#save-webhook').click(function() {
             const url = "{{ route('webhooks.update', [$webhook->id]) }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#save-webhook-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-webhook-form",
-                file: true,
-                data: $('#save-webhook-form').serialize(),
-                success: function(response) {
-                    const redirectUrl = "{{ route('webhooks.index') }}";
-                    window.location.href = redirectUrl;
-                }
-            });
+            window.apiHttp.postUrlEncoded(url, $('#save-webhook-form').serialize()).then(function(response) {
+                const redirectUrl = "{{ route('webhooks.index') }}";
+                window.location.href = redirectUrl;
+            }).catch(function(err) { $.handleApiFormError(err); });
         });
 
         $('body').on('change', '#webhook_for', function() {

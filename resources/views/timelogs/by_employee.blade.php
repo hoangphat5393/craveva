@@ -5,17 +5,14 @@
 @endpush
 
 @section('filter-section')
-
-
     <x-filters.filter-box>
         <!-- DATE START -->
-         <div class="select-box d-flex pr-2 border-right-grey border-right-grey-sm-0">
+        <div class="select-box d-flex pr-2 border-right-grey border-right-grey-sm-0">
             <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('app.duration')</p>
             <div class="select-status d-flex">
-                <input type="text" class="position-relative text-dark form-control border-0 p-2 text-left f-14 f-w-500 border-additional-grey"
-                       id="datatableRange" placeholder="@lang('placeholders.dateRange')"/>
-                       <input type="hidden" id="start-date" value="{{$startDate}}">
-                       <input type="hidden" id="end-date" value="{{$endDate}}">
+                <input type="text" class="position-relative text-dark form-control border-0 p-2 text-left f-14 f-w-500 border-additional-grey" id="datatableRange" placeholder="@lang('placeholders.dateRange')" />
+                <input type="hidden" id="start-date" value="{{ $startDate }}">
+                <input type="hidden" id="end-date" value="{{ $endDate }}">
             </div>
         </div>
         <!-- DATE END -->
@@ -24,8 +21,7 @@
         <div class="select-box d-flex  py-2 px-lg-2 px-md-2 px-0 border-right-grey border-right-grey-sm-0">
             <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('app.employee')</p>
             <div class="select-status">
-                <select class="form-control select-picker" name="employee" id="employee" data-live-search="true"
-                    data-size="8">
+                <select class="form-control select-picker" name="employee" id="employee" data-live-search="true" data-size="8">
                     <option value="all">@lang('app.all')</option>
                     @foreach ($employees as $employee)
                         <x-user-option :user="$employee" />
@@ -45,8 +41,7 @@
                             <i class="fa fa-search f-13 text-dark-grey"></i>
                         </span>
                     </div>
-                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field"
-                        placeholder="@lang('app.startTyping')">
+                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field" placeholder="@lang('app.startTyping')">
                 </div>
             </form>
         </div>
@@ -66,8 +61,7 @@
                 <label class="f-14 text-dark-grey mb-12 " for="usr">@lang('app.project')</label>
                 <div class="select-filter mb-4">
                     <div class="select-others">
-                        <select class="form-control select-picker" name="project_id" id="project_id" data-live-search="true"
-                            data-size="8" data-container="body">
+                        <select class="form-control select-picker" name="project_id" id="project_id" data-live-search="true" data-size="8" data-container="body">
                             <option value="all">@lang('app.all')</option>
                             @foreach ($projects as $project)
                                 <option value="{{ $project->id }}">{{ $project->project_name }}</option>
@@ -81,8 +75,7 @@
                 <label class="f-14 text-dark-grey mb-12 " for="usr">@lang('app.status')</label>
                 <div class="select-filter mb-4">
                     <div class="select-others">
-                        <select class="form-control select-picker" name="status" id="status" data-live-search="true"
-                            data-container="body" data-size="8">
+                        <select class="form-control select-picker" name="status" id="status" data-live-search="true" data-container="body" data-size="8">
                             <option value="all">@lang('app.all')</option>
                             <option value="1">@lang('app.approved')</option>
                             <option value="0">@lang('app.pending')</option>
@@ -96,8 +89,7 @@
                 <label class="f-14 text-dark-grey mb-12 " for="usr">@lang('app.invoiceGenerate')</label>
                 <div class="select-filter mb-4">
                     <div class="select-others">
-                        <select class="form-control select-picker" name="invoice_generate" id="invoice_generate"
-                            data-container="body" data-live-search="true" data-size="8">
+                        <select class="form-control select-picker" name="invoice_generate" id="invoice_generate" data-container="body" data-live-search="true" data-size="8">
                             <option value="all">@lang('app.all')</option>
                             <option value="1">@lang('app.yes')</option>
                             <option value="0">@lang('app.no')</option>
@@ -110,11 +102,10 @@
         </x-filters.more-filter-box>
         <!-- MORE FILTERS END -->
     </x-filters.filter-box>
-
 @endsection
 
 @php
-$addTimelogPermission = user()->permission('add_timelogs');
+    $addTimelogPermission = user()->permission('add_timelogs');
 @endphp
 
 
@@ -125,8 +116,7 @@ $addTimelogPermission = user()->permission('add_timelogs');
         <div class="d-flex my-3">
             <div id="table-actions" class="flex-grow-1 align-items-center">
                 @if ($addTimelogPermission == 'all' || $addTimelogPermission == 'added')
-                    <x-forms.link-primary :link="route('timelogs.create')" class="mr-3 openRightModal float-left"
-                        icon="plus">
+                    <x-forms.link-primary :link="route('timelogs.create')" class="mr-3 openRightModal float-left" icon="plus">
                         @lang('modules.timeLogs.logTime')
                     </x-forms.link-primary>
                 @endif
@@ -149,10 +139,9 @@ $addTimelogPermission = user()->permission('add_timelogs');
 
     </div>
     <!-- CONTENT WRAPPER END -->
-
 @endsection
 @push('scripts')
-<script src="{{ asset('vendor/jquery/daterangepicker.min.js') }}"></script>
+    <script src="{{ asset('vendor/jquery/daterangepicker.min.js') }}"></script>
 
     <script>
         $(function() {
@@ -171,14 +160,14 @@ $addTimelogPermission = user()->permission('add_timelogs');
             $('#datatableRange').on('apply.daterangepicker', (event, picker) => {
                 cb2(picker.startDate, picker.endDate);
                 $('#datatableRange').val(picker.startDate.format('{{ companyOrGlobalSetting()->moment_date_format }}') +
-                    ' @lang("app.to") ' + picker.endDate.format(
+                    ' @lang('app.to') ' + picker.endDate.format(
                         '{{ companyOrGlobalSetting()->moment_date_format }}'));
-                    showTable()
+                showTable()
             });
 
             function cb2(start, end) {
                 $('#datatableRange').val(start.format('{{ companyOrGlobalSetting()->moment_date_format }}') +
-                    ' @lang("app.to") ' + end.format(
+                    ' @lang('app.to') ' + end.format(
                         '{{ companyOrGlobalSetting()->moment_date_format }}'));
             }
 
@@ -206,18 +195,24 @@ $addTimelogPermission = user()->permission('add_timelogs');
             var token = "{{ csrf_token() }}";
             var url = "{{ route('timelogs.employee_data') }}";
 
-            $.easyAjax({
-                type: 'POST',
-                url: url,
-                data: {
-                    '_token': token,
-                    startDate: startDate,
-                    endDate: endDate,
-                    projectID: projectID,
-                    employee: employee
-                },
-                success: function(response) {
-                    $('#member-list').html(response.html);
+            window.apiHttp.postUrlEncoded(url, {
+                '_token': token,
+                startDate: startDate,
+                endDate: endDate,
+                projectID: projectID,
+                employee: employee
+            }).then(function(response) {
+                $('#member-list').html(response.html);
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
                 }
             });
         }
@@ -285,27 +280,35 @@ $addTimelogPermission = user()->permission('add_timelogs');
             var token = "{{ csrf_token() }}";
             var url = "{{ route('timelogs.user_time_logs') }}";
 
-            $.easyAjax({
-                type: 'POST',
-                url: url,
-                blockUI: true,
-                container: '.timelog-user-' + employee + ' .card-body',
-                data: {
-                    '_token': token,
-                    startDate: startDate,
-                    endDate: endDate,
-                    projectID: projectID,
-                    employee: employee,
-                },
-                success: function(response) {
-                    $('.user-timelogs').remove();
-                    $('.timelog-user-' + employee + ' .card-body').append(response.html);
-                    $('.timelog-user-' + employee).find('.hide-user-timelogs').removeClass('d-none');
-                    $('.timelog-user-' + employee).find('.show-user-timelogs').addClass('d-none');
-                    $("body").tooltip({
-                        selector: '[data-toggle="tooltip"]'
+            var $userCardBody = $('.timelog-user-' + employee + ' .card-body');
+            $.easyBlockUI($userCardBody);
+            window.apiHttp.postUrlEncoded(url, {
+                '_token': token,
+                startDate: startDate,
+                endDate: endDate,
+                projectID: projectID,
+                employee: employee,
+            }).then(function(response) {
+                $('.user-timelogs').remove();
+                $userCardBody.append(response.html);
+                $('.timelog-user-' + employee).find('.hide-user-timelogs').removeClass('d-none');
+                $('.timelog-user-' + employee).find('.show-user-timelogs').addClass('d-none');
+                $("body").tooltip({
+                    selector: '[data-toggle="tooltip"]'
+                });
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
                     });
                 }
+            }).finally(function() {
+                $.easyUnblockUI($userCardBody);
             });
 
         });
@@ -344,19 +347,24 @@ $addTimelogPermission = user()->permission('add_timelogs');
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                showTable();
-                            }
+                    $.easyBlockUI();
+                    window.apiHttp.delete(url, token).then(function(response) {
+                        if (response.status == "success") {
+                            showTable();
                         }
+                    }).catch(function(err) {
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                text: err.message,
+                                toast: true,
+                                position: 'top-end',
+                                timer: 4000,
+                                showConfirmButton: false
+                            });
+                        }
+                    }).finally(function() {
+                        $.easyUnblockUI();
                     });
                 }
             });
@@ -367,17 +375,23 @@ $addTimelogPermission = user()->permission('add_timelogs');
             var url = "{{ route('timelogs.approve_timelog', ':id') }}";
             url = url.replace(':id', id);
             var token = '{{ csrf_token() }}';
-            $.easyAjax({
-                url: url,
-                type: "POST",
-                data: {
-                    id: id,
-                    _token: token
-                },
-                success: function(data) {
-                    showTable();
+            window.apiHttp.postUrlEncoded(url, {
+                id: id,
+                _token: token
+            }).then(function() {
+                showTable();
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
                 }
-            })
+            });
 
         });
 
@@ -386,15 +400,15 @@ $addTimelogPermission = user()->permission('add_timelogs');
             let url = "{{ route('timelogs.revert_to_pending', ':id') }}";
             url = url.replace(':id', id);
             const token = '{{ csrf_token() }}';
-            
+
             Swal.fire({
-                title: '@lang("messages.sweetAlertTitle")',
-                text: '@lang("messages.revertTimelogToPending")',
+                title: '@lang('messages.sweetAlertTitle')',
+                text: '@lang('messages.revertTimelogToPending')',
                 icon: 'warning',
                 showCancelButton: true,
                 focusConfirm: false,
-                confirmButtonText: '@lang("messages.confirm")',
-                cancelButtonText: '@lang("app.cancel")',
+                confirmButtonText: '@lang('messages.confirm')',
+                cancelButtonText: '@lang('app.cancel')',
                 buttonsStyling: false,
                 customClass: {
                     confirmButton: 'btn btn-primary mr-3',
@@ -402,15 +416,21 @@ $addTimelogPermission = user()->permission('add_timelogs');
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    $.easyAjax({
-                        url: url,
-                        type: "POST",
-                        data: {
-                            id: id,
-                            _token: token
-                        },
-                        success: function (data) {
-                            showTable();
+                    window.apiHttp.postUrlEncoded(url, {
+                        id: id,
+                        _token: token
+                    }).then(function() {
+                        showTable();
+                    }).catch(function(err) {
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                text: err.message,
+                                toast: true,
+                                position: 'top-end',
+                                timer: 4000,
+                                showConfirmButton: false
+                            });
                         }
                     });
                 }
@@ -441,10 +461,10 @@ $addTimelogPermission = user()->permission('add_timelogs');
             });
         @endif
 
-        $(document).ready(function () {
+        $(document).ready(function() {
 
             $('#datatableRange').val('{{ $startDate }}' +
-            ' @lang("app.to") ' + '{{ $endDate }}');
+                ' @lang('app.to') ' + '{{ $endDate }}');
             showTable();
 
         });

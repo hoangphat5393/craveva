@@ -93,19 +93,19 @@
             var data = $('#save-check-ins-form').serialize();
 
             if (url) {
-                $.easyAjax({
-                    url: url,
-                    container: '#save-check-ins-form',
-                    type: "POST",
-                    disableButton: true,
-                    blockUI: true,
-                    data: data,
-                    success: function(response) {
+                $.easyBlockUI('#save-check-ins-form');
+                window.apiHttp.postUrlEncoded(url, data)
+                    .then(function(response) {
                         if (response.status == "success") {
                             window.location.reload();
                         }
-                    }
-                });
+                    })
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    })
+                    .finally(function() {
+                        $.easyUnblockUI('#save-check-ins-form');
+                    });
             }
         });
     });

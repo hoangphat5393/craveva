@@ -91,20 +91,16 @@
             .innerHTML;
         @endif
 
-        $.easyAjax({
-            url: "{{ route('superadmin.front-settings.features-settings.store') }}",
-            container: '#createFeature',
-            type: "POST",
-            blockUI: true,
-            file: true,
-            data: $('#createFeature').serialize(),
-            success: function(response) {
+        $.easyBlockUI('#createFeature');
+        window.apiHttp.postForm("{{ route('superadmin.front-settings.features-settings.store') }}", document.getElementById('createFeature'))
+            .then(function(response) {
                 if (response.status == "success") {
                     $('#table-view').html(response.html);
                     $(MODAL_LG).modal('hide');
                 }
-            }
-        })
+            })
+            .catch(function (err) { $.handleApiFormError(err); })
+            .finally(function () { $.easyUnblockUI('#createFeature'); });
     });
 
     @if($type == 'icon')

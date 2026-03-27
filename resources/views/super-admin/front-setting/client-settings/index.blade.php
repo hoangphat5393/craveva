@@ -17,18 +17,19 @@
     <script>
 
         $("body").on("click", "#saveFrontSetting", function() {
-            $.easyAjax({
-                url: "{{ route('superadmin.front-settings.client_setting.update_lang') }}",
-                container: '#editSettings',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                data: $('#editSettings').serialize(),
-                success: function (response) {
-                    // This will add green-circle icon
+            const $btn = $('#saveFrontSetting');
+            const prev = $btn.html();
+            $.easyBlockUI('#editSettings');
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+            window.apiHttp.postUrlEncoded("{{ route('superadmin.front-settings.client_setting.update_lang') }}", $('#editSettings').serialize())
+                .then(function (response) {
                     addBadge(response);
-                }
-            })
+                })
+                .catch(function (err) { $.handleApiFormError(err); })
+                .finally(function () {
+                    $.easyUnblockUI('#editSettings');
+                    $btn.prop('disabled', false).html(prev);
+                });
         });
 
 

@@ -98,16 +98,36 @@
     $(document).ready(function () {
 
         $('#save-superadmin-form').click(function () {
-            $.easyAjax({
-                url: "{{ route('superadmin.superadmin.update', $superAdmin->id) }}",
-                container: '#save-superadmin-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                file: true,
-                buttonSelector: "#save-superadmin-form",
-                data: $('#save-superadmin-data-form').serialize(),
-            });
+            const url = "{{ route('superadmin.superadmin.update', $superAdmin->id) }}";
+            const $btn = $('#save-superadmin-form');
+            const prev = $btn.html();
+            $.easyBlockUI('#save-superadmin-data-form');
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+            window.apiHttp.postForm(url, document.getElementById('save-superadmin-data-form'))
+                .then(function (response) {
+                    if (response.status === 'success') {
+                        if (response.action === 'redirect' && response.url) {
+                            window.location.href = response.url;
+                        } else if (typeof response.message !== 'undefined') {
+                            Swal.fire({
+                                icon: 'success',
+                                text: response.message,
+                                toast: true,
+                                position: 'top-end',
+                                timer: 3000,
+                                timerProgressBar: true,
+                                showConfirmButton: false,
+                                customClass: { confirmButton: 'btn btn-primary' },
+                                showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                            });
+                        }
+                    }
+                })
+                .catch(function (err) { $.handleApiFormError(err); })
+                .finally(function () {
+                    $.easyUnblockUI('#save-superadmin-data-form');
+                    $btn.prop('disabled', false).html(prev);
+                });
         });
 
 

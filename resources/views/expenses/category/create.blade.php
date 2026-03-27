@@ -4,8 +4,7 @@
 
 <div class="modal-header">
     <h5 class="modal-title" id="modelHeading">@lang('modules.expenses.expenseCategory')</h5>
-    <button type="button"  class="close" data-dismiss="modal" aria-label="Close"><span
-            aria-hidden="true">×</span></button>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
 </div>
 <div class="modal-body">
     <x-table class="table-bordered" headType="thead-light">
@@ -22,8 +21,8 @@
                 <td data-row-id="{{ $item->id }}" contenteditable="true">{{ $item->category_name }}</td>
                 <td>
                     <div class='form-group mb-0'>
-                        <select name="cat_role[]" data-row-id="{{ $item->id }}" id="cat_role-{{ $item->id }}" multiple class="form-control select-picker cat_roles" data-size="8" >
-                            @foreach($roles as $role)
+                        <select name="cat_role[]" data-row-id="{{ $item->id }}" id="cat_role-{{ $item->id }}" multiple class="form-control select-picker cat_roles" data-size="8">
+                            @foreach ($roles as $role)
                                 @php
                                     $selected = '';
                                 @endphp
@@ -35,8 +34,7 @@
                                         @endphp
                                     @endif
                                 @endforeach
-                                <option {{ $selected }}
-                                value="{{ $role->id }}">{{ $role->display_name }}</option>
+                                <option {{ $selected }} value="{{ $role->id }}">{{ $role->display_name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -57,13 +55,12 @@
     <x-form id="createProjectCategory">
         <div class="row border-top-grey ">
             <div class="col-sm-12">
-                <x-forms.text fieldId="category_name" :fieldLabel="__('modules.projectCategory.categoryName')" fieldName="category_name"
-                    fieldRequired="true" :fieldPlaceholder="__('placeholders.category')">
+                <x-forms.text fieldId="category_name" :fieldLabel="__('modules.projectCategory.categoryName')" fieldName="category_name" fieldRequired="true" :fieldPlaceholder="__('placeholders.category')">
                 </x-forms.text>
             </div>
             <div class="col-sm-12">
                 <x-forms.select fieldId="role" :fieldLabel="__('modules.expenseCategory.assignToRole')" multiple="true" fieldName="role[]">
-                    @foreach($roles as $role)
+                    @foreach ($roles as $role)
                         <option value="{{ $role->id }}">{{ $role->display_name }}</option>
                     @endforeach
                 </x-forms.select>
@@ -106,19 +103,22 @@
             buttonsStyling: false
         }).then((result) => {
             if (result.isConfirmed) {
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
-                        if (response.status == "success") {
-                            $('#row-' + id).fadeOut();
-                            $('#expense_category_id').html(response.data);
-                            $('#expense_category_id').selectpicker('refresh');
-                        }
+                window.apiHttp.delete(url, token).then(function(response) {
+                    if (response.status == "success") {
+                        $('#row-' + id).fadeOut();
+                        $('#expense_category_id').html(response.data);
+                        $('#expense_category_id').selectpicker('refresh');
+                    }
+                }).catch(function(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
                     }
                 });
             }
@@ -128,41 +128,57 @@
 
     $('#save-category').click(function() {
         var url = "{{ route('expenseCategory.store') }}";
-        $.easyAjax({
-            url: url,
-            container: '#createProjectCategory',
-            type: "POST",
-            data: $('#createProjectCategory').serialize(),
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-category",
-            success: function(response) {
-                if (response.status == 'success') {
-                    if (response.status == 'success') {
-                        $('#expense_category_id').html(response.data);
-                        $('#expense_category_id').selectpicker('refresh');
-                        $(MODAL_LG).modal('hide');
-                    }
-                }
+        var $saveCat = $("#save-category");
+        $saveCat.prop('disabled', true);
+        $.easyBlockUI('#createProjectCategory');
+        window.apiHttp.postUrlEncoded(url, $('#createProjectCategory').serialize()).then(function(response) {
+            if (response.status == 'success') {
+                $('#expense_category_id').html(response.data);
+                $('#expense_category_id').selectpicker('refresh');
+                $(MODAL_LG).modal('hide');
             }
-        })
+        }).catch(function(err) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    text: err.message,
+                    toast: true,
+                    position: 'top-end',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            }
+        }).finally(function() {
+            $saveCat.prop('disabled', false);
+            $.easyUnblockUI('#createProjectCategory');
+        });
     });
 
     $('#save-category').click(function() {
-       let userId = $('#user_id').val();
+        let userId = $('#user_id').val();
 
         const url = "{{ route('expenses.get_employee_projects') }}";
         let data = $('#save-expense-data-form').serialize();
 
         if (userId != '') {
             setTimeout(function() {
-                $.easyAjax({
-                    url: url,
-                    type: "GET",
-                    data: {'userId' : userId},
-                    success: function(response) {
-                        $('#expense_category_id').html('<option value="">--</option>'+response.category);
-                        $('#expense_category_id').selectpicker('refresh')
+                window.apiHttp.get(url, {
+                    params: {
+                        userId: userId
+                    }
+                }).then(function(response) {
+                    $('#expense_category_id').html('<option value="">--</option>' + response.category);
+                    $('#expense_category_id').selectpicker('refresh')
+                }).catch(function(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
                     }
                 });
             }, 2000);
@@ -179,29 +195,36 @@
             let id = $(this).data('row-id');
             let value = $(this).html();
 
-            if(id){
+            if (id) {
                 var url = "{{ route('expenseCategory.update', ':id') }}";
                 url = url.replace(':id', id);
 
                 var token = "{{ csrf_token() }}";
 
-                $.easyAjax({
-                    url: url,
-                    container: '#row-' + id,
-                    type: "POST",
-                    data: {
-                        'category_name': value,
-                        '_token': token,
-                        '_method': 'PUT'
-                    },
-                    blockUI: true,
-                    success: function(response) {
-                        if (response.status == 'success') {
-                            $('#expense_category_id').html(response.data);
-                            $('#expense_category_id').selectpicker('refresh');
-                        }
+                $.easyBlockUI('#row-' + id);
+                window.apiHttp.postUrlEncoded(url, {
+                    category_name: value,
+                    _token: token,
+                    _method: 'PUT'
+                }).then(function(response) {
+                    if (response.status == 'success') {
+                        $('#expense_category_id').html(response.data);
+                        $('#expense_category_id').selectpicker('refresh');
                     }
-                })
+                }).catch(function(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
+                    }
+                }).finally(function() {
+                    $.easyUnblockUI('#row-' + id);
+                });
             }
         }
     });
@@ -215,28 +238,35 @@
 
         let value = $(this).val();
 
-        if(id){
+        if (id) {
             var url = "{{ route('expenseCategory.update', ':id') }}";
             url = url.replace(':id', id);
 
             var token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#row-' + id,
-                type: "POST",
-                data: {
-                    'roles': value,
-                    '_token': token,
-                    'role_update': 1,
-                    '_method': 'PUT'
-                },
-                blockUI: true,
-                success: function(response) {
-                    $('#expense_category_id').html(response.data);
-                    $('#expense_category_id').selectpicker('refresh')
+            $.easyBlockUI('#row-' + id);
+            window.apiHttp.postUrlEncoded(url, {
+                roles: value,
+                _token: token,
+                role_update: 1,
+                _method: 'PUT'
+            }).then(function(response) {
+                $('#expense_category_id').html(response.data);
+                $('#expense_category_id').selectpicker('refresh')
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
                 }
-            })
+            }).finally(function() {
+                $.easyUnblockUI('#row-' + id);
+            });
         }
     });
 
@@ -249,19 +279,28 @@
         if (categoryId != '') {
 
             setTimeout(function() {
-                $.easyAjax({
-                    url: url,
-                    type: "GET",
-                    data: {'categoryId' : categoryId},
-                    success: function(response) {
-                        $('#user_id').html('<option value="">--</option>'+response.employees);
-                        $('#user_id').selectpicker('refresh')
-                        $('#expense_category_id').html('<option value="">--</option>'+response.category);
-                        $('#expense_category_id').selectpicker('refresh')
+                window.apiHttp.get(url, {
+                    params: {
+                        categoryId: categoryId
+                    }
+                }).then(function(response) {
+                    $('#user_id').html('<option value="">--</option>' + response.employees);
+                    $('#user_id').selectpicker('refresh')
+                    $('#expense_category_id').html('<option value="">--</option>' + response.category);
+                    $('#expense_category_id').selectpicker('refresh')
+                }).catch(function(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
                     }
                 });
             }, 2000);
         }
     });
-
 </script>

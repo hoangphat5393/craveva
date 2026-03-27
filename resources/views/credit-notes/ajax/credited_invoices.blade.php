@@ -1,5 +1,5 @@
 @php
-$deleteInvoicePermission = user()->permission('delete_invoices');
+    $deleteInvoicePermission = user()->permission('delete_invoices');
 @endphp
 <!-- ROW START -->
 <div class="row">
@@ -11,13 +11,10 @@ $deleteInvoicePermission = user()->permission('delete_invoices');
         <div class="row">
 
             <div class="col-xl-3 col-sm-12 mb-4">
-                <x-cards.widget :title="__('modules.invoices.total')"
-                    :value="currency_format($creditNote->total, $creditNote->currency->id)" icon="file-invoice-dollar" />
+                <x-cards.widget :title="__('modules.invoices.total')" :value="currency_format($creditNote->total, $creditNote->currency->id)" icon="file-invoice-dollar" />
             </div>
             <div class="col-xl-3 col-sm-12 mb-4">
-                <x-cards.widget :title="__('modules.credit-notes.creditAmountRemaining')"
-                    :value="currency_format($creditNote->creditAmountRemaining(), $creditNote->currency->id)"
-                    icon="file-invoice-dollar" widgetId="remainingAmount" />
+                <x-cards.widget :title="__('modules.credit-notes.creditAmountRemaining')" :value="currency_format($creditNote->creditAmountRemaining(), $creditNote->currency->id)" icon="file-invoice-dollar" widgetId="remainingAmount" />
             </div>
             <div class="col-xl-6 col-sm-12 mb-4">
                 <x-cards.user :image="$creditNote->client->image_url">
@@ -56,10 +53,9 @@ $deleteInvoicePermission = user()->permission('delete_invoices');
                 </x-slot>
 
                 @forelse ($payments as $payment)
-                    <tr id="row{{$payment->id}}">
+                    <tr id="row{{ $payment->id }}">
                         <td>
-                            <a class="text-darkest-grey"
-                                href="{{ route('invoices.show', [$payment->invoice->id]) }}">{{ $payment->invoice->invoice_number }}</a>
+                            <a class="text-darkest-grey" href="{{ route('invoices.show', [$payment->invoice->id]) }}">{{ $payment->invoice->invoice_number }}</a>
                         </td>
                         <td>
                             {{ currency_format($payment->amount, $payment->currency->id) }}
@@ -69,9 +65,7 @@ $deleteInvoicePermission = user()->permission('delete_invoices');
                         </td>
                         <td class="text-right">
                             @if ($deleteInvoicePermission == 'all' || ($deleteInvoicePermission == 'added' && $payment->added_by == user()->id))
-                                <x-forms.button-secondary
-                                    onclick="deleteCreditedInvoice({{ $payment->credit_notes_id }}, {{ $payment->id }})"
-                                    icon="trash">
+                                <x-forms.button-secondary onclick="deleteCreditedInvoice({{ $payment->credit_notes_id }}, {{ $payment->id }})" icon="trash">
                                     @lang('app.remove')
                                 </x-forms.button-secondary>
                             @else
@@ -115,25 +109,30 @@ $deleteInvoicePermission = user()->permission('delete_invoices');
                 var url = "{{ route('creditnotes.delete_credited_invoice', [':id']) }}";
                 url = url.replace(':id', id);
 
-                $.easyAjax({
-                    url: url,
-                    type: 'POST',
-                    container: '.content-wrapper',
-                    blockUI: true,
-                    redirect: true,
-                    data: {
-                        credit_id: credit_id,
-                        _token: '{{ csrf_token() }}'
-                    },
-                    success: function(response) {
-                        if (response.status == 'success') {
-                            $('#remainingAmount').html(response.remainingAmount);
-                            $('#row'+id).fadeOut(1000);
-                        }
+                $.easyBlockUI('.content-wrapper');
+                window.apiHttp.postUrlEncoded(url, {
+                    credit_id: credit_id,
+                    _token: '{{ csrf_token() }}'
+                }).then(function(response) {
+                    if (response.status == 'success') {
+                        $('#remainingAmount').html(response.remainingAmount);
+                        $('#row' + id).fadeOut(1000);
                     }
-                })
+                }).catch(function(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
+                    }
+                }).finally(function() {
+                    $.easyUnblockUI('.content-wrapper');
+                });
             }
         });
     }
-
 </script>

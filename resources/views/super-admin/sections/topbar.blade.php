@@ -189,19 +189,15 @@
             if (typeof openStatus == "undefined" || openStatus == "false") {
 
                 const token = '{{ csrf_token() }}';
-                $.easyAjax({
-                    type: 'POST',
-                    url: "{{ route('show_notifications') }}",
-                    container: "#notification-list",
-                    blockUI: true,
-                    data: {
-                        '_token': token
-                    },
-                    success: function (data) {
-                        if (data.status === 'success') {
-                            $('#notification-list').html(data.html);
-                        }
+                $.easyBlockUI('#notification-list');
+                window.apiHttp.postUrlEncoded("{{ route('show_notifications') }}", { '_token': token }).then(function (data) {
+                    if (data.status === 'success') {
+                        $('#notification-list').html(data.html);
                     }
+                }).catch(function (err) {
+                    $.handleApiFormError(err);
+                }).finally(function () {
+                    $.easyUnblockUI('#notification-list');
                 });
 
             }
@@ -210,33 +206,30 @@
 
         $('.mark-notification-read').click(function () {
             const token = '{{ csrf_token() }}';
-            $.easyAjax({
-                type: 'POST',
-                url: "{{ route('mark_notification_read') }}",
-                blockUI: true,
-                data: {
-                    '_token': token
-                },
-                success: function (data) {
-                    if (data.status === 'success') {
-                        $('#notification-list').html('');
-                        $('.unread-notifications-count').remove();
-                        window.location.reload();
-                    }
+            $.easyBlockUI('body');
+            window.apiHttp.postUrlEncoded("{{ route('mark_notification_read') }}", { '_token': token }).then(function (data) {
+                if (data.status === 'success') {
+                    $('#notification-list').html('');
+                    $('.unread-notifications-count').remove();
+                    window.location.reload();
                 }
+            }).catch(function (err) {
+                $.handleApiFormError(err);
+            }).finally(function () {
+                $.easyUnblockUI('body');
             });
         });
 
         $('.clear-cache').click(function () {
-            $.easyAjax({
-                type: 'GET',
-                url: "{{ route('superadmin.superadmin.refresh-cache') }}",
-                blockUI: true,
-                success: function (data) {
-                    if (data.status === 'success') {
-                        window.location.reload();
-                    }
+            $.easyBlockUI('body');
+            window.apiHttp.get("{{ route('superadmin.superadmin.refresh-cache') }}").then(function (data) {
+                if (data.status === 'success') {
+                    window.location.reload();
                 }
+            }).catch(function (err) {
+                $.handleApiFormError(err);
+            }).finally(function () {
+                $.easyUnblockUI('body');
             });
         });
 

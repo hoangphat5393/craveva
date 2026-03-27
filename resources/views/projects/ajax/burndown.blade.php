@@ -126,16 +126,16 @@
             var endDate = $('#end_date').val();
             if (endDate == '') { endDate = null; }
 
-            var token = "{{ csrf_token() }}";
-            $.easyAjax({
-                url: "{{route('projects.burndown', [$project->id])}}",
-                container: '#burndown',
-                type: "GET",
-                redirect: false,
-                data: {'_token': token, startDate: startDate, endDate: endDate},
-                success: function (data) {
-                    showBurnDown("burndown", JSON.parse(data.deadlineTasks), JSON.parse(data.uncompletedTasks), data.datesArray);
+            window.apiHttp.get("{{route('projects.burndown', [$project->id])}}", {
+                params: {
+                    _token: "{{ csrf_token() }}",
+                    startDate: startDate,
+                    endDate: endDate
                 }
+            }).then(function (data) {
+                showBurnDown("burndown", JSON.parse(data.deadlineTasks), JSON.parse(data.uncompletedTasks), data.datesArray);
+            }).catch(function(err) {
+                $.handleApiFormError(err);
             });
         }
 

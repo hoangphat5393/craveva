@@ -343,18 +343,14 @@
             var url = "{{ route('interview-schedule.show', ':id') }}";
             url = url.replace(':id', id);
 
-            $.easyAjax({
-                url: url,
-                blockUI: true,
-                container: RIGHT_MODAL,
-                historyPush: true,
-                success: function (response) {
+            window.apiHttp.get(url)
+                .then(function (response) {
                     if (response.status == "success") {
                         $(RIGHT_MODAL_CONTENT).html(response.html);
                         $(RIGHT_MODAL_TITLE).html(response.title);
                     }
-                },
-                error: function (request, status, error) {
+                })
+                .catch(function (request) {
                     if (request.status == 403) {
                         $(RIGHT_MODAL_CONTENT).html(
                             '<div class="align-content-between d-flex justify-content-center mt-105 f-21">403 | Permission Denied</div>'
@@ -368,8 +364,8 @@
                             '<div class="align-content-between d-flex justify-content-center mt-105 f-21">500 | Something Went Wrong</div>'
                         );
                     }
-                }
-            });
+                    $.handleApiFormError(request);
+                });
         }
 
         function employeeResponse(id, type) {
@@ -397,16 +393,15 @@
                     url = url.replace(':type', type);
 
                     var token = "{{ csrf_token() }}";
-                    $.easyAjax({
-                        url: url,
-                        blockUI: true,
-                        type: 'GET',
-                        success: function (response) {
+                    window.apiHttp.get(url)
+                        .then(function (response) {
                             if (response.status == 'success') {
                                 window.location.reload();
                             }
-                        }
-                    });
+                        })
+                        .catch(function (err) {
+                            $.handleApiFormError(err);
+                        });
                 }
             });
         };
@@ -436,22 +431,20 @@
                         var url = "{{ route('interview-schedule.destroy', ':id') }}";
                         url = url.replace(':id', id);
                         var token = "{{ csrf_token() }}";
-                        $.easyAjax({
-                            type: 'POST',
-                            url: url,
-                            blockUI: true,
-                            data: {
-                                '_token': token,
-                                'parentId': parentId,
-                                '_method': 'DELETE'
-                            },
-                            success: function (response) {
+                        window.apiHttp.postUrlEncoded(url, {
+                                _token: token,
+                                parentId: parentId,
+                                _method: 'DELETE'
+                            })
+                            .then(function (response) {
                                 if (response.status == "success") {
                                     window.location.href = response.redirectUrl;
 
                                 }
-                            }
-                        });
+                            })
+                            .catch(function (err) {
+                                $.handleApiFormError(err);
+                            });
                     }
                 });
             } else {
@@ -477,22 +470,20 @@
                         var url = "{{ route('interview-schedule.destroy', ':id') }}";
                         url = url.replace(':id', id);
                         var token = "{{ csrf_token() }}";
-                        $.easyAjax({
-                            type: 'POST',
-                            url: url,
-                            blockUI: true,
-                            data: {
-                                '_token': token,
-                                'parentId': parentId,
-                                '_method': 'DELETE',
-                            },
-                            success: function (response) {
+                        window.apiHttp.postUrlEncoded(url, {
+                                _token: token,
+                                parentId: parentId,
+                                _method: 'DELETE'
+                            })
+                            .then(function (response) {
                                 if (response.status == "success") {
                                     window.location.href = response.redirectUrl;
 
                                 }
-                            }
-                        });
+                            })
+                            .catch(function (err) {
+                                $.handleApiFormError(err);
+                            });
                     }
                 });
             }
@@ -507,17 +498,15 @@
 
         $('#status').change(function(){
             let status = $(this).val();
-            $.easyAjax({
-                type: 'GET',
-                url: "{{route('interview-schedule.index')}}",
-                blockUI: true,
-                data: {
-                    'status':status,
-                },
-                success: function (response) {
+            window.apiHttp.get("{{route('interview-schedule.index')}}", {
+                    status: status
+                })
+                .then(function (response) {
                     $('#projectActivityDetail').html(response.html);
-                }
-            })
+                })
+                .catch(function (err) {
+                    $.handleApiFormError(err);
+                });
         });
     </script>
 @endpush

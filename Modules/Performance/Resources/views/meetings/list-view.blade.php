@@ -152,16 +152,15 @@
         });
 
         function loadData(status) {
-            $.easyAjax({
-                url: "{{ route('meetings.index') }}",
-                type: "GET",
-                data: {
+            window.apiHttp.get("{{ route('meetings.index') }}", {
+                params: {
                     status: status,
                     employee: $('#employee').val(),
                     year: $('#year').val(),
                     searchText: $('#search-text-field').val()
-                },
-                success: function(response) {
+                }
+            })
+                .then(function(response) {
                     if (response.status == "success") {
                         $('#activeTab').val(response.activeTab),
                         $('#list-view').html(response.html);
@@ -184,8 +183,10 @@
                             }
                         }
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                });
         }
 
         // Initial load
@@ -198,18 +199,14 @@
             url = url.replace(':id', meetingId);
 
             if (url) {
-                $.easyAjax({
-                    url: url,
-                    type: "GET",
-                    buttonSelector: ".sendReminder",
-                    blockUI: true,
-                    disableButton: true,
-                    success: function(response) {
-                        if (response.status == "success") {
-                            $.easyUnblockUI();
-                        }
-                    }
-                });
+                $.easyBlockUI();
+                window.apiHttp.get(url)
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    })
+                    .finally(function() {
+                        $.easyUnblockUI();
+                    });
             }
         });
 
@@ -240,17 +237,16 @@
             button.find('.load-more-text').text('@lang("app.loading")...');
             button.prop('disabled', true);
 
-            $.easyAjax({
-                url: "{{ route('meetings.load_more') }}",
-                type: "GET",
-                data: {
+            window.apiHttp.get("{{ route('meetings.load_more') }}", {
+                params: {
                     status: status,
                     employee: employee,
                     year: year,
                     searchText: searchText,
                     skip: skip
-                },
-                success: function(response) {
+                }
+            })
+                .then(function(response) {
                     console.log('Load more response:', response); // Debug log
                     if (response.status == "success") {
                         if (response.html.trim() !== '') {
@@ -281,14 +277,13 @@
                             button.prop('disabled', false);
                         }
                     }
-                },
-                error: function() {
-                    // Reset button state on error
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
                     button.find('.fa-spinner').addClass('d-none');
                     button.find('.load-more-text').text('@lang("app.loadMore")');
                     button.prop('disabled', false);
-                }
-            });
+                });
         });
 
     </script>

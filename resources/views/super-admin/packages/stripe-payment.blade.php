@@ -110,30 +110,48 @@
     var orderComplete = function (paymentIntentId) {
         loading(false);
         cardButton.disabled = true;
-        $.easyAjax({
-            url: "{{ route('billing.stripeNew', $company->id) }}",
-            container: '#invoice_container',
-            buttonSelector: "#card-button",
-            disableButton: true,
-            blockUI: true,
-            type: "POST",
-            redirect: true,
-            data: {planId: clientDetails.planId, paymentIntentId: paymentIntentId, "_token": "{{ csrf_token() }}"},
-        })
+        const $cardBtn = $("#card-button");
+        const cardPrev = $cardBtn.html();
+        $.easyBlockUI('#invoice_container');
+        $cardBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+        window.apiHttp.postUrlEncoded("{{ route('billing.stripeNew', $company->id) }}", {planId: clientDetails.planId, paymentIntentId: paymentIntentId, "_token": "{{ csrf_token() }}"})
+            .then(function (response) {
+                if (response.status === 'success') {
+                    if (response.action === 'redirect' && response.url) {
+                        window.location.href = response.url;
+                    } else if (typeof response.message !== 'undefined') {
+                        Swal.fire({
+                            icon: 'success',
+                            text: response.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 3000,
+                            timerProgressBar: true,
+                            showConfirmButton: false,
+                            customClass: { confirmButton: 'btn btn-primary' },
+                            showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                        });
+                    }
+                }
+            })
+            .catch(function (err) { $.handleApiFormError(err); })
+            .finally(function () {
+                $.easyUnblockUI('#invoice_container');
+                $cardBtn.prop('disabled', false).html(cardPrev);
+            });
     };
 
     var paymentFailed = function (result) {
-        $.easyAjax({
-            url: "{{ route('front.invoice_payment_failed', [$company->id]) }}",
-            container: '#invoice_container',
-            type: "POST",
-            redirect: true,
-            data: {errorMessage: result.error, gateway: 'Stripe', "_token": "{{ csrf_token() }}"},
-            success: function (response) {
-                // Unblock Modal UI when got error response
-                $.easyUnblockUI('#stripeAddress');
-            }
-        })
+        window.apiHttp.postUrlEncoded("{{ route('front.invoice_payment_failed', [$company->id]) }}", {errorMessage: result.error, gateway: 'Stripe', "_token": "{{ csrf_token() }}"})
+            .then(function (response) {
+                if (response.status === 'success') {
+                    if (response.action === 'redirect' && response.url) {
+                        window.location.href = response.url;
+                    }
+                }
+            })
+            .catch(function (err) { $.handleApiFormError(err); })
+            .finally(function () { $.easyUnblockUI('#stripeAddress'); });
     }
 
     // Show the customer the error from Stripe if their card fails to charge

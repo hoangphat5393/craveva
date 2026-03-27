@@ -9,9 +9,7 @@
         <div class="d-block d-lg-flex d-md-flex justify-content-between action-bar dd">
             <div class="d-flex" id="table-actions">
                 @if ($addInterviewPermission == 'all' || $addInterviewPermission == 'added')
-                    <x-forms.link-primary :link="route('interview-schedule.create',['id' => $jobId])"
-                                            class="mr-3 openRightModal"
-                                            icon="plus" data-redirect-url="{{ url()->full() }}">
+                    <x-forms.link-primary :link="route('interview-schedule.create', ['id' => $jobId])" class="mr-3 openRightModal" icon="plus" data-redirect-url="{{ url()->full() }}">
                         @lang('add') @lang('recruit::app.menu.interviewSchedule')
                     </x-forms.link-primary>
                 @endif
@@ -51,7 +49,7 @@
 @include('sections.datatable_js')
 
 <script>
-    $('#interview-schedule-table').on('preXhr.dt', function (e, settings, data) {
+    $('#interview-schedule-table').on('preXhr.dt', function(e, settings, data) {
         data['job_id'] = '{{ $job->id }}';
     });
 
@@ -60,7 +58,7 @@
     }
 
     $('#search-text-field, #status, #location, #job')
-        .on('change keyup', function () {
+        .on('change keyup', function() {
             if ($('#search-text-field').val() !== "") {
                 $('#reset-filters').removeClass('d-none');
             } else if ($('#status').val() != "all") {
@@ -69,20 +67,20 @@
             }
             showTable();
         });
-    $('body').on('click', '#reset-filters', function () {
+    $('body').on('click', '#reset-filters', function() {
         $('#filter-form')[0].reset();
         $('.filter-box #status').val('not finished');
         $('.filter-box .select-picker').selectpicker("refresh");
         $('#reset-filters').addClass('d-none');
         showTable();
     });
-    $('body').on('click', '#reset-filters-2', function () {
+    $('body').on('click', '#reset-filters-2', function() {
         $('#filter-form')[0].reset();
         $('.filter-box .select-picker').selectpicker("refresh");
         $('#reset-filters').addClass('d-none');
         showTable();
     });
-    $('#quick-action-type').change(function () {
+    $('#quick-action-type').change(function() {
         const actionValue = $(this).val();
         if (actionValue !== '') {
             $('#quick-action-apply').removeAttr('disabled');
@@ -98,7 +96,7 @@
             $('.quick-action-field').addClass('d-none');
         }
     });
-    $('body').on('click', '#quick-action-apply', function () {
+    $('body').on('click', '#quick-action-apply', function() {
         const actionValue = $('#quick-action-type').val();
         if (actionValue == 'delete') {
             Swal.fire({
@@ -129,29 +127,25 @@
         }
     });
     const applyQuickAction = () => {
-        var rowdIds = $("#interview-schedule-table input:checkbox:checked").map(function () {
+        var rowdIds = $("#interview-schedule-table input:checkbox:checked").map(function() {
             return $(this).val();
         }).get();
 
         const url = "{{ route('interview-schedule.apply_quick_action') }}?row_ids=" + rowdIds;
 
-        $.easyAjax({
-            url: url,
-            container: '#quick-action-form',
-            type: "POST",
-            disableButton: true,
-            buttonSelector: "#quick-action-apply",
-            data: $('#quick-action-form').serialize(),
-            success: function (response) {
-                if (response.status == 'success') {
+        window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize())
+            .then(function(response) {
+                if (response.data.status == 'success') {
                     showTable();
                     resetActionButtons();
                     deSelectAll();
                 }
-            }
-        })
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            });
     };
-    $('body').on('click', '.delete-table-row', function () {
+    $('body').on('click', '.delete-table-row', function() {
         var id = $(this).data('user-id');
         console.log(id);
         Swal.fire({
@@ -175,61 +169,50 @@
             if (result.isConfirmed) {
                 var url = "{{ route('interview-schedule.destroy', ':id') }}";
                 url = url.replace(':id', id);
-                var token = "{{ csrf_token() }}";
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    blockUI: true,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function (response) {
-                        if (response.status == "success") {
-                            showTable();
-                        }
+                window.apiHttp.delete(url, {
+                    _token: "{{ csrf_token() }}"
+                }).then(function(response) {
+                    if (response.data.status == "success") {
+                        showTable();
                     }
+                }).catch(function(err) {
+                    $.handleApiFormError(err);
                 });
             }
         });
     });
 
-    $('body').on('click', '.reschedule-interview', function () {
+    $('body').on('click', '.reschedule-interview', function() {
         var id = $(this).data('user-id');
         const url = "{{ route('interview-schedule.reschedule') }}?id=" + id;
         $(MODAL_LG + ' ' + MODAL_HEADING).html('...');
         $.ajaxModal(MODAL_LG, url);
     });
 
-    $('body').on('change', '.change-interview-status', function () {
+    $('body').on('change', '.change-interview-status', function() {
         var id = $(this).data('interview-id');
         var url = "{{ route('interview-schedule.change_interview_status') }}";
 
-        var token = "{{ csrf_token() }}";
         var status = $(this).val();
 
         if (typeof id !== 'undefined') {
-            $.easyAjax({
-                url: "{{ route('interview-schedule.change_interview_status') }}",
-                type: "POST",
-                data: {
-                    '_token': token,
-                    interviewId: id,
-                    status: status
-                },
-
-                success: function (response) {
-                    if (response.status == "success") {
-                        showTable();
-                        resetActionButtons();
-                        deSelectAll();
-                    }
+            window.apiHttp.postUrlEncoded("{{ route('interview-schedule.change_interview_status') }}", {
+                _token: "{{ csrf_token() }}",
+                interviewId: id,
+                status: status
+            }).then(function(response) {
+                if (response.data.status == "success") {
+                    showTable();
+                    resetActionButtons();
+                    deSelectAll();
                 }
+            }).catch(function(err) {
+                $.handleApiFormError(err);
             });
         }
     });
 
-    $('body').on('click', '.employeeResponse', function () {
+    $('body').on('click', '.employeeResponse', function() {
         var action = $(this).data('response-action');
         var responseId = $(this).data('response-id');
         var url = "{{ route('interview-schedule.employee_response') }}";
@@ -253,26 +236,21 @@
             buttonsStyling: false
         }).then((result) => {
             if (result.isConfirmed) {
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    blockUI: true,
-                    data: {
-                        'action': action,
-                        'responseId': responseId,
-                        '_token': '{{ csrf_token() }}'
-                    },
-                    success: function (response) {
-                        if (response.status == 'success') {
-                            showTable();
-                            resetActionButtons();
-                            deSelectAll();
-                        }
+                window.apiHttp.postUrlEncoded(url, {
+                    action: action,
+                    responseId: responseId,
+                    _token: '{{ csrf_token() }}'
+                }).then(function(response) {
+                    if (response.data.status == 'success') {
+                        showTable();
+                        resetActionButtons();
+                        deSelectAll();
                     }
+                }).catch(function(err) {
+                    $.handleApiFormError(err);
                 });
             }
         });
 
     });
-
 </script>

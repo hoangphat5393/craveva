@@ -39,22 +39,13 @@
             let url = "{{ route('policy.send_remainder', ':id') }}";
             url = url.replace(':id', id);
 
-            let token = "{{ csrf_token() }}";
+            window.apiHttp.postUrlEncoded(url, {
+                '_token': "{{ csrf_token() }}"
+            }).then(function(response) {
+                if (response.status == "success") {
 
-            console.log(url);
-
-            $.easyAjax({
-                type: 'POST',
-                url: url,
-                data: {
-                    '_token': token,
-                },
-                success: function(response) {
-                    if (response.status == "success") {
-
-                    }
                 }
-            });
+            }).catch(function(err) { $.handleApiFormError(err); });
         });
     </script>
 @endpush

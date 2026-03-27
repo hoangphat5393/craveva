@@ -74,21 +74,19 @@
         $('#save-subtask').click(function() {
 
             const url = "{{ route('project-template-sub-task.store') }}";
-
-            $.easyAjax({
-                url: url,
-                container: '#save-subtask-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-subtask",
-                data: $('#save-subtask-data-form').serialize(),
-                success: function(response) {
-                    if (response.status == "success") {
-                        window.location.reload();
-                    }
-
+            var $btn = $('#save-subtask');
+            var prev = $btn.html();
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+            $.easyBlockUI('#save-subtask-data-form');
+            window.apiHttp.postUrlEncoded(url, $('#save-subtask-data-form').serialize()).then(function(response) {
+                if (response.status == "success") {
+                    window.location.reload();
                 }
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI('#save-subtask-data-form');
+                $btn.prop('disabled', false).html(prev);
             });
         });
 

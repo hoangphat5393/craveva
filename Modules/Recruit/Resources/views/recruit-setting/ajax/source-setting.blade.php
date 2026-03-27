@@ -24,27 +24,25 @@
                 </td>
                 <td class="text-right">
                     @if ($editPermission == 'all' && !$source->is_predefined)
-                    <div class="task_view">
-                        <a href="javascript:;" data-source-id="{{ $source->id }}"
-                            class="edit-source task_view_more d-flex align-items-center justify-content-center">
-                            <i class="fa fa-edit icons mr-1"></i> @lang('app.edit')
-                        </a>
-                    </div>
-                    <div class="task_view">
-                        <a href="javascript:;" data-source-id="{{ $source->id }}"
-                            class="delete-source task_view_more d-flex align-items-center justify-content-center dropdown-toggle">
-                            <i class="fa fa-trash icons mr-2"></i> @lang('app.delete')
-                        </a>
-                    </div>
+                        <div class="task_view">
+                            <a href="javascript:;" data-source-id="{{ $source->id }}" class="edit-source task_view_more d-flex align-items-center justify-content-center">
+                                <i class="fa fa-edit icons mr-1"></i> @lang('app.edit')
+                            </a>
+                        </div>
+                        <div class="task_view">
+                            <a href="javascript:;" data-source-id="{{ $source->id }}" class="delete-source task_view_more d-flex align-items-center justify-content-center dropdown-toggle">
+                                <i class="fa fa-trash icons mr-2"></i> @lang('app.delete')
+                            </a>
+                        </div>
                     @else
-                       <p>@lang('recruit::messages.predefinedSourceDelete')</p>
+                        <p>@lang('recruit::messages.predefinedSourceDelete')</p>
                     @endif
                 </td>
             </tr>
         @empty
             <tr>
                 <td colspan="2">
-                    <x-cards.no-record icon="user" :message="__('messages.noRecordFound')"/>
+                    <x-cards.no-record icon="user" :message="__('messages.noRecordFound')" />
                 </td>
             </tr>
         @endforelse
@@ -53,7 +51,7 @@
 
 <script>
     /* delete status */
-    $('body').on('click', '.delete-source', function () {
+    $('body').on('click', '.delete-source', function() {
         var id = $(this).data('source-id');
         var url = "{{ route('source-setting.destroy', ':id') }}";
         url = url.replace(':id', id);
@@ -77,25 +75,21 @@
             buttonsStyling: false
         }).then((result) => {
             if (result.isConfirmed) {
-                $.easyAjax({
-                    url: url,
-                    type: 'POST',
-                    data: {
-                        '_token': '{{ csrf_token() }}',
-                        '_method': 'DELETE'
-                    },
-                    success: function (response) {
-                        if (response.status == 'success') {
-                            window.location.reload();
-                        }
+                window.apiHttp.delete(url, {
+                    _token: '{{ csrf_token() }}'
+                }).then(function(response) {
+                    if (response.data.status == 'success') {
+                        window.location.reload();
                     }
+                }).catch(function(err) {
+                    $.handleApiFormError(err);
                 });
             }
         });
 
     });
 
-    $('body').on('click', '.edit-source', function () {
+    $('body').on('click', '.edit-source', function() {
         var id = $(this).data('source-id');
         var url = "{{ route('source-setting.edit', ':id') }}";
         url = url.replace(':id', id);
@@ -105,7 +99,7 @@
     });
 
     /* open add status modal */
-     $('body').on('click', '#add-source', function () {
+    $('body').on('click', '#add-source', function() {
         const url = "{{ route('source-setting.create') }}";
 
         $(MODAL_LG + ' ' + MODAL_HEADING).html('...');

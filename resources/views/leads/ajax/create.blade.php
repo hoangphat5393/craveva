@@ -184,31 +184,29 @@
         function getAgents(categoryId){
             var url = "{{ route('deals.get_agents', ':id')}}";
             url = url.replace(':id', categoryId);
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                success: function(response)
+            window.apiHttp.get(url).then(function(response)
+            {
+                var options = [];
+                var rData = [];
+                if($.isArray(response.data))
                 {
-                    var options = [];
-                    var rData = [];
-                    if($.isArray(response.data))
-                    {
-                        rData = response.data;
-                        $.each(rData, function(index, value) {
-                            var selectData = '';
-                            options.push(value);
-                        });
+                    rData = response.data;
+                    $.each(rData, function(index, value) {
+                        var selectData = '';
+                        options.push(value);
+                    });
 
-                        $('#deal_agent_id').html('<option value="">--</option>' + options);
+                    $('#deal_agent_id').html('<option value="">--</option>' + options);
 
-                    }
-                    else
-                    {
-                        $('#deal_agent_id').html(response.data);
-                    }
-
-                    $('#deal_agent_id').selectpicker('refresh');
                 }
+                else
+                {
+                    $('#deal_agent_id').html(response.data);
+                }
+
+                $('#deal_agent_id').selectpicker('refresh');
+            }).catch(function(err) {
+                $.handleApiFormError(err);
             });
         }
 
@@ -232,32 +230,30 @@
         function getStages(pipelineId) {
             var url = "{{ route('deals.get-stage', ':id') }}";
             url = url.replace(':id', pipelineId);
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                success: function (response) {
-                    if (response.status == 'success') {
-                        var options = [];
-                        var rData = [];
-                        rData = response.data;
-                        $.each(rData, function (index, value) {
-                            var seleted = '';
-                            var stageID = 0;
-                            @if(!is_null($stage))
-                                stageID = {{ $stage->id }};
+            window.apiHttp.get(url).then(function (response) {
+                if (response.status == 'success') {
+                    var options = [];
+                    var rData = [];
+                    rData = response.data;
+                    $.each(rData, function (index, value) {
+                        var seleted = '';
+                        var stageID = 0;
+                        @if(!is_null($stage))
+                            stageID = {{ $stage->id }};
 
-                            if (stageID == value.id) {
-                                seleted = 'selected';
-                            }
-                            @endif
-                            var selectData = '';
-                            selectData = `<option data-content="<i class='fa fa-circle' style='color: ${value.label_color}'></i> ${value.name} " value="${value.id}"> ${value.name}</option>`;
-                            options.push(selectData);
-                        });
-                        $('#stages').html(options);
-                        $('#stages').selectpicker('refresh');
-                    }
+                        if (stageID == value.id) {
+                            seleted = 'selected';
+                        }
+                        @endif
+                        var selectData = '';
+                        selectData = `<option data-content="<i class='fa fa-circle' style='color: ${value.label_color}'></i> ${value.name} " value="${value.id}"> ${value.name}</option>`;
+                        options.push(selectData);
+                    });
+                    $('#stages').html(options);
+                    $('#stages').selectpicker('refresh');
                 }
+            }).catch(function(err) {
+                $.handleApiFormError(err);
             });
         }
 
@@ -283,38 +279,39 @@
         });
 
         function saveLead(data, url, buttonSelector) {
-            $.easyAjax({
-                url: url,
-                container: '#save-lead-data-form',
-                type: "POST",
-                file: true,
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: buttonSelector,
-                data: data,
-                success: function (response) {
-                    if (response.add_more == true) {
+            var $btn = $('#save-lead-data-form').find(buttonSelector);
+            var btnPrev = $btn.html();
+            $btn.attr('data-prev-text', btnPrev);
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+            $.easyBlockUI('#save-lead-data-form');
+            window.apiHttp.postForm(url, document.getElementById('save-lead-data-form')).then(function (response) {
+                if (response.add_more == true) {
 
-                        var right_modal_content = $.trim($(RIGHT_MODAL_CONTENT).html());
+                    var right_modal_content = $.trim($(RIGHT_MODAL_CONTENT).html());
 
-                        if (right_modal_content.length) {
+                    if (right_modal_content.length) {
 
-                            $(RIGHT_MODAL_CONTENT).html(response.html.html);
-                            $('#add_more').val(false);
-                        } else {
-
-                            $('.content-wrapper').html(response.html.html);
-                            init('.content-wrapper');
-                            $('#add_more').val(false);
-                        }
+                        $(RIGHT_MODAL_CONTENT).html(response.html.html);
+                        $('#add_more').val(false);
                     } else {
-                        window.location.href = response.redirectUrl;
-                    }
 
-                    if (typeof showTable !== 'undefined' && typeof showTable === 'function') {
-                        showTable();
+                        $('.content-wrapper').html(response.html.html);
+                        init('.content-wrapper');
+                        $('#add_more').val(false);
                     }
+                } else {
+                    window.location.href = response.redirectUrl;
                 }
+
+                if (typeof showTable !== 'undefined' && typeof showTable === 'function') {
+                    showTable();
+                }
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI('#save-lead-data-form');
+                $btn.html($btn.attr('data-prev-text'));
+                $btn.prop('disabled', false);
             });
 
         }

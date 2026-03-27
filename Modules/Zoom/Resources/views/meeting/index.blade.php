@@ -377,17 +377,15 @@
                     var url = "{{ route('zoom-meetings.destroy', ':id') }}";
                     url = url.replace(':id', id);
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: dataObject,
-                        success: function (response) {
+                    var destroyPromise = (occurrence == '1')
+                        ? window.apiHttp.postUrlEncoded(url, dataObject)
+                        : window.apiHttp.delete(url, token);
+
+                    destroyPromise.then(function (response) {
                             if (response.status == "success") {
                                 window.LaravelDataTables["meeting-table"].draw(true);
                             }
-                        }
-                    });
+                    }).catch(function (err) { $.handleApiFormError(err); });
                 }
             });
         });
@@ -399,20 +397,12 @@
 
             var url = "{{ route('zoom-meetings.apply_quick_action') }}?row_ids=" + rowdIds;
 
-            $.easyAjax({
-                url: url,
-                container: '#quick-action-form',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#quick-action-apply",
-                data: $('#quick-action-form').serialize(),
-                success: function (response) {
+            window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize()).then(function (response) {
                     if (response.status == 'success') {
                         showTable();
                         resetActionButtons();
                     }
-                }
-            })
+            }).catch(function (err) { $.handleApiFormError(err); })
         };
 
         $('body').on('click', '.cancel-meeting', function () {
@@ -441,19 +431,14 @@
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
+                    window.apiHttp.postUrlEncoded(url, {
                             '_token': token,
                             'id': id
-                        },
-                        success: function (response) {
+                    }).then(function (response) {
                             if (response.status == "success") {
                                 window.LaravelDataTables["meeting-table"].draw(true);
                             }
-                        }
-                    });
+                    }).catch(function (err) { $.handleApiFormError(err); });
                 }
             });
         });
@@ -480,25 +465,16 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     var url = "{{ route('zoom-meetings.end_meeting') }}";
+                    var token = "{{ csrf_token() }}";
 
-                    var dataObject = {
-                        '_token': token,
-                        'id': id
-                    };
-
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
+                    window.apiHttp.postUrlEncoded(url, {
                             '_token': token,
                             'id': id
-                        },
-                        success: function (response) {
+                    }).then(function (response) {
                             if (response.status == "success") {
                                 window.LaravelDataTables["meeting-table"].draw(true);
                             }
-                        }
-                    });
+                    }).catch(function (err) { $.handleApiFormError(err); });
                 }
             });
         });

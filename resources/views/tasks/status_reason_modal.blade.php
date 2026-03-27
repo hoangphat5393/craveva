@@ -34,22 +34,34 @@
         let userId = '{{ $userId }}';
         let reason = $('#reason').val();
 
-        $.easyAjax({
-            url: url,
-            type: "POST",
-            blockUI: true,
-            data: {
-                'taskStatus': taskStatus,
-                'taskId': taskId,
-                '_token': '{{ csrf_token() }}',
-                'reason': reason,
-                'userId': userId,
-            },
-            success: function(response) {
-                if (response.status == "success") {
-                    window.location.reload();
+        $.easyBlockUI('body');
+        window.apiHttp.postUrlEncoded(url, {
+            'taskStatus': taskStatus,
+            'taskId': taskId,
+            '_token': '{{ csrf_token() }}',
+            'reason': reason,
+            'userId': userId,
+        }).then(function(response) {
+            if (response.status == "success") {
+                if (typeof response.message !== 'undefined' && response.message) {
+                    Swal.fire({
+                        icon: 'success',
+                        text: response.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 3000,
+                        timerProgressBar: true,
+                        showConfirmButton: false,
+                        customClass: { confirmButton: 'btn btn-primary' },
+                        showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                    });
                 }
+                window.location.reload();
             }
-        })
+        }).catch(function(err) {
+            $.handleApiFormError(err);
+        }).finally(function() {
+            $.easyUnblockUI('body');
+        });
     });
 </script>

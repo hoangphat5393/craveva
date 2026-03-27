@@ -23,19 +23,17 @@
 <script>
 
     $('#save-blacklist-email').click(function () {
-        $.easyAjax({
-            container: '#blacklist-email-form',
-            type: "POST",
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-blacklist-email",
-            url: "{{ route('cybersecurity.blacklist-email.store') }}",
-            data: $('#blacklist-email-form').serialize(),
-            success: function (response) {
+        window.apiHttp.postUrlEncoded(
+            "{{ route('cybersecurity.blacklist-email.store') }}",
+            $('#blacklist-email-form').serialize()
+        )
+            .then(function (response) {
                 if (response.status === 'success') {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch(function (err) {
+                $.handleApiFormError(err);
+            });
     });
 </script>

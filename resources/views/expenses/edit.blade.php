@@ -9,7 +9,6 @@
 @endpush
 
 @section('content')
-
     <div class="content-wrapper ssssssssssss">
         <!-- CREATE INVOICE START -->
         <div class="bg-white rounded b-shadow-4 create-inv">
@@ -27,10 +26,9 @@
                     <!-- INVOICE NUMBER START -->
                     <div class="col-md-6 col-lg-4">
                         <div class="form-group mb-lg-0 mb-md-0 mb-4">
-                            <label class="f-14 text-dark-grey mb-12 "
-                                for="usr">@lang('modules.estimates.estimatesNumber')</label>
+                            <label class="f-14 text-dark-grey mb-12 " for="usr">@lang('modules.estimates.estimatesNumber')</label>
                             <div class="input-group">
-                                <input type="text" name="estimate_number" id="estimate_number" class="form-control height-35 f-15 readonly-background" readonly value="{{ $estimate->estimate_number }}" >
+                                <input type="text" name="estimate_number" id="estimate_number" class="form-control height-35 f-15 readonly-background" readonly value="{{ $estimate->estimate_number }}">
                             </div>
                         </div>
                     </div>
@@ -41,10 +39,7 @@
                             <x-forms.label fieldId="due_date" :fieldLabel="__('modules.estimates.validTill')">
                             </x-forms.label>
                             <div class="input-group">
-                                <input type="text" id="valid_till" name="valid_till"
-                                    class="px-6 position-relative text-dark font-weight-normal form-control height-35 rounded p-0 text-left f-15"
-                                    placeholder="@lang('placeholders.date')"
-                                    value="{{ $estimate->valid_till->format(company()->date_format) }}">
+                                <input type="text" id="valid_till" name="valid_till" class="px-6 position-relative text-dark font-weight-normal form-control height-35 rounded p-0 text-left f-15" placeholder="@lang('placeholders.date')" value="{{ $estimate->valid_till->format(company()->date_format) }}">
                             </div>
                         </div>
                     </div>
@@ -59,8 +54,7 @@
                             <div class="select-others height-35 rounded">
                                 <select class="form-control select-picker" name="currency_id" id="currency_id">
                                     @foreach ($currencies as $currency)
-                                        <option @selected($estimate->currency_id == $currency->id)
-                                            value="{{ $currency->id }}">
+                                        <option @selected($estimate->currency_id == $currency->id) value="{{ $currency->id }}">
                                             {{ $currency->currency_code . ' (' . $currency->currency_symbol . ')' }}
                                         </option>
                                     @endforeach
@@ -79,33 +73,29 @@
                         <div class="form-group c-inv-select mb-4">
                             <x-forms.label fieldId="client_id" :fieldLabel="__('app.client')" fieldRequired="true">
                             </x-forms.label>
-                            <select class="form-control select-picker" data-live-search="true" data-size="8"
-                                    name="client_id" id="client_id">
+                            <select class="form-control select-picker" data-live-search="true" data-size="8" name="client_id" id="client_id">
                                 <option value="">--</option>
                                 @foreach ($clients as $client)
-                                    <x-user-option :user="$client" :selected="$client->id == $estimate->client_id"/>
+                                    <x-user-option :user="$client" :selected="$client->id == $estimate->client_id" />
                                 @endforeach
                             </select>
                         </div>
                     </div>
                     <!-- CLIENT END -->
 
-                     <!-- CLIENT START -->
-                     <div class="col-md-6">
+                    <!-- CLIENT START -->
+                    <div class="col-md-6">
                         <div class="form-group c-inv-select mb-4">
                             <x-forms.label fieldId="client_id" :fieldLabel="__('app.status')">
                             </x-forms.label>
                             <select class="form-control select-picker" name="status" id="status">
-                                <option
-                                    @selected($estimate->status == 'accepted') value="accepted">@lang('modules.estimates.accepted')
+                                <option @selected($estimate->status == 'accepted') value="accepted">@lang('modules.estimates.accepted')
                                 </option>
-                                <option
-                                    @selected($estimate->status == 'waiting') value="waiting">@lang('modules.estimates.waiting')
+                                <option @selected($estimate->status == 'waiting') value="waiting">@lang('modules.estimates.waiting')
                                 </option>
-                                <option
-                                    @selected($estimate->status == 'declined') value="declined">@lang('modules.estimates.declined')
+                                <option @selected($estimate->status == 'declined') value="declined">@lang('modules.estimates.declined')
                                 </option>
-                                @if($estimate->status == 'draft')
+                                @if ($estimate->status == 'draft')
                                     <option selected value="draft">@lang('modules.invoices.draft')</option>
                                 @endif
                             </select>
@@ -122,88 +112,75 @@
                 <div class="d-flex px-4 py-3">
                     <div class="form-group">
                         <select class="form-control select-picker" data-live-search="true" data-size="8" id="add-products">
-                                <option value="">{{__('app.select') . ' ' . __('app.product') }}</option>
-                                @foreach ($products as $item)
-                                    <option
-                                        data-content="{{ $item->name }} <a href='javascript:;' class='p-1 badge badge-secondary ml-2'><i class='fa fa-plus mr-1'></i>{{ __('app.add') }}</a>"
-                                        value="{{ $item->id }}">{{ $item->name }}</option>
-                                @endforeach
+                            <option value="">{{ __('app.select') . ' ' . __('app.product') }}</option>
+                            @foreach ($products as $item)
+                                <option data-content="{{ $item->name }} <a href='javascript:;' class='p-1 badge badge-secondary ml-2'><i class='fa fa-plus mr-1'></i>{{ __('app.add') }}</a>" value="{{ $item->id }}">{{ $item->name }}</option>
+                            @endforeach
                         </select>
                     </div>
                 </div>
 
                 <div id="sortable">
-                    @foreach($estimate->items as $key => $item)
-                    <!-- DESKTOP DESCRIPTION TABLE START -->
-                    <div class="d-flex px-4 py-3 c-inv-desc item-row">
+                    @foreach ($estimate->items as $key => $item)
+                        <!-- DESKTOP DESCRIPTION TABLE START -->
+                        <div class="d-flex px-4 py-3 c-inv-desc item-row">
 
-                        <div class="c-inv-desc-table w-100 d-lg-flex d-md-flex d-block">
-                        <table width="100%">
-                            <tbody>
-                                <tr class="text-dark-grey font-weight-bold f-14">
-                                    <td width="50%" class="border-0 inv-desc-mbl btlr">@lang('app.description')</td>
-                                    <td width="10%" class="border-0" align="right">@lang("modules.invoices.qty")</td>
-                                    <td width="10%" class="border-0" align="right">@lang("modules.invoices.unitPrice")</td>
-                                    <td width="13%" class="border-0" align="right">@lang('modules.invoices.tax')</td>
-                                    <td width="17%" class="border-0 bblr-mbl" align="right">@lang('modules.invoices.amount')</td>
-                                </tr>
-                                <tr>
-                                    <td class="border-bottom-0 btrr-mbl btlr">
-                                        <input type="text" class="f-14 border-0 w-100 item_name" name="item_name[]"
-                                            placeholder="@lang('modules.expenses.itemName')" value="{{ $item->item_name }}">
-                                    </td>
-                                    <td class="border-bottom-0 d-block d-lg-none d-md-none">
-                                        <input type="text" class="f-14 border-0 w-100 mobile-description" placeholder="@lang('placeholders.invoices.description')" name="item_summary[]" value="{{ $item->item_summary }}">
-                                    </td>
-                                    <td class="border-bottom-0">
-                                        <input type="number" min="1" class="f-14 border-0 w-100 text-right quantity" value="{{ $item->quantity }}"
-                                            name="quantity[]">
-                                    </td>
-                                    <td class="border-bottom-0">
-                                        <input type="number" min="1" class="f-14 border-0 w-100 text-right cost_per_item"
-                                            placeholder="0.00" value="{{ $item->unit_price }}" name="cost_per_item[]">
-                                    </td>
-                                    <td class="border-bottom-0">
-                                        <div class="select-others height-35 rounded border-0">
-                                            <select id="multiselect" name="taxes[{{ $key }}][]" multiple="multiple"
-                                                class="select-picker type customSequence border-0" data-size="3">
-                                                @foreach ($taxes as $tax)
-                                                    <option data-rate="{{ $tax->rate_percent }}"
-                                                        @if (isset($item->taxes) && array_search($tax->id, json_decode($item->taxes)) !== false)
-                                                        selected
-                                                        @endif
-                                                        value="{{ $tax->id }}">{{ $tax->tax_name }}:
-                                                        {{ $tax->rate_percent }}%</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </td>
-                                    <td rowspan="2" align="right" valign="top" class="bg-amt-grey btrr-bbrr">
-                                        <span class="amount-html">{{ number_format((float)$item->amount, 2, '.', '') }}</span>
-                                        <input type="hidden" class="amount" name="amount[]" value="{{ $item->amount }}">
-                                    </td>
-                                </tr>
-                                <tr class="d-none d-md-block d-lg-table-row">
-                                    <td colspan="4" class="dash-border-top bblr">
-                                        <input type="text" class="f-14 border-0 w-100 desktop-description" name="item_summary[]"
-                                            placeholder="@lang('placeholders.invoices.description')" value="{{ $item->item_summary }}">
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                            <div class="c-inv-desc-table w-100 d-lg-flex d-md-flex d-block">
+                                <table width="100%">
+                                    <tbody>
+                                        <tr class="text-dark-grey font-weight-bold f-14">
+                                            <td width="50%" class="border-0 inv-desc-mbl btlr">@lang('app.description')</td>
+                                            <td width="10%" class="border-0" align="right">@lang('modules.invoices.qty')</td>
+                                            <td width="10%" class="border-0" align="right">@lang('modules.invoices.unitPrice')</td>
+                                            <td width="13%" class="border-0" align="right">@lang('modules.invoices.tax')</td>
+                                            <td width="17%" class="border-0 bblr-mbl" align="right">@lang('modules.invoices.amount')</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="border-bottom-0 btrr-mbl btlr">
+                                                <input type="text" class="f-14 border-0 w-100 item_name" name="item_name[]" placeholder="@lang('modules.expenses.itemName')" value="{{ $item->item_name }}">
+                                            </td>
+                                            <td class="border-bottom-0 d-block d-lg-none d-md-none">
+                                                <input type="text" class="f-14 border-0 w-100 mobile-description" placeholder="@lang('placeholders.invoices.description')" name="item_summary[]" value="{{ $item->item_summary }}">
+                                            </td>
+                                            <td class="border-bottom-0">
+                                                <input type="number" min="1" class="f-14 border-0 w-100 text-right quantity" value="{{ $item->quantity }}" name="quantity[]">
+                                            </td>
+                                            <td class="border-bottom-0">
+                                                <input type="number" min="1" class="f-14 border-0 w-100 text-right cost_per_item" placeholder="0.00" value="{{ $item->unit_price }}" name="cost_per_item[]">
+                                            </td>
+                                            <td class="border-bottom-0">
+                                                <div class="select-others height-35 rounded border-0">
+                                                    <select id="multiselect" name="taxes[{{ $key }}][]" multiple="multiple" class="select-picker type customSequence border-0" data-size="3">
+                                                        @foreach ($taxes as $tax)
+                                                            <option data-rate="{{ $tax->rate_percent }}" @if (isset($item->taxes) && array_search($tax->id, json_decode($item->taxes)) !== false) selected @endif value="{{ $tax->id }}">{{ $tax->tax_name }}:
+                                                                {{ $tax->rate_percent }}%</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </td>
+                                            <td rowspan="2" align="right" valign="top" class="bg-amt-grey btrr-bbrr">
+                                                <span class="amount-html">{{ number_format((float) $item->amount, 2, '.', '') }}</span>
+                                                <input type="hidden" class="amount" name="amount[]" value="{{ $item->amount }}">
+                                            </td>
+                                        </tr>
+                                        <tr class="d-none d-md-block d-lg-table-row">
+                                            <td colspan="4" class="dash-border-top bblr">
+                                                <input type="text" class="f-14 border-0 w-100 desktop-description" name="item_summary[]" placeholder="@lang('placeholders.invoices.description')" value="{{ $item->item_summary }}">
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
 
-                        <a href="javascript:;" class="d-flex align-items-center justify-content-center ml-3 remove-item"><i
-                                class="fa fa-times-circle f-20 text-lightest"></i></a>
+                                <a href="javascript:;" class="d-flex align-items-center justify-content-center ml-3 remove-item"><i class="fa fa-times-circle f-20 text-lightest"></i></a>
+                            </div>
                         </div>
-                    </div>
-                    <!-- DESKTOP DESCRIPTION TABLE END -->
+                        <!-- DESKTOP DESCRIPTION TABLE END -->
                     @endforeach
                 </div>
                 <!--  ADD ITEM START-->
                 <div class="row px-lg-4 px-md-4 px-3 pb-3 pt-0 mb-3  mt-2">
                     <div class="col-md-12">
-                        <a class="f-15 f-w-500" href="javascript:;" id="add-item"><i
-                                class="icons icon-plus font-weight-bold mr-1"></i>@lang('modules.invoices.addItem')</a>
+                        <a class="f-15 f-w-500" href="javascript:;" id="add-item"><i class="icons icon-plus font-weight-bold mr-1"></i>@lang('modules.invoices.addItem')</a>
                     </div>
                 </div>
                 <!--  ADD ITEM END-->
@@ -222,7 +199,7 @@
                                             <tr>
                                                 <td colspan="2" class="border-top-0 text-dark-grey">
                                                     @lang('modules.invoices.subTotal')</td>
-                                                <td width="30%" class="border-top-0 sub-total">{{ number_format((float)$estimate->sub_total, 2, '.', '') }}</td>
+                                                <td width="30%" class="border-top-0 sub-total">{{ number_format((float) $estimate->sub_total, 2, '.', '') }}</td>
                                                 <input type="hidden" class="sub-total-field" name="sub_total" value="{{ $estimate->sub_total }}">
                                             </tr>
                                             <tr>
@@ -233,17 +210,13 @@
                                                         <tbody>
                                                             <tr>
                                                                 <td width="50%" class="c-inv-sub-padding">
-                                                                    <input type="number" min="0" name="discount_value"
-                                                                        class="f-14 border-0 w-100 text-right discount_value"
-                                                                        placeholder="0" value="{{ $estimate->discount }}">
+                                                                    <input type="number" min="0" name="discount_value" class="f-14 border-0 w-100 text-right discount_value" placeholder="0" value="{{ $estimate->discount }}">
                                                                 </td>
                                                                 <td width="50%" align="left" class="c-inv-sub-padding">
-                                                                    <div
-                                                                        class="select-others select-tax height-35 rounded border-0">
-                                                                        <select class="form-control select-picker"
-                                                                            id="discount_type" name="discount_type">
-                                                                            <option @selected($estimate->discount_type == 'percent')  value="percent">%</option>
-                                                                            <option @selected($estimate->discount_type == 'fixed')  value="fixed">
+                                                                    <div class="select-others select-tax height-35 rounded border-0">
+                                                                        <select class="form-control select-picker" id="discount_type" name="discount_type">
+                                                                            <option @selected($estimate->discount_type == 'percent') value="percent">%</option>
+                                                                            <option @selected($estimate->discount_type == 'fixed') value="fixed">
                                                                                 @lang('modules.invoices.amount')</option>
                                                                         </select>
                                                                     </div>
@@ -252,7 +225,7 @@
                                                         </tbody>
                                                     </table>
                                                 </td>
-                                                <td><span id="discount_amount">{{ number_format((float)$estimate->discount, 2, '.', '') }}</span></td>
+                                                <td><span id="discount_amount">{{ number_format((float) $estimate->discount, 2, '.', '') }}</span></td>
                                             </tr>
                                             <tr>
                                                 <td>@lang('modules.invoices.tax')</td>
@@ -267,7 +240,7 @@
                                             </tr>
                                             <tr class="bg-amt-grey f-16 f-w-500">
                                                 <td colspan="2">@lang('modules.invoices.total')</td>
-                                                <td><span class="total">{{ number_format((float)$estimate->total, 2, '.', '') }}</span></td>
+                                                <td><span class="total">{{ number_format((float) $estimate->total, 2, '.', '') }}</span></td>
                                                 <input type="hidden" class="total-field" name="total" value="{{ round($estimate->total, 2) }}">
                                             </tr>
                                         </tbody>
@@ -282,14 +255,11 @@
                 <!-- NOTE AND TERMS AND CONDITIONS START -->
                 <div class="d-flex flex-wrap px-lg-4 px-md-4 px-3 py-3">
                     <div class="col-md-6 col-sm-12 c-inv-note-terms p-0 mb-lg-0 mb-md-0 mb-3">
-                        <label class="f-14 text-dark-grey mb-12  w-100"
-                            for="usr">@lang('modules.invoices.note')</label>
-                        <textarea class="form-control" name="note" id="note" rows="4"
-                            placeholder="@lang('placeholders.invoices.note')">{{ $estimate->note }}</textarea>
+                        <label class="f-14 text-dark-grey mb-12  w-100" for="usr">@lang('modules.invoices.note')</label>
+                        <textarea class="form-control" name="note" id="note" rows="4" placeholder="@lang('placeholders.invoices.note')">{{ $estimate->note }}</textarea>
                     </div>
                     <div class="col-md-6 col-sm-12 p-0 c-inv-note-terms">
-                        <label class="f-14 text-dark-grey mb-12  w-100"
-                            for="usr">@lang('modules.invoiceSettings.invoiceTerms')</label>
+                        <label class="f-14 text-dark-grey mb-12  w-100" for="usr">@lang('modules.invoiceSettings.invoiceTerms')</label>
                         {!! nl2br($invoiceSetting->invoice_terms) !!}
                     </div>
                 </div>
@@ -298,8 +268,7 @@
                 <!-- CANCEL SAVE SEND START -->
                 <div class="px-lg-4 px-md-4 px-3 py-3 c-inv-btns">
 
-                    <button type="button"
-                        class="btn-cancel rounded mt-3 mt-lg-0 mt-md-0 mr-0 mr-lg-3 mr-md-3 f-15">@lang('app.cancel')</button>
+                    <button type="button" class="btn-cancel rounded mt-3 mt-lg-0 mt-md-0 mr-0 mr-lg-3 mr-md-3 f-15">@lang('app.cancel')</button>
 
                     <div class="d-flex">
                         <x-forms.button-primary class="save-form" icon="check">@lang('app.save')</x-forms.button-primary>
@@ -312,7 +281,6 @@
         </div>
         <!-- CREATE INVOICE END -->
     </div>
-
 @endsection
 
 @push('scripts')
@@ -323,7 +291,7 @@
             ...datepickerConfig
         });
 
-        $('#add-products').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+        $('#add-products').on('changed.bs.select', function(e, clickedIndex, isSelected, previousValue) {
             e.stopImmediatePropagation()
             var id = $(this).val();
             if (previousValue != id && id != '') {
@@ -334,100 +302,108 @@
         function addProduct(id) {
             var currencyId = $('#currency_id').val();
             var exchangeRate = $('#exchange_rate').val();
-            $.easyAjax({
-                url:"{{ route('invoices.add_item') }}",
-                type: "GET",
-                data: {
+            window.apiHttp.get("{{ route('invoices.add_item') }}", {
+                params: {
                     id: id,
                     currencyId: currencyId,
                     exchangeRate: exchangeRate
-                },
-                success: function(response) {
-                    if($('input[name="item_name[]"]').val() == ''){
-                        $("#sortable .item-row").remove();
-                    }
-                    $(response.view).hide().appendTo("#sortable").fadeIn(500);
-                    calculateTotal();
+                }
+            }).then(function(response) {
+                if ($('input[name="item_name[]"]').val() == '') {
+                    $("#sortable .item-row").remove();
+                }
+                $(response.view).hide().appendTo("#sortable").fadeIn(500);
+                calculateTotal();
 
-                    var noOfRows = $(document).find('#sortable .item-row').length;
-                    var i = $(document).find('.item_name').length-1;
-                    var itemRow = $(document).find('#sortable .item-row:nth-child('+noOfRows+') select.type');
-                    itemRow.attr('id', 'multiselect'+i);
-                    itemRow.attr('name', 'taxes['+i+'][]');
-                    $(document).find('#multiselect'+i).selectpicker();
+                var noOfRows = $(document).find('#sortable .item-row').length;
+                var i = $(document).find('.item_name').length - 1;
+                var itemRow = $(document).find('#sortable .item-row:nth-child(' + noOfRows + ') select.type');
+                itemRow.attr('id', 'multiselect' + i);
+                itemRow.attr('name', 'taxes[' + i + '][]');
+                $(document).find('#multiselect' + i).selectpicker();
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
                 }
             });
         }
 
         $(document).on('click', '#add-item', function() {
             var i = $(document).find('.item_name').length;
-            var item = ' <div class="d-flex px-4 py-3 c-inv-desc item-row">'
-            +'<div class="c-inv-desc-table w-100 d-lg-flex d-md-flex d-block">'
-                +'<table width="100%">'
-                    +'<tbody>'
-                        +'<tr class="text-dark-grey font-weight-bold f-14">'
-                            +'<td width="50%" class="border-0 inv-desc-mbl btlr">@lang('app.description')</td>'
-                            +'<td width="10%" class="border-0" align="right">@lang("modules.invoices.qty")</td>'
-                            +'<td width="10%" class="border-0" align="right">@lang("modules.invoices.unitPrice")</td>'
-                            +'<td width="13%" class="border-0" align="right">@lang('modules.invoices.tax')</td>'
-                            +'<td width="17%" class="border-0 bblr-mbl" align="right">@lang('modules.invoices.amount')</td>'
-                            +'</tr>'
-                            +'<tr>'
-                                +'<td class="border-bottom-0 btrr-mbl btlr">'
-                                    +`<input type="text" class="f-14 border-0 w-100 item_name" name="item_name[]" placeholder="@lang('modules.expenses.itemName')">`
-                                    +'</td>'
-                                    +'<td class="border-bottom-0 d-block d-lg-none d-md-none">'
-                                        +`<input type="text" class="f-14 border-0 w-100 mobile-description" name="item_summary[]" placeholder="@lang('placeholders.invoices.description')">`
-                                    +'</td>'
-                                    +'<td class="border-bottom-0">'
-                                        +'<input type="number" min="1" class="f-14 border-0 w-100 text-right quantity" value="1" name="quantity[]">'
-                                        +'</td>'
-                                        +'<td class="border-bottom-0">'
-                                            +'<input type="number" min="1" class="f-14 border-0 w-100 text-right cost_per_item" placeholder="0.00" value="0" name="cost_per_item[]">'
-                                            +'</td>'
-                                            +'<td class="border-bottom-0">'
-                                                +'<div class="select-others height-35 rounded border-0">'
-                                                    +'<select id="multiselect'+i+'" name="taxes['+i+'][]" multiple="multiple" class="select-picker type customSequence" data-size="3">'
-                                                    @foreach ($taxes as $tax)
-                                                        +'<option data-rate="{{ $tax->rate_percent }}" value="{{ $tax->id }}">{{ $tax->tax_name }}: {{ $tax->rate_percent }}%</option>'
-                                                    @endforeach
-                                                    +'</select>'
-                                                +'</div>'
-                                            +'</td>'
-                                        +'<td rowspan="2" align="right" valign="top" class="bg-amt-grey btrr-bbrr">'
-                                        +'<span class="amount-html">0.00</span>'
-                                        +'<input type="hidden" class="amount" name="amount[]" value="0">'
-                                +'</td>'
-                            +'</tr>'
-                            +'<tr class="d-none d-md-table-row d-lg-table-row">'
-                                +'<td colspan="4" class="dash-border-top bblr">'
-                                    +'<input type="text" class="f-14 border-0 w-100 desktop-description" name="item_summary[]" placeholder="@lang('placeholders.invoices.description')">'
-                                +'</td>'
-                            +'</tr>'
-                        +'</tbody>'
-                    +'</table>'
-                +'</div>'
-            +'<a href="javascript:;" class="d-flex align-items-center justify-content-center ml-3 remove-item"><i class="fa fa-times-circle f-20 text-lightest"></i></a>'
-            +'</div>';
+            var item = ' <div class="d-flex px-4 py-3 c-inv-desc item-row">' +
+                '<div class="c-inv-desc-table w-100 d-lg-flex d-md-flex d-block">' +
+                '<table width="100%">' +
+                '<tbody>' +
+                '<tr class="text-dark-grey font-weight-bold f-14">' +
+                '<td width="50%" class="border-0 inv-desc-mbl btlr">@lang('app.description')</td>' +
+                '<td width="10%" class="border-0" align="right">@lang('modules.invoices.qty')</td>' +
+                '<td width="10%" class="border-0" align="right">@lang('modules.invoices.unitPrice')</td>' +
+                '<td width="13%" class="border-0" align="right">@lang('modules.invoices.tax')</td>' +
+                '<td width="17%" class="border-0 bblr-mbl" align="right">@lang('modules.invoices.amount')</td>' +
+                '</tr>' +
+                '<tr>' +
+                '<td class="border-bottom-0 btrr-mbl btlr">' +
+                `<input type="text" class="f-14 border-0 w-100 item_name" name="item_name[]" placeholder="@lang('modules.expenses.itemName')">` +
+                '</td>' +
+                '<td class="border-bottom-0 d-block d-lg-none d-md-none">' +
+                `<input type="text" class="f-14 border-0 w-100 mobile-description" name="item_summary[]" placeholder="@lang('placeholders.invoices.description')">` +
+                '</td>' +
+                '<td class="border-bottom-0">' +
+                '<input type="number" min="1" class="f-14 border-0 w-100 text-right quantity" value="1" name="quantity[]">' +
+                '</td>' +
+                '<td class="border-bottom-0">' +
+                '<input type="number" min="1" class="f-14 border-0 w-100 text-right cost_per_item" placeholder="0.00" value="0" name="cost_per_item[]">' +
+                '</td>' +
+                '<td class="border-bottom-0">' +
+                '<div class="select-others height-35 rounded border-0">' +
+                '<select id="multiselect' + i + '" name="taxes[' + i + '][]" multiple="multiple" class="select-picker type customSequence" data-size="3">'
+            @foreach ($taxes as $tax)
+                +'<option data-rate="{{ $tax->rate_percent }}" value="{{ $tax->id }}">{{ $tax->tax_name }}: {{ $tax->rate_percent }}%</option>'
+            @endforeach +
+            '</select>' +
+            '</div>' +
+            '</td>' +
+            '<td rowspan="2" align="right" valign="top" class="bg-amt-grey btrr-bbrr">' +
+            '<span class="amount-html">0.00</span>' +
+            '<input type="hidden" class="amount" name="amount[]" value="0">' +
+            '</td>' +
+            '</tr>' +
+            '<tr class="d-none d-md-table-row d-lg-table-row">' +
+            '<td colspan="4" class="dash-border-top bblr">' +
+            '<input type="text" class="f-14 border-0 w-100 desktop-description" name="item_summary[]" placeholder="@lang('placeholders.invoices.description')">' +
+            '</td>' +
+            '</tr>' +
+            '</tbody>' +
+            '</table>' +
+            '</div>' +
+            '<a href="javascript:;" class="d-flex align-items-center justify-content-center ml-3 remove-item"><i class="fa fa-times-circle f-20 text-lightest"></i></a>' +
+            '</div>';
             $(item).hide().appendTo("#sortable").fadeIn(500);
-            $('#multiselect'+i).selectpicker();
+            $('#multiselect' + i).selectpicker();
 
         });
 
-        $('#saveInvoiceForm').on('click','.remove-item', function () {
+        $('#saveInvoiceForm').on('click', '.remove-item', function() {
             $(this).closest('.item-row').fadeOut(300, function() {
                 $(this).remove();
-                $('select.customSequence').each(function(index){
-                    $(this).attr('name', 'taxes['+index+'][]');
-                    $(this).attr('id', 'multiselect'+index+'');
+                $('select.customSequence').each(function(index) {
+                    $(this).attr('name', 'taxes[' + index + '][]');
+                    $(this).attr('id', 'multiselect' + index + '');
                 });
                 calculateTotal();
             });
         });
 
-        $('.save-form').click(function(){
+        $('.save-form').click(function() {
 
-            if(KTUtil.isMobileDevice()) {
+            if (KTUtil.isMobileDevice()) {
                 $('.desktop-description').remove();
             } else {
                 $('.mobile-description').remove();
@@ -438,7 +414,7 @@
             var discount = $('#discount_amount').html();
             var total = $('.sub-total-field').val();
 
-            if(parseFloat(discount) > parseFloat(total)){
+            if (parseFloat(discount) > parseFloat(total)) {
                 Swal.fire({
                     icon: 'error',
                     text: "{{ __('messages.discountExceed') }}",
@@ -455,16 +431,26 @@
                 return false;
             }
 
-            $.easyAjax({
-                url: "{{route('estimates.update', $estimate->id)}}",
-                container:'#saveInvoiceForm',
-                type: "POST",
-                blockUI: true,
-                redirect: true,
-                data: $('#saveInvoiceForm').serialize()
-            })
+            $.easyBlockUI('#saveInvoiceForm');
+            window.apiHttp.postUrlEncoded("{{ route('estimates.update', $estimate->id) }}", $('#saveInvoiceForm').serialize()).then(function(response) {
+                if (response.status == 'success' && response.redirectUrl) {
+                    window.location.href = response.redirectUrl;
+                }
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $.easyUnblockUI('#saveInvoiceForm');
+            });
         });
-
     </script>
     <script>
         $('#saveInvoiceForm').on('click', '.remove-item', function() {

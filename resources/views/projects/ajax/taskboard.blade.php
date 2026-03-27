@@ -100,18 +100,15 @@ $addTaskPermission = ($project->project_admin == user()->id) ? 'all' : user()->p
                 encodeURIComponent(endDate) + '&projectID=' + projectID + '&project_admin=' + projectAdmin +
                 '&searchText=' + encodeURIComponent(searchText);
 
-            $.easyAjax({
-                url: url,
-                container: '#taskboard-columns',
-                type: "GET",
-                success: function(response) {
-                    if (response.status == 'success') {
-                        $('#taskboard-columns').html(response.view);
-                        $("body").tooltip({
-                            selector: '[data-toggle="tooltip"]'
-                        });
-                    }
+            window.apiHttp.get(url).then(function(response) {
+                if (response.status == 'success') {
+                    $('#taskboard-columns').html(response.view);
+                    $("body").tooltip({
+                        selector: '[data-toggle="tooltip"]'
+                    });
                 }
+            }).catch(function(err) {
+                $.handleApiFormError(err);
             });
         }
 
@@ -148,27 +145,26 @@ $addTaskPermission = ($project->project_admin == user()->id) ? 'all' : user()->p
                 currentTotalTasks +
                 '&totalTasks=' + totalTasks + '&project_admin=' + projectAdmin;
 
-            $.easyAjax({
-                url: url,
-                container: '#drag-container-' + columnId,
-                blockUI: true,
-                type: "GET",
-                success: function(response) {
-                    $('#drag-container-' + columnId).append(response.view);
-                    if (response.load_more == 'show') {
-                        $('#drag-container-' + columnId).closest('.b-p-body').find(
-                            '.load-more-tasks');
+            $.easyBlockUI('#drag-container-' + columnId);
+            window.apiHttp.get(url).then(function(response) {
+                $('#drag-container-' + columnId).append(response.view);
+                if (response.load_more == 'show') {
+                    $('#drag-container-' + columnId).closest('.b-p-body').find(
+                        '.load-more-tasks');
 
-                    } else {
-                        $('#drag-container-' + columnId).closest('.b-p-body').find(
-                                '.load-more-tasks')
-                            .remove();
-                    }
-
-                    $("body").tooltip({
-                        selector: '[data-toggle="tooltip"]'
-                    });
+                } else {
+                    $('#drag-container-' + columnId).closest('.b-p-body').find(
+                            '.load-more-tasks')
+                        .remove();
                 }
+
+                $("body").tooltip({
+                    selector: '[data-toggle="tooltip"]'
+                });
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI('#drag-container-' + columnId);
             });
 
         });
@@ -230,18 +226,12 @@ $addTaskPermission = ($project->project_admin == user()->id) ? 'all' : user()->p
                 buttonsStyling: false
             }).then((result) => {
                 if (result.isConfirmed) {
-                    $.easyAjax({
-                        url: url,
-                        type: 'POST',
-                        data: {
-                            '_token': '{{ csrf_token() }}',
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == 'success') {
-                                window.location.reload();
-                            }
+                    window.apiHttp.delete(url, "{{ csrf_token() }}").then(function(response) {
+                        if (response.status == 'success') {
+                            window.location.reload();
                         }
+                    }).catch(function(err) {
+                        $.handleApiFormError(err);
                     });
                 }
             });
@@ -252,21 +242,19 @@ $addTaskPermission = ($project->project_admin == user()->id) ? 'all' : user()->p
             var boardColumnId = $(this).data('column-id');
             var type = $(this).data('type');
 
-            $.easyAjax({
-                url: "{{ route('taskboards.collapse_column') }}",
-                type: 'POST',
-                container: '#taskboard-columns',
-                blockUI: true,
-                data: {
-                    boardColumnId: boardColumnId,
-                    type: type,
-                    '_token': '{{ csrf_token() }}'
-                },
-                success: function(response) {
-                    if (response.status == 'success') {
-                        loadData();
-                    }
+            $.easyBlockUI('#taskboard-columns');
+            window.apiHttp.postUrlEncoded("{{ route('taskboards.collapse_column') }}", {
+                boardColumnId: boardColumnId,
+                type: type,
+                _token: '{{ csrf_token() }}'
+            }).then(function(response) {
+                if (response.status == 'success') {
+                    loadData();
                 }
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI('#taskboard-columns');
             });
         });
 

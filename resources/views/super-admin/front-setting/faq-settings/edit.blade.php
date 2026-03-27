@@ -41,19 +41,16 @@
     $('#save-faq').click(function() {
         document.getElementById('answer_text').value = document.getElementById('answer').children[0].innerHTML;
 
-        $.easyAjax({
-            url: "{{ route('superadmin.front-settings.faq-settings.update', $faq->id) }}",
-            container: '#updateFAQ',
-            type: "POST",
-            blockUI: true,
-            data: $('#updateFAQ').serialize(),
-            success: function(response) {
+        $.easyBlockUI('#updateFAQ');
+        window.apiHttp.postUrlEncoded("{{ route('superadmin.front-settings.faq-settings.update', $faq->id) }}", $('#updateFAQ').serialize())
+            .then(function(response) {
                 if (response.status == "success") {
                     $('#example').html(response.html);
                     $(MODAL_LG).modal('hide');
                 }
-            }
-        })
+            })
+            .catch(function (err) { $.handleApiFormError(err); })
+            .finally(function () { $.easyUnblockUI('#updateFAQ'); });
     });
 
     init('#updateFAQ');

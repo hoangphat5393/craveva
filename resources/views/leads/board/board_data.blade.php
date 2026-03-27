@@ -167,22 +167,17 @@ $changeStatusPermission = user()->permission('change_deal_stages');
              prioritys.push($(el).index());
          });
 
-         // update values for all tasks
-         $.easyAjax({
-             url: "{{ route('leadboards.update_index') }}",
-             type: 'POST',
-             container: '#taskboard-columns',
-             blockUI: true,
-             data: {
-                 boardColumnId: boardColumnId,
-                 movingTaskId: movingTaskId,
-                 taskIds: taskIds,
-                 prioritys: prioritys,
-                 '_token': '{{ csrf_token() }}'
-             },
-             success: function() {
-                let leadID = movingTaskId;
-                let statusID = boardColumnId;
+        // update values for all tasks
+        $.easyBlockUI('#taskboard-columns');
+        window.apiHttp.postUrlEncoded("{{ route('leadboards.update_index') }}", $.param({
+            boardColumnId: boardColumnId,
+            movingTaskId: movingTaskId,
+            taskIds: taskIds,
+            prioritys: prioritys,
+            '_token': '{{ csrf_token() }}'
+        })).then(function() {
+               let leadID = movingTaskId;
+               let statusID = boardColumnId;
 
                 if ($('#' + source.id + ' .task-card').length == 0) {
                     $('#' + source.id + ' .no-task-card').removeClass('d-none');
@@ -194,25 +189,22 @@ $changeStatusPermission = user()->permission('change_deal_stages');
                 $('#lead-column-count-' + sourceBoardColumnId).text(sourceColumnCount - 1);
                 $('#lead-column-count-' + boardColumnId).text(targetColumnCount + 1);
 
-                $.easyAjax({
-                    url: "{{ route('leadboards.get_stage_slug') }}",
-                    type: 'Post',
-                    data: {
-                        statusID: statusID,
-                        '_token': '{{ csrf_token() }}'
-                    },
-                    success:function(response) {
-                        if (response.slug === 'win' || response.slug === 'lost') {
-                            var modalUrl = "{{ route('deals.stage_change', ':id')}}?via=deal&leadID=" + leadID + "&statusID=" + statusID;
-                            modalUrl = modalUrl.replace(':id', leadID);
-                            $(MODAL_LG + ' ' + MODAL_HEADING).html('...');
-                            $.ajaxModal(MODAL_LG, modalUrl);
-                            return;
-                        }
-                    }
-                });
-             }
-         });
+                return window.apiHttp.postUrlEncoded("{{ route('leadboards.get_stage_slug') }}", $.param({
+                    statusID: statusID,
+                    '_token': '{{ csrf_token() }}'
+                }));
+            }).then(function(response) {
+                if (response && (response.slug === 'win' || response.slug === 'lost')) {
+                    var modalUrl = "{{ route('deals.stage_change', ':id')}}?via=deal&leadID=" + movingTaskId + "&statusID=" + boardColumnId;
+                    modalUrl = modalUrl.replace(':id', movingTaskId);
+                    $(MODAL_LG + ' ' + MODAL_HEADING).html('...');
+                    $.ajaxModal(MODAL_LG, modalUrl);
+                }
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI('#taskboard-columns');
+            });
 
      });
 

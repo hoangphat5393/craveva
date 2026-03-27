@@ -169,36 +169,30 @@
         document.getElementById('description_text').value = document.getElementById('description').children[0]
             .innerHTML;
 
-        $.easyAjax({
-            url: "{{ route('superadmin.front-settings.footer-settings.store') }}",
-            container: '#createFooter',
-            type: "POST",
-            blockUI: true,
-            data: $('#createFooter').serialize(),
-            success: function(response) {
+        $.easyBlockUI('#createFooter');
+        window.apiHttp.postUrlEncoded("{{ route('superadmin.front-settings.footer-settings.store') }}", $('#createFooter').serialize())
+            .then(function(response) {
                 if (response.status == "success") {
                     $('#example').html(response.html);
                     $(MODAL_LG).modal('hide');
                 }
-            }
-        })
+            })
+            .catch(function (err) { $.handleApiFormError(err); })
+            .finally(function () { $.easyUnblockUI('#createFooter'); });
     });
 
 
     $('#title').on('change', function () {
         var title = $(this).val();
         var csrf = "{{ csrf_token() }}";
-        $.easyAjax({
-            url: "{{ route('superadmin.front-settings.footer-settings.generate_slug') }}",
-            type: "POST",
-            data: {
+        window.apiHttp.postUrlEncoded("{{ route('superadmin.front-settings.footer-settings.generate_slug') }}", {
                 title: title,
                 _token: csrf
-            },
-            success: function (response) {
+            })
+            .then(function (response) {
                 $('#slug').val(response.slug);
-            }
-        })
+            })
+            .catch(function (err) { $.handleApiFormError(err); });
     });
     init('#createFooter');
 </script>

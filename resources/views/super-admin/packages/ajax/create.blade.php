@@ -275,15 +275,36 @@
             }
         });
         $('#save-package-form').click(function () {
-            $.easyAjax({
-                url: "{{ route('superadmin.packages.store') }}",
-                container: '#save-package-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-package-form",
-                data: $('#save-package-data-form').serialize(),
-            });
+            const url = "{{ route('superadmin.packages.store') }}";
+            const $btn = $('#save-package-form');
+            const prev = $btn.html();
+            $.easyBlockUI('#save-package-data-form');
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+            window.apiHttp.postUrlEncoded(url, $('#save-package-data-form').serialize())
+                .then(function (response) {
+                    if (response.status === 'success') {
+                        if (response.action === 'redirect' && response.url) {
+                            window.location.href = response.url;
+                        } else if (typeof response.message !== 'undefined') {
+                            Swal.fire({
+                                icon: 'success',
+                                text: response.message,
+                                toast: true,
+                                position: 'top-end',
+                                timer: 3000,
+                                timerProgressBar: true,
+                                showConfirmButton: false,
+                                customClass: { confirmButton: 'btn btn-primary' },
+                                showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                            });
+                        }
+                    }
+                })
+                .catch(function (err) { $.handleApiFormError(err); })
+                .finally(function () {
+                    $.easyUnblockUI('#save-package-data-form');
+                    $btn.prop('disabled', false).html(prev);
+                });
         });
          $('#package_type').on('change', function() {
             let selectedValue = $(this).val();

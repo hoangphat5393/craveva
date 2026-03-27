@@ -423,21 +423,15 @@
 
             $('body').on('click', '#save-form', function() {
 
-                $.easyAjax({
-                    url: "{{ route('save_application') }}",
-                    container: '#applyForm',
-                    type: "POST",
-                    disableButton: true,
-                    blockUI: true,
-                    file: true,
-                    redirect: true,
-                    data: $('#applyForm').serialize(),
-                    success: function(response) {
+                window.apiHttp.postUrlEncoded("{{ route('save_application') }}", $('#applyForm').serialize())
+                    .then(function(response) {
                         if (response.status == "success") {
                             window.location.href = response.redirectUrl;
                         }
-                    }
-                });
+                    })
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    });
             });
 
             @if ($job->is_dob_require)

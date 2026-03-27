@@ -70,19 +70,22 @@
     });
 
     $('#edit-category').click(function () {
-        $.easyAjax({
-            container: '#editCategory',
-            type: "PUT",
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-category",
-            url: "{{ route('cybersecurity.login-expiry.update', $loginExpiry->id) }}",
-            data: $('#editCategory').serialize(),
-            success: function (response) {
+        window.apiHttp.put(
+            "{{ route('cybersecurity.login-expiry.update', $loginExpiry->id) }}",
+            $('#editCategory').serialize(),
+            {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                },
+            }
+        )
+            .then(function (response) {
                 if (response.status == 'success') {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch(function (err) {
+                $.handleApiFormError(err);
+            });
     });
 </script>

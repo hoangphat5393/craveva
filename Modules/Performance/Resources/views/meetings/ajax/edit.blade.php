@@ -99,21 +99,20 @@
             let ele = $('#monthlyOn');
             let url = '{{ route('meetings.monthly_on') }}';
             setTimeout(() => {
-                $.easyAjax({
-                    url: url,
-                    type: "POST",
-                    data: {
+                window.apiHttp.postUrlEncoded(url, {
                         _token: "{{ csrf_token() }}",
                         date: $('#meeting_date').val()
-                    },
-                    success: function(response) {
+                    })
+                    .then(function(response) {
                         @if (App::environment('development'))
                             $('#event_name').val(response.message);
                         @endif
                         ele.html(response.message);
                         $('#repeat_type').selectpicker('refresh');
-                    }
-                });
+                    })
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    });
             }, 100);
         }
 
@@ -151,21 +150,20 @@
 
         // Submit Meeting Form
         $('#update-meeting-form').click(function() {
-            $.easyAjax({
-                url: "{{ route('meetings.update', $meeting->id) }}",
-                container: '#update-meeting-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#update-meeting-form",
-                data: $('#update-meeting-data-form').serialize(),
-                success: function(response) {
+            $.easyBlockUI('#update-meeting-data-form');
+            window.apiHttp.postUrlEncoded("{{ route('meetings.update', $meeting->id) }}", $('#update-meeting-data-form').serialize())
+                .then(function(response) {
                     if (response.status == 'success') {
                         let redirectUrl = response.redirectUrl;
                         window.location.href = redirectUrl;
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#update-meeting-data-form');
+                });
         });
 
         monthlyOn();

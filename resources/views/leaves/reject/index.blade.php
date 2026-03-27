@@ -1,7 +1,6 @@
 <div class="modal-header">
     <h5 class="modal-title" id="modelHeading">@lang('app.leavesRejectReason')</h5>
-    <button type="button"  class="close" data-dismiss="modal" aria-label="Close"><span
-            aria-hidden="true">×</span></button>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
 </div>
 <div class="modal-body">
     <div class="portlet-body">
@@ -10,8 +9,7 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="form-group my-3">
-                            <x-forms.textarea class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('app.reason')"
-                                fieldName="reason" fieldId="reason" fieldRequired="true">
+                            <x-forms.textarea class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('app.reason')" fieldName="reason" fieldId="reason" fieldRequired="true">
                             </x-forms.textarea>
                         </div>
                     </div>
@@ -28,29 +26,38 @@
 <script>
     // save leave
     $('#save-leave').click(function() {
-        let url = '{{ route("leaves.leave_action") }}';
+        let url = '{{ route('leaves.leave_action') }}';
         let action = '{{ $leaveAction }}';
         let leaveId = '{{ $leaveID }}';
-        let type = '{{$type}}';
+        let type = '{{ $type }}';
         let userId = $('.leave-action-reject').data('user-id');
         let reason = $('#reason').val();
 
-        $.easyAjax({
-            url: url,
-            type: "POST",
-            blockUI: true,
-            data: { 'action': action,
-                'leaveId': leaveId,
-                '_token': '{{ csrf_token() }}',
-                'reason': reason,
-                'userId': userId,
-                'type' : type
-            },
-            success: function(response) {
-                if (response.status == "success") {
-                    window.location.reload();
-                }
+        $.easyBlockUI('.modal-content');
+        window.apiHttp.postUrlEncoded(url, {
+            action: action,
+            leaveId: leaveId,
+            _token: '{{ csrf_token() }}',
+            reason: reason,
+            userId: userId,
+            type: type
+        }).then(function(response) {
+            if (response.status == "success") {
+                window.location.reload();
             }
-        })
+        }).catch(function(err) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    text: err.message,
+                    toast: true,
+                    position: 'top-end',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            }
+        }).finally(function() {
+            $.easyUnblockUI('.modal-content');
+        });
     });
 </script>

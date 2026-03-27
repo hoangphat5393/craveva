@@ -119,21 +119,21 @@
 
             var data = projectData+='&mention_user_id=' + mention_user_id;
 
-            $.easyAjax({
-                url: url,
-                container: '#save-project-note-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-project-note-form",
-                data: data,
-                success: function(response) {
-                    if (response.status == 'success') {
-                        location.reload();
-                        window.location.href = response.redirectUrl;
+            var $btn = $('#save-project-note-form');
+            var prev = $btn.html();
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+            $.easyBlockUI('#save-project-note-data-form');
+            window.apiHttp.postUrlEncoded(url, data).then(function(response) {
+                if (response.status == 'success') {
+                    location.reload();
+                    window.location.href = response.redirectUrl;
 
-                    }
                 }
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI('#save-project-note-data-form');
+                $btn.prop('disabled', false).html(prev);
             })
         });
 

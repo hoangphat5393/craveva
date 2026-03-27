@@ -69,21 +69,19 @@
 
         $('#save-letter').click(function() {
             var url = "{{ route('letter.template.store') }}";
-
-            $.easyAjax({
-                url: url,
-                container: '#createLetter',
-                type: "POST",
-                blockUI: true,
-                buttonSelector: "#save-letter",
-                disableButton: true,
-                data: $('#createLetter').serialize(),
-                success: function(response) {
-                    if (response.status == 'success') {
-                        window.location.href = response.redirectUrl;
-                    }
+            var $btn = $('#save-letter');
+            $btn.prop('disabled', true);
+            $.easyBlockUI('#createLetter');
+            window.apiHttp.postUrlEncoded(url, $('#createLetter').serialize()).then(function(response) {
+                if (response.status == 'success') {
+                    window.location.href = response.redirectUrl;
                 }
-            })
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $btn.prop('disabled', false);
+                $.easyUnblockUI('#createLetter');
+            });
         });
 
         const clipboard = new ClipboardJS('.btn-copy');

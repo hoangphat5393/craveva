@@ -1,7 +1,6 @@
 <div class="modal-header">
     <h5 class="modal-title" id="modelHeading">@lang('recruit::app.menu.add') @lang('recruit::app.menu.skill') </h5>
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-            aria-hidden="true">×</span></button>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
 </div>
 <div class="modal-body" id="skill-table">
     <x-table class="table-bordered" headType="thead-light">
@@ -28,9 +27,7 @@
             <div class="col-sm-12">
                 <input type="hidden" value="{{ $selectedSkills }}" name="selectedSkills">
 
-                <x-forms.text fieldId="names" :fieldLabel="__('recruit::app.menu.skills')" fieldName="names"
-                              fieldRequired="true"
-                              :fieldPlaceholder="__('recruit::modules.skill.skillname')">
+                <x-forms.text fieldId="names" :fieldLabel="__('recruit::app.menu.skills')" fieldName="names" fieldRequired="true" :fieldPlaceholder="__('recruit::modules.skill.skillname')">
                 </x-forms.text>
             </div>
         </div>
@@ -42,14 +39,12 @@
 </div>
 
 <script>
-    $('body').on('click', '.delete-row', function () {
+    $('body').on('click', '.delete-row', function() {
 
 
         var id = $(this).data('row-id');
         var url = "{{ route('job-skills.destroy', ':id') }}";
         url = url.replace(':id', id);
-
-        var token = "{{ csrf_token() }}";
 
         Swal.fire({
             title: "@lang('messages.sweetAlertTitle')",
@@ -70,78 +65,61 @@
             buttonsStyling: false
         }).then((result) => {
             if (result.isConfirmed) {
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function (response) {
-                        if (response.status == "success") {
-                            $('#row-' + id).fadeOut();
-                            $('#selectEmployeeData').html(response.data);
-                            $('#selectEmployeeData').selectpicker('refresh');
-                        }
+                window.apiHttp.delete(url, {
+                    _token: "{{ csrf_token() }}"
+                }).then(function(response) {
+                    if (response.data.status == "success") {
+                        $('#row-' + id).fadeOut();
+                        $('#selectEmployeeData').html(response.data.data);
+                        $('#selectEmployeeData').selectpicker('refresh');
                     }
+                }).catch(function(err) {
+                    $.handleApiFormError(err);
                 });
             }
         });
 
     });
 
-    $('body').off('click', "#save-skill").on('click', '#save-skill', function () {
+    $('body').off('click', "#save-skill").on('click', '#save-skill', function() {
         var url = "{{ route('job-skills.storeSkill') }}";
-        $.easyAjax({
-            url: url,
-            container: '#createSkill',
-            type: "POST",
-            data: $('#createSkill').serialize(),
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-skill",
-            success: function (response) {
-                if (response.status == 'success') {
-                    if (response.status == 'success') {
-                        $('#selectEmployeeData').html(response.data);
-                        $('#selectEmployeeData').selectpicker('refresh');
-                        $(MODAL_LG).modal('hide');
-                    }
+        window.apiHttp.postUrlEncoded(url, $('#createSkill').serialize())
+            .then(function(response) {
+                if (response.data.status == 'success') {
+                    $('#selectEmployeeData').html(response.data.data);
+                    $('#selectEmployeeData').selectpicker('refresh');
+                    $(MODAL_LG).modal('hide');
                 }
-            }
-        })
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            });
     });
 
 
-    $('#skill-table [contenteditable=true]').focus(function () {
+    $('#skill-table [contenteditable=true]').focus(function() {
         $(this).data("initialText", $(this).html());
         let rowId = $(this).data('row-id');
-    }).blur(function () {
+    }).blur(function() {
         // ...if content is different...
         if ($(this).data("initialText") !== $(this).html()) {
             let id = $(this).data('row-id');
             let value = $(this).html();
             var url = "{{ route('job-skills.updateSkill', ':id') }}";
             url = url.replace(':id', id);
-            var token = "{{ csrf_token() }}";
             var selectedSkills = "{{ $selectedSkills }}";
-            $.easyAjax({
-                url: url,
-                container: '#row-' + id,
-                type: "POST",
-                data: {
-                    'name': value,
-                    '_token': token,
-                    'selectedSkills': selectedSkills
-                },
-                blockUI: true,
-                success: function (response) {
-                    if (response.status == 'success') {
-                        $('#selectEmployeeData').html(response.data);
-                        $('#selectEmployeeData').selectpicker('refresh');
-                    }
+            window.apiHttp.postUrlEncoded(url, {
+                name: value,
+                _token: "{{ csrf_token() }}",
+                selectedSkills: selectedSkills
+            }).then(function(response) {
+                if (response.data.status == 'success') {
+                    $('#selectEmployeeData').html(response.data.data);
+                    $('#selectEmployeeData').selectpicker('refresh');
                 }
-            })
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            });
         }
     });
 </script>

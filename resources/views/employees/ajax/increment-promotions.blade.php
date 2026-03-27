@@ -5,16 +5,12 @@
     @endif
     @if ($manageIncrementPermission != 'none')
         <div class="d-flex justify-content-between action-bar mb-3">
-            <x-forms.link-primary
-                class="mr-3 float-left add-promotion"
-                link="javascript:;"
-                icon="plus">
+            <x-forms.link-primary class="mr-3 float-left add-promotion" link="javascript:;" icon="plus">
                 @lang('modules.incrementPromotion.addPromotion')
             </x-forms.link-primary>
         </div>
     @endif
-    <x-cards.data class="mb-4" :title="__('modules.incrementPromotion.incrementPromotions')" padding="false"
-        otherClasses="h-200 p-activity-detail cal-information">
+    <x-cards.data class="mb-4" :title="__('modules.incrementPromotion.incrementPromotions')" padding="false" otherClasses="h-200 p-activity-detail cal-information">
         <!-- Timeline -->
         <div class="list-group lg-alt lg-even-black">
             @forelse ($careerProgress as $progress)
@@ -30,29 +26,29 @@
                                     @php
                                         $date = \Carbon\Carbon::parse($progress['data']->date);
                                     @endphp
-                                    @if($progress['type'] === 'promotion' && isset($progress['data']->date))
-                                        @if($date->isToday())
-                                            @if($progress['data']->promotion == 1)
+                                    @if ($progress['type'] === 'promotion' && isset($progress['data']->date))
+                                        @if ($date->isToday())
+                                            @if ($progress['data']->promotion == 1)
                                                 (@lang('modules.incrementPromotion.promotion') @lang('app.fromToday'))
                                             @else
                                                 (@lang('modules.decrementPromotion.demotion') @lang('app.fromToday'))
                                             @endif
                                         @else
-                                            @if($progress['data']->promotion == 1)
+                                            @if ($progress['data']->promotion == 1)
                                                 (@lang('modules.incrementPromotion.promotion') {{ $date->diffForHumans() }})
                                             @else
                                                 (@lang('modules.decrementPromotion.demotion') {{ $date->diffForHumans() }})
                                             @endif
                                         @endif
                                     @elseif($progress['type'] === 'increment' && isset($progress['data']->date) && module_enabled('Payroll') && in_array('payroll', user_modules()))
-                                        @if($date->isToday())
-                                            @if($progress['data']->promotion == 1)
+                                        @if ($date->isToday())
+                                            @if ($progress['data']->promotion == 1)
                                                 (@lang('modules.incrementPromotion.increment') @lang('app.fromToday'))
                                             @else
                                                 (@lang('modules.decrementPromotion.decrement') @lang('app.fromToday'))
                                             @endif
                                         @else
-                                            @if($progress['data']->promotion == 1)
+                                            @if ($progress['data']->promotion == 1)
                                                 (@lang('modules.incrementPromotion.increment') {{ $date->diffForHumans() }})
                                             @else
                                                 (@lang('modules.decrementPromotion.decrement') {{ $date->diffForHumans() }})
@@ -62,21 +58,18 @@
                                 </span>
                             </div>
 
-                            @if($progress['type'] === 'promotion' && $manageIncrementPermission == 'all')
+                            @if ($progress['type'] === 'promotion' && $manageIncrementPermission == 'all')
                                 <div class="col-md-2 text-right">
                                     <div class="dropdown">
-                                        <button class="btn f-14 px-0 py-0 text-dark-grey dropdown-toggle"
-                                            type="button" data-toggle="dropdown" aria-haspopup="true"
-                                            aria-expanded="false">
+                                        <button class="btn f-14 px-0 py-0 text-dark-grey dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             <i class="fa fa-ellipsis-h"></i>
                                         </button>
 
-                                        <div class="dropdown-menu dropdown-menu-right border-grey rounded b-shadow-4 p-0"
-                                            aria-labelledby="dropdownMenuLink" tabindex="0">
-                                            <a class="dropdown-item update-promotion" href="javascript:;" data-promotion-id="{{$progress['data']->id}}">
+                                        <div class="dropdown-menu dropdown-menu-right border-grey rounded b-shadow-4 p-0" aria-labelledby="dropdownMenuLink" tabindex="0">
+                                            <a class="dropdown-item update-promotion" href="javascript:;" data-promotion-id="{{ $progress['data']->id }}">
                                                 <i class="fa fa-edit mr-1"></i> @lang('app.edit')
                                             </a>
-                                            <a class="dropdown-item delete-promotion" href="javascript:;" data-promotion-id="{{$progress['data']->id}}">
+                                            <a class="dropdown-item delete-promotion" href="javascript:;" data-promotion-id="{{ $progress['data']->id }}">
                                                 <i class="fa fa-trash mr-1"></i> @lang('app.delete')
                                             </a>
                                         </div>
@@ -85,7 +78,7 @@
                             @endif
                         </div>
 
-                        @if($progress['type'] === 'increment' && module_enabled('Payroll') &&  in_array('payroll', user_modules()))
+                        @if ($progress['type'] === 'increment' && module_enabled('Payroll') && in_array('payroll', user_modules()))
                             <div class="mb-2">
                                 <span class="badge badge-success">@lang('modules.incrementPromotion.increment')</span>
                             </div>
@@ -93,11 +86,10 @@
                                 <li>@lang('modules.incrementPromotion.salary'): {{ currency_format($progress['netSalary'], $currency, true) }} ({{ $progress['percentage'] }}% @lang('modules.incrementPromotion.increment'))</li>
                             </ul>
                         @elseif($progress['type'] === 'promotion')
-
                             <div class="mb-2">
                                 <span class="badge badge-warning">
-                                    @if($progress['data']->promotion == 1)
-                                     @lang('modules.incrementPromotion.promotion')
+                                    @if ($progress['data']->promotion == 1)
+                                        @lang('modules.incrementPromotion.promotion')
                                     @else
                                         @lang('modules.incrementPromotion.demotion')
                                     @endif
@@ -127,7 +119,7 @@
                 </div>
             @empty
                 <div class="list-group-item align-items-center">
-                    <x-cards.no-record icon="map-marker-alt" :message="__('messages.noRecordFound')"/>
+                    <x-cards.no-record icon="map-marker-alt" :message="__('messages.noRecordFound')" />
                 </div>
             @endforelse
         </div>
@@ -138,14 +130,14 @@
 
 <script>
     // Add new emergency contact modal
-    $('body').on('click', '.add-promotion', function () {
+    $('body').on('click', '.add-promotion', function() {
         var url = "{{ route('promotions.create') }}?user_id=" + "{{ $employee->id }}";
 
         $(MODAL_LG + ' ' + MODAL_HEADING).html('...');
         $.ajaxModal(MODAL_LG, url);
     });
 
-    $('body').on('click', '.update-promotion', function () {
+    $('body').on('click', '.update-promotion', function() {
         let id = $(this).data('promotion-id');
 
         var url = "{{ route('promotions.edit', [':id']) }}";
@@ -155,7 +147,7 @@
         $.ajaxModal(MODAL_LG, url);
     });
 
-    $('body').on('click', '.delete-promotion', function () {
+    $('body').on('click', '.delete-promotion', function() {
 
         let id = $(this).data('promotion-id');
 
@@ -184,22 +176,26 @@
 
                 var token = "{{ csrf_token() }}";
 
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    blockUI: true,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function (response) {
-                        if (response.status == "success") {
-                            window.location.reload();
-                        }
+                $.easyBlockUI();
+                window.apiHttp.delete(url, token).then(function(response) {
+                    if (response.status == "success") {
+                        window.location.reload();
                     }
+                }).catch(function(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
+                    }
+                }).finally(function() {
+                    $.easyUnblockUI();
                 });
             }
         });
     });
-
 </script>

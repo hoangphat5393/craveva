@@ -6,7 +6,7 @@
         <x-form id="save-attendance-data-form">
             <div class="add-client bg-white rounded">
                 <h4 class="mb-0 p-20 f-21 font-weight-normal  border-bottom-grey">
-                        @lang('app.attendanceDetails')</h4>
+                    @lang('app.attendanceDetails')</h4>
                 <div class="row p-20">
 
                     <div class="col-lg-3 col-md-6">
@@ -15,12 +15,10 @@
                                 <x-forms.label class="mt-3" fieldId=department_id :fieldLabel="__('app.department')" fieldRequired="true">
                                 </x-forms.label>
                                 <input type="hidden" name="department" id="department_id" value="{{ $defaultAssign->employeeDetail->department_id }}">
-                                <input type="text" value="{{ $defaultAssign->employeeDetail->department->team_name }}"
-                                    class="form-control height-35 f-15 readonly-background" readonly>
+                                <input type="text" value="{{ $defaultAssign->employeeDetail->department->team_name }}" class="form-control height-35 f-15 readonly-background" readonly>
                             </div>
                         @else
-                            <x-forms.select fieldId="department_id" :fieldLabel="__('app.department')"
-                                fieldName="department_id" search="true">
+                            <x-forms.select fieldId="department_id" :fieldLabel="__('app.department')" fieldName="department_id" search="true">
                                 <option value="0">--</option>
                                 @foreach ($departments as $team)
                                     <option value="{{ $team->id }}">{{ $team->team_name }}</option>
@@ -35,19 +33,16 @@
                                 <x-forms.label class="mt-3" fieldId=selectEmployee :fieldLabel="__('app.name')" fieldRequired="true">
                                 </x-forms.label>
                                 <input type="hidden" name="user_id[]" id="selectEmployee" value="{{ $defaultAssign->id }}">
-                                <input type="text" value="{{ $defaultAssign->name }}"
-                                    class="form-control height-35 f-15 readonly-background" readonly>
+                                <input type="text" value="{{ $defaultAssign->name }}" class="form-control height-35 f-15 readonly-background" readonly>
                             </div>
                         @else
                             <div class="form-group my-3">
-                                <x-forms.label fieldId="selectEmployee" :fieldLabel="__('app.menu.employees')"
-                                fieldRequired="true">
+                                <x-forms.label fieldId="selectEmployee" :fieldLabel="__('app.menu.employees')" fieldRequired="true">
                                 </x-forms.label>
                                 <x-forms.input-group>
-                                    <select class="form-control multiple-users" multiple name="user_id[]"
-                                        id="selectEmployee" data-live-search="true" data-size="8">
+                                    <select class="form-control multiple-users" multiple name="user_id[]" id="selectEmployee" data-live-search="true" data-size="8">
                                         @foreach ($employees as $item)
-                                            <x-user-option :user="$item" :pill="true"/>
+                                            <x-user-option :user="$item" :pill="true" />
                                         @endforeach
                                     </select>
                                 </x-forms.input-group>
@@ -60,57 +55,46 @@
 
                     <div class="col-lg-3 col-md-6">
                         <div class="form-group my-3">
-                            <x-forms.label fieldId="mark_attendance_by_month" :fieldLabel="__('modules.attendance.markAttendance'). ' ' . __('app.by')">
+                            <x-forms.label fieldId="mark_attendance_by_month" :fieldLabel="__('modules.attendance.markAttendance') . ' ' . __('app.by')">
                             </x-forms.label>
                             <div class="d-flex">
-                                <x-forms.radio fieldId="mark_attendance_by_month" :fieldLabel="__('app.month')" fieldName="mark_attendance_by"
-                                    fieldValue="month" checked="true">
+                                <x-forms.radio fieldId="mark_attendance_by_month" :fieldLabel="__('app.month')" fieldName="mark_attendance_by" fieldValue="month" checked="true">
                                 </x-forms.radio>
-                                <x-forms.radio fieldId="mark_attendance_by_dates" :fieldLabel="__('app.date')" fieldValue="date"
-                                    fieldName="mark_attendance_by"></x-forms.radio>
+                                <x-forms.radio fieldId="mark_attendance_by_dates" :fieldLabel="__('app.date')" fieldValue="date" fieldName="mark_attendance_by"></x-forms.radio>
                             </div>
                         </div>
                     </div>
 
                     <div class="col-lg-3 col-md-6 attendance_by_month">
-                        <x-forms.select fieldId="year" :fieldLabel="__('app.year')" fieldName="year" search="true"
-                            fieldRequired="true">
+                        <x-forms.select fieldId="year" :fieldLabel="__('app.year')" fieldName="year" search="true" fieldRequired="true">
                             <option value="">--</option>
                             @for ($i = $year; $i >= $year - 4; $i--)
-                                <option @if ($i == $year) selected @endif
-                                    value="{{ $i }}">{{ $i }}</option>
+                                <option @if ($i == $year) selected @endif value="{{ $i }}">{{ $i }}</option>
                             @endfor
                         </x-forms.select>
                     </div>
 
                     <div class="col-lg-3 col-md-6 attendance_by_month">
 
-                        <x-forms.select fieldId="month" :fieldLabel="__('app.month')" fieldName="month" search="true"
-                            fieldRequired="true">
-                            <x-forms.months :selectedMonth="$month" fieldRequired="true"/>
+                        <x-forms.select fieldId="month" :fieldLabel="__('app.month')" fieldName="month" search="true" fieldRequired="true">
+                            <x-forms.months :selectedMonth="$month" fieldRequired="true" />
                         </x-forms.select>
                     </div>
 
                     <div class="col-lg-4 col-md-6 d-none multi_date_div">
-                        <x-forms.text :fieldLabel="__('messages.selectMultipleDates')" fieldName="multi_date"
-                            fieldId="multi_date" :fieldPlaceholder="__('messages.selectMultipleDates')"
-                            :fieldValue="Carbon\Carbon::today()->translatedFormat(company()->date_format)" />
+                        <x-forms.text :fieldLabel="__('messages.selectMultipleDates')" fieldName="multi_date" fieldId="multi_date" :fieldPlaceholder="__('messages.selectMultipleDates')" :fieldValue="Carbon\Carbon::today()->translatedFormat(company()->date_format)" />
                     </div>
 
                 </div>
                 <div class="row px-4">
                     <div class="col-lg-4 col-md-6 col-xl-3">
                         <div class="bootstrap-timepicker timepicker">
-                            <x-forms.text :fieldLabel="__('modules.attendance.clock_in')"
-                                :fieldPlaceholder="__('placeholders.hours')" fieldName="clock_in_time"
-                                fieldId="start_time" fieldRequired="true"
-                                :fieldValue="\Carbon\Carbon::createFromFormat('H:i:s', attendance_setting()->shift->office_start_time)->format(company()->time_format)" />
+                            <x-forms.text :fieldLabel="__('modules.attendance.clock_in')" :fieldPlaceholder="__('placeholders.hours')" fieldName="clock_in_time" fieldId="start_time" fieldRequired="true" :fieldValue="\Carbon\Carbon::createFromFormat('H:i:s', attendance_setting()->shift->office_start_time)->format(company()->time_format)" />
                         </div>
                     </div>
 
                     <div class="col-lg-3 col-md-6">
-                        <x-forms.select fieldId="location" :fieldLabel="__('app.location')" fieldName="location"
-                        search="true">
+                        <x-forms.select fieldId="location" :fieldLabel="__('app.location')" fieldName="location" search="true">
                             @foreach ($location as $locations)
                                 <option @if ($locations->is_default == 1) selected @endif value="{{ $locations->id }}">
                                     {{ $locations->location }}</option>
@@ -119,16 +103,15 @@
                     </div>
 
                     <div class="col-lg-3 col-md-3">
-                        <x-forms.select fieldId="work_from_type" :fieldLabel="__('modules.attendance.working_from')" fieldName="work_from_type" fieldRequired="true"
-                            search="true" >
-                                <option value="office">@lang('modules.attendance.office')</option>
-                                <option value="home">@lang('modules.attendance.home')</option>
-                                <option value="other">@lang('modules.attendance.other')</option>
+                        <x-forms.select fieldId="work_from_type" :fieldLabel="__('modules.attendance.working_from')" fieldName="work_from_type" fieldRequired="true" search="true">
+                            <option value="office">@lang('modules.attendance.office')</option>
+                            <option value="home">@lang('modules.attendance.home')</option>
+                            <option value="other">@lang('modules.attendance.other')</option>
                         </x-forms.select>
                     </div>
 
                     <div class="col-lg-3 col-md-6" id="other_place" style="display:none">
-                        <x-forms.text fieldId="working_from" :fieldLabel="__('modules.attendance.otherPlace')" fieldName="working_from" fieldRequired="true" >
+                        <x-forms.text fieldId="working_from" :fieldLabel="__('modules.attendance.otherPlace')" fieldName="working_from" fieldRequired="true">
                         </x-forms.text>
                     </div>
 
@@ -137,16 +120,12 @@
                 <div class="row px-4">
                     <div class="col-lg-4 col-md-6 col-xl-3">
                         <div class="bootstrap-timepicker timepicker">
-                            <x-forms.text :fieldLabel="__('modules.attendance.clock_out')"
-                                :fieldPlaceholder="__('placeholders.hours')" fieldName="clock_out_time"
-                                fieldId="end_time"
-                                :fieldValue="\Carbon\Carbon::createFromFormat('H:i:s', attendance_setting()->shift->office_end_time)->format(company()->time_format)" />
+                            <x-forms.text :fieldLabel="__('modules.attendance.clock_out')" :fieldPlaceholder="__('placeholders.hours')" fieldName="clock_out_time" fieldId="end_time" :fieldValue="\Carbon\Carbon::createFromFormat('H:i:s', attendance_setting()->shift->office_end_time)->format(company()->time_format)" />
                         </div>
                     </div>
 
                     <div class="col-lg-3 col-md-6">
-                        <x-forms.select fieldId="clock_out_time_location_id" :fieldLabel="__('app.location')" fieldName="clock_out_time_location_id"
-                        search="true">
+                        <x-forms.select fieldId="clock_out_time_location_id" :fieldLabel="__('app.location')" fieldName="clock_out_time_location_id" search="true">
                             @foreach ($location as $locations)
                                 <option @if ($locations->is_default == 1) selected @endif value="{{ $locations->id }}">
                                     {{ $locations->location }}</option>
@@ -155,16 +134,15 @@
                     </div>
 
                     <div class="col-lg-3 col-md-3">
-                        <x-forms.select fieldId="clock_out_time_work_from_type" :fieldLabel="__('modules.attendance.working_from')" fieldName="clock_out_time_work_from_type" fieldRequired="true"
-                            search="true" >
-                                <option value="office">@lang('modules.attendance.office')</option>
-                                <option value="home">@lang('modules.attendance.home')</option>
-                                <option value="other">@lang('modules.attendance.other')</option>
+                        <x-forms.select fieldId="clock_out_time_work_from_type" :fieldLabel="__('modules.attendance.working_from')" fieldName="clock_out_time_work_from_type" fieldRequired="true" search="true">
+                            <option value="office">@lang('modules.attendance.office')</option>
+                            <option value="home">@lang('modules.attendance.home')</option>
+                            <option value="other">@lang('modules.attendance.other')</option>
                         </x-forms.select>
                     </div>
 
                     <div class="col-lg-3 col-md-6" id="clock_out_other_place" style="display:none">
-                        <x-forms.text fieldId="clock_out_time_working_from" :fieldLabel="__('modules.attendance.otherPlace')" fieldName="clock_out_time_working_from" fieldRequired="true" >
+                        <x-forms.text fieldId="clock_out_time_working_from" :fieldLabel="__('modules.attendance.otherPlace')" fieldName="clock_out_time_working_from" fieldRequired="true">
                         </x-forms.text>
                     </div>
                 </div>
@@ -176,11 +154,9 @@
                             <x-forms.label fieldId="late_yes" :fieldLabel="__('modules.attendance.late')">
                             </x-forms.label>
                             <div class="d-flex">
-                                <x-forms.radio fieldId="late_yes" :fieldLabel="__('app.yes')" fieldName="late"
-                                    fieldValue="yes">
+                                <x-forms.radio fieldId="late_yes" :fieldLabel="__('app.yes')" fieldName="late" fieldValue="yes">
                                 </x-forms.radio>
-                                <x-forms.radio fieldId="late_no" :fieldLabel="__('app.no')" fieldValue="no"
-                                    fieldName="late" checked="true"></x-forms.radio>
+                                <x-forms.radio fieldId="late_no" :fieldLabel="__('app.no')" fieldValue="no" fieldName="late" checked="true"></x-forms.radio>
                             </div>
                         </div>
                     </div>
@@ -190,11 +166,9 @@
                             <x-forms.label fieldId="half_day_yes" :fieldLabel="__('modules.attendance.halfDay')">
                             </x-forms.label>
                             <div class="d-flex">
-                                <x-forms.radio fieldId="half_day_yes" :fieldLabel="__('app.yes')" fieldName="half_day"
-                                    fieldValue="yes">
+                                <x-forms.radio fieldId="half_day_yes" :fieldLabel="__('app.yes')" fieldName="half_day" fieldValue="yes">
                                 </x-forms.radio>
-                                <x-forms.radio fieldId="half_day_no" :fieldLabel="__('app.no')" fieldValue="no"
-                                    fieldName="half_day" checked="true"></x-forms.radio>
+                                <x-forms.radio fieldId="half_day_no" :fieldLabel="__('app.no')" fieldValue="no" fieldName="half_day" checked="true"></x-forms.radio>
                             </div>
                         </div>
                     </div>
@@ -204,11 +178,9 @@
                             <x-forms.label fieldId="duration" :fieldLabel="__('modules.leaves.selectDuration')">
                             </x-forms.label>
                             <div class="d-flex">
-                                <x-forms.radio fieldId="first_half_day_yes" :fieldLabel="__('modules.leaves.firstHalf')" fieldName="half_day_duration"
-                                    fieldValue="first_half" checked="true">
+                                <x-forms.radio fieldId="first_half_day_yes" :fieldLabel="__('modules.leaves.firstHalf')" fieldName="half_day_duration" fieldValue="first_half" checked="true">
                                 </x-forms.radio>
-                                <x-forms.radio fieldId="first_half_day_no" :fieldLabel="__('modules.leaves.secondHalf')" fieldValue="second_half"
-                                    fieldName="half_day_duration"></x-forms.radio>
+                                <x-forms.radio fieldId="first_half_day_no" :fieldLabel="__('modules.leaves.secondHalf')" fieldValue="second_half" fieldName="half_day_duration"></x-forms.radio>
                             </div>
                         </div>
                     </div>
@@ -218,9 +190,7 @@
 
                 <div class="row p-20">
                     <div class="col-lg-4 col-md-6">
-                        <x-forms.checkbox class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('app.overwriteAttendance')"
-                                          fieldName="overwrite_attendance" fieldId="overwrite_attendance" fieldValue="yes"
-                                          fieldRequired="true" :popover="__('messages.overwriteAttendanceTooltip')"/>
+                        <x-forms.checkbox class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('app.overwriteAttendance')" fieldName="overwrite_attendance" fieldId="overwrite_attendance" fieldValue="yes" fieldRequired="true" :popover="__('messages.overwriteAttendanceTooltip')" />
                     </div>
                 </div>
 
@@ -239,7 +209,6 @@
 
 <script src="{{ asset('vendor/jquery/daterangepicker.min.js') }}" defer=""></script>
 <script>
-
     $(document).ready(function() {
         $("#selectEmployee").selectpicker({
             actionsBox: true,
@@ -266,7 +235,7 @@
         });
 
         $('input[type=radio][name=mark_attendance_by]').change(function() {
-            if(this.value=='date') {
+            if (this.value == 'date') {
                 $('#multi_date').daterangepicker('clearDates').daterangepicker({
                     linkedCalendars: false,
                     multidate: true,
@@ -281,12 +250,12 @@
             }
 
         });
-        $('#work_from_type').change(function(){
-            ($(this).val() == 'other') ? $('#other_place').show() : $('#other_place').hide();
+        $('#work_from_type').change(function() {
+            ($(this).val() == 'other') ? $('#other_place').show(): $('#other_place').hide();
         });
 
-        $('#clock_out_time_work_from_type').change(function(){
-            ($(this).val() == 'other') ? $('#clock_out_other_place').show() : $('#clock_out_other_place').hide();
+        $('#clock_out_time_work_from_type').change(function() {
+            ($(this).val() == 'other') ? $('#clock_out_other_place').show(): $('#clock_out_other_place').hide();
         });
 
         $('#start_time, #end_time').timepicker({
@@ -298,18 +267,27 @@
             var url = "{{ route('employees.by_department', ':id') }}";
             url = url.replace(':id', id);
 
-            $.easyAjax({
-                url: url,
-                container: '#save-attendance-data-form',
-                type: "GET",
-                blockUI: true,
-                data: $('#save-attendance-data-form').serialize(),
-                success: function(response) {
-                    if (response.status == 'success') {
-                        $('#selectEmployee').html(response.data);
-                        $('#selectEmployee').selectpicker('refresh');
-                    }
+            var qs = $('#save-attendance-data-form').serialize();
+            var sep = url.indexOf('?') >= 0 ? '&' : '?';
+            $.easyBlockUI('#save-attendance-data-form');
+            window.apiHttp.get(url + sep + qs).then(function(response) {
+                if (response.status == 'success') {
+                    $('#selectEmployee').html(response.data);
+                    $('#selectEmployee').selectpicker('refresh');
                 }
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $.easyUnblockUI('#save-attendance-data-form');
             });
         });
 
@@ -342,21 +320,29 @@
                 multiDate = [startDate, endDate];
                 $('#multi_date').val(multiDate);
             }
-            const url = "{{ route('attendances.bulk_mark')}}";
+            const url = "{{ route('attendances.bulk_mark') }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#save-attendance-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-attendance-form",
-                data: $('#save-attendance-data-form').serialize()
+            var $bulkBtn = $('#save-attendance-form');
+            $bulkBtn.prop('disabled', true);
+            $.easyBlockUI('#save-attendance-data-form');
+            window.apiHttp.postUrlEncoded(url, $('#save-attendance-data-form').serialize()).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $bulkBtn.prop('disabled', false);
+                $.easyUnblockUI('#save-attendance-data-form');
             });
         };
 
-        $('#save-attendance-form').click(function()
-        {
+        $('#save-attendance-form').click(function() {
             // Validate employee selection before submitting (only if it's a select field, not hidden input)
             var selectEmployeeField = $('#selectEmployee');
             if (selectEmployeeField.is('select')) {
@@ -387,95 +373,103 @@
             }
             var url = "{{ route('attendances.check_half_day') }}?type=bulkMark";
 
-            $.easyAjax({
-                url: url,
-                container: '#save-attendance-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-attendance-form",
-                data: $('#save-attendance-data-form').serialize(),
-                success: function(response) {
-                        if ((response.halfDayExist == true && response.requestedHalfDay == 'no') &&
-                        response.halfDayDurEnd == 'no' &&
-                        (response.fullDayExist == false && response.requestedFullDay == 'yes') &&
-                        (response.attendanceDuration === response.leaveDuration)
-                        ) {
-                            Swal.fire({
-                                title: "@lang('messages.sweetAlertTitle')",
-                                text: "@lang('messages.halfDayAlreadyApplied')",
-                                icon: 'warning',
-                                showCancelButton: true,
-                                focusConfirm: false,
-                                confirmButtonText: "@lang('messages.rejectIt')",
-                                cancelButtonText: "@lang('app.cancel')",
-                                customClass: {
-                                    confirmButton: 'btn btn-primary mr-3',
-                                    cancelButton: 'btn btn-secondary'
-                                },
-                                showClass: {
-                                    popup: 'swal2-noanimation',
-                                    backdrop: 'swal2-noanimation'
-                                },
-                                buttonsStyling: false
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    saveAttendanceForm();
-                                }
-                            });
-
-                        } else if ((response.fullDayExist == true && response.requestedFullDay == 'no') &&
-                        (response.halfDayExist == false && response.requestedHalfDay == 'yes')) {
-                            Swal.fire({
-                                title: "@lang('messages.sweetAlertTitle')",
-                                text: "@lang('messages.fullDayAlreadyApplied')",
-                                icon: 'warning',
-                                showCancelButton: true,
-                                focusConfirm: false,
-                                confirmButtonText: "@lang('messages.rejectIt')",
-                                cancelButtonText: "@lang('app.cancel')",
-                                customClass: {
-                                    confirmButton: 'btn btn-primary mr-3',
-                                    cancelButton: 'btn btn-secondary'
-                                },
-                                showClass: {
-                                    popup: 'swal2-noanimation',
-                                    backdrop: 'swal2-noanimation'
-                                },
-                                buttonsStyling: false
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    saveAttendanceForm();
-                                }
-                            });
-                        } else if((response.halfDayExist == true && response.requestedHalfDay == 'no') &&
-                        (response.fullDayExist == true && response.requestedFullDay == 'no')){
-                            Swal.fire({
-                                title: "@lang('messages.sweetAlertTitle')",
-                                text: "@lang('messages.leaveAlreadyApplied')",
-                                icon: 'warning',
-                                showCancelButton: true,
-                                focusConfirm: false,
-                                confirmButtonText: "@lang('messages.rejectIt')",
-                                cancelButtonText: "@lang('app.cancel')",
-                                customClass: {
-                                    confirmButton: 'btn btn-primary mr-3',
-                                    cancelButton: 'btn btn-secondary'
-                                },
-                                showClass: {
-                                    popup: 'swal2-noanimation',
-                                    backdrop: 'swal2-noanimation'
-                                },
-                                buttonsStyling: false
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    saveAttendanceForm();
-                                }
-                            });
-                        }else {
+            var $chkBtn = $('#save-attendance-form');
+            $chkBtn.prop('disabled', true);
+            $.easyBlockUI('#save-attendance-data-form');
+            window.apiHttp.postUrlEncoded(url, $('#save-attendance-data-form').serialize()).then(function(response) {
+                if ((response.halfDayExist == true && response.requestedHalfDay == 'no') &&
+                    response.halfDayDurEnd == 'no' &&
+                    (response.fullDayExist == false && response.requestedFullDay == 'yes') &&
+                    (response.attendanceDuration === response.leaveDuration)
+                ) {
+                    Swal.fire({
+                        title: "@lang('messages.sweetAlertTitle')",
+                        text: "@lang('messages.halfDayAlreadyApplied')",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        focusConfirm: false,
+                        confirmButtonText: "@lang('messages.rejectIt')",
+                        cancelButtonText: "@lang('app.cancel')",
+                        customClass: {
+                            confirmButton: 'btn btn-primary mr-3',
+                            cancelButton: 'btn btn-secondary'
+                        },
+                        showClass: {
+                            popup: 'swal2-noanimation',
+                            backdrop: 'swal2-noanimation'
+                        },
+                        buttonsStyling: false
+                    }).then((result) => {
+                        if (result.isConfirmed) {
                             saveAttendanceForm();
                         }
+                    });
+
+                } else if ((response.fullDayExist == true && response.requestedFullDay == 'no') &&
+                    (response.halfDayExist == false && response.requestedHalfDay == 'yes')) {
+                    Swal.fire({
+                        title: "@lang('messages.sweetAlertTitle')",
+                        text: "@lang('messages.fullDayAlreadyApplied')",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        focusConfirm: false,
+                        confirmButtonText: "@lang('messages.rejectIt')",
+                        cancelButtonText: "@lang('app.cancel')",
+                        customClass: {
+                            confirmButton: 'btn btn-primary mr-3',
+                            cancelButton: 'btn btn-secondary'
+                        },
+                        showClass: {
+                            popup: 'swal2-noanimation',
+                            backdrop: 'swal2-noanimation'
+                        },
+                        buttonsStyling: false
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            saveAttendanceForm();
+                        }
+                    });
+                } else if ((response.halfDayExist == true && response.requestedHalfDay == 'no') &&
+                    (response.fullDayExist == true && response.requestedFullDay == 'no')) {
+                    Swal.fire({
+                        title: "@lang('messages.sweetAlertTitle')",
+                        text: "@lang('messages.leaveAlreadyApplied')",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        focusConfirm: false,
+                        confirmButtonText: "@lang('messages.rejectIt')",
+                        cancelButtonText: "@lang('app.cancel')",
+                        customClass: {
+                            confirmButton: 'btn btn-primary mr-3',
+                            cancelButton: 'btn btn-secondary'
+                        },
+                        showClass: {
+                            popup: 'swal2-noanimation',
+                            backdrop: 'swal2-noanimation'
+                        },
+                        buttonsStyling: false
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            saveAttendanceForm();
+                        }
+                    });
+                } else {
+                    saveAttendanceForm();
                 }
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $chkBtn.prop('disabled', false);
+                $.easyUnblockUI('#save-attendance-data-form');
             });
         });
 

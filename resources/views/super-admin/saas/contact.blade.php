@@ -89,18 +89,15 @@
     <script>
         $('#contact-submit').click(function () {
 
-            $.easyAjax({
-                url: "{{route('front.contact-us')}}",
-                container: '#contactUs',
-                blockUI: true,
-                type: "POST",
-                data: $('#contactUs').serialize(),
-                messagePosition: "inline",
-                success: function (response) {
-                    if (response.status === 'success') {
-                        $('#contactUsBox').remove();
-                    }
+            $.easyBlockUI('#contactUs');
+            window.apiHttp.postUrlEncoded("{{route('front.contact-us')}}", $('#contactUs').serialize()).then(function (response) {
+                if (response.status === 'success') {
+                    $('#contactUsBox').remove();
                 }
+            }).catch(function (err) {
+                $.handleApiFormError(err);
+            }).finally(function () {
+                $.easyUnblockUI('#contactUs');
             })
         });
     </script>

@@ -104,20 +104,22 @@
     });
 
     $('#save-custom-field').click(function () {
-        $.easyAjax({
-            url: "{{route('superadmin.settings.global-custom-fields.store')}}",
-            container: '#createForm',
-            type: "POST",
-            data: $('#createForm').serialize(),
-            file: true,
-            blockUI: true,
-            buttonSelector: "#save-custom-field",
-            success: function (response) {
+        const url = "{{route('superadmin.settings.global-custom-fields.store')}}";
+        const $btn = $('#save-custom-field');
+        const prev = $btn.html();
+        $.easyBlockUI('#createForm');
+        $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+        window.apiHttp.postForm(url, document.getElementById('createForm'))
+            .then(function (response) {
                 if (response.status === 'success') {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch(function (err) { $.handleApiFormError(err); })
+            .finally(function () {
+                $.easyUnblockUI('#createForm');
+                $btn.prop('disabled', false).html(prev);
+            });
         return false;
     })
 

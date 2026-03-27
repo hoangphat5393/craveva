@@ -43,21 +43,19 @@
 
         $('body').on('click', '#import-project-form', function() {
             const url = "{{ route('projects.import.store') }}";
-
-            $.easyAjax({
-                url: url,
-                container: '#import-project-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#import-project-form",
-                file: true,
-                data: $('#import-project-data-form').serialize(),
-                success: function(response) {
-                    if (response.status == 'success') {
-                        $('#import_table').html(response.view);
-                    }
+            var $btn = $('#import-project-form');
+            var prev = $btn.html();
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+            $.easyBlockUI('#import-project-data-form');
+            window.apiHttp.postForm(url, document.getElementById('import-project-data-form')).then(function(response) {
+                if (response.status == 'success') {
+                    $('#import_table').html(response.view);
                 }
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI('#import-project-data-form');
+                $btn.prop('disabled', false).html(prev);
             });
         });
     });

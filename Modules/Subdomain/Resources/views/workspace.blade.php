@@ -92,13 +92,10 @@
     <script>
         $('#save-form').on('click', function (e) {
             e.preventDefault();
-            $.easyAjax({
-                url: '{{route('front.check-domain')}}',
-                container: '#register',
-                type: "POST",
-                messagePosition: "inline",
-                data: $('#register').serialize(),
-            })
+            window.apiHttp.postUrlEncoded("{{route('front.check-domain')}}", $('#register').serialize())
+                .catch(function (err) {
+                    $.handleApiFormError(err);
+                });
         });
     </script>
 @endpush

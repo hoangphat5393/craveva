@@ -73,23 +73,13 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     var url = "{{ route('start.offboarding') }}";
-                    var token = '{{ csrf_token() }}';
 
-                    $.easyAjax({
-                        url: url,
-                        container: '#startOffboardingButton',
-                        type: "POST",
-                        blockUI: true,
-                        buttonSelector: "#startOffboardingBtn",
-                        disableButton: true,
-                        data: {
-                            _token: token,
+                    window.apiHttp.postUrlEncoded(url, {
+                            _token: '{{ csrf_token() }}',
                             employee_id: "{{ $employee->id }}",
-                        },
-                        success: function() {
+                    }).then(function() {
                             window.location.reload();
-                        }
-                    });
+                    }).catch(function (err) { $.handleApiFormError(err); });
                 }
             });
         });
@@ -116,24 +106,14 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     var url = "{{ route('start.onboarding') }}";
-                    var token = '{{ csrf_token() }}';
                     var id = "{{ $employee->id }}";
 
-                    $.easyAjax({
-                        url: url,
-                        container: '#startOnboardingButton',
-                        type: "POST",
-                        blockUI: true,
-                        buttonSelector: "#startOnboardingBtn",
-                        disableButton: true,
-                        data: {
-                            _token: token,
+                    window.apiHttp.postUrlEncoded(url, {
+                            _token: '{{ csrf_token() }}',
                             id: id
-                        },
-                        success: function() {
+                    }).then(function() {
                             window.location.reload();
-                        }
-                    });
+                    }).catch(function (err) { $.handleApiFormError(err); });
                 }
             });
         });

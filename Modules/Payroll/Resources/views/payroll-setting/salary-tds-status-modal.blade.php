@@ -42,19 +42,14 @@
     $(".select-picker").selectpicker();
     // save channel
     $('#save-salary-tds').click(function () {
-        $.easyAjax({
-            url: "{{route('salary_tds.status')}}",
-            container: '#addSalaryTest',
-            type: "POST",
-            blockUI: true,
-            disableButton: true,
-            buttonSelector: "#save-salary-tds",
-            data: $('#addSalaryTest').serialize(),
-            success: function (response) {
+        window.apiHttp.postUrlEncoded("{{route('salary_tds.status')}}", $('#addSalaryTest').serialize())
+            .then(function (response) {
                 if (response.status == "success") {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch(function (err) {
+                $.handleApiFormError(err);
+            });
     });
 </script>

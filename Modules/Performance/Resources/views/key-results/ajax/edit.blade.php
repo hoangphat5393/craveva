@@ -94,21 +94,20 @@
             var data = $('#update-key-results-form').serialize();
 
             if (url) {
-                $.easyAjax({
-                    url: url,
-                    container: '#update-key-results-form',
-                    type: "POST",
-                    disableButton: true,
-                    blockUI: true,
-                    file: true,
-                    data: data,
-                    success: function(response) {
+                $.easyBlockUI('#update-key-results-form');
+                window.apiHttp.postUrlEncoded(url, data)
+                    .then(function(response) {
                         if (response.status == "success") {
                             let redirectUrl = response.redirectUrl;
                             window.location.href = redirectUrl;
                         }
-                    }
-                });
+                    })
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    })
+                    .finally(function() {
+                        $.easyUnblockUI('#update-key-results-form');
+                    });
             }
         });
 

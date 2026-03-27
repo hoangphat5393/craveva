@@ -1,8 +1,8 @@
 @php
-$addPermission = user()->permission('add_job_application');
-$viewPermission = user()->permission('view_job_application');
-$editPermission = user()->permission('edit_job_application');
-$deletePermission = user()->permission('delete_job_application');
+    $addPermission = user()->permission('add_job_application');
+    $viewPermission = user()->permission('view_job_application');
+    $editPermission = user()->permission('edit_job_application');
+    $deletePermission = user()->permission('delete_job_application');
 @endphp
 
 <!-- ROW START -->
@@ -11,15 +11,14 @@ $deletePermission = user()->permission('delete_job_application');
         <div class="col-xl-12 col-lg-12 col-md-12 mb-4 mb-xl-0 mb-lg-4 mb-md-0">
             <input type="hidden" id="candidate_id" name="candidate_id" value="{{ $application->id }}">
 
-            @if (($addPermission == 'all' || $addPermission == 'added'))
+            @if ($addPermission == 'all' || $addPermission == 'added')
                 <x-forms.button-primary icon="plus" id="add-candidate-followup" data-application-id="{{ $application->id }}" data-datatable="false" class="type-btn mb-3">
                     @lang('modules.followup.newFollowUp')
                 </x-forms.button-primary>
             @endif
 
             @if ($viewPermission == 'all' || $viewPermission == 'added')
-                <x-cards.data :title="__('modules.lead.followUp')"
-                    otherClasses="border-0 p-0 d-flex justify-content-between align-items-center table-responsive-sm">
+                <x-cards.data :title="__('modules.lead.followUp')" otherClasses="border-0 p-0 d-flex justify-content-between align-items-center table-responsive-sm">
                     <x-table class="border-0 pb-3 admin-dash-table table-hover">
 
                         <x-slot name="thead">
@@ -41,33 +40,29 @@ $deletePermission = user()->permission('delete_job_application');
                                     {{ $follow->next_follow_up_date->translatedFormat(company()->date_format . ' ' . company()->time_format) }}
                                 </td>
                                 <td>
-                                    {!! $follow->remark != '' ? (nl2br($follow->remark)) : '--' !!}
+                                    {!! $follow->remark != '' ? nl2br($follow->remark) : '--' !!}
                                 </td>
                                 <td>
-                                    <select class="form-control select-picker" id="change-follow-up-status" data-id = "{{$follow->id}}">
-                                        <option value="incomplete"  @if($follow->status == 'incomplete') selected @endif  data-content="<i class='fa fa-circle mr-2 text-red'></i> @lang('app.incomplete') " >@lang('app.incomplete')</option>
-                                        <option value="completed" @if($follow->status == 'completed') selected @endif data-content="<i class='fa fa-circle mr-2 text-dark-green'></i> @lang('app.completed') " >@lang('app.completed')</option>
+                                    <select class="form-control select-picker" id="change-follow-up-status" data-id = "{{ $follow->id }}">
+                                        <option value="incomplete" @if ($follow->status == 'incomplete') selected @endif data-content="<i class='fa fa-circle mr-2 text-red'></i> @lang('app.incomplete') ">@lang('app.incomplete')</option>
+                                        <option value="completed" @if ($follow->status == 'completed') selected @endif data-content="<i class='fa fa-circle mr-2 text-dark-green'></i> @lang('app.completed') ">@lang('app.completed')</option>
                                     </select>
                                 </td>
                                 <td class="text-right pr-20">
                                     <div class="task_view">
                                         <div class="dropdown">
-                                            <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle"
-                                                type="link" id="dropdownMenuLink-3" data-toggle="dropdown"
-                                                aria-haspopup="true" aria-expanded="false">
+                                            <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" type="link" id="dropdownMenuLink-3" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                 <i class="icon-options-vertical icons"></i>
                                             </a>
                                             <div class="dropdown-menu dropdown-menu-right">
                                                 @if ($editPermission == 'all' || ($editPermission == 'added' && $follow->added_by == user()->id))
-                                                    <a class="dropdown-item edit-candidate-followup"
-                                                        data-follow-id="{{ $follow->id }}" href="javascript:;">
+                                                    <a class="dropdown-item edit-candidate-followup" data-follow-id="{{ $follow->id }}" href="javascript:;">
                                                         <i class="fa fa-edit mr-2"></i>
                                                         @lang('app.edit')
                                                     </a>
                                                 @endif
                                                 @if ($deletePermission == 'all' || ($deletePermission == 'added' && $follow->added_by == user()->id))
-                                                    <a class="dropdown-item delete-table-row-followup" href="javascript:;"
-                                                        data-follow-id="{{ $follow->id }}">
+                                                    <a class="dropdown-item delete-table-row-followup" href="javascript:;" data-follow-id="{{ $follow->id }}">
                                                         <i class="fa fa-trash mr-2"></i>
                                                         @lang('app.delete')
                                                     </a>
@@ -78,7 +73,7 @@ $deletePermission = user()->permission('delete_job_application');
                                 </td>
                             </tr>
                         @empty
-                            <x-cards.no-record-found-list colspan="5"/>
+                            <x-cards.no-record-found-list colspan="5" />
                         @endforelse
                     </x-table>
                 </x-cards.data>
@@ -119,14 +114,8 @@ $deletePermission = user()->permission('delete_job_application');
 
                 var token = "{{ csrf_token() }}";
 
-                $.easyAjax({
-                    type: 'DELETE',
-                    url: url,
-                    blockUI: true,
-                    data: {
-                        '_token': token,
-                    },
-                    success: function(response) {
+                window.apiHttp.delete(url, token)
+                    .then(function(response) {
                         if (response.status == "success") {
                             document.getElementById('follow-up-table').innerHTML = response.view;
                             $(".select-picker").selectpicker();
@@ -149,8 +138,10 @@ $deletePermission = user()->permission('delete_job_application');
                                 $.ajaxModal(MODAL_LG, url);
                             });
                         }
-                    }
-                });
+                    })
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    });
             }
         });
     });
@@ -174,23 +165,20 @@ $deletePermission = user()->permission('delete_job_application');
     });
 
     /* change status */
-    $('body').on('change', '#change-follow-up-status', function () {
+    $('body').on('change', '#change-follow-up-status', function() {
         var followUpId = $(this).data('id');
         var status = $(this).val();
         var token = '{{ csrf_token() }}';
         var url = "{{ route('candidate-follow-up.change_follow_up_status') }}?id=" + followUpId;
 
         if (typeof followUpId !== 'undefined') {
-            $.easyAjax({
-                type: 'POST',
-                url: url,
-                blockUI: true,
-                data: {
-                    '_token': token,
-                    'status': status
-                }
-            });
+            window.apiHttp.postUrlEncoded(url, {
+                    _token: token,
+                    status: status
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                });
         }
     });
-
 </script>

@@ -185,18 +185,19 @@ $changeDealStagesPermission = user()->permission('change_deal_stages');
             const tab = "{{ $tab }}";
             const url = tab != null ? "{{ route('deals.update', [$deal->id]) }}?tab=" + tab : "{{ route('deals.update', [$deal->id]) }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#save-lead-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                file: true,
-                buttonSelector: "#save-lead-form",
-                data: $('#save-lead-data-form').serialize(),
-                success: function(response) {
-                    window.location.href = response.redirectUrl;
-                }
+            var $btn = $('#save-lead-data-form').find('#save-lead-form');
+            var btnPrev = $btn.html();
+            $btn.attr('data-prev-text', btnPrev);
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+            $.easyBlockUI('#save-lead-data-form');
+            window.apiHttp.postForm(url, document.getElementById('save-lead-data-form')).then(function(response) {
+                window.location.href = response.redirectUrl;
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI('#save-lead-data-form');
+                $btn.html($btn.attr('data-prev-text'));
+                $btn.prop('disabled', false);
             });
         });
 
@@ -261,17 +262,17 @@ $changeDealStagesPermission = user()->permission('change_deal_stages');
         $('#add-project').click(function() {
             $(MODAL_XL).modal('show');
             const url = "{{ route('projects.create') }}";
-            $.easyAjax({
-                url: url,
-                blockUI: true,
-                container: MODAL_XL,
-                success: function(response) {
-                    if (response.status == "success") {
-                        $(MODAL_XL + ' .modal-body').html(response.html);
-                        $(MODAL_XL + ' .modal-title').html(response.title);
-                        init(MODAL_XL);
-                    }
+            $.easyBlockUI(MODAL_XL);
+            window.apiHttp.get(url).then(function(response) {
+                if (response.status == "success") {
+                    $(MODAL_XL + ' .modal-body').html(response.html);
+                    $(MODAL_XL + ' .modal-title').html(response.title);
+                    init(MODAL_XL);
                 }
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI(MODAL_XL);
             });
         });
 
@@ -287,26 +288,24 @@ $changeDealStagesPermission = user()->permission('change_deal_stages');
             var url = "{{ route('deals.get-stage', ':id') }}";
             url = url.replace(':id', pipelineId);
 
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                success: function (response) {
-                    if (response.status == 'success') {
-                        var options = [];
-                        var rData = [];
-                        rData = response.data;
-                        $.each(rData, function (index, value) {
-                            var selectData = '';
-                            var selected = value.id == selectedStageId ? 'selected' : '';
-                            selectData = `<option data-content="<i class='fa fa-circle' style='color: ${value.label_color}'></i> ${value.name} " value="${value.id}" ${selected}> ${value.name}</option>`;
-                            options.push(selectData);
-                        });
+            window.apiHttp.get(url).then(function (response) {
+                if (response.status == 'success') {
+                    var options = [];
+                    var rData = [];
+                    rData = response.data;
+                    $.each(rData, function (index, value) {
+                        var selectData = '';
+                        var selected = value.id == selectedStageId ? 'selected' : '';
+                        selectData = `<option data-content="<i class='fa fa-circle' style='color: ${value.label_color}'></i> ${value.name} " value="${value.id}" ${selected}> ${value.name}</option>`;
+                        options.push(selectData);
+                    });
 
-                        $('#stages').html(options);
-                        $('#stages').selectpicker('refresh');
-                    }
+                    $('#stages').html(options);
+                    $('#stages').selectpicker('refresh');
                 }
-            })
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            });
         }
 
         $('#add-employee').click(function() {
@@ -314,17 +313,17 @@ $changeDealStagesPermission = user()->permission('change_deal_stages');
 
             const url = "{{ route('employees.create') }}";
 
-            $.easyAjax({
-                url: url,
-                blockUI: true,
-                container: MODAL_XL,
-                success: function(response) {
-                    if (response.status == "success") {
-                        $(MODAL_XL + ' .modal-body').html(response.html);
-                        $(MODAL_XL + ' .modal-title').html(response.title);
-                        init(MODAL_XL);
-                    }
+            $.easyBlockUI(MODAL_XL);
+            window.apiHttp.get(url).then(function(response) {
+                if (response.status == "success") {
+                    $(MODAL_XL + ' .modal-body').html(response.html);
+                    $(MODAL_XL + ' .modal-title').html(response.title);
+                    init(MODAL_XL);
                 }
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI(MODAL_XL);
             });
         });
         var categoryId = $('#category_id').val();
@@ -337,31 +336,26 @@ $changeDealStagesPermission = user()->permission('change_deal_stages');
             var url = "{{ route('deals.get_agents', ':id')}}";
             url = url.replace(':id', categoryId);
             var dealId = "{{$deal->id}}";
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                data: {
-                    dealId : dealId,
-                },
-                success: function(response)
+            window.apiHttp.get(url, { params: { dealId: dealId } }).then(function(response)
+            {
+                var options = [];
+                var rData = [];
+                if($.isArray(response.data))
                 {
-                    var options = [];
-                    var rData = [];
-                    if($.isArray(response.data))
-                    {
-                        rData = response.data;
-                        $.each(rData, function(index, value) {
-                            var selectData = '';
-                            options.push(value);
-                        });
-                        $('#deal_agent_id').html('<option value="">--</option>' + options);
-                    }
-                    else
-                    {
-                        $('#deal_agent_id').html(response.data);
-                    }
-                    $('#deal_agent_id').selectpicker('refresh');
+                    rData = response.data;
+                    $.each(rData, function(index, value) {
+                        var selectData = '';
+                        options.push(value);
+                    });
+                    $('#deal_agent_id').html('<option value="">--</option>' + options);
                 }
+                else
+                {
+                    $('#deal_agent_id').html(response.data);
+                }
+                $('#deal_agent_id').selectpicker('refresh');
+            }).catch(function(err) {
+                $.handleApiFormError(err);
             });
         }
 

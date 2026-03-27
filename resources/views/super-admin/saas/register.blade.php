@@ -152,27 +152,33 @@
     <script>
 
         $('#submit-form').click(function () {
-
-            $.easyAjax({
-                url: '{{route('front.signup.store')}}',
-                container: '.form-section',
-                type: "POST",
-                data: $('#register').serialize(),
-                blockUI: true,
-                disableButton: true,
-                buttonSelector: "#submit-form",
-                messagePosition: "inline",
-                success: function (response) {
-                    if (response.status === 'success') {
-                        $('#form-box').remove();
-                    } else if (response.status === 'fail') {
-
-                        @if($global->google_recaptcha_status == 'active')
-                        grecaptcha.reset();
-                        @endif
-
+            var $btn = $('#submit-form');
+            var prev = $btn.html();
+            $.easyBlockUI('.form-section');
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+            window.apiHttp.postUrlEncoded('{{route('front.signup.store')}}', $('#register').serialize()).then(function (response) {
+                if (response.status === 'success') {
+                    $('#form-box').remove();
+                    if (response.action === 'redirect' && response.url) {
+                        window.location.href = response.url;
+                    } else if (typeof response.message !== 'undefined') {
+                        var ele = $('.form-section').find('#alert');
+                        var html = '<div class="alert alert-success">' + response.message + '</div>';
+                        if (ele.length === 0) {
+                            $('.form-section').find('.form-group:first').before('<div id="alert">' + html + '</div>');
+                        } else {
+                            ele.html(html);
+                        }
                     }
-                },
+                }
+            }).catch(function (err) {
+                $.handleApiFormError(err);
+                @if($global->google_recaptcha_status == 'active')
+                grecaptcha.reset();
+                @endif
+            }).finally(function () {
+                $.easyUnblockUI('.form-section');
+                $btn.prop('disabled', false).html(prev);
             });
             @if($global->google_recaptcha_status == 'active')
             grecaptcha.reset();

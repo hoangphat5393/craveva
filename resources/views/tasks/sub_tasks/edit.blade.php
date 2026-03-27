@@ -173,24 +173,39 @@
 
             const url = "{{ route('sub-tasks.update', $subTask->id) }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#edit-save-subtask-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#edit-save-subtask",
-                data: $('#edit-save-subtask-data-form').serialize(),
-                success: function(response) {
-                    if (response.status == "success") {
-                        if (subTaskDropzone.getQueuedFiles().length > 0) {
-                            subTaskDropzone.processQueue();
-                       } else {
-                            $('#sub-task-list').html(response.view);
-                            $(MODAL_LG).modal('hide');
-                        }
+            var $saveBtn = $('#edit-save-subtask-data-form').find('#edit-save-subtask');
+            var savePrev = $saveBtn.html();
+            $saveBtn.attr('data-prev-text', savePrev);
+            $saveBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+            $.easyBlockUI('#edit-save-subtask-data-form');
+            window.apiHttp.postUrlEncoded(url, $('#edit-save-subtask-data-form').serialize()).then(function(response) {
+                if (response.status == "success") {
+                    if (typeof response.message !== 'undefined' && response.message) {
+                        Swal.fire({
+                            icon: 'success',
+                            text: response.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 3000,
+                            timerProgressBar: true,
+                            showConfirmButton: false,
+                            customClass: { confirmButton: 'btn btn-primary' },
+                            showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                        });
+                    }
+                    if (subTaskDropzone.getQueuedFiles().length > 0) {
+                        subTaskDropzone.processQueue();
+                   } else {
+                        $('#sub-task-list').html(response.view);
+                        $(MODAL_LG).modal('hide');
                     }
                 }
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI('#edit-save-subtask-data-form');
+                $saveBtn.html($saveBtn.attr('data-prev-text'));
+                $saveBtn.prop('disabled', false);
             });
         });
 

@@ -32,19 +32,24 @@
         $(".select-picker").selectpicker();
 
         $('#save-testimonial').click(function (event) {
-            $.easyAjax({
-                url: "{{ route('superadmin.front-settings.store_testimonial_title') }}",
-                container: '#createMethods',
-                type: "POST",
-                redirect: true,
-                disableButton: true,
-                blockUI: true,
-                data: $('#createMethods').serialize(),
-                success: function(response) {
+            const $btn = $('#save-testimonial');
+            const prev = $btn.html();
+            $.easyBlockUI('#createMethods');
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+            window.apiHttp.postUrlEncoded("{{ route('superadmin.front-settings.store_testimonial_title') }}", $('#createMethods').serialize())
+                .then(function(response) {
                     if (response.status == "success") {
-                        window.location.reload();
+                        if (response.action === 'redirect' && response.url) {
+                            window.location.href = response.url;
+                        } else {
+                            window.location.reload();
+                        }
                     }
-                }
-            })
+                })
+                .catch(function (err) { $.handleApiFormError(err); })
+                .finally(function () {
+                    $.easyUnblockUI('#createMethods');
+                    $btn.prop('disabled', false).html(prev);
+                });
         });
     </script>

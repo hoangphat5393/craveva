@@ -99,44 +99,24 @@
 
         if(signature_type == 'upload')
             {
-                $.easyAjax({
-                    url: "{{ route('policy.signStore', $policy->id) }}",
-                    container: '#acceptEstimates',
-                    type: "POST",
-                    blockUI: true,
-                    file: true,
-                    disableButton: true,
-                    buttonSelector : '#save-sign',
-                    data: $('#acceptEstimates').serialize(),
-                    success: function(response) {
-                        if (response.status == 'success') {
-                            window.location.reload();
-                        }
+                window.apiHttp.postForm("{{ route('policy.signStore', $policy->id) }}", document.getElementById('acceptEstimates')).then(function(response) {
+                    if (response.status == 'success') {
+                        window.location.reload();
                     }
-                })
+                }).catch(function(err) { $.handleApiFormError(err); })
             }
             else
             {
-                $.easyAjax({
-                    url: "{{ route('policy.signStore', $policy->id) }}",
-                    container: '#acceptEstimate',
-                    type: "POST",
-                    blockUI: true,
-                    file: true,
-                    disableButton: true,
-                    buttonSelector : '#save-sign',
-                    data: {
-                        signature: signature,
-                        image: image,
-                        signature_type: signature_type,
-                        _token: '{{ csrf_token() }}'
-                    },
-                    success: function(response) {
-                        if (response.status == 'success') {
-                            window.location.reload();
-                        }
+                window.apiHttp.postUrlEncoded("{{ route('policy.signStore', $policy->id) }}", {
+                    signature: signature,
+                    image: image,
+                    signature_type: signature_type,
+                    _token: '{{ csrf_token() }}'
+                }).then(function(response) {
+                    if (response.status == 'success') {
+                        window.location.reload();
                     }
-                })
+                }).catch(function(err) { $.handleApiFormError(err); })
             }
     });
 </script>

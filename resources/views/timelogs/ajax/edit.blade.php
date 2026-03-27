@@ -9,8 +9,7 @@
                     <div class="col-md-12">
                         <div class="row">
                             <div class="col-md-6 col-lg-4">
-                                <x-forms.select fieldId="project_id2" fieldName="project_id"
-                                    :fieldLabel="__('app.project')" search="true">
+                                <x-forms.select fieldId="project_id2" fieldName="project_id" :fieldLabel="__('app.project')" search="true">
                                     <option value="">--</option>
                                     @foreach ($projects as $project)
                                         <option @if ($project->id == $timeLog->project_id) selected @endif value="{{ $project->id }}">
@@ -21,8 +20,7 @@
                             </div>
 
                             <div class="col-md-6 col-lg-4">
-                                <x-forms.select fieldId="task_id2" fieldName="task_id" :fieldLabel="__('app.task')"
-                                    fieldRequired="true" search="true">
+                                <x-forms.select fieldId="task_id2" fieldName="task_id" :fieldLabel="__('app.task')" fieldRequired="true" search="true">
                                     <option value="">--</option>
                                     @if ($timeLog->task_id)
                                         <option selected value="{{ $timeLog->task_id }}">
@@ -39,17 +37,14 @@
 
                             @if ($editTimelogPermission == 'all')
                                 <div class="col-md-6 col-lg-4">
-                                    <x-forms.label class="mt-3" fieldId="user_id2" :fieldLabel="__('app.employee')"
-                                        fieldRequired="true">
+                                    <x-forms.label class="mt-3" fieldId="user_id2" :fieldLabel="__('app.employee')" fieldRequired="true">
                                     </x-forms.label>
                                     <x-forms.input-group>
-                                        <select class="form-control select-picker" name="user_id" id="user_id2"
-                                            data-live-search="true" data-size="8">
+                                        <select class="form-control select-picker" name="user_id" id="user_id2" data-live-search="true" data-size="8">
                                             <option value="">--</option>
                                             @forelse ($employees as $item)
-                                                <x-user-option :user="$item" :selected="$item->id == $timeLog->user_id"/>
+                                                <x-user-option :user="$item" :selected="$item->id == $timeLog->user_id" />
                                             @empty
-
                                             @endforelse
                                         </select>
                                     </x-forms.input-group>
@@ -63,49 +58,33 @@
 
                         <div class="row">
                             <div class="col-md-3 col-lg-3">
-                                <x-forms.datepicker fieldId="start_date" fieldRequired="true"
-                                    :fieldLabel="__('modules.timeLogs.startDate')" fieldName="start_date"
-                                    :fieldValue="$timeLog->start_time->timezone(company()->timezone)->format(company()->date_format)"
-                                    :fieldPlaceholder="__('placeholders.date')" />
+                                <x-forms.datepicker fieldId="start_date" fieldRequired="true" :fieldLabel="__('modules.timeLogs.startDate')" fieldName="start_date" :fieldValue="$timeLog->start_time->timezone(company()->timezone)->format(company()->date_format)" :fieldPlaceholder="__('placeholders.date')" />
                             </div>
 
                             <div class="col-md-3 col-lg-3">
                                 <div class="bootstrap-timepicker timepicker">
-                                    <x-forms.text :fieldLabel="__('modules.timeLogs.startTime')"
-                                        :fieldPlaceholder="__('placeholders.hours')" fieldName="start_time"
-                                        fieldId="start_time" fieldRequired="true"
-                                        :fieldValue="$timeLog->start_time->timezone(company()->timezone)->format(company()->time_format)" />
+                                    <x-forms.text :fieldLabel="__('modules.timeLogs.startTime')" :fieldPlaceholder="__('placeholders.hours')" fieldName="start_time" fieldId="start_time" fieldRequired="true" :fieldValue="$timeLog->start_time->timezone(company()->timezone)->format(company()->time_format)" />
                                 </div>
                             </div>
 
                             <div class="col-md-3 col-lg-3">
-                                <x-forms.datepicker fieldId="end_date" fieldRequired="true"
-                                    :fieldLabel="__('modules.timeLogs.endDate')" fieldName="end_date"
-                                    :fieldValue="now(company()->timezone)->format(company()->date_format)"
-                                    :fieldPlaceholder="__('placeholders.date')"
-                                    :fieldValue="$timeLog->end_time->timezone(company()->timezone)->format(company()->date_format)" />
+                                <x-forms.datepicker fieldId="end_date" fieldRequired="true" :fieldLabel="__('modules.timeLogs.endDate')" fieldName="end_date" :fieldValue="now(company()->timezone)->format(company()->date_format)" :fieldPlaceholder="__('placeholders.date')" :fieldValue="$timeLog->end_time->timezone(company()->timezone)->format(company()->date_format)" />
                             </div>
 
                             <div class="col-md-3 col-lg-3">
                                 <div class="bootstrap-timepicker timepicker">
-                                    <x-forms.text :fieldLabel="__('modules.timeLogs.endTime')"
-                                        :fieldPlaceholder="__('placeholders.hours')" fieldName="end_time"
-                                        fieldId="end_time" fieldRequired="true"
-                                        :fieldValue="$timeLog->end_time->timezone(company()->timezone)->format(company()->time_format)" />
+                                    <x-forms.text :fieldLabel="__('modules.timeLogs.endTime')" :fieldPlaceholder="__('placeholders.hours')" fieldName="end_time" fieldId="end_time" fieldRequired="true" :fieldValue="$timeLog->end_time->timezone(company()->timezone)->format(company()->time_format)" />
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <div class="col-md-6">
-                        <x-forms.text :fieldLabel="__('modules.timeLogs.memo')" fieldName="memo" fieldRequired="true"
-                            fieldId="memo" :fieldValue="$timeLog->memo"
-                            :fieldPlaceholder="__('placeholders.timelog.memo')" />
+                        <x-forms.text :fieldLabel="__('modules.timeLogs.memo')" fieldName="memo" fieldRequired="true" fieldId="memo" :fieldValue="$timeLog->memo" :fieldPlaceholder="__('placeholders.timelog.memo')" />
                     </div>
 
                     <div class="col-md-6">
-                        <x-forms.label fieldId="total_time" class="my-3"
-                            :fieldLabel="__('modules.timeLogs.totalHours')" />
+                        <x-forms.label fieldId="total_time" class="my-3" :fieldLabel="__('modules.timeLogs.totalHours')" />
                         <p id="total_time" class="f-w-500 text-primary f-21">{{ $timeLog->hours }}</p>
                     </div>
 
@@ -178,19 +157,26 @@
             if (id == '') {
                 id = 0;
             }
-            var url = "{{ route('tasks.project_tasks', ':id').'?for_timelogs=true' }}";
+            var url = "{{ route('tasks.project_tasks', ':id') . '?for_timelogs=true' }}";
             url = url.replace(':id', id);
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                container: '#save-timelog-data-form',
-                blockUI: true,
-                redirect: true,
-                success: function(data) {
-                    $('#task_id2').html(data.data);
-                    $('#task_id2').selectpicker('refresh');
+            $.easyBlockUI('#save-timelog-data-form');
+            window.apiHttp.get(url).then(function(data) {
+                $('#task_id2').html(data.data);
+                $('#task_id2').selectpicker('refresh');
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
                 }
-            })
+            }).finally(function() {
+                $.easyUnblockUI('#save-timelog-data-form');
+            });
         });
 
         $('#task_id2').change(function() {
@@ -200,31 +186,38 @@
             }
             var url = "{{ route('tasks.members', ':id') }}";
             url = url.replace(':id', id);
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                container: '#save-timelog-data-form',
-                blockUI: true,
-                redirect: true,
-                success: function(data) {
-                    $('#user_id2').html(data.data);
-                    $('#user_id2').selectpicker('refresh');
+            $.easyBlockUI('#save-timelog-data-form');
+            window.apiHttp.get(url).then(function(data) {
+                $('#user_id2').html(data.data);
+                $('#user_id2').selectpicker('refresh');
 
-                    if (data.startDate) {
-                        dp1.setMin(new Date(0));
-                        dp2.setMin(new Date(0));
-                        
-                        dp1.setDate(new Date(data.startDate), true);
-                        dp2.setDate(new Date(data.startDate), true);
+                if (data.startDate) {
+                    dp1.setMin(new Date(0));
+                    dp2.setMin(new Date(0));
 
-                        dp1.setMin(new Date(data.startDateMin));
-                        dp2.setMin(new Date(data.startDateMin));
-                    }
+                    dp1.setDate(new Date(data.startDate), true);
+                    dp2.setDate(new Date(data.startDate), true);
+
+                    dp1.setMin(new Date(data.startDateMin));
+                    dp2.setMin(new Date(data.startDateMin));
                 }
-            })
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $.easyUnblockUI('#save-timelog-data-form');
+            });
         });
 
-        
+
         var id = $('#task_id2').val();
         if (id == '') {
             id = 0;
@@ -232,48 +225,61 @@
 
         var url = "{{ route('tasks.members', ':id') }}";
         url = url.replace(':id', id);
-        $.easyAjax({
-            url: url,
-            type: "GET",
-            container: '#save-timelog-data-form',
-            blockUI: true,
-            redirect: true,
-            success: function(data) {
-                if (data.startDateMin) {
-                    
-                        dp1.setMin(new Date(data.startDateMin));
-                        dp2.setMin(new Date(data.startDateMin));
-                }
+        $.easyBlockUI('#save-timelog-data-form');
+        window.apiHttp.get(url).then(function(data) {
+            if (data.startDateMin) {
+                dp1.setMin(new Date(data.startDateMin));
+                dp2.setMin(new Date(data.startDateMin));
             }
+        }).catch(function(err) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    text: err.message,
+                    toast: true,
+                    position: 'top-end',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            }
+        }).finally(function() {
+            $.easyUnblockUI('#save-timelog-data-form');
         });
-        
+
 
         $('#save-timelog-form').click(function() {
             const url = "{{ route('timelogs.update', $timeLog->id) }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#save-timelog-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                file: true,
-                buttonSelector: "#save-timelog-form",
-                data: $('#save-timelog-data-form').serialize(),
-                success: function(response) {
-                    if (response.status == 'success') {
-                        if ($(RIGHT_MODAL).hasClass('in')) {
-                            document.getElementById('close-task-detail').click();
-                            if ($('#timelogs-table').length) {
-                                window.LaravelDataTables["timelogs-table"].draw(true);
-                            } else {
-                                showTable();
-                            }
+            var $saveTl = $('#save-timelog-form');
+            $saveTl.prop('disabled', true);
+            $.easyBlockUI('#save-timelog-data-form');
+            window.apiHttp.postForm(url, document.getElementById('save-timelog-data-form')).then(function(response) {
+                if (response.status == 'success') {
+                    if ($(RIGHT_MODAL).hasClass('in')) {
+                        document.getElementById('close-task-detail').click();
+                        if ($('#timelogs-table').length) {
+                            window.LaravelDataTables["timelogs-table"].draw(true);
                         } else {
-                            window.location.href = response.redirectUrl;
+                            showTable();
                         }
+                    } else {
+                        window.location.href = response.redirectUrl;
                     }
                 }
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $saveTl.prop('disabled', false);
+                $.easyUnblockUI('#save-timelog-data-form');
             });
         });
 

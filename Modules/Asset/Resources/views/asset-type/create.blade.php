@@ -61,8 +61,6 @@
         var url = "{{ route('asset-type.destroy', ':id') }}";
         url = url.replace(':id', id);
 
-        var token = "{{ csrf_token() }}";
-
         Swal.fire({
             title: "@lang('messages.sweetAlertTitle')",
             text: "@lang('messages.recoverRecord')",
@@ -82,22 +80,21 @@
             buttonsStyling: false
         }).then((result) => {
             if (result.isConfirmed) {
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    blockUI: true,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function (response) {
+                $.easyBlockUI('body');
+                window.apiHttp.delete(url, "{{ csrf_token() }}")
+                    .then(function (response) {
                         if (response.status == "success") {
                             $('#row-' + id).fadeOut();
                             $('#asset_type_id').html(response.data);
                             $('#asset_type_id').selectpicker('refresh');
                         }
-                    }
-                });
+                    })
+                    .catch(function (err) {
+                        $.handleApiFormError(err);
+                    })
+                    .finally(function () {
+                        $.easyUnblockUI('body');
+                    });
             }
         });
 
@@ -105,15 +102,11 @@
 
     $('#save-asset-type').click(function () {
         var url = "{{ route('asset-type.store') }}";
-        $.easyAjax({
-            url: url,
-            container: '#create-asset-type',
-            type: "POST",
-            data: $('#create-asset-type').serialize(),
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-asset-type",
-            success: function (response) {
+        const $btn = $('#save-asset-type');
+        $btn.prop('disabled', true);
+        $.easyBlockUI('#create-asset-type');
+        window.apiHttp.postUrlEncoded(url, $('#create-asset-type').serialize())
+            .then(function (response) {
                 if (response.status == 'success') {
                     if (response.status == 'success') {
                         $('#asset_type_id').html(response.data);
@@ -121,8 +114,14 @@
                         $(MODAL_LG).modal('hide');
                     }
                 }
-            }
-        })
+            })
+            .catch(function (err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function () {
+                $btn.prop('disabled', false);
+                $.easyUnblockUI('#create-asset-type');
+            });
     });
 
 
@@ -137,25 +136,24 @@
             var url = "{{ route('asset-type.update', ':id') }}";
             url = url.replace(':id', id);
 
-            var token = "{{ csrf_token() }}";
-
-            $.easyAjax({
-                url: url,
-                container: '#row-' + id,
-                type: "POST",
-                data: {
-                    'name': value,
-                    '_token': token,
-                    '_method': 'PUT'
-                },
-                blockUI: true,
-                success: function (response) {
+            $.easyBlockUI('#row-' + id);
+            window.apiHttp.postUrlEncoded(url, {
+                name: value,
+                _token: "{{ csrf_token() }}",
+                _method: 'PUT'
+            })
+                .then(function (response) {
                     if (response.status == 'success') {
                         $('#asset_type_id').html(response.data);
                         $('#asset_type_id').selectpicker('refresh');
                     }
-                }
-            })
+                })
+                .catch(function (err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function () {
+                    $.easyUnblockUI('#row-' + id);
+                });
         }
     });
 

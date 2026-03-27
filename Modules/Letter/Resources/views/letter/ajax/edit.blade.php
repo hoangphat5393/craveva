@@ -177,16 +177,13 @@
         $('#downloadButton').on('click', function() {
             var url = "{{ route('letter.download.preview.store') }}";
 
-            $.easyAjax({
-                url: url,
-                type: "POST",
-                data: {
-                    _token: "{{ csrf_token() }}",
-                    description: $('#descriptionPreviewArea').html()
-                },
-                success: function(response) {
-                    window.location.href = response.url;
-                }
+            window.apiHttp.postUrlEncoded(url, {
+                _token: "{{ csrf_token() }}",
+                description: $('#descriptionPreviewArea').html()
+            }).then(function(response) {
+                window.location.href = response.url;
+            }).catch(function(err) {
+                $.handleApiFormError(err);
             });
         });
 
@@ -220,16 +217,14 @@
             var url = "{{ route('letter.ajax.template', ':id') }}";
             url = url.replace(':id', letterId);
 
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                container: '#letterForm',
-                blockUI: true,
-                redirect: true,
-                success: function(response) {
-                    quill.pasteHTML(response.letter.description);
-                    generatePreview();
-                }
+            $.easyBlockUI('#letterForm');
+            window.apiHttp.get(url).then(function(response) {
+                quill.pasteHTML(response.letter.description);
+                generatePreview();
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI('#letterForm');
             });
         });
 
@@ -251,30 +246,47 @@
             var url = "{{ route('letter.employee', ':id') }}";
             url = url.replace(':id', employeeId);
 
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                container: '#letterForm',
-                blockUI: true,
-                redirect: true,
-                success: function(response) {
-                    employeeLetterVariable = response.employeeLetterVariable;
-                    generatePreview();
-                }
+            $.easyBlockUI('#letterForm');
+            window.apiHttp.get(url).then(function(response) {
+                employeeLetterVariable = response.employeeLetterVariable;
+                generatePreview();
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI('#letterForm');
             });
         });
 
         $('#update-letter').click(function() {
             var url = "{{ route('letter.generate.update', $letter->id) }}";
-
-            $.easyAjax({
-                url: url,
-                container: '#letterForm',
-                type: "POST",
-                blockUI: true,
-                buttonSelector: "#update-letter",
-                disableButton: true,
-                data: $('#letterForm').serialize(),
+            var $btn = $('#update-letter');
+            $btn.prop('disabled', true);
+            $.easyBlockUI('#letterForm');
+            window.apiHttp.postUrlEncoded(url, $('#letterForm').serialize()).then(function(response) {
+                if (response.status == 'success') {
+                    if (response.action == 'redirect' && response.url) {
+                        window.location.href = response.url;
+                    } else if (typeof response.message !== 'undefined') {
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'success',
+                                text: response.message,
+                                toast: true,
+                                position: 'top-end',
+                                timer: 3000,
+                                timerProgressBar: true,
+                                showConfirmButton: false,
+                                customClass: { confirmButton: 'btn btn-primary' },
+                                showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' },
+                            });
+                        }
+                    }
+                }
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $btn.prop('disabled', false);
+                $.easyUnblockUI('#letterForm');
             });
         });
 

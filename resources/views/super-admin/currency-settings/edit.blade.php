@@ -156,21 +156,21 @@
         // Save form data
         $('#save-form').click(function() {
             const url = "{{ route('superadmin.settings.global-currency-settings.update', [$currency->id]) }}";
-            $.easyAjax({
-                url: url,
-                container: '#editCurrency',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-form",
-                data: $('#editCurrency').serialize(),
-                success: function (response) {
+            const $btn = $('#save-form');
+            const prev = $btn.html();
+            $.easyBlockUI('#editCurrency');
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+            window.apiHttp.postUrlEncoded(url, $('#editCurrency').serialize())
+                .then(function (response) {
                 if (response.status == 'success') {
                     window.location.reload();
                 }
-            }
-
             })
+                .catch(function (err) { $.handleApiFormError(err); })
+                .finally(function () {
+                    $.easyUnblockUI('#editCurrency');
+                    $btn.prop('disabled', false).html(prev);
+                });
         });
 
         $('.fetch-exchange-rate').click(function() {
@@ -186,21 +186,21 @@
             let url = "{{ route('superadmin.settings.currency_settings.exchange_rate', '#cc') }}";
             url = url.replace('#cc', currencyCode);
 
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                data: {
-                    currencyCode: currencyCode
-                },
-                disableButton: true,
-                messagePosition: "inline",
-                blockUI: true,
-                success: function(response) {
+            const $fetchBtn = $(this);
+            const fetchPrev = $fetchBtn.html();
+            $.easyBlockUI('#editCurrency');
+            $fetchBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+            window.apiHttp.get(url, { params: { currencyCode: currencyCode } })
+                .then(function(response) {
                     if (response.status === 'success') {
                         $('#exchange_rate').val(response.value);
                     }
-                }
-            })
+                })
+                .catch(function (err) { $.handleApiFormError(err); })
+                .finally(function () {
+                    $.easyUnblockUI('#editCurrency');
+                    $fetchBtn.prop('disabled', false).html(fetchPrev);
+                });
         });
 
         function addCurrencyExchangeKey() {

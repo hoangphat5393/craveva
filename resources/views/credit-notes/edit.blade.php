@@ -9,11 +9,10 @@
 @endpush
 
 @php
-$addProductPermission = user()->permission('add_product');
+    $addProductPermission = user()->permission('add_product');
 @endphp
 
 @section('content')
-
     <div class="content-wrapper">
         <!-- CREATE INVOICE START -->
         <div class="bg-white rounded b-shadow-4 create-inv">
@@ -36,10 +35,7 @@ $addProductPermission = user()->permission('add_product');
                             <label class="f-14 text-dark-grey mb-12 " for="usr">@lang('app.credit-note')
                                 #</label>
                             <div class="input-group">
-                                <input type="text" name="cn_number" id="cn_number"
-                                    class="form-control height-35 f-15 readonly-background" readonly
-                                    value="{{ $creditNote->cn_number }}" placeholder="0019" aria-label="0019"
-                                    aria-describedby="basic-addon1">
+                                <input type="text" name="cn_number" id="cn_number" class="form-control height-35 f-15 readonly-background" readonly value="{{ $creditNote->cn_number }}" placeholder="0019" aria-label="0019" aria-describedby="basic-addon1">
                             </div>
                         </div>
                     </div>
@@ -50,10 +46,7 @@ $addProductPermission = user()->permission('add_product');
                             <x-forms.label fieldId="due_date" :fieldLabel="__('modules.invoices.invoiceDate')">
                             </x-forms.label>
                             <div class="input-group">
-                                <input type="text" id="invoice_date" name="issue_date"
-                                    class="px-6 position-relative text-dark font-weight-normal form-control height-35 rounded p-0 text-left f-15"
-                                    placeholder="@lang('placeholders.date')"
-                                    value="{{ now(company()->timezone)->translatedFormat(company()->date_format) }}">
+                                <input type="text" id="invoice_date" name="issue_date" class="px-6 position-relative text-dark font-weight-normal form-control height-35 rounded p-0 text-left f-15" placeholder="@lang('placeholders.date')" value="{{ now(company()->timezone)->translatedFormat(company()->date_format) }}">
                             </div>
                         </div>
                     </div>
@@ -109,7 +102,7 @@ $addProductPermission = user()->permission('add_product');
                         </div>
                     </div>
                     <!-- PROJECT END -->
-                <input type="hidden" name="calculate_tax" id="calculate_tax" value="{{ $creditNote->calculate_tax }}">
+                    <input type="hidden" name="calculate_tax" id="calculate_tax" value="{{ $creditNote->calculate_tax }}">
 
                 </div>
 
@@ -129,12 +122,12 @@ $addProductPermission = user()->permission('add_product');
                                         <tr class="text-dark-grey font-weight-bold f-14">
                                             <td width="40%" class="border-0 inv-desc-mbl btlr">@lang('app.description')</td>
                                             @if ($creditNoteSetting->hsn_sac_code_show)
-                                                <td width="10%" class="border-0" align="right">@lang("app.hsnSac")
+                                                <td width="10%" class="border-0" align="right">@lang('app.hsnSac')
                                             @endif
                                             <td width="10%" class="border-0" align="right">@lang('modules.invoices.qty')
                                             </td>
                                             <td width="10%" class="border-0" align="right">
-                                                @lang("modules.invoices.unitPrice")</td>
+                                                @lang('modules.invoices.unitPrice')</td>
                                             <td width="13%" class="border-0" align="right">@lang('modules.invoices.tax')
                                             </td>
                                             <td width="17%" class="border-0 bblr-mbl" align="right">
@@ -142,40 +135,33 @@ $addProductPermission = user()->permission('add_product');
                                         </tr>
                                         <tr>
                                             <td class="border-bottom-0 btrr-mbl btlr">
-                                                <input type="hidden" class="form-control f-14 border-0 w-100 item_name"
-                                                    name="item_name[]" value="{{ $item->item_name }}">
-                                                    <span>{{ $item->item_name }}</span>
+                                                <input type="hidden" class="form-control f-14 border-0 w-100 item_name" name="item_name[]" value="{{ $item->item_name }}">
+                                                <span>{{ $item->item_name }}</span>
                                             </td>
                                             <td class="border-bottom-0 d-block d-lg-none d-md-none">
-                                                <textarea class="form-control f-14 border-0 w-100 mobile-description"
-                                                    placeholder="@lang('placeholders.invoices.description')"
-                                                    name="item_summary[]">{{ $item->item_summary }}</textarea>
+                                                <textarea class="form-control f-14 border-0 w-100 mobile-description" placeholder="@lang('placeholders.invoices.description')" name="item_summary[]">{{ $item->item_summary }}</textarea>
                                             </td>
                                             @if ($creditNoteSetting->hsn_sac_code_show)
                                                 <td class="border-bottom-0 text-right">
-                                                    <input type="hidden" class="f-14 border-0 w-100 text-right hsn_sac_code"
-                                                        value="{{ $item->hsn_sac_code }}" name="hsn_sac_code[]">
+                                                    <input type="hidden" class="f-14 border-0 w-100 text-right hsn_sac_code" value="{{ $item->hsn_sac_code }}" name="hsn_sac_code[]">
                                                     <span>{{ $item->hsn_sac_code }}</span>
                                                 </td>
                                             @endif
                                             <td class="border-bottom-0 text-right">
                                                 <input type="hidden" class="f-14 border-0 w-100 text-right quantity" value="{{ $item->quantity }}" name="quantity[]">
-                                                {{ $item->quantity }} @if($item->unit)<br><span class="f-11 text-dark-grey">{{ $item->unit->unit_type }}</span>@endif
+                                                {{ $item->quantity }} @if ($item->unit)
+                                                    <br><span class="f-11 text-dark-grey">{{ $item->unit->unit_type }}</span>
+                                                @endif
                                             </td>
                                             <td class="border-bottom-0 text-right">
-                                                <input type="hidden" class="f-14 border-0 w-100 text-right cost_per_item"
-                                                    value="{{ $item->unit_price }}" name="cost_per_item[]">
+                                                <input type="hidden" class="f-14 border-0 w-100 text-right cost_per_item" value="{{ $item->unit_price }}" name="cost_per_item[]">
                                                 <span>{{ $item->unit_price }}</span>
                                             </td>
                                             <td class="border-bottom-0 text-right">
                                                 <div class="select-others height-35 rounded border-0">
-                                                    <select id="multiselect{{ $key }}"
-                                                        multiple="multiple"
-                                                        class="select-picker type customSequence border-0" data-size="3"
-                                                        disabled>
+                                                    <select id="multiselect{{ $key }}" multiple="multiple" class="select-picker type customSequence border-0" data-size="3" disabled>
                                                         @foreach ($taxes as $tax)
-                                                            <option data-rate="{{ $tax->rate_percent }}" data-tax-text="{{ $tax->tax_name .':'. $tax->rate_percent }}%"
-                                                                @if (isset($item->taxes) && array_search($tax->id, json_decode($item->taxes)) !== false) selected @endif value="{{ $tax->id }}">
+                                                            <option data-rate="{{ $tax->rate_percent }}" data-tax-text="{{ $tax->tax_name . ':' . $tax->rate_percent }}%" @if (isset($item->taxes) && array_search($tax->id, json_decode($item->taxes)) !== false) selected @endif value="{{ $tax->id }}">
                                                                 {{ $tax->tax_name }}:
                                                                 {{ $tax->rate_percent }}%</option>
                                                         @endforeach
@@ -188,30 +174,16 @@ $addProductPermission = user()->permission('add_product');
                                                 </div>
                                             </td>
                                             <td rowspan="2" align="right" valign="top" class="bg-amt-grey btrr-bbrr">
-                                                <span
-                                                    class="amount-html">{{ number_format((float) $item->amount, 2, '.', '') }}</span>
-                                                <input type="hidden" class="amount" name="amount[]"
-                                                    value="{{ $item->amount }}">
+                                                <span class="amount-html">{{ number_format((float) $item->amount, 2, '.', '') }}</span>
+                                                <input type="hidden" class="amount" name="amount[]" value="{{ $item->amount }}">
                                             </td>
                                         </tr>
                                         <tr class="d-none d-md-block d-lg-table-row">
                                             <td colspan="{{ $invoiceSetting->hsn_sac_code_show ? '4' : '3' }}" class="dash-border-top bblr">
-                                                <textarea class="f-14 border-0 w-100 desktop-description"
-                                                    name="item_summary[]"
-                                                    placeholder="@lang('placeholders.invoices.description')">{{ $item->item_summary }}</textarea>
+                                                <textarea class="f-14 border-0 w-100 desktop-description" name="item_summary[]" placeholder="@lang('placeholders.invoices.description')">{{ $item->item_summary }}</textarea>
                                             </td>
                                             <td class="border-left-0">
-                                                <input type="file"
-                                                class="dropify"
-                                                name="invoice_item_image[]"
-                                                data-allowed-file-extensions="png jpg jpeg bmp"
-                                                data-messages-default="test"
-                                                data-height="70"
-                                                data-id="{{ $item->id }}"
-                                                id="{{ $item->id }}"
-                                                data-default-file="{{ $item->creditNoteItemImage ? $item->creditNoteItemImage->file_url : '' }}"
-                                                disabled="disabled"
-                                                />
+                                                <input type="file" class="dropify" name="invoice_item_image[]" data-allowed-file-extensions="png jpg jpeg bmp" data-messages-default="test" data-height="70" data-id="{{ $item->id }}" id="{{ $item->id }}" data-default-file="{{ $item->creditNoteItemImage ? $item->creditNoteItemImage->file_url : '' }}" disabled="disabled" />
                                                 <input type="hidden" name="invoice_item_image_url[]" value="{{ $item->creditNoteItemImage ? $item->creditNoteItemImage->file : '' }}">
                                             </td>
                                         </tr>
@@ -248,19 +220,13 @@ $addProductPermission = user()->permission('add_product');
                                                         <tbody>
                                                             <tr>
                                                                 <td width="50%" class="c-inv-sub-padding">
-                                                                    <input type="hidden" min="0" name="discount_value"
-                                                                        class="f-14 border-0 w-100 text-right discount_value"
-                                                                        placeholder="0"
-                                                                        value="{{ $creditNote->discount }}">
+                                                                    <input type="hidden" min="0" name="discount_value" class="f-14 border-0 w-100 text-right discount_value" placeholder="0" value="{{ $creditNote->discount }}">
                                                                     <span>{{ $creditNote->discount }}</span>
                                                                 </td>
                                                                 <td width="50%" align="left" class="c-inv-sub-padding">
-                                                                    <div
-                                                                        class="select-others select-tax height-35 rounded border-0">
-                                                                        <select class="form-control select-picker"
-                                                                            id="discount_type" name="discount_type" disabled>
-                                                                            <option @if ($creditNote->discount_type == 'percent') selected @endif
-                                                                                value="percent">%</option>
+                                                                    <div class="select-others select-tax height-35 rounded border-0">
+                                                                        <select class="form-control select-picker" id="discount_type" name="discount_type" disabled>
+                                                                            <option @if ($creditNote->discount_type == 'percent') selected @endif value="percent">%</option>
                                                                             <option @if ($creditNote->discount_type == 'fixed') selected @endif value="fixed">
                                                                                 @lang('modules.invoices.amount')</option>
                                                                         </select>
@@ -292,13 +258,7 @@ $addProductPermission = user()->permission('add_product');
                                                     <table width="100%" id="invoice-taxes">
                                                         <tr>
                                                             <td colspan="2">
-                                                                <input type="number"
-                                                                    min="-{{ $creditNote->creditAmountRemaining() }}"
-                                                                    name="adjustment_amount"
-                                                                    class="form-control f-14 border-0 w-100 text-right" id="adjustment_amount"
-                                                                    placeholder="0"
-                                                                    data-min-adjustment-amount="{{ $creditNote->creditAmountRemaining() }}"
-                                                                    value="{{ $creditNote->adjustment_amount }}">
+                                                                <input type="number" min="-{{ $creditNote->creditAmountRemaining() }}" name="adjustment_amount" class="form-control f-14 border-0 w-100 text-right" id="adjustment_amount" placeholder="0" data-min-adjustment-amount="{{ $creditNote->creditAmountRemaining() }}" value="{{ $creditNote->adjustment_amount }}">
                                                             </td>
                                                         </tr>
                                                     </table>
@@ -308,8 +268,8 @@ $addProductPermission = user()->permission('add_product');
                                                 <td colspan="2">@lang('modules.invoices.total')</td>
                                                 <td><span class="total">0.00</span></td>
                                                 <input type="hidden" class="total-field" name="total" value="0">
-                                                    <input type="hidden" id="total-field" value="{{ $creditNote->creditAmountUsed() }}">
-                                                    <input type="hidden" name="min_adjustment_amount" value="{{ $creditNote->creditAmountRemaining() }}">
+                                                <input type="hidden" id="total-field" value="{{ $creditNote->creditAmountUsed() }}">
+                                                <input type="hidden" name="min_adjustment_amount" value="{{ $creditNote->creditAmountRemaining() }}">
                                             </tr>
                                         </tbody>
                                     </table>
@@ -323,14 +283,11 @@ $addProductPermission = user()->permission('add_product');
                 <!-- NOTE AND TERMS AND CONDITIONS START -->
                 <div class="d-flex flex-wrap px-lg-4 px-md-4 px-3 py-3">
                     <div class="col-md-6 col-sm-12 c-inv-note-terms p-0 mb-lg-0 mb-md-0 mb-3">
-                        <label class="f-14 text-dark-grey mb-12  w-100"
-                            for="usr">@lang('modules.invoices.note')</label>
-                        <textarea class="form-control" name="note" id="note" rows="4"
-                            placeholder="@lang('placeholders.invoices.note')">{{ $creditNote->note ? $creditNote->note : '' }}</textarea>
+                        <label class="f-14 text-dark-grey mb-12  w-100" for="usr">@lang('modules.invoices.note')</label>
+                        <textarea class="form-control" name="note" id="note" rows="4" placeholder="@lang('placeholders.invoices.note')">{{ $creditNote->note ? $creditNote->note : '' }}</textarea>
                     </div>
                     <div class="col-md-6 col-sm-12 p-0 c-inv-note-terms">
-                        <label class="f-14 text-dark-grey mb-12  w-100"
-                            for="usr">@lang('modules.invoiceSettings.invoiceTerms')</label>
+                        <label class="f-14 text-dark-grey mb-12  w-100" for="usr">@lang('modules.invoiceSettings.invoiceTerms')</label>
                         {!! nl2br($creditNoteSetting->invoice_terms) !!}
                     </div>
                 </div>
@@ -355,11 +312,9 @@ $addProductPermission = user()->permission('add_product');
         </div>
         <!-- CREATE INVOICE END -->
     </div>
-
 @endsection
 
 @push('scripts')
-
     <script>
         $(document).ready(function() {
             const dp1 = datepicker('#invoice_date', {
@@ -379,28 +334,36 @@ $addProductPermission = user()->permission('add_product');
             function addProduct(id) {
                 var currencyId = $('#currency_id').val();
                 var exchangeRate = $('#exchange_rate').val();
-                $.easyAjax({
-                    url: "{{ route('invoices.add_item') }}",
-                    type: "GET",
-                    data: {
+                window.apiHttp.get("{{ route('invoices.add_item') }}", {
+                    params: {
                         id: id,
                         currencyId: currencyId,
                         exchangeRate: exchangeRate
-                    },
-                    success: function(response) {
-                        if($('input[name="item_name[]"]').val() == ''){
-                            $("#sortable .item-row").remove();
-                        }
-                        $(response.view).hide().appendTo("#sortable").fadeIn(500);
-                        calculateTotal();
+                    }
+                }).then(function(response) {
+                    if ($('input[name="item_name[]"]').val() == '') {
+                        $("#sortable .item-row").remove();
+                    }
+                    $(response.view).hide().appendTo("#sortable").fadeIn(500);
+                    calculateTotal();
 
-                        var noOfRows = $(document).find('#sortable .item-row').length;
-                        var i = $(document).find('.item_name').length - 1;
-                        var itemRow = $(document).find('#sortable .item-row:nth-child(' + noOfRows +
-                            ') select.type');
-                        itemRow.attr('id', 'multiselect' + i);
-                        itemRow.attr('name', 'taxes[' + i + '][]');
-                        $(document).find('#multiselect' + i).selectpicker();
+                    var noOfRows = $(document).find('#sortable .item-row').length;
+                    var i = $(document).find('.item_name').length - 1;
+                    var itemRow = $(document).find('#sortable .item-row:nth-child(' + noOfRows +
+                        ') select.type');
+                    itemRow.attr('id', 'multiselect' + i);
+                    itemRow.attr('name', 'taxes[' + i + '][]');
+                    $(document).find('#multiselect' + i).selectpicker();
+                }).catch(function(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
                     }
                 });
             }
@@ -411,7 +374,7 @@ $addProductPermission = user()->permission('add_product');
                 let grandTotal = parseFloat(total) + parseFloat(adjustmentAmount);
                 let minAdjustmentAmount = $('#adjustment_amount').data('min-adjustment-amount');
 
-                if(adjustmentAmount < -minAdjustmentAmount){
+                if (adjustmentAmount < -minAdjustmentAmount) {
                     $(this).val(-parseFloat(minAdjustmentAmount));
 
                     total = parseFloat(total) - parseFloat(minAdjustmentAmount);
@@ -422,12 +385,11 @@ $addProductPermission = user()->permission('add_product');
                     return false;
                 }
 
-                if(adjustmentAmount == '') {
+                if (adjustmentAmount == '') {
                     $(".total").html(total);
                     $(".total-field").val(total);
                     return false;
-                }
-                else if(adjustmentAmount < 0) {
+                } else if (adjustmentAmount < 0) {
                     grandTotal = (grandTotal < 0) ? 0 : grandTotal;
                 }
 
@@ -474,14 +436,25 @@ $addProductPermission = user()->permission('add_product');
                     return false;
                 }
 
-                $.easyAjax({
-                    url: "{{ route('creditnotes.update', $creditNote->id) }}",
-                    container: '#saveInvoiceForm',
-                    type: "POST",
-                    blockUI: true,
-                    redirect: true,
-                    data: $('#saveInvoiceForm').serialize()
-                })
+                $.easyBlockUI('#saveInvoiceForm');
+                window.apiHttp.postUrlEncoded("{{ route('creditnotes.update', $creditNote->id) }}", $('#saveInvoiceForm').serialize()).then(function(response) {
+                    if (response.status == 'success' && response.redirectUrl) {
+                        window.location.href = response.redirectUrl;
+                    }
+                }).catch(function(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
+                    }
+                }).finally(function() {
+                    $.easyUnblockUI('#saveInvoiceForm');
+                });
             });
 
             $('#saveInvoiceForm').on('click', '.remove-item', function() {

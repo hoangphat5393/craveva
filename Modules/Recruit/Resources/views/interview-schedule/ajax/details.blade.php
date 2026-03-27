@@ -707,16 +707,12 @@
                         var url = "{{ route('interview-schedule.destroy', ':id') }}";
                         url = url.replace(':id', id);
                         var token = "{{ csrf_token() }}";
-                        $.easyAjax({
-                            type: 'POST',
-                            url: url,
-                            blockUI: true,
-                            data: {
-                                '_token': token,
-                                'parentId' : parentId,
-                                '_method': 'DELETE'
-                            },
-                            success: function (response) {
+                        window.apiHttp.postUrlEncoded(url, {
+                                _token: token,
+                                parentId: parentId,
+                                _method: 'DELETE'
+                            })
+                            .then(function (response) {
                                 if (response.status == 'success') {
                                     if ($(MODAL_XL).hasClass('show')) {
                                         $(MODAL_XL).modal('hide');
@@ -732,8 +728,10 @@
                                         window.location.href = response.redirectUrl;
                                     }
                                 }
-                            }
-                        });
+                            })
+                            .catch(function (err) {
+                                $.handleApiFormError(err);
+                            });
                     }
                 });
             } else {
@@ -759,16 +757,12 @@
                         var url = "{{ route('interview-schedule.destroy', ':id') }}";
                         url = url.replace(':id', id);
                         var token = "{{ csrf_token() }}";
-                        $.easyAjax({
-                            type: 'POST',
-                            url: url,
-                            blockUI: true,
-                            data: {
-                                '_token': token,
-                                'parentId': parentId,
-                                '_method': 'DELETE'
-                            },
-                            success: function (response) {
+                        window.apiHttp.postUrlEncoded(url, {
+                                _token: token,
+                                parentId: parentId,
+                                _method: 'DELETE'
+                            })
+                            .then(function (response) {
                                 if (response.status == 'success') {
                                     if ($(MODAL_XL).hasClass('show')) {
                                         $(MODAL_XL).modal('hide');
@@ -784,8 +778,10 @@
                                         window.location.href = response.redirectUrl;
                                     }
                                 }
-                            }
-                        });
+                            })
+                            .catch(function (err) {
+                                $.handleApiFormError(err);
+                            });
                     }
                 });
             }
@@ -822,21 +818,19 @@
                 buttonsStyling: false
             }).then((result) => {
                 if (result.isConfirmed) {
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            'action': action,
-                            'responseId': responseId,
-                            '_token': '{{ csrf_token() }}'
-                        },
-                        success: function (response) {
+                    window.apiHttp.postUrlEncoded(url, {
+                            action: action,
+                            responseId: responseId,
+                            _token: '{{ csrf_token() }}'
+                        })
+                        .then(function (response) {
                             if (response.status == 'success') {
                                 window.location.reload();
                             }
-                        }
-                    });
+                        })
+                        .catch(function (err) {
+                            $.handleApiFormError(err);
+                        });
                 }
             });
         });
@@ -847,20 +841,18 @@
             var id = $(this).data('id');
             var url = "{{ route('interview-schedule.change_interview_status') }}";
             var token = "{{ csrf_token() }}";
-            $.easyAjax({
-                url: url,
-                type: "POST",
-                async: false,
-                data: {
-                    '_token': token,
+            window.apiHttp.postUrlEncoded(url, {
+                    _token: token,
                     interviewId: id,
                     status: status,
                     sortBy: 'id'
-                },
-                success: function (data) {
+                })
+                .then(function (data) {
                     window.location.reload();
-                }
-            })
+                })
+                .catch(function (err) {
+                    $.handleApiFormError(err);
+                });
         });
 
         $('body').on('click', '.delete-file', function () {
@@ -889,19 +881,15 @@
 
                     var token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function (response) {
+                    window.apiHttp.delete(url, token)
+                        .then(function (response) {
                             if (response.status == "success") {
                                 $('#task-file-list').html(response.view);
                             }
-                        }
-                    });
+                        })
+                        .catch(function (err) {
+                            $.handleApiFormError(err);
+                        });
                 }
             });
         });
@@ -928,19 +916,16 @@
         const requestUrl = this.href;
         console.log(requestUrl);
 
-        $.easyAjax({
-            url: requestUrl,
-            blockUI: true,
-            container: "#nav-tabContent",
-            historyPush: ($(RIGHT_MODAL).hasClass('in') ? false : true),
-            data: {
-                'json': true
-            },
-            success: function (response) {
+        window.apiHttp.get(requestUrl, {
+                json: true
+            })
+            .then(function (response) {
                 if (response.status == "success") {
                     $('#nav-tabContent').html(response.html);
                 }
-            }
-        });
+            })
+            .catch(function (err) {
+                $.handleApiFormError(err);
+            });
     });
 </script>

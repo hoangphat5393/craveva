@@ -55,16 +55,34 @@
 <script>
     init('#updateSeoDetail');
     $('#update-seo-detail').click(function () {
-        $.easyAjax({
-            url: "{{ route('superadmin.front-settings.seo-detail.update', $seoDetail->id) }}",
-            container: '#updateSeoDetail',
-            type: "POST",
-            file: true,
-            redirect: true,
-            disableButton: true,
-            blockUI: true,
-            data: $('#updateSeoDetail').serialize()
-        })
+        var $btn = $('#update-seo-detail');
+        var prev = $btn.html();
+        $.easyBlockUI('#updateSeoDetail');
+        $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+        window.apiHttp.postForm("{{ route('superadmin.front-settings.seo-detail.update', $seoDetail->id) }}", document.getElementById('updateSeoDetail')).then(function (response) {
+            if (response.status === 'success') {
+                if (response.action === 'redirect' && response.url) {
+                    window.location.href = response.url;
+                } else if (typeof response.message !== 'undefined') {
+                    Swal.fire({
+                        icon: 'success',
+                        text: response.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 3000,
+                        timerProgressBar: true,
+                        showConfirmButton: false,
+                        customClass: { confirmButton: 'btn btn-primary' },
+                        showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                    });
+                }
+            }
+        }).catch(function (err) {
+            $.handleApiFormError(err);
+        }).finally(function () {
+            $.easyUnblockUI('#updateSeoDetail');
+            $btn.prop('disabled', false).html(prev);
+        });
     });
 </script>
 

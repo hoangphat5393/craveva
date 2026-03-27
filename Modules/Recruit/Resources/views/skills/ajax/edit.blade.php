@@ -8,9 +8,7 @@
                     <div class="col-lg-12">
                         <div class="row">
                             <div class="col-lg-5">
-                                <x-forms.text fieldId="name" :fieldLabel="__('recruit::modules.skill.skillname')"
-                                              fieldName="name" :fieldValue="$skills->name" fieldRequired="true"
-                                              :fieldPlaceholder="__('placeholders.name')">
+                                <x-forms.text fieldId="name" :fieldLabel="__('recruit::modules.skill.skillname')" fieldName="name" :fieldValue="$skills->name" fieldRequired="true" :fieldPlaceholder="__('placeholders.name')">
                                 </x-forms.text>
                             </div>
                         </div>
@@ -32,7 +30,7 @@
 <script src="{{ asset('vendor/jquery/tagify.min.js') }}"></script>
 
 <script>
-    $(document).ready(function () {
+    $(document).ready(function() {
 
         var input = document.querySelector('input[name=tags]'),
             // init Tagify script on the above inputs
@@ -40,24 +38,18 @@
                 whitelist: {!! json_encode($skills) !!},
             });
 
-        $('body').on('click', '#save-skill', function () {
+        $('body').on('click', '#save-skill', function() {
 
             const url = "{{ route('job-skills.update', [$skills->id]) }}";
-            $.easyAjax({
-                url: url,
-                container: '#save-skill-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-skill",
-                file: true,
-                data: $('#save-skill-data-form').serialize(),
-                success: function (response) {
-                    if (response.status == 'success') {
-                        window.location.href = response.redirectUrl;
+            window.apiHttp.postUrlEncoded(url, $('#save-skill-data-form').serialize())
+                .then(function(response) {
+                    if (response.data.status == 'success') {
+                        window.location.href = response.data.redirectUrl;
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                });
         });
         init(RIGHT_MODAL);
     });

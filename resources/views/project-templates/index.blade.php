@@ -168,30 +168,28 @@
             var url = "{{ route('project.get_project_sub_category', ':id') }}";
             url = url.replace(':id', categoryId);
 
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                success: function(response) {
-                    console.log('categoryId');
+            window.apiHttp.get(url).then(function(response) {
+                console.log('categoryId');
+                console.log(categoryId);
+                if (response.status == 'success') {
                     console.log(categoryId);
-                    if (response.status == 'success') {
-                        console.log(categoryId);
-                        var options = [];
-                        var rData = [];
-                        rData = response.data;
-                        $.each(rData, function(index, value) {
-                            var selectData = '';
-                            selectData = '<option value="' + value.id + '">' + value
-                                .category_name + '</option>';
-                            options.push(selectData);
-                        });
+                    var options = [];
+                    var rData = [];
+                    rData = response.data;
+                    $.each(rData, function(index, value) {
+                        var selectData = '';
+                        selectData = '<option value="' + value.id + '">' + value
+                            .category_name + '</option>';
+                        options.push(selectData);
+                    });
 
-                        $('#project_template_sub_category_id').html('<option value="all">--</option>' +
-                            options);
-                        $('#project_template_sub_category_id').selectpicker('refresh');
-                    }
+                    $('#project_template_sub_category_id').html('<option value="all">--</option>' +
+                        options);
+                    $('#project_template_sub_category_id').selectpicker('refresh');
                 }
-            })
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            });
 
         });
 
@@ -250,20 +248,12 @@
                     var url = "{{ route('project-template.destroy', ':id') }}";
                     url = url.replace(':id', id);
 
-                    var token = "{{ csrf_token() }}";
-
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
-                            if (response.status == "success") {
-                                showTable();
-                            }
+                    window.apiHttp.delete(url, "{{ csrf_token() }}").then(function(response) {
+                        if (response.status == "success") {
+                            showTable();
                         }
+                    }).catch(function(err) {
+                        $.handleApiFormError(err);
                     });
                 }
             });
@@ -276,21 +266,22 @@
 
             var url = "{{ route('project_template.apply_quick_action') }}?row_ids=" + rowdIds;
 
-            $.easyAjax({
-                url: url,
-                container: '#quick-action-form',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#quick-action-apply",
-                data: $('#quick-action-form').serialize(),
-                success: function(response) {
-                    if (response.status == 'success') {
-                        showTable();
-                        resetActionButtons();
-                        deSelectAll();
-                    }
+            var $btn = $('#quick-action-apply');
+            var prev = $btn.html();
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+            $.easyBlockUI('#quick-action-form');
+            window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize()).then(function(response) {
+                if (response.status == 'success') {
+                    showTable();
+                    resetActionButtons();
+                    deSelectAll();
                 }
-            })
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI('#quick-action-form');
+                $btn.prop('disabled', false).html(prev);
+            });
         };
 
     </script>

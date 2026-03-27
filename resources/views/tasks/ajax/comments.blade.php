@@ -227,30 +227,44 @@
 
             }).get();
 
-            var token = '{{ csrf_token() }}';
             const url = "{{ route('taskComment.store') }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#save-comment-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#submit-comment",
-                data: {
-                    '_token': token,
-                    comment: comment,
-                    mention_user_id : mention_user_id,
-                    taskId: '{{ $task->id }}'
-                },
-                success: function(response) {
-                    if (response.status == "success") {
-                        $('#comment-list').html(response.view);
-                        document.getElementById('task-comment').children[0].innerHTML = "";
-                        $('#task-comment-text').val('');
+            var $subBtn = $('#save-comment-data-form').find('#submit-comment');
+            var subPrev = $subBtn.html();
+            $subBtn.attr('data-prev-text', subPrev);
+            $subBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+            $.easyBlockUI('#save-comment-data-form');
+            window.apiHttp.postUrlEncoded(url, $.param({
+                '_token': '{{ csrf_token() }}',
+                comment: comment,
+                mention_user_id: mention_user_id,
+                taskId: '{{ $task->id }}'
+            })).then(function(response) {
+                if (response.status == "success") {
+                    if (typeof response.message !== 'undefined' && response.message) {
+                        Swal.fire({
+                            icon: 'success',
+                            text: response.message,
+                            toast: true,
+                            position: 'top-end',
+                            timer: 3000,
+                            timerProgressBar: true,
+                            showConfirmButton: false,
+                            customClass: { confirmButton: 'btn btn-primary' },
+                            showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                        });
                     }
-
+                    $('#comment-list').html(response.view);
+                    document.getElementById('task-comment').children[0].innerHTML = "";
+                    $('#task-comment-text').val('');
                 }
+
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI('#save-comment-data-form');
+                $subBtn.html($subBtn.attr('data-prev-text'));
+                $subBtn.prop('disabled', false);
             });
         });
 

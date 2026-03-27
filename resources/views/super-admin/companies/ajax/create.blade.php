@@ -151,17 +151,35 @@
 
         $('#save-company-form').click(function () {
             const url = "{{ route('superadmin.companies.store') }}";
-
-            $.easyAjax({
-                url: url,
-                container: '#save-company-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-company-form",
-                file: true,
-                data: $('#save-company-data-form').serialize()
-            })
+            const $btn = $('#save-company-form');
+            const prev = $btn.html();
+            $.easyBlockUI('#save-company-data-form');
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+            window.apiHttp.postForm(url, document.getElementById('save-company-data-form'))
+                .then(function (response) {
+                    if (response.status === 'success') {
+                        if (response.action === 'redirect' && response.url) {
+                            window.location.href = response.url;
+                        } else if (typeof response.message !== 'undefined') {
+                            Swal.fire({
+                                icon: 'success',
+                                text: response.message,
+                                toast: true,
+                                position: 'top-end',
+                                timer: 3000,
+                                timerProgressBar: true,
+                                showConfirmButton: false,
+                                customClass: { confirmButton: 'btn btn-primary' },
+                                showClass: { popup: 'swal2-noanimation', backdrop: 'swal2-noanimation' }
+                            });
+                        }
+                    }
+                })
+                .catch(function (err) { $.handleApiFormError(err); })
+                .finally(function () {
+                    $.easyUnblockUI('#save-company-data-form');
+                    $btn.prop('disabled', false).html(prev);
+                });
         });
 
         $('#random_password').click(function () {

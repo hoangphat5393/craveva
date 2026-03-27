@@ -375,14 +375,8 @@
                             var url = "{{ route('product-files.destroy', ':id') }}";
                             url = url.replace(':id', file.id);
 
-                            $.easyAjax({
-                                type: 'POST',
-                                url: url,
-                                data: {
-                                    '_token': token,
-                                    '_method': 'DELETE'
-                                },
-                                success: function(response) {
+                            window.apiHttp.delete(url, token)
+                                .then(function(response) {
                                     //This will manually removed the file
                                     file.previewElement.remove();
 
@@ -390,8 +384,10 @@
                                         let $radio = $('.custom-control-input');
                                         $radio[1].checked = true;
                                     }
-                                }
-                            });
+                                })
+                                .catch(function(err) {
+                                    $.handleApiFormError(err);
+                                });
                         }
                     });
 
@@ -513,16 +509,8 @@
         $('#save-product-form').click(function() {
             const url = "{{ route('purchase-products.update', [$product->id]) }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#save-product-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-product-form",
-                file: true,
-                data: $('#save-product-data-form').serialize(),
-                success: function(response) {
+            window.apiHttp.postUrlEncoded(url, $('#save-product-data-form').serialize())
+                .then(function(response) {
                     if (productDropzone.getQueuedFiles().length > 0) {
                         productID = response.productID
                         defaultImage = response.defaultImage;
@@ -536,8 +524,10 @@
                             window.location.href = response.redirectUrl;
                         }
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                });
         });
 
         $('#product_category_id').change(function(e) {
@@ -546,10 +536,8 @@
             var url = "{{ route('get_product_sub_categories', ':id') }}";
             url = url.replace(':id', categoryId);
 
-            $.easyAjax({
-                url: url,
-                type: "GET",
-                success: function(response) {
+            window.apiHttp.get(url)
+                .then(function(response) {
                     if (response.status == 'success') {
                         var options = [];
                         var rData = [];
@@ -564,8 +552,10 @@
                         $('#sub_category_id').html('<option value="">--</option>' + options.join(''));
                         $('#sub_category_id').selectpicker('refresh');
                     }
-                }
-            })
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                });
         });
 
         $('#add-category').click(function() {

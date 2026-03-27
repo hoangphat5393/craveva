@@ -33,19 +33,21 @@
 
 <script>
     $('#edit-type').click(function () {
-        $.easyAjax({
-            container: '#editType',
-            type: "PUT",
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-type",
-            url: "{{ route('asset-type.update', $assetType->id) }}",
-            data: $('#editType').serialize(),
-            success: function (response) {
+        const $btn = $('#edit-type');
+        $btn.prop('disabled', true);
+        $.easyBlockUI('#editType');
+        window.apiHttp.postUrlEncoded("{{ route('asset-type.update', $assetType->id) }}", $('#editType').serialize())
+            .then(function (response) {
                 if (response.status == 'success') {
                     window.location.reload();
                 }
-            }
-        })
+            })
+            .catch(function (err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function () {
+                $btn.prop('disabled', false);
+                $.easyUnblockUI('#editType');
+            });
     });
 </script>

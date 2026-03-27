@@ -43,18 +43,18 @@
     // update offline methods
     $('#save-method').click(function () {
         var url =  "{{route('superadmin.settings.global-offline-payment-setting.update', $method->id)}}";
-        $.easyAjax({
-            url: url,
-            container: '#updateMethods',
-            type: "POST",
-            buttonSelector: "#save-method",
-            disableButton: true,
-            blockUI: true,
-            data: $('#updateMethods').serialize(),
-            success: function () {
-                window.location.reload();
-            }
-        })
+        var $btn = $('#save-method');
+        var prev = $btn.html();
+        $.easyBlockUI('#updateMethods');
+        $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+        window.apiHttp.postUrlEncoded(url, $('#updateMethods').serialize()).then(function () {
+            window.location.reload();
+        }).catch(function (err) {
+            $.handleApiFormError(err);
+        }).finally(function () {
+            $.easyUnblockUI('#updateMethods');
+            $btn.prop('disabled', false).html(prev);
+        });
     });
 </script>
 

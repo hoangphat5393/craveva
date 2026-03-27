@@ -20,15 +20,14 @@
         width: 400px;
         height: 150px;
     }
-
 </style>
 
-@if(!in_array('client', user_roles()))
-    @if(!is_null($invoice->last_viewed))
+@if (!in_array('client', user_roles()))
+    @if (!is_null($invoice->last_viewed))
         <x-alert type="info">
-            @lang('app.viewedOn') {{$invoice->last_viewed->timezone($settings->timezone)->translatedFormat($settings->date_format)}}
-            @lang('app.at') {{$invoice->last_viewed->timezone($settings->timezone)->translatedFormat($settings->time_format)}}
-            @lang('app.usingIpAddress'):{{$invoice->ip_address}}
+            @lang('app.viewedOn') {{ $invoice->last_viewed->timezone($settings->timezone)->translatedFormat($settings->date_format) }}
+            @lang('app.at') {{ $invoice->last_viewed->timezone($settings->timezone)->translatedFormat($settings->time_format) }}
+            @lang('app.usingIpAddress'):{{ $invoice->ip_address }}
 
             @if (request()->ip() == $invoice->ip_address)
                 <strong>(@lang('modules.invoices.sameIp'))</strong>
@@ -45,8 +44,7 @@
         <div class="invoice-table-wrapper">
             <table width="100%" class="">
                 <tr class="inv-logo-heading">
-                    <td><img src="{{ invoice_setting()->logo_url }}" alt="{{ company()->company_name }}"
-                            id="logo" /></td>
+                    <td><img src="{{ invoice_setting()->logo_url }}" alt="{{ company()->company_name }}" id="logo" /></td>
                     <td align="right" class="font-weight-bold f-21 text-dark text-uppercase mt-4 mt-lg-0 mt-md-0">
                         @lang('modules.lead.proposal')</td>
                 </tr>
@@ -93,37 +91,39 @@
             <table width="100%">
                 <tr class="inv-unpaid">
                     <td class="f-14 text-dark">
-                        @if ($invoice->lead && ($invoice->lead->contact->client_name || $invoice->lead->contact->client_email || $invoice->lead->contact->mobile || $invoice->lead->contact->company_name || $invoice->lead->contact->address) && (invoice_setting()->show_client_name == 'yes' || invoice_setting()->show_client_email == 'yes' || invoice_setting()->show_client_phone == 'yes' || invoice_setting()->show_client_company_name == 'yes' || invoice_setting()->show_client_company_address == 'yes'))
-                        <p class="mb-0 text-left">
-                            <span class="text-dark-grey ">
-                                @lang("modules.invoices.billedTo")
-                            </span><br>
+                        @if (
+                            $invoice->lead &&
+                                ($invoice->lead->contact->client_name || $invoice->lead->contact->client_email || $invoice->lead->contact->mobile || $invoice->lead->contact->company_name || $invoice->lead->contact->address) &&
+                                (invoice_setting()->show_client_name == 'yes' || invoice_setting()->show_client_email == 'yes' || invoice_setting()->show_client_phone == 'yes' || invoice_setting()->show_client_company_name == 'yes' || invoice_setting()->show_client_company_address == 'yes'))
+                            <p class="mb-0 text-left">
+                                <span class="text-dark-grey ">
+                                    @lang('modules.invoices.billedTo')
+                                </span><br>
 
-                            @if ($invoice->deal && !empty($invoice->deal->name))
-                                {{ $invoice->deal->name }}<br>
-                            @endif
-                            @if ($invoice->lead->contact && $invoice->lead->contact->client_name && invoice_setting()->show_client_name == 'yes')
-                                {{ $invoice->lead->contact->client_name_salutation }}<br>
-                            @endif
-                            @if ($invoice->lead->contact && $invoice->lead->contact->client_email && invoice_setting()->show_client_email == 'yes')
-                                {{ $invoice->lead->contact->client_email }}<br>
-                            @endif
-                            @if ($invoice->lead->contact && $invoice->lead->contact->mobile && invoice_setting()->show_client_phone == 'yes')
-                                {{ $invoice->lead->contact->mobile }}<br>
-                            @endif
-                            @if ($invoice->lead->contact && $invoice->lead->contact->company_name && invoice_setting()->show_client_company_name == 'yes')
-                                {{ $invoice->lead->contact->company_name }}<br>
-                            @endif
-                            @if ($invoice->lead->contact && $invoice->lead->contact->address && invoice_setting()->show_client_company_address == 'yes')
-                                {!! nl2br($invoice->lead->contact->address) !!}
-                            @endif
-                        </p>
+                                @if ($invoice->deal && !empty($invoice->deal->name))
+                                    {{ $invoice->deal->name }}<br>
+                                @endif
+                                @if ($invoice->lead->contact && $invoice->lead->contact->client_name && invoice_setting()->show_client_name == 'yes')
+                                    {{ $invoice->lead->contact->client_name_salutation }}<br>
+                                @endif
+                                @if ($invoice->lead->contact && $invoice->lead->contact->client_email && invoice_setting()->show_client_email == 'yes')
+                                    {{ $invoice->lead->contact->client_email }}<br>
+                                @endif
+                                @if ($invoice->lead->contact && $invoice->lead->contact->mobile && invoice_setting()->show_client_phone == 'yes')
+                                    {{ $invoice->lead->contact->mobile }}<br>
+                                @endif
+                                @if ($invoice->lead->contact && $invoice->lead->contact->company_name && invoice_setting()->show_client_company_name == 'yes')
+                                    {{ $invoice->lead->contact->company_name }}<br>
+                                @endif
+                                @if ($invoice->lead->contact && $invoice->lead->contact->address && invoice_setting()->show_client_company_address == 'yes')
+                                    {!! nl2br($invoice->lead->contact->address) !!}
+                                @endif
+                            </p>
                         @endif
                     </td>
 
                     <td align="right" class="mt-4 mt-lg-0 mt-md-0">
-                        <span
-                            class="unpaid {{ $invoice->status == 'waiting' ? 'text-warning border-warning' : '' }} {{ $invoice->status == 'accepted' ? 'text-success border-success' : '' }} rounded f-15 ">@lang('modules.proposal.'.$invoice->status)</span>
+                        <span class="unpaid {{ $invoice->status == 'waiting' ? 'text-warning border-warning' : '' }} {{ $invoice->status == 'accepted' ? 'text-success border-success' : '' }} rounded f-15 ">@lang('modules.proposal.' . $invoice->status)</span>
                     </td>
                 </tr>
                 <tr>
@@ -142,28 +142,31 @@
                             <table class="inv-detail f-14 table-responsive-sm" width="100%">
                                 <tr class="i-d-heading bg-light-grey text-dark-grey font-weight-bold">
                                     <td class="border-right-0" width="35%">@lang('app.description')</td>
-                                    @if($invoiceSetting->hsn_sac_code_show == 1)
-                                        <td class="border-right-0 border-left-0" align="right">@lang("app.hsnSac")</td>
+                                    @if ($invoiceSetting->hsn_sac_code_show == 1)
+                                        <td class="border-right-0 border-left-0" align="right">@lang('app.hsnSac')</td>
                                     @endif
                                     <td class="border-right-0 border-left-0" align="right">@lang('modules.invoices.qty')</td>
                                     <td class="border-right-0 border-left-0" align="right">
-                                        @lang("modules.invoices.unitPrice") ({{ $invoice->currency->currency_code }})
+                                        @lang('modules.invoices.unitPrice') ({{ $invoice->currency->currency_code }})
                                     </td>
                                     <td class="border-right-0 border-left-0" align="right">
-                                        @lang("modules.invoices.tax")
+                                        @lang('modules.invoices.tax')
                                     </td>
                                     <td class="border-left-0" align="right">
-                                        @lang("modules.invoices.amount")
+                                        @lang('modules.invoices.amount')
                                         ({{ $invoice->currency->currency_code }})</td>
                                 </tr>
                                 @foreach ($invoice->items->sortBy('field_order') as $item)
                                     @if ($item->type == 'item')
                                         <tr class="text-dark font-weight-semibold f-13">
                                             <td>{{ $item->item_name }}</td>
-                                            @if($invoiceSetting->hsn_sac_code_show == 1)
+                                            @if ($invoiceSetting->hsn_sac_code_show == 1)
                                                 <td align="right">{{ $item->hsn_sac_code }}</td>
                                             @endif
-                                            <td align="right">{{ $item->quantity }}@if($item->unit)<br><span class="f-11 text-dark-grey">{{ $item->unit->unit_type }}</span>@endif</td>
+                                            <td align="right">{{ $item->quantity }}@if ($item->unit)
+                                                    <br><span class="f-11 text-dark-grey">{{ $item->unit->unit_type }}</span>
+                                                @endif
+                                            </td>
                                             <td align="right">
                                                 {{ currency_format($item->unit_price, $invoice->currency_id, false) }}
                                             </td>
@@ -196,12 +199,12 @@
                                         <table width="100%">
                                             <tr class="text-dark-grey" align="right">
                                                 <td class="w-50 border-top-0 border-left-0">
-                                                    @lang("modules.invoices.subTotal")</td>
+                                                    @lang('modules.invoices.subTotal')</td>
                                             </tr>
                                             @if ($discount != 0 && $discount != '')
                                                 <tr class="text-dark-grey" align="right">
                                                     <td class="w-50 border-top-0 border-left-0">
-                                                        @lang("modules.invoices.discount"): {{$discountType}}</td>
+                                                        @lang('modules.invoices.discount'): {{ $discountType }}</td>
                                                 </tr>
                                             @endif
                                             @foreach ($taxes as $key => $tax)
@@ -212,7 +215,7 @@
                                             @endforeach
                                             <tr class="bg-light-grey text-dark f-w-500 f-16" align="right">
                                                 <td class="w-50 border-bottom-0 border-left-0">
-                                                    @lang("modules.invoices.total")</td>
+                                                    @lang('modules.invoices.total')</td>
                                             </tr>
                                         </table>
                                     </td>
@@ -250,7 +253,6 @@
 
                     @foreach ($invoice->items->sortBy('field_order') as $item)
                         @if ($item->type == 'item')
-
                             <tr>
                                 <th width="50%" class="bg-light-grey text-dark-grey font-weight-bold">
                                     @lang('app.description')</th>
@@ -285,13 +287,14 @@
                             </tr>
                             <tr>
                                 <th width="50%" class="bg-light-grey text-dark-grey font-weight-bold">
-                                    @lang("modules.invoices.unitPrice")
-                                    ({{ $invoice->currency->currency_code }})</th>
+                                    @lang('modules.invoices.unitPrice')
+                                    ({{ $invoice->currency->currency_code }})
+                                </th>
                                 <td width="50%">{{ currency_format($item->unit_price, $invoice->currency_id, false) }}</td>
                             </tr>
                             <tr>
                                 <th width="50%" class="bg-light-grey text-dark-grey font-weight-bold">
-                                    @lang("modules.invoices.amount")
+                                    @lang('modules.invoices.amount')
                                     ({{ $invoice->currency->currency_code }})</th>
                                 <td width="50%">{{ currency_format($item->amount, $invoice->currency_id, false) }}</td>
                             </tr>
@@ -302,14 +305,14 @@
                     @endforeach
 
                     <tr>
-                        <th width="50%" class="text-dark-grey font-weight-normal">@lang("modules.invoices.subTotal")
+                        <th width="50%" class="text-dark-grey font-weight-normal">@lang('modules.invoices.subTotal')
                         </th>
                         <td width="50%" class="text-dark-grey font-weight-normal">
                             {{ currency_format($invoice->sub_total, $invoice->currency_id, false) }}</td>
                     </tr>
                     @if ($discount != 0 && $discount != '')
                         <tr>
-                            <th width="50%" class="text-dark-grey font-weight-normal">@lang("modules.invoices.discount")
+                            <th width="50%" class="text-dark-grey font-weight-normal">@lang('modules.invoices.discount')
                             </th>
                             <td width="50%" class="text-dark-grey font-weight-normal">
                                 {{ currency_format($discount, $invoice->currency_id, false) }}</td>
@@ -324,9 +327,9 @@
                         </tr>
                     @endforeach
                     <tr>
-                        <th width="50%" class="text-dark-grey font-weight-bold">@lang("modules.invoices.total")</th>
+                        <th width="50%" class="text-dark-grey font-weight-bold">@lang('modules.invoices.total')</th>
                         <td width="50%" class="text-dark-grey font-weight-bold">
-                            {{ currency_format( $invoice->total, $invoice->currency_id, false) }}</td>
+                            {{ currency_format($invoice->total, $invoice->currency_id, false) }}</td>
                     </tr>
                 </table>
                 <table class="inv-note">
@@ -394,8 +397,8 @@
             </div>
         @endif
 
-         @if ($invoice->client_comment)
-             <div class="row">
+        @if ($invoice->client_comment)
+            <div class="row">
                 <div class="col-md-12">
                     <hr>
                     <h4 class="name heading-h4" style="margin-bottom: 20px;">@lang('app.rejectReason')</h4>
@@ -411,37 +414,32 @@
 
         <div class="d-flex">
             <div class="inv-action mr-3 mr-lg-3 mr-md-3 dropup">
-                <button class="dropdown-toggle btn-secondary" type="button" id="dropdownMenuButton"
-                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@lang('app.action')
+                <button class="dropdown-toggle btn-secondary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@lang('app.action')
                     <span><i class="fa fa-chevron-down f-15 text-dark-grey"></i></span>
                 </button>
                 <!-- DROPDOWN - INFORMATION -->
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton" tabindex="0">
                     <li>
-                        <a class="dropdown-item f-14 text-dark"
-                            href="{{ url()->temporarySignedRoute('front.proposal', now()->addDays(\App\Models\GlobalSetting::SIGNED_ROUTE_EXPIRY), $invoice->hash) }}" target="_blank">
+                        <a class="dropdown-item f-14 text-dark" href="{{ url()->temporarySignedRoute('front.proposal', now()->addDays(\App\Models\GlobalSetting::SIGNED_ROUTE_EXPIRY), $invoice->hash) }}" target="_blank">
                             <i class="fa fa-link f-w-500 mr-2 f-11"></i> @lang('modules.proposal.publicLink')
                         </a>
-                        <a class="dropdown-item f-14 text-dark"
-                            href="{{ route('proposals.download', [$invoice->id]) }}">
+                        <a class="dropdown-item f-14 text-dark" href="{{ route('proposals.download', [$invoice->id]) }}">
                             <i class="fa fa-download f-w-500 mr-2 f-11"></i> @lang('app.download')
                         </a>
                     </li>
                     @if (!$invoice->signature || $invoice->status == 'waiting')
                         <li>
-                            <a class="dropdown-item openRightModal"
-                                href="{{ route('proposals.edit', [$invoice->id]) }}">
+                            <a class="dropdown-item openRightModal" href="{{ route('proposals.edit', [$invoice->id]) }}">
                                 <i class="fa fa-edit f-w-500 mr-2 f-11"></i> @lang('app.edit')
                             </a>
                         </li>
                     @endif
                     @if (!$invoice->signature || $firstProposal->id == $invoice->id)
-                            <li>
-                                <a class="dropdown-item delete-table-row" href="javascript:;"
-                                    data-proposal-id="{{ $invoice->id }}">
-                                    <i class="fa fa-trash mr-2"></i>@lang('app.delete')
-                                </a>
-                            </li>
+                        <li>
+                            <a class="dropdown-item delete-table-row" href="javascript:;" data-proposal-id="{{ $invoice->id }}">
+                                <i class="fa fa-trash mr-2"></i>@lang('app.delete')
+                            </a>
+                        </li>
                     @endif
                 </ul>
             </div>
@@ -459,50 +457,54 @@
 
 @push('scripts')
     <script>
-
         $('body').on('click', '.delete-table-row', function() {
-                var id = $(this).data('proposal-id');
+            var id = $(this).data('proposal-id');
 
-                Swal.fire({
-                    title: "@lang('messages.sweetAlertTitle')",
-                    text: "@lang('messages.recoverRecord')",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    focusConfirm: false,
-                    confirmButtonText: "@lang('messages.confirmDelete')",
-                    cancelButtonText: "@lang('app.cancel')",
-                    customClass: {
-                        confirmButton: 'btn btn-primary mr-3',
-                        cancelButton: 'btn btn-secondary'
-                    },
-                    showClass: {
-                        popup: 'swal2-noanimation',
-                        backdrop: 'swal2-noanimation'
-                    },
-                    buttonsStyling: false
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        var url = "{{ route('proposals.destroy', ':id') }}";
-                        url = url.replace(':id', id);
+            Swal.fire({
+                title: "@lang('messages.sweetAlertTitle')",
+                text: "@lang('messages.recoverRecord')",
+                icon: 'warning',
+                showCancelButton: true,
+                focusConfirm: false,
+                confirmButtonText: "@lang('messages.confirmDelete')",
+                cancelButtonText: "@lang('app.cancel')",
+                customClass: {
+                    confirmButton: 'btn btn-primary mr-3',
+                    cancelButton: 'btn btn-secondary'
+                },
+                showClass: {
+                    popup: 'swal2-noanimation',
+                    backdrop: 'swal2-noanimation'
+                },
+                buttonsStyling: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    var url = "{{ route('proposals.destroy', ':id') }}";
+                    url = url.replace(':id', id);
 
-                        var token = "{{ csrf_token() }}";
+                    var token = "{{ csrf_token() }}";
 
-                        $.easyAjax({
-                            type: 'POST',
-                            url: url,
-                            blockUI: true,
-                            data: {
-                                '_token': token,
-                                '_method': 'DELETE'
-                            },
-                            success: function(response) {
-                                if (response.status == "success") {
-                                    window.location.href = "{{ route('proposals.index') }}";
-                                }
-                            }
-                        });
-                    }
-                });
+                    $.easyBlockUI('.content-wrapper');
+                    window.apiHttp.delete(url, token).then(function(response) {
+                        if (response.status == "success") {
+                            window.location.href = "{{ route('proposals.index') }}";
+                        }
+                    }).catch(function(err) {
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                text: err.message,
+                                toast: true,
+                                position: 'top-end',
+                                timer: 4000,
+                                showConfirmButton: false
+                            });
+                        }
+                    }).finally(function() {
+                        $.easyUnblockUI('.content-wrapper');
+                    });
+                }
             });
+        });
     </script>
 @endpush

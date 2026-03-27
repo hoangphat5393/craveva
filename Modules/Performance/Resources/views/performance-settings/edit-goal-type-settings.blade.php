@@ -111,21 +111,18 @@
 
     // Update goal type settings
     $('#save-goal-type').click(function() {
-        $.easyAjax({
-            url: "{{ route('goal-type-settings.update', $goalType->id) }}",
-            container: '#editGoalTypeForm',
-            type: "POST",
-            redirect: true,
-            file: true,
-            data: $('#editGoalTypeForm').serialize(),
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-goal-type",
-            success: function (response) {
+        $.easyBlockUI('#editGoalTypeForm');
+        window.apiHttp.postUrlEncoded("{{ route('goal-type-settings.update', $goalType->id) }}", $('#editGoalTypeForm').serialize())
+            .then(function (response) {
                 if (response.status == "success") {
                     window.location.reload();
                 }
-            }
-        });
+            })
+            .catch(function (err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function () {
+                $.easyUnblockUI('#editGoalTypeForm');
+            });
     });
 </script>

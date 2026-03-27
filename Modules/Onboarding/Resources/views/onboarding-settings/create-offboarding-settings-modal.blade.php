@@ -66,20 +66,11 @@
 
         $('#save-offboarding-setting').click(function () {
             
-            $.easyAjax({
-                container: '#createOffboarding',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-offboarding-setting",
-                url: "{{ route('onboarding-settings.store') }}",
-                data: $('#createOffboarding').serialize(),
-                success: function (response) {
+            window.apiHttp.postUrlEncoded("{{ route('onboarding-settings.store') }}", $('#createOffboarding').serialize()).then(function (response) {
                     if (response.status === 'success') {
                         window.location.reload();
                     }
-                }
-            });
+            }).catch(function (err) { $.handleApiFormError(err); });
         });
     });
 </script>

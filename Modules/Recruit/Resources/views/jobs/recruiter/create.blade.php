@@ -7,10 +7,9 @@
         <x-form id="createMethods" method="POST" class="ajax-form">
             <div class="row">
                 <div class="col-md-12">
-                    <x-forms.select fieldId="user_id" :fieldLabel="__('recruit::modules.setting.recruiter')"
-                                    fieldName="user_id[]" search="true" fieldRequired="true" multiple="true">
+                    <x-forms.select fieldId="user_id" :fieldLabel="__('recruit::modules.setting.recruiter')" fieldName="user_id[]" search="true" fieldRequired="true" multiple="true">
                         @foreach ($employees as $emp)
-                            @if(!in_array($emp->id, $selectedRecruiter))
+                            @if (!in_array($emp->id, $selectedRecruiter))
                                 <x-user-option :user="$emp" />
                             @endif
                         @endforeach
@@ -30,23 +29,18 @@
     $(".select-picker").selectpicker();
 
     // save recruiter
-    $('body').off('click', "#save-recruiter").on('click', '#save-recruiter', function () {
+    $('body').off('click', "#save-recruiter").on('click', '#save-recruiter', function() {
         var url = "{{ route('recruiter.store') }}";
-        $.easyAjax({
-            url: url,
-            container: '#createMethods',
-            type: "POST",
-            data: $('#createMethods').serialize(),
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#save-recruiter",
-            success: function (response) {
-                if (response.status == 'success') {
-                    $('#fetch-recruiter').html(response.data);
+        window.apiHttp.postUrlEncoded(url, $('#createMethods').serialize())
+            .then(function(response) {
+                if (response.data.status == 'success') {
+                    $('#fetch-recruiter').html(response.data.data);
                     $('#fetch-recruiter').selectpicker('refresh');
                     $(MODAL_DEFAULT).modal('hide');
                 }
-            }
-        })
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            });
     });
 </script>

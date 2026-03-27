@@ -24,21 +24,15 @@
         $('#save-currency').click(function () {
 
             var currency = $('#currency').val();
-            var token = "{{ csrf_token() }}";
-            $.easyAjax({
-                url: "{{ route('payroll-currency-settings.index') }}",
-                container: '#currency-setting',
-                type: "POST",
-                blockUI: true,
-                disableButton: true,
-                buttonSelector: "#save-currency",
-                data: {
+            window.apiHttp.postUrlEncoded("{{ route('payroll-currency-settings.index') }}", {
                     currency: currency,
-                    _token: token,
-                },
-                success: function (response) {
+                    _token: "{{ csrf_token() }}",
+                })
+                .then(function () {
 
-                }
-            })
+                })
+                .catch(function (err) {
+                    $.handleApiFormError(err);
+                });
         });
     </script>

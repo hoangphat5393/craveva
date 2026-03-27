@@ -46,20 +46,21 @@
         $('body').on('click', '#import-lead-form', function() {
             const url = "{{ route('lead-contact.import.store') }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#import-lead-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#import-lead-form",
-                file: true,
-                data: $('#import-lead-data-form').serialize(),
-                success: function(response) {
-                    if (response.status == 'success') {
-                        $('#import_table').html(response.view);
-                    }
+            var $btn = $('#import-lead-data-form').find('#import-lead-form');
+            var btnPrev = $btn.html();
+            $btn.attr('data-prev-text', btnPrev);
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
+            $.easyBlockUI('#import-lead-data-form');
+            window.apiHttp.postForm(url, document.getElementById('import-lead-data-form')).then(function(response) {
+                if (response.status == 'success') {
+                    $('#import_table').html(response.view);
                 }
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $.easyUnblockUI('#import-lead-data-form');
+                $btn.html($btn.attr('data-prev-text'));
+                $btn.prop('disabled', false);
             });
         });
     });

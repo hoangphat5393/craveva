@@ -5,14 +5,12 @@
 @endpush
 
 @section('filter-section')
-
     <x-filters.filter-box>
         <!-- DATE START -->
         <div class="select-box d-flex pr-2 border-right-grey border-right-grey-sm-0">
             <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('app.duration')</p>
             <div class="select-status d-flex">
-                <input type="text" class="position-relative text-dark form-control border-0 p-2 text-left f-14 f-w-500 border-additional-grey"
-                       id="datatableRange" placeholder="@lang('placeholders.dateRange')" />
+                <input type="text" class="position-relative text-dark form-control border-0 p-2 text-left f-14 f-w-500 border-additional-grey" id="datatableRange" placeholder="@lang('placeholders.dateRange')" />
             </div>
         </div>
         <!-- DATE END -->
@@ -21,13 +19,12 @@
         <div class="select-box d-flex  py-2 px-lg-2 px-md-2 px-0 border-right-grey border-right-grey-sm-0">
             <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('app.employee')</p>
             <div class="select-status">
-                <select class="form-control select-picker" name="employee" id="employee" data-live-search="true"
-                        data-size="8">
+                <select class="form-control select-picker" name="employee" id="employee" data-live-search="true" data-size="8">
                     @if ($employees->count() > 1 || in_array('admin', user_roles()))
                         <option value="all">@lang('app.all')</option>
                     @endif
                     @foreach ($employees as $employee)
-                            <x-user-option :user="$employee" :selected="request('assignee') == 'me' && $employee->id == user()->id"/>
+                        <x-user-option :user="$employee" :selected="request('assignee') == 'me' && $employee->id == user()->id" />
                     @endforeach
                 </select>
             </div>
@@ -38,8 +35,7 @@
         <div class="select-box d-flex  py-2 px-lg-2 px-md-2 px-0 border-right-grey border-right-grey-sm-0">
             <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('app.department')</p>
             <div class="select-status">
-                <select class="form-control select-picker" name="department" id="department" data-live-search="true"
-                        data-size="8">
+                <select class="form-control select-picker" name="department" id="department" data-live-search="true" data-size="8">
                     @if ($departments->count() > 1 || in_array('admin', user_roles()))
                         <option value="all">@lang('app.all')</option>
                     @endif
@@ -60,8 +56,7 @@
                             <i class="fa fa-search f-13 text-dark-grey"></i>
                         </span>
                     </div>
-                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field"
-                           placeholder="@lang('app.startTyping')">
+                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field" placeholder="@lang('app.startTyping')">
                 </div>
             </form>
         </div>
@@ -81,9 +76,7 @@
                 <label class="f-14 text-dark-grey mb-12 " for="usr">@lang('app.project')</label>
                 <div class="select-filter mb-4">
                     <div class="select-others">
-                        <select class="form-control select-picker" name="project_id" id="project_id"
-                                data-live-search="true"
-                                data-container="body" data-size="8">
+                        <select class="form-control select-picker" name="project_id" id="project_id" data-live-search="true" data-container="body" data-size="8">
                             <option value="all">@lang('app.all')</option>
                             @foreach ($projects as $project)
                                 <option value="{{ $project->id }}">{{ $project->project_name }}</option>
@@ -97,8 +90,7 @@
                 <label class="f-14 text-dark-grey mb-12 " for="usr">@lang('app.status')</label>
                 <div class="select-filter mb-4">
                     <div class="select-others">
-                        <select class="form-control select-picker" name="status" id="status" data-live-search="true"
-                                data-container="body" data-size="8">
+                        <select class="form-control select-picker" name="status" id="status" data-live-search="true" data-container="body" data-size="8">
                             <option value="all">@lang('app.all')</option>
                             <option value="1">@lang('app.approved')</option>
                             <option value="0">@lang('app.pending')</option>
@@ -113,8 +105,7 @@
                 <label class="f-14 text-dark-grey mb-12 " for="usr">@lang('app.invoiceGenerate')</label>
                 <div class="select-filter mb-4">
                     <div class="select-others">
-                        <select class="form-control select-picker" name="invoice_generate" id="invoice_generate"
-                                data-container="body" data-live-search="true" data-size="8">
+                        <select class="form-control select-picker" name="invoice_generate" id="invoice_generate" data-container="body" data-live-search="true" data-size="8">
                             <option value="all">@lang('app.all')</option>
                             <option value="1">@lang('app.yes')</option>
                             <option value="0">@lang('app.no')</option>
@@ -127,7 +118,6 @@
         </x-filters.more-filter-box>
         <!-- MORE FILTERS END -->
     </x-filters.filter-box>
-
 @endsection
 
 @php
@@ -142,17 +132,15 @@
         <div class="d-lg-flex d-md-flex d-block my-3 justify-content-between action-bar">
             <div id="table-actions" class="flex-grow-1 align-items-center mb-2 mb-lg-0 mb-md-0">
                 @if ($addTimelogPermission == 'all' || $addTimelogPermission == 'added')
-                    <x-forms.link-primary :link="route('timelogs.create')" class="mr-3 openRightModal float-left"
-                                          icon="plus">
+                    <x-forms.link-primary :link="route('timelogs.create')" class="mr-3 openRightModal float-left" icon="plus">
                         @lang('modules.timeLogs.logTime')
                     </x-forms.link-primary>
                 @endif
 
-                @if(canDataTableExport())
-                <x-forms.button-secondary class="mr-3 float-left export-excel"
-                icon="file-export">
-                @lang('app.exportExcel')
-                </x-forms.button-secondary>
+                @if (canDataTableExport())
+                    <x-forms.button-secondary class="mr-3 float-left export-excel" icon="file-export">
+                        @lang('app.exportExcel')
+                    </x-forms.button-secondary>
                 @endif
 
             </div>
@@ -175,7 +163,7 @@
 
 
             <div class="btn-group ml-3" role="group">
-              @include('timelogs.timelog-menu')
+                @include('timelogs.timelog-menu')
             </div>
         </div>
         <!-- Add Task Export Buttons End -->
@@ -188,14 +176,13 @@
         <!-- Task Box End -->
     </div>
     <!-- CONTENT WRAPPER END -->
-
 @endsection
 
 @push('scripts')
     @include('sections.datatable_js')
 
     <script>
-        $('#timelogs-table').on('preXhr.dt', function (e, settings, data) {
+        $('#timelogs-table').on('preXhr.dt', function(e, settings, data) {
 
             const dateRangePicker = $('#datatableRange').data('daterangepicker');
 
@@ -232,7 +219,7 @@
         }
 
         $('#project_id, #employee, #department, #status, #invoice_generate').on('change keyup',
-            function () {
+            function() {
                 if ($('#status').val() !== "all") {
                     $('#reset-filters').removeClass('d-none');
                 } else if ($('#employee').val() !== "all") {
@@ -250,14 +237,14 @@
                 showTable();
             });
 
-        $('#search-text-field').on('keyup', function () {
+        $('#search-text-field').on('keyup', function() {
             if ($('#search-text-field').val() !== "") {
                 $('#reset-filters').removeClass('d-none');
                 showTable();
             }
         });
 
-        $('#reset-filters').click(function () {
+        $('#reset-filters').click(function() {
             $('#filter-form')[0].reset();
 
             $('.filter-box .select-picker').selectpicker("refresh");
@@ -265,7 +252,7 @@
             showTable();
         });
 
-        $('#reset-filters-2').click(function () {
+        $('#reset-filters-2').click(function() {
             $('#filter-form')[0].reset();
 
             $('.filter-box .select-picker').selectpicker("refresh");
@@ -273,7 +260,7 @@
             showTable();
         });
 
-        $('#quick-action-type').change(function () {
+        $('#quick-action-type').change(function() {
             const actionValue = $(this).val();
             if (actionValue !== '') {
                 $('#quick-action-apply').removeAttr('disabled');
@@ -290,7 +277,7 @@
             }
         });
 
-        $('#quick-action-apply').click(function () {
+        $('#quick-action-apply').click(function() {
             const actionValue = $('#quick-action-type').val();
             if (actionValue == 'delete') {
                 Swal.fire({
@@ -321,7 +308,7 @@
             }
         });
 
-        $('body').on('click', '.delete-table-row', function () {
+        $('body').on('click', '.delete-table-row', function() {
             const id = $(this).data('time-id');
             Swal.fire({
                 title: "@lang('messages.sweetAlertTitle')",
@@ -347,19 +334,24 @@
 
                     const token = "{{ csrf_token() }}";
 
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function (response) {
-                            if (response.status === "success") {
-                                showTable();
-                            }
+                    $.easyBlockUI('#timelogs-table');
+                    window.apiHttp.delete(url, token).then(function(response) {
+                        if (response.status === "success") {
+                            showTable();
                         }
+                    }).catch(function(err) {
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                text: err.message,
+                                toast: true,
+                                position: 'top-end',
+                                timer: 4000,
+                                showConfirmButton: false
+                            });
+                        }
+                    }).finally(function() {
+                        $.easyUnblockUI('#timelogs-table');
                     });
                 }
             });
@@ -373,26 +365,32 @@
             $.ajaxModal(MODAL_LG, url);
         });
 
-        $('body').on('click', '.approve-timelog', function () {
+        $('body').on('click', '.approve-timelog', function() {
             const id = $(this).data('time-id');
             let url = "{{ route('timelogs.approve_timelog', ':id') }}";
             url = url.replace(':id', id);
             const token = '{{ csrf_token() }}';
-            $.easyAjax({
-                url: url,
-                type: "POST",
-                data: {
-                    id: id,
-                    _token: token
-                },
-                success: function (data) {
-                    showTable();
+            window.apiHttp.postUrlEncoded(url, {
+                id: id,
+                _token: token
+            }).then(function() {
+                showTable();
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
                 }
-            })
+            });
 
         });
 
-        $('body').on('click', '.reject-timelog', function () {
+        $('body').on('click', '.reject-timelog', function() {
             let timelogId = $(this).data('time-id');
             let searchQuery = "?timelog_id=" + timelogId;
             let url = "{{ route('timelogs.show_reject_modal') }}" + searchQuery;
@@ -401,20 +399,20 @@
             $.ajaxModal(MODAL_LG, url);
         });
 
-        $('body').on('click', '.revert-timelog-to-pending', function () {
+        $('body').on('click', '.revert-timelog-to-pending', function() {
             const id = $(this).data('time-id');
             let url = "{{ route('timelogs.revert_to_pending', ':id') }}";
             url = url.replace(':id', id);
             const token = '{{ csrf_token() }}';
-            
+
             Swal.fire({
-                title: '@lang("messages.sweetAlertTitle")',
-                text: '@lang("messages.revertTimelogToPending")',
+                title: '@lang('messages.sweetAlertTitle')',
+                text: '@lang('messages.revertTimelogToPending')',
                 icon: 'warning',
                 showCancelButton: true,
                 focusConfirm: false,
-                confirmButtonText: '@lang("messages.confirm")',
-                cancelButtonText: '@lang("app.cancel")',
+                confirmButtonText: '@lang('messages.confirm')',
+                cancelButtonText: '@lang('app.cancel')',
                 buttonsStyling: false,
                 customClass: {
                     confirmButton: 'btn btn-primary mr-3',
@@ -422,15 +420,21 @@
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    $.easyAjax({
-                        url: url,
-                        type: "POST",
-                        data: {
-                            id: id,
-                            _token: token
-                        },
-                        success: function (data) {
-                            showTable();
+                    window.apiHttp.postUrlEncoded(url, {
+                        id: id,
+                        _token: token
+                    }).then(function() {
+                        showTable();
+                    }).catch(function(err) {
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                text: err.message,
+                                toast: true,
+                                position: 'top-end',
+                                timer: 4000,
+                                showConfirmButton: false
+                            });
                         }
                     });
                 }
@@ -438,32 +442,40 @@
         });
 
         const applyQuickAction = () => {
-            const rowdIds = $("#timelogs-table input:checkbox:checked").map(function () {
+            const rowdIds = $("#timelogs-table input:checkbox:checked").map(function() {
                 return $(this).val();
             }).get();
 
             const url = "{{ route('timelogs.apply_quick_action') }}?row_ids=" + rowdIds;
 
-            $.easyAjax({
-                url: url,
-                container: '#quick-action-form',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#quick-action-apply",
-                data: $('#quick-action-form').serialize(),
-                blockUI: true,
-                success: function (response) {
-                    if (response.status === 'success') {
-                        showTable();
-                        resetActionButtons();
-                        deSelectAll();
-                        $('#quick-action-form').hide();
-                    }
+            var $qaBtn = $("#quick-action-apply");
+            $qaBtn.prop('disabled', true);
+            $.easyBlockUI('.content-wrapper');
+            window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize()).then(function(response) {
+                if (response.status === 'success') {
+                    showTable();
+                    resetActionButtons();
+                    deSelectAll();
+                    $('#quick-action-form').hide();
                 }
-            })
+            }).catch(function(err) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.message,
+                        toast: true,
+                        position: 'top-end',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                }
+            }).finally(function() {
+                $qaBtn.prop('disabled', false);
+                $.easyUnblockUI('.content-wrapper');
+            });
         };
 
-        
+
         @if (canDataTableExport())
             $('.export-excel').click(function() {
                 const dateRangePicker = $('#datatableRange').data('daterangepicker');
@@ -488,15 +500,14 @@
                 window.location = url + '?startDate=' + encodeURIComponent(startDate) + '&endDate=' + encodeURIComponent(endDate) + '&projectID=' + projectID + '&employee=' + employee;
             });
         @endif
-
     </script>
 
     @if (!is_null(request('start')) && !is_null(request('end')))
         <script>
-            $(document).ready(function () {
+            $(document).ready(function() {
                 $('#datatableRange').data('daterangepicker').setStartDate('{{ request('start') }}')
                 $('#datatableRange').data('daterangepicker').setEndDate('{{ request('end') }}')
-                $('#datatableRange').val('{{ request('start') }}' + ' @lang("app.to") ' + '{{ request('end') }}');
+                $('#datatableRange').val('{{ request('start') }}' + ' @lang('app.to') ' + '{{ request('end') }}');
 
                 showTable();
             });

@@ -72,20 +72,11 @@
         $('#update-offboarding-setting').click(function () {
             $('#type').val('offboard');
 
-            $.easyAjax({
-                container: '#editOffboarding',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#update-offboarding-setting",
-                url: "{{ route('onboarding-settings.update', $onboardingSetting->id) }}",
-                data: $('#editOffboarding').serialize(),
-                success: function (response) {
+            window.apiHttp.postUrlEncoded("{{ route('onboarding-settings.update', $onboardingSetting->id) }}", $('#editOffboarding').serialize()).then(function (response) {
                     if (response.status === 'success') {
                         window.location.reload();
                     }
-                }
-            })
+            }).catch(function (err) { $.handleApiFormError(err); })
         });
     });
 </script>

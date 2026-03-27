@@ -71,15 +71,8 @@
 
         $('#save-provider-form').click(function () {
             const url = "{{ route('provider.store') }}";
-            $.easyAjax({
-                url: url,
-                container: '#save-provider-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-provider-form",
-                data: $('#save-provider-data-form').serialize(),
-                success: function (response) {
+            window.apiHttp.postUrlEncoded(url, $('#save-provider-data-form').serialize())
+                .then(function (response) {
                     if (response.status === 'success') {
                         if (typeof showTable !== 'undefined' && typeof showTable === 'function') {
                             showTable();
@@ -90,8 +83,10 @@
                             window.location.reload();
                         }
                     }
-                }
-            });
+                })
+                .catch(function (err) {
+                    $.handleApiFormError(err);
+                });
         });
     });
 </script>

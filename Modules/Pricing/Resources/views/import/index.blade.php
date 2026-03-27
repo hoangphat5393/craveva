@@ -44,21 +44,21 @@
         $('body').on('click', '#import-pricing-form', function() {
             const url = "{{ route('pricing.import.store') }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#import-pricing-data-form',
-                type: 'POST',
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: '#import-pricing-form',
-                file: true,
-                data: $('#import-pricing-data-form').serialize(),
-                success: function(response) {
+            $.easyBlockUI('#import-pricing-data-form');
+            $('#import-pricing-form').prop('disabled', true);
+            window.apiHttp.postForm(url, document.getElementById('import-pricing-data-form'))
+                .then(function(response) {
                     if (response.status === 'success') {
                         $('#import_table').html(response.view);
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $.easyUnblockUI('#import-pricing-data-form');
+                    $('#import-pricing-form').prop('disabled', false);
+                });
         });
     });
 </script>

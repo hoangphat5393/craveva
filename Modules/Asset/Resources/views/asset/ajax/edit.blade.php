@@ -118,17 +118,11 @@
 
         $('#update-asset').click(function () {
             const url = "{{ route('assets.update', $asset->id) }}";
-
-            $.easyAjax({
-                url: url,
-                container: '#update-asset-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#update-asset",
-                file: true,
-                data: $('#update-asset-form').serialize(),
-                success: function (response) {
+            const $btn = $('#update-asset');
+            $btn.prop('disabled', true);
+            $.easyBlockUI('#update-asset-form');
+            window.apiHttp.postForm(url, document.getElementById('update-asset-form'))
+                .then(function (response) {
                     if (response.status == 'success') {
                         if ($(MODAL_XL).hasClass('show')) {
                             $(MODAL_XL).modal('hide');
@@ -137,8 +131,14 @@
                             window.location.href = response.redirectUrl;
                         }
                     }
-                }
-            });
+                })
+                .catch(function (err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function () {
+                    $btn.prop('disabled', false);
+                    $.easyUnblockUI('#update-asset-form');
+                });
         });
 
         $('#asset-type-setting').click(function () {

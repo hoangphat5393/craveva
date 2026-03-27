@@ -85,15 +85,11 @@
     });
 
     $('#save-currency').click(function () {
-        $.easyAjax({
-            url: "{{route('superadmin.settings.currency_settings.exchange_key_store')}}",
-            container: '#createCurrencyKey',
-            type: "POST",
-            data: $('#createCurrencyKey').serialize(),
-            success: function (response) {
+        window.apiHttp.postUrlEncoded("{{route('superadmin.settings.currency_settings.exchange_key_store')}}", $('#createCurrencyKey').serialize())
+            .then(function (response) {
                 $(MODAL_LG).modal('hide');
-            }
-        });
+            })
+            .catch(function (err) { $.handleApiFormError(err); });
     });
 
     init(MODAL_LG);

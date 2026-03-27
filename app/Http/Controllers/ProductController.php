@@ -11,7 +11,6 @@ use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
 use App\Imports\ProductImport;
 use App\Jobs\ImportProductChunkJob;
-use App\Jobs\ImportProductJob;
 use App\Models\Order;
 use App\Models\OrderCart;
 use App\Models\Product;
@@ -511,6 +510,9 @@ class ProductController extends AccountBaseController
 
     public function importStore(ImportRequest $request)
     {
+        $this->addPermission = user()->permission('add_product');
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
+
         $rvalue = $this->importFileProcess($request, ProductImport::class);
 
         if ($rvalue == 'abort') {
@@ -526,6 +528,9 @@ class ProductController extends AccountBaseController
 
     public function importProcess(ImportProcessRequest $request)
     {
+        $this->addPermission = user()->permission('add_product');
+        abort_403(! in_array($this->addPermission, ['all', 'added']));
+
         // Default chunk 100: fewer jobs, less SKU load + queue overhead (see PRODUCT_IMPORT_SLOWNESS_ANALYSIS).
         // Override via request chunk_size if needed.
         $chunkSize = $request->filled('chunk_size') ? (int) $request->chunk_size : 100;

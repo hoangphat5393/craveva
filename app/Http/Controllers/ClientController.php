@@ -24,7 +24,6 @@ use App\Http\Requests\Admin\Employee\ImportRequest;
 use App\Http\Requests\Gdpr\SaveConsentUserDataRequest;
 use App\Imports\ClientImport;
 use App\Jobs\ImportClientChunkJob;
-use App\Jobs\ImportClientJob;
 use App\Models\BaseModel;
 use App\Models\ClientCategory;
 use App\Models\ClientContact;
@@ -50,6 +49,7 @@ use App\Scopes\CompanyScope;
 use App\Traits\EmployeeActivityTrait;
 use App\Traits\ImportExcel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -463,7 +463,7 @@ class ClientController extends AccountBaseController
             $user->clientDetails->updateCustomFieldData($request->custom_fields_data);
         }
 
-        $this->createEmployeeActivity(auth()->user()->id, 'client-updated', $id, 'client');
+        $this->createEmployeeActivity(Auth::id(), 'client-updated', $id, 'client');
 
         $redirectUrl = urldecode($request->redirect_url);
 
@@ -522,7 +522,7 @@ class ClientController extends AccountBaseController
         $user->delete();
 
         Lead::where('client_id', $user->id)->update(['client_id' => null]);
-        $this->createEmployeeActivity(auth()->user()->id, 'client-deleted');
+        $this->createEmployeeActivity(Auth::id(), 'client-deleted');
 
         session()->forget('company');
 
@@ -1015,6 +1015,9 @@ class ClientController extends AccountBaseController
 
     public function importStore(ImportRequest $request)
     {
+        $addPermission = user()->permission('add_clients');
+        abort_403(! in_array($addPermission, ['all', 'added', 'both']));
+
         $rvalue = $this->importFileProcess($request, ClientImport::class);
 
         if ($rvalue == 'abort') {
@@ -1029,6 +1032,9 @@ class ClientController extends AccountBaseController
 
     public function importProcess(ImportProcessRequest $request)
     {
+        $addPermission = user()->permission('add_clients');
+        abort_403(! in_array($addPermission, ['all', 'added', 'both']));
+
         // Default chunk 100: fewer jobs, less queue overhead; bulk insert custom fields keeps each job fast.
         // Override via request chunk_size if needed (e.g. 20 for easier error location when debugging).
         $chunkSize = $request->filled('chunk_size') ? (int) $request->chunk_size : 100;

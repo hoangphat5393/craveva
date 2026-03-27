@@ -12,6 +12,25 @@ use Illuminate\Support\Facades\Storage;
 class ImportController extends Controller
 {
     /**
+     * Queue names used by ImportExcel / module imports (short class names). Blocks arbitrary queue:work targets.
+     */
+    private const ALLOWED_IMPORT_QUEUE_NAMES = [
+        'ClientImport',
+        'ProductImport',
+        'EmployeeImport',
+        'ProjectImport',
+        'DealImport',
+        'LeadImport',
+        'ExpenseImport',
+        'AttendanceImport',
+        'JobApplicationImport',
+        'ClientProductPricingImport',
+        'PricingTierItemsImport',
+        'WarehouseImport',
+        'InventoryImport',
+    ];
+
+    /**
      * Get import progress percentage
      *
      * @param  mixed  $id
@@ -19,6 +38,8 @@ class ImportController extends Controller
      */
     public function getImportProgress($name, $id)
     {
+        $this->assertAllowedImportQueueName($name);
+
         // Đảm bảo request đủ lâu để xử lý nhiều job (web server thường dùng php.ini khác CLI)
         set_time_limit(300);
 
@@ -28,6 +49,7 @@ class ImportController extends Controller
         Artisan::call('queue:work database --max-jobs=' . $execution_jobs . ' --queue=' . $name . ' --stop-when-empty');
 
         $batch = Bus::findBatch($id);
+        $this->assertBatchBelongsToImportQueue($batch, $name);
         $progress = 0;
         $failedJobs = 0;
         $processedJobs = 0;
@@ -57,10 +79,15 @@ class ImportController extends Controller
 
     public function getQueueException($name)
     {
+        $this->assertAllowedImportQueueName($name);
+
         $batchId = request()->query('batch_id');
 
         if ($batchId) {
             $batchRecord = DB::table('job_batches')->where('id', $batchId)->first();
+            if ($batchRecord && ! $this->batchRecordNameMatchesQueue($batchRecord->name ?? '', $name)) {
+                abort(403);
+            }
             $failedIds = $batchRecord && ! empty($batchRecord->failed_job_ids)
                 ? json_decode($batchRecord->failed_job_ids, true) ?? []
                 : [];
@@ -208,5 +235,33 @@ class ImportController extends Controller
         ksort($byRow, SORT_NUMERIC);
 
         return array_values($byRow);
+    }
+
+    private function assertAllowedImportQueueName(string $name): void
+    {
+        if (! in_array($name, self::ALLOWED_IMPORT_QUEUE_NAMES, true)) {
+            abort(403);
+        }
+    }
+
+    private function assertBatchBelongsToImportQueue($batch, string $queueName): void
+    {
+        if (! $batch) {
+            return;
+        }
+        $batchName = (string) ($batch->name ?? '');
+        if ($batchName !== '' && ! $this->batchRecordNameMatchesQueue($batchName, $queueName)) {
+            abort(403);
+        }
+    }
+
+    /**
+     * Batches are named like "ClientImport" or "ClientImport-chunked".
+     */
+    private function batchRecordNameMatchesQueue(string $batchName, string $queueName): bool
+    {
+        return $batchName === $queueName
+            || str_starts_with($batchName, $queueName . '-')
+            || str_starts_with($batchName, $queueName . '_');
     }
 }

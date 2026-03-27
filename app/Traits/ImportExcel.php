@@ -98,9 +98,8 @@ trait ImportExcel
         // get class name from $importClass
         $importClassName = (new ReflectionClass($importClass))->getShortName();
 
-        // clear previous import
+        // Clear only this import queue (do not queue:flush — that wipes all failed_jobs globally).
         Artisan::call('queue:clear database --queue=' . $importClassName);
-        Artisan::call('queue:flush');
         // Get index of an array not null value with key
         $columns = array_filter($request->columns, function ($value) {
             return $value !== null;
@@ -147,8 +146,8 @@ trait ImportExcel
     {
         $importClassName = (new ReflectionClass($importClass))->getShortName();
 
+        // Clear only this import queue (do not queue:flush — that wipes all failed_jobs globally).
         Artisan::call('queue:clear database --queue=' . $importClassName);
-        Artisan::call('queue:flush');
 
         $columns = array_filter($request->columns, fn($value) => $value !== null);
 

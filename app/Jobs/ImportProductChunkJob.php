@@ -7,8 +7,8 @@ use App\Models\CustomFieldGroup;
 use App\Models\Product;
 use App\Models\UnitType;
 use App\Traits\EmployeeActivityTrait;
+use App\Traits\StoresImportBatchMetrics;
 use App\Traits\UniversalSearchTrait;
-use Carbon\Exceptions\InvalidFormatException;
 use Exception;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
@@ -16,7 +16,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -25,7 +24,7 @@ use Illuminate\Support\Facades\DB;
  */
 class ImportProductChunkJob implements ShouldQueue
 {
-    use Batchable, Dispatchable, EmployeeActivityTrait, InteractsWithQueue, Queueable, SerializesModels, UniversalSearchTrait;
+    use Batchable, Dispatchable, EmployeeActivityTrait, InteractsWithQueue, Queueable, SerializesModels, StoresImportBatchMetrics, UniversalSearchTrait;
 
     /** @var array<int, array> */
     private array $rows;
@@ -406,25 +405,6 @@ class ImportProductChunkJob implements ShouldQueue
 
     private function storeBatchMetrics(array $delta): void
     {
-        if (! $this->batchId) {
-            return;
-        }
-
-        $cacheKey = 'import_metrics_' . $this->batchId;
-        $current = Cache::get($cacheKey, [
-            'created' => 0,
-            'updated' => 0,
-            'skipped' => 0,
-            'skipped_missing_required' => 0,
-            'invalid_status' => 0,
-        ]);
-
-        $current['created'] += (int) ($delta['created'] ?? 0);
-        $current['updated'] += (int) ($delta['updated'] ?? 0);
-        $current['skipped'] += (int) ($delta['skipped'] ?? 0);
-        $current['skipped_missing_required'] += (int) ($delta['skipped_missing_required'] ?? 0);
-        $current['invalid_status'] += (int) ($delta['invalid_status'] ?? 0);
-
-        Cache::put($cacheKey, $current, now()->addHours(12));
+        $this->mergeImportBatchMetrics($this->batchId, $delta);
     }
 }

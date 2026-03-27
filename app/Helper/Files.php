@@ -50,6 +50,7 @@ class Files
         self::createDirectoryIfNotExist($folder);
 
         $newPath = $folder . '/' . $newName;
+        $tempRelative = 'temp/' . $newName;
 
         // On Windows or some PHP configs getRealPath() can return false even when file is valid; fallback to writing content to temp
         if ($realPath === false || $realPath === '') {
@@ -66,8 +67,16 @@ class Files
             $uploadedFile->storeAs('temp', $newName, 'local');
         }
 
+        // Read temp via the same disk used for storeAs (avoids "File does not exist" when public_path and disk root differ, e.g. symlinks).
+        if (! Storage::disk('local')->exists($tempRelative)) {
+            $msg = __('messages.pleaseSelectFile');
+            throw new Exception($msg !== 'messages.pleaseSelectFile' ? $msg : 'Could not store uploaded file temporarily.');
+        }
+
+        $tempDiskPath = Storage::disk('local')->path($tempRelative);
+
         if (($width && $height) && File::extension($uploadedFile->getClientOriginalName()) !== 'svg') {
-            Image::make($tempPath)
+            Image::make($tempDiskPath)
                 ->resize($width, $height, function ($constraint) {
                     $constraint->aspectRatio();
                     $constraint->upsize();
@@ -75,10 +84,9 @@ class Files
                 ->save();
         }
 
-        Storage::put($newPath, File::get($tempPath), ['public']);
+        Storage::put($newPath, Storage::disk('local')->get($tempRelative), ['public']);
 
-        // Deleting temp file
-        File::delete($tempPath);
+        Storage::disk('local')->delete($tempRelative);
 
         return $newName;
     }
@@ -433,6 +441,7 @@ class Files
         self::createDirectoryIfNotExist('temp');
 
         $newPath = $folder . '/' . $newName;
+        $tempRelative = 'temp/' . $newName;
 
         $realPath = $uploadedFile->getRealPath();
         if ($realPath === false || $realPath === '') {
@@ -449,12 +458,19 @@ class Files
             $uploadedFile->storeAs('temp', $newName, 'local');
         }
 
+        if (! Storage::disk('local')->exists($tempRelative)) {
+            $msg = __('messages.pleaseSelectFile');
+            throw new \Exception($msg !== 'messages.pleaseSelectFile' ? $msg : 'Could not store uploaded file temporarily.');
+        }
+
+        $tempDiskPath = Storage::disk('local')->path($tempRelative);
+
         // Resizing image if width and height is provided
         $svgNot = File::extension($uploadedFile->getClientOriginalName()) !== 'svg';
         $webPNot = File::extension($uploadedFile->getClientOriginalName()) !== 'webp';
 
         if ($width && $height && $svgNot && $webPNot) {
-            Image::make($tempPath)
+            Image::make($tempDiskPath)
                 ->resize($width, $height, function ($constraint) {
                     $constraint->aspectRatio();
                     $constraint->upsize();
@@ -462,11 +478,10 @@ class Files
                 ->save();
         }
 
-        Storage::disk(config('filesystems.default'))->put($newPath, File::get($tempPath));
+        Storage::disk(config('filesystems.default'))->put($newPath, Storage::disk('local')->get($tempRelative));
         self::fileStore($uploadedFile, $folder, $newName);
 
-        // Deleting temp file
-        File::delete($tempPath);
+        Storage::disk('local')->delete($tempRelative);
 
         return $newName;
     }

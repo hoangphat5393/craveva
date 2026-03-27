@@ -1,5 +1,7 @@
 # Staging Disk Recovery Log - 2026-03-27
 
+**Hướng dẫn vận hành & deploy (chuẩn hiện tại):** [`docs/STAGING_OPERATIONS.md`](STAGING_OPERATIONS.md)
+
 Environment:
 
 - Host: `craveva-staging`

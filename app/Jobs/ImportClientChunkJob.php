@@ -6,6 +6,7 @@ use App\Models\ClientDetails;
 use App\Models\PermissionRole;
 use App\Models\Role;
 use App\Services\ClientImportProcessor;
+use App\Traits\StoresImportBatchMetrics;
 use Exception;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
@@ -13,7 +14,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\DB;
 class ImportClientChunkJob implements ShouldQueue
 {
     use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use StoresImportBatchMetrics;
 
     /**
      * @var array<int, array>
@@ -267,25 +268,6 @@ class ImportClientChunkJob implements ShouldQueue
 
     private function storeBatchMetrics(array $delta): void
     {
-        if (! $this->batchId) {
-            return;
-        }
-
-        $cacheKey = 'import_metrics_' . $this->batchId;
-        $current = Cache::get($cacheKey, [
-            'created' => 0,
-            'updated' => 0,
-            'skipped' => 0,
-            'skipped_missing_required' => 0,
-            'invalid_status' => 0,
-        ]);
-
-        $current['created'] += (int) ($delta['created'] ?? 0);
-        $current['updated'] += (int) ($delta['updated'] ?? 0);
-        $current['skipped'] += (int) ($delta['skipped'] ?? 0);
-        $current['skipped_missing_required'] += (int) ($delta['skipped_missing_required'] ?? 0);
-        $current['invalid_status'] += (int) ($delta['invalid_status'] ?? 0);
-
-        Cache::put($cacheKey, $current, now()->addHours(12));
+        $this->mergeImportBatchMetrics($this->batchId, $delta);
     }
 }

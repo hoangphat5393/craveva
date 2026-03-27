@@ -150,28 +150,62 @@ class ClientImportProcessor
      */
     protected static function updateExistingClient(User $user, ClientDetails $existingDetails, array $row, array $columns, $companyId, string $nameTrimmed, array $options = []): User
     {
-        $countryID = self::columnExists($columns, 'country_id')
-            ? Country::where('name', self::getValue($row, $columns, 'country_id'))->first()?->id
-            : null;
-
         $user->name = $nameTrimmed;
-        $user->email = self::columnExists($columns, 'email') && self::isEmailValid(self::getValue($row, $columns, 'email'))
-            ? self::getValue($row, $columns, 'email')
-            : null;
-        $user->mobile = self::columnExists($columns, 'mobile') ? self::getValue($row, $columns, 'mobile') : null;
-        $user->gender = self::columnExists($columns, 'gender') ? strtolower(self::getValue($row, $columns, 'gender')) : null;
-        $user->country_id = $countryID;
+
+        if (self::columnExists($columns, 'email')) {
+            $emailVal = self::getValue($row, $columns, 'email');
+            if (self::isEmailValid($emailVal)) {
+                $user->email = $emailVal;
+            }
+        }
+
+        if (self::columnExists($columns, 'mobile')) {
+            $mobileVal = self::getValue($row, $columns, 'mobile');
+            if ($mobileVal !== null && trim((string) $mobileVal) !== '') {
+                $user->mobile = $mobileVal;
+            }
+        }
+
+        if (self::columnExists($columns, 'gender')) {
+            $genderVal = self::getValue($row, $columns, 'gender');
+            if ($genderVal !== null && trim((string) $genderVal) !== '') {
+                $user->gender = strtolower((string) $genderVal);
+            }
+        }
+
+        if (self::columnExists($columns, 'country_id')) {
+            $countryName = self::getValue($row, $columns, 'country_id');
+            if ($countryName !== null && trim((string) $countryName) !== '') {
+                $resolved = Country::where('name', $countryName)->first()?->id;
+                if ($resolved !== null) {
+                    $user->country_id = $resolved;
+                }
+            }
+        }
+
         $user->save();
 
-        $existingDetails->company_name = self::columnExists($columns, 'company_name') ? self::getValue($row, $columns, 'company_name') : null;
-        $existingDetails->address = self::columnExists($columns, 'address') ? self::getValue($row, $columns, 'address') : null;
-        $existingDetails->city = self::columnExists($columns, 'city') ? self::getValue($row, $columns, 'city') : null;
-        $existingDetails->state = self::columnExists($columns, 'state') ? self::getValue($row, $columns, 'state') : null;
-        $existingDetails->postal_code = self::columnExists($columns, 'postal_code') ? self::getValue($row, $columns, 'postal_code') : null;
-        $existingDetails->office = self::columnExists($columns, 'company_phone') ? self::getValue($row, $columns, 'company_phone') : null;
-        $existingDetails->website = self::columnExists($columns, 'company_website') ? self::getValue($row, $columns, 'company_website') : null;
-        $existingDetails->gst_number = self::columnExists($columns, 'gst_number') ? self::getValue($row, $columns, 'gst_number') : null;
-        $existingDetails->default_warehouse_id = self::resolveDefaultWarehouseId($row, $columns, $companyId);
+        self::applyMappedDetailString($existingDetails, 'company_name', $row, $columns);
+        self::applyMappedDetailString($existingDetails, 'address', $row, $columns);
+        self::applyMappedDetailString($existingDetails, 'city', $row, $columns);
+        self::applyMappedDetailString($existingDetails, 'state', $row, $columns);
+        self::applyMappedDetailString($existingDetails, 'postal_code', $row, $columns);
+        self::applyMappedDetailString($existingDetails, 'office', $row, $columns, 'company_phone');
+        self::applyMappedDetailString($existingDetails, 'website', $row, $columns, 'company_website');
+        self::applyMappedDetailString($existingDetails, 'gst_number', $row, $columns);
+
+        if (self::columnExists($columns, 'designated_warehouse_code') || self::columnExists($columns, 'designated_warehouse_name')) {
+            $whCode = self::columnExists($columns, 'designated_warehouse_code')
+                ? trim((string) self::getValue($row, $columns, 'designated_warehouse_code'))
+                : '';
+            $whName = self::columnExists($columns, 'designated_warehouse_name')
+                ? trim((string) self::getValue($row, $columns, 'designated_warehouse_name'))
+                : '';
+            if ($whCode !== '' || $whName !== '') {
+                $existingDetails->default_warehouse_id = self::resolveDefaultWarehouseId($row, $columns, $companyId);
+            }
+        }
+
         $existingDetails->save();
 
         if (! ($options['skip_custom_fields'] ?? false)) {
@@ -198,6 +232,23 @@ class ClientImportProcessor
         }
 
         return $user;
+    }
+
+    /**
+     * On update-by-client_code: only overwrite mapped fields when the cell has a non-empty value (avoid wiping DB with null).
+     *
+     * @param  string|null  $columnId  Import field id when different from model attribute (e.g. company_phone -> office)
+     */
+    protected static function applyMappedDetailString(ClientDetails $details, string $attribute, array $row, array $columns, ?string $columnId = null): void
+    {
+        $field = $columnId ?? $attribute;
+        if (! self::columnExists($columns, $field)) {
+            return;
+        }
+        $v = self::getValue($row, $columns, $field);
+        if ($v !== null && trim((string) $v) !== '') {
+            $details->{$attribute} = $v;
+        }
     }
 
     protected static function getValue(array $row, array $columns, string $column)

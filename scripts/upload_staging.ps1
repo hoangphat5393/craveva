@@ -1,4 +1,5 @@
 # PowerShell script to zip selected files and upload to staging server
+# Quy trình & rủi ro (destructive remote rm): docs/STAGING_OPERATIONS.md
 
 $StagingHost = "craveva-staging"
 $StagingPath = "/var/www/craveva-staging/current/craveva"
@@ -302,6 +303,9 @@ $FilesToCopy += @(
     "Modules/Pricing/docs/ReleaseNotes.md",
     "Modules/Pricing/Tests/Unit/ContractPricingTest.php"
 )
+
+# Gom path trùng (cùng file liệt kê nhiều lần trong các batch) — không đổi thứ tự lần xuất hiện đầu
+$FilesToCopy = $FilesToCopy | Select-Object -Unique
 
 $DirsToCopy = @(
     "Modules/LanguagePack/Languages/app",

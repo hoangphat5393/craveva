@@ -1,7 +1,6 @@
 <div class="modal-header">
     <h5 class="modal-title" id="modelHeading">@lang('app.category')</h5>
-    <button type="button"  class="close" data-dismiss="modal" aria-label="Close"><span
-            aria-hidden="true">×</span></button>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
 </div>
 <div class="modal-body">
     <x-table class="table-bordered client-cat-table" headType="thead-light">
@@ -17,12 +16,11 @@
                 <td data-row-id="{{ $category->id }}" contenteditable="true">{{ $category->category_name }}
                 </td>
                 <td class="text-right">
-                    
-                        <x-forms.button-secondary data-cat-id="{{ $category->id }}" icon="trash"
-                            class="delete-category">
-                            @lang('app.delete')
-                        </x-forms.button-secondary>
-                    
+
+                    <x-forms.button-secondary data-cat-id="{{ $category->id }}" icon="trash" class="delete-category">
+                        @lang('app.delete')
+                    </x-forms.button-secondary>
+
             </tr>
         @empty
             <x-cards.no-record-found-list />
@@ -32,8 +30,7 @@
     <x-form id="createProjectCategory">
         <div class="row border-top-grey ">
             <div class="col-sm-12">
-                <x-forms.text fieldId="category_name" :fieldLabel="__('modules.projectCategory.categoryName')"
-                    fieldName="category_name" fieldRequired="true" :fieldPlaceholder="__('placeholders.categoryName')">
+                <x-forms.text fieldId="category_name" :fieldLabel="__('modules.projectCategory.categoryName')" fieldName="category_name" fieldRequired="true" :fieldPlaceholder="__('placeholders.categoryName')">
                 </x-forms.text>
             </div>
 
@@ -74,14 +71,8 @@
             buttonsStyling: false
         }).then((result) => {
             if (result.isConfirmed) {
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
+                window.apiHttp.delete(url, token)
+                    .then(function(response) {
                         if (response.status == "success") {
                             $('#cat-' + id).fadeOut();
                             var options = [];
@@ -100,8 +91,10 @@
                                 options);
                             $('#category_id').selectpicker('refresh');
                         }
-                    }
-                });
+                    })
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    });
             }
         });
 
@@ -110,12 +103,8 @@
     $('#save-category').click(function() {
         var url = "{{ route('vendor-cateogory.store') }}";
         let selectedCategory = $('#category_id').val();
-        $.easyAjax({
-            url: url,
-            container: '#createProjectCategory',
-            type: "POST",
-            data: $('#createProjectCategory').serialize(),
-            success: function(response) {
+        window.apiHttp.postUrlEncoded(url, $('#createProjectCategory').serialize())
+            .then(function(response) {
                 if (response.status == 'success') {
                     if (response.status == 'success') {
                         var options = [];
@@ -134,8 +123,10 @@
                         $(MODAL_LG).modal('hide');
                     }
                 }
-            }
-        })
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            });
     });
 
     $('.client-cat-table [contenteditable=true]').focus(function() {
@@ -152,17 +143,12 @@
             let selectedCategory = $('#category_id').val();
             var token = "{{ csrf_token() }}";
 
-            $.easyAjax({
-                url: url,
-                container: '#cat-' + id,
-                type: "POST",
-                data: {
-                    'category_name': value,
-                    '_token': token,
-                    '_method': 'PUT'
-                },
-                blockUI: true,
-                success: function(response) {
+            window.apiHttp.postUrlEncoded(url, {
+                    category_name: value,
+                    _token: token,
+                    _method: 'PUT'
+                })
+                .then(function(response) {
                     if (response.status == 'success') {
                         var options = [];
                         var rData = [];
@@ -178,8 +164,10 @@
                         $('#category_id').html('<option value="">--</option>' + options);
                         $('#category_id').selectpicker('refresh');
                     }
-                }
-            })
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                });
         }
     });
 </script>

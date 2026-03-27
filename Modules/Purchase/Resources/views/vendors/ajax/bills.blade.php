@@ -3,14 +3,13 @@
 @endphp
 
 @section('content')
-
     <!-- CONTENT WRAPPER START -->
     <div class="content-wrapper">
         <!-- Add Task Export Buttons Start -->
         <div class="d-flex justify-content-between action-bar">
             <div id="table-actions" class="d-block d-lg-flex align-items-center">
                 @if ($addBillPermission == 'all' || $addBillPermission == 'added')
-                    <x-forms.link-primary :link="route('bills.create').'?bill_vendor_id='.$vendor->id" class="mr-3" icon="plus" data-redirect-url="{{ url()->full() }}">
+                    <x-forms.link-primary :link="route('bills.create') . '?bill_vendor_id=' . $vendor->id" class="mr-3" icon="plus" data-redirect-url="{{ url()->full() }}">
                         @lang('purchase::app.menu.createBill')
                     </x-forms.link-primary>
                 @endif
@@ -43,13 +42,12 @@
         <!-- Task Box End -->
     </div>
     <!-- CONTENT WRAPPER END -->
-
 @endsection
 @push('scripts')
     @include('sections.datatable_js')
 
     <script>
-        $('#purchasebills-table').on('preXhr.dt', function (e, settings, data) {
+        $('#purchasebills-table').on('preXhr.dt', function(e, settings, data) {
             var status = $('#status').val();
             var vendor_id = "{{ $vendor->id }}";
             data['vendor_id'] = vendor_id;
@@ -85,21 +83,15 @@
                     url = url.replace(':id', id);
 
                     var token = "{{ csrf_token() }}";
-
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
+                    window.apiHttp.delete(url, token)
+                        .then(function(response) {
                             if (response.status == "success") {
                                 showTable();
                             }
-                        }
-                    });
+                        })
+                        .catch(function(err) {
+                            $.handleApiFormError(err);
+                        });
                 }
             });
         });
@@ -110,22 +102,17 @@
             url = url.replace(':id', id);
 
             var token = "{{ csrf_token() }}";
-
-            $.easyAjax({
-                type: 'POST',
-                url: url,
-                container: '#purchasebills-table',
-                blockUI: true,
-                data: {
-                    '_token': token,
-                },
-                success: function(response) {
+            window.apiHttp.postUrlEncoded(url, {
+                    _token: token
+                })
+                .then(function(response) {
                     if (response.status == "success") {
                         showTable();
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                });
         });
-
     </script>
 @endpush

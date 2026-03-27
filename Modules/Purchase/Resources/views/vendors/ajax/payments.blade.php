@@ -10,7 +10,7 @@
 
             <div id="table-actions" class="d-block d-lg-flex align-items-center">
                 @if ($addPermission == 'all' || $addPermission == 'added')
-                    <x-forms.link-primary :link="route('vendor-payments.create').'?payment_vendor_id='.$vendor->id" class="mr-3 float-left openRightModal" icon="plus" data-redirect-url="{{ url()->full() }}">
+                    <x-forms.link-primary :link="route('vendor-payments.create') . '?payment_vendor_id=' . $vendor->id" class="mr-3 float-left openRightModal" icon="plus" data-redirect-url="{{ url()->full() }}">
                         @lang('purchase::app.purchaseOrder.addVendorPayments')
                     </x-forms.link-primary>
                 @endif
@@ -36,13 +36,12 @@
         <!-- Task Box End -->
     </div>
     <!-- CONTENT WRAPPER END -->
-
 @endsection
 @push('scripts')
     @include('sections.datatable_js')
 
     <script>
-        $('#vendor-payments-table').on('preXhr.dt', function (e, settings, data) {
+        $('#vendor-payments-table').on('preXhr.dt', function(e, settings, data) {
             var vendor_id = "{{ $vendor->id }}";
             data['vendor_id'] = vendor_id;
         });
@@ -51,7 +50,7 @@
             window.LaravelDataTables["vendor-payments-table"].draw(true);
         }
 
-        $('#quick-action-type').change(function () {
+        $('#quick-action-type').change(function() {
             const actionValue = $(this).val();
             if (actionValue != '') {
                 $('#quick-action-apply').removeAttr('disabled');
@@ -67,7 +66,7 @@
                 $('.quick-action-field').addClass('d-none');
             }
         });
-        $('body').on('click', '#quick-action-apply', function () {
+        $('body').on('click', '#quick-action-apply', function() {
             const actionValue = $('#quick-action-type').val();
             if (actionValue == 'delete') {
                 Swal.fire({
@@ -98,30 +97,26 @@
             }
         });
         const applyQuickAction = () => {
-            var rowdIds = $("#vendor-payments-table input:checkbox:checked").map(function () {
+            var rowdIds = $("#vendor-payments-table input:checkbox:checked").map(function() {
                 return $(this).val();
             }).get();
 
             const url = "{{ route('vendor-payments.apply_quick_action') }}?row_ids=" + rowdIds;
 
-            $.easyAjax({
-                url: url,
-                container: '#quick-action-form',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#quick-action-apply",
-                data: $('#quick-action-form').serialize(),
-                success: function (response) {
+            window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize())
+                .then(function(response) {
                     if (response.status == 'success') {
                         showTable();
                         resetActionButtons();
                         deSelectAll();
                         $('#quick-action-form').hide();
                     }
-                }
-            })
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                });
         };
-        $('body').on('click', '.delete-table-row', function () {
+        $('body').on('click', '.delete-table-row', function() {
             var id = $(this).data('vendor-payment-id');
             Swal.fire({
                 title: "@lang('messages.sweetAlertTitle')",
@@ -145,23 +140,17 @@
                     var url = "{{ route('vendor-payments.destroy', ':id') }}";
                     url = url.replace(':id', id);
                     var token = "{{ csrf_token() }}";
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function (response) {
+                    window.apiHttp.delete(url, token)
+                        .then(function(response) {
                             if (response.status == "success") {
                                 showTable();
                             }
-                        }
-                    });
+                        })
+                        .catch(function(err) {
+                            $.handleApiFormError(err);
+                        });
                 }
             });
         });
-
     </script>
 @endpush

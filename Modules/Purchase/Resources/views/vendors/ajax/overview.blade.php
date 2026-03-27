@@ -16,26 +16,17 @@
                         </div>
 
                         <div class="col-lg-3 col-md-2 col-2 text-right">
-                            @if ($editPermission == 'all'
-                                || ($editPermission == 'added' && $vendor->added_by == user()->id) ||
-                                ($deletePermission == 'all'
-                                || ($deletePermission == 'added' && $vendor->added_by == user()->id)))
+                            @if ($editPermission == 'all' || ($editPermission == 'added' && $vendor->added_by == user()->id) || ($deletePermission == 'all' || ($deletePermission == 'added' && $vendor->added_by == user()->id)))
                                 <div class="dropdown">
-                                    <button
-                                        class="btn btn-lg f-14 px-2 py-1 text-dark-grey  rounded  dropdown-toggle"
-                                        type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <button class="btn btn-lg f-14 px-2 py-1 text-dark-grey  rounded  dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         <i class="fa fa-ellipsis-h"></i>
                                     </button>
 
-                                    <div class="dropdown-menu dropdown-menu-right border-grey rounded b-shadow-4 p-0"
-                                         aria-labelledby="dropdownMenuLink" tabindex="0">
-                                        @if ($editPermission == 'all'
-                                            || ($editPermission == 'added' && $vendor->added_by == user()->id))
-                                            <a class="dropdown-item openRightModal"
-                                               href="{{ route('vendors.edit', $vendor->id) }}">@lang('app.edit')</a>
+                                    <div class="dropdown-menu dropdown-menu-right border-grey rounded b-shadow-4 p-0" aria-labelledby="dropdownMenuLink" tabindex="0">
+                                        @if ($editPermission == 'all' || ($editPermission == 'added' && $vendor->added_by == user()->id))
+                                            <a class="dropdown-item openRightModal" href="{{ route('vendors.edit', $vendor->id) }}">@lang('app.edit')</a>
                                         @endif
-                                        @if ($deletePermission == 'all'
-                                            || ($deletePermission == 'added' && $vendor->added_by == user()->id))
+                                        @if ($deletePermission == 'all' || ($deletePermission == 'added' && $vendor->added_by == user()->id))
                                             <a class="dropdown-item delete-table-row">@lang('app.delete')</a>
                                         @endif
                                     </div>
@@ -49,18 +40,14 @@
     </div>
     <div class="row">
         <div class="col-sm-12 col-lg-3 mt-3">
-            <x-cards.widget :title="__('purchase::modules.vendorPayment.outstandingPayable')"
-                :value="($totalBillAmount) - ($totalPaymentAmount)"
-                icon="coins" />
+            <x-cards.widget :title="__('purchase::modules.vendorPayment.outstandingPayable')" :value="$totalBillAmount - $totalPaymentAmount" icon="coins" />
         </div>
         {{-- to be updated according to the vendor credit --}}
         <div class="col-sm-12 col-lg-3 mt-3">
-            <x-cards.widget :title="__('purchase::modules.vendorPayment.unusedCredit')"
-                :value="($unusedAmt)"
-                icon="coins" />
+            <x-cards.widget :title="__('purchase::modules.vendorPayment.unusedCredit')" :value="$unusedAmt" icon="coins" />
         </div>
         <div class="col-sm-12 col-lg-6 mt-3">
-            <x-cards.data :title="__('purchase::modules.vendorPayment.paymentToVendor').' <i class=\'fa fa-question-circle\' data-toggle=\'popover\' data-placement=\'top\' data-content=\''.__('app.from').' '.$startDate->translatedFormat(company()->date_format).' '.__('app.to').' '.$endDate->translatedFormat(company()->date_format).'\' data-trigger=\'hover\'></i>'">
+            <x-cards.data :title="__('purchase::modules.vendorPayment.paymentToVendor') . ' <i class=\'fa fa-question-circle\' data-toggle=\'popover\' data-placement=\'top\' data-content=\'' . __('app.from') . ' ' . $startDate->translatedFormat(company()->date_format) . ' ' . __('app.to') . ' ' . $endDate->translatedFormat(company()->date_format) . '\' data-trigger=\'hover\'></i>'">
                 <x-bar-chart id="task-chart1" :chartData="$earningChartData" height="200"></x-bar-chart>
             </x-cards.data>
         </div>
@@ -71,8 +58,7 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-xl-9 col-lg-8 col-md-12 mb-4 mb-xl-0 mb-lg-4 mb-md-0">
-                            <x-cards.data-row :label="__('purchase::modules.vendor.companyName')"
-                            :value="$vendor->company_name ?? '--'" />
+                            <x-cards.data-row :label="__('purchase::modules.vendor.companyName')" :value="$vendor->company_name ?? '--'" />
 
                             <x-cards.data-row :label="__('app.email')" :value="$vendor->email ?? '--'" />
 
@@ -82,9 +68,9 @@
 
                             <x-cards.data-row :label="__('modules.client.website')" :value="$vendor->website ?? '--'" />
 
-                            <x-cards.data-row :label="__('purchase::modules.vendor.openingsBalance')" :value="currency_format($vendor->opening_balance,  $currency->id, $currency->currency_code)" />
+                            <x-cards.data-row :label="__('purchase::modules.vendor.openingsBalance')" :value="currency_format($vendor->opening_balance, $currency->id, $currency->currency_code)" />
 
-                            <x-cards.data-row :label="__('modules.invoices.currency')" :value="$currency->currency_name . '('.$currency->currency_code . ')' " />
+                            <x-cards.data-row :label="__('modules.invoices.currency')" :value="$currency->currency_name . '(' . $currency->currency_code . ')'" />
 
                             <x-cards.data-row :label="__('modules.invoices.shippingAddress')" :value="$vendor->shipping_address ?? '--'" />
 
@@ -95,7 +81,7 @@
                                     @lang('app.addedBy')
                                 </p>
                                 @if ($vendor->user)
-                                    <x-employee :user="$vendor->user"/>
+                                    <x-employee :user="$vendor->user" />
                                 @else
                                     --
                                 @endif
@@ -108,9 +94,9 @@
     </div>
 </div>
 <script>
-    $(document).ready(function () {
+    $(document).ready(function() {
 
-        $('body').on('click', '.delete-table-row', function () {
+        $('body').on('click', '.delete-table-row', function() {
             Swal.fire({
                 title: "@lang('messages.sweetAlertTitle')",
                 text: "@lang('messages.recoverRecord')",
@@ -132,15 +118,8 @@
                 if (result.isConfirmed) {
                     var url = "{{ route('vendors.destroy', $vendor->id) }}";
                     var token = "{{ csrf_token() }}";
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function (response) {
+                    window.apiHttp.delete(url, token)
+                        .then(function(response) {
                             if ($(RIGHT_MODAL).hasClass('in')) {
                                 document.getElementById('close-task-detail').click();
                                 if ($('#vendors-table').length) {
@@ -151,8 +130,10 @@
                             } else {
                                 window.location.href = response.redirectUrl;
                             }
-                        }
-                    });
+                        })
+                        .catch(function(err) {
+                            $.handleApiFormError(err);
+                        });
                 }
             });
         });

@@ -6,15 +6,12 @@
             <h4 class="my-3 f-21 text-capitalize font-weight-bold">{{ $vendorCredit->vendor_credit_number }}</h4>
             <div class="row">
                 <div class="col-xl-3 col-sm-12 mb-4">
-                    <x-cards.widget :title="__('modules.invoices.total')"
-                        :value="number_format((float) $vendorCredit->total, 2, '.', '')" icon="file-invoice-dollar" />
+                    <x-cards.widget :title="__('modules.invoices.total')" :value="number_format((float) $vendorCredit->total, 2, '.', '')" icon="file-invoice-dollar" />
                 </div>
                 <div class="col-xl-3 col-sm-12 mb-4">
-                    <x-cards.widget :title="__('modules.credit-notes.creditAmountRemaining')"
-                        :value="number_format((float) $vendorCredit->creditAmountRemaining(), 2, '.', '')"
-                        icon="file-invoice-dollar" />
+                    <x-cards.widget :title="__('modules.credit-notes.creditAmountRemaining')" :value="number_format((float) $vendorCredit->creditAmountRemaining(), 2, '.', '')" icon="file-invoice-dollar" />
                 </div>
-               <div class="col-xl-6 col-sm-12 mb-4">
+                <div class="col-xl-6 col-sm-12 mb-4">
                     <x-cards.user :image="$vendorCredit->vendors->image_url">
                         <div class="row">
                             <div class="col-10">
@@ -26,7 +23,7 @@
                         <p class="f-13 font-weight-normal text-dark-grey mb-0">
                             {{ mb_ucwords($vendorCredit->vendors->company_name) }}
                         </p>
-                       {{-- <p class="card-text f-12 text-lightest">@lang('app.lastLogin')
+                        {{-- <p class="card-text f-12 text-lightest">@lang('app.lastLogin')
 
                             @if (!is_null($vendorCredit->client->last_login))
                                 {{ $vendorCredit->client->last_login->timezone(company()->timezone)->translatedFormat(company()->date_format . ' ' . company()->time_format) }}
@@ -43,7 +40,7 @@
             <h4 class="mt-5 mb-3 f-21  font-weight-bold">@lang('purchase::app.menu.vendor') @lang('app.unpaid')
                 @lang('app.bill')</h4>
 
-             <x-cards.data padding="false">
+            <x-cards.data padding="false">
                 <div class="table-responsive">
                     <x-table class="table-hover">
                         <x-slot name="thead">
@@ -54,20 +51,17 @@
                             <th class="border-left">@lang('app.credit-notes.amountToCredit')</th>
                         </x-slot>
 
-                            @forelse ($nonPaidInvoices as $bill)
-
+                        @forelse ($nonPaidInvoices as $bill)
                             @php
 
                                 $amountDue = $bill->amountDue($bill->purchase_vendor_id);
                                 $paid = $bill->purchasePaymentBills->sum('total_paid');
 
-                                @endphp
+                            @endphp
                             @if ($amountDue > 0)
-
-                            <tr>
+                                <tr>
                                     <td>
-                                        <a class="text-darkest-grey"
-                                            href="{{ route('invoices.show', [$bill->id]) }}">{{ $bill->bill_number }}</a>
+                                        <a class="text-darkest-grey" href="{{ route('invoices.show', [$bill->id]) }}">{{ $bill->bill_number }}</a>
                                     </td>
                                     <td>
                                         {{ $bill->bill_date->translatedFormat(company()->date_format) }}
@@ -79,10 +73,7 @@
                                         {{ currency_format($amountDue) }}
                                     </td>
                                     <td class="border-left">
-                                        <input data-invoice-id="{{ $bill->id }}"
-                                            data-balance-due='{{ $amountDue }}' type="number"
-                                            max="{{ min($vendorCredit->total, $amountDue) }}" min="0" value="0"
-                                            step="1.00" class="form-control height-35 f-14 amt-to-credit">
+                                        <input data-invoice-id="{{ $bill->id }}" data-balance-due='{{ $amountDue }}' type="number" max="{{ min($vendorCredit->total, $amountDue) }}" min="0" value="0" step="1.00" class="form-control height-35 f-14 amt-to-credit">
                                     </td>
                                 </tr>
                             @endif
@@ -160,9 +151,9 @@
         evt = (evt) ? evt : window.event;
         let charCode = (evt.which) ? evt.which : evt.keyCode;
         if ((charCode > 31 && (charCode < 48 || charCode > 57)) && charCode !== 46) {
-        evt.preventDefault();
+            evt.preventDefault();
         } else {
-        return true;
+            return true;
         }
     }
 
@@ -188,7 +179,7 @@
         let amount = getTotalAmountToCredit();
         let remainingAmount = creditBalance - amount;
 
-        if(remainingAmount < 0) {
+        if (remainingAmount < 0) {
             $(this).val(0);
             return false;
         }
@@ -231,18 +222,24 @@
 
         let url = "{{ route('vendor-credits.apply_bill_credit', [':id']) }}";
         url = url.replace(':id', '{{ $vendorCredit->id }}');
-        $.easyAjax({
-            url: url,
-            type: 'POST',
-            container: '.content-wrapper',
-            disableButton: true,
-            blockUI: true,
-            buttonSelector: "#apply-invoice",
-            redirect: true,
-            data: {
+        const $btn = $('#apply-invoice');
+        $btn.prop('disabled', true);
+        $.easyBlockUI('.content-wrapper');
+        window.apiHttp.postUrlEncoded(url, {
                 ...data,
                 _token: '{{ csrf_token() }}'
-            }
-        });
+            })
+            .then(function(response) {
+                if (response.status === 'success' && response.redirectUrl) {
+                    window.location.href = response.redirectUrl;
+                }
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            })
+            .finally(function() {
+                $btn.prop('disabled', false);
+                $.easyUnblockUI('.content-wrapper');
+            });
     });
 </script>

@@ -9,23 +9,19 @@
 
                 <div class="row p-20">
                     <div class="col-md-4">
-                        <x-forms.text fieldId="title" :fieldLabel="__('app.title')" fieldName="title"
-                            :fieldPlaceholder="__('placeholders.title')">
-                            </x-forms.text>
-                    </div>
-                    <div class="col-md-4">
-                        <x-forms.text fieldId="contact_name" :fieldLabel="__('modules.contacts.contactName')"
-                            fieldName="contact_name" fieldRequired="true" :fieldPlaceholder="__('placeholders.name')">
+                        <x-forms.text fieldId="title" :fieldLabel="__('app.title')" fieldName="title" :fieldPlaceholder="__('placeholders.title')">
                         </x-forms.text>
                     </div>
                     <div class="col-md-4">
-                        <x-forms.email fieldId="email" :fieldLabel="__('app.email')" fieldName="email"
-                            fieldRequired="true" :fieldPlaceholder="__('placeholders.email')"></x-forms.email>
+                        <x-forms.text fieldId="contact_name" :fieldLabel="__('modules.contacts.contactName')" fieldName="contact_name" fieldRequired="true" :fieldPlaceholder="__('placeholders.name')">
+                        </x-forms.text>
                     </div>
                     <div class="col-md-4">
-                        <x-forms.text fieldId="phone" :fieldLabel="__('app.phone')" fieldName="phone"
-                            :fieldPlaceholder="__('placeholders.mobile')">
-                            </x-forms.text>
+                        <x-forms.email fieldId="email" :fieldLabel="__('app.email')" fieldName="email" fieldRequired="true" :fieldPlaceholder="__('placeholders.email')"></x-forms.email>
+                    </div>
+                    <div class="col-md-4">
+                        <x-forms.text fieldId="phone" :fieldLabel="__('app.phone')" fieldName="phone" :fieldPlaceholder="__('placeholders.mobile')">
+                        </x-forms.text>
                     </div>
                 </div>
 
@@ -48,22 +44,22 @@
 
         $('#save-contact-form').click(function() {
             const url = "{{ route('purchase-contacts.store') }}";
-
-            $.easyAjax({
-                url: url,
-                container: '#save-contact-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-contact-form",
-                data: $('#save-contact-data-form').serialize(),
-                success: function(response) {
-
+            const $btn = $('#save-contact-form');
+            $btn.prop('disabled', true);
+            $.easyBlockUI('#save-contact-data-form');
+            window.apiHttp.postUrlEncoded(url, $('#save-contact-data-form').serialize())
+                .then(function(response) {
                     if (response.status === 'success') {
                         window.location.href = response.redirectUrl;
                     }
-                }
-            })
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $btn.prop('disabled', false);
+                    $.easyUnblockUI('#save-contact-data-form');
+                });
         });
 
         init(RIGHT_MODAL);

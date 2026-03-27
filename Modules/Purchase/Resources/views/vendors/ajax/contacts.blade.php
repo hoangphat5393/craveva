@@ -1,5 +1,5 @@
 @php
-$addPermission = user()->permission('add_vendor');
+    $addPermission = user()->permission('add_vendor');
 @endphp
 
 <!-- ROW START -->
@@ -9,8 +9,7 @@ $addPermission = user()->permission('add_vendor');
         <div class="d-flex justify-content-between action-bar">
             <div id="table-actions" class="d-flex align-items-center">
                 @if ($addPermission == 'all' || $addPermission == 'added' || $addPermission == 'both')
-                    <x-forms.link-primary :link="route('purchase-contacts.create').'?vendor='.$vendor->id"
-                        class="mr-3 openRightModal" icon="plus">
+                    <x-forms.link-primary :link="route('purchase-contacts.create') . '?vendor=' . $vendor->id" class="mr-3 openRightModal" icon="plus">
                         @lang('modules.contacts.addContact')
                     </x-forms.link-primary>
                 @endif
@@ -122,20 +121,15 @@ $addPermission = user()->permission('add_vendor');
                 url = url.replace(':id', id);
 
                 var token = "{{ csrf_token() }}";
-
-                $.easyAjax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        '_token': token,
-                        '_method': 'DELETE'
-                    },
-                    success: function(response) {
+                window.apiHttp.delete(url, token)
+                    .then(function(response) {
                         if (response.status == "success") {
                             showTable();
                         }
-                    }
-                });
+                    })
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    });
             }
         });
     });
@@ -147,20 +141,16 @@ $addPermission = user()->permission('add_vendor');
 
         var url = "{{ route('purchase-contacts.apply_quick_action') }}?row_ids=" + rowdIds;
 
-        $.easyAjax({
-            url: url,
-            container: '#quick-action-form',
-            type: "POST",
-            disableButton: true,
-            buttonSelector: "#quick-action-apply",
-            data: $('#quick-action-form').serialize(),
-            success: function(response) {
+        window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize())
+            .then(function(response) {
                 if (response.status == 'success') {
                     showTable();
                     resetActionButtons();
                     deSelectAll();
                 }
-            }
-        })
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            });
     };
 </script>

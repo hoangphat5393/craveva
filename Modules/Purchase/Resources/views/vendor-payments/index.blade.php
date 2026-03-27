@@ -9,15 +9,13 @@
 @endphp
 
 @section('filter-section')
-
     <x-filters.filter-box>
 
         <!-- DATE START -->
         <div class="select-box d-flex pr-2 border-right-grey border-right-grey-sm-0">
             <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('app.duration')</p>
             <div class="select-status d-flex">
-                <input type="text" class="position-relative text-dark form-control border-0 p-2 text-left f-14 f-w-500 border-additional-grey"
-                       id="datatableRange" placeholder="@lang('placeholders.dateRange')">
+                <input type="text" class="position-relative text-dark form-control border-0 p-2 text-left f-14 f-w-500 border-additional-grey" id="datatableRange" placeholder="@lang('placeholders.dateRange')">
             </div>
         </div>
         <!-- DATE END -->
@@ -31,8 +29,7 @@
                             <i class="fa fa-search f-13 text-dark-grey"></i>
                         </span>
                     </div>
-                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field"
-                           placeholder="@lang('app.startTyping')">
+                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field" placeholder="@lang('app.startTyping')">
                 </div>
             </form>
         </div>
@@ -47,7 +44,6 @@
         <!-- RESET END -->
 
     </x-filters.filter-box>
-
 @endsection
 @section('content')
     <!-- CONTENT WRAPPER START -->
@@ -83,13 +79,12 @@
         <!-- Task Box End -->
     </div>
     <!-- CONTENT WRAPPER END -->
-
 @endsection
 @push('scripts')
     @include('sections.datatable_js')
 
     <script>
-        $('#vendor-payments-table').on('preXhr.dt', function (e, settings, data) {
+        $('#vendor-payments-table').on('preXhr.dt', function(e, settings, data) {
             const dateRangePicker = $('#datatableRange').data('daterangepicker');
             let startDate = $('#datatableRange').val();
 
@@ -117,7 +112,7 @@
         }
 
         $('#search-text-field, #status, #recruiter, #department_id,#date_filter_on')
-            .on('change keyup', function () {
+            .on('change keyup', function() {
                 if ($('#search-text-field').val() !== "") {
                     $('#reset-filters').removeClass('d-none');
                 } else if ($('#date_filter_on').val() != "start_date") {
@@ -128,7 +123,7 @@
                 showTable();
             });
 
-        $('body').on('click', '#reset-filters', function () {
+        $('body').on('click', '#reset-filters', function() {
             $('#filter-form')[0].reset();
             $('.filter-box #date_filter_on').val('start_date');
             $('.filter-box #status').val('not finished');
@@ -136,14 +131,14 @@
             $('#reset-filters').addClass('d-none');
             showTable();
         });
-        $('body').on('click', '#reset-filters-2', function () {
+        $('body').on('click', '#reset-filters-2', function() {
             $('#filter-form')[0].reset();
             $('.filter-box #date_filter_on').val('start_date');
             $('.filter-box .select-picker').selectpicker("refresh");
             $('#reset-filters').addClass('d-none');
             showTable();
         });
-        $('#quick-action-type').change(function () {
+        $('#quick-action-type').change(function() {
             const actionValue = $(this).val();
             if (actionValue != '') {
                 $('#quick-action-apply').removeAttr('disabled');
@@ -159,7 +154,7 @@
                 $('.quick-action-field').addClass('d-none');
             }
         });
-        $('body').on('click', '#quick-action-apply', function () {
+        $('body').on('click', '#quick-action-apply', function() {
             const actionValue = $('#quick-action-type').val();
             if (actionValue == 'delete') {
                 Swal.fire({
@@ -190,30 +185,26 @@
             }
         });
         const applyQuickAction = () => {
-            var rowdIds = $("#vendor-payments-table input:checkbox:checked").map(function () {
+            var rowdIds = $("#vendor-payments-table input:checkbox:checked").map(function() {
                 return $(this).val();
             }).get();
 
             const url = "{{ route('vendor-payments.apply_quick_action') }}?row_ids=" + rowdIds;
 
-            $.easyAjax({
-                url: url,
-                container: '#quick-action-form',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#quick-action-apply",
-                data: $('#quick-action-form').serialize(),
-                success: function (response) {
+            window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize())
+                .then(function(response) {
                     if (response.status == 'success') {
                         showTable();
                         resetActionButtons();
                         deSelectAll();
                         $('#quick-action-form').hide();
                     }
-                }
-            })
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                });
         };
-        $('body').on('click', '.delete-table-row', function () {
+        $('body').on('click', '.delete-table-row', function() {
             var id = $(this).data('vendor-payment-id');
             Swal.fire({
                 title: "@lang('messages.sweetAlertTitle')",
@@ -237,23 +228,17 @@
                     var url = "{{ route('vendor-payments.destroy', ':id') }}";
                     url = url.replace(':id', id);
                     var token = "{{ csrf_token() }}";
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function (response) {
+                    window.apiHttp.delete(url, token)
+                        .then(function(response) {
                             if (response.status == "success") {
                                 showTable();
                             }
-                        }
-                    });
+                        })
+                        .catch(function(err) {
+                            $.handleApiFormError(err);
+                        });
                 }
             });
         });
-
     </script>
 @endpush

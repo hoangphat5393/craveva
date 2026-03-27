@@ -1,5 +1,5 @@
 @php
-$addBankAccountPermission = user()->permission('add_bankaccount');
+    $addBankAccountPermission = user()->permission('add_bankaccount');
 @endphp
 
 @section('content')
@@ -9,7 +9,7 @@ $addBankAccountPermission = user()->permission('add_bankaccount');
         <div class="d-flex justify-content-between action-bar">
             <div id="table-actions" class="flex-grow-1 align-items-center mt-3">
                 @if ($addBankAccountPermission == 'all' || $addBankAccountPermission == 'added')
-                    <x-forms.link-primary :link="route('purchase-order.create').'?purchase_order_vendor_id='.$vendor->id" class="mr-3 float-left openRightModal" icon="plus" data-redirect-url="{{ url()->full() }}">
+                    <x-forms.link-primary :link="route('purchase-order.create') . '?purchase_order_vendor_id=' . $vendor->id" class="mr-3 float-left openRightModal" icon="plus" data-redirect-url="{{ url()->full() }}">
                         @lang('app.add') @lang('app.order')
                     </x-forms.link-primary>
                 @endif
@@ -34,7 +34,6 @@ $addBankAccountPermission = user()->permission('add_bankaccount');
         <!-- Task Box End -->
     </div>
     <!-- CONTENT WRAPPER END -->
-
 @endsection
 
 @push('scripts')
@@ -100,21 +99,17 @@ $addBankAccountPermission = user()->permission('add_bankaccount');
 
             var url = "{{ route('bankaccounts.apply_quick_action') }}?row_ids=" + rowdIds;
 
-            $.easyAjax({
-                url: url,
-                container: '#quick-action-form',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#quick-action-apply",
-                data: $('#quick-action-form').serialize(),
-                success: function(response) {
+            window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize())
+                .then(function(response) {
                     if (response.status == 'success') {
                         showTable();
                         resetActionButtons();
                         deSelectAll();
                     }
-                }
-            })
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                });
         };
 
         $('body').on('click', '.delete-table-row', function() {
@@ -142,20 +137,15 @@ $addBankAccountPermission = user()->permission('add_bankaccount');
                     url = url.replace(':id', id);
 
                     var token = "{{ csrf_token() }}";
-
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function(response) {
+                    window.apiHttp.delete(url, token)
+                        .then(function(response) {
                             if (response.status == "success") {
                                 showTable();
                             }
-                        }
-                    });
+                        })
+                        .catch(function(err) {
+                            $.handleApiFormError(err);
+                        });
                 }
             });
         });
@@ -167,22 +157,18 @@ $addBankAccountPermission = user()->permission('add_bankaccount');
             url = url.replace(':id', id);
 
             var token = "{{ csrf_token() }}";
-
-            $.easyAjax({
-                type: 'POST',
-                url: url,
-                container: '#purchase-order-table',
-                blockUI: true,
-                data: {
-                    '_token': token,
-                    'data_type' : dataType
-                },
-                success: function(response) {
+            window.apiHttp.postUrlEncoded(url, {
+                    _token: token,
+                    data_type: dataType
+                })
+                .then(function(response) {
                     if (response.status == "success") {
                         showTable();
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                });
         });
 
         $('body').on('change', '.change-account-status', function() {
@@ -193,43 +179,43 @@ $addBankAccountPermission = user()->permission('add_bankaccount');
             var status = $(this).val();
 
             if (typeof id !== 'undefined') {
-                $.easyAjax({
-                    url: url,
-                    type: "POST",
-                    data: {
-                        '_token': token,
+                window.apiHttp.postUrlEncoded(url, {
+                        _token: token,
                         accountId: id,
                         status: status
-                    },
-
-                    success: function(response) {
+                    })
+                    .then(function(response) {
                         if (response.status == "success") {
                             showTable();
                             resetActionButtons();
                             deSelectAll();
                         }
-                    }
-                });
+                    })
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    });
             }
         });
 
         $('body').on('change', '#delivery-status', function() {
             let id = $(this).data('order-id');
             let value = $(this).val();
-            let url = "{{route('purchase_order.change_status', ':id')}}";
+            let url = "{{ route('purchase_order.change_status', ':id') }}";
             url = url.replace(':id', id);
 
-            $.easyAjax({
-                type:"GET",
-                url:url,
-                data: {delivery_status: value},
-                success: function(response) {
+            window.apiHttp.get(url, {
+                    params: {
+                        delivery_status: value
+                    }
+                })
+                .then(function(response) {
                     showTable();
                     resetActionButtons();
                     deSelectAll();
-                }
-            })
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                });
         })
-
     </script>
 @endpush

@@ -5,15 +5,13 @@
 @endpush
 
 @section('filter-section')
-
     <x-filters.filter-box>
 
         <!-- DATE START -->
         <div class="select-box d-flex pr-2 border-right-grey border-right-grey-sm-0">
             <p class="mb-0 pr-2 f-14 text-dark-grey d-flex align-items-center">@lang('app.duration')</p>
             <div class="select-status d-flex">
-                <input type="text" class="position-relative text-dark form-control border-0 p-2 text-left f-14 f-w-500 border-additional-grey"
-                       id="datatableRange" placeholder="@lang('placeholders.dateRange')">
+                <input type="text" class="position-relative text-dark form-control border-0 p-2 text-left f-14 f-w-500 border-additional-grey" id="datatableRange" placeholder="@lang('placeholders.dateRange')">
             </div>
         </div>
         <!-- DATE END -->
@@ -40,8 +38,7 @@
                             <i class="fa fa-search f-13 text-dark-grey"></i>
                         </span>
                     </div>
-                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field"
-                           placeholder="@lang('app.startTyping')">
+                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field" placeholder="@lang('app.startTyping')">
                 </div>
             </form>
         </div>
@@ -56,7 +53,6 @@
         <!-- RESET END -->
 
     </x-filters.filter-box>
-
 @endsection
 @section('content')
     <!-- CONTENT WRAPPER START -->
@@ -65,7 +61,7 @@
         <div class="d-flex justify-content-between action-bar">
 
             <div id="table-actions" class="d-block d-lg-flex align-items-center">
-                    {{-- <x-forms.link-primary :link="route('vendor-credits.create')" class="mr-3 openRightModal" icon="plus">
+                {{-- <x-forms.link-primary :link="route('vendor-credits.create')" class="mr-3 openRightModal" icon="plus">
                         @lang('purchase::app.menu.addVendorCredit')
                     </x-forms.link-primary> --}}
             </div>
@@ -90,13 +86,12 @@
         <!-- Task Box End -->
     </div>
     <!-- CONTENT WRAPPER END -->
-
 @endsection
 @push('scripts')
     @include('sections.datatable_js')
 
     <script>
-        $('#vendor-credits-table').on('preXhr.dt', function (e, settings, data) {
+        $('#vendor-credits-table').on('preXhr.dt', function(e, settings, data) {
             const dateRangePicker = $('#datatableRange').data('daterangepicker');
             let startDate = $('#datatableRange').val();
             let vendorId = $('#vendor_id').val();
@@ -128,7 +123,7 @@
             if ($('#vendor_id').val() != "") {
                 $('#reset-filters').removeClass('d-none');
                 showTable();
-            }else{
+            } else {
                 $('#reset-filters').addClass('d-none');
                 showTable();
             }
@@ -145,16 +140,16 @@
             showTable();
         });
 
-        $('#search-text-field').on('change keyup', function () {
-                if ($('#search-text-field').val() !== "") {
-                    $('#reset-filters').removeClass('d-none');
-                } else {
-                    $('#reset-filters').addClass('d-none');
-                }
-                showTable();
-            });
+        $('#search-text-field').on('change keyup', function() {
+            if ($('#search-text-field').val() !== "") {
+                $('#reset-filters').removeClass('d-none');
+            } else {
+                $('#reset-filters').addClass('d-none');
+            }
+            showTable();
+        });
 
-        $('body').on('click', '#reset-filters', function () {
+        $('body').on('click', '#reset-filters', function() {
             $('#filter-form')[0].reset();
             $('.filter-box #date_filter_on').val('start_date');
             $('.filter-box #status').val('not finished');
@@ -162,7 +157,7 @@
             $('#reset-filters').addClass('d-none');
             showTable();
         });
-        $('body').on('click', '#reset-filters-2', function () {
+        $('body').on('click', '#reset-filters-2', function() {
             $('#filter-form')[0].reset();
             $('.filter-box #date_filter_on').val('start_date');
             $('.filter-box .select-picker').selectpicker("refresh");
@@ -170,7 +165,7 @@
             showTable();
         });
 
-        $('#quick-action-type').change(function () {
+        $('#quick-action-type').change(function() {
             const actionValue = $(this).val();
             if (actionValue != '') {
                 $('#quick-action-apply').removeAttr('disabled');
@@ -186,7 +181,7 @@
                 $('.quick-action-field').addClass('d-none');
             }
         });
-        $('body').on('click', '#quick-action-apply', function () {
+        $('body').on('click', '#quick-action-apply', function() {
             const actionValue = $('#quick-action-type').val();
             if (actionValue == 'delete') {
                 Swal.fire({
@@ -217,31 +212,27 @@
             }
         });
         const applyQuickAction = () => {
-            var rowdIds = $("#vendor-credits-table input:checkbox:checked").map(function () {
+            var rowdIds = $("#vendor-credits-table input:checkbox:checked").map(function() {
                 return $(this).val();
             }).get();
 
             const url = "{{ route('vendor-credits.apply_quick_action') }}?row_ids=" + rowdIds;
 
-            $.easyAjax({
-                url: url,
-                container: '#quick-action-form',
-                type: "POST",
-                disableButton: true,
-                buttonSelector: "#quick-action-apply",
-                data: $('#quick-action-form').serialize(),
-                success: function (response) {
+            window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize())
+                .then(function(response) {
                     if (response.status == 'success') {
                         showTable();
                         resetActionButtons();
                         deSelectAll();
                         $('#quick-action-form').hide();
                     }
-                }
-            })
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                });
         }
 
-        $('body').on('click', '.delete-table-row', function () {
+        $('body').on('click', '.delete-table-row', function() {
             var id = $(this).data('vendor-credit-id');
             Swal.fire({
                 title: "@lang('messages.sweetAlertTitle')",
@@ -265,23 +256,17 @@
                     var url = "{{ route('vendor-credits.destroy', ':id') }}";
                     url = url.replace(':id', id);
                     var token = "{{ csrf_token() }}";
-                    $.easyAjax({
-                        type: 'POST',
-                        url: url,
-                        blockUI: true,
-                        data: {
-                            '_token': token,
-                            '_method': 'DELETE'
-                        },
-                        success: function (response) {
+                    window.apiHttp.delete(url, token)
+                        .then(function(response) {
                             if (response.status == "success") {
                                 showTable();
                             }
-                        }
-                    });
+                        })
+                        .catch(function(err) {
+                            $.handleApiFormError(err);
+                        });
                 }
             });
         });
-
     </script>
 @endpush

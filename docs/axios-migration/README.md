@@ -58,3 +58,5 @@ Work these **before** optional nwidart modules (Sms, Letter, QRCode pilot, …):
 - **Pilot modules** already migrated for process proof: see [QRCode.md](./QRCode.md).
 
 Secondary / later waves: remaining `Modules/*`, super-admin-only views, integrations — lower priority than the table above unless blocking.
+
+Latest secondary wave completed: **Purchase vendors** (`Modules/Purchase/Resources/views/vendors/**`) — see [vendor.md](./vendor.md).

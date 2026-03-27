@@ -1,19 +1,13 @@
 <div class="modal-header">
     <h5 class="modal-title" id="modelHeading">@lang('app.verify') @lang('app.password')</h5>
-    <button type="button"  class="close" data-dismiss="modal" aria-label="Close"><span
-            aria-hidden="true">×</span></button>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
 </div>
 <div class="modal-body">
 
     <x-form id="checkForpassword">
         <div class="row">
             <div class="col-sm-12">
-                <x-forms.password
-                    fieldId="password"
-                    :fieldLabel="__('app.password')"
-                    fieldName="password"
-                    :fieldPlaceholder="__('app.password')"
-                    :fieldRequired="true">
+                <x-forms.password fieldId="password" :fieldLabel="__('app.password')" fieldName="password" :fieldPlaceholder="__('app.password')" :fieldRequired="true">
                 </x-forms.password>
             </div>
         </div>
@@ -26,7 +20,6 @@
 </div>
 
 <script>
-
     $('#check-password').click(function() {
         let url = "{{ route('project_notes.check_password') }}";
 
@@ -36,18 +29,19 @@
 
         let noteId = "{{ $note->id }}";
 
-        $.easyAjax({
-            url: url,
-            container: '#checkForpassword',
-            type: "POST",
-            data: { note_id : noteId, '_token': token, password: password },
-            success: function(response) {
+        window.apiHttp.postUrlEncoded(url, {
+                note_id: noteId,
+                _token: token,
+                password: password
+            })
+            .then(function(response) {
                 if (response.status == 'success') {
                     $(MODAL_LG).modal('hide');
                     getNoteDetail(noteId);
                 }
-            }
-        })
+            })
+            .catch(function(err) {
+                $.handleApiFormError(err);
+            });
     });
-
 </script>

@@ -13,8 +13,7 @@
                     </div>
 
                     <div class="col-md-6">
-                        <x-forms.text fieldId="title" :fieldLabel="__('modules.client.noteTitle')" fieldName="title"
-                            fieldRequired="true" :fieldPlaceholder="__('placeholders.name')" :fieldValue="$note->note_title">
+                        <x-forms.text fieldId="title" :fieldLabel="__('modules.client.noteTitle')" fieldName="title" fieldRequired="true" :fieldPlaceholder="__('placeholders.name')" :fieldValue="$note->note_title">
                         </x-forms.text>
                     </div>
 
@@ -23,11 +22,9 @@
                             <x-forms.label fieldId="late_yes" :fieldLabel="__('modules.client.noteType')">
                             </x-forms.label>
                             <div class="d-flex">
-                                <x-forms.radio fieldId="public" :fieldLabel="__('app.public')" fieldName="type"
-                                    fieldValue="0" :checked="$note->note_type==0">
+                                <x-forms.radio fieldId="public" :fieldLabel="__('app.public')" fieldName="type" fieldValue="0" :checked="$note->note_type == 0">
                                 </x-forms.radio>
-                                <x-forms.radio fieldId="private" :fieldLabel="__('app.private')" fieldValue="1"
-                                    fieldName="type" :checked="$note->note_type==1"></x-forms.radio>
+                                <x-forms.radio fieldId="private" :fieldLabel="__('app.private')" fieldValue="1" fieldName="type" :checked="$note->note_type == 1"></x-forms.radio>
                             </div>
                         </div>
                     </div>
@@ -38,16 +35,12 @@
 
                     <div class="col-md-6">
                         <div class="form-group">
-                            <x-forms.label class="my-3" :fieldRequired="(!in_array('client', user_roles())) ? true : false" fieldId="selectEmployee" :fieldLabel="__('app.employee')">
+                            <x-forms.label class="my-3" :fieldRequired="!in_array('client', user_roles()) ? true : false" fieldId="selectEmployee" :fieldLabel="__('app.employee')">
                             </x-forms.label>
                             <x-forms.input-group>
-                                <select class="form-control multiple-users" multiple name="user_id[]"
-                                    id="selectEmployee" data-live-search="true" data-size="8">
+                                <select class="form-control multiple-users" multiple name="user_id[]" id="selectEmployee" data-live-search="true" data-size="8">
                                     @foreach ($employees as $employee)
-                                        <x-user-option :user="$employee"
-                                                       :pill="true"
-                                                       :selected="in_array($employee->id, $noteMembers)"
-                                        />
+                                        <x-user-option :user="$employee" :pill="true" :selected="in_array($employee->id, $noteMembers)" />
                                     @endforeach
                                 </select>
                             </x-forms.input-group>
@@ -57,9 +50,7 @@
 
                     <div class="col-md-3">
                         <x-forms.label class="my-3" fieldId="selectEmployee" fieldLabel="&nbsp;" />
-                        <x-forms.checkbox :fieldLabel="__('modules.client.askToReenterPassword')"
-                            fieldName="ask_password" fieldId="ask_password" fieldValue="1" fieldRequired="true"
-                            :checked="$note->ask_password == 1" />
+                        <x-forms.checkbox :fieldLabel="__('modules.client.askToReenterPassword')" fieldName="ask_password" fieldId="ask_password" fieldValue="1" fieldRequired="true" :checked="$note->ask_password == 1" />
                     </div>
 
                 </div>
@@ -111,21 +102,22 @@
 
 
             const url = "{{ route('vendor-notes.update', $note->id) }}";
-
-            $.easyAjax({
-                url: url,
-                container: '#save-client-note-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#save-client-note-form",
-                data: $('#save-client-note-data-form').serialize(),
-                success: function(response) {
+            const $btn = $('#save-client-note-form');
+            $btn.prop('disabled', true);
+            $.easyBlockUI('#save-client-note-data-form');
+            window.apiHttp.postUrlEncoded(url, $('#save-client-note-data-form').serialize())
+                .then(function(response) {
                     if (response.status == 'success') {
                         window.location.href = response.redirectUrl;
                     }
-                }
-            })
+                })
+                .catch(function(err) {
+                    $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $btn.prop('disabled', false);
+                    $.easyUnblockUI('#save-client-note-data-form');
+                });
         });
 
         $('.custom-control-input').click(function() {

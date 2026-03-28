@@ -44,8 +44,12 @@ use App\Traits\EmployeeActivityTrait;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\DB;
 use Modules\Purchase\Entities\PurchaseProduct;
 use Modules\Purchase\Entities\PurchaseStockAdjustment;
+use Modules\Warehouse\Services\InvoiceWarehouseStockService;
+use Stripe\Customer;
+use Stripe\PaymentIntent;
 use Stripe\Stripe;
 
 class InvoiceController extends AccountBaseController
@@ -205,7 +209,16 @@ class InvoiceController extends AccountBaseController
         $stockAdjustment = [];
         $userId = UserService::getUserId();
 
-        if ((module_enabled('Purchase') && in_array('purchase', user_modules()) && $request->do_it_later == 'direct')) {
+        $whStockSvc = app(InvoiceWarehouseStockService::class);
+        if ($request->do_it_later == 'direct' && $whStockSvc->isEnabled()) {
+            if (! $whStockSvc->validateRequestHasResolvableWarehouse($request)) {
+                return Reply::error(__('warehouse::app.err_no_warehouse_for_invoice'));
+            }
+            $check = $whStockSvc->validateRequestLinesAgainstWarehouse($request);
+            if (! empty($check)) {
+                return Reply::dataOnly(['status' => 'error', 'data' => $check, 'showValue' => true, 'title' => $this->pageTitle]);
+            }
+        } elseif ((module_enabled('Purchase') && in_array('purchase', user_modules()) && $request->do_it_later == 'direct')) {
             if (is_array($product)) {
 
                 $serviceProductIds = Product::whereIn('id', $product)->where('type', 'service')->pluck('id')->toArray();
@@ -220,27 +233,27 @@ class InvoiceController extends AccountBaseController
                         $stockAdjustment[$productId] += $quantity[$key];
                     }
                 }
-            }
 
-            $check = [];
-            $invoiceItems = InvoiceItems::whereHas('invoice', function ($invoiceQuery) {
-                $invoiceQuery->where('status', 'unpaid');
-            })->get();
+                $check = [];
+                $invoiceItems = InvoiceItems::whereHas('invoice', function ($invoiceQuery) {
+                    $invoiceQuery->where('status', 'unpaid');
+                })->get();
 
-            foreach ($stockAdjustment as $index => $quantityCount) {
-                $commitedStock = $invoiceItems->filter(function ($value, $key) use ($index) {
-                    return $value->product_id == $index;
-                })->sum('quantity');
+                foreach ($stockAdjustment as $index => $quantityCount) {
+                    $commitedStock = $invoiceItems->filter(function ($value, $key) use ($index) {
+                        return $value->product_id == $index;
+                    })->sum('quantity');
 
-                $quantity = PurchaseStockAdjustment::where('product_id', $index)->sum('net_quantity');
+                    $quantity = PurchaseStockAdjustment::where('product_id', $index)->sum('net_quantity');
 
-                if (($quantity - $commitedStock) < $quantityCount) {
-                    $check[] = $index;
+                    if (($quantity - $commitedStock) < $quantityCount) {
+                        $check[] = $index;
+                    }
                 }
-            }
 
-            if (! empty($check)) {
-                return Reply::dataOnly(['status' => 'error', 'data' => $check, 'showValue' => true, 'title' => $this->pageTitle]);
+                if (! empty($check)) {
+                    return Reply::dataOnly(['status' => 'error', 'data' => $check, 'showValue' => true, 'title' => $this->pageTitle]);
+                }
             }
         }
 
@@ -309,7 +322,13 @@ class InvoiceController extends AccountBaseController
         $invoice->bank_account_id = $request->bank_account_id;
         $invoice->payment_status = $request->payment_status == null ? '0' : $request->payment_status;
         $invoice->invoice_payment_id = $request->invoice_payment_id;
-        $invoice->save();
+        if ($whStockSvc->isEnabled()) {
+            DB::transaction(function () use ($invoice) {
+                $invoice->save();
+            });
+        } else {
+            $invoice->save();
+        }
 
         // To add custom fields data
 
@@ -746,7 +765,16 @@ class InvoiceController extends AccountBaseController
         $amount = $request->amount;
         $userId = UserService::getUserId();
 
-        if (module_enabled('Purchase') && in_array('purchase', user_modules()) && $request->do_it_later == 'direct') {
+        $whStockSvc = app(InvoiceWarehouseStockService::class);
+        if ($request->do_it_later == 'direct' && $whStockSvc->isEnabled()) {
+            if (! $whStockSvc->validateRequestHasResolvableWarehouse($request)) {
+                return Reply::error(__('warehouse::app.err_no_warehouse_for_invoice'));
+            }
+            $check = $whStockSvc->validateRequestLinesAgainstWarehouse($request, (int) $id);
+            if (! empty($check)) {
+                return Reply::dataOnly(['status' => 'error', 'data' => $check, 'showValue' => true, 'title' => $this->pageTitle]);
+            }
+        } elseif (module_enabled('Purchase') && in_array('purchase', user_modules()) && $request->do_it_later == 'direct') {
             $stockAdjustment = [];
 
             if (is_array($product)) {
@@ -777,7 +805,7 @@ class InvoiceController extends AccountBaseController
 
                 $qty = PurchaseStockAdjustment::where('product_id', $index)->sum('net_quantity');
                 $productQuantity = InvoiceItems::select('quantity')->where('invoice_id', $id)->first();
-                $productQty = $productQuantity->quantity;
+                $productQty = $productQuantity ? $productQuantity->quantity : 0;
                 $remainingStock = $commitedStock - $productQty;
 
                 if (($remainingStock + $quantityCount) > $qty) {
@@ -785,7 +813,7 @@ class InvoiceController extends AccountBaseController
                 }
             }
 
-            if (! empty($check && $productId)) {
+            if (! empty($check)) {
                 return Reply::dataOnly(['status' => 'error', 'data' => $check, 'showValue' => true, 'title' => $this->pageTitle]);
             }
         }
@@ -844,7 +872,13 @@ class InvoiceController extends AccountBaseController
         $invoice->bank_account_id = $request->bank_account_id;
         $invoice->payment_status = $request->payment_status == null ? '0' : $request->payment_status;
         $invoice->invoice_payment_id = $request->invoice_payment_id;
-        $invoice->save();
+        if ($whStockSvc->isEnabled()) {
+            DB::transaction(function () use ($invoice) {
+                $invoice->save();
+            });
+        } else {
+            $invoice->save();
+        }
 
         // To add custom fields data
         if ($request->custom_fields_data) {
@@ -1221,7 +1255,7 @@ class InvoiceController extends AccountBaseController
 
             $totalAmount = $this->invoice->amountDue();
 
-            $customer = \Stripe\Customer::create([
+            $customer = Customer::create([
                 'email' => $client->email,
                 'name' => $request->clientName,
                 'address' => [
@@ -1232,7 +1266,7 @@ class InvoiceController extends AccountBaseController
                 ],
             ]);
 
-            $intent = \Stripe\PaymentIntent::create([
+            $intent = PaymentIntent::create([
                 'amount' => $totalAmount * 100,
                 'currency' => $this->invoice->currency->currency_code,
                 'customer' => $customer->id,

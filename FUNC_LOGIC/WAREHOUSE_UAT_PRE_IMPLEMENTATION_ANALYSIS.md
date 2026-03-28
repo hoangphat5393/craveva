@@ -1,6 +1,6 @@
 # Phân tích trước triển khai — UAT Report (Miaolin) × Codebase
 
-**Ngày cập nhật:** 2026-03-27  
+**Ngày cập nhật:** 2026-03-28  
 **Mục đích:** Làm rõ điều kiện tiên quyết, phạm vi ảnh hưởng, rủi ro và quyết định nghiệp vụ **trước khi** code theo các hạng mục UAT / gap report.
 
 **Tham chiếu:**
@@ -15,11 +15,11 @@
 
 ## 1) Tóm tắt điều hành (Executive summary)
 
-| Khía cạnh                               | Kết luận                                                                                                                                                                       |
-| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **UAT report có đúng không?**           | **Đúng** ở các mức Critical/High/Medium/Low đã đối chiếu code (xem mục 3).                                                                                                     |
-| **Có “đủ” để bắt tay code ngay không?** | **Chưa** — thiếu **quyết định nghiệp vụ** (trigger outbound, chọn kho, ma trận reversal) và cần **đánh giá blast radius** với `PurchaseStockAdjustment` + `InvoiceController`. |
-| **Khuyến nghị**                         | **Sprint 0 (design lock)** bắt buộc; sau đó mới triển khai theo `WAREHOUSE_MIAOLIN_IMPLEMENTATION_PLAN.md`.                                                                    |
+| Khía cạnh                               | Kết luận                                                                                                                                                                            |
+| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **UAT report có đúng không?**           | **Đúng** ở các mức Critical/High/Medium/Low đã đối chiếu code (xem mục 3).                                                                                                          |
+| **Có “đủ” để bắt tay code ngay không?** | **Đã có code Scope B v1** (2026-03) — xem `WAREHOUSE_SCOPE_B_IMPLEMENTATION_LOG.md`. **Vẫn cần** xác nhận PM cho trigger/kho nếu khác mặc định kỹ thuật + **UAT staging** trước Go. |
+| **Khuyến nghị**                         | Triển khai staging + UAT theo checklist; cập nhật Go/No-Go khi có bằng chứng.                                                                                                       |
 
 ---
 

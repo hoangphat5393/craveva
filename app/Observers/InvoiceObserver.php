@@ -25,6 +25,7 @@ use App\Traits\UnitTypeSaveTrait;
 use Carbon\Carbon;
 use Exception;
 use Google_Service_Calendar_Event;
+use Modules\Warehouse\Services\InvoiceWarehouseStockService;
 
 class InvoiceObserver
 {
@@ -146,7 +147,6 @@ class InvoiceObserver
                                 'external_link' => isset($invoice_item_image[$key]) ? null : (isset($invoice_item_image_url[$key]) ? $invoice_item_image_url[$key] : null),
                             ]
                         );
-
                     }
 
                     $image = true;
@@ -166,7 +166,6 @@ class InvoiceObserver
 
                         $this->duplicateImageStore($estimateOldImg, $invoiceItem, true);
                     }
-
                 }
             }
 
@@ -230,6 +229,10 @@ class InvoiceObserver
             $clientPayment->paid_on = now();
             $clientPayment->save();
         }
+
+        if (! isSeedingData()) {
+            app(InvoiceWarehouseStockService::class)->syncInvoiceStock($invoice->fresh(['items', 'clientdetails']));
+        }
     }
 
     public function updating(Invoice $invoice)
@@ -247,9 +250,7 @@ class InvoiceObserver
             if ($invoice && ! is_null($invoice->due_date)) {
                 $invoice->event_id = $this->googleCalendarEvent($invoice);
             }
-
         }
-
     }
 
     public function updated(Invoice $invoice)
@@ -350,7 +351,6 @@ class InvoiceObserver
             if ($notifyUser && request()->type != 'mark_as_send') {
                 event(new InvoiceUpdatedEvent($invoice, $notifyUser));
             }
-
         }
 
         $paymentStatus = request()->payment_status;
@@ -395,10 +395,17 @@ class InvoiceObserver
             }
         }
 
+        if (! isSeedingData()) {
+            app(InvoiceWarehouseStockService::class)->syncInvoiceStock($invoice->fresh(['items', 'clientdetails']));
+        }
     }
 
     public function deleting(Invoice $invoice)
     {
+        if (! isSeedingData()) {
+            app(InvoiceWarehouseStockService::class)->reverseAllPostings($invoice);
+        }
+
         $universalSearches = UniversalSearch::where('searchable_id', $invoice->id)->where('module_type', 'invoice')->get();
 
         if ($universalSearches) {
@@ -455,7 +462,6 @@ class InvoiceObserver
     {
         if (user()) {
             self::createEmployeeActivity(user()->id, 'invoice-deleted');
-
         }
     }
 
@@ -533,7 +539,6 @@ class InvoiceObserver
                     }
                 }
             }
-
         }
 
         return $event->event_id;
@@ -552,7 +557,6 @@ class InvoiceObserver
 
             if (! $proposal) {
                 Files::copy(EstimateItemImage::FILE_PATH.'/'.$estimateOldImg->item->id.'/'.$estimateOldImg->hashname, InvoiceItemImage::FILE_PATH.'/'.$invoiceItem->id.'/'.$fileName);
-
             } else {
                 Files::copy(ProposalItemImage::FILE_PATH.'/'.$estimateOldImg->item->id.'/'.$estimateOldImg->hashname, InvoiceItemImage::FILE_PATH.'/'.$invoiceItem->id.'/'.$fileName);
             }
@@ -561,7 +565,6 @@ class InvoiceObserver
             $file->hashname = $fileName;
             $file->size = $estimateOldImg->size;
             $file->save();
-
         }
     }
 }

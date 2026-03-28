@@ -24,8 +24,8 @@
 | Warehouse master, stock adjustment, transfer, movements UI | Exercise flows & data integrity                                   | **In scope** for Scope A; keep testing against checklist.                                                   |
 | Inbound from purchase (PO delivered **or** DO received)    | Exactly **one** canonical inbound path per environment            | **Config + process**; risk if **both** flags are enabled in production.                                     |
 | Purchase Inventory absolute sync                           | Delta posts movements to match target qty                         | **Implemented** in Purchase + `StockMovementService` path (verify on staging).                              |
-| **Sales outbound** (invoice/order/payment)                 | **Critical gap** in checklist: must reduce warehouse stock        | **Not implemented** as end-to-end warehouse outbound from sales; requires Scope B work.                     |
-| Legacy payment stock adjustment                            | Checklist flags risk: `PurchaseStockAdjustment` without warehouse | **Exists** in code; needs **decision** when we move to Scope B (disable / replace / feature-flag).          |
+| **Sales outbound** (invoice/order/payment)                 | **Critical gap** in checklist: must reduce warehouse stock        | **Scope B v1 implemented** — `InvoiceWarehouseStockService` + flag `WAREHOUSE_SALES_OUTBOUND_ENABLED`; **staging UAT** still required before sign-off. |
+| Legacy payment stock adjustment                            | Checklist flags risk: `PurchaseStockAdjustment` without warehouse | **When outbound flag ON:** `PaymentObserver` skips legacy adjustment; legacy path remains when flag OFF.    |
 | Batch/expiry on manual stock UI                            | Medium gap                                                        | Service supports FEFO; **UI** may not capture batch/expiry on all forms — clarify if mandatory for Miaolin. |
 
 ---

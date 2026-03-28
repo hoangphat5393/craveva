@@ -12,6 +12,7 @@ return [
     'editTitle' => '编辑仓库',
     'product' => '产品',
     'warehouse' => '仓库',
+    'err_no_warehouse_for_invoice' => '无法解析此发票的仓库（请设置客户默认仓库或公司默认仓库）。',
     'quantity' => '数量',
     'addStock' => '添加库存',
     'removeStock' => '减少库存',

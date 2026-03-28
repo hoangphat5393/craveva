@@ -1,6 +1,6 @@
 # Warehouse UAT Go/No-Go Sheet (Miaolin)
 
-Ngay cap nhat: 2026-03-27
+Ngay cap nhat: 2026-03-28
 Nguoi tong hop: AI Assistant
 
 ---
@@ -18,12 +18,12 @@ Chi tiet bang tieng Anh: `WAREHOUSE_PM_ENG_ALIGNMENT_BRIEF.md` §6. Bang tieng V
 ## 1) Trang thai tong quan
 
 - [ ] Go
-- [x] No-Go (hien tai)
+- [x] No-Go (hien tai — **cho bang chung UAT staging sau khi deploy code Scope B**)
 
 Ly do No-Go hien tai:
 
-- Chua co luong outbound kho tu sales theo `StockMovementService`.
-- Con logic tru/cong ton legacy theo `PurchaseStockAdjustment` khong co warehouse context trong payment flow.
+- **Code:** Da co luong outbound/reversal/flag (xem `FUNC_LOGIC/WAREHOUSE_SCOPE_B_IMPLEMENTATION_LOG.md`). **Chua** co ket qua UAT checklist + bằng chứng movement/staging.
+- **Quy trinh:** Can xac nhan tren staging voi `WAREHOUSE_SALES_OUTBOUND_ENABLED=true`, migration, va khong bat ca hai inbound PO+DO neu khong co y do.
 
 ---
 
@@ -53,13 +53,13 @@ Ly do No-Go hien tai:
 
 ## 4) Bang dieu kien Go/No-Go
 
-| Dieu kien                                                              | Owner          | Trang thai | Bang chung                         |
-| ---------------------------------------------------------------------- | -------------- | ---------- | ---------------------------------- |
-| Chon va khoa 1 inbound canonical flow (PO/DO) tren prod                | PM + Tech Lead | [ ]        | `.env` + smoke test                |
-| Sales outbound duoc ghi qua `StockMovementService` tai trigger da chon | Dev            | [ ]        | movement rows + stock tru dung kho |
-| Reversal flow (cancel/return/refund) tra ton dung                      | Dev            | [ ]        | movement nguoc + stock sync        |
-| PaymentObserver khong con mutate legacy stock khong warehouse          | Dev            | [ ]        | code diff + regression test        |
-| UAT checklist pass >= 95% va khong con blocker                         | QA/UAT         | [ ]        | UAT evidence sheet                 |
+| Dieu kien                                                              | Owner          | Trang thai             | Bang chung                           |
+| ---------------------------------------------------------------------- | -------------- | ---------------------- | ------------------------------------ |
+| Chon va khoa 1 inbound canonical flow (PO/DO) tren prod                | PM + Tech Lead | [ ]                    | `.env` + smoke test                  |
+| Sales outbound duoc ghi qua `StockMovementService` tai trigger da chon | Dev            | [x] code               | **Staging:** movement rows + ton kho |
+| Reversal flow (cancel/return/refund) tra ton dung                      | Dev            | [x] code (v1)          | **Staging:** xoa/update invoice      |
+| PaymentObserver khong con mutate legacy stock khong warehouse          | Dev            | [x] code (khi flag ON) | unit test + code review              |
+| UAT checklist pass >= 95% va khong con blocker                         | QA/UAT         | [ ]                    | UAT evidence sheet                   |
 
 ---
 

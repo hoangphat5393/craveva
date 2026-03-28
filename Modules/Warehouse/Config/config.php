@@ -13,4 +13,10 @@ return [
      * Default false — enable when using DO as canonical GRN.
      */
     'inbound_from_delivery_order_received' => env('WAREHOUSE_INBOUND_FROM_DO_RECEIVED', false),
+
+    /**
+     * When true, finalized (non-draft) invoices post outbound stock via StockMovementService
+     * and legacy PaymentObserver PurchaseStockAdjustment mutations are skipped.
+     */
+    'sales_outbound_enabled' => env('WAREHOUSE_SALES_OUTBOUND_ENABLED', false),
 ];

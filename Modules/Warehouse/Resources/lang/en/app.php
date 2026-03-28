@@ -9,6 +9,7 @@ return [
     'err_module_not_warehouse' => 'Err Module Not Warehouse',
     'err_permission_denied' => 'Err Permission Denied',
     'err_company_context_missing' => 'Err Company Context Missing',
+    'err_no_warehouse_for_invoice' => 'No warehouse could be resolved for this invoice (set a client default warehouse or a company default warehouse).',
     'createTitle' => 'Create Title',
     'warehouse' => 'Warehouse',
     'success_warehouse_updated' => 'Success Warehouse Updated',

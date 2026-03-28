@@ -1,7 +1,9 @@
 # Warehouse x Miaolin - Implementation Plan (Sprint-Based)
 
-Ngay cap nhat: 2026-03-27
+Ngay cap nhat: 2026-03-28
 Muc tieu: dong cac gap critical/high de dat sign-off UAT cho Miaolin inventory-aware sales.
+
+**Tien do code Scope B (v1):** da co trong repo — nhat ky `WAREHOUSE_SCOPE_B_IMPLEMENTATION_LOG.md`. **Viec tiep theo:** UAT staging + xac nhan PM + Go/No-Go.
 
 ---
 
@@ -23,7 +25,7 @@ Chi tiet bang tieng Anh gui PM: `WAREHOUSE_PM_ENG_ALIGNMENT_BRIEF.md` (muc 6).
 
 ## 1) Executive summary
 
-- Trang thai hien tai: Warehouse core da on dinh hon (validation/guard/error handling), nhung Miaolin con blocker o sales outbound.
+- Trang thai hien tai: Warehouse core da on dinh hon; **sales outbound v1 da code** — **blocker con lai** la UAT staging + xac nhan nghiep vu + bang chung movement.
 - Muc tieu release:
     - Phase 1 (Go cho Warehouse core): tiep tuc UAT va deploy hardening da xong.
     - Phase 2 (Go cho Miaolin inventory-aware sales): bo sung sales outbound + reversal + bo xung guard config.

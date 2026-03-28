@@ -32,6 +32,10 @@ class PaymentObserver
 
     public function adjustStock($invoice, $addOrMinus)
     {
+        if (config('warehouse.sales_outbound_enabled')) {
+            return;
+        }
+
         foreach ($invoice->items as $item) {
             if ($stock = PurchaseStockAdjustment::where('product_id', $item->product_id)->first()) {
                 $stock->net_quantity += ($addOrMinus == 'add') ? $item->quantity : -$item->quantity;

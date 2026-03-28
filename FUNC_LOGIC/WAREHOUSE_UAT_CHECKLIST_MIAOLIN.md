@@ -1,5 +1,7 @@
 # Warehouse Module — UAT Checklist & Gap Report (Miaolin)
 
+**Tài liệu đồng bộ:** Luồng nghiệp vụ (tiếng Việt) → [`WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md`](WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md) · Mục lục → [`WAREHOUSE_INDEX.md`](WAREHOUSE_INDEX.md) · Trạng thái triển khai → [`WAREHOUSE_TOM_TAT_NOI_BO.md`](WAREHOUSE_TOM_TAT_NOI_BO.md).
+
 ## Tab Title (Google Doc)
 
 `Warehouse Module — UAT Checklist & Gap Report (Miaolin)`
@@ -183,7 +185,8 @@
 
 ### Critical (Release Blockers for Miaolin “Inventory-Aware Sales”)
 
-- Missing: sales outbound integration (Order/Invoice/Payment completion does not reduce warehouse stock via StockMovementService)
+- **Update (2026-03):** Sales outbound **v1** exists when `WAREHOUSE_SALES_OUTBOUND_ENABLED=true` (invoice sync via `StockMovementService`). **Still verify on staging** (movements, stock, idempotency, reversals).
+- ~~Missing: sales outbound integration~~ — _Previously:_ Order/Invoice/Payment did not reduce warehouse stock via StockMovementService
     - Impact:
         - warehouse quantities do not decrement on sales
         - cannot reliably enforce “cannot sell if insufficient stock”
@@ -204,15 +207,14 @@
 
 - Legacy behavior: payment observer adjusts PurchaseStockAdjustment without warehouse context
     - Impact: desync with warehouse movement ledger and multi-warehouse accuracy
-    - Fix: remove stock mutation from payment events or replace with movement-based logic tied to fulfillment (not payment)
+    - Fix (partial, 2026-03): when `WAREHOUSE_SALES_OUTBOUND_ENABLED=true`, `PaymentObserver` **skips** that legacy adjustment — still audit any other `PurchaseStockAdjustment` usages in reporting.
 
 ### Medium
 
 - UI gap: batch/expiry input not captured in stock adjustment/transfer UI (service supports expiry-driven FEFO)
     - Impact: FEFO benefit limited unless batch/expiry data is imported/managed elsewhere
 
-- Optional: manual ordering requires `warehouses.sort_order` column if UI needs drag-to-reorder
-    - Impact: ordering feature cannot persist without column + UI wiring
+- ~~Optional: drag-to-reorder warehouses (`sort_order`)~~ — **tạm không làm** trong phase UAT này.
 
 ### Low / Nice-to-have
 

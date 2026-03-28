@@ -1,6 +1,10 @@
 # Warehouse Master Guide
 
-Tai lieu tong hop duy nhat cho pham vi Warehouse, thay cho cac file:
+**Doc hub (2026-03):** Nghiệp vụ & luồng → [`WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md`](WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md) · Trạng thái PM/QA → [`WAREHOUSE_TOM_TAT_NOI_BO.md`](WAREHOUSE_TOM_TAT_NOI_BO.md) · Mục lục → [`WAREHOUSE_INDEX.md`](WAREHOUSE_INDEX.md).
+
+---
+
+Tai lieu ky thuat tong hop cho pham vi Warehouse, thay cho cac file:
 
 - `WAREHOUSE_ANALYSIS_AND_PLAN.md`
 - `WAREHOUSE_CUSTOM_FIELDS_RATIONALIZATION.md`
@@ -27,7 +31,7 @@ Master data (Product, Client, Vendor)
         v
    Warehouse master
         |
-   PO / DO / Inventory / Transfer
+   PO / DO / Inventory / Transfer`
         |
         v
    StockMovementService
@@ -156,7 +160,7 @@ Da xu ly:
 Con theo doi:
 
 - Bo test tu dong (feature/integration) cho stock flows.
-- Rasoat toan bo luong Payment/Invoice neu can chuan da kho sau.
+- Scope B (invoice outbound) da trien khai v1 — xem `WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md` va `WAREHOUSE_TOM_TAT_NOI_BO.md`; van can UAT staging va co the mo rong trigger/kho theo PM.
 
 ---
 

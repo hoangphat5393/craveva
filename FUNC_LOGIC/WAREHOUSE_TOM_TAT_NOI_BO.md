@@ -1,8 +1,9 @@
 # Warehouse — Tóm tắt nội bộ (PM / QA / Dev)
 
 **Cập nhật:** 2026-03-28  
-**Luồng nghiệp vụ (đọc trước):** [`WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md`](WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md)  
-**Checklist UAT đầy đủ:** [`WAREHOUSE_UAT_CHECKLIST_MIAOLIN.md`](WAREHOUSE_UAT_CHECKLIST_MIAOLIN.md)  
+**Quy trình tổng (PO / DO / SO / Invoice / Kho):** [`QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md`](QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md)  
+**Luồng chỉ module kho:** [`WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md`](WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md)  
+**Checklist UAT:** [`WAREHOUSE_UAT_CHECKLIST_MIAOLIN.md`](WAREHOUSE_UAT_CHECKLIST_MIAOLIN.md)  
 **Mục lục:** [`WAREHOUSE_INDEX.md`](WAREHOUSE_INDEX.md)
 
 File này **gộp** nội dung từ: nhật ký Scope B, prompt Cursor, Go/No-Go sheet, kế hoạch Miaolin, alignment PM (EN), phân tích pre-UAT, gap verification — để **chỉ còn một chỗ** tra trạng thái và quyết định.
@@ -102,7 +103,7 @@ File này **gộp** nội dung từ: nhật ký Scope B, prompt Cursor, Go/No-Go
 
 ## 8) Việc còn lại (checklist nội bộ)
 
-- [ ] **Trước nâng cấp kho:** audit baseline Product / Client / PO / DO / Purchase Inventory / Order / Invoice / Payment — [`WAREHOUSE_PRE_UPGRADE_DEPENDENCY_AUDIT_CHECKLIST.md`](WAREHOUSE_PRE_UPGRADE_DEPENDENCY_AUDIT_CHECKLIST.md) (**local** trước push; staging sau `git pull`).
+- [ ] **Trước nâng cấp kho:** audit baseline — **§10** dưới đây (**local** trước push; staging sau `git pull`).
 - [ ] Staging: migrate + bật flag có kiểm soát.
 - [ ] Chạy [`WAREHOUSE_UAT_CHECKLIST_MIAOLIN.md`](WAREHOUSE_UAT_CHECKLIST_MIAOLIN.md) (đặc biệt mục sales outbound).
 - [ ] Cập nhật bảng Go/No-Go trong file này khi QA có evidence.
@@ -122,4 +123,111 @@ File này **gộp** nội dung từ: nhật ký Scope B, prompt Cursor, Go/No-Go
 
 ---
 
-_Tài liệu gộp thay thế: `WAREHOUSE_SCOPE_B__`, `WAREHOUSE*UAT_GO_NO_GO_SHEET`, `WAREHOUSE_MIAOLIN_IMPLEMENTATION_PLAN`, `WAREHOUSE_PM_ENG_ALIGNMENT_BRIEF`, `WAREHOUSE_UAT_PRE_IMPLEMENTATION_ANALYSIS`, `WAREHOUSE_PM_GAP_VERIFICATION\*_`, `DINGXIN*\*` (nội dung nghiệp vụ Dingxin nằm trong FLOW).*
+## 10) Audit trước khi triển khai / nâng cấp Warehouse
+
+**Mục đích:** Đảm bảo Product, Client, PO, DO, Inventory, Order, Invoice, Payment **ổn** trước khi bật rộng kho / `WAREHOUSE_SALES_OUTBOUND_ENABLED`. **Phạm vi:** chỉ Craveva (không DigiWin).
+
+**Quy trình:** code chạy ổn **local** (migrate, PHPUnit, smoke) → **push** → staging **pull** → smoke bổ sung.
+
+### 10.1 Tài liệu tham chiếu khi audit
+
+| File                                                                                                                       | Dùng khi                              |
+| -------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
+| [`QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md`](QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md)                                 | Thứ tự nghiệp vụ PO/DO/SO/Invoice/kho |
+| [`SALES_PURCHASE_FLOW.md`](SALES_PURCHASE_FLOW.md)                                                                         | Observer, bảng DB, Scope B            |
+| [`FLOW_ADD_PRODUCT.md`](FLOW_ADD_PRODUCT.md) / [`FLOW_ADD_INVENTORY.md`](FLOW_ADD_INVENTORY.md)                            | Product / Purchase Inventory          |
+| [`multi_warehouse_audit_report.md`](multi_warehouse_audit_report.md)                                                       | Rủi ro legacy (đọc kèm note Scope B)  |
+| [`WAREHOUSE_MASTER_GUIDE.md`](WAREHOUSE_MASTER_GUIDE.md)                                                                   | URL, permission                       |
+| [`WAREHOUSE_UAT_CHECKLIST_MIAOLIN.md`](WAREHOUSE_UAT_CHECKLIST_MIAOLIN.md)                                                 | UAT sau audit                         |
+| [`SCHEMATIC_LAYER_USERS_CLIENT_DETAILS_1_1_REASON_AND_FIX.md`](SCHEMATIC_LAYER_USERS_CLIENT_DETAILS_1_1_REASON_AND_FIX.md) | Client + `default_warehouse_id`       |
+
+### 10.2 Checklist baseline (A–J)
+
+**Quy ước:** `[ ]` chưa kiểm — `[x]` pass — **FAIL** ghi mô tả. **N/A** nếu tenant không dùng luồng.
+
+**A. Môi trường:** branch/commit; module Warehouse trạng thái; ghi `.env` inbound (chỉ **một** PO **hoặc** DO chuẩn); `WAREHOUSE_ALLOW_NEGATIVE_STOCK`.
+
+**B. Product:** tạo/import SKU; hàng hóa vs service; custom field không vỡ form.
+
+**C. Client:** lưu OK; `default_warehouse_id` đúng company; import designated warehouse nếu có.
+
+**D. PO:** có `warehouse_id` + `product_id`; `delivered` → inbound khi cờ PO bật; không nhập đôi cùng lô.
+
+**E. DO inbound:** N/A hoặc `received` + cờ DO; không bật đôi inbound với PO cho cùng lần nhận.
+
+**F. Purchase Inventory:** phiếu + import tồn — delta movement đúng.
+
+**G. Order (SO):** tạo/chuyển trạng thái OK; nhớ 1 SO → tối đa 1 Invoice gắn `order_id`.
+
+**H. Invoice & Payment:** trước bật Scope B — lưu/xóa/draft không lỗi; sau bật flag — outbound, sửa, xóa, `PaymentObserver` không legacy lệch.
+
+**I. Warehouse smoke:** 2 kho, default; điều chỉnh ±; chuyển kho; movement filter; xóa kho có tồn bị chặn.
+
+**J. Hồi quy:** multi-company; quyền; log không spike lỗi.
+
+### 10.3 Thứ tự khuyến nghị
+
+1. Local: `migrate`, PHPUnit warehouse/invoice, checklist **A→J**.
+2. Push → staging pull → smoke.
+3. Bật Scope B → lặp **H** (outbound) + **I**.
+4. [`WAREHOUSE_UAT_CHECKLIST_MIAOLIN.md`](WAREHOUSE_UAT_CHECKLIST_MIAOLIN.md) sign-off.
+5. Prompt dev (nếu còn gap): **§11** dưới đây.
+
+### 10.4 Sign-off audit
+
+| Vai trò    | Tên | Ngày | Ghi chú |
+| ---------- | --- | ---- | ------- |
+| QA / Owner |     |      |         |
+| Tech       |     |      |         |
+
+---
+
+## 11) Cursor prompt UAT + gap + PM “đa kho cơ bản”
+
+**Trước prompt:** hoàn thành **§10** (ưu tiên local).
+
+**Nguồn đọc:** `WAREHOUSE_UAT_CHECKLIST_MIAOLIN.md`, `WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md`, `WAREHOUSE_MASTER_GUIDE.md`, file này §1–9.
+
+### 11.1 Prompt dán vào Cursor Agent
+
+```
+You are working in the Craveva Laravel repo (Modules/Warehouse + Purchase + Invoice observers).
+
+GOAL
+Close gaps so the Warehouse module passes internal UAT in FUNC_LOGIC/WAREHOUSE_UAT_CHECKLIST_MIAOLIN.md sections A–I, WITHOUT DigiWin/external ERP integration.
+
+SCOPE
+- In scope: warehouse master CRUD, bulk, Excel import, stock adjustment, transfer, movements ledger, PO-delivered OR DO-received inbound (single canonical), Purchase Inventory sync, permissions, validation, UX smoke, Scope B verify/fix only.
+- Out of scope: DigiWin files, morning import from external ERP, Dingxin two-step reserve/outbound parity, new public APIs unless checklist requires.
+
+PROCESS
+1) Read WAREHOUSE_UAT_CHECKLIST_MIAOLIN.md. Per subsection A–I: PASS / GAP / CONFIG-ONLY.
+2) Fix GAP minimally: StockMovementService, DB::transaction, WarehouseBusinessException, existing permissions.
+3) Critical: InvoiceWarehouseStockService + flag — idempotency, reversal, tests/Unit/InvoiceWarehouseStockScopeBTest.php.
+4) High: one inbound path only.
+5) Medium: batch/expiry on adjustment UI if checklist requires.
+6) Low: movement deep links — backlog if not quick.
+7) Run PHPUnit warehouse-related tests.
+
+DELIVERABLES
+- Code + tests; summary table section → PASS/GAP.
+```
+
+### 11.2 Gap so với UAT (tóm tắt)
+
+| Mức        | Nội dung                                                                                            |
+| ---------- | --------------------------------------------------------------------------------------------------- |
+| Bằng chứng | Verify A–I local/staging; Scope B movement + reversal.                                              |
+| Medium     | UI lô/HSD điều chỉnh/chuyển kho có thể hạn chế.                                                     |
+| Low        | Deep link movement; stub API. Không làm sort_order / kéo thả kho.                                   |
+| Cấu hình   | Một inbound; `WAREHOUSE_ALLOW_NEGATIVE_STOCK`; bật `WAREHOUSE_SALES_OUTBOUND_ENABLED` khi test bán. |
+
+### 11.3 PM nói multi warehouse “cơ bản” — UAT thực tế gồm gì?
+
+So với WMS lớn thì “cơ bản” đúng; so với “chỉ nhiều kho” thì UAT đã thêm: import/bulk kho, điều chỉnh ±, chuyển kho, ledger, PO/DO + sync inventory, permission, **bán trừ tồn (Scope B)**.
+
+**Một dòng tới PM:** _Đa kho trong UAT gồm vận hành + mua nhập + sổ cái + phân quyền + nhánh invoice outbound khi bật flag._
+
+---
+
+_Tài liệu đã gộp vào file này: audit trước upgrade và prompt Cursor (tên file cũ đã xóa). PM questionnaire tiếng Anh: phụ lục cuối trong `WAREHOUSE_PM_CAU_HOI_CHOT_NGHIEP_VU_VI.md`._

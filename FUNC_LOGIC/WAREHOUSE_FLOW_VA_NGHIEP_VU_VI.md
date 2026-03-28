@@ -2,6 +2,7 @@
 
 **Cập nhật:** 2026-03-28  
 **Đối tượng:** Người cần hiểu **business logic** (không cần đọc code).  
+**Quy trình tổng PO/DO/SO/Invoice/kho (đọc trước):** [`QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md`](QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md)  
 **Checklist test tay đầy đủ:** [`WAREHOUSE_UAT_CHECKLIST_MIAOLIN.md`](WAREHOUSE_UAT_CHECKLIST_MIAOLIN.md)  
 **Kỹ thuật sâu (DB, URL, permission):** [`WAREHOUSE_MASTER_GUIDE.md`](WAREHOUSE_MASTER_GUIDE.md)
 

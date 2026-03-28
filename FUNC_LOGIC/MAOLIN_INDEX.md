@@ -2,7 +2,7 @@
 
 **Mục đích:** Giảm rối khi trong `FUNC_LOGIC/` có nhiều file MAOLIN/Miaolin. **Bắt đầu từ file này.**
 
-**Quy ước:** Tài liệu **warehouse** (đa kho, Miaolin, Scope B) — **bắt đầu từ** [`WAREHOUSE_INDEX.md`](WAREHOUSE_INDEX.md). Cập nhật nghiệp vụ/flow vào [`WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md`](WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md); cập nhật kỹ thuật/runbook vào [`WAREHOUSE_MASTER_GUIDE.md`](WAREHOUSE_MASTER_GUIDE.md); trạng thái PM/QA vào [`WAREHOUSE_TOM_TAT_NOI_BO.md`](WAREHOUSE_TOM_TAT_NOI_BO.md).
+**Quy ước:** Tài liệu **warehouse** (đa kho, Miaolin, Scope B) — **bắt đầu từ** [`WAREHOUSE_INDEX.md`](WAREHOUSE_INDEX.md). Quy trình tổng **PO / DO / SO / Invoice / kho:** [`QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md`](QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md). Cập nhật nghiệp vụ chỉ module kho vào [`WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md`](WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md); kỹ thuật/runbook vào [`WAREHOUSE_MASTER_GUIDE.md`](WAREHOUSE_MASTER_GUIDE.md); trạng thái PM/QA + audit + prompt UAT vào [`WAREHOUSE_TOM_TAT_NOI_BO.md`](WAREHOUSE_TOM_TAT_NOI_BO.md).
 
 **Trạng thái hệ thống (2026-03):** Chức năng **đa kho (multi-warehouse)** đã có trong codebase: master kho, movement/lô, `default_warehouse_id` khách, cột `warehouse_id` / `batch_number` / ngày trên luồng Purchase Inventory, v.v. Các ghi chú cũ viết _trước_ khi bật đa kho vẫn có giá trị cho **ngữ cảnh** nhưng phải đọc kèm:
 
@@ -18,12 +18,12 @@
 
 ## 1) Nên đọc theo thứ tự này (khi cần đào sâu)
 
-| Thứ tự | File                                                                                     | Khi nào mở                                                                            |
-| ------ | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| **1**  | **[`MAOLIN_MASTER_GUIDE.md`](MAOLIN_MASTER_GUIDE.md)**                                   | Đọc 1 file là đủ: multi-warehouse + mapping + checklist.                              |
-| **2**  | **[`MAOLIN_IMPORT_MAPPING.md`](MAOLIN_IMPORT_MAPPING.md)**                               | Map cột Excel → field import / core DB (vận hành import ngay).                        |
-| **3**  | **[`MAOLIN_IMPORT_READINESS_AND_SEQUENCE.md`](MAOLIN_IMPORT_READINESS_AND_SEQUENCE.md)** | Kiểm tra “đủ/chưa đủ để import” + thứ tự import theo B2B guide.                       |
-| **4**  | **[`PROJECT_MAOLIN_NEW_FILES_ANALYSIS.md`](PROJECT_MAOLIN_NEW_FILES_ANALYSIS.md)**       | Phân tích chi tiết từng sheet/cột file trong `PROJECT MAOLIN New/` (bản đầy đủ nhất). |
+| Thứ tự | File                                                                                                       | Khi nào mở                                                                             |
+| ------ | ---------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| **1**  | **[`MAOLIN_MASTER_GUIDE.md`](MAOLIN_MASTER_GUIDE.md)**                                                     | Đọc 1 file là đủ: multi-warehouse + mapping + checklist.                               |
+| **2**  | **[`MAOLIN_IMPORT_MAPPING.md`](MAOLIN_IMPORT_MAPPING.md)**                                                 | Map cột Excel → field import / core DB (vận hành import ngay).                         |
+| **3**  | **[`MAOLIN_IMPORT_READINESS_AND_SEQUENCE.md`](MAOLIN_IMPORT_READINESS_AND_SEQUENCE.md)**                   | Kiểm tra “đủ/chưa đủ để import” + thứ tự import theo B2B guide.                        |
+| **4**  | **[`PROJECT_MAOLIN_NEW_FILES_ANALYSIS.md`](PROJECT_MAOLIN_NEW_FILES_ANALYSIS.md)**                         | Phân tích chi tiết từng sheet/cột file trong `PROJECT MAOLIN New/` (bản đầy đủ nhất).  |
 | **5**  | **[`MAOLIN_NOTES_YEU_CAU_KHACH_VA_PDF_BAN_HANG_VI.md`](MAOLIN_NOTES_YEU_CAU_KHACH_VA_PDF_BAN_HANG_VI.md)** | Ghi chú tóm tắt: yêu cầu khách (sync file, GAP) + PDF B2B 規劃書 (chức năng bán hàng). |
 
 **Ghi chú:** Các file phân tích chi tiết/legacy/contract đã được **gộp** vào `MAOLIN_MASTER_GUIDE.md` và đã xóa khỏi repo để giảm số lượng file.

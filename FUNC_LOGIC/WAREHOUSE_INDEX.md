@@ -1,41 +1,39 @@
 # Warehouse — Mục lục tài liệu (điểm vào)
 
 **Cập nhật:** 2026-03-28  
-**Mục đích:** Giảm số file rải rác. Bắt đầu từ đây, rồi mở đúng một file theo nhu cầu.
+**Mục đích:** Ít file hơn — bắt đầu từ bảng dưới.
 
 ---
 
-## Đọc theo vai trò
+## Đọc theo nhu cầu
 
-| Bạn là…                                                             | Đọc file                                                                                                         |
-| ------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| **PM / BA / người mới, cần hiểu nghiệp vụ & luồng**                 | **[`WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md`](WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md)**                                     |
-| **Dev / Tech Lead — kiến trúc, DB, permission, runbook**            | **[`WAREHOUSE_MASTER_GUIDE.md`](WAREHOUSE_MASTER_GUIDE.md)**                                                     |
-| **PM / QA / Dev — trạng thái triển khai, gap, Go/No-Go, ước lượng** | **[`WAREHOUSE_TOM_TAT_NOI_BO.md`](WAREHOUSE_TOM_TAT_NOI_BO.md)**                                                 |
-| **Gửi PM để chốt nghiệp vụ (bảng câu hỏi)**                         | **[`WAREHOUSE_PM_CAU_HOI_CHOT_NGHIEP_VU_VI.md`](WAREHOUSE_PM_CAU_HOI_CHOT_NGHIEP_VU_VI.md)**                     |
-| **QA chạy test tay**                                                | **[`WAREHOUSE_UAT_CHECKLIST_MIAOLIN.md`](WAREHOUSE_UAT_CHECKLIST_MIAOLIN.md)**                                   |
-| **Dev / Cursor — prompt hoàn thiện theo UAT (không DigiWin)**       | **[`WAREHOUSE_CURSOR_PROMPT_UAT_COMPLETION.md`](WAREHOUSE_CURSOR_PROMPT_UAT_COMPLETION.md)**                     |
-| **QA — audit Product/PO/DO/Inventory/Invoice _trước_ nâng cấp kho** | **[`WAREHOUSE_PRE_UPGRADE_DEPENDENCY_AUDIT_CHECKLIST.md`](WAREHOUSE_PRE_UPGRADE_DEPENDENCY_AUDIT_CHECKLIST.md)** |
-| **Tham chiếu audit lịch sử**                                        | [`multi_warehouse_audit_report.md`](multi_warehouse_audit_report.md)                                             |
+| Bạn cần…                                                               | File                                                                                           |
+| ---------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| **Quy trình PO / DO / SO / Invoice / Kho (một chỗ)**                   | **[`QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md`](QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md)** |
+| Luồng chi tiết **chỉ module kho** (điều chỉnh, chuyển, ledger…)        | [`WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md`](WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md)                       |
+| Kiến trúc, DB, URL, permission                                         | [`WAREHOUSE_MASTER_GUIDE.md`](WAREHOUSE_MASTER_GUIDE.md)                                       |
+| Trạng thái code, Scope A/B, **audit trước upgrade**, **prompt Cursor** | [`WAREHOUSE_TOM_TAT_NOI_BO.md`](WAREHOUSE_TOM_TAT_NOI_BO.md) §10–11                            |
+| Câu hỏi PM (VI + **EN** cuối file)                                     | [`WAREHOUSE_PM_CAU_HOI_CHOT_NGHIEP_VU_VI.md`](WAREHOUSE_PM_CAU_HOI_CHOT_NGHIEP_VU_VI.md)       |
+| Checklist UAT tay                                                      | [`WAREHOUSE_UAT_CHECKLIST_MIAOLIN.md`](WAREHOUSE_UAT_CHECKLIST_MIAOLIN.md)                     |
+| Luồng code SO/Invoice/PO (English, deep)                               | [`SALES_PURCHASE_FLOW.md`](SALES_PURCHASE_FLOW.md)                                             |
+| Audit đa kho (lịch sử + note Scope B)                                  | [`multi_warehouse_audit_report.md`](multi_warehouse_audit_report.md)                           |
+
+**Link cũ giữ tên:** [`B2B_ERP_PO_DO_INVOICE_GUIDE.md`](B2B_ERP_PO_DO_INVOICE_GUIDE.md) → stub trỏ về **QUY*TRINH*…**.
 
 ---
 
-## Các file đã gộp / không còn dùng tên cũ
+## File đã xóa / gộp (không tìm trong repo)
 
-Nội dung từ các file sau đã được đưa vào **`WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md`** và **`WAREHOUSE_TOM_TAT_NOI_BO.md`** (và phần còn lại là checklist dài):
+Nội dung đã chuyển vào **`WAREHOUSE_TOM_TAT_NOI_BO.md`** (§10–11) hoặc **`WAREHOUSE_PM_CAU_HOI_CHOT_NGHIEP_VU_VI.md`** (bản EN):
 
-- `WAREHOUSE_UAT_NGHIEP_VU_VA_UI_GIAI_THICH.md`
-- `WAREHOUSE_SCOPE_B_IMPLEMENTATION_LOG.md`
-- `WAREHOUSE_SCOPE_B_CURSOR_IMPLEMENTATION_PROMPT.md`
-- `WAREHOUSE_UAT_GO_NO_GO_SHEET.md`
-- `WAREHOUSE_MIAOLIN_IMPLEMENTATION_PLAN.md`
-- `WAREHOUSE_PM_ENG_ALIGNMENT_BRIEF.md`
-- `WAREHOUSE_UAT_PRE_IMPLEMENTATION_ANALYSIS.md`
-- `WAREHOUSE_PM_GAP_VERIFICATION_AND_IMPROVEMENT_OPTIONS.md`
-- `DINGXIN_ORDER_INVOICE_INVENTORY_WORKFLOW_EXPLAINED.md`
+- `WAREHOUSE_PRE_UPGRADE_DEPENDENCY_AUDIT_CHECKLIST.md`
+- `WAREHOUSE_CURSOR_PROMPT_UAT_COMPLETION.md`
+- `WAREHOUSE_PM_BUSINESS_QUESTIONS_EN.md`
+
+Các tên cũ khác (Scope B log, Go-No-Go, Dingxin explained…) đã gộp trước đó — xem danh sách trong commit lịch sử.
 
 ---
 
 ## Liên hệ MAOLIN
 
-Trong [`MAOLIN_INDEX.md`](MAOLIN_INDEX.md), mục tài liệu warehouse trỏ về **`WAREHOUSE_INDEX.md`** này.
+[`MAOLIN_INDEX.md`](MAOLIN_INDEX.md) trỏ warehouse về **`WAREHOUSE_INDEX.md`** này.

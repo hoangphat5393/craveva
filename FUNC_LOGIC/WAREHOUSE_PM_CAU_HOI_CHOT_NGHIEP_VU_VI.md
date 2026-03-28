@@ -143,4 +143,65 @@ Là có **quy ước cột + khóa** (số SO, dòng, SKU, kho, số lượng, s
 
 ---
 
+## Phụ lục — Bản tiếng Anh gửi PM (cùng câu hỏi A–F)
+
+_(Gộp từ `WAREHOUSE_PM_BUSINESS_QUESTIONS_EN.md` — copy email/Slack từ đây.)_
+
+**Purpose:** Engineering needs **clear business decisions** from PM so configuration and testing are correct. Warehouse, sales, and ERP sync are **easy to get wrong**; without alignment we risk **incorrect stock deductions** or **double-counting with another system**.
+
+**How to use:** Copy the tables below to PM (email/Slack), or use a 20-minute working session to fill them in.
+
+### A) System of record (“who owns” the data?)
+
+| #   | Question                                                                                                                                                      | PM response |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| A1  | Where are **sales orders** **primarily created**: Craveva only, another ERP only (e.g. Dingxin), or both?                                                     |             |
+| A2  | Where are **sales invoices** **created and finalized**: Craveva, another ERP, or both?                                                                        |             |
+| A3  | For **authoritative stock** used to decide whether you can sell: which system is the **source of truth** — Craveva or the other ERP?                          |             |
+| A4  | Should Craveva **deduct stock itself** when an invoice is saved **in Craveva**, or only **display stock synced from the other ERP** (which already deducted)? |             |
+
+### B) When to deduct stock (if Craveva still posts movements)
+
+| #   | Question                                                                                                                                    | PM choice / notes |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------- | ----------------- |
+| B1  | Is deducting stock on **invoice save** (non-draft) correct, or must we wait until **paid** / **shipped** / **confirmed after picking**?     |                   |
+| B2  | If we later add a separate **“confirm shipment / outbound”** step (after picking): is it **required** now, or **not needed** in this phase? |                   |
+
+### C) Choosing the shipping warehouse
+
+| #   | Question                                                                                                                                                                                             | PM response |
+| --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| C1  | Is **client default warehouse → company default warehouse** enough for outbound, or not?                                                                                                             |             |
+| C2  | Is **per-line warehouse selection** on one invoice (one order, multiple warehouses) **mandatory**?                                                                                                   |             |
+| C3  | When one warehouse **does not have enough stock**: the standard process is **split into multiple invoices** (as in Dingxin) — must Craveva **mandatorily** support the same on the UI in this phase? |             |
+
+### D) Edits, voids, returns
+
+| #   | Question                                                                                                                                   | PM response |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------ | ----------- |
+| D1  | After an invoice is **finalized** (no longer editable): how do we fix mistakes — **void**, **return note**, or **only in the other ERP**?  |             |
+| D2  | If goods are **already shipped**: only **sales return** applies — should that flow exist **only in the other ERP** or **also in Craveva**? |             |
+
+### E) Sync with the other ERP (if applicable)
+
+| #   | Question                                                                                                                     | PM response |
+| --- | ---------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| E1  | Craveva vs other ERP: **one-way** (Craveva → ERP) or **two-way** (ERP also updates stock back into Craveva)?                 |             |
+| E2  | Desired sync **frequency / trigger**: **real-time**, **batch**, **end of day**? (You may answer “TBD — needs IT / partner”.) |             |
+
+### F) UAT sign-off scope (Miaolin)
+
+| #   | Question                                                                                                                                                               | PM choice                                                         |
+| --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| F1  | For this sign-off: **operational warehouse only** (manual in/out, transfers, purchase receipts, etc.) or **must include** **sales-driven stock deduction in Craveva**? | ☐ Operational warehouse only ☐ Must include sales stock deduction |
+| F2  | Target date for UAT evidence on **staging**?                                                                                                                           |                                                                   |
+
+**Short notes for PM (optional):** Craveva has **v1** stock deduction on invoice save (feature flag). If PM decides Craveva should **not** deduct and only **show synced stock**, engineering will align — **we cannot guess**. If **both** systems deduct the **same** movement without a rule → **negative or inconsistent stock**.
+
+**Prepared by:** … **Date:** …
+
+_Bản alignment Dingxin / appendix chi tiết tiếng Anh dài: đối chiếu **Phụ lục b–c** phía trên (tiếng Việt); nội dung EN đầy đủ từng bảng mapping có trong lịch sử git trước khi gộp file._
+
+---
+
 _Cập nhật phụ lục khi Miaolin chốt void vs return (D1), spec file/sync đầy đủ (E), và khi chốt master tồn / tránh double-count Dingxin ↔ Craveva (A3 + Phụ lục c)._

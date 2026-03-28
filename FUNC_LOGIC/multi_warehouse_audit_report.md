@@ -5,7 +5,7 @@
 **Phiên bản tài liệu:** 1.0
 
 > **Cập nhật sau báo cáo:** Đã có **Scope B** — hóa đơn bán có thể gọi `StockMovementService` outbound khi `WAREHOUSE_SALES_OUTBOUND_ENABLED` và module Warehouse bật. Phần mục §2.4 / bảng bước 9–11 coi **Invoice + Payment** là trạng thái **trước Scope B**; chuẩn luồng hiện tại: [`SALES_PURCHASE_FLOW.md`](SALES_PURCHASE_FLOW.md), [`WAREHOUSE_TOM_TAT_NOI_BO.md`](WAREHOUSE_TOM_TAT_NOI_BO.md).  
-> **Trước triển khai nâng cấp kho:** checklist vận hành — [`WAREHOUSE_PRE_UPGRADE_DEPENDENCY_AUDIT_CHECKLIST.md`](WAREHOUSE_PRE_UPGRADE_DEPENDENCY_AUDIT_CHECKLIST.md) (**local trước push**, staging sau `git pull`).
+> **Trước triển khai nâng cấp kho:** checklist vận hành — [`WAREHOUSE_TOM_TAT_NOI_BO.md`](WAREHOUSE_TOM_TAT_NOI_BO.md) §10 (**local trước push**, staging sau `git pull`).
 
 ---
 

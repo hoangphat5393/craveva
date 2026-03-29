@@ -1,0 +1,25 @@
+# systemd unit — copy vào /etc/systemd/system/craveva-queue-all.service
+# sudo cp deploy/systemd/craveva-queue-all.service /etc/systemd/system/
+# sudo systemctl daemon-reload && sudo systemctl enable --now craveva-queue-all
+#
+# Sau deploy code: sudo systemctl restart craveva-queue-all
+# (hoặc: cd app && php artisan queue:restart)
+
+[Unit]
+Description=Craveva Laravel queue worker (import queues + default)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=hoangphat5393
+Group=hoangphat5393
+WorkingDirectory=/var/www/craveva-staging/current/craveva
+Environment=HOME=/home/hoangphat5393
+ExecStart=/usr/bin/php artisan queue:work database --queue=ClientImport,ProductImport,EmployeeImport,ProjectImport,DealImport,LeadImport,ExpenseImport,AttendanceImport,JobApplicationImport,ClientProductPricingImport,PricingTierItemsImport,WarehouseImport,InventoryImport,default --tries=3 --sleep=3
+Restart=always
+RestartSec=10
+TimeoutStopSec=3600
+
+[Install]
+WantedBy=multi-user.target

@@ -65,8 +65,8 @@ class ImportInventoryJob implements ShouldQueue
         $sku = null;
 
         if ($this->isColumnExists('sku')) {
-            $sku = $this->getColumnValue('sku');
-            if (! empty($sku)) {
+            $sku = $this->cleanImportString((string) $this->getColumnValue('sku'));
+            if ($sku !== '') {
                 $product = PurchaseProduct::where('company_id', $this->company->id)
                     ->where('sku', $sku)
                     ->first();
@@ -74,7 +74,7 @@ class ImportInventoryJob implements ShouldQueue
         }
 
         if (! $product && $this->isColumnExists('product_name')) {
-            $productName = $this->getColumnValue('product_name');
+            $productName = $this->cleanImportString((string) $this->getColumnValue('product_name'));
 
             if (! empty($productName)) {
                 $product = PurchaseProduct::where('company_id', $this->company->id)
@@ -228,16 +228,20 @@ class ImportInventoryJob implements ShouldQueue
 
                 if ($type == 'quantity') {
                     // Prioritize Ending Inventory if provided, otherwise fallback to Quantity
-                    if ($this->isColumnExists('ending_inventory') && ! is_null($this->getColumnValue('ending_inventory'))) {
-                        $quantity = $this->getColumnValue('ending_inventory');
+                    if ($this->isColumnExists('ending_inventory') && $this->getColumnValue('ending_inventory') !== null && $this->getColumnValue('ending_inventory') !== '') {
+                        $quantity = $this->parseImportNumber($this->getColumnValue('ending_inventory'));
                     } else {
-                        $quantity = $this->isColumnExists('quantity') ? $this->getColumnValue('quantity') : 0;
+                        $quantity = $this->isColumnExists('quantity')
+                            ? $this->parseImportNumber($this->getColumnValue('quantity'))
+                            : 0.0;
                     }
 
                     $addStock->net_quantity = $quantity;
                     $addStock->quantity_adjustment = $quantity;
                 } else {
-                    $costPrice = $this->isColumnExists('cost_price') ? $this->getColumnValue('cost_price') : 0;
+                    $costPrice = $this->isColumnExists('cost_price')
+                        ? $this->parseImportNumber($this->getColumnValue('cost_price'))
+                        : 0.0;
                     $addStock->changed_value = $costPrice;
                     $addStock->adjusted_value = $costPrice;
                 }
@@ -335,6 +339,44 @@ class ImportInventoryJob implements ShouldQueue
 
             $this->failJob(__('messages.invalidData') . ': Product not found. Row: ');
         }
+    }
+
+    /**
+     * Strip UTF-8 BOM and trim (CSV/Excel exports from external ERPs).
+     */
+    protected function cleanImportString(string $value): string
+    {
+        if ($value === '') {
+            return '';
+        }
+        if (str_starts_with($value, "\xEF\xBB\xBF")) {
+            $value = substr($value, 3);
+        }
+
+        return trim($value);
+    }
+
+    /**
+     * Parse quantities/prices: supports "1,220" and "1 220,50" style thousands separators.
+     */
+    protected function parseImportNumber($value): float
+    {
+        if ($value === null || $value === '') {
+            return 0.0;
+        }
+        if (is_int($value) || is_float($value)) {
+            return (float) $value;
+        }
+        if (is_numeric($value)) {
+            return (float) $value;
+        }
+        $s = str_replace(["\xC2\xA0", ' '], '', (string) $value);
+        $s = str_replace(',', '', $s);
+        if ($s === '' || ! is_numeric($s)) {
+            return 0.0;
+        }
+
+        return (float) $s;
     }
 
     protected function resolveWarehouseId(): ?int

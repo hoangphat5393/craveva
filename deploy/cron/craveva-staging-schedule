@@ -1,0 +1,7 @@
+# Laravel scheduler -> install: sudo cp ... /etc/cron.d/craveva-staging && sudo chmod 644 ...
+#
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+# Deploy user must be able to append storage/logs (e.g. member of www-data).
+* * * * * hoangphat5393 cd /var/www/craveva-staging/current/craveva && /usr/bin/php artisan schedule:run >> /var/www/craveva-staging/current/craveva/storage/logs/scheduler-cron.log 2>&1

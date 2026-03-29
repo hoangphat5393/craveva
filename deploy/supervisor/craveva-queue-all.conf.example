@@ -1,0 +1,21 @@
+; 1) Sửa APP_ROOT và user bên dưới cho đúng server.
+; 2) sudo cp deploy/supervisor/craveva-queue-all.conf.example /etc/supervisor/conf.d/craveva-queue-all.conf
+; 3) sudo supervisorctl reread && sudo supervisorctl update && sudo supervisorctl start craveva-queue-all:*
+;
+; Danh sách queue = ImportController whitelist + default (webhook). Thứ tự: import trước, default sau.
+
+[program:craveva-queue-all]
+process_name=%(program_name)s_%(process_num)02d
+command=php /CHANGE_ME_APP_ROOT/artisan queue:work database --queue=ClientImport,ProductImport,EmployeeImport,ProjectImport,DealImport,LeadImport,ExpenseImport,AttendanceImport,JobApplicationImport,ClientProductPricingImport,PricingTierItemsImport,WarehouseImport,InventoryImport,default --tries=3 --sleep=3 --max-time=3600
+directory=/CHANGE_ME_APP_ROOT
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+user=CHANGE_ME_USER
+numprocs=1
+redirect_stderr=true
+stdout_logfile=/var/log/supervisor/craveva-queue-all.log
+stopwaitsecs=3600
+
+; Nếu backlog queue `default` rất lớn: thêm program thứ hai chỉ --queue=default với numprocs=2.

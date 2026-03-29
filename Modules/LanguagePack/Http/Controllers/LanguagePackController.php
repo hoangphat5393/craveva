@@ -77,7 +77,7 @@ class LanguagePackController extends AccountBaseController
         $modules = \Nwidart\Modules\Facades\Module::all();
 
         foreach ($modules as $moduleName => $module) {
-            $this->publishModuleLanguage($moduleName, $languageCode);
+            $this->publishModuleLanguage($module, $languageCode);
         }
     }
 
@@ -94,15 +94,19 @@ class LanguagePackController extends AccountBaseController
         return $msg;
     }
 
+    /**
+     * @param  \Nwidart\Modules\Laravel\Module  $module
+     */
     private function publishModuleLanguage($module, $languageCode)
     {
-        $path = module_path($module, 'Resources/lang/' . $languageCode);
+        $path = module_path($module->getName(), 'Resources/lang/' . $languageCode);
 
         if (File::isDirectory($path)) {
             File::deleteDirectory($path);
         }
 
-        $sourcePath = languagePackPath($languageCode, $module);
+        // LanguagePack folders use StudlyCase (e.g. Affiliate); Module::all() keys are lowercase.
+        $sourcePath = languagePackPath($languageCode, $module->getStudlyName());
 
         if (File::isDirectory($sourcePath)) {
             File::ensureDirectoryExists($path);

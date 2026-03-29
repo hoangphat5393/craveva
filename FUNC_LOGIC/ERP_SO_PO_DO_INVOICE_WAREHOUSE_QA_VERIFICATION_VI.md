@@ -115,6 +115,18 @@
 - **Xuất kho bán (mặc định code):** mode **`shipment`** → trừ tồn khi **ship** shipment, **không** trừ theo invoice. Mode **`invoice`** → trừ khi invoice (legacy). Trạng thái SO đơn thuần **không** tự trừ tồn.
 - **`WAREHOUSE_SALES_OUTBOUND_ENABLED`** mặc định **true**; vẫn có thể tắt bằng env nếu tenant không dùng outbound tự động.
 - **Nhập kho mua:** PO `delivered` và/hoặc DO inbound `received` — chỉ **một** nguồn trigger cho cùng lần nhận; đã có guard giảm double inbound.
+- **"Bật cờ" là gì?** Là cấu hình trong file **`.env`**:
+    - `WAREHOUSE_INBOUND_FROM_PO_DELIVERED=true|false`
+    - `WAREHOUSE_INBOUND_FROM_DO_RECEIVED=true|false`
+    - Sau khi đổi env cần `php artisan optimize:clear` (và restart worker nếu có queue).
+- **Không bật đồng thời 2 cờ inbound trong production:**  
+  Chọn **1 inbound canonical event** theo tenant để tránh lệch tồn:
+    - **Mode A (legacy):** PO delivered post inbound (`PO=true`, `DO=false`)
+    - **Mode B (ERP chuẩn GRN):** DO received post inbound (`PO=false`, `DO=true`)
+- **Liên quan với outbound mode:**  
+  `WAREHOUSE_SALES_OUTBOUND_MODE=shipment|invoice` chỉ điều phối **xuất kho bán hàng (SO)**, **không** điều khiển inbound PO/DO.
+    - `shipment`: trừ tồn khi Sales Shipment ship
+    - `invoice`: trừ tồn khi invoice finalize (legacy)
 - **Hóa đơn NCC (`PurchaseBill`)** = chứng từ **kế toán AP**, **không** nhập kho — xem mục **L**.
 - **End-to-end staging:** chạy tay và đối chiếu `stock_movements`, `warehouse_product_stocks`, `sales_shipments.outbound_stock_applied`, `invoice_warehouse_stock_postings` (nếu mode invoice), `purchase_orders.delivery_status`.
 
@@ -317,3 +329,76 @@ Repo **chưa** có (hoặc chưa thấy trong `tests/`) các suite kiểu:
 - Module **Inventory** (màn hình tồn, điều chỉnh) nếu tách khác `StockMovementService`.
 
 **Kết luận cho PM/QA:** lần chạy này **không phát hiện regression** trong phạm vi test đã có; **luồng ERP đầy đủ trên UI** vẫn nên chạy theo `FUNC_LOGIC/SALES_SHIPMENT_OPTION_B_UAT_TEST_CASES_VI.md` và checklist PO/DO/inbound trong tài liệu quy trình.
+
+---
+
+## N. Recommended `.env` by tenant (copy/paste nhanh)
+
+> Mục tiêu: chọn **1 inbound canonical event** + **1 outbound canonical event** để tránh double-count.
+
+### 1) Khuyến nghị hiện tại (ERP flow mới)
+
+- Purchase inbound theo DO `received`
+- Sales outbound theo Sales Shipment `shipped`
+
+```env
+WAREHOUSE_SALES_OUTBOUND_ENABLED=true
+WAREHOUSE_SALES_OUTBOUND_MODE=shipment
+WAREHOUSE_INBOUND_FROM_PO_DELIVERED=false
+WAREHOUSE_INBOUND_FROM_DO_RECEIVED=true
+WAREHOUSE_ALLOW_NEGATIVE_STOCK=false
+```
+
+### 2) Tenant legacy (chưa chuyển DO inbound canonical)
+
+- Purchase inbound theo PO `delivered`
+- Sales outbound theo invoice (legacy)
+
+```env
+WAREHOUSE_SALES_OUTBOUND_ENABLED=true
+WAREHOUSE_SALES_OUTBOUND_MODE=invoice
+WAREHOUSE_INBOUND_FROM_PO_DELIVERED=true
+WAREHOUSE_INBOUND_FROM_DO_RECEIVED=false
+WAREHOUSE_ALLOW_NEGATIVE_STOCK=false
+```
+
+### 3) Cấu hình không khuyến nghị (chỉ để debug tạm thời)
+
+```env
+WAREHOUSE_INBOUND_FROM_PO_DELIVERED=true
+WAREHOUSE_INBOUND_FROM_DO_RECEIVED=true
+```
+
+- Có guard giảm rủi ro cộng tồn đôi, nhưng **không nên dùng production**.
+- Sau khi đổi `.env`: chạy `php artisan optimize:clear` và restart queue worker (nếu có).
+
+---
+
+## O. Backlog de xuat (luu de can nhac sau) — Chuan hoa ten nghiep vu: `SO -> DO`, `PO -> GRN`
+
+**Nguon de xuat:** trao doi voi user ngay 2026-03-30.
+
+### Muc tieu nghiep vu mong muon
+
+- Ban hang: `SO -> DO -> Invoice` (de user van hanh de hieu va quen thuoc).
+- Mua hang: `PO -> GRN -> Bill`.
+
+### Cach lam khuyen nghi (an toan, it rui ro)
+
+1. **Pha 1 (UI/SOP rename, khong doi logic/DB):**
+    - Hien thi `Sales Shipment` duoi ten nghiep vu: **Sales DO** / **Delivery Note**.
+    - Hien thi `Delivery Orders` (module Purchase) duoi ten nghiep vu: **GRN / Goods Receipt**.
+    - Cap nhat menu, title trang, label form, tai lieu huong dan va UAT.
+    - Giu nguyen route, table, service hien tai de tranh regression.
+
+2. **Pha 2 (neu can refactor ky thuat sau):**
+    - Doi ten technical artifact (route/key/view) theo DO/GRN that su.
+    - Bo sung migration mapping/backward compatibility neu doi cau truc.
+    - Yeu cau test regression full luong SO/PO/DO/Shipment/Invoice/Warehouse.
+
+### Quy tac an toan khi trien khai de xuat nay
+
+- Khong thay doi co che post kho:
+    - outbound van theo `WAREHOUSE_SALES_OUTBOUND_MODE` (`shipment` hoac `invoice`);
+    - inbound van chon 1 canonical (`PO delivered` hoac `DO received`), khong bat dong thoi 2 co.
+- Uu tien pha 1 truoc de dat hieu qua van hanh nhanh, sau do moi danh gia pha 2.

@@ -140,9 +140,27 @@
     <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
     <script src="{{ asset('vendor/jquery/modernizr.min.js') }}"></script>
     <script src="{{ asset('vendor/jquery/bootstrap-colorpicker.js') }}"></script>
+    <script>
+        // Some legacy inline modules expect KTUtil from old bundles.
+        // Provide a minimal safe fallback to avoid "KTUtil is not defined".
+        if (typeof window.KTUtil === 'undefined') {
+            window.KTUtil = {
+                isMobileDevice: function() {
+                    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                },
+                isDesktopDevice: function() {
+                    return !window.KTUtil.isMobileDevice();
+                }
+            };
+        }
+    </script>
 
     <!-- Bootstrap Bundle -->
     <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <script>
+        // jQuery UI (loaded later in some AJAX partials) replaces $.fn.tooltip and breaks Bootstrap tooltips + positioning.
+        window.bootstrapTooltipFn = jQuery.fn.tooltip;
+    </script>
 
     <!-- Moment -->
     <script src="{{ asset('vendor/moment/moment-with-locales.min.js') }}"></script>

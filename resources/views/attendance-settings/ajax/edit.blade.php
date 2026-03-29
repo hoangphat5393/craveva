@@ -20,40 +20,37 @@
                 <div class="row p-20">
                     <input type="hidden" name="rotation_id" value="{{ $shiftRotation->id }}">
                     <div class="col-md-3">
-                        <x-forms.text fieldId="rotation_name" :fieldLabel="__('app.rotationName')" fieldName="rotation_name"
-                            fieldRequired="true" :fieldValue="$shiftRotation->rotation_name">
+                        <x-forms.text fieldId="rotation_name" :fieldLabel="__('app.rotationName')" fieldName="rotation_name" fieldRequired="true" :fieldValue="$shiftRotation->rotation_name">
                         </x-forms.text>
                     </div>
 
                     <div class="col-md-3">
-                        <x-forms.select fieldId="rotation_frequency" :fieldLabel="__('app.rotationFrequency')" fieldName="rotation_frequency"
-                            search="true">
+                        <x-forms.select fieldId="rotation_frequency" :fieldLabel="__('app.rotationFrequency')" fieldName="rotation_frequency" search="true">
                             <option value="">--</option>
-                            <option value="weekly" @if($shiftRotation->rotation_frequency == 'weekly') selected @endif>@lang('app.weekly')</option>
-                            <option value="bi-weekly" @if($shiftRotation->rotation_frequency == 'bi-weekly') selected @endif>@lang('app.bi-weekly')</option>
-                            <option value="monthly" @if($shiftRotation->rotation_frequency == 'monthly') selected @endif>@lang('app.monthly')</option>
+                            <option value="weekly" @if ($shiftRotation->rotation_frequency == 'weekly') selected @endif>@lang('app.weekly')</option>
+                            <option value="bi-weekly" @if ($shiftRotation->rotation_frequency == 'bi-weekly') selected @endif>@lang('app.bi-weekly')</option>
+                            <option value="monthly" @if ($shiftRotation->rotation_frequency == 'monthly') selected @endif>@lang('app.monthly')</option>
                         </x-forms.select>
                     </div>
 
-                    <div class="col-md-3 @if(is_null($shiftRotation->schedule_on)) d-none @endif" id="scheduleOnDiv">
+                    <div class="col-md-3 @if (is_null($shiftRotation->schedule_on)) d-none @endif" id="scheduleOnDiv">
                         <x-forms.select fieldId="schedule_on" :fieldLabel="__('app.scheduleOn')" fieldName="schedule_on" fieldRequired="true" search="true">
                             <option value="">--</option>
-                            <option value="every-monday" @if($shiftRotation->schedule_on == 'every-monday') selected @endif>@lang('app.every') @lang('app.monday')</option>
-                            <option value="every-tuesday" @if($shiftRotation->schedule_on == 'every-tuesday') selected @endif>@lang('app.every') @lang('app.tuesday')</option>
-                            <option value="every-wednesday" @if($shiftRotation->schedule_on == 'every-wednesday') selected @endif>@lang('app.every') @lang('app.wednesday')</option>
-                            <option value="every-thursday" @if($shiftRotation->schedule_on == 'every-thursday') selected @endif>@lang('app.every') @lang('app.thursday')</option>
-                            <option value="every-friday" @if($shiftRotation->schedule_on == 'every-friday') selected @endif>@lang('app.every') @lang('app.friday')</option>
-                            <option value="every-saturday" @if($shiftRotation->schedule_on == 'every-saturday') selected @endif>@lang('app.every') @lang('app.saturday')</option>
-                            <option value="every-sunday" @if($shiftRotation->schedule_on == 'every-sunday') selected @endif>@lang('app.every') @lang('app.sunday')</option>
+                            <option value="every-monday" @if ($shiftRotation->schedule_on == 'every-monday') selected @endif>@lang('app.every') @lang('app.monday')</option>
+                            <option value="every-tuesday" @if ($shiftRotation->schedule_on == 'every-tuesday') selected @endif>@lang('app.every') @lang('app.tuesday')</option>
+                            <option value="every-wednesday" @if ($shiftRotation->schedule_on == 'every-wednesday') selected @endif>@lang('app.every') @lang('app.wednesday')</option>
+                            <option value="every-thursday" @if ($shiftRotation->schedule_on == 'every-thursday') selected @endif>@lang('app.every') @lang('app.thursday')</option>
+                            <option value="every-friday" @if ($shiftRotation->schedule_on == 'every-friday') selected @endif>@lang('app.every') @lang('app.friday')</option>
+                            <option value="every-saturday" @if ($shiftRotation->schedule_on == 'every-saturday') selected @endif>@lang('app.every') @lang('app.saturday')</option>
+                            <option value="every-sunday" @if ($shiftRotation->schedule_on == 'every-sunday') selected @endif>@lang('app.every') @lang('app.sunday')</option>
                         </x-forms.select>
                     </div>
 
-                    <div class="col-md-3 @if(is_null($shiftRotation->rotation_date)) d-none @endif" id="dateDiv">
-                        <x-forms.select fieldId="rotation_date" :fieldLabel="__('app.scheduleDate')" fieldName="rotation_date"
-                        fieldRequired="true" search="true">
+                    <div class="col-md-3 @if (is_null($shiftRotation->rotation_date)) d-none @endif" id="dateDiv">
+                        <x-forms.select fieldId="rotation_date" :fieldLabel="__('app.scheduleDate')" fieldName="rotation_date" fieldRequired="true" search="true">
                             <option value="">--</option>
                             @foreach ($dates as $date)
-                                <option value="{{ $date }}" @if($shiftRotation->rotation_date == $date) selected @endif>{{ $date }}</option>
+                                <option value="{{ $date }}" @if ($shiftRotation->rotation_date == $date) selected @endif>{{ $date }}</option>
                             @endforeach
                         </x-forms.select>
                     </div>
@@ -64,8 +61,7 @@
                                 <x-forms.label fieldId="color_code" :fieldLabel="__('app.colorCode')" fieldRequired="true">
                                 </x-forms.label>
                                 <x-forms.input-group>
-                                    <input type="text" name="color_code" id="color_code" value="@if($shiftRotation->color_code) {{ $shiftRotation->color_code }} @else #7EE7F9 @endif"
-                                        class="form-control height-35 f-15 light_text">
+                                    <input type="text" name="color_code" id="color_code" value="@if ($shiftRotation->color_code) {{ $shiftRotation->color_code }} @else #7EE7F9 @endif" class="form-control height-35 f-15 light_text">
                                     <x-slot name="append">
                                         <span class="input-group-text colorpicker-input-addon height-35"><i></i></span>
                                     </x-slot>
@@ -77,14 +73,12 @@
 
                 <div class="row pl-20 pr-20">
                     <div class="col-md-3">
-                        <x-forms.select fieldId="rotation_sequence" :fieldLabel="__('app.selectShift')" fieldName="rotation_sequence"
-                        fieldRequired="true" search="true">
+                        <x-forms.select fieldId="rotation_sequence" :fieldLabel="__('app.selectShift')" fieldName="rotation_sequence" fieldRequired="true" search="true">
                             <option value="">--</option>
                             @foreach ($employeeShifts as $item)
-                                <option
-                                data-content="<i class='fa fa-circle mr-2' style='color: {{ $item->color }}'></i> {{ ($item->shift_name != 'Day Off') ? $item->shift_name : __('modules.attendance.' . str($item->shift_name)->camel()) }}{{ ($item->shift_name != 'Day Off') ? ' ['.$item->office_start_time.' - '.$item->office_end_time.']' : ''}}"
-                                value="{{ $item->id }}" data-name="{{ $item->shift_name }}" data-color="{{ $item->color }}">
-                                    {{ ($item->shift_name != 'Day Off') ? $item->shift_name : __('modules.attendance.' . str($item->shift_name)->camel()) }}{{ ($item->shift_name != 'Day Off') ? ' ['.$item->office_start_time.' - '.$item->office_end_time.']' : ''}}</option>
+                                <option data-content="<i class='fa fa-circle mr-2' style='color: {{ $item->color }}'></i> {{ $item->shift_name != 'Day Off' ? $item->shift_name : __('modules.attendance.' . str($item->shift_name)->camel()) }}{{ $item->shift_name != 'Day Off' ? ' [' . $item->office_start_time . ' - ' . $item->office_end_time . ']' : '' }}" value="{{ $item->id }}"
+                                    data-name="{{ $item->shift_name }}" data-color="{{ $item->color }}">
+                                    {{ $item->shift_name != 'Day Off' ? $item->shift_name : __('modules.attendance.' . str($item->shift_name)->camel()) }}{{ $item->shift_name != 'Day Off' ? ' [' . $item->office_start_time . ' - ' . $item->office_end_time . ']' : '' }}</option>
                             @endforeach
                         </x-forms.select>
                     </div>
@@ -96,14 +90,10 @@
                         </div>
                     </div>
                     <div class="col-md-3 mt-5">
-                        <x-forms.checkbox :fieldLabel="__('app.replacePreAssignedShift')"
-                                        fieldName="override_shift"
-                                        fieldId="override_shift" fieldValue="yes" :checked="($shiftRotation->override_shift == 'yes') ? 'checked' : ''"/>
+                        <x-forms.checkbox :fieldLabel="__('app.replacePreAssignedShift')" fieldName="override_shift" fieldId="override_shift" fieldValue="yes" :checked="$shiftRotation->override_shift == 'yes' ? 'checked' : ''" />
                     </div>
                     <div class="col-md-3 mt-5">
-                        <x-forms.checkbox :fieldLabel="__('app.sendRotationNotification')"
-                                        fieldName="send_mail"
-                                        fieldId="send_mail" fieldValue="yes" :checked="($shiftRotation->send_mail == 'yes') ? 'checked' : ''" />
+                        <x-forms.checkbox :fieldLabel="__('app.sendRotationNotification')" fieldName="send_mail" fieldId="send_mail" fieldValue="yes" :checked="$shiftRotation->send_mail == 'yes' ? 'checked' : ''" />
                     </div>
                 </div>
 
@@ -113,11 +103,13 @@
                         </x-forms.label>
                         <div id="shiftContainer" class="border p-3" style="min-height: 150px;">
                             @foreach ($shiftRotation->sequences as $sequence)
-                                <div class="shift-item border p-2 mb-2" data-id="{{ $sequence->employee_shift_id }}" data-name="<i class='fa fa-circle mr-2' style='color: {{ $sequence->shift->color }}'></i> {{ ($sequence->shift->shift_name != 'Day Off') ? $sequence->shift->shift_name : __('modules.attendance.' . str($sequence->shift->shift_name)->camel()) }}{{ ($sequence->shift->shift_name != 'Day Off') ? ' ['.$sequence->shift->office_start_time.' - '.$sequence->shift->office_end_time.']' : ''}}">
+                                <div class="shift-item border p-2 mb-2" data-id="{{ $sequence->employee_shift_id }}"
+                                    data-name="<i class='fa fa-circle mr-2' style='color: {{ $sequence->shift->color }}'></i> {{ $sequence->shift->shift_name != 'Day Off' ? $sequence->shift->shift_name : __('modules.attendance.' . str($sequence->shift->shift_name)->camel()) }}{{ $sequence->shift->shift_name != 'Day Off' ? ' [' . $sequence->shift->office_start_time . ' - ' . $sequence->shift->office_end_time . ']' : '' }}">
                                     <input type="hidden" name="sort_order[]" value="{{ $loop->index + 1 }}">
                                     <input type="hidden" name="shifts[]" value="{{ $sequence->shift->id }}">
                                     <span class="ui-icon ui-icon-arrowthick-2-n-s"></span>
-                                    <i class='fa fa-circle mr-2' style='color: {{ $sequence->shift->color }}'></i> {{ ($sequence->shift->shift_name != 'Day Off') ? $sequence->shift->shift_name : __('modules.attendance.' . str($sequence->shift->shift_name)->camel()) }}{{ ($sequence->shift->shift_name != 'Day Off') ? ' ['.$sequence->shift->office_start_time.' - '.$sequence->shift->office_end_time.']' : ''}}
+                                    <i class='fa fa-circle mr-2' style='color: {{ $sequence->shift->color }}'></i>
+                                    {{ $sequence->shift->shift_name != 'Day Off' ? $sequence->shift->shift_name : __('modules.attendance.' . str($sequence->shift->shift_name)->camel()) }}{{ $sequence->shift->shift_name != 'Day Off' ? ' [' . $sequence->shift->office_start_time . ' - ' . $sequence->shift->office_end_time . ']' : '' }}
                                     <span class="remove-shift text-danger float-right" style="cursor: pointer;">&times;</span>
                                 </div>
                             @endforeach
@@ -141,11 +133,12 @@
 <script src="{{ asset('vendor/jquery/daterangepicker.min.js') }}" defer=""></script>
 <!-- script for sortable content start-->
 <script src="{{ asset('vendor/jquery/jquery-ui.min.js') }}"></script>
+@include('sections.jquery_ui_restore_bootstrap_tooltip')
 
 <script>
     $(document).ready(function() {
         const rotId = '{{ $shiftRotation->id }}';
-        $('a.text-lightest[href="/account/settings/shift-rotations/'+rotId+'"]').contents().unwrap();
+        $('a.text-lightest[href="/account/settings/shift-rotations/' + rotId + '"]').contents().unwrap();
         const redirectUrl = "{{ route('attendance-settings.index') }}?tab=shift-rotation";
         $('a.text-lightest[href="/account/settings/shift-rotations"]').attr('href', redirectUrl);
 

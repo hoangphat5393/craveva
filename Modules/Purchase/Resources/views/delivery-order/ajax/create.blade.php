@@ -10,12 +10,12 @@
                         <div class="row align-items-start">
                             <div class="col-md-4">
                                 <div class="form-group my-3">
-                                    <label class="f-14 text-dark-grey mb-12 d-block" for="delivery_number">@lang('app.orderNumber')</label>
+                                    <label class="f-14 text-dark-grey mb-12 d-block" for="delivery_number">@lang('purchase::app.deliveryOrderNumber')</label>
                                     <div class="input-group">
                                         <div class="input-group-prepend height-35">
                                             <span class="input-group-text border-grey f-15 bg-additional-grey px-3 text-dark" id="do-number-prefix">DO#</span>
                                         </div>
-                                        <input type="text" name="delivery_number" id="delivery_number" class="form-control height-35 f-15" placeholder="001" aria-label="001" aria-describedby="do-number-prefix" spellcheck="false" autocomplete="off">
+                                        <input type="text" name="delivery_number" id="delivery_number" class="form-control height-35 f-15" value="{{ $nextDeliveryNumber ?? '001' }}" placeholder="001" aria-label="001" aria-describedby="do-number-prefix" spellcheck="false" autocomplete="off">
                                     </div>
                                 </div>
                             </div>
@@ -88,7 +88,9 @@
             }
             datepicker(this, {
                 position: 'bl',
-                ...datepickerConfig
+                ...datepickerConfig,
+                container: document.body,
+                zIndex: 9999
             });
             $(this).data('datepicker-initialized', true);
         });
@@ -116,6 +118,28 @@
             }
         });
 
+        function getReadableApiError(err) {
+            if (err && err.errors && typeof err.errors === 'object') {
+                var messages = [];
+                Object.keys(err.errors).forEach(function(key) {
+                    var val = err.errors[key];
+                    if (Array.isArray(val)) {
+                        val.forEach(function(item) {
+                            if (item) {
+                                messages.push(item);
+                            }
+                        });
+                    } else if (val) {
+                        messages.push(val);
+                    }
+                });
+                if (messages.length) {
+                    return messages.slice(0, 4).join('\n');
+                }
+            }
+            return (err && err.message) ? err.message : "@lang('messages.somethingWentWrong')";
+        }
+
         $('#save-delivery-order-button').click(function() {
             const url = "{{ route('delivery-orders.store') }}";
             var $btn = $('#save-delivery-order-button');
@@ -136,10 +160,10 @@
                 if (typeof Swal !== 'undefined') {
                     Swal.fire({
                         icon: 'error',
-                        text: err.message,
+                        text: getReadableApiError(err),
                         toast: true,
                         position: 'top-end',
-                        timer: 4000,
+                        timer: 7000,
                         showConfirmButton: false
                     });
                 }

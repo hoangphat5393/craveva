@@ -177,8 +177,7 @@ class OrdersDataTable extends BaseDataTable
 
         $model = Order::with([
             'currency:id,currency_symbol,currency_code',
-            'client',
-            'payment',
+            'client:id,name,image,salutation',
         ])
             ->with(
                 [
@@ -188,17 +187,16 @@ class OrdersDataTable extends BaseDataTable
                     },
                 ]
             )
-            ->with('client', 'client.session', 'client.clientDetails', 'payment')
             ->select('orders.id', 'orders.client_id', 'orders.project_id', 'orders.currency_id', 'orders.total', 'orders.status', 'orders.order_date', 'orders.show_shipping_address', 'orders.added_by', 'orders.order_number', 'orders.custom_order_number');
 
         if ($request->startDate !== null && $request->startDate != 'null' && $request->startDate != '') {
             $startDate = companyToDateString($request->startDate);
-            $model = $model->where(DB::raw('DATE(orders.`order_date`)'), '>=', $startDate);
+            $model = $model->where('orders.order_date', '>=', $startDate);
         }
 
         if ($request->endDate !== null && $request->endDate != 'null' && $request->endDate != '') {
             $endDate = companyToDateString($request->endDate);
-            $model = $model->where(DB::raw('DATE(orders.`order_date`)'), '<=', $endDate);
+            $model = $model->where('orders.order_date', '<=', $endDate);
         }
 
         if ($request->status != 'all' && ! is_null($request->status)) {

@@ -55,4 +55,5 @@ return [
     'err_warehouse_not_in_company' => 'Err Warehouse Not In Company',
     'err_product_not_in_company' => 'Err Product Not In Company',
     'warehouses' => 'Warehouses',
+    'err_no_warehouse_for_invoice' => 'Err No Warehouse For Invoice',
 ];

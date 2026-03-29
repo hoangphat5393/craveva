@@ -32,20 +32,14 @@
                                                 <div class="row py-3 pt-4 border-bottom">
                                                     <div class="col-md-2">
                                                         <span class="ui-icon ui-icon-arrowthick-2-n-s"></span>
-                                                        <input type="hidden" name="sort_order[]"
-                                                               value="{{ $item->id }}">
+                                                        <input type="hidden" name="sort_order[]" value="{{ $item->id }}">
                                                     </div>
-                                                    <div class="col-md-4">{{ $item->field_display_name}}</div>
+                                                    <div class="col-md-4">{{ $item->field_display_name }}</div>
                                                     <div class="col-md-3">
                                                         @if ($item->field_name != 'name')
                                                             <div class="custom-control custom-switch">
-                                                                <input type="checkbox"
-                                                                       class="custom-control-input change-setting"
-                                                                       data-setting-id="{{ $item->id }}"
-                                                                       @if ($item->status == 'active') checked @endif
-                                                                       id="status_{{ $item->id }}">
-                                                                <label class="custom-control-label f-14 cursor-pointer"
-                                                                       for="status_{{ $item->id }}"></label>
+                                                                <input type="checkbox" class="custom-control-input change-setting" data-setting-id="{{ $item->id }}" @if ($item->status == 'active') checked @endif id="status_{{ $item->id }}">
+                                                                <label class="custom-control-label f-14 cursor-pointer" for="status_{{ $item->id }}"></label>
                                                             </div>
                                                         @else
                                                             --
@@ -54,13 +48,8 @@
                                                     <div class="col-md-3">
                                                         @if ($item->field_name != 'name')
                                                             <div class="custom-control custom-switch">
-                                                                <input type="checkbox"
-                                                                       class="custom-control-input change-required"
-                                                                       data-setting-id="{{ $item->id }}"
-                                                                       @if ($item->required == 1) checked @endif
-                                                                       id="required_{{ $item->id }}">
-                                                                <label class="custom-control-label f-14 cursor-pointer"
-                                                                       for="required_{{ $item->id }}"></label>
+                                                                <input type="checkbox" class="custom-control-input change-required" data-setting-id="{{ $item->id }}" @if ($item->required == 1) checked @endif id="required_{{ $item->id }}">
+                                                                <label class="custom-control-label f-14 cursor-pointer" for="required_{{ $item->id }}"></label>
                                                             </div>
                                                         @else
                                                             <span class="text-success">✓</span>
@@ -79,17 +68,14 @@
                         <x-cards.data>
                             <p class="f-w-500">@lang('modules.lead.iframeSnippet')</p>
                             <code>
-                                &lt;iframe src="{{ route('front.lead_form',[company()->hash]) }}"  frameborder="0" scrolling="yes"  style="display:block; width:100%; height:60vh;">&lt;/iframe&gt;
+                                &lt;iframe src="{{ route('front.lead_form', [company()->hash]) }}" frameborder="0" scrolling="yes" style="display:block; width:100%; height:60vh;">&lt;/iframe&gt;
                             </code>
                         </x-cards.data>
                         <x-cards.data>
                             <p class="f-w-500">Share Direct link</p>
-                            <p class="f-12"><a href="{{ route('front.lead_form', [company()->hash]).'?styled=1' }}"
-                                               target="_blank">{{ route('front.lead_form', [company()->hash]).'?styled=1' }}</a>
+                            <p class="f-12"><a href="{{ route('front.lead_form', [company()->hash]) . '?styled=1' }}" target="_blank">{{ route('front.lead_form', [company()->hash]) . '?styled=1' }}</a>
                             </p>
-                            <p class="f-12"><a
-                                    href="{{ route('front.lead_form', [company()->hash]).'?styled=1&with_logo=1' }}"
-                                    target="_blank">{{ route('front.lead_form', [company()->hash]).'?styled=1&with_logo=1' }}</a>
+                            <p class="f-12"><a href="{{ route('front.lead_form', [company()->hash]) . '?styled=1&with_logo=1' }}" target="_blank">{{ route('front.lead_form', [company()->hash]) . '?styled=1&with_logo=1' }}</a>
                             </p>
                         </x-cards.data>
                     </div>
@@ -98,8 +84,7 @@
             <div class="col-lg-6">
                 <x-cards.data>
                     <h4>@lang('app.preview')</h4>
-                    <iframe src="{{ route('front.lead_form', [company()->hash]) }}" id="previewIframe" width="100%"
-                            onload="resizeIframe(this)" frameborder="0"></iframe>
+                    <iframe src="{{ route('front.lead_form', [company()->hash]) }}" id="previewIframe" width="100%" onload="resizeIframe(this)" frameborder="0"></iframe>
                 </x-cards.data>
                 <br>
 
@@ -113,16 +98,17 @@
 @push('scripts')
     <!-- for sortable content -->
     <script src="{{ asset('vendor/jquery/jquery-ui.min.js') }}"></script>
+    @include('sections.jquery_ui_restore_bootstrap_tooltip')
 
     <!-- to highlight html content -->
     <script src="{{ asset('vendor/jquery/highlight.min.js') }}"></script>
 
     <script>
-        $(function () {
+        $(function() {
             $("#sortable").sortable({
-                update: function (event, ui) {
+                update: function(event, ui) {
                     var sortedValues = [];
-                    $('input[name="sort_order[]"]').each(function (index, value) {
+                    $('input[name="sort_order[]"]').each(function(index, value) {
                         sortedValues[index] = $(this).val();
                     });
                     $.easyBlockUI('body');
@@ -141,7 +127,7 @@
             });
         });
 
-        $('.change-setting').change(function () {
+        $('.change-setting').change(function() {
             var id = $(this).data('setting-id');
             var sendEmail = $(this).is(':checked') ? 'active' : 'inactive';
 
@@ -163,7 +149,7 @@
             });
         });
 
-        $('.change-required').change(function () {
+        $('.change-required').change(function() {
             var id = $(this).data('setting-id');
             var isRequired = $(this).is(':checked') ? 1 : 0;
 

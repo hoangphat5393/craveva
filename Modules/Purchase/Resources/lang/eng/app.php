@@ -31,6 +31,7 @@ return [
     'erpShipmentRef' => 'ERP Shipment Reference',
     'wmsShipmentRef' => 'WMS Shipment Reference',
     'shipmentNumber' => 'Shipment Number',
+    'deliveryOrderNumber' => 'Delivery Order Number',
     'remainingQty' => 'Remaining Qty',
     'shipQty' => 'Qty to Ship',
     'batchNumber' => 'Batch Number',

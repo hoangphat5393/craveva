@@ -328,6 +328,7 @@
 
 <!-- for sortable content -->
 <script src="{{ asset('vendor/jquery/jquery-ui.min.js') }}"></script>
+@include('sections.jquery_ui_restore_bootstrap_tooltip')
 
 <script>
     $(function() {
@@ -374,16 +375,40 @@
                 if (typeof Swal !== 'undefined') {
                     Swal.fire({
                         icon: 'error',
-                        text: err.message,
+                        text: getReadableApiError(err),
                         toast: true,
                         position: 'top-end',
-                        timer: 4000,
+                        timer: 7000,
                         showConfirmButton: false
                     });
                 }
             }).finally(function() {
                 $.easyUnblockUI('#saveOrderForm');
             });
+        }
+
+        function getReadableApiError(err) {
+            if (err && err.errors && typeof err.errors === 'object') {
+                var messages = [];
+                Object.keys(err.errors).forEach(function(key) {
+                    var val = err.errors[key];
+                    if (Array.isArray(val)) {
+                        val.forEach(function(item) {
+                            if (item) {
+                                messages.push(item);
+                            }
+                        });
+                    } else if (val) {
+                        messages.push(val);
+                    }
+                });
+
+                if (messages.length) {
+                    return messages.slice(0, 4).join('\n');
+                }
+            }
+
+            return (err && err.message) ? err.message : "@lang('messages.somethingWentWrong')";
         }
 
 
@@ -589,10 +614,10 @@
                 if (typeof Swal !== 'undefined') {
                     Swal.fire({
                         icon: 'error',
-                        text: err.message,
+                        text: getReadableApiError(err),
                         toast: true,
                         position: 'top-end',
-                        timer: 4000,
+                        timer: 7000,
                         showConfirmButton: false
                     });
                 }

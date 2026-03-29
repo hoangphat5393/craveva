@@ -112,15 +112,21 @@
 
             @if (isset($warehouses) && $warehouses->count() > 0)
                 <div class="col-md-6 col-lg-4 mt-3">
-                    <x-forms.select fieldId="warehouse_id" :fieldLabel="__('purchase::modules.deliveryOrder.warehouse')" fieldName="warehouse_id" search="true">
-                        <option value="">@lang('purchase::modules.deliveryOrder.selectWarehouse')</option>
-                        @foreach ($warehouses as $wh)
-                            <option value="{{ $wh->id }}" @selected((int) ($order->warehouse_id ?? 0) === (int) $wh->id)>{{ $wh->name }}@if (!empty($wh->code))
-                                    ({{ $wh->code }})
-                                @endif
-                            </option>
-                        @endforeach
-                    </x-forms.select>
+                    <div class="form-group c-inv-select mb-4">
+                        <x-forms.label fieldId="warehouse_id" :fieldLabel="__('purchase::modules.deliveryOrder.warehouse')">
+                        </x-forms.label>
+                        <div class="select-others height-35 rounded">
+                            <select class="form-control select-picker" data-live-search="true" data-size="8" name="warehouse_id" id="warehouse_id">
+                                <option value="">@lang('purchase::modules.deliveryOrder.selectWarehouse')</option>
+                                @foreach ($warehouses as $wh)
+                                    <option value="{{ $wh->id }}" @selected((int) ($order->warehouse_id ?? 0) === (int) $wh->id)>{{ $wh->name }}@if (!empty($wh->code))
+                                            ({{ $wh->code }})
+                                        @endif
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
                 </div>
             @endif
 
@@ -185,7 +191,7 @@
                         <select class="form-control select-picker" data-live-search="true" data-size="8" id="add-products">
                             <option value="">{{ __('app.select') . ' ' . __('app.product') }}</option>
                             @foreach ($products as $item)
-                                <option data-content="{{ $item->name }}" value="{{ $item->id }}">
+                                <option data-content="{{ $item->name }}@if ($item->sku) ({{ $item->sku }}) @endif" value="{{ $item->id }}">
                                     {{ $item->name }}</option>
                             @endforeach
                         </select>
@@ -475,7 +481,8 @@
                     rData = response.data;
                     $.each(rData, function(index, value) {
                         var selectData = '';
-                        selectData = '<option value="' + value.id + '">' + value.name +
+                        var skuSuffix = value.sku ? ' (' + value.sku + ')' : '';
+                        selectData = '<option data-content="' + value.name + skuSuffix + '" value="' + value.id + '">' + value.name +
                             '</option>';
                         options.push(selectData);
                     });

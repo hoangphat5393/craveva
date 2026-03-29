@@ -10,7 +10,7 @@
                         <div class="row align-items-start">
                             <div class="col-md-4">
                                 <div class="form-group my-3">
-                                    <label class="f-14 text-dark-grey mb-12 d-block" for="delivery_number">@lang('app.orderNumber')</label>
+                                    <label class="f-14 text-dark-grey mb-12 d-block" for="delivery_number">@lang('purchase::app.deliveryOrderNumber')</label>
                                     <div class="input-group">
                                         <div class="input-group-prepend height-35">
                                             <span class="input-group-text border-grey f-15 bg-additional-grey px-3 text-dark" id="do-number-prefix">DO#</span>
@@ -89,7 +89,9 @@
             }
             datepicker(this, {
                 position: 'bl',
-                ...datepickerConfig
+                ...datepickerConfig,
+                container: document.body,
+                zIndex: 9999
             });
             $(this).data('datepicker-initialized', true);
         });

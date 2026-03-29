@@ -31,7 +31,7 @@
                         <table class="inv-num-date text-dark f-13 mt-3">
                             <tr>
                                 <td class="bg-light-grey border-right-0 f-w-500">
-                                    @lang('app.orderNumber')</td>
+                                    @lang('purchase::app.deliveryOrderNumber')</td>
                                 <td class="border-left-0">{{ $delivery->delivery_number }}</td>
                             </tr>
                             <tr>

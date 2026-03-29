@@ -121,7 +121,7 @@
                 @endif
 
                 @if (!in_array('client', user_roles()) && in_array('clients', user_modules()) && ($addOrderPermission == 'all' || $addOrderPermission == 'added'))
-                    <x-forms.link-primary :link="route('orders.create')" class="mr-3 float-left" icon="plus">
+                    <x-forms.link-primary :link="route('orders.create')" class="mr-3 float-left openRightModal" icon="plus" data-redirect-url="{{ route('orders.index') }}">
                         @lang('app.addNewOrder')
                     </x-forms.link-primary>
                 @endif

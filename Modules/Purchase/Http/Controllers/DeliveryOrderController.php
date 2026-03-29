@@ -75,7 +75,16 @@ class DeliveryOrderController extends AccountBaseController
 
     public function changeStatus($id, Request $request)
     {
-        $delivery = DeliveryOrder::findOrFail($id);
+        $request->validate([
+            'status' => 'required|in:draft,inbound,received',
+        ]);
+
+        $query = DeliveryOrder::query();
+        if ($this->company) {
+            $query->where('company_id', $this->company->id);
+        }
+
+        $delivery = $query->findOrFail($id);
         $delivery->status = $request->status;
         $delivery->save();
 
@@ -99,6 +108,7 @@ class DeliveryOrderController extends AccountBaseController
         $this->pageTitle = __('app.add') . ' ' . __('purchase::app.menu.deliveryOrders');
         $this->purchaseOrders = PurchaseOrder::where('company_id', $this->company ? $this->company->id : null)->get();
         $this->warehouses = $this->warehouseList();
+        $this->nextDeliveryNumber = $this->nextDeliveryNumber();
 
         if (request()->ajax()) {
             $html = view('purchase::delivery-order.ajax.create', $this->data)->render();
@@ -282,5 +292,23 @@ class DeliveryOrderController extends AccountBaseController
         $r = strtoupper(trim((string) $raw));
 
         return in_array($r, ['FIFO', 'FEFO'], true) ? $r : null;
+    }
+
+    private function nextDeliveryNumber(): string
+    {
+        $query = DeliveryOrder::query();
+        if ($this->company) {
+            $query->where('company_id', $this->company->id);
+        }
+
+        $lastNumber = (string) ($query->orderByDesc('id')->value('delivery_number') ?? '');
+        if ($lastNumber !== '' && preg_match('/(\d+)$/', $lastNumber, $matches)) {
+            $digits = $matches[1];
+            $next = (int) $digits + 1;
+
+            return str_pad((string) $next, max(strlen($digits), 3), '0', STR_PAD_LEFT);
+        }
+
+        return '001';
     }
 }

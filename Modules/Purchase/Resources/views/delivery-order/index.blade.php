@@ -107,8 +107,23 @@
         });
 
         $('body').on('change', '.change-do-status', function() {
-            var id = $(this).data('delivery-id');
-            var status = $(this).val();
+            var $target = $(this);
+            var $select = $target.is('select') ? $target : $target.find('select.change-do-status').first();
+            if (!$select.length && $target.closest('.bootstrap-select').length) {
+                $select = $target.closest('.bootstrap-select').prev('select.change-do-status');
+            }
+
+            var id = $select.data('delivery-id');
+            if (!id) {
+                var rowId = $target.closest('tr').attr('id') || '';
+                var match = rowId.match(/^row-(\d+)$/);
+                id = match ? match[1] : null;
+            }
+
+            var status = $select.val();
+            if (!id || !status) {
+                return;
+            }
             var token = "{{ csrf_token() }}";
 
             var chUrl = "{{ route('delivery-orders.changeStatus', ':id') }}".replace(':id', id);

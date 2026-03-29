@@ -96,11 +96,20 @@ class OrderController extends AccountBaseController
 
         $this->pageTitle = __('modules.orders.createOrder');
         $this->clients = User::allClients();
-        $this->products = Product::all();
-        $this->categories = ProductCategory::all();
+        // Keep create modal payload lean: the dropdown only needs id/name/sku.
+        $this->products = Product::query()
+            ->select('id', 'name', 'sku')
+            ->orderBy('name')
+            ->get();
+        $this->categories = ProductCategory::query()
+            ->select('id', 'category_name')
+            ->orderBy('category_name')
+            ->get();
         $this->unit_types = UnitType::all();
-        $this->companyAddresses = CompanyAddress::all();
-        $this->projects = Project::allProjects();
+        $this->companyAddresses = CompanyAddress::query()
+            ->select('id', 'location', 'is_default')
+            ->orderByDesc('is_default')
+            ->get();
         $this->lastOrder = Order::lastOrderNumber() + 1;
         $this->orderSetting = invoice_setting();
         $this->zero = '';

@@ -37,15 +37,15 @@
 
         <div class="accordionItemContent pb-2">
 
-            @if (in_array('orders', user_modules()) && $sidebarUserPermissions['view_order'] != 5 && $sidebarUserPermissions['view_order'] != 'none')
-                <x-sub-menu-item :link="route('orders.index')" :text="__('app.menu.orders')" />
-            @endif
-
             <x-sub-menu-item :link="route('vendors.index')" :text="__('purchase::app.menu.vendor')" :permission="$purchaseViewVendorPermission != 'none' && $purchaseViewVendorPermission != ''" />
 
             <!-- NAV ITEM - PRODUCTS -->
             @if (in_array('products', user_modules()) && $sidebarUserPermissions['view_product'] != 5 && $sidebarUserPermissions['view_product'] != 'none')
                 <x-sub-menu-item :link="route('purchase-products.index')" :text="__('purchase::app.menu.products')" />
+            @endif
+
+            @if (in_array('orders', user_modules()) && $sidebarUserPermissions['view_order'] != 5 && $sidebarUserPermissions['view_order'] != 'none')
+                <x-sub-menu-item :link="route('orders.index')" :text="__('app.menu.orders')" />
             @endif
 
             <!-- NAV ITEM - ORDERS -->

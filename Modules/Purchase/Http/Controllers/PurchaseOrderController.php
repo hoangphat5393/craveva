@@ -17,6 +17,7 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Modules\Purchase\DataTables\PurchaseOrderDataTable;
 use Modules\Purchase\Entities\PurchaseItem;
 use Modules\Purchase\Entities\PurchaseItemImage;
@@ -180,7 +181,10 @@ class PurchaseOrderController extends AccountBaseController
         $order->delivery_status = $request->delivery_status;
         $order->total = round($request->total, 2);
         $order->address_id = $request->address_id;
-        $order->warehouse_id = $request->filled('warehouse_id') ? (int) $request->warehouse_id : null;
+        // Backward compatibility when DB schema has not yet added purchase_orders.warehouse_id.
+        if (Schema::hasColumn('purchase_orders', 'warehouse_id')) {
+            $order->warehouse_id = $request->filled('warehouse_id') ? (int) $request->warehouse_id : null;
+        }
         $order->note = trim_editor($request->note);
         $order->save();
 
@@ -396,7 +400,10 @@ class PurchaseOrderController extends AccountBaseController
         $order->delivery_status = $request->delivery_status;
         $order->total = round($request->total, 2);
         $order->address_id = $request->address_id;
-        $order->warehouse_id = $request->filled('warehouse_id') ? (int) $request->warehouse_id : null;
+        // Backward compatibility when DB schema has not yet added purchase_orders.warehouse_id.
+        if (Schema::hasColumn('purchase_orders', 'warehouse_id')) {
+            $order->warehouse_id = $request->filled('warehouse_id') ? (int) $request->warehouse_id : null;
+        }
         $order->note = trim_editor($request->note);
         $order->updated_at = now();
 
@@ -440,21 +447,28 @@ class PurchaseOrderController extends AccountBaseController
             ? Currency::findOrFail($request->currencyId)
             : Currency::findOrFail($companyCurrencyID);
 
+        // Keep PO behavior but fallback to product price when purchase_price is empty.
+        $basePurchasePrice = $this->items->purchase_price;
+        if (is_null($basePurchasePrice) || floatval($basePurchasePrice) <= 0) {
+            $basePurchasePrice = $this->items->price;
+        }
+
         if (! is_null($exchangeRate) && ! is_null($exchangeRate->exchange_rate)) {
             if ($this->items->total_amount != '') {
                 /** @phpstan-ignore-next-line */
                 $this->items->purchase_price = floor($this->items->total_amount * $exchangeRate->exchange_rate);
             } else {
-
-                $this->items->purchase_price = floatval($this->items->purchase_price) * floatval($exchangeRate->exchange_rate);
+                $this->items->purchase_price = floatval($basePurchasePrice) * floatval($exchangeRate->exchange_rate);
             }
         } else {
             if ($this->items->total_amount != '') {
-                $this->items->price = $this->items->total_amount;
+                $this->items->purchase_price = $this->items->total_amount;
+            } else {
+                $this->items->purchase_price = floatval($basePurchasePrice);
             }
         }
 
-        $this->items->price = number_format((float) $this->items->price, 2, '.', '');
+        $this->items->purchase_price = number_format((float) $this->items->purchase_price, 2, '.', '');
         $this->taxes = Tax::all();
         $this->units = UnitType::all();
         $view = view('purchase::purchase-order.ajax.add_item', $this->data)->render();

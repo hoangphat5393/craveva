@@ -348,9 +348,16 @@ $('body').on('click', '#right-modal-content .btn-cancel', function (e) {
     closeTaskDetail();
 });
 
-//hide tooltip after click on element
-$(document).on('mousedown', '[aria-describedby]', function () {
-    $('[aria-describedby]').tooltip('hide');
+// Hide tooltip on mousedown: only for Bootstrap tooltip triggers (not every [aria-describedby] — modals/ARIA also use it).
+$(document).on('mousedown', '[data-toggle="tooltip"]', function () {
+    var $el = $(this);
+    try {
+        if ($el.data('bs.tooltip')) {
+            $el.tooltip('hide');
+        }
+    } catch (e) {
+        /* ignore: wrong plugin or not initialized */
+    }
 });
 
 // Snippet to reload the page on browser back and forward button click
@@ -635,11 +642,17 @@ function rtl() {
 *******************************************************/
 function openTaskDetail() {
     var otd1 = document.getElementById('task-detail-1');
-    otd1.classList.add('in');
+    if (otd1) {
+        otd1.classList.add('in');
+    }
     var ops2 = document.getElementById('close-task-detail-overlay');
-    ops2.classList.add('in');
+    if (ops2) {
+        ops2.classList.add('in');
+    }
     var otd4 = document.getElementById('close-task-detail');
-    otd4.classList.add('in');
+    if (otd4) {
+        otd4.classList.add('in');
+    }
 }
 var el = document.getElementById('close-task-detail-overlay');
 if (el) {
@@ -651,13 +664,19 @@ if (el) {
 }
 function closeTaskDetail() {
     var ctd1 = document.getElementById('task-detail-1');
-    ctd1.classList.remove('in');
+    if (ctd1) {
+        ctd1.classList.remove('in');
+    }
     var ctd2 = document.getElementById('close-task-detail-overlay');
-    ctd2.classList.remove('in');
+    if (ctd2) {
+        ctd2.classList.remove('in');
+    }
     sessionStorage.setItem('RIGHT_MODAL', 'opened');
     window.history.back();
     var ctd3 = document.getElementById('close-task-detail');
-    ctd3.classList.remove('in');
+    if (ctd3) {
+        ctd3.classList.remove('in');
+    }
 }
 /*******************************************************
                  Task Detail End

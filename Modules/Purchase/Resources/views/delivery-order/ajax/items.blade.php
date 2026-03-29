@@ -36,10 +36,10 @@
                             <input type="text" class="form-control height-35 f-14" name="batch_number[]" value="{{ $line->batch_number }}" placeholder="—">
                         </td>
                         <td>
-                            <input type="text" class="form-control height-35 f-14 do-line-expiry" name="expiry_date[]" autocomplete="off" value="{{ $line->expiry_date ? \Carbon\Carbon::parse($line->expiry_date)->translatedFormat(company()->date_format) : '' }}" placeholder="{{ company()->date_format }}">
+                            <input type="date" class="form-control height-35 f-14" name="expiry_date[]" autocomplete="off" value="{{ $line->expiry_date ? \Carbon\Carbon::parse($line->expiry_date)->format('Y-m-d') : '' }}">
                         </td>
                         <td>
-                            <select class="form-control select-picker height-35 f-14" name="picking_rule_applied[]" data-size="3">
+                            <select class="form-control select-picker height-35 f-14" name="picking_rule_applied[]" data-size="3" data-container="body">
                                 <option value="">—</option>
                                 <option value="FIFO" @selected($line->picking_rule_applied === 'FIFO')>FIFO</option>
                                 <option value="FEFO" @selected($line->picking_rule_applied === 'FEFO')>FEFO</option>
@@ -66,10 +66,10 @@
                             <input type="text" class="form-control height-35 f-14" name="batch_number[]" value="" placeholder="—">
                         </td>
                         <td>
-                            <input type="text" class="form-control height-35 f-14 do-line-expiry" name="expiry_date[]" value="" autocomplete="off" placeholder="{{ company()->date_format }}">
+                            <input type="date" class="form-control height-35 f-14" name="expiry_date[]" value="" autocomplete="off">
                         </td>
                         <td>
-                            <select class="form-control select-picker height-35 f-14" name="picking_rule_applied[]" data-size="3">
+                            <select class="form-control select-picker height-35 f-14" name="picking_rule_applied[]" data-size="3" data-container="body">
                                 <option value="">—</option>
                                 <option value="FIFO">FIFO</option>
                                 <option value="FEFO">FEFO</option>

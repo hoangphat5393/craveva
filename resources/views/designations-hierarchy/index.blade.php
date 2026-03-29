@@ -83,49 +83,48 @@
             cursor: pointer;
         }
 
-        #drophere li{
+        #drophere li {
             color: rgb(5, 5, 34);
-            font-weight:bold;
+            font-weight: bold;
         }
 
-        #dragRoot ul li > span {
-            color:rgb(6, 6, 44);
+        #dragRoot ul li>span {
+            color: rgb(6, 6, 44);
             padding: 6px;
             letter-spacing: 2px;
 
         }
 
-        #drophere li > span {
+        #drophere li>span {
             cursor: default;
         }
 
-        .chartHeading-org{
+        .chartHeading-org {
             position: relative;
             padding: 20px;
         }
 
-        .setOpacity{
+        .setOpacity {
             opacity: 0;
         }
 
-        .unsetOpacity{
+        .unsetOpacity {
             opacity: 1;
         }
 
-        #resize,#full_view
-        {
+        #resize,
+        #full_view {
             cursor: pointer;
         }
 
-        #dragRoot{
+        #dragRoot {
             overflow-y: auto;
             overflow-x: hidden;
         }
-
     </style>
     @if (!user()->dark_theme)
         <style>
-            .chartHeading-org{
+            .chartHeading-org {
                 background: #fff;
             }
         </style>
@@ -139,8 +138,8 @@
 @endpush
 
 @php
-$addDesignationPermission = user()->permission('add_designation');
-$editDesignationPermission = user()->permission('edit_designation');
+    $addDesignationPermission = user()->permission('add_designation');
+    $editDesignationPermission = user()->permission('edit_designation');
 @endphp
 
 @section('filter-section')
@@ -155,8 +154,7 @@ $editDesignationPermission = user()->permission('edit_designation');
                             <i class="fa fa-search f-13 text-dark-grey"></i>
                         </span>
                     </div>
-                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field"
-                        placeholder="@lang('modules.department.searchValidation')">
+                    <input type="text" class="form-control f-14 p-1 border-additional-grey" id="search-text-field" placeholder="@lang('modules.department.searchValidation')">
                 </div>
             </form>
         </div>
@@ -180,18 +178,16 @@ $editDesignationPermission = user()->permission('edit_designation');
         <div class="d-grid d-lg-flex d-md-flex action-bar">
             <div id="table-actions" class="flex-grow-1 align-items-center">
                 @if ($addDesignationPermission == 'all' || $addDesignationPermission == 'added')
-                <x-forms.link-primary :link="route('designations.create')" class="mr-3 openRightModal float-left" icon="plus" data-redirect-url="{{ route('designation.hierarchy') }}">
-                    @lang('app.menu.addDesignation')
-                </x-forms.link-primary>
+                    <x-forms.link-primary :link="route('designations.create')" class="mr-3 openRightModal float-left" icon="plus" data-redirect-url="{{ route('designation.hierarchy') }}">
+                        @lang('app.menu.addDesignation')
+                    </x-forms.link-primary>
                 @endif
             </div>
 
             <div class="btn-group mt-2 mt-lg-0 mt-md-0 ml-0 ml-lg-3 ml-md-3" role="group">
-                <a href="{{ route('designations.index') }}" class="btn btn-secondary f-14" data-toggle="tooltip"
-                data-original-title="@lang('modules.leaves.tableView')"><i class="side-icon bi bi-list-ul"></i></a>
+                <a href="{{ route('designations.index') }}" class="btn btn-secondary f-14" data-toggle="tooltip" data-original-title="@lang('modules.leaves.tableView')"><i class="side-icon bi bi-list-ul"></i></a>
 
-                <a href="{{ route('designation.hierarchy') }}" class="btn btn-secondary f-14 btn-active" data-toggle="tooltip"
-                    data-original-title="@lang('app.hierarchy')"><i class="bi bi-diagram-3"></i></a>
+                <a href="{{ route('designation.hierarchy') }}" class="btn btn-secondary f-14 btn-active" data-toggle="tooltip" data-original-title="@lang('app.hierarchy')"><i class="bi bi-diagram-3"></i></a>
             </div>
         </div>
 
@@ -216,59 +212,59 @@ $editDesignationPermission = user()->permission('edit_designation');
 @endsection
 
 @push('scripts')
-<script>
-    var bsTooltip = $.fn.tooltip;
-</script>
-<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js" type="text/javascript"></script>
-<script>
+    <script>
+        var bsTooltip = $.fn.tooltip;
+    </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js" type="text/javascript"></script>
+    @include('sections.jquery_ui_restore_bootstrap_tooltip')
+    <script>
+        // Initialize tooltips
+        bsTooltip.call($("[data-toggle='tooltip']"));
 
-// Initialize tooltips
-bsTooltip.call( $( "[data-toggle='tooltip']" ) );
+        var editDepartment = <?php echo json_encode($editDesignationPermission); ?>;
 
-var editDepartment = <?php echo json_encode($editDesignationPermission); ?>;
+        // Zoom in effect Zoom out effect
+        scrHeight = $(window).height();
+        scrHeight = scrHeight - 280;
 
-// Zoom in effect Zoom out effect
-    scrHeight = $(window).height();
-    scrHeight = scrHeight - 280;
+        $('#chartOrganization').css('height', scrHeight);
+        $('#chartTree').css('height', scrHeight);
 
-    $('#chartOrganization').css('height', scrHeight);
-    $('#chartTree').css('height', scrHeight);
+        $(document).on('click', '#full_view', function() {
+            $('#chartOrganization').removeClass('col-md-6');
+            $('#chartOrganization').addClass('col-md-12');
+            $('#chartTree').hide();
 
-$(document).on('click', '#full_view', function () {
-    $('#chartOrganization').removeClass('col-md-6');
-    $('#chartOrganization').addClass('col-md-12');
-    $('#chartTree').hide();
+            $('#full_view').hide();
+            $('#resize').show();
 
-    $('#full_view').hide();
-    $('#resize').show();
+            screenHeight = $(window).height();
+            screenHeight = screenHeight - 280;
+            $('#chartDiv').css('height', screenHeight);
 
-    screenHeight = $(window).height();
-    screenHeight = screenHeight - 280;
-    $('#chartDiv').css('height', screenHeight);
+        });
 
-});
+        $(document).on('click', '#resize', function() {
+            $('#chartOrganization').removeClass('col-md-12');
+            $('#chartOrganization').addClass('col-md-6');
+            $('#chartTree').show();
 
-$(document).on('click', '#resize', function () {
-    $('#chartOrganization').removeClass('col-md-12');
-    $('#chartOrganization').addClass('col-md-6');
-    $('#chartTree').show();
+            $('#resize').hide();
+            $('#full_view').show();
+            $('#chartDiv').css('height', '100%');
+        });
 
-    $('#resize').hide();
-    $('#full_view').show();
-    $('#chartDiv').css('height', '100%');
-});
-
-// search filter
-$('#search-text-field').on('change keyup',
-    function() {
-        if ($('#search-text-field').val() != "") {
-            $('#reset-filters').removeClass('d-none');
-            searchText();
-        } else {
-            $('#reset-filters').addClass('d-none');
-            searchText();
-        }
-    });
+        // search filter
+        $('#search-text-field').on('change keyup',
+            function() {
+                if ($('#search-text-field').val() != "") {
+                    $('#reset-filters').removeClass('d-none');
+                    searchText();
+                } else {
+                    $('#reset-filters').addClass('d-none');
+                    searchText();
+                }
+            });
 
         $('#reset-filters').click(function() {
             $('#filter-form')[0].reset();
@@ -278,43 +274,44 @@ $('#search-text-field').on('change keyup',
 
         });
 
- function searchText(){
-        let srchText = $('#search-text-field').val();
+        function searchText() {
+            let srchText = $('#search-text-field').val();
 
-        $.ajax({
-            url: "{{ route('designation.srchFilter') }}",
-            type: "POST",
-            data: {
-                "_token": "{{ csrf_token() }}",
-                "searchText": srchText
-            },
-            success: function(data) {
-                if(data.status == 'success')
-                {
-                    $('#chartTree').html(data.html);
-                    $('#chartOrganization').html(data.organizational);
-                    $(function() { DragAndDrop.enable("#dragRoot"); });
+            $.ajax({
+                url: "{{ route('designation.srchFilter') }}",
+                type: "POST",
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "searchText": srchText
+                },
+                success: function(data) {
+                    if (data.status == 'success') {
+                        $('#chartTree').html(data.html);
+                        $('#chartOrganization').html(data.organizational);
+                        $(function() {
+                            DragAndDrop.enable("#dragRoot");
+                        });
+                    }
                 }
-            }
+            });
+        }
+
+        // Collapse tree by node
+
+        $(document).on('click', '#dragRoot', function(e) {
+            $('#node-ul-' + e.target.id).toggle();
         });
-    }
 
-// Collapse tree by node
+        // On drag reduce the opacity of the node and on drop restore the opacity
 
-$(document).on('click', '#dragRoot', function(e) {
-              $('#node-ul-'+e.target.id).toggle();
-});
+        $(document).on('mouseup', 'body', function(e) {
+            $('.node-cpe').addClass('unsetOpacity');
+            setTimeout(() => {
+                $('.node-cpe').removeClass('setOpacity');
+            }, 100);
+        });
 
-// On drag reduce the opacity of the node and on drop restore the opacity
-
-$(document).on('mouseup', 'body', function(e) {
-    $('.node-cpe').addClass('unsetOpacity');
-    setTimeout(() => {
-        $('.node-cpe').removeClass('setOpacity');
-    }, 100);
-});
-
-// initialize draggable
+        // initialize draggable
         var DragAndDrop = (function(DragAndDrop) {
 
             function shouldAcceptDrop(item) {
@@ -337,7 +334,7 @@ $(document).on('mouseup', 'body', function(e) {
             function itemOut(event, ui) {}
 
             function itemDropped(event, ui) {
-                var parent_id  = event.target.id;
+                var parent_id = event.target.id;
 
                 if (parent_id == 'NewNode') {
                     var checkExits = setInterval(() => {
@@ -354,11 +351,12 @@ $(document).on('mouseup', 'body', function(e) {
                                     "newParent": $newParent,
                                 },
                                 success: function(data) {
-                                    if(data.status == 'success')
-                                    {
+                                    if (data.status == 'success') {
                                         $('#chartTree').html(data.html);
                                         $('#chartOrganization').html(data.organizational);
-                                        $(function() { DragAndDrop.enable("#dragRoot"); });
+                                        $(function() {
+                                            DragAndDrop.enable("#dragRoot");
+                                        });
                                     }
                                 }
                             });
@@ -378,7 +376,7 @@ $(document).on('mouseup', 'body', function(e) {
 
                 // destination may not have a UL yet
                 if ($dstUL.length == 0) {
-                    $dstUL = $("<ul id='node-ul-"+parent_id+"'></ul>");
+                    $dstUL = $("<ul id='node-ul-" + parent_id + "'></ul>");
                     $target.append($dstUL);
                 }
 
@@ -399,17 +397,16 @@ $(document).on('mouseup', 'body', function(e) {
                 var checkElementExits = setInterval(() => {
                     var values = [];
 
-                    if(parent_id == 'NewNode')
-                    {
+                    if (parent_id == 'NewNode') {
                         clearInterval(checkElementExits);
                     }
 
-                    if ($('#node-ul-'+parent_id).length && parent_id != 'NewNode') {
-                        $('#node-ul-'+parent_id).children('li').each(function() {
+                    if ($('#node-ul-' + parent_id).length && parent_id != 'NewNode') {
+                        $('#node-ul-' + parent_id).children('li').each(function() {
                             values.push($(this).val());
                         });
 
-                    // save the values in designation table
+                        // save the values in designation table
                         $.ajax({
                             url: "{{ route('designation.changeParent') }}",
                             type: "POST",
@@ -419,11 +416,12 @@ $(document).on('mouseup', 'body', function(e) {
                                 "parent_id": parent_id
                             },
                             success: function(data) {
-                                if(data.status == 'success')
-                                {
+                                if (data.status == 'success') {
                                     $('#chartTree').html(data.html);
                                     $('#chartOrganization').html(data.organizational);
-                                    $(function() { DragAndDrop.enable("#dragRoot"); });
+                                    $(function() {
+                                        DragAndDrop.enable("#dragRoot");
+                                    });
                                 }
                             }
                         });
@@ -460,13 +458,10 @@ $(document).on('mouseup', 'body', function(e) {
 
         if (editDepartment == 'none') {
             $('.node-cpe').css('cursor', 'default');
-        }
-        else{
+        } else {
             $(function() {
                 DragAndDrop.enable("#dragRoot");
             });
         }
-
-
-</script>
+    </script>
 @endpush

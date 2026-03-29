@@ -840,6 +840,7 @@
     <!-- CREATE INVOICE END -->
     <!-- for sortable content -->
     <script src="{{ asset('vendor/jquery/jquery-ui.min.js') }}"></script>
+    @include('sections.jquery_ui_restore_bootstrap_tooltip')
 
     <script>
         $(function() {

@@ -31,12 +31,11 @@
                                                 <div class="row py-3 pt-4 border-bottom">
                                                     <div class="col-md-3">
                                                         <span class="ui-icon ui-icon-arrowthick-2-n-s"></span>
-                                                        <input type="hidden" name="sort_order[]"
-                                                            value="{{ $item->id }}">
+                                                        <input type="hidden" name="sort_order[]" value="{{ $item->id }}">
                                                     </div>
                                                     <div class="col-md-5">
                                                         @if ($item->custom_fields_id === null)
-                                                            {{ __('modules.tickets.'.$item->field_name) }}
+                                                            {{ __('modules.tickets.' . $item->field_name) }}
                                                         @else
                                                             {{ $item->field_display_name }}
                                                         @endif
@@ -44,12 +43,8 @@
                                                     <div class="col-md-4">
                                                         @if (!in_array($item->field_name, ['name', 'email', 'ticket_subject', 'message', 'assign_group']))
                                                             <div class="custom-control custom-switch">
-                                                                <input type="checkbox"
-                                                                    class="custom-control-input change-setting"
-                                                                    data-setting-id="{{ $item->id }}"
-                                                                    @if ($item->status == 'active') checked @endif id="{{ $item->id }}">
-                                                                <label class="custom-control-label f-14"
-                                                                    for="{{ $item->id }}"></label>
+                                                                <input type="checkbox" class="custom-control-input change-setting" data-setting-id="{{ $item->id }}" @if ($item->status == 'active') checked @endif id="{{ $item->id }}">
+                                                                <label class="custom-control-label f-14" for="{{ $item->id }}"></label>
                                                             </div>
                                                         @else
                                                             --
@@ -68,14 +63,14 @@
                         <x-cards.data>
                             <p class="f-w-500">@lang('modules.lead.iframeSnippet')</p>
                             <code>
-                                &lt;iframe src="{{ route('front.ticket_form',company()->hash) }}"  frameborder="0" scrolling="yes"  style="display:block; width:100%; height:60vh;">&lt;/iframe&gt;
+                                &lt;iframe src="{{ route('front.ticket_form', company()->hash) }}" frameborder="0" scrolling="yes" style="display:block; width:100%; height:60vh;">&lt;/iframe&gt;
                             </code>
                         </x-cards.data>
 
                         <x-cards.data>
                             <p class="f-w-500">Share Direct link</p>
-                            <p class="f-12"><a href="{{ route('front.ticket_form', [company()->hash]).'?styled=1&lang='.company()->locale }}" target="_blank">{{ route('front.ticket_form', [company()->hash]).'?styled=1&lang='.company()->locale }}</a></p>
-                            <p class="f-12"><a href="{{ route('front.ticket_form', [company()->hash]).'?styled=1&with_logo=1&lang='.company()->locale }}" target="_blank">{{ route('front.ticket_form', [company()->hash]).'?styled=1&with_logo=1&lang='.company()->locale }}</a></p>
+                            <p class="f-12"><a href="{{ route('front.ticket_form', [company()->hash]) . '?styled=1&lang=' . company()->locale }}" target="_blank">{{ route('front.ticket_form', [company()->hash]) . '?styled=1&lang=' . company()->locale }}</a></p>
+                            <p class="f-12"><a href="{{ route('front.ticket_form', [company()->hash]) . '?styled=1&with_logo=1&lang=' . company()->locale }}" target="_blank">{{ route('front.ticket_form', [company()->hash]) . '?styled=1&with_logo=1&lang=' . company()->locale }}</a></p>
                         </x-cards.data>
                     </div>
                 </div>
@@ -84,8 +79,7 @@
             <div class="col-lg-6">
                 <x-cards.data>
                     <h4>@lang('app.preview')</h4>
-                    <iframe src="{{ route('front.ticket_form', company()->hash) }}" id="previewIframe" width="100%"
-                        onload="resizeIframe(this)" frameborder="0"></iframe>
+                    <iframe src="{{ route('front.ticket_form', company()->hash) }}" id="previewIframe" width="100%" onload="resizeIframe(this)" frameborder="0"></iframe>
                 </x-cards.data>
             </div>
         </div>
@@ -97,6 +91,7 @@
 @push('scripts')
     <!-- for sortable content -->
     <script src="{{ asset('vendor/jquery/jquery-ui.min.js') }}"></script>
+    @include('sections.jquery_ui_restore_bootstrap_tooltip')
 
     <!-- to highlight html content -->
     <script src="{{ asset('vendor/jquery/highlight.min.js') }}"></script>

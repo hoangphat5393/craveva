@@ -7,15 +7,15 @@
                 </h4>
                 <div class="row p-20">
                     <div class="col-lg-12">
-                        <div class="row">
+                        <div class="row align-items-start">
                             <div class="col-md-4">
-                                <div class="form-group mb-4">
-                                    <label class="f-14 text-dark-grey mb-12" for="delivery_number">@lang('app.orderNumber')</label>
+                                <div class="form-group my-3">
+                                    <label class="f-14 text-dark-grey mb-12 d-block" for="delivery_number">@lang('app.orderNumber')</label>
                                     <div class="input-group">
                                         <div class="input-group-prepend height-35">
                                             <span class="input-group-text border-grey f-15 bg-additional-grey px-3 text-dark" id="do-number-prefix">DO#</span>
                                         </div>
-                                        <input type="text" name="delivery_number" id="delivery_number" class="form-control height-35 f-15" placeholder="001" aria-label="001" aria-describedby="do-number-prefix">
+                                        <input type="text" name="delivery_number" id="delivery_number" class="form-control height-35 f-15" placeholder="001" aria-label="001" aria-describedby="do-number-prefix" spellcheck="false" autocomplete="off">
                                     </div>
                                 </div>
                             </div>
@@ -37,6 +37,22 @@
                                     <option value="received">Received</option>
                                 </x-forms.select>
                             </div>
+                            @if (isset($warehouses) && $warehouses->count() > 0)
+                                <div class="col-md-4">
+                                    <x-forms.select fieldId="warehouse_id" :fieldLabel="__('purchase::modules.deliveryOrder.warehouse')" fieldName="warehouse_id" search="true">
+                                        <option value="">@lang('purchase::modules.deliveryOrder.selectWarehouse')</option>
+                                        @foreach ($warehouses as $wh)
+                                            <option value="{{ $wh->id }}">{{ $wh->name }}@if (!empty($wh->code))
+                                                    ({{ $wh->code }})
+                                                @endif
+                                            </option>
+                                        @endforeach
+                                    </x-forms.select>
+                                </div>
+                            @endif
+                            <div class="col-md-4">
+                                <x-forms.text fieldId="delivery_fee" :fieldLabel="__('purchase::modules.deliveryOrder.deliveryFee')" fieldName="delivery_fee" fieldPlaceholder="0.00" />
+                            </div>
                             <div class="col-md-4">
                                 <x-forms.text fieldId="erp_shipment_reference" :fieldLabel="__('purchase::app.erpShipmentRef')" fieldName="erp_shipment_reference" />
                             </div>
@@ -48,8 +64,6 @@
                         <div class="row mt-4">
                             <div class="col-md-12" id="items-list"></div>
                         </div>
-
-                        <x-forms.custom-field :fields="$fields" class="col-md-12"></x-forms.custom-field>
                     </div>
                 </div>
 
@@ -66,6 +80,30 @@
 </div>
 
 <script>
+    function initDoLineDatepickers(container) {
+        var $root = container ? $(container) : $(document);
+        $root.find('.do-line-expiry').each(function() {
+            if ($(this).data('datepicker-initialized')) {
+                return;
+            }
+            datepicker(this, {
+                position: 'bl',
+                ...datepickerConfig
+            });
+            $(this).data('datepicker-initialized', true);
+        });
+        if (typeof $.fn.selectpicker !== 'undefined') {
+            $root.find('#items-list select.select-picker').each(function() {
+                var $s = $(this);
+                if (!$s.parent().hasClass('bootstrap-select')) {
+                    $s.selectpicker();
+                } else {
+                    $s.selectpicker('refresh');
+                }
+            });
+        }
+    }
+
     $(document).ready(function() {
         datepicker('#delivery_date', {
             position: 'bl',
@@ -123,6 +161,7 @@
             }).then(function(response) {
                 if (response.status === 'success') {
                     $('#items-list').html(response.html);
+                    initDoLineDatepickers('#items-list');
                 }
             }).catch(function(err) {
                 if (typeof Swal !== 'undefined') {

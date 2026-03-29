@@ -12,7 +12,6 @@ return [
     'editTitle' => 'Sửa kho',
     'product' => 'Sản phẩm',
     'warehouse' => 'Kho',
-    'err_no_warehouse_for_invoice' => 'Không xác định được kho cho hóa đơn (thiết lập kho mặc định cho khách hoặc kho mặc định công ty).',
     'quantity' => 'Số lượng',
     'addStock' => 'Thêm tồn kho',
     'removeStock' => 'Giảm tồn kho',

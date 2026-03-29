@@ -216,4 +216,16 @@ return [
         'committedStock' => '承诺库存',
         'availableForSale' => '可供出售',
     ],
+    'deliveryOrder' => [
+        'draft' => '草稿',
+        'inbound' => '入库',
+        'received' => '已收货',
+        'quantityReceived' => '收货数量',
+        'warehouse' => '仓库',
+        'selectWarehouse' => '选择仓库',
+        'deliveryFee' => '运费',
+        'batchLot' => '批次 / 批号',
+        'expiryDate' => '有效期至',
+        'pickingRule' => '拣货规则（先进先出 / 先到期先出）',
+    ],
 ];

@@ -7,35 +7,50 @@
                 </h4>
                 <div class="row p-20">
                     <div class="col-lg-12">
-                        <div class="row">
+                        <div class="row align-items-start">
                             <div class="col-md-4">
-                                <div class="form-group mb-4">
-                                    <label class="f-14 text-dark-grey mb-12" for="delivery_number">@lang('app.orderNumber')</label>
+                                <div class="form-group my-3">
+                                    <label class="f-14 text-dark-grey mb-12 d-block" for="delivery_number">@lang('app.orderNumber')</label>
                                     <div class="input-group">
                                         <div class="input-group-prepend height-35">
                                             <span class="input-group-text border-grey f-15 bg-additional-grey px-3 text-dark" id="do-number-prefix">DO#</span>
                                         </div>
-                                        <input type="text" name="delivery_number" id="delivery_number" class="form-control height-35 f-15" value="{{ $delivery->delivery_number }}" placeholder="001" aria-label="001" aria-describedby="do-number-prefix">
+                                        <input type="text" name="delivery_number" id="delivery_number" class="form-control height-35 f-15" value="{{ $delivery->delivery_number }}" placeholder="001" aria-label="001" aria-describedby="do-number-prefix" spellcheck="false" autocomplete="off">
                                     </div>
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <x-forms.select fieldId="purchase_order_id" :fieldLabel="__('purchase::app.menu.purchaseOrder')" fieldName="purchase_order_id" search="true">
-                                    <option value="">--</option>
-                                    @foreach ($purchaseOrders as $order)
-                                        <option value="{{ $order->id }}" @if ($delivery->purchase_order_id == $order->id) selected @endif>{{ $order->purchase_order_number }}</option>
-                                    @endforeach
-                                </x-forms.select>
+                                <input type="hidden" name="purchase_order_id" value="{{ $delivery->purchase_order_id }}">
+                                <div class="form-group my-3">
+                                    <x-forms.label fieldId="purchase_order_display" :fieldLabel="__('purchase::app.menu.purchaseOrder')" fieldRequired="false" />
+                                    <input type="text" id="purchase_order_display" class="form-control height-35 f-14 bg-light" readonly value="{{ $delivery->purchaseOrder?->purchase_order_number ?? '—' }}">
+                                </div>
                             </div>
                             <div class="col-md-4">
                                 <x-forms.datepicker fieldId="delivery_date" fieldRequired="true" :fieldLabel="__('app.date')" fieldName="delivery_date" :fieldValue="\Carbon\Carbon::parse($delivery->delivery_date)->translatedFormat(company()->date_format)" :fieldPlaceholder="__('placeholders.date')" />
                             </div>
                             <div class="col-md-4">
                                 <x-forms.select fieldId="status" :fieldLabel="__('app.status')" fieldName="status">
-                                    <option value="draft" @if ($delivery->status == 'draft') selected @endif>Draft</option>
-                                    <option value="inbound" @if ($delivery->status == 'inbound') selected @endif>Inbound</option>
-                                    <option value="received" @if ($delivery->status == 'received') selected @endif>Received</option>
+                                    <option value="draft" @selected($delivery->status == 'draft')>Draft</option>
+                                    <option value="inbound" @selected($delivery->status == 'inbound')>Inbound</option>
+                                    <option value="received" @selected($delivery->status == 'received')>Received</option>
                                 </x-forms.select>
+                            </div>
+                            @if (isset($warehouses) && $warehouses->count() > 0)
+                                <div class="col-md-4">
+                                    <x-forms.select fieldId="warehouse_id" :fieldLabel="__('purchase::modules.deliveryOrder.warehouse')" fieldName="warehouse_id" search="true">
+                                        <option value="">@lang('purchase::modules.deliveryOrder.selectWarehouse')</option>
+                                        @foreach ($warehouses as $wh)
+                                            <option value="{{ $wh->id }}" @selected((int) $delivery->warehouse_id === (int) $wh->id)>{{ $wh->name }}@if (!empty($wh->code))
+                                                    ({{ $wh->code }})
+                                                @endif
+                                            </option>
+                                        @endforeach
+                                    </x-forms.select>
+                                </div>
+                            @endif
+                            <div class="col-md-4">
+                                <x-forms.text fieldId="delivery_fee" :fieldLabel="__('purchase::modules.deliveryOrder.deliveryFee')" fieldName="delivery_fee" fieldPlaceholder="0.00" :fieldValue="$delivery->delivery_fee !== null ? $delivery->delivery_fee : ''" />
                             </div>
                             <div class="col-md-4">
                                 <x-forms.text fieldId="erp_shipment_reference" :fieldLabel="__('purchase::app.erpShipmentRef')" fieldName="erp_shipment_reference" :fieldValue="$delivery->erp_shipment_reference" />
@@ -45,7 +60,11 @@
                             </div>
                         </div>
 
-                        <x-forms.custom-field :fields="$fields" class="col-md-12"></x-forms.custom-field>
+                        <div class="row mt-4">
+                            <div class="col-md-12" id="items-list">
+                                @include('purchase::delivery-order.ajax.items', ['items' => collect(), 'deliveryItems' => $deliveryItems])
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -62,11 +81,36 @@
 </div>
 
 <script>
+    function initDoLineDatepickers(container) {
+        var $root = container ? $(container) : $(document);
+        $root.find('.do-line-expiry').each(function() {
+            if ($(this).data('datepicker-initialized')) {
+                return;
+            }
+            datepicker(this, {
+                position: 'bl',
+                ...datepickerConfig
+            });
+            $(this).data('datepicker-initialized', true);
+        });
+        if (typeof $.fn.selectpicker !== 'undefined') {
+            $root.find('#items-list select.select-picker').each(function() {
+                var $s = $(this);
+                if (!$s.parent().hasClass('bootstrap-select')) {
+                    $s.selectpicker();
+                } else {
+                    $s.selectpicker('refresh');
+                }
+            });
+        }
+    }
+
     $(document).ready(function() {
         datepicker('#delivery_date', {
             position: 'bl',
             ...datepickerConfig
         });
+        initDoLineDatepickers('#items-list');
 
         $('#update-delivery-order-form').on('keypress', function(e) {
             if (e.key === 'Enter') {
@@ -104,33 +148,6 @@
             }).finally(function() {
                 $btn.prop('disabled', false);
                 $.easyUnblockUI('#update-delivery-order-form');
-            });
-        });
-
-        $('#purchase_order_id').change(function() {
-            var id = $(this).val();
-            var url = "{{ route('delivery-orders.get-items') }}";
-            var token = "{{ csrf_token() }}";
-            window.apiHttp.get(url, {
-                params: {
-                    purchase_order_id: id,
-                    _token: token
-                }
-            }).then(function(response) {
-                if (response.status === 'success') {
-                    $('#items-list').html(response.html);
-                }
-            }).catch(function(err) {
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        icon: 'error',
-                        text: err.message,
-                        toast: true,
-                        position: 'top-end',
-                        timer: 4000,
-                        showConfirmButton: false
-                    });
-                }
             });
         });
 

@@ -55,6 +55,26 @@
                                     {{ optional($delivery->purchaseOrder)->purchase_order_number }}
                                 </td>
                             </tr>
+                            @if ($delivery->warehouse)
+                                <tr>
+                                    <td class="bg-light-grey border-right-0 f-w-500">
+                                        @lang('purchase::modules.deliveryOrder.warehouse')</td>
+                                    <td class="border-left-0">
+                                        {{ $delivery->warehouse->name }}@if ($delivery->warehouse->code)
+                                            ({{ $delivery->warehouse->code }})
+                                        @endif
+                                    </td>
+                                </tr>
+                            @endif
+                            @if ($delivery->delivery_fee !== null)
+                                <tr>
+                                    <td class="bg-light-grey border-right-0 f-w-500">
+                                        @lang('purchase::modules.deliveryOrder.deliveryFee')</td>
+                                    <td class="border-left-0">
+                                        {{ number_format((float) $delivery->delivery_fee, 2) }}
+                                    </td>
+                                </tr>
+                            @endif
                         </table>
                     </td>
                 </tr>
@@ -96,13 +116,16 @@
                     <td colspan="3">
                         <table class="inv-detail f-14 table-responsive-sm" width="100%">
                             <tr class="i-d-heading bg-light-grey text-dark-grey font-weight-bold">
-                                <td class="border-right-0" width="50%">@lang('app.description')</td>
-                                <td class="border-right-0 border-left-0" align="right">
+                                <td class="border-right-0" width="32%">@lang('app.description')</td>
+                                <td class="border-right-0 border-left-0" align="right" width="12%">
                                     @lang('purchase::modules.reports.quantityOrdered')
                                 </td>
-                                <td class="border-left-0" align="right">
+                                <td class="border-left-0" align="right" width="12%">
                                     @lang('purchase::modules.deliveryOrder.quantityReceived')
                                 </td>
+                                <td class="border-left-0" width="14%">@lang('purchase::modules.deliveryOrder.batchLot')</td>
+                                <td class="border-left-0" width="15%">@lang('purchase::modules.deliveryOrder.expiryDate')</td>
+                                <td class="border-left-0" width="15%">@lang('purchase::modules.deliveryOrder.pickingRule')</td>
                             </tr>
 
                             @if ($delivery->items->count() > 0)
@@ -121,10 +144,15 @@
                                                 <br><span class="f-11 text-dark-grey">{{ $item->purchaseItem->unit->unit_type }}</span>
                                             @endif
                                         </td>
+                                        <td>{{ $item->batch_number ?: '—' }}</td>
+                                        <td>
+                                            {{ $item->expiry_date ? \Carbon\Carbon::parse($item->expiry_date)->translatedFormat(company()->date_format) : '—' }}
+                                        </td>
+                                        <td>{{ $item->picking_rule_applied ?: '—' }}</td>
                                     </tr>
                                     @if ($item->purchaseItem && $item->purchaseItem->item_summary)
                                         <tr class="text-dark f-12">
-                                            <td colspan="3" class="border-bottom-0">
+                                            <td colspan="6" class="border-bottom-0">
                                                 {!! nl2br(strip_tags($item->purchaseItem->item_summary, ['p', 'b', 'strong', 'a'])) !!}
                                             </td>
                                         </tr>
@@ -147,10 +175,11 @@
                                                     <br><span class="f-11 text-dark-grey">{{ $item->unit->unit_type }}</span>
                                                 @endif
                                             </td>
+                                            <td colspan="3">—</td>
                                         </tr>
                                         @if ($item->item_summary)
                                             <tr class="text-dark f-12">
-                                                <td colspan="3" class="border-bottom-0">
+                                                <td colspan="6" class="border-bottom-0">
                                                     {!! nl2br(strip_tags($item->item_summary, ['p', 'b', 'strong', 'a'])) !!}
                                                 </td>
                                             </tr>

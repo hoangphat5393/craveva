@@ -5,6 +5,8 @@ namespace Modules\Purchase\Http\Controllers;
 use App\Helper\Reply;
 use App\Http\Controllers\AccountBaseController;
 use App\Models\DeliveryOrder;
+use Carbon\Carbon;
+use Carbon\Exceptions\InvalidFormatException;
 use Illuminate\Http\Request;
 use Modules\Purchase\DataTables\DeliveryOrderDataTable;
 use Modules\Purchase\Entities\DeliveryOrderItem;
@@ -29,7 +31,8 @@ class DeliveryOrderController extends AccountBaseController
             'purchaseOrder.items',
             'purchaseOrder.items.unit',
             'purchaseOrder.vendor',
-            'purchaseOrder.address'
+            'purchaseOrder.address',
+            'warehouse'
         )->findOrFail($id);
 
         $this->pageTitle = $this->delivery->delivery_number;
@@ -95,13 +98,7 @@ class DeliveryOrderController extends AccountBaseController
     {
         $this->pageTitle = __('app.add') . ' ' . __('purchase::app.menu.deliveryOrders');
         $this->purchaseOrders = PurchaseOrder::where('company_id', $this->company ? $this->company->id : null)->get();
-
-        $delivery = new DeliveryOrder;
-        $getCustomFieldGroupsWithFields = $delivery->getCustomFieldGroupsWithFields();
-
-        if ($getCustomFieldGroupsWithFields) {
-            $this->fields = $getCustomFieldGroupsWithFields->fields;
-        }
+        $this->warehouses = $this->warehouseList();
 
         if (request()->ajax()) {
             $html = view('purchase::delivery-order.ajax.create', $this->data)->render();
@@ -117,13 +114,10 @@ class DeliveryOrderController extends AccountBaseController
     public function edit($id)
     {
         $this->pageTitle = __('app.edit') . ' ' . __('purchase::app.menu.deliveryOrders');
-        $this->delivery = DeliveryOrder::with('items', 'items.purchaseItem')->findOrFail($id);
+        $this->delivery = DeliveryOrder::with(['items.purchaseItem.unit', 'purchaseOrder'])->findOrFail($id);
         $this->purchaseOrders = PurchaseOrder::where('company_id', $this->company ? $this->company->id : null)->get();
-
-        $getCustomFieldGroupsWithFields = $this->delivery->getCustomFieldGroupsWithFields();
-        if ($getCustomFieldGroupsWithFields) {
-            $this->fields = $getCustomFieldGroupsWithFields->fields;
-        }
+        $this->warehouses = $this->warehouseList();
+        $this->deliveryItems = $this->delivery->items;
 
         if (request()->ajax()) {
             $html = view('purchase::delivery-order.ajax.edit', $this->data)->render();
@@ -147,20 +141,16 @@ class DeliveryOrderController extends AccountBaseController
         $delivery = DeliveryOrder::findOrFail($id);
         $delivery->purchase_order_id = $request->purchase_order_id;
         $po = $request->purchase_order_id ? PurchaseOrder::find($request->purchase_order_id) : null;
-        $delivery->warehouse_id = $request->input('warehouse_id') ?? $po?->warehouse_id;
+        $delivery->warehouse_id = $request->filled('warehouse_id') ? (int) $request->warehouse_id : ($po?->warehouse_id);
         $delivery->type = $request->input('type', $delivery->type ?? 'inbound');
         $delivery->delivery_number = $request->delivery_number;
-        $delivery->delivery_date = \Carbon\Carbon::createFromFormat(company()->date_format, $request->delivery_date)->format('Y-m-d');
+        $delivery->delivery_date = Carbon::createFromFormat(company()->date_format, $request->delivery_date)->format('Y-m-d');
         $delivery->status = $request->status;
         $delivery->erp_shipment_reference = $request->erp_shipment_reference;
         $delivery->wms_shipment_reference = $request->wms_shipment_reference;
+        $delivery->delivery_fee = $request->filled('delivery_fee') ? (float) $request->delivery_fee : null;
         $delivery->save();
 
-        if ($request->custom_fields_data) {
-            $delivery->updateCustomFieldData($request->custom_fields_data);
-        }
-
-        // Save Items
         if ($request->has('item_id')) {
             DeliveryOrderItem::where('delivery_order_id', $delivery->id)->delete();
 
@@ -168,9 +158,12 @@ class DeliveryOrderController extends AccountBaseController
                 DeliveryOrderItem::create([
                     'delivery_order_id' => $delivery->id,
                     'purchase_item_id' => $itemId,
-                    'product_id' => $request->product_id[$key],
-                    'quantity_ordered' => $request->quantity_ordered[$key],
-                    'quantity_received' => $request->quantity_received[$key],
+                    'product_id' => $request->product_id[$key] ?? null,
+                    'quantity_ordered' => $request->quantity_ordered[$key] ?? 0,
+                    'quantity_received' => $request->quantity_received[$key] ?? 0,
+                    'batch_number' => $this->normalizeBatch($request->batch_number[$key] ?? null),
+                    'expiry_date' => $this->parseDoExpiryInput($request->expiry_date[$key] ?? null),
+                    'picking_rule_applied' => $this->normalizePickingRule($request->picking_rule_applied[$key] ?? null),
                 ]);
             }
         }
@@ -190,28 +183,27 @@ class DeliveryOrderController extends AccountBaseController
         $delivery->company_id = $this->company ? $this->company->id : null;
         $delivery->purchase_order_id = $request->purchase_order_id;
         $po = $request->purchase_order_id ? PurchaseOrder::find($request->purchase_order_id) : null;
-        $delivery->warehouse_id = $request->input('warehouse_id') ?? $po?->warehouse_id;
+        $delivery->warehouse_id = $request->filled('warehouse_id') ? (int) $request->warehouse_id : ($po?->warehouse_id);
         $delivery->type = $request->input('type', 'inbound');
         $delivery->delivery_number = $request->delivery_number;
-        $delivery->delivery_date = \Carbon\Carbon::createFromFormat(company()->date_format, $request->delivery_date)->format('Y-m-d');
+        $delivery->delivery_date = Carbon::createFromFormat(company()->date_format, $request->delivery_date)->format('Y-m-d');
         $delivery->status = $request->status;
         $delivery->erp_shipment_reference = $request->erp_shipment_reference;
         $delivery->wms_shipment_reference = $request->wms_shipment_reference;
+        $delivery->delivery_fee = $request->filled('delivery_fee') ? (float) $request->delivery_fee : null;
         $delivery->save();
 
-        if ($request->custom_fields_data) {
-            $delivery->updateCustomFieldData($request->custom_fields_data);
-        }
-
-        // Save Items
         if ($request->has('item_id')) {
             foreach ($request->item_id as $key => $itemId) {
                 DeliveryOrderItem::create([
                     'delivery_order_id' => $delivery->id,
                     'purchase_item_id' => $itemId,
-                    'product_id' => $request->product_id[$key],
-                    'quantity_ordered' => $request->quantity_ordered[$key],
-                    'quantity_received' => $request->quantity_received[$key],
+                    'product_id' => $request->product_id[$key] ?? null,
+                    'quantity_ordered' => $request->quantity_ordered[$key] ?? 0,
+                    'quantity_received' => $request->quantity_received[$key] ?? 0,
+                    'batch_number' => $this->normalizeBatch($request->batch_number[$key] ?? null),
+                    'expiry_date' => $this->parseDoExpiryInput($request->expiry_date[$key] ?? null),
+                    'picking_rule_applied' => $this->normalizePickingRule($request->picking_rule_applied[$key] ?? null),
                 ]);
             }
         }
@@ -221,7 +213,7 @@ class DeliveryOrderController extends AccountBaseController
 
     public function download($id)
     {
-        $this->delivery = DeliveryOrder::with('items', 'items.purchaseItem', 'purchaseOrder', 'purchaseOrder.items', 'purchaseOrder.items.unit', 'purchaseOrder.vendor', 'purchaseOrder.address')->findOrFail($id);
+        $this->delivery = DeliveryOrder::with('items', 'items.purchaseItem', 'purchaseOrder', 'purchaseOrder.items', 'purchaseOrder.items.unit', 'purchaseOrder.vendor', 'purchaseOrder.address', 'warehouse')->findOrFail($id);
         $this->company = $this->delivery->company;
         $this->invoiceSetting = $this->company->invoiceSetting;
 
@@ -241,5 +233,54 @@ class DeliveryOrderController extends AccountBaseController
         $filename = 'delivery-order-' . $this->delivery->delivery_number;
 
         return $pdf->download($filename . '.pdf');
+    }
+
+    private function warehouseList(): \Illuminate\Support\Collection
+    {
+        if (! $this->company || ! class_exists(\Modules\Warehouse\Entities\Warehouse::class)) {
+            return collect();
+        }
+
+        return \Modules\Warehouse\Entities\Warehouse::query()
+            ->where('company_id', $this->company->id)
+            ->orderBy('name')
+            ->get();
+    }
+
+    private function normalizeBatch(?string $raw): ?string
+    {
+        if ($raw === null) {
+            return null;
+        }
+        $t = trim($raw);
+
+        return $t === '' ? null : $t;
+    }
+
+    private function parseDoExpiryInput(?string $raw): ?string
+    {
+        if ($raw === null || trim($raw) === '') {
+            return null;
+        }
+
+        $str = trim($raw);
+        $company = company();
+
+        try {
+            return Carbon::createFromFormat($company->date_format, $str)->format('Y-m-d');
+        } catch (InvalidFormatException $e) {
+            try {
+                return Carbon::parse($str)->format('Y-m-d');
+            } catch (\Throwable $e2) {
+                return null;
+            }
+        }
+    }
+
+    private function normalizePickingRule(?string $raw): ?string
+    {
+        $r = strtoupper(trim((string) $raw));
+
+        return in_array($r, ['FIFO', 'FEFO'], true) ? $r : null;
     }
 }

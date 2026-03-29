@@ -74,6 +74,7 @@ class PurchaseOrderController extends AccountBaseController
         $this->units = UnitType::all();
         $this->vendors = PurchaseVendor::all();
         $this->addresses = CompanyAddress::all();
+        $this->warehouses = $this->warehouseListForPurchaseOrder();
         $this->currencies = Currency::all();
         $this->companyCurrency = Currency::where('id', company()->currency_id)->first();
         $this->vendorID = request()->purchase_order_vendor_id;
@@ -179,6 +180,7 @@ class PurchaseOrderController extends AccountBaseController
         $order->delivery_status = $request->delivery_status;
         $order->total = round($request->total, 2);
         $order->address_id = $request->address_id;
+        $order->warehouse_id = $request->filled('warehouse_id') ? (int) $request->warehouse_id : null;
         $order->note = trim_editor($request->note);
         $order->save();
 
@@ -329,6 +331,7 @@ class PurchaseOrderController extends AccountBaseController
         $this->vendors = PurchaseVendor::all();
 
         $this->companyAddresses = CompanyAddress::all();
+        $this->warehouses = $this->warehouseListForPurchaseOrder();
 
         if (request()->ajax()) {
             $html = view('purchase::purchase-order.ajax.edit', $this->data)->render();
@@ -393,6 +396,7 @@ class PurchaseOrderController extends AccountBaseController
         $order->delivery_status = $request->delivery_status;
         $order->total = round($request->total, 2);
         $order->address_id = $request->address_id;
+        $order->warehouse_id = $request->filled('warehouse_id') ? (int) $request->warehouse_id : null;
         $order->note = trim_editor($request->note);
         $order->updated_at = now();
 
@@ -719,5 +723,17 @@ class PurchaseOrderController extends AccountBaseController
         $purchaseOrder->save();
 
         return Reply::success(__('messages.updateSuccess'));
+    }
+
+    private function warehouseListForPurchaseOrder()
+    {
+        if (! $this->company || ! class_exists(\Modules\Warehouse\Entities\Warehouse::class)) {
+            return collect();
+        }
+
+        return \Modules\Warehouse\Entities\Warehouse::query()
+            ->where('company_id', $this->company->id)
+            ->orderBy('name')
+            ->get();
     }
 }

@@ -1,8 +1,8 @@
 <?php
 
-return array (
-  'product' => 
-  array (
+return array(
+  'product' =>
+  array(
     'type' => 'Type',
     'goods' => 'Goods',
     'images' => 'Images',
@@ -41,8 +41,8 @@ return array (
     'expirationDate' => 'Expirationdate',
     'commitedStock' => 'Commited Stock',
   ),
-  'inventory' => 
-  array (
+  'inventory' =>
+  array(
     'adjustmentReason' => 'Stock Adjustment Reason',
     'reasonName' => 'Reason name',
     'addReason' => 'Add Reason',
@@ -93,8 +93,8 @@ return array (
     'beginningPackageInventory' => 'Beginning Package Inventory',
     'warehouse' => 'Warehouse',
   ),
-  'vendor' => 
-  array (
+  'vendor' =>
+  array(
     'primaryContactName' => 'Primary Contact Name',
     'companyName' => 'Company Name',
     'otherDetails' => 'Other Details',
@@ -136,8 +136,8 @@ return array (
     'payments' => 'Payments',
     'vendor_name' => 'Vendor Name',
   ),
-  'vendorPayment' => 
-  array (
+  'vendorPayment' =>
+  array(
     'addPayment' => 'Add Payment',
     'billAmount' => 'Bill Amount',
     'amountDue' => 'Amount Due',
@@ -187,8 +187,8 @@ return array (
     'sendNotification' => 'Send Email Notification to Vendor',
     'clearAppliedAmount' => 'Clear Applied Amount',
   ),
-  'purchaseSettings' => 
-  array (
+  'purchaseSettings' =>
+  array(
     'purchaseOrderPrefix' => 'Purchase Order Prefix',
     'purchaseOrderNumberSeprator' => 'Purchase Order Number Seprator',
     'purchaseOrderDigits' => 'Purchase Order Number Digits',
@@ -203,16 +203,16 @@ return array (
     'billOrderDigits' => 'Bill Order Digits',
     'billOrderExample' => 'Bill Order Example',
   ),
-  'vendorCredit' => 
-  array (
+  'vendorCredit' =>
+  array(
     'vendorCreditCreated' => 'Vendor Credit is created by',
     'vendorCreditUpdated' => 'Vendor Credit is updated by',
     'Created' => 'Vendor Credit Created',
     'Updated' => 'Vendor Credit Updated',
     'ofAmount' => 'of amount',
   ),
-  'purchaseBill' => 
-  array (
+  'purchaseBill' =>
+  array(
     'saveAsOpen' => 'Save as Open',
     'billCreated' => 'Bill is created of amount',
     'billUpdated' => 'Bill date is updated to',
@@ -223,8 +223,8 @@ return array (
     'partially_paid' => 'Partially Paid',
     'onDate' => 'on date',
   ),
-  'purchaseOrder' => 
-  array (
+  'purchaseOrder' =>
+  array(
     'expectedDate' => 'Expected Date',
     'billedStatus' => 'Billed Status',
     'billed' => 'Billed',
@@ -246,8 +246,8 @@ return array (
     'orderDate' => 'Order Date',
     'del_status' => 'Del Status',
   ),
-  'reports' => 
-  array (
+  'reports' =>
+  array(
     'inventorySummary' => 'Inventory Summary',
     'itemName' => 'Item Name',
     'sku' => 'SKU',
@@ -260,11 +260,17 @@ return array (
     'committed_Stock' => 'Committed Stock',
     'commitedStock' => 'Committed Stock',
   ),
-  'deliveryOrder' => 
-  array (
+  'deliveryOrder' =>
+  array(
     'draft' => 'Draft',
     'inbound' => 'Inbound',
     'received' => 'Received',
-    'quantityReceived' => 'Quantityreceived',
+    'quantityReceived' => 'Quantity Received',
+    'warehouse' => 'Warehouse',
+    'selectWarehouse' => 'Select warehouse',
+    'deliveryFee' => 'Delivery fee',
+    'batchLot' => 'Batch / lot',
+    'expiryDate' => 'Expiry date',
+    'pickingRule' => 'Picking rule (FIFO / FEFO)',
   ),
 );

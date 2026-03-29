@@ -1,16 +1,8 @@
-<x-forms.label :fieldId="$fieldId" :fieldLabel="$fieldLabel" :fieldRequired="$fieldRequired" :popover="$popover"
-               class="mt-3"></x-forms.label>
-<div {{ $attributes->merge(['class' => 'form-group mb-0']) }}>
+<div {{ $attributes->merge(['class' => 'form-group my-3']) }}>
+    <x-forms.label :fieldId="$fieldId" :fieldLabel="$fieldLabel" :fieldRequired="$fieldRequired" :popover="$popover">
+    </x-forms.label>
 
-    <select name="{{ $fieldName }}" id="{{ $fieldId }}" @if ($multiple) multiple @endif @if ($search)
-        data-live-search="true"
-            @endif
-
-            class="form-control select-picker" data-size="10"
-            @if ($alignRight) data-dropdown-align-right="true" @endif
-            @disabled($changeDealStage == 'none')
-    >
+    <select name="{{ $fieldName }}" id="{{ $fieldId }}" @if ($multiple) multiple @endif @if ($search) data-live-search="true" @endif class="form-control select-picker" data-size="10" @if ($alignRight) data-dropdown-align-right="true" @endif @disabled($changeDealStage == 'none')>
         {!! $slot !!}
     </select>
-
 </div>

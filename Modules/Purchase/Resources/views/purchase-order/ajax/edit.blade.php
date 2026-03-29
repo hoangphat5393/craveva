@@ -110,6 +110,20 @@
                 </div>
             </div>
 
+            @if (isset($warehouses) && $warehouses->count() > 0)
+                <div class="col-md-6 col-lg-4 mt-3">
+                    <x-forms.select fieldId="warehouse_id" :fieldLabel="__('purchase::modules.deliveryOrder.warehouse')" fieldName="warehouse_id" search="true">
+                        <option value="">@lang('purchase::modules.deliveryOrder.selectWarehouse')</option>
+                        @foreach ($warehouses as $wh)
+                            <option value="{{ $wh->id }}" @selected((int) ($order->warehouse_id ?? 0) === (int) $wh->id)>{{ $wh->name }}@if (!empty($wh->code))
+                                    ({{ $wh->code }})
+                                @endif
+                            </option>
+                        @endforeach
+                    </x-forms.select>
+                </div>
+            @endif
+
             <div class="col-md-6 col-lg-4 mt-3">
                 <div class="form-group c-inv-select mb-4">
                     <x-forms.label fieldId="calculate_tax" :fieldLabel="__('modules.invoices.calculateTax')">

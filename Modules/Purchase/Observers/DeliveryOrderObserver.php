@@ -58,13 +58,27 @@ class DeliveryOrderObserver
                 continue;
             }
 
+            $batch = $item->batch_number;
+            $batch = ($batch !== null && trim((string) $batch) !== '') ? trim((string) $batch) : null;
+
+            $expiry = null;
+            if ($item->expiry_date) {
+                $expiry = $item->expiry_date instanceof \Carbon\Carbon
+                    ? $item->expiry_date->format('Y-m-d')
+                    : (string) $item->expiry_date;
+            }
+
+            $rule = $item->picking_rule_applied;
+            $rule = in_array($rule, ['FIFO', 'FEFO'], true) ? $rule : null;
+
             $payloads[] = [
                 'company_id' => $deliveryOrder->company_id,
                 'warehouse_id' => (int) $warehouseId,
                 'product_id' => (int) $item->product_id,
                 'quantity' => $qty,
-                'batch_number' => null,
-                'expiry_date' => null,
+                'batch_number' => $batch,
+                'expiry_date' => $expiry,
+                'fefo_fifo_rule' => $rule,
                 'reference_type' => DeliveryOrder::class,
                 'reference_id' => $deliveryOrder->id,
                 'delivery_order_item_id' => $item->id,

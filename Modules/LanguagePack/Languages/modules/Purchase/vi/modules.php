@@ -242,4 +242,16 @@ return [
         'committedStock' => 'Cổ phiếu cam kết',
         'availableForSale' => 'Có sẵn để bán',
     ],
+    'deliveryOrder' => [
+        'draft' => 'Nháp',
+        'inbound' => 'Nhập kho',
+        'received' => 'Đã nhận',
+        'quantityReceived' => 'Số lượng nhận',
+        'warehouse' => 'Kho',
+        'selectWarehouse' => 'Chọn kho',
+        'deliveryFee' => 'Phí giao hàng',
+        'batchLot' => 'Số lô',
+        'expiryDate' => 'Hạn dùng',
+        'pickingRule' => 'Quy tắc lấy hàng (FIFO / FEFO)',
+    ],
 ];

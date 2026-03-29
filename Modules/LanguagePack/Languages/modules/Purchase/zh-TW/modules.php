@@ -235,4 +235,16 @@ return [
         'committedStock' => '承諾庫存',
         'availableForSale' => '可供出售',
     ],
+    'deliveryOrder' => [
+        'draft' => '草稿',
+        'inbound' => '入庫',
+        'received' => '已收貨',
+        'quantityReceived' => '收貨數量',
+        'warehouse' => '倉庫',
+        'selectWarehouse' => '選擇倉庫',
+        'deliveryFee' => '運費',
+        'batchLot' => '批次 / 批號',
+        'expiryDate' => '有效期限',
+        'pickingRule' => '揀貨規則（FIFO / FEFO）',
+    ],
 ];

@@ -14,8 +14,15 @@ class DeliveryOrderItem extends BaseModel
         'delivery_order_id',
         'purchase_item_id',
         'product_id',
+        'batch_number',
+        'expiry_date',
+        'picking_rule_applied',
         'quantity_ordered',
         'quantity_received',
+    ];
+
+    protected $casts = [
+        'expiry_date' => 'date',
     ];
 
     public function deliveryOrder(): BelongsTo

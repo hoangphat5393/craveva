@@ -40,7 +40,7 @@ In this codebase, **customer billing (SO path)** and **vendor billing (PO path)*
 | Flow              | Document in code | Model / table (concept)                                                                                               |
 | ----------------- | ---------------- | --------------------------------------------------------------------------------------------------------------------- |
 | **Sales (SO)**    | Customer invoice | `App\Models\Invoice` → **`invoices`**, lines **`invoice_items`**, links to **`order_id`** when created from an order. |
-| **Purchase (PO)** | Vendor bill      | `Modules\Purchase\Entities\PurchaseBill` → **purchase bill** tables, linked by **`purchase_order_id`**.               |
+| **Purchase (PO)** | Vendor bill      | `Modules\Purchase\Encleartities\PurchaseBill` → **purchase bill** tables, linked by **`purchase_order_id`**.          |
 
 **Tiếng Việt (dễ hiểu):** “Hóa đơn” bán hàng cho khách và “hóa đơn” nhận từ nhà cung cấp **là hai luồng tách biệt**: bán dùng **`Invoice`**, mua dùng **`PurchaseBill`** — **không** gộp chung một entity. Chỉ trùng từ nghiệp vụ “có hóa đơn”, không trùng code.
 

@@ -26,6 +26,7 @@ class DeliveryOrder extends BaseModel
         'inbound_stock_applied',
         'erp_shipment_reference',
         'wms_shipment_reference',
+        'delivery_fee',
         'created_by',
         'updated_by',
     ];
@@ -38,5 +39,10 @@ class DeliveryOrder extends BaseModel
     public function items(): HasMany
     {
         return $this->hasMany(DeliveryOrderItem::class, 'delivery_order_id');
+    }
+
+    public function warehouse(): BelongsTo
+    {
+        return $this->belongsTo(\Modules\Warehouse\Entities\Warehouse::class, 'warehouse_id');
     }
 }

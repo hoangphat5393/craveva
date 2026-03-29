@@ -12,7 +12,6 @@ return [
     'editTitle' => '編輯倉庫',
     'product' => '產品',
     'warehouse' => '倉庫',
-    'err_no_warehouse_for_invoice' => '無法解析此發票的倉庫（請設定客戶預設倉庫或公司預設倉庫）。',
     'quantity' => '數量',
     'addStock' => '添加庫存',
     'removeStock' => '減少庫存',

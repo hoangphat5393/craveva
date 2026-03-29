@@ -31,20 +31,7 @@ return new class extends Migration
                 'values' => null,
             ]);
 
-            $deliveryOrderGroup = CustomFieldGroup::firstOrCreate(
-                [
-                    'name' => 'Delivery Order',
-                    'model' => 'App\\Models\\DeliveryOrder',
-                    'company_id' => $company->id,
-                ]
-            );
-
-            $this->createFieldIfMissing($deliveryOrderGroup, $company, [
-                'name' => 'delivery_fee',
-                'label' => 'Delivery Fee',
-                'type' => 'number',
-                'values' => null,
-            ]);
+            // DO delivery_fee: use column delivery_orders.delivery_fee (see migration), not custom field.
         }
     }
 
@@ -80,17 +67,6 @@ return new class extends Migration
 
             if ($purchaseOrderGroup) {
                 CustomField::where('custom_field_group_id', $purchaseOrderGroup->id)
-                    ->where('name', 'delivery_fee')
-                    ->delete();
-            }
-
-            $deliveryOrderGroup = CustomFieldGroup::where('name', 'Delivery Order')
-                ->where('model', 'App\\Models\\DeliveryOrder')
-                ->where('company_id', $company->id)
-                ->first();
-
-            if ($deliveryOrderGroup) {
-                CustomField::where('custom_field_group_id', $deliveryOrderGroup->id)
                     ->where('name', 'delivery_fee')
                     ->delete();
             }

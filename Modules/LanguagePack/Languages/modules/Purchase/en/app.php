@@ -1,6 +1,6 @@
 <?php
 
-return array (
+return array(
   'qty' => 'Qty',
   'val' => 'Val',
   'sku' => 'SKU',
@@ -28,8 +28,8 @@ return array (
   'availableStock' => 'Available Stock',
   'availableBalance' => 'Available Balance',
   'defaultImage' => 'Default Image',
-  'menu' => 
-  array (
+  'menu' =>
+  array(
     'purchase' => 'Purchase',
     'purchaseSettings' => 'Purchase Settings',
     'purchaseNotificationSettings' => 'Purchase Notification Settings',
@@ -54,17 +54,17 @@ return array (
     'billDate' => 'Bill Date',
     'billNumber' => 'Bill Number',
     'purchaseOrder' => 'Purchase Order',
-    'deliveryOrders' => 'Deliveryorders',
+    'deliveryOrders' => 'Delivery Orders',
     'receipt' => 'Receipt',
     'report' => 'Report',
     'paymentDate' => 'Payment Date',
-    'paymentMade' => 'Paymentmade',
-    'internalNote' => 'Internalnote',
+    'paymentMade' => 'Payment Made',
+    'internalNote' => 'Internal Note',
     'billItems' => 'Bill Items',
     'createBill' => 'Create Bill',
     'reports' => 'Reports',
     'addFiles' => 'Add files',
-    'inventoryValuationSummary' => 'inventory Valuation Summary',
+    'inventoryValuationSummary' => 'Inventory Valuation Summary',
     'addPayment' => 'Add Payment',
     'vendorCredits' => 'Vendor Credits',
     'vendorCredit' => 'Vendor Credit',
@@ -73,18 +73,18 @@ return array (
     'billAmount' => 'Bill Amount',
     'billDue' => 'Bill Due',
     'creditNumber' => 'Credit Number',
-    'paymentReceipt' => 'Paymentreceipt',
-    'vendorName' => 'Vendorname',
-    'bankAccount' => 'Bankaccount',
+    'paymentReceipt' => 'Payment Receipt',
+    'vendorName' => 'Vendor Name',
+    'bankAccount' => 'Bank Account',
   ),
-  'purchaseOrder' => 
-  array (
+  'purchaseOrder' =>
+  array(
     'vendorPayments' => 'Vendor Payments',
     'addVendorPayments' => 'Add Vendor Payment',
     'purchaseOrder' => 'Purchase Order',
     'vendorName' => 'Vendor Name',
-    'paymentToVendor' => 'Paymenttovendor',
+    'paymentToVendor' => 'Payment To Vendor',
   ),
-  'erpShipmentRef' => 'Erpshipmentref',
-  'wmsShipmentRef' => 'Wmsshipmentref',
+  'erpShipmentRef' => 'ERP Shipment Reference',
+  'wmsShipmentRef' => 'WMS Shipment Reference',
 );

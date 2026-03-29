@@ -8,6 +8,7 @@ use App\Traits\HasCompany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Modules\Purchase\Entities\SalesShipment;
 
 /**
  * App\Models\Order
@@ -87,7 +88,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  */
 class Order extends BaseModel
 {
-    use CustomFieldsTrait,HasCompany;
+    use CustomFieldsTrait, HasCompany;
 
     const CUSTOM_FIELD_MODEL = 'App\Models\Order';
 
@@ -114,6 +115,11 @@ class Order extends BaseModel
     public function invoice(): HasOne
     {
         return $this->hasOne(Invoice::class, 'order_id');
+    }
+
+    public function salesShipments(): HasMany
+    {
+        return $this->hasMany(SalesShipment::class, 'order_id');
     }
 
     public function currency(): BelongsTo

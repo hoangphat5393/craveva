@@ -30,6 +30,11 @@ return [
     'defaultImage' => 'Default Image',
     'erpShipmentRef' => 'ERP Shipment Reference',
     'wmsShipmentRef' => 'WMS Shipment Reference',
+    'shipmentNumber' => 'Shipment Number',
+    'remainingQty' => 'Remaining Qty',
+    'shipQty' => 'Qty to Ship',
+    'batchNumber' => 'Batch Number',
+    'ship' => 'Ship',
 
     'menu' => [
         'purchase' => 'Purchase',
@@ -56,6 +61,7 @@ return [
         'billNumber' => 'Bill Number',
         'purchaseOrder' => 'Purchase Order',
         'deliveryOrders' => 'Delivery Orders',
+        'salesShipments' => 'Sales Shipments',
         'receipt' => 'Receipt',
         'report' => 'Report',
         'paymentDate' => 'Payment Date',

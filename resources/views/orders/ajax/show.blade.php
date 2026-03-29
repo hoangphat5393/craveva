@@ -13,6 +13,7 @@
 @php
     $editOrderPermission = user()->permission('edit_order');
     $deleteOrderPermission = user()->permission('delete_order');
+    $createSalesShipmentPermission = user()->permission('create_sales_shipment');
 @endphp
 
 <div class="card border-0 invoice">
@@ -398,6 +399,14 @@
                             <li>
                                 <a class="dropdown-item f-14 text-dark" href="{{ route('invoices.show', $order->invoice->id) }}">
                                     <i class="fa fa-receipt f-w-500 mr-2 f-11"></i> @lang('app.viewInvoice')
+                                </a>
+                            </li>
+                        @endif
+
+                        @if ($createSalesShipmentPermission != 'none' && in_array(\Modules\Purchase\Entities\PurchaseManagementSetting::MODULE_NAME, user_modules()))
+                            <li>
+                                <a class="dropdown-item f-14 text-dark openRightModal" href="{{ route('sales-shipments.create', ['order_id' => $order->id]) }}">
+                                    <i class="fa fa-truck-loading f-w-500 mr-2 f-11"></i> @lang('app.add') @lang('purchase::app.menu.salesShipments')
                                 </a>
                             </li>
                         @endif
@@ -874,7 +883,8 @@
                     gateway: 'Razorpay',
                     _token: "{{ csrf_token() }}"
                 }).catch(function() {
-                    /* log failure */ });
+                    /* log failure */
+                });
             });
 
             rzp1.open();

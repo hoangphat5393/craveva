@@ -237,6 +237,14 @@ return [
         'expiryDate' => 'Expiry date',
         'pickingRule' => 'Picking rule (FIFO / FEFO)',
     ],
+    'salesShipment' => [
+        'draft' => 'Draft',
+        'confirmed' => 'Confirmed',
+        'shipped' => 'Shipped',
+        'delivered' => 'Delivered',
+        'cancelled' => 'Cancelled',
+        'reverse' => 'Reverse Outbound',
+    ],
     'reports' => [
         'inventorySummary' => 'Inventory Summary',
         'itemName' => 'Item Name',

@@ -42,12 +42,20 @@ class InvoiceWarehouseStockService
         return in_array('warehouse', user_modules() ?? [], true);
     }
 
+    public function shouldPostOutboundFromInvoice(): bool
+    {
+        // Option B orchestration:
+        // - mode=shipment => stock outbound happens when shipment is shipped, never here.
+        // - mode=invoice  => keep legacy invoice outbound behavior.
+        return config('warehouse.sales_outbound_mode', 'invoice') === 'invoice';
+    }
+
     /**
      * Full sync: reverse previous postings then post current lines (idempotent net state).
      */
     public function syncInvoiceStock(Invoice $invoice): void
     {
-        if (! $this->isEnabled()) {
+        if (! $this->isEnabled() || ! $this->shouldPostOutboundFromInvoice()) {
             return;
         }
 
@@ -111,7 +119,7 @@ class InvoiceWarehouseStockService
 
     public function reverseAllPostings(Invoice $invoice): void
     {
-        if (! $this->isEnabled()) {
+        if (! $this->isEnabled() || ! $this->shouldPostOutboundFromInvoice()) {
             return;
         }
 

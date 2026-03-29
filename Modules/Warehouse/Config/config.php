@@ -19,4 +19,13 @@ return [
      * and legacy PaymentObserver PurchaseStockAdjustment mutations are skipped.
      */
     'sales_outbound_enabled' => env('WAREHOUSE_SALES_OUTBOUND_ENABLED', false),
+
+    /**
+     * Sales outbound orchestration mode:
+     * - "shipment": outbound is posted from SalesShipmentStockService at shipment shipped.
+     * - "invoice": legacy behavior, outbound is posted from InvoiceWarehouseStockService.
+     *
+     * Keep this explicit to avoid double deduction between shipment and invoice.
+     */
+    'sales_outbound_mode' => env('WAREHOUSE_SALES_OUTBOUND_MODE', 'invoice'),
 ];

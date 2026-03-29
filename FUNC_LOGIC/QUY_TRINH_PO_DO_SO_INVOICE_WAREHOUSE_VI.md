@@ -2,7 +2,7 @@
 
 **Mục đích:** Một file **hướng dẫn nghiệp vụ + vận hành** theo thứ tự: mua (PO/DO), kho, bán (SO/Invoice), cấu hình.  
 **Đối tượng:** PM, BA, vận hành, dev mới.  
-**Cập nhật:** 2026-03-28
+**Cập nhật:** 2026-03-29
 
 **Chi tiết kỹ thuật (class, bảng, observer):** [`SALES_PURCHASE_FLOW.md`](SALES_PURCHASE_FLOW.md)  
 **Chỉ riêng module kho (điều chỉnh, chuyển, ledger):** [`WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md`](WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md)  
@@ -51,29 +51,42 @@
 
 ---
 
-## 4) Luồng bán — **Order (SO)** → **Invoice** → **xuất kho** (Scope B)
+## 4) Luồng bán — **Order (SO)** → **Sales Shipment**/**Invoice** → **xuất kho**
 
 ### 4.1 Sales Order (Order)
 
 1. Tạo **Order** + dòng (`OrderItems`), gắn **client**, sản phẩm, SL.
 2. **Lưu ý sản phẩm:** Với một SO, hệ thống **mặc định** coi **tối đa một** `Invoice` gắn `order_id` (1 SO → 1 HĐ kiểu “Cách 1”). Chi tiết: `SALES_PURCHASE_FLOW.md` §2.1.
-3. **Trừ tồn:** Trạng thái Order **không** tự gọi xuất kho Scope B; phụ thuộc **Invoice** bước sau.
+3. **Trừ tồn:** Trạng thái Order **không** tự gọi xuất kho; phụ thuộc mode outbound ở bước sau.
 
-### 4.2 Invoice (hóa đơn bán)
+### 4.2 Sales Shipment (Option B - mới)
+
+1. Tạo một hoặc nhiều `Sales Shipment` từ cùng một SO (partial shipment).
+2. Chuyển trạng thái: `draft -> confirmed -> shipped -> delivered` (hoặc `cancelled`).
+3. Khi mode outbound là `shipment`, lúc `shipped` hệ thống post outbound qua `SalesShipmentStockService`.
+4. Có action `reverse outbound` để hoàn kho và đưa shipment về `confirmed` khi cần xử lý sai lệch vận hành.
+
+### 4.3 Invoice (hóa đơn bán)
 
 1. Tạo **Invoice** từ order hoặc độc lập; dòng kiểu **item** + **`product_id`** mới đủ điều kiện xuất kho hàng.
-2. Khi invoice **không** ở trạng thái **draft** và **không** phải credit note, và đủ điều kiện bật dưới đây → **Scope B** ghi **outbound** theo kho resolve (khách → công ty → kho active).
+2. Khi mode outbound là `invoice`, invoice **không** ở trạng thái **draft** và **không** phải credit note sẽ ghi outbound theo kho resolve (khách → công ty → kho active).
 
-### 4.3 Bật xuất kho khi bán (Scope B)
+### 4.4 Cấu hình orchestration outbound (quan trọng)
 
 Đồng thời thỏa:
 
 - `.env`: **`WAREHOUSE_SALES_OUTBOUND_ENABLED=true`** (và `php artisan config:clear`).
+- `.env`: **`WAREHOUSE_SALES_OUTBOUND_MODE=shipment|invoice`**.
 - Module **Warehouse** bật; user đăng nhập có **`warehouse`** trong `user_modules`.
-- Đã **migrate** bảng `invoice_warehouse_stock_postings`.
+- Đã migrate các bảng kho liên quan (`invoice_warehouse_stock_postings` nếu mode invoice).
 - **Payment:** Khi flag trên, `PaymentObserver` **không** chỉnh legacy `PurchaseStockAdjustment` cho đường stock warehouse (tránh lệch đa kho).
 
-**Tắt flag** = invoice **không** tạo movement xuất kho qua luồng này (tồn chỉ thay đổi bởi PO/DO/inventory/chuyển kho/điều chỉnh).
+Quy tắc tránh double deduction:
+
+- Mode `shipment`: chỉ shipment trừ tồn, invoice không trừ thêm.
+- Mode `invoice`: giữ legacy invoice outbound.
+
+**Tắt flag** = không tự tạo outbound từ shipment/invoice (tồn chỉ thay đổi bởi PO/DO/inventory/chuyển kho/điều chỉnh).
 
 ---
 
@@ -107,8 +120,10 @@ flowchart TB
 
 - [ ] Một nguồn inbound: PO **hoặc** DO (không double inbound).
 - [ ] `WAREHOUSE_ALLOW_NEGATIVE_STOCK` theo policy.
+- [ ] Chọn đúng mode outbound (`shipment` hoặc `invoice`) theo quy trình vận hành.
 - [ ] Thử 1 PO delivered → tồn tăng + có dòng movement inbound.
-- [ ] Thử 1 invoice không draft (Scope B bật) → tồn giảm + outbound + posting.
+- [ ] Nếu mode `shipment`: thử SO 10 -> shipment 4 + 6, không cho shipment vượt phần còn lại.
+- [ ] Nếu mode `invoice`: thử 1 invoice không draft -> tồn giảm + outbound + posting.
 - [ ] Sửa/xóa invoice → reversal đúng kỳ vọng (UAT).
 
 ---

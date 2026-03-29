@@ -6,6 +6,7 @@
     $purchaseViewInventoryPermission = user()->permission('view_inventory');
     $purchaseViewOrderReportPermission = user()->permission('view_order_report');
     $purchaseViewPaymentPermission = user()->permission('view_vendor_payment');
+    $salesShipmentViewPermission = user()->permission('view_sales_shipment');
     // Warehouse module: migration chỉ gán quyền vào role "admin"; employee thường chưa có view_warehouses → hiển thị kèm quyền Inventory.
     $viewWarehouses = user()->permission('view_warehouses');
     $addWarehouses = user()->permission('add_warehouses');
@@ -14,7 +15,7 @@
     $manageWarehouseTransfer = user()->permission('manage_warehouse_transfer');
     $canSeeWarehouseMaster = ($viewWarehouses && $viewWarehouses != 'none') || ($purchaseViewInventoryPermission != 'none' && $purchaseViewInventoryPermission != '');
     $canSeeWarehouseStockUi = ($viewWarehouseStock && $viewWarehouseStock != 'none') || ($purchaseViewInventoryPermission != 'none' && $purchaseViewInventoryPermission != '');
-    $operationsMenuActive = request()->routeIs('orders.*', 'vendors.*', 'purchase-products.*', 'purchase-order.*', 'delivery-orders.*', 'bills.*', 'vendor-payments.*', 'vendor-credits.*', 'purchase-inventory.*', 'warehouse.*', 'warehouse.stock.*', 'warehouse.transfer.*', 'warehouse.movements.*');
+    $operationsMenuActive = request()->routeIs('orders.*', 'vendors.*', 'purchase-products.*', 'purchase-order.*', 'delivery-orders.*', 'sales-shipments.*', 'bills.*', 'vendor-payments.*', 'vendor-credits.*', 'purchase-inventory.*', 'warehouse.*', 'warehouse.stock.*', 'warehouse.transfer.*', 'warehouse.movements.*');
 @endphp
 @if (in_array(\Modules\Purchase\Entities\PurchaseManagementSetting::MODULE_NAME, user_modules()) &&
         ($purchaseViewVendorPermission != 'none' ||
@@ -24,6 +25,7 @@
             $purchaseViewInventoryPermission != 'none' ||
             $purchaseViewOrderReportPermission != 'none' ||
             $purchaseViewPaymentPermission != 'none' ||
+            $salesShipmentViewPermission != 'none' ||
             (in_array('products', user_modules()) && $sidebarUserPermissions['view_product'] != 'none') ||
             (in_array('orders', user_modules()) && $sidebarUserPermissions['view_order'] != 'none')))
 
@@ -51,6 +53,9 @@
 
             <!-- NAV ITEM - DELIVERY ORDERS -->
             <x-sub-menu-item :link="route('delivery-orders.index')" :text="__('purchase::app.menu.deliveryOrders')" :permission="$purchaseViewOrderPermission != 'none' && $purchaseViewOrderPermission != ''" />
+
+            <!-- NAV ITEM - SALES SHIPMENTS -->
+            <x-sub-menu-item :link="route('sales-shipments.index')" :text="__('purchase::app.menu.salesShipments')" :permission="$salesShipmentViewPermission != 'none' && $salesShipmentViewPermission != ''" />
 
             <!-- NAV ITEM - BILLS -->
             <x-sub-menu-item :link="route('bills.index')" :text="__('purchase::app.menu.bills')" :permission="$purchaseViewBillPermission != 'none' && $purchaseViewBillPermission != ''" />

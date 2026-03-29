@@ -16,6 +16,7 @@ use Modules\Purchase\Http\Controllers\PurchaseVendorCategoryController;
 use Modules\Purchase\Http\Controllers\PurchaseVendorController;
 use Modules\Purchase\Http\Controllers\PurchaseVendorPaymentController;
 use Modules\Purchase\Http\Controllers\ReportsController;
+use Modules\Purchase\Http\Controllers\SalesShipmentController;
 use Modules\Purchase\Http\Controllers\StockAdjustmentReasonController;
 use Modules\Purchase\Http\Controllers\VendorCreditController;
 use Modules\Purchase\Http\Controllers\VendorNotesController;
@@ -134,6 +135,15 @@ Route::group(['middleware' => 'auth', 'prefix' => 'account'], function () {
     Route::get('delivery_orders/change_status/{id}', [DeliveryOrderController::class, 'changeStatus'])->name('delivery_orders.change_status');
     Route::post('delivery-orders/change-status/{id}', [DeliveryOrderController::class, 'changeStatus'])->name('delivery-orders.changeStatus');
     Route::resource('delivery-orders', DeliveryOrderController::class);
+
+    /* Sales Shipments (Option B) */
+    Route::get('sales-shipments/get-items', [SalesShipmentController::class, 'getOrderItems'])->name('sales-shipments.get-items');
+    Route::post('sales-shipments/{id}/confirm', [SalesShipmentController::class, 'confirm'])->name('sales-shipments.confirm');
+    Route::post('sales-shipments/{id}/ship', [SalesShipmentController::class, 'ship'])->name('sales-shipments.ship');
+    Route::post('sales-shipments/{id}/deliver', [SalesShipmentController::class, 'deliver'])->name('sales-shipments.deliver');
+    Route::post('sales-shipments/{id}/reverse', [SalesShipmentController::class, 'reverse'])->name('sales-shipments.reverse');
+    Route::post('sales-shipments/{id}/cancel', [SalesShipmentController::class, 'cancel'])->name('sales-shipments.cancel');
+    Route::resource('sales-shipments', SalesShipmentController::class);
 
     /* Purchase Order files */
     Route::get('purchase-order-file/download/{id}', [PurchaseOrderFileController::class, 'download'])->name('purchase_order_file.download');

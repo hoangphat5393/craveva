@@ -97,6 +97,7 @@ Hệ thống sẽ:
 ## 9) File kỹ thuật tham chiếu
 
 - `FUNC_LOGIC/SALES_SHIPMENT_OPTION_B_IMPLEMENTATION.md`
+- `FUNC_LOGIC/SALES_SHIPMENT_OPTION_B_UAT_TEST_CASES_VI.md`
 - `FUNC_LOGIC/QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md`
 - `Modules/Purchase/Http/Controllers/SalesShipmentController.php`
 - `Modules/Warehouse/Services/SalesShipmentStockService.php`

@@ -7,6 +7,19 @@ use Illuminate\Validation\Rule;
 
 class StoreAiOrderWebhookRequest extends FormRequest
 {
+    protected function prepareForValidation(): void
+    {
+        if (! empty($this->all())) {
+            return;
+        }
+
+        $decoded = json_decode((string) $this->getContent(), true);
+
+        if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+            $this->merge($decoded);
+        }
+    }
+
     public function authorize(): bool
     {
         return true;
@@ -16,7 +29,7 @@ class StoreAiOrderWebhookRequest extends FormRequest
     {
         return [
             'company_id' => ['required', 'integer', 'exists:companies,id'],
-            'client_id' => ['nullable', 'integer', 'exists:users,id'],
+            'client_id' => ['required', 'integer', 'exists:users,id'],
             'external_event_id' => ['nullable', 'string', 'max:191'],
             'project_id' => ['nullable', 'integer', 'exists:projects,id'],
             'company_address_id' => ['nullable', 'integer', 'exists:company_addresses,id'],

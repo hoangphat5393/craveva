@@ -36,7 +36,7 @@ return new class extends Migration
                 $table->id();
                 $table->unsignedBigInteger('sales_shipment_id');
                 $table->unsignedBigInteger('order_item_id');
-                $table->unsignedBigInteger('product_id')->nullable();
+                $table->unsignedInteger('product_id')->nullable();
                 $table->decimal('quantity_ordered', 20, 4)->default(0);
                 $table->decimal('quantity_shipped', 20, 4)->default(0);
                 $table->unsignedBigInteger('unit_id')->nullable();

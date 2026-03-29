@@ -141,3 +141,81 @@ Orchestration xuat kho:
 - Neu mode=`invoice`: giu hanh vi legacy invoice outbound.
 
 Pham vi Option B MVP khong sua pha flow PO/DO inbound cu.
+
+---
+
+## I. Kiểm tra lại end-to-end theo checklist ERP (2026-03-29, sau Option B)
+
+### A. 🔴 Critical Functional Bugs
+
+- **Flow:** Sale  
+  **Step:** SO -> DO -> xuất kho  
+  **Issue:** `delivery_orders` vẫn chỉ gắn `purchase_order_id`; luồng bán dùng `sales_shipments`, không có DO bán trong bảng cũ.  
+  **Example:** Không thể “Create Delivery Order from SO” theo nghĩa `delivery_orders`.  
+  **Impact:** Checklist nghiệp vụ cũ kỳ vọng DO bán sẽ fail nếu không đổi sang Sales Shipment.  
+  **Fix:** Chuẩn hóa SOP: SO -> Sales Shipment -> Invoice; đổi label nghiệp vụ từ DO bán sang Sales Shipment.
+
+- **Flow:** Purchase  
+  **Step:** PO delivered + DO received  
+  **Issue:** Nếu bật đồng thời `WAREHOUSE_INBOUND_FROM_PO_DELIVERED=true` và `WAREHOUSE_INBOUND_FROM_DO_RECEIVED=true` có rủi ro nhập đôi.  
+  **Example:** Hai movement inbound cho cùng lô nhận hàng.  
+  **Impact:** Lệch tồn kho và sai báo cáo giá trị tồn.  
+  **Fix:** Chốt duy nhất 1 nguồn inbound canonical theo tenant.
+
+- **Flow:** Invoice  
+  **Step:** Outbound mode orchestration  
+  **Issue:** Cấu hình sai `WAREHOUSE_SALES_OUTBOUND_MODE` có thể dẫn tới kỳ vọng vận hành sai.  
+  **Example:** Team vận hành nghĩ invoice trừ tồn trong khi mode đang `shipment`.  
+  **Impact:** Sai quy trình thao tác và tranh cãi số tồn.  
+  **Fix:** Chốt mode ở staging/prod, cập nhật SOP và đào tạo user.
+
+### B. ⚠️ Data Inconsistencies
+
+- **Tables:** `orders`, `invoices`  
+  **Problem:** 1 SO -> 1 Invoice theo `invoices.order_id` trong mô hình hiện tại.  
+  **Example:** Nhu cầu nhiều AR invoice cho 1 SO theo đợt chưa có model chuẩn.  
+  **Fix:** Nếu cần nhiều invoice/1 SO thì cần thiết kế lại quan hệ và đối soát line-level.
+
+- **Tables:** `purchase_stock_adjustments` vs `stock_movements`  
+  **Problem:** PO observer cập nhật cả tồn legacy (`purchase_stock_adjustments.net_quantity`) và tồn warehouse (`stock_movements`) khi delivered.  
+  **Example:** Hai nguồn “tồn” cùng tồn tại, dễ lệch nếu báo cáo trộn sai nguồn.  
+  **Fix:** Chốt rõ nguồn dữ liệu chuẩn cho báo cáo vận hành (warehouse tables).
+
+- **Tables:** `sales_shipment_items`  
+  **Problem:** `product_id` cho phép null theo schema; line null product sẽ không tạo outbound.  
+  **Example:** Shipment line chỉ có mô tả nhưng thiếu product mapping.  
+  **Fix:** Policy nhập liệu: line cần trừ tồn bắt buộc có `product_id`.
+
+### C. ⚡ Missing or Broken Logic
+
+- **Module:** Sales  
+  **Issue:** Không có “DO bán” trên `delivery_orders`; đã thay bằng `sales_shipments`.  
+  **Why it breaks system:** Nếu tài liệu/đào tạo vẫn dùng thuật ngữ DO bán sẽ gây nhầm luồng.
+
+- **Module:** Purchase Bill  
+  **Issue:** `PurchaseBillObserver` không post stock inbound.  
+  **Why it breaks system:** Nếu kế toán kỳ vọng “bill = nhập kho” sẽ sai nghiệp vụ.
+
+- **Module:** Invoice warehouse hook  
+  **Issue:** `InvoiceWarehouseStockService::isEnabled()` phụ thuộc `user_modules()` ngữ cảnh runtime.  
+  **Why it breaks system:** Context không có user (job/console) có thể không post stock nếu gọi sai luồng.
+
+### D. 🧨 Inventory Issues
+
+- **Problem:** Double inbound risk  
+  **Scenario:** PO delivered và DO received cùng bật.  
+  **Fix:** Bật một cờ inbound duy nhất.
+
+- **Problem:** Double outbound risk do sai mode nhận thức  
+  **Scenario:** Mode `shipment` nhưng user vẫn cố đối chiếu tồn theo invoice outbound.  
+  **Fix:** Khóa mode + phát hành SOP + checklist UAT bắt buộc.
+
+- **Problem:** Xuất âm (nếu bật)  
+  **Scenario:** `WAREHOUSE_ALLOW_NEGATIVE_STOCK=true`.  
+  **Fix:** Giữ false ở môi trường vận hành chuẩn, chỉ bật khi có phê duyệt nghiệp vụ.
+
+### E. 🛠 Suggested Fix Plan
+
+- **Step 1:** Chốt config tenant (`WAREHOUSE_SALES_OUTBOUND_MODE`, inbound flags, negative stock), lưu trong runbook triển khai.
+- **Step 2:** QA chạy bộ test case `FUNC_LOGIC/SALES_SHIPMENT_OPTION_B_UAT_TEST_CASES_VI.md` và ký nhận kết quả từng TC.
+- **Step 3:** Cập nhật tài liệu đào tạo user: thay toàn bộ “DO bán” thành “Sales Shipment” và hướng dẫn đối soát tồn theo mode đã chốt.

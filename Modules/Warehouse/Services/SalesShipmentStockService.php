@@ -105,6 +105,6 @@ class SalesShipmentStockService
 
     public function shouldPostOutboundFromShipment(): bool
     {
-        return config('warehouse.sales_outbound_mode', 'invoice') === 'shipment';
+        return config('warehouse.sales_outbound_mode', 'shipment') === 'shipment';
     }
 }

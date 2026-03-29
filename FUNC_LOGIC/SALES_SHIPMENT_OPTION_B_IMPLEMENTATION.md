@@ -57,7 +57,7 @@ Action bổ sung:
 
 Thêm config:
 
-- `WAREHOUSE_SALES_OUTBOUND_MODE=invoice|shipment`
+- `WAREHOUSE_SALES_OUTBOUND_MODE=invoice|shipment` (mặc định trong `config`: **`shipment`** — xuất kho theo Sales Shipment; đặt `invoice` nếu cần legacy).
 
 Và xử lý:
 

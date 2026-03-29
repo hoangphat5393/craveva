@@ -35,8 +35,14 @@ class InvoiceWarehouseStockService
             return false;
         }
 
+        // In non-interactive contexts (jobs/console/system operations), there may be no current user.
+        // In that case, if module + config are enabled, allow stock sync to proceed.
+        if (function_exists('user') && ! user()) {
+            return true;
+        }
+
         if (! function_exists('user_modules')) {
-            return false;
+            return true;
         }
 
         return in_array('warehouse', user_modules() ?? [], true);
@@ -47,7 +53,7 @@ class InvoiceWarehouseStockService
         // Option B orchestration:
         // - mode=shipment => stock outbound happens when shipment is shipped, never here.
         // - mode=invoice  => keep legacy invoice outbound behavior.
-        return config('warehouse.sales_outbound_mode', 'invoice') === 'invoice';
+        return config('warehouse.sales_outbound_mode', 'shipment') === 'invoice';
     }
 
     /**

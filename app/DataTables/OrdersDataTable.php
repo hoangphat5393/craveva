@@ -101,8 +101,8 @@ class OrdersDataTable extends BaseDataTable
         });
         $datatables->addColumn('order', fn($row) => $row->custom_order_number);
         $datatables->addColumn('order_number_export', fn($row) => $row->custom_order_number);
-        $datatables->addColumn('client_name', fn($row) => $row->client->name);
-        $datatables->editColumn('name', fn($row) => view('components.client', ['user' => $row->client]));
+        $datatables->addColumn('client_name', fn($row) => $row->client?->name ?? '--');
+        $datatables->editColumn('name', fn($row) => $row->client ? view('components.client', ['user' => $row->client]) : '--');
         $datatables->editColumn('status', function ($row) use ($id) {
 
             if ((in_array('admin', user_roles()) || in_array('employee', user_roles())) && ($this->editOrderPermission == 'all' || ($this->editOrderPermission == 'both' && ($row->added_by == $id || $row->client_id == $id)) || ($this->editOrderPermission == 'added' && $row->added_by == $id) || ($this->editOrderPermission == 'owned' && $row->client_id == $id))) {

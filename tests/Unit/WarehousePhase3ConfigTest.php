@@ -10,7 +10,7 @@ class WarehousePhase3ConfigTest extends TestCase
     {
         $this->assertTrue(config('warehouse.inbound_from_purchase_order_delivered'));
         $this->assertFalse(config('warehouse.inbound_from_delivery_order_received'));
-        $this->assertSame('invoice', config('warehouse.sales_outbound_mode'));
+        $this->assertSame('shipment', config('warehouse.sales_outbound_mode'));
     }
 
     public function test_stock_movement_service_has_record_inbound_batch(): void

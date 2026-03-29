@@ -1,21 +1,22 @@
 # ERP — Kiểm tra SO / PO / DO / Invoice / Multi-Warehouse / Inventory (codebase)
 
-**Ngày:** 2026-03-29  
+**Ngày cập nhật:** 2026-03-30  
 **Phương pháp:** Phân tích luồng thực tế trong code (Laravel + `Modules/Purchase`, `Modules/Warehouse`), **không** chạy UAT tự động trên DB staging.  
-**Tham chiếu:** `FUNC_LOGIC/SALES_PURCHASE_FLOW.md`, `Modules/Warehouse/Config/config.php`, `InvoiceWarehouseStockService`, `PurchaseOrderObserver`, `DeliveryOrderObserver`.
+**Chốt flow bán (mặc định code):** `WAREHOUSE_SALES_OUTBOUND_MODE=shipment` → xuất kho theo **Sales Shipment**; invoice không post outbound (trừ khi đặt mode `invoice`).  
+**Tham chiếu:** `FUNC_LOGIC/SALES_PURCHASE_FLOW.md`, `Modules/Warehouse/Config/config.php`, `SalesShipmentStockService`, `InvoiceWarehouseStockService`, `PurchaseOrderObserver`, `DeliveryOrderObserver`.
 
 ---
 
 ## A. 🔴 Critical Functional Bugs (thiết kế / kỳ vọng nghiệp vụ vs code)
 
-| Flow         | Step                               | Issue                                                                                                                                                                                                          | Example                                                                                                       | Impact                                                                             | Fix (hướng)                                                                                                                                         |
-| ------------ | ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Sale**     | SO → DO → xuất kho                 | **Không có “Delivery Order bán hàng” gắn `orders.id`.** `delivery_orders` chỉ nhận `purchase_order_id` (nhập mua).                                                                                             | User kỳ vọng: tạo DO từ SO rồi xuất kho.                                                                      | Luồng ERP “SO → DO sales → pick” **không tồn tại** trong model hiện tại.           | Đổi kỳ vọng: xuất kho theo **Invoice** (xem dòng dưới) **hoặc** phát triển entity mới (Sales DO) + FK + observer.                                   |
-| **Sale**     | Confirm SO / xuất kho              | **Trừ tồn kho không gắn với trạng thái Order.** `Order` completed **không** gọi `StockMovementService` trong observer order cho outbound.                                                                      | `OrderController::changeStatus` đổi `orders.status` nhưng không trừ `warehouse_product_stocks`.               | Nếu chỉ “confirm SO” mà không lập hóa đơn (hoặc outbound tắt), **tồn không giảm**. | Bật `WAREHOUSE_SALES_OUTBOUND_ENABLED=true` và tạo **Invoice** (không draft); hoặc mở rộng nghiệp vụ reservation từ SO (chưa có trong code đã đọc). |
-| **Sale**     | Invoice → kho                      | **Outbound sales tắt mặc định.** `config('warehouse.sales_outbound_enabled')` ← `WAREHOUSE_SALES_OUTBOUND_ENABLED` **default `false`** trong `Modules/Warehouse/Config/config.php`.                            | Staging chưa set `.env` → `InvoiceWarehouseStockService::isEnabled()` → **return false** → không outbound.    | **Hệ thống có module Warehouse nhưng bán hàng có thể không đụng tồn.**             | Set `WAREHOUSE_SALES_OUTBOUND_ENABLED=true` + module Warehouse enabled + user có `warehouse` trong `user_modules()`.                                |
-| **Purchase** | PO delivered + DO received         | **Rủi ro nhập kho đơn.** `inbound_from_purchase_order_delivered` **default true**; `inbound_from_delivery_order_received` **default false**. Nếu bật **cả hai** cho cùng một lần nhận hàng → **double-count**. | Comment trong `DeliveryOrderObserver`: _“Double-count risk if both PO delivered and DO received post stock”_. | Tồn kho sai (x2).                                                                  | Chỉ bật **một** nguồn inbound (PO **hoặc** DO) theo quy trình; cấu hình `.env` rõ ràng + UAT.                                                       |
-| **Sale**     | 1 SO → nhiều hóa đơn theo đợt giao | **`Order::invoice()` là `hasOne(Invoice)`** — `invoices.order_id` tối đa **một** invoice cho một SO.                                                                                                           | Giao 3 lần, 3 hóa đơn AR cùng SO: **không** được model hóa.                                                   | Thanh toán/lô hàng không tách theo đợt trên cùng SO.                               | Dùng **một** invoice + nhiều `Payment` (partial) **hoặc** hóa đơn không gắn `order_id` (mất liên kết SO).                                           |
-| **Purchase** | Supplier invoice                   | **`PurchaseBill` không post stock** (`PurchaseBillObserver` không gọi `StockMovementService`).                                                                                                                 | Kỳ vọng “hóa đơn NCC = nhập kho”.                                                                             | Nhập kho đi theo **PO delivered** hoặc **DO received**, không theo bill.           | Phân tách nghiệp vụ: GRN = PO/DO; bill = kế toán AP.                                                                                                |
+| Flow         | Step                              | Issue                                                                                                                                                                                 | Example                                                         | Impact                                     | Fix (hướng)                                                                                                             |
+| ------------ | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| **Sale**     | SO → “DO bán” → xuất kho          | **`delivery_orders` không gắn `order_id`.** Luồng bán dùng **`sales_shipments`** (Option B), không tái dùng bảng DO mua.                                                              | User kỳ vọng tạo DO từ SO như PO.                               | SOP cũ “DO bán” không khớp DB.             | SOP: **SO → Sales Shipment → ship** (trừ tồn khi mode `shipment`) → **Invoice** (AR).                                   |
+| **Sale**     | Confirm SO / xuất kho             | **Trừ tồn không gắn trạng thái SO.** Đổi `orders.status` không tự gọi outbound.                                                                                                       | Chỉ confirm SO, chưa shipment/invoice (tùy mode).               | Tồn có thể không đổi.                      | Mode `shipment`: **ship** shipment; mode `invoice`: invoice finalized; hoặc mở rộng reservation từ SO (chưa có).        |
+| **Sale**     | Shipment / Invoice → kho          | **Điều phối bằng `WAREHOUSE_SALES_OUTBOUND_MODE`.** Mặc định code: **`shipment`** → `InvoiceWarehouseStockService` **không** post outbound; chỉ `SalesShipmentStockService` khi ship. | Team nghĩ “có invoice là trừ tồn” trong khi mode đang shipment. | Đối soát tồn sai kỳ vọng.                  | Chốt env + SOP; xem `QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md`. `WAREHOUSE_SALES_OUTBOUND_ENABLED` mặc định **true**. |
+| **Purchase** | PO delivered + DO received        | **Rủi ro nhập đôi** nếu bật đồng thời `WAREHOUSE_INBOUND_FROM_PO_DELIVERED` và `WAREHOUSE_INBOUND_FROM_DO_RECEIVED` cho cùng lần nhận.                                                | Hai movement inbound cho cùng lượng.                            | Tồn x2.                                    | Một nguồn inbound canonical; đã có guard trong `DeliveryOrderObserver` khi PO đã delivered + PO inbound bật.            |
+| **Sale**     | 1 SO → nhiều hóa đơn              | DB cho phép nhiều `invoices.order_id`; model có `Order::invoices()` và `Order::invoice()` = invoice **mới nhất** (`latestOfMany`).                                                    | UI/luồng tạo invoice lần 2, 3 từ SO có thể chưa đầy đủ.         | Thanh toán theo đợt chưa khép kín trên UI. | Hoàn thiện màn hình/luồng tạo nhiều invoice gắn SO + đối soát với shipment.                                             |
+| **Purchase** | Supplier invoice (`PurchaseBill`) | **Bill NCC không post stock** — `PurchaseBillObserver` không gọi `StockMovementService`.                                                                                              | Kỳ vọng “nhập kho khi có hóa đơn NCC”.                          | Tồn vật lý ≠ thời điển ghi AP.             | **Đúng thiết kế hiện tại:** nhập kho theo **PO delivered** hoặc **DO received**; bill = AP. Chi tiết mục **L**.         |
 
 ---
 
@@ -32,35 +33,35 @@
 
 ## C. ⚡ Missing or Broken Logic (so với mô tả ERP đầy đủ)
 
-| Module                           | Issue                                                  | Why it breaks system                                                                      |
-| -------------------------------- | ------------------------------------------------------ | ----------------------------------------------------------------------------------------- |
-| **Sales DO**                     | Không có `DeliveryOrder` cho `order_id` (bán).         | Quy trình “SO → DO → xuất kho” không khớp code; chỉ có PO-linked DO.                      |
-| **SO → tồn**                     | Trừ tồn gắn **Invoice**, không phải SO.                | Báo cáo “đã confirm SO” chưa chắc đã trừ kho.                                             |
-| **InvoiceWarehouseStockService** | `isEnabled()` cần `user_modules()` chứa `'warehouse'`. | Ngữ cảnh không có user (job/console) có thể **không** sync (cần xác nhận khi chạy queue). |
-| **Partial delivery**             | Không có split SO → nhiều invoice theo `order_id`.     | Giao một phần nhiều lần không map thành nhiều AR trên cùng SO.                            |
+| Module                           | Issue                                                                                  | Why it breaks system                                                                      |
+| -------------------------------- | -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| **Sales DO**                     | Không có `DeliveryOrder` cho `order_id` (bán).                                         | Quy trình “SO → DO → xuất kho” không khớp code; chỉ có PO-linked DO.                      |
+| **SO → tồn**                     | Trừ tồn theo **mode**: `shipment` = shipment ship; `invoice` = invoice; không phải SO. | Báo cáo “đã confirm SO” chưa chắc đã trừ kho.                                             |
+| **InvoiceWarehouseStockService** | `isEnabled()` cần `user_modules()` chứa `'warehouse'`.                                 | Ngữ cảnh không có user (job/console) có thể **không** sync (cần xác nhận khi chạy queue). |
+| **Partial delivery**             | Không có split SO → nhiều invoice theo `order_id`.                                     | Giao một phần nhiều lần không map thành nhiều AR trên cùng SO.                            |
 
 ---
 
 ## D. 🧨 Inventory Issues
 
-| Problem                   | Scenario                                                                                                                     | Fix (hướng)                                                                                          |
-| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| **Tồn không đổi khi bán** | Tạo SO + confirm, không tạo invoice **hoặc** invoice `draft` **hoặc** `WAREHOUSE_SALES_OUTBOUND_ENABLED=false`.              | Bật outbound + invoice finalized (non-draft) + kiểm tra `isEnabled()`.                               |
-| **Âm tồn**                | `allow_negative_stock` trong `config/warehouse.php` (`WAREHOUSE_ALLOW_NEGATIVE_STOCK`, default false).                       | Nếu `false`, `StockMovementService` sẽ chặn; nếu **true**, cho phép âm — cần policy rõ.              |
-| **Đa kho**                | Tồn theo `warehouse_product_stocks` / batch; transfer qua `WarehouseTransferController` / `StockMovementService` (transfer). | UAT: cùng SKU hai kho; **bán** vẫn outbound từ `default_warehouse_id` (client) trừ khi mở rộng code. |
-| **Trộn nguồn nhập**       | PO delivered + DO received cùng bật.                                                                                         | Chỉ một đường nhập (xem A).                                                                          |
+| Problem                   | Scenario                                                                                                                                                         | Fix (hướng)                                                                                          |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| **Tồn không đổi khi bán** | Mode `shipment`: chưa **ship** shipment **hoặc** outbound tắt. Mode `invoice`: chưa invoice finalized / draft **hoặc** `WAREHOUSE_SALES_OUTBOUND_ENABLED=false`. | Theo mode: ship shipment hoặc finalize invoice + kiểm tra `isEnabled()` và env.                      |
+| **Âm tồn**                | `allow_negative_stock` trong `config/warehouse.php` (`WAREHOUSE_ALLOW_NEGATIVE_STOCK`, default false).                                                           | Nếu `false`, `StockMovementService` sẽ chặn; nếu **true**, cho phép âm — cần policy rõ.              |
+| **Đa kho**                | Tồn theo `warehouse_product_stocks` / batch; transfer qua `WarehouseTransferController` / `StockMovementService` (transfer).                                     | UAT: cùng SKU hai kho; **bán** vẫn outbound từ `default_warehouse_id` (client) trừ khi mở rộng code. |
+| **Trộn nguồn nhập**       | PO delivered + DO received cùng bật.                                                                                                                             | Chỉ một đường nhập (xem A).                                                                          |
 
 ---
 
 ## E. 🛠 Suggested Fix Plan (ưu tiên)
 
-| Step  | Action                                                                                                                                                                                                                      |
-| ----- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **1** | **Xác nhận `.env` staging:** `WAREHOUSE_SALES_OUTBOUND_ENABLED`, `WAREHOUSE_INBOUND_FROM_PO_DELIVERED`, `WAREHOUSE_INBOUND_FROM_DO_RECEIVED`, `WAREHOUSE_ALLOW_NEGATIVE_STOCK`.                                             |
-| **2** | **UAT theo đúng code:** Sale = SO → **Invoice** (không draft) → kiểm `stock_movements` (outbound `reference_type=Invoice`), `invoice_warehouse_stock_postings`. Purchase = PO delivered **hoặc** DO received **một** nhánh. |
-| **3** | **Nếu nghiệp vụ bắt buộc “SO → DO sales”:** thiết kế bảng/FK mới + observer xuất kho hoặc reservation — **không** có trong code hiện tại.                                                                                   |
-| **4** | **Ghi nhận giới hạn:** 1 SO → 1 Invoice (`order_id`); partial payment = nhiều `payments` trên cùng invoice.                                                                                                                 |
-| **5** | **Kiểm tra** `client_details.default_warehouse_id` và sản phẩm `goods`/`service` trên từng dòng invoice.                                                                                                                    |
+| Step  | Action                                                                                                                                                                                                                                                                                                                   |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **1** | **Xác nhận `.env` staging:** `WAREHOUSE_SALES_OUTBOUND_ENABLED`, `WAREHOUSE_INBOUND_FROM_PO_DELIVERED`, `WAREHOUSE_INBOUND_FROM_DO_RECEIVED`, `WAREHOUSE_ALLOW_NEGATIVE_STOCK`.                                                                                                                                          |
+| **2** | **UAT theo đúng code:** Sale mặc định = SO → **Sales Shipment** → **ship** → kiểm `stock_movements` (outbound `reference_type=SalesShipment`). Nếu `WAREHOUSE_SALES_OUTBOUND_MODE=invoice`: SO → Invoice (không draft) → `invoice_warehouse_stock_postings`. Purchase = PO delivered **hoặc** DO received **một** nhánh. |
+| **3** | **SO → phiếu giao bán:** đã có **Option B** (`sales_shipments`); không dùng `delivery_orders` cho bán.                                                                                                                                                                                                                   |
+| **4** | **Nhiều invoice / SO:** DB + `Order::invoices()` hỗ trợ nhiều bản ghi; cần hoàn thiện luồng tạo invoice từ SO trên UI nếu nghiệp vụ bắt buộc.                                                                                                                                                                            |
+| **5** | **Kiểm tra** `client_details.default_warehouse_id` và sản phẩm `goods`/`service` trên từng dòng invoice.                                                                                                                                                                                                                 |
 
 ---
 
@@ -110,12 +111,12 @@
 
 ## Ghi chú (tóm tắt tiếng Việt)
 
-- **Hệ thống hiện tại không có “phiếu giao hàng bán (DO)” nối Sale Order.** `DeliveryOrder` trong code là **phiếu nhập/giao hàng mua** (liên quan `purchase_order_id`).
-- **Xuất kho bán** (khi bật cấu hình) đi theo **Hóa đơn khách (`Invoice`)**, không theo trạng thái **Đơn hàng (`Order`)** đơn thuần.
-- **Mặc định env có thể** tắt xuất kho bán — cần bật đúng biến khi kiểm tra.
-- **Nhập kho mua:** PO “delivered” và/hoặc DO “received” — **không** bật cả hai cho cùng một quy trình nhận thực tế.
-- **Hóa đơn nhà cung cấp (`PurchaseBill`)** không làm tồn kho; tồn theo PO/DO.
-- Để **chứng minh end-to-end** trên staging, cần **chạy tay** các bước và kiểm tra bảng `stock_movements`, `warehouse_product_stocks`, `invoice_warehouse_stock_postings`, `invoices.order_id`, `purchase_orders.delivery_status`.
+- **Không có “DO bán” trên bảng `delivery_orders`.** Đó là **phiếu nhập mua** (`purchase_order_id`). Bán dùng **`sales_shipments`** (Sales Shipment).
+- **Xuất kho bán (mặc định code):** mode **`shipment`** → trừ tồn khi **ship** shipment, **không** trừ theo invoice. Mode **`invoice`** → trừ khi invoice (legacy). Trạng thái SO đơn thuần **không** tự trừ tồn.
+- **`WAREHOUSE_SALES_OUTBOUND_ENABLED`** mặc định **true**; vẫn có thể tắt bằng env nếu tenant không dùng outbound tự động.
+- **Nhập kho mua:** PO `delivered` và/hoặc DO inbound `received` — chỉ **một** nguồn trigger cho cùng lần nhận; đã có guard giảm double inbound.
+- **Hóa đơn NCC (`PurchaseBill`)** = chứng từ **kế toán AP**, **không** nhập kho — xem mục **L**.
+- **End-to-end staging:** chạy tay và đối chiếu `stock_movements`, `warehouse_product_stocks`, `sales_shipments.outbound_stock_applied`, `invoice_warehouse_stock_postings` (nếu mode invoice), `purchase_orders.delivery_status`.
 
 ---
 
@@ -136,7 +137,7 @@ Da bo sung Option B theo huong tach domain ban khoi inbound DO:
 
 Orchestration xuat kho:
 
-- Them config `warehouse.sales_outbound_mode` (`invoice|shipment`).
+- Them config `warehouse.sales_outbound_mode` (`invoice|shipment`). **Mac dinh code: `shipment`** (flow moi: xuat kho theo Sales Shipment).
 - Neu mode=`shipment`: invoice khong post outbound (tranh double).
 - Neu mode=`invoice`: giu hanh vi legacy invoice outbound.
 
@@ -172,9 +173,9 @@ Pham vi Option B MVP khong sua pha flow PO/DO inbound cu.
 ### B. ⚠️ Data Inconsistencies
 
 - **Tables:** `orders`, `invoices`  
-  **Problem:** 1 SO -> 1 Invoice theo `invoices.order_id` trong mô hình hiện tại.  
-  **Example:** Nhu cầu nhiều AR invoice cho 1 SO theo đợt chưa có model chuẩn.  
-  **Fix:** Nếu cần nhiều invoice/1 SO thì cần thiết kế lại quan hệ và đối soát line-level.
+  **Problem:** DB cho phép nhiều invoice cùng `order_id`; `Order::invoices()` đã có, nhưng luồng UI “tạo invoice lần 2+” từ SO có thể chưa đủ.  
+  **Example:** Nhiều AR theo đợt giao trên cùng SO.  
+  **Fix:** Hoàn thiện UI/controller tạo invoice gắn SO + rule đối soát với `sales_shipments`.
 
 - **Tables:** `purchase_stock_adjustments` vs `stock_movements`  
   **Problem:** PO observer cập nhật cả tồn legacy (`purchase_stock_adjustments.net_quantity`) và tồn warehouse (`stock_movements`) khi delivered.  
@@ -193,8 +194,8 @@ Pham vi Option B MVP khong sua pha flow PO/DO inbound cu.
   **Why it breaks system:** Nếu tài liệu/đào tạo vẫn dùng thuật ngữ DO bán sẽ gây nhầm luồng.
 
 - **Module:** Purchase Bill  
-  **Issue:** `PurchaseBillObserver` không post stock inbound.  
-  **Why it breaks system:** Nếu kế toán kỳ vọng “bill = nhập kho” sẽ sai nghiệp vụ.
+  **Issue:** `PurchaseBillObserver` không post stock inbound (cố ý tách nghiệp vụ).  
+  **Why it breaks system:** Nếu kỳ vọng “có bill NCC thì tồn tăng” sẽ lệch thực tế code — xem **mục L**.
 
 - **Module:** Invoice warehouse hook  
   **Issue:** `InvoiceWarehouseStockService::isEnabled()` phụ thuộc `user_modules()` ngữ cảnh runtime.  
@@ -219,3 +220,100 @@ Pham vi Option B MVP khong sua pha flow PO/DO inbound cu.
 - **Step 1:** Chốt config tenant (`WAREHOUSE_SALES_OUTBOUND_MODE`, inbound flags, negative stock), lưu trong runbook triển khai.
 - **Step 2:** QA chạy bộ test case `FUNC_LOGIC/SALES_SHIPMENT_OPTION_B_UAT_TEST_CASES_VI.md` và ký nhận kết quả từng TC.
 - **Step 3:** Cập nhật tài liệu đào tạo user: thay toàn bộ “DO bán” thành “Sales Shipment” và hướng dẫn đối soát tồn theo mode đã chốt.
+
+---
+
+## J. Vòng test tiếp theo + cập nhật fix (2026-03-29)
+
+_Kết quả chạy test tự động mới nhất (2026-03-30): **mục M**._
+
+### Các fix đã áp dụng trong vòng này
+
+- Thêm guard chống double inbound tại `DeliveryOrderObserver`:
+    - Khi PO linked đã `delivery_status=delivered` và PO inbound đang bật, DO inbound sẽ skip để tránh nhập đôi.
+- Siết validation `SalesShipmentController`:
+    - Không cho `quantity_shipped > 0` nếu line không có `product_id`.
+- Điều chỉnh `InvoiceWarehouseStockService::isEnabled()`:
+    - Trong ngữ cảnh không có user (job/console), vẫn cho phép sync nếu module + config đã bật.
+- **Chốt flow mới (staging, chưa production):** mặc định `warehouse.sales_outbound_mode` = **`shipment`** trong `Modules/Warehouse/Config/config.php`; invoice không post outbound trừ khi đặt env `WAREHOUSE_SALES_OUTBOUND_MODE=invoice`.
+
+### Kết quả test (tham chiếu mới nhất)
+
+Xem **mục M** — lần chạy `php artisan test` toàn bộ repo và mapping phạm vi SO/PO/DO/kho/invoice.
+
+---
+
+## K. Trạng thái fix cho nhóm Critical Bugs (mục A, dòng 8-19)
+
+| Bug mục A                                                           | Trạng thái                                    | Ghi chú                                                                                                                                                   |
+| ------------------------------------------------------------------- | --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Sale: SO -> DO -> xuất kho (`delivery_orders` không gắn `order_id`) | **Đã xử lý theo Option B (thay thế)**         | Không sửa `delivery_orders`; đã triển khai `sales_shipments` cho luồng bán.                                                                               |
+| Sale: Confirm SO không tự trừ tồn                                   | **Tạm bỏ qua theo quyết định nghiệp vụ**      | Outbound trigger theo `sales shipment` hoặc `invoice` tùy mode, không theo trạng thái SO.                                                                 |
+| Sale: Outbound sales default false                                  | **Đã sửa**                                    | Đổi default config `sales_outbound_enabled` sang true (vẫn có thể override bằng env).                                                                     |
+| Purchase: PO delivered + DO received gây double inbound             | **Đã giảm rủi ro bằng guard code**            | `DeliveryOrderObserver` đã chặn inbound DO khi PO linked đã delivered và PO inbound đang bật.                                                             |
+| Sale: 1 SO -> nhiều invoice                                         | **Đã xử lý tương thích quan hệ (partial)**    | Đã thêm `Order::invoices()` (`hasMany`) và đổi `Order::invoice()` trả invoice mới nhất; luồng tạo nhiều invoice theo nghiệp vụ sẽ làm ở bước kế tiếp.     |
+| Purchase: Supplier invoice không post stock                         | **Không coi là bug — đúng thiết kế hiện tại** | Nhập kho theo **PO delivered** / **DO inbound received**; `PurchaseBill` = AP. Nếu nghiệp vụ bắt buộc “bill → tồn” thì là **ép mở rộng mới** (mục **L**). |
+
+---
+
+## L. Hóa đơn nhà cung cấp (`PurchaseBill`) — vì sao “không post stock”?
+
+### Đây có phải lỗi không?
+
+**Không.** Trong codebase hiện tại, đây là **tách nghiệp vụ có chủ đích**:
+
+| Chứng từ / sự kiện            | Vai trò trong hệ thống                                  | Tồn kho (`stock_movements` / `warehouse_product_stocks`)          |
+| ----------------------------- | ------------------------------------------------------- | ----------------------------------------------------------------- |
+| **PO delivered**              | Hoàn tất mua hàng (theo cấu hình)                       | Có thể **nhập kho** nếu bật `WAREHOUSE_INBOUND_FROM_PO_DELIVERED` |
+| **DO inbound `received`**     | GRN / nhận hàng vào kho                                 | Có thể **nhập kho** nếu bật `WAREHOUSE_INBOUND_FROM_DO_RECEIVED`  |
+| **`PurchaseBill` (bill NCC)** | Ghi nhận **công nợ / AP**, đối chiếu thanh toán với NCC | **Không** được nối với `StockMovementService` trong observer bill |
+
+Kỳ vọng sai thường gặp: _“Kế toán đã nhập hóa đơn NCC thì kho phải có hàng.”_  
+Trong ERP chuẩn, **hàng về kho** (GRN) và **hóa đơn NCC** có thể **lệch thời gian** (nhận trước, bill sau hoặc ngược lại). Code hiện tại chọn **GRN = PO/DO**, **bill = kế toán**.
+
+### “Lỗi tiếp theo” là gì nếu muốn làm tiếp?
+
+Không phải sửa bug, mà là **quyết định sản phẩm**:
+
+1. **Giữ như hiện tại (khuyến nghị nếu chưa có BRD rõ):** đào tạo user — nhập kho khi **nhận hàng** (PO/DO), bill chỉ để **AP**.
+2. **Mở rộng sau (nếu bắt buộc):** thiết kế **3-way match** hoặc rule rõ ràng: bill chỉ post stock khi đã có GRN và số lượng khớp, tránh nhập đôi với PO/DO — cần spec, migration/event và test riêng.
+
+Tóm lại: mục **“Purchase: Supplier invoice không post stock”** trong bảng audit là **ghi nhận kỳ vọng vs thiết kế**, không phải defect bắt buộc phải sửa trừ khi PM chốt nghiệp vụ “bill kích hoạt tồn”.
+
+---
+
+## M. Chạy test tự động toàn bộ — SO / PO / DO / kho / invoice (2026-03-30)
+
+### Lệnh và kết quả
+
+- **Lệnh:** `php artisan test` (toàn bộ thư mục `tests/`).
+- **Kết quả (cập nhật sau khi bổ sung `PurchaseInboundStockFlowTest`):** **46 passed**, **1 skipped**, **0 failed**, **402 assertions**, thời gian ~**53s** (môi trường dev cục bộ).
+
+**Skipped (không phải lỗi ERP):** `Tests\Feature\LoginTest` — case _inactive user is logged out_ (ứng dụng hiện tại cho phép hoặc xử lý khác; test được đánh dấu skip).
+
+**Không có test failed** trong lần chạy này.
+
+### Test tự động trùng với nghiệp vụ SO · PO · DO · Inventory · Warehouse · Invoice
+
+| Nhóm nghiệp vụ (ý nghĩa vận hành)                           | File test                                    | Ghi chú ngắn                                                                                                                                                                              |
+| ----------------------------------------------------------- | -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **SO + xuất bán (Sales Shipment, Option B)**                | `Tests\Feature\SalesShipmentOptionBTest`     | Outbound theo shipment, idempotent, over-shipment, reverse, `shouldPostOutboundFromInvoice` false khi mode shipment.                                                                      |
+| **Invoice + warehouse outbound (Scope B)**                  | `Tests\Unit\InvoiceWarehouseStockScopeBTest` | Config outbound, `InvoiceWarehouseStockService`, draft/CN, seeding skip sync/reverse.                                                                                                     |
+| **Order ↔ Invoice (nhiều hóa đơn / SO)**                    | `Tests\Unit\OrderInvoiceRelationTest`        | `Order::invoices()` + `invoice()` latest.                                                                                                                                                 |
+| **DO nhập + PO (guard double inbound)**                     | `Tests\Unit\DeliveryOrderObserverGuardTest`  | Khi PO đã delivered + inbound PO bật, DO inbound không post trùng.                                                                                                                        |
+| **DO nhập → tồn (happy path)**                              | `Tests\Feature\PurchaseInboundStockFlowTest` | `DeliveryOrderObserver` + `recordInboundBatch`: DO `received`, cờ `WAREHOUSE_INBOUND_FROM_DO_RECEIVED`, cập nhật `warehouse_product_stock` + `stock_movements` + `inbound_stock_applied`. |
+| **PO delivered → tồn (đường `recordPurchaseOrderInbound`)** | `Tests\Feature\PurchaseInboundStockFlowTest` | Reflection gọi private method tương đương nhánh PO delivered + `WAREHOUSE_INBOUND_FROM_PO_DELIVERED`; kiểm tra bỏ qua khi flag false.                                                     |
+| **Kho: movement, âm tồn, FEFO**                             | `Tests\Unit\StockMovementServiceTest`        | `StockMovementService` — chặn âm tồn mặc định, override, FEFO.                                                                                                                            |
+| **Cấu hình warehouse phase 3**                              | `Tests\Unit\WarehousePhase3ConfigTest`       | Inbound flags default, `recordInboundBatch`, reservation service.                                                                                                                         |
+| **Import master warehouse (chunk)**                         | `Tests\Feature\WarehouseImportChunkJobTest`  | Upsert warehouse theo company/code, skip dòng thiếu tên/mã.                                                                                                                               |
+
+### Phần chưa có test HTTP/E2E tự động (vẫn cần UAT tay hoặc bổ sung sau)
+
+Repo **chưa** có (hoặc chưa thấy trong `tests/`) các suite kiểu:
+
+- Full **OrderController** / tạo SO / đổi trạng thái SO end-to-end qua HTTP.
+- Full **Purchase Order** / **Delivery Order** qua **HTTP** (form submit, quyền user, `company()`): đã có test **observer + tồn** trong `PurchaseInboundStockFlowTest` (SQLite in-memory), chưa có test request qua controller.
+- **InvoiceController** tạo/sửa invoice qua request thật + đối chiếu `stock_movements`.
+- Module **Inventory** (màn hình tồn, điều chỉnh) nếu tách khác `StockMovementService`.
+
+**Kết luận cho PM/QA:** lần chạy này **không phát hiện regression** trong phạm vi test đã có; **luồng ERP đầy đủ trên UI** vẫn nên chạy theo `FUNC_LOGIC/SALES_SHIPMENT_OPTION_B_UAT_TEST_CASES_VI.md` và checklist PO/DO/inbound trong tài liệu quy trình.

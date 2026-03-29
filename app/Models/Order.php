@@ -114,7 +114,13 @@ class Order extends BaseModel
 
     public function invoice(): HasOne
     {
-        return $this->hasOne(Invoice::class, 'order_id');
+        // Backward-compatible single access point: always return latest invoice of this order.
+        return $this->hasOne(Invoice::class, 'order_id')->latestOfMany('id');
+    }
+
+    public function invoices(): HasMany
+    {
+        return $this->hasMany(Invoice::class, 'order_id')->orderByDesc('id');
     }
 
     public function salesShipments(): HasMany

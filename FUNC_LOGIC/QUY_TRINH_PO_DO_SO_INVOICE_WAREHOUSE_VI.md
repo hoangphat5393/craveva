@@ -76,7 +76,7 @@
 Đồng thời thỏa:
 
 - `.env`: **`WAREHOUSE_SALES_OUTBOUND_ENABLED=true`** (và `php artisan config:clear`).
-- `.env`: **`WAREHOUSE_SALES_OUTBOUND_MODE=shipment|invoice`**.
+- `.env`: **`WAREHOUSE_SALES_OUTBOUND_MODE=shipment|invoice`** (mặc định code đang là **`shipment`**; override bằng env nếu tenant cần legacy invoice outbound).
 - Module **Warehouse** bật; user đăng nhập có **`warehouse`** trong `user_modules`.
 - Đã migrate các bảng kho liên quan (`invoice_warehouse_stock_postings` nếu mode invoice).
 - **Payment:** Khi flag trên, `PaymentObserver` **không** chỉnh legacy `PurchaseStockAdjustment` cho đường stock warehouse (tránh lệch đa kho).

@@ -29,7 +29,14 @@ class StoreAiOrderWebhookRequest extends FormRequest
     {
         return [
             'company_id' => ['required', 'integer', 'exists:companies,id'],
-            'client_id' => ['required', 'integer', 'exists:users,id'],
+            'client_id' => [
+                'required',
+                'integer',
+                Rule::exists('users', 'id')->where(function ($query) {
+                    $query->where('company_id', (int) $this->input('company_id'))
+                        ->where('status', 'active');
+                }),
+            ],
             'external_event_id' => ['nullable', 'string', 'max:191'],
             'project_id' => ['nullable', 'integer', 'exists:projects,id'],
             'company_address_id' => ['nullable', 'integer', 'exists:company_addresses,id'],

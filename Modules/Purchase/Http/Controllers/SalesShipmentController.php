@@ -325,6 +325,12 @@ class SalesShipmentController extends AccountBaseController
             if ($requestQty > $left) {
                 abort(422, __('messages.quantityNumber'));
             }
+
+            // Shippable line must map to a product so stock movement can be posted correctly.
+            $lineProductId = $validated['product_id'][$idx] ?? null;
+            if ($requestQty > 0 && empty($lineProductId)) {
+                abort(422, __('messages.invalidRequest'));
+            }
         }
 
         if ($shipmentId) {

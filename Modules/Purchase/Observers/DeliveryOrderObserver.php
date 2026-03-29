@@ -21,6 +21,21 @@ class DeliveryOrderObserver
             return;
         }
 
+        // Safety guard: if both inbound channels are enabled and the linked PO is already delivered,
+        // skip DO inbound posting to avoid double-counting the same receiving event.
+        if (
+            config('warehouse.inbound_from_purchase_order_delivered', true)
+            && $deliveryOrder->purchaseOrder
+            && $deliveryOrder->purchaseOrder->delivery_status === 'delivered'
+        ) {
+            Log::warning('DeliveryOrder inbound stock skipped: PO inbound already eligible (double-count prevention)', [
+                'delivery_order_id' => $deliveryOrder->id,
+                'purchase_order_id' => $deliveryOrder->purchase_order_id,
+            ]);
+
+            return;
+        }
+
         if ($deliveryOrder->inbound_stock_applied) {
             return;
         }

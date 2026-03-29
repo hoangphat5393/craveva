@@ -1,5 +1,7 @@
 # Hướng dẫn sử dụng Sales Shipment (Option B) - UAT/Vận hành
 
+**Trạng thái kiểm tra gần nhất:** 2026-03-29 (test suite `tests/` pass, không có lỗi fail)
+
 ## 1) Mục tiêu
 
 Tài liệu này hướng dẫn team vận hành và QA sử dụng luồng:

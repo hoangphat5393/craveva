@@ -17,9 +17,16 @@ class InvoiceWarehouseStockScopeBTest extends TestCase
         parent::tearDown();
     }
 
-    public function test_sales_outbound_config_defaults_to_false(): void
+    public function test_sales_outbound_config_defaults_to_true(): void
     {
-        $this->assertFalse((bool) config('warehouse.sales_outbound_enabled'));
+        $this->assertTrue((bool) config('warehouse.sales_outbound_enabled'));
+    }
+
+    public function test_sales_outbound_mode_defaults_to_shipment(): void
+    {
+        $this->assertSame('shipment', config('warehouse.sales_outbound_mode'));
+        $svc = app(InvoiceWarehouseStockService::class);
+        $this->assertFalse($svc->shouldPostOutboundFromInvoice());
     }
 
     public function test_invoice_warehouse_stock_service_is_registered(): void

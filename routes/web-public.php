@@ -3,6 +3,7 @@
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ImageController;
+use App\Http\Controllers\Integrations\AiOrderWebhookController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\Payment\AuthorizeController;
 use App\Http\Controllers\Payment\FlutterwaveController;
@@ -116,6 +117,9 @@ Route::get('/verify-webhook/{hash?}', [StripeWebhookController::class, 'getWebho
 Route::post('/verify-webhook/{hash}', [StripeWebhookController::class, 'verifyStripeWebhook'])->name('stripe.webhook');
 
 Route::post('setup-account', [RegisterController::class, 'setupAccount'])->name('setup_account');
+
+// AI inbound webhook -> create order (pilot)
+Route::post('ai-order-webhook/{hash}', [AiOrderWebhookController::class, 'store'])->name('ai.order.webhook');
 
 // Get quill image uploaded
 Route::get('quill-image/{image}', [ImageController::class, 'getImage'])->name('image.getImage');

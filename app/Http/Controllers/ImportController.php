@@ -42,7 +42,8 @@ class ImportController extends Controller
 
         // Staging/production: do NOT run queue:work inside HTTP — nginx/php-fpm often times out (60s),
         // breaking JSON polling (empty progress). Use Supervisor: `php artisan queue:work database --queue=ClientImport`.
-        // Local dev: default runs worker per poll unless IMPORT_PROGRESS_RUN_QUEUE_WORKER=false.
+        // Dev: default runs worker per poll when APP_ENV matches config (e.g. craveva/local), unless
+        // IMPORT_PROGRESS_RUN_QUEUE_WORKER=false. Staging/production: set that to false and use Supervisor.
         if ($this->shouldRunQueueWorkerDuringImportProgressPoll()) {
             set_time_limit(300);
             $execution_jobs = 50;
@@ -247,17 +248,42 @@ class ImportController extends Controller
 
     /**
      * Legacy: poll endpoint used to run queue:work so imports worked without a daemon. That breaks behind
-     * reverse proxies with short timeouts. Default: only on APP_ENV=local when env is unset.
+     * reverse proxies with short timeouts. When unset, defaults to true for envs in
+     * config('app.import_progress_run_queue_worker_environments'), APP_URL host looks like local dev
+     * (localhost / *.test), or IMPORT_PROGRESS_RUN_QUEUE_WORKER=true.
      */
     private function shouldRunQueueWorkerDuringImportProgressPoll(): bool
     {
         $configured = config('app.import_progress_run_queue_worker');
 
         if ($configured === null || $configured === '') {
-            return app()->environment('local');
+            $envs = config('app.import_progress_run_queue_worker_environments', ['local']);
+            if ($envs !== [] && app()->environment($envs)) {
+                return true;
+            }
+
+            // .env.example uses APP_ENV=craveva; avoid enabling on servers that use craveva + a public APP_URL.
+            return app()->environment('craveva') && $this->appUrlHostLooksLikeLocalDev();
         }
 
         return filter_var($configured, FILTER_VALIDATE_BOOLEAN);
+    }
+
+    private function appUrlHostLooksLikeLocalDev(): bool
+    {
+        $url = (string) config('app.url', '');
+        if ($url === '') {
+            return false;
+        }
+        $host = parse_url($url, PHP_URL_HOST);
+        if (! is_string($host) || $host === '') {
+            return false;
+        }
+        $host = strtolower($host);
+
+        return in_array($host, ['localhost', '127.0.0.1', '::1'], true)
+            || str_ends_with($host, '.localhost')
+            || str_ends_with($host, '.test');
     }
 
     private function assertBatchBelongsToImportQueue($batch, string $queueName): void

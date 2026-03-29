@@ -58,8 +58,16 @@ return [
     /*
     | Import progress polling: optional queue:work inside HTTP (legacy). Staging/production should use
     | Supervisor and leave this unset — nginx/php-fpm timeouts break JSON polling otherwise.
+    |
+    | When IMPORT_PROGRESS_RUN_QUEUE_WORKER is unset, inline worker runs only if APP_ENV matches one of
+    | these names (comma-separated). Default is local,development — if you use APP_ENV=craveva (.env.example),
+    | set IMPORT_PROGRESS_RUN_QUEUE_WORKER=true or add craveva to IMPORT_PROGRESS_RUN_QUEUE_WORKER_ENVIRONMENTS.
     */
     'import_progress_run_queue_worker' => env('IMPORT_PROGRESS_RUN_QUEUE_WORKER'),
+    'import_progress_run_queue_worker_environments' => array_values(array_filter(array_map(
+        'trim',
+        explode(',', env('IMPORT_PROGRESS_RUN_QUEUE_WORKER_ENVIRONMENTS', 'local,development'))
+    ))),
 
     /*
     |--------------------------------------------------------------------------

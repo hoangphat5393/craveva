@@ -20,6 +20,14 @@ class PricingImportController extends AccountBaseController
     {
         parent::__construct();
         $this->pageTitle = __('pricing::app.menu.pricing');
+        $this->middleware(function ($request, $next) {
+            abort_403(! in_array('pricing', array_map('strtolower', $this->user->modules)));
+            if (! company()) {
+                abort(403, 'Company context is required.');
+            }
+
+            return $next($request);
+        });
     }
 
     public function import()

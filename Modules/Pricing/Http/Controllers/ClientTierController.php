@@ -39,6 +39,9 @@ class ClientTierController extends AccountBaseController
 
     public function edit($id)
     {
+        $viewPermission = user()->permission('view_client_tiers');
+        abort_403($viewPermission == 'none');
+
         $this->client = User::with('clientDetails')->findOrFail($id);
 
         if (! $this->client->clientDetails) {
@@ -87,6 +90,11 @@ class ClientTierController extends AccountBaseController
             $details = new ClientDetails;
             $details->user_id = $user->id;
             $details->company_name = $user->name;
+            if ($user->company_id) {
+                $details->company_id = $user->company_id;
+            } elseif (company()) {
+                $details->company_id = company()->id;
+            }
         }
 
         $details->client_code = $request->client_code;

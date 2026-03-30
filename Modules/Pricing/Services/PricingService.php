@@ -4,7 +4,6 @@ namespace Modules\Pricing\Services;
 
 use App\Models\ClientDetails;
 use App\Models\Product;
-use App\Models\User;
 use App\Scopes\CompanyScope;
 use Modules\Pricing\Entities\ClientProductPricing;
 use Modules\Pricing\Entities\CompanyCustomerPricing;
@@ -23,8 +22,6 @@ class PricingService
     {
         $product = Product::findOrFail($productId);
         $sellerCompanyId = $product->company_id;
-        $buyerUser = User::find($clientId);
-        $buyerCompanyId = $buyerUser ? $buyerUser->company_id : null;
         $basePrice = (float) $product->price;
 
         // --- STAGE 1: Determine Unit Price ---
@@ -165,7 +162,8 @@ class PricingService
 
     public function getApplicableTiers(?int $companyId, ?int $customerCompanyId): array
     {
-        $query = \Modules\Pricing\Entities\PricingTier::where('is_active', true);
+        $query = PricingTier::withoutGlobalScope(CompanyScope::class)
+            ->where('is_active', true);
 
         if ($companyId) {
             $query->where(function ($q) use ($companyId) {
@@ -176,7 +174,7 @@ class PricingService
             $query->whereNull('company_id');
         }
 
-        return $query->get()->toArray();
+        return $query->orderByDesc('priority')->orderBy('id')->get()->toArray();
     }
 
     public function applyVolumeDiscount(array $items, ?int $companyId = null): array

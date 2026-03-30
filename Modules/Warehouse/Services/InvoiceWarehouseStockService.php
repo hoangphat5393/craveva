@@ -200,7 +200,7 @@ class InvoiceWarehouseStockService
      */
     public function validateRequestLinesAgainstWarehouse(Request $request, ?int $excludeInvoiceId = null): array
     {
-        if (! $this->isEnabled() || $request->do_it_later !== 'direct') {
+        if (! $this->isEnabled() || ! $this->shouldPostOutboundFromInvoice() || $request->do_it_later !== 'direct') {
             return [];
         }
 
@@ -258,7 +258,7 @@ class InvoiceWarehouseStockService
      */
     public function validateRequestHasResolvableWarehouse(Request $request): bool
     {
-        if (! $this->isEnabled() || $request->do_it_later !== 'direct') {
+        if (! $this->isEnabled() || ! $this->shouldPostOutboundFromInvoice() || $request->do_it_later !== 'direct') {
             return true;
         }
 

@@ -150,14 +150,18 @@ if (! function_exists('getSubdomainSchema')) {
 
 if (! function_exists('superadmin_theme')) {
 
+    /**
+     * Super Admin panel theme (global row: company_id NULL, panel superadmin).
+     * Intentionally not cached in session — stale Eloquent models caused sidebar/accent colors
+     * to ignore DB updates until logout (staging vs local mismatch).
+     */
     // @codingStandardsIgnoreLine
     function superadmin_theme()
     {
-        if (! session()->has('superadmin_theme')) {
-            session(['superadmin_theme' => \App\Models\ThemeSetting::withoutGlobalScope(CompanyScope::class)->where('panel', 'superadmin')->first()]);
-        }
-
-        return session('superadmin_theme');
+        return \App\Models\ThemeSetting::withoutGlobalScope(CompanyScope::class)
+            ->where('panel', 'superadmin')
+            ->whereNull('company_id')
+            ->first();
     }
 }
 
@@ -1220,19 +1224,6 @@ if (! function_exists('companyOrGlobalSetting')) {
         }
 
         return global_setting();
-    }
-}
-
-if (! function_exists('superadmin_theme')) {
-
-    // @codingStandardsIgnoreLine
-    function superadmin_theme()
-    {
-        if (! session()->has('superadmin_theme')) {
-            session(['superadmin_theme' => ThemeSetting::withoutGlobalScope(CompanyScope::class)->where('panel', 'superadmin')->first()]);
-        }
-
-        return session('superadmin_theme');
     }
 }
 

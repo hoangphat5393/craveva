@@ -310,10 +310,10 @@
 
             if (typeof id !== 'undefined') {
                 window.apiHttp.postUrlEncoded(url, {
-                    '_token': token,
-                    tierId: id,
-                    status: status
-                })
+                        '_token': token,
+                        tierId: id,
+                        status: status
+                    })
                     .then(function(response) {
                         if (response.status == "success") {
                             // window.location.reload();

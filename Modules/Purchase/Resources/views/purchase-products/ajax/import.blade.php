@@ -36,7 +36,12 @@
 
         $('body').on('click', '#import-purchase-product-form', function() {
             const url = "{{ route('purchase-products.import.store') }}";
-            window.apiHttp.postUrlEncoded(url, $('#import-purchase-product-data-form').serialize())
+            const $btn = $('#import-purchase-product-form');
+            const formEl = document.getElementById('import-purchase-product-data-form');
+
+            $btn.prop('disabled', true);
+            $.easyBlockUI('#import_table');
+            window.apiHttp.postForm(url, formEl)
                 .then(function(response) {
                     if (response.status == 'success') {
                         $('#import_table').html(response.view);
@@ -44,6 +49,10 @@
                 })
                 .catch(function(err) {
                     $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $btn.prop('disabled', false);
+                    $.easyUnblockUI('#import_table');
                 });
         });
     });

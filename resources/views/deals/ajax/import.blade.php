@@ -13,19 +13,14 @@
                     <div class="col-md-12">
                         <x-forms.link-secondary :link="asset('sample-import/deal-sample.xlsx')" icon="download">@lang('app.downloadSampleImport')</x-forms.link-secondary>
 
-                        <x-forms.file :fieldLabel="__('modules.import.file')" fieldName="import_file"
-                                      fieldId="deal_import"/>
+                        <x-forms.file :fieldLabel="__('modules.import.file')" fieldName="import_file" fieldId="deal_import" />
                     </div>
                     <div class="col-md-12">
-                        <x-forms.toggle-switch class="mr-0 mr-lg-12"
-                                               :fieldLabel="__('modules.import.containsHeadings')"
-                                               fieldName="heading"
-                                               fieldId="heading"/>
+                        <x-forms.toggle-switch class="mr-0 mr-lg-12" :fieldLabel="__('modules.import.containsHeadings')" fieldName="heading" fieldId="heading" />
                     </div>
                 </div>
                 <x-form-actions>
-                    <x-forms.button-primary id="import-deal-form" class="mr-3"
-                                            icon="arrow-right">@lang('app.uploadNext')
+                    <x-forms.button-primary id="import-deal-form" class="mr-3" icon="arrow-right">@lang('app.uploadNext')
                     </x-forms.button-primary>
                     <x-forms.button-cancel :link="route('deals.index')" class="border-0">@lang('app.back')
                     </x-forms.button-cancel>
@@ -38,30 +33,28 @@
 </div>
 
 <script>
-
-    $(document).ready(function () {
+    $(document).ready(function() {
 
         $("#deal_import").dropify({
             messages: dropifyMessages
         });
 
-        $('body').on('click', '#import-deal-form', function () {
+        $('body').on('click', '#import-deal-form', function() {
             const url = "{{ route('deals.import.store') }}";
+            const $btn = $('#import-deal-form');
+            const formEl = document.getElementById('import-deal-data-form');
 
-            $.easyAjax({
-                url: url,
-                container: '#import-deal-data-form',
-                type: "POST",
-                disableButton: true,
-                blockUI: true,
-                buttonSelector: "#import-deal-form",
-                file: true,
-                data: $('#import-deal-data-form').serialize(),
-                success: function (response) {
-                    if (response.status == 'success') {
-                        $('#import_table').html(response.view);
-                    }
+            $btn.prop('disabled', true);
+            $.easyBlockUI('#import_table');
+            window.apiHttp.postForm(url, formEl).then(function(response) {
+                if (response.status == 'success') {
+                    $('#import_table').html(response.view);
                 }
+            }).catch(function(err) {
+                $.handleApiFormError(err);
+            }).finally(function() {
+                $btn.prop('disabled', false);
+                $.easyUnblockUI('#import_table');
             });
         });
     });

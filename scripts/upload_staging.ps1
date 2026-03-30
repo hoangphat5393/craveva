@@ -1,5 +1,6 @@
 # PowerShell script to zip selected files and upload to staging server
-# Quy trình & rủi ro (destructive remote rm): docs/STAGING_OPERATIONS.md
+# Staging ưu tiên deploy qua Git (git pull trên server) — xem docs/STAGING_OPERATIONS.md
+# Script zip chỉ dùng khi thật sự cần; có đoạn rm trên remote — đọc docs trước khi chạy.
 
 $StagingHost = "craveva-staging"
 $StagingPath = "/var/www/craveva-staging/current/craveva"

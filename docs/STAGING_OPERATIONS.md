@@ -4,6 +4,8 @@
 **App:** `/var/www/craveva-staging/current/craveva`  
 **URL:** `https://staging.craveva.com`
 
+**Nguyên tắc:** Staging **luôn lấy mã nguồn từ Git** (`git pull` trên `main`, working tree sạch). **Không** sửa tay / `scp` từng file PHP lên server cho thay đổi tính năng (dễ lệch commit, `git pull` báo conflict hoặc “untracked would be overwritten”). Chỉnh trên máy local → commit → push → rồi pull trên staging. Cấu hình server-only (cron, systemd, `.env`) giữ tách khỏi tree hoặc document trong `deploy/`.
+
 Tài liệu này gộp quy trình chuẩn; log sự cố theo ngày vẫn giữ riêng trong repo (xem mục _Tài liệu liên quan_).
 
 ---
@@ -17,9 +19,9 @@ Tài liệu này gộp quy trình chuẩn; log sự cố theo ngày vẫn giữ 
 
 ---
 
-## 2. Cách deploy khuyến nghị: Git
+## 2. Cách deploy khuyến nghị: Git (bắt buộc ưu tiên)
 
-Ưu tiên **`git pull`** trên server (không xóa toàn bộ tree như gói zip).
+Luôn **`git pull`** để đồng bộ với `origin/main`. Trước khi pull: `git status` — nếu có file **modified** hoặc **untracked** trùng đường dẫn với bản trên Git, xử lý (`git checkout -- <file>`, `stash`, hoặc `mv` file tạm ra ngoài) để **không** chặn merge.
 
 ```bash
 cd /var/www/craveva-staging/current/craveva

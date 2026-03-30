@@ -25,10 +25,7 @@
                         <x-forms.file :fieldLabel="__('modules.import.file')" fieldName="import_file" fieldId="job_application_import" />
                     </div>
                     <div class="col-md-12">
-                        <x-forms.toggle-switch class="mr-0 mr-lg-12"
-                            :fieldLabel="__('modules.import.containsHeadings')"
-                            fieldName="heading"
-                            fieldId="heading"/>
+                        <x-forms.toggle-switch class="mr-0 mr-lg-12" :fieldLabel="__('modules.import.containsHeadings')" fieldName="heading" fieldId="heading" />
                     </div>
                 </div>
                 <x-form-actions>
@@ -45,7 +42,6 @@
 </div>
 
 <script>
-
     $(document).ready(function() {
 
         $("#job_application_import").dropify({
@@ -54,8 +50,12 @@
 
         $('body').on('click', '#import-job-application-form', function() {
             const url = "{{ route('job-applications.import.store') }}";
+            const $btn = $('#import-job-application-form');
+            const formEl = document.getElementById('import-job-application-data-form');
 
-            window.apiHttp.postUrlEncoded(url, $('#import-job-application-data-form').serialize())
+            $btn.prop('disabled', true);
+            $.easyBlockUI('#import_table');
+            window.apiHttp.postForm(url, formEl)
                 .then(function(response) {
                     if (response.status == 'success') {
                         $('#import_table').html(response.view);
@@ -63,6 +63,10 @@
                 })
                 .catch(function(err) {
                     $.handleApiFormError(err);
+                })
+                .finally(function() {
+                    $btn.prop('disabled', false);
+                    $.easyUnblockUI('#import_table');
                 });
         });
     });

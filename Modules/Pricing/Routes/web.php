@@ -26,7 +26,6 @@ Route::group(['middleware' => 'auth', 'prefix' => 'account/pricing'], function (
     Route::post('tiers/items/apply-quick-action', [PricingTierController::class, 'applyItemsQuickAction'])->name('pricing.tiers.items.apply_quick_action');
 
     Route::get('client-tiers', [ClientTierController::class, 'index'])->name('pricing.client_tiers.index');
-    Route::post('client-tiers', [ClientTierController::class, 'store'])->name('pricing.client_tiers.store');
     Route::get('client-tiers/{id}/edit', [ClientTierController::class, 'edit'])->name('pricing.client_tiers.edit');
     Route::put('client-tiers/{id}', [ClientTierController::class, 'update'])->name('pricing.client_tiers.update');
 

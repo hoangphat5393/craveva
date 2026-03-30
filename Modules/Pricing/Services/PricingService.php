@@ -5,9 +5,11 @@ namespace Modules\Pricing\Services;
 use App\Models\ClientDetails;
 use App\Models\Product;
 use App\Models\User;
+use App\Scopes\CompanyScope;
 use Modules\Pricing\Entities\ClientProductPricing;
 use Modules\Pricing\Entities\CompanyCustomerPricing;
 use Modules\Pricing\Entities\CompanyCustomerProductPricing;
+use Modules\Pricing\Entities\PricingTier;
 use Modules\Pricing\Entities\PricingTierItem;
 
 class PricingService
@@ -31,8 +33,12 @@ class PricingService
         $specific = ClientProductPricing::where('client_id', $clientId)
             ->where('product_id', $productId)
             ->where('is_active', true)
-            ->where('start_date', '<=', now())
-            ->where('end_date', '>=', now())
+            ->where(function ($q) {
+                $q->whereNull('start_date')->orWhere('start_date', '<=', now());
+            })
+            ->where(function ($q) {
+                $q->whereNull('end_date')->orWhere('end_date', '>=', now());
+            })
             ->first();
 
         if ($specific) {
@@ -54,7 +60,7 @@ class PricingService
         $tierId = $clientDetail ? $clientDetail->pricing_tier_id : null;
 
         if ($tierId) {
-            $tier = \Modules\Pricing\Entities\PricingTier::find($tierId);
+            $tier = $this->resolvePricingTierById($tierId);
             // Check validity
             if (
                 $tier && $tier->is_active &&
@@ -150,16 +156,11 @@ class PricingService
 
     public function calculatePrice(int $productId, ?int $companyId, ?int $customerCompanyId, int $quantity = 1): array
     {
-        // Wrapper for compatibility, though calculate() now uses clientId (User ID)
-        // If we don't have clientId, we can't fully resolve user-specific pricing.
-        // For now, if no clientId is available, we might skip user-specific checks.
-        // But calculate() signature requires int $clientId.
+        $product = Product::findOrFail($productId);
+        $sellerCompanyId = $product->company_id;
+        $basePrice = (float) $product->price;
 
-        // This method seems legacy or internal.
-        // If we must support it, we need a way to mock clientId or overload calculate.
-        // For safety, let's just use 0 or a dummy if needed, but ideally we should use calculate().
-
-        return $this->calculate($productId, 0, $quantity);
+        return $this->applyStage2($basePrice, $quantity, $productId, $sellerCompanyId, 'base_price');
     }
 
     public function getApplicableTiers(?int $companyId, ?int $customerCompanyId): array
@@ -227,7 +228,7 @@ class PricingService
 
         // Check for assigned Tier in Corporate Contract
         if ($relation->pricing_tier_id) {
-            $tier = \Modules\Pricing\Entities\PricingTier::find($relation->pricing_tier_id);
+            $tier = $this->resolvePricingTierById($relation->pricing_tier_id);
             if (
                 $tier && $tier->is_active &&
                 ($tier->valid_from === null || now()->toDateString() >= $tier->valid_from) &&
@@ -235,6 +236,9 @@ class PricingService
             ) {
 
                 $product = Product::find($productId);
+                if (! $product) {
+                    return null;
+                }
                 $basePrice = (float) $product->price;
 
                 $tierItem = PricingTierItem::where('pricing_tier_id', $tier->id)
@@ -263,5 +267,14 @@ class PricingService
         }
 
         return null;
+    }
+
+    /**
+     * Load a tier by primary key without CompanyScope so platform tiers (company_id null)
+     * and tiers referenced by FK still resolve; caller enforces seller/platform rules.
+     */
+    private function resolvePricingTierById(int $tierId): ?PricingTier
+    {
+        return PricingTier::withoutGlobalScope(CompanyScope::class)->find($tierId);
     }
 }

@@ -7,6 +7,7 @@ use App\Http\Controllers\AccountBaseController;
 use App\Models\ClientDetails;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Modules\Pricing\DataTables\ClientTiersDataTable;
 use Modules\Pricing\Entities\PricingTier;
 
@@ -17,7 +18,7 @@ class ClientTierController extends AccountBaseController
         parent::__construct();
         $this->pageTitle = __('pricing::app.menu.pricing');
         $this->middleware(function ($request, $next) {
-            // Ensure strict company context
+            abort_403(! in_array('pricing', array_map('strtolower', $this->user->modules)));
             if (! company()) {
                 abort(403, 'Company context is required.');
             }
@@ -38,13 +39,12 @@ class ClientTierController extends AccountBaseController
 
     public function edit($id)
     {
-        \Illuminate\Support\Facades\Log::info('ClientTierController@edit called for ID: '.$id);
         $this->client = User::with('clientDetails')->findOrFail($id);
 
         if (! $this->client->clientDetails) {
             $details = new ClientDetails;
             $details->user_id = $this->client->id;
-            $details->company_name = $this->client->name ?? 'Client '.$this->client->id;
+            $details->company_name = $this->client->name ?? 'Client ' . $this->client->id;
             // Ensure company_id is set if available on client
             if ($this->client->company_id) {
                 $details->company_id = $this->client->company_id;
@@ -69,7 +69,14 @@ class ClientTierController extends AccountBaseController
         abort_403($editPermission == 'none');
 
         $request->validate([
-            'pricing_tier_id' => 'nullable|integer',
+            'pricing_tier_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('pricing_tiers', 'id')->where(function ($query) {
+                    $query->where('company_id', company()->id)
+                        ->orWhereNull('company_id');
+                }),
+            ],
             'client_code' => 'nullable|string|max:100',
         ]);
 

@@ -26,7 +26,11 @@ class ThemeSettingController extends AccountBaseController
 
     public function index()
     {
-        $this->superAdminTheme = ThemeSetting::withoutGlobalScope(CompanyScope::class)->whereNull('company_id')->first();
+        // Must match store() and superadmin_theme() helper (panel = superadmin), not first() row with null company_id only.
+        $this->superAdminTheme = ThemeSetting::withoutGlobalScope(CompanyScope::class)
+            ->whereNull('company_id')
+            ->where('panel', 'superadmin')
+            ->first();
 
         return view('super-admin.theme-settings.index', $this->data);
     }
@@ -99,8 +103,22 @@ class ThemeSettingController extends AccountBaseController
 
         $globalSetting->save();
 
-        session()->forget(['superadmin_theme', 'admin_theme']);
+        // Clear all cached theme objects in session (they hold stale Eloquent models after DB update).
+        session()->forget([
+            'superadmin_theme',
+            'admin_theme',
+            'employee_theme',
+            'client_theme',
+        ]);
         cache()->forget('global_setting');
+
+        $freshSuperadminTheme = ThemeSetting::withoutGlobalScope(CompanyScope::class)
+            ->where('panel', 'superadmin')
+            ->whereNull('company_id')
+            ->first();
+        if ($freshSuperadminTheme) {
+            session(['superadmin_theme' => $freshSuperadminTheme]);
+        }
 
         return Reply::redirect(route('superadmin.settings.super-admin-theme-settings.index'), __('messages.updateSuccess'));
     }

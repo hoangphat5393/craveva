@@ -68,8 +68,8 @@ class PricingTierController extends AccountBaseController
         $tier->name = $request->name;
         $tier->description = $request->description;
         $tier->priority = $request->priority;
-        $tier->valid_from = $request->valid_from ? \Carbon\Carbon::createFromFormat(company()->date_format, $request->valid_from)->format('Y-m-d') : null;
-        $tier->valid_to = $request->valid_to ? \Carbon\Carbon::createFromFormat(company()->date_format, $request->valid_to)->format('Y-m-d') : null;
+        $tier->valid_from = $this->parseTierDate($request->valid_from);
+        $tier->valid_to = $this->parseTierDate($request->valid_to);
         $tier->discount_type = $request->discount_type;
         $tier->discount_value = $request->discount_value;
         $tier->is_active = true;
@@ -117,8 +117,8 @@ class PricingTierController extends AccountBaseController
         $tier->name = $request->name;
         $tier->description = $request->description;
         $tier->priority = $request->priority;
-        $tier->valid_from = $request->valid_from ? \Carbon\Carbon::createFromFormat(company()->date_format, $request->valid_from)->format('Y-m-d') : null;
-        $tier->valid_to = $request->valid_to ? \Carbon\Carbon::createFromFormat(company()->date_format, $request->valid_to)->format('Y-m-d') : null;
+        $tier->valid_from = $this->parseTierDate($request->valid_from);
+        $tier->valid_to = $this->parseTierDate($request->valid_to);
         $tier->discount_type = $request->discount_type;
         $tier->discount_value = $request->discount_value;
         $tier->is_active = $request->has('is_active') ? true : false;
@@ -142,8 +142,12 @@ class PricingTierController extends AccountBaseController
         $viewPermission = user()->permission('view_pricing_tiers');
         abort_403($viewPermission == 'none');
 
-        $this->pricingTier = PricingTier::with('items.product')->findOrFail($id);
-        $this->products = Product::all();
+        $this->pricingTier = PricingTier::with(['items.product.unit'])->findOrFail($id);
+        $this->products = Product::query()
+            ->select(['id', 'name', 'allow_purchase', 'status', 'unit_id'])
+            ->with('unit')
+            ->orderBy('name')
+            ->get();
         $this->view = 'pricing::tiers.ajax.show';
 
         if (request()->ajax()) {
@@ -163,6 +167,8 @@ class PricingTierController extends AccountBaseController
             'discount_type' => 'required|in:percentage,fixed,specific_price',
             'discount_value' => 'required|numeric|min:0',
         ]);
+
+        PricingTier::findOrFail($id);
 
         $item = new PricingTierItem;
         $item->pricing_tier_id = $id;
@@ -210,21 +216,37 @@ class PricingTierController extends AccountBaseController
 
     protected function deleteRecords($request)
     {
-        PricingTier::whereIn('id', explode(',', $request->row_ids))->delete();
+        $ids = array_filter(array_map('intval', explode(',', (string) $request->row_ids)));
+        if (empty($ids)) {
+            return;
+        }
+        PricingTier::whereIn('id', $ids)->delete();
     }
 
     protected function deleteItemRecords($request)
     {
-        PricingTierItem::whereIn('id', explode(',', $request->row_ids))->delete();
+        $ids = array_filter(array_map('intval', explode(',', (string) $request->row_ids)));
+        if (empty($ids)) {
+            return;
+        }
+        $allowedTierIds = PricingTier::query()->pluck('id');
+        PricingTierItem::whereIn('id', $ids)->whereIn('pricing_tier_id', $allowedTierIds)->delete();
     }
 
     protected function changeBulkStatus($request)
     {
-        PricingTier::whereIn('id', explode(',', $request->row_ids))->update(['is_active' => $request->status == 'active']);
+        $ids = array_filter(array_map('intval', explode(',', (string) $request->row_ids)));
+        if (empty($ids)) {
+            return;
+        }
+        PricingTier::whereIn('id', $ids)->update(['is_active' => $request->status == 'active']);
     }
 
     public function changeStatus(Request $request)
     {
+        $editPermission = user()->permission('edit_pricing_tiers');
+        abort_403($editPermission == 'none');
+
         $tier = PricingTier::findOrFail($request->tierId);
         $tier->is_active = $request->status == 'active';
         $tier->save();
@@ -237,8 +259,28 @@ class PricingTierController extends AccountBaseController
         $editPermission = user()->permission('edit_pricing_tiers');
         abort_403($editPermission == 'none');
 
-        PricingTierItem::destroy($itemId);
+        $item = PricingTierItem::findOrFail($itemId);
+        PricingTier::findOrFail($item->pricing_tier_id);
+        $item->delete();
 
         return Reply::success(__('messages.deleteSuccess'));
+    }
+
+    /**
+     * Parse tier validity dates using company format, with fallback for ISO/other strings.
+     */
+    private function parseTierDate(?string $value): ?string
+    {
+        if (! $value) {
+            return null;
+        }
+
+        $format = company()->date_format;
+
+        try {
+            return \Carbon\Carbon::createFromFormat($format, $value)->format('Y-m-d');
+        } catch (\Throwable) {
+            return \Carbon\Carbon::parse($value)->format('Y-m-d');
+        }
     }
 }

@@ -82,7 +82,8 @@ class ClientImportProcessor
         $user = new User;
         $user->company_id = $companyId;
         $user->name = $nameTrimmed;
-        $user->login = 'disable'; // Mặc định không cho client đăng nhập khi import; admin bật "Login Allowed" sau nếu cần
+        // Không có email hợp lệ → Allow login = no. Có email hợp lệ vẫn disable khi import; admin bật tay sau nếu cần.
+        $user->login = 'disable';
         $user->email = self::columnExists($columns, 'email') && self::isEmailValid(self::getValue($row, $columns, 'email'))
             ? self::getValue($row, $columns, 'email')
             : null;
@@ -156,6 +157,11 @@ class ClientImportProcessor
             $emailVal = self::getValue($row, $columns, 'email');
             if (self::isEmailValid($emailVal)) {
                 $user->email = $emailVal;
+            } else {
+                // Cột email được map nhưng trống / không hợp lệ → không cho đăng nhập, xóa email & liên kết đăng nhập
+                $user->email = null;
+                $user->user_auth_id = null;
+                $user->login = 'disable';
             }
         }
 

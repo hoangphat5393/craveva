@@ -407,6 +407,8 @@ return [
     'notAllowedToAssignAdminPermission' => 'Bạn không được phép chỉ định vai trò quản trị viên.',
     'downloadable' => 'Sản phẩm có thể tải xuống cung cấp quyền truy cập vào tệp khi mua',
     'invalidData' => 'Dữ liệu không hợp lệ:',
+    'importProductMissingProductName' => 'Dữ liệu không hợp lệ: cần map cột tên sản phẩm (Product Name) hoặc file không có cột tên.',
+    'importProductPriceNotNumeric' => 'Dữ liệu không hợp lệ: giá / Standard Price phải là số (hoặc để trống để dùng 0).',
     'invalidDate' => 'Định dạng ngày tháng hợp lệ :',
     'duplicateEntryForEmail' => 'Mục nhập trùng lặp cho Email:',
     'duplicateEntryForEmployeeId' => 'Mục nhập trùng lặp cho ID nhân viên:',

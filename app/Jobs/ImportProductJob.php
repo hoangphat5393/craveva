@@ -50,12 +50,20 @@ class ImportProductJob implements ShouldQueue
             company($this->company);
         }
 
-        if ($this->isColumnExists('product_name') && $this->isColumnExists('price')) {
+        if (! $this->isColumnExists('sku')) {
+            return;
+        }
+        $skuRaw = $this->getColumnValue('sku');
+        if ($skuRaw === null || trim((string) $skuRaw) === '') {
+            return;
+        }
 
-            $cleanedPrice = preg_replace('/[^\d.]/', '', $this->getColumnValue('price'));
+        if ($this->isColumnExists('product_name')) {
 
-            if (! is_numeric($cleanedPrice)) {
-                $this->failJob(__('messages.invalidData'));
+            $cleanedPrice = $this->resolveImportPriceForRow();
+
+            if ($cleanedPrice === null) {
+                $this->failJob(__('messages.importProductPriceNotNumeric'));
 
                 return;
             }
@@ -66,7 +74,7 @@ class ImportProductJob implements ShouldQueue
                 $product->company_id = $this->company?->id;
                 $product->name = $this->getColumnValue('product_name');
 
-                $product->price = $cleanedPrice;
+                $product->price = (float) $cleanedPrice;
 
                 $product->description = $this->isColumnExists('description') ? $this->getColumnValue('description') : null;
                 $product->sku = $this->isColumnExists('sku') ? $this->getColumnValue('sku') : null;
@@ -86,11 +94,28 @@ class ImportProductJob implements ShouldQueue
                 $product->inventory_type = $this->isColumnExists('inventory_type') ? $this->getColumnValue('inventory_type') : null;
 
                 if ($this->isColumnExists('status')) {
-                    $status = strtolower($this->getColumnValue('status'));
-                    $product->status = ($status == 'active') ? 'active' : 'inactive';
+                    $rawStatus = $this->getColumnValue('status');
+                    if ($rawStatus === null || trim((string) $rawStatus) === '') {
+                        $product->status = 'active';
+                    } else {
+                        $status = strtolower(trim((string) $rawStatus));
+                        $product->status = ($status === 'active') ? 'active' : 'inactive';
+                    }
+                } else {
+                    $product->status = 'active';
                 }
 
-                $product->allow_purchase = true;
+                if ($this->isColumnExists('allow_purchase')) {
+                    $rawAllow = $this->getColumnValue('allow_purchase');
+                    if ($rawAllow === null || trim((string) $rawAllow) === '') {
+                        $product->allow_purchase = true;
+                    } else {
+                        $v = strtolower(trim((string) $rawAllow));
+                        $product->allow_purchase = in_array($v, ['yes', '1', 'true', 'y'], true);
+                    }
+                } else {
+                    $product->allow_purchase = true;
+                }
 
                 // Unit type: có cột thì tra theo tên; không có hoặc trống thì dùng unit đầu tiên (theo id), chỉ query 1 lần
                 $product->unit_id = $this->resolveUnitIdForRow();
@@ -140,8 +165,34 @@ class ImportProductJob implements ShouldQueue
                 $this->failJobWithMessage($e->getMessage());
             }
         } else {
-            $this->failJob(__('messages.invalidData'));
+            $this->failJob(__('messages.importProductMissingProductName'));
         }
+    }
+
+    /**
+     * @return string|null numeric string for price, or null if value is non-numeric garbage
+     */
+    private function resolveImportPriceForRow(): ?string
+    {
+        $hasStandard = $this->isColumnExists('standard_price');
+        $hasPrice = $this->isColumnExists('price');
+
+        if (! $hasStandard && ! $hasPrice) {
+            return '0';
+        }
+
+        $priceVal = $hasStandard ? $this->getColumnValue('standard_price') : $this->getColumnValue('price');
+        $cleaned = preg_replace('/[^\d.]/', '', (string) $priceVal);
+
+        if ($cleaned !== '' && is_numeric($cleaned)) {
+            return $cleaned;
+        }
+
+        if ($priceVal === null || trim((string) $priceVal) === '') {
+            return '0';
+        }
+
+        return null;
     }
 
     /** Cache unit_id của unit type đầu tiên (theo id), chỉ query 1 lần. */

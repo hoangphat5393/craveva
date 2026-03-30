@@ -218,6 +218,8 @@ return [
     'employeeNotFound' => 'Employee not found',
     'invalidDate' => 'Invalid Date Format : ',
     'invalidData' => 'Invalid Data : ',
+    'importProductMissingProductName' => 'Invalid Data: map the Product Name column (or your file has no product name column).',
+    'importProductPriceNotNumeric' => 'Invalid Data: price / standard price must be a number (or leave the cell empty to use 0).',
     'duplicateEntryForEmail' => 'Duplicate Entry for Email : ',
     'duplicateEntryForEmployeeId' => 'Duplicate Entry for Employee ID : ',
     'smtpSuccess' => 'Your SMTP details are correct',

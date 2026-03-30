@@ -50,8 +50,8 @@ class ImportProductChunkJob implements ShouldQueue
     /** Cached fallback unit type id: khi không có unit_type và không có defaultUnitId thì dùng unit đầu tiên, chỉ query 1 lần/chunk. */
     private $fallbackUnitId = null;
 
-    /** Cache SKU đã tồn tại trong DB (và trong chunk) để tránh N query exists() – key = sku, O(1) lookup. */
-    private array $existingSkus = [];
+    /** SKU => product id trong company (preload + bổ sung khi tạo mới trong chunk). */
+    private array $skuToId = [];
 
     public function __construct(array $rows, array $columns, $company = null, int $chunkStartIndex = 0, array $options = [])
     {
@@ -68,13 +68,14 @@ class ImportProductChunkJob implements ShouldQueue
             company($this->company);
         }
 
-        // Cache SKU đã tồn tại trong DB (1 query/chunk) để tránh exists() từng dòng.
         if ($this->company) {
-            $this->existingSkus = Product::where('company_id', $this->company->id)
+            $this->skuToId = Product::where('company_id', $this->company->id)
                 ->whereNotNull('sku')
-                ->pluck('sku')
-                ->flip()
+                ->where('sku', '!=', '')
+                ->pluck('id', 'sku')
                 ->all();
+        } else {
+            $this->skuToId = [];
         }
 
         $failures = [];
@@ -85,14 +86,16 @@ class ImportProductChunkJob implements ShouldQueue
         foreach ($this->rows as $index => $row) {
             try {
                 $normalizedRow = $this->normalizeRow($row);
-                $created = DB::transaction(function () use ($normalizedRow, $index) {
+                $result = DB::transaction(function () use ($normalizedRow, $index) {
                     return $this->processRow($normalizedRow, $this->chunkStartIndex + $index);
                 });
-                if (! $created) {
+                if ($result === 'skipped') {
                     $skippedCount++;
-                    continue;
+                } elseif ($result === 'updated') {
+                    $updatedCount++;
+                } elseif ($result === 'created') {
+                    $createdCount++;
                 }
-                $createdCount++;
             } catch (Exception $e) {
                 $fileRow = $this->chunkStartIndex + $index + 2; // +2: 1-based and header row
                 $failures[] = 'Row ' . $fileRow . ': ' . $e->getMessage();
@@ -117,47 +120,103 @@ class ImportProductChunkJob implements ShouldQueue
     }
 
     /**
-     * @return bool true if product was created, false if row skipped (duplicate SKU)
+     * @return string 'created'|'updated'|'skipped'
      */
-    private function processRow(array $row, int $index): bool
+    private function processRow(array $row, int $index): string
     {
-        if (! $this->columnExists('product_name')) {
-            throw new Exception(__('messages.invalidData'));
-        }
-        $priceVal = $this->columnExists('standard_price') ? $this->getValue($row, 'standard_price') : $this->getValue($row, 'price');
-        if (! $this->columnExists('price') && ! $this->columnExists('standard_price')) {
-            throw new Exception(__('messages.invalidData'));
-        }
-        $cleanedPrice = is_scalar($priceVal) ? preg_replace('/[^\d.]/', '', (string) $priceVal) : '';
-        if (! is_numeric($cleanedPrice)) {
-            throw new Exception(__('messages.invalidData'));
+        $companyId = $this->company?->id;
+
+        if (! $this->columnExists('sku')) {
+            return 'skipped';
         }
 
-        $sku = $this->columnExists('sku') ? $this->getValue($row, 'sku') : null;
-        $skuTrimmed = $sku !== null && $sku !== '' ? trim((string) $sku) : null;
-        if ($skuTrimmed !== null && isset($this->existingSkus[$skuTrimmed])) {
-            return false;
+        $skuRaw = $this->getValue($row, 'sku');
+        $skuTrimmed = ($skuRaw !== null && trim((string) $skuRaw) !== '') ? trim((string) $skuRaw) : '';
+
+        if ($skuTrimmed === '') {
+            return 'skipped';
+        }
+
+        $existingId = $this->skuToId[$skuTrimmed] ?? null;
+        if ($existingId !== null) {
+            $product = Product::find($existingId);
+            if (
+                ! $product
+                || ($companyId !== null && (int) $product->company_id !== (int) $companyId)
+            ) {
+                $product = $this->findProductBySkuQuery($skuTrimmed)->first();
+            }
+            if ($product) {
+                return $this->persistProductUpdate($product, $row, $skuTrimmed);
+            }
+
+            unset($this->skuToId[$skuTrimmed]);
+        }
+
+        $fallbackExisting = $this->findProductBySkuQuery($skuTrimmed)->first();
+        if ($fallbackExisting) {
+            return $this->persistProductUpdate($fallbackExisting, $row, $skuTrimmed);
+        }
+
+        if (! $this->columnExists('product_name')) {
+            throw new Exception(__('messages.importProductMissingProductName'));
         }
 
         $product = new Product;
-        $product->company_id = $this->company?->id;
-        $product->name = $this->getValue($row, 'product_name');
-        $product->price = (float) $cleanedPrice;
-        $product->description = $this->columnExists('description') ? $this->getValue($row, 'description') : null;
-        $product->specification = $this->columnExists('specification') ? $this->getValue($row, 'specification') : null;
-        $product->product_source = $this->columnExists('product_source') ? $this->getValue($row, 'product_source') : null;
-        $product->brand = $this->columnExists('brand') ? $this->getValue($row, 'brand') : null;
-        $product->product_grade = $this->columnExists('product_grade') ? $this->getValue($row, 'product_grade') : null;
-        $product->sku = $skuTrimmed ?? $sku;
-        $product->storage_condition = $this->columnExists('storage_condition') ? $this->getValue($row, 'storage_condition') : null;
-        $product->certification = $this->columnExists('certification') ? $this->getValue($row, 'certification') : null;
-        $product->wholesale_price = $this->columnExists('wholesale_price') ? $this->getValue($row, 'wholesale_price') : null;
-        $product->price_per_box = $this->columnExists('price_per_box') ? $this->getValue($row, 'price_per_box') : null;
-        $product->employee_price = $this->columnExists('employee_price') ? $this->getValue($row, 'employee_price') : null;
+        $this->applyMappedFieldsToProduct($product, $row, true);
+        $product->save();
+        $this->skuToId[$skuTrimmed] = $product->id;
+        $this->afterSaveCustomFieldsAndActivity($product, $row, true);
+
+        return 'created';
+    }
+
+    /**
+     * Ghi chỉ các cột đã map trong bước match column. Tạo mới: các cột không map = null/default như trước.
+     */
+    private function applyMappedFieldsToProduct(Product $product, array $row, bool $isNew): void
+    {
+        if ($isNew) {
+            $product->company_id = $this->company?->id;
+            $product->added_by = user() ? user()->id : null;
+        } elseif (user()) {
+            $product->last_updated_by = user()->id;
+        }
+
+        if ($this->columnExists('product_name')) {
+            $product->name = (string) $this->getValue($row, 'product_name');
+        }
+
+        if ($isNew) {
+            $product->price = (float) $this->resolveImportPrice($row);
+        } elseif ($this->columnExists('price') || $this->columnExists('standard_price')) {
+            $product->price = (float) $this->resolveImportPrice($row);
+        }
+
+        $this->setNullableStringField($product, 'description', $row, $isNew);
+        $this->setNullableStringField($product, 'specification', $row, $isNew);
+        $this->setNullableStringField($product, 'product_source', $row, $isNew);
+        $this->setNullableStringField($product, 'brand', $row, $isNew);
+        $this->setNullableStringField($product, 'product_grade', $row, $isNew);
+        $this->setNullableStringField($product, 'storage_condition', $row, $isNew);
+        $this->setNullableStringField($product, 'certification', $row, $isNew);
+        $this->setNullableStringField($product, 'wholesale_price', $row, $isNew);
+        $this->setNullableStringField($product, 'price_per_box', $row, $isNew);
+        $this->setNullableStringField($product, 'employee_price', $row, $isNew);
+        $this->setNullableStringField($product, 'inventory_type', $row, $isNew);
+
+        if ($this->columnExists('sku')) {
+            $v = $this->getValue($row, 'sku');
+            $product->sku = ($v !== null && trim((string) $v) !== '') ? trim((string) $v) : null;
+        } elseif ($isNew) {
+            $product->sku = null;
+        }
 
         if ($this->columnExists('shelf_life_days')) {
             $v = $this->getValue($row, 'shelf_life_days');
             $product->shelf_life_days = ($v !== null && $v !== '' && is_numeric(trim((string) $v))) ? (int) trim((string) $v) : null;
+        } elseif ($isNew) {
+            $product->shelf_life_days = null;
         }
 
         if ($this->columnExists('track_inventory')) {
@@ -165,36 +224,120 @@ class ImportProductChunkJob implements ShouldQueue
             $product->track_inventory = ($v === 'yes' || $v === '1' || $v === 'true') ? 1 : 0;
         }
 
-        $product->inventory_type = $this->columnExists('inventory_type') ? $this->getValue($row, 'inventory_type') : null;
-
         if ($this->columnExists('status')) {
-            $status = strtolower((string) $this->getValue($row, 'status'));
-            $product->status = ($status === 'active') ? 'active' : 'inactive';
+            $rawStatus = $this->getValue($row, 'status');
+            if ($rawStatus === null || trim((string) $rawStatus) === '') {
+                $product->status = 'active';
+            } else {
+                $status = strtolower(trim((string) $rawStatus));
+                $product->status = ($status === 'active') ? 'active' : 'inactive';
+            }
+        } elseif ($isNew) {
+            $product->status = 'active';
         }
 
-        $product->allow_purchase = true;
-
-        $product->unit_id = $this->resolveUnitId($row);
-        $product->category_id = $this->resolveCategoryId($row);
-        $product->sub_category_id = $this->resolveSubCategoryId($row, $product->category_id);
-        $product->added_by = user() ? user()->id : null;
-
-        $product->save();
-
-        if ($skuTrimmed !== null) {
-            $this->existingSkus[$skuTrimmed] = true;
+        if ($this->columnExists('allow_purchase')) {
+            $rawAllow = $this->getValue($row, 'allow_purchase');
+            if ($rawAllow === null || trim((string) $rawAllow) === '') {
+                $product->allow_purchase = true;
+            } else {
+                $v = strtolower(trim((string) $rawAllow));
+                $product->allow_purchase = in_array($v, ['yes', '1', 'true', 'y'], true);
+            }
+        } elseif ($isNew) {
+            $product->allow_purchase = true;
         }
 
+        if ($isNew) {
+            $product->unit_id = $this->resolveUnitId($row);
+            $cid = $this->resolveCategoryId($row);
+            $product->category_id = $cid;
+            $product->sub_category_id = $this->resolveSubCategoryId($row, $cid);
+        } else {
+            if ($this->columnExists('unit_type')) {
+                $product->unit_id = $this->resolveUnitId($row);
+            }
+            if ($this->columnExists('product_category')) {
+                $product->category_id = $this->resolveCategoryId($row);
+            }
+            if ($this->columnExists('product_sub_category')) {
+                $product->sub_category_id = $this->resolveSubCategoryId($row, $product->category_id);
+            }
+        }
+    }
+
+    private function setNullableStringField(Product $product, string $attribute, array $row, bool $isNew): void
+    {
+        $mapKey = $attribute;
+        if (! $this->columnExists($mapKey)) {
+            if ($isNew) {
+                $product->{$attribute} = null;
+            }
+
+            return;
+        }
+        $v = $this->getValue($row, $mapKey);
+        $product->{$attribute} = ($v !== null && $v !== '') ? (is_scalar($v) ? (string) $v : (string) $v) : null;
+    }
+
+    private function afterSaveCustomFieldsAndActivity(Product $product, array $row, bool $wasCreated): void
+    {
         $customFieldsData = $this->buildProductCustomFieldsData($row);
         if ($customFieldsData !== []) {
             $product->updateCustomFieldData($customFieldsData);
         }
 
         if (user()) {
-            self::createEmployeeActivity(user()->id, 'product-created', $product->id, 'product');
+            $action = $wasCreated ? 'product-created' : 'product-updated';
+            self::createEmployeeActivity(user()->id, $action, $product->id, 'product');
+        }
+    }
+
+    private function persistProductUpdate(Product $product, array $row, string $skuTrimmed): string
+    {
+        $this->applyMappedFieldsToProduct($product, $row, false);
+        $product->save();
+        $this->skuToId[$skuTrimmed] = $product->id;
+        $this->afterSaveCustomFieldsAndActivity($product, $row, false);
+
+        return 'updated';
+    }
+
+    private function findProductBySkuQuery(string $skuTrimmed)
+    {
+        $q = Product::query()->where('sku', $skuTrimmed);
+        if ($this->company?->id !== null) {
+            $q->where('company_id', $this->company->id);
         }
 
-        return true;
+        return $q;
+    }
+
+    /**
+     * CSV files often omit a price column (e.g. master data only). Default to 0 when no price
+     * column is mapped or the cell is empty. If a column is mapped but the value is not numeric, fail clearly.
+     */
+    private function resolveImportPrice(array $row): string
+    {
+        $hasStandard = $this->columnExists('standard_price');
+        $hasPrice = $this->columnExists('price');
+
+        if (! $hasStandard && ! $hasPrice) {
+            return '0';
+        }
+
+        $priceVal = $hasStandard ? $this->getValue($row, 'standard_price') : $this->getValue($row, 'price');
+        $cleaned = is_scalar($priceVal) ? preg_replace('/[^\d.]/', '', (string) $priceVal) : '';
+
+        if ($cleaned !== '' && is_numeric($cleaned)) {
+            return $cleaned;
+        }
+
+        if ($priceVal === null || (is_string($priceVal) && trim($priceVal) === '')) {
+            return '0';
+        }
+
+        throw new Exception(__('messages.importProductPriceNotNumeric'));
     }
 
     /**

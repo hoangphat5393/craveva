@@ -68,7 +68,6 @@ class DashboardController extends AccountBaseController
             ->selectRaw('SUM(CASE WHEN status = "active" THEN 1 ELSE 0 END) as activeCompanies')
             ->selectRaw('SUM(CASE WHEN status = "inactive" THEN 1 ELSE 0 END) as inactiveCompanies')
             ->selectRaw('SUM(CASE WHEN status = "license_expired" THEN 1 ELSE 0 END) as expiredCompanies')
-            ->selectRaw('logo')
             ->first();
 
         $this->totalCompanies = $companyStats->totalCompanies;
@@ -124,7 +123,7 @@ class DashboardController extends AccountBaseController
             ->orderBy('year')
             ->orderBy('month')
             ->get()
-            ->mapWithKeys(fn ($row) => [$row->year.'-'.$row->month => (float) $row->total]);
+            ->mapWithKeys(fn($row) => [$row->year . '-' . $row->month => (float) $row->total]);
 
         $maxMonthlyEarning = $monthlyInvoiceTotals->max() ?? 0;
 
@@ -137,7 +136,7 @@ class DashboardController extends AccountBaseController
         }
 
         $this->monthlyEarningsReport = $months->map(function (Carbon $date) use ($monthlyInvoiceTotals, $maxMonthlyEarning) {
-            $key = $date->year.'-'.$date->month;
+            $key = $date->year . '-' . $date->month;
             $total = round($monthlyInvoiceTotals[$key] ?? 0, 2);
 
             return [
@@ -163,12 +162,12 @@ class DashboardController extends AccountBaseController
             ->orderBy('year')
             ->orderBy('month')
             ->get()
-            ->mapWithKeys(fn ($row) => [$row->year.'-'.$row->month => (int) $row->total]);
+            ->mapWithKeys(fn($row) => [$row->year . '-' . $row->month => (int) $row->total]);
 
         $maxMonthlySubscriptions = $monthlySubscriptionTotals->max() ?? 0;
 
         $this->monthlySubscriptionReport = $months->map(function (Carbon $date) use ($monthlySubscriptionTotals, $maxMonthlySubscriptions) {
-            $key = $date->year.'-'.$date->month;
+            $key = $date->year . '-' . $date->month;
             $total = $monthlySubscriptionTotals[$key] ?? 0;
 
             return [

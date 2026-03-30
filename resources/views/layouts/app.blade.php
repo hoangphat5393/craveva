@@ -126,16 +126,14 @@
         }
     </style>
 
-    {{-- Custom theme styles --}}
-    @if (!user()->dark_theme)
-        @include('sections.theme_css')
-    @endif
-
     <link href="{{ asset('css/app-custom.css') }}?v={{ file_exists(public_path('css/app-custom.css')) ? filemtime(public_path('css/app-custom.css')) : time() }}" rel="stylesheet">
 
     @if (file_exists(public_path() . '/css/custom-css/theme-custom.css'))
         <link href="{{ asset('css/custom-css/theme-custom.css') }}" rel="stylesheet">
     @endif
+
+    {{-- Keep this include after optional custom theme CSS, so dynamic DB theme colors win on staging overrides. --}}
+    @include('sections.theme_css')
 
     <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
     <script src="{{ asset('vendor/jquery/modernizr.min.js') }}"></script>
@@ -242,6 +240,24 @@
     <script src="{{ asset('vendor/helper/helper.js') }}?v={{ filemtime(public_path('vendor/helper/helper.js')) }}"></script>
     <script src="{{ asset('js/main.js') }}?v={{ filemtime(public_path('js/main.js')) }}"></script>
     <script src="{{ asset('js/custom.js') }}?v={{ filemtime(public_path('js/custom.js')) }}"></script>
+    <script>
+        $(function() {
+            var path = window.location.pathname.replace(/\/$/, '') || '/';
+            $('.main-sidebar a.nav-item[href]').each(function() {
+                var href = $(this).attr('href');
+                if (!href || href.indexOf('javascript:') === 0) {
+                    return;
+                }
+                var a = document.createElement('a');
+                a.href = href;
+                var p = a.pathname.replace(/\/$/, '') || '/';
+                if (p === path) {
+                    $(this).addClass('active');
+                    $(this).closest('.accordionItem').addClass('openIt').removeClass('closeIt');
+                }
+            });
+        });
+    </script>
     <script>
         // Translation of default values for the select picker box.
         $.fn.selectpicker.Constructor.DEFAULTS.noneSelectedText = "@lang('placeholders.noneSelectedText')";

@@ -80,7 +80,6 @@ class ClientTierController extends AccountBaseController
                         ->orWhereNull('company_id');
                 }),
             ],
-            'client_code' => 'nullable|string|max:100',
         ]);
 
         $user = User::findOrFail($id);
@@ -97,7 +96,9 @@ class ClientTierController extends AccountBaseController
             }
         }
 
-        $details->client_code = $request->client_code;
+        // Only assign tier here. Do not overwrite client_code from this form — it caused
+        // duplicate (company_id, client_code) when the hidden field drifted from the switcher.
+        // Customer code is edited on the client profile / import, not on tier assignment.
         $details->pricing_tier_id = $request->pricing_tier_id;
         $details->save();
 

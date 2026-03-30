@@ -112,14 +112,6 @@ class ThemeSettingController extends AccountBaseController
         ]);
         cache()->forget('global_setting');
 
-        $freshSuperadminTheme = ThemeSetting::withoutGlobalScope(CompanyScope::class)
-            ->where('panel', 'superadmin')
-            ->whereNull('company_id')
-            ->first();
-        if ($freshSuperadminTheme) {
-            session(['superadmin_theme' => $freshSuperadminTheme]);
-        }
-
         return Reply::redirect(route('superadmin.settings.super-admin-theme-settings.index'), __('messages.updateSuccess'));
     }
 

@@ -16,7 +16,9 @@
                         <div class="form-group">
                             <label class="f-14 text-dark-grey mb-12">@lang('app.client')</label>
                             <div class="f-14 font-weight-bold">
-                                @if (!empty($clientCode)){{ $clientCode }} - @endif{{ $client->name }}
+                                @if (!empty($clientCode))
+                                    {{ $clientCode }} -
+                                @endif{{ $client->name }}
                                 @if (!empty($companyName))
                                     <span class="text-lightest ml-1">({{ $companyName }})</span>
                                 @endif
@@ -27,12 +29,15 @@
                         <x-forms.select fieldId="client_code_search" :fieldLabel="__('pricing::app.customerCode')" fieldName="client_switcher" search="true">
                             @foreach ($clients as $c)
                                 <option value="{{ $c->id }}" data-edit-url="{{ route('pricing.client_tiers.edit', $c->id) }}" @if ($c->id == $client->id) selected @endif>
-                                    @if (!empty($c->client_code)){{ $c->client_code }} - @endif{{ $c->name }}
-                                    @if (!empty($c->company_name))({{ $c->company_name }})@endif
+                                    @if (!empty($c->client_code))
+                                        {{ $c->client_code }} -
+                                    @endif{{ $c->name }}
+                                    @if (!empty($c->company_name))
+                                        ({{ $c->company_name }})
+                                    @endif
                                 </option>
                             @endforeach
                         </x-forms.select>
-                        <input type="hidden" name="client_code" value="{{ $clientCode }}">
                     </div>
                     <div class="col-md-6">
                         <x-forms.select fieldId="pricing_tier_id" :fieldLabel="__('pricing::app.pricingTier')" fieldName="pricing_tier_id" search="true">

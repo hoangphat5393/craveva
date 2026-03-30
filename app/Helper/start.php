@@ -167,18 +167,24 @@ if (! function_exists('superadmin_theme')) {
 
 if (! function_exists('admin_theme')) {
 
+    /**
+     * Company admin panel theme. When Super Admin enables "Set this theme for all customers",
+     * always read the global superadmin row from DB (same as superadmin_theme()).
+     * Otherwise read the company admin row from DB each request (no session cache — stale models
+     * caused sidebar/header colors to ignore DB until re-login).
+     */
     // @codingStandardsIgnoreLine
     function admin_theme()
     {
-        if (! session()->has('admin_theme')) {
-            if (superadmin_theme()->restrict_admin_theme_change) {
-                session(['admin_theme' => superadmin_theme()]);
-            } else {
-                session(['admin_theme' => ThemeSetting::where('panel', 'admin')->first()]);
-            }
+        $super = superadmin_theme();
+
+        if ($super && (int) ($super->restrict_admin_theme_change ?? 0) === 1) {
+            return $super;
         }
 
-        return session('admin_theme');
+        // Always read from DB (company-scoped) — session-cached models caused sidebar/header
+        // colors to stay stale until re-login (same class of bug as superadmin_theme).
+        return ThemeSetting::where('panel', 'admin')->first();
     }
 }
 
@@ -187,15 +193,13 @@ if (! function_exists('employee_theme')) {
     // @codingStandardsIgnoreLine
     function employee_theme()
     {
-        if (! session()->has('employee_theme')) {
-            if (superadmin_theme()->restrict_admin_theme_change) {
-                session(['employee_theme' => superadmin_theme()]);
-            } else {
-                session(['employee_theme' => ThemeSetting::where('panel', 'employee')->first()]);
-            }
+        $super = superadmin_theme();
+
+        if ($super && (int) ($super->restrict_admin_theme_change ?? 0) === 1) {
+            return $super;
         }
 
-        return session('employee_theme');
+        return ThemeSetting::where('panel', 'employee')->first();
     }
 }
 
@@ -204,15 +208,13 @@ if (! function_exists('client_theme')) {
     // @codingStandardsIgnoreLine
     function client_theme()
     {
-        if (! session()->has('client_theme')) {
-            if (superadmin_theme()->restrict_admin_theme_change) {
-                session(['client_theme' => superadmin_theme()]);
-            } else {
-                session(['client_theme' => ThemeSetting::where('panel', 'client')->first()]);
-            }
+        $super = superadmin_theme();
+
+        if ($super && (int) ($super->restrict_admin_theme_change ?? 0) === 1) {
+            return $super;
         }
 
-        return session('client_theme');
+        return ThemeSetting::where('panel', 'client')->first();
     }
 }
 

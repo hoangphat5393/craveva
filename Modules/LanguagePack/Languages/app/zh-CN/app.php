@@ -15,7 +15,7 @@ return [
     'false' => '错误的',
     'title' => '标题',
     'note' => '笔记',
-    'save' => '节省',
+    'save' => '保存',
     'update' => '更新',
     'timer' => '定时器',
     'back' => '后退',

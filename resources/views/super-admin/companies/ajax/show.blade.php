@@ -5,6 +5,15 @@
             padding: 10px;
             border-radius: 5px;
         }
+
+        /* Keep package meta readable on white cards even when custom themes are loaded. */
+        .company-package-summary .card-text.text-lightest {
+            color: #616e80 !important;
+        }
+
+        .company-package-summary .card-text .font-weight-bold {
+            color: #1f2937 !important;
+        }
     </style>
 @endpush
 <!-- ROW START -->
@@ -122,7 +131,7 @@
     <!--  USER CARDS END -->
 
     <!--  WIDGETS START -->
-    <div class="col-xl-4 col-md-12">
+    <div class="col-xl-4 col-md-12 company-package-summary">
         <x-cards.data>
             <div class="row">
                 <div class="col-12">
@@ -468,8 +477,12 @@
                             location.href = "{{ route('dashboard') }}"
                         }
                     })
-                    .catch(function (err) { $.handleApiFormError(err); })
-                    .finally(function () { $.easyUnblockUI(); });
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    })
+                    .finally(function() {
+                        $.easyUnblockUI();
+                    });
             }
         });
     });
@@ -509,8 +522,12 @@
                             window.location.reload();
                         }
                     })
-                    .catch(function (err) { $.handleApiFormError(err); })
-                    .finally(function () { $.easyUnblockUI(); });
+                    .catch(function(err) {
+                        $.handleApiFormError(err);
+                    })
+                    .finally(function() {
+                        $.easyUnblockUI();
+                    });
             }
         });
     });

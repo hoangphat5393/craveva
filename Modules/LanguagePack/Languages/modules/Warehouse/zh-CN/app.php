@@ -18,6 +18,8 @@ return [
     'action' => '操作',
     'reason' => '原因',
     'allWarehouses' => '所有仓库',
+    'warehouses' => '仓库',
+    'stockMovements' => '库存流水',
     'noStockFound' => '未找到库存',
     'adjustStock' => '调整库存',
     'transferStock' => '转移库存',

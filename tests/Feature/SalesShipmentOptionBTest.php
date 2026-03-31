@@ -12,6 +12,7 @@ use Modules\Warehouse\Services\StockMovementService;
 beforeEach(function () {
     Config::set('database.default', 'sqlite');
     Config::set('database.connections.sqlite.database', ':memory:');
+    Config::set('purchase.do_grn_cutover_enabled', false);
     DB::purge('sqlite');
     DB::reconnect('sqlite');
 

@@ -1,6 +1,22 @@
 # PowerShell script to zip selected files and upload to staging server
 # Staging ưu tiên deploy qua Git (git pull trên server) — xem docs/STAGING_OPERATIONS.md
 # Script zip chỉ dùng khi thật sự cần; có đoạn rm trên remote — đọc docs trước khi chạy.
+#
+# GIT-FIRST WORKFLOW (khuyến nghị):
+# 1) Local:   git push origin main
+# 2) Staging: cd /var/www/craveva-staging/current/craveva && git pull --ff-only
+#
+# Nếu staging báo lỗi "local changes/untracked would be overwritten":
+#   cd /var/www/craveva-staging/current/craveva
+#   ts=$(date +%Y%m%d_%H%M%S)
+#   mkdir -p storage/app/deploy-backups
+#   git diff > storage/app/deploy-backups/prepull_${ts}.patch
+#   git stash push -u -m prepull_${ts}
+#   git pull --ff-only
+#
+# Lưu ý:
+# - Không deploy song song "zip upload" và "git pull" trong cùng một vòng phát hành.
+# - Chỉ dùng script zip này khi bắt buộc phải hotfix thủ công ngoài luồng Git.
 
 $StagingHost = "craveva-staging"
 $StagingPath = "/var/www/craveva-staging/current/craveva"

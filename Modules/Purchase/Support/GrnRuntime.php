@@ -6,7 +6,9 @@ class GrnRuntime
 {
     public static function isCutoverEnabled(): bool
     {
-        return (bool) config('purchase.do_grn_cutover_enabled', false);
+        // Legacy delivery_order tables are removed in phase 5.
+        // Runtime is now permanently pinned to GRN tables.
+        return true;
     }
 
     public static function headerModelClass(): string

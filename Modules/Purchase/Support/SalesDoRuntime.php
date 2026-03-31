@@ -9,7 +9,9 @@ class SalesDoRuntime
 {
     public static function isCutoverEnabled(): bool
     {
-        return (bool) config('purchase.do_grn_cutover_enabled', false);
+        // Legacy shipment tables are removed in phase 5.
+        // Runtime is now permanently pinned to new Sales DO tables.
+        return true;
     }
 
     public static function headerModelClass(): string

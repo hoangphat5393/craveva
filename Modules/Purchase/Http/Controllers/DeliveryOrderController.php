@@ -4,26 +4,43 @@ namespace Modules\Purchase\Http\Controllers;
 
 use App\Helper\Reply;
 use App\Http\Controllers\AccountBaseController;
-use App\Models\DeliveryOrder;
 use Carbon\Carbon;
 use Carbon\Exceptions\InvalidFormatException;
 use Illuminate\Http\Request;
 use Modules\Purchase\DataTables\DeliveryOrderDataTable;
-use Modules\Purchase\Entities\DeliveryOrderItem;
 use Modules\Purchase\Entities\PurchaseOrder;
+use Modules\Purchase\Services\GrnService;
+use Modules\Purchase\Support\FlowPermission;
+use Modules\Purchase\Support\GrnRuntime;
 
 class DeliveryOrderController extends AccountBaseController
 {
+    private function grnRouteName(string $action): string
+    {
+        $prefix = config('purchase.flow_naming_mode', 'compat_v2') === 'legacy' ? 'delivery-orders' : 'grn';
+
+        return $prefix . '.' . $action;
+    }
+
+    private function grnTitleKey(): string
+    {
+        return config('purchase.flow_naming_mode', 'compat_v2') === 'legacy'
+            ? 'purchase::app.menu.deliveryOrders'
+            : 'purchase::app.menu.goodsReceivedNote';
+    }
+
     public function index(DeliveryOrderDataTable $dataTable)
     {
-        $this->pageTitle = 'purchase::app.menu.deliveryOrders';
+        abort_403(! FlowPermission::allowsAlias('grn.view'));
+        $this->pageTitle = $this->grnTitleKey();
 
         return $dataTable->render('purchase::delivery-order.index', $this->data);
     }
 
     public function show($id)
     {
-        $this->delivery = DeliveryOrder::with(
+        abort_403(! FlowPermission::allowsAlias('grn.view'));
+        $this->delivery = $this->queryByCompany()->with(
             'items',
             'items.purchaseItem',
             'items.purchaseItem.unit',
@@ -59,6 +76,7 @@ class DeliveryOrderController extends AccountBaseController
 
     public function getItems(Request $request)
     {
+        abort_403(! FlowPermission::allowsAlias('grn.create') && ! FlowPermission::allowsAlias('grn.update'));
         $purchaseOrderId = $request->get('purchase_order_id');
 
         $this->items = collect();
@@ -73,31 +91,26 @@ class DeliveryOrderController extends AccountBaseController
         return Reply::dataOnly(['status' => 'success', 'html' => $html]);
     }
 
-    public function changeStatus($id, Request $request)
+    public function changeStatus($id, Request $request, GrnService $grnService)
     {
+        abort_403(! FlowPermission::allowsAlias('grn.change_status'));
         $request->validate([
             'status' => 'required|in:draft,inbound,received',
         ]);
 
-        $query = DeliveryOrder::query();
-        if ($this->company) {
-            $query->where('company_id', $this->company->id);
+        $delivery = $this->queryByCompany()->findOrFail($id);
+        $error = $grnService->changeStatus($delivery, (string) $request->status);
+        if ($error) {
+            return Reply::error(__($error));
         }
-
-        $delivery = $query->findOrFail($id);
-        $delivery->status = $request->status;
-        $delivery->save();
 
         return Reply::success(__('messages.updateSuccess'));
     }
 
     public function destroy($id)
     {
-        $query = DeliveryOrder::query();
-        if ($this->company) {
-            $query->where('company_id', $this->company->id);
-        }
-        $delivery = $query->findOrFail($id);
+        abort_403(! FlowPermission::allowsAlias('grn.delete'));
+        $delivery = $this->queryByCompany()->findOrFail($id);
         $delivery->delete();
 
         return Reply::success(__('messages.deleteSuccess'));
@@ -105,7 +118,8 @@ class DeliveryOrderController extends AccountBaseController
 
     public function create()
     {
-        $this->pageTitle = __('app.add') . ' ' . __('purchase::app.menu.deliveryOrders');
+        abort_403(! FlowPermission::allowsAlias('grn.create'));
+        $this->pageTitle = __('app.add') . ' ' . __($this->grnTitleKey());
         $this->purchaseOrders = PurchaseOrder::where('company_id', $this->company ? $this->company->id : null)->get();
         $this->warehouses = $this->warehouseList();
         $this->nextDeliveryNumber = $this->nextDeliveryNumber();
@@ -123,8 +137,9 @@ class DeliveryOrderController extends AccountBaseController
 
     public function edit($id)
     {
-        $this->pageTitle = __('app.edit') . ' ' . __('purchase::app.menu.deliveryOrders');
-        $this->delivery = DeliveryOrder::with(['items.purchaseItem.unit', 'purchaseOrder'])->findOrFail($id);
+        abort_403(! FlowPermission::allowsAlias('grn.update'));
+        $this->pageTitle = __('app.edit') . ' ' . __($this->grnTitleKey());
+        $this->delivery = $this->queryByCompany()->with(['items.purchaseItem.unit', 'purchaseOrder'])->findOrFail($id);
         $this->purchaseOrders = PurchaseOrder::where('company_id', $this->company ? $this->company->id : null)->get();
         $this->warehouses = $this->warehouseList();
         $this->deliveryItems = $this->delivery->items;
@@ -142,88 +157,40 @@ class DeliveryOrderController extends AccountBaseController
 
     public function update(Request $request, $id)
     {
+        abort_403(! FlowPermission::allowsAlias('grn.update'));
         $request->validate([
             'delivery_number' => 'required',
             'delivery_date' => 'required|date',
             'status' => 'required',
         ]);
 
-        $delivery = DeliveryOrder::findOrFail($id);
-        $delivery->purchase_order_id = $request->purchase_order_id;
-        $po = $request->purchase_order_id ? PurchaseOrder::find($request->purchase_order_id) : null;
-        $delivery->warehouse_id = $request->filled('warehouse_id') ? (int) $request->warehouse_id : ($po?->warehouse_id);
-        $delivery->type = $request->input('type', $delivery->type ?? 'inbound');
-        $delivery->delivery_number = $request->delivery_number;
-        $delivery->delivery_date = Carbon::createFromFormat(company()->date_format, $request->delivery_date)->format('Y-m-d');
-        $delivery->status = $request->status;
-        $delivery->erp_shipment_reference = $request->erp_shipment_reference;
-        $delivery->wms_shipment_reference = $request->wms_shipment_reference;
-        $delivery->delivery_fee = $request->filled('delivery_fee') ? (float) $request->delivery_fee : null;
-        $delivery->save();
+        $delivery = $this->queryByCompany()->findOrFail($id);
+        app(GrnService::class)->update($delivery, $this->buildDeliveryPayload($request, $delivery->type ?? 'inbound'));
 
-        if ($request->has('item_id')) {
-            DeliveryOrderItem::where('delivery_order_id', $delivery->id)->delete();
-
-            foreach ($request->item_id as $key => $itemId) {
-                DeliveryOrderItem::create([
-                    'delivery_order_id' => $delivery->id,
-                    'purchase_item_id' => $itemId,
-                    'product_id' => $request->product_id[$key] ?? null,
-                    'quantity_ordered' => $request->quantity_ordered[$key] ?? 0,
-                    'quantity_received' => $request->quantity_received[$key] ?? 0,
-                    'batch_number' => $this->normalizeBatch($request->batch_number[$key] ?? null),
-                    'expiry_date' => $this->parseDoExpiryInput($request->expiry_date[$key] ?? null),
-                    'picking_rule_applied' => $this->normalizePickingRule($request->picking_rule_applied[$key] ?? null),
-                ]);
-            }
-        }
-
-        return Reply::successWithData(__('messages.updateSuccess'), ['redirectUrl' => route('delivery-orders.index')]);
+        return Reply::successWithData(__('messages.updateSuccess'), ['redirectUrl' => route($this->grnRouteName('index'))]);
     }
 
     public function store(Request $request)
     {
+        abort_403(! FlowPermission::allowsAlias('grn.create'));
         $request->validate([
             'delivery_number' => 'required',
             'delivery_date' => 'required|date',
             'status' => 'required',
         ]);
 
-        $delivery = new DeliveryOrder;
-        $delivery->company_id = $this->company ? $this->company->id : null;
-        $delivery->purchase_order_id = $request->purchase_order_id;
-        $po = $request->purchase_order_id ? PurchaseOrder::find($request->purchase_order_id) : null;
-        $delivery->warehouse_id = $request->filled('warehouse_id') ? (int) $request->warehouse_id : ($po?->warehouse_id);
-        $delivery->type = $request->input('type', 'inbound');
-        $delivery->delivery_number = $request->delivery_number;
-        $delivery->delivery_date = Carbon::createFromFormat(company()->date_format, $request->delivery_date)->format('Y-m-d');
-        $delivery->status = $request->status;
-        $delivery->erp_shipment_reference = $request->erp_shipment_reference;
-        $delivery->wms_shipment_reference = $request->wms_shipment_reference;
-        $delivery->delivery_fee = $request->filled('delivery_fee') ? (float) $request->delivery_fee : null;
-        $delivery->save();
+        app(GrnService::class)->create(
+            $this->buildDeliveryPayload($request, 'inbound'),
+            $this->company ? $this->company->id : null
+        );
 
-        if ($request->has('item_id')) {
-            foreach ($request->item_id as $key => $itemId) {
-                DeliveryOrderItem::create([
-                    'delivery_order_id' => $delivery->id,
-                    'purchase_item_id' => $itemId,
-                    'product_id' => $request->product_id[$key] ?? null,
-                    'quantity_ordered' => $request->quantity_ordered[$key] ?? 0,
-                    'quantity_received' => $request->quantity_received[$key] ?? 0,
-                    'batch_number' => $this->normalizeBatch($request->batch_number[$key] ?? null),
-                    'expiry_date' => $this->parseDoExpiryInput($request->expiry_date[$key] ?? null),
-                    'picking_rule_applied' => $this->normalizePickingRule($request->picking_rule_applied[$key] ?? null),
-                ]);
-            }
-        }
-
-        return Reply::successWithData(__('messages.recordSaved'), ['redirectUrl' => route('delivery-orders.index')]);
+        return Reply::successWithData(__('messages.recordSaved'), ['redirectUrl' => route($this->grnRouteName('index'))]);
     }
 
     public function download($id)
     {
-        $this->delivery = DeliveryOrder::with('items', 'items.purchaseItem', 'purchaseOrder', 'purchaseOrder.items', 'purchaseOrder.items.unit', 'purchaseOrder.vendor', 'purchaseOrder.address', 'warehouse')->findOrFail($id);
+        abort_403(! FlowPermission::allowsAlias('grn.view'));
+        $this->delivery = $this->queryByCompany()->with('items', 'items.purchaseItem', 'purchaseOrder', 'purchaseOrder.items', 'purchaseOrder.items.unit', 'purchaseOrder.vendor', 'purchaseOrder.address', 'warehouse')->findOrFail($id);
         $this->company = $this->delivery->company;
         $this->invoiceSetting = $this->company->invoiceSetting;
 
@@ -296,12 +263,14 @@ class DeliveryOrderController extends AccountBaseController
 
     private function nextDeliveryNumber(): string
     {
-        $query = DeliveryOrder::query();
+        $headerModelClass = GrnRuntime::headerModelClass();
+        $numberColumn = GrnRuntime::numberColumn();
+        $query = $headerModelClass::query();
         if ($this->company) {
             $query->where('company_id', $this->company->id);
         }
 
-        $lastNumber = (string) ($query->orderByDesc('id')->value('delivery_number') ?? '');
+        $lastNumber = (string) ($query->orderByDesc('id')->value($numberColumn) ?? '');
         if ($lastNumber !== '' && preg_match('/(\d+)$/', $lastNumber, $matches)) {
             $digits = $matches[1];
             $next = (int) $digits + 1;
@@ -310,5 +279,55 @@ class DeliveryOrderController extends AccountBaseController
         }
 
         return '001';
+    }
+
+    private function buildDeliveryPayload(Request $request, string $defaultType): array
+    {
+        $purchaseOrderId = $request->purchase_order_id;
+        $po = $purchaseOrderId ? PurchaseOrder::find($purchaseOrderId) : null;
+        $payload = [
+            'purchase_order_id' => $purchaseOrderId,
+            'warehouse_id' => $request->filled('warehouse_id') ? (int) $request->warehouse_id : ($po?->warehouse_id),
+            'type' => $request->input('type', $defaultType),
+            'delivery_number' => $request->delivery_number,
+            'delivery_date' => Carbon::createFromFormat(company()->date_format, $request->delivery_date)->format('Y-m-d'),
+            'status' => $request->status,
+            'erp_shipment_reference' => $request->erp_shipment_reference,
+            'wms_shipment_reference' => $request->wms_shipment_reference,
+            'delivery_fee' => $request->filled('delivery_fee') ? (float) $request->delivery_fee : null,
+        ];
+
+        if ($request->has('item_id') && is_array($request->item_id)) {
+            $payload['item_id'] = $request->item_id;
+            $payload['product_id'] = $request->product_id ?? [];
+            $payload['quantity_ordered'] = $request->quantity_ordered ?? [];
+            $payload['quantity_received'] = $request->quantity_received ?? [];
+            $payload['batch_number'] = array_map(
+                fn($batch) => $this->normalizeBatch($batch),
+                $request->batch_number ?? []
+            );
+            $payload['expiry_date'] = array_map(
+                fn($expiry) => $this->parseDoExpiryInput($expiry),
+                $request->expiry_date ?? []
+            );
+            $payload['picking_rule_applied'] = array_map(
+                fn($rule) => $this->normalizePickingRule($rule),
+                $request->picking_rule_applied ?? []
+            );
+        }
+
+        return $payload;
+    }
+
+    private function queryByCompany()
+    {
+        $headerModelClass = GrnRuntime::headerModelClass();
+        $q = $headerModelClass::query();
+
+        if ($this->company) {
+            $q->where('company_id', $this->company->id);
+        }
+
+        return $q;
     }
 }

@@ -78,7 +78,9 @@ class InvoiceController extends AccountBaseController
             if (in_array('client', user_roles())) {
                 $this->clients = User::client();
             } else {
-                $this->clients = User::allClients();
+                $this->clients = User::allClients(execute: false)
+                    ->limit(100)
+                    ->get();
             }
         }
 
@@ -138,21 +140,22 @@ class InvoiceController extends AccountBaseController
             $condition = $this->invoiceSetting->invoice_digit - strlen($this->lastInvoice);
 
             for ($i = 0; $i < $condition; $i++) {
-                $this->zero = '0'.$this->zero;
+                $this->zero = '0' . $this->zero;
             }
         }
 
         $this->units = UnitType::all();
         $this->taxes = Tax::all();
 
-        if (module_enabled('Purchase')) {
-            /** @phpstan-ignore-next-line */
-            $this->products = Product::with('inventory')->get();
-        } else {
-            $this->products = Product::all();
-        }
+        $this->products = Product::query()
+            ->select('id', 'name', 'sku')
+            ->orderBy('name')
+            ->limit(100)
+            ->get();
 
-        $this->clients = User::allClients();
+        $this->clients = User::allClients(execute: false)
+            ->limit(100)
+            ->get();
         $this->companyAddresses = CompanyAddress::all();
         $this->projects = Project::allProjectsHavingClient();
         $this->linkInvoicePermission = user()->permission('link_invoice_bank_account');
@@ -512,14 +515,14 @@ class InvoiceController extends AccountBaseController
 
         // Download file uploaded
         if ($this->invoice->file != null && request()->has('download-uploaded')) {
-            return response()->download(storage_path('app/public/invoice-files').'/'.$this->invoice->file);
+            return response()->download(storage_path('app/public/invoice-files') . '/' . $this->invoice->file);
         }
 
         $pdfOption = $this->domPdfObjectForDownload($id);
         $pdf = $pdfOption['pdf'];
         $filename = $pdfOption['fileName'];
 
-        return request()->view ? $pdf->stream($filename.'.pdf') : $pdf->download($filename.'.pdf');
+        return request()->view ? $pdf->stream($filename . '.pdf') : $pdf->download($filename . '.pdf');
     }
 
     public function domPdfObjectForDownload($id)
@@ -562,18 +565,18 @@ class InvoiceController extends AccountBaseController
             foreach (json_decode($item->taxes) as $tax) {
                 $this->tax = InvoiceItems::taxbyid($tax)->first();
 
-                if (! isset($taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'])) {
+                if (! isset($taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'])) {
 
                     if ($this->invoice->calculate_tax == 'after_discount' && $this->discount > 0) {
-                        $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = ($item->amount - ($item->amount / $this->invoice->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
+                        $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = ($item->amount - ($item->amount / $this->invoice->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
                     } else {
-                        $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $item->amount * ($this->tax->rate_percent / 100);
+                        $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $item->amount * ($this->tax->rate_percent / 100);
                     }
                 } else {
                     if ($this->invoice->calculate_tax == 'after_discount' && $this->discount > 0) {
-                        $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + (($item->amount - ($item->amount / $this->invoice->sub_total) * $this->discount) * ($this->tax->rate_percent / 100));
+                        $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + (($item->amount - ($item->amount / $this->invoice->sub_total) * $this->discount) * ($this->tax->rate_percent / 100));
                     } else {
-                        $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + ($item->amount * ($this->tax->rate_percent / 100));
+                        $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + ($item->amount * ($this->tax->rate_percent / 100));
                     }
                 }
             }
@@ -597,7 +600,7 @@ class InvoiceController extends AccountBaseController
                 * { text-transform: none !important; }
             </style>';
 
-        $pdf->loadHTML($customCss.view('invoices.pdf.'.$this->invoiceSetting->template, $this->data)->render());
+        $pdf->loadHTML($customCss . view('invoices.pdf.' . $this->invoiceSetting->template, $this->data)->render());
 
         $filename = $this->invoice->invoice_number;
 
@@ -641,18 +644,18 @@ class InvoiceController extends AccountBaseController
                 $this->tax = InvoiceItems::taxbyid($tax)->first();
 
                 if ($this->tax) {
-                    if (! isset($taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'])) {
+                    if (! isset($taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'])) {
 
                         if ($this->invoice->calculate_tax == 'after_discount' && $this->discount > 0) {
-                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = ($item->amount - ($item->amount / $this->invoice->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
+                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = ($item->amount - ($item->amount / $this->invoice->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
                         } else {
-                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $item->amount * ($this->tax->rate_percent / 100);
+                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $item->amount * ($this->tax->rate_percent / 100);
                         }
                     } else {
                         if ($this->invoice->calculate_tax == 'after_discount' && $this->discount > 0) {
-                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + (($item->amount - ($item->amount / $this->invoice->sub_total) * $this->discount) * ($this->tax->rate_percent / 100));
+                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + (($item->amount - ($item->amount / $this->invoice->sub_total) * $this->discount) * ($this->tax->rate_percent / 100));
                         } else {
-                            $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + ($item->amount * ($this->tax->rate_percent / 100));
+                            $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + ($item->amount * ($this->tax->rate_percent / 100));
                         }
                     }
                 }
@@ -674,7 +677,7 @@ class InvoiceController extends AccountBaseController
         App::setLocale($this->invoiceSetting->locale ?? 'en');
         Carbon::setLocale($this->invoiceSetting->locale ?? 'en');
         // Hide  $pdf->loadView('invoices.pdf.invoice-recurring', $this->data);
-        $pdf->loadView('invoices.pdf.'.$this->invoiceSetting->template, $this->data);
+        $pdf->loadView('invoices.pdf.' . $this->invoiceSetting->template, $this->data);
 
         $filename = $this->invoice->invoice_number;
 
@@ -720,8 +723,14 @@ class InvoiceController extends AccountBaseController
         $this->units = UnitType::all();
 
         $this->taxes = Tax::all();
-        $this->products = Product::all();
-        $this->clients = User::allClients();
+        $this->products = Product::query()
+            ->select('id', 'name', 'sku')
+            ->orderBy('name')
+            ->limit(100)
+            ->get();
+        $this->clients = User::allClients(execute: false)
+            ->limit(100)
+            ->get();
         $this->linkInvoicePermission = user()->permission('link_invoice_bank_account');
         $this->viewBankAccountPermission = user()->permission('view_bankaccount');
         $this->paymentGateway = PaymentGatewayCredentials::first();
@@ -913,6 +922,107 @@ class InvoiceController extends AccountBaseController
         return Reply::successWithData(__('messages.updateSuccess'), ['redirectUrl' => $redirectUrl, 'invoiceID' => $invoice->id]);
     }
 
+    public function searchClients(Request $request)
+    {
+        abort_403(! in_array('clients', user_modules()) || in_array('client', user_roles()));
+
+        $term = trim((string) $request->get('q', ''));
+        $page = max(1, (int) $request->get('page', 1));
+        $perPage = (int) $request->get('per_page', 50);
+        $perPage = max(10, min(100, $perPage));
+
+        $query = User::allClients(execute: false);
+
+        if ($term !== '') {
+            $query->where(function ($q) use ($term) {
+                $q->where('users.name', 'like', '%' . $term . '%')
+                    ->orWhere('users.email', 'like', '%' . $term . '%')
+                    ->orWhere('users.mobile', 'like', '%' . $term . '%')
+                    ->orWhere('client_details.company_name', 'like', '%' . $term . '%')
+                    ->orWhere('client_details.client_code', 'like', '%' . $term . '%');
+            });
+        }
+
+        $items = $query
+            ->forPage($page, $perPage)
+            ->get();
+
+        return Reply::dataOnly([
+            'status' => 'success',
+            'items' => $items->map(function ($client) {
+                return [
+                    'id' => $client->id,
+                    'name' => $client->name_salutation,
+                    'company_name' => $client->company_name ?? null,
+                    'email' => $client->email ?? null,
+                ];
+            })->values(),
+            'pagination' => [
+                'page' => $page,
+                'per_page' => $perPage,
+                'has_more' => $items->count() === $perPage,
+            ],
+        ]);
+    }
+
+    public function searchProducts(Request $request)
+    {
+        abort_403((! in_array('products', user_modules()) && ! in_array('purchase', user_modules())) || in_array('client', user_roles()));
+
+        $term = trim((string) $request->get('q', ''));
+        $page = max(1, (int) $request->get('page', 1));
+        $perPage = (int) $request->get('per_page', 50);
+        $perPage = max(10, min(100, $perPage));
+        $categoryId = $request->get('category_id');
+
+        $query = Product::query()
+            ->select('products.id', 'products.name', 'products.sku')
+            ->orderBy('products.name');
+
+        if (! is_null($categoryId) && $categoryId !== '' && $categoryId !== 'null') {
+            $query->where('products.category_id', $categoryId);
+        }
+
+        if (module_enabled('Purchase') && in_array('purchase', user_modules())) {
+            $query->where(function ($q) {
+                $q->where('products.type', 'service')
+                    ->orWhere(function ($stockedProducts) {
+                        $stockedProducts->where('products.track_inventory', 1)
+                            ->whereRaw(
+                                '(select coalesce(sum(purchase_stock_adjustments.net_quantity), 0) from purchase_stock_adjustments where purchase_stock_adjustments.product_id = products.id) > 0'
+                            );
+                    });
+            });
+        }
+
+        if ($term !== '') {
+            $query->where(function ($q) use ($term) {
+                $q->where('products.name', 'like', '%' . $term . '%')
+                    ->orWhere('products.sku', 'like', '%' . $term . '%');
+            });
+        }
+
+        $items = $query
+            ->forPage($page, $perPage)
+            ->get();
+
+        return Reply::dataOnly([
+            'status' => 'success',
+            'items' => $items->map(function ($product) {
+                return [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'sku' => $product->sku,
+                ];
+            })->values(),
+            'pagination' => [
+                'page' => $page,
+                'per_page' => $perPage,
+                'has_more' => $items->count() === $perPage,
+            ],
+        ]);
+    }
+
     public function show($id)
     {
         $this->invoice = Invoice::with('project', 'items', 'items.unit', 'items.invoiceItemImage', 'invoicePaymentDetail')->findOrFail($id)->withCustomFields();
@@ -956,7 +1066,7 @@ class InvoiceController extends AccountBaseController
 
         if ($this->invoice->discount_type == 'percent') {
             $discountAmount = $this->invoice->discount;
-            $this->discountType = $discountAmount.'%';
+            $this->discountType = $discountAmount . '%';
         } else {
             $discountAmount = $this->invoice->discount;
             $this->discountType = currency_format($discountAmount, $this->invoice->currency_id);
@@ -973,18 +1083,18 @@ class InvoiceController extends AccountBaseController
             foreach (json_decode($item->taxes) as $tax) {
                 $this->tax = InvoiceItems::taxbyid($tax)->first();
 
-                if (! isset($taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'])) {
+                if (! isset($taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'])) {
 
                     if ($this->invoice->calculate_tax == 'after_discount' && $this->discount > 0) {
-                        $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = ($item->amount - ($item->amount / $this->invoice->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
+                        $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = ($item->amount - ($item->amount / $this->invoice->sub_total) * $this->discount) * ($this->tax->rate_percent / 100);
                     } else {
-                        $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $item->amount * ($this->tax->rate_percent / 100);
+                        $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $item->amount * ($this->tax->rate_percent / 100);
                     }
                 } else {
                     if ($this->invoice->calculate_tax == 'after_discount' && $this->discount > 0) {
-                        $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + (($item->amount - ($item->amount / $this->invoice->sub_total) * $this->discount) * ($this->tax->rate_percent / 100));
+                        $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + (($item->amount - ($item->amount / $this->invoice->sub_total) * $this->discount) * ($this->tax->rate_percent / 100));
                     } else {
-                        $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + ($item->amount * ($this->tax->rate_percent / 100));
+                        $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + ($item->amount * ($this->tax->rate_percent / 100));
                     }
                 }
             }
@@ -1210,7 +1320,7 @@ class InvoiceController extends AccountBaseController
         if ($invoice != null) {
 
             if ($invoice->file != null) {
-                unlink(storage_path('app/public/invoice-files').'/'.$invoice->file);
+                unlink(storage_path('app/public/invoice-files') . '/' . $invoice->file);
             }
 
             $file->move(storage_path('app/public/invoice-files'), $newName);
@@ -1272,7 +1382,7 @@ class InvoiceController extends AccountBaseController
                 'customer' => $customer->id,
                 'setup_future_usage' => 'off_session',
                 'payment_method_types' => ['card'],
-                'description' => $this->invoice->invoice_number.' Payment',
+                'description' => $this->invoice->invoice_number . ' Payment',
                 'metadata' => ['integration_check' => 'accept_a_payment', 'invoice_id' => $id],
             ]);
 
@@ -1519,7 +1629,7 @@ class InvoiceController extends AccountBaseController
         $item = InvoiceItemImage::where('invoice_item_id', $request->invoice_item_id)->first();
 
         if ($item) {
-            Files::deleteFile($item->hashname, InvoiceItemImage::FILE_PATH.'/'.$item->id.'/');
+            Files::deleteFile($item->hashname, InvoiceItemImage::FILE_PATH . '/' . $item->id . '/');
             $item->delete();
         }
 
@@ -1558,10 +1668,10 @@ class InvoiceController extends AccountBaseController
         $id = $request->id;
 
         $offlineMethod = $id ? OfflinePaymentMethod::findOrFail($id) : '';
-        $description = $offlineMethod ? '<span class="float-left">'.$offlineMethod->description.'</span>' : '';
+        $description = $offlineMethod ? '<span class="float-left">' . $offlineMethod->description . '</span>' : '';
 
         if ($offlineMethod && $offlineMethod->image) {
-            $description .= '<span class="float-right"><img src="'.$offlineMethod->image_url.'" width="100px" height="100px"/></span>';
+            $description .= '<span class="float-right"><img src="' . $offlineMethod->image_url . '" width="100px" height="100px"/></span>';
         }
 
         return Reply::dataOnly(['status' => 'success', 'description' => $description]);

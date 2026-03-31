@@ -1,4 +1,4 @@
-# Hướng dẫn sử dụng Sales Shipment (Option B) - UAT/Vận hành
+# Hướng dẫn sử dụng Sales DO (technical: Sales Shipment) - UAT/Vận hành
 
 **Trạng thái kiểm tra gần nhất:** 2026-03-29 (test suite `tests/` pass, không có lỗi fail)
 
@@ -6,7 +6,7 @@
 
 Tài liệu này hướng dẫn team vận hành và QA sử dụng luồng:
 
-- `SO (Order) -> Sales Shipment -> Invoice`
+- `SO (Order) -> Sales DO (Sales Shipment) -> Invoice`
 - Cấu hình mode outbound để tránh trừ tồn hai lần.
 
 ## 2) Điều kiện trước khi test
@@ -42,14 +42,14 @@ Sau đó chạy:
 
 ### 4.1 Vào menu
 
-- Operations -> `Sales Shipments`
+- Operations -> `Sales DO` (technical menu cũ có thể vẫn là `Sales Shipments` tùy `PURCHASE_FLOW_NAMING_MODE`)
 
 ### 4.2 Tạo shipment từ SO
 
 Cách 1:
 
 - Mở `Orders -> Show`
-- Chọn action: `Add Sales Shipments`
+- Chọn action: `Add Sales DO` (hoặc `Add Sales Shipments` ở chế độ legacy)
 
 Cách 2:
 

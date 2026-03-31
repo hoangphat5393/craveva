@@ -13,7 +13,10 @@
 @php
     $editOrderPermission = user()->permission('edit_order');
     $deleteOrderPermission = user()->permission('delete_order');
-    $createSalesShipmentPermission = user()->permission('create_sales_shipment');
+    $canCreateSalesDo = \Modules\Purchase\Support\FlowPermission::allowsAlias('sales_do.create');
+    $flowNamingMode = config('purchase.flow_naming_mode', 'compat_v2');
+    $salesDoRouteName = $flowNamingMode === 'legacy' ? 'sales-shipments.create' : 'sales-do.create';
+    $salesDoLabelKey = $flowNamingMode === 'legacy' ? 'purchase::app.menu.salesShipments' : 'purchase::app.menu.salesDo';
 @endphp
 
 <div class="card border-0 invoice">
@@ -403,10 +406,10 @@
                             </li>
                         @endif
 
-                        @if ($createSalesShipmentPermission != 'none' && in_array(\Modules\Purchase\Entities\PurchaseManagementSetting::MODULE_NAME, user_modules()))
+                        @if ($canCreateSalesDo && in_array(\Modules\Purchase\Entities\PurchaseManagementSetting::MODULE_NAME, user_modules()))
                             <li>
-                                <a class="dropdown-item f-14 text-dark openRightModal" href="{{ route('sales-shipments.create', ['order_id' => $order->id]) }}">
-                                    <i class="fa fa-truck-loading f-w-500 mr-2 f-11"></i> @lang('app.add') @lang('purchase::app.menu.salesShipments')
+                                <a class="dropdown-item f-14 text-dark openRightModal" href="{{ route($salesDoRouteName, ['order_id' => $order->id]) }}">
+                                    <i class="fa fa-truck-loading f-w-500 mr-2 f-11"></i> @lang('app.add') @lang($salesDoLabelKey)
                                 </a>
                             </li>
                         @endif

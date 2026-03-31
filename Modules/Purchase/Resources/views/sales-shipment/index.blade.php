@@ -1,4 +1,7 @@
 @extends('layouts.app')
+@php($salesDoLabelKey = config('purchase.flow_naming_mode', 'compat_v2') === 'legacy' ? 'purchase::app.menu.salesShipments' : 'purchase::app.menu.salesDo')
+@php($salesDoRoutePrefix = config('purchase.flow_naming_mode', 'compat_v2') === 'legacy' ? 'sales-shipments' : 'sales-do')
+@php($canCreateSalesDo = \Modules\Purchase\Support\FlowPermission::allowsAlias('sales_do.create'))
 
 @push('datatable-styles')
     @include('sections.datatable_css')
@@ -34,9 +37,11 @@
     <div class="content-wrapper">
         <div class="d-flex justify-content-between action-bar">
             <div id="table-actions" class="flex-grow-1 align-items-center mt-3">
-                <x-forms.link-primary :link="route('sales-shipments.create')" class="mr-3 float-left openRightModal" icon="plus">
-                    @lang('app.add') @lang('purchase::app.menu.salesShipments')
-                </x-forms.link-primary>
+                @if ($canCreateSalesDo)
+                    <x-forms.link-primary :link="route($salesDoRoutePrefix . '.create')" class="mr-3 float-left openRightModal" icon="plus">
+                        @lang('app.add') @lang($salesDoLabelKey)
+                    </x-forms.link-primary>
+                @endif
             </div>
         </div>
 
@@ -79,7 +84,7 @@
         });
 
         const shipmentAction = (name, id) => {
-            const url = "{{ url('/account/sales-shipments') }}/" + id + "/" + name;
+            const url = "{{ url('/account') }}/{{ $salesDoRoutePrefix }}/" + id + "/" + name;
             const body = '_token=' + encodeURIComponent("{{ csrf_token() }}");
 
             const labels = {

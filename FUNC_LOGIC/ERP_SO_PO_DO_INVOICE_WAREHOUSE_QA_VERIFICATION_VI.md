@@ -377,6 +377,7 @@ WAREHOUSE_INBOUND_FROM_DO_RECEIVED=true
 ## O. Backlog de xuat (luu de can nhac sau) — Chuan hoa ten nghiep vu: `SO -> DO`, `PO -> GRN`
 
 **Nguon de xuat:** trao doi voi user ngay 2026-03-30.
+**Tai lieu quyet dinh chi tiet:** `FUNC_LOGIC/REFATOR_SO_DO_PO_GRN_DECISION_VI.md`.
 
 ### Muc tieu nghiep vu mong muon
 

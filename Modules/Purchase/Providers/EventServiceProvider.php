@@ -5,6 +5,7 @@ namespace Modules\Purchase\Providers;
 use App\Events\NewCompanyCreatedEvent;
 use App\Models\Currency;
 use App\Models\Payment;
+use App\Models\Grn;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Modules\Purchase\Entities\PurchaseBill;
 use Modules\Purchase\Entities\PurchaseInventory;
@@ -81,6 +82,7 @@ class EventServiceProvider extends ServiceProvider
         PurchaseInventoryFile::class => [PurchaseInventoryFileObserver::class],
         PurchaseOrder::class => [PurchaseOrderObserver::class],
         DeliveryOrder::class => [DeliveryOrderObserver::class],
+        Grn::class => [DeliveryOrderObserver::class],
         PurchaseItem::class => [PurchaseItemObserver::class],
         PurchaseOrderFile::class => [PurchaseOrderFileObserver::class],
         PurchaseBill::class => [PurchaseBillObserver::class],

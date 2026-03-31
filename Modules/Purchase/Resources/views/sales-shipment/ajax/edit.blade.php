@@ -1,9 +1,11 @@
+@php($salesDoLabelKey = config('purchase.flow_naming_mode', 'compat_v2') === 'legacy' ? 'purchase::app.menu.salesShipments' : 'purchase::app.menu.salesDo')
+@php($salesDoRoutePrefix = config('purchase.flow_naming_mode', 'compat_v2') === 'legacy' ? 'sales-shipments' : 'sales-do')
 <div class="row">
     <div class="col-sm-12">
         <x-form id="update-sales-shipment-form" method="PUT">
             <div class="add-client bg-white rounded">
                 <h4 class="mb-0 p-20 f-21 font-weight-normal text-capitalize border-bottom-grey">
-                    @lang('purchase::app.menu.salesShipments')
+                    @lang($salesDoLabelKey)
                 </h4>
 
                 <div class="row p-20">
@@ -52,7 +54,7 @@
 
                 <x-form-actions>
                     <x-forms.button-primary id="update-sales-shipment-button" class="mr-3" icon="check">@lang('app.update')</x-forms.button-primary>
-                    <x-forms.button-cancel :link="route('sales-shipments.index')" class="border-0">@lang('app.cancel')</x-forms.button-cancel>
+                    <x-forms.button-cancel :link="route($salesDoRoutePrefix . '.index')" class="border-0">@lang('app.cancel')</x-forms.button-cancel>
                 </x-form-actions>
             </div>
         </x-form>
@@ -65,7 +67,7 @@
             $('#sales-shipment-items').html('');
             return;
         }
-        window.apiHttp.get("{{ route('sales-shipments.get-items') }}", {
+        window.apiHttp.get("{{ route($salesDoRoutePrefix . '.get-items') }}", {
             params: {
                 order_id: orderId,
                 shipment_id: "{{ $shipment->id }}",
@@ -98,7 +100,7 @@
         $('#update-sales-shipment-button').on('click', function() {
             const body = $('#update-sales-shipment-form').serialize() + '&_method=PUT';
             $.easyBlockUI('#update-sales-shipment-form');
-            window.apiHttp.postUrlEncoded("{{ route('sales-shipments.update', $shipment->id) }}", body).then(function(response) {
+            window.apiHttp.postUrlEncoded("{{ route($salesDoRoutePrefix . '.update', $shipment->id) }}", body).then(function(response) {
                 const dest = response.redirectUrl || (response.action === 'redirect' ? response.url : null);
                 if (dest) {
                     window.location.href = dest;

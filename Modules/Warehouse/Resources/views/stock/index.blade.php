@@ -7,6 +7,7 @@
 @php
     $addStockPerm = user()->permission('add_warehouse_stock');
     $transferPerm = user()->permission('manage_warehouse_transfer');
+    $grnRouteName = config('purchase.flow_naming_mode', 'compat_v2') === 'legacy' ? 'delivery-orders.index' : 'grn.index';
 @endphp
 
 @section('filter-section')
@@ -109,7 +110,7 @@
                                         @endphp
                                         @if ($poPerm != 'none' && $poPerm != '')
                                             <li class="mb-1"><a href="{{ route('purchase-order.index') }}">{{ __('warehouse::app.linkPurchaseOrders') }}</a></li>
-                                            <li class="mb-1"><a href="{{ route('delivery-orders.index') }}">{{ __('warehouse::app.linkDeliveryOrders') }}</a></li>
+                                            <li class="mb-1"><a href="{{ route($grnRouteName) }}">{{ __('warehouse::app.linkDeliveryOrders') }}</a></li>
                                         @endif
                                         @if ($invPerm != 'none' && $invPerm != '')
                                             <li class="mb-1"><a href="{{ route('purchase-inventory.index') }}">{{ __('warehouse::app.linkInventory') }}</a></li>

@@ -32,8 +32,8 @@
                             <option value="all">@lang('app.all')</option>
                         @endif
                         @foreach ($clients as $client)
+                            {{-- remote search appends options progressively --}}
                             <x-user-option :user="$client" />
-                            </option>
                         @endforeach
                     </select>
                 </div>
@@ -162,6 +162,135 @@
     @include('sections.datatable_js')
     <script src="{{ asset('vendor/jquery/clipboard.min.js') }}"></script>
     <script>
+        function escapeHtml(value) {
+            return $('<div>').text(value == null ? '' : String(value)).html();
+        }
+
+        function debounce(fn, wait) {
+            var timer = null;
+            return function() {
+                var ctx = this;
+                var args = arguments;
+                clearTimeout(timer);
+                timer = setTimeout(function() {
+                    fn.apply(ctx, args);
+                }, wait);
+            };
+        }
+
+        function initInvoiceClientFilterRemoteSearch() {
+            var $select = $('#clientID');
+            if (!$select.length) {
+                return;
+            }
+
+            var state = {
+                term: '',
+                page: 1,
+                hasMore: true,
+                loading: false,
+                requestId: 0
+            };
+
+            function selectedValue() {
+                return $select.val() || 'all';
+            }
+
+            function optionHtml(item, selected) {
+                var label = escapeHtml(item.name || '');
+                var company = item.company_name ? ' - ' + escapeHtml(item.company_name) : '';
+                var email = item.email ? ' (' + escapeHtml(item.email) + ')' : '';
+                var isSelected = String(selected) === String(item.id);
+                return '<option value="' + item.id + '"' + (isSelected ? ' selected' : '') + ' data-content="' + label + company + email + '">' + label + '</option>';
+            }
+
+            function replaceOptions(items) {
+                var selected = selectedValue();
+                var html = '<option value="all">{{ __('app.all') }}</option>';
+                $.each(items, function(_, item) {
+                    html += optionHtml(item, selected);
+                });
+                $select.html(html);
+                $select.selectpicker('refresh');
+            }
+
+            function appendOptions(items) {
+                var selected = selectedValue();
+                $.each(items, function(_, item) {
+                    if ($select.find('option[value="' + item.id + '"]').length) {
+                        return;
+                    }
+                    $select.append(optionHtml(item, selected));
+                });
+                $select.selectpicker('refresh');
+            }
+
+            function load(term, page, appendMode) {
+                if (state.loading) {
+                    return;
+                }
+
+                state.loading = true;
+                var currentRequestId = ++state.requestId;
+
+                window.apiHttp.get("{{ route('invoices.search_clients') }}", {
+                    params: {
+                        q: term,
+                        page: page,
+                        per_page: 50
+                    }
+                }).then(function(response) {
+                    if (currentRequestId !== state.requestId) {
+                        return;
+                    }
+
+                    var items = response.items || [];
+                    state.hasMore = !!(response.pagination && response.pagination.has_more);
+                    state.page = page;
+
+                    if (appendMode) {
+                        appendOptions(items);
+                    } else {
+                        replaceOptions(items);
+                    }
+                }).catch(function(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message || "@lang('messages.somethingWentWrong')",
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
+                    }
+                }).finally(function() {
+                    state.loading = false;
+                });
+            }
+
+            $select.on('shown.bs.select', function() {
+                var $picker = $select.parent();
+                var $searchInput = $picker.find('.bs-searchbox input');
+                var $inner = $picker.find('.inner');
+
+                $searchInput.off('.remoteSelect').on('input.remoteSelect', debounce(function() {
+                    state.term = ($(this).val() || '').trim();
+                    state.page = 1;
+                    state.hasMore = true;
+                    load(state.term, 1, false);
+                }, 300));
+
+                $inner.off('.remoteSelect').on('scroll.remoteSelect', function() {
+                    var nearBottom = this.scrollTop + this.clientHeight >= this.scrollHeight - 24;
+                    if (!nearBottom || !state.hasMore || state.loading) {
+                        return;
+                    }
+                    load(state.term, state.page + 1, true);
+                });
+            });
+        }
+
         $(function() {
             var clipboard = new ClipboardJS('.btn-copy');
 
@@ -651,6 +780,8 @@
         });
 
         $(document).ready(function() {
+            initInvoiceClientFilterRemoteSearch();
+
             @if (!is_null(request('start')) && !is_null(request('end')))
                 $('#datatableRange').val('{{ request('start') }}' +
                     ' @lang('app.to') ' + '{{ request('end') }}');

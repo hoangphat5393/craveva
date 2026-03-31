@@ -1,8 +1,9 @@
+@php($grnLabelKey = config('purchase.flow_naming_mode', 'compat_v2') === 'legacy' ? 'purchase::app.menu.deliveryOrders' : 'purchase::app.menu.goodsReceivedNote')
 <html lang="en">
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>@lang('purchase::app.menu.deliveryOrders')</title>
+    <title>@lang($grnLabelKey)</title>
     @includeIf('invoices.pdf.invoice_pdf_css')
     <style>
         .clearfix:after {
@@ -188,7 +189,7 @@
         <table cellpadding="0" cellspacing="0" class="billing">
             <tr>
                 <td colspan="2">
-                    <h1>@lang('purchase::app.menu.deliveryOrders')</h1>
+                    <h1>@lang($grnLabelKey)</h1>
                 </td>
             </tr>
             <tr>

@@ -6,7 +6,13 @@
     $purchaseViewInventoryPermission = user()->permission('view_inventory');
     $purchaseViewOrderReportPermission = user()->permission('view_order_report');
     $purchaseViewPaymentPermission = user()->permission('view_vendor_payment');
-    $salesShipmentViewPermission = user()->permission('view_sales_shipment');
+    $canViewGrn = \Modules\Purchase\Support\FlowPermission::allowsAlias('grn.view');
+    $canViewSalesDo = \Modules\Purchase\Support\FlowPermission::allowsAlias('sales_do.view');
+    $flowNamingMode = config('purchase.flow_naming_mode', 'compat_v2');
+    $grnLabel = $flowNamingMode === 'legacy' ? __('purchase::app.menu.deliveryOrders') : __('purchase::app.menu.goodsReceivedNote');
+    $salesDoLabel = $flowNamingMode === 'legacy' ? __('purchase::app.menu.salesShipments') : __('purchase::app.menu.salesDo');
+    $grnRouteName = $flowNamingMode === 'legacy' ? 'delivery-orders.index' : 'grn.index';
+    $salesDoRouteName = $flowNamingMode === 'legacy' ? 'sales-shipments.index' : 'sales-do.index';
     // Warehouse module: migration chỉ gán quyền vào role "admin"; employee thường chưa có view_warehouses → hiển thị kèm quyền Inventory.
     $viewWarehouses = user()->permission('view_warehouses');
     $addWarehouses = user()->permission('add_warehouses');
@@ -25,7 +31,8 @@
             $purchaseViewInventoryPermission != 'none' ||
             $purchaseViewOrderReportPermission != 'none' ||
             $purchaseViewPaymentPermission != 'none' ||
-            $salesShipmentViewPermission != 'none' ||
+            $canViewSalesDo ||
+            $canViewGrn ||
             (in_array('products', user_modules()) && $sidebarUserPermissions['view_product'] != 'none') ||
             (in_array('orders', user_modules()) && $sidebarUserPermissions['view_order'] != 'none')))
 
@@ -48,14 +55,14 @@
                 <x-sub-menu-item :link="route('orders.index')" :text="__('app.menu.orders')" />
             @endif
 
+            <!-- NAV ITEM - SALES SHIPMENTS -->
+            <x-sub-menu-item :link="route($salesDoRouteName)" :text="$salesDoLabel" :permission="$canViewSalesDo" />
+
             <!-- NAV ITEM - ORDERS -->
             <x-sub-menu-item :link="route('purchase-order.index')" :text="__('purchase::app.menu.purchaseOrder')" :permission="$purchaseViewOrderPermission != 'none' && $purchaseViewOrderPermission != ''" />
 
             <!-- NAV ITEM - DELIVERY ORDERS -->
-            <x-sub-menu-item :link="route('delivery-orders.index')" :text="__('purchase::app.menu.deliveryOrders')" :permission="$purchaseViewOrderPermission != 'none' && $purchaseViewOrderPermission != ''" />
-
-            <!-- NAV ITEM - SALES SHIPMENTS -->
-            <x-sub-menu-item :link="route('sales-shipments.index')" :text="__('purchase::app.menu.salesShipments')" :permission="$salesShipmentViewPermission != 'none' && $salesShipmentViewPermission != ''" />
+            <x-sub-menu-item :link="route($grnRouteName)" :text="$grnLabel" :permission="$canViewGrn" />
 
             <!-- NAV ITEM - BILLS -->
             <x-sub-menu-item :link="route('bills.index')" :text="__('purchase::app.menu.bills')" :permission="$purchaseViewBillPermission != 'none' && $purchaseViewBillPermission != ''" />

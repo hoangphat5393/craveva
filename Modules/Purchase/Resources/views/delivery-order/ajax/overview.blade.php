@@ -1,3 +1,4 @@
+@php($grnLabelKey = config('purchase.flow_naming_mode', 'compat_v2') === 'legacy' ? 'purchase::app.menu.deliveryOrders' : 'purchase::app.menu.goodsReceivedNote')
 <style>
     #logo {
         height: 50px;
@@ -13,7 +14,7 @@
                         <img src="{{ invoice_setting()->logo_url }}" alt="{{ mb_ucwords(company()->company_name) }}" id="logo" />
                     </td>
                     <td align="right" class="font-weight-bold f-21 text-dark text-uppercase mt-4 mt-lg-0 mt-md-0">
-                        @lang('purchase::app.menu.deliveryOrders')
+                        @lang($grnLabelKey)
                     </td>
                 </tr>
                 <tr class="inv-num">

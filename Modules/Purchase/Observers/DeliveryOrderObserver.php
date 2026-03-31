@@ -3,8 +3,10 @@
 namespace Modules\Purchase\Observers;
 
 use App\Models\DeliveryOrder;
+use App\Models\Grn;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Modules\Purchase\Support\GrnRuntime;
 use Modules\Warehouse\Services\StockMovementService;
 
 /**
@@ -15,7 +17,7 @@ use Modules\Warehouse\Services\StockMovementService;
  */
 class DeliveryOrderObserver
 {
-    public function saved(DeliveryOrder $deliveryOrder): void
+    public function saved(DeliveryOrder|Grn $deliveryOrder): void
     {
         if (! config('warehouse.inbound_from_delivery_order_received', false)) {
             return;
@@ -94,7 +96,7 @@ class DeliveryOrderObserver
                 'batch_number' => $batch,
                 'expiry_date' => $expiry,
                 'fefo_fifo_rule' => $rule,
-                'reference_type' => DeliveryOrder::class,
+                'reference_type' => get_class($deliveryOrder),
                 'reference_id' => $deliveryOrder->id,
                 'delivery_order_item_id' => $item->id,
             ];
@@ -107,7 +109,7 @@ class DeliveryOrderObserver
         try {
             app(StockMovementService::class)->recordInboundBatch($payloads);
 
-            DB::table('delivery_orders')
+            DB::table(GrnRuntime::headerTable())
                 ->where('id', $deliveryOrder->id)
                 ->update([
                     'inbound_stock_applied' => true,

@@ -51,7 +51,7 @@
 
 ---
 
-## 4) Luồng bán — **Order (SO)** → **Sales Shipment**/**Invoice** → **xuất kho**
+## 4) Luồng bán — **Order (SO)** → **Sales DO**/**Invoice** → **xuất kho**
 
 ### 4.1 Sales Order (Order)
 
@@ -59,9 +59,9 @@
 2. **Lưu ý sản phẩm:** Với một SO, hệ thống **mặc định** coi **tối đa một** `Invoice` gắn `order_id` (1 SO → 1 HĐ kiểu “Cách 1”). Chi tiết: `SALES_PURCHASE_FLOW.md` §2.1.
 3. **Trừ tồn:** Trạng thái Order **không** tự gọi xuất kho; phụ thuộc mode outbound ở bước sau.
 
-### 4.2 Sales Shipment (Option B - mới)
+### 4.2 Sales DO (technical entity hiện tại: `Sales Shipment`)
 
-1. Tạo một hoặc nhiều `Sales Shipment` từ cùng một SO (partial shipment).
+1. Tạo một hoặc nhiều `Sales DO` (technical: `Sales Shipment`) từ cùng một SO (partial shipment).
 2. Chuyển trạng thái: `draft -> confirmed -> shipped -> delivered` (hoặc `cancelled`).
 3. Khi mode outbound là `shipment`, lúc `shipped` hệ thống post outbound qua `SalesShipmentStockService`.
 4. Có action `reverse outbound` để hoàn kho và đưa shipment về `confirmed` khi cần xử lý sai lệch vận hành.
@@ -83,7 +83,7 @@
 
 Quy tắc tránh double deduction:
 
-- Mode `shipment`: chỉ shipment trừ tồn, invoice không trừ thêm.
+- Mode `shipment`: chỉ Sales DO/Sales Shipment trừ tồn, invoice không trừ thêm.
 - Mode `invoice`: giữ legacy invoice outbound.
 
 **Tắt flag** = không tự tạo outbound từ shipment/invoice (tồn chỉ thay đổi bởi PO/DO/inventory/chuyển kho/điều chỉnh).

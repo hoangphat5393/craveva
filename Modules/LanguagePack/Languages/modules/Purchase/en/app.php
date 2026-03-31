@@ -76,6 +76,9 @@ return [
         'vendorName' => 'Vendor Name',
         'bankAccount' => 'Bank Account',
         'salesShipments' => 'Sales Shipments',
+        'salesDo' => 'Sales DO',
+        'grn' => 'GRN',
+        'goodsReceivedNote' => 'Goods Received Note',
     ],
     'purchaseOrder' => [
         'vendorPayments' => 'Vendor Payments',

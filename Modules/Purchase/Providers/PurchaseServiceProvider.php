@@ -4,6 +4,12 @@ namespace Modules\Purchase\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Modules\Purchase\Console\ActivateModuleCommand;
+use Modules\Purchase\Console\GrnMigrateDataCommand;
+use Modules\Purchase\Console\GrnMigrateRollbackCommand;
+use Modules\Purchase\Console\SalesDoMigrateDataCommand;
+use Modules\Purchase\Console\SalesDoMigrateRollbackCommand;
+use Modules\Purchase\Console\SalesDoMigrationRehearsalCommand;
+use Modules\Purchase\Console\SalesDoReconciliationReportCommand;
 
 class PurchaseServiceProvider extends ServiceProvider
 {
@@ -24,7 +30,7 @@ class PurchaseServiceProvider extends ServiceProvider
         $this->registerTranslations();
         $this->registerConfig();
         $this->registerViews();
-        $this->loadMigrationsFrom(__DIR__.'/../Database/Migrations');
+        $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
         $this->registerCommands();
     }
 
@@ -46,11 +52,11 @@ class PurchaseServiceProvider extends ServiceProvider
     protected function registerConfig()
     {
         $this->publishes([
-            __DIR__.'/../Config/config.php' => config_path('purchase.php'),
+            __DIR__ . '/../Config/config.php' => config_path('purchase.php'),
         ]);
 
         $this->mergeConfigFrom(
-            __DIR__.'/../Config/config.php',
+            __DIR__ . '/../Config/config.php',
             'purchase'
         );
 
@@ -69,7 +75,7 @@ class PurchaseServiceProvider extends ServiceProvider
     {
         $viewPath = base_path('resources/views/modules/purchase');
 
-        $sourcePath = __DIR__.'/../Resources/views';
+        $sourcePath = __DIR__ . '/../Resources/views';
 
         $this->publishes([
             $sourcePath => $viewPath,
@@ -89,9 +95,8 @@ class PurchaseServiceProvider extends ServiceProvider
 
         if (is_dir($langPath)) {
             $this->loadTranslationsFrom($langPath, 'purchase');
-
         } else {
-            $this->loadTranslationsFrom(__DIR__.'/../Resources/lang', 'purchase');
+            $this->loadTranslationsFrom(__DIR__ . '/../Resources/lang', 'purchase');
         }
     }
 
@@ -103,7 +108,9 @@ class PurchaseServiceProvider extends ServiceProvider
     public function registerFactories()
     {
         if (! app()->environment('production') && $this->app->runningInConsole()) {
-            app(Factory::class)->load(__DIR__.'/../Database/factories');
+            if (class_exists('Illuminate\Database\Eloquent\Factory')) {
+                app()->make('Illuminate\Database\Eloquent\Factory')->load(__DIR__ . '/../Database/factories');
+            }
         }
     }
 
@@ -125,6 +132,12 @@ class PurchaseServiceProvider extends ServiceProvider
         $this->commands(
             [
                 ActivateModuleCommand::class,
+                SalesDoMigrationRehearsalCommand::class,
+                SalesDoReconciliationReportCommand::class,
+                SalesDoMigrateDataCommand::class,
+                SalesDoMigrateRollbackCommand::class,
+                GrnMigrateDataCommand::class,
+                GrnMigrateRollbackCommand::class,
             ]
         );
     }

@@ -80,7 +80,9 @@ class OrderController extends AccountBaseController
             if (in_array('client', user_roles())) {
                 $this->clients = User::client();
             } else {
-                $this->clients = User::allClients();
+                $this->clients = User::allClients(execute: false)
+                    ->limit(100)
+                    ->get();
             }
         }
 
@@ -95,11 +97,14 @@ class OrderController extends AccountBaseController
         $id = UserService::getUserId();
 
         $this->pageTitle = __('modules.orders.createOrder');
-        $this->clients = User::allClients();
+        $this->clients = User::allClients(execute: false)
+            ->limit(100)
+            ->get();
         // Keep create modal payload lean: the dropdown only needs id/name/sku.
         $this->products = Product::query()
             ->select('id', 'name', 'sku')
             ->orderBy('name')
+            ->limit(100)
             ->get();
         $this->categories = ProductCategory::query()
             ->select('id', 'category_name')
@@ -118,7 +123,7 @@ class OrderController extends AccountBaseController
             $condition = $this->orderSetting->order_digit - strlen($this->lastOrder);
 
             for ($i = 0; $i < $condition; $i++) {
-                $this->zero = '0'.$this->zero;
+                $this->zero = '0' . $this->zero;
             }
         }
 
@@ -158,7 +163,6 @@ class OrderController extends AccountBaseController
         $this->view = 'orders.ajax.admin_create';
 
         return view('orders.create', $this->data);
-
     }
 
     public function saveOrder($request)
@@ -187,7 +191,6 @@ class OrderController extends AccountBaseController
             $client = $order->clientdetails;
             $client->shipping_address = $request->shipping_address;
             $client->saveQuietly();
-
         }
 
         return $order;
@@ -286,7 +289,6 @@ class OrderController extends AccountBaseController
         $this->logSearchEntry($order->id, $order->id, 'orders.show', 'order');
 
         return response(Reply::redirect(route('orders.show', $order->id), __('messages.recordSaved')))->withCookie(Cookie::forget('productDetails'));
-
     }
 
     public function addItem(Request $request)
@@ -307,7 +309,6 @@ class OrderController extends AccountBaseController
             if ($this->item->total_amount != '') {
 
                 $this->item->price = floor($this->item->total_amount / $exRate);
-
             } else {
                 /** @phpstan-ignore-next-line */
                 $this->item->price = $this->item->price / $exRate;
@@ -342,7 +343,11 @@ class OrderController extends AccountBaseController
 
         $this->currencies = Currency::all();
         $this->taxes = Tax::all();
-        $this->products = Product::all();
+        $this->products = Product::query()
+            ->select('id', 'name', 'sku')
+            ->orderBy('name')
+            ->limit(100)
+            ->get();
         $this->categories = ProductCategory::all();
         $this->clients = User::allClients();
         $this->companyAddresses = CompanyAddress::all();
@@ -362,6 +367,94 @@ class OrderController extends AccountBaseController
         $this->view = 'orders.ajax.edit';
 
         return view('orders.create', $this->data);
+    }
+
+    public function searchClients(Request $request)
+    {
+        abort_403(! in_array('clients', user_modules()) || in_array('client', user_roles()));
+
+        $term = trim((string) $request->get('q', ''));
+        $page = max(1, (int) $request->get('page', 1));
+        $perPage = (int) $request->get('per_page', 50);
+        $perPage = max(10, min(100, $perPage));
+
+        $query = User::allClients(execute: false);
+
+        if ($term !== '') {
+            $query->where(function ($q) use ($term) {
+                $q->where('users.name', 'like', '%' . $term . '%')
+                    ->orWhere('users.email', 'like', '%' . $term . '%')
+                    ->orWhere('users.mobile', 'like', '%' . $term . '%')
+                    ->orWhere('client_details.company_name', 'like', '%' . $term . '%')
+                    ->orWhere('client_details.client_code', 'like', '%' . $term . '%');
+            });
+        }
+
+        $items = $query
+            ->forPage($page, $perPage)
+            ->get();
+
+        $hasMore = $items->count() === $perPage;
+
+        return Reply::dataOnly([
+            'status' => 'success',
+            'items' => $items->map(function ($client) {
+                return [
+                    'id' => $client->id,
+                    'name' => $client->name_salutation,
+                    'company_name' => $client->company_name ?? null,
+                    'email' => $client->email ?? null,
+                ];
+            })->values(),
+            'pagination' => [
+                'page' => $page,
+                'per_page' => $perPage,
+                'has_more' => $hasMore,
+            ],
+        ]);
+    }
+
+    public function searchProducts(Request $request)
+    {
+        abort_403((! in_array('products', user_modules()) && ! in_array('purchase', user_modules())) || in_array('client', user_roles()));
+
+        $term = trim((string) $request->get('q', ''));
+        $page = max(1, (int) $request->get('page', 1));
+        $perPage = (int) $request->get('per_page', 50);
+        $perPage = max(10, min(100, $perPage));
+
+        $query = Product::query()
+            ->select('id', 'name', 'sku')
+            ->orderBy('name');
+
+        if ($term !== '') {
+            $query->where(function ($q) use ($term) {
+                $q->where('name', 'like', '%' . $term . '%')
+                    ->orWhere('sku', 'like', '%' . $term . '%');
+            });
+        }
+
+        $items = $query
+            ->forPage($page, $perPage)
+            ->get();
+
+        $hasMore = $items->count() === $perPage;
+
+        return Reply::dataOnly([
+            'status' => 'success',
+            'items' => $items->map(function ($product) {
+                return [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'sku' => $product->sku,
+                ];
+            })->values(),
+            'pagination' => [
+                'page' => $page,
+                'per_page' => $perPage,
+                'has_more' => $hasMore,
+            ],
+        ]);
     }
 
     public function update(UpdateOrder $request, $id)
@@ -463,7 +556,6 @@ class OrderController extends AccountBaseController
                     ]
                 );
             }
-
         }
 
         if ($request->has('shipping_address')) {
@@ -531,10 +623,10 @@ class OrderController extends AccountBaseController
             foreach (json_decode($item->taxes) as $tax) {
                 $this->tax = OrderItems::taxbyid($tax)->first();
 
-                if (! isset($taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'])) {
-                    $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = ($this->tax->rate_percent / 100) * $item->amount;
+                if (! isset($taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'])) {
+                    $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = ($this->tax->rate_percent / 100) * $item->amount;
                 } else {
-                    $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + (($this->tax->rate_percent / 100) * $item->amount);
+                    $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + (($this->tax->rate_percent / 100) * $item->amount);
                 }
             }
         }
@@ -635,7 +727,7 @@ class OrderController extends AccountBaseController
                     'customer' => $customer->id,
                     'setup_future_usage' => 'off_session',
                     'payment_method_types' => ['card'],
-                    'description' => $this->order->id.' Payment',
+                    'description' => $this->order->id . ' Payment',
                     'metadata' => ['integration_check' => 'accept_a_payment', 'order_id' => $id],
                 ]
             );
@@ -739,7 +831,6 @@ class OrderController extends AccountBaseController
                     $invoiceItemImage->external_link = $item->orderItemImage->external_link;
                     $invoiceItemImage->save();
                 }
-
             }
         } else {
             $invoice = $order->invoice;
@@ -844,7 +935,6 @@ class OrderController extends AccountBaseController
                 $invoiceItemImage->external_link = $item->orderItemImage->external_link;
                 $invoiceItemImage->save();
             }
-
         }
 
         $notifyUser = User::withoutGlobalScope(ActiveScope::class)->findOrFail($order->client_id);
@@ -992,7 +1082,7 @@ class OrderController extends AccountBaseController
         $pdf = $pdfOption['pdf'];
         $filename = $pdfOption['fileName'];
 
-        return $pdf->download($filename.'.pdf');
+        return $pdf->download($filename . '.pdf');
     }
 
     public function domPdfObjectForDownload($id)
@@ -1030,11 +1120,11 @@ class OrderController extends AccountBaseController
             foreach (json_decode($item->taxes) as $tax) {
                 $this->tax = OrderItems::taxbyid($tax)->first();
 
-                if (! isset($taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'])) {
+                if (! isset($taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'])) {
 
-                    $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $item->amount * ($this->tax->rate_percent / 100);
+                    $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $item->amount * ($this->tax->rate_percent / 100);
                 } else {
-                    $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] = $taxList[$this->tax->tax_name.': '.$this->tax->rate_percent.'%'] + ($item->amount * ($this->tax->rate_percent / 100));
+                    $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] = $taxList[$this->tax->tax_name . ': ' . $this->tax->rate_percent . '%'] + ($item->amount * ($this->tax->rate_percent / 100));
                 }
             }
         }
@@ -1051,7 +1141,7 @@ class OrderController extends AccountBaseController
                 * { text-transform: none !important; }
             </style>';
 
-        $pdf->loadHTML($customCss.view('orders.pdf.'.$this->invoiceSetting->template, $this->data)->render());
+        $pdf->loadHTML($customCss . view('orders.pdf.' . $this->invoiceSetting->template, $this->data)->render());
         $filename = $this->order->order_number;
 
         return [

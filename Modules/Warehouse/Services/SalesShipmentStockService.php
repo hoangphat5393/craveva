@@ -5,6 +5,7 @@ namespace Modules\Warehouse\Services;
 use App\Models\StockMovement;
 use Illuminate\Support\Facades\DB;
 use Modules\Purchase\Entities\SalesShipment;
+use Modules\Purchase\Support\SalesDoRuntime;
 
 class SalesShipmentStockService
 {
@@ -16,14 +17,15 @@ class SalesShipmentStockService
      * In Option B, outbound can be posted from shipment (mode "shipment").
      * This method is idempotent via sales_shipments.outbound_stock_applied.
      */
-    public function applyOutboundForShipment(SalesShipment $shipment): void
+    public function applyOutboundForShipment($shipment): void
     {
         if (! $this->shouldPostOutboundFromShipment()) {
             return;
         }
 
         DB::transaction(function () use ($shipment) {
-            $locked = SalesShipment::query()
+            $headerModelClass = SalesDoRuntime::headerModelClass();
+            $locked = $headerModelClass::query()
                 ->with('items')
                 ->lockForUpdate()
                 ->findOrFail($shipment->id);
@@ -45,7 +47,7 @@ class SalesShipmentStockService
                     'quantity' => $qty,
                     'batch_number' => $item->batch_number,
                     'expiry_date' => null,
-                    'reference_type' => SalesShipment::class,
+                    'reference_type' => get_class($locked),
                     'reference_id' => $locked->id,
                 ]);
             }
@@ -59,21 +61,22 @@ class SalesShipmentStockService
      * Reverse outbound movements created from a shipment.
      * Safe no-op when outbound was never applied.
      */
-    public function reverseOutboundForShipment(SalesShipment $shipment): void
+    public function reverseOutboundForShipment($shipment): void
     {
         if (! $this->shouldPostOutboundFromShipment()) {
             return;
         }
 
         DB::transaction(function () use ($shipment) {
-            $locked = SalesShipment::query()->lockForUpdate()->findOrFail($shipment->id);
+            $headerModelClass = SalesDoRuntime::headerModelClass();
+            $locked = $headerModelClass::query()->lockForUpdate()->findOrFail($shipment->id);
 
             if (! $locked->outbound_stock_applied) {
                 return;
             }
 
             $movements = StockMovement::query()
-                ->where('reference_type', SalesShipment::class)
+                ->whereIn('reference_type', [get_class($locked), SalesShipment::class])
                 ->where('reference_id', $locked->id)
                 ->where('movement_type', 'outbound')
                 ->lockForUpdate()

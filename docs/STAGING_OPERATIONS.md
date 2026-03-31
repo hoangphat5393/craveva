@@ -69,17 +69,182 @@ ssh craveva-staging "curl -sI -o /dev/null -w '%{http_code}\n' https://staging.c
 
 Mục tiêu: root còn **> ~2 GB** trống; HTTP **200**; Laravel boot không lỗi.
 
+### Sau khi đổi Cloud SQL (Authorized networks / IP DB)
+
+`.env` trên staging đã trỏ **`DB_HOST=136.110.52.19`** (instance `craveva-staging-db`). Không cần sửa **App URL** trong admin nếu **`APP_URL=https://staging.craveva.com`** đã đúng trong `.env`.
+
+Trên server (sau khi GCP đã mở IP / allowlist):
+
+```bash
+cd /var/www/craveva-staging/current/craveva
+sudo -u www-data php artisan db:show | head -15
+sudo -u www-data php artisan config:clear
+sudo -u www-data php artisan cache:clear
+```
+
+Kiểm tra web: `curl -sI -o /dev/null -w '%{http_code}\n' https://staging.craveva.com/` → **200**.
+
+Chi tiết allowlist / AI → DB: **`docs/ENG_AI_MYSQL_CONNECTIVITY_BOSS_REPORT.md`**.
+
 ---
 
 ## 6. Tài liệu liên quan (không gộp nội dung)
 
-| File                                        | Nội dung                                      |
-| ------------------------------------------- | --------------------------------------------- |
-| `docs/STAGING_DISK_RECOVERY_2026-03-27.md`  | Nhật ký incident ổ đĩa (2026-03-27)           |
-| `docs/STAGING_PHP83_L11_DEPLOY_PROGRESS.md` | Tiến độ PHP 8.3 / L11, composer, cache        |
-| `docs/STAGING_RECOVERY_LATEST.md`           | Stub trỏ về tài liệu này + recovery tối thiểu |
-| `scripts/download_staging_logs.ps1`         | Tải log Nginx/PHP từ staging về máy local     |
+| File                                            | Nội dung                                      |
+| ----------------------------------------------- | --------------------------------------------- |
+| `docs/STAGING_DISK_RECOVERY_2026-03-27.md`      | Nhật ký incident ổ đĩa (2026-03-27)           |
+| `docs/STAGING_PHP83_L11_DEPLOY_PROGRESS.md`     | Tiến độ PHP 8.3 / L11, composer, cache        |
+| `docs/STAGING_RECOVERY_LATEST.md`               | Stub trỏ về tài liệu này + recovery tối thiểu |
+| `docs/ENG_AI_MYSQL_CONNECTIVITY_BOSS_REPORT.md` | DB staging / allowlist / AI connectivity (EN) |
+| `scripts/download_staging_logs.ps1`             | Tải log Nginx/PHP từ staging về máy local     |
 
 ---
 
-_Cập nhật: 2026-03-27 — gộp hướng dẫn deploy, `en`/`eng`, upload zip và kiểm tra._
+## 7. Rehearsal dữ liệu SO/DO (Phase 3)
+
+Áp dụng khi chuẩn bị cutover refactor `SO -> DO`, mục tiêu là **đối soát số liệu trước/sau** mà **không sửa dữ liệu thật**.
+
+### 7.1 Tạo baseline (dry-run, không mutate)
+
+```bash
+cd /var/www/craveva-staging/current/craveva
+sudo -u www-data php artisan purchase:sales-do-migration-rehearsal \
+  --company_id=10 \
+  --sample=50 \
+  --output=storage/app/reports/sales-do-baseline-company10.json
+```
+
+### 7.2 Chạy reconciliation dựa trên baseline
+
+```bash
+cd /var/www/craveva-staging/current/craveva
+sudo -u www-data php artisan purchase:sales-do-reconcile-report \
+  --company_id=10 \
+  --baseline=storage/app/reports/sales-do-baseline-company10.json \
+  --sample=50 \
+  --output=storage/app/reports/sales-do-reconcile-company10.json
+```
+
+### 7.3 Tiêu chí pass nhanh
+
+- `comparison.shipments_count_delta == 0`
+- `comparison.items_count_delta == 0`
+- `comparison.total_quantity_shipped_delta == 0`
+- `comparison.quality_checks_ok.orphan_item_count_is_zero == true`
+- `comparison.quality_checks_ok.duplicate_shipment_number_count_is_zero == true`
+
+Nếu có delta khác `0` hoặc quality check fail: **không bật cutover**, lưu report và điều tra trước.
+
+### 7.4 Ghi chú an toàn
+
+- Hai command trên hiện là **read/report only** (không migrate dữ liệu).
+- Command rehearsal có `--execute` nhưng hiện chỉ là placeholder, chưa chạy mutate.
+- Luôn giữ baseline/reconcile report để audit trước khi làm bước migrate thật.
+
+### 7.5 Script gate tự động (khuyến nghị)
+
+Đã có script chạy trọn gói baseline + reconcile + gate:
+
+```bash
+cd /var/www/craveva-staging/current/craveva
+bash scripts/staging_sales_do_rehearsal_gate.sh 10 50
+```
+
+Gate sẽ fail (exit code `1`) nếu:
+
+- `shipments_count_delta != 0`
+- `items_count_delta != 0`
+- `total_quantity_shipped_delta != 0`
+- hoặc quality check orphan/duplicate không đạt.
+
+### 7.6 Safe one-command cho staging (preflight + backup + gate)
+
+Nếu muốn chạy rehearsal có "hàng rào an toàn" trong một lệnh:
+
+```bash
+cd /var/www/craveva-staging/current/craveva
+bash scripts/staging_phase3_safe_execute.sh 10 50
+```
+
+Script sẽ:
+
+1. Preflight:
+    - check dung lượng đĩa `/` (mặc định yêu cầu >= 2048MB trống),
+    - check app boot (`php artisan about`),
+    - check DB connectivity (`php artisan db:show`).
+2. Backup DB MySQL/MariaDB từ cấu hình hiện tại trong `.env`.
+3. Chạy gate rehearsal (`staging_sales_do_rehearsal_gate.sh`).
+
+Biến môi trường tùy chọn:
+
+- `NO_BACKUP=1` để bỏ backup (không khuyến nghị).
+- `MIN_FREE_MB=3072` để tăng ngưỡng disk check.
+- `BACKUP_DIR=storage/app/backups/phase3` để đổi nơi lưu backup.
+
+### 7.7 Chạy từ máy local Windows (PowerShell)
+
+Đã có script wrapper để chạy remote an toàn qua SSH:
+
+```powershell
+.\scripts\run_staging_phase3_safe_execute.ps1 -SshHost craveva-staging -CompanyId 10 -Sample 50
+```
+
+Điểm an toàn thêm:
+
+- Script sẽ tự chuẩn hóa line-ending shell script trên staging (`sed -i 's/\r$//'`) trước khi chạy để tránh lỗi CRLF.
+- Có thể dùng `-NoBackup` nếu cần chạy nhanh, nhưng mặc định vẫn backup trước khi gate.
+
+### 7.8 Migrate thật + rollback (Phase 3 execute window)
+
+Khi đã có rehearsal pass và cần migrate dữ liệu thật sang thực thể mới:
+
+```bash
+cd /var/www/craveva-staging/current/craveva
+sudo -u www-data php artisan purchase:sales-do-migrate-data \
+  --company_id=10 \
+  --chunk=200 \
+  --execute \
+  --force \
+  --output=storage/app/reports/sales-do-migrate-execute-company10.json
+```
+
+Command sẽ sinh rollback manifest tại `storage/app/reports/sales-do-migrate-manifest-<run-id>.json`.
+
+Dry-run rollback (không xóa dữ liệu):
+
+```bash
+sudo -u www-data php artisan purchase:sales-do-migrate-rollback \
+  --manifest=storage/app/reports/sales-do-migrate-manifest-<run-id>.json
+```
+
+Execute rollback (xóa bản ghi đã tạo theo manifest):
+
+```bash
+sudo -u www-data php artisan purchase:sales-do-migrate-rollback \
+  --manifest=storage/app/reports/sales-do-migrate-manifest-<run-id>.json \
+  --execute \
+  --force
+```
+
+### 7.9 Precheck gate trước Phase 4 cutover
+
+Dùng script precheck để xác nhận staging sẵn sàng trước khi bật cutover:
+
+```bash
+cd /var/www/craveva-staging/current/craveva
+bash scripts/staging_phase4_cutover_precheck.sh 20 20
+```
+
+Script sẽ kiểm tra:
+
+1. Disk/app/db preflight.
+2. Command cần thiết có sẵn (`rehearsal/reconcile/migrate/rollback`).
+3. Bảng nguồn + bảng đích (`sales_shipments`, `sales_shipment_items`, `sales_dos`, `sales_do_items`).
+4. Reconciliation gate pass.
+5. Migrate dry-run report tạo thành công.
+
+Nếu PASS, script sẽ in sẵn lệnh execute migrate và rollback để chạy trong cửa sổ cutover.
+
+---
+
+_Cập nhật: 2026-03-30 — bổ sung runbook rehearsal Phase 3 (baseline + reconcile), script gate tự động, và safe one-command (preflight + backup + gate)._

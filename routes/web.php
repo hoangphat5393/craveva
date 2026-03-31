@@ -459,6 +459,8 @@ Route::group(['middleware' => ['auth', 'multi-company-select', 'email_verified']
     /* Payments */
     Route::get('orders/offline-payment-modal', [OrderController::class, 'offlinePaymentModal'])->name('orders.offline_payment_modal');
     Route::get('orders/add-item', [OrderController::class, 'addItem'])->name('orders.add_item');
+    Route::get('orders/search-clients', [OrderController::class, 'searchClients'])->name('orders.search_clients');
+    Route::get('orders/search-products', [OrderController::class, 'searchProducts'])->name('orders.search_products');
     Route::get('orders/stripe-modal', [OrderController::class, 'stripeModal'])->name('orders.stripe_modal');
     Route::post('orders/make-invoice/{orderId}', [OrderController::class, 'makeInvoice'])->name('orders.make_invoice');
 
@@ -704,6 +706,8 @@ Route::group(['middleware' => ['auth', 'multi-company-select', 'email_verified']
     Route::post('invoices/apply-quick-action', [InvoiceController::class, 'applyQuickAction'])->name('invoices.apply_quick_action');
     Route::get('invoices/download/{id}', [InvoiceController::class, 'download'])->name('invoices.download');
     Route::get('invoices/add-item', [InvoiceController::class, 'addItem'])->name('invoices.add_item');
+    Route::get('invoices/search-clients', [InvoiceController::class, 'searchClients'])->name('invoices.search_clients');
+    Route::get('invoices/search-products', [InvoiceController::class, 'searchProducts'])->name('invoices.search_products');
     Route::get('invoices/update-status/{invoiceID}', [InvoiceController::class, 'cancelStatus'])->name('invoices.update_status');
     Route::get('invoices/get-client-company/{projectID?}', [InvoiceController::class, 'getClientOrCompanyName'])->name('invoices.get_client_company');
     Route::post('invoices/fetchTimelogs', [InvoiceController::class, 'fetchTimelogs'])->name('invoices.fetch_timelogs');

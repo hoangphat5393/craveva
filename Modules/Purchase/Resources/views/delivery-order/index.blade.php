@@ -1,4 +1,9 @@
 @extends('layouts.app')
+@php($grnLabelKey = config('purchase.flow_naming_mode', 'compat_v2') === 'legacy' ? 'purchase::app.menu.deliveryOrders' : 'purchase::app.menu.goodsReceivedNote')
+@php($grnRoutePrefix = config('purchase.flow_naming_mode', 'compat_v2') === 'legacy' ? 'delivery-orders' : 'grn')
+@php($canCreateGrn = \Modules\Purchase\Support\FlowPermission::allowsAlias('grn.create'))
+@php($canChangeStatusGrn = \Modules\Purchase\Support\FlowPermission::allowsAlias('grn.change_status'))
+@php($canDeleteGrn = \Modules\Purchase\Support\FlowPermission::allowsAlias('grn.delete'))
 
 @push('datatable-styles')
     @include('sections.datatable_css')
@@ -44,9 +49,11 @@
     <div class="content-wrapper">
         <div class="d-flex justify-content-between action-bar">
             <div id="table-actions" class="flex-grow-1 align-items-center mt-3">
-                <x-forms.link-primary :link="route('delivery-orders.create')" class="mr-3 float-left openRightModal" icon="plus">
-                    @lang('app.add') @lang('purchase::app.menu.deliveryOrders')
-                </x-forms.link-primary>
+                @if ($canCreateGrn)
+                    <x-forms.link-primary :link="route($grnRoutePrefix . '.create')" class="mr-3 float-left openRightModal" icon="plus">
+                        @lang('app.add') @lang($grnLabelKey)
+                    </x-forms.link-primary>
+                @endif
             </div>
         </div>
 
@@ -107,6 +114,9 @@
         });
 
         $('body').on('change', '.change-do-status', function() {
+            if (!@json($canChangeStatusGrn)) {
+                return;
+            }
             var $target = $(this);
             var $select = $target.is('select') ? $target : $target.find('select.change-do-status').first();
             if (!$select.length && $target.closest('.bootstrap-select').length) {
@@ -126,7 +136,7 @@
             }
             var token = "{{ csrf_token() }}";
 
-            var chUrl = "{{ route('delivery-orders.changeStatus', ':id') }}".replace(':id', id);
+            var chUrl = "{{ route($grnRoutePrefix . '.changeStatus', ':id') }}".replace(':id', id);
             var chBody = '_token=' + encodeURIComponent(token) + '&status=' + encodeURIComponent(status);
             window.apiHttp.postUrlEncoded(chUrl, chBody).then(function(response) {
                 if (response.status == "success") {
@@ -147,6 +157,9 @@
         });
 
         $('body').on('click', '.delete-table-row', function() {
+            if (!@json($canDeleteGrn)) {
+                return;
+            }
             var id = $(this).data('id');
             Swal.fire({
                 title: "@lang('messages.sweetAlertTitle')",
@@ -167,7 +180,7 @@
                 buttonsStyling: false
             }).then((result) => {
                 if (result.isConfirmed) {
-                    var url = "{{ route('delivery-orders.destroy', ':id') }}";
+                    var url = "{{ route($grnRoutePrefix . '.destroy', ':id') }}";
                     url = url.replace(':id', id);
 
                     var token = "{{ csrf_token() }}";

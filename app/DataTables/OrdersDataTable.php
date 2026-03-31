@@ -45,14 +45,17 @@ class OrdersDataTable extends BaseDataTable
         $datatables->addColumn('action', function ($row) use ($id) {
 
             $action = '<div class="task_view">
-<a href="' . route('orders.show', [$row->id]) . '"
-                        class="taskView  text-darkest-grey f-w-500">' . __('app.view') . '</a>
                 <div class="dropdown">
                     <a class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" type="link"
                         id="dropdownMenuLink-' . $row->id . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="icon-options-vertical icons"></i>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-' . $row->id . '" tabindex="0">';
+
+            $action .= '<a class="dropdown-item" href="' . route('orders.show', [$row->id]) . '">
+                            <i class="fa fa-eye mr-2"></i>
+                            ' . trans('app.view') . '
+                        </a>';
 
             if (! in_array('client', user_roles()) && in_array($row->status, ['pending', 'on-hold', 'failed', 'processing']) && ($this->editOrderPermission == 'all' || (in_array($this->editOrderPermission, ['added', 'both']) && $row->added_by == $id))) {
                 $action .= '<a class="dropdown-item orderStatusChange" href="javascript:;"  data-order-id="' . $row->id . '" data-status="completed"><i class="fa fa-check mr-2"></i>' . __('app.orderMarkAsComplete') . '</a>';

@@ -7,9 +7,10 @@
         'cancelled' => 'text-danger border-danger',
         default => 'text-dark border-dark',
     };
-    $canUpdate = user()->permission('update_sales_shipment') !== 'none';
-    $canShip = user()->permission('ship_sales_shipment') !== 'none';
-    $canCancel = user()->permission('cancel_sales_shipment') !== 'none';
+    $canUpdate = \Modules\Purchase\Support\FlowPermission::allowsAlias('sales_do.update');
+    $canShip = \Modules\Purchase\Support\FlowPermission::allowsAlias('sales_do.ship');
+    $canCancel = \Modules\Purchase\Support\FlowPermission::allowsAlias('sales_do.cancel');
+    $salesDoRoutePrefix = config('purchase.flow_naming_mode', 'compat_v2') === 'legacy' ? 'sales-shipments' : 'sales-do';
 @endphp
 
 <div class="card border-0 invoice">
@@ -85,7 +86,7 @@
                 <ul class="dropdown-menu" tabindex="0">
                     @if ($canUpdate && !in_array($shipment->status, ['shipped', 'delivered', 'cancelled'], true))
                         <li>
-                            <a class="dropdown-item f-14 text-dark openRightModal" href="{{ route('sales-shipments.edit', $shipment->id) }}">
+                            <a class="dropdown-item f-14 text-dark openRightModal" href="{{ route($salesDoRoutePrefix . '.edit', $shipment->id) }}">
                                 <i class="fa fa-edit f-w-500 mr-2 f-11"></i> @lang('app.edit')
                             </a>
                         </li>
@@ -108,7 +109,7 @@
                 </ul>
             </div>
 
-            <x-forms.button-cancel :link="route('sales-shipments.index')" class="border-0 mr-3">@lang('app.back')</x-forms.button-cancel>
+            <x-forms.button-cancel :link="route($salesDoRoutePrefix . '.index')" class="border-0 mr-3">@lang('app.back')</x-forms.button-cancel>
         </div>
     </div>
 </div>
@@ -116,7 +117,7 @@
 <script>
     $('body').off('click.shipment-action').on('click.shipment-action', '.shipment-action', function() {
         const action = $(this).data('action');
-        const url = "{{ url('/account/sales-shipments/' . $shipment->id) }}/" + action;
+        const url = "{{ url('/account') }}/{{ $salesDoRoutePrefix }}/{{ $shipment->id }}/" + action;
         const body = '_token=' + encodeURIComponent("{{ csrf_token() }}");
         const labels = {
             confirm: "@lang('app.confirm')",

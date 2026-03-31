@@ -1,9 +1,11 @@
+@php($grnLabelKey = config('purchase.flow_naming_mode', 'compat_v2') === 'legacy' ? 'purchase::app.menu.deliveryOrders' : 'purchase::app.menu.goodsReceivedNote')
+@php($grnRoutePrefix = config('purchase.flow_naming_mode', 'compat_v2') === 'legacy' ? 'delivery-orders' : 'grn')
 <div class="row">
     <div class="col-sm-12">
         <x-form id="update-delivery-order-form" method="PUT">
             <div class="add-client bg-white rounded">
                 <h4 class="mb-0 p-20 f-21 font-weight-normal text-capitalize border-bottom-grey">
-                    @lang('purchase::app.menu.deliveryOrders')
+                    @lang($grnLabelKey)
                 </h4>
                 <div class="row p-20">
                     <div class="col-lg-12">
@@ -71,7 +73,7 @@
                 <x-form-actions>
                     <x-forms.button-primary id="update-delivery-order-button" class="mr-3" icon="check">@lang('app.update')
                     </x-forms.button-primary>
-                    <x-forms.button-cancel :link="route('delivery-orders.index')" class="border-0">@lang('app.cancel')
+                    <x-forms.button-cancel :link="route($grnRoutePrefix . '.index')" class="border-0">@lang('app.cancel')
                     </x-forms.button-cancel>
                 </x-form-actions>
             </div>
@@ -121,7 +123,7 @@
         });
 
         $('#update-delivery-order-button').click(function() {
-            const url = "{{ route('delivery-orders.update', $delivery->id) }}";
+            const url = "{{ route($grnRoutePrefix . '.update', $delivery->id) }}";
             var $btn = $('#update-delivery-order-button');
             var body = $('#update-delivery-order-form').serialize() + '&_method=PUT';
             $btn.prop('disabled', true);

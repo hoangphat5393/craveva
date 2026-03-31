@@ -74,6 +74,11 @@ return [
         'paymentReceipt' => 'Hóa đơn thanh toán',
         'vendorName' => 'Tên nhà cung cấp',
         'bankAccount' => 'Tài khoản ngân hàng',
+        'deliveryOrders' => 'Đơn giao hàng',
+        'salesShipments' => 'Giao hàng bán',
+        'grn' => 'GRN',
+        'goodsReceivedNote' => 'Phiếu nhận hàng',
+        'salesDo' => 'Phiếu xuất giao (DO)',
     ],
     'purchaseOrder' => [
         'vendorPayments' => 'Thanh toán của nhà cung cấp',

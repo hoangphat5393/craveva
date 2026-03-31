@@ -1,10 +1,10 @@
-# UAT Test Cases - Sales Shipment Option B (Step-by-step)
+# UAT Test Cases - Sales DO (technical: Sales Shipment) Option B (Step-by-step)
 
 ## 1) Mục tiêu
 
 Tài liệu này cung cấp kịch bản UAT chi tiết theo dữ liệu mẫu cố định để QA kiểm thử nhanh:
 
-- Luồng chuẩn: `SO -> Sales Shipment (partial) -> Invoice`
+- Luồng chuẩn: `SO -> Sales DO (Sales Shipment, partial) -> Invoice`
 - Outbound mode: `shipment`
 - Kiểm tra chống double deduction, reverse, cancel, và tương thích luồng PO/DO inbound cũ.
 
@@ -51,7 +51,7 @@ Tài liệu này cung cấp kịch bản UAT chi tiết theo dữ liệu mẫu c
 ### Bước thực hiện
 
 1. Tạo Sales Order `SO-UAT-0001` với line qty = 10 cho `SKU-UAT-SS-001`.
-2. Mở màn show SO, xác nhận nút `Add Sales Shipments` hiển thị.
+2. Mở màn show SO, xác nhận nút `Add Sales DO` (hoặc `Add Sales Shipments` ở legacy mode) hiển thị.
 3. Kiểm tra tồn kho hiện tại của SKU tại `WH-STAGING-A`.
 
 ### Kỳ vọng

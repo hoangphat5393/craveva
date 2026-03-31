@@ -48,6 +48,7 @@ return [
         'vendorReport' => '供应商报告',
         'orderReport' => '采购订单报告',
         'inventory' => '库存',
+        'stockAdjustments' => '库存调整',
         'bill' => '账单',
         'bills' => '账单',
         'billDate' => '账单日期',
@@ -76,6 +77,10 @@ return [
         'paymentReceipt' => '付款收据',
         'vendorName' => '供应商名称',
         'bankAccount' => '银行账户',
+        'salesShipments' => '销售发货',
+        'salesDo' => '销售出库单',
+        'grn' => 'GRN',
+        'goodsReceivedNote' => '货物接收单',
     ],
     'purchaseOrder' => [
         'vendorPayments' => '供应商付款',

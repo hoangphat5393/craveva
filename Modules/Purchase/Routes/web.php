@@ -135,6 +135,11 @@ Route::group(['middleware' => 'auth', 'prefix' => 'account'], function () {
     Route::get('delivery_orders/change_status/{id}', [DeliveryOrderController::class, 'changeStatus'])->name('delivery_orders.change_status');
     Route::post('delivery-orders/change-status/{id}', [DeliveryOrderController::class, 'changeStatus'])->name('delivery-orders.changeStatus');
     Route::resource('delivery-orders', DeliveryOrderController::class);
+    // Phase-2 transition aliases (business naming): GRN -> DeliveryOrderController
+    Route::get('grn/download/{id}', [DeliveryOrderController::class, 'download'])->name('grn.download');
+    Route::get('grn/get-items', [DeliveryOrderController::class, 'getItems'])->name('grn.get-items');
+    Route::post('grn/change-status/{id}', [DeliveryOrderController::class, 'changeStatus'])->name('grn.changeStatus');
+    Route::resource('grn', DeliveryOrderController::class);
 
     /* Sales Shipments (Option B) */
     Route::get('sales-shipments/get-items', [SalesShipmentController::class, 'getOrderItems'])->name('sales-shipments.get-items');
@@ -144,6 +149,14 @@ Route::group(['middleware' => 'auth', 'prefix' => 'account'], function () {
     Route::post('sales-shipments/{id}/reverse', [SalesShipmentController::class, 'reverse'])->name('sales-shipments.reverse');
     Route::post('sales-shipments/{id}/cancel', [SalesShipmentController::class, 'cancel'])->name('sales-shipments.cancel');
     Route::resource('sales-shipments', SalesShipmentController::class);
+    // Phase-2 transition aliases (business naming): Sales DO -> SalesShipmentController
+    Route::get('sales-do/get-items', [SalesShipmentController::class, 'getOrderItems'])->name('sales-do.get-items');
+    Route::post('sales-do/{id}/confirm', [SalesShipmentController::class, 'confirm'])->name('sales-do.confirm');
+    Route::post('sales-do/{id}/ship', [SalesShipmentController::class, 'ship'])->name('sales-do.ship');
+    Route::post('sales-do/{id}/deliver', [SalesShipmentController::class, 'deliver'])->name('sales-do.deliver');
+    Route::post('sales-do/{id}/reverse', [SalesShipmentController::class, 'reverse'])->name('sales-do.reverse');
+    Route::post('sales-do/{id}/cancel', [SalesShipmentController::class, 'cancel'])->name('sales-do.cancel');
+    Route::resource('sales-do', SalesShipmentController::class);
 
     /* Purchase Order files */
     Route::get('purchase-order-file/download/{id}', [PurchaseOrderFileController::class, 'download'])->name('purchase_order_file.download');

@@ -8,27 +8,40 @@ use App\Models\Order;
 use App\Models\OrderItems;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Modules\Purchase\DataTables\SalesShipmentDataTable;
-use Modules\Purchase\Entities\SalesShipment;
-use Modules\Purchase\Entities\SalesShipmentItem;
-use Modules\Warehouse\Services\SalesShipmentStockService;
+use Modules\Purchase\Services\SalesDoService;
+use Modules\Purchase\Support\FlowPermission;
+use Modules\Purchase\Support\SalesDoRuntime;
 
 class SalesShipmentController extends AccountBaseController
 {
+    private function salesDoRouteName(string $action): string
+    {
+        $prefix = config('purchase.flow_naming_mode', 'compat_v2') === 'legacy' ? 'sales-shipments' : 'sales-do';
+
+        return $prefix . '.' . $action;
+    }
+
+    private function salesDoTitleKey(): string
+    {
+        return config('purchase.flow_naming_mode', 'compat_v2') === 'legacy'
+            ? 'purchase::app.menu.salesShipments'
+            : 'purchase::app.menu.salesDo';
+    }
+
     public function index(SalesShipmentDataTable $dataTable)
     {
-        abort_403(user()->permission('view_sales_shipment') === 'none');
-        $this->pageTitle = 'purchase::app.menu.salesShipments';
+        abort_403(! FlowPermission::allowsAlias('sales_do.view'));
+        $this->pageTitle = $this->salesDoTitleKey();
 
         return $dataTable->render('purchase::sales-shipment.index', $this->data);
     }
 
     public function create(Request $request)
     {
-        abort_403(user()->permission('create_sales_shipment') === 'none');
-        $this->pageTitle = __('app.add') . ' ' . __('purchase::app.menu.salesShipments');
+        abort_403(! FlowPermission::allowsAlias('sales_do.create'));
+        $this->pageTitle = __('app.add') . ' ' . __($this->salesDoTitleKey());
         $this->warehouses = $this->warehouseList();
         $this->orders = Order::query()
             ->where('company_id', $this->company?->id)
@@ -54,8 +67,8 @@ class SalesShipmentController extends AccountBaseController
 
     public function edit($id)
     {
-        abort_403(user()->permission('update_sales_shipment') === 'none');
-        $this->pageTitle = __('app.edit') . ' ' . __('purchase::app.menu.salesShipments');
+        abort_403(! FlowPermission::allowsAlias('sales_do.update'));
+        $this->pageTitle = __('app.edit') . ' ' . __($this->salesDoTitleKey());
         $this->shipment = $this->queryByCompany()->with(['items.orderItem', 'order'])->findOrFail($id);
         abort_if(in_array($this->shipment->status, ['shipped', 'delivered'], true), 403);
 
@@ -79,7 +92,7 @@ class SalesShipmentController extends AccountBaseController
 
     public function show($id)
     {
-        abort_403(user()->permission('view_sales_shipment') === 'none');
+        abort_403(! FlowPermission::allowsAlias('sales_do.view'));
         $this->shipment = $this->queryByCompany()
             ->with(['items.orderItem', 'order', 'warehouse'])
             ->findOrFail($id);
@@ -99,7 +112,7 @@ class SalesShipmentController extends AccountBaseController
 
     public function getOrderItems(Request $request)
     {
-        abort_403(user()->permission('create_sales_shipment') === 'none' && user()->permission('update_sales_shipment') === 'none');
+        abort_403(! FlowPermission::allowsAlias('sales_do.create') && ! FlowPermission::allowsAlias('sales_do.update'));
         $orderId = (int) $request->get('order_id');
         $shipmentId = (int) $request->get('shipment_id', 0);
 
@@ -124,155 +137,94 @@ class SalesShipmentController extends AccountBaseController
 
     public function store(Request $request)
     {
-        abort_403(user()->permission('create_sales_shipment') === 'none');
+        abort_403(! FlowPermission::allowsAlias('sales_do.create'));
         $payload = $this->validateForm($request);
+        $payload['shipment_number'] = $payload['shipment_number'] ?: $this->nextShipmentNumber();
 
-        $shipment = DB::transaction(function () use ($payload) {
-            $shipment = new SalesShipment;
-            $shipment->company_id = $this->company?->id;
-            $shipment->order_id = (int) $payload['order_id'];
-            $shipment->warehouse_id = (int) $payload['warehouse_id'];
-            $shipment->shipment_number = $payload['shipment_number'] ?: $this->nextShipmentNumber();
-            $shipment->shipment_date = $payload['shipment_date'];
-            $shipment->status = $payload['status'];
-            $shipment->notes = $payload['notes'];
-            $shipment->created_by = user()->id;
-            $shipment->updated_by = user()->id;
-            $shipment->save();
-
-            $this->upsertItems($shipment, $payload);
-
-            return $shipment;
-        });
+        $shipment = app(SalesDoService::class)->create($payload, $this->company?->id, user()->id);
 
         return Reply::successWithData(__('messages.recordSaved'), [
-            'redirectUrl' => route('sales-shipments.show', $shipment->id),
+            'redirectUrl' => route($this->salesDoRouteName('show'), $shipment->id),
         ]);
     }
 
     public function update(Request $request, $id)
     {
-        abort_403(user()->permission('update_sales_shipment') === 'none');
+        abort_403(! FlowPermission::allowsAlias('sales_do.update'));
         $shipment = $this->queryByCompany()->with('items')->findOrFail($id);
         abort_if(in_array($shipment->status, ['shipped', 'delivered'], true), 403);
 
         $payload = $this->validateForm($request, $shipment->id);
+        $payload['shipment_number'] = $payload['shipment_number'] ?: $shipment->shipment_number;
 
-        DB::transaction(function () use ($shipment, $payload) {
-            $shipment->order_id = (int) $payload['order_id'];
-            $shipment->warehouse_id = (int) $payload['warehouse_id'];
-            $shipment->shipment_number = $payload['shipment_number'] ?: $shipment->shipment_number;
-            $shipment->shipment_date = $payload['shipment_date'];
-            $shipment->status = $payload['status'];
-            $shipment->notes = $payload['notes'];
-            $shipment->updated_by = user()->id;
-            $shipment->save();
-
-            $this->upsertItems($shipment, $payload);
-        });
+        app(SalesDoService::class)->update($shipment, $payload, user()->id);
 
         return Reply::successWithData(__('messages.updateSuccess'), [
-            'redirectUrl' => route('sales-shipments.show', $shipment->id),
+            'redirectUrl' => route($this->salesDoRouteName('show'), $shipment->id),
         ]);
     }
 
-    public function confirm($id)
+    public function confirm($id, SalesDoService $salesDoService)
     {
-        abort_403(user()->permission('update_sales_shipment') === 'none');
+        abort_403(! FlowPermission::allowsAlias('sales_do.update'));
         $shipment = $this->queryByCompany()->with('items')->findOrFail($id);
 
-        if ($shipment->status !== 'draft') {
-            return Reply::error(__('messages.invalidRequest'));
+        $error = $salesDoService->confirm($shipment);
+        if ($error) {
+            return Reply::error(__($error));
         }
-
-        if ($shipment->items->isEmpty()) {
-            return Reply::error(__('messages.addItem'));
-        }
-
-        $shipment->status = 'confirmed';
-        $shipment->updated_by = user()->id;
-        $shipment->save();
 
         return Reply::success(__('messages.updateSuccess'));
     }
 
-    public function ship($id, SalesShipmentStockService $stockService)
+    public function ship($id, SalesDoService $salesDoService)
     {
-        abort_403(user()->permission('ship_sales_shipment') === 'none');
+        abort_403(! FlowPermission::allowsAlias('sales_do.ship'));
         $shipment = $this->queryByCompany()->with('items')->findOrFail($id);
 
-        if (! in_array($shipment->status, ['confirmed', 'draft'], true)) {
-            return Reply::error(__('messages.invalidRequest'));
+        $error = $salesDoService->ship($shipment);
+        if ($error) {
+            return Reply::error(__($error));
         }
-
-        if ($shipment->items->sum('quantity_shipped') <= 0) {
-            return Reply::error(__('messages.quantityNumber'));
-        }
-
-        DB::transaction(function () use ($shipment, $stockService) {
-            $shipment->status = 'shipped';
-            $shipment->updated_by = user()->id;
-            $shipment->save();
-
-            $stockService->applyOutboundForShipment($shipment);
-        });
 
         return Reply::success(__('messages.updateSuccess'));
     }
 
-    public function deliver($id)
+    public function deliver($id, SalesDoService $salesDoService)
     {
-        abort_403(user()->permission('ship_sales_shipment') === 'none');
+        abort_403(! FlowPermission::allowsAlias('sales_do.ship'));
         $shipment = $this->queryByCompany()->findOrFail($id);
 
-        if ($shipment->status !== 'shipped') {
-            return Reply::error(__('messages.invalidRequest'));
+        $error = $salesDoService->deliver($shipment);
+        if ($error) {
+            return Reply::error(__($error));
         }
-
-        $shipment->status = 'delivered';
-        $shipment->updated_by = user()->id;
-        $shipment->save();
 
         return Reply::success(__('messages.updateSuccess'));
     }
 
-    public function reverse($id, SalesShipmentStockService $stockService)
+    public function reverse($id, SalesDoService $salesDoService)
     {
-        abort_403(user()->permission('cancel_sales_shipment') === 'none');
+        abort_403(! FlowPermission::allowsAlias('sales_do.cancel'));
         $shipment = $this->queryByCompany()->findOrFail($id);
 
-        if (! in_array($shipment->status, ['shipped', 'delivered'], true)) {
-            return Reply::error(__('messages.invalidRequest'));
+        $error = $salesDoService->reverse($shipment);
+        if ($error) {
+            return Reply::error(__($error));
         }
-
-        DB::transaction(function () use ($shipment, $stockService) {
-            $stockService->reverseOutboundForShipment($shipment);
-            $shipment->status = 'confirmed';
-            $shipment->updated_by = user()->id;
-            $shipment->save();
-        });
 
         return Reply::success(__('messages.updateSuccess'));
     }
 
-    public function cancel($id, SalesShipmentStockService $stockService)
+    public function cancel($id, SalesDoService $salesDoService)
     {
-        abort_403(user()->permission('cancel_sales_shipment') === 'none');
+        abort_403(! FlowPermission::allowsAlias('sales_do.cancel'));
         $shipment = $this->queryByCompany()->findOrFail($id);
 
-        if ($shipment->status === 'cancelled') {
-            return Reply::success(__('messages.updateSuccess'));
+        $error = $salesDoService->cancel($shipment);
+        if ($error) {
+            return Reply::error(__($error));
         }
-
-        DB::transaction(function () use ($shipment, $stockService) {
-            if ($shipment->outbound_stock_applied) {
-                $stockService->reverseOutboundForShipment($shipment);
-            }
-
-            $shipment->status = 'cancelled';
-            $shipment->updated_by = user()->id;
-            $shipment->save();
-        });
 
         return Reply::success(__('messages.updateSuccess'));
     }
@@ -286,7 +238,7 @@ class SalesShipmentController extends AccountBaseController
                 'nullable',
                 'string',
                 'max:64',
-                Rule::unique('sales_shipments', 'shipment_number')
+                Rule::unique(SalesDoRuntime::headerTable(), SalesDoRuntime::numberColumn())
                     ->where(fn($q) => $q->where('company_id', $this->company?->id))
                     ->ignore($shipmentId),
             ],
@@ -345,23 +297,6 @@ class SalesShipmentController extends AccountBaseController
         return $validated;
     }
 
-    protected function upsertItems(SalesShipment $shipment, array $payload): void
-    {
-        SalesShipmentItem::query()->where('sales_shipment_id', $shipment->id)->delete();
-
-        foreach ($payload['order_item_id'] as $idx => $orderItemId) {
-            SalesShipmentItem::create([
-                'sales_shipment_id' => $shipment->id,
-                'order_item_id' => (int) $orderItemId,
-                'product_id' => isset($payload['product_id'][$idx]) ? (int) $payload['product_id'][$idx] : null,
-                'quantity_ordered' => (float) ($payload['quantity_ordered'][$idx] ?? 0),
-                'quantity_shipped' => (float) ($payload['quantity_shipped'][$idx] ?? 0),
-                'unit_id' => isset($payload['unit_id'][$idx]) ? (int) $payload['unit_id'][$idx] : null,
-                'batch_number' => $payload['batch_number'][$idx] ?? null,
-            ]);
-        }
-    }
-
     protected function remainingQtyByOrderItem(int $orderId, ?int $excludeShipmentId = null): array
     {
         $ordered = OrderItems::query()
@@ -370,13 +305,18 @@ class SalesShipmentController extends AccountBaseController
             ->map(fn($qty) => (float) $qty)
             ->toArray();
 
-        $alreadyShipped = SalesShipmentItem::query()
-            ->selectRaw('sales_shipment_items.order_item_id, SUM(sales_shipment_items.quantity_shipped) as shipped_qty')
-            ->join('sales_shipments', 'sales_shipments.id', '=', 'sales_shipment_items.sales_shipment_id')
-            ->where('sales_shipments.order_id', $orderId)
-            ->whereNotIn('sales_shipments.status', ['cancelled'])
-            ->when($excludeShipmentId, fn($q) => $q->where('sales_shipments.id', '!=', $excludeShipmentId))
-            ->groupBy('sales_shipment_items.order_item_id')
+        $itemModelClass = SalesDoRuntime::itemModelClass();
+        $headerTable = SalesDoRuntime::headerTable();
+        $itemTable = SalesDoRuntime::itemTable();
+        $itemForeignKey = SalesDoRuntime::itemForeignKey();
+
+        $alreadyShipped = $itemModelClass::query()
+            ->selectRaw($itemTable . '.order_item_id, SUM(' . $itemTable . '.quantity_shipped) as shipped_qty')
+            ->join($headerTable, $headerTable . '.id', '=', $itemTable . '.' . $itemForeignKey)
+            ->where($headerTable . '.order_id', $orderId)
+            ->whereNotIn($headerTable . '.status', ['cancelled'])
+            ->when($excludeShipmentId, fn($q) => $q->where($headerTable . '.id', '!=', $excludeShipmentId))
+            ->groupBy($itemTable . '.order_item_id')
             ->pluck('shipped_qty', 'order_item_id')
             ->map(fn($qty) => (float) $qty)
             ->toArray();
@@ -391,7 +331,8 @@ class SalesShipmentController extends AccountBaseController
 
     protected function nextShipmentNumber(): string
     {
-        $lastId = SalesShipment::query()
+        $headerModelClass = SalesDoRuntime::headerModelClass();
+        $lastId = $headerModelClass::query()
             ->where('company_id', $this->company?->id)
             ->max('id');
 
@@ -445,7 +386,8 @@ class SalesShipmentController extends AccountBaseController
 
     protected function queryByCompany()
     {
-        $q = SalesShipment::query();
+        $headerModelClass = SalesDoRuntime::headerModelClass();
+        $q = $headerModelClass::query();
 
         if ($this->company) {
             $q->where('company_id', $this->company->id);

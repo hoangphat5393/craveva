@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@php($grnRoutePrefix = config('purchase.flow_naming_mode', 'compat_v2') === 'legacy' ? 'delivery-orders' : 'grn')
 
 @push('datatable-styles')
     @include('sections.datatable_css')
@@ -13,7 +14,7 @@
                 <i class="fa fa-times"></i>
             </a>
 
-            <x-tab :href="route('delivery-orders.show', $delivery->id)" :text="__('modules.projects.overview')" class="overview" />
+            <x-tab :href="route($grnRoutePrefix . '.show', $delivery->id)" :text="__('modules.projects.overview')" class="overview" />
         </div>
         <a class="mb-0 d-block d-lg-none text-dark-grey ml-auto mr-2 border-left-grey" onclick="openClientDetailSidebar()"><i class="fa fa-ellipsis-v "></i></a>
     </div>

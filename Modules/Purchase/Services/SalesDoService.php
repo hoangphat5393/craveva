@@ -1,0 +1,160 @@
+<?php
+
+namespace Modules\Purchase\Services;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+use Modules\Purchase\Support\SalesDoRuntime;
+use Modules\Warehouse\Services\SalesShipmentStockService;
+
+class SalesDoService
+{
+    public function __construct(
+        protected SalesShipmentStockService $stockService
+    ) {}
+
+    public function confirm(Model $shipment): ?string
+    {
+        if ($shipment->status !== 'draft') {
+            return 'messages.invalidRequest';
+        }
+
+        if ($shipment->items->isEmpty()) {
+            return 'messages.addItem';
+        }
+
+        $shipment->status = 'confirmed';
+        $shipment->updated_by = user()->id;
+        $shipment->save();
+
+        return null;
+    }
+
+    public function create(array $payload, ?int $companyId, int $userId): Model
+    {
+        return DB::transaction(function () use ($payload, $companyId, $userId) {
+            $headerModelClass = SalesDoRuntime::headerModelClass();
+            $shipment = new $headerModelClass;
+            $shipment->company_id = $companyId;
+            $shipment->order_id = (int) $payload['order_id'];
+            $shipment->warehouse_id = (int) $payload['warehouse_id'];
+            $shipment->shipment_number = $payload['shipment_number'];
+            $shipment->shipment_date = $payload['shipment_date'];
+            $shipment->status = $payload['status'];
+            $shipment->notes = $payload['notes'];
+            $shipment->created_by = $userId;
+            $shipment->updated_by = $userId;
+            $shipment->save();
+
+            $this->syncItems($shipment, $payload);
+
+            return $shipment;
+        });
+    }
+
+    public function update(Model $shipment, array $payload, int $userId): Model
+    {
+        return DB::transaction(function () use ($shipment, $payload, $userId) {
+            $shipment->order_id = (int) $payload['order_id'];
+            $shipment->warehouse_id = (int) $payload['warehouse_id'];
+            $shipment->shipment_number = $payload['shipment_number'];
+            $shipment->shipment_date = $payload['shipment_date'];
+            $shipment->status = $payload['status'];
+            $shipment->notes = $payload['notes'];
+            $shipment->updated_by = $userId;
+            $shipment->save();
+
+            $this->syncItems($shipment, $payload);
+
+            return $shipment;
+        });
+    }
+
+    public function ship(Model $shipment): ?string
+    {
+        if (! in_array($shipment->status, ['confirmed', 'draft'], true)) {
+            return 'messages.invalidRequest';
+        }
+
+        if ($shipment->items->sum('quantity_shipped') <= 0) {
+            return 'messages.quantityNumber';
+        }
+
+        DB::transaction(function () use ($shipment) {
+            $shipment->status = 'shipped';
+            $shipment->updated_by = user()->id;
+            $shipment->save();
+
+            $this->stockService->applyOutboundForShipment($shipment);
+        });
+
+        return null;
+    }
+
+    public function deliver(Model $shipment): ?string
+    {
+        if ($shipment->status !== 'shipped') {
+            return 'messages.invalidRequest';
+        }
+
+        $shipment->status = 'delivered';
+        $shipment->updated_by = user()->id;
+        $shipment->save();
+
+        return null;
+    }
+
+    public function reverse(Model $shipment): ?string
+    {
+        if (! in_array($shipment->status, ['shipped', 'delivered'], true)) {
+            return 'messages.invalidRequest';
+        }
+
+        DB::transaction(function () use ($shipment) {
+            $this->stockService->reverseOutboundForShipment($shipment);
+            $shipment->status = 'confirmed';
+            $shipment->updated_by = user()->id;
+            $shipment->save();
+        });
+
+        return null;
+    }
+
+    public function cancel(Model $shipment): ?string
+    {
+        if ($shipment->status === 'cancelled') {
+            return null;
+        }
+
+        DB::transaction(function () use ($shipment) {
+            if ($shipment->outbound_stock_applied) {
+                $this->stockService->reverseOutboundForShipment($shipment);
+            }
+
+            $shipment->status = 'cancelled';
+            $shipment->updated_by = user()->id;
+            $shipment->save();
+        });
+
+        return null;
+    }
+
+    protected function syncItems(Model $shipment, array $payload): void
+    {
+        $itemModelClass = SalesDoRuntime::itemModelClass();
+        $itemForeignKey = SalesDoRuntime::itemForeignKey();
+        $itemModelClass::query()->where($itemForeignKey, $shipment->id)->delete();
+
+        foreach ($payload['order_item_id'] as $idx => $orderItemId) {
+            $itemModelClass::create([
+                $itemForeignKey => $shipment->id,
+                'order_item_id' => (int) $orderItemId,
+                'product_id' => isset($payload['product_id'][$idx]) ? (int) $payload['product_id'][$idx] : null,
+                'quantity_ordered' => (float) ($payload['quantity_ordered'][$idx] ?? 0),
+                'quantity_shipped' => (float) ($payload['quantity_shipped'][$idx] ?? 0),
+                'unit_id' => isset($payload['unit_id'][$idx]) ? (int) $payload['unit_id'][$idx] : null,
+                'batch_number' => $payload['batch_number'][$idx] ?? null,
+            ]);
+        }
+    }
+}

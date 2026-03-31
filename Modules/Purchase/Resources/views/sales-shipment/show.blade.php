@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@php($salesDoRoutePrefix = config('purchase.flow_naming_mode', 'compat_v2') === 'legacy' ? 'sales-shipments' : 'sales-do')
 
 @push('datatable-styles')
     @include('sections.datatable_css')
@@ -11,7 +12,7 @@
             <a class="d-none close-it" href="javascript:;" id="close-client-detail">
                 <i class="fa fa-times"></i>
             </a>
-            <x-tab :href="route('sales-shipments.show', $shipment->id)" :text="__('modules.projects.overview')" class="overview" />
+            <x-tab :href="route($salesDoRoutePrefix . '.show', $shipment->id)" :text="__('modules.projects.overview')" class="overview" />
         </div>
         <a class="mb-0 d-block d-lg-none text-dark-grey ml-auto mr-2 border-left-grey" onclick="openClientDetailSidebar()"><i class="fa fa-ellipsis-v "></i></a>
     </div>

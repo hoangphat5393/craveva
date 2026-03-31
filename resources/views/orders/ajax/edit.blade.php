@@ -336,6 +336,139 @@
     });
 
     $(document).ready(function() {
+        function escapeHtml(value) {
+            return $('<div>').text(value == null ? '' : String(value)).html();
+        }
+
+        function debounce(fn, wait) {
+            var timer = null;
+            return function() {
+                var ctx = this;
+                var args = arguments;
+                clearTimeout(timer);
+                timer = setTimeout(function() {
+                    fn.apply(ctx, args);
+                }, wait);
+            };
+        }
+
+        function initRemoteBootstrapSelect(selectSelector, endpointUrl, optionBuilder) {
+            var $select = $(selectSelector);
+            if (!$select.length) {
+                return;
+            }
+
+            var state = {
+                term: '',
+                page: 1,
+                loading: false,
+                hasMore: true,
+                requestId: 0
+            };
+
+            function selectedValues() {
+                var val = $select.val();
+                if (!val) {
+                    return [];
+                }
+                return Array.isArray(val) ? val : [val];
+            }
+
+            function replaceOptions(items) {
+                var selected = selectedValues();
+                var html = '<option value="">{{ __('app.menu.selectProduct') }}</option>';
+
+                $.each(items, function(_, item) {
+                    html += optionBuilder(item, selected);
+                });
+
+                $select.html(html);
+                $select.selectpicker('refresh');
+            }
+
+            function appendOptions(items) {
+                var selected = selectedValues();
+                $.each(items, function(_, item) {
+                    if ($select.find('option[value="' + item.id + '"]').length) {
+                        return;
+                    }
+                    $select.append(optionBuilder(item, selected));
+                });
+                $select.selectpicker('refresh');
+            }
+
+            function load(term, page, appendMode) {
+                if (state.loading) {
+                    return;
+                }
+
+                state.loading = true;
+                var currentRequestId = ++state.requestId;
+
+                window.apiHttp.get(endpointUrl, {
+                    params: {
+                        q: term,
+                        page: page,
+                        per_page: 50
+                    }
+                }).then(function(response) {
+                    if (currentRequestId !== state.requestId) {
+                        return;
+                    }
+
+                    var items = response.items || [];
+                    state.hasMore = !!(response.pagination && response.pagination.has_more);
+                    state.page = page;
+
+                    if (appendMode) {
+                        appendOptions(items);
+                    } else {
+                        replaceOptions(items);
+                    }
+                }).catch(function(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.message || "@lang('messages.somethingWentWrong')",
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
+                    }
+                }).finally(function() {
+                    state.loading = false;
+                });
+            }
+
+            $select.on('shown.bs.select', function() {
+                var $picker = $select.parent();
+                var $searchInput = $picker.find('.bs-searchbox input');
+                var $inner = $picker.find('.inner');
+
+                $searchInput.off('.remoteSelect').on('input.remoteSelect', debounce(function() {
+                    state.term = ($(this).val() || '').trim();
+                    state.page = 1;
+                    state.hasMore = true;
+                    load(state.term, 1, false);
+                }, 300));
+
+                $inner.off('.remoteSelect').on('scroll.remoteSelect', function() {
+                    var nearBottom = this.scrollTop + this.clientHeight >= this.scrollHeight - 24;
+                    if (!nearBottom || !state.hasMore || state.loading) {
+                        return;
+                    }
+                    load(state.term, state.page + 1, true);
+                });
+            });
+        }
+
+        initRemoteBootstrapSelect('#add-products', "{{ route('orders.search_products') }}", function(item, selected) {
+            var label = escapeHtml(item.name || '');
+            var sku = item.sku ? ' (' + escapeHtml(item.sku) + ')' : '';
+            var isSelected = selected.indexOf(String(item.id)) !== -1 || selected.indexOf(item.id) !== -1;
+            return '<option value="' + item.id + '"' + (isSelected ? ' selected' : '') + ' data-content="' + label + sku + '">' + label + '</option>';
+        });
 
         $('.toggle-product-category').click(function() {
             $('.product-category-filter').toggleClass('d-none');

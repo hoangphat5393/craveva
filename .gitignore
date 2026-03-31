@@ -34,9 +34,9 @@ storage/fonts/installed-fonts.json
 resources/lang/*
 resources/views/sections/custom_script.blade.php
 database/maxmind/
-public/css/app-custom.css
-public/css/theme-custom.css
-public/css/custom-css/theme-custom.css
+# public/css/app-custom.css
+# public/css/theme-custom.css
+# public/css/custom-css/theme-custom.css
 composer.lock
 package-lock.json
 /.composer-cache

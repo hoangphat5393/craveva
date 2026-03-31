@@ -128,9 +128,9 @@
 
     <link href="{{ asset('css/app-custom.css') }}?v={{ file_exists(public_path('css/app-custom.css')) ? filemtime(public_path('css/app-custom.css')) : time() }}" rel="stylesheet">
 
-    @if (file_exists(public_path() . '/css/custom-css/theme-custom.css'))
+    {{-- @if (file_exists(public_path() . '/css/custom-css/theme-custom.css'))
         <link href="{{ asset('css/custom-css/theme-custom.css') }}" rel="stylesheet">
-    @endif
+    @endif --}}
 
     {{-- Keep this include after optional custom theme CSS, so dynamic DB theme colors win on staging overrides. --}}
     @include('sections.theme_css')

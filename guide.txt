@@ -1,0 +1,24 @@
+theme-custom.css trong local được gọi ở 2 chỗ trong Blade:
+
+resources/views/layouts/app.blade.php
+
+    có điều kiện:
+
+    @if (file_exists(public_path() . '/css/custom-css/theme-custom.css'))
+
+    rồi load:
+
+    <link href="{{ asset('css/custom-css/theme-custom.css') }}" rel="stylesheet">
+
+resources/views/components/auth.blade.php
+
+    cũng cùng pattern kiểm tra file_exists(...)
+
+    rồi <link href="{{ asset('css/custom-css/theme-custom.css') }}" rel="stylesheet">
+
+    Nói ngắn gọn: local chỉ load theme-custom.css khi file tồn tại tại path: public/css/custom-css/theme-custom.css.
+
+
+@if (file_exists(public_path() . '/css/custom-css/theme-custom.css'))
+    <link href="{{ asset('css/custom-css/theme-custom.css') }}" rel="stylesheet">
+@endif  

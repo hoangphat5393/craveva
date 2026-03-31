@@ -411,9 +411,14 @@ $RemoteCommand += " && sudo unzip -o deploy_staging.zip && sudo rm deploy_stagin
 # Fix permissions
 $RemoteCommand += " && sudo chown -R www-data:www-data $StagingPath/Modules $StagingPath/resources $StagingPath/storage $StagingPath/bootstrap/cache $StagingPath/public"
 $RemoteCommand += " && sudo chmod -R 775 $StagingPath/storage $StagingPath/bootstrap/cache"
-# ACL: Cho phep ca www-data VA user SSH ghi vao storage; default ACL -> file moi ke thua quyen (tranh loi moi ngay)
-$RemoteCommand += " && DEPLOY_USER=`$(whoami) && sudo setfacl -R -m u:www-data:rwX -m u:`$DEPLOY_USER:rwX $StagingPath/storage $StagingPath/bootstrap/cache 2>/dev/null || true"
-$RemoteCommand += " && sudo setfacl -dR -m u:www-data:rwX -m u:`$DEPLOY_USER:rwX $StagingPath/storage $StagingPath/bootstrap/cache 2>/dev/null || true"
+# Logs: fix recurring 'Permission denied' when laravel-YYYY-MM-DD.log is rotated/created
+$RemoteCommand += " && sudo mkdir -p $StagingPath/storage/logs"
+$RemoteCommand += " && sudo chown -R www-data:www-data $StagingPath/storage/logs"
+$RemoteCommand += " && sudo chmod 2777 $StagingPath/storage/logs"
+$RemoteCommand += " && sudo find $StagingPath/storage/logs -maxdepth 1 -type f -name '*.log' -exec chmod 666 {} + 2>/dev/null || true"
+# ACL: allow both www-data and SSH deploy user write to storage/cache, and inherit on new files
+$RemoteCommand += " && DEPLOY_USER=`$(whoami); sudo setfacl -R -m u:www-data:rwX,u:`$DEPLOY_USER:rwX $StagingPath/storage $StagingPath/bootstrap/cache $StagingPath/storage/logs 2>/dev/null || true"
+$RemoteCommand += " && DEPLOY_USER=`$(whoami); sudo setfacl -dR -m u:www-data:rwX,u:`$DEPLOY_USER:rwX $StagingPath/storage $StagingPath/bootstrap/cache $StagingPath/storage/logs 2>/dev/null || true"
 $RemoteCommand += " && sudo chmod -R 755 $StagingPath/public"
 $RemoteCommand += " && sudo chown -R www-data:www-data $StagingPath/public/vendor"
 $RemoteCommand += " && sudo chmod -R 755 $StagingPath/public/vendor"

@@ -45,6 +45,8 @@ return [
             'driver' => 'single',
             'path' => storage_path('logs/laravel.log'),
             'level' => env('LOG_LEVEL', 'debug'),
+            // Keep log files writable across deploy user / www-data differences on staging.
+            'permission' => 0666,
         ],
 
         'daily' => [
@@ -52,6 +54,8 @@ return [
             'path' => storage_path('logs/laravel.log'),
             'level' => env('LOG_LEVEL', 'debug'),
             'days' => 14,
+            // Ensure newly-rotated daily files are writable by app process.
+            'permission' => 0666,
         ],
 
         'slack' => [

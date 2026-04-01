@@ -47,3 +47,6 @@ Modules/LanguagePack/Languages/app/en/(Added By*
 
 # Local copies of staging SQL/tar backups (large; do not commit)
 /staging-backups-*/
+
+# Local backups (e.g. hub .env); do not commit
+/backup/

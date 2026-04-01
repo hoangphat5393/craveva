@@ -1,10 +1,77 @@
 # PowerShell Script: Upload to craveva-hub-server using Zip (Upload to Home)
+# Optional: -HubEnsureGit installs git via apt on the hub; Step 0 verifies Git and optional pull from GitHub (-HubGitPull).
+# GitHub: https://github.com/CRAVEVA/craveva-hub-server (HTTPS remote in -HubGitRemote).
+
+param(
+    [switch]$HubGitPull,
+    # On first run or minimal images: install git via apt on the hub (requires passwordless sudo).
+    [switch]$HubEnsureGit,
+    [string]$HubGitBranch = "main",
+    # HTTPS remote for CRAVEVA hub server — use for clone / git remote origin after deploy-key or credential setup.
+    [string]$HubGitRemote = "https://github.com/CRAVEVA/craveva-hub-server.git"
+)
+
 $ErrorActionPreference = "Stop"
 
+# --- Hub SSH target & app path (must match your SSH config Host craveva-hub-server) ---
 $HubHost = "craveva-hub-server"
 $HubPath = "/var/www/hub.craveva.com"
+# --- GitHub source (same repo as hub production git workflow) ---
+# Web: https://github.com/CRAVEVA/craveva-hub-server
+# Remote URL: https://github.com/CRAVEVA/craveva-hub-server.git
 $LocalTempDir = ".deploy_hub_tmp"
 $ZipFile = "deploy_hub.zip"
+
+if ($HubEnsureGit) {
+    Write-Host "----------------------------------------------------------------"
+    Write-Host "Step 0a: Ensure git package on $HubHost (apt install -y git)"
+    Write-Host "----------------------------------------------------------------"
+    ssh "${HubHost}" "sudo DEBIAN_FRONTEND=noninteractive apt-get update -qq && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y git"
+}
+
+# 0) Hub server: verify Git is installed; optionally git pull (only if $HubPath is already a clone)
+Write-Host "----------------------------------------------------------------"
+Write-Host "Step 0: Git on $HubHost (path: $HubPath, remote: $HubGitRemote)"
+Write-Host "----------------------------------------------------------------"
+$doPullFlag = if ($HubGitPull) { "1" } else { "0" }
+$gitCheckScript = @'
+set -euo pipefail
+if ! command -v git >/dev/null 2>&1; then
+  echo "ERROR: git is not installed on this server. Install: sudo apt update && sudo apt install -y git"
+  exit 1
+fi
+echo "GIT_OK: $(git --version)"
+echo "HUB_GIT_SOURCE_URL=REMOTE_PLACEHOLDER"
+cd "APP_PATH_PLACEHOLDER"
+if [ ! -d .git ]; then
+  echo "HUB_NOT_A_GIT_REPO"
+  echo "This folder was deployed by zip, not git clone. git pull will not work until you clone the repo, e.g.:"
+  echo "  git clone REMOTE_PLACEHOLDER /tmp/craveva-hub-src"
+  echo "Then sync .env and storage/ from the live path, or point nginx to the new clone."
+  exit 2
+fi
+echo "HUB_IS_GIT_REPO"
+git remote -v
+git status -sb
+git fetch origin
+if [ "DO_PULL_PLACEHOLDER" = "1" ]; then
+  git pull --ff-only origin "BRANCH_PLACEHOLDER"
+  echo "GIT_PULL_DONE branch=BRANCH_PLACEHOLDER"
+else
+  echo "GIT_PULL_SKIPPED (add -HubGitPull to run: git pull --ff-only origin BRANCH_PLACEHOLDER)"
+fi
+'@
+$gitCheckScript = $gitCheckScript.Replace("APP_PATH_PLACEHOLDER", $HubPath).Replace("REMOTE_PLACEHOLDER", $HubGitRemote).Replace("DO_PULL_PLACEHOLDER", $doPullFlag).Replace("BRANCH_PLACEHOLDER", $HubGitBranch)
+
+$gitCheckScript | ssh "${HubHost}" "bash -se"
+$gitExit = $LASTEXITCODE
+if ($gitExit -ne 0) {
+    if ($gitExit -eq 2) {
+        Write-Warning "Hub app path is not a git repository. Continuing with zip deploy. For git workflow, clone $HubGitRemote then align .env/storage."
+    } else {
+        throw "Git check on hub failed (exit $gitExit)."
+    }
+}
 
 Write-Host "Starting upload to $HubHost (Zip mode)..."
 

@@ -253,6 +253,10 @@ class PurchaseInventoryController extends AccountBaseController
                 $addStock->manufacturing_date = isset($request->manufacturing_date[$key]) && $request->manufacturing_date[$key] ? Carbon::parse($request->manufacturing_date[$key])->format('Y-m-d') : null;
                 $addStock->expiration_date = isset($request->expiration_date[$key]) && $request->expiration_date[$key] ? Carbon::parse($request->expiration_date[$key])->format('Y-m-d') : null;
 
+                $addStock->reserved_quantity = isset($request->reserved_quantity[$key]) && $request->reserved_quantity[$key] !== ''
+                    ? (float) $request->reserved_quantity[$key]
+                    : 0;
+
                 $addStock->save();
 
                 if (! empty($quantity) && $warehouseId && class_exists(StockMovementService::class)) {

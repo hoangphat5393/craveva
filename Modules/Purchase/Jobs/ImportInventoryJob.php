@@ -238,6 +238,11 @@ class ImportInventoryJob implements ShouldQueue
 
                     $addStock->net_quantity = $quantity;
                     $addStock->quantity_adjustment = $quantity;
+                    if (Schema::hasColumn('purchase_stock_adjustments', 'reserved_quantity')) {
+                        $addStock->reserved_quantity = $this->isColumnExists('reserved_quantity')
+                            ? $this->parseImportNumber($this->getColumnValue('reserved_quantity'))
+                            : 0;
+                    }
                 } else {
                     $costPrice = $this->isColumnExists('cost_price')
                         ? $this->parseImportNumber($this->getColumnValue('cost_price'))

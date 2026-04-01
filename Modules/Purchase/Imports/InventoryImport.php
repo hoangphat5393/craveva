@@ -19,6 +19,7 @@ class InventoryImport implements ToArray
             ['id' => 'warehouse_name', 'name' => __('purchase::modules.inventory.warehouseName'), 'required' => 'No'],
             ['id' => 'quantity', 'name' => __('purchase::modules.product.quantity'), 'required' => 'No'],
             ['id' => 'ending_inventory', 'name' => __('purchase::modules.inventory.endingInventory'), 'required' => 'No'],
+            ['id' => 'reserved_quantity', 'name' => __('purchase::modules.inventory.reservedQuantity'), 'required' => 'No'],
             ['id' => 'cost_price', 'name' => __('app.price'), 'required' => 'No'],
             ['id' => 'description', 'name' => __('app.description'), 'required' => 'No'],
             ['id' => 'unit', 'name' => __('modules.unitType.unitType'), 'required' => 'No'],

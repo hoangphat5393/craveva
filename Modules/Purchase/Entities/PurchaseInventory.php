@@ -56,7 +56,7 @@ class PurchaseInventory extends BaseModel
     public function products(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         return $this->belongsToMany(PurchaseProduct::class, 'purchase_stock_adjustments', 'inventory_id', 'product_id')
-            ->withPivot(['quantity_adjustment', 'net_quantity', 'type', 'changed_value', 'adjusted_value', 'expiration_date', 'manufacturing_date'])
+            ->withPivot(['quantity_adjustment', 'net_quantity', 'reserved_quantity', 'type', 'changed_value', 'adjusted_value', 'expiration_date', 'manufacturing_date'])
             ->withTimestamps();
     }
 }

@@ -7,6 +7,8 @@ return [
     // Giới hạn số LEFT JOIN custom fields trong Inventory DataTable để tránh query chậm.
     // Đặt 0 để tắt hoàn toàn; tăng lên nếu cần hiển thị custom fields.
     'inventory_max_custom_field_joins' => env('PURCHASE_INVENTORY_MAX_CUSTOM_FIELD_JOINS', 0),
+    // Days until expiry still counted as "near expiry" (filters + PurchaseStockAdjustment::near_expiry_status).
+    'inventory_near_expiry_days' => (int) env('PURCHASE_INVENTORY_NEAR_EXPIRY_DAYS', 30),
     // Phase-1 compatibility naming for business UI:
     // - legacy: keep old labels (Sales Shipments / Delivery Orders)
     // - compat_v2: show business labels (Sales DO / GRN) while technical routes/tables stay unchanged

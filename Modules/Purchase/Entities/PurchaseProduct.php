@@ -77,12 +77,12 @@ class PurchaseProduct extends BaseModel
             return $this->default_image;
         }
 
-        return ($this->default_image) ? asset_url_local_s3(PurchaseProduct::FILE_PATH.'/'.$this->default_image) : '';
+        return ($this->default_image) ? asset_url_local_s3(PurchaseProduct::FILE_PATH . '/' . $this->default_image) : '';
     }
 
     public function getDownloadFileUrlAttribute()
     {
-        return ($this->downloadable_file) ? asset_url_local_s3(PurchaseProduct::FILE_PATH.'/'.$this->downloadable_file) : null;
+        return ($this->downloadable_file) ? asset_url_local_s3(PurchaseProduct::FILE_PATH . '/' . $this->downloadable_file) : null;
     }
 
     public function tax(): BelongsTo
@@ -141,9 +141,9 @@ class PurchaseProduct extends BaseModel
             if (! is_null($productItem->taxes)) {
                 foreach (json_decode($productItem->taxes) as $index => $tax) {
                     $tax = $this->taxbyid($tax)->first();
-                    $taxes .= $tax->tax_name.': '.$tax->rate_percent.'%';
+                    $taxes .= $tax->tax_name . ': ' . $tax->rate_percent . '%';
 
-                    $taxes = ($index + 1 != $numItems) ? $taxes.', ' : $taxes;
+                    $taxes = ($index + 1 != $numItems) ? $taxes . ', ' : $taxes;
                 }
             }
         }
@@ -174,7 +174,7 @@ class PurchaseProduct extends BaseModel
     public function inventoryAdjustments(): BelongsToMany
     {
         return $this->belongsToMany(PurchaseInventory::class, 'purchase_stock_adjustments', 'product_id', 'inventory_id')
-            ->withPivot(['quantity_adjustment', 'net_quantity', 'type', 'changed_value', 'adjusted_value', 'expiration_date', 'manufacturing_date'])
+            ->withPivot(['quantity_adjustment', 'net_quantity', 'reserved_quantity', 'type', 'changed_value', 'adjusted_value', 'expiration_date', 'manufacturing_date'])
             ->withTimestamps();
     }
 }

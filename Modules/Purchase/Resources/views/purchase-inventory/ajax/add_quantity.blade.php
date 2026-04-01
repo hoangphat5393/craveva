@@ -59,6 +59,14 @@
                         @endif
                     </td>
                 </tr>
+                <tr class="d-md-block d-lg-table-row">
+                    <td colspan="{{ $invoiceSetting->hsn_sac_code_show ? 5 : 4 }}" class="dash-border-top bblr">
+                        <div class="d-flex align-items-center justify-content-between flex-wrap py-1">
+                            <span class="text-dark-grey f-12">@lang('purchase::modules.inventory.reservedQuantity') <span class="text-lightest">(@lang('app.optional'))</span></span>
+                            <input type="number" step="any" min="0" class="form-control f-14 text-right height-35" style="max-width: 220px;" name="reserved_quantity[]" value="{{ optional($stockAdjustment)->reserved_quantity ?? 0 }}">
+                        </div>
+                    </td>
+                </tr>
             </tbody>
         </table>
 

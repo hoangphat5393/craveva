@@ -84,20 +84,19 @@ class PurchaseInventoryDataTable extends BaseDataTable
 
         // 4. Available Quantity (Calculated)
         $datatables->addColumn('available_quantity', function ($row) {
-            // Logic: On-Hand - Reserved.
-            // Currently Reserved is 0 as per system limitation/form check.
             $stock = $row->stocks->first();
-            $onHand = optional($stock)->net_quantity ?? 0;
-            $reserved = 0;
-            $available = $onHand - $reserved;
+            $onHand = (float) (optional($stock)->net_quantity ?? 0);
+            $reserved = (float) (optional($stock)->reserved_quantity ?? 0);
 
-            return $available;
+            return max(0, $onHand - $reserved);
         });
 
-        // 5. Ending Inventory (Removed as per user request - using Custom Field instead)
-        // $datatables->addColumn('ending_inventory', function ($row) {
-        //      return $row->ending_inventory ?? '--';
-        // });
+        // 5. Ending inventory = net_quantity on stock line (core; replaces CF)
+        $datatables->addColumn('ending_inventory', function ($row) {
+            $stock = $row->stocks->first();
+
+            return $stock !== null ? rtrim(rtrim(number_format((float) $stock->net_quantity, 4, '.', ''), '0'), '.') : '--';
+        });
 
         // 6. Unit
         $datatables->addColumn('unit', function ($row) {
@@ -144,12 +143,25 @@ class PurchaseInventoryDataTable extends BaseDataTable
         });
 
         // --- Tier 2: Drill-Down / Hidden by Default ---
-        $maxCfJoins = (int) (config('purchase.inventory_max_custom_field_joins') ?? 0);
-        if ($maxCfJoins == 0 || ! isset($this->customFieldAliasMap['reserved_quantity'])) {
-            $datatables->addColumn('reserved_quantity', function ($row) {
-                return '0'; // Placeholder when custom fields disabled or no reserved_quantity cf
-            });
-        }
+        $datatables->addColumn('reserved_quantity', function ($row) {
+            $stock = $row->stocks->first();
+
+            return $stock !== null ? rtrim(rtrim(number_format((float) ($stock->reserved_quantity ?? 0), 4, '.', ''), '0'), '.') : '0';
+        });
+
+        $datatables->addColumn('near_expiry_status', function ($row) {
+            $stock = $row->stocks->first();
+            $status = $stock?->near_expiry_status;
+            if ($status === null) {
+                return '--';
+            }
+
+            return match ($status) {
+                'expired' => __('app.expired'),
+                'near_expiry' => __('purchase::modules.inventory.nearExpiryStatus'),
+                default => __('app.normal'),
+            };
+        });
 
         $datatables->addColumn('inventory_value', function ($row) {
             $stock = $row->stocks->first();
@@ -195,9 +207,11 @@ class PurchaseInventoryDataTable extends BaseDataTable
                 'product_name',
                 'warehouse_name',
                 'available_quantity',
+                'ending_inventory',
                 'unit',
                 'status',
                 'reserved_quantity',
+                'near_expiry_status',
                 'inventory_value',
                 'recent_inbound_date',
                 'batch_number',
@@ -422,12 +436,13 @@ class PurchaseInventoryDataTable extends BaseDataTable
 
             // Core KPIs
             __('purchase::modules.product.availableQuantity') => ['data' => 'available_quantity', 'name' => 'available_quantity', 'title' => __('purchase::modules.product.availableQuantity'), 'orderable' => false],
-            // __('purchase::modules.inventory.endingInventory') => ['data' => 'ending_inventory', 'name' => 'ending_inventory', 'title' => __('purchase::modules.inventory.endingInventory'), 'orderable' => false],
+            __('purchase::modules.inventory.endingInventory') => ['data' => 'ending_inventory', 'name' => 'ending_inventory', 'title' => __('purchase::modules.inventory.endingInventory'), 'orderable' => false],
             __('purchase::modules.inventory.unit') => ['data' => 'unit', 'name' => 'unit', 'title' => __('purchase::modules.inventory.unit'), 'orderable' => false],
             __('purchase::modules.inventory.stockHealth') => ['data' => 'status', 'name' => 'status', 'exportable' => false, 'title' => __('purchase::modules.inventory.stockHealth')],
 
             // --- Tier 2: Toggle / Selector (Hidden by Default) ---
             __('purchase::modules.inventory.reservedQuantity') => ['data' => 'reserved_quantity', 'name' => 'reserved_quantity', 'title' => __('purchase::modules.inventory.reservedQuantity'), 'visible' => false, 'orderable' => false],
+            __('purchase::modules.inventory.nearExpiryStatus') => ['data' => 'near_expiry_status', 'name' => 'near_expiry_status', 'title' => __('purchase::modules.inventory.nearExpiryStatus'), 'visible' => false, 'orderable' => false],
             __('purchase::modules.inventory.inventoryValue') => ['data' => 'inventory_value', 'name' => 'inventory_value', 'title' => __('purchase::modules.inventory.inventoryValue'), 'visible' => false, 'orderable' => false],
             __('purchase::modules.inventory.recentInboundDate') => ['data' => 'recent_inbound_date', 'name' => 'recent_inbound_date', 'title' => __('purchase::modules.inventory.recentInboundDate'), 'visible' => false, 'orderable' => false],
 

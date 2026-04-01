@@ -23,6 +23,7 @@ class StorePurchaseInventoryRequest extends CoreRequest
             'batch_number.*' => 'nullable|string|max:191',
             'manufacturing_date.*' => 'nullable|date',
             'expiration_date.*' => 'nullable|date',
+            'reserved_quantity.*' => 'nullable|numeric',
         ];
 
         return $rules;

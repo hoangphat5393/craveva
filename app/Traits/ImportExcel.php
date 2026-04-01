@@ -67,6 +67,9 @@ trait ImportExcel
         $this->fileHeading = [];
 
         $this->columns = $importClass::fields();
+        if (method_exists($importClass, 'mergeDynamicColumns')) {
+            $this->columns = $importClass::mergeDynamicColumns($this->columns);
+        }
         $this->importMatchedColumns = [];
         $this->matchedColumns = [];
 
@@ -79,7 +82,7 @@ trait ImportExcel
             $this->fileHeading = (new HeadingRowImport)->toArray($filePath)[0][0];
             HeadingRowFormatter::default(config('excel.imports.heading_row.formatter'));
 
-            array_shift($excelData);
+            // Dòng tiêu đề đã bỏ bằng array_shift ở trên khi $request->has('heading'); không shift lại (tránh mất dòng dữ liệu đầu).
             $this->matchedColumns = collect($this->columns)->whereIn('id', $this->heading)->pluck('id');
             $importMatchedColumns = [];
 

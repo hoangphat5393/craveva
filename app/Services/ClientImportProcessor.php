@@ -325,14 +325,29 @@ class ClientImportProcessor
         return null;
     }
 
-    protected static function getClientCustomFieldNames(): array
+    /**
+     * All custom field slugs (name) for the Client group — loaded from DB so new CFs work in import without code changes.
+     */
+    protected static function getClientCustomFieldNames(?int $companyId = null): array
     {
-        return [
-            'salesperson',
-            'department',
-            'sales_assistant_name',
-            'last_transaction_at',
-        ];
+        $companyId = $companyId ?? company()?->id;
+        if (! $companyId) {
+            return [];
+        }
+
+        $group = CustomFieldGroup::where('name', 'Client')
+            ->where('model', ClientDetails::CUSTOM_FIELD_MODEL)
+            ->where('company_id', $companyId)
+            ->first();
+
+        if (! $group) {
+            return [];
+        }
+
+        return CustomField::where('custom_field_group_id', $group->id)
+            ->orderBy('sort_order')
+            ->pluck('name')
+            ->all();
     }
 
     /**
@@ -382,10 +397,7 @@ class ClientImportProcessor
             return [];
         }
 
-        $customNames = self::getClientCustomFieldNames();
-        $fields = CustomField::where('custom_field_group_id', $group->id)
-            ->whereIn('name', $customNames)
-            ->get();
+        $fields = CustomField::where('custom_field_group_id', $group->id)->get();
 
         $map = [];
         foreach ($fields as $field) {
@@ -405,7 +417,7 @@ class ClientImportProcessor
     {
         $company = $companyId ? \App\Models\Company::find($companyId) : null;
         $rows = [];
-        foreach (self::getClientCustomFieldNames() as $name) {
+        foreach (self::getClientCustomFieldNames($companyId) as $name) {
             if (! self::columnExists($columns, $name)) {
                 continue;
             }
@@ -477,9 +489,8 @@ class ClientImportProcessor
             return;
         }
 
-        $customNames = self::getClientCustomFieldNames();
+        $customNames = self::getClientCustomFieldNames($companyId);
         $fields = CustomField::where('custom_field_group_id', $group->id)
-            ->whereIn('name', $customNames)
             ->get()
             ->keyBy('name');
 

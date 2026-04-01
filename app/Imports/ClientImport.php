@@ -2,6 +2,9 @@
 
 namespace App\Imports;
 
+use App\Models\ClientDetails;
+use App\Models\CustomField;
+use App\Models\CustomFieldGroup;
 use Maatwebsite\Excel\Concerns\ToArray;
 
 class ClientImport implements ToArray
@@ -39,6 +42,44 @@ class ClientImport implements ToArray
             ['id' => 'designated_warehouse_code', 'name' => 'Designated Warehouse Code', 'required' => 'No'],
             ['id' => 'designated_warehouse_name', 'name' => 'Designated Warehouse Name', 'required' => 'No'],
         ];
+    }
+
+    /**
+     * Append Client module custom fields from DB so import mapping dropdown lists them (slug = field name).
+     */
+    public static function mergeDynamicColumns(array $columns): array
+    {
+        $companyId = company()?->id;
+        if (! $companyId) {
+            return $columns;
+        }
+
+        $group = CustomFieldGroup::where('name', 'Client')
+            ->where('model', ClientDetails::CUSTOM_FIELD_MODEL)
+            ->where('company_id', $companyId)
+            ->first();
+
+        if (! $group) {
+            return $columns;
+        }
+
+        $existingIds = collect($columns)->pluck('id')->flip();
+        $customFields = CustomField::where('custom_field_group_id', $group->id)
+            ->orderBy('sort_order')
+            ->get();
+
+        foreach ($customFields as $cf) {
+            if ($existingIds->has($cf->name)) {
+                continue;
+            }
+            $columns[] = [
+                'id' => $cf->name,
+                'name' => $cf->label,
+                'required' => strtolower((string) $cf->required) === 'yes' ? 'Yes' : 'No',
+            ];
+        }
+
+        return $columns;
     }
 
     public function array(array $array): array

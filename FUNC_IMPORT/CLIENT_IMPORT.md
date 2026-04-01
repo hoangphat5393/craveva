@@ -30,4 +30,4 @@ Giữ custom (hiện tại)
 -- salesperson
 -- sales_assistant_name
 -- geographical_distinction
-last_transaction_at (nên tính từ giao dịch thực tế thay vì nhập tay)
+-- last_transaction_at (nên tính từ giao dịch thực tế thay vì nhập tay)

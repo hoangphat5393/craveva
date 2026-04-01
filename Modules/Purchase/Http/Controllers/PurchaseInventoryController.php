@@ -640,6 +640,7 @@ class PurchaseInventoryController extends AccountBaseController
             return Reply::error(__('messages.abortAction'));
         }
 
+        $this->data['originalImportFilename'] = $request->import_file->getClientOriginalName();
         $view = view('purchase::purchase-inventory.ajax.import_progress', $this->data)->render();
 
         return Reply::successWithData(__('messages.importUploadSuccess'), ['view' => $view]);

@@ -11,12 +11,12 @@
                 </div>
                 <div class="row py-20">
                     <div class="col-md-12">
-                        <x-forms.link-secondary :link="asset('sample-import/deal-sample.xlsx')" icon="download">@lang('app.downloadSampleImport')</x-forms.link-secondary>
-
                         <x-forms.file :fieldLabel="__('modules.import.file')" fieldName="import_file" fieldId="deal_import" />
                     </div>
                     <div class="col-md-12">
+                        <x-forms.link-secondary :link="asset('sample-import/deal-sample.xlsx')" icon="download">@lang('app.downloadSampleImport')</x-forms.link-secondary>
                         <x-forms.toggle-switch class="mr-0 mr-lg-12" :fieldLabel="__('modules.import.containsHeadings')" fieldName="heading" fieldId="heading" />
+                        <x-forms.toggle-switch class="mr-0 mr-lg-12" :fieldLabel="__('modules.import.skipFooterRow')" fieldName="skip_footer" fieldId="skip_footer" />
                     </div>
                 </div>
                 <x-form-actions>

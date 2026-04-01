@@ -74,7 +74,6 @@ class DealController extends AccountBaseController
         if (! request()->ajax()) {
             $this->loadDataForView();
             $this->products = Product::all();
-
         }
 
         return $dataTable->render('leads.index', $this->data);
@@ -246,7 +245,6 @@ class DealController extends AccountBaseController
         $this->view = 'leads.ajax.show';
 
         return view('leads.create', $this->data);
-
     }
 
     /**
@@ -315,7 +313,6 @@ class DealController extends AccountBaseController
         }
 
         return view('leads.create', $this->data);
-
     }
 
     /**
@@ -379,7 +376,6 @@ class DealController extends AccountBaseController
         }
 
         return Reply::successWithData(__('messages.recordSaved'), ['redirectUrl' => $redirectUrl]);
-
     }
 
     /**
@@ -457,7 +453,6 @@ class DealController extends AccountBaseController
         }
 
         return view('leads.create', $this->data);
-
     }
 
     /**
@@ -505,7 +500,6 @@ class DealController extends AccountBaseController
         $redirectTo = (! is_null(request('tab')) && request('tab') == 'overview') ? route('deals.show', [$deal->id]) : route('deals.index');
 
         return Reply::successWithData(__('messages.updateSuccess'), ['redirectUrl' => $redirectTo]);
-
     }
 
     /**
@@ -535,7 +529,6 @@ class DealController extends AccountBaseController
         Deal::destroy($id);
 
         return Reply::success(__('messages.deleteSuccess'));
-
     }
 
     /**
@@ -629,7 +622,6 @@ class DealController extends AccountBaseController
                 $deal->save();
             }
         }
-
     }
 
     /**
@@ -646,7 +638,6 @@ class DealController extends AccountBaseController
         $this->deal = Deal::findOrFail($dealID);
 
         return view('leads.followup.create', $this->data);
-
     }
 
     public function leadFollowup()
@@ -677,8 +668,8 @@ class DealController extends AccountBaseController
         }
 
         $next_follow_up_date = Carbon::createFromFormat(
-            $this->company->date_format.' '.$this->company->time_format,
-            $request->next_follow_up_date.' '.$request->start_time
+            $this->company->date_format . ' ' . $this->company->time_format,
+            $request->next_follow_up_date . ' ' . $request->start_time
         );
 
         $followUp = new DealFollowUp;
@@ -695,7 +686,6 @@ class DealController extends AccountBaseController
         event(new AutoFollowUpReminderEvent($followUp, true));
 
         return Reply::success(__('messages.recordSaved'));
-
     }
 
     public function editFollow($id)
@@ -722,7 +712,7 @@ class DealController extends AccountBaseController
 
         $followUp->deal_id = $request->deal_id;
 
-        $followUp->next_follow_up_date = Carbon::createFromFormat($this->company->date_format.' '.$this->company->time_format, $request->next_follow_up_date.' '.$request->start_time)->format('Y-m-d H:i:s');
+        $followUp->next_follow_up_date = Carbon::createFromFormat($this->company->date_format . ' ' . $this->company->time_format, $request->next_follow_up_date . ' ' . $request->start_time)->format('Y-m-d H:i:s');
 
         $followUp->remark = $request->remark;
         $followUp->send_reminder = $request->send_reminder;
@@ -733,7 +723,6 @@ class DealController extends AccountBaseController
         $followUp->save();
 
         return Reply::success(__('messages.updateSuccess'));
-
     }
 
     public function deleteFollow($id)
@@ -811,7 +800,7 @@ class DealController extends AccountBaseController
 
     public function importLead()
     {
-        $this->pageTitle = __('app.importExcel').' '.__('app.menu.deal');
+        $this->pageTitle = __('app.importExcel') . ' ' . __('app.menu.deal');
 
         $this->addPermission = user()->permission('add_deals');
         abort_403(! in_array($this->addPermission, ['all', 'added']));
@@ -832,6 +821,8 @@ class DealController extends AccountBaseController
         if ($rvalue == 'abort') {
             return Reply::error(__('messages.abortAction'));
         }
+
+        $this->data['originalImportFilename'] = $request->import_file->getClientOriginalName();
         $view = view('deals.ajax.import_progress', $this->data)->render();
 
         return Reply::successWithData(__('messages.importUploadSuccess'), ['view' => $view]);
@@ -895,7 +886,6 @@ class DealController extends AccountBaseController
         }
 
         return Reply::success(__('messages.leadStatusChangeSuccess'));
-
     }
 
     // Get Satges
@@ -953,7 +943,6 @@ class DealController extends AccountBaseController
                         ->orWhere('user_id', $currentUser);
                 });
             }
-
         }])->where('id', $id)->first();
 
         $deal = Deal::where('id', request()->dealId)->first();
@@ -994,7 +983,6 @@ class DealController extends AccountBaseController
         }
 
         return Reply::dataOnly(['data' => $data, 'groupData' => $groupData]);
-
     }
 
     public function stageChange(Request $request)

@@ -779,6 +779,7 @@ class PurchaseProductController extends AccountBaseController
             return Reply::error(__('messages.abortAction'));
         }
 
+        $this->data['originalImportFilename'] = $request->import_file->getClientOriginalName();
         $this->data['unitTypes'] = UnitType::orderBy('id')->get();
 
         $view = view('purchase::purchase-products.ajax.import_progress', $this->data)->render();

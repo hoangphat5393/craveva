@@ -42,12 +42,11 @@ trait ImportExcel
         $importInstance = new $importClass;
         Excel::import($importInstance, $filePath);
         $excelData = $importInstance->getProcessedData();
-        if ($request->has('heading')) {
-            array_shift($excelData);
-        }
-        if ($request->has('skip_footer') && count($excelData) > 1) {
-            array_pop($excelData);
-        }
+        $excelData = $this->stripHeadingFooterFromRows(
+            $excelData,
+            $request->boolean('heading'),
+            $request->boolean('skip_footer')
+        );
 
         $isDataNull = true;
 
@@ -62,7 +61,7 @@ trait ImportExcel
             return 'abort';
         }
 
-        $this->hasHeading = $request->has('heading');
+        $this->hasHeading = $request->boolean('heading');
         $this->heading = [];
         $this->fileHeading = [];
 
@@ -73,7 +72,7 @@ trait ImportExcel
         $this->importMatchedColumns = [];
         $this->matchedColumns = [];
 
-        $this->hasSkipFooter = $request->has('skip_footer');
+        $this->hasSkipFooter = $request->boolean('skip_footer');
         if ($this->hasHeading) {
             $this->heading = (new HeadingRowImport)->toArray($filePath)[0][0];
 
@@ -82,7 +81,7 @@ trait ImportExcel
             $this->fileHeading = (new HeadingRowImport)->toArray($filePath)[0][0];
             HeadingRowFormatter::default(config('excel.imports.heading_row.formatter'));
 
-            // Dòng tiêu đề đã bỏ bằng array_shift ở trên khi $request->has('heading'); không shift lại (tránh mất dòng dữ liệu đầu).
+            // Tiêu đề đã bỏ bằng stripHeadingFooterFromRows(); HeadingRowImport đọc lại từ file — không shift $excelData thêm lần nữa.
             $this->matchedColumns = collect($this->columns)->whereIn('id', $this->heading)->pluck('id');
             $importMatchedColumns = [];
 
@@ -111,13 +110,11 @@ trait ImportExcel
         $importInstance = new $importClass;
         Excel::import($importInstance, public_path(Files::UPLOAD_FOLDER . '/' . Files::IMPORT_FOLDER . '/' . $request->file));
         $excelData = $importInstance->getProcessedData();
-
-        if ($request->has_heading) {
-            array_shift($excelData);
-        }
-        if ($request->boolean('has_skip_footer') && count($excelData) > 1) {
-            array_pop($excelData);
-        }
+        $excelData = $this->stripHeadingFooterFromRows(
+            $excelData,
+            $request->boolean('has_heading'),
+            $request->boolean('has_skip_footer')
+        );
 
         $jobs = [];
 
@@ -133,6 +130,24 @@ trait ImportExcel
         Files::deleteFile($request->file, Files::IMPORT_FOLDER);
 
         return $batch;
+    }
+
+    /**
+     * Strip header and/or footer rows from imported sheet data. Single place for shift/pop so it cannot run twice by mistake.
+     *
+     * @param  array<int, array<int, mixed>>  $rows
+     * @return array<int, array<int, mixed>>
+     */
+    private function stripHeadingFooterFromRows(array $rows, bool $stripHeading, bool $stripFooter): array
+    {
+        if ($stripHeading && $rows !== []) {
+            array_shift($rows);
+        }
+        if ($stripFooter && count($rows) > 1) {
+            array_pop($rows);
+        }
+
+        return $rows;
     }
 
     /**
@@ -164,13 +179,11 @@ trait ImportExcel
         $importInstance = new $importClass;
         Excel::import($importInstance, $filePath);
         $excelData = $importInstance->getProcessedData();
-
-        if ($request->has_heading) {
-            array_shift($excelData);
-        }
-        if ($request->boolean('has_skip_footer') && count($excelData) > 1) {
-            array_pop($excelData);
-        }
+        $excelData = $this->stripHeadingFooterFromRows(
+            $excelData,
+            $request->boolean('has_heading'),
+            $request->boolean('has_skip_footer')
+        );
 
         $excelData = self::normalizeExcelRows($excelData);
 

@@ -178,6 +178,26 @@
                     </div>
 
                     <div class="col-md-3">
+                        <x-forms.text class="mb-3 mt-3 mt-lg-0 mt-md-0" fieldId="payment_terms" :fieldLabel="__('modules.client.paymentTerms')" fieldName="payment_terms" :fieldPlaceholder="__('placeholders.name')" :fieldValue="$lead->payment_terms ?? ''">
+                        </x-forms.text>
+                    </div>
+                    <div class="col-md-3">
+                        <x-forms.text class="mb-3 mt-3 mt-lg-0 mt-md-0" fieldId="customer_grade" :fieldLabel="__('modules.client.customerGrade')" fieldName="customer_grade" :fieldPlaceholder="__('placeholders.name')" :fieldValue="$lead->customer_grade ?? ''">
+                        </x-forms.text>
+                    </div>
+                    <div class="col-md-3">
+                        <x-forms.text class="mb-3 mt-3 mt-lg-0 mt-md-0" fieldId="channel_type" :fieldLabel="__('modules.client.channelType')" fieldName="channel_type" :fieldPlaceholder="__('placeholders.name')" :fieldValue="$lead->channel_type ?? ''">
+                        </x-forms.text>
+                    </div>
+                    <div class="col-md-3">
+                        <x-forms.text class="mb-3 mt-3 mt-lg-0 mt-md-0" fieldId="business_type" :fieldLabel="__('modules.client.businessType')" fieldName="business_type" :fieldPlaceholder="__('placeholders.name')" :fieldValue="$lead->business_type ?? ''">
+                        </x-forms.text>
+                    </div>
+                    <div class="col-md-3">
+                        <x-forms.datepicker fieldId="business_closure_date" :fieldLabel="__('modules.client.businessClosureDate')" fieldName="business_closure_date" :fieldPlaceholder="__('placeholders.date')" :fieldValue="''" />
+                    </div>
+
+                    <div class="col-md-3">
                         <x-forms.text fieldId="office" :fieldLabel="__('modules.client.officePhoneNumber')" fieldName="office" :fieldPlaceholder="__('placeholders.mobileWithPlus')" :fieldValue="$lead->office ?? ''">
                         </x-forms.text>
                     </div>

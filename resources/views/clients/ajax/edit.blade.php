@@ -187,6 +187,22 @@
                     </div>
 
                     <div class="col-lg-3 col-md-6">
+                        <x-forms.text class="mb-3 mt-3 mt-lg-0 mt-md-0" fieldId="payment_terms" :fieldLabel="__('modules.client.paymentTerms')" fieldName="payment_terms" :fieldPlaceholder="__('placeholders.name')" :fieldValue="$client->clientDetails->payment_terms"></x-forms.text>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <x-forms.text class="mb-3 mt-3 mt-lg-0 mt-md-0" fieldId="customer_grade" :fieldLabel="__('modules.client.customerGrade')" fieldName="customer_grade" :fieldPlaceholder="__('placeholders.name')" :fieldValue="$client->clientDetails->customer_grade"></x-forms.text>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <x-forms.text class="mb-3 mt-3 mt-lg-0 mt-md-0" fieldId="channel_type" :fieldLabel="__('modules.client.channelType')" fieldName="channel_type" :fieldPlaceholder="__('placeholders.name')" :fieldValue="$client->clientDetails->channel_type"></x-forms.text>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <x-forms.text class="mb-3 mt-3 mt-lg-0 mt-md-0" fieldId="business_type" :fieldLabel="__('modules.client.businessType')" fieldName="business_type" :fieldPlaceholder="__('placeholders.name')" :fieldValue="$client->clientDetails->business_type"></x-forms.text>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <x-forms.datepicker fieldId="business_closure_date" :fieldLabel="__('modules.client.businessClosureDate')" fieldName="business_closure_date" :fieldPlaceholder="__('placeholders.date')" :fieldValue="optional(optional($client->clientDetails)->business_closure_date)->format(company()->date_format) ?? ''" />
+                    </div>
+
+                    <div class="col-lg-3 col-md-6">
                         <x-forms.text fieldId="office" :fieldLabel="__('modules.client.officePhoneNumber')" fieldName="office" :fieldPlaceholder="__('placeholders.mobileWithPlus')" :fieldValue="$client->clientDetails->office"></x-forms.text>
                     </div>
                     <div class="col-lg-3 col-md-6">

@@ -113,14 +113,15 @@ class ClientImportProcessor
         $clientDetails->website = self::columnExists($columns, 'company_website') ? self::getValue($row, $columns, 'company_website') : null;
         $clientDetails->gst_number = self::columnExists($columns, 'gst_number') ? self::getValue($row, $columns, 'gst_number') : null;
         $clientDetails->default_warehouse_id = self::resolveDefaultWarehouseId($row, $columns, $companyId);
+        $closureSetsInactive = self::applyCoreClientDetailFieldsFromImportRow($clientDetails, $row, $columns, $companyId);
         $clientDetails->save();
 
         if (! ($options['skip_custom_fields'] ?? false)) {
             self::saveCustomFieldsFromRow($clientDetails, $row, $columns, $companyId);
         }
 
-        if (self::columnExists($columns, 'business_closure_date') && self::getValue($row, $columns, 'business_closure_date')) {
-            $user->status = 'inactive';
+        if ($closureSetsInactive) {
+            $user->status = 'deactive';
             $user->save();
         }
 
@@ -212,14 +213,15 @@ class ClientImportProcessor
             }
         }
 
+        $closureSetsInactive = self::applyCoreClientDetailFieldsFromImportRow($existingDetails, $row, $columns, $companyId);
         $existingDetails->save();
 
         if (! ($options['skip_custom_fields'] ?? false)) {
             self::saveCustomFieldsFromRow($existingDetails, $row, $columns, $companyId);
         }
 
-        if (self::columnExists($columns, 'business_closure_date') && self::getValue($row, $columns, 'business_closure_date')) {
-            $user->status = 'inactive';
+        if ($closureSetsInactive) {
+            $user->status = 'deactive';
             $user->save();
         }
 
@@ -285,13 +287,40 @@ class ClientImportProcessor
             'salesperson',
             'department',
             'sales_assistant_name',
-            'customer_grade',
-            'channel_type',
-            'business_type',
             'last_transaction_at',
-            'payment_terms',
-            'business_closure_date',
         ];
+    }
+
+    /**
+     * Core client_details columns mapped from import (not custom_fields_data).
+     * Returns true when business_closure_date was set from a valid parsed date (client should be inactive).
+     */
+    protected static function applyCoreClientDetailFieldsFromImportRow(ClientDetails $details, array $row, array $columns, $companyId): bool
+    {
+        $company = $companyId ? \App\Models\Company::find($companyId) : null;
+
+        self::applyMappedDetailString($details, 'payment_terms', $row, $columns);
+        self::applyMappedDetailString($details, 'customer_grade', $row, $columns);
+        self::applyMappedDetailString($details, 'channel_type', $row, $columns);
+        self::applyMappedDetailString($details, 'business_type', $row, $columns);
+
+        if (! self::columnExists($columns, 'business_closure_date')) {
+            return false;
+        }
+
+        $raw = self::getValue($row, $columns, 'business_closure_date');
+        if ($raw === null || trim((string) $raw) === '') {
+            return false;
+        }
+
+        $parsed = self::parseDateForCustomField($raw, $company);
+        if ($parsed === '') {
+            return false;
+        }
+
+        $details->business_closure_date = $parsed;
+
+        return true;
     }
 
     /**

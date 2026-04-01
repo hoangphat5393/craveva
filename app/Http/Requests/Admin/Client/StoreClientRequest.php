@@ -51,6 +51,11 @@ class StoreClientRequest extends CoreRequest
             'client_code' => ['nullable', Rule::unique('client_details', 'client_code')->where('company_id', company()->id)],
             'mobile' => 'nullable|numeric',
             'default_warehouse_id' => 'nullable|integer|exists:warehouses,id',
+            'payment_terms' => 'nullable|string|max:255',
+            'customer_grade' => 'nullable|string|max:255',
+            'channel_type' => 'nullable|string|max:255',
+            'business_type' => 'nullable|string|max:255',
+            'business_closure_date' => 'nullable|date',
         ];
 
         $rules = $this->customFieldRules($rules);

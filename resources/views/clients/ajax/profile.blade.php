@@ -139,6 +139,16 @@
 
             <x-cards.data-row :label="__('app.gstNumber')" :value="$client->clientDetails->gst_number ?? '--'" />
 
+            <x-cards.data-row :label="__('modules.client.paymentTerms')" :value="$client->clientDetails->payment_terms ?? '--'" />
+
+            <x-cards.data-row :label="__('modules.client.customerGrade')" :value="$client->clientDetails->customer_grade ?? '--'" />
+
+            <x-cards.data-row :label="__('modules.client.channelType')" :value="$client->clientDetails->channel_type ?? '--'" />
+
+            <x-cards.data-row :label="__('modules.client.businessType')" :value="$client->clientDetails->business_type ?? '--'" />
+
+            <x-cards.data-row :label="__('modules.client.businessClosureDate')" :value="$client->clientDetails->business_closure_date ? $client->clientDetails->business_closure_date->timezone(company()->timezone)->translatedFormat(company()->date_format) : '--'" />
+
             <x-cards.data-row :label="__('app.address')" :value="$client->clientDetails->address ?? '--'" />
 
             <x-cards.data-row :label="__('modules.stripeCustomerAddress.state')" :value="$client->clientDetails->state ?? '--'" />

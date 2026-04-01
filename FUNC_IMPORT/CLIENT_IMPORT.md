@@ -14,3 +14,20 @@ TEL_NO(二) | company_phone → company_phone
 最近交易 | last_transaction_at → last_transaction_at (custom field)
 歇業日期 | Business Closure Date → business_closure_date (custom field)
 指定庫別名稱 | designated_warehouse_name → designated_warehouse_name
+
+Tier 1 (nên chuyển ngay)
+-- business_closure_date
+Vì đã có tác động nghiệp vụ thật: import có giá trị này thì hệ thống set users.status = inactive.
+Nếu để custom field lâu dài sẽ khó kiểm soát nhất quán.
+Tier 2 (chuyển khi bắt đầu dùng cho rule/filter/report chính thức)
+-- payment_terms — 交易條件 | Payment Terms | cách thức và thời hạn thanh toán: 30 ngày, 60 ngày, 90 ngày, 120 ngày, 180 ngày
+-- customer_grade — 客戶(集團)分級 | Customer Grade (Phân cấp / phân hạng khách)
+-- channel_type — 通路別 | Channel Type | bán lẻ, đại lý, siêu thị, chuỗi, đơn lẻ
+-- business_type — 型態別 | Business Type | sỉ / lẻ / nhà hàng / spa / chuỗi / đơn lẻ  
+Lý do: có ý nghĩa vận hành/report rõ, nhưng hiện chưa thấy query/join/rule xuyên module dùng trực tiếp.
+
+Giữ custom (hiện tại)
+-- salesperson
+-- sales_assistant_name
+-- geographical_distinction
+last_transaction_at (nên tính từ giao dịch thực tế thay vì nhập tay)

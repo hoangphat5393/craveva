@@ -200,8 +200,18 @@ class ClientController extends AccountBaseController
             $data['email_notifications'] = 1;
         }
 
-        $user = User::create($data);
+        $userData = $data;
+        foreach (['payment_terms', 'customer_grade', 'channel_type', 'business_type', 'business_closure_date'] as $clientOnlyKey) {
+            unset($userData[$clientOnlyKey]);
+        }
+
+        $user = User::create($userData);
         $user->clientDetails()->create($data);
+
+        if ($request->filled('business_closure_date')) {
+            $user->status = 'deactive';
+            $user->save();
+        }
         $client_id = $user->id;
 
         if ($request->has('is_client_contact')) {
@@ -456,6 +466,11 @@ class ClientController extends AccountBaseController
             $user->clientDetails->save();
         } else {
             $user->clientDetails()->create($data);
+        }
+
+        if ($request->filled('business_closure_date')) {
+            $user->status = 'deactive';
+            $user->save();
         }
 
         // To add custom fields data

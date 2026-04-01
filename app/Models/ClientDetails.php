@@ -88,13 +88,17 @@ class ClientDetails extends BaseModel
 {
     use CustomFieldsTrait, HasCompany;
 
-    protected $fillable = ['company_name', 'user_id', 'address', 'postal_code', 'state', 'city', 'office', 'cell', 'website', 'note', 'skype', 'facebook', 'twitter', 'linkedin', 'tax_name', 'gst_number', 'shipping_address', 'category_id', 'sub_category_id', 'company_logo', 'electronic_address', 'electronic_address_scheme', 'client_code', 'pricing_tier_id', 'default_warehouse_id'];
+    protected $fillable = ['company_name', 'user_id', 'address', 'postal_code', 'state', 'city', 'office', 'cell', 'website', 'note', 'skype', 'facebook', 'twitter', 'linkedin', 'tax_name', 'gst_number', 'shipping_address', 'category_id', 'sub_category_id', 'company_logo', 'electronic_address', 'electronic_address_scheme', 'client_code', 'pricing_tier_id', 'default_warehouse_id', 'payment_terms', 'customer_grade', 'channel_type', 'business_type', 'business_closure_date'];
 
     protected $default = ['id', 'company_name', 'address', 'website', 'note', 'skype', 'facebook', 'twitter', 'linkedin', 'tax_name', 'gst_number', 'name', 'email', 'company_logo'];
 
     protected $table = 'client_details';
 
     protected $appends = ['image_url'];
+
+    protected $casts = [
+        'business_closure_date' => 'date',
+    ];
 
     const CUSTOM_FIELD_MODEL = 'App\Models\ClientDetails';
 

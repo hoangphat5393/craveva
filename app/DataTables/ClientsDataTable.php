@@ -79,7 +79,13 @@ class ClientsDataTable extends BaseDataTable
             return $action;
         });
         $datatables->addColumn('client_code', fn($row) => $row->client_code ?? '--');
-        $datatables->addColumn('client_name', fn($row) => $row->name_salutation);
+        $datatables->addColumn('client_name', function ($row) {
+            if (! $row->salutation) {
+                return '--';
+            }
+
+            return $row->salutation->label();
+        });
         $datatables->addColumn('mobile', function ($row) {
             if (trim((string) ($row->mobile ?? '')) === '') {
                 return '--';
@@ -92,6 +98,21 @@ class ClientsDataTable extends BaseDataTable
             return ! is_null($row->clientDetails->category_id) ? $row->cat_name : '--';
         });
         $datatables->addColumn('added_by', fn($row) => optional($row->clientDetails)->addedBy ? $row->clientDetails->addedBy->name : '--');
+        $datatables->addColumn('payment_terms', fn($row) => $row->payment_terms ?? '--');
+        $datatables->addColumn('customer_grade', fn($row) => $row->customer_grade ?? '--');
+        $datatables->addColumn('channel_type', fn($row) => $row->channel_type ?? '--');
+        $datatables->addColumn('business_type', fn($row) => $row->business_type ?? '--');
+        $datatables->addColumn('business_closure_date', function ($row) {
+            $d = $row->business_closure_date ?? null;
+            if ($d === null || $d === '') {
+                return '--';
+            }
+            try {
+                return Carbon::parse($d)->translatedFormat($this->company->date_format);
+            } catch (\Throwable $e) {
+                return '--';
+            }
+        });
         $datatables->editColumn('name', fn($row) => view('components.client', ['user' => $row]));
         $datatables->editColumn('id', fn($row) => $row->clientDetails?->id);
         $datatables->editColumn('created_at', fn($row) => Carbon::parse($row->created_at)->translatedFormat($this->company->date_format));
@@ -112,13 +133,18 @@ class ClientsDataTable extends BaseDataTable
             2 => 'users.id',
             3 => 'client_details.client_code',
             4 => 'users.name',
-            5 => 'users.name',
+            5 => 'users.salutation',
             6 => 'users.email',
             7 => 'client_details.added_by',
             8 => 'users.mobile',
             9 => 'client_categories.category_name',
             10 => 'users.status',
             11 => 'users.created_at',
+            12 => 'client_details.payment_terms',
+            13 => 'client_details.customer_grade',
+            14 => 'client_details.channel_type',
+            15 => 'client_details.business_type',
+            16 => 'client_details.business_closure_date',
         ];
         $customFieldColumns = CustomField::customFieldData(
             $datatables,
@@ -146,7 +172,28 @@ class ClientsDataTable extends BaseDataTable
             ->leftJoin('client_details', 'users.id', '=', 'client_details.user_id')
             ->leftJoin('client_categories', 'client_details.category_id', '=', 'client_categories.id')
             ->join('roles', 'roles.id', '=', 'role_user.role_id')
-            ->select('client_categories.category_name as cat_name', 'users.id', 'client_details.client_code as client_code', 'users.salutation', 'users.is_client_contact', 'users.name', 'client_details.company_name', 'users.email', 'users.mobile', 'users.country_phonecode', 'users.image', 'users.created_at', 'users.status', 'client_details.added_by', 'users.admin_approval')
+            ->select(
+                'client_categories.category_name as cat_name',
+                'users.id',
+                'client_details.client_code as client_code',
+                'users.salutation',
+                'users.is_client_contact',
+                'users.name',
+                'client_details.company_name',
+                'users.email',
+                'users.mobile',
+                'users.country_phonecode',
+                'users.image',
+                'users.created_at',
+                'users.status',
+                'client_details.added_by',
+                'users.admin_approval',
+                'client_details.payment_terms',
+                'client_details.customer_grade',
+                'client_details.channel_type',
+                'client_details.business_type',
+                'client_details.business_closure_date'
+            )
             ->where('roles.name', 'client')
             ->whereNull('users.is_client_contact');
 
@@ -270,13 +317,18 @@ class ClientsDataTable extends BaseDataTable
             __('app.id') => ['data' => 'id', 'name' => 'id', 'title' => __('app.id'), 'visible' => showId()],
             __('app.clientCode') => ['data' => 'client_code', 'name' => 'client_details.client_code', 'title' => __('app.clientCode')],
             __('app.name') => ['data' => 'name', 'name' => 'name', 'exportable' => false, 'title' => __('app.name')],
-            __('app.customers') => ['data' => 'client_name', 'name' => 'users.name', 'visible' => false, 'title' => __('app.customers')],
+            __('modules.client.salutation') => ['data' => 'client_name', 'name' => 'users.salutation', 'visible' => false, 'title' => __('modules.client.salutation')],
             __('app.email') => ['data' => 'email', 'name' => 'email', 'title' => __('app.email')],
             __('app.addedBy') => ['data' => 'added_by', 'name' => 'added_by', 'visible' => false, 'title' => __('app.addedBy')],
             __('app.mobile') => ['data' => 'mobile', 'name' => 'mobile', 'title' => __('app.mobile')],
             __('app.category') => ['data' => 'category_name', 'name' => 'category_name', 'title' => __('app.category')],
             __('app.status') => ['data' => 'status', 'name' => 'status', 'title' => __('app.status')],
             __('app.createdAt') => ['data' => 'created_at', 'name' => 'created_at', 'title' => __('app.createdAt')],
+            __('modules.client.paymentTerms') => ['data' => 'payment_terms', 'name' => 'payment_terms', 'visible' => false, 'title' => __('modules.client.paymentTerms')],
+            __('modules.client.customerGrade') => ['data' => 'customer_grade', 'name' => 'customer_grade', 'visible' => false, 'title' => __('modules.client.customerGrade')],
+            __('modules.client.channelType') => ['data' => 'channel_type', 'name' => 'channel_type', 'visible' => false, 'title' => __('modules.client.channelType')],
+            __('modules.client.businessType') => ['data' => 'business_type', 'name' => 'business_type', 'visible' => false, 'title' => __('modules.client.businessType')],
+            __('modules.client.businessClosureDate') => ['data' => 'business_closure_date', 'name' => 'business_closure_date', 'visible' => false, 'title' => __('modules.client.businessClosureDate')],
         ];
 
         $action = [

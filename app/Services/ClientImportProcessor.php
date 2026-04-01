@@ -8,6 +8,7 @@ use App\Models\CustomField;
 use App\Models\CustomFieldGroup;
 use App\Models\Role;
 use App\Models\UniversalSearch;
+use App\Enums\Salutation;
 use App\Models\User;
 use App\Models\UserAuth;
 use App\Traits\UniversalSearchTrait;
@@ -90,6 +91,9 @@ class ClientImportProcessor
         $user->mobile = self::columnExists($columns, 'mobile') ? self::getValue($row, $columns, 'mobile') : null;
         $user->gender = self::columnExists($columns, 'gender') ? strtolower(self::getValue($row, $columns, 'gender')) : null;
         $user->country_id = $countryID;
+        if (self::columnExists($columns, 'salutation')) {
+            $user->salutation = self::parseSalutationValue(self::getValue($row, $columns, 'salutation'));
+        }
 
         $emailKey = self::columnKeys($columns, 'email');
         $emailValue = ! empty($emailKey) ? ($row[$emailKey[0]] ?? null) : null;
@@ -190,6 +194,10 @@ class ClientImportProcessor
             }
         }
 
+        if (self::columnExists($columns, 'salutation')) {
+            $user->salutation = self::parseSalutationValue(self::getValue($row, $columns, 'salutation'));
+        }
+
         $user->save();
 
         self::applyMappedDetailString($existingDetails, 'company_name', $row, $columns);
@@ -279,6 +287,42 @@ class ClientImportProcessor
     protected static function isEmailValid(?string $email): bool
     {
         return $email !== null && $email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL);
+    }
+
+    /**
+     * Map CSV cell to Salutation enum. Empty / whitespace → null (no fallback to client name).
+     * Unknown text → null.
+     */
+    protected static function parseSalutationValue($raw): ?Salutation
+    {
+        if ($raw === null) {
+            return null;
+        }
+        $normalized = strtolower(str_replace(['.', ' '], '', trim((string) $raw)));
+        if ($normalized === '') {
+            return null;
+        }
+
+        $direct = Salutation::tryFrom($normalized);
+        if ($direct !== null) {
+            return $direct;
+        }
+
+        foreach (Salutation::cases() as $case) {
+            $label = strtolower(str_replace(['.', ' '], '', (string) $case->label()));
+            if ($label === $normalized) {
+                return $case;
+            }
+            $trans = __('app.' . $case->value);
+            if (is_string($trans)) {
+                $transNorm = strtolower(str_replace(['.', ' '], '', trim(strip_tags($trans))));
+                if ($transNorm === $normalized) {
+                    return $case;
+                }
+            }
+        }
+
+        return null;
     }
 
     protected static function getClientCustomFieldNames(): array

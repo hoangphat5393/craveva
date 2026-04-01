@@ -13,6 +13,7 @@ class ClientImport implements ToArray
         return [
             ['id' => 'client_code', 'name' => __('modules.client.clientCode'), 'required' => 'No'],
             ['id' => 'name', 'name' => __('modules.client.clientName'), 'required' => 'Yes'],
+            ['id' => 'salutation', 'name' => __('modules.client.salutation'), 'required' => 'No'],
             ['id' => 'email', 'name' => __('app.email'), 'required' => 'No'],
             ['id' => 'mobile', 'name' => __('app.mobile'), 'required' => 'No'],
             ['id' => 'gender', 'name' => __('modules.employees.gender'), 'required' => 'No'],

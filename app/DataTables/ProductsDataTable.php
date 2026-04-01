@@ -7,7 +7,9 @@ use App\Models\CustomField;
 use App\Models\CustomFieldGroup;
 use App\Models\OrderCart;
 use App\Models\Product;
+use Illuminate\Database\Eloquent\Builder;
 use Modules\Pricing\Services\PricingService;
+use Yajra\DataTables\DataTableAbstract;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
 
@@ -28,7 +30,7 @@ class ProductsDataTable extends BaseDataTable
      * Build DataTable class.
      *
      * @param  mixed  $query  Results from query() method.
-     * @return \Yajra\DataTables\DataTableAbstract
+     * @return DataTableAbstract
      */
     public function dataTable($query)
     {
@@ -43,6 +45,12 @@ class ProductsDataTable extends BaseDataTable
         });
         $datatables->editColumn('description', function ($row) {
             return strip_tags($row->description);
+        });
+        $datatables->editColumn('specification', function ($row) {
+            return $row->specification ? strip_tags((string) $row->specification) : '';
+        });
+        $datatables->addColumn('unit_type_name', function ($row) {
+            return $row->unit ? $row->unit->unit_type : '';
         });
         $datatables->addColumn('action', function ($row) {
 
@@ -98,15 +106,25 @@ class ProductsDataTable extends BaseDataTable
         $datatables->editColumn('default_image', function ($row) {
             return '<img src="' . $row->image_url . '" class="rounded height-35" />';
         });
+        $datatables->editColumn('expiry_date', function ($row) {
+            return $row->expiry_date
+                ? $row->expiry_date->copy()->timezone(company()->timezone)->format(company()->date_format)
+                : '—';
+        });
+
         $datatables->editColumn('allow_purchase', function ($row) {
 
             if ($row->allow_purchase == 1) {
-                $status = '<i class="fa fa-circle mr-1 text-dark-green f-10"></i>' . __('app.allowed') . '</label>';
+                $status = '<i class="fa fa-circle mr-1 text-dark-green f-10"></i>' . __('app.allowed');
             } else {
-                $status = '<i class="fa fa-circle mr-1 text-red f-10"></i>' . __('app.notAllowed') . '</label>';
+                $status = '<i class="fa fa-circle mr-1 text-red f-10"></i>' . __('app.notAllowed');
             }
 
             return $status;
+        });
+
+        $datatables->addColumn('allow_purchase_export', function ($row) {
+            return $row->allow_purchase == 1 ? __('app.allowed') : __('app.notAllowed');
         });
         $datatables->editColumn('price', function ($row) {
             $price = $row->price;
@@ -150,13 +168,13 @@ class ProductsDataTable extends BaseDataTable
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function query(Product $model)
     {
         $request = $this->request();
 
-        $model = $model->with('tax', 'category', 'subCategory')->select('id', 'name', 'sku', 'price', 'taxes', 'allow_purchase', 'added_by', 'default_image', 'category_id', 'sub_category_id', 'description', 'product_source', 'brand', 'product_grade');
+        $model = $model->with('tax', 'category', 'subCategory', 'unit')->select('id', 'name', 'sku', 'price', 'taxes', 'allow_purchase', 'added_by', 'default_image', 'category_id', 'sub_category_id', 'description', 'product_source', 'brand', 'product_grade', 'expiry_date', 'specification', 'shelf_life_days', 'unit_id');
 
         if (! is_null($request->category_id) && $request->category_id != 'all' && $request->category_id > 0) {
             $model->where('category_id', $request->category_id);
@@ -241,11 +259,16 @@ class ProductsDataTable extends BaseDataTable
             __('modules.productCategory.productCategory') => ['data' => 'category', 'name' => 'category', 'title' => __('modules.productCategory.productCategory'), 'visible' => false],
             __('modules.productCategory.productSubCategory') => ['data' => 'sub_category', 'name' => 'sub_category', 'title' => __('modules.productCategory.productSubCategory'), 'visible' => false],
             __('app.description') => ['data' => 'description', 'name' => 'description', 'title' => __('app.description'), 'visible' => false],
+            __('app.specification') => ['data' => 'specification', 'name' => 'specification', 'title' => __('app.specification'), 'visible' => false],
+            __('app.shelfLifeDays') => ['data' => 'shelf_life_days', 'name' => 'shelf_life_days', 'title' => __('app.shelfLifeDays'), 'visible' => false],
+            __('modules.unitType.unitType') => ['data' => 'unit_type_name', 'name' => 'unit_type_name', 'title' => __('modules.unitType.unitType'), 'visible' => false],
             __('app.price') . ' (' . __('app.inclusiveAllTaxes') . ')' => ['data' => 'price', 'name' => 'price', 'title' => __('app.price') . ' (' . __('app.inclusiveAllTaxes') . ')'],
             __('app.productSource') => ['data' => 'product_source', 'name' => 'product_source', 'title' => __('app.productSource'), 'visible' => false],
             __('app.brand') => ['data' => 'brand', 'name' => 'brand', 'title' => __('app.brand'), 'visible' => false],
             __('app.productGrade') => ['data' => 'product_grade', 'name' => 'product_grade', 'title' => __('app.productGrade'), 'visible' => false],
-            __('app.purchaseAllow') => ['data' => 'allow_purchase', 'name' => 'allow_purchase', 'visible' => ! in_array('client', user_roles()), 'title' => __('app.purchaseAllow')],
+            __('app.expiryDate') => ['data' => 'expiry_date', 'name' => 'expiry_date', 'title' => __('app.expiryDate'), 'visible' => true],
+            'allow_purchase_export' => ['data' => 'allow_purchase_export', 'name' => 'allow_purchase_export', 'visible' => false, 'title' => __('app.clientPurchase'), 'exportable' => ! in_array('client', user_roles())],
+            __('app.clientPurchase') => ['data' => 'allow_purchase', 'name' => 'allow_purchase', 'visible' => ! in_array('client', user_roles()), 'title' => __('app.clientPurchase'), 'exportable' => false],
         ];
 
         $customFieldMerge = CustomFieldGroup::customFieldsDataMerge(new Product);

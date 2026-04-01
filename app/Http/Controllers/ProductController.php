@@ -20,7 +20,9 @@ use App\Models\ProductSubCategory;
 use App\Models\Tax;
 use App\Models\UnitType;
 use App\Traits\ImportExcel;
+use Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
 use Modules\Pricing\Services\PricingService;
 
@@ -66,7 +68,7 @@ class ProductController extends AccountBaseController
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function create()
     {
@@ -110,6 +112,7 @@ class ProductController extends AccountBaseController
         $product->price_per_box = $request->price_per_box;
         $product->employee_price = $request->employee_price;
         $product->shelf_life_days = $request->filled('shelf_life_days') ? (int) $request->shelf_life_days : null;
+        $product->expiry_date = Product::parseExpiryDateInput($request->input('expiry_date'));
         $product->taxes = $request->tax ? json_encode($request->tax) : null;
         $product->description = trim_editor($request->description);
         $product->specification = $request->specification;
@@ -155,7 +158,7 @@ class ProductController extends AccountBaseController
      * Display the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function show($id)
     {
@@ -171,7 +174,7 @@ class ProductController extends AccountBaseController
 
         foreach ($this->taxes as $tax) {
             if ($this->product && isset($this->product->taxes) && array_search($tax->id, json_decode($this->product->taxes)) !== false) {
-                $taxes[] = $tax->tax_name . ' : ' . $tax->rate_percent . '%';
+                $taxes[] = $tax->tax_name.' : '.$tax->rate_percent.'%';
             }
         }
 
@@ -196,7 +199,7 @@ class ProductController extends AccountBaseController
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function edit($id)
     {
@@ -209,7 +212,7 @@ class ProductController extends AccountBaseController
         $this->categories = ProductCategory::all();
         $this->unit_types = UnitType::all();
         $this->subCategories = ! is_null($this->product->sub_category_id) ? ProductSubCategory::where('category_id', $this->product->category_id)->get() : [];
-        $this->pageTitle = __('app.update') . ' ' . __('app.menu.products');
+        $this->pageTitle = __('app.update').' '.__('app.menu.products');
 
         $images = [];
 
@@ -245,7 +248,7 @@ class ProductController extends AccountBaseController
      * @param  int  $id
      * @return array|void
      *
-     * @throws \Froiden\RestAPI\Exceptions\RelatedResourceNotFoundException
+     * @throws RelatedResourceNotFoundException
      */
     public function update(UpdateProductRequest $request, $id)
     {
@@ -260,6 +263,7 @@ class ProductController extends AccountBaseController
         $product->price_per_box = $request->price_per_box;
         $product->employee_price = $request->employee_price;
         $product->shelf_life_days = $request->filled('shelf_life_days') ? (int) $request->shelf_life_days : null;
+        $product->expiry_date = Product::parseExpiryDateInput($request->input('expiry_date'));
         $product->taxes = $request->tax ? json_encode($request->tax) : null;
         $product->hsn_sac_code = $request->hsn_sac_code;
         $product->sku = $request->sku;
@@ -300,7 +304,7 @@ class ProductController extends AccountBaseController
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function destroy($id)
     {
@@ -486,7 +490,7 @@ class ProductController extends AccountBaseController
         $option = '';
 
         foreach ($products as $item) {
-            $option .= '<option data-content="' . $item->name . '" value="' . $item->id . '"> ' . $item->name . '</option>';
+            $option .= '<option data-content="'.$item->name.'" value="'.$item->id.'"> '.$item->name.'</option>';
         }
 
         return Reply::dataOnly(['products' => $option]);
@@ -494,7 +498,7 @@ class ProductController extends AccountBaseController
 
     public function importProduct()
     {
-        $this->pageTitle = __('app.importExcel') . ' ' . __('app.menu.product');
+        $this->pageTitle = __('app.importExcel').' '.__('app.menu.product');
 
         $this->addPermission = user()->permission('add_product');
         abort_403(! in_array($this->addPermission, ['all', 'added']));
@@ -539,7 +543,7 @@ class ProductController extends AccountBaseController
         $batch = $this->importJobProcessChunked($request, ProductImport::class, ImportProductChunkJob::class, $chunkSize, $options);
         $batchId = data_get($batch, 'id');
         if ($batchId) {
-            Cache::put('import_metrics_' . $batchId, [
+            Cache::put('import_metrics_'.$batchId, [
                 'created' => 0,
                 'updated' => 0,
                 'skipped' => 0,

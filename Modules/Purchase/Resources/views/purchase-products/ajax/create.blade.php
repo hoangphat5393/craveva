@@ -182,6 +182,9 @@
                                         <x-forms.number fieldId="shelf_life_days" :fieldLabel="__('app.shelfLifeDays')" fieldName="shelf_life_days" :fieldPlaceholder="__('app.shelfLifeDays')" minValue="0">
                                         </x-forms.number>
                                     </div>
+                                    <div class="col-md-3 col-6">
+                                        <x-forms.datepicker fieldId="expiry_date" :fieldLabel="__('app.expiryDate')" fieldName="expiry_date" :fieldPlaceholder="__('placeholders.date')" :fieldValue="$product && $product->expiry_date ? $product->expiry_date->timezone(company()->timezone)->format(company()->date_format) : ''" />
+                                    </div>
                                 </div>
                             </div>
 
@@ -211,7 +214,7 @@
                             </div>
 
                             <div class="col-md-2 mt-5">
-                                <x-forms.checkbox class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('app.purchaseAllow')" fieldName="purchase_allow" fieldId="purchase_allow" fieldValue="no" fieldRequired="true" :checked="$product ? ($product->allow_purchase = 1) : ''" />
+                                <x-forms.checkbox class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('app.clientPurchase')" fieldName="purchase_allow" fieldId="purchase_allow" fieldValue="no" fieldRequired="true" :checked="$product ? ($product->allow_purchase = 1) : ''" />
                             </div>
 
                             <div class="col-md-2 mt-5">

@@ -41,6 +41,10 @@
                             </div>
 
                             <div class="col-md-4">
+                                <x-forms.datepicker fieldId="expiry_date" :fieldLabel="__('app.expiryDate')" fieldName="expiry_date" :fieldPlaceholder="__('placeholders.date')" :fieldValue="$product->expiry_date ? $product->expiry_date->timezone(company()->timezone)->format(company()->date_format) : ''" />
+                            </div>
+
+                            <div class="col-md-4">
                                 <x-forms.label class="mt-3" fieldId="category_id" :fieldLabel="__('modules.productCategory.productCategory')">
                                 </x-forms.label>
                                 <x-forms.input-group>
@@ -126,7 +130,7 @@
                             </div>
 
                             <div class="col-lg-4 col-md-6 mt-5">
-                                <x-forms.checkbox class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('app.purchaseAllow')" fieldName="purchase_allow" fieldId="purchase_allow" fieldValue="no" fieldRequired="true" :checked="$product->allow_purchase == 1" />
+                                <x-forms.checkbox class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('app.clientPurchase')" fieldName="purchase_allow" fieldId="purchase_allow" fieldValue="no" fieldRequired="true" :checked="$product->allow_purchase == 1" />
                             </div>
                             <div class="col-lg-4 col-md-6 mt-5">
                                 <x-forms.checkbox class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('app.downloadable')" fieldName="downloadable" fieldId="downloadable" fieldValue="true" fieldRequired="true" :popover="__('messages.downloadable')" :checked="$product->downloadable == 1" />

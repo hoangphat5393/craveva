@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Modules\Purchase\Database\factories\PurchaseProductFactory;
 
 class PurchaseProduct extends BaseModel
 {
@@ -39,6 +40,8 @@ class PurchaseProduct extends BaseModel
         'wholesale_price',
         'price_per_box',
         'employee_price',
+        'shelf_life_days',
+        'expiry_date',
         'type',
         'status',
         'track_inventory',
@@ -49,9 +52,13 @@ class PurchaseProduct extends BaseModel
 
     protected $dates = ['created_at'];
 
+    protected $casts = [
+        'expiry_date' => 'date',
+    ];
+
     protected static function newFactory()
     {
-        return \Modules\Purchase\Database\factories\PurchaseProductFactory::new();
+        return PurchaseProductFactory::new();
     }
 
     protected $table = 'products';
@@ -164,7 +171,7 @@ class PurchaseProduct extends BaseModel
         return $this->hasOne(PurchaseStockAdjustment::class, 'product_id');
     }
 
-    public function inventoryAdjustments(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    public function inventoryAdjustments(): BelongsToMany
     {
         return $this->belongsToMany(PurchaseInventory::class, 'purchase_stock_adjustments', 'product_id', 'inventory_id')
             ->withPivot(['quantity_adjustment', 'net_quantity', 'type', 'changed_value', 'adjusted_value', 'expiration_date', 'manufacturing_date'])

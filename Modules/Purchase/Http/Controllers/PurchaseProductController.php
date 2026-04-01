@@ -9,7 +9,6 @@ use App\Http\Requests\Admin\Employee\ImportProcessRequest;
 use App\Http\Requests\Admin\Employee\ImportRequest;
 use App\Imports\ProductImport;
 use App\Jobs\ImportProductChunkJob;
-use App\Jobs\ImportProductJob;
 use App\Models\InvoiceItems;
 use App\Models\OrderCart;
 use App\Models\Product;
@@ -146,6 +145,7 @@ class PurchaseProductController extends AccountBaseController
         $product->price_per_box = $request->price_per_box;
         $product->employee_price = $request->employee_price;
         $product->shelf_life_days = $request->filled('shelf_life_days') ? (int) $request->shelf_life_days : null;
+        $product->expiry_date = Product::parseExpiryDateInput($request->input('expiry_date'));
         $product->inventory_type = $request->inventory_type;
         $product->storage_condition = $request->storage_condition;
         $product->certification = $request->certification;
@@ -234,9 +234,10 @@ class PurchaseProductController extends AccountBaseController
         $this->viewPermission = user()->permission('view_product');
         $this->deletePermission = user()->permission('delete_product');
         $this->editInventoryPermission = user()->permission('edit_product');
-        abort_403(! ($this->viewPermission == 'all' || ($this->viewPermission == 'added' && $this->product->added_by == user()->id)));
 
         $this->product = PurchaseProduct::with(['category', 'subCategory'])->findOrFail($id);
+
+        abort_403(! ($this->viewPermission == 'all' || ($this->viewPermission == 'added' && $this->product->added_by == user()->id)));
         $this->inventory = PurchaseStockAdjustment::where('product_id', $id)->first();
         $this->taxes = Tax::withTrashed()->get();
         $this->pageTitle = $this->product->name;
@@ -408,6 +409,7 @@ class PurchaseProductController extends AccountBaseController
         $product->price_per_box = $request->price_per_box;
         $product->employee_price = $request->employee_price;
         $product->shelf_life_days = $request->filled('shelf_life_days') ? (int) $request->shelf_life_days : null;
+        $product->expiry_date = Product::parseExpiryDateInput($request->input('expiry_date'));
         $product->inventory_type = $request->inventory_type;
         $product->storage_condition = $request->storage_condition;
         $product->certification = $request->certification;

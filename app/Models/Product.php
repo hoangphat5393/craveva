@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Traits\CustomFieldsTrait;
 use App\Traits\HasCompany;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -30,7 +32,7 @@ use Modules\Purchase\Entities\PurchaseStockAdjustment;
  * @property string|null $sku
  * @property-read mixed $icon
  * @property-read mixed $total_amount
- * @property-read \App\Models\Tax $tax
+ * @property-read Tax $tax
  *
  * @method static \Database\Factories\ProductFactory factory(...$parameters)
  * @method static \Illuminate\Database\Eloquent\Builder|Product newModelQuery()
@@ -50,7 +52,7 @@ use Modules\Purchase\Entities\PurchaseStockAdjustment;
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereTaxes($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereUpdatedAt($value)
  *
- * @property-read \App\Models\ProductCategory|null $category
+ * @property-read ProductCategory|null $category
  * @property string|null $image
  * @property-read mixed $image_url
  *
@@ -59,32 +61,32 @@ use Modules\Purchase\Entities\PurchaseStockAdjustment;
  * @property int $downloadable
  * @property string|null $downloadable_file
  * @property string|null $default_image
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ProductFiles[] $files
+ * @property-read Collection|ProductFiles[] $files
  * @property-read int|null $files_count
  * @property-read mixed $download_file_url
  * @property-read mixed $extras
- * @property-read \App\Models\ProductSubCategory|null $subCategory
+ * @property-read ProductSubCategory|null $subCategory
  *
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereDefaultImage($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereDownloadable($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereDownloadableFile($value)
  *
  * @property int|null $company_id
- * @property-read \App\Models\Company|null $company
+ * @property-read Company|null $company
  * @property-read mixed $tax_list
  *
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereCompanyId($value)
  *
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Lead> $leads
+ * @property-read Collection<int, Lead> $leads
  * @property-read int|null $leads_count
- * @property-read \App\Models\UnitType|null $unit
+ * @property-read UnitType|null $unit
  *
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereUnitId($value)
  *
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\OrderItems> $orderItem
+ * @property-read Collection<int, OrderItems> $orderItem
  * @property-read int|null $order_item_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Lead> $leads
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\OrderItems> $orderItem
+ * @property-read Collection<int, Lead> $leads
+ * @property-read Collection<int, OrderItems> $orderItem
  * @property string|null $purchase_price
  * @property string $purchase_information
  * @property string $track_inventory
@@ -95,8 +97,8 @@ use Modules\Purchase\Entities\PurchaseStockAdjustment;
  * @property string|null $sku
  * @property string|null $type
  * @property string $status
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Lead> $leads
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\OrderItems> $orderItem
+ * @property-read Collection<int, Lead> $leads
+ * @property-read Collection<int, OrderItems> $orderItem
  *
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereOpeningStock($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Product wherePurchaseDescription($value)
@@ -109,7 +111,7 @@ use Modules\Purchase\Entities\PurchaseStockAdjustment;
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereTrackInventory($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereType($value)
  *
- * @property-read \Illuminate\Database\Eloquent\Collection<int, PurchaseStockAdjustment> $inventory
+ * @property-read Collection<int, PurchaseStockAdjustment> $inventory
  * @property-read int|null $inventory_count
  *
  * @mixin \Eloquent
@@ -140,6 +142,7 @@ class Product extends BaseModel
         'price_per_box',
         'employee_price',
         'shelf_life_days',
+        'expiry_date',
         'allow_purchase',
         'unit_id',
         'category_id',
@@ -163,19 +166,39 @@ class Product extends BaseModel
 
     const CUSTOM_FIELD_MODEL = 'App\Models\Product';
 
+    protected $casts = [
+        'expiry_date' => 'date',
+    ];
+
+    /**
+     * Parse expiry date from date-picker (company date format) to Y-m-d for storage.
+     */
+    public static function parseExpiryDateInput(?string $value): ?string
+    {
+        if ($value === null || trim($value) === '') {
+            return null;
+        }
+
+        try {
+            return Carbon::createFromFormat(company()->date_format, $value)->format('Y-m-d');
+        } catch (\Throwable $e) {
+            return null;
+        }
+    }
+
     public function getImageUrlAttribute()
     {
         if (app()->environment(['development', 'demo']) && $this->default_image && str($this->default_image)->contains('http')) {
             return $this->default_image;
         }
 
-        return ($this->default_image) ? asset_url_local_s3(Product::FILE_PATH . '/' . $this->default_image) : '';
+        return ($this->default_image) ? asset_url_local_s3(Product::FILE_PATH.'/'.$this->default_image) : '';
     }
 
     public function getImageAttribute()
     {
         if ($this->default_image) {
-            return str($this->default_image)->contains('http') ? $this->default_image : (Product::FILE_PATH . '/' . $this->default_image);
+            return str($this->default_image)->contains('http') ? $this->default_image : (Product::FILE_PATH.'/'.$this->default_image);
         }
 
         return $this->default_image;
@@ -183,7 +206,7 @@ class Product extends BaseModel
 
     public function getDownloadFileUrlAttribute()
     {
-        return ($this->downloadable_file) ? asset_url_local_s3(Product::FILE_PATH . '/' . $this->downloadable_file) : null;
+        return ($this->downloadable_file) ? asset_url_local_s3(Product::FILE_PATH.'/'.$this->downloadable_file) : null;
     }
 
     public function tax(): BelongsTo
@@ -242,9 +265,9 @@ class Product extends BaseModel
             if (! is_null($productItem->taxes)) {
                 foreach (json_decode($productItem->taxes) as $index => $tax) {
                     $tax = $this->taxbyid($tax)->first();
-                    $taxes .= $tax->tax_name . ': ' . $tax->rate_percent . '%';
+                    $taxes .= $tax->tax_name.': '.$tax->rate_percent.'%';
 
-                    $taxes = ($index + 1 != $numItems) ? $taxes . ', ' : $taxes;
+                    $taxes = ($index + 1 != $numItems) ? $taxes.', ' : $taxes;
                 }
             }
         }

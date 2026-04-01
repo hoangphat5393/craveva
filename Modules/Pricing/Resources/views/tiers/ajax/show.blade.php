@@ -120,7 +120,7 @@
                                 <th>@lang('pricing::app.value')</th>
                                 <th>@lang('purchase::modules.product.stockOnHand')</th>
                                 <th>@lang('modules.unitType.unitType')</th>
-                                <th>Client can purchase</th>
+                                <th>@lang('app.clientPurchase')</th>
                                 <th>@lang('app.status')</th>
                                 <th class="text-right">@lang('app.action')</th>
                             </tr>
@@ -295,10 +295,10 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         window.apiHttp.postUrlEncoded("{{ route('pricing.tiers.items.apply_quick_action') }}", {
-                            '_token': "{{ csrf_token() }}",
-                            action_type: 'delete',
-                            row_ids: rowIds.join(',')
-                        })
+                                '_token': "{{ csrf_token() }}",
+                                action_type: 'delete',
+                                row_ids: rowIds.join(',')
+                            })
                             .then(function(response) {
                                 if (response.status == 'success') {
                                     window.location.reload();

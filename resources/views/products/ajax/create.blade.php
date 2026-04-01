@@ -45,6 +45,10 @@
                             </div>
 
                             <div class="col-lg-4 col-md-6">
+                                <x-forms.datepicker fieldId="expiry_date" :fieldLabel="__('app.expiryDate')" fieldName="expiry_date" :fieldPlaceholder="__('placeholders.date')" :fieldValue="''" />
+                            </div>
+
+                            <div class="col-lg-4 col-md-6">
                                 <x-forms.label class="my-3" fieldId="" :fieldLabel="__('modules.productCategory.productCategory')">
                                 </x-forms.label>
                                 <x-forms.input-group>
@@ -126,7 +130,7 @@
                             </div>
 
                             <div class="col-lg-4 col-md-6 mt-5">
-                                <x-forms.checkbox class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('app.purchaseAllow')" fieldName="purchase_allow" fieldId="purchase_allow" fieldValue="no" fieldRequired="true" />
+                                <x-forms.checkbox class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('app.clientPurchase')" fieldName="purchase_allow" fieldId="purchase_allow" fieldValue="no" fieldRequired="true" />
                             </div>
                             <div class="col-lg-4 col-md-6 mt-5">
                                 <x-forms.checkbox class="mr-0 mr-lg-2 mr-md-2" :fieldLabel="__('app.downloadable')" fieldName="downloadable" fieldId="downloadable" fieldValue="true" fieldRequired="true" :popover="__('messages.downloadable')" />

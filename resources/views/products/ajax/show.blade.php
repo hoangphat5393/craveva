@@ -44,9 +44,12 @@
                             <x-cards.data-row :label="__('app.sku')" :value="$product->sku ?? '--'" />
                             <x-cards.data-row :label="__('modules.productCategory.productCategory')" :value="$product->category->category_name ?? '--'" />
                             <x-cards.data-row :label="__('modules.productCategory.productSubCategory')" :value="$product->subCategory->category_name ?? '--'" />
+                            <x-cards.data-row :label="__('app.specification')" :value="$product->specification ? strip_tags((string) $product->specification) : '--'" />
+                            <x-cards.data-row :label="__('app.shelfLifeDays')" :value="$product->shelf_life_days !== null && $product->shelf_life_days !== '' ? (string) $product->shelf_life_days : '--'" />
 
+                            <x-cards.data-row :label="__('app.expiryDate')" :value="$product->expiry_date ? $product->expiry_date->timezone(company()->timezone)->format(company()->date_format) : '--'" />
                             @if (!in_array('client', user_roles()))
-                                <x-cards.data-row :label="__('app.purchaseAllow')" :value="$product->allow_purchase ? '<span class=\'badge badge-success\'>' . __('app.yes') . ' </span>' : '<span class=\'badge badge-danger\'>' . __('app.no') . ' </span>'" />
+                                <x-cards.data-row :label="__('app.clientPurchase')" :value="$product->allow_purchase ? '<span class=\'badge badge-success\'>' . __('app.yes') . ' </span>' : '<span class=\'badge badge-danger\'>' . __('app.no') . ' </span>'" />
                             @endif
                             <x-cards.data-row :label="__('app.downloadable')" :value="$product->downloadable ? '<span class=\'badge badge-success\'>' . __('app.yes') . ' </span>' : '<span class=\'badge badge-danger\'>' . __('app.no') . ' </span>'" />
                             @if ($product->downloadable && !in_array('client', user_roles()))

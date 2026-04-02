@@ -16,6 +16,14 @@
                             <x-forms.text fieldId="code" :fieldLabel="__('warehouse::app.code')" fieldName="code" :fieldValue="old('code')" />
                         </div>
                         <div class="col-lg-6 col-md-6">
+                            <x-forms.select fieldId="warehouse_type" :fieldLabel="__('warehouse::app.warehouseType')" fieldName="warehouse_type">
+                                <option value="normal" @selected(old('warehouse_type', 'normal') === 'normal')>@lang('warehouse::app.warehouseTypeNormal')</option>
+                                <option value="locked" @selected(old('warehouse_type') === 'locked')>@lang('warehouse::app.warehouseTypeLocked')</option>
+                                <option value="scrap" @selected(old('warehouse_type') === 'scrap')>@lang('warehouse::app.warehouseTypeScrap')</option>
+                                <option value="transit" @selected(old('warehouse_type') === 'transit')>@lang('warehouse::app.warehouseTypeTransit')</option>
+                            </x-forms.select>
+                        </div>
+                        <div class="col-lg-6 col-md-6">
                             <x-forms.textarea fieldId="address" :fieldLabel="__('warehouse::app.address')" fieldName="address" :fieldValue="old('address')" />
                         </div>
                         <div class="col-lg-6 col-md-6">

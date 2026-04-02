@@ -7,6 +7,7 @@ use App\Models\StockMovement;
 use App\Scopes\CompanyScope;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Modules\Warehouse\Concerns\ScopesWarehouseProductBatchQuery;
 use Modules\Warehouse\Entities\Warehouse;
 use Modules\Warehouse\Entities\WarehouseProductBatch;
@@ -16,6 +17,11 @@ use Modules\Warehouse\Exceptions\WarehouseBusinessException;
 class StockMovementService
 {
     use ScopesWarehouseProductBatchQuery;
+
+    public function __construct(
+        protected WarehouseFlowPolicyService $flowPolicy,
+        protected WarehouseUnitConversionService $unitConversionService
+    ) {}
 
     public function recordInbound(array $payload): void
     {
@@ -47,7 +53,10 @@ class StockMovementService
      */
     protected function applyInboundOnce(array $payload): void
     {
-        $qty = (float) ($payload['quantity'] ?? 0);
+        $rawQty = (float) ($payload['quantity'] ?? 0);
+        $qty = $this->convertToBaseQuantity($payload, $rawQty);
+        $payload['quantity'] = $qty;
+        $payload['unit_id'] = $this->unitConversionService->baseUnitId((int) $payload['product_id']) ?: ($payload['unit_id'] ?? null);
         if ($qty <= 0) {
             throw new WarehouseBusinessException(__('warehouse::app.err_quantity_must_be_positive'), [
                 'quantity' => $qty,
@@ -78,7 +87,10 @@ class StockMovementService
      */
     protected function executeOutboundMovement(array $payload, ?bool $allowNegativeStock = null): void
     {
-        $requested = (float) ($payload['quantity'] ?? 0);
+        $rawRequested = (float) ($payload['quantity'] ?? 0);
+        $requested = $this->convertToBaseQuantity($payload, $rawRequested);
+        $payload['quantity'] = $requested;
+        $payload['unit_id'] = $this->unitConversionService->baseUnitId((int) $payload['product_id']) ?: ($payload['unit_id'] ?? null);
         if ($requested <= 0) {
             throw new WarehouseBusinessException(__('warehouse::app.err_quantity_must_be_positive'), [
                 'quantity' => $requested,
@@ -88,6 +100,10 @@ class StockMovementService
         $companyId = $this->requireCompanyId($payload);
         $this->assertWarehouseBelongsToCompany((int) $payload['warehouse_id'], $companyId);
         $this->assertProductBelongsToCompany((int) $payload['product_id'], $companyId);
+        $referenceType = (string) ($payload['reference_type'] ?? '');
+        if (! in_array($referenceType, ['transfer', 'warehouse_transfer'], true)) {
+            $this->flowPolicy->assertSellableOutboundWarehouse((int) $payload['warehouse_id'], $referenceType);
+        }
 
         $rows = $this->resolveOutboundRows($payload);
         $available = (float) $rows->sum('quantity');
@@ -329,6 +345,20 @@ class StockMovementService
 
     protected function createMovement(array $payload, string $type): void
     {
+        $idempotencyKey = $payload['idempotency_key'] ?? null;
+        $hasIdempotencyColumn = Schema::hasColumn('stock_movements', 'idempotency_key');
+        if ($idempotencyKey && $hasIdempotencyColumn) {
+            $alreadyExists = StockMovement::query()
+                ->where('company_id', $payload['company_id'] ?? null)
+                ->where('movement_type', $type)
+                ->where('idempotency_key', $idempotencyKey)
+                ->exists();
+
+            if ($alreadyExists) {
+                return;
+            }
+        }
+
         $movementType = match ($type) {
             'inbound' => 'inbound',
             'outbound' => 'outbound',
@@ -336,7 +366,7 @@ class StockMovementService
             default => $type,
         };
 
-        StockMovement::create([
+        $attributes = [
             'company_id' => $payload['company_id'] ?? null,
             'product_id' => $payload['product_id'] ?? null,
             'delivery_order_item_id' => $payload['delivery_order_item_id'] ?? null,
@@ -349,6 +379,27 @@ class StockMovementService
             'fefo_fifo_rule' => $payload['fefo_fifo_rule'] ?? (($type === 'outbound') ? 'FEFO' : null),
             'reference_type' => $payload['reference_type'] ?? null,
             'reference_id' => $payload['reference_id'] ?? null,
-        ]);
+        ];
+        if (Schema::hasColumn('stock_movements', 'unit_id')) {
+            $attributes['unit_id'] = $payload['unit_id'] ?? null;
+        }
+        if ($hasIdempotencyColumn) {
+            $attributes['idempotency_key'] = $idempotencyKey;
+        }
+
+        StockMovement::create($attributes);
+    }
+
+    protected function convertToBaseQuantity(array $payload, float $quantity): float
+    {
+        $companyId = isset($payload['company_id']) ? (int) $payload['company_id'] : 0;
+        $productId = isset($payload['product_id']) ? (int) $payload['product_id'] : 0;
+        $unitId = isset($payload['unit_id']) ? (int) $payload['unit_id'] : null;
+
+        if ($companyId <= 0 || $productId <= 0 || $unitId === null || $unitId <= 0) {
+            return $quantity;
+        }
+
+        return $this->unitConversionService->convertToBase($companyId, $productId, $quantity, $unitId);
     }
 }

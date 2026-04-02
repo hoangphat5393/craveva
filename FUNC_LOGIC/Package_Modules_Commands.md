@@ -1,6 +1,23 @@
+# Laravel module nwidart
+
 # Lệnh Package & Module (Craveva)
 
 Tài liệu lưu các lệnh Artisan và cách dùng cho quản lý module trong Package.
+
+## Kết luận nhanh cho lỗi gần đây (Warehouse Permission denied)
+
+Lỗi dạng:
+
+```text
+include(.../Modules/Warehouse/Entities/Warehouse.php): Failed to open stream: Permission denied
+```
+
+**Không phải** do chưa chạy `packages:modules` hay `module:enable`.
+
+- Đây là lỗi **filesystem permission** (PHP-FPM không đọc được file/thư mục module).
+- Nếu module chưa bật đúng, thường gặp lỗi kiểu route/menu/module not found, **không** phải `Failed to open stream: Permission denied`.
+
+---
 
 **Hai loại "bật module" khác nhau:**
 
@@ -10,6 +27,23 @@ Tài liệu lưu các lệnh Artisan và cách dùng cho quản lý module trong
 | **Custom Modules (toggle trên UI)** | `enable-custom` hoặc bật từng cái trên trang **Settings > Module Settings > Custom Modules** | `storage/app/modules_statuses.json` (nwidart)   | Bật/tắt module Laravel (Affiliate, Asset, Payroll, …); nếu tắt thì module không load. |
 
 → Chạy `activate-all` **không** đổi trạng thái toggle trên trang **Custom Modules**. Để tất cả toggle ON, dùng `enable-custom` hoặc dùng một lệnh gộp `activate-all-full` (xem mục 2.5).
+
+### Nwidart có lưu DB không?
+
+Theo cấu hình hiện tại:
+
+- `config/modules.php` dùng `FileActivator` và `statuses-file = storage/app/modules_statuses.json`.
+- Nghĩa là trạng thái enable/disable của **nwidart custom modules** được lưu **file JSON**, không lưu DB.
+
+Tuy nhiên app Craveva có lớp entitlement riêng trong DB:
+
+- `packages.module_in_package` (JSON theo package)
+- `module_settings` (status/is_allowed theo company)
+
+=> Runtime thực tế là **kết hợp 2 lớp**:
+
+1. **Nwidart layer (file):** module có được load toàn hệ thống không (`modules_statuses.json`).
+2. **Business layer (DB):** company nào được dùng module gì (`module_in_package` + `module_settings`).
 
 ---
 
@@ -135,6 +169,7 @@ Danh sách đầy đủ lấy từ bảng `modules` (trừ settings, dashboards,
 
 - Danh sách module “đầy đủ” trùng với form sửa Package trong Super Admin.
 - Sau khi chạy activate, cache user (`user_modules_{id}`) được xóa qua `CompanyObserver::updateModuleSettings`.
+- Nếu bật/tắt module bằng luồng ngoài chuẩn (vd. thao tác trực tiếp), cần refresh cache `craveva_plugins`/`user_modules` để UI phản ánh đúng.
 
 ---
 
@@ -187,11 +222,14 @@ Danh sách đầy đủ lấy từ bảng `modules` (trừ settings, dashboards,
 
 ## 6. File chính liên quan
 
-| File                                                    | Vai trò                                    |
-| ------------------------------------------------------- | ------------------------------------------ |
-| `app/Models/SuperAdmin/Package.php`                     | Model package, quan hệ company             |
-| `app/Models/ModuleSetting.php`                          | Logic module settings, checkModule         |
-| `app/Models/Module.php`                                 | Danh sách module, disabled modules         |
-| `app/Observers/CompanyObserver.php`                     | create/update module settings, clear cache |
-| `app/Http/Controllers/SuperAdmin/PackageController.php` | CRUD package, lưu `module_in_package`      |
-| `app/Console/Commands/PackageModulesCommand.php`        | Lệnh `packages:modules`                    |
+| File                                                    | Vai trò                                                        |
+| ------------------------------------------------------- | -------------------------------------------------------------- |
+| `app/Models/SuperAdmin/Package.php`                     | Model package, quan hệ company                                 |
+| `app/Models/ModuleSetting.php`                          | Logic module settings, checkModule                             |
+| `app/Models/Module.php`                                 | Danh sách module, disabled modules                             |
+| `app/Observers/CompanyObserver.php`                     | create/update module settings, clear cache                     |
+| `app/Http/Controllers/SuperAdmin/PackageController.php` | CRUD package, lưu `module_in_package`                          |
+| `app/Console/Commands/PackageModulesCommand.php`        | Lệnh `packages:modules`                                        |
+| `app/Http/Controllers/CustomModuleController.php`       | Bật/tắt custom module + migrate + rebuild cache                |
+| `config/modules.php`                                    | Cấu hình nwidart activator (file JSON)                         |
+| `app/Helper/start.php`                                  | Helper `craveva_plugins()` đọc cache từ `Module::allEnabled()` |

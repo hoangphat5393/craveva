@@ -29,9 +29,27 @@ class MenuItem extends Component
         $this->text = $text;
         $this->icon = $icon;
         $this->link = $link;
-        $this->active = $active;
+        $this->active = $this->resolveActiveState((bool) $active, $link);
         $this->addon = $addon;
         $this->count = $count;
+    }
+
+    protected function resolveActiveState(bool $active, ?string $link): bool
+    {
+        if ($active || empty($link) || ! request()) {
+            return $active;
+        }
+
+        $linkPath = (string) parse_url($link, PHP_URL_PATH);
+        $normalizedLinkPath = trim($linkPath, '/');
+        $currentPath = trim((string) request()->path(), '/');
+
+        if ($normalizedLinkPath === '') {
+            return $currentPath === '';
+        }
+
+        return $currentPath === $normalizedLinkPath
+            || str_starts_with($currentPath, $normalizedLinkPath . '/');
     }
 
     /**

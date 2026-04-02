@@ -23,9 +23,13 @@ class SalesDoService
             return 'messages.addItem';
         }
 
-        $shipment->status = 'confirmed';
-        $shipment->updated_by = user()->id;
-        $shipment->save();
+        DB::transaction(function () use ($shipment) {
+            $this->stockService->ensureReservationsForShipment($shipment);
+
+            $shipment->status = 'confirmed';
+            $shipment->updated_by = user()->id;
+            $shipment->save();
+        });
 
         return null;
     }
@@ -81,6 +85,8 @@ class SalesDoService
         }
 
         DB::transaction(function () use ($shipment) {
+            $this->stockService->ensureReservationsForShipment($shipment);
+
             $shipment->status = 'shipped';
             $shipment->updated_by = user()->id;
             $shipment->save();
@@ -112,6 +118,7 @@ class SalesDoService
 
         DB::transaction(function () use ($shipment) {
             $this->stockService->reverseOutboundForShipment($shipment);
+            $this->stockService->ensureReservationsForShipment($shipment);
             $shipment->status = 'confirmed';
             $shipment->updated_by = user()->id;
             $shipment->save();
@@ -130,6 +137,7 @@ class SalesDoService
             if ($shipment->outbound_stock_applied) {
                 $this->stockService->reverseOutboundForShipment($shipment);
             }
+            $this->stockService->releaseReservationsForShipment($shipment);
 
             $shipment->status = 'cancelled';
             $shipment->updated_by = user()->id;

@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Helper\Reply;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Bus;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class ImportController extends Controller
@@ -28,6 +28,7 @@ class ImportController extends Controller
         'PricingTierItemsImport',
         'WarehouseImport',
         'InventoryImport',
+        'SalesOrderImport',
     ];
 
     /**

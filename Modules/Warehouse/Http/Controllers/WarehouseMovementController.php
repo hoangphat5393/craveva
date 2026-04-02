@@ -35,7 +35,13 @@ class WarehouseMovementController extends AccountBaseController
             'warehouse_id' => 'nullable|integer',
             'movement_type' => 'nullable|in:inbound,outbound',
             'search' => 'nullable|string|max:255',
+            'per_page' => 'nullable|integer',
         ]);
+
+        $perPage = (int) $request->get('per_page', 25);
+        if (! in_array($perPage, [10, 25, 50, 100], true)) {
+            $perPage = 25;
+        }
 
         $filters = [
             'warehouse_id' => $request->get('warehouse_id'),
@@ -43,7 +49,7 @@ class WarehouseMovementController extends AccountBaseController
             'search' => $request->get('search'),
         ];
 
-        $movements = $queries->paginateStockMovements($filters, 25);
+        $movements = $queries->paginateStockMovements($filters, $perPage);
         $warehouseTable = (new Warehouse)->getTable();
         $warehouses = Warehouse::where('status', 'active')
             ->when(Schema::hasColumn($warehouseTable, 'sort_order'), function ($query) {
@@ -59,6 +65,7 @@ class WarehouseMovementController extends AccountBaseController
         $this->warehouses = $warehouses;
         $this->warehouseId = $filters['warehouse_id'];
         $this->movementType = $filters['movement_type'];
+        $this->warehousePerPage = $perPage;
 
         return view('warehouse::movements.index', $this->data);
     }

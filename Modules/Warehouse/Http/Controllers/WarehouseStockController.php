@@ -11,16 +11,19 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
 use Modules\Warehouse\Entities\Warehouse;
+use Modules\Warehouse\Entities\WarehouseProductBatch;
 use Modules\Warehouse\Entities\WarehouseProductStock;
 use Modules\Warehouse\Http\Controllers\Concerns\HandlesWarehouseErrors;
+use Modules\Warehouse\Services\WarehouseFlowPolicyService;
 use Modules\Warehouse\Services\StockMovementService;
 
 class WarehouseStockController extends AccountBaseController
 {
     use HandlesWarehouseErrors;
 
-    public function __construct()
-    {
+    public function __construct(
+        protected WarehouseFlowPolicyService $flowPolicyService
+    ) {
         parent::__construct();
         $this->middleware(function ($request, $next) {
             abort_if(! in_array('warehouse', user_modules()), 403, __('warehouse::app.err_module_not_warehouse'));
@@ -39,6 +42,10 @@ class WarehouseStockController extends AccountBaseController
 
         $warehouseId = $request->get('warehouse_id');
         $search = $request->get('search');
+        $perPage = (int) $request->get('per_page', 25);
+        if (! in_array($perPage, [10, 25, 50, 100], true)) {
+            $perPage = 25;
+        }
 
         $warehouseTable = (new Warehouse)->getTable();
         $warehouses = Warehouse::where('status', 'active')
@@ -59,13 +66,16 @@ class WarehouseStockController extends AccountBaseController
                         ->orWhere('sku', 'like', '%' . $search . '%');
                 });
             })
-            ->paginate(20);
+            ->paginate($perPage);
+
+        $this->appendSellableMetrics($stocks);
 
         $this->pageTitle = 'warehouse::app.adjustStock';
         $this->pageIcon = 'ti-layout';
         $this->stocks = $stocks;
         $this->warehouses = $warehouses;
         $this->warehouseId = $warehouseId;
+        $this->warehousePerPage = $perPage;
 
         return view('warehouse::stock.index', $this->data);
     }
@@ -173,5 +183,39 @@ class WarehouseStockController extends AccountBaseController
     public function show($id)
     {
         // History of product in warehouse
+    }
+
+    protected function appendSellableMetrics($stocks): void
+    {
+        $warehouseIds = $stocks->pluck('warehouse_id')->unique()->values()->all();
+        $productIds = $stocks->pluck('product_id')->unique()->values()->all();
+
+        if ($warehouseIds === [] || $productIds === []) {
+            return;
+        }
+
+        $batchAgg = WarehouseProductBatch::query()
+            ->selectRaw('warehouse_id, product_id, SUM(reserved_quantity) as reserved')
+            ->whereIn('warehouse_id', $warehouseIds)
+            ->whereIn('product_id', $productIds)
+            ->groupBy('warehouse_id', 'product_id')
+            ->get()
+            ->keyBy(fn($row) => $row->warehouse_id . ':' . $row->product_id);
+
+        $stocks->getCollection()->transform(function ($stock) use ($batchAgg) {
+            $key = $stock->warehouse_id . ':' . $stock->product_id;
+            $reserved = (float) ($batchAgg->get($key)->reserved ?? 0);
+            $onHand = (float) $stock->quantity;
+            $available = max(0.0, $onHand - $reserved);
+            $warehouseType = (string) ($stock->warehouse->warehouse_type ?? 'normal');
+            $sellable = $this->flowPolicyService->isSellableWarehouseType($warehouseType) ? $available : 0.0;
+
+            $stock->reserved_quantity = $reserved;
+            $stock->available_quantity = $available;
+            $stock->sellable_quantity = $sellable;
+            $stock->warehouse_type = $warehouseType;
+
+            return $stock;
+        });
     }
 }

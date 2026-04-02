@@ -11,6 +11,7 @@ use Modules\Purchase\Entities\PurchaseOrder;
 use Modules\Purchase\Entities\PurchaseOrderHistory;
 use Modules\Purchase\Entities\PurchaseStockAdjustment;
 use Modules\Purchase\Events\NewPurchaseOrderEvent;
+use Modules\Warehouse\Services\WarehouseFlowPolicyService;
 use Modules\Warehouse\Services\StockMovementService;
 
 class PurchaseOrderObserver
@@ -109,7 +110,7 @@ class PurchaseOrderObserver
                         }
 
                         if ($order->delivery_status === 'delivered' && $order->warehouse_id && isset($product[$key]) && $product[$key]) {
-                            $this->recordPurchaseOrderInbound($order, (int) $product[$key], (float) $quantity[$key]);
+                            $this->recordPurchaseOrderInbound($order, (int) $product[$key], (float) $quantity[$key], isset($unitId[$key]) ? (int) $unitId[$key] : null);
                         }
                     }
 
@@ -181,7 +182,7 @@ class PurchaseOrderObserver
                 $inventory->save();
 
                 if ($order->warehouse_id && $item->product_id) {
-                    $this->recordPurchaseOrderInbound($order, (int) $item->product_id, (float) $item->quantity);
+                    $this->recordPurchaseOrderInbound($order, (int) $item->product_id, (float) $item->quantity, $item->unit_id ? (int) $item->unit_id : null);
                 }
             }
         }
@@ -303,11 +304,13 @@ class PurchaseOrderObserver
     /**
      * Physical stock: company + warehouse + product (+ batch/expiry when PO lines carry them later).
      */
-    private function recordPurchaseOrderInbound(PurchaseOrder $order, int $productId, float $quantity): void
+    private function recordPurchaseOrderInbound(PurchaseOrder $order, int $productId, float $quantity, ?int $unitId = null): void
     {
         if (! config('warehouse.inbound_from_purchase_order_delivered', true)) {
             return;
         }
+
+        app(WarehouseFlowPolicyService::class)->assertInboundSourceAllowed('purchase_order');
 
         if ($quantity <= 0 || ! $order->warehouse_id) {
             return;
@@ -322,6 +325,7 @@ class PurchaseOrderObserver
             'warehouse_id' => (int) $order->warehouse_id,
             'product_id' => $productId,
             'quantity' => $quantity,
+            'unit_id' => $unitId,
             'batch_number' => null,
             'expiry_date' => null,
             'reference_type' => PurchaseOrder::class,

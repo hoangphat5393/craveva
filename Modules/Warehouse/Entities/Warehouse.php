@@ -17,11 +17,16 @@ class Warehouse extends BaseModel
         'company_id',
         'name',
         'code',
+        'warehouse_type',
         'address',
         'description',
         'is_default',
         'status',
         'sort_order',
+    ];
+
+    protected $casts = [
+        'is_default' => 'boolean',
     ];
 
     public function stocks(): HasMany

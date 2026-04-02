@@ -230,7 +230,7 @@ Pham vi Option B MVP khong sua pha flow PO/DO inbound cu.
 ### E. 🛠 Suggested Fix Plan
 
 - **Step 1:** Chốt config tenant (`WAREHOUSE_SALES_OUTBOUND_MODE`, inbound flags, negative stock), lưu trong runbook triển khai.
-- **Step 2:** QA chạy bộ test case `FUNC_LOGIC/SALES_SHIPMENT_OPTION_B_UAT_TEST_CASES_VI.md` và ký nhận kết quả từng TC.
+- **Step 2:** QA chạy checklist theo `FUNC_LOGIC/WAREHOUSE_OPERATION_RUNBOOK_VI.md` và ký nhận kết quả từng TC.
 - **Step 3:** Cập nhật tài liệu đào tạo user: thay toàn bộ “DO bán” thành “Sales Shipment” và hướng dẫn đối soát tồn theo mode đã chốt.
 
 ---
@@ -328,7 +328,7 @@ Repo **chưa** có (hoặc chưa thấy trong `tests/`) các suite kiểu:
 - **InvoiceController** tạo/sửa invoice qua request thật + đối chiếu `stock_movements`.
 - Module **Inventory** (màn hình tồn, điều chỉnh) nếu tách khác `StockMovementService`.
 
-**Kết luận cho PM/QA:** lần chạy này **không phát hiện regression** trong phạm vi test đã có; **luồng ERP đầy đủ trên UI** vẫn nên chạy theo `FUNC_LOGIC/SALES_SHIPMENT_OPTION_B_UAT_TEST_CASES_VI.md` và checklist PO/DO/inbound trong tài liệu quy trình.
+**Kết luận cho PM/QA:** lần chạy này **không phát hiện regression** trong phạm vi test đã có; **luồng ERP đầy đủ trên UI** vẫn nên chạy theo `FUNC_LOGIC/WAREHOUSE_OPERATION_RUNBOOK_VI.md` và checklist PO/DO/inbound trong tài liệu quy trình.
 
 ---
 

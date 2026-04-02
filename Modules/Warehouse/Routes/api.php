@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Modules\Warehouse\Http\Controllers\WarehouseAvailabilityController;
 
 /*
     |--------------------------------------------------------------------------
@@ -15,5 +16,6 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware(['auth:sanctum'])->prefix('v1')->name('api.')->group(function () {
-    Route::get('warehouse', fn (Request $request) => $request->user())->name('warehouse');
+    Route::get('warehouse', fn(Request $request) => $request->user())->name('warehouse');
+    Route::get('warehouse/availability', [WarehouseAvailabilityController::class, 'show'])->name('warehouse.availability');
 });

@@ -2,7 +2,38 @@
 
 @push('datatable-styles')
     @include('sections.datatable_css')
+    <style>
+        .movement-ref-cell {
+            max-width: 220px;
+        }
+
+        .movement-ref-line {
+            display: inline-block;
+            max-width: 200px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            vertical-align: middle;
+        }
+
+        .content-wrapper .pagination .page-link svg {
+            width: 14px !important;
+            height: 14px !important;
+            max-width: 14px;
+            max-height: 14px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .content-wrapper .pagination .page-link {
+            line-height: 1.2;
+        }
+    </style>
 @endpush
+
+@php
+    $warehousePerPage = in_array((int) ($warehousePerPage ?? request('per_page', 25)), [10, 25, 50, 100], true) ? (int) ($warehousePerPage ?? request('per_page', 25)) : 25;
+@endphp
 
 @section('filter-section')
     <form method="GET" action="{{ route('warehouse.movements.index') }}" id="warehouse-movements-filter">
@@ -75,7 +106,8 @@
                     @forelse($movements as $movement)
                         @php
                             $ref = $movement->reference_type;
-                            $refLabel = $ref ? (str_contains($ref, '\\') ? class_basename($ref) : $ref) : '—';
+                            $refRaw = $ref ? (str_contains($ref, '\\') ? class_basename($ref) : $ref) : '';
+                            $refLabel = $refRaw ? \Illuminate\Support\Str::headline(str_replace('_', ' ', $refRaw)) : '—';
                         @endphp
                         <tr>
                             <td>{{ $loop->iteration + ($movements->currentPage() - 1) * $movements->perPage() }}</td>
@@ -113,10 +145,10 @@
                             </td>
                             <td class="text-right font-weight-semibold">{{ $movement->quantity }}</td>
                             <td><span class="text-dark-grey">{{ $movement->batch_number ?: '—' }}</span></td>
-                            <td>
-                                <small class="text-dark-grey">{{ $refLabel }}</small>
+                            <td class="movement-ref-cell">
+                                <small class="text-dark-grey movement-ref-line" title="{{ $refLabel }}">{{ $refLabel }}</small>
                                 @if ($movement->reference_id)
-                                    <br><small class="text-lightest">#{{ $movement->reference_id }}</small>
+                                    <br><small class="text-lightest">@lang('app.id') #{{ $movement->reference_id }}</small>
                                 @endif
                             </td>
                         </tr>
@@ -132,8 +164,25 @@
         </div>
 
         @if ($movements->hasPages())
-            <div class="w-100 d-flex justify-content-end mt-3 px-3">
-                {{ $movements->appends(request()->query())->links() }}
+            <div class="warehouse-footer d-flex justify-content-between align-items-center flex-wrap mt-3 px-3 py-2 bg-white border">
+                <div class="d-flex align-items-center mb-2 mb-md-0">
+                    <span class="mr-2 text-dark-grey">@lang('app.show')</span>
+                    <div class="select-status mr-2" style="min-width: 90px;">
+                        <select class="form-control select-picker" id="warehouse-movements-per-page" data-size="4">
+                            @foreach ([10, 25, 50, 100] as $size)
+                                <option value="{{ $size }}" @selected($warehousePerPage === $size)>{{ $size }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <span class="text-dark-grey">@lang('app.entries')</span>
+                </div>
+
+                <div class="d-flex align-items-center">
+                    <span class="text-dark-grey mr-3">
+                        @lang('app.showing') {{ $movements->firstItem() ?? 0 }} @lang('app.to') {{ $movements->lastItem() ?? 0 }} @lang('app.of') {{ $movements->total() }} @lang('app.entries')
+                    </span>
+                    {{ $movements->appends(request()->query())->links('pagination::bootstrap-4') }}
+                </div>
             </div>
         @endif
     </div>
@@ -147,6 +196,14 @@
 
         $('#warehouse-movements-reset-filters').click(function() {
             window.location.href = '{{ route('warehouse.movements.index') }}';
+        });
+
+        $('#warehouse-movements-per-page').on('changed.bs.select', function() {
+            const value = $(this).val() || '25';
+            const url = new URL(window.location.href);
+            url.searchParams.set('per_page', value);
+            url.searchParams.delete('page');
+            window.location.href = url.toString();
         });
     </script>
 @endpush

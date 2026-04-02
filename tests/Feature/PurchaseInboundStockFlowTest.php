@@ -196,6 +196,7 @@ it('posts inbound stock when inbound DO is received and WAREHOUSE_INBOUND_FROM_D
 
 it('posts inbound stock from purchase order path when WAREHOUSE_INBOUND_FROM_PO_DELIVERED is true', function () {
     Config::set('warehouse.inbound_from_purchase_order_delivered', true);
+    Config::set('warehouse.inbound_from_delivery_order_received', false);
 
     $observer = new PurchaseOrderObserver;
     $po = new PurchaseOrder([
@@ -224,6 +225,7 @@ it('posts inbound stock from purchase order path when WAREHOUSE_INBOUND_FROM_PO_
 
 it('skips purchase order inbound when WAREHOUSE_INBOUND_FROM_PO_DELIVERED is false', function () {
     Config::set('warehouse.inbound_from_purchase_order_delivered', false);
+    Config::set('warehouse.inbound_from_delivery_order_received', false);
 
     $observer = new PurchaseOrderObserver;
     $po = new PurchaseOrder([

@@ -4,6 +4,11 @@ return [
     'name' => 'Warehouse',
     'allow_negative_stock' => env('WAREHOUSE_ALLOW_NEGATIVE_STOCK', false),
     /**
+     * When true, reserve/outbound/inbound with non-base unit requires explicit product unit mapping.
+     * When false, system falls back to quantity as-is if mapping is missing.
+     */
+    'strict_unit_conversion' => env('WAREHOUSE_STRICT_UNIT_CONVERSION', false),
+    /**
      * Inbound stock when PO delivery_status becomes "delivered" (legacy / default on).
      * Set false if you only post receiving via Delivery Order (received) to avoid double-counting.
      */

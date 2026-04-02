@@ -7,9 +7,13 @@ use App\Events\NewInvoiceEvent;
 use App\Events\NewOrderEvent;
 use App\Helper\Reply;
 use App\Helper\UserService;
+use App\Http\Requests\Admin\Employee\ImportProcessRequest;
+use App\Http\Requests\Admin\Employee\ImportRequest;
 use App\Http\Requests\Orders\PlaceOrder;
 use App\Http\Requests\Orders\UpdateOrder;
 use App\Http\Requests\Stripe\StoreStripeDetail;
+use App\Imports\SalesOrderImport;
+use App\Jobs\ImportSalesOrderChunkJob;
 use App\Models\BankAccount;
 use App\Models\CompanyAddress;
 use App\Models\CreditNoteItem;
@@ -32,15 +36,22 @@ use App\Models\Tax;
 use App\Models\UnitType;
 use App\Models\User;
 use App\Scopes\ActiveScope;
+use App\Traits\ImportExcel;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
+use Stripe\Customer;
+use Stripe\PaymentIntent;
 use Stripe\Stripe;
 
 class OrderController extends AccountBaseController
 {
+    use ImportExcel;
+
     public function __construct()
     {
         parent::__construct();
@@ -199,7 +210,7 @@ class OrderController extends AccountBaseController
     /**
      * XXXXXXXXXXX
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function store(PlaceOrder $request)
     {
@@ -706,7 +717,7 @@ class OrderController extends AccountBaseController
             $total = $this->order->total;
             $totalAmount = $total;
 
-            $customer = \Stripe\Customer::create(
+            $customer = Customer::create(
                 [
                     'email' => $client->email,
                     'name' => $request->clientName,
@@ -719,7 +730,7 @@ class OrderController extends AccountBaseController
                 ]
             );
 
-            $intent = \Stripe\PaymentIntent::create(
+            $intent = PaymentIntent::create(
                 [
                     'amount' => $totalAmount * 100,
                     /** @phpstan-ignore-next-line */
@@ -1156,5 +1167,59 @@ class OrderController extends AccountBaseController
         $unitId = UnitType::where('id', $id)->first();
 
         return Reply::dataOnly(['status' => 'success', 'data' => $client_data, 'type' => $unitId]);
+    }
+
+    public function importOrder()
+    {
+        $this->pageTitle = __('app.importExcel') . ' ' . __('app.menu.orders');
+        $this->addPermission = user()->permission('add_order');
+        abort_403(! in_array($this->addPermission, ['all', 'added', 'both']));
+
+        $this->view = 'orders.ajax.import';
+
+        if (request()->ajax()) {
+            return $this->returnAjax($this->view);
+        }
+
+        return view('orders.create', $this->data);
+    }
+
+    public function importStore(ImportRequest $request)
+    {
+        $this->addPermission = user()->permission('add_order');
+        abort_403(! in_array($this->addPermission, ['all', 'added', 'both']));
+
+        $rvalue = $this->importFileProcess($request, SalesOrderImport::class);
+
+        if ($rvalue == 'abort') {
+            return Reply::error(__('messages.abortAction'));
+        }
+
+        $this->data['originalImportFilename'] = $request->import_file->getClientOriginalName();
+        $view = view('orders.ajax.import_progress', $this->data)->render();
+
+        return Reply::successWithData(__('messages.importUploadSuccess'), ['view' => $view]);
+    }
+
+    public function importProcess(ImportProcessRequest $request)
+    {
+        $this->addPermission = user()->permission('add_order');
+        abort_403(! in_array($this->addPermission, ['all', 'added', 'both']));
+
+        $chunkSize = $request->filled('chunk_size') ? (int) $request->chunk_size : 100;
+        $batch = $this->importJobProcessChunked($request, SalesOrderImport::class, ImportSalesOrderChunkJob::class, $chunkSize);
+
+        $batchId = data_get($batch, 'id');
+        if ($batchId) {
+            Cache::put('import_metrics_' . $batchId, [
+                'created' => 0,
+                'updated' => 0,
+                'skipped' => 0,
+                'skipped_missing_required' => 0,
+                'invalid_status' => 0,
+            ], now()->addHours(12));
+        }
+
+        return Reply::successWithData(__('messages.importProcessStart'), ['batch' => $batch]);
     }
 }

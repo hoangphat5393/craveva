@@ -22,7 +22,8 @@ use Modules\Warehouse\Exceptions\WarehouseBusinessException;
 class InvoiceWarehouseStockService
 {
     public function __construct(
-        protected StockMovementService $stockMovement
+        protected StockMovementService $stockMovement,
+        protected WarehouseFlowPolicyService $flowPolicy
     ) {}
 
     public function isEnabled(): bool
@@ -50,6 +51,8 @@ class InvoiceWarehouseStockService
 
     public function shouldPostOutboundFromInvoice(): bool
     {
+        $this->flowPolicy->assertOutboundConfigurationValid();
+
         // Option B orchestration:
         // - mode=shipment => stock outbound happens when shipment is shipped, never here.
         // - mode=invoice  => keep legacy invoice outbound behavior.
@@ -103,10 +106,12 @@ class InvoiceWarehouseStockService
                     'warehouse_id' => $warehouseId,
                     'product_id' => (int) $item->product_id,
                     'quantity' => $qty,
+                    'unit_id' => $item->unit_id ? (int) $item->unit_id : null,
                     'batch_number' => null,
                     'expiry_date' => null,
                     'reference_type' => Invoice::class,
                     'reference_id' => $invoice->id,
+                    'idempotency_key' => 'invoice-outbound:' . $invoice->id . ':' . $item->id,
                 ];
 
                 $this->stockMovement->recordOutbound($payload);
@@ -145,10 +150,12 @@ class InvoiceWarehouseStockService
                     'warehouse_id' => (int) $posting->warehouse_id,
                     'product_id' => (int) $posting->product_id,
                     'quantity' => (float) $posting->quantity,
+                    'unit_id' => null,
                     'batch_number' => null,
                     'expiry_date' => null,
                     'reference_type' => 'invoice_stock_reversal',
                     'reference_id' => $invoice->id,
+                    'idempotency_key' => 'invoice-reversal:' . $invoice->id . ':' . $posting->id,
                 ]);
                 $posting->delete();
             }

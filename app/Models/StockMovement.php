@@ -29,6 +29,7 @@ class StockMovement extends BaseModel
         'fefo_fifo_rule',
         'reference_type',
         'reference_id',
+        'idempotency_key',
     ];
 
     public function product(): BelongsTo

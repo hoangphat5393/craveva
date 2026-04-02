@@ -10,7 +10,7 @@
                     <div id="alert"></div>
                     <div class="row">
                         <div class="col-lg-6 col-md-6">
-                            <x-forms.select fieldId="warehouse_id" :fieldLabel="__('warehouse::app.warehouse')" fieldName="warehouse_id" fieldRequired="true">
+                            <x-forms.select fieldId="warehouse_id" :fieldLabel="__('warehouse::app.warehouse')" fieldName="warehouse_id" fieldRequired="true" search="true">
                                 @foreach ($warehouses as $warehouse)
                                     <option value="{{ $warehouse->id }}">
                                         {{ $warehouse->name }}{{ $warehouse->code ? ' (' . $warehouse->code . ')' : '' }}{{ $warehouse->is_default ? ' - ' . __('warehouse::app.isDefault') : '' }}
@@ -56,6 +56,12 @@
 </div>
 
 <script>
+    $(function() {
+        if (typeof $.fn.selectpicker === 'function') {
+            $('.select-picker').selectpicker('refresh');
+        }
+    });
+
     $('#save-stock-form').click(function() {
         const $btn = $('#save-stock-form');
         $btn.prop('disabled', true);

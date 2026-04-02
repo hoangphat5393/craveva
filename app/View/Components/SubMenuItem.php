@@ -27,9 +27,27 @@ class SubMenuItem extends Component
         $this->text = $text;
         $this->link = $link;
         $this->addon = $addon;
-        $this->active = $active;
+        $this->active = $this->resolveActiveState((bool) $active, (string) $link);
         // Show icon only when permission is true
         $this->permission = $permission;
+    }
+
+    protected function resolveActiveState(bool $active, string $link): bool
+    {
+        if ($active || $link === '' || ! request()) {
+            return $active;
+        }
+
+        $linkPath = (string) parse_url($link, PHP_URL_PATH);
+        $normalizedLinkPath = trim($linkPath, '/');
+        $currentPath = trim((string) request()->path(), '/');
+
+        if ($normalizedLinkPath === '') {
+            return $currentPath === '';
+        }
+
+        return $currentPath === $normalizedLinkPath
+            || str_starts_with($currentPath, $normalizedLinkPath . '/');
     }
 
     /**

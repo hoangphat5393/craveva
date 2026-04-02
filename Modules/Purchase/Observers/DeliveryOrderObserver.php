@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Modules\Purchase\Support\GrnRuntime;
 use Modules\Warehouse\Services\StockMovementService;
+use Modules\Warehouse\Services\WarehouseFlowPolicyService;
 
 /**
  * Inbound DO (purchase receiving note): when status = received, post stock via StockMovementService.
@@ -22,6 +23,8 @@ class DeliveryOrderObserver
         if (! config('warehouse.inbound_from_delivery_order_received', false)) {
             return;
         }
+
+        app(WarehouseFlowPolicyService::class)->assertInboundSourceAllowed('delivery_order');
 
         // Safety guard: if both inbound channels are enabled and the linked PO is already delivered,
         // skip DO inbound posting to avoid double-counting the same receiving event.
@@ -66,7 +69,7 @@ class DeliveryOrderObserver
             return;
         }
 
-        $deliveryOrder->loadMissing('items');
+        $deliveryOrder->loadMissing('items.purchaseItem');
 
         $payloads = [];
         foreach ($deliveryOrder->items as $item) {
@@ -93,12 +96,14 @@ class DeliveryOrderObserver
                 'warehouse_id' => (int) $warehouseId,
                 'product_id' => (int) $item->product_id,
                 'quantity' => $qty,
+                'unit_id' => $item->purchaseItem?->unit_id ? (int) $item->purchaseItem->unit_id : null,
                 'batch_number' => $batch,
                 'expiry_date' => $expiry,
                 'fefo_fifo_rule' => $rule,
                 'reference_type' => get_class($deliveryOrder),
                 'reference_id' => $deliveryOrder->id,
                 'delivery_order_item_id' => $item->id,
+                'idempotency_key' => 'delivery-order-inbound:' . $deliveryOrder->id . ':' . $item->id,
             ];
         }
 

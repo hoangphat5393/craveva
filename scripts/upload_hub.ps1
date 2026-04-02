@@ -4,6 +4,8 @@
 
 param(
     [switch]$HubGitPull,
+    # Bắt buộc local main khớp origin/main (orphan / zip + git init / "No commits yet") — dùng git checkout -f -B.
+    [switch]$HubGitRepairMain,
     # On first run or minimal images: install git via apt on the hub (requires passwordless sudo).
     [switch]$HubEnsureGit,
     [string]$HubGitBranch = "main",
@@ -30,10 +32,13 @@ if ($HubEnsureGit) {
 }
 
 # 0) Hub server: verify Git is installed; optionally git pull (only if $HubPath is already a clone)
+# Workflow: local push → GitHub (main) → hub git pull / -HubGitPull. Permission denied → chown (xem bash exit 4).
 Write-Host "----------------------------------------------------------------"
 Write-Host "Step 0: Git on $HubHost (path: $HubPath, remote: $HubGitRemote)"
+Write-Host "  Workflow: local push → GitHub → hub pull (-HubGitPull)"
 Write-Host "----------------------------------------------------------------"
 $doPullFlag = if ($HubGitPull) { "1" } else { "0" }
+$repairFlag = if ($HubGitRepairMain) { "1" } else { "0" }
 $gitCheckScript = @'
 set -euo pipefail
 if ! command -v git >/dev/null 2>&1; then
@@ -53,22 +58,79 @@ fi
 echo "HUB_IS_GIT_REPO"
 git remote -v
 git status -sb
+BR="BRANCH_PLACEHOLDER"
+OREF="origin/${BR}"
+# Đảm bảo remote trỏ đúng (HTTPS deploy key / PAT đã cấu hình trên server).
+current_url="$(git remote get-url origin 2>/dev/null || true)"
+if [ -z "${current_url}" ]; then
+  git remote add origin "REMOTE_PLACEHOLDER"
+elif [ "${current_url}" != "REMOTE_PLACEHOLDER" ] && [ "${current_url}" != "REMOTE_PLACEHOLDER/" ]; then
+  echo "HUB_GIT_NOTE: origin URL is ${current_url} (expected REMOTE_PLACEHOLDER) — giữ nguyên; fetch vẫn chạy."
+fi
 git fetch origin
+if ! git rev-parse -q --verify "${OREF}" >/dev/null; then
+  echo "ERROR: Không có ${OREF} sau fetch. Kiểm tra nhánh trên GitHub."
+  git branch -a
+  exit 3
+fi
+# Orphan / "No commits yet on main" / zip rồi git init — chỉ sửa khi có -HubGitPull hoặc -HubGitRepairMain (tránh ghi đè nhầm).
+NEED_REPAIR=0
+if [ "REPAIR_FLAG_PLACEHOLDER" = "1" ]; then
+  NEED_REPAIR=1
+  echo "HUB_GIT_REPAIR: forced by -HubGitRepairMain"
+elif [ "DO_PULL_PLACEHOLDER" = "1" ]; then
+  if ! git rev-parse -q --verify HEAD >/dev/null 2>&1; then
+    NEED_REPAIR=1
+    echo "HUB_GIT_REPAIR: no HEAD (empty repo)"
+  else
+    HC=$(git rev-list --count HEAD 2>/dev/null || echo 0)
+    if [ "${HC}" -eq 0 ]; then
+      NEED_REPAIR=1
+      echo "HUB_GIT_REPAIR: branch has zero commits (orphan / zip deploy)"
+    fi
+  fi
+fi
+if [ "${NEED_REPAIR}" = "1" ]; then
+  echo "HUB_GIT_REPAIR: git checkout -f -B ${BR} ${OREF}"
+  if ! git checkout -f -B "${BR}" "${OREF}"; then
+    echo "HUB_GIT_ERROR: checkout thất bại (thường do Permission denied — file thuộc www-data/root)."
+    echo "Chạy một lần trên hub (user SSH = $(whoami)):"
+    echo "  sudo chown -R $(whoami):$(whoami) \"$(pwd)\""
+    echo "  sudo chown -R www-data:www-data \"$(pwd)/storage\" \"$(pwd)/bootstrap/cache\""
+    echo "  sudo chmod -R ug+rwX \"$(pwd)/storage\" \"$(pwd)/bootstrap/cache\""
+    echo "Sau đó chạy lại checkout/pull."
+    exit 4
+  fi
+  git branch --set-upstream-to="${OREF}" "${BR}"
+fi
 if [ "DO_PULL_PLACEHOLDER" = "1" ]; then
-  git pull --ff-only origin "BRANCH_PLACEHOLDER"
+  git checkout "${BR}"
+  if [ "${NEED_REPAIR}" != "1" ]; then
+    git branch --set-upstream-to="${OREF}" "${BR}" 2>/dev/null || true
+  fi
+  if ! git pull --ff-only; then
+    echo "HUB_GIT_ERROR: git pull thất bại — kiểm tra quyền ghi (chown như trên) hoặc conflict."
+    exit 4
+  fi
   echo "GIT_PULL_DONE branch=BRANCH_PLACEHOLDER"
 else
-  echo "GIT_PULL_SKIPPED (add -HubGitPull to run: git pull --ff-only origin BRANCH_PLACEHOLDER)"
+  echo "GIT_PULL_SKIPPED (add -HubGitPull to run pull; repair still ran if needed)"
 fi
+git status -sb
+git log -1 --oneline || true
 '@
-$gitCheckScript = $gitCheckScript.Replace("APP_PATH_PLACEHOLDER", $HubPath).Replace("REMOTE_PLACEHOLDER", $HubGitRemote).Replace("DO_PULL_PLACEHOLDER", $doPullFlag).Replace("BRANCH_PLACEHOLDER", $HubGitBranch)
+$gitCheckScript = $gitCheckScript.Replace("APP_PATH_PLACEHOLDER", $HubPath).Replace("REMOTE_PLACEHOLDER", $HubGitRemote).Replace("DO_PULL_PLACEHOLDER", $doPullFlag).Replace("BRANCH_PLACEHOLDER", $HubGitBranch).Replace("REPAIR_FLAG_PLACEHOLDER", $repairFlag)
 
 $gitCheckScript | ssh "${HubHost}" "bash -se"
 $gitExit = $LASTEXITCODE
 if ($gitExit -ne 0) {
     if ($gitExit -eq 2) {
         Write-Warning "Hub app path is not a git repository. Continuing with zip deploy. For git workflow, clone $HubGitRemote then align .env/storage."
-    } else {
+    }
+    elseif ($gitExit -eq 4) {
+        throw "Hub Git failed: fix ownership on $HubPath (see HUB_GIT_ERROR lines from SSH — chown to your SSH user, then www-data for storage + bootstrap/cache)."
+    }
+    else {
         throw "Git check on hub failed (exit $gitExit)."
     }
 }
@@ -445,12 +507,19 @@ $RemoteCommand += " && echo 'Removing existing Pricing module directory...'"
 $RemoteCommand += " && sudo rm -rf Modules/Pricing"
 # Unzip
 $RemoteCommand += " && sudo unzip -o $ZipFile && sudo rm $ZipFile"
-# Fix permissions
-$RemoteCommand += " && sudo chown -R www-data:www-data $HubPath/Modules $HubPath/resources $HubPath/storage $HubPath/bootstrap/cache $HubPath/public"
-$RemoteCommand += " && sudo chmod -R 775 $HubPath/storage $HubPath/bootstrap/cache"
-$RemoteCommand += " && sudo chmod -R 755 $HubPath/public"
-$RemoteCommand += " && sudo chown -R www-data:www-data $HubPath/public/vendor"
-$RemoteCommand += " && sudo chmod -R 755 $HubPath/public/vendor"
+# Fix permissions (safe defaults for Laravel + future git pull)
+# - Code tree: deploy user owns files, web server group can read.
+# - Runtime writable dirs: www-data owns storage + bootstrap/cache.
+$RemoteCommand += " && sudo chown -R hoangphat5393:www-data $HubPath"
+$RemoteCommand += " && sudo find $HubPath -path $HubPath/storage -prune -o -path $HubPath/bootstrap/cache -prune -o -type d -exec chmod 755 {} \\;"
+$RemoteCommand += " && sudo find $HubPath -path $HubPath/storage -prune -o -path $HubPath/bootstrap/cache -prune -o -type f -exec chmod 644 {} \\;"
+$RemoteCommand += " && sudo mkdir -p $HubPath/storage $HubPath/bootstrap/cache"
+$RemoteCommand += " && sudo chown -R www-data:www-data $HubPath/storage $HubPath/bootstrap/cache"
+$RemoteCommand += " && sudo find $HubPath/storage $HubPath/bootstrap/cache -type d -exec chmod 2775 {} \\;"
+$RemoteCommand += " && sudo find $HubPath/storage $HubPath/bootstrap/cache -type f -exec chmod 664 {} \\;"
+$RemoteCommand += " && [ -f $HubPath/.env ] && sudo chmod 640 $HubPath/.env || true"
+$RemoteCommand += " && [ -f $HubPath/.env.backupv2 ] && sudo chmod 640 $HubPath/.env.backupv2 || true"
+$RemoteCommand += " && [ -f $HubPath/env.production ] && sudo chmod 640 $HubPath/env.production || true"
 # Clear caches and run migrations
 $RemoteCommand += " && sudo -u www-data php artisan migrate --force"
 $RemoteCommand += " && sudo -u www-data php artisan migrate --path=database/migrations/2026_01_21_000000_add_storage_and_certification_to_products_table_fb.php --force"

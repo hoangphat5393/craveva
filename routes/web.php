@@ -8,8 +8,8 @@ use App\Http\Controllers\BankAccountController;
 use App\Http\Controllers\ClientCategoryController;
 use App\Http\Controllers\ClientContactController;
 use App\Http\Controllers\ClientController;
-use App\Http\Controllers\ClientImportLogController;
 use App\Http\Controllers\ClientDocController;
+use App\Http\Controllers\ClientImportLogController;
 use App\Http\Controllers\ClientNoteController;
 use App\Http\Controllers\ContractController;
 use App\Http\Controllers\ContractFileController;
@@ -98,6 +98,7 @@ use App\Http\Controllers\TimelogCalendarController;
 use App\Http\Controllers\TimelogController;
 use App\Http\Controllers\TimelogReportController;
 use App\Http\Controllers\UserPermissionController;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Route;
@@ -157,6 +158,7 @@ Route::get('php-ini-check', function () {
         ],
         'import_execution_jobs_per_poll' => (function () {
             $n = (int) (ini_get('max_execution_time') / 10);
+
             return $n > 1 ? min($n, 100) : 50;
         })(),
         'extensions' => [
@@ -169,7 +171,7 @@ Route::get('php-ini-check', function () {
 })->name('php-ini.check');
 
 Route::get('debug-final-check', function () {
-    $user = \App\Models\User::whereHas('roles', function ($q) {
+    $user = User::whereHas('roles', function ($q) {
         $q->where('name', 'client');
     })->first();
     if (! $user) {
@@ -199,6 +201,7 @@ Route::get('debug-final-check', function () {
     ];
 });
 
+use App\Events\TestPusherEvent;
 use App\Http\Controllers\ClientSubCategoryController;
 use App\Http\Controllers\ContractDiscussionController;
 use App\Http\Controllers\DealNoteController;
@@ -467,6 +470,9 @@ Route::group(['middleware' => ['auth', 'multi-company-select', 'email_verified']
     Route::post('orders/payment-failed/{orderId}', [OrderController::class, 'paymentFailed'])->name('orders.payment_failed');
     Route::post('orders/save-stripe-detail/', [OrderController::class, 'saveStripeDetail'])->name('orders.save_stripe_detail');
     Route::post('orders/change-status/', [OrderController::class, 'changeStatus'])->name('orders.change_status');
+    Route::get('orders/import', [OrderController::class, 'importOrder'])->name('orders.import');
+    Route::post('orders/import', [OrderController::class, 'importStore'])->name('orders.import.store');
+    Route::post('orders/import/process', [OrderController::class, 'importProcess'])->name('orders.import.process');
     /* Payments */
     Route::get('orders/download/{id}', [OrderController::class, 'download'])->name('orders.download');
     Route::post('orders/store-quantity/', [OrderController::class, 'storeQuantity'])->name('orders.store_quantity');
@@ -1020,10 +1026,10 @@ Route::group(['middleware' => ['auth', 'multi-company-select', 'email_verified']
 // Test broadcasting
 Route::get('/test-broadcast', function () {
     try {
-        event(new \App\Events\TestPusherEvent);
+        event(new TestPusherEvent);
 
         return response()->json(['success' => true, 'message' => 'Event broadcasted successfully']);
-    } catch (\Throwable $e) {
+    } catch (Throwable $e) {
         return response()->json(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
     }
 })->name('test-broadcast');

@@ -8,7 +8,7 @@ Dùng file này để vào nhanh tài liệu mới nhất, tránh đọc nhầm 
 2. `FUNC_LOGIC/QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md`
 3. `PROJECT BIOMIXING/BIOMIXING_FLOW_CRACEVA_GAP.md`
 4. `FUNC_LOGIC/SALES_PURCHASE_FLOW.md`
-5. `FUNC_LOGIC/PROMPT_OPTION_B_SO_SHIPMENT_IMPLEMENTATION.md`
+5. `FUNC_LOGIC/WAREHOUSE_OPERATION_RUNBOOK_VI.md`
 
 ## Legacy / redirect files (giữ để không gãy link)
 

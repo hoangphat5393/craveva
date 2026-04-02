@@ -157,6 +157,17 @@
 
 <script>
     $(document).ready(function() {
+        const openActiveSidebarAccordions = () => {
+            $('.accordionItem').each(function() {
+                const $item = $(this);
+                if ($item.find('.accordionItemContent a.active').length > 0) {
+                    $item.removeClass('closeIt').addClass('openIt');
+                    $item.find('.accordionItemHeading').addClass('active');
+                }
+            });
+        };
+
+        openActiveSidebarAccordions();
 
         $('.invite-member').click(function() {
             const url = "{{ route('employees.invite_member') }}";

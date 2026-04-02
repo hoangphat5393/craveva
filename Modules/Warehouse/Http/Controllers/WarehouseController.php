@@ -46,7 +46,7 @@ class WarehouseController extends AccountBaseController
         $viewPermission = user()->permission('view_warehouses');
         abort_if(! in_array($viewPermission, ['all', 'added', 'owned', 'both'], true), 403, __('warehouse::app.err_permission_denied'));
 
-        $allowedSortColumns = ['id', 'name', 'code', 'address', 'status', 'is_default'];
+        $allowedSortColumns = ['id', 'name', 'code', 'warehouse_type', 'address', 'status', 'is_default'];
         $sortBy = $request->get('sort_by');
         $sortDir = strtolower((string) $request->get('sort_dir', 'asc')) === 'desc' ? 'desc' : 'asc';
         $hasColumnSort = in_array($sortBy, $allowedSortColumns, true);
@@ -79,6 +79,10 @@ class WarehouseController extends AccountBaseController
 
         $this->pageTitle = 'warehouse::app.warehouses';
         $this->pageIcon = 'ti-layout';
+        $this->hasInboundConfigConflict = (bool) config('warehouse.inbound_from_purchase_order_delivered', true)
+            && (bool) config('warehouse.inbound_from_delivery_order_received', false);
+        $this->outboundMode = (string) config('warehouse.sales_outbound_mode', 'shipment');
+        $this->hasOutboundModeConflict = ! in_array($this->outboundMode, ['shipment', 'invoice'], true);
         $this->warehouseSortBy = $hasColumnSort ? $sortBy : null;
         $this->warehouseSortDir = $sortDir;
         $this->warehousePerPage = $perPage;
@@ -243,6 +247,7 @@ class WarehouseController extends AccountBaseController
         $request->validate([
             'name' => 'required|string|max:255',
             'code' => 'nullable|string|max:50|unique:warehouses,code',
+            'warehouse_type' => 'nullable|in:normal,locked,scrap,transit',
             'address' => 'nullable|string|max:255',
             'status' => 'required|in:active,inactive',
         ]);
@@ -259,6 +264,7 @@ class WarehouseController extends AccountBaseController
                 'company_id' => $companyId,
                 'name' => $request->name,
                 'code' => $request->code,
+                'warehouse_type' => $request->input('warehouse_type', 'normal'),
                 'address' => $request->address,
                 'description' => $request->description,
                 'status' => $request->status,
@@ -335,6 +341,7 @@ class WarehouseController extends AccountBaseController
         $request->validate([
             'name' => 'required|string|max:255',
             'code' => 'nullable|string|max:50|unique:warehouses,code,' . $id,
+            'warehouse_type' => 'nullable|in:normal,locked,scrap,transit',
             'address' => 'nullable|string|max:255',
             'status' => 'required|in:active,inactive',
         ]);
@@ -347,6 +354,7 @@ class WarehouseController extends AccountBaseController
             $warehouse->update([
                 'name' => $request->name,
                 'code' => $request->code,
+                'warehouse_type' => $request->input('warehouse_type', 'normal'),
                 'address' => $request->address,
                 'description' => $request->description,
                 'status' => $request->status,

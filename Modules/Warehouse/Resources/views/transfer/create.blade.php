@@ -1,5 +1,19 @@
 @extends('layouts.app')
 
+@push('styles')
+    <style>
+        .content-wrapper .bootstrap-select {
+            width: 100% !important;
+        }
+
+        .content-wrapper .bootstrap-select .filter-option-inner-inner {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    </style>
+@endpush
+
 @section('content')
     <div class="content-wrapper">
         <div class="row">
@@ -13,7 +27,7 @@
                             <div id="alert"></div>
                             <div class="row">
                                 <div class="col-lg-6 col-md-6">
-                                    <x-forms.select fieldId="warehouse_from_id" :fieldLabel="__('warehouse::app.fromWarehouse')" fieldName="warehouse_from_id" fieldRequired="true">
+                                    <x-forms.select fieldId="warehouse_from_id" :fieldLabel="__('warehouse::app.fromWarehouse')" fieldName="warehouse_from_id" fieldRequired="true" search="true">
                                         @foreach ($warehouses as $warehouse)
                                             <option value="{{ $warehouse->id }}">
                                                 {{ $warehouse->name }}{{ $warehouse->code ? ' (' . $warehouse->code . ')' : '' }}{{ $warehouse->is_default ? ' - ' . __('warehouse::app.isDefault') : '' }}
@@ -23,7 +37,7 @@
                                 </div>
 
                                 <div class="col-lg-6 col-md-6">
-                                    <x-forms.select fieldId="warehouse_to_id" :fieldLabel="__('warehouse::app.toWarehouse')" fieldName="warehouse_to_id" fieldRequired="true">
+                                    <x-forms.select fieldId="warehouse_to_id" :fieldLabel="__('warehouse::app.toWarehouse')" fieldName="warehouse_to_id" fieldRequired="true" search="true">
                                         @foreach ($warehouses as $warehouse)
                                             <option value="{{ $warehouse->id }}">
                                                 {{ $warehouse->name }}{{ $warehouse->code ? ' (' . $warehouse->code . ')' : '' }}{{ $warehouse->is_default ? ' - ' . __('warehouse::app.isDefault') : '' }}
@@ -60,3 +74,13 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        $(function() {
+            if (typeof $.fn.selectpicker === 'function') {
+                $('.select-picker').selectpicker('refresh');
+            }
+        });
+    </script>
+@endpush

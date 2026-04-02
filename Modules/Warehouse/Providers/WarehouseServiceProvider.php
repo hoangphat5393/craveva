@@ -5,9 +5,14 @@ namespace Modules\Warehouse\Providers;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
+use Modules\Warehouse\Console\WarehouseReconciliationReportCommand;
 use Modules\Warehouse\Services\InvoiceWarehouseStockService;
 use Modules\Warehouse\Services\StockMovementService;
 use Modules\Warehouse\Services\StockReservationService;
+use Modules\Warehouse\Services\WarehouseFlowPolicyService;
+use Modules\Warehouse\Services\WarehouseAvailabilityService;
+use Modules\Warehouse\Services\WarehouseReconciliationService;
+use Modules\Warehouse\Services\WarehouseUnitConversionService;
 use Modules\Warehouse\Services\WarehouseQueryService;
 
 class WarehouseServiceProvider extends ServiceProvider
@@ -41,6 +46,10 @@ class WarehouseServiceProvider extends ServiceProvider
         $this->app->singleton(StockMovementService::class);
         $this->app->singleton(InvoiceWarehouseStockService::class);
         $this->app->singleton(StockReservationService::class);
+        $this->app->singleton(WarehouseFlowPolicyService::class);
+        $this->app->singleton(WarehouseAvailabilityService::class);
+        $this->app->singleton(WarehouseUnitConversionService::class);
+        $this->app->singleton(WarehouseReconciliationService::class);
         $this->app->singleton(WarehouseQueryService::class);
         $this->app->register(RouteServiceProvider::class);
     }
@@ -50,7 +59,9 @@ class WarehouseServiceProvider extends ServiceProvider
      */
     protected function registerCommands(): void
     {
-        // $this->commands([]);
+        $this->commands([
+            WarehouseReconciliationReportCommand::class,
+        ]);
     }
 
     /**
@@ -69,7 +80,7 @@ class WarehouseServiceProvider extends ServiceProvider
      */
     public function registerTranslations(): void
     {
-        $langPath = resource_path('lang/modules/'.$this->moduleNameLower);
+        $langPath = resource_path('lang/modules/' . $this->moduleNameLower);
 
         if (is_dir($langPath)) {
             $this->loadTranslationsFrom($langPath, $this->moduleNameLower);
@@ -85,7 +96,7 @@ class WarehouseServiceProvider extends ServiceProvider
      */
     protected function registerConfig(): void
     {
-        $this->publishes([module_path($this->moduleName, 'Config/config.php') => config_path($this->moduleNameLower.'.php')], 'config');
+        $this->publishes([module_path($this->moduleName, 'Config/config.php') => config_path($this->moduleNameLower . '.php')], 'config');
         $this->mergeConfigFrom(module_path($this->moduleName, 'Config/config.php'), $this->moduleNameLower);
     }
 
@@ -94,14 +105,14 @@ class WarehouseServiceProvider extends ServiceProvider
      */
     public function registerViews(): void
     {
-        $viewPath = resource_path('views/modules/'.$this->moduleNameLower);
+        $viewPath = resource_path('views/modules/' . $this->moduleNameLower);
         $sourcePath = module_path($this->moduleName, 'Resources/views');
 
-        $this->publishes([$sourcePath => $viewPath], ['views', $this->moduleNameLower.'-module-views']);
+        $this->publishes([$sourcePath => $viewPath], ['views', $this->moduleNameLower . '-module-views']);
 
         $this->loadViewsFrom(array_merge($this->getPublishableViewPaths(), [$sourcePath]), $this->moduleNameLower);
 
-        $componentNamespace = str_replace('/', '\\', config('modules.namespace').'\\'.$this->moduleName.'\\'.config('modules.paths.generator.component-class.path'));
+        $componentNamespace = str_replace('/', '\\', config('modules.namespace') . '\\' . $this->moduleName . '\\' . config('modules.paths.generator.component-class.path'));
         Blade::componentNamespace($componentNamespace, $this->moduleNameLower);
     }
 
@@ -117,8 +128,8 @@ class WarehouseServiceProvider extends ServiceProvider
     {
         $paths = [];
         foreach (config('view.paths') as $path) {
-            if (is_dir($path.'/modules/'.$this->moduleNameLower)) {
-                $paths[] = $path.'/modules/'.$this->moduleNameLower;
+            if (is_dir($path . '/modules/' . $this->moduleNameLower)) {
+                $paths[] = $path . '/modules/' . $this->moduleNameLower;
             }
         }
 

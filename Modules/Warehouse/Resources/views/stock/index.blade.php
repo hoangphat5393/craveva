@@ -2,12 +2,27 @@
 
 @push('datatable-styles')
     @include('sections.datatable_css')
+    <style>
+        .content-wrapper .pagination .page-link svg {
+            width: 14px !important;
+            height: 14px !important;
+            max-width: 14px;
+            max-height: 14px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .content-wrapper .pagination .page-link {
+            line-height: 1.2;
+        }
+    </style>
 @endpush
 
 @php
     $addStockPerm = user()->permission('add_warehouse_stock');
     $transferPerm = user()->permission('manage_warehouse_transfer');
     $grnRouteName = config('purchase.flow_naming_mode', 'compat_v2') === 'legacy' ? 'delivery-orders.index' : 'grn.index';
+    $warehousePerPage = in_array((int) ($warehousePerPage ?? request('per_page', 25)), [10, 25, 50, 100], true) ? (int) ($warehousePerPage ?? request('per_page', 25)) : 25;
 @endphp
 
 @section('filter-section')
@@ -74,7 +89,11 @@
                         <th>#</th>
                         <th>@lang('warehouse::app.product')</th>
                         <th>@lang('warehouse::app.warehouse')</th>
+                        <th>@lang('warehouse::app.warehouseType')</th>
                         <th>@lang('warehouse::app.quantity')</th>
+                        <th>@lang('warehouse::app.reservedQuantity')</th>
+                        <th>@lang('warehouse::app.availableQuantity')</th>
+                        <th>@lang('warehouse::app.sellableQuantity')</th>
                         <th>@lang('app.updatedAt')</th>
                     </tr>
                 </thead>
@@ -93,13 +112,25 @@
                                 @endif
                             </td>
                             <td>
+                                <span class="badge badge-light">
+                                    @lang('warehouse::app.warehouseTypeLabel', ['type' => $stock->warehouse_type ?? ($stock->warehouse->warehouse_type ?? 'normal')])
+                                </span>
+                            </td>
+                            <td>
                                 <span class="font-weight-semibold {{ $stock->quantity > 0 ? 'text-success' : 'text-danger' }}">{{ $stock->quantity }}</span>
+                            </td>
+                            <td>{{ number_format((float) ($stock->reserved_quantity ?? 0), 4, '.', '') }}</td>
+                            <td>{{ number_format((float) ($stock->available_quantity ?? 0), 4, '.', '') }}</td>
+                            <td>
+                                <span class="font-weight-semibold {{ (float) ($stock->sellable_quantity ?? 0) > 0 ? 'text-success' : 'text-danger' }}">
+                                    {{ number_format((float) ($stock->sellable_quantity ?? 0), 4, '.', '') }}
+                                </span>
                             </td>
                             <td class="text-nowrap">{{ $stock->updated_at->timezone(company()->timezone)->format(company()->date_format . ' H:i') }}</td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="p-0">
+                            <td colspan="9" class="p-0">
                                 <div class="p-5">
                                     <x-cards.no-record icon="cubes" :message="__('warehouse::app.emptyStockOnboardingTitle')" />
                                     <p class="f-14 text-dark-grey mt-3 mb-2">{{ __('warehouse::app.emptyStockOnboardingIntro') }}</p>
@@ -125,8 +156,25 @@
         </div>
 
         @if ($stocks->hasPages())
-            <div class="w-100 d-flex justify-content-end mt-3 px-3">
-                {{ $stocks->appends(request()->query())->links() }}
+            <div class="warehouse-footer d-flex justify-content-between align-items-center flex-wrap mt-3 px-3 py-2 bg-white border">
+                <div class="d-flex align-items-center mb-2 mb-md-0">
+                    <span class="mr-2 text-dark-grey">@lang('app.show')</span>
+                    <div class="select-status mr-2" style="min-width: 90px;">
+                        <select class="form-control select-picker" id="warehouse-stock-per-page" data-size="4">
+                            @foreach ([10, 25, 50, 100] as $size)
+                                <option value="{{ $size }}" @selected($warehousePerPage === $size)>{{ $size }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <span class="text-dark-grey">@lang('app.entries')</span>
+                </div>
+
+                <div class="d-flex align-items-center">
+                    <span class="text-dark-grey mr-3">
+                        @lang('app.showing') {{ $stocks->firstItem() ?? 0 }} @lang('app.to') {{ $stocks->lastItem() ?? 0 }} @lang('app.of') {{ $stocks->total() }} @lang('app.entries')
+                    </span>
+                    {{ $stocks->appends(request()->query())->links('pagination::bootstrap-4') }}
+                </div>
             </div>
         @endif
     </div>
@@ -140,6 +188,14 @@
 
         $('#warehouse-stock-reset-filters').click(function() {
             window.location.href = '{{ route('warehouse.stock.index') }}';
+        });
+
+        $('#warehouse-stock-per-page').on('changed.bs.select', function() {
+            const value = $(this).val() || '25';
+            const url = new URL(window.location.href);
+            url.searchParams.set('per_page', value);
+            url.searchParams.delete('page');
+            window.location.href = url.toString();
         });
     </script>
 @endpush

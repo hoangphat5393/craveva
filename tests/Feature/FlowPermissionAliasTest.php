@@ -2,8 +2,9 @@
 
 use Modules\Purchase\Support\FlowPermission;
 
-if (! class_exists('FlowPermissionFakeUser')) {
-    class FlowPermissionFakeUser
+function fakeFlowPermissionUser(array $permissions): object
+{
+    return new class($permissions)
     {
         public function __construct(private array $permissions) {}
 
@@ -11,7 +12,7 @@ if (! class_exists('FlowPermissionFakeUser')) {
         {
             return $this->permissions[$name] ?? 'none';
         }
-    }
+    };
 }
 
 beforeEach(function () {
@@ -33,7 +34,7 @@ afterEach(function () {
 it('allows alias by legacy permission before cutover', function () {
     config()->set('purchase.do_grn_cutover_enabled', false);
 
-    session(['user' => new FlowPermissionFakeUser([
+    session(['user' => fakeFlowPermissionUser([
         'view_sales_do' => 'none',
         'view_sales_shipment' => 'all',
     ])]);
@@ -44,7 +45,7 @@ it('allows alias by legacy permission before cutover', function () {
 it('requires new permission after cutover', function () {
     config()->set('purchase.do_grn_cutover_enabled', true);
 
-    session(['user' => new FlowPermissionFakeUser([
+    session(['user' => fakeFlowPermissionUser([
         'view_sales_do' => 'none',
         'view_sales_shipment' => 'all',
     ])]);
@@ -53,7 +54,7 @@ it('requires new permission after cutover', function () {
 });
 
 it('accepts new permission in both modes', function () {
-    session(['user' => new FlowPermissionFakeUser([
+    session(['user' => fakeFlowPermissionUser([
         'view_grn' => 'all',
     ])]);
 
@@ -66,7 +67,7 @@ it('accepts new permission in both modes', function () {
 
 it('denies when alias key is missing', function () {
     config()->set('purchase.do_grn_cutover_enabled', false);
-    session(['user' => new FlowPermissionFakeUser([
+    session(['user' => fakeFlowPermissionUser([
         'anything' => 'all',
     ])]);
 

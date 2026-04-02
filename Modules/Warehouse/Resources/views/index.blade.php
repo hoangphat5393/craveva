@@ -114,6 +114,20 @@
 @section('content')
     <div class="content-wrapper">
         <div id="warehouse-list-wrap">
+            @if ($hasInboundConfigConflict || $hasOutboundModeConflict)
+                <div class="alert alert-warning mt-3 mb-0" role="alert">
+                    @if ($hasInboundConfigConflict)
+                        <div class="mb-1">
+                            <strong>@lang('app.warning'):</strong> @lang('warehouse::app.inboundCanonicalConflictUi')
+                        </div>
+                    @endif
+                    @if ($hasOutboundModeConflict)
+                        <div>
+                            <strong>@lang('app.warning'):</strong> @lang('warehouse::app.outboundModeConflictUi', ['mode' => $outboundMode])
+                        </div>
+                    @endif
+                </div>
+            @endif
             <div class="d-flex justify-content-between action-bar">
                 <div id="table-actions" class="flex-grow-1 align-items-center mt-3">
                     @if ($addWarehousePermission == 'all' || $addWarehousePermission == 'added')
@@ -186,6 +200,12 @@
                                 </a>
                             </th>
                             <th>
+                                <a class="text-dark-grey warehouse-sort-link {{ $sortClass('warehouse_type') }}" href="{{ route('warehouse.index', array_merge(request()->except('page'), ['sort_by' => 'warehouse_type', 'sort_dir' => $nextSortDir('warehouse_type')])) }}">
+                                    @lang('warehouse::app.warehouseType')
+                                    <i class="{{ $sortIndicatorClass('warehouse_type') }}"></i>
+                                </a>
+                            </th>
+                            <th>
                                 <a class="text-dark-grey warehouse-sort-link {{ $sortClass('status') }}" href="{{ route('warehouse.index', array_merge(request()->except('page'), ['sort_by' => 'status', 'sort_dir' => $nextSortDir('status')])) }}">
                                     @lang('app.status')
                                     <i class="{{ $sortIndicatorClass('status') }}"></i>
@@ -212,6 +232,12 @@
                                 <td class="font-weight-semibold">{{ $warehouse->name }}</td>
                                 <td>{{ $warehouse->code ?: '—' }}</td>
                                 <td><span class="text-dark-grey">{{ \Illuminate\Support\Str::limit($warehouse->address, 60) ?: '—' }}</span></td>
+                                <td>
+                                    @php($wType = $warehouse->warehouse_type ?? 'normal')
+                                    <span class="badge badge-light">
+                                        @lang('warehouse::app.warehouseTypeLabel', ['type' => $wType])
+                                    </span>
+                                </td>
                                 <td>
                                     @if ($editWarehousePermission == 'all' || $editWarehousePermission == 'added')
                                         <select class="form-control select-picker change-warehouse-status" data-size="8" data-warehouse-id="{{ $warehouse->id }}" data-current-status="{{ $warehouse->status }}">
@@ -269,7 +295,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="{{ $canBulkWarehouseAction ? 8 : 7 }}" class="p-5">
+                                <td colspan="{{ $canBulkWarehouseAction ? 9 : 8 }}" class="p-5">
                                     <x-cards.no-record icon="cubes" :message="__('messages.noRecordFound')" />
                                 </td>
                             </tr>

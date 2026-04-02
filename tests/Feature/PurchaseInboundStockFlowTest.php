@@ -82,6 +82,20 @@ beforeEach(function () {
         $table->timestamps();
     });
 
+    // GRN cutover: DeliveryOrderObserver updates `grns` by the same id as the legacy DO row.
+    Schema::create('grns', function ($table) {
+        $table->id();
+        $table->unsignedInteger('company_id')->nullable();
+        $table->unsignedBigInteger('purchase_order_id')->nullable();
+        $table->string('type')->nullable();
+        $table->string('grn_number')->nullable();
+        $table->date('grn_date')->nullable();
+        $table->unsignedBigInteger('warehouse_id')->nullable();
+        $table->string('status')->default('draft');
+        $table->boolean('inbound_stock_applied')->default(false);
+        $table->timestamps();
+    });
+
     Schema::create('delivery_order_items', function ($table) {
         $table->id();
         $table->unsignedBigInteger('delivery_order_id');
@@ -113,6 +127,7 @@ beforeEach(function () {
 
 afterEach(function () {
     Schema::dropIfExists('delivery_order_items');
+    Schema::dropIfExists('grns');
     Schema::dropIfExists('delivery_orders');
     Schema::dropIfExists('stock_movements');
     Schema::dropIfExists('warehouse_product_stock');
@@ -146,6 +161,18 @@ it('posts inbound stock when inbound DO is received and WAREHOUSE_INBOUND_FROM_D
         'updated_at' => now(),
     ]);
 
+    DB::table('grns')->insert([
+        'id' => $doId,
+        'company_id' => 10,
+        'purchase_order_id' => null,
+        'type' => 'inbound',
+        'warehouse_id' => 1,
+        'status' => 'received',
+        'inbound_stock_applied' => false,
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
     $deliveryOrder = DeliveryOrder::with('items')->findOrFail($doId);
     app(DeliveryOrderObserver::class)->saved($deliveryOrder);
 
@@ -164,7 +191,7 @@ it('posts inbound stock when inbound DO is received and WAREHOUSE_INBOUND_FROM_D
     expect($movement)->not->toBeNull();
     expect((float) $movement->quantity)->toBe(5.0);
 
-    expect((bool) DB::table('delivery_orders')->where('id', $doId)->value('inbound_stock_applied'))->toBeTrue();
+    expect((bool) DB::table('grns')->where('id', $doId)->value('inbound_stock_applied'))->toBeTrue();
 });
 
 it('posts inbound stock from purchase order path when WAREHOUSE_INBOUND_FROM_PO_DELIVERED is true', function () {

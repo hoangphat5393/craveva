@@ -27,13 +27,13 @@ class SalesShipmentController extends AccountBaseController
     {
         return config('purchase.flow_naming_mode', 'compat_v2') === 'legacy'
             ? 'purchase::app.menu.salesShipments'
-            : 'purchase::app.menu.salesDo';
+            : 'purchase::app.menu.saleDeliveryOrder';
     }
 
     public function index(SalesShipmentDataTable $dataTable)
     {
         abort_403(! FlowPermission::allowsAlias('sales_do.view'));
-        $this->pageTitle = $this->salesDoTitleKey();
+        $this->pageTitle = __($this->salesDoTitleKey());
 
         return $dataTable->render('purchase::sales-shipment.index', $this->data);
     }

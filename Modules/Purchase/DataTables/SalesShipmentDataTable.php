@@ -168,7 +168,7 @@ class SalesShipmentDataTable extends BaseDataTable
     {
         $salesDoColumnLabel = config('purchase.flow_naming_mode', 'compat_v2') === 'legacy'
             ? __('purchase::app.menu.salesShipments')
-            : __('purchase::app.menu.salesDo');
+            : __('purchase::app.menu.saleDeliveryOrder');
         $headerTable = SalesDoRuntime::headerTable();
         $numberColumn = SalesDoRuntime::numberColumn();
         $dateColumn = SalesDoRuntime::dateColumn();

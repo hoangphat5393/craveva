@@ -16,7 +16,7 @@
     $canCreateSalesDo = \Modules\Purchase\Support\FlowPermission::allowsAlias('sales_do.create');
     $flowNamingMode = config('purchase.flow_naming_mode', 'compat_v2');
     $salesDoRouteName = $flowNamingMode === 'legacy' ? 'sales-shipments.create' : 'sales-do.create';
-    $salesDoLabelKey = $flowNamingMode === 'legacy' ? 'purchase::app.menu.salesShipments' : 'purchase::app.menu.salesDo';
+    $salesDoLabelKey = $flowNamingMode === 'legacy' ? 'purchase::app.menu.salesShipments' : 'purchase::app.menu.saleDeliveryOrder';
 @endphp
 
 <div class="card border-0 invoice">

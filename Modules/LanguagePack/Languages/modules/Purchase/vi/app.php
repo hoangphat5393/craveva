@@ -78,7 +78,8 @@ return [
         'salesShipments' => 'Giao hàng bán',
         'grn' => 'GRN',
         'goodsReceivedNote' => 'Phiếu nhận hàng',
-        'salesDo' => 'Phiếu xuất giao (DO)',
+        'salesDo' => 'Đơn giao hàng bán (Sale DO)',
+        'saleDeliveryOrder' => 'Đơn giao hàng bán (Sale DO)',
     ],
     'purchaseOrder' => [
         'vendorPayments' => 'Thanh toán của nhà cung cấp',

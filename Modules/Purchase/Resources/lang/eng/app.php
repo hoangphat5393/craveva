@@ -65,7 +65,9 @@ return [
         'grn' => 'GRN',
         'goodsReceivedNote' => 'Goods Received Note',
         'salesShipments' => 'Sales Shipments',
-        'salesDo' => 'Sales DO',
+        /** @deprecated Use saleDeliveryOrder for UI labels */
+        'salesDo' => 'Sale Delivery Order',
+        'saleDeliveryOrder' => 'Sale Delivery Order',
         'receipt' => 'Receipt',
         'report' => 'Report',
         'paymentDate' => 'Payment Date',

@@ -34,6 +34,9 @@ return [
         'productUpdated' => 'Produkt aktualisiert von',
         'Updated' => 'Produkt aktualisiert',
         'newQuantityOnHand' => 'Neue Menge verfügbar',
+        'dataTableTotalNetQtyAdjustments' => 'Total net qty (purchase adjustment lines)',
+        'dataTableProductCardExpiry' => 'Product card expiry (not batch / warehouse)',
+        'dataTableAllowClientPurchase' => 'Allow client purchase',
     ],
     'inventory' => [
         'adjustmentReason' => 'Grund für die Bestandsanpassung',

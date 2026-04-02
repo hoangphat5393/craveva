@@ -34,6 +34,9 @@ return [
         'productUpdated' => 'Product bijgewerkt door',
         'Updated' => 'Product bijgewerkt',
         'newQuantityOnHand' => 'Nieuwe hoeveelheid bij de hand',
+        'dataTableTotalNetQtyAdjustments' => 'Total net qty (purchase adjustment lines)',
+        'dataTableProductCardExpiry' => 'Product card expiry (not batch / warehouse)',
+        'dataTableAllowClientPurchase' => 'Allow client purchase',
     ],
     'inventory' => [
         'adjustmentReason' => 'Reden voorraadaanpassing',

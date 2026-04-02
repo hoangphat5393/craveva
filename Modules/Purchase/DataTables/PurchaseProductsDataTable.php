@@ -366,14 +366,15 @@ class PurchaseProductsDataTable extends BaseDataTable
             __('app.shelfLifeDays') => ['data' => 'shelf_life_days', 'name' => 'shelf_life_days', 'title' => __('app.shelfLifeDays'), 'visible' => false],
             // Removed duplicate Name column
             __('app.price') . ' (' . __('app.inclusiveAllTaxes') . ')' => ['data' => 'price', 'name' => 'price', 'title' => __('app.price') . ' (' . __('app.inclusiveAllTaxes') . ')'],
-            __('purchase::modules.product.stockOnHand') => ['data' => 'stock_on_hand', 'name' => 'stock_on_hand', 'title' => __('purchase::modules.product.stockOnHand')],
+            __('purchase::modules.product.dataTableTotalNetQtyAdjustments') => ['data' => 'stock_on_hand', 'name' => 'stock_on_hand', 'title' => __('purchase::modules.product.dataTableTotalNetQtyAdjustments')],
             __('app.unit_type') . ' (' . __('modules.unitType.unitType') . ')' => ['data' => 'unit_type', 'name' => 'unit_type', 'title' => __('modules.unitType.unitType')],
             __('app.productSource') => ['data' => 'product_source', 'name' => 'product_source', 'title' => __('app.productSource'), 'visible' => false],
             __('app.brand') => ['data' => 'brand', 'name' => 'brand', 'title' => __('app.brand'), 'visible' => false],
             __('app.productGrade') => ['data' => 'product_grade', 'name' => 'product_grade', 'title' => __('app.productGrade'), 'visible' => false],
-            __('app.expiryDate') => ['data' => 'expiry_date', 'name' => 'expiry_date', 'title' => __('app.expiryDate'), 'visible' => true],
-            'allow_purchase_export' => ['data' => 'allow_purchase_export', 'name' => 'allow_purchase_export', 'visible' => false, 'title' => __('app.clientPurchase'), 'exportable' => ! in_array('client', user_roles())],
-            __('app.clientPurchase') => ['data' => 'allow_purchase', 'name' => 'allow_purchase', 'visible' => ! in_array('client', user_roles()), 'title' => __('app.clientPurchase'), 'exportable' => false],
+            // Batch / per-line expiry lives under Purchase → Inventory; hide by default to avoid implying warehouse FEFO.
+            __('purchase::modules.product.dataTableProductCardExpiry') => ['data' => 'expiry_date', 'name' => 'expiry_date', 'title' => __('purchase::modules.product.dataTableProductCardExpiry'), 'visible' => false],
+            'allow_purchase_export' => ['data' => 'allow_purchase_export', 'name' => 'allow_purchase_export', 'visible' => false, 'title' => __('purchase::modules.product.dataTableAllowClientPurchase'), 'exportable' => ! in_array('client', user_roles())],
+            __('purchase::modules.product.dataTableAllowClientPurchase') => ['data' => 'allow_purchase', 'name' => 'allow_purchase', 'visible' => ! in_array('client', user_roles()), 'title' => __('purchase::modules.product.dataTableAllowClientPurchase'), 'exportable' => false],
             __('app.status') => ['data' => 'status', 'name' => 'status', 'exportable' => false, 'title' => __('app.status')],
         ];
 

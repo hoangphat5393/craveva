@@ -34,6 +34,9 @@ return [
         'productUpdated' => 'Produkti i përditësuar nga',
         'Updated' => 'Produkti i përditësuar',
         'newQuantityOnHand' => 'Sasi e re në dorë',
+        'dataTableTotalNetQtyAdjustments' => 'Total net qty (purchase adjustment lines)',
+        'dataTableProductCardExpiry' => 'Product card expiry (not batch / warehouse)',
+        'dataTableAllowClientPurchase' => 'Allow client purchase',
     ],
     'inventory' => [
         'adjustmentReason' => 'Arsyeja e rregullimit të aksioneve',

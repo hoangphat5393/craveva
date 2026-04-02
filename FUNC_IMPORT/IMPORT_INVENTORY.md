@@ -79,3 +79,18 @@ Chạy migration rồi dùng các cột sau — **không** cần CF tương ứn
 ### CF có thể giữ thêm
 
 - **Closing Code**, **Recent / Batch Recent Inbound**, **Location Code**, **Packaging / Small Unit** — xem nhu cầu từng company.
+
+<!-- 1. Nhập / sửa trên màn hình (không qua file)
+   Vào Purchase → Inventory (điều chỉnh tồn / purchase inventory), Tạo mới (/purchase-inventory/create).
+   Chọn loại điều chỉnh Quantity (số lượng), không phải Value.
+   Trên từng dòng sản phẩm:
+   Tồn / số lượng trên tay → ô Quantity on hand → lưu vào net_quantity (đúng nghĩa Ending / tồn cuối cho dòng đó).
+   Hạn dùng (Expiry) → ô Expiration date → expiration_date.
+   NSX → Manufacturing date (nếu dùng).
+   Lô → Batch number.
+   Reserved → dòng Reserved quantity (optional) → reserved_quantity (đã thêm ở form add_quantity).
+   Near-expiry (gần hạn): không có ô nhập — hệ thống tự tính từ ngày Expiration date (và cấu hình số ngày cảnh báo trong purchase.inventory_near_expiry_days).
+
+2. Nhập bằng file (import)
+   Purchase → Inventory → Import (route kiểu /purchase-inventory/import).
+   Tải template / map cột: sku, product*name, warehouse*\*, ending_inventory, expiration_date, reserved_quantity, batch_number, … (đúng header template import). -->

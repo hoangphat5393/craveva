@@ -34,6 +34,9 @@ return [
         'productUpdated' => 'Toodet värskendas',
         'Updated' => 'Toode uuendatud',
         'newQuantityOnHand' => 'Uus kogus käepärast',
+        'dataTableTotalNetQtyAdjustments' => 'Total net qty (purchase adjustment lines)',
+        'dataTableProductCardExpiry' => 'Product card expiry (not batch / warehouse)',
+        'dataTableAllowClientPurchase' => 'Allow client purchase',
     ],
     'inventory' => [
         'adjustmentReason' => 'Varude korrigeerimise põhjus',

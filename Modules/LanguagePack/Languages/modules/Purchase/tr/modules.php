@@ -34,6 +34,9 @@ return [
         'productUpdated' => 'Ürün güncelleyen:',
         'Updated' => 'Ürün Güncellendi',
         'newQuantityOnHand' => 'Yeni miktar elimizde',
+        'dataTableTotalNetQtyAdjustments' => 'Total net qty (purchase adjustment lines)',
+        'dataTableProductCardExpiry' => 'Product card expiry (not batch / warehouse)',
+        'dataTableAllowClientPurchase' => 'Allow client purchase',
     ],
     'inventory' => [
         'adjustmentReason' => 'Stok Düzeltme Sebebi',

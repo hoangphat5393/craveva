@@ -36,6 +36,9 @@ return [
         'productUpdated' => 'Sản phẩm được cập nhật bởi',
         'Updated' => 'Đã cập nhật sản phẩm',
         'newQuantityOnHand' => 'Số lượng mới có sẵn',
+        'dataTableTotalNetQtyAdjustments' => 'Tổng SL ròng (các dòng điều chỉnh Purchase)',
+        'dataTableProductCardExpiry' => 'Hạn dùng trên thẻ SP (không phải lô / kho)',
+        'dataTableAllowClientPurchase' => 'Cho phép khách hàng mua',
     ],
     'inventory' => [
         'adjustmentReason' => 'Lý do điều chỉnh cổ phiếu',
@@ -85,6 +88,7 @@ return [
         'closingCode' => 'Mã kết thúc',
         'endingPackageInventory' => 'Tồn kho đóng gói cuối kỳ',
         'endingInventory' => 'Tồn kho cuối kỳ',
+        'importCustomFieldBadge' => ' (trường tùy chỉnh)',
     ],
     'vendor' => [
         'primaryContactName' => 'Tên liên hệ chính',

@@ -36,6 +36,9 @@ return [
         'productUpdated' => 'Product updated by',
         'Updated' => 'Product Updated',
         'newQuantityOnHand' => 'New Quantity on hand',
+        'dataTableTotalNetQtyAdjustments' => 'Total net qty (purchase adjustment lines)',
+        'dataTableProductCardExpiry' => 'Product card expiry (not batch / warehouse)',
+        'dataTableAllowClientPurchase' => 'Allow client purchase',
         'manufacturingDate' => 'Manufacturingdate',
         'expirationDate' => 'Expirationdate',
         'commitedStock' => 'Commited Stock',
@@ -90,6 +93,7 @@ return [
         'inboundQuantity' => 'Inbound Quantity',
         'beginningPackageInventory' => 'Beginning Package Inventory',
         'warehouse' => 'Warehouse',
+        'importCustomFieldBadge' => ' (custom field)',
     ],
     'vendor' => [
         'primaryContactName' => 'Primary Contact Name',

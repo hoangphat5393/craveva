@@ -34,6 +34,9 @@ return [
         'productUpdated' => 'Производ је ажурирао',
         'Updated' => 'Продуцт Упдатед',
         'newQuantityOnHand' => 'Нова количина при руци',
+        'dataTableTotalNetQtyAdjustments' => 'Total net qty (purchase adjustment lines)',
+        'dataTableProductCardExpiry' => 'Product card expiry (not batch / warehouse)',
+        'dataTableAllowClientPurchase' => 'Allow client purchase',
     ],
     'inventory' => [
         'adjustmentReason' => 'Разлог прилагођавања залиха',

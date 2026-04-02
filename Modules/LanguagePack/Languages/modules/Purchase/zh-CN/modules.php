@@ -34,6 +34,9 @@ return [
         'productUpdated' => '产品更新者',
         'Updated' => '产品更新',
         'newQuantityOnHand' => '现有数量新',
+        'dataTableTotalNetQtyAdjustments' => '净量合计（采购库存调整明细）',
+        'dataTableProductCardExpiry' => '商品卡有效期（非批次／仓库存效期）',
+        'dataTableAllowClientPurchase' => '允许客户购买',
     ],
     'inventory' => [
         'adjustmentReason' => '库存调整原因',
@@ -59,6 +62,7 @@ return [
         'fromValue' => '从价值',
         'toNewValue' => '到新的价值',
         'details' => '正在创建库存',
+        'importCustomFieldBadge' => '（自定义字段）',
     ],
     'vendor' => [
         'primaryContactName' => '主要联系人姓名',

@@ -34,6 +34,9 @@ return [
         'productUpdated' => 'Produs actualizat de',
         'Updated' => 'Produs actualizat',
         'newQuantityOnHand' => 'Cantitate nouă la îndemână',
+        'dataTableTotalNetQtyAdjustments' => 'Total net qty (purchase adjustment lines)',
+        'dataTableProductCardExpiry' => 'Product card expiry (not batch / warehouse)',
+        'dataTableAllowClientPurchase' => 'Allow client purchase',
     ],
     'inventory' => [
         'adjustmentReason' => 'Motivul ajustării stocului',

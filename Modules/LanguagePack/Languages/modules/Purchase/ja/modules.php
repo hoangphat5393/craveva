@@ -34,6 +34,9 @@ return [
         'productUpdated' => '製品の更新者',
         'Updated' => '製品が更新されました',
         'newQuantityOnHand' => '新しい手持ち数量',
+        'dataTableTotalNetQtyAdjustments' => 'Total net qty (purchase adjustment lines)',
+        'dataTableProductCardExpiry' => 'Product card expiry (not batch / warehouse)',
+        'dataTableAllowClientPurchase' => 'Allow client purchase',
     ],
     'inventory' => [
         'adjustmentReason' => '在庫調整理由',

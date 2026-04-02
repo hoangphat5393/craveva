@@ -34,6 +34,9 @@ return [
         'productUpdated' => 'Το προϊόν ενημερώθηκε από',
         'Updated' => 'Ενημερώθηκε το προϊόν',
         'newQuantityOnHand' => 'Νέα ποσότητα σε ετοιμότητα',
+        'dataTableTotalNetQtyAdjustments' => 'Total net qty (purchase adjustment lines)',
+        'dataTableProductCardExpiry' => 'Product card expiry (not batch / warehouse)',
+        'dataTableAllowClientPurchase' => 'Allow client purchase',
     ],
     'inventory' => [
         'adjustmentReason' => 'Λόγος προσαρμογής αποθεμάτων',

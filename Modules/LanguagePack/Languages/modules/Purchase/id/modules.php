@@ -34,6 +34,9 @@ return [
         'productUpdated' => 'Produk diperbarui oleh',
         'Updated' => 'Produk Diperbarui',
         'newQuantityOnHand' => 'Kuantitas Baru tersedia',
+        'dataTableTotalNetQtyAdjustments' => 'Total net qty (purchase adjustment lines)',
+        'dataTableProductCardExpiry' => 'Product card expiry (not batch / warehouse)',
+        'dataTableAllowClientPurchase' => 'Allow client purchase',
     ],
     'inventory' => [
         'adjustmentReason' => 'Alasan Penyesuaian Stok',

@@ -34,6 +34,9 @@ return [
         'productUpdated' => 'محصول به روز شده توسط',
         'Updated' => 'محصول به روز شد',
         'newQuantityOnHand' => 'مقدار جدید در دست است',
+        'dataTableTotalNetQtyAdjustments' => 'Total net qty (purchase adjustment lines)',
+        'dataTableProductCardExpiry' => 'Product card expiry (not batch / warehouse)',
+        'dataTableAllowClientPurchase' => 'Allow client purchase',
     ],
     'inventory' => [
         'adjustmentReason' => 'دلیل تعدیل سهام',

@@ -34,6 +34,12 @@ return [
         'productUpdated' => 'Product updated by',
         'Updated' => 'Product Updated',
         'newQuantityOnHand' => 'New Quantity on hand',
+        'dataTableTotalNetQtyAdjustments' => 'Total net qty (purchase adjustment lines)',
+        'dataTableProductCardExpiry' => 'Product card expiry (not batch / warehouse)',
+        'dataTableAllowClientPurchase' => 'Allow client purchase',
+        'manufacturingDate' => 'Manufacturingdate',
+        'expirationDate' => 'Expirationdate',
+        'commitedStock' => 'Commited Stock',
     ],
     'inventory' => [
         'adjustmentReason' => 'Stock Adjustment Reason',

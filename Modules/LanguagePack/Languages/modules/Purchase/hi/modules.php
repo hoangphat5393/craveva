@@ -34,6 +34,9 @@ return [
         'productUpdated' => 'उत्पाद द्वारा अद्यतन किया गया',
         'Updated' => 'उत्पाद अद्यतन',
         'newQuantityOnHand' => 'हाथ में नई मात्रा',
+        'dataTableTotalNetQtyAdjustments' => 'Total net qty (purchase adjustment lines)',
+        'dataTableProductCardExpiry' => 'Product card expiry (not batch / warehouse)',
+        'dataTableAllowClientPurchase' => 'Allow client purchase',
     ],
     'inventory' => [
         'adjustmentReason' => 'स्टॉक समायोजन कारण',

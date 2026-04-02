@@ -34,6 +34,9 @@ return [
         'productUpdated' => 'პროდუქტი განახლებულია',
         'Updated' => 'პროდუქტი განახლებულია',
         'newQuantityOnHand' => 'ახალი რაოდენობა ხელზე',
+        'dataTableTotalNetQtyAdjustments' => 'Total net qty (purchase adjustment lines)',
+        'dataTableProductCardExpiry' => 'Product card expiry (not batch / warehouse)',
+        'dataTableAllowClientPurchase' => 'Allow client purchase',
     ],
     'inventory' => [
         'adjustmentReason' => 'აქციების კორექტირების მიზეზი',

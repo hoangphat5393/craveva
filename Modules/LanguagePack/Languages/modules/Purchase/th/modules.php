@@ -34,6 +34,9 @@ return [
         'productUpdated' => 'อัพเดตสินค้าโดย',
         'Updated' => 'อัปเดตผลิตภัณฑ์แล้ว',
         'newQuantityOnHand' => 'ปริมาณใหม่ในมือ',
+        'dataTableTotalNetQtyAdjustments' => 'Total net qty (purchase adjustment lines)',
+        'dataTableProductCardExpiry' => 'Product card expiry (not batch / warehouse)',
+        'dataTableAllowClientPurchase' => 'Allow client purchase',
     ],
     'inventory' => [
         'adjustmentReason' => 'เหตุผลในการปรับสต็อก',

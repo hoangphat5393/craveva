@@ -34,6 +34,9 @@ return [
         'productUpdated' => '產品更新者',
         'Updated' => '產品更新',
         'newQuantityOnHand' => '現有數量新',
+        'dataTableTotalNetQtyAdjustments' => '淨量合計（採購庫存調整明細）',
+        'dataTableProductCardExpiry' => '商品卡有效日（非批號／倉儲效期）',
+        'dataTableAllowClientPurchase' => '允許客戶購買',
         'manufacturingDate' => '製造日期',
         'expirationDate' => '有效日期',
     ],
@@ -78,6 +81,7 @@ return [
         'closingCode' => '結帳代碼',
         'endingPackageInventory' => '期末包裝庫存',
         'endingInventory' => '期末庫存',
+        'importCustomFieldBadge' => '（自訂欄位）',
     ],
     'vendor' => [
         'primaryContactName' => '主要聯絡人姓名',

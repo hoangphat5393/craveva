@@ -34,6 +34,9 @@ return [
         'productUpdated' => 'تم تحديث المنتج بواسطة',
         'Updated' => 'تم تحديث المنتج',
         'newQuantityOnHand' => 'كمية جديدة في متناول اليد',
+        'dataTableTotalNetQtyAdjustments' => 'Total net qty (purchase adjustment lines)',
+        'dataTableProductCardExpiry' => 'Product card expiry (not batch / warehouse)',
+        'dataTableAllowClientPurchase' => 'Allow client purchase',
     ],
     'inventory' => [
         'adjustmentReason' => 'سبب تعديل المخزون',

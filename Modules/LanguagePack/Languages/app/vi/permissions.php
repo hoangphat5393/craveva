@@ -330,6 +330,8 @@ return [
     'view_order' => 'Xem đơn hàng',
     'edit_order' => 'Chỉnh sửa đơn hàng',
     'delete_order' => 'Xóa đơn hàng',
+    'view_sales_history' => 'Xem lịch sử bán hàng',
+    'add_sales_history_import' => 'Import lịch sử bán hàng',
     'add_knowledgebase' => 'Thêm cơ sở kiến ​​thức',
     'view_knowledgebase' => 'Xem cơ sở kiến ​​thức',
     'edit_knowledgebase' => 'Chỉnh sửa kiến ​​thức',

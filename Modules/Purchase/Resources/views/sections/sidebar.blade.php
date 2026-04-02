@@ -21,7 +21,7 @@
     $manageWarehouseTransfer = user()->permission('manage_warehouse_transfer');
     $canSeeWarehouseMaster = ($viewWarehouses && $viewWarehouses != 'none') || ($purchaseViewInventoryPermission != 'none' && $purchaseViewInventoryPermission != '');
     $canSeeWarehouseStockUi = ($viewWarehouseStock && $viewWarehouseStock != 'none') || ($purchaseViewInventoryPermission != 'none' && $purchaseViewInventoryPermission != '');
-    $operationsMenuActive = request()->routeIs('orders.*', 'vendors.*', 'purchase-products.*', 'purchase_products.*', 'purchase-order.*', 'delivery-orders.*', 'sales-shipments.*', 'bills.*', 'vendor-payments.*', 'vendor-credits.*', 'purchase-inventory.*', 'warehouse.*', 'warehouse.stock.*', 'warehouse.transfer.*', 'warehouse.movements.*', 'grn.*', 'sales-do.*');
+    $operationsMenuActive = request()->routeIs('orders.*', 'vendors.*', 'purchase-products.*', 'purchase_products.*', 'purchase-order.*', 'delivery-orders.*', 'sales-shipments.*', 'bills.*', 'vendor-payments.*', 'vendor-credits.*', 'purchase-inventory.*', 'warehouse.*', 'warehouse.stock.*', 'warehouse.transfer.*', 'warehouse.movements.*', 'grn.*', 'sales-do.*', 'sales-history.*');
 @endphp
 @if (in_array(\Modules\Purchase\Entities\PurchaseManagementSetting::MODULE_NAME, user_modules()) &&
         ($purchaseViewVendorPermission != 'none' ||
@@ -34,7 +34,8 @@
             $canViewSalesDo ||
             $canViewGrn ||
             (in_array('products', user_modules()) && $sidebarUserPermissions['view_product'] != 'none') ||
-            (in_array('orders', user_modules()) && $sidebarUserPermissions['view_order'] != 'none')))
+            (in_array('orders', user_modules()) && $sidebarUserPermissions['view_order'] != 'none') ||
+            (in_array('orders', user_modules()) && isset($sidebarUserPermissions['view_sales_history']) && $sidebarUserPermissions['view_sales_history'] != 'none')))
 
     <x-menu-item icon="wallet" :text="__('app.menu.operations')" :addon="App::environment('demo')" :active="$operationsMenuActive">
         <x-slot name="iconPath">
@@ -53,6 +54,10 @@
 
             @if (in_array('orders', user_modules()) && $sidebarUserPermissions['view_order'] != 5 && $sidebarUserPermissions['view_order'] != 'none')
                 <x-sub-menu-item :link="route('orders.index')" :text="__('app.menu.orders')" />
+            @endif
+
+            @if (in_array('orders', user_modules()) && user()->permission('view_sales_history') === 'all')
+                <x-sub-menu-item :link="route('sales-history.index')" :text="__('app.menu.salesHistory')" :active="request()->routeIs('sales-history.*')" />
             @endif
 
             <!-- NAV ITEM - SALES SHIPMENTS -->

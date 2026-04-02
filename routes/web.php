@@ -76,6 +76,7 @@ use App\Http\Controllers\ProposalController;
 use App\Http\Controllers\QuickbookController;
 use App\Http\Controllers\RecurringEventController;
 use App\Http\Controllers\RecurringTaskController;
+use App\Http\Controllers\SalesHistoryController;
 use App\Http\Controllers\SalesReportController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SettingsController;
@@ -473,6 +474,11 @@ Route::group(['middleware' => ['auth', 'multi-company-select', 'email_verified']
     Route::get('orders/import', [OrderController::class, 'importOrder'])->name('orders.import');
     Route::post('orders/import', [OrderController::class, 'importStore'])->name('orders.import.store');
     Route::post('orders/import/process', [OrderController::class, 'importProcess'])->name('orders.import.process');
+
+    Route::get('sales-history', [SalesHistoryController::class, 'index'])->name('sales-history.index');
+    Route::get('sales-history/import', [SalesHistoryController::class, 'importHistory'])->name('sales-history.import');
+    Route::post('sales-history/import', [SalesHistoryController::class, 'importStore'])->name('sales-history.import.store');
+    Route::post('sales-history/import/process', [SalesHistoryController::class, 'importProcess'])->name('sales-history.import.process');
     /* Payments */
     Route::get('orders/download/{id}', [OrderController::class, 'download'])->name('orders.download');
     Route::post('orders/store-quantity/', [OrderController::class, 'storeQuantity'])->name('orders.store_quantity');

@@ -14,8 +14,49 @@ use ReflectionClass;
 
 trait ImportExcel
 {
+    private function memoryLimitToBytes(?string $value): int
+    {
+        if (! is_string($value) || trim($value) === '') {
+            return 0;
+        }
+
+        $value = trim($value);
+        if ($value === '-1') {
+            return -1;
+        }
+
+        $unit = strtolower(substr($value, -1));
+        $num = (int) $value;
+
+        return match ($unit) {
+            'g' => $num * 1024 * 1024 * 1024,
+            'm' => $num * 1024 * 1024,
+            'k' => $num * 1024,
+            default => (int) $value,
+        };
+    }
+
+    private function boostImportRuntimeLimits(): void
+    {
+        @set_time_limit(0);
+
+        $current = ini_get('memory_limit');
+        if (! is_string($current) || $current === '' || $current === '-1') {
+            return;
+        }
+
+        $currentBytes = $this->memoryLimitToBytes($current);
+        $targetBytes = 1024 * 1024 * 1024; // 1GB
+
+        if ($currentBytes > 0 && $currentBytes < $targetBytes) {
+            @ini_set('memory_limit', '1024M');
+        }
+    }
+
     public function importFileProcess($request, $importClass)
     {
+        $this->boostImportRuntimeLimits();
+
         // get class name from $importClass
         $this->importClassName = (new ReflectionClass($importClass))->getShortName();
 
@@ -26,6 +67,17 @@ trait ImportExcel
             }
             throw ValidationException::withMessages([
                 'import_file' => [$msg],
+            ]);
+        }
+
+        $uploadedSize = (int) ($request->file('import_file')->getSize() ?? 0);
+        $memoryBytes = $this->memoryLimitToBytes(ini_get('memory_limit'));
+        $requiredBytesForLargeExcel = 1024 * 1024 * 1024; // 1GB
+        $largeExcelThreshold = 10 * 1024 * 1024; // 10MB
+
+        if ($uploadedSize >= $largeExcelThreshold && $memoryBytes !== -1 && $memoryBytes > 0 && $memoryBytes < $requiredBytesForLargeExcel) {
+            throw ValidationException::withMessages([
+                'import_file' => ['Excel file is large. Increase PHP memory_limit to at least 1024M (or upload monthly CSV files).'],
             ]);
         }
 
@@ -97,6 +149,8 @@ trait ImportExcel
 
     public function importJobProcess($request, $importClass, $importJobClass)
     {
+        $this->boostImportRuntimeLimits();
+
         // get class name from $importClass
         $importClassName = (new ReflectionClass($importClass))->getShortName();
 
@@ -162,6 +216,8 @@ trait ImportExcel
      */
     public function importJobProcessChunked($request, $importClass, $chunkJobClass, int $chunkSize = 100, array $options = [])
     {
+        $this->boostImportRuntimeLimits();
+
         $importClassName = (new ReflectionClass($importClass))->getShortName();
 
         // Clear only this import queue (do not queue:flush — that wipes all failed_jobs globally).

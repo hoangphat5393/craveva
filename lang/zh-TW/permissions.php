@@ -330,6 +330,8 @@ return [
     'view_order' => '查看訂單',
     'edit_order' => '編輯訂單',
     'delete_order' => '刪除訂單',
+    'view_sales_history' => '檢視銷售歷史',
+    'add_sales_history_import' => '匯入銷售歷史',
     'add_knowledgebase' => '新增知識庫',
     'view_knowledgebase' => '查看知識庫',
     'edit_knowledgebase' => '編輯知識庫',

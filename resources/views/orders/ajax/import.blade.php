@@ -6,6 +6,9 @@
                     @lang('app.importExcel') @lang('app.menu.orders')
                 </h4>
                 <div class="col-sm-12 pt-2">
+                    <div class="alert alert-info" role="alert">
+                        {!! __('app.ordersImportLegacyNetSalesHint', ['url' => route('sales-history.import')]) !!}
+                    </div>
                     <div class="alert alert-warning" role="alert">
                         @lang('app.importProjectExcelInfo')
                     </div>

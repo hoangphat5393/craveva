@@ -330,6 +330,8 @@ return [
     'view_order' => '查看订单',
     'edit_order' => '编辑订单',
     'delete_order' => '删除订单',
+    'view_sales_history' => '查看销售历史',
+    'add_sales_history_import' => '导入销售历史',
     'add_knowledgebase' => '添加知识库',
     'view_knowledgebase' => '查看知识库',
     'edit_knowledgebase' => '编辑知识库',

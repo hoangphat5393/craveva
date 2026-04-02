@@ -1,11 +1,12 @@
 # Báo cáo Kế hoạch Phát triển Chức năng Production — Craveva ERP (Laravel/PHP)
 
-| Thuộc tính     | Giá trị                                                      |
-| -------------- | ------------------------------------------------------------ |
-| **Vai trò**    | Senior ERP Architect & Project Manager                       |
-| **Tham chiếu** | `BIOMIXING_FLOW_CRACEVA_GAP.md`, `BIOMIXING_GAP_ANALYSIS.md` |
-| **Phạm vi**    | Dự án ERP đa tenant, module `Modules/*`, core `app/`         |
-| **Trạng thái** | Bản kế hoạch — cập nhật khi scope khách hàng thay đổi        |
+| Thuộc tính            | Giá trị                                                                                                                                  |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| **Vai trò**           | Senior ERP Architect & Project Manager                                                                                                   |
+| **Tham chiếu**        | `BIOMIXING_FLOW_CRACEVA_GAP.md`, `BIOMIXING_GAP_ANALYSIS.md`; POC prototype (timeline Việt): `BIOMIXING_PRODUCTION_PROTOTYPE_PLAN_VI.md` |
+| **Phạm vi**           | Dự án ERP đa tenant, module `Modules/*`, core `app/`                                                                                     |
+| **Trạng thái**        | Bản kế hoạch — cập nhật khi scope khách hàng thay đổi                                                                                    |
+| **Cập nhật gần nhất** | 2026-04 — đối chiếu repo; multi-warehouse & batch warehouse đã có trên codebase (khác bản nháp đầu khi nền kho chưa hoàn thiện).         |
 
 ---
 
@@ -14,24 +15,37 @@
 ### 1.1 Bối cảnh kỹ thuật
 
 - **Stack:** Laravel (PHP), multi-tenant theo `company_id`, permission theo role/module.
-- **Mở rộng:** `nwidart/laravel-modules` — các tính năng nặng (Purchase, Warehouse) nằm dưới `Modules/`.
+- **Hai lớp mã:** (1) **`nwidart/laravel-modules`** — package dưới `Modules/` (ví dụ `Purchase`, `Warehouse`, `Asset`). (2) **Core `app/`** — Sales/Orders, Project, Product, Delivery, Invoice, User… **không** phải mỗi khối nghiệp vụ đều là một folder `Modules/<Tên>`.
 - **Luồng nghiệp vụ chuẩn đã có:** Order → Delivery Order → Invoice → Payment (xem `MASTER_DOCUMENTATION.md`).
+
+### 1.1a Bản đồ nhanh: đâu là `Modules/`, đâu là `app/`
+
+| Khối nghiệp vụ                          | Gói code chính                        | Ghi chú                                                                                            |
+| --------------------------------------- | ------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| **Purchase**                            | `Modules/Purchase`                    | Module nwidart                                                                                     |
+| **Warehouse**                           | `Modules/Warehouse`                   | Module nwidart; đa kho + batch tồn (`warehouse_product_batches`) đã có migration/entity trong repo |
+| **Asset**                               | `Modules/Asset`                       | Tùy bật                                                                                            |
+| **Sales / Orders / Finance / Delivery** | `app/Models`, controllers core        | CRM, Order, Invoice, Delivery Order…                                                               |
+| **Projects**                            | `app/Models/Project.php`, Task…       | Không nhầm với `Modules/ProjectRoadmap`                                                            |
+| **Product**                             | `app/Models/Product.php` (`products`) | Chưa có BOM chuẩn — không phải `Modules/Product`                                                   |
+
+**Module `Production`:** **chưa tồn tại** — có thể tạo mới theo cùng pattern `Modules/<Name>` (đề xuất §3).
 
 ### 1.2 Module hiện có và mức hỗ trợ quy trình sản xuất
 
-| Module                   | Vị trí / thực thể chính                                                              | Hỗ trợ sản xuất (Biomixing / HACCP-style)                                                                                                                                                                |
-| ------------------------ | ------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Sales (CRM)**          | Leads, Deals, Estimates, **Orders**, Clients                                         | **Đầu vào đơn hàng:** xác nhận nhu cầu, giá, SLA giao hàng. **Chưa:** gắn “recipe version” đầy đủ nếu chưa có BOM chuẩn hóa.                                                                             |
-| **Projects**             | `Project`, `Task`, milestones, timelogs, files                                       | **Đóng vai “Production Order engine” tạm thời:** template task (cân, trộn, QC) mô phỏng từng bước. **Hạn chế:** không có **batch record** điện tử, không **routing** chuẩn MES, không **CCP gate** cứng. |
-| **Finance**              | Invoices, Payments, Expenses                                                         | **Sau sản xuất:** xuất hóa đơn theo giao hàng. **Không** tham gia trực tiếp shop floor.                                                                                                                  |
-| **Product**              | `Product`, categories, pricing                                                       | **Thiếu BOM/Recipe:** chưa quản lý thành phần, tỷ lệ, phiên bản công thức — đây là nút thắt cho “company vs custom formula”.                                                                             |
-| **Purchase**             | `PurchaseOrder`, Vendor, nhập kho liên quan PO                                       | **Đầu vào nguyên liệu:** PO, receipt. **Thiếu:** **Receiving QC** (pass/fail), quarantine, disposition gắn với lô.                                                                                       |
-| **Warehouse**            | `Warehouse`, stock movements, transfer; tiến tới batch (`warehouse_product_batches`) | **Tồn kho thô + chuyển kho:** phù hợp RM/FG. **Một phần:** traceability theo lô đang được bổ sung; **chưa:** location kiểu phòng nhiệt độ ổn định, FG hold theo QA, receiving disposition.               |
-| **Delivery / Logistics** | Delivery Order (core app)                                                            | **Xuất giao:** đóng vòng Order. **Một phần:** Quality Lock (task QC xong mới cho tạo DO) — theo `BIOMIXING_GAP_ANALYSIS.md` là mục cần **triển khai/hoàn thiện**.                                        |
-| **Asset** (tùy bật)      | Thiết bị                                                                             | **Tùy chọn:** đăng ký máy trộn 250KG; **chưa** liên kết chuỗi batch/CCP.                                                                                                                                 |
-| **HR / Roles**           | User, Employee, permission                                                           | **Phân quyền** vai trò (giám đốc xưởng, QA). **Không** thay thế PRP (log người/xe).                                                                                                                      |
+| Module                   | Vị trí / thực thể chính                                                                                       | Hỗ trợ sản xuất (Biomixing / HACCP-style)                                                                                                                                                                                                                                                                                                                          |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Sales (CRM)**          | Core `app/`: Leads, Deals, Estimates, **Orders**, Clients                                                     | **Đầu vào đơn hàng:** xác nhận nhu cầu, giá, SLA giao hàng. **Chưa:** gắn “recipe version” đầy đủ nếu chưa có BOM chuẩn hóa.                                                                                                                                                                                                                                       |
+| **Projects**             | Core `app/`: `Project`, `Task`, milestones, timelogs, files                                                   | **Đóng vai “Production Order engine” tạm thời:** template task (cân, trộn, QC) mô phỏng từng bước. **Hạn chế:** không có **batch record** điện tử, không **routing** chuẩn MES, không **CCP gate** cứng.                                                                                                                                                           |
+| **Finance**              | Core `app/`: Invoices, Payments, Expenses                                                                     | **Sau sản xuất:** xuất hóa đơn theo giao hàng. **Không** tham gia trực tiếp shop floor.                                                                                                                                                                                                                                                                            |
+| **Product**              | Core `app/`: `Product`, categories, pricing                                                                   | **Thiếu BOM/Recipe:** chưa quản lý thành phần, tỷ lệ, phiên bản công thức — đây là nút thắt cho “company vs custom formula”.                                                                                                                                                                                                                                       |
+| **Purchase**             | `Modules/Purchase`: `PurchaseOrder`, Vendor, nhập kho liên quan PO                                            | **Đầu vào nguyên liệu:** PO, receipt. **Thiếu:** **Receiving QC** (pass/fail), quarantine, disposition gắn với lô.                                                                                                                                                                                                                                                 |
+| **Warehouse**            | `Modules/Warehouse`: `Warehouse`, movement, transfer, **đa kho**; tồn theo lô qua `warehouse_product_batches` | **Đã có:** nền **multi-warehouse**, tồn theo kho, movement/transfer, batch/HSD trên bảng batch (khác thời điểm bản kế hoạch đầu chưa có nền này). **Vẫn thiếu cho HACCP đầy đủ:** khép kín RM lô → production batch → FG → DO; **FG hold** theo QA; receiving QC; bin/location chi tiết có thể vẫn partial (xem `FUNC_LOGIC/WAREHOUSE_UPGRADE_PLANE.MD` — WUP-09). |
+| **Delivery / Logistics** | Core `app/`: Delivery Order                                                                                   | **Xuất giao:** đóng vòng Order. **Một phần:** Quality Lock (task QC xong mới cho tạo DO) — theo `BIOMIXING_GAP_ANALYSIS.md` là mục cần **triển khai/hoàn thiện**.                                                                                                                                                                                                  |
+| **Asset** (tùy bật)      | `Modules/Asset`: thiết bị                                                                                     | **Tùy chọn:** đăng ký máy trộn 250KG; **chưa** liên kết chuỗi batch/CCP.                                                                                                                                                                                                                                                                                           |
+| **HR / Roles**           | Core: User, Employee, permission                                                                              | **Phân quyền** vai trò (giám đốc xưởng, QA). **Không** thay thế PRP (log người/xe).                                                                                                                                                                                                                                                                                |
 
-**Tóm lại:** Hệ thống đã có **xương sống** Order → Project (task) → Warehouse → Delivery → Invoice. Phần **sản xuất có kiểm soát** (recipe, lô, CCP, rework, QC đầu vào, sampling) **chưa có domain model riêng** — đang “mượn” Project + Task + ghi chú thủ công.
+**Tóm lại:** Hệ thống đã có **xương sống** Order → Project (task) → Warehouse (**đa kho + batch tồn**) → Delivery → Invoice. Phần **sản xuất có kiểm soát** (recipe, lô khép kín xuyên lệnh sản xuất, CCP, rework, QC đầu vào, sampling) **chưa có domain model riêng** — đang “mượn” Project + Task + ghi chú thủ công; **Production module vẫn là hạng mục phát triển mới**.
 
 ---
 
@@ -46,10 +60,10 @@
 
 ### 2.2 Batch / Lot traceability (truy xuất nguồn gốc)
 
-| Hiện trạng                                                                                                                            | Rủi ro                                                                                                                                                                        |
-| ------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Warehouse đang có hướng batch (`warehouse_product_batches`); chưa khép kín **nguyên liệu lô A → batch sản xuất B → giao cho khách C** | Không đáp ứng yêu cầu thực phẩm / HACCP khi audit.                                                                                                                            |
-| **Đề xuất kỹ thuật**                                                                                                                  | Mọi nhập kho gắn `batch_number` (và expiry nếu cần); **production consumption** ghi rõ lô tiêu thụ; **FG batch** link với production batch; DO/invoice line trỏ tới FG batch. |
+| Hiện trạng                                                                                                                                                                                                        | Rủi ro                                                                                                                                                                        |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Warehouse **đã có** batch tồn (`warehouse_product_batches`) và đa kho; **chưa khép kín** trong hệ thống: **nguyên liệu lô A → batch sản xuất B → giao cho khách C** (thiếu domain Production + liên kết chứng từ) | Không đáp ứng đủ HACCP/audit cho đến khi có lệnh sản xuất + tiêu thụ/nhận FG gắn lô.                                                                                          |
+| **Đề xuất kỹ thuật**                                                                                                                                                                                              | Mọi nhập kho gắn `batch_number` (và expiry nếu cần); **production consumption** ghi rõ lô tiêu thụ; **FG batch** link với production batch; DO/invoice line trỏ tới FG batch. |
 
 ### 2.3 CCP (Critical Control Point) và Rework
 
@@ -75,11 +89,11 @@
 
 ### 2.6 Các lỗ hổng khác (rút gọn)
 
-| Hạng mục                                                          | Mức độ                                           |
-| ----------------------------------------------------------------- | ------------------------------------------------ |
-| Production batch record điện tử (operator, timestamp, actual qty) | Thiếu                                            |
-| PRP: log người/xe (ISO 22000 prerequisite)                        | Thiếu                                            |
-| Location: phòng nhiệt độ ổn định, tách A棟/B棟                    | Thiếu / một phần (multi-warehouse hoặc location) |
+| Hạng mục                                                          | Mức độ                                                                                                                                          |
+| ----------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| Production batch record điện tử (operator, timestamp, actual qty) | Thiếu                                                                                                                                           |
+| PRP: log người/xe (ISO 22000 prerequisite)                        | Thiếu                                                                                                                                           |
+| Location: phòng nhiệt độ ổn định, tách A棟/B棟                    | **Một phần:** đa kho đã hỗ trợ **tách xưởng/khu** (A/B) bằng nhiều `warehouse`; **bin/location** chi tiết trong kho có thể vẫn backlog (WUP-09) |
 
 ---
 
@@ -156,22 +170,22 @@
 
 - **Hiện trạng** phù hợp **quản lý dự án + kho + bán hàng**; **chưa đủ** cho **sản xuất thực phẩm có CCP và truy xuất lô** như flow Biomixing.
 - **Gap chính:** BOM, batch end-to-end, CCP/rework, receiving QC, sampling/COA.
-- **Kiến trúm:** Nên **module Production** (domain riêng), **mở rộng Warehouse/Purchase**, **Quality** tách lớp mỏng; Projects có thể đồng tồn tại làm lớp PM.
+- **Kiến trúc:** Nên **module Production** (domain riêng), **mở rộng Warehouse/Purchase**, **Quality** tách lớp mỏng; Projects có thể đồng tồn tại làm lớp PM.
 - **Roadmap:** Critical → High → Medium → Advanced — ưu tiên **BOM + batch + production batch record** trước khi làm UI phức tạp sampling/PRP.
 
 ---
 
 ## 6. Ước lượng thời gian & Go-live Hub (cho PM)
 
-**Giả định:** đã có **multi-warehouse** (giảm thời gian làm “tách kho A/B” thuần cấu hình); 1 nhóm **1–2 dev backend full-time** + **0.5 QA** + PM; không tính song song nhiều dự án lớn; deploy **Hub** sau UAT trên staging.
+**Giả định (cập nhật 2026-04):** Trên codebase **đã có multi-warehouse và tồn theo batch** (`warehouse_product_batches`) — khác bản kế hoạch ban đầu khi nền kho đa site chưa hoàn thiện. Phần **còn lại chủ yếu là code mới:** BOM, `Modules/Production`, CCP/rework, khép chuỗi tiêu hao/nhận FG, v.v. Ước lượng **Phase 1–2** vì thế **không giảm mạnh** chỉ vì đã có kho; lợi ích nằm ở **ít spike tích hợp `warehouse_id` / migration kho zero-to-one**. Giả định nhân sự: **1–2 dev backend full-time** + **0.5 QA** + PM; không tính song song nhiều dự án lớn; deploy **Hub** sau UAT trên staging.
 
-| Mốc         | Nội dung (theo §4)                                   | Ước lượng (lịch) | Ghi chú                                                                         |
-| ----------- | ---------------------------------------------------- | ---------------- | ------------------------------------------------------------------------------- |
-| **Phase 0** | Chuẩn bị, ERD, pilot flow                            | **1–2 tuần**     | Song song với dev chuẩn bị skeleton module                                      |
-| **Phase 1** | BOM, batch MVP, Production order/batch, tích hợp kho | **6–10 tuần**    | Phần nặng nhất; phụ thuộc độ sẵn có của `warehouse_product_batches` + API stock |
-| **Phase 2** | CCP, Receiving QC, Rework, Quality lock DO           | **5–8 tuần**     | Nhiều luồng nghiệp vụ + test hồi quy Warehouse/Purchase                         |
-| **Phase 3** | Sampling/COA, auto project, storage field            | **3–6 tuần**     | Tùy scope sampling/COA; có thể tách wave                                        |
-| **Phase 4** | PRP, audit export, email approve…                    | **3–6 tuần**     | Tùy bắt buộc ISO; có thể làm wave 2                                             |
+| Mốc         | Nội dung (theo §4)                                   | Ước lượng (lịch) | Ghi chú                                                                                                                                  |
+| ----------- | ---------------------------------------------------- | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| **Phase 0** | Chuẩn bị, ERD, pilot flow                            | **1–2 tuần**     | Song song với dev chuẩn bị skeleton module                                                                                               |
+| **Phase 1** | BOM, batch MVP, Production order/batch, tích hợp kho | **6–10 tuần**    | Phần nặng nhất; tích hợp dựa trên **`warehouse_product_batches` + API stock đã có** — trọng tâm là **schema/UI Production + khép luồng** |
+| **Phase 2** | CCP, Receiving QC, Rework, Quality lock DO           | **5–8 tuần**     | Nhiều luồng nghiệp vụ + test hồi quy Warehouse/Purchase                                                                                  |
+| **Phase 3** | Sampling/COA, auto project, storage field            | **3–6 tuần**     | Tùy scope sampling/COA; có thể tách wave                                                                                                 |
+| **Phase 4** | PRP, audit export, email approve…                    | **3–6 tuần**     | Tùy bắt buộc ISO; có thể làm wave 2                                                                                                      |
 
 **Tổng hợp lịch (wall-clock):**
 
@@ -181,7 +195,7 @@
 | **HACCP-ready (Biomixing pilot)** | Phase 0 + 1 + 2 (thêm CCP gate, receiving QC, rework, quality lock DO)                              | **~14–22 tuần**                             | **+3–4 tuần**                 | **~17–26 tuần** (~4–6.5 tháng)                                |
 | **Đầy đủ theo roadmap §4**        | Thêm Phase 3 (+ Phase 4 tùy)                                                                        | **+7–13 tuần** sau Phase 2                  | **+2–4 tuần**                 | **~6–9 tháng** từ kickoff đến go-live “đủ tính năng nâng cao” |
 
-**Điều chỉnh khi đã có multi-warehouse:** tiết kiệm khoảng **1–2 tuần** so với ước lượng “từ zero” (ít việc migration kho / ít spike tích hợp warehouse_id); **không** giảm đáng kể Phase 1–2 vì BOM, production batch, CCP vẫn là code mới.
+**Điều chỉnh so với tình huống “chưa có multi-warehouse / chưa có batch tồn”:** tiết kiệm khoảng **1–2 tuần** ở hạng mục **dựng nền kho + warehouse_id** (đã xảy ra trong codebase hiện tại). **Phase 1–2** vẫn nặng vì **BOM, production batch record, CCP, receiving QC** là phát triển mới — không tự giảm chỉ nhờ đã có kho.
 
 **Mốc go-live gợi ý cho PM:**
 
@@ -195,4 +209,4 @@
 
 ---
 
-_Tài liệu này bổ sung cho `BIOMIXING_GAP_ANALYSIS.md` (tiếng Anh, gap pilot) và `BIOMIXING_FLOW_CRACEVA_GAP.md` (đối chiếu từng bước flow). Cập nhật ngày khi chốt scope với khách hàng._
+_Tài liệu này bổ sung cho `BIOMIXING_GAP_ANALYSIS.md` (tiếng Anh, gap pilot) và `BIOMIXING_FLOW_CRACEVA_GAP.md` (đối chiếu từng bước flow). Chi tiết nâng cấp Warehouse vận hành: `FUNC_LOGIC/WAREHOUSE_UPGRADE_PLANE.MD`. Cập nhật ngày khi chốt scope với khách hàng._

@@ -29,6 +29,7 @@ class ImportController extends Controller
         'WarehouseImport',
         'InventoryImport',
         'SalesOrderImport',
+        'SalesHistoryImport',
     ];
 
     /**

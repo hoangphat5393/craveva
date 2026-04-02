@@ -1706,6 +1706,16 @@ class Module extends BaseModel
                     'is_custom' => 1,
                     'name' => 'view_project_orders',
                 ],
+                [
+                    'allowed_permissions' => Permission::ALL_NONE,
+                    'is_custom' => 1,
+                    'name' => 'view_sales_history',
+                ],
+                [
+                    'allowed_permissions' => Permission::ALL_NONE,
+                    'is_custom' => 1,
+                    'name' => 'add_sales_history_import',
+                ],
             ],
         ],
         [
@@ -2123,7 +2133,7 @@ class Module extends BaseModel
             return true;
         }
 
-        $parentMinVersion = config(strtolower($module).'.parent_min_version');
+        $parentMinVersion = config(strtolower($module) . '.parent_min_version');
 
         if ($parentMinVersion >= File::get('version.txt')) {
 
@@ -2131,7 +2141,7 @@ class Module extends BaseModel
             /* @phpstan-ignore-line */
             $module->disable();
 
-            $message = 'To activate <strong>'.$module.'</strong> module, minimum version of <b>craveva application</b> must be greater than equal to <b>'.$parentMinVersion.'</b> But your application version is <b>'.File::get('version.txt').'</b>. Please upgrade the application to latest version';
+            $message = 'To activate <strong>' . $module . '</strong> module, minimum version of <b>craveva application</b> must be greater than equal to <b>' . $parentMinVersion . '</b> But your application version is <b>' . File::get('version.txt') . '</b>. Please upgrade the application to latest version';
             throw new \Exception($message);
         }
     }

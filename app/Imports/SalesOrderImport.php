@@ -5,10 +5,8 @@ namespace App\Imports;
 use Maatwebsite\Excel\Concerns\SkipsUnknownSheets;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 
-class SalesOrderImport implements WithMultipleSheets
+class SalesOrderImport implements WithMultipleSheets, SkipsUnknownSheets
 {
-    use SkipsUnknownSheets;
-
     protected array $processedData = [];
 
     public static function fields(): array
@@ -48,8 +46,22 @@ class SalesOrderImport implements WithMultipleSheets
         }
     }
 
+    public function appendRow(array $row): void
+    {
+        if ($row === []) {
+            return;
+        }
+
+        $this->processedData[] = $row;
+    }
+
     public function getProcessedData(): array
     {
         return $this->processedData;
+    }
+
+    public function onUnknownSheet($sheetName): void
+    {
+        // Ignore unknown sheet names/indexes safely.
     }
 }

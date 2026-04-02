@@ -16,6 +16,8 @@ param(
 $ErrorActionPreference = "Stop"
 
 # --- Hub SSH target & app path (must match your SSH config Host craveva-hub-server) ---
+# Production docroot: aaPanel Nginx vhost hub.craveva.com must use root .../public under this same path
+# (not /www/wwwroot/...). If panel UI still shows the old path, change Site directory there or this deploy will not match live HTTP.
 $HubHost = "craveva-hub-server"
 $HubPath = "/var/www/hub.craveva.com"
 # --- GitHub source (same repo as hub production git workflow) ---

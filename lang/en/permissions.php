@@ -330,6 +330,8 @@ return [
     'view_order' => 'View Order',
     'edit_order' => 'Edit Order',
     'delete_order' => 'Delete Order',
+    'view_sales_history' => 'View Sales History',
+    'add_sales_history_import' => 'Import Sales History',
     'add_knowledgebase' => 'Add Knowledgebase',
     'view_knowledgebase' => 'View Knowledgebase',
     'edit_knowledgebase' => 'Edit Knowledgebase',

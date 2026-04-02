@@ -149,6 +149,7 @@ class SalesHistoryDataTable extends BaseDataTable
             ->parameters([
                 // Tránh state cũ (tên cột product.name) sau khi đổi schema → Ajax lỗi.
                 'stateSave' => false,
+                'pageLength' => 50,
                 'initComplete' => 'function () {
                     window.LaravelDataTables["sales-history-dt"].buttons().container()
                     .appendTo( "#table-actions")

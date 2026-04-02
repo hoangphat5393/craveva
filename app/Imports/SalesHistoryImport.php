@@ -43,7 +43,6 @@ class SalesHistoryImport implements WithMultipleSheets, SkipsUnknownSheets
             if (! is_array($row)) {
                 continue;
             }
-            $row['__sheet'] = (string) $sheetIndex;
             $this->processedData[] = $row;
         }
     }
@@ -54,7 +53,6 @@ class SalesHistoryImport implements WithMultipleSheets, SkipsUnknownSheets
             return;
         }
 
-        $row['__sheet'] = (string) $sheetIndex;
         $this->processedData[] = $row;
     }
 

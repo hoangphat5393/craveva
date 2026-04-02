@@ -7,10 +7,11 @@ use App\Helper\Reply;
 use App\Http\Requests\Admin\Employee\ImportProcessRequest;
 use App\Http\Requests\Admin\Employee\ImportRequest;
 use App\Imports\SalesHistoryImport;
-use App\Jobs\ImportSalesHistoryChunkJob;
+use App\Jobs\ImportSalesHistoryStreamJob;
 use App\Models\SalesHistory;
 use App\Models\User;
 use App\Traits\ImportExcel;
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Cache;
 
 class SalesHistoryController extends AccountBaseController
@@ -78,14 +79,18 @@ class SalesHistoryController extends AccountBaseController
             'imported_at' => now(),
         ]);
 
-        $chunkSize = $request->filled('chunk_size') ? (int) $request->chunk_size : 100;
-        $batch = $this->importJobProcessChunked(
-            $request,
-            SalesHistoryImport::class,
-            ImportSalesHistoryChunkJob::class,
-            $chunkSize,
-            ['sales_history_id' => $salesHistory->id]
-        );
+        $columns = array_filter((array) $request->columns, static fn($value) => $value !== null);
+
+        $batch = Bus::batch([
+            new ImportSalesHistoryStreamJob(
+                (string) $request->file,
+                (int) company()->id,
+                (int) $salesHistory->id,
+                $columns,
+                (bool) $request->boolean('has_heading'),
+                (bool) $request->boolean('has_skip_footer')
+            ),
+        ])->onConnection('database')->onQueue('SalesHistoryImport')->name('SalesHistoryImport-streamed')->dispatch();
 
         $batchId = data_get($batch, 'id');
         if ($batchId) {

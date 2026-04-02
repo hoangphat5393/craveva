@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use App\Helper\Files;
+use App\Imports\ChunkReadFilter;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Session;
@@ -10,6 +11,7 @@ use Illuminate\Validation\ValidationException;
 use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\HeadingRowImport;
 use Maatwebsite\Excel\Imports\HeadingRowFormatter;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use ReflectionClass;
 
 trait ImportExcel
@@ -91,28 +93,6 @@ trait ImportExcel
             ]);
         }
 
-        $importInstance = new $importClass;
-        Excel::import($importInstance, $filePath);
-        $excelData = $importInstance->getProcessedData();
-        $excelData = $this->stripHeadingFooterFromRows(
-            $excelData,
-            $request->boolean('heading'),
-            $request->boolean('skip_footer')
-        );
-
-        $isDataNull = true;
-
-        foreach ($excelData as $rowitem) {
-            if (array_filter($rowitem)) {
-                $isDataNull = false;
-                break;
-            }
-        }
-
-        if ($isDataNull) {
-            return 'abort';
-        }
-
         $this->hasHeading = $request->boolean('heading');
         $this->heading = [];
         $this->fileHeading = [];
@@ -125,6 +105,49 @@ trait ImportExcel
         $this->matchedColumns = [];
 
         $this->hasSkipFooter = $request->boolean('skip_footer');
+
+        // Optimization for large multi-sheet sales history files:
+        // mapping step only needs one representative sheet, not full workbook.
+        if ($importClass === \App\Imports\SalesHistoryImport::class) {
+            if ($this->hasHeading) {
+                [$this->heading, $this->fileHeading] = $this->readFirstSheetHeadingRows($filePath);
+
+                $this->matchedColumns = collect($this->columns)->whereIn('id', $this->heading)->pluck('id');
+                $importMatchedColumns = [];
+                foreach ($this->matchedColumns as $matchedColumn) {
+                    $importMatchedColumns[$matchedColumn] = 1;
+                }
+                $this->importMatchedColumns = $importMatchedColumns;
+            }
+
+            $this->importSample = $this->readFirstSheetSampleRows($filePath, $this->hasHeading, 5);
+            if ($this->importSample === []) {
+                return 'abort';
+            }
+
+            return;
+        }
+
+        $importInstance = new $importClass;
+        Excel::import($importInstance, $filePath);
+        $excelData = $importInstance->getProcessedData();
+        $excelData = $this->stripHeadingFooterFromRows(
+            $excelData,
+            $request->boolean('heading'),
+            $request->boolean('skip_footer')
+        );
+
+        $isDataNull = true;
+        foreach ($excelData as $rowitem) {
+            if (array_filter($rowitem)) {
+                $isDataNull = false;
+                break;
+            }
+        }
+        if ($isDataNull) {
+            return 'abort';
+        }
+
         if ($this->hasHeading) {
             $this->heading = (new HeadingRowImport)->toArray($filePath)[0][0];
 
@@ -145,6 +168,103 @@ trait ImportExcel
         }
 
         $this->importSample = array_slice($excelData, 0, 5);
+    }
+
+    /**
+     * Read sample rows from first sheet only (for mapping UI performance).
+     *
+     * @return array<int, array<int, mixed>>
+     */
+    private function readFirstSheetSampleRows(string $filePath, bool $hasHeading, int $sampleSize = 5): array
+    {
+        $reader = IOFactory::createReaderForFile($filePath);
+        $reader->setReadDataOnly(true);
+        if (method_exists($reader, 'setReadEmptyCells')) {
+            $reader->setReadEmptyCells(false);
+        }
+
+        $sheetNames = method_exists($reader, 'listWorksheetNames')
+            ? (array) call_user_func([$reader, 'listWorksheetNames'], $filePath)
+            : [];
+
+        if ($sheetNames === []) {
+            return [];
+        }
+
+        $reader->setLoadSheetsOnly([(string) $sheetNames[0]]);
+        $startRow = $hasHeading ? 2 : 1;
+        $maxScanRows = 100;
+        $readFilter = new ChunkReadFilter;
+        $readFilter->setRows($startRow, $maxScanRows);
+        $reader->setReadFilter($readFilter);
+
+        $spreadsheet = $reader->load($filePath);
+        $sheet = $spreadsheet->getSheet(0);
+        $endRow = $startRow + $maxScanRows - 1;
+        $endColumn = $sheet->getHighestDataColumn();
+        $rows = $sheet->rangeToArray("A{$startRow}:{$endColumn}{$endRow}", null, true, true, false);
+
+        $samples = [];
+        foreach ($rows as $row) {
+            while ($row !== [] && end($row) === null) {
+                array_pop($row);
+            }
+
+            if (count(array_filter($row, static fn($value) => $value !== null && trim((string) $value) !== '')) === 0) {
+                continue;
+            }
+
+            $samples[] = $row;
+            if (count($samples) >= $sampleSize) {
+                break;
+            }
+        }
+
+        $spreadsheet->disconnectWorksheets();
+
+        return $samples;
+    }
+
+    /**
+     * Read heading row from first sheet only.
+     *
+     * @return array{0: array<int, mixed>, 1: array<int, mixed>} [formattedHeading, rawHeading]
+     */
+    private function readFirstSheetHeadingRows(string $filePath): array
+    {
+        $reader = IOFactory::createReaderForFile($filePath);
+        $reader->setReadDataOnly(true);
+        if (method_exists($reader, 'setReadEmptyCells')) {
+            $reader->setReadEmptyCells(false);
+        }
+
+        $sheetNames = method_exists($reader, 'listWorksheetNames')
+            ? (array) call_user_func([$reader, 'listWorksheetNames'], $filePath)
+            : [];
+
+        if ($sheetNames === []) {
+            return [[], []];
+        }
+
+        $reader->setLoadSheetsOnly([(string) $sheetNames[0]]);
+        $readFilter = new ChunkReadFilter;
+        $readFilter->setRows(1, 1);
+        $reader->setReadFilter($readFilter);
+
+        $spreadsheet = $reader->load($filePath);
+        $sheet = $spreadsheet->getSheet(0);
+        $endColumn = $sheet->getHighestDataColumn();
+        $rawHeading = $sheet->rangeToArray("A1:{$endColumn}1", null, true, true, false)[0] ?? [];
+
+        while ($rawHeading !== [] && end($rawHeading) === null) {
+            array_pop($rawHeading);
+        }
+
+        $spreadsheet->disconnectWorksheets();
+
+        $formattedHeading = HeadingRowFormatter::format($rawHeading);
+
+        return [$formattedHeading, $rawHeading];
     }
 
     public function importJobProcess($request, $importClass, $importJobClass)

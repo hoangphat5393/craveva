@@ -382,6 +382,7 @@ return [
     'unmatchedColumns' => '<span id=\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"unmatchedCount\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\">:unmatchCount</span> unmatched columns.',
     'importRunningInBackground' => 'Import is running in the background.',
     'importFirstProgressMayTakeAMinute' => 'The first progress update may take 1–2 minutes for large files; please keep this page open.',
+    'importQueueTakingLong' => 'The import is still queued or processing on the server. You may leave this page — the job continues in the background. Refresh Sales history later to see results. If progress stays at 0% for a long time, ask your admin to verify the queue worker (cron schedule:run every minute) and server logs.',
     'pleaseSelectAColumn' => 'Please select a column or click on skip',
     'invoiceLogoTooltip' => 'This logo will appear on the invoices (only .jpg, .jpeg, .png formats are allowed)',
     'authorisedSignatorySignatureTooltip' => 'This signature will appear on the paid invoices (only .jpg, .jpeg, .png formats are allowed). Check Show Authorised Signatory from the bottom of the invoice setting page',

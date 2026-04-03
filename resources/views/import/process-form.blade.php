@@ -132,6 +132,9 @@
             @lang('app.doNotCloseOrRefreshPage')
             <p class="mb-0 mt-2 small">@lang('messages.importRunningInBackground')</p>
         </div>
+        <div class="alert alert-secondary border-warning" role="alert" id="importLongWaitNotice" style="display:none;">
+            @lang('messages.importQueueTakingLong')
+        </div>
         <div class="alert alert-success" role="alert" id="importSuccess" style="display:none">
         </div>
         <div class="alert alert-success" role="alert" id="progressSuccess" style="display:none">
@@ -166,6 +169,9 @@
     let columnID = 0;
     let progress = 0;
     let isFirstPoll = true;
+    let importPollStartedAt = null;
+    let importPollIntervalMs = 2000;
+    const importLongWaitAfterMs = 3 * 60 * 1000;
     // Fields associated with this import
     let jsColumnArray = @json($columns);
     let currentImportColumnID = jsColumnArray[0].id; // By default column 0 is selected
@@ -431,10 +437,13 @@
 
         $('#process-{{ $importClassName }}-data-form').hide();
         $('#afterSubmitting').show();
+        if (importPollStartedAt === null) {
+            importPollStartedAt = Date.now();
+        }
         var url = "{{ route('import.process.progress', [$importClassName, ':batchId']) }}";
         url = url.replace(':batchId', batchId);
 
-        var delay = isFirstPoll ? 0 : 2000;
+        var delay = isFirstPoll ? 0 : importPollIntervalMs;
         if (isFirstPoll) isFirstPoll = false;
         setTimeout(function() {
             window.apiHttp.get(url).then(function(response) {
@@ -483,8 +492,15 @@
                 var keepPolling = totalJobs > 0 && (p > 0 || sumDone < totalJobs);
 
                 if (keepPolling) {
+                    if (importPollStartedAt && (Date.now() - importPollStartedAt) >= importLongWaitAfterMs && p > 0) {
+                        $('#importLongWaitNotice').show();
+                        importPollIntervalMs = 5000;
+                    }
                     getProgress(batchId);
                 } else {
+                    importPollStartedAt = null;
+                    importPollIntervalMs = 2000;
+                    $('#importLongWaitNotice').hide();
                     $('#importSuccess').html(failedJobs > 0 ? `@lang('app.importFinishedWithErrors')` : `@lang('app.importCompleted')`);
                     $('#process-warning').hide();
                     $('#importSuccess').show();

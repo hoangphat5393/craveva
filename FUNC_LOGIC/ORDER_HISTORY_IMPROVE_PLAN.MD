@@ -116,3 +116,17 @@ No: Cả qty ≥ 0 và (không có amount hoặc amount ≥ 0)
 4. **Nếu vẫn muốn thử chạy worker qua poll (không khuyến nghị production):** đặt `IMPORT_PROGRESS_RUN_QUEUE_WORKER=true` — chỉ dùng khi hiểu rủi ro timeout proxy/FPM.
 
 **PHP memory (khi job đã chạy nhưng fail / kill):** tăng `memory_limit` cho **CLI** (worker) và nếu cần **php-fpm** (vd. 512M–1024M tùy file). Kiểm tra `php artisan queue:failed` và log worker.
+
+---
+
+## Tại sao **local** ít lỗi, **staging** dễ lỗi / cảm giác “chờ mãi”?
+
+| | **Local (máy dev)** | **Staging / production** |
+|---|---------------------|---------------------------|
+| **Worker khi mở trang import** | Thường **có** `queue:work` trong từng request poll (khi `APP_URL` dạng `.test` / `localhost` hoặc env cho phép) → job chạy ngay, % nhích nhanh. | **Không** chạy worker trong poll (domain thật) → phải chờ **cron** `schedule:run` (mỗi phút) hoặc Supervisor. |
+| **Dữ liệu** | DB local đã có **client_code**, **SKU** khớp file test. | DB staging **khác** — dễ **Client not found / Product not found** → job **FAIL** nhanh; cần xem `failed_jobs` / log từng dòng. |
+| **File upload** | Cùng máy, path `public/user-uploads/...` thống nhất. | Phải đúng quyền `storage` / `user-uploads` (www-data); zip deploy sai có thể thiếu file. |
+
+**Job được xử lý khi nào?** Khi có process **queue worker** lấy job từ bảng `jobs` (cron `queue:work ... --queue=...SalesHistoryImport...` hoặc worker nền). Không có worker = `pendingJobs` mãi = 1, % đứng 0% — **không phải lỗi logic import**, mà **cấu hình server**.
+
+**UI:** Sau ~3 phút mà vẫn còn pending, trang import hiện thêm cảnh báo (có thể rời trang, job vẫn chạy nền) — xem `resources/views/import/process-form.blade.php` và `messages.importQueueTakingLong`.

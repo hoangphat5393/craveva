@@ -97,3 +97,22 @@ No: Cả qty ≥ 0 và (không có amount hoặc amount ≥ 0)
 
 - Mục tiêu đạt được: **map nhanh**, **process chia job nhỏ hơn**, **ít query DB hơn trong từng job**, **poll phản hồi ổn định hơn** — phù hợp user chỉ dùng UI.
 - Việc có cần **process queue nền 24/7** (Supervisor, v.v.) là **cấu hình server** khi triển khai production/staging; không đưa vào hướng dẫn cho khách hàng nghiệp vụ.
+
+---
+
+## Staging / production: import đứng 0% (`pendingJobs: 1`, `processedJobs: 0`)
+
+**Ý nghĩa JSON poll:** Job vẫn nằm trong bảng `jobs` — **chưa có worker** (hoặc worker không lắng nghe đúng queue) xử lý. Đây **không** phải lỗi PHP memory trước khi job chạy; memory chỉ liên quan khi job **đã** bắt đầu và bị OOM.
+
+**Trên staging với `APP_URL` public (vd. `staging.craveva.com`):** mặc định **không** chạy `queue:work` trong từng request poll (xem `shouldRunQueueWorkerDuringImportProgressPoll()` trong `ImportController`, `config/app.php`). Cần **daemon** xử lý queue.
+
+**Checklist trên server:**
+
+1. **`.env`:** `QUEUE_CONNECTION=database` (hoặc driver đã cấu hình đúng); migrate đã chạy (`jobs`, `failed_jobs`, `job_batches`).
+2. **Worker lắng nghe queue import:** batch Sales history dùng queue tên **`SalesHistoryImport`**. Ví dụ Supervisor:
+   - `php artisan queue:work database --queue=SalesHistoryImport --sleep=3 --tries=1 --timeout=3600`
+   - Hoặc đưa `SalesHistoryImport` vào đầu danh sách `--queue=SalesHistoryImport,default,...`.
+3. **Sau deploy:** `php artisan queue:restart` để worker nạp code mới.
+4. **Nếu vẫn muốn thử chạy worker qua poll (không khuyến nghị production):** đặt `IMPORT_PROGRESS_RUN_QUEUE_WORKER=true` — chỉ dùng khi hiểu rủi ro timeout proxy/FPM.
+
+**PHP memory (khi job đã chạy nhưng fail / kill):** tăng `memory_limit` cho **CLI** (worker) và nếu cần **php-fpm** (vd. 512M–1024M tùy file). Kiểm tra `php artisan queue:failed` và log worker.

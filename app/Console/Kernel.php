@@ -48,6 +48,32 @@ use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 class Kernel extends ConsoleKernel
 {
     /**
+     * Queues processed by the scheduled `queue:work` job. Must include every queue used by
+     * ImportExcel / Bus::batch()->onQueue(...) (short import class names) plus `default`.
+     * Keep in sync with ImportController::ALLOWED_IMPORT_QUEUE_NAMES.
+     *
+     * @var list<string>
+     */
+    private const DATABASE_WORKER_QUEUE_NAMES = [
+        'default',
+        'ClientImport',
+        'ProductImport',
+        'EmployeeImport',
+        'ProjectImport',
+        'DealImport',
+        'LeadImport',
+        'ExpenseImport',
+        'AttendanceImport',
+        'JobApplicationImport',
+        'ClientProductPricingImport',
+        'PricingTierItemsImport',
+        'WarehouseImport',
+        'InventoryImport',
+        'SalesOrderImport',
+        'SalesHistoryImport',
+    ];
+
+    /**
      * The Artisan commands provided by your application.
      *
      * @var array

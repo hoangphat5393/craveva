@@ -379,6 +379,7 @@ return [
     'pleaseSelectCategory' => 'Hãy chọn một danh mục',
     'importUploadSuccess' => 'Dữ liệu được tải lên thành công.',
     'importProcessStart' => 'Quá trình nhập khẩu bắt đầu. Vui lòng chờ.',
+    'salesHistoryImportJobFailedShort' => 'Import lịch sử bán: :count dòng lỗi trong đoạn xử lý này. Xem chi tiết từng dòng trong nhật ký import bên dưới.',
     'importRunningInBackground' => 'Nhập liệu đang chạy nền.',
     'importFirstProgressMayTakeAMinute' => 'Lần cập nhật tiến độ đầu có thể mất 1–2 phút với file lớn; vui lòng không đóng trang.',
     'confirmResetPermission' => 'Thao tác này sẽ đặt lại quyền cho tất cả người dùng có vai trò này. Bạn có muốn thiết lập lại không?',

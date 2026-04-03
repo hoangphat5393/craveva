@@ -4,6 +4,9 @@ namespace App\Traits;
 
 use App\Helper\Files;
 use App\Imports\ChunkReadFilter;
+use App\Imports\SalesHistoryImport;
+use Illuminate\Bus\PendingBatch;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Session;
@@ -108,7 +111,7 @@ trait ImportExcel
 
         // Optimization for large multi-sheet sales history files:
         // mapping step only needs one representative sheet, not full workbook.
-        if ($importClass === \App\Imports\SalesHistoryImport::class) {
+        if ($importClass === SalesHistoryImport::class) {
             if ($this->hasHeading) {
                 [$this->heading, $this->fileHeading] = $this->readFirstSheetHeadingRows($filePath);
 
@@ -171,6 +174,36 @@ trait ImportExcel
     }
 
     /**
+     * Csv reader has no listWorksheetNames() (Xlsx/Xls do). Use listWorksheetInfo or single-sheet fallback.
+     *
+     * @return array<int, string>
+     */
+    private function listWorksheetNamesForReader($reader, string $filePath): array
+    {
+        if (method_exists($reader, 'listWorksheetNames')) {
+            $names = (array) call_user_func([$reader, 'listWorksheetNames'], $filePath);
+            if ($names !== []) {
+                return $names;
+            }
+        }
+
+        if (method_exists($reader, 'listWorksheetInfo')) {
+            $info = call_user_func([$reader, 'listWorksheetInfo'], $filePath);
+            $names = [];
+            foreach (is_array($info) ? $info : [] as $row) {
+                if (! empty($row['worksheetName'])) {
+                    $names[] = (string) $row['worksheetName'];
+                }
+            }
+            if ($names !== []) {
+                return $names;
+            }
+        }
+
+        return ['Worksheet'];
+    }
+
+    /**
      * Read sample rows from first sheet only (for mapping UI performance).
      *
      * @return array<int, array<int, mixed>>
@@ -183,9 +216,7 @@ trait ImportExcel
             $reader->setReadEmptyCells(false);
         }
 
-        $sheetNames = method_exists($reader, 'listWorksheetNames')
-            ? (array) call_user_func([$reader, 'listWorksheetNames'], $filePath)
-            : [];
+        $sheetNames = $this->listWorksheetNamesForReader($reader, $filePath);
 
         if ($sheetNames === []) {
             return [];
@@ -238,9 +269,7 @@ trait ImportExcel
             $reader->setReadEmptyCells(false);
         }
 
-        $sheetNames = method_exists($reader, 'listWorksheetNames')
-            ? (array) call_user_func([$reader, 'listWorksheetNames'], $filePath)
-            : [];
+        $sheetNames = $this->listWorksheetNamesForReader($reader, $filePath);
 
         if ($sheetNames === []) {
             return [[], []];
@@ -327,12 +356,12 @@ trait ImportExcel
     /**
      * Dispatch import as chunk jobs (e.g. 100 rows per job) to reduce queue overhead and speed up import.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      * @param  string  $importClass  e.g. ClientImport::class
      * @param  string  $chunkJobClass  Job that accepts (array $rows, array $columns, $company) e.g. ImportClientChunkJob::class
      * @param  int  $chunkSize  Rows per chunk (default 100)
      * @param  array  $options  Optional data passed to each job (e.g. ['default_unit_id' => 1])
-     * @return \Illuminate\Bus\PendingBatch
+     * @return PendingBatch
      */
     public function importJobProcessChunked($request, $importClass, $chunkJobClass, int $chunkSize = 100, array $options = [])
     {
@@ -419,6 +448,7 @@ trait ImportExcel
             if (is_object($value) && method_exists($value, '__toString')) {
                 return (string) $value;
             }
+
             return $value === null ? null : (string) $value;
         } catch (\Throwable $e) {
             return '';

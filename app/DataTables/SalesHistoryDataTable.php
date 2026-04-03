@@ -55,9 +55,9 @@ class SalesHistoryDataTable extends BaseDataTable
     {
         $datatable = datatables()
             ->eloquent($query)
-            ->editColumn('client_name', fn($row) => $row->client_name ?: '--')
-            ->editColumn('product_sku', fn($row) => $row->product_sku ?: '--')
-            ->editColumn('product_name', fn($row) => $row->product_name ?: '--')
+            ->editColumn('client_name', fn ($row) => $row->client_name ?: '--')
+            ->editColumn('product_sku', fn ($row) => $row->product_sku ?: '--')
+            ->editColumn('product_name', fn ($row) => $row->product_name ?: '--')
             ->addColumn('shipment_date_formatted', function ($row) {
                 if (! $row->shipment_date) {
                     return '--';
@@ -80,9 +80,9 @@ class SalesHistoryDataTable extends BaseDataTable
                     return (string) $row->amount;
                 }
             })
-            ->addColumn('return_label', fn($row) => $row->is_return ? __('app.yes') : __('app.no'))
+            ->addColumn('return_label', fn ($row) => $row->is_return ? __('app.yes') : __('app.no'))
             ->addIndexColumn()
-            ->setRowId(fn($row) => 'row-' . $row->id)
+            ->setRowId(fn ($row) => 'row-'.$row->id)
             ->rawColumns([]);
 
         // Server-side ordering must use real columns (joins below), not relation dot-notation.
@@ -93,6 +93,7 @@ class SalesHistoryDataTable extends BaseDataTable
         $datatable->orderColumn('amount', 'sales_history_lines.amount $1');
         $datatable->orderColumn('is_return', 'sales_history_lines.is_return $1');
         $datatable->orderColumn('quantity', 'sales_history_lines.quantity $1');
+        $datatable->orderColumn('id', 'sales_history_lines.id $1');
 
         return $datatable;
     }
@@ -134,9 +135,9 @@ class SalesHistoryDataTable extends BaseDataTable
             $safeTerm = Common::safeString(request('searchText'));
             // Dùng cột từ join (users, products) — tránh whereHas + join gây SQL lỗi trên một số DB.
             $model->where(function ($query) use ($safeTerm) {
-                $query->where('products.name', 'like', '%' . $safeTerm . '%')
-                    ->orWhere('products.sku', 'like', '%' . $safeTerm . '%')
-                    ->orWhere('users.name', 'like', '%' . $safeTerm . '%');
+                $query->where('products.name', 'like', '%'.$safeTerm.'%')
+                    ->orWhere('products.sku', 'like', '%'.$safeTerm.'%')
+                    ->orWhere('users.name', 'like', '%'.$safeTerm.'%');
             });
         }
 
@@ -160,7 +161,7 @@ class SalesHistoryDataTable extends BaseDataTable
             ]);
 
         if (canDataTableExport()) {
-            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> ' . trans('app.exportExcel')]));
+            $dataTable->buttons(Button::make(['extend' => 'excel', 'text' => '<i class="fa fa-file-export"></i> '.trans('app.exportExcel')]));
         }
 
         return $dataTable;
@@ -170,6 +171,7 @@ class SalesHistoryDataTable extends BaseDataTable
     {
         return [
             '#' => ['data' => 'DT_RowIndex', 'orderable' => false, 'searchable' => false, 'visible' => false, 'title' => '#'],
+            __('app.id') => ['data' => 'id', 'name' => 'id', 'title' => __('app.id'), 'searchable' => false, 'width' => '72px'],
             __('app.date') => ['data' => 'shipment_date_formatted', 'name' => 'shipment_date', 'title' => __('app.salesHistoryShipmentDate'), 'searchable' => false],
             __('app.client') => ['data' => 'client_name', 'name' => 'client_name', 'title' => __('app.client'), 'searchable' => false],
             __('app.product') => ['data' => 'product_name', 'name' => 'product_name', 'title' => __('app.product'), 'searchable' => false],

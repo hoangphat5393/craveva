@@ -23,6 +23,7 @@ return [
     'abortAction' => 'The uploaded file contains no valid data.',
     'importUploadSuccess' => 'Data uploaded successfully.',
     'importProcessStart' => 'Import process started. Please wait.',
+    'salesHistoryImportJobFailedShort' => 'Sales history import: :count row error(s) in this segment. See row-level errors in the import log below.',
     'qrCodeAndFirstSignError' => '\'QR Code\' and \'Auto clock-in employee by first sign in\' cannot be enabled simultaneously. To enable QR Code, please first disable \'Auto Clock-In by First Sign-In\'.',
     'leaveApplied' => 'Leave is applied for today.',
     'leaveForFirstHalf' => 'Leave is applied for the first half.',

@@ -1,61 +1,99 @@
-Đề xuất cải thiện (ưu tiên từ hiệu quả nhất)
+1. Dòng dữ liệu được tạo mới (INSERT)
 
-1) Bỏ parse file trong request, chuyển 100% sang queue background
 
-    Upload xong trả về ngay batch_id, không đọc toàn bộ file trong importStore.
-    Đây là cải thiện lớn nhất: UI phản hồi nhanh, không timeout/hết RAM trên request web.
+Return:
+Yes: Số lượng (net sales volume) < 0 hoặc số tiền (net sales amount) < 0 (khi có nhập amount)
+No: Cả qty ≥ 0 và (không có amount hoặc amount ≥ 0)
 
-2) Không đọc file 2 lần
 
-    Luồng hiện tại đang có khả năng parse file ở bước upload + parse lại ở bước process.
-    Chỉ nên parse 1 lần trong worker queue.
+# Kế hoạch / trạng thái cải thiện Import Sales History (Order History)
 
-3) Không gom toàn bộ rows vào mảng RAM (processedData)
 
-    Dù có chunk reading, nếu vẫn append toàn bộ vào array thì vẫn nổ RAM.
-    Chuyển sang xử lý từng chunk và ghi DB ngay.
+## Quy chuẩn UX lỗi import (Sales History — dùng lại cho import khác)
 
-4) Tối ưu DB khi import
+**Mục tiêu:** Người dùng cuối **không** đọc stack trace PHP; chỉ thấy **một dòng rõ ràng / một badge** cho mỗi dòng file lỗi.
 
-    Cache map client_code -> user_id và sku -> product_id theo chunk (tránh query từng dòng).
-    Dùng insert/upsert theo lô thay vì save() từng dòng + transaction từng row.
+| Thành phần | Quy ước |
+|------------|---------|
+| **Cache key** | `import_row_errors_{batchId}` — mảng chuỗi, TTL **12h** (cùng nhịp với `import_metrics_{batchId}`). |
+| **Khởi tạo** | Khi `dispatch` batch: `Cache::put('import_row_errors_'.$batchId, [], …)` (tránh null). |
+| **Ghi (parallel-safe)** | `StoresImportBatchMetrics::mergeImportBatchRowErrors($batchId, $lines)` — lock `lock_import_row_errors_{batchId}`, tối đa **500** dòng/batch (tránh phình cache). |
+| **Nội dung mỗi phần tử** | Một dòng, ví dụ: `Sheet {index} Row {n}: Product not found by SKU: {sku}` — **không** nhét stack trace. |
+| **Job khi có lỗi dòng** | Gọi `mergeImportBatchRowErrors` **trước** `throw`; exception message **ngắn** (dịch `messages.*ImportJobFailedShort`) để `failed_jobs` gọn. |
+| **UI** | `ImportController@getQueueException`: đọc cache, truyền `importRowErrors` vào `import.import_exception`; hiển thị **badge** + nút **CSV**; nếu có `importRowErrors` và queue là Sales History thì **rút gọn** cột exception (chỉ dòng đầu). |
+| **API poll** | Có thể trả thêm `import_row_errors` trong JSON (đã thêm cho tương thích client JS). |
 
-5) Cấu hình PhpSpreadsheet dùng cache ra disk
-
-    Giảm dùng RAM khi workbook lớn (đổi cache driver sang file/illuminate trong config excel).
-
-6) Giải pháp vận hành tạm thời
-
-    Tách file lớn thành CSV theo tháng rồi import nhiều lần (nhanh và ổn định hơn xlsx lớn nhiều sheet).
+**Áp dụng cho import khác:** Copy pattern cache + merge + view (hoặc nhánh theo `$name` trong `getQueueException`), giữ **một chuỗi một lỗi** để badge/CSV ổn định.
 
 ---
 
-Các phương án đã thực hiện (trạng thái hiện tại)
+## Nguyên tắc UX
 
-- [x] Giữ màn mapping cột, nhưng tối ưu bước upload/map chỉ đọc sheet đầu cho `SalesHistoryImport`.
-- [x] Ở bước mapping đã đổi sang đọc nhẹ:
-  - chỉ đọc header dòng 1 của sheet đầu;
-  - chỉ đọc sample data của sheet đầu;
-  - dùng `ChunkReadFilter` để giới hạn dòng nạp vào RAM.
+- **Người dùng cuối (khách hàng)** chỉ thao tác trên trình duyệt: upload → map cột → giữ trang để thanh tiến độ cập nhật. **Không** được giả định họ biết chạy `php artisan` hay SSH.
+- **Worker queue** (nếu cần chạy nền ổn định) là trách nhiệm **môi trường triển khai** (hosting, IT nội bộ, DevOps): Supervisor, systemd, hoặc panel quản lý process — **không** ghi vào hướng dẫn cho user nghiệp vụ.
+- Trên môi trường dev (`.test` / `localhost` / cấu hình tương đương), ứng dụng có thể tự gọi `queue:work` trong luồng poll progress (xem `ImportController@getImportProgress` và `config/app.php` — `import_progress_*`). Đó là chi tiết kỹ thuật, không phải việc user phải làm.
 
-**Số liệu cụ thể khi Upload (chỉ `SalesHistoryImport`, bước mở form map cột):**
+---
 
-| Hạng mục                              | Giá trị               | Ghi chú               |
-|---------------------------------------|-----------------------|----------------------------------------------------------|
-| Số sheet **nạp nội dung**             | **1**                 | Chỉ sheet đầu (`setLoadSheetsOnly` tên sheet đầu). Tên các sheet khác có thể được đọc metadata qua `listWorksheetNames` nhưng không load dữ liệu các sheet đó ở bước này. |
-| Header (khi bật “có dòng tiêu đề”)    | **1 dòng**            | Dòng **1** của sheet đầu, filter `ChunkReadFilter` 1–1. |
-| Vùng quét để lấy sample               | **tối đa 100 dòng**   | Từ dòng 2 nếu có header, từ dòng 1 nếu không; `maxScanRows = 100` trong `readFirstSheetSampleRows`. |
-| Số dòng **hiển thị** trên UI sample   | **tối đa 5**          | Lấy tối đa 5 dòng **không rỗng** đầu tiên trong vùng quét trên. |
-| Thời gian phản hồi UI                 | **~0.5s**             | Chỉ đọc sheet đầu, metadata và sample — tải nhẹ. |
+## Đề xuất cải thiện thêm (ưu tiên từ hiệu quả)
+
+1) **Bỏ parse nặng trong request upload**, chuyển dần 100% phần đọc file lớn sang background sau khi đã có `batch_id` (nếu sau này đổi UX được).
+
+2) **Không đọc cùng một workbook nhiều lần không cần thiết**
+   Luồng hiện tại: bước map nhẹ (sheet đầu); bước process vẫn **mở lại file theo từng job** (theo range dòng). Hướng tốt hơn lâu dài: một lần đọc/chia chunk trong worker (giống tinh thần `importJobProcessChunked` của Client import) — còn trong backlog.
+
+3) **Không gom toàn bộ rows vào một mảng RAM**
+   Với Sales History đang dùng stream theo range + job nhỏ hơn; vẫn cần cẩn trọng file xlsx cực lớn.
+
+4) **Tối ưu DB** — **đã làm một phần** trong `ImportSalesHistoryStreamJob`: prefetch `client_code` / `SKU` / `source_row_hash` theo chunk, bulk insert theo lô (xem code). Có thể mở rộng cache xuyên job nếu cần.
+
+5) **PhpSpreadsheet cache disk** (tùy `config/excel.php`) — backlog, giảm RAM workbook lớn.
+
+6) **Gợi ý nghiệp vụ (cho user)**
+   File rất lớn / nhiều sheet: có thể tách theo tháng hoặc giảm dung lượng (CSV tháng) để **ổn định hơn** — đây là khuyến nghị dùng phần mềm bảng tính, **không** phải lệnh server.
+
+---
+
+## Đã thực hiện (cập nhật theo code)
+
+- [x] Giữ màn mapping cột; bước upload/map **chỉ đọc sheet đầu** cho `SalesHistoryImport` (nhẹ).
+- [x] Bước mapping: header + sample giới hạn (`ChunkReadFilter`, tối đa 100 dòng quét, tối đa 5 dòng mẫu hiển thị).
+- [x] Process: **nhiều job queue** theo sheet + khoảng dòng; job `ImportSalesHistoryStreamJob`.
+- [x] **Chunk mặc định 500 dòng/job** (trước đây 2000 — quá nặng mỗi job). Cấu hình: `config/craveva_import.php` / env `SALES_HISTORY_IMPORT_ROWS_PER_JOB` (clamp 100–2000 trong controller).
+- [x] Trong mỗi job: **prefetch** `client_details` + `products` bằng `whereIn`, prefetch `source_row_hash` đã tồn tại; **insert theo lô** (fallback từng dòng nếu lô lỗi); timeout job tăng phù hợp.
+- [x] Poll import: giảm nguy cơ request poll bị treo lâu — điều chỉnh số job xử lý mỗi lần poll trong `ImportController` + `import_progress_execution_jobs_per_poll` (`config/app.php`).
+- [x] **Lỗi theo dòng (UX):** gom vào `import_row_errors_{batchId}`; job ném exception **ngắn**; Import Log hiện **badge** + tải CSV; không hiển thị stack trace dài cho user (xem mục quy chuẩn UX lỗi import).
+- [x] Loại bỏ key nội bộ `__sheet` khỏi sample để tránh lỗi Blade/import form.
+- [x] **CSV ở bước map:** Reader CSV của PhpSpreadsheet **không có** `listWorksheetNames()` (chỉ Xlsx/Xls có) → trước đây `$sheetNames === []` → `abort` “no valid data”. Đã thêm `listWorksheetNamesForReader()` dùng `listWorksheetInfo` hoặc fallback `Worksheet` (`ImportExcel`).
+- [ ] Chưa làm full mục (1)+(2) “một lần parse toàn luồng” vì vẫn giữ UX map cột và kiến trúc stream hiện tại.
+
+**Số liệu tham chiếu (SalesHistoryImport, bước map cột):**
+
+| Hạng mục                          | Giá trị               | Ghi chú                                |
+|-----------------------------------|-----------------------|----------------------------------------|
+| Sheet nạp nội dung ở bước map     | 1                     | Sheet đầu.                             |
+| Sample quét                       | tối đa 100 dòng       | `readFirstSheetSampleRows`.            |
+| Sample hiển thị UI                | tối đa 5 dòng         |                                         |
+| Dòng mỗi job process              | **500** (mặc định)    | `SalesHistoryController` + `config/craveva_import.php`. |
 
 
-- [x] Loại bỏ key nội bộ `__sheet` khỏi sample rows để tránh lỗi `Undefined array key "sheet"` ở `import.process-form`.
-- [x] Chỉnh sample scan từ 300 dòng xuống 100 dòng để giảm tải request hơn nữa.
-- [x] Chuyển bước process sang batch nhiều jobs theo `sheet + row range` (chunk size 2000), thay vì 1 job lớn duy nhất.
-- [x] Vẫn giữ UX mapping cột hiện tại (không bỏ bước map), nhưng process đã chạy queue kiểu chunk giống client import.
-- [ ] Chưa áp dụng full (1)+(2)+(3) thuần vì vẫn giữ màn map cột theo yêu cầu.
+**Vị trí code chính:**
 
-Ghi chú quyết định
+| Hạng mục                              | File                                                              |
+|---------------------------------------|---------------------------------------------------------------------------------------|
+| Chunk rows/job + dispatch batch       | `app/Http/Controllers/SalesHistoryController.php`                                     |
+| Đọc nhẹ sheet đầu / sample            | `app/Traits/ImportExcel.php`                                                          |
+| Xử lý chunk + batch DB + bulk insert  | `app/Jobs/ImportSalesHistoryStreamJob.php`                                            |
+| Cấu hình số dòng/job                  | `config/craveva_import.php`                                                           |
+| Poll progress / worker inline (chỉ theo cấu hình môi trường) | `app/Http/Controllers/ImportController.php`, `config/app.php`  |
+| Merge row errors (cache)              | `app/Traits/StoresImportBatchMetrics.php` (`mergeImportBatchRowErrors`)               |
+| Import log UI (badge / CSV)           | `resources/views/import/import_exception.blade.php`                                   |
+| Page length datatable                 | `app/DataTables/SalesHistoryDataTable.php` (`pageLength` 50)                          |
 
-- Mục tiêu hiện tại là "partial (1)": bỏ đọc nặng ở bước mapping nhưng vẫn giữ màn map cột.
-- Bước process (sau khi submit mapping) đã chuyển sang mô hình queue chunk nhiều jobs, giúp progress tăng dần thay vì nhảy 0% -> 100%.
+
+---
+
+## Ghi chú quyết định
+
+- Mục tiêu đạt được: **map nhanh**, **process chia job nhỏ hơn**, **ít query DB hơn trong từng job**, **poll phản hồi ổn định hơn** — phù hợp user chỉ dùng UI.
+- Việc có cần **process queue nền 24/7** (Supervisor, v.v.) là **cấu hình server** khi triển khai production/staging; không đưa vào hướng dẫn cho khách hàng nghiệp vụ.

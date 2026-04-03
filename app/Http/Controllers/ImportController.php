@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class ImportController extends Controller
 {
@@ -48,7 +49,7 @@ class ImportController extends Controller
         // IMPORT_PROGRESS_RUN_QUEUE_WORKER=false. Staging/production: set that to false and use Supervisor.
         if ($this->shouldRunQueueWorkerDuringImportProgressPoll()) {
             set_time_limit(300);
-            $execution_jobs = 50;
+            $execution_jobs = $this->resolveImportExecutionJobsPerPoll();
             Artisan::call('queue:work database --max-jobs=' . $execution_jobs . ' --queue=' . $name . ' --stop-when-empty');
         }
 
@@ -116,6 +117,19 @@ class ImportController extends Controller
         }
         $failedRows = $this->sortAndDedupeFailedRows($failedRows);
 
+        $importRowErrors = [];
+        if ($batchId && $name === 'SalesHistoryImport') {
+            $cached = Cache::get('import_row_errors_' . $batchId, []);
+            $importRowErrors = is_array($cached) ? array_values($cached) : [];
+            if ($importRowErrors !== [] && $exceptions->isNotEmpty()) {
+                foreach ($exceptions as $ex) {
+                    $raw = (string) ($ex->exception ?? '');
+                    $first = Str::of($raw)->explode("\n")->first();
+                    $ex->exception = trim((string) $first);
+                }
+            }
+        }
+
         $summary = null;
         if ($batchId && $batchRecord) {
             $totalJobs = (int) ($batchRecord->total_jobs ?? 0);
@@ -137,6 +151,7 @@ class ImportController extends Controller
             'exceptions' => $exceptions,
             'failedRows' => $failedRows,
             'summary' => $summary,
+            'importRowErrors' => $importRowErrors,
         ])->render();
 
         return Reply::dataOnly([
@@ -144,6 +159,7 @@ class ImportController extends Controller
             'count' => count($exceptions),
             'failed_rows' => $failedRows,
             'summary' => $summary,
+            'import_row_errors' => $importRowErrors,
         ]);
     }
 
@@ -286,6 +302,27 @@ class ImportController extends Controller
         return in_array($host, ['localhost', '127.0.0.1', '::1'], true)
             || str_ends_with($host, '.localhost')
             || str_ends_with($host, '.test');
+    }
+
+    /**
+     * Keep each polling request short to avoid "stuck" UI.
+     * Large values make one poll execute queue:work too long before returning JSON.
+     */
+    private function resolveImportExecutionJobsPerPoll(): int
+    {
+        $configured = (int) config('app.import_progress_execution_jobs_per_poll', 0);
+        if ($configured > 0) {
+            return max(1, min($configured, 100));
+        }
+
+        $maxExecutionSeconds = (int) ini_get('max_execution_time');
+        if ($maxExecutionSeconds > 0) {
+            $derived = intdiv($maxExecutionSeconds, 10);
+
+            return max(3, min($derived, 20));
+        }
+
+        return 8;
     }
 
     private function assertBatchBelongsToImportQueue($batch, string $queueName): void

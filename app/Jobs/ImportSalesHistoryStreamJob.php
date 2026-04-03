@@ -3,13 +3,11 @@
 namespace App\Jobs;
 
 use App\Helper\Files;
+use App\Imports\ChunkReadFilter;
 use App\Models\Company;
-use App\Models\Product;
-use App\Models\SalesHistoryLine;
 use App\Traits\StoresImportBatchMetrics;
 use Carbon\Carbon;
 use Exception;
-use App\Imports\ChunkReadFilter;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -24,9 +22,12 @@ class ImportSalesHistoryStreamJob implements ShouldQueue
 {
     use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, StoresImportBatchMetrics;
 
-    public int $timeout = 180;
+    /** Enough for batched IO + bulk insert of ~500 rows. */
+    public int $timeout = 300;
 
     public int $tries = 2;
+
+    private const INSERT_CHUNK = 200;
 
     public function __construct(
         private string $uploadedFileName,
@@ -58,7 +59,7 @@ class ImportSalesHistoryStreamJob implements ShouldQueue
         $updatedCount = 0;
         $skippedCount = 0;
         $missingRequiredCount = 0;
-        $invalidStatusCount = 0; // kept for shared UI metrics schema
+        $invalidStatusCount = 0;
         $failures = [];
 
         if ($this->startRow > $this->endRow) {
@@ -82,30 +83,154 @@ class ImportSalesHistoryStreamJob implements ShouldQueue
         $endColumn = $sheet->getHighestDataColumn();
         $rows = $sheet->rangeToArray("A{$this->startRow}:{$endColumn}{$this->endRow}", null, true, true, false);
 
-        foreach ($rows as $offset => $row) {
-            try {
-                $result = DB::transaction(function () use ($row, $company) {
-                    return $this->processRow($this->normalizeRow($row), $company);
-                });
+        $candidates = [];
 
-                if ($result === 'created') {
-                    $createdCount++;
-                } elseif ($result === 'updated') {
-                    $updatedCount++;
-                } elseif ($result === 'missing_required') {
-                    $skippedCount++;
-                    $missingRequiredCount++;
-                } else {
-                    $skippedCount++;
-                }
-            } catch (Exception $e) {
-                $fileRow = $this->startRow + $offset;
-                $failures[] = 'Sheet ' . $this->sheetIndex . ' Row ' . $fileRow . ': ' . $e->getMessage();
+        foreach ($rows as $offset => $row) {
+            $fileRow = $this->startRow + (int) $offset;
+            $normalized = $this->normalizeRow($row);
+
+            if ($this->isEmptyRow($normalized)) {
+                $skippedCount++;
+
+                continue;
             }
+
+            try {
+                $prepared = $this->prepareDataRow($normalized, $company);
+            } catch (Exception $e) {
+                $failures[] = 'Sheet ' . $this->sheetIndex . ' Row ' . $fileRow . ': ' . $e->getMessage();
+
+                continue;
+            }
+
+            if ($prepared === null) {
+                $skippedCount++;
+                $missingRequiredCount++;
+
+                continue;
+            }
+
+            $candidates[] = [
+                'fileRow' => $fileRow,
+                'data' => $prepared,
+            ];
         }
 
         $spreadsheet->disconnectWorksheets();
         unset($rows, $sheet, $spreadsheet, $reader);
+
+        if ($candidates !== []) {
+            $codes = [];
+            $skus = [];
+            foreach ($candidates as $c) {
+                $codes[$c['data']['customerCode']] = true;
+                $skus[$c['data']['sku']] = true;
+            }
+            $codeList = array_keys($codes);
+            $skuList = array_keys($skus);
+
+            $clientMap = DB::table('client_details')
+                ->where('company_id', $company->id)
+                ->whereIn('client_code', $codeList)
+                ->get(['user_id', 'id', 'client_code'])
+                ->keyBy('client_code');
+
+            $productMap = DB::table('products')
+                ->where('company_id', $company->id)
+                ->whereIn('sku', $skuList)
+                ->pluck('id', 'sku');
+
+            $hashesForLookup = [];
+            foreach ($candidates as $c) {
+                $hashesForLookup[$c['data']['sourceHash']] = true;
+            }
+            $hashList = array_keys($hashesForLookup);
+
+            $existingHashes = $hashList === []
+                ? []
+                : DB::table('sales_history_lines')
+                ->where('company_id', $company->id)
+                ->whereIn('source_row_hash', $hashList)
+                ->pluck('source_row_hash')
+                ->all();
+
+            $seenHash = array_flip($existingHashes);
+
+            $insertRows = [];
+            $now = now()->toDateTimeString();
+
+            foreach ($candidates as $c) {
+                $fileRow = $c['fileRow'];
+                $d = $c['data'];
+                $code = $d['customerCode'];
+                $sku = $d['sku'];
+
+                $clientRow = $clientMap->get($code);
+                if (! $clientRow || ! $clientRow->user_id) {
+                    $failures[] = 'Sheet ' . $this->sheetIndex . ' Row ' . $fileRow . ': Client not found by code: ' . $code;
+
+                    continue;
+                }
+
+                if (! $productMap->has($sku)) {
+                    $failures[] = 'Sheet ' . $this->sheetIndex . ' Row ' . $fileRow . ': Product not found by SKU: ' . $sku;
+
+                    continue;
+                }
+
+                $h = $d['sourceHash'];
+                if (isset($seenHash[$h])) {
+                    $updatedCount++;
+
+                    continue;
+                }
+                $seenHash[$h] = true;
+
+                $insertRows[] = [
+                    'company_id' => $company->id,
+                    'sales_history_id' => $this->salesHistoryId,
+                    'shipment_date' => $d['shipmentDate'],
+                    'client_id' => $clientRow->user_id,
+                    'client_details_id' => $clientRow->id,
+                    'product_id' => (int) $productMap[$sku],
+                    'quantity' => $d['qty'],
+                    'quantity_abs' => $d['qtyAbs'],
+                    'amount' => $d['amountAbs'],
+                    'unit_price' => $d['unitPrice'],
+                    'is_return' => $d['isReturn'] ? 1 : 0,
+                    'currency_id' => $company->currency_id,
+                    'source_sheet_name' => null,
+                    'source_row_hash' => $h,
+                    'net_sales_volume_raw' => $d['net_sales_volume_raw'],
+                    'net_sales_amount_raw' => $d['net_sales_amount_raw'],
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ];
+            }
+
+            foreach (array_chunk($insertRows, self::INSERT_CHUNK) as $chunk) {
+                if ($chunk === []) {
+                    continue;
+                }
+                try {
+                    DB::table('sales_history_lines')->insert($chunk);
+                    $createdCount += count($chunk);
+                } catch (\Throwable $e) {
+                    foreach ($chunk as $one) {
+                        try {
+                            DB::table('sales_history_lines')->insert([$one]);
+                            $createdCount++;
+                        } catch (\Throwable $inner) {
+                            if ($this->isDuplicateHashException($inner)) {
+                                $updatedCount++;
+                            } else {
+                                $failures[] = 'Sheet ' . $this->sheetIndex . ' Row (hash ' . substr((string) $one['source_row_hash'], 0, 8) . '…): ' . $inner->getMessage();
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         if ($this->batchId) {
             $this->mergeImportBatchMetrics($this->batchId, [
@@ -118,23 +243,19 @@ class ImportSalesHistoryStreamJob implements ShouldQueue
         }
 
         if ($failures !== []) {
-            $message = implode("\n", array_slice($failures, 0, 50));
-            if (count($failures) > 50) {
-                $message .= "\n… and " . (count($failures) - 50) . ' more';
-            }
-            throw new Exception($message);
+            $this->mergeImportBatchRowErrors($this->batchId, $failures);
+            $count = count($failures);
+            throw new Exception(__('messages.salesHistoryImportJobFailedShort', ['count' => $count]));
         }
     }
 
     /**
-     * @return string created|updated|skipped|missing_required
+     * @return null|array<string, mixed> null = missing required columns (skip row)
+     *
+     * @throws Exception
      */
-    private function processRow(array $row, Company $company): string
+    private function prepareDataRow(array $row, Company $company): ?array
     {
-        if ($this->isEmptyRow($row)) {
-            return 'skipped';
-        }
-
         $customerCode = trim((string) $this->getValue($row, 'customer_number'));
         $sku = trim((string) $this->getValue($row, 'product_part_number'));
         $shipmentDateRaw = $this->getValue($row, 'shipment_return_date');
@@ -142,25 +263,7 @@ class ImportSalesHistoryStreamJob implements ShouldQueue
         $amountRaw = $this->getValue($row, 'net_sales_amount');
 
         if ($customerCode === '' || $sku === '' || $shipmentDateRaw === null || trim((string) $shipmentDateRaw) === '' || $qtyRaw === null || trim((string) $qtyRaw) === '') {
-            return 'missing_required';
-        }
-
-        $details = DB::table('client_details')
-            ->where('company_id', $company->id)
-            ->where('client_code', $customerCode)
-            ->first(['user_id', 'id']);
-
-        if (! $details?->user_id) {
-            throw new Exception("Client not found by code: {$customerCode}");
-        }
-
-        $product = Product::query()
-            ->where('company_id', $company->id)
-            ->where('sku', $sku)
-            ->first(['id']);
-
-        if (! $product) {
-            throw new Exception("Product not found by SKU: {$sku}");
+            return null;
         }
 
         $shipmentDate = $this->parseDateToYmd($shipmentDateRaw);
@@ -181,34 +284,34 @@ class ImportSalesHistoryStreamJob implements ShouldQueue
             (string) ($amount ?? ''),
         ]));
 
-        $existing = SalesHistoryLine::query()
-            ->where('company_id', $company->id)
-            ->where('source_row_hash', $sourceHash)
-            ->exists();
+        return [
+            'customerCode' => $customerCode,
+            'sku' => $sku,
+            'shipmentDate' => $shipmentDate,
+            'qty' => $qty,
+            'qtyAbs' => $qtyAbs,
+            'amountAbs' => $amountAbs !== null ? round($amountAbs, 6) : null,
+            'unitPrice' => round($unitPrice, 6),
+            'isReturn' => $isReturn,
+            'sourceHash' => $sourceHash,
+            'net_sales_volume_raw' => $qty,
+            'net_sales_amount_raw' => $amount,
+        ];
+    }
 
-        if ($existing) {
-            return 'updated';
+    private function isDuplicateHashException(\Throwable $e): bool
+    {
+        $msg = $e->getMessage();
+        if (stripos($msg, 'Duplicate') !== false || stripos($msg, 'UNIQUE') !== false || stripos($msg, '1062') !== false) {
+            return true;
         }
 
-        $line = new SalesHistoryLine;
-        $line->company_id = $company->id;
-        $line->sales_history_id = $this->salesHistoryId;
-        $line->shipment_date = $shipmentDate;
-        $line->client_id = $details->user_id;
-        $line->client_details_id = $details->id;
-        $line->product_id = $product->id;
-        $line->quantity = $qty;
-        $line->quantity_abs = $qtyAbs;
-        $line->amount = $amountAbs !== null ? round($amountAbs, 6) : null;
-        $line->unit_price = round($unitPrice, 6);
-        $line->is_return = $isReturn;
-        $line->currency_id = $company->currency_id;
-        $line->source_row_hash = $sourceHash;
-        $line->net_sales_volume_raw = $qty;
-        $line->net_sales_amount_raw = $amount;
-        $line->save();
+        $prev = $e->getPrevious();
+        if ($prev instanceof \Throwable) {
+            return $this->isDuplicateHashException($prev);
+        }
 
-        return 'created';
+        return false;
     }
 
     private function parseDateToYmd($value): string

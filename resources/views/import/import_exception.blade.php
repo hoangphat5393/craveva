@@ -11,6 +11,17 @@
         </div>
     @endif
 
+    @if (!empty($importRowErrors))
+        <p class="text-muted small mb-2">@lang('app.importRowErrorsTitle')</p>
+        <p class="f-12 text-dark-grey mb-2">@lang('app.importRowErrorsHelp')</p>
+        <div class="d-flex flex-wrap mb-3" style="gap: 0.5rem;">
+            @foreach ($importRowErrors as $rowErr)
+                <span class="badge badge-danger" style="white-space: normal; text-align: left; font-weight: 500;">{{ $rowErr }}</span>
+            @endforeach
+        </div>
+        <button type="button" class="btn btn-outline-secondary btn-sm mb-3" id="import-row-errors-download-csv">@lang('app.downloadImportRowErrorsCsv')</button>
+    @endif
+
     @if (!empty($failedRows))
         <p class="text-muted small mb-2">@lang('app.importLogFailedRows')</p>
         <div class="table-responsive">
@@ -33,6 +44,9 @@
         </div>
         <button type="button" class="btn btn-outline-secondary btn-sm mt-2" id="import-log-download-csv">@lang('app.downloadFailedRowsCsv')</button>
     @elseif(!empty($exceptions) && empty($failedRows))
+        @if (!empty($importRowErrors))
+            <p class="text-muted small mb-2">@lang('app.importFailedJobsSummary')</p>
+        @endif
         <table class="table table-bordered table-striped table-sm" id="import_table_body">
             <thead>
                 <tr>
@@ -67,6 +81,31 @@
         </table>
     @endif
 </div>
+
+@if (!empty($importRowErrors))
+    <script>
+        (function() {
+            var btn = document.getElementById('import-row-errors-download-csv');
+            if (!btn) return;
+            var lines = @json($importRowErrors);
+            btn.addEventListener('click', function() {
+                var csv = 'Error\n';
+                for (var i = 0; i < lines.length; i++) {
+                    var msg = String(lines[i]).replace(/"/g, '""');
+                    csv += '"' + msg + '"\n';
+                }
+                var blob = new Blob([csv], {
+                    type: 'text/csv;charset=utf-8;'
+                });
+                var link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = 'import_row_errors.csv';
+                link.click();
+                URL.revokeObjectURL(link.href);
+            });
+        })();
+    </script>
+@endif
 
 @if (!empty($failedRows))
     <script>

@@ -1,6 +1,43 @@
 <?php
 
+use App\Providers\AppServiceProvider;
+use App\Providers\CustomConfigProvider;
+use App\Providers\EventServiceProvider;
+use App\Providers\FileStorageCustomConfigProvider;
+use App\Providers\FortifyServiceProvider;
+use App\Providers\RouteServiceProvider;
+use Barryvdh\TranslationManager\ManagerServiceProvider;
+use Froiden\LaravelInstaller\Providers\LaravelInstallerServiceProvider;
+use Froiden\RestAPI\Facades\ApiRoute;
+use Froiden\RestAPI\Providers\ApiServiceProvider;
+use Illuminate\Auth\AuthServiceProvider;
+use Illuminate\Auth\Passwords\PasswordResetServiceProvider;
+use Illuminate\Broadcasting\BroadcastServiceProvider;
+use Illuminate\Bus\BusServiceProvider;
+use Illuminate\Cache\CacheServiceProvider;
+use Illuminate\Cookie\CookieServiceProvider;
+use Illuminate\Database\DatabaseServiceProvider;
+use Illuminate\Encryption\EncryptionServiceProvider;
+use Illuminate\Filesystem\FilesystemServiceProvider;
+use Illuminate\Foundation\Providers\ConsoleSupportServiceProvider;
+use Illuminate\Foundation\Providers\FoundationServiceProvider;
+use Illuminate\Hashing\HashServiceProvider;
+use Illuminate\Mail\MailServiceProvider;
+use Illuminate\Notifications\NotificationServiceProvider;
+use Illuminate\Pagination\PaginationServiceProvider;
+use Illuminate\Pipeline\PipelineServiceProvider;
+use Illuminate\Queue\QueueServiceProvider;
+use Illuminate\Redis\RedisServiceProvider;
+use Illuminate\Session\SessionServiceProvider;
 use Illuminate\Support\Facades\Facade;
+use Illuminate\Translation\TranslationServiceProvider;
+use Illuminate\Validation\ValidationServiceProvider;
+use Illuminate\View\ViewServiceProvider;
+use Macellan\Zip\ZipFacade;
+use Macellan\Zip\ZipServiceProvider;
+use Webklex\PDFMerger\Facades\PDFMergerFacade;
+use Webklex\PDFMerger\Providers\PDFMergerServiceProvider;
+use Yajra\DataTables\Facades\DataTables;
 
 return [
 
@@ -64,6 +101,7 @@ return [
     | set IMPORT_PROGRESS_RUN_QUEUE_WORKER=true or add craveva to IMPORT_PROGRESS_RUN_QUEUE_WORKER_ENVIRONMENTS.
     */
     'import_progress_run_queue_worker' => env('IMPORT_PROGRESS_RUN_QUEUE_WORKER'),
+    'import_progress_execution_jobs_per_poll' => env('IMPORT_PROGRESS_EXECUTION_JOBS_PER_POLL', 8),
     'import_progress_run_queue_worker_environments' => array_values(array_filter(array_map(
         'trim',
         explode(',', env('IMPORT_PROGRESS_RUN_QUEUE_WORKER_ENVIRONMENTS', 'local,development'))
@@ -225,31 +263,31 @@ return [
         /*
          * Laravel Framework Service Providers...
          */
-        Illuminate\Auth\AuthServiceProvider::class,
-        Illuminate\Broadcasting\BroadcastServiceProvider::class,
-        Illuminate\Bus\BusServiceProvider::class,
-        Illuminate\Cache\CacheServiceProvider::class,
-        Illuminate\Foundation\Providers\ConsoleSupportServiceProvider::class,
-        Illuminate\Cookie\CookieServiceProvider::class,
-        Illuminate\Database\DatabaseServiceProvider::class,
-        Illuminate\Encryption\EncryptionServiceProvider::class,
-        Illuminate\Filesystem\FilesystemServiceProvider::class,
-        Illuminate\Foundation\Providers\FoundationServiceProvider::class,
-        Illuminate\Hashing\HashServiceProvider::class,
-        Illuminate\Notifications\NotificationServiceProvider::class,
-        Illuminate\Pagination\PaginationServiceProvider::class,
-        Illuminate\Pipeline\PipelineServiceProvider::class,
-        Illuminate\Queue\QueueServiceProvider::class,
-        Illuminate\Redis\RedisServiceProvider::class,
-        Illuminate\Auth\Passwords\PasswordResetServiceProvider::class,
-        Illuminate\Session\SessionServiceProvider::class,
-        Illuminate\Translation\TranslationServiceProvider::class,
-        Illuminate\Validation\ValidationServiceProvider::class,
-        Illuminate\View\ViewServiceProvider::class,
-        \Illuminate\Mail\MailServiceProvider::class,
-        \App\Providers\FileStorageCustomConfigProvider::class,
-        \App\Providers\CustomConfigProvider::class,
-        Webklex\PDFMerger\Providers\PDFMergerServiceProvider::class,
+        AuthServiceProvider::class,
+        BroadcastServiceProvider::class,
+        BusServiceProvider::class,
+        CacheServiceProvider::class,
+        ConsoleSupportServiceProvider::class,
+        CookieServiceProvider::class,
+        DatabaseServiceProvider::class,
+        EncryptionServiceProvider::class,
+        FilesystemServiceProvider::class,
+        FoundationServiceProvider::class,
+        HashServiceProvider::class,
+        NotificationServiceProvider::class,
+        PaginationServiceProvider::class,
+        PipelineServiceProvider::class,
+        QueueServiceProvider::class,
+        RedisServiceProvider::class,
+        PasswordResetServiceProvider::class,
+        SessionServiceProvider::class,
+        TranslationServiceProvider::class,
+        ValidationServiceProvider::class,
+        ViewServiceProvider::class,
+        MailServiceProvider::class,
+        FileStorageCustomConfigProvider::class,
+        CustomConfigProvider::class,
+        PDFMergerServiceProvider::class,
 
         /*
          * Package Service Providers...
@@ -258,16 +296,16 @@ return [
         /*
          * Application Service Providers...
          */
-        App\Providers\AppServiceProvider::class,
+        AppServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
         App\Providers\BroadcastServiceProvider::class,
-        App\Providers\EventServiceProvider::class,
-        App\Providers\RouteServiceProvider::class,
-        Froiden\RestAPI\Providers\ApiServiceProvider::class,
-        App\Providers\FortifyServiceProvider::class,
-        Barryvdh\TranslationManager\ManagerServiceProvider::class,
-        Macellan\Zip\ZipServiceProvider::class,
-        Froiden\LaravelInstaller\Providers\LaravelInstallerServiceProvider::class,
+        EventServiceProvider::class,
+        RouteServiceProvider::class,
+        ApiServiceProvider::class,
+        FortifyServiceProvider::class,
+        ManagerServiceProvider::class,
+        ZipServiceProvider::class,
+        LaravelInstallerServiceProvider::class,
 
         App\Providers\SuperAdmin\EventServiceProvider::class,
     ],
@@ -284,10 +322,10 @@ return [
     */
 
     'aliases' => Facade::defaultAliases()->merge([
-        'ApiRoute' => Froiden\RestAPI\Facades\ApiRoute::class,
-        'DataTables' => Yajra\DataTables\Facades\DataTables::class,
-        'Zip' => Macellan\Zip\ZipFacade::class,
-        'PDFMerger' => Webklex\PDFMerger\Facades\PDFMergerFacade::class,
+        'ApiRoute' => ApiRoute::class,
+        'DataTables' => DataTables::class,
+        'Zip' => ZipFacade::class,
+        'PDFMerger' => PDFMergerFacade::class,
     ])->toArray(),
 
     'debug_blacklist' => [

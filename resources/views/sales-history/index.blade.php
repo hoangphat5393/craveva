@@ -98,7 +98,6 @@
                 ranges: daterangeConfig
             }, function() {});
 
-            // Default view should show all imported rows; only filter by date when user applies a range.
             $('#datatableRange').val('');
         });
 

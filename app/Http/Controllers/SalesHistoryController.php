@@ -91,7 +91,8 @@ class SalesHistoryController extends AccountBaseController
             return Reply::error('Import file not found.');
         }
 
-        $chunkSize = 2000;
+        // Smaller chunks = shorter jobs (faster poll JSON), less timeout risk; lookups are batched inside each job.
+        $chunkSize = max(100, min((int) config('craveva_import.sales_history_rows_per_job', 500), 2000));
         $jobs = [];
         $reader = IOFactory::createReaderForFile($fullPath);
         $reader->setReadDataOnly(true);
@@ -150,6 +151,7 @@ class SalesHistoryController extends AccountBaseController
                 'skipped_missing_required' => 0,
                 'invalid_status' => 0,
             ], now()->addHours(12));
+            Cache::put('import_row_errors_' . $batchId, [], now()->addHours(12));
         }
 
         return Reply::successWithData(__('messages.importProcessStart'), ['batch' => $batch]);

@@ -942,6 +942,7 @@ return [
     'importFailedJobs' => ':failedJobs entries failed of :totalJobs entries in the import.',
     'importProcessedJobs' => ':processedJobs entries processed of :totalJobs entries in the import.',
     'importCompleted' => 'Import completed',
+    'importFinishedWithErrors' => 'Import finished with errors. See details below.',
     'sendReminderBefore' => 'Send Reminder Before',
     'showGst' => 'Show Tax number on invoice',
     'hsnSacCodeShow' => 'Hsn/Sac Code Show',

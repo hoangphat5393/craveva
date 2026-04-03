@@ -468,7 +468,7 @@
                     $('#progressSuccess').show();
                 }
 
-                if (metrics && $('#importMetricsSummary').length) {
+                if (metrics && typeof metrics === 'object' && !Array.isArray(metrics) && $('#importMetricsSummary').length) {
                     var metricsMsg = 'Created: ' + (metrics.created || 0) +
                         ' | Updated: ' + (metrics.updated || 0) +
                         ' | Skipped: ' + (metrics.skipped || 0) +
@@ -477,10 +477,15 @@
                     $('#importMetricsSummary').html(metricsMsg).show();
                 }
 
-                if (totalJobs != (failedJobs + processedJobs)) {
+                var p = Number(pendingJobs) || 0;
+                var sumDone = (Number(processedJobs) || 0) + (Number(failedJobs) || 0);
+                // pendingJobs > 0: còn job trong batch; hoặc chưa đủ processed+failed — tiếp tục poll (staging thường không chạy worker trong request).
+                var keepPolling = totalJobs > 0 && (p > 0 || sumDone < totalJobs);
+
+                if (keepPolling) {
                     getProgress(batchId);
                 } else {
-                    $('#importSuccess').html(`@lang('app.importCompleted')`);
+                    $('#importSuccess').html(failedJobs > 0 ? `@lang('app.importFinishedWithErrors')` : `@lang('app.importCompleted')`);
                     $('#process-warning').hide();
                     $('#importSuccess').show();
                     $('#progress').hide();

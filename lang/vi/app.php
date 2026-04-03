@@ -1001,6 +1001,7 @@ return [
     'pleaseWait' => 'Vui lòng chờ...',
     'importProcessedJobs' => 'các mục :processedJobs được xử lý của các mục :totalJobs trong quá trình nhập.',
     'importCompleted' => 'Đã nhập xong',
+    'importFinishedWithErrors' => 'Nhập xong nhưng có lỗi. Xem chi tiết bên dưới.',
     'importRowErrorsTitle' => 'Lỗi theo từng dòng file',
     'importRowErrorsHelp' => 'Mỗi badge là một dòng không import được. Sửa dữ liệu hoặc thêm khách hàng/sản phẩm khớp mã, rồi import lại.',
     'downloadImportRowErrorsCsv' => 'Tải danh sách lỗi (CSV)',

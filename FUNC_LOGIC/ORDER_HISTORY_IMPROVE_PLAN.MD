@@ -183,6 +183,8 @@ Sau khi sửa quyền/cron, kiểm tra: `php artisan queue:failed`, log Laravel,
 
 Chi tiết quyền thư mục và PHP-FPM: `docs/LARAVEL_PHP_FPM_QUEUE_PERMISSIONS_VI.md`.
 
+Phân loại cơ chế import (Client / Product / Inventory / Sales History) và poll queue: `FUNC_IMPORT/IMPORT_MECHANISMS_POLL_AND_QUEUE_VI.md`.
+
 ---
 
 ## Git và staging: nguồn sự thật là repo (local / `main`)

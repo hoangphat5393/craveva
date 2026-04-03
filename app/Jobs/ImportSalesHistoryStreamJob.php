@@ -9,31 +9,35 @@ use App\Models\SalesHistoryLine;
 use App\Traits\StoresImportBatchMetrics;
 use Carbon\Carbon;
 use Exception;
+use App\Imports\ChunkReadFilter;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
-use App\Imports\ChunkReadFilter;
 
 class ImportSalesHistoryStreamJob implements ShouldQueue
 {
     use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, StoresImportBatchMetrics;
+
+    public int $timeout = 180;
+
+    public int $tries = 2;
 
     public function __construct(
         private string $uploadedFileName,
         private int $companyId,
         private int $salesHistoryId,
         private array $columns,
-        private bool $hasHeading,
-        private bool $hasSkipFooter
-    ) {
-    }
+        private string $sheetName,
+        private int $sheetIndex,
+        private int $startRow,
+        private int $endRow
+    ) {}
 
     public function handle(): void
     {
@@ -54,110 +58,71 @@ class ImportSalesHistoryStreamJob implements ShouldQueue
         $updatedCount = 0;
         $skippedCount = 0;
         $missingRequiredCount = 0;
-        $invalidStatusCount = 0;
+        $invalidStatusCount = 0; // kept for shared UI metrics schema
         $failures = [];
 
-        $chunkSize = 500;
+        if ($this->startRow > $this->endRow) {
+            return;
+        }
+
+        $chunkSize = $this->endRow - $this->startRow + 1;
         $readFilter = new ChunkReadFilter;
+        $readFilter->setRows($this->startRow, $chunkSize);
 
-        try {
-            $metaReader = IOFactory::createReaderForFile($fullPath);
-            $metaReader->setReadDataOnly(true);
-            $worksheetInfos = method_exists($metaReader, 'listWorksheetInfo')
-                ? (array) call_user_func([$metaReader, 'listWorksheetInfo'], $fullPath)
-                : [];
+        $reader = IOFactory::createReaderForFile($fullPath);
+        $reader->setReadDataOnly(true);
+        if (method_exists($reader, 'setReadEmptyCells')) {
+            $reader->setReadEmptyCells(false);
+        }
+        $reader->setReadFilter($readFilter);
+        $reader->setLoadSheetsOnly([$this->sheetName]);
 
-            foreach ($worksheetInfos as $sheetIndex => $worksheetInfo) {
-                if ($sheetIndex >= 60) {
-                    break;
+        $spreadsheet = $reader->load($fullPath);
+        $sheet = $spreadsheet->getSheetByName($this->sheetName) ?? $spreadsheet->getActiveSheet();
+        $endColumn = $sheet->getHighestDataColumn();
+        $rows = $sheet->rangeToArray("A{$this->startRow}:{$endColumn}{$this->endRow}", null, true, true, false);
+
+        foreach ($rows as $offset => $row) {
+            try {
+                $result = DB::transaction(function () use ($row, $company) {
+                    return $this->processRow($this->normalizeRow($row), $company);
+                });
+
+                if ($result === 'created') {
+                    $createdCount++;
+                } elseif ($result === 'updated') {
+                    $updatedCount++;
+                } elseif ($result === 'missing_required') {
+                    $skippedCount++;
+                    $missingRequiredCount++;
+                } else {
+                    $skippedCount++;
                 }
-
-                $sheetName = (string) ($worksheetInfo['worksheetName'] ?? '');
-                $totalRows = (int) ($worksheetInfo['totalRows'] ?? 0);
-                if ($sheetName === '' || $totalRows <= 0) {
-                    continue;
-                }
-
-                $startRow = $this->hasHeading ? 2 : 1;
-                $endRow = $this->hasSkipFooter ? max($startRow, $totalRows - 1) : $totalRows;
-                if ($startRow > $endRow) {
-                    continue;
-                }
-
-                for ($rowCursor = $startRow; $rowCursor <= $endRow; $rowCursor += $chunkSize) {
-                    $currentChunkSize = min($chunkSize, $endRow - $rowCursor + 1);
-                    $readFilter->setRows($rowCursor, $currentChunkSize);
-
-                    $reader = IOFactory::createReaderForFile($fullPath);
-                    $reader->setReadDataOnly(true);
-                    if (method_exists($reader, 'setReadEmptyCells')) {
-                        $reader->setReadEmptyCells(false);
-                    }
-                    $reader->setReadFilter($readFilter);
-                    $reader->setLoadSheetsOnly([$sheetName]);
-
-                    $spreadsheet = $reader->load($fullPath);
-                    $sheet = $spreadsheet->getSheetByName($sheetName) ?? $spreadsheet->getActiveSheet();
-                    $lastRow = $rowCursor + $currentChunkSize - 1;
-                    $endColumn = $sheet->getHighestDataColumn();
-                    $rows = $sheet->rangeToArray("A{$rowCursor}:{$endColumn}{$lastRow}", null, true, true, false);
-
-                    foreach ($rows as $offset => $row) {
-                        try {
-                            $result = DB::transaction(function () use ($row, $company) {
-                                return $this->processRow($this->normalizeRow($row), $company);
-                            });
-
-                            if ($result === 'created') {
-                                $createdCount++;
-                            } elseif ($result === 'updated') {
-                                $updatedCount++;
-                            } elseif ($result === 'missing_required') {
-                                $skippedCount++;
-                                $missingRequiredCount++;
-                            } else {
-                                $skippedCount++;
-                            }
-                        } catch (Exception $e) {
-                            $fileRow = $rowCursor + $offset;
-                            $failures[] = 'Sheet ' . $sheetIndex . ' Row ' . $fileRow . ': ' . $e->getMessage();
-                        }
-                    }
-
-                    $spreadsheet->disconnectWorksheets();
-                    unset($rows, $sheet, $spreadsheet, $reader);
-
-                    if ($this->batchId) {
-                        $this->mergeImportBatchMetrics($this->batchId, [
-                            'created' => $createdCount,
-                            'updated' => $updatedCount,
-                            'skipped' => $skippedCount,
-                            'skipped_missing_required' => $missingRequiredCount,
-                            'invalid_status' => $invalidStatusCount,
-                        ]);
-                    }
-                }
+            } catch (Exception $e) {
+                $fileRow = $this->startRow + $offset;
+                $failures[] = 'Sheet ' . $this->sheetIndex . ' Row ' . $fileRow . ': ' . $e->getMessage();
             }
+        }
 
-            if ($this->batchId) {
-                Cache::put('import_metrics_' . $this->batchId, [
-                    'created' => $createdCount,
-                    'updated' => $updatedCount,
-                    'skipped' => $skippedCount,
-                    'skipped_missing_required' => $missingRequiredCount,
-                    'invalid_status' => $invalidStatusCount,
-                ], now()->addHours(12));
-            }
+        $spreadsheet->disconnectWorksheets();
+        unset($rows, $sheet, $spreadsheet, $reader);
 
-            if ($failures !== []) {
-                $message = implode("\n", array_slice($failures, 0, 50));
-                if (count($failures) > 50) {
-                    $message .= "\n… and " . (count($failures) - 50) . ' more';
-                }
-                throw new Exception($message);
+        if ($this->batchId) {
+            $this->mergeImportBatchMetrics($this->batchId, [
+                'created' => $createdCount,
+                'updated' => $updatedCount,
+                'skipped' => $skippedCount,
+                'skipped_missing_required' => $missingRequiredCount,
+                'invalid_status' => $invalidStatusCount,
+            ]);
+        }
+
+        if ($failures !== []) {
+            $message = implode("\n", array_slice($failures, 0, 50));
+            if (count($failures) > 50) {
+                $message .= "\n… and " . (count($failures) - 50) . ' more';
             }
-        } finally {
-            Files::deleteFile($this->uploadedFileName, Files::IMPORT_FOLDER);
+            throw new Exception($message);
         }
     }
 

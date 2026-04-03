@@ -37,11 +37,25 @@ Các phương án đã thực hiện (trạng thái hiện tại)
   - chỉ đọc header dòng 1 của sheet đầu;
   - chỉ đọc sample data của sheet đầu;
   - dùng `ChunkReadFilter` để giới hạn dòng nạp vào RAM.
+
+**Số liệu cụ thể khi Upload (chỉ `SalesHistoryImport`, bước mở form map cột):**
+
+| Hạng mục                              | Giá trị               | Ghi chú               |
+|---------------------------------------|-----------------------|----------------------------------------------------------|
+| Số sheet **nạp nội dung**             | **1**                 | Chỉ sheet đầu (`setLoadSheetsOnly` tên sheet đầu). Tên các sheet khác có thể được đọc metadata qua `listWorksheetNames` nhưng không load dữ liệu các sheet đó ở bước này. |
+| Header (khi bật “có dòng tiêu đề”)    | **1 dòng**            | Dòng **1** của sheet đầu, filter `ChunkReadFilter` 1–1. |
+| Vùng quét để lấy sample               | **tối đa 100 dòng**   | Từ dòng 2 nếu có header, từ dòng 1 nếu không; `maxScanRows = 100` trong `readFirstSheetSampleRows`. |
+| Số dòng **hiển thị** trên UI sample   | **tối đa 5**          | Lấy tối đa 5 dòng **không rỗng** đầu tiên trong vùng quét trên. |
+| Thời gian phản hồi UI                 | **~0.5s**             | Chỉ đọc sheet đầu, metadata và sample — tải nhẹ. |
+
+
 - [x] Loại bỏ key nội bộ `__sheet` khỏi sample rows để tránh lỗi `Undefined array key "sheet"` ở `import.process-form`.
 - [x] Chỉnh sample scan từ 300 dòng xuống 100 dòng để giảm tải request hơn nữa.
-- [ ] Chưa áp dụng full (1)+(2)+(3) vì đang giữ UX mapping cột theo yêu cầu.
+- [x] Chuyển bước process sang batch nhiều jobs theo `sheet + row range` (chunk size 2000), thay vì 1 job lớn duy nhất.
+- [x] Vẫn giữ UX mapping cột hiện tại (không bỏ bước map), nhưng process đã chạy queue kiểu chunk giống client import.
+- [ ] Chưa áp dụng full (1)+(2)+(3) thuần vì vẫn giữ màn map cột theo yêu cầu.
 
 Ghi chú quyết định
 
 - Mục tiêu hiện tại là "partial (1)": bỏ đọc nặng ở bước mapping nhưng vẫn giữ màn map cột.
-- Bước process (sau khi submit mapping) vẫn chạy theo flow hiện tại để tránh thay đổi UX quá lớn.
+- Bước process (sau khi submit mapping) đã chuyển sang mô hình queue chunk nhiều jobs, giúp progress tăng dần thay vì nhảy 0% -> 100%.

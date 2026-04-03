@@ -23,6 +23,10 @@ $StagingPath = "/var/www/craveva-staging/current/craveva"
 $LocalTempDir = ".\temp_deploy"
 $ZipFile = ".\deploy_staging.zip"
 
+# Nếu $false: chỉ unzip đè file (an toàn cho deploy từng phần). Nếu $true: XÓA gần hết thư mục app (trừ .env, storage, .git)
+# rồi giải nén — CHỈ bật khi zip chứa đủ toàn bộ code cần thiết; sai cấu hình sẽ làm mất Kernel/console.
+$RemoteWipeAppBeforeUnzip = $false
+
 # --- Setup lần đầu sau khi clone (chạy trong PowerShell tại thư mục project) ---
 # 1) Tải .env từ staging (nếu cần):   scp "${StagingHost}:${StagingPath}/.env" ".env"
 # 2) Bật Composer cache rồi cài dependency (không cần lấy composer.lock từ staging):
@@ -332,6 +336,7 @@ $DirsToCopy = @(
     "Modules/Performance/Resources/lang",
     "public/vendor/dropify",
     "public/vendor/quill",
+    "app/Console",
     "app/Imports",
     "app/Jobs",
     "resources/views/products"
@@ -368,6 +373,7 @@ Start-Sleep -Seconds 2
 
 # Verify critical files in temp
 $CriticalFiles = @(
+    "app/Console/Kernel.php",
     "Modules/Pricing/Http/Controllers/CompanyPricingController.php",
     "Modules/Pricing/module.json",
     "Modules/Pricing/Routes/web.php"
@@ -402,9 +408,14 @@ scp $ZipFile "${StagingHost}:deploy_staging.zip"
 Write-Host "Extracting on server and deploying to $StagingPath (sudo may be required)..."
 $RemoteCommand = "sudo mv ~/deploy_staging.zip /tmp/deploy_staging.zip"
 $RemoteCommand += " && cd $StagingPath"
-# CLEANUP COMMAND: Deletes everything except .env and storage and .git
-$RemoteCommand += " && echo 'Cleaning staging directory (preserving .env and storage)...'"
-$RemoteCommand += " && sudo find . -maxdepth 1 ! -name '.' ! -name '..' ! -name '.env' ! -name 'storage' ! -name '.git' -exec rm -rf {} +"
+if ($RemoteWipeAppBeforeUnzip) {
+    # CLEANUP: Deletes everything except .env and storage and .git — chỉ dùng khi zip đủ đầy; thiếu app/Console sẽ gãy queue/schedule.
+    $RemoteCommand += " && echo 'Cleaning staging directory (preserving .env and storage)...'"
+    $RemoteCommand += " && sudo find . -maxdepth 1 ! -name '.' ! -name '..' ! -name '.env' ! -name 'storage' ! -name '.git' -exec rm -rf {} +"
+}
+else {
+    $RemoteCommand += " && echo 'Skipping full wipe — overlay unzip only (RemoteWipeAppBeforeUnzip=false)'"
+}
 # Move zip back and unzip
 $RemoteCommand += " && sudo mv /tmp/deploy_staging.zip $StagingPath/deploy_staging.zip"
 $RemoteCommand += " && sudo unzip -o deploy_staging.zip && sudo rm deploy_staging.zip"

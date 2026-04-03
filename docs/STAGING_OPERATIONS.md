@@ -46,9 +46,11 @@ sudo -u www-data php artisan optimize:clear
 ## 3. Script `scripts/upload_staging.ps1` (zip từng phần)
 
 - **Mục đích:** đóng gói **danh sách file/thư mục** cục bộ → zip → `scp` → giải nén lên staging.
-- **Rủi ro:** lệnh remote có đoạn **`find ... -maxdepth 1 ... -exec rm -rf`** (xóa gần như mọi thứ trong app **trừ** `.env`, `storage`, `.git`). Chỉ dùng khi hiểu rõ hậu quả; **ưu tiên Git deploy** (mục 2).
+- **Mặc định an toàn:** biến **`$RemoteWipeAppBeforeUnzip = $false`** — **không** xóa sạch thư mục app trước khi unzip; chỉ đè file có trong zip. Bật `$true` chỉ khi zip chứa **đủ** mã nguồn (kể cả `app/Console/Kernel.php`); trước đây thiếu `app/Console` trong zip + bật wipe dễ làm **mất lịch queue** (`Kernel.php`).
+- Script đã thêm **`app/Console`** vào `$DirsToCopy` và kiểm tra **`app/Console/Kernel.php`** trong bước verify.
+- **Rủi ro (khi bật wipe):** lệnh **`find ... -exec rm -rf`** xóa gần như mọi thứ **trừ** `.env`, `storage`, `.git`. **Ưu tiên Git deploy** (mục 2).
 - Danh sách file trong script có thể **trùng lặp**; script đã gom **`Select-Object -Unique`** trước khi copy để gọn và dễ đọc.
-- Thư mục copy nguyên khối: ví dụ `Modules/LanguagePack/Languages/modules`, `resources/lang` (xem biến `$DirsToCopy` trong script).
+- Thư mục copy nguyên khối: ví dụ `app/Console`, `Modules/LanguagePack/Languages/modules`, `resources/lang` (xem `$DirsToCopy` trong script).
 
 ---
 

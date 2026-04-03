@@ -168,5 +168,26 @@ Sau khi sửa quyền/cron, kiểm tra: `php artisan queue:failed`, log Laravel,
 
 **UI:** Sau ~3 phút mà vẫn còn pending, trang import hiện thêm cảnh báo (có thể rời trang, job vẫn chạy nền) — xem `resources/views/import/process-form.blade.php` và `messages.importQueueTakingLong`.
 
+---
 
-www-data:www-data
+## Ghi chú: nguyên nhân thường gặp và cách xử lý (cập nhật theo vận hành staging)
+
+| Triệu chứng (UI / poll) | Nguyên nhân | Cách xử lý |
+|-------------------------|-------------|------------|
+| **Thanh % đứng 0%, `0 / 1`, poll HTTP 200** nhưng `processedJobs` không tăng | Request poll **chỉ đọc** `job_batches` / queue; **job chưa được worker xử lý** (không có `queue:work` đúng queue, hoặc chưa tới lượt cron). | Đảm bảo `app/Console/Kernel.php` có `SalesHistoryImport` trong `queue:work`; cron `schedule:run` (ưu tiên chạy dưới `www-data`). Tạm thời staging: bật **`IMPORT_PROGRESS_RUN_QUEUE_WORKER=true`** trong `.env` để mỗi lần poll có thể chạy vài job (giới hạn `IMPORT_PROGRESS_EXECUTION_JOBS_PER_POLL`); sau đó `php artisan config:clear` hoặc `config:cache`. |
+| **Cùng triệu chứng**, đã có cron | Worker/cron user **khác** user FPM → lỗi ghi **`storage/framework/cache`** khi job gọi `Cache::put` | `chown`/`chmod` `storage` + `bootstrap/cache`; cron `schedule:run` nên **`sudo -u www-data`**; user deploy trong group `www-data`. |
+| **Chuỗi lỗi hiển thị nguyên khóa** `messages.importQueueTakingLong` (hoặc tương tự) | Thiếu bản dịch trong **`lang/{locale}/messages.php`** (vd. `zh-TW`, `zh-CN`) | Thêm key tương ứng trong repo, deploy, `view:clear` nếu cần. |
+| Import nặng / spreadsheet lớn | **`memory_limit` PHP-FPM** thấp (vd. 128M) hoặc sai phiên bản pool | Site cần trùng **phiên bản** Nginx → FPM (vd. 8.3); đặt **`memory_limit`** đủ (vd. 1024M) trong đúng `php.ini` của pool đang dùng. |
+| Extension thiếu (local có, staging không) | Package PHP chưa cài | `apt install php8.3-sqlite3` (ví dụ `sqlite3` / `pdo_sqlite`); `phpenmod` + reload FPM. |
+
+Chi tiết quyền thư mục và PHP-FPM: `docs/LARAVEL_PHP_FPM_QUEUE_PERMISSIONS_VI.md`.
+
+---
+
+## Git và staging: nguồn sự thật là repo (local / `main`)
+
+- **Mã nguồn và tài liệu trong repo** (máy dev local, nhánh `main` trên GitHub/GitLab) là **bản chuẩn**: chỉnh sửa, commit, push từ đó.
+- **Staging** chỉ **kéo code** (`git pull` / deploy script) để chạy thử — **không** coi staging là nơi chỉnh code rồi “đẩy ngược” lên repo. Mọi thay đổi bền vững phải **vào repo trước**, rồi staging **pull** bản mới.
+- **Cấu hình chỉ trên server** (`.env`, `memory_limit`, cron, quyền `storage`) ghi lại trong tài liệu vận hành hoặc script deploy; tránh drift không theo dõi được.
+
+Mục đích: **local ↔ git ↔ staging** luôn **đồng nhất** theo hướng **code từ repo → staging áp dụng**, không phải staging tự phát sinh thay đổi nguồn.

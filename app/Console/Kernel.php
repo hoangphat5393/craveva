@@ -199,9 +199,12 @@ class Kernel extends ConsoleKernel
         $schedule->command('licence-expire')->dailyAt('02:00');
         $schedule->command('trial-expire')->dailyAt('03:00');
 
+        // Schedule the queue:work command to run without overlapping and with 3 tries
+        $schedule->command('queue:work database --tries=3 --stop-when-empty')->withoutOverlapping();
+
         // Without --queue=..., only `default` is processed; import batches use named queues (e.g. SalesHistoryImport).
-        $queueList = implode(',', self::DATABASE_WORKER_QUEUE_NAMES);
-        $schedule->command("queue:work database --queue={$queueList} --tries=3 --stop-when-empty")->withoutOverlapping();
+        // $queueList = implode(',', self::DATABASE_WORKER_QUEUE_NAMES);
+        // $schedule->command("queue:work database --queue={$queueList} --tries=3 --stop-when-empty")->withoutOverlapping();
     }
 
     /**

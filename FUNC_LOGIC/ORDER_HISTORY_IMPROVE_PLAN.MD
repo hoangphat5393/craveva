@@ -117,6 +117,43 @@ No: Cả qty ≥ 0 và (không có amount hoặc amount ≥ 0)
 
 **PHP memory (khi job đã chạy nhưng fail / kill):** tăng `memory_limit` cho **CLI** (worker) và nếu cần **php-fpm** (vd. 512M–1024M tùy file). Kiểm tra `php artisan queue:failed` và log worker.
 
+### Nguyên nhân gốc đã gặp trên staging (tóm tắt)
+
+Import **không “chạy”** (0% lâu, `pendingJobs: 1`, poll vẫn 200) thường do **một hoặc kết hợp** các lý sau — **không phải** do trình duyệt không gọi API poll:
+
+| Thứ tự | Hiện tượng | Nguyên nhân kỹ thuật |
+|--------|------------|----------------------|
+| 1 | Worker không bao giờ lấy job Sales History | `queue:work` phải có **`SalesHistoryImport`** trong `--queue=...`. Nếu Kernel chỉ liệt kê `default` hoặc thiếu tên queue này, job nằm trong bảng `jobs` nhưng **không được consume** → `%` đứng yên. |
+| 2 | Sau khi sửa Kernel, vẫn cũ | Worker/cron cần **restart** (`queue:restart`, hoặc chờ cron khởi động lại process) để nạp cấu hình queue mới. |
+| 3 | Job bị **FAIL** gần như ngay khi worker đã lấy | Log có thể ghi **`file_put_contents(... storage/framework/cache/data/...): Permission denied`** khi job gọi `Cache::put` (vd. `StoresImportBatchMetrics`). **PHP-FPM** (web) thường chạy **`www-data`**, còn **cron** chạy **`schedule:run`** dưới user SSH → worker/cache ghi file với user khác owner `storage` → **từ chối ghi** → job lỗi, UI vẫn giống “không tiến độ”. |
+
+**Kết luận vận hành:** Cần **đúng danh sách queue trong worker** + **cron chạy worker/cache cùng “ý” user với web** (hoặc quyền thư mục thống nhất — xem mục dưới).
+
+### Quyền thư mục nên trao để hệ thống ổn định (Laravel + queue + file cache)
+
+Mục tiêu: **mọi** process ghi được chỗ Laravel cần: cache file, session (nếu file), log, view compiled, upload tạm — thường gom vào **`storage/`** và **`bootstrap/cache/`**.
+
+| Thư mục / nhánh | Vai trò | Gợi ý quyền / owner |
+|-----------------|---------|----------------------|
+| **`storage/`** (toàn bộ) | `framework/cache`, `framework/sessions`, `logs`, `app` (file tạm/import nếu có) | Owner **`www-data:www-data`** (hoặc user chạy **cả** php-fpm **và** worker). Thư mục: **`2775`** hoặc **`775`** (setgid `2775` giúp file mới cùng group `www-data`). |
+| **`bootstrap/cache/`** | config/routes/view cache | Cùng nguyên tắc với `storage`: ghi được bởi user chạy web + CLI worker. |
+| **`public/user-uploads/`** (nếu dùng) | File user upload | Đảm bảo web server ghi được; thường cùng group `www-data`. |
+
+**Nguyên tắc đồng bộ user (quan trọng trên staging/production):**
+
+- **Cron** `* * * * * ... php artisan schedule:run` nên chạy job queue **cùng user với PHP-FPM** — ví dụ: `sudo -u www-data php artisan schedule:run` — để `queue:work` trong schedule không ghi cache/log dưới user khác `www-data`.
+- Nếu deploy bằng user SSH: hoặc **`chown -R www-data:www-data storage bootstrap/cache`** sau deploy và chỉ sửa file qua quy trình chuẩn; hoặc thêm user deploy vào group **`www-data`** và đảm bảo **session mới** nhận group (sau `usermod -aG www-data` cần đăng nhập lại); tránh mix owner `root`/user khác trên `storage/framework/cache`.
+
+**Lệnh tham chiếu (chạy trên server, điều chỉnh path):**
+
+```bash
+sudo chown -R www-data:www-data /path/to/app/storage /path/to/app/bootstrap/cache
+sudo chmod -R ug+rwx /path/to/app/storage /path/to/app/bootstrap/cache
+# tùy chọn setgid cho thư mục con (đã nêu 2775 ở trên)
+```
+
+Sau khi sửa quyền/cron, kiểm tra: `php artisan queue:failed`, log Laravel, và thử **một job** (`queue:work ... --once -v`) dưới **`www-data`** nếu vẫn nghi ngờ permission.
+
 ---
 
 ## Tại sao **local** ít lỗi, **staging** dễ lỗi / cảm giác “chờ mãi”?
@@ -130,3 +167,6 @@ No: Cả qty ≥ 0 và (không có amount hoặc amount ≥ 0)
 **Job được xử lý khi nào?** Khi có process **queue worker** lấy job từ bảng `jobs` (cron `queue:work ... --queue=...SalesHistoryImport...` hoặc worker nền). Không có worker = `pendingJobs` mãi = 1, % đứng 0% — **không phải lỗi logic import**, mà **cấu hình server**.
 
 **UI:** Sau ~3 phút mà vẫn còn pending, trang import hiện thêm cảnh báo (có thể rời trang, job vẫn chạy nền) — xem `resources/views/import/process-form.blade.php` và `messages.importQueueTakingLong`.
+
+
+www-data:www-data

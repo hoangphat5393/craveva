@@ -50,7 +50,12 @@ class ImportController extends Controller
         if ($this->shouldRunQueueWorkerDuringImportProgressPoll()) {
             set_time_limit(300);
             $execution_jobs = $this->resolveImportExecutionJobsPerPoll();
-            Artisan::call('queue:work database --max-jobs=' . $execution_jobs . ' --queue=' . $name . ' --stop-when-empty');
+            $maxSeconds = (int) config('app.import_progress_worker_max_seconds', 25);
+            $command = 'queue:work database --max-jobs=' . $execution_jobs . ' --queue=' . $name . ' --stop-when-empty';
+            if ($maxSeconds > 0) {
+                $command .= ' --max-time=' . $maxSeconds;
+            }
+            Artisan::call($command);
         }
 
         $batch = Bus::findBatch($id);

@@ -102,6 +102,12 @@ return [
     */
     'import_progress_run_queue_worker' => env('IMPORT_PROGRESS_RUN_QUEUE_WORKER'),
     'import_progress_execution_jobs_per_poll' => env('IMPORT_PROGRESS_EXECUTION_JOBS_PER_POLL', 8),
+    /*
+     * When running queue:work inside the poll request, cap worker duration (seconds) so nginx/php-fpm
+     * does not kill the request before JSON returns — especially for large Client import (many chunk jobs).
+     * Set to 0 to disable (not recommended behind short proxy timeouts). Default 25.
+     */
+    'import_progress_worker_max_seconds' => (int) env('IMPORT_PROGRESS_WORKER_MAX_SECONDS', 25),
     'import_progress_run_queue_worker_environments' => array_values(array_filter(array_map(
         'trim',
         explode(',', env('IMPORT_PROGRESS_RUN_QUEUE_WORKER_ENVIRONMENTS', 'local,development'))

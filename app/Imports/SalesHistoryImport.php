@@ -2,10 +2,13 @@
 
 namespace App\Imports;
 
-use Maatwebsite\Excel\Concerns\SkipsUnknownSheets;
-use Maatwebsite\Excel\Concerns\WithMultipleSheets;
+use Maatwebsite\Excel\Concerns\ToArray;
 
-class SalesHistoryImport implements WithMultipleSheets, SkipsUnknownSheets
+/**
+ * Single-sheet import (first sheet only), aligned with Client/Product for light map + chunked queue.
+ * Extra sheets in the workbook are ignored.
+ */
+class SalesHistoryImport implements ToArray
 {
     protected array $processedData = [];
 
@@ -20,49 +23,15 @@ class SalesHistoryImport implements WithMultipleSheets, SkipsUnknownSheets
         ];
     }
 
-    /**
-     * @return array<int, SalesHistorySheetImport>
-     */
-    public function sheets(): array
+    public function array(array $array): array
     {
-        $sheets = [];
-        for ($i = 0; $i < 60; $i++) {
-            $sheets[$i] = new SalesHistorySheetImport($this, $i);
-        }
+        $this->processedData = $array;
 
-        return $sheets;
-    }
-
-    public function appendRows(array $rows, int $sheetIndex): void
-    {
-        if ($rows === []) {
-            return;
-        }
-
-        foreach ($rows as $row) {
-            if (! is_array($row)) {
-                continue;
-            }
-            $this->processedData[] = $row;
-        }
-    }
-
-    public function appendRow(array $row, int $sheetIndex): void
-    {
-        if ($row === []) {
-            return;
-        }
-
-        $this->processedData[] = $row;
+        return $array;
     }
 
     public function getProcessedData(): array
     {
         return $this->processedData;
-    }
-
-    public function onUnknownSheet($sheetName): void
-    {
-        // Ignore unknown sheet names/indexes safely.
     }
 }

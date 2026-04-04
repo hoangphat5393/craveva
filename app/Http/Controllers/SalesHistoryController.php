@@ -3,18 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\SalesHistoryDataTable;
-use App\Helper\Files;
 use App\Helper\Reply;
 use App\Http\Requests\Admin\Employee\ImportProcessRequest;
 use App\Http\Requests\Admin\Employee\ImportRequest;
 use App\Imports\SalesHistoryImport;
-use App\Jobs\ImportSalesHistoryStreamJob;
+use App\Jobs\ImportSalesHistoryChunkJob;
 use App\Models\SalesHistory;
 use App\Models\User;
 use App\Traits\ImportExcel;
-use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Cache;
-use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class SalesHistoryController extends AccountBaseController
 {
@@ -81,67 +78,18 @@ class SalesHistoryController extends AccountBaseController
             'imported_at' => now(),
         ]);
 
-        $columns = array_filter((array) $request->columns, static fn($value) => $value !== null);
-        $hasHeading = (bool) $request->boolean('has_heading');
-        $hasSkipFooter = (bool) $request->boolean('has_skip_footer');
-        $uploadedFileName = (string) $request->file;
-        $fullPath = public_path(Files::UPLOAD_FOLDER . '/' . Files::IMPORT_FOLDER . '/' . $uploadedFileName);
+        $chunkSize = $request->filled('chunk_size')
+            ? max(50, min((int) $request->chunk_size, 2000))
+            : max(100, min((int) config('craveva_import.sales_history_rows_per_job', 500), 2000));
 
-        if (! is_file($fullPath)) {
-            return Reply::error('Import file not found.');
-        }
-
-        // Smaller chunks = shorter jobs (faster poll JSON), less timeout risk; lookups are batched inside each job.
-        $chunkSize = max(100, min((int) config('craveva_import.sales_history_rows_per_job', 500), 2000));
-        $jobs = [];
-        $reader = IOFactory::createReaderForFile($fullPath);
-        $reader->setReadDataOnly(true);
-        $worksheetInfos = method_exists($reader, 'listWorksheetInfo')
-            ? (array) call_user_func([$reader, 'listWorksheetInfo'], $fullPath)
-            : [];
-
-        foreach ($worksheetInfos as $sheetIndex => $worksheetInfo) {
-            if ($sheetIndex >= 60) {
-                break;
-            }
-
-            $sheetName = (string) ($worksheetInfo['worksheetName'] ?? '');
-            $totalRows = (int) ($worksheetInfo['totalRows'] ?? 0);
-            if ($sheetName === '' || $totalRows <= 0) {
-                continue;
-            }
-
-            $startRow = $hasHeading ? 2 : 1;
-            $endRow = $hasSkipFooter ? max($startRow, $totalRows - 1) : $totalRows;
-            if ($startRow > $endRow) {
-                continue;
-            }
-
-            for ($rowCursor = $startRow; $rowCursor <= $endRow; $rowCursor += $chunkSize) {
-                $rangeEndRow = min($endRow, $rowCursor + $chunkSize - 1);
-                $jobs[] = new ImportSalesHistoryStreamJob(
-                    $uploadedFileName,
-                    (int) company()->id,
-                    (int) $salesHistory->id,
-                    $columns,
-                    $sheetName,
-                    (int) $sheetIndex,
-                    (int) $rowCursor,
-                    (int) $rangeEndRow
-                );
-            }
-        }
-
-        if ($jobs === []) {
-            return Reply::error(__('messages.abortAction'));
-        }
-
-        $batch = Bus::batch($jobs)
-            ->onConnection('database')
-            ->onQueue('SalesHistoryImport')
-            ->name('SalesHistoryImport-chunked')
-            ->allowFailures()
-            ->dispatch();
+        $batch = $this->importJobProcessChunked(
+            $request,
+            SalesHistoryImport::class,
+            ImportSalesHistoryChunkJob::class,
+            $chunkSize,
+            ['sales_history_id' => (int) $salesHistory->id],
+            true
+        );
 
         $batchId = data_get($batch, 'id');
         if ($batchId) {

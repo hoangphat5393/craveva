@@ -45,7 +45,7 @@ No: Cả qty ≥ 0 và (không có amount hoặc amount ≥ 0)
 3) **Không gom toàn bộ rows vào một mảng RAM**
    Với Sales History đang dùng stream theo range + job nhỏ hơn; vẫn cần cẩn trọng file xlsx cực lớn.
 
-4) **Tối ưu DB** — **đã làm một phần** trong `ImportSalesHistoryStreamJob`: prefetch `client_code` / `SKU` / `source_row_hash` theo chunk, bulk insert theo lô (xem code). Có thể mở rộng cache xuyên job nếu cần.
+4) **Tối ưu DB** — **đã làm** trong `ImportSalesHistoryChunkJob`: prefetch `client_code` / `SKU` / `source_row_hash` theo chunk, bulk insert theo lô (cùng ý tưởng stream cũ). Có thể mở rộng cache xuyên job nếu cần.
 
 5) **PhpSpreadsheet cache disk** (tùy `config/excel.php`) — backlog, giảm RAM workbook lớn.
 
@@ -58,7 +58,7 @@ No: Cả qty ≥ 0 và (không có amount hoặc amount ≥ 0)
 
 - [x] Giữ màn mapping cột; bước upload/map **chỉ đọc sheet đầu** cho `SalesHistoryImport` (nhẹ).
 - [x] Bước mapping: header + sample giới hạn (`ChunkReadFilter`, tối đa 100 dòng quét, tối đa 5 dòng mẫu hiển thị).
-- [x] Process: **nhiều job queue** theo sheet + khoảng dòng; job `ImportSalesHistoryStreamJob`.
+- [x] Process: **chunk** một sheet đầu qua `importJobProcessChunked`; job `ImportSalesHistoryChunkJob` (stream đa sheet đã gỡ).
 - [x] **Chunk mặc định 500 dòng/job** (trước đây 2000 — quá nặng mỗi job). Cấu hình: `config/craveva_import.php` / env `SALES_HISTORY_IMPORT_ROWS_PER_JOB` (clamp 100–2000 trong controller).
 - [x] Trong mỗi job: **prefetch** `client_details` + `products` bằng `whereIn`, prefetch `source_row_hash` đã tồn tại; **insert theo lô** (fallback từng dòng nếu lô lỗi); timeout job tăng phù hợp.
 - [x] Poll import: giảm nguy cơ request poll bị treo lâu — điều chỉnh số job xử lý mỗi lần poll trong `ImportController` + `import_progress_execution_jobs_per_poll` (`config/app.php`).
@@ -83,7 +83,7 @@ No: Cả qty ≥ 0 và (không có amount hoặc amount ≥ 0)
 |---------------------------------------|---------------------------------------------------------------------------------------|
 | Chunk rows/job + dispatch batch       | `app/Http/Controllers/SalesHistoryController.php`                                     |
 | Đọc nhẹ sheet đầu / sample            | `app/Traits/ImportExcel.php`                                                          |
-| Xử lý chunk + batch DB + bulk insert  | `app/Jobs/ImportSalesHistoryStreamJob.php`                                            |
+| Xử lý chunk + batch DB + bulk insert  | `app/Jobs/ImportSalesHistoryChunkJob.php`                                            |
 | Cấu hình số dòng/job                  | `config/craveva_import.php`                                                           |
 | Poll progress / worker inline (chỉ theo cấu hình môi trường) | `app/Http/Controllers/ImportController.php`, `config/app.php`  |
 | Merge row errors (cache)              | `app/Traits/StoresImportBatchMetrics.php` (`mergeImportBatchRowErrors`)               |

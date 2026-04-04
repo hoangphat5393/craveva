@@ -17,6 +17,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\HeadingRowImport;
 use Maatwebsite\Excel\Imports\HeadingRowFormatter;
 use Modules\Purchase\Imports\InventoryImport;
+use Modules\Warehouse\Imports\WarehouseImport;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use ReflectionClass;
 
@@ -538,11 +539,11 @@ trait ImportExcel
         $hasSkipFooter = $request->boolean('has_skip_footer');
 
         $excelData = null;
-        if (in_array($importClass, [ClientImport::class, ProductImport::class, InventoryImport::class], true)) {
+        if (in_array($importClass, [ClientImport::class, ProductImport::class, InventoryImport::class, SalesHistoryImport::class, WarehouseImport::class], true)) {
             $excelData = $this->loadFirstSheetDataRowsByRowRange($filePath, $hasHeading, $hasSkipFooter);
         }
 
-        if ($excelData === null) {
+        if (! isset($excelData) || $excelData === null) {
             $importInstance = new $importClass;
             Excel::import($importInstance, $filePath);
             $excelData = $importInstance->getProcessedData();
@@ -590,10 +591,11 @@ trait ImportExcel
      * @param  string  $importClass  e.g. ClientImport::class
      * @param  string  $chunkJobClass  Job that accepts (array $rows, array $columns, $company) e.g. ImportClientChunkJob::class
      * @param  int  $chunkSize  Rows per chunk (default 100)
-     * @param  array  $options  Optional data passed to each job (e.g. ['default_unit_id' => 1])
+     * @param  array  $options  Optional data passed to each job (e.g. ['default_unit_id' => 1, 'sales_history_id' => 1])
+     * @param  bool  $allowBatchFailures  When true, dispatch with allowFailures() (e.g. Sales History row-level issues should not cancel the whole batch)
      * @return PendingBatch
      */
-    public function importJobProcessChunked($request, $importClass, $chunkJobClass, int $chunkSize = 100, array $options = [])
+    public function importJobProcessChunked($request, $importClass, $chunkJobClass, int $chunkSize = 100, array $options = [], bool $allowBatchFailures = false)
     {
         $this->boostImportRuntimeLimits();
 
@@ -614,7 +616,7 @@ trait ImportExcel
         $hasHeading = $request->boolean('has_heading');
         $hasSkipFooter = $request->boolean('has_skip_footer');
 
-        if (in_array($importClass, [ClientImport::class, ProductImport::class, InventoryImport::class], true)) {
+        if (in_array($importClass, [ClientImport::class, ProductImport::class, InventoryImport::class, SalesHistoryImport::class, WarehouseImport::class], true)) {
             $excelData = $this->loadFirstSheetDataRowsByRowRange($filePath, $hasHeading, $hasSkipFooter);
         }
 
@@ -635,6 +637,9 @@ trait ImportExcel
         }
 
         $batch = Bus::batch($jobs)->onConnection('database')->onQueue($importClassName)->name($importClassName . '-chunked');
+        if ($allowBatchFailures) {
+            $batch = $batch->allowFailures();
+        }
         if ($request->filled('original_filename')) {
             $batch = $batch->withOption('original_filename', $request->input('original_filename'));
         }

@@ -91,25 +91,20 @@ it('imports sales history line and is idempotent by source hash', function () {
     expect(DB::table('sales_history_lines')->count())->toBe(1);
 });
 
-it('fails row when client or product not found', function () {
+it('records no lines when client or product not found without throwing', function () {
     $rows = [
         ['2024/01/02', 'NOCLIENT', 'NOSKU', '2', '4100'],
     ];
     $columns = ['shipment_return_date', 'customer_number', 'product_part_number', 'net_sales_volume', 'net_sales_amount'];
     $company = (object) ['id' => 1, 'currency_id' => 1];
+    $options = ['sales_history_id' => 1];
 
-    $job = new ImportSalesHistoryChunkJob($rows, $columns, $company, 0, []);
-
-    try {
-        $job->handle();
-    } catch (Throwable $e) {
-        // fail() from batch
-    }
+    (new ImportSalesHistoryChunkJob($rows, $columns, $company, 0, $options))->handle();
 
     expect(DB::table('sales_history_lines')->count())->toBe(0);
 });
 
-it('tracks sheet index on rows', function () {
+it('imports multiple data rows from first sheet only (source_sheet_name null)', function () {
     DB::table('client_details')->insert([
         'company_id' => 1,
         'user_id' => 101,
@@ -126,15 +121,15 @@ it('tracks sheet index on rows', function () {
     ]);
 
     $rows = [
-        ['2024/01/02', 'A1173', 'A0101009', '1', '100', '__sheet' => '3'],
-        ['2024/01/03', 'A1173', 'A0101009', '2', '200', '__sheet' => '5'],
+        ['2024/01/02', 'A1173', 'A0101009', '1', '100'],
+        ['2024/01/03', 'A1173', 'A0101009', '2', '200'],
     ];
     $columns = ['shipment_return_date', 'customer_number', 'product_part_number', 'net_sales_volume', 'net_sales_amount'];
     $company = (object) ['id' => 1, 'currency_id' => 1];
+    $options = ['sales_history_id' => 1];
 
-    (new ImportSalesHistoryChunkJob($rows, $columns, $company, 0, []))->handle();
+    (new ImportSalesHistoryChunkJob($rows, $columns, $company, 0, $options))->handle();
 
     expect(DB::table('sales_history_lines')->count())->toBe(2);
-    expect(DB::table('sales_history_lines')->where('source_sheet_name', 'sheet-3')->count())->toBe(1);
-    expect(DB::table('sales_history_lines')->where('source_sheet_name', 'sheet-5')->count())->toBe(1);
+    expect(DB::table('sales_history_lines')->whereNull('source_sheet_name')->count())->toBe(2);
 });

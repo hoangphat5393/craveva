@@ -67,7 +67,7 @@ Kết luận: rủi ro chính là **bundle đã compile** (`public/js/app.js`) v
 
 ### Phase F — Live (hub)
 
-1. Backup + maintenance window (theo `docs/LIVE_HUB_L11_UPLOAD_AND_UPGRADE_CHECKLIST.md` nếu áp dụng).
+1. Backup + maintenance window (theo `docs/SERVER_RUNBOOK_VI.md` mục hub go-live nếu áp dụng).
 2. Deploy giống staging; smoke test lại tối thiểu 15 phút.
 
 ## 5) Dấu hiệu cần rollback

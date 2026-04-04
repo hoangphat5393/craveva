@@ -1,5 +1,5 @@
 # PowerShell script to zip selected files and upload to staging server
-# Staging ưu tiên deploy qua Git (git pull trên server) — xem docs/STAGING_OPERATIONS.md
+# Staging ưu tiên deploy qua Git — xem docs/SERVER_RUNBOOK_VI.md và docs/STAGING_OPERATIONS.md (zip)
 # Script zip chỉ dùng khi thật sự cần; có đoạn rm trên remote — đọc docs trước khi chạy.
 #
 # GIT-FIRST WORKFLOW (khuyến nghị):

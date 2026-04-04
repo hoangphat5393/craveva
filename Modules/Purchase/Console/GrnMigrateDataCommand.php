@@ -163,6 +163,11 @@ class GrnMigrateDataCommand extends Command
         $missing = collect($required)->filter(fn($table) => ! Schema::hasTable($table))->values()->all();
         if ($missing !== []) {
             $this->error('Required tables not found: ' . implode(', ', $missing) . '.');
+            $legacyMissing = array_values(array_intersect($missing, ['delivery_orders', 'delivery_order_items']));
+            if ($legacyMissing !== [] && Schema::hasTable('grns')) {
+                $this->line('Nothing to migrate: this command only copies from legacy Delivery Order tables.');
+                $this->line('If those tables were dropped (phase 5 / fresh DB), create GRNs in the app or restore a backup that still has delivery_orders, then run this command.');
+            }
 
             return false;
         }

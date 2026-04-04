@@ -8,7 +8,7 @@
 
 - **Hub / staging:** đã đồng bộ **`pm.max_spare_servers = 2`** cùng **`pm.max_children = 2`** (**2026-04-04**).
 
-**Supervisor (staging):** đã cài **`supervisor`**, program **`craveva-queue-all`** chạy `queue:work` nền (**2026-04-04**). `.env` staging: **`IMPORT_PROGRESS_RUN_QUEUE_WORKER=false`**. Chi tiết: `docs/STAGING_OPERATIONS.md`, `deploy/supervisor/craveva-queue-all.conf.example`.
+**Supervisor (staging):** đã cài **`supervisor`**, program **`craveva-queue-all`** chạy `queue:work` nền (**2026-04-04**). `.env` staging: **`IMPORT_PROGRESS_RUN_QUEUE_WORKER=false`**. Chi tiết: `docs/SERVER_RUNBOOK_VI.md`, `deploy/supervisor/craveva-queue-all.conf.example`.
 
 **Mục đích:** giải thích vì sao sau import / tăng `max_execution_time` / upload limit, máy có thể **load cao hoặc “đơ”**: RAM nhỏ, swap, và **oversubscription** `memory_limit` PHP-FPM.
 
@@ -135,8 +135,8 @@
 | **Theo dõi**                            | `free -h`, `swapon --show`, `uptime` khi import — xác nhận swap có nhảy không.                                                                                        |
 | **Queue / import**                      | Giữ chunk hợp lý; tránh nhiều import song song trên cùng VM nhỏ.                                                                                                      |
 | **Hub: swap cao**                       | Tìm process ăn RAM (`ps aux --sort=-%mem \| head`); cân nhắc **nâng RAM VM** hoặc giảm service trùng.                                                                 |
-| **Quyền / cache**                       | `docs/LARAVEL_PHP_FPM_QUEUE_PERMISSIONS_VI.md`.                                                                                                                       |
-| **Supervisor**                          | Staging: worker queue nền; tránh **`IMPORT_PROGRESS_RUN_QUEUE_WORKER=true`** đồng thời. `docs/STAGING_OPERATIONS.md`.                                                 |
+| **Quyền / cache**                       | `docs/SERVER_RUNBOOK_VI.md`.                                                                                                                                          |
+| **Supervisor**                          | Staging: worker queue nền; tránh **`IMPORT_PROGRESS_RUN_QUEUE_WORKER=true`** đồng thời. `docs/SERVER_RUNBOOK_VI.md`.                                                  |
 
 ---
 
@@ -190,6 +190,6 @@ sudo php-fpm8.3 -t && sudo systemctl restart php8.3-fpm
 ## 8. Liên quan trong repo
 
 - PHP ini tuning script: `scripts/tune_php83_import_limits.sh`
-- Staging vận hành (Supervisor, deploy): `docs/STAGING_OPERATIONS.md`
+- Staging vận hành (Supervisor, deploy): `docs/SERVER_RUNBOOK_VI.md`; rehearsal/zip: `docs/STAGING_OPERATIONS.md`
 - Supervisor mẫu cấu hình queue: `deploy/supervisor/craveva-queue-all.conf.example`
 - Import & poll: `FUNC_IMPORT/IMPORT_MECHANISMS_POLL_AND_QUEUE_VI.md`

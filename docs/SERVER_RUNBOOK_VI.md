@@ -1,0 +1,231 @@
+# Runbook server — Staging & Hub go-live (Craveva)
+
+**Mục đích:** một chỗ cho deploy **hub (live)** và **staging**, quyền `storage`, queue worker, và **các bẫy đã gặp** — tránh lặp lỗi cũ (Permission denied import, hai worker, `sudo php artisan`, DNS IP, v.v.).
+
+| Môi trường   | App (chuẩn tham chiếu)                                              | URL / ghi chú                                                                           |
+| ------------ | ------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| **Staging**  | `/var/www/craveva-staging/current/craveva`                          | `https://staging.craveva.com` — IP VM có thể đổi sau stop/start; cập nhật DNS A record. |
+| **Hub live** | Điền đúng path trên server hub (vd. `/var/www/.../current/craveva`) | Kiểm tra `docs/GCP_INFRA_INVENTORY_SUMMARY.md` / firewall Cloud SQL.                    |
+
+**Tài liệu chuyên sâu (không gộp vào đây):** import/poll/queue trong code → `FUNC_IMPORT/IMPORT_MECHANISMS_POLL_AND_QUEUE_VI.md`. Rehearsal Phase 3 SO/DO trên staging → `docs/STAGING_OPERATIONS.md` (chỉ còn mục dài).
+
+---
+
+## 1. Bẫy đã gặp — checklist nhanh
+
+| #   | Triệu chứng / nguyên nhân                                                     | Việc phải làm                                                                                                                                                                                                                                                                                                                            |
+| --- | ----------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | **`Permission denied`** `storage/framework/cache/data/...` khi import / queue | FPM và **`queue:work` cùng user `www-data`**. Không chạy **`sudo php artisan …`** (tạo file **root**). Dùng **`sudo -u www-data php artisan …`**. Xem [mục 4](#4-quyền-storage-queue-supervisor--systemd).                                                                                                                               |
+| 2   | **Hai** process `queue:work` — một user **deploy**, một **`www-data`**        | Trùng **Supervisor** + **`craveva-queue-all.service` (systemd)**. Chỉ giữ **một** nguồn. Staging: `sudo systemctl disable --now craveva-queue-all.service`. Mẫu unit: `deploy/systemd/craveva-queue-all.service` (đã sửa `User=www-data`; vẫn **không** bật song song Supervisor).                                                       |
+| 3   | **`staging.craveva.com` timeout** sau đổi VM                                  | DNS A record trỏ **IP cũ**. Lấy IP mới: GCP Console hoặc `gcloud compute instances describe craveva-staging --zone=... --format='value(networkInterfaces[0].accessConfigs[0].natIP)'`.                                                                                                                                                   |
+| 4   | **`IMPORT_PROGRESS_RUN_QUEUE_WORKER=true`** + Supervisor                      | Dư worker, poll HTTP nặng, dễ timeout. Staging/production: **`false`** hoặc unset; dựa Supervisor/cron.                                                                                                                                                                                                                                  |
+| 5   | **`chown -R www-data`** lên **cả mã nguồn**                                   | `git pull` / deploy user **không ghi** được code. Chỉ `chown` **`storage/`**, **`bootstrap/cache`** (và `public/` upload nếu cần).                                                                                                                                                                                                       |
+| 6   | RAM nhỏ + import lớn                                                          | OOM / load cao. Tăng RAM VM; có thể tạm `supervisorctl stop craveva-queue-all:*`.                                                                                                                                                                                                                                                        |
+| 7   | **DataTables / SQL 1146** — thiếu `sales_dos`, `grns`, …                      | Code đã **pin** bảng mới (`SalesDoRuntime`, `GrnRuntime` = `true`). Chạy **`php artisan migrate`**. Nếu báo _Nothing to migrate_ mà bảng vẫn không có → bảng `migrations` **lệch** (đã ghi Ran nhưng bảng chưa từng tạo): xóa dòng migration tương ứng rồi `migrate` lại — xem [mục 9](#9-schema-cutover--sales-do--grn-kiểm-tra-nhanh). |
+
+---
+
+## 2. Hub (live) — checklist deploy & nâng cấp
+
+1. **Chuẩn bị:** code đã merge; ghi SHA commit; đã test staging; `rg "->change\\(|->renameColumn\\(" database/migrations Modules -g "*.php"` không còn migration DBAL nguy hiểm bất ngờ.
+2. **Backup bắt buộc:** snapshot VM/volume + dump DB (`mysqldump … > backup_before_YYYYMMDD_HHMM.sql`).
+3. **Maintenance:** thông báo; cửa sổ off-peak; một người theo dõi log.
+4. **Deploy code:** SSH → `cd <APP>` → `git fetch --all --prune` → `git checkout <branch>` → `git pull --ff-only` → xác nhận `HEAD` = SHA đã chốt.
+5. **Composer:** `composer install --no-dev --optimize-autoloader` — **không** `composer update` trên live.
+6. **Artisan có ghi cache / storage — luôn user web:**
+
+```bash
+# Thay <APP> = đường dẫn thư mục chứa artisan
+sudo -u www-data php <APP>/artisan optimize:clear
+sudo -u www-data php <APP>/artisan config:cache
+sudo -u www-data php <APP>/artisan route:cache
+sudo -u www-data php <APP>/artisan view:cache
+```
+
+**Không** dùng `php artisan optimize:clear` thuần sau `sudo su` nếu kết quả là process **root** ghi cache.
+
+7. **Migration:** `sudo -u www-data php artisan migrate --pretend --force` → nếu ổn → `sudo -u www-data php artisan migrate --force` → `migrate:status` không còn Pending.
+8. **Health:** `curl -I -sS https://<live-domain>` → 200; `systemctl is-active nginx php8.3-fpm`; xem `journalctl -u nginx -u php8.3-fpm -p err -n 50`; log Laravel không lỗi mới nghiêm trọng.
+9. **Smoke:** đăng nhập; order/invoice; warehouse; một luồng import nếu có.
+10. **Rollback:** `git checkout <last-good-sha>` + `composer install --no-dev` + cache lại bằng **`sudo -u www-data`**; DB restore từ backup nếu lỗi schema/data.
+
+**Ghi log mỗi lần deploy:** thời gian, người deploy, SHA, lệnh, migrate, health, sự cố.
+
+---
+
+## 3. Staging — deploy Git (tóm tắt)
+
+```bash
+cd /var/www/craveva-staging/current/craveva
+git fetch origin main
+git pull --ff-only origin main
+APP_ENV=production composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+sudo -u www-data php artisan migrate --force
+sudo -u www-data php artisan optimize:clear
+sudo supervisorctl restart craveva-queue-all:*
+```
+
+**Quyền sau deploy:** xem [mục 4](#4-quyền-storage-queue-supervisor--systemd). Chi tiết zip `upload_staging.ps1` → `docs/STAGING_OPERATIONS.md`.
+
+---
+
+## 4. Quyền, storage, queue, Supervisor & systemd
+
+### 4.1 Nguyên tắc
+
+- **PHP-FPM** (thường **`www-data`**) và **`queue:work`** phải **cùng quyền ghi** `storage/` và `bootstrap/cache/`.
+- **`CACHE_DRIVER=file`** → import metrics ghi dưới `storage/framework/cache/data/` — worker khác user → **Permission denied**.
+
+### 4.2 Supervisor (khuyến nghị worker nền)
+
+- File: `/etc/supervisor/conf.d/craveva-queue-all.conf` (mẫu: `deploy/supervisor/craveva-queue-all.conf.example`).
+- **`user=www-data`**. Danh sách `--queue=` khớp `app/Console/Kernel.php::DATABASE_WORKER_QUEUE_NAMES`.
+
+```bash
+sudo supervisorctl status
+sudo supervisorctl restart craveva-queue-all:*
+```
+
+### 4.3 Không chạy trùng systemd `craveva-queue-all.service`
+
+Nếu vừa **Supervisor** vừa **systemd** với `queue:work` → hai worker; unit cũ từng để **`User=hoangphat5393`** gây lỗi cache. **Chỉ một nguồn:**
+
+```bash
+sudo systemctl disable --now craveva-queue-all.service
+sudo systemctl daemon-reload
+ps aux | grep queue:work | grep -v grep   # chỉ còn www-data
+```
+
+### 4.4 Cron `schedule:run`
+
+Nên: `* * * * * cd <APP> && sudo -u www-data /usr/bin/php artisan schedule:run >> /dev/null 2>&1`  
+(trong crontab user deploy **hoặc** crontab có `sudo -u www-data`).
+
+### 4.5 Kiểm tra nhanh
+
+```bash
+APP=/var/www/craveva-staging/current/craveva   # hoặc path hub
+ps aux | grep 'php-fpm: pool' | grep -v grep | head -3
+ps aux | grep 'queue:work' | grep -v grep
+namei -l "$APP/storage/framework/cache/data" 2>/dev/null | tail -15
+```
+
+### 4.6 Sửa quyền (staging path mẫu — đổi `APP` trên hub)
+
+```bash
+APP=/var/www/craveva-staging/current/craveva
+sudo chown -R www-data:www-data "$APP/storage" "$APP/bootstrap/cache"
+sudo chmod -R ug+rwX "$APP/storage" "$APP/bootstrap/cache"
+sudo find "$APP/storage" "$APP/bootstrap/cache" -type d -exec chmod g+s {} \; 2>/dev/null || true
+sudo mkdir -p "$APP/storage/logs"
+sudo chown -R www-data:www-data "$APP/storage/logs"
+sudo chmod 2777 "$APP/storage/logs"
+DEPLOY_USER=$(whoami)
+sudo setfacl -R  -m u:www-data:rwX,u:$DEPLOY_USER:rwX "$APP/storage" "$APP/bootstrap/cache" "$APP/storage/logs" 2>/dev/null || true
+sudo setfacl -dR -m u:www-data:rwX,u:$DEPLOY_USER:rwX "$APP/storage" "$APP/bootstrap/cache" "$APP/storage/logs" 2>/dev/null || true
+sudo -u www-data php "$APP/artisan" cache:clear
+sudo systemctl reload php8.3-fpm
+```
+
+**Tuỳ chọn:** `CACHE_DRIVER=redis` nếu đã có Redis — giảm ghi file cache; vẫn cần quyền `storage/logs`.
+
+### 4.7 PHP 8.3 trên Ubuntu (staging đã dùng)
+
+- Pool FPM: `grep -E '^user|^group' /etc/php/8.3/fpm/pool.d/www.conf`
+- Socket: thường `unix:/run/php/php8.3-fpm.sock`; có thể `update-alternatives` cho `php-fpm.sock` trỏ 8.3.
+- Sau đổi `memory_limit` FPM: `sudo systemctl reload php8.3-fpm`.
+
+---
+
+## 5. Git / owner code — tránh vòng “pull lỗi → chown → pull”
+
+- **`git pull` / `composer install`:** user **deploy** (ubuntu, …).
+- **Không** `chown -R www-data` lên `app/`, `config/`, `vendor/`, …
+- **Chỉ** `storage/`, `bootstrap/cache` (và ACL như [mục 4.6](#46-sửa-quyền-staging-path-mẫu--đổi-app-trên-hub)).
+
+**Khi đã kẹt — gỡ nhanh một lần** (trên server; thay `APP` nếu khác):
+
+```bash
+APP=/var/www/craveva-staging/current/craveva
+cd "$APP"
+U=$(whoami)
+for d in app bootstrap config database resources routes Modules public vendor; do
+  [ -d "$APP/$d" ] && sudo chown -R "$U:$U" "$APP/$d"
+done
+for f in artisan composer.json composer.lock package.json vite.config.js webpack.mix.js; do
+  [ -f "$APP/$f" ] && sudo chown "$U:$U" "$APP/$f"
+done
+sudo chown -R www-data:www-data "$APP/storage" "$APP/bootstrap/cache"
+sudo chmod -R ug+rwX "$APP/storage" "$APP/bootstrap/cache"
+git pull --ff-only origin main
+```
+
+`bootstrap/` ở trên gồm cả `app.php`; **`bootstrap/cache`** được `chown` lại **`www-data`** ngay sau. Nếu nghi cache lệch: `sudo -u www-data php artisan optimize:clear`.
+
+**Tuỳ chọn lâu dài:** `sudo usermod -aG www-data <user_ssh>` + ACL trên `storage` / `bootstrap/cache` (như mục 4.6 và `scripts/upload_staging.ps1`).
+
+---
+
+## 6. Ngôn ngữ `en` (không dùng `eng`)
+
+Locale chuẩn **`en`**. DB đã migration `eng` → `en`. Dịch cần thư mục `lang/en/` hoặc module `Resources/lang/en/`.
+
+---
+
+## 7. Kiểm tra nhanh sau deploy (staging)
+
+```bash
+ssh craveva-staging "df -h /"
+ssh craveva-staging "cd /var/www/craveva-staging/current/craveva && sudo -u www-data php artisan about | head -25"
+ssh craveva-staging "curl -sI -o /dev/null -w '%{http_code}\n' https://staging.craveva.com/"
+```
+
+---
+
+## 8. Liên kết
+
+| Nội dung                                         | File                                                           |
+| ------------------------------------------------ | -------------------------------------------------------------- |
+| Import / poll / queue trong code                 | `FUNC_IMPORT/IMPORT_MECHANISMS_POLL_AND_QUEUE_VI.md`           |
+| Rehearsal Phase 3, script zip staging            | `docs/STAGING_OPERATIONS.md`                                   |
+| Inventory RAM/FPM staging & hub                  | `SPECIFICATION/STAGING_AND_HUB_SERVER_INVENTORY_2026-04-03.md` |
+| GCP VM / IP                                      | `docs/GCP_INFRA_INVENTORY_SUMMARY.md`                          |
+| Firewall / Cloud SQL                             | `docs/FIREWALL_STATUS_HUB_AND_STAGING_DB.md`                   |
+| Supervisor mẫu                                   | `deploy/supervisor/craveva-queue-all.conf.example`             |
+| Systemd mẫu (chỉ dùng nếu không dùng Supervisor) | `deploy/systemd/craveva-queue-all.service`                     |
+
+---
+
+## 9. Schema cutover — Sales DO + GRN (kiểm tra nhanh)
+
+Runtime đang **cố định** dùng **`sales_dos` / `sales_do_items`** (Sale Delivery Order) và **`grns` / `grn_items`** (Goods Received Note), không còn đọc bảng legacy `sales_shipments` / `delivery_orders` trong code path chính. Thiếu bảng → lỗi **1146** trên DataTables.
+
+**Lệnh kiểm tra (sau deploy / trên local):**
+
+```bash
+php artisan purchase:verify-cutover-schema
+```
+
+Lệnh kiểm tra tồn tại các bảng: `sales_dos`, `sales_do_items`, `grns`, `grn_items`, `warehouses`, `stock_movements`, `warehouse_product_stock`.
+
+**Nếu thiếu bảng nhưng `php artisan migrate` báo Nothing to migrate:** thường là dòng trong bảng `migrations` đã **Ran** trong khi bảng thật không được tạo (restore DB cũ, import lệch, thao tác tay). Trên **DB dev** (đã backup nếu cần), có thể xóa **một** dòng migration rồi chạy lại `migrate`, ví dụ:
+
+```sql
+DELETE FROM migrations WHERE migration = '2026_03_30_190000_create_sales_do_tables';
+DELETE FROM migrations WHERE migration = '2026_03_30_191000_create_grn_tables';
+```
+
+Sau đó: `php artisan migrate`. **Production/hub:** chỉ làm sau backup + trong cửa sổ bảo trì; ưu tiên hiểu vì sao lệch trước khi xóa dòng.
+
+**Copy dữ liệu legacy (một lần, khi vẫn còn bảng nguồn):**
+
+- `php artisan purchase:sales-do-migrate-data` — cần `sales_shipments` + `sales_shipment_items` (xem `--help`, mặc định dry-run).
+- `php artisan purchase:grn-migrate-data` — cần `delivery_orders` + `delivery_order_items`.
+
+Nếu DB đã bỏ bảng legacy, hai lệnh trên **không chạy được** — đó là bình thường; tạo chứng từ mới trên UI.
+
+**Tài liệu nghiệp vụ:** `FUNC_LOGIC/REFACTOR_SO_DO_PO_GRN_TRACKER_VI.md`, `docs/PHAN_TICH_MODULE_WAREHOUSE_SO_PO_DO_INVOICE_GRN_VI.md`.
+
+---
+
+_Cập nhật: 2026-04-04 — gộp nội dung từ `LIVE_HUB_L11_UPLOAD_AND_UPGRADE_CHECKLIST.md` và `LARAVEL_PHP_FPM_QUEUE_PERMISSIONS_VI.md` (đã xóa để tránh trùng). 2026-04-05 — mục 9 cutover schema + bẫy #7._

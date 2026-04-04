@@ -167,6 +167,11 @@ class SalesDoMigrateDataCommand extends Command
         $missing = collect($required)->filter(fn($table) => ! Schema::hasTable($table))->values()->all();
         if ($missing !== []) {
             $this->error('Required tables not found: ' . implode(', ', $missing) . '.');
+            $legacyMissing = array_values(array_intersect($missing, ['sales_shipments', 'sales_shipment_items']));
+            if ($legacyMissing !== [] && Schema::hasTable('sales_dos')) {
+                $this->line('Nothing to migrate: this command only copies from legacy sales_shipments tables.');
+                $this->line('If those tables were dropped (phase 5 / fresh DB), use Sales DO in the app or restore a backup that still has sales_shipments.');
+            }
 
             return false;
         }

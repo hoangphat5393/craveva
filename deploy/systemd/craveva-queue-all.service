@@ -1,9 +1,14 @@
-# systemd unit — copy vào /etc/systemd/system/craveva-queue-all.service
-# sudo cp deploy/systemd/craveva-queue-all.service /etc/systemd/system/
-# sudo systemctl daemon-reload && sudo systemctl enable --now craveva-queue-all
+# systemd unit — OPTIONAL. Staging khuyến nghị dùng Supervisor (`deploy/supervisor/craveva-queue-all.conf.example`).
+# Không bật đồng thời Supervisor + unit này — hai worker sẽ giành job; nếu User≠www-data sẽ lỗi
+# Permission denied trên storage/framework/cache (FPM + cache thuộc www-data).
 #
-# Sau deploy code: sudo systemctl restart craveva-queue-all
-# (hoặc: cd app && php artisan queue:restart)
+# Cài đặt:
+#   sudo cp deploy/systemd/craveva-queue-all.service /etc/systemd/system/
+#   sudo systemctl daemon-reload && sudo systemctl enable --now craveva-queue-all
+#
+# Nếu đã dùng Supervisor: sudo systemctl disable --now craveva-queue-all
+#
+# Sau deploy: sudo systemctl restart craveva-queue-all  (hoặc php artisan queue:restart)
 
 [Unit]
 Description=Craveva Laravel queue worker (import queues + default)
@@ -12,11 +17,12 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-User=hoangphat5393
-Group=hoangphat5393
+User=www-data
+Group=www-data
 WorkingDirectory=/var/www/craveva-staging/current/craveva
-Environment=HOME=/home/hoangphat5393
-ExecStart=/usr/bin/php artisan queue:work database --queue=ClientImport,ProductImport,EmployeeImport,ProjectImport,DealImport,LeadImport,ExpenseImport,AttendanceImport,JobApplicationImport,ClientProductPricingImport,PricingTierItemsImport,WarehouseImport,InventoryImport,default --tries=3 --sleep=3
+Environment=HOME=/var/www
+# Khớp deploy/supervisor/craveva-queue-all.conf.example và Kernel::DATABASE_WORKER_QUEUE_NAMES
+ExecStart=/usr/bin/php artisan queue:work database --queue=ClientImport,ProductImport,EmployeeImport,ProjectImport,DealImport,LeadImport,ExpenseImport,AttendanceImport,JobApplicationImport,ClientProductPricingImport,PricingTierItemsImport,WarehouseImport,InventoryImport,SalesOrderImport,SalesHistoryImport,default --tries=3 --sleep=3 --max-time=3600
 Restart=always
 RestartSec=10
 TimeoutStopSec=3600

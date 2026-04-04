@@ -8,6 +8,7 @@ use Modules\Purchase\Console\GrnMigrateDataCommand;
 use Modules\Purchase\Console\GrnMigrateRollbackCommand;
 use Modules\Purchase\Console\SalesDoMigrateDataCommand;
 use Modules\Purchase\Console\SalesDoMigrateRollbackCommand;
+use Modules\Purchase\Console\VerifyCutoverSchemaCommand;
 use Modules\Purchase\Console\SalesDoMigrationRehearsalCommand;
 use Modules\Purchase\Console\SalesDoReconciliationReportCommand;
 
@@ -138,6 +139,7 @@ class PurchaseServiceProvider extends ServiceProvider
                 SalesDoMigrateRollbackCommand::class,
                 GrnMigrateDataCommand::class,
                 GrnMigrateRollbackCommand::class,
+                VerifyCutoverSchemaCommand::class,
             ]
         );
     }

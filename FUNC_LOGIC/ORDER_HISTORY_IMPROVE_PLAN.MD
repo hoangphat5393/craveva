@@ -181,7 +181,7 @@ Sau khi sửa quyền/cron, kiểm tra: `php artisan queue:failed`, log Laravel,
 | Import nặng / spreadsheet lớn | **`memory_limit` PHP-FPM** thấp (vd. 128M) hoặc sai phiên bản pool | Site cần trùng **phiên bản** Nginx → FPM (vd. 8.3); đặt **`memory_limit`** đủ (vd. 1024M) trong đúng `php.ini` của pool đang dùng. |
 | Extension thiếu (local có, staging không) | Package PHP chưa cài | `apt install php8.3-sqlite3` (ví dụ `sqlite3` / `pdo_sqlite`); `phpenmod` + reload FPM. |
 
-Chi tiết quyền thư mục và PHP-FPM: `docs/LARAVEL_PHP_FPM_QUEUE_PERMISSIONS_VI.md`.
+Chi tiết quyền thư mục và PHP-FPM: `docs/SERVER_RUNBOOK_VI.md`.
 
 Phân loại cơ chế import (Client / Product / Inventory / Sales History) và poll queue: `FUNC_IMPORT/IMPORT_MECHANISMS_POLL_AND_QUEUE_VI.md`.
 

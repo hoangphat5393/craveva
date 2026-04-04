@@ -1,6 +1,6 @@
 # Staging Deploy Progress - PHP 8.3 + Laravel 11
 
-**Tóm tắt vận hành staging:** [`docs/STAGING_OPERATIONS.md`](STAGING_OPERATIONS.md)
+**Runbook server:** [`docs/SERVER_RUNBOOK_VI.md`](SERVER_RUNBOOK_VI.md) — rehearsal/zip: [`STAGING_OPERATIONS.md`](STAGING_OPERATIONS.md)
 
 Environment: `craveva-staging` (`/var/www/craveva-staging/current/craveva`)  
 Policy: **No destructive DB actions** (`migrate:fresh`, `db:wipe`, drop/truncate are forbidden).

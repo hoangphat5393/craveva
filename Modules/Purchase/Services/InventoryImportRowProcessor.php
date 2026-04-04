@@ -209,6 +209,7 @@ final class InventoryImportRowProcessor
             }
 
             $inventory = new PurchaseInventory;
+            $inventory->company_id = $this->company->id;
             $inventory->date = $date;
             $inventory->type = $type;
             $inventory->warehouse_id = $warehouseId;
@@ -216,6 +217,7 @@ final class InventoryImportRowProcessor
             $inventory->save();
 
             $addStock = new PurchaseStockAdjustment;
+            $addStock->company_id = $this->company->id;
             $addStock->type = $type;
             $addStock->date = $date;
             $addStock->inventory_id = $inventory->id;
@@ -448,7 +450,7 @@ final class InventoryImportRowProcessor
         }
 
         $payload = [
-            'company_id' => $inventory->company_id,
+            'company_id' => (int) $this->company->id,
             'warehouse_id' => $warehouseId,
             'product_id' => $productId,
             'batch_number' => null,

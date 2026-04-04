@@ -59,10 +59,20 @@ sudo chown -R www-data:www-data /var/www/craveva-staging/current/craveva/storage
 sudo chmod -R ug+rwx /var/www/craveva-staging/current/craveva/storage /var/www/craveva-staging/current/craveva/bootstrap/cache
 ```
 
-/var/www/craveva-staging/current/craveva/storage
-/var/www/craveva-staging/current/craveva/bootstrap/cache
-
 _(Nếu FPM không dùng `www-data`, thay `www-data` bằng user/group trong pool.)_
+
+---
+
+## Staging (`craveva-staging`): PHP 8.3, socket và extension
+
+- **Nginx** site staging dùng **`fastcgi_pass unix:/run/php/php8.3-fpm.sock`** (không phụ thuộc `php-fpm.sock` mặc định).
+- **`update-alternatives`** cho `php-fpm.sock` nên trỏ **`/run/php/php8.3-fpm.sock`** để script/monitor không nhầm sang 8.4:
+    - `sudo update-alternatives --set php-fpm.sock /run/php/php8.3-fpm.sock`
+    - Kiểm tra: `readlink -f /etc/alternatives/php-fpm.sock`
+- **CLI** `php` đã ưu tiên **8.3** (`/usr/bin/php` → `php8.3`).
+- **Đồng bộ extension với máy dev (Windows / PHP cài sẵn):** trên staging đã cài **`php8.3-sqlite3`** để có **`sqlite3`** và **`pdo_sqlite`** (trước đó staging chỉ có MySQL). Các extension khác (bcmath, curl, gd, intl, mbstring, xml, xsl, zip, redis, v.v.) đã có trong **8.3**; bật qua symlink trong `/etc/php/8.3/fpm/conf.d/` (không cần bật thủ công từng file nếu đã `phpenmod`/APT).
+- **`memory_limit` PHP 8.3 FPM:** tăng trong `/etc/php/8.3/fpm/php.ini` (ví dụ **1024M**) rồi `sudo systemctl reload php8.3-fpm`.
+- Sau khi đổi extension hoặc ini: **reload** `php8.3-fpm`; `nginx -t` nếu sửa vhost.
 
 ---
 

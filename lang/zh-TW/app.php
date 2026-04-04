@@ -1003,6 +1003,7 @@ return [
     'pleaseWait' => 'Please wait...',
     'importProcessedJobs' => ':processedJobs entries processed of :totalJobs entries in the import.',
     'importCompleted' => 'Import completed',
+    'importFinishedWithErrors' => '匯入完成但有錯誤。請見下方詳情。',
     'exceptions' => 'Exceptions while importing',
     'importExcelInfo' => 'Date format should be in Y-m-d (e.g. 2022-04-21) format. Make sure the date format is correct in the excel file.',
     'importAttendanceExcelInfo' => 'Datetime format should be in Y-m-d H:i:s (e.g. 2022-04-21 12:00:00) format. Make sure the date format is correct in the excel file.',

@@ -381,6 +381,8 @@ return [
     'importProcessStart' => '导入过程开始。请稍等。',
     'importRunningInBackground' => '导入正在后台运行。',
     'importFirstProgressMayTakeAMinute' => '首次进度更新对于大文件可能需要 1–2 分钟，请勿关闭此页面。',
+    'importQueueTakingLong' => '导入仍在队列中或服务器正在处理。您可以离开此页面——任务会在后台继续；稍后刷新销售历史以查看结果。若进度长时间停留在 0%，请管理员确认队列 worker（cron 每分钟执行 schedule:run）与服务器日志。',
+    'importPollChecking' => '正在检查导入进度…（第 #:n 次请求）',
     'confirmResetPermission' => '这将重置具有此角色的所有用户的权限。您想重置吗？',
     'invoiceDueOn' => '发票到期日',
     'googleCalendar' => [

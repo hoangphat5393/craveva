@@ -148,6 +148,7 @@
             <p class="mb-1">@lang('app.importInProgress') <strong id="progressAmount">@lang('app.pleaseWait')</strong></p>
             <p class="mb-1 small text-muted">@lang('messages.importFirstProgressMayTakeAMinute')</p>
             <p class="mb-2 font-weight-bold text-primary" id="progressCountLine" style="font-size: 1.1rem;">—</p>
+            <p class="mb-2 small text-muted" id="importPollHeartbeat" style="display:none;" aria-live="polite"></p>
             <div class="progress" style="height: 24px;">
                 <div id="processingBarStatus" class="progress-bar  progress-bar-striped  progress-bar-animated" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
             </div>
@@ -171,6 +172,8 @@
     let isFirstPoll = true;
     let importPollStartedAt = null;
     let importPollIntervalMs = 2000;
+    let importPollRequestCount = 0;
+    const importPollCheckingText = @json(__('messages.importPollChecking'));
     const importLongWaitAfterMs = 3 * 60 * 1000;
     // Fields associated with this import
     let jsColumnArray = @json($columns);
@@ -433,12 +436,26 @@
     }
 
 
+    function normalizeImportPollPayload(raw) {
+        if (!raw || typeof raw !== 'object') {
+            return {};
+        }
+        if (typeof raw.progress !== 'undefined' || typeof raw.totalJobs !== 'undefined' || typeof raw.pendingJobs !== 'undefined') {
+            return raw;
+        }
+        if (raw.data && typeof raw.data === 'object') {
+            return raw.data;
+        }
+        return raw;
+    }
+
     function getProgress(batchId) {
 
         $('#process-{{ $importClassName }}-data-form').hide();
         $('#afterSubmitting').show();
         if (importPollStartedAt === null) {
             importPollStartedAt = Date.now();
+            importPollRequestCount = 0;
         }
         var url = "{{ route('import.process.progress', [$importClassName, ':batchId']) }}";
         url = url.replace(':batchId', batchId);
@@ -446,7 +463,12 @@
         var delay = isFirstPoll ? 0 : importPollIntervalMs;
         if (isFirstPoll) isFirstPoll = false;
         setTimeout(function() {
-            window.apiHttp.get(url).then(function(response) {
+            window.apiHttp.get(url).then(function(raw) {
+                var response = normalizeImportPollPayload(raw);
+                importPollRequestCount += 1;
+                if ($('#importPollHeartbeat').length) {
+                    $('#importPollHeartbeat').show().text(importPollCheckingText.replace(':n', String(importPollRequestCount)));
+                }
                 var failedJobs = response.failedJobs || 0;
                 var pendingJobs = response.pendingJobs || 0;
                 var processedJobs = response.processedJobs || 0;

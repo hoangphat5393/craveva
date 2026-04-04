@@ -383,6 +383,7 @@ return [
     'importRunningInBackground' => 'Nhập liệu đang chạy nền.',
     'importFirstProgressMayTakeAMinute' => 'Lần cập nhật tiến độ đầu có thể mất 1–2 phút với file lớn; vui lòng không đóng trang.',
     'importQueueTakingLong' => 'Import vẫn đang xếp hàng hoặc đang chạy trên server. Bạn có thể rời trang — job vẫn chạy nền; vào lại mục Lịch sử bán sau để xem kết quả. Nếu tiến độ mãi 0%, nhờ admin kiểm tra worker queue (cron chạy schedule:run mỗi phút) và log server.',
+    'importPollChecking' => 'Đang kiểm tra tiến độ import… (lần #:n)',
     'confirmResetPermission' => 'Thao tác này sẽ đặt lại quyền cho tất cả người dùng có vai trò này. Bạn có muốn thiết lập lại không?',
     'invoiceDueOn' => 'Hóa đơn đến hạn',
     'googleCalendar' => [

@@ -37,9 +37,133 @@ sudo -u www-data php artisan migrate --force
 sudo -u www-data php artisan optimize:clear
 ```
 
+**Quan trọng — quyền `storage/` sau deploy:** mọi lệnh `artisan` có ghi cache/config (**`optimize:clear`**, **`cache:clear`**) nên chạy **`sudo -u www-data`**, không chạy thuần `sudo php artisan ...` (dễ tạo file/dir dưới `storage/framework/cache` **owner root** → import Client / queue báo _Permission denied_). Nếu vẫn lỗi: `chown` + `setfacl` như `docs/LARAVEL_PHP_FPM_QUEUE_PERMISSIONS_VI.md` (mục Import Client). Queue worker và Supervisor nên **`user=www-data`** trùng với PHP-FPM.
+
 **Không** chạy `composer update` trên staging (chỉ `install` theo `composer.lock` đã commit). Chi tiết: `docs/STAGING_PHP83_L11_DEPLOY_PROGRESS.md`.
 
 **Trước khi pull:** trên server thường có file `M` dưới `storage/` — có thể cần `git stash` hoặc chỉ checkout phần code, tránh kẹt merge.
+
+### Tránh vòng lặp “pull lỗi → chown → pull lại”
+
+Chu kỳ đó **không phải bình thường** — thường do **một lần** đã **`chown -R www-data`** (hoặc **root**) lên **cả mã nguồn** Git (`app/`, `config/`, …) nên user deploy **không ghi** được khi `git pull` / `composer`.
+
+**Phòng (làm đúng thì ít phải sửa tay):**
+
+1. **Không** chạy `sudo chown -R www-data:www-data` trên **toàn bộ** thư mục app — chỉ **`storage/`**, **`bootstrap/cache`**, và (nếu cần) **`public/`** như `scripts/upload_staging.ps1`.
+2. Mọi **`php artisan`** có ghi cache: **`sudo -u www-data php artisan …`** (không `sudo php` thuần).
+3. **`git pull`** và **`composer install`**: luôn user **deploy** (`ubuntu`, `hoangphat5393`, …).
+
+**Khi đã kẹt — gỡ nhanh một lần** (trên server, đứng trong thư mục app; thay `APP` nếu khác):
+
+```bash
+APP=/var/www/craveva-staging/current/craveva
+cd "$APP"
+U=$(whoami)
+for d in app bootstrap config database resources routes Modules public vendor; do
+  [ -d "$APP/$d" ] && sudo chown -R "$U:$U" "$APP/$d"
+done
+for f in artisan composer.json composer.lock package.json vite.config.js webpack.mix.js; do
+  [ -f "$APP/$f" ] && sudo chown "$U:$U" "$APP/$f"
+done
+sudo chown -R www-data:www-data "$APP/storage" "$APP/bootstrap/cache"
+sudo chmod -R ug+rwX "$APP/storage" "$APP/bootstrap/cache"
+git pull --ff-only origin main
+```
+
+`bootstrap/` ở trên gồm cả `app.php`; **`bootstrap/cache`** được `chown` lại **`www-data`** ngay sau — file cache đã build vẫn do web ghi. Nếu nghi ngờ cache lệch: `sudo -u www-data php artisan optimize:clear`.
+
+**Tùy chọn lâu dài:** thêm user deploy vào nhóm **`www-data`** (`sudo usermod -aG www-data hoangphat5393`) và đặt **setgid + ACL** trên `storage` / `bootstrap/cache` (giống cuối `upload_staging.ps1`) — vẫn **giữ owner code là deploy** để `git pull` nhẹ.
+
+### Supervisor — worker queue nền (staging)
+
+**Đã bật trên VM** (gói `supervisor`, program **`craveva-queue-all`**). File cấu hình: **`/etc/supervisor/conf.d/craveva-queue-all.conf`** (tạo từ `deploy/supervisor/craveva-queue-all.conf.example` — danh sách `--queue=` khớp `app/Console/Kernel.php::DATABASE_WORKER_QUEUE_NAMES`).
+
+```bash
+sudo supervisorctl status
+sudo supervisorctl restart craveva-queue-all:*
+sudo tail -f /var/log/supervisor/craveva-queue-all.log
+```
+
+Sau deploy lớn (đổi code queue): **`sudo supervisorctl restart craveva-queue-all:*`**.
+
+**`.env`:** nên **`IMPORT_PROGRESS_RUN_QUEUE_WORKER=false`** (hoặc không set). Nếu **`true`** trong khi Supervisor đã chạy: mỗi lần poll import vẫn gọi thêm `queue:work` trong request HTTP → **dư worker**, tăng tải, dễ **timeout FPM/Nginx**; job vẫn được xử lý nhưng không cần thiết.
+
+Cron `schedule:run` vẫn có thể chạy `queue:work --stop-when-empty` trong `Kernel` — trùng một phần với Supervisor; có thể gỡ dòng đó sau khi Supervisor ổn định để tránh hai nguồn worker.
+
+### Users & quyền — bảng tham chiếu (staging)
+
+**App path:** `/var/www/craveva-staging/current/craveva`  
+Trên GCP Ubuntu, user SSH thường là **`ubuntu`** (hoặc tài khoản deploy bạn dùng). **PHP-FPM pool** và **Supervisor worker** nên là **`www-data`**.
+
+| Thành phần                                                                                                            | User / nhóm chạy                                                                          | Ghi chú                                                                                                                                                                                                                                                              |
+| --------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **SSH, `git pull`**                                                                                                   | User đăng nhập (**thường `ubuntu`**)                                                      | File **được Git cập nhật** (tracked) mang **owner = user chạy `git`** (`ubuntu:ubuntu`, …). **Không** tự động thành `www-data`. Code trong `app/`, `resources/`, … sau pull vẫn đọc được vì world/other thường có quyền đọc; **ghi** (hiếm) phụ thuộc quyền thư mục. |
+| **Nginx**                                                                                                             | master **root**, worker thường **`www-data`**                                             | Chỉ đọc `public/`; PHP không chạy trực tiếp trong process nginx.                                                                                                                                                                                                     |
+| **PHP 8.3 FPM**                                                                                                       | **`www-data`** (pool `www.conf`: `user` / `group`)                                        | Mọi request web (trình duyệt, upload, poll import) chạy PHP với quyền này → ghi `storage/`, `bootstrap/cache` nếu thư mục cho phép.                                                                                                                                  |
+| **`composer install` / `composer update`**                                                                            | Nên user **deploy (`ubuntu`)** hoặc root rồi **sửa owner** phần cần web ghi               | **`vendor/`** thường **755** + owner là user chạy composer → **FPM vẫn đọc được** (execute + read). Tránh để `vendor` chỉ root đọc (700). Trên staging khuyến nghị: **`composer install`** (theo lock), không `update` lung tung.                                    |
+| **`php artisan …` có ghi cache / `storage`** (`optimize:clear`, `cache:clear`, `view:clear`, `migrate` nếu ghi, v.v.) | **`sudo -u www-data php …`**                                                              | Chạy **`sudo php`** → file/dir mới dưới `storage/framework/cache`, `storage/logs`, `bootstrap/cache` có thể thành **root:root** → FPM / queue **Permission denied**.                                                                                                 |
+| **Supervisor `queue:work`**                                                                                           | **`user=www-data`** trong `/etc/supervisor/conf.d/craveva-queue-all.conf`                 | Job import / queue ghi cache, log → cùng “ý” với FPM.                                                                                                                                                                                                                |
+| **Cron `schedule:run`**                                                                                               | Nên cấu hình chạy **`www-data`** hoặc `cd … && sudo -u www-data php artisan schedule:run` | Nếu cron là **root** mà lệnh gọi `php` không qua `-u www-data`, mọi thứ artisan tạo ra có thể **root** → lỗi tương tự.                                                                                                                                               |
+
+**`storage/` và `bootstrap/cache` — ai được ghi, file mới ra sao**
+
+| Thư mục (tiêu biểu)                                              | Owner mong muốn         | File / thư mục mới                                                                                                                                      |
+| ---------------------------------------------------------------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`storage/logs`**                                               | **`www-data:www-data`** | Log Laravel do **FPM** hoặc **queue** ghi. Script zip deploy đặt `chmod 2777` + ACL để log rotate / tạo file mới ít kẹt (`scripts/upload_staging.ps1`). |
+| **`storage/framework/cache`**                                    | **`www-data:www-data`** | Cache file (metrics import, v.v.). Thư mục con do Laravel tạo — cần **g+w** hoặc **ACL default** để `www-data` luôn ghi được.                           |
+| **`storage/framework/sessions`**, **`views`**, **`storage/app`** | **`www-data:www-data`** | Session file, compiled view cache (nếu dùng file), upload.                                                                                              |
+| **`bootstrap/cache`** (`config.php`, `routes-v7.php`, …)         | **`www-data:www-data`** | `php artisan config:cache` nếu chạy **`sudo -u www-data`** thì file thuộc `www-data`; chạy root → FPM không ghi đè được.                                |
+
+**Sau `git pull`:** chỉ các file **thuộc repo** đổi owner theo user pull; **`storage/`** (thường gitignore) và file đã có trong `bootstrap/cache` **không** bị Git đổi owner. Nếu vừa pull xong và chạy **`sudo php artisan optimize:clear`** → nguy cơ **root** sở hữu cache mới → nên **`sudo -u www-data php artisan optimize:clear`**.
+
+**View (Blade) — file mới:** với `CACHE_DRIVER=file`, view compiled có thể nằm **`storage/framework/views`**. User tạo file = process chạy PHP (**FPM** hoặc **CLI**). **Trình duyệt** không tạo file trực tiếp; **request qua FPM** (`www-data`) mới compile view → file mới thường **`www-data`**. Nếu compile chạy CLI sai user → owner sai.
+
+**Khi “ngày sau” import / log lại báo Permission denied:** thường do **file hoặc thư mục mới** (`storage/logs/laravel-*.log`, file cache metrics, thư mục `storage/framework/cache/data/...`) bị tạo bởi **root** hoặc user khác **`www-data`**, hoặc thư mục cha **không có g+w / ACL default**. **Phòng:** không chạy `sudo php artisan` thuần; giữ **ACL + setgid** trên `storage` (như `upload_staging.ps1`). **Sửa một lần:** dùng khối lệnh dưới (gom cả **log**).
+
+**Khắc phục nhanh khi lệch quyền (trên server):**
+
+```bash
+APP=/var/www/craveva-staging/current/craveva
+sudo chown -R www-data:www-data $APP/storage $APP/bootstrap/cache
+sudo chmod -R ug+rwX $APP/storage $APP/bootstrap/cache
+sudo find $APP/storage $APP/bootstrap/cache -type d -exec chmod g+s {} \;
+sudo mkdir -p $APP/storage/logs
+sudo chown -R www-data:www-data $APP/storage/logs
+sudo chmod 2777 $APP/storage/logs
+sudo find $APP/storage/logs -maxdepth 1 -type f -name '*.log' -exec chmod 666 {} + 2>/dev/null || true
+DEPLOY_USER=$(whoami)
+sudo setfacl -R -m u:www-data:rwX,u:$DEPLOY_USER:rwX $APP/storage $APP/bootstrap/cache $APP/storage/logs 2>/dev/null || true
+sudo setfacl -dR -m u:www-data:rwX,u:$DEPLOY_USER:rwX $APP/storage $APP/bootstrap/cache $APP/storage/logs 2>/dev/null || true
+```
+
+Sau đó (tùy): `sudo supervisorctl restart craveva-queue-all:*` và thử import lại. Chi tiết: `docs/LARAVEL_PHP_FPM_QUEUE_PERMISSIONS_VI.md`.
+
+### Một lần cấu hình — “chung quyền” mà không cần nhớ nhiều user
+
+**Thực tế:** **Ubuntu không gộp** `ubuntu` / `hoangphat5393` với `www-data` thành **một** user. Cách gọn nhất là **chỉ nhớ 2 vai trò** và **cài một lần** cho vùng ghi Laravel:
+
+| Vai trò                       | User                 | Việc gì                                                               |
+| ----------------------------- | -------------------- | --------------------------------------------------------------------- |
+| **Chạy web + queue**          | **`www-data`**       | PHP-FPM pool + Supervisor — **giữ mặc định**, **đừng** đổi lung tung. |
+| **Git + composer + sửa code** | **User SSH của bạn** | `git pull`, `composer install`, mở editor.                            |
+
+**Để bạn và `www-data` cùng ghi được `storage/` + `bootstrap/cache` (ít phải `chown` lại):**
+
+1. **Thêm user deploy vào nhóm `www-data`** (một lần; thay `hoangphat5393` bằng đúng user SSH):
+
+    ```bash
+    sudo usermod -aG www-data hoangphat5393
+    ```
+
+    **Đăng xuất SSH / mở session mới** (hoặc `newgrp www-data`) để nhóm có hiệu lực.
+
+2. **Chạy khối ACL + `storage` ở mục “Khắc phục nhanh” phía trên** (hoặc deploy bằng `upload_staging.ps1` — đã có `setfacl`). **ACL default** (`-dR`) khiến **file/thư mục mới** trong các thư mục đó vẫn cho **cả `www-data` lẫn user deploy** ghi được.
+
+3. **Chỉ cần nhớ thêm một quy tắc:** mọi `php artisan` **có ghi cache/config** → **`sudo -u www-data php artisan …`** (không `sudo php` thuần). Có thể đặt **alias** trên server: `alias art='sudo -u www-data php artisan'`.
+
+**Kết quả:** FPM và Supervisor **vẫn** là `www-data` (đúng chuẩn Ubuntu); bạn **không** phải đổi owner code mỗi lần cho web; vùng **Laravel cần ghi** được **chia sẻ** bằng **nhóm + ACL** thay vì nhớ từng user từng lệnh.
+
+_(Đổi cả PHP-FPM pool sang user deploy — ví dụ `ubuntu` — được nhưng phải sửa `www.conf`, dễ lệch với tài liệu/hosting; **không khuyến nghị** trừ khi bạn chủ động chuẩn hóa toàn VM.)_
 
 ---
 

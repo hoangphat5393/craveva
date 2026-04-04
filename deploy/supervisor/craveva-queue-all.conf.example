@@ -1,12 +1,17 @@
 ; 1) Sửa APP_ROOT và user bên dưới cho đúng server.
 ; 2) sudo cp deploy/supervisor/craveva-queue-all.conf.example /etc/supervisor/conf.d/craveva-queue-all.conf
-; 3) sudo supervisorctl reread && sudo supervisorctl update && sudo supervisorctl start craveva-queue-all:*
+; 3) sudo mkdir -p /var/log/supervisor && sudo chown www-data:www-data /var/log/supervisor
+; 4) sudo supervisorctl reread && sudo supervisorctl update && sudo supervisorctl start craveva-queue-all:*
 ;
-; Danh sách queue = ImportController whitelist + default (webhook). Thứ tự: import trước, default sau.
+; Danh sách --queue= phải khớp app\Console\Kernel::DATABASE_WORKER_QUEUE_NAMES và
+; ImportController::ALLOWED_IMPORT_QUEUE_NAMES (+ default). Thứ tự: import trước, default sau.
+;
+; Staging/production: đặt IMPORT_PROGRESS_RUN_QUEUE_WORKER=false (hoặc unset). Nếu vẫn true
+; trong khi Supervisor chạy, mỗi lần poll HTTP cũng gọi queue:work — dư worker, dễ timeout FPM.
 
 [program:craveva-queue-all]
 process_name=%(program_name)s_%(process_num)02d
-command=php /CHANGE_ME_APP_ROOT/artisan queue:work database --queue=ClientImport,ProductImport,EmployeeImport,ProjectImport,DealImport,LeadImport,ExpenseImport,AttendanceImport,JobApplicationImport,ClientProductPricingImport,PricingTierItemsImport,WarehouseImport,InventoryImport,default --tries=3 --sleep=3 --max-time=3600
+command=php /CHANGE_ME_APP_ROOT/artisan queue:work database --queue=ClientImport,ProductImport,EmployeeImport,ProjectImport,DealImport,LeadImport,ExpenseImport,AttendanceImport,JobApplicationImport,ClientProductPricingImport,PricingTierItemsImport,WarehouseImport,InventoryImport,SalesOrderImport,SalesHistoryImport,default --tries=3 --sleep=3 --max-time=3600
 directory=/CHANGE_ME_APP_ROOT
 autostart=true
 autorestart=true

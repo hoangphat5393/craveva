@@ -82,6 +82,79 @@ Xác định user **PHP-FPM** trên server; cho **worker + cron `schedule:run`**
 
 ---
 
+## Import Client (chunk) — `Permission denied` trong `storage/framework/cache/data/...`
+
+### Triệu chứng (staging)
+
+Lỗi kiểu:
+
+`file_put_contents(.../storage/framework/cache/data/...): Failed to open stream: Permission denied`
+
+Stack trace thường qua `Illuminate\Filesystem\Filesystem::put` → **file cache** — trong code có **`StoresImportBatchMetrics::mergeImportBatchMetrics`** (`Cache::put` / lock file) khi job **`ImportClientChunkJob`** chạy.
+
+**Driver:** `CACHE_DRIVER=file` (mặc định hoặc `.env`) → mỗi key cache tạo file (và thư mục con băm) dưới `storage/framework/cache/data/`.
+
+### Có phải “cứ có file/cache mới là phải chmod lại”?
+
+**Không** — nếu cấu hình đúng **một lần**:
+
+- Thư mục cha **`storage/`** (và **`storage/framework/cache`**) thuộc đúng owner/group (thường **`www-data`**) **và**
+- Worker queue chạy **cùng user** với FPM (**`www-data`**) **hoặc**
+- Đã bật **default ACL** (`setfacl -dR`) trên `storage/` và `bootstrap/cache/` để mọi file/thư mục **mới** sinh ra vẫn cho phép **cả** FPM **và** user deploy ghi (xem `scripts/upload_staging.ps1` — khối `setfacl` sau deploy).
+
+Khi đó Laravel tạo thêm thư mục `data/d3/da/...` **không** cần chỉnh quyền tay từng file.
+
+### Vì sao “hôm qua ổn, hôm nay lại lỗi”?
+
+Các nguyên nhân hay gặp **lặp lại** sau khi đã “sửa quyền”:
+
+| Nguyên nhân                                                    | Giải thích ngắn                                                                                                                                                                                                                                                                         |
+| -------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Worker ≠ FPM user**                                          | `queue:work` / Supervisor chạy user **`ubuntu`**, **`deploy`**, hoặc **`root`**, trong khi web ghi cache bằng **`www-data`** (hoặc ngược lại) → thư mục/file do một bên tạo, bên kia **không ghi được**.                                                                                |
+| **`php artisan cache:clear` / `optimize:clear` chạy sai user** | Chạy **`sudo php artisan ...`** (mặc định **root**) hoặc user khác `www-data` → Laravel tạo lại cây `storage/framework/cache` **owner root** → FPM/worker **www-data** báo _Permission denied_. **Luôn ưu tiên:** `sudo -u www-data php artisan cache:clear` (và worker cũng www-data). |
+| **Deploy / `git pull` / unzip bằng root**                      | File hoặc thư mục mới trong `bootstrap/cache` hoặc vài path dưới `storage` bị **`root:root`** nếu có lệnh tạo file không qua `www-data`.                                                                                                                                                |
+| **Chưa có default ACL**                                        | Sau `chown` một lần, nếu không có **`setfacl -dR`**, vẫn có thể ổn **cho đến khi** có thao tác ở trên làm đổi owner cây cache.                                                                                                                                                          |
+| **Đổi `current` symlink (release mới)**                        | Nếu mỗi release là thư mục mới và **chưa** `chown`/`setfacl` cho `storage` của release đó (ít gặp nếu `storage` là shared mount; hay gặp nếu copy tree mới thiếu bước).                                                                                                                 |
+
+### Kiểm tra nhanh trên server
+
+```bash
+APP=/var/www/craveva-staging/current/craveva
+# User của PHP-FPM (thường www-data)
+ps aux | grep 'php-fpm: pool' | grep -v grep | head -3
+# User của queue worker
+ps aux | grep 'queue:work' | grep -v grep
+# Quyền cây cache
+namei -l "$APP/storage" "$APP/storage/framework/cache" 2>/dev/null | tail -20
+ls -la "$APP/storage/framework/cache/data" 2>/dev/null | head -5
+```
+
+Hai dòng **`ps`** phải thấy **cùng user** (lý tưởng: `www-data`) cho pool FPM và `queue:work`.
+
+### Sửa nhanh (staging path chuẩn — chỉnh nếu đường dẫn khác)
+
+```bash
+APP=/var/www/craveva-staging/current/craveva
+sudo chown -R www-data:www-data "$APP/storage" "$APP/bootstrap/cache"
+sudo chmod -R ug+rwx "$APP/storage" "$APP/bootstrap/cache"
+DEPLOY_USER=$(whoami)
+sudo setfacl -R  -m u:www-data:rwX,u:$DEPLOY_USER:rwX "$APP/storage" "$APP/bootstrap/cache" 2>/dev/null || true
+sudo setfacl -dR -m u:www-data:rwX,u:$DEPLOY_USER:rwX "$APP/storage" "$APP/bootstrap/cache" 2>/dev/null || true
+sudo systemctl reload php8.3-fpm
+```
+
+Sau đó xóa cache **bằng www-data** (tránh tạo lại file root):
+
+```bash
+sudo -u www-data php "$APP/artisan" cache:clear
+```
+
+### Giảm phụ thuộc file cache (tuỳ chọn)
+
+Nếu trên staging/hub đã có **Redis**, có thể đặt **`CACHE_DRIVER=redis`** trong `.env` để metric import (và cache chung) không ghi xuống `storage/framework/cache` — vẫn cần quyền ghi **`storage/logs`** và các luồng khác; quyền FPM/worker vẫn nên đồng bộ.
+
+---
+
 ## Liên quan
 
 - Staging / import đứng 0% — nguyên nhân queue + permission: `FUNC_LOGIC/ORDER_HISTORY_IMPROVE_PLAN.MD`

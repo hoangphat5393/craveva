@@ -140,6 +140,7 @@ class SalesHistoryController extends AccountBaseController
             ->onConnection('database')
             ->onQueue('SalesHistoryImport')
             ->name('SalesHistoryImport-chunked')
+            ->allowFailures()
             ->dispatch();
 
         $batchId = data_get($batch, 'id');

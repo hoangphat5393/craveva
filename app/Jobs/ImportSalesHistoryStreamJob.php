@@ -238,14 +238,16 @@ class ImportSalesHistoryStreamJob implements ShouldQueue
                 'updated' => $updatedCount,
                 'skipped' => $skippedCount,
                 'skipped_missing_required' => $missingRequiredCount,
-                'invalid_status' => $invalidStatusCount,
+                'invalid_status' => $invalidStatusCount + count($failures),
             ]);
         }
 
+        // Do not throw: a failed batch job never calls recordSuccessfulJob(), so pending_jobs stays
+        // at totalJobs → poll shows 0% forever while metrics grow. Row-level issues belong in
+        // import_row_errors_* cache (UI) and invalid_status count above — same idea as Client chunk
+        // not aborting the whole chunk for every bad row.
         if ($failures !== []) {
             $this->mergeImportBatchRowErrors($this->batchId, $failures);
-            $count = count($failures);
-            throw new Exception(__('messages.salesHistoryImportJobFailedShort', ['count' => $count]));
         }
     }
 

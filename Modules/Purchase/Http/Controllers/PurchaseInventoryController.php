@@ -28,9 +28,10 @@ use Modules\Purchase\Entities\PurchaseStockAdjustmentReason;
 use Modules\Purchase\Events\PurchaseInventoryEvent;
 use Modules\Purchase\Http\Requests\Inventory\StorePurchaseInventoryRequest;
 use Modules\Purchase\Imports\InventoryImport;
-use Modules\Purchase\Jobs\ImportInventoryJob;
-use Modules\Warehouse\Services\StockMovementService;
+use Modules\Purchase\Jobs\ImportInventoryChunkJob;
+use Modules\Warehouse\Entities\Warehouse;
 use Modules\Warehouse\Entities\WarehouseProductStock;
+use Modules\Warehouse\Services\StockMovementService;
 
 class PurchaseInventoryController extends AccountBaseController
 {
@@ -102,9 +103,9 @@ class PurchaseInventoryController extends AccountBaseController
 
         $this->warehouses = collect();
 
-        if (class_exists(\Modules\Warehouse\Entities\Warehouse::class) && Schema::hasTable('warehouses')) {
-            $warehouseTable = (new \Modules\Warehouse\Entities\Warehouse)->getTable();
-            $this->warehouses = \Modules\Warehouse\Entities\Warehouse::where('status', 'active')
+        if (class_exists(Warehouse::class) && Schema::hasTable('warehouses')) {
+            $warehouseTable = (new Warehouse)->getTable();
+            $this->warehouses = Warehouse::where('status', 'active')
                 ->when(Schema::hasColumn($warehouseTable, 'sort_order'), function ($query) {
                     $query->orderBy('sort_order')->orderBy('name');
                 }, function ($query) {
@@ -142,7 +143,7 @@ class PurchaseInventoryController extends AccountBaseController
         $quantity = $request->quantity_on_hand;
         $warehouseId = $request->warehouse_id;
 
-        if (class_exists(\Modules\Warehouse\Entities\Warehouse::class) && Schema::hasTable('warehouses') && empty($warehouseId)) {
+        if (class_exists(Warehouse::class) && Schema::hasTable('warehouses') && empty($warehouseId)) {
             return Reply::error(__('purchase::modules.inventory.warehouse') . ' ' . __('app.required'));
         }
 
@@ -652,7 +653,8 @@ class PurchaseInventoryController extends AccountBaseController
 
     public function importProcess(ImportProcessRequest $request)
     {
-        $batch = $this->importJobProcess($request, InventoryImport::class, ImportInventoryJob::class);
+        $chunkSize = $request->filled('chunk_size') ? (int) $request->chunk_size : 100;
+        $batch = $this->importJobProcessChunked($request, InventoryImport::class, ImportInventoryChunkJob::class, $chunkSize);
 
         return Reply::successWithData(__('messages.importProcessStart'), ['batch' => $batch]);
     }

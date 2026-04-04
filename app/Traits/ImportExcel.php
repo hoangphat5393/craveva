@@ -4,6 +4,8 @@ namespace App\Traits;
 
 use App\Helper\Files;
 use App\Imports\ChunkReadFilter;
+use App\Imports\ClientImport;
+use App\Imports\ProductImport;
 use App\Imports\SalesHistoryImport;
 use Illuminate\Bus\PendingBatch;
 use Illuminate\Http\Request;
@@ -14,11 +16,17 @@ use Illuminate\Validation\ValidationException;
 use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\HeadingRowImport;
 use Maatwebsite\Excel\Imports\HeadingRowFormatter;
+use Modules\Purchase\Imports\InventoryImport;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use ReflectionClass;
 
 trait ImportExcel
 {
+    /**
+     * First rows scanned to infer map column width (no full-file metadata scan).
+     */
+    private const IMPORT_MAP_COLUMN_SCAN_ROWS = 200;
+
     private function memoryLimitToBytes(?string $value): int
     {
         if (! is_string($value) || trim($value) === '') {
@@ -39,6 +47,21 @@ trait ImportExcel
             'k' => $num * 1024,
             default => (int) $value,
         };
+    }
+
+    /**
+     * First-sheet light map (no full Excel::import on upload step).
+     *
+     * @param  class-string  $importClass
+     */
+    private function importClassUsesLightMap(string $importClass): bool
+    {
+        return in_array($importClass, [
+            SalesHistoryImport::class,
+            ClientImport::class,
+            ProductImport::class,
+            InventoryImport::class,
+        ], true);
     }
 
     private function boostImportRuntimeLimits(): void
@@ -101,7 +124,8 @@ trait ImportExcel
         $this->fileHeading = [];
 
         $this->columns = $importClass::fields();
-        if (method_exists($importClass, 'mergeDynamicColumns')) {
+        // Client / Product / Inventory: merge dynamic columns inside the light-read branch (full targets before heading match).
+        if (method_exists($importClass, 'mergeDynamicColumns') && ! in_array($importClass, [ClientImport::class, ProductImport::class, InventoryImport::class], true)) {
             $this->columns = $importClass::mergeDynamicColumns($this->columns);
         }
         $this->importMatchedColumns = [];
@@ -109,9 +133,19 @@ trait ImportExcel
 
         $this->hasSkipFooter = $request->boolean('skip_footer');
 
-        // Optimization for large multi-sheet sales history files:
-        // mapping step only needs one representative sheet, not full workbook.
-        if ($importClass === SalesHistoryImport::class) {
+        // Light mapping read (first sheet only): heading + sample (≤100 rows scanned for 5 samples), width from first 200 rows.
+        // Sales History, Client, Product, Purchase Inventory — avoids full Excel::import on "Upload next".
+        if ($this->importClassUsesLightMap($importClass)) {
+            if ($importClass === ClientImport::class) {
+                $this->columns = ClientImport::mergeDynamicColumns(ClientImport::fields());
+            }
+            if ($importClass === InventoryImport::class) {
+                $this->columns = InventoryImport::mergeDynamicColumns(InventoryImport::fields());
+            }
+            if ($importClass === ProductImport::class) {
+                $this->columns = ProductImport::mergeDynamicColumns(ProductImport::fields());
+            }
+
             if ($this->hasHeading) {
                 [$this->heading, $this->fileHeading] = $this->readFirstSheetHeadingRows($filePath);
 
@@ -127,6 +161,9 @@ trait ImportExcel
             if ($this->importSample === []) {
                 return 'abort';
             }
+
+            // Pad heading + samples to inferred width (scan first IMPORT_MAP_COLUMN_SCAN_ROWS for non-empty cells).
+            $this->normalizeLightImportMapColumnWidth($filePath);
 
             return;
         }
@@ -296,6 +333,192 @@ trait ImportExcel
         return [$formattedHeading, $rawHeading];
     }
 
+    /**
+     * Max column count from first N rows of sheet 1: rightmost index with non-empty trimmed cell value, max over rows.
+     * Bounded I/O (CSV/XLSX); avoids listWorksheetInfo full-file CSV scan for map UI width only.
+     */
+    private function getMaxColumnCountFromFirstSheetRows(string $filePath, int $maxRows): int
+    {
+        $reader = IOFactory::createReaderForFile($filePath);
+        $reader->setReadDataOnly(true);
+        if (method_exists($reader, 'setReadEmptyCells')) {
+            $reader->setReadEmptyCells(false);
+        }
+
+        $sheetNames = $this->listWorksheetNamesForReader($reader, $filePath);
+        if ($sheetNames === []) {
+            return 0;
+        }
+
+        $reader->setLoadSheetsOnly([(string) $sheetNames[0]]);
+        $readFilter = new ChunkReadFilter;
+        $readFilter->setRows(1, $maxRows);
+        $reader->setReadFilter($readFilter);
+
+        $spreadsheet = $reader->load($filePath);
+        $sheet = $spreadsheet->getSheet(0);
+        $highestRow = (int) $sheet->getHighestDataRow();
+        if ($highestRow < 1) {
+            $spreadsheet->disconnectWorksheets();
+
+            return 0;
+        }
+
+        $endRow = min($maxRows, $highestRow);
+        $endColumn = $sheet->getHighestDataColumn();
+        if ($endColumn === null || $endColumn === '') {
+            $spreadsheet->disconnectWorksheets();
+
+            return 0;
+        }
+
+        $rows = $sheet->rangeToArray("A1:{$endColumn}{$endRow}", null, true, true, false);
+        $spreadsheet->disconnectWorksheets();
+
+        $maxCol = 0;
+        foreach ($rows as $row) {
+            if (! is_array($row)) {
+                continue;
+            }
+            $lastDataIndex = -1;
+            foreach ($row as $idx => $value) {
+                if ($value !== null && trim((string) $value) !== '') {
+                    $lastDataIndex = max($lastDataIndex, (int) $idx);
+                }
+            }
+            if ($lastDataIndex >= 0) {
+                $maxCol = max($maxCol, $lastDataIndex + 1);
+            }
+        }
+
+        return $maxCol;
+    }
+
+    /**
+     * @param  array<int, mixed>  $row
+     * @return array<int, mixed>
+     */
+    private function padImportRowToColumnCount(array $row, int $columnCount): array
+    {
+        if (count($row) >= $columnCount) {
+            return array_slice($row, 0, $columnCount);
+        }
+
+        return array_pad($row, $columnCount, null);
+    }
+
+    /**
+     * Ensure heading + sample rows span sheet width for the map form (pad to max of: data in first N rows, heading, samples).
+     */
+    private function normalizeLightImportMapColumnWidth(string $filePath): void
+    {
+        $fromFirstRows = $this->getMaxColumnCountFromFirstSheetRows($filePath, self::IMPORT_MAP_COLUMN_SCAN_ROWS);
+
+        $widthCandidates = [
+            $fromFirstRows,
+            count($this->heading),
+            count($this->fileHeading),
+        ];
+        foreach ($this->importSample as $sampleRow) {
+            $widthCandidates[] = count($sampleRow);
+        }
+
+        $columnCount = max($widthCandidates);
+        if ($columnCount < 1) {
+            return;
+        }
+
+        if ($this->hasHeading) {
+            $this->fileHeading = $this->padImportRowToColumnCount($this->fileHeading, $columnCount);
+            $this->heading = HeadingRowFormatter::format($this->fileHeading);
+
+            $this->matchedColumns = collect($this->columns)->whereIn('id', $this->heading)->pluck('id');
+            $importMatchedColumns = [];
+            foreach ($this->matchedColumns as $matchedColumn) {
+                $importMatchedColumns[$matchedColumn] = 1;
+            }
+            $this->importMatchedColumns = $importMatchedColumns;
+        }
+
+        $this->importSample = array_map(
+            fn(array $row) => $this->padImportRowToColumnCount($row, $columnCount),
+            $this->importSample
+        );
+    }
+
+    /**
+     * Load first-sheet data rows for client import using row range (no array_shift on a full-sheet array).
+     * Returns null to signal caller should fall back to Maatwebsite Excel::import + stripHeadingFooterFromRows.
+     *
+     * @return array<int, array<int, mixed>>|null
+     */
+    /**
+     * First sheet only: read data rows by range (skip header row via startRow), no array_shift on full sheet.
+     * Used after map for Client, Product, Purchase Inventory.
+     */
+    private function loadFirstSheetDataRowsByRowRange(string $filePath, bool $hasHeading, bool $skipFooter): ?array
+    {
+        $infoReader = IOFactory::createReaderForFile($filePath);
+        $infoReader->setReadDataOnly(true);
+        if (method_exists($infoReader, 'setReadEmptyCells')) {
+            $infoReader->setReadEmptyCells(false);
+        }
+
+        if (! method_exists($infoReader, 'listWorksheetInfo')) {
+            return null;
+        }
+
+        $infos = (array) call_user_func([$infoReader, 'listWorksheetInfo'], $filePath);
+        if ($infos === []) {
+            return null;
+        }
+
+        $totalRows = (int) ($infos[0]['totalRows'] ?? 0);
+        $sheetName = (string) ($infos[0]['worksheetName'] ?? 'Worksheet');
+
+        if ($totalRows < 1) {
+            return null;
+        }
+
+        $startRow = $hasHeading ? 2 : 1;
+        if ($startRow > $totalRows) {
+            return [];
+        }
+
+        $endRow = $skipFooter ? max($startRow, $totalRows - 1) : $totalRows;
+        if ($startRow > $endRow) {
+            return [];
+        }
+
+        $reader = IOFactory::createReaderForFile($filePath);
+        $reader->setReadDataOnly(true);
+        if (method_exists($reader, 'setReadEmptyCells')) {
+            $reader->setReadEmptyCells(false);
+        }
+
+        $reader->setLoadSheetsOnly([$sheetName]);
+        $rowCount = $endRow - $startRow + 1;
+        $readFilter = new ChunkReadFilter;
+        $readFilter->setRows($startRow, $rowCount);
+        $reader->setReadFilter($readFilter);
+
+        $spreadsheet = $reader->load($filePath);
+        $sheet = $spreadsheet->getSheet(0);
+        $endColumn = $sheet->getHighestDataColumn();
+        $rows = $sheet->rangeToArray("A{$startRow}:{$endColumn}{$endRow}", null, true, true, false);
+        $spreadsheet->disconnectWorksheets();
+
+        $out = [];
+        foreach ($rows as $row) {
+            while ($row !== [] && end($row) === null) {
+                array_pop($row);
+            }
+            $out[] = $row;
+        }
+
+        return $out;
+    }
+
     public function importJobProcess($request, $importClass, $importJobClass)
     {
         $this->boostImportRuntimeLimits();
@@ -310,14 +533,21 @@ trait ImportExcel
             return $value !== null;
         });
 
-        $importInstance = new $importClass;
-        Excel::import($importInstance, public_path(Files::UPLOAD_FOLDER . '/' . Files::IMPORT_FOLDER . '/' . $request->file));
-        $excelData = $importInstance->getProcessedData();
-        $excelData = $this->stripHeadingFooterFromRows(
-            $excelData,
-            $request->boolean('has_heading'),
-            $request->boolean('has_skip_footer')
-        );
+        $filePath = public_path(Files::UPLOAD_FOLDER . '/' . Files::IMPORT_FOLDER . '/' . $request->file);
+        $hasHeading = $request->boolean('has_heading');
+        $hasSkipFooter = $request->boolean('has_skip_footer');
+
+        $excelData = null;
+        if (in_array($importClass, [ClientImport::class, ProductImport::class, InventoryImport::class], true)) {
+            $excelData = $this->loadFirstSheetDataRowsByRowRange($filePath, $hasHeading, $hasSkipFooter);
+        }
+
+        if ($excelData === null) {
+            $importInstance = new $importClass;
+            Excel::import($importInstance, $filePath);
+            $excelData = $importInstance->getProcessedData();
+            $excelData = $this->stripHeadingFooterFromRows($excelData, $hasHeading, $hasSkipFooter);
+        }
 
         $jobs = [];
 
@@ -381,14 +611,19 @@ trait ImportExcel
             ]);
         }
 
-        $importInstance = new $importClass;
-        Excel::import($importInstance, $filePath);
-        $excelData = $importInstance->getProcessedData();
-        $excelData = $this->stripHeadingFooterFromRows(
-            $excelData,
-            $request->boolean('has_heading'),
-            $request->boolean('has_skip_footer')
-        );
+        $hasHeading = $request->boolean('has_heading');
+        $hasSkipFooter = $request->boolean('has_skip_footer');
+
+        if (in_array($importClass, [ClientImport::class, ProductImport::class, InventoryImport::class], true)) {
+            $excelData = $this->loadFirstSheetDataRowsByRowRange($filePath, $hasHeading, $hasSkipFooter);
+        }
+
+        if (! isset($excelData) || $excelData === null) {
+            $importInstance = new $importClass;
+            Excel::import($importInstance, $filePath);
+            $excelData = $importInstance->getProcessedData();
+            $excelData = $this->stripHeadingFooterFromRows($excelData, $hasHeading, $hasSkipFooter);
+        }
 
         $excelData = self::normalizeExcelRows($excelData);
 

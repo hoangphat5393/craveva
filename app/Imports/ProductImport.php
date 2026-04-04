@@ -2,11 +2,45 @@
 
 namespace App\Imports;
 
+use App\Models\Company;
+use App\Models\CustomField;
+use App\Models\CustomFieldGroup;
+use App\Models\Product;
 use Maatwebsite\Excel\Concerns\ToArray;
 
 class ProductImport implements ToArray
 {
     protected array $processedData = [];
+
+    /**
+     * Slugs that must not collide with custom field `name` (same as static import columns).
+     *
+     * @var list<string>
+     */
+    private const CORE_COLUMN_IDS = [
+        'product_name',
+        'price',
+        'unit_type',
+        'product_category',
+        'product_sub_category',
+        'sku',
+        'description',
+        'specification',
+        'storage_condition',
+        'certification',
+        'wholesale_price',
+        'price_per_box',
+        'employee_price',
+        'shelf_life_days',
+        'track_inventory',
+        'inventory_type',
+        'status',
+        'allow_purchase',
+        'standard_price',
+        'product_grade',
+        'product_source',
+        'brand',
+    ];
 
     public static function fields(): array
     {
@@ -34,6 +68,84 @@ class ProductImport implements ToArray
             ['id' => 'product_source', 'name' => __('app.productSource'), 'required' => 'No'],
             ['id' => 'brand', 'name' => __('app.brand'), 'required' => 'No'],
         ];
+    }
+
+    /**
+     * Same resolution as Client / Inventory import map (company() may be false while user has company_id).
+     */
+    public static function resolveImportCompanyId(): ?int
+    {
+        $co = company();
+        if ($co instanceof Company) {
+            return (int) $co->id;
+        }
+
+        $user = function_exists('user') ? user() : null;
+        if ($user && ($user->company_id ?? null)) {
+            return (int) $user->company_id;
+        }
+
+        return null;
+    }
+
+    /**
+     * Append Product module custom fields from DB so import mapping lists them (column id = field `name` slug).
+     */
+    public static function mergeDynamicColumns(array $columns): array
+    {
+        $companyId = self::resolveImportCompanyId();
+        if (! $companyId) {
+            return $columns;
+        }
+
+        $group = CustomFieldGroup::where('model', Product::CUSTOM_FIELD_MODEL)
+            ->where('company_id', $companyId)
+            ->first();
+
+        if (! $group) {
+            return $columns;
+        }
+
+        $existingIds = collect($columns)->pluck('id')->flip();
+        $usedLabels = collect($columns)
+            ->pluck('name')
+            ->map(fn($n) => mb_strtolower(trim((string) $n)))
+            ->filter()
+            ->all();
+
+        $customFields = CustomField::where('custom_field_group_id', $group->id)
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get();
+
+        foreach ($customFields as $cf) {
+            $slug = (string) $cf->name;
+            if ($slug === '' || in_array($slug, self::CORE_COLUMN_IDS, true)) {
+                continue;
+            }
+            if ($existingIds->has($slug)) {
+                continue;
+            }
+
+            $display = trim((string) __($cf->label));
+            if ($display === '') {
+                continue;
+            }
+
+            $labelKey = mb_strtolower($display);
+            if (in_array($labelKey, $usedLabels, true)) {
+                continue;
+            }
+
+            $columns[] = [
+                'id' => $slug,
+                'name' => $display,
+                'required' => strtolower((string) $cf->required) === 'yes' ? 'Yes' : 'No',
+            ];
+            $usedLabels[] = $labelKey;
+        }
+
+        return $columns;
     }
 
     public function array(array $array): array

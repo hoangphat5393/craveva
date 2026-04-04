@@ -348,18 +348,20 @@ class ImportProductChunkJob implements ShouldQueue
      */
     private function buildProductCustomFieldsData(array $row): array
     {
-        $customFieldNames = [];
         $companyId = $this->company?->id;
         if (! $companyId) {
             return [];
         }
 
-        $group = CustomFieldGroup::where('company_id', $companyId)->where('model', Product::class)->first();
+        $group = CustomFieldGroup::where('company_id', $companyId)->where('model', Product::CUSTOM_FIELD_MODEL)->first();
         if (! $group) {
             return [];
         }
 
-        $fields = CustomField::where('custom_field_group_id', $group->id)->whereIn('name', $customFieldNames)->get();
+        $fields = CustomField::where('custom_field_group_id', $group->id)
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get();
         if ($fields->isEmpty()) {
             return [];
         }

@@ -2,6 +2,7 @@
 
 namespace Modules\Purchase\Imports;
 
+use App\Models\Company;
 use App\Models\CustomField;
 use App\Models\CustomFieldGroup;
 use Maatwebsite\Excel\Concerns\ToArray;
@@ -60,11 +61,29 @@ class InventoryImport implements ToArray
     }
 
     /**
+     * Same resolution as Client import map (company() may be false while user has company_id).
+     */
+    public static function resolveImportCompanyId(): ?int
+    {
+        $co = company();
+        if ($co instanceof Company) {
+            return (int) $co->id;
+        }
+
+        $user = function_exists('user') ? user() : null;
+        if ($user && ($user->company_id ?? null)) {
+            return (int) $user->company_id;
+        }
+
+        return null;
+    }
+
+    /**
      * Append Inventory custom fields; dedupe by slug (name) vs core columns and by translated label vs core labels.
      */
     public static function mergeDynamicColumns(array $columns): array
     {
-        $companyId = company()?->id;
+        $companyId = self::resolveImportCompanyId();
         if (! $companyId || ! request()->user()) {
             return $columns;
         }
@@ -80,7 +99,7 @@ class InventoryImport implements ToArray
         $existingIds = collect($columns)->pluck('id')->flip();
         $usedLabels = collect($columns)
             ->pluck('name')
-            ->map(fn($n) => mb_strtolower(trim((string) $n)))
+            ->map(fn ($n) => mb_strtolower(trim((string) $n)))
             ->filter()
             ->all();
 
@@ -90,7 +109,7 @@ class InventoryImport implements ToArray
             ->get();
 
         foreach ($fields as $cf) {
-            if ($existingIds->has('field_' . $cf->id)) {
+            if ($existingIds->has('field_'.$cf->id)) {
                 continue;
             }
 
@@ -114,8 +133,8 @@ class InventoryImport implements ToArray
             $suffix = $badge !== 'purchase::modules.inventory.importCustomFieldBadge' ? $badge : '';
 
             $columns[] = [
-                'id' => 'field_' . $cf->id,
-                'name' => $suffix !== '' ? ($display . $suffix) : $display,
+                'id' => 'field_'.$cf->id,
+                'name' => $suffix !== '' ? ($display.$suffix) : $display,
                 'required' => strtolower((string) $cf->required) === 'yes' ? 'Yes' : 'No',
             ];
             $usedLabels[] = $labelKey;

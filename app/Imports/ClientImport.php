@@ -3,6 +3,7 @@
 namespace App\Imports;
 
 use App\Models\ClientDetails;
+use App\Models\Company;
 use App\Models\CustomField;
 use App\Models\CustomFieldGroup;
 use Maatwebsite\Excel\Concerns\ToArray;
@@ -28,7 +29,7 @@ class ClientImport implements ToArray
             ['id' => 'postal_code', 'name' => __('modules.stripeCustomerAddress.postalCode'), 'required' => 'No'],
             ['id' => 'company_phone', 'name' => __('modules.client.officePhoneNumber'), 'required' => 'No'],
             ['id' => 'company_website', 'name' => __('modules.client.website'), 'required' => 'No'],
-            ['id' => 'gst_number', 'name' => __('app.gstNumber') . ' (' . __('app.taxId') . ')', 'required' => 'No'],
+            ['id' => 'gst_number', 'name' => __('app.gstNumber').' ('.__('app.taxId').')', 'required' => 'No'],
             // Custom fields (Client group)
             ['id' => 'salesperson', 'name' => __('modules.client.salesperson'), 'required' => 'No'],
             ['id' => 'department', 'name' => __('modules.client.department'), 'required' => 'No'],
@@ -45,11 +46,29 @@ class ClientImport implements ToArray
     }
 
     /**
+     * Resolve company id for import mapping (avoid company()?->id when company() is false — skips merge silently).
+     */
+    public static function resolveImportCompanyId(): ?int
+    {
+        $co = company();
+        if ($co instanceof Company) {
+            return (int) $co->id;
+        }
+
+        $user = function_exists('user') ? user() : null;
+        if ($user && ($user->company_id ?? null)) {
+            return (int) $user->company_id;
+        }
+
+        return null;
+    }
+
+    /**
      * Append Client module custom fields from DB so import mapping dropdown lists them (slug = field name).
      */
     public static function mergeDynamicColumns(array $columns): array
     {
-        $companyId = company()?->id;
+        $companyId = self::resolveImportCompanyId();
         if (! $companyId) {
             return $columns;
         }

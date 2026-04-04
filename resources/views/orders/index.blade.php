@@ -124,9 +124,12 @@
                     <x-forms.link-primary :link="route('orders.create')" class="mr-3 float-left openRightModal" icon="plus" data-redirect-url="{{ route('orders.index') }}">
                         @lang('app.addNewOrder')
                     </x-forms.link-primary>
+                    {{-- Temporarily hidden: order Excel import (Sales Order flow unchanged in code). Re-enable when needed. --}}
+                    {{--
                     <x-forms.link-secondary :link="route('orders.import')" class="mr-3 float-left" icon="file-upload">
                         @lang('app.importExcel')
                     </x-forms.link-secondary>
+                    --}}
                 @endif
             </div>
         </div>

@@ -119,7 +119,7 @@ class EstimatesDataTable extends BaseDataTable
                 }
 
                 if ($this->editEstimatePermission == 'all' || ($this->editEstimatePermission == 'added' && $row->added_by == $userId)) {
-                    $action .= '<a href="javascript:;" class="dropdown-item change-status" data-estimate-id="'.$row->id.'" ><i class="fa fa-times mr-2"></i> '.__('app.cancelEstimate').'</a>';
+                    $action .= '<a href="javascript:;" class="dropdown-item change-status" data-estimate-id="'.$row->id.'" ><i class="fa fa-times mr-2"></i> '.__('app.quotation_ui.cancel_action').'</a>';
                 }
             }
 
@@ -347,7 +347,7 @@ class EstimatesDataTable extends BaseDataTable
         $data = [
             '#' => ['data' => 'DT_RowIndex', 'orderable' => false, 'searchable' => false, 'visible' => false, 'title' => '#'],
             __('app.id') => ['data' => 'id', 'name' => 'id', 'title' => __('app.id'), 'visible' => false],
-            __('app.estimate').'#' => ['data' => 'estimate_number', 'name' => 'estimate_number', 'title' => __('app.estimate')],
+            __('app.quotation_ui.column_number') => ['data' => 'estimate_number', 'name' => 'estimate_number', 'title' => __('app.quotation_ui.singular')],
             __('app.project') => ['data' => 'project_name', 'name' => 'project.project_name', 'title' => __('app.project'), 'visible' => in_array('projects', user_modules()), 'exportable' => in_array('projects', user_modules())],
             __('app.client') => ['data' => 'name', 'name' => 'users.name', 'exportable' => false, 'title' => __('app.client'), 'visible' => (in_array('clients', user_modules()) && ! in_array('client', user_roles()))],
             __('app.customers') => ['data' => 'client_name', 'name' => 'users.name', 'visible' => false, 'title' => __('app.customers')],

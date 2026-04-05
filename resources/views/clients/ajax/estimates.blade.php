@@ -9,7 +9,7 @@
         <div class="d-flex" id="table-actions">
             @if ($addEstimatePermission == 'all' || $addEstimatePermission == 'added')
                 <x-forms.link-primary :link="route('estimates.create') . '?default_client=' . $client->id" class="mr-3 float-left openRightModal" icon="plus" data-redirect-url="{{ route('clients.show', $client->id) . '?tab=estimates' }}">
-                    @lang('modules.estimates.createEstimate')
+                    @lang('app.quotation_ui.create')
                 </x-forms.link-primary>
             @endif
         </div>

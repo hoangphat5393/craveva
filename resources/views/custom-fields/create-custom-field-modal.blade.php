@@ -9,54 +9,44 @@
             <div class="row">
 
                 <div class="col-lg-6">
-                    <x-forms.select fieldId="module" :fieldLabel="__('app.module')" fieldName="module"
-                                    search="true">
+                    <x-forms.select fieldId="module" :fieldLabel="__('app.module')" fieldName="module" search="true">
                         @foreach ($customFieldGroups as $item)
-                            <option value="{{ $item->id }}">{{ __('app.' . \Illuminate\Support\Str::camel($item->name)) }}</option>
+                            <option value="{{ $item->id }}">{{ \App\Models\CustomFieldGroup::settingsModuleLabel($item->name, $item->model) }}</option>
                         @endforeach
                     </x-forms.select>
                 </div>
 
                 <div class="col-lg-6">
-                    <x-forms.text :fieldLabel="__('modules.customFields.label')" fieldName="label" fieldId="label"  fieldRequired="true"  />
+                    <x-forms.text :fieldLabel="__('modules.customFields.label')" fieldName="label" fieldId="label" fieldRequired="true" />
                 </div>
 
                 <div class="col-lg-6">
                     <div class="form-group my-3">
                         <label class="f-14 text-dark-grey mb-12 w-100" for="usr">@lang('app.required')</label>
                         <div class="d-flex">
-                            <x-forms.radio fieldId="optionsRadios1" :fieldLabel="__('app.yes')" fieldName="required"
-                                           fieldValue="yes" checked="true">
+                            <x-forms.radio fieldId="optionsRadios1" :fieldLabel="__('app.yes')" fieldName="required" fieldValue="yes" checked="true">
                             </x-forms.radio>
-                            <x-forms.radio fieldId="optionsRadios2" :fieldLabel="__('app.no')" fieldValue="no"
-                                           fieldName="required"></x-forms.radio>
+                            <x-forms.radio fieldId="optionsRadios2" :fieldLabel="__('app.no')" fieldValue="no" fieldName="required"></x-forms.radio>
                         </div>
                     </div>
                 </div>
 
                 <div class="col-lg-6">
-                    <x-forms.select fieldId="type"
-                                    :fieldLabel="__('modules.customFields.fieldType')"
-                                    fieldName="type"
-                                    search="true">
+                    <x-forms.select fieldId="type" :fieldLabel="__('modules.customFields.fieldType')" fieldName="type" search="true">
                         @foreach ($types as $type)
-                            <option value="{{ $type }}">@lang('app.'.$type)</option>
+                            <option value="{{ $type }}">@lang('app.' . $type)</option>
                         @endforeach
                     </x-forms.select>
                 </div>
 
                 <div class="col-lg-6">
                     <div class="form-group my-5">
-                        <x-forms.checkbox fieldId="visible"
-                        :fieldLabel="__('modules.customFields.showInTable')" fieldName="visible"
-                        fieldValue="true"/>
+                        <x-forms.checkbox fieldId="visible" :fieldLabel="__('modules.customFields.showInTable')" fieldName="visible" fieldValue="true" />
                     </div>
                 </div>
                 <div class="col-lg-6">
                     <div class="form-group my-5">
-                    <x-forms.checkbox fieldId="export"
-                        :fieldLabel="__('modules.customFields.export')" fieldName="export"
-                        fieldValue="1"  />
+                        <x-forms.checkbox fieldId="export" :fieldLabel="__('modules.customFields.export')" fieldName="export" fieldValue="1" />
                     </div>
                 </div>
 
@@ -66,11 +56,9 @@
                     <div class="col-md-10">
                         <div class="form-group">
                             {{-- <label class="control-label" >@lang('app.value')</label> --}}
-                            <x-forms.label fieldId="value" fieldRequired="true"
-                                           :fieldLabel="__('app.value')">
+                            <x-forms.label fieldId="value" fieldRequired="true" :fieldLabel="__('app.value')">
                             </x-forms.label>
-                            <input class="form-control height-35 f-14" name="value[]" type="text" value=""
-                                   placeholder=""/>
+                            <input class="form-control height-35 f-14" name="value[]" type="text" value="" placeholder="" />
                         </div>
                     </div>
                 </div>
@@ -78,8 +66,7 @@
                 <div class="row">
                     <div class="col-md-12 mt-4">
 
-                        <a class="f-15 f-w-500" href="javascript:;" data-repeater-create id="plusButton"><i
-                                class="icons icon-plus font-weight-bold mr-1"></i>@lang('modules.invoices.addItem')</a>
+                        <a class="f-15 f-w-500" href="javascript:;" data-repeater-create id="plusButton"><i class="icons icon-plus font-weight-bold mr-1"></i>@lang('modules.invoices.addItem')</a>
                     </div>
                 </div>
             </div>
@@ -93,17 +80,18 @@
 </div>
 
 <script>
-
     $(".select-picker").selectpicker();
 
     var $insertBefore = $('#insertBefore');
     var $i = 1;
 
     // Add More Inputs
-    $('#plusButton').click(function () {
+    $('#plusButton').click(function() {
         $i = $i + 1;
         var indexs = $i + 1;
-        $('<div id="addMoreBox' + indexs + '" class="row my-3"> <div class="col-md-10">  <label class="control-label">@lang('app.value')</label> <input class="form-control height-35 f-14" name="value[]" type="text" value="" placeholder=""/>  </div> <div class="col-md-1"> <div class="task_view mt-4"> <a href="javascript:;" class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" onclick="removeBox(' + indexs + ')"> <i class="fa fa-trash icons mr-2"></i> @lang('app.delete')</a> </div> </div></div>').insertBefore($insertBefore);
+        $('<div id="addMoreBox' + indexs +
+            '" class="row my-3"> <div class="col-md-10">  <label class="control-label">@lang('app.value')</label> <input class="form-control height-35 f-14" name="value[]" type="text" value="" placeholder=""/>  </div> <div class="col-md-1"> <div class="task_view mt-4"> <a href="javascript:;" class="task_view_more d-flex align-items-center justify-content-center dropdown-toggle" onclick="removeBox(' +
+            indexs + ')"> <i class="fa fa-trash icons mr-2"></i> @lang('app.delete')</a> </div> </div></div>').insertBefore($insertBefore);
     });
 
     // Remove fields
@@ -111,28 +99,28 @@
         $('#addMoreBox' + index).remove();
     }
 
-    $('#type').on('change', function () {
-        (this.value === 'select' || this.value === 'radio' || this.value === 'checkbox') ? $('.mt-repeater').removeClass('d-none') : $('.mt-repeater').addClass('d-none');
+    $('#type').on('change', function() {
+        (this.value === 'select' || this.value === 'radio' || this.value === 'checkbox') ? $('.mt-repeater').removeClass('d-none'): $('.mt-repeater').addClass('d-none');
     });
 
     function convertToSlug(Text) {
         return Text.toLowerCase().replace(/[^\w ]+/g, '').replace(/ +/g, '-');
     }
 
-    $('#label').keyup(function () {
+    $('#label').keyup(function() {
         $('#name').val(convertToSlug($(this).val()));
     });
 
-    $('#save-custom-field').click(function () {
+    $('#save-custom-field').click(function() {
         $.easyAjax({
-            url: "{{route('custom-fields.store')}}",
+            url: "{{ route('custom-fields.store') }}",
             container: '#createForm',
             type: "POST",
             data: $('#createForm').serialize(),
             file: true,
             blockUI: true,
             buttonSelector: "#save-custom-field",
-            success: function (response) {
+            success: function(response) {
                 if (response.status === 'success') {
                     window.location.reload();
                 }
@@ -141,16 +129,16 @@
         return false;
     })
 
-    $('#save-add-another').click(function () {
+    $('#save-add-another').click(function() {
         $.easyAjax({
-            url: "{{route('custom-fields.store')}}",
+            url: "{{ route('custom-fields.store') }}",
             container: '#createForm',
             type: "POST",
             data: $('#createForm').serialize(),
             file: true,
             blockUI: true,
             buttonSelector: "#save-add-another",
-            success: function (response) {
+            success: function(response) {
                 if (response.status === 'success') {
                     // Clear fields but keep Module selected
                     $('#label').val('');
@@ -164,5 +152,4 @@
         })
         return false;
     })
-
 </script>

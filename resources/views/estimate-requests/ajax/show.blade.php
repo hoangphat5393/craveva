@@ -27,7 +27,7 @@
                         @if ($estimateRequest->status != 'accepted')
                             @if ($addEstimatePermission == 'all' || $addEstimatePermission == 'added')
                                 <a class="dropdown-item"
-                                    href="{{ route('estimates.create', ['estimate-request' => $estimateRequest->id]) }}">@lang('app.create') @lang('app.estimate')</a>
+                                    href="{{ route('estimates.create', ['estimate-request' => $estimateRequest->id]) }}">@lang('app.quotation_ui.create')</a>
                             @endif
                         @endif
                         @if (
@@ -54,7 +54,7 @@
             <x-cards.data-row :label="__('app.project')"
                 :value="$estimateRequest->project ? $estimateRequest->project->project_name : '--'" />
 
-            <x-cards.data-row :label="__('app.estimate')" :html="true" :value="$estimateLink" />
+            <x-cards.data-row :label="__('app.quotation_ui.singular')" :html="true" :value="$estimateLink" />
             <x-cards.data-row :label="__('modules.estimateRequest.earlyRequest')"
                 :value="$estimateRequest->early_requirement ?? '--' " />
             @if (isset($estimateRequest->reason) && !empty($estimateRequest->reason) && $estimateRequest->status == 'rejected')

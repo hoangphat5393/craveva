@@ -52,7 +52,7 @@
                 <tr class="inv-logo-heading">
                     <td><img src="{{ invoice_setting()->logo_url }}" alt="{{ company()->company_name }}" id="logo" /></td>
                     <td align="right" class="font-weight-bold f-21 text-dark text-uppercase mt-4 mt-lg-0 mt-md-0">
-                        @lang('app.estimate')</td>
+                        @lang('app.quotation_ui.singular')</td>
                 </tr>
                 <tr class="inv-num">
                     <td class="f-14 text-dark">
@@ -466,7 +466,7 @@
                             @if ($editEstimatePermission == 'all' || ($editEstimatePermission == 'added' && $invoice->added_by == user()->id))
                                 <li>
                                     <a class="dropdown-item change-status" href="javascript:;" data-estimate-id="{{ $invoice->id }}">
-                                        <i class="fa fa-times f-w-500 mr-2 f-11"></i> @lang('app.cancelEstimate')
+                                        <i class="fa fa-times f-w-500 mr-2 f-11"></i> @lang('app.quotation_ui.cancel_action')
                                     </a>
                                 </li>
                             @endif

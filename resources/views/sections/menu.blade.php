@@ -104,7 +104,7 @@
                     @endif
 
                     @if (in_array('estimates', user_modules()) && $sidebarUserPermissions['view_estimates'] != 5 && $sidebarUserPermissions['view_estimates'] != 'none')
-                        <x-sub-menu-item :link="route('estimates.index')" :text="__('app.menu.quotation')" />
+                        <x-sub-menu-item :link="route('estimates.index')" :text="__('app.quotation_ui.menu')" />
                     @endif
                 </div>
             </x-menu-item>
@@ -599,7 +599,7 @@
                         <x-sub-menu-item :link="route('proposals.index')" :text="__('app.menu.proposal')" />
                     @endif
                     @if (in_array('estimates', user_modules()) && $sidebarUserPermissions['view_estimates'] != 5 && $sidebarUserPermissions['view_estimates'] != 'none')
-                        <x-sub-menu-item :link="route('estimates.index')" :text="__('app.menu.quotation')" />
+                        <x-sub-menu-item :link="route('estimates.index')" :text="__('app.quotation_ui.menu')" />
                     @endif
                     @if (in_array('invoices', user_modules()) && $sidebarUserPermissions['view_invoices'] != 5 && $sidebarUserPermissions['view_invoices'] != 'none')
                         <x-sub-menu-item :link="route('invoices.index')" :text="__('app.menu.invoices')" />

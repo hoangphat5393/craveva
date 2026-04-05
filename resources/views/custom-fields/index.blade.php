@@ -37,7 +37,7 @@
                         <div class="row no-gutters border rounded my-3 px-4 py-2" id="removeModule{{ $module }}">
                             <div class="col-md-6">
                                 <div class="heading-h4">
-                                    {{ $module }}
+                                    {{ \App\Models\CustomFieldGroup::settingsModuleLabel($module) }}
                                 </div>
 
                                 <div class="simple-text text-lightest mt-1">
@@ -273,7 +273,7 @@
         $('body').on('click', '.editable-label', function() {
             var id = $(this).data('id');
             var input = $(this).siblings('.edit-label-input');
-            
+
             $(this).hide();
             input.show().focus();
         });
@@ -283,19 +283,19 @@
             var value = $(this).val();
             var input = $(this);
             var span = $(this).siblings('.editable-label');
-            var originalValue = span.text().trim(); // Note: span text might include the icon text if any, but icon is <i> so .text() gets it. 
+            var originalValue = span.text().trim(); // Note: span text might include the icon text if any, but icon is <i> so .text() gets it.
             // Wait, my span has <i class="fa fa-pencil"></i> inside. .text() will get the label text only if I am careful.
             // Actually, the span content is "{{ __($field->label) }} <i ...></i>".
             // .text() will ignore the html tag but return the text.
             // But when I set span.text(value), I will lose the icon.
             // I should reconstruct the html.
-            
+
             // Let's check logic below.
 
             if (value === '') {
-                 input.hide();
-                 span.show();
-                 return;
+                input.hide();
+                span.show();
+                return;
             }
 
             var url = "{{ route('custom-fields.ajax_update_label', ':id') }}";
@@ -320,8 +320,8 @@
                     span.show();
                 },
                 error: function(response) {
-                     input.hide();
-                     span.show();
+                    input.hide();
+                    span.show();
                 }
             })
         });

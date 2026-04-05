@@ -70,11 +70,11 @@
             <div id="table-actions" class="flex-grow-1 align-items-center mb-2 mb-lg-0 mb-md-0">
                 @if ($addEstimatePermission == 'all' || $addEstimatePermission == 'added')
                     <x-forms.link-primary :link="route('estimates.create')" class="mr-3 float-left mb-2 mb-lg-0 mb-md-0" icon="plus">
-                        @lang('modules.estimates.createEstimate')
+                        @lang('app.quotation_ui.create')
                     </x-forms.link-primary>
 
                     <x-forms.link-secondary :link="route('estimate-template.index')" class="mr-3 mb-2 mb-lg-0 mb-md-0 float-left mb-2 mb-lg-0 mb-md-0" icon="layer-group">
-                        @lang('modules.estimates.estimateTemplate')
+                        @lang('app.quotation_ui.estimate_template')
                     </x-forms.link-secondary>
                 @endif
                 @if (in_array('client', user_roles()) && ($addEstimateRequestPermission == 'all' || $addEstimateRequestPermission == 'added'))

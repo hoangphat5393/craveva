@@ -89,7 +89,7 @@ $projectArchived = $project->trashed();
 
                     @if (in_array('estimates', user_modules()) && ($viewEstimatePermission == 'all' || ($viewEstimatePermission == 'added' && user()->id == $project->added_by) || ($viewEstimatePermission == 'owned' && user()->id == $project->client_id)))
                         <li>
-                            <x-tab :href="route('projects.show', $project->id).'?tab=estimates'" :text="__('app.menu.estimates')" class="estimates" ajax="false" />
+                            <x-tab :href="route('projects.show', $project->id).'?tab=estimates'" :text="__('app.quotation_ui.plural_list')" class="estimates" ajax="false" />
                         </li>
                     @endif
 

@@ -22,6 +22,7 @@
 | 5   | **`chown -R www-data`** lên **cả mã nguồn**                                   | `git pull` / deploy user **không ghi** được code. Chỉ `chown` **`storage/`**, **`bootstrap/cache`** (và `public/` upload nếu cần).                                                                                                                                                                                                       |
 | 6   | RAM nhỏ + import lớn                                                          | OOM / load cao. Tăng RAM VM; có thể tạm `supervisorctl stop craveva-queue-all:*`.                                                                                                                                                                                                                                                        |
 | 7   | **DataTables / SQL 1146** — thiếu `sales_dos`, `grns`, …                      | Code đã **pin** bảng mới (`SalesDoRuntime`, `GrnRuntime` = `true`). Chạy **`php artisan migrate`**. Nếu báo _Nothing to migrate_ mà bảng vẫn không có → bảng `migrations` **lệch** (đã ghi Ran nhưng bảng chưa từng tạo): xóa dòng migration tương ứng rồi `migrate` lại — xem [mục 9](#9-schema-cutover--sales-do--grn-kiểm-tra-nhanh). |
+| 8   | **Language Pack** — Sync keys / **Publish All** — `Permission denied` (`LanguagePack/Languages`, `resources/lang`, `Modules/*/Resources/lang`) | FPM = **www-data**; chỉnh **owner deploy + group www-data**, `chmod ug+rwX`, `g+s` trên các thư mục đó — [mục 4.8](#48-language-pack--sync-keys--publish-all-ghi-file-trong-repo). |
 
 ---
 
@@ -134,6 +135,38 @@ sudo systemctl reload php8.3-fpm
 - Pool FPM: `grep -E '^user|^group' /etc/php/8.3/fpm/pool.d/www.conf`
 - Socket: thường `unix:/run/php/php8.3-fpm.sock`; có thể `update-alternatives` cho `php-fpm.sock` trỏ 8.3.
 - Sau đổi `memory_limit` FPM: `sudo systemctl reload php8.3-fpm`.
+
+### 4.8 Language Pack — Sync keys & Publish All (ghi file trong repo)
+
+**PHP-FPM (`www-data`)** phải **ghi** được các thư mục sau (deploy giữ **owner**, group **`www-data`**, `ug+rwX`, `g+s` trên thư mục):
+
+| Thao tác UI        | Ghi vào đâu |
+| ------------------ | ----------- |
+| **Sync keys**      | `Modules/LanguagePack/Languages/` |
+| **Publish / Publish All** | `resources/lang/{locale}/` (copy từ pack) và từng `Modules/{Name}/Resources/lang/{locale}/` |
+
+**Hub (đổi `APP` nếu khác; `U=$(whoami)` = user deploy SSH):**
+
+```bash
+APP=/var/www/hub.craveva.com
+cd "$APP"
+U=$(whoami)
+
+sudo chown -R "$U":www-data Modules/LanguagePack/Languages resources/lang
+sudo chmod -R ug+rwX Modules/LanguagePack/Languages resources/lang
+sudo find Modules/LanguagePack/Languages resources/lang -type d -exec chmod g+s {} \;
+
+for d in Modules/*/Resources/lang; do
+  [ -d "$d" ] || continue
+  sudo chown -R "$U":www-data "$d"
+  sudo chmod -R ug+rwX "$d"
+  sudo find "$d" -type d -exec chmod g+s {} \;
+done
+```
+
+**Nếu có `setfacl`:** có thể bổ sung ACL `www-data` + deploy trên các thư mục trên (tương tự `storage`).
+
+**Không** `chown -R www-data:www-data` cả cây `resources/lang` nếu sau đó `git pull` cần ghi — ưu tiên **`deploy:www-data`** + `g+rwX` như trên.
 
 ---
 

@@ -44,7 +44,7 @@
 
                     @if (in_array('estimates', user_modules()))
                         <li>
-                            <x-tab :href="route('clients.show', $client->id) . '?tab=estimates'" ajax="false" :text="__('app.menu.estimates')" class="estimates" />
+                            <x-tab :href="route('clients.show', $client->id) . '?tab=estimates'" ajax="false" :text="__('app.quotation_ui.plural_list')" class="estimates" />
                         </li>
                     @endif
 

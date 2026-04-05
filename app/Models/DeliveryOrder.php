@@ -13,6 +13,8 @@ class DeliveryOrder extends BaseModel
 {
     use CustomFieldsTrait, HasCompany;
 
+    const CUSTOM_FIELD_MODEL = 'App\\Models\\DeliveryOrder';
+
     protected $table = 'delivery_orders';
 
     protected $fillable = [

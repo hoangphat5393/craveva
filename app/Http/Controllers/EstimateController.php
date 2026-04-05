@@ -37,7 +37,7 @@ class EstimateController extends AccountBaseController
     public function __construct()
     {
         parent::__construct();
-        $this->pageTitle = 'app.menu.estimates';
+        $this->pageTitle = 'app.quotation_ui.page_title';
         $this->pageIcon = 'ti-file';
         $this->middleware(function ($request, $next) {
             abort_403(! in_array('estimates', $this->user->modules));
@@ -66,7 +66,7 @@ class EstimateController extends AccountBaseController
             $this->estimate = Estimate::with('items', 'items.estimateItemImage', 'client', 'unit', 'client.projects')->findOrFail($this->estimateId);
         }
 
-        $this->pageTitle = __('modules.estimates.createEstimate');
+        $this->pageTitle = 'app.quotation_ui.create';
         $this->clients = User::allClients();
         $this->currencies = Currency::all();
         $this->lastEstimate = Estimate::lastEstimateNumber() + 1;

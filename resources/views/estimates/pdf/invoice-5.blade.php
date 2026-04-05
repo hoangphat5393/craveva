@@ -3,10 +3,10 @@
 <head>
     <!-- Required meta tags -->
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>@lang('app.estimate')</title>
+    <title>@lang('app.quotation_ui.singular')</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>@lang('app.estimate') - {{ $estimate->estimate_number }}</title>
+    <title>@lang('app.quotation_ui.singular') - {{ $estimate->estimate_number }}</title>
     <meta name="msapplication-TileColor" content="#ffffff">
     <meta name="msapplication-TileImage" content="{{ $company->favicon_url }}">
     <meta name="theme-color" content="#ffffff">
@@ -274,7 +274,7 @@
             <tr>
                 <td><img src="{{ $invoiceSetting->logo_url }}" alt="{{ $company->company_name }}"
                         id="logo" /></td>
-                <td align="right" class="f-21 text-black font-weight-700 text-uppercase">@lang('app.estimate')</td>
+                <td align="right" class="f-21 text-black font-weight-700 text-uppercase">@lang('app.quotation_ui.singular')</td>
             </tr>
             <!-- Table Row End -->
             <!-- Table Row Start -->

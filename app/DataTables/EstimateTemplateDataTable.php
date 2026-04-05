@@ -48,7 +48,7 @@ class EstimateTemplateDataTable extends BaseDataTable
 
                 $action .= '<a class="dropdown-item" href="'.route('estimates.create').'?template='.$row->id.'">
                         <i class="fa fa-plus mr-2"></i>
-                        '.trans('app.create').' '.trans('app.menu.estimate').'
+                        '.__('app.quotation_ui.create').'
                     </a>';
 
                 if (

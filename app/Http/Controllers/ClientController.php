@@ -1085,7 +1085,7 @@ class ClientController extends AccountBaseController
 
         $projectName = $counts->projects_count > 1 ? __('app.menu.projects') : __('app.project');
         $invoiceName = $counts->invoices_count > 1 ? __('app.menu.invoices') : __('app.invoice');
-        $estimateName = $counts->estimates_count > 1 ? __('app.menu.estimates') : __('app.estimate');
+        $estimateName = $counts->estimates_count > 1 ? __('app.quotation_ui.plural_list') : __('app.quotation_ui.singular');
         $paymentName = $payments > 1 ? __('app.menu.payments') : __('app.payment');
 
         $deleteClient = (__('messages.clientFinanceCount', ['projectCount' => $counts->projects_count, 'invoiceCount' => $counts->invoices_count, 'estimateCount' => $counts->estimates_count, 'paymentCount' => $payments, 'project' => $projectName, 'invoice' => $invoiceName, 'estimate' => $estimateName, 'payment' => $paymentName]));

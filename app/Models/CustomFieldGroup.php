@@ -5,6 +5,8 @@ namespace App\Models;
 use App\Traits\HasCompany;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
+use Modules\Purchase\Entities\PurchaseInventory;
 use Modules\Purchase\Entities\PurchaseOrder;
 
 /**
@@ -47,22 +49,37 @@ class CustomFieldGroup extends BaseModel
         ['name' => 'Deal', 'model' => Deal::CUSTOM_FIELD_MODEL],
         ['name' => 'Product', 'model' => Product::CUSTOM_FIELD_MODEL],
         ['name' => 'Order', 'model' => Order::CUSTOM_FIELD_MODEL],
-        ['name' => 'Purchase Order', 'model' => 'Modules\\Purchase\\Entities\\PurchaseOrder'],
-        ['name' => 'Delivery Order', 'model' => 'App\\Models\\DeliveryOrder'],
-        ['name' => 'Inventory', 'model' => 'Modules\\Purchase\\Entities\\PurchaseInventory'],
+        ['name' => 'Purchase Order', 'model' => PurchaseOrder::CUSTOM_FIELD_MODEL],
+        ['name' => 'Delivery Order', 'model' => DeliveryOrder::CUSTOM_FIELD_MODEL],
+        ['name' => 'Inventory', 'model' => PurchaseInventory::CUSTOM_FIELD_MODEL],
         ['name' => 'Event', 'model' => Event::CUSTOM_FIELD_MODEL],
         ['name' => 'Ticket', 'model' => Ticket::CUSTOM_FIELD_MODEL],
         ['name' => 'Time Log', 'model' => ProjectTimeLog::CUSTOM_FIELD_MODEL],
         ['name' => 'Contract', 'model' => Contract::CUSTOM_FIELD_MODEL],
     ];
 
-    // ['name' => 'Purchase Order', 'model' => PurchaseOrder::CUSTOM_FIELD_MODEL],
-
     public $timestamps = false;
 
     public function customField(): HasMany
     {
         return $this->HasMany(CustomField::class);
+    }
+
+    /**
+     * Label for Custom Fields settings UI (module dropdown, grouped headings).
+     * Quotation uses model Estimate; show "Quotation" via app.quotation_ui.singular without renaming DB group.
+     */
+    public static function settingsModuleLabel(?string $groupName, ?string $modelFqcn = null): string
+    {
+        if ($groupName === null || $groupName === '') {
+            return '';
+        }
+
+        if ($modelFqcn === Estimate::CUSTOM_FIELD_MODEL || $groupName === 'Estimate') {
+            return __('app.quotation_ui.singular');
+        }
+
+        return __('app.' . Str::camel($groupName));
     }
 
     public static function customFieldsDataMerge($model)

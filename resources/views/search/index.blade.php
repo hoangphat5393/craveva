@@ -27,7 +27,7 @@
                                 <option value="project">@lang('app.project')</option>
                             @endif
                             @if (in_array('estimates', user_modules()))
-                                <option value="estimate">@lang('app.estimate')</option>
+                                <option value="estimate">@lang('app.quotation_ui.singular')</option>
                             @endif
                             @if (!in_array('client', user_roles()))
                                 @if (in_array('creditNotes', user_modules()))

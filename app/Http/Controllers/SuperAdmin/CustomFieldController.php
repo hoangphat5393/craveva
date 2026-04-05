@@ -35,11 +35,15 @@ class CustomFieldController extends AccountBaseController
 
         if (\request()->ajax()) {
             $permissions = CustomField::join('custom_field_groups', 'custom_field_groups.id', '=', 'custom_fields.custom_field_group_id')
-                ->select('custom_fields.id', 'custom_field_groups.name as module', 'custom_fields.label', 'custom_fields.type', 'custom_fields.values', 'custom_fields.required')
+                ->select('custom_fields.id', 'custom_field_groups.name as module', 'custom_field_groups.model as module_model', 'custom_fields.label', 'custom_fields.type', 'custom_fields.values', 'custom_fields.required')
                 ->whereNull('custom_fields.company_id')
                 ->get();
 
             $data = DataTables::of($permissions)
+                ->editColumn(
+                    'module',
+                    fn($row) => CustomFieldGroup::settingsModuleLabel($row->module, $row->module_model)
+                )
                 ->editColumn(
                     'values',
                     function ($row) {
@@ -49,7 +53,7 @@ class CustomFieldController extends AccountBaseController
                             $ul = '<ul class="value-list">';
 
                             foreach (json_decode($row->values) as $key => $value) {
-                                $ul .= '<li>'.$value.'</li>';
+                                $ul .= '<li>' . $value . '</li>';
                             }
 
                             $ul .= '</ul>';
@@ -66,12 +70,12 @@ class CustomFieldController extends AccountBaseController
                         $class = 'badge badge-danger disabled color-palette';
 
                         if ($row->required === 'yes') {
-                            $string = '<span class="'.$class.'">'.__('app.'.$row->required).'</span>';
+                            $string = '<span class="' . $class . '">' . __('app.' . $row->required) . '</span>';
                         }
 
                         if ($row->required === 'no') {
                             $class = 'badge badge-secondary disabled color-palette';
-                            $string = '<span class="'.$class.'">'.__('app.'.$row->required).'</span>';
+                            $string = '<span class="' . $class . '">' . __('app.' . $row->required) . '</span>';
                         }
 
                         return $string;
@@ -81,9 +85,9 @@ class CustomFieldController extends AccountBaseController
                     'action',
                     function ($row) {
 
-                        return '<div class="task_view"> <a data-user-id="'.$row->id.'" class="task_view_more d-flex align-items-center justify-content-center edit-custom-field" href="javascript:;" data-id="{{ $permission->id }}" > <i class="fa fa-edit icons mr-2"></i>'.__('app.edit').'</a> </div>
-                    <div class="task_view"> <a data-user-id="'.$row->id.'" class="task_view_more d-flex align-items-center justify-content-center sa-params" href="javascript:;" data-id="{{ $permission->id }}"  >
-                            <i class="fa fa-trash icons mr-2"></i> '.__('app.delete').' </a> </div>';
+                        return '<div class="task_view"> <a data-user-id="' . $row->id . '" class="task_view_more d-flex align-items-center justify-content-center edit-custom-field" href="javascript:;" data-id="{{ $permission->id }}" > <i class="fa fa-edit icons mr-2"></i>' . __('app.edit') . '</a> </div>
+                    <div class="task_view"> <a data-user-id="' . $row->id . '" class="task_view_more d-flex align-items-center justify-content-center sa-params" href="javascript:;" data-id="{{ $permission->id }}"  >
+                            <i class="fa fa-trash icons mr-2"></i> ' . __('app.delete') . ' </a> </div>';
                     }
                 )
                 ->rawColumns(['values', 'action', 'required'])
@@ -195,7 +199,6 @@ class CustomFieldController extends AccountBaseController
 
             if (isset($field['required']) && (in_array($field['required'], ['yes', 'on', 1]))) {
                 $insertData['required'] = 'yes';
-
             } else {
                 $insertData['required'] = 'no';
             }
@@ -204,14 +207,12 @@ class CustomFieldController extends AccountBaseController
             if (isset($field['values'])) {
                 if (is_array($field['values'])) {
                     $insertData['values'] = \GuzzleHttp\json_encode($field['values']);
-
                 } else {
                     $insertData['values'] = $field['values'];
                 }
             }
 
             CustomField::create($insertData);
-
         }
     }
 }

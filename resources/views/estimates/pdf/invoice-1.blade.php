@@ -1,7 +1,7 @@
 <html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>@lang('app.estimate')</title>
+    <title>@lang('app.quotation_ui.singular')</title>
     @includeIf('estimates.pdf.estimate_pdf_css')
     <style>
         .clearfix:after {
@@ -308,7 +308,7 @@
 
     <table cellpadding="0" cellspacing="0" class="billing">
         <tr>
-            <td colspan="2"><h1>@lang('app.estimate')</h1></td>
+            <td colspan="2"><h1>@lang('app.quotation_ui.singular')</h1></td>
         </tr>
         <tr>
             <td id="invoiced_to">

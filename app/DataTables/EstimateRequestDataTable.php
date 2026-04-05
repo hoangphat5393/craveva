@@ -260,7 +260,7 @@ class EstimateRequestDataTable extends BaseDataTable
             __('app.clientName') => ['data' => 'client', 'name' => 'users.name', 'title' => __('app.clientName')],
             __('app.project') => ['data' => 'project', 'name' => 'projects.project_name', 'title' => __('app.project')],
             __('modules.estimateRequest.estimatedBudget') => ['data' => 'estimated_budget', 'name' => 'estimated_budget', 'title' => __('modules.estimateRequest.estimatedBudget')],
-            __('app.estimate') => ['data' => 'estimate_id', 'name' => 'estimate_id', 'title' => __('app.estimate')],
+            __('app.quotation_ui.singular') => ['data' => 'estimate_id', 'name' => 'estimate_id', 'title' => __('app.quotation_ui.singular')],
             __('app.status') => ['data' => 'status1', 'name' => 'status', 'width' => '10%', 'exportable' => false, 'visible' => true, 'title' => __('app.status')],
             __('modules.estimateRequest.earlyRequirement') => ['data' => 'early_requirement', 'name' => 'early_requirement',  'visible' => false],
             __('modules.estimateRequest.estimateRequest').' '.__('app.status') => ['data' => 'status_name', 'name' => 'status', 'visible' => false, 'exportable' => true, 'title' => __('modules.estimateRequest.estimateRequest').' '.__('app.status')],

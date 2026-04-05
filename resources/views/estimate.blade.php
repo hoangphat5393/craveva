@@ -129,7 +129,7 @@
                                          alt="{{ $company->company_name }}" id="logo"/></td>
                                 <td align="right"
                                     class="mt-4 font-weight-bold f-21 text-dark text-uppercase mt-lg-0 mt-md-0">
-                                    @lang('app.estimate')</td>
+                                    @lang('app.quotation_ui.singular')</td>
                             </tr>
                             <tr class="inv-num">
                                 <td class="f-14 text-dark">

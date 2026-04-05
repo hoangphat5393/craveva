@@ -5,6 +5,7 @@ namespace App\Traits;
 use App\Helper\Files;
 use App\Imports\ChunkReadFilter;
 use App\Imports\ClientImport;
+use App\Imports\EstimateImport;
 use App\Imports\ProductImport;
 use App\Imports\SalesHistoryImport;
 use Illuminate\Bus\PendingBatch;
@@ -62,6 +63,7 @@ trait ImportExcel
             ClientImport::class,
             ProductImport::class,
             InventoryImport::class,
+            EstimateImport::class,
         ], true);
     }
 
@@ -126,7 +128,7 @@ trait ImportExcel
 
         $this->columns = $importClass::fields();
         // Client / Product / Inventory: merge dynamic columns inside the light-read branch (full targets before heading match).
-        if (method_exists($importClass, 'mergeDynamicColumns') && ! in_array($importClass, [ClientImport::class, ProductImport::class, InventoryImport::class], true)) {
+        if (method_exists($importClass, 'mergeDynamicColumns') && ! in_array($importClass, [ClientImport::class, ProductImport::class, InventoryImport::class, EstimateImport::class], true)) {
             $this->columns = $importClass::mergeDynamicColumns($this->columns);
         }
         $this->importMatchedColumns = [];
@@ -145,6 +147,9 @@ trait ImportExcel
             }
             if ($importClass === ProductImport::class) {
                 $this->columns = ProductImport::mergeDynamicColumns(ProductImport::fields());
+            }
+            if ($importClass === EstimateImport::class) {
+                $this->columns = EstimateImport::mergeDynamicColumns(EstimateImport::fields());
             }
 
             if ($this->hasHeading) {
@@ -539,7 +544,7 @@ trait ImportExcel
         $hasSkipFooter = $request->boolean('has_skip_footer');
 
         $excelData = null;
-        if (in_array($importClass, [ClientImport::class, ProductImport::class, InventoryImport::class, SalesHistoryImport::class, WarehouseImport::class], true)) {
+        if (in_array($importClass, [ClientImport::class, ProductImport::class, InventoryImport::class, SalesHistoryImport::class, WarehouseImport::class, EstimateImport::class], true)) {
             $excelData = $this->loadFirstSheetDataRowsByRowRange($filePath, $hasHeading, $hasSkipFooter);
         }
 
@@ -548,6 +553,10 @@ trait ImportExcel
             Excel::import($importInstance, $filePath);
             $excelData = $importInstance->getProcessedData();
             $excelData = $this->stripHeadingFooterFromRows($excelData, $hasHeading, $hasSkipFooter);
+        }
+
+        if ($importClass === EstimateImport::class) {
+            $excelData = EstimateImport::forwardFillRows($excelData, array_filter($columns, fn($v) => $v !== null));
         }
 
         $jobs = [];
@@ -616,7 +625,7 @@ trait ImportExcel
         $hasHeading = $request->boolean('has_heading');
         $hasSkipFooter = $request->boolean('has_skip_footer');
 
-        if (in_array($importClass, [ClientImport::class, ProductImport::class, InventoryImport::class, SalesHistoryImport::class, WarehouseImport::class], true)) {
+        if (in_array($importClass, [ClientImport::class, ProductImport::class, InventoryImport::class, SalesHistoryImport::class, WarehouseImport::class, EstimateImport::class], true)) {
             $excelData = $this->loadFirstSheetDataRowsByRowRange($filePath, $hasHeading, $hasSkipFooter);
         }
 
@@ -625,6 +634,10 @@ trait ImportExcel
             Excel::import($importInstance, $filePath);
             $excelData = $importInstance->getProcessedData();
             $excelData = $this->stripHeadingFooterFromRows($excelData, $hasHeading, $hasSkipFooter);
+        }
+
+        if ($importClass === EstimateImport::class) {
+            $excelData = EstimateImport::forwardFillRows($excelData, array_filter($columns, fn($v) => $v !== null));
         }
 
         $excelData = self::normalizeExcelRows($excelData);

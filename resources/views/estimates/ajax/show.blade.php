@@ -88,6 +88,60 @@
                                     {{ $invoice->created_at->translatedFormat(company()->date_format) }}
                                 </td>
                             </tr>
+                            @if ($invoice->quotation_date)
+                                <tr>
+                                    <td class="bg-light-grey border-right-0 f-w-500">@lang('modules.estimates.quotationDate')</td>
+                                    <td class="border-left-0">{{ $invoice->quotation_date->translatedFormat(company()->date_format) }}</td>
+                                </tr>
+                            @endif
+                            @if ($invoice->document_date)
+                                <tr>
+                                    <td class="bg-light-grey border-right-0 f-w-500">@lang('modules.estimates.documentDate')</td>
+                                    <td class="border-left-0">{{ $invoice->document_date->translatedFormat(company()->date_format) }}</td>
+                                </tr>
+                            @endif
+                            @if ($invoice->exchange_rate !== null && $invoice->exchange_rate !== '')
+                                <tr>
+                                    <td class="bg-light-grey border-right-0 f-w-500">@lang('modules.estimates.exchangeRate')</td>
+                                    <td class="border-left-0">{{ $invoice->exchange_rate }}</td>
+                                </tr>
+                            @endif
+                            @if ($invoice->header_quotation_amount !== null && $invoice->header_quotation_amount !== '')
+                                <tr>
+                                    <td class="bg-light-grey border-right-0 f-w-500">@lang('modules.estimates.headerQuotationAmount')</td>
+                                    <td class="border-left-0">{{ currency_format($invoice->header_quotation_amount, $invoice->currency_id, false) }}</td>
+                                </tr>
+                            @endif
+                            @if ($invoice->header_tax_amount !== null && $invoice->header_tax_amount !== '')
+                                <tr>
+                                    <td class="bg-light-grey border-right-0 f-w-500">@lang('modules.estimates.headerTaxAmount')</td>
+                                    <td class="border-left-0">{{ currency_format($invoice->header_tax_amount, $invoice->currency_id, false) }}</td>
+                                </tr>
+                            @endif
+                            @if ($invoice->salesperson_name)
+                                <tr>
+                                    <td class="bg-light-grey border-right-0 f-w-500">@lang('modules.estimates.salespersonName')</td>
+                                    <td class="border-left-0">{{ $invoice->salesperson_name }}</td>
+                                </tr>
+                            @endif
+                            @if ($invoice->tax_type_label)
+                                <tr>
+                                    <td class="bg-light-grey border-right-0 f-w-500">@lang('modules.estimates.taxTypeLabel')</td>
+                                    <td class="border-left-0">{{ $invoice->tax_type_label }}</td>
+                                </tr>
+                            @endif
+                            @if ($invoice->payment_terms_name || $invoice->payment_terms_code)
+                                <tr>
+                                    <td class="bg-light-grey border-right-0 f-w-500">@lang('modules.estimates.paymentTermsName')</td>
+                                    <td class="border-left-0">{{ trim(($invoice->payment_terms_code ? $invoice->payment_terms_code . ' — ' : '') . ($invoice->payment_terms_name ?? '')) }}</td>
+                                </tr>
+                            @endif
+                            @if ($invoice->delivery_note)
+                                <tr>
+                                    <td class="bg-light-grey border-right-0 f-w-500">@lang('modules.estimates.deliveryNote')</td>
+                                    <td class="border-left-0">{{ $invoice->delivery_note }}</td>
+                                </tr>
+                            @endif
                         </table>
                     </td>
                 </tr>
@@ -185,7 +239,7 @@
                                     </tr>
                                     @if ($item->item_summary || $item->estimateItemImage)
                                         <tr class="text-dark f-12">
-                                            <td colspan="{{ $invoiceSetting->hsn_sac_code_show ? '6' : '5' }}"" class="border-bottom-0">
+                                            <td colspan="{{ $invoiceSetting->hsn_sac_code_show ? '6' : '5' }}" class="border-bottom-0">
                                                 {!! nl2br(strip_tags($item->item_summary)) !!}
                                                 @if ($item->estimateItemImage)
                                                     <p class="mt-2">
@@ -193,6 +247,21 @@
                                                             <img src="{{ $item->estimateItemImage->file_url }}" width="80" height="80" class="img-thumbnail">
                                                         </a>
                                                     </p>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endif
+                                    @if (!is_null($item->free_quantity) || $item->line_effective_date || $item->line_expiry_date)
+                                        <tr class="text-dark-grey f-11">
+                                            <td colspan="{{ $invoiceSetting->hsn_sac_code_show ? '6' : '5' }}" class="border-bottom-0">
+                                                @if (!is_null($item->free_quantity))
+                                                    <span class="mr-3">@lang('modules.estimates.lineFreeQuantity'): {{ $item->free_quantity }}</span>
+                                                @endif
+                                                @if ($item->line_effective_date)
+                                                    <span class="mr-3">@lang('modules.estimates.lineEffectiveDate'): {{ $item->line_effective_date->translatedFormat(company()->date_format) }}</span>
+                                                @endif
+                                                @if ($item->line_expiry_date)
+                                                    <span>@lang('modules.estimates.lineExpiryDate'): {{ $item->line_expiry_date->translatedFormat(company()->date_format) }}</span>
                                                 @endif
                                             </td>
                                         </tr>
@@ -309,6 +378,22 @@
                                 ({{ $invoice->currency->currency_code }})</th>
                             <td width="50%">{{ currency_format($item->amount, $invoice->currency_id, false) }}</td>
                         </tr>
+                        @if (!is_null($item->free_quantity) || $item->line_effective_date || $item->line_expiry_date)
+                            <tr>
+                                <th width="50%" class="bg-light-grey text-dark-grey font-weight-bold f-11">@lang('modules.estimates.quotationSourceSection')</th>
+                                <td width="50%" class="f-11">
+                                    @if (!is_null($item->free_quantity))
+                                        <div>@lang('modules.estimates.lineFreeQuantity'): {{ $item->free_quantity }}</div>
+                                    @endif
+                                    @if ($item->line_effective_date)
+                                        <div>@lang('modules.estimates.lineEffectiveDate'): {{ $item->line_effective_date->translatedFormat(company()->date_format) }}</div>
+                                    @endif
+                                    @if ($item->line_expiry_date)
+                                        <div>@lang('modules.estimates.lineExpiryDate'): {{ $item->line_expiry_date->translatedFormat(company()->date_format) }}</div>
+                                    @endif
+                                </td>
+                            </tr>
+                        @endif
                         <tr>
                             <td height="3" class="p-0 " colspan="2"></td>
                         </tr>

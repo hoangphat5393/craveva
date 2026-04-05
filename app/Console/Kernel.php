@@ -71,6 +71,7 @@ class Kernel extends ConsoleKernel
         'InventoryImport',
         'SalesOrderImport',
         'SalesHistoryImport',
+        'EstimateImport',
     ];
 
     /**

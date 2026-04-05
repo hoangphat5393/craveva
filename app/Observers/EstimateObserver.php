@@ -14,6 +14,7 @@ use App\Models\Notification;
 use App\Models\UniversalSearch;
 use App\Traits\EmployeeActivityTrait;
 use App\Traits\UnitTypeSaveTrait;
+use Carbon\Carbon;
 
 use function user;
 
@@ -34,7 +35,6 @@ class EstimateObserver
                 $estimate->calculate_tax = request()->calculate_tax;
             }
         }
-
     }
 
     public function creating(Estimate $estimate)
@@ -62,8 +62,7 @@ class EstimateObserver
         }
 
         $invoiceSettings = (company()) ? company()->invoiceSetting : $estimate->company->invoiceSetting;
-        $estimate->original_estimate_number = str($estimate->estimate_number)->replace($invoiceSettings->estimate_prefix.$invoiceSettings->estimate_number_separator, '');
-
+        $estimate->original_estimate_number = str($estimate->estimate_number)->replace($invoiceSettings->estimate_prefix . $invoiceSettings->estimate_number_separator, '');
     }
 
     public function created(Estimate $estimate)
@@ -106,6 +105,9 @@ class EstimateObserver
                                 'amount' => round($amount[$key], 2),
                                 'taxes' => ($tax ? (array_key_exists($key, $tax) ? json_encode($tax[$key]) : null) : null),
                                 'field_order' => $key + 1,
+                                'free_quantity' => self::optionalRequestItemDecimal('item_free_quantity', $key),
+                                'line_effective_date' => self::optionalRequestItemDateYmd('item_line_effective_date', $key),
+                                'line_expiry_date' => self::optionalRequestItemDateYmd('item_line_expiry_date', $key),
                             ]
                         );
 
@@ -116,12 +118,11 @@ class EstimateObserver
                                 [
                                     'estimate_item_id' => $estimateItem->id,
                                     'filename' => isset($invoice_item_image[$key]) ? $invoice_item_image[$key]->getClientOriginalName() : null,
-                                    'hashname' => isset($invoice_item_image[$key]) ? Files::uploadLocalOrS3($invoice_item_image[$key], EstimateItemImage::FILE_PATH.'/'.$estimateItem->id.'/') : null,
+                                    'hashname' => isset($invoice_item_image[$key]) ? Files::uploadLocalOrS3($invoice_item_image[$key], EstimateItemImage::FILE_PATH . '/' . $estimateItem->id . '/') : null,
                                     'size' => isset($invoice_item_image[$key]) ? $invoice_item_image[$key]->getSize() : null,
                                     'external_link' => isset($invoice_item_image[$key]) ? null : ($invoice_item_image_url[$key] ?? null),
                                 ]
                             );
-
                         }
 
                         $image = true;
@@ -141,9 +142,7 @@ class EstimateObserver
 
                             $this->duplicateTemplateImageStore($estimateTemplateImg, $estimateItem);
                         }
-
                     }
-
                 }
             }
 
@@ -180,14 +179,12 @@ class EstimateObserver
 
         $notifyData = ['App\Notifications\NewEstimate'];
         Notification::deleteNotification($notifyData, $estimate->id);
-
     }
 
     public function deleted(Estimate $estimate)
     {
         if (user()) {
             self::createEmployeeActivity(user()->id, 'estimate-deleted');
-
         }
     }
 
@@ -208,13 +205,12 @@ class EstimateObserver
 
             $fileName = Files::generateNewFileName($estimateOldImg->filename);
 
-            Files::copy(EstimateItemImage::FILE_PATH.'/'.$estimateOldImg->item->id.'/'.$estimateOldImg->hashname, EstimateItemImage::FILE_PATH.'/'.$estimateItem->id.'/'.$fileName);
+            Files::copy(EstimateItemImage::FILE_PATH . '/' . $estimateOldImg->item->id . '/' . $estimateOldImg->hashname, EstimateItemImage::FILE_PATH . '/' . $estimateItem->id . '/' . $fileName);
 
             $file->filename = $estimateOldImg->filename;
             $file->hashname = $fileName;
             $file->size = $estimateOldImg->size;
             $file->save();
-
         }
     }
 
@@ -228,13 +224,39 @@ class EstimateObserver
 
             $fileName = Files::generateNewFileName($estimateTemplateImg->filename);
 
-            Files::copy(EstimateTemplateItemImage::FILE_PATH.'/'.$estimateTemplateImg->estimate_template_item_id.'/'.$estimateTemplateImg->hashname, EstimateItemImage::FILE_PATH.'/'.$estimateItem->id.'/'.$fileName);
+            Files::copy(EstimateTemplateItemImage::FILE_PATH . '/' . $estimateTemplateImg->estimate_template_item_id . '/' . $estimateTemplateImg->hashname, EstimateItemImage::FILE_PATH . '/' . $estimateItem->id . '/' . $fileName);
 
             $file->filename = $estimateTemplateImg->filename;
             $file->hashname = $fileName;
             $file->size = $estimateTemplateImg->size;
             $file->save();
+        }
+    }
 
+    private static function optionalRequestItemDecimal(string $field, int $key): ?float
+    {
+        $raw = request()->input($field . '.' . $key);
+        if ($raw === null || $raw === '') {
+            return null;
+        }
+        if (is_numeric($raw)) {
+            return (float) $raw;
+        }
+        $s = preg_replace('/[^0-9.\-]/', '', str_replace(',', '', (string) $raw));
+
+        return is_numeric($s) ? (float) $s : null;
+    }
+
+    private static function optionalRequestItemDateYmd(string $field, int $key): ?string
+    {
+        $raw = request()->input($field . '.' . $key);
+        if ($raw === null || trim((string) $raw) === '') {
+            return null;
+        }
+        try {
+            return Carbon::createFromFormat(company()->date_format, trim((string) $raw))->format('Y-m-d');
+        } catch (\Throwable) {
+            return null;
         }
     }
 }

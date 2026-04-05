@@ -102,6 +102,14 @@ class Estimate extends BaseModel
     protected $casts = [
         'valid_till' => 'datetime',
         'last_viewed' => 'datetime',
+        'quotation_date' => 'date',
+        'document_date' => 'date',
+        'exchange_rate' => 'decimal:6',
+        'header_quotation_amount' => 'decimal:2',
+        'header_tax_amount' => 'decimal:2',
+        'header_total_quantity' => 'decimal:4',
+        'total_gross_weight_kg' => 'decimal:4',
+        'total_volume' => 'decimal:4',
     ];
 
     protected $appends = ['total_amount', 'valid_date'];
@@ -152,7 +160,7 @@ class Estimate extends BaseModel
 
     public function getTotalAmountAttribute()
     {
-        return (! is_null($this->total) && isset($this->currency) && ! is_null($this->currency->currency_symbol)) ? $this->currency->currency_symbol.$this->total : '';
+        return (! is_null($this->total) && isset($this->currency) && ! is_null($this->currency->currency_symbol)) ? $this->currency->currency_symbol . $this->total : '';
     }
 
     public function getValidDateAttribute()

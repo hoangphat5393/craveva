@@ -883,6 +883,28 @@ return array(
     'canceled' => 'Canceled',
     'addEstimateTemplate' => 'Add Estimate Template',
     'estimateTemplates' => 'ESTIMATE TEMPLATE',
+    'quotationSourceSection' => 'Quotation details (optional)',
+    'quotationSourceSectionHelp' => 'Used for ERP / Maolin-style imports and reference. Totals here are source values; line totals still drive subtotal.',
+    'quotationDate' => 'Quotation date',
+    'documentDate' => 'Document date',
+    'exchangeRate' => 'Exchange rate',
+    'headerQuotationAmount' => 'Source quotation total',
+    'headerTaxAmount' => 'Source tax amount',
+    'headerTotalQuantity' => 'Source total quantity',
+    'deliveryNote' => 'Delivery / lead time',
+    'salespersonName' => 'Salesperson',
+    'taxTypeLabel' => 'Tax category (label)',
+    'paymentTermsCode' => 'Payment terms code',
+    'paymentTermsName' => 'Payment terms',
+    'confirmInternal' => 'Internal confirm',
+    'confirmCustomer' => 'Customer confirm',
+    'priceTerms' => 'Price terms',
+    'volumeUnit' => 'Volume unit',
+    'totalGrossWeightKg' => 'Total gross weight (kg)',
+    'totalVolume' => 'Total volume',
+    'lineFreeQuantity' => 'Free / bonus qty',
+    'lineEffectiveDate' => 'Line effective date',
+    'lineExpiryDate' => 'Line expiry date',
   ),
   'credit-notes' =>
   array(
@@ -2581,4 +2603,3 @@ return array(
     'postal_code' => 'Postal Code',
   ),
 );
-

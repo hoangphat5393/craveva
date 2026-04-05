@@ -746,6 +746,9 @@ Route::group(['middleware' => ['auth', 'multi-company-select', 'email_verified']
     Route::resource('invoices-payment-details', InvoicePaymentDetailController::class);
 
     // Estimates
+    Route::get('estimates/import', [EstimateController::class, 'importQuotation'])->name('estimates.import');
+    Route::post('estimates/import', [EstimateController::class, 'importStore'])->name('estimates.import.store');
+    Route::post('estimates/import/process', [EstimateController::class, 'importProcess'])->name('estimates.import.process');
     Route::get('estimates/delete-image', [EstimateController::class, 'deleteEstimateItemImage'])->name('estimates.delete_image');
     Route::get('estimates/download/{id}', [EstimateController::class, 'download'])->name('estimates.download');
     Route::post('estimates/send-estimate/{id}', [EstimateController::class, 'sendEstimate'])->name('estimates.send_estimate');

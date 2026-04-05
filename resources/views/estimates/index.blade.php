@@ -69,12 +69,16 @@
         <div class="d-block d-lg-flex d-md-flex justify-content-between">
             <div id="table-actions" class="flex-grow-1 align-items-center mb-2 mb-lg-0 mb-md-0">
                 @if ($addEstimatePermission == 'all' || $addEstimatePermission == 'added')
-                    <x-forms.link-primary :link="route('estimates.create')" class="mr-3 float-left mb-2 mb-lg-0 mb-md-0" icon="plus">
+                    <x-forms.link-primary :link="route('estimates.create')" class="mr-3 float-left mb-2 mb-lg-0 mb-md-0 openRightModal" icon="plus" data-redirect-url="{{ route('estimates.index') }}">
                         @lang('app.quotation_ui.create')
                     </x-forms.link-primary>
 
                     <x-forms.link-secondary :link="route('estimate-template.index')" class="mr-3 mb-2 mb-lg-0 mb-md-0 float-left mb-2 mb-lg-0 mb-md-0" icon="layer-group">
                         @lang('app.quotation_ui.estimate_template')
+                    </x-forms.link-secondary>
+
+                    <x-forms.link-secondary :link="route('estimates.import')" class="mr-3 openRightModal float-left mb-2 mb-lg-0 mb-md-0" icon="file-upload">
+                        @lang('app.importExcel') @lang('app.quotation_ui.singular')
                     </x-forms.link-secondary>
                 @endif
                 @if (in_array('client', user_roles()) && ($addEstimateRequestPermission == 'all' || $addEstimateRequestPermission == 'added'))

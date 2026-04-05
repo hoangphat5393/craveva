@@ -53,6 +53,12 @@ class EstimateItem extends BaseModel
 {
     protected $guarded = ['id'];
 
+    protected $casts = [
+        'line_effective_date' => 'date',
+        'line_expiry_date' => 'date',
+        'free_quantity' => 'decimal:4',
+    ];
+
     protected $with = ['estimateItemImage'];
 
     public static function taxbyid($id)
@@ -81,9 +87,9 @@ class EstimateItem extends BaseModel
             if (! is_null($estimateItem->taxes)) {
                 foreach (json_decode($estimateItem->taxes) as $index => $tax) {
                     $tax = $this->taxbyid($tax)->first();
-                    $taxes .= $tax->tax_name.': '.$tax->rate_percent.'%';
+                    $taxes .= $tax->tax_name . ': ' . $tax->rate_percent . '%';
 
-                    $taxes = ($index + 1 != $numItems) ? $taxes.', ' : $taxes;
+                    $taxes = ($index + 1 != $numItems) ? $taxes . ', ' : $taxes;
                 }
             }
         }

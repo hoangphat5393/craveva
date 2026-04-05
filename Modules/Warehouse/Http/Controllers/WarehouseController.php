@@ -327,13 +327,23 @@ class WarehouseController extends AccountBaseController
         $this->pageTitle = 'warehouse::app.editTitle';
         $this->pageIcon = 'ti-layout';
 
+        if (request()->ajax()) {
+            $html = view('warehouse::ajax.edit', $this->data)->render();
+
+            return response()->json(Reply::dataOnly([
+                'status' => 'success',
+                'html' => $html,
+                'title' => __('warehouse::app.editTitle'),
+            ]));
+        }
+
         return view('warehouse::edit', $this->data);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id): RedirectResponse
+    public function update(Request $request, $id): RedirectResponse|JsonResponse
     {
         $editPermission = user()->permission('edit_warehouses');
         abort_if(! in_array($editPermission, ['all', 'added'], true), 403, __('warehouse::app.err_permission_denied'));
@@ -369,6 +379,12 @@ class WarehouseController extends AccountBaseController
             }
 
             DB::commit();
+
+            if ($request->ajax()) {
+                session()->flash('success', __('warehouse::app.success_warehouse_updated'));
+
+                return response()->json(Reply::redirect(route('warehouse.index')));
+            }
 
             return redirect()->route('warehouse.index')->with('success', __('warehouse::app.success_warehouse_updated'));
         } catch (\Throwable $e) {

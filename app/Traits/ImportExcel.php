@@ -276,7 +276,7 @@ trait ImportExcel
         $sheet = $spreadsheet->getSheet(0);
         $endRow = $startRow + $maxScanRows - 1;
         $endColumn = $sheet->getHighestDataColumn();
-        $rows = $sheet->rangeToArray("A{$startRow}:{$endColumn}{$endRow}", null, true, true, false);
+        $rows = $sheet->rangeToArray("A{$startRow}:{$endColumn}{$endRow}", null, false, true, false);
 
         $samples = [];
         foreach ($rows as $row) {
@@ -326,7 +326,7 @@ trait ImportExcel
         $spreadsheet = $reader->load($filePath);
         $sheet = $spreadsheet->getSheet(0);
         $endColumn = $sheet->getHighestDataColumn();
-        $rawHeading = $sheet->rangeToArray("A1:{$endColumn}1", null, true, true, false)[0] ?? [];
+        $rawHeading = $sheet->rangeToArray("A1:{$endColumn}1", null, false, true, false)[0] ?? [];
 
         while ($rawHeading !== [] && end($rawHeading) === null) {
             array_pop($rawHeading);
@@ -378,7 +378,7 @@ trait ImportExcel
             return 0;
         }
 
-        $rows = $sheet->rangeToArray("A1:{$endColumn}{$endRow}", null, true, true, false);
+        $rows = $sheet->rangeToArray("A1:{$endColumn}{$endRow}", null, false, true, false);
         $spreadsheet->disconnectWorksheets();
 
         $maxCol = 0;
@@ -511,7 +511,7 @@ trait ImportExcel
         $spreadsheet = $reader->load($filePath);
         $sheet = $spreadsheet->getSheet(0);
         $endColumn = $sheet->getHighestDataColumn();
-        $rows = $sheet->rangeToArray("A{$startRow}:{$endColumn}{$endRow}", null, true, true, false);
+        $rows = $sheet->rangeToArray("A{$startRow}:{$endColumn}{$endRow}", null, false, true, false);
         $spreadsheet->disconnectWorksheets();
 
         $out = [];

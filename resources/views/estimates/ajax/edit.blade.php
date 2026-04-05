@@ -590,13 +590,6 @@
                 ...datepickerConfig
             });
 
-            $('#quotation_date, #document_date').each(function(ind, el) {
-                datepicker(el, {
-                    position: 'bl',
-                    ...datepickerConfig
-                });
-            });
-
             const resetAddProductButton = () => {
                 $("#add-products").val('').selectpicker("refresh");
             };

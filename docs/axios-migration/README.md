@@ -112,3 +112,4 @@ Latest secondary waves completed:
 - **HR / attendance / leave** (`resources/views/employees/**`, `attendances/**`, `timelogs/**`, `leaves/**`, `weekly-timesheets/**`) — completed, see [hr-attendance-leave.md](./hr-attendance-leave.md)
 - **Payroll** (`Modules/Payroll/Resources/views/**`) — completed, see [payroll.md](./payroll.md)
 - **Recruit** (`Modules/Recruit/Resources/views/**`) — completed, see [recruit.md](./recruit.md)
+- **Global right modal** (`.openRightModal` in `resources/js/custom.js`) — completed, see [global-right-modal.md](./global-right-modal.md)

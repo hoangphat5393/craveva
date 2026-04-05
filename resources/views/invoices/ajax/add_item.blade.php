@@ -89,13 +89,6 @@
                 messages: dropifyMessages
             });
 
-            $('#saveInvoiceForm .item-line-meta:last .custom-date-picker').each(function(ind, el) {
-                datepicker(el, {
-                    position: 'bl',
-                    ...datepickerConfig
-                });
-            });
-
             for (i = 0; i < $('.quantity').length; i++) {
                 var quantity = $('.quantity').eq(i).val();
                 var perItemCost = $('.cost_per_item').eq(i).val();

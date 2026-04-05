@@ -276,7 +276,7 @@
                                                         <a class="dropdown-item" href="{{ route('warehouse.show', $warehouse->id) }}"><i class="fa fa-eye mr-2 text-dark-grey"></i>@lang('app.view')</a>
                                                     @endif
                                                     @if ($editWarehousePermission == 'all' || $editWarehousePermission == 'added')
-                                                        <a class="dropdown-item" href="{{ route('warehouse.edit', $warehouse->id) }}"><i class="fa fa-edit mr-2 text-dark-grey"></i>@lang('app.edit')</a>
+                                                        <a class="dropdown-item openRightModal" href="{{ route('warehouse.edit', $warehouse->id) }}" data-redirect-url="{{ route('warehouse.index') }}"><i class="fa fa-edit mr-2 text-dark-grey"></i>@lang('app.edit')</a>
                                                     @endif
                                                     @if ($deleteWarehousePermission == 'all' || $deleteWarehousePermission == 'added')
                                                         <a class="dropdown-item delete-warehouse" href="javascript:;" data-warehouse-id="{{ $warehouse->id }}"><i class="fa fa-trash-alt mr-2 text-dark-grey"></i>@lang('app.delete')</a>

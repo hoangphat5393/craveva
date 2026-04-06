@@ -116,6 +116,7 @@ return [
         'offlineRequest' => 'Demande hors ligne',
         'supportTicket' => 'Billet d\'assistance',
         'frontSettings' => 'Paramètres avant',
+        'frontendSettings' => 'Paramètres de l’interface',
         'frontSettingsTranslation' => 'Traduction des paramètres avant',
         'featureTranslation' => 'Traduction des fonctionnalités',
         'frontThemeSettings' => 'Paramètres du thème avant',

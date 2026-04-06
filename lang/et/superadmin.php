@@ -116,6 +116,7 @@ return [
         'offlineRequest' => 'Võrguühenduseta taotlus',
         'supportTicket' => 'Tugipilet',
         'frontSettings' => 'Esikülje seaded',
+        'frontendSettings' => 'Esiliideseaded',
         'frontSettingsTranslation' => 'Esikülje seaded Tõlge',
         'featureTranslation' => 'Funktsioonide tõlge',
         'frontThemeSettings' => 'Esikülje teema seaded',

@@ -116,6 +116,7 @@ return [
         'offlineRequest' => 'ऑफ़लाइन अनुरोध',
         'supportTicket' => 'समर्थन टिकट',
         'frontSettings' => 'सामने की सेटिंग',
+        'frontendSettings' => 'फ्रंटएंड सेटिंग्स',
         'frontSettingsTranslation' => 'फ्रंट सेटिंग्स अनुवाद',
         'featureTranslation' => 'फ़ीचर अनुवाद',
         'frontThemeSettings' => 'फ्रंट थीम सेटिंग्स',

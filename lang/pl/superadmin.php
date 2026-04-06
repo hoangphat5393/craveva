@@ -116,6 +116,7 @@ return [
         'offlineRequest' => 'Żądanie offline',
         'supportTicket' => 'Zgłoszenie serwisowe',
         'frontSettings' => 'Ustawienia z przodu',
+        'frontendSettings' => 'Ustawienia interfejsu',
         'frontSettingsTranslation' => 'Tłumaczenie ustawień przednich',
         'featureTranslation' => 'Tłumaczenie funkcji',
         'frontThemeSettings' => 'Ustawienia motywu z przodu',

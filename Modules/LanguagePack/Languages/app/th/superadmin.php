@@ -116,6 +116,7 @@ return [
         'offlineRequest' => 'คำขอออฟไลน์',
         'supportTicket' => 'ตั๋วสนับสนุน',
         'frontSettings' => 'การตั้งค่าด้านหน้า',
+        'frontendSettings' => 'การตั้งค่าส่วนหน้า',
         'frontSettingsTranslation' => 'การแปลการตั้งค่าด้านหน้า',
         'featureTranslation' => 'การแปลคุณสมบัติ',
         'frontThemeSettings' => 'การตั้งค่าธีมด้านหน้า',

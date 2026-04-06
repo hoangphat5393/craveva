@@ -116,6 +116,7 @@ return [
         'offlineRequest' => 'Оффлине Рекуест',
         'supportTicket' => 'Карта за подршку',
         'frontSettings' => 'Фронт Сеттингс',
+        'frontendSettings' => 'Подешавања интерфејса',
         'frontSettingsTranslation' => 'Превод предњих подешавања',
         'featureTranslation' => 'Феатуре Транслатион',
         'frontThemeSettings' => 'Подешавања предње теме',

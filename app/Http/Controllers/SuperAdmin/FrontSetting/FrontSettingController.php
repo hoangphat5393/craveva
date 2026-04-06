@@ -13,13 +13,14 @@ use App\Models\LanguageSetting;
 use App\Models\SuperAdmin\FrontDetail;
 use App\Models\SuperAdmin\TrFrontDetail;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class FrontSettingController extends AccountBaseController
 {
     public function __construct()
     {
         parent::__construct();
-        $this->pageTitle = 'superadmin.menu.frontSettings';
+        $this->pageTitle = 'superadmin.menu.frontendSettings';
         $this->activeSettingMenu = 'front_settings';
         $this->middleware(function ($request, $next) {
             abort_403(GlobalSetting::validateSuperAdmin('manage_superadmin_front_settings'));
@@ -31,11 +32,11 @@ class FrontSettingController extends AccountBaseController
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function index($lang = 'en')
     {
-        $this->pageTitle = 'superadmin.menu.frontSettings';
+        $this->pageTitle = 'superadmin.menu.frontendSettings';
         $this->activeSettingMenu = 'front_settings';
         $this->view = 'super-admin.front-setting.front-details.ajax.lang';
 

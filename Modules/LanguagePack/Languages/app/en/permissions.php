@@ -440,7 +440,7 @@ return [
     'view_request' => 'View Request',
     'accept_reject_request' => 'Accept And Reject Request',
     'manage_faq_category' => 'Manage Faq Category',
-    'manage_superadmin_front_settings' => 'Manage Front Settings',
+    'manage_superadmin_front_settings' => 'Manage Frontend Settings',
     'manage_superadmin_app_settings' => 'Manage App Settings',
     'manage_superadmin_notification_settings' => 'Manage Notification Settings',
     'manage_superadmin_language_settings' => 'Manage Language Settings',

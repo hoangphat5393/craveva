@@ -116,6 +116,7 @@ return [
         'offlineRequest' => 'Permintaan Offline',
         'supportTicket' => 'Tiket Dukungan',
         'frontSettings' => 'Pengaturan Depan',
+        'frontendSettings' => 'Pengaturan Frontend',
         'frontSettingsTranslation' => 'Terjemahan Pengaturan Depan',
         'featureTranslation' => 'Terjemahan Fitur',
         'frontThemeSettings' => 'Pengaturan Tema Depan',

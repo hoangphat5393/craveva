@@ -116,6 +116,7 @@ return [
         'offlineRequest' => 'Yêu cầu ngoại tuyến',
         'supportTicket' => 'Vé ủng hộ',
         'frontSettings' => 'Cài đặt phía trước',
+        'frontendSettings' => 'Cài đặt giao diện công khai',
         'frontSettingsTranslation' => 'Dịch cài đặt phía trước',
         'featureTranslation' => 'Dịch tính năng',
         'frontThemeSettings' => 'Cài đặt chủ đề phía trước',

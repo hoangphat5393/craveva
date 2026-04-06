@@ -116,6 +116,7 @@ return [
         'offlineRequest' => 'Solicitud sin conexión',
         'supportTicket' => 'Boleto de soporte',
         'frontSettings' => 'Configuración frontal',
+        'frontendSettings' => 'Configuración del frontend',
         'frontSettingsTranslation' => 'Traducción de configuración frontal',
         'featureTranslation' => 'Traducción de funciones',
         'frontThemeSettings' => 'Configuración del tema frontal',

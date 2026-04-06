@@ -116,6 +116,7 @@ return [
         'offlineRequest' => 'درخواست آفلاین',
         'supportTicket' => 'بلیط پشتیبانی',
         'frontSettings' => 'تنظیمات جلو',
+        'frontendSettings' => 'تنظیمات رابط کاربری',
         'frontSettingsTranslation' => 'ترجمه تنظیمات جلو',
         'featureTranslation' => 'ترجمه ویژگی',
         'frontThemeSettings' => 'تنظیمات تم جلو',

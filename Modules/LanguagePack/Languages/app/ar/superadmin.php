@@ -116,6 +116,7 @@ return [
         'offlineRequest' => 'طلب دون اتصال',
         'supportTicket' => 'بطاقة الدعم',
         'frontSettings' => 'الإعدادات الأمامية',
+        'frontendSettings' => 'إعدادات الواجهة الأمامية',
         'frontSettingsTranslation' => 'ترجمة الإعدادات الأمامية',
         'featureTranslation' => 'ترجمة مميزة',
         'frontThemeSettings' => 'إعدادات الموضوع الأمامي',

@@ -116,6 +116,7 @@ return [
         'offlineRequest' => 'オフラインリクエスト',
         'supportTicket' => 'サポートチケット',
         'frontSettings' => 'フロント設定',
+        'frontendSettings' => 'フロントエンド設定',
         'frontSettingsTranslation' => 'フロント設定の翻訳',
         'featureTranslation' => '特徴の変換',
         'frontThemeSettings' => 'フロントテーマの設定',

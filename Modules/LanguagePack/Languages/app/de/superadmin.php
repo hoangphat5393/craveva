@@ -116,6 +116,7 @@ return [
         'offlineRequest' => 'Offline-Anfrage',
         'supportTicket' => 'Unterstüzungsticket',
         'frontSettings' => 'Vordere Einstellungen',
+        'frontendSettings' => 'Frontend-Einstellungen',
         'frontSettingsTranslation' => 'Übersetzung der Fronteinstellungen',
         'featureTranslation' => 'Feature-Übersetzung',
         'frontThemeSettings' => 'Front-Theme-Einstellungen',

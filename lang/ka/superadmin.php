@@ -116,6 +116,7 @@ return [
         'offlineRequest' => 'ოფლაინ მოთხოვნა',
         'supportTicket' => 'მხარდაჭერის ბილეთი',
         'frontSettings' => 'წინა პარამეტრები',
+        'frontendSettings' => 'ფრონტენდის პარამეტრები',
         'frontSettingsTranslation' => 'წინა პარამეტრების თარგმანი',
         'featureTranslation' => 'მხატვრული თარგმანი',
         'frontThemeSettings' => 'წინა თემის პარამეტრები',

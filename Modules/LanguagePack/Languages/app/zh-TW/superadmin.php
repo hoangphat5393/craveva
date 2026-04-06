@@ -117,6 +117,7 @@ return [
         'offlineRequest' => '線下請求',
         'supportTicket' => '支持工單',
         'frontSettings' => '前台設置',
+        'frontendSettings' => '前端設定',
         'frontSettingsTranslation' => '前台設置翻譯',
         'featureTranslation' => '功能翻譯',
         'frontThemeSettings' => '前台主題設置',

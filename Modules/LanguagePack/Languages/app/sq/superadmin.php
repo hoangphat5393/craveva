@@ -116,6 +116,7 @@ return [
         'offlineRequest' => 'Kërkesë jashtë linje',
         'supportTicket' => 'Bileta e Mbështetjes',
         'frontSettings' => 'Cilësimet e përparme',
+        'frontendSettings' => 'Cilësimet e ndërfaqes',
         'frontSettingsTranslation' => 'Përkthimi i cilësimeve të përparme',
         'featureTranslation' => 'Përkthimi i veçorive',
         'frontThemeSettings' => 'Cilësimet e temës së përparme',

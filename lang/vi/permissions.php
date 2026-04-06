@@ -439,7 +439,7 @@ return [
     'view_request' => 'Xem yêu cầu',
     'accept_reject_request' => 'Chấp nhận và từ chối yêu cầu',
     'manage_faq_category' => 'Quản lý danh mục Câu hỏi thường gặp',
-    'manage_superadmin_front_settings' => 'Quản lý cài đặt mặt trước',
+    'manage_superadmin_front_settings' => 'Quản lý cài đặt giao diện công khai',
     'manage_superadmin_app_settings' => 'Quản lý cài đặt ứng dụng',
     'manage_superadmin_notification_settings' => 'Quản lý cài đặt thông báo',
     'manage_superadmin_language_settings' => 'Quản lý cài đặt ngôn ngữ',

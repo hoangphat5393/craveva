@@ -114,6 +114,7 @@ return [
         'offlineRequest' => 'Offline Request',
         'supportTicket' => 'Support Ticket',
         'frontSettings' => 'Front Settings',
+        'frontendSettings' => 'Frontend Settings',
         'frontSettingsTranslation' => 'Front Settings Translation',
         'featureTranslation' => 'Feature Translation',
         'frontThemeSettings' => 'Front Theme Settings',

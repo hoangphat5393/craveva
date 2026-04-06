@@ -116,6 +116,7 @@ return [
         'offlineRequest' => 'Offline verzoek',
         'supportTicket' => 'Ondersteuningsticket',
         'frontSettings' => 'Instellingen voorzijde',
+        'frontendSettings' => 'Frontend-instellingen',
         'frontSettingsTranslation' => 'Vertaling van frontinstellingen',
         'featureTranslation' => 'Functievertaling',
         'frontThemeSettings' => 'Thema-instellingen vooraan',

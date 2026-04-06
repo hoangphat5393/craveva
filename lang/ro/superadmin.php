@@ -116,6 +116,7 @@ return [
         'offlineRequest' => 'Solicitare offline',
         'supportTicket' => 'Bilet de suport',
         'frontSettings' => 'Setări frontale',
+        'frontendSettings' => 'Setări interfață publică',
         'frontSettingsTranslation' => 'Traducere setări față',
         'featureTranslation' => 'Traducere caracteristică',
         'frontThemeSettings' => 'Setările temei din față',

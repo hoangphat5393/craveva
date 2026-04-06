@@ -116,6 +116,7 @@ return [
         'offlineRequest' => 'Çevrimdışı İstek',
         'supportTicket' => 'Destek bileti',
         'frontSettings' => 'Ön Ayarlar',
+        'frontendSettings' => 'Önyüz Ayarları',
         'frontSettingsTranslation' => 'Ön Ayarlar Çevirisi',
         'featureTranslation' => 'Özellik Çevirisi',
         'frontThemeSettings' => 'Ön Tema Ayarları',

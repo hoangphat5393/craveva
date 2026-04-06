@@ -116,6 +116,7 @@ return [
         'offlineRequest' => 'Αίτημα εκτός σύνδεσης',
         'supportTicket' => 'Εισιτήριο υποστήριξης',
         'frontSettings' => 'Μπροστινές ρυθμίσεις',
+        'frontendSettings' => 'Ρυθμίσεις διεπαφής',
         'frontSettingsTranslation' => 'Μετάφραση μπροστινών ρυθμίσεων',
         'featureTranslation' => 'Μετάφραση Χαρακτηριστικού',
         'frontThemeSettings' => 'Ρυθμίσεις μπροστινού θέματος',

@@ -115,6 +115,7 @@ return [
         'offlineRequest' => 'Офлайн запит',
         'supportTicket' => 'Квиток підтримки',
         'frontSettings' => 'Налаштування передньої панелі',
+        'frontendSettings' => 'Налаштування інтерфейсу',
         'frontSettingsTranslation' => 'Переклад налаштувань передньої панелі',
         'featureTranslation' => 'Особливий переклад',
         'frontThemeSettings' => 'Налаштування передньої теми',

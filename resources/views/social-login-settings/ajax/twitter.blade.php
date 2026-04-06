@@ -24,7 +24,7 @@
                         <x-forms.input-group>
                             <input type="password" name="twitter_secret_id" id="twitter_secret_id"
                                 class="form-control height-35 f-14"
-                                value="{{ $credentials->twitter_secret_id }}">
+                                value="">
                             <x-slot name="preappend">
                                 <button type="button" data-toggle="tooltip"
                                     data-original-title="{{ __('messages.viewKey') }}"

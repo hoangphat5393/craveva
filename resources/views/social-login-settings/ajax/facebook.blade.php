@@ -23,7 +23,7 @@
                         <x-forms.input-group>
                             <input type="password" name="facebook_secret_id" id="facebook_secret_id"
                                 class="form-control height-35 f-14"
-                                value="{{ $credentials->facebook_secret_id }}">
+                                value="">
 
                             <x-slot name="preappend">
                                 <button type="button" data-toggle="tooltip"

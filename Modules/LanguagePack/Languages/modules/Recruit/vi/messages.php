@@ -80,4 +80,5 @@ return [
     'thankyouNote' => 'Cảm ơn bạn đã xem xét sự nghiệp với chúng tôi.',
     'greetingMessage' => 'Chúng tôi hy vọng tin nhắn này đến được với bạn.',
     'predefinedSourceDelete' => 'Bạn không thể xóa các nguồn được xác định trước.',
+    'interviewScheduleExist' => 'Interview Schedule Exist',
 ];

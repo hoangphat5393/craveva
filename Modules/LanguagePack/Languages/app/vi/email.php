@@ -59,6 +59,8 @@ return [
         'text' => 'Đã thêm ghi chú mới cho',
         'action' => 'Xem ghi chú',
         'subject' => 'Đã thêm ghi chú mới cho Dự án',
+        'updateSubject' => 'Update Subject',
+        'updateContent' => 'Update Content',
     ],
     'newProject' => [
         'subject' => 'Dự án mới được thêm vào',
@@ -417,7 +419,7 @@ return [
         'subject' => 'Đăng ký khách hàng mới',
         'text' => 'Khách hàng mới đã được đăng ký.',
     ],
-    'footer' => 'Nếu bạn gặp khó khăn khi nhấp vào nút ":actionText", vui lòng sao chép và dán URL bên dưới vào trình duyệt web của bạn:',
+    'footer' => 'Nếu bạn gặp khó khăn khi nhấp vào nút \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\":actionText\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\", vui lòng sao chép và dán URL bên dưới vào trình duyệt web của bạn:',
     'productPurchase' => [
         'subject' => 'Mua sản phẩm mới',
         'text' => 'Một giao dịch mua sản phẩm mới đã được thực hiện. Đăng nhập ngay để xem việc mua hàng.',
@@ -431,6 +433,7 @@ return [
         'nextFollowUpTime' => 'Lần theo dõi tiếp theo',
         'followUpLead' => 'Tên khách hàng tiềm năng theo dõi',
         'followUpLeadText' => 'Bạn có lượt theo dõi mới',
+        'remark' => 'Remark',
     ],
     'shiftScheduled' => [
         'subject' => 'Cập nhật lịch trình: Ca làm việc của bạn đã được chỉ định',
@@ -546,5 +549,37 @@ return [
         'text2' => 'Lý do: :reason',
         'action' => 'Xem bảng thời gian',
         'thankYou' => 'Cảm ơn bạn đã sử dụng ứng dụng của chúng tôi!',
+    ],
+    'approveProjectTimeLog' => [
+        'subject' => 'Subject',
+        'text' => 'Text',
+        'action' => 'Action',
+    ],
+    'createProjectTimeLog' => [
+        'subject' => 'Subject',
+        'text' => 'Text',
+        'action' => 'Action',
+    ],
+    'createdProjectTimeLog' => [
+        'subject' => 'Subject',
+        'text' => 'Text',
+        'action' => 'Action',
+    ],
+    'projectTimeLog' => [
+        'subject' => 'Subject',
+        'text' => 'Text',
+        'action' => 'Action',
+    ],
+    'decrementPromotion' => [
+        'subject' => 'Subject',
+        'same' => 'Same',
+        'updateText' => 'Update Text',
+        'in' => 'In',
+        'text2' => 'Text2',
+        'text3' => 'Text3',
+    ],
+    'emailVerify' => [
+        'subject' => 'Subject',
+        'text' => 'Text',
     ],
 ];

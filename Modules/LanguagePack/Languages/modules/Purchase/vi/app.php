@@ -88,4 +88,12 @@ return [
         'vendorName' => 'Tên nhà cung cấp',
         'paymentToVendor' => 'Thanh toán cho nhà cung cấp',
     ],
+    'ship' => 'Ship',
+    'erpShipmentRef' => 'Erp Shipment Ref',
+    'wmsShipmentRef' => 'Wms Shipment Ref',
+    'deliveryOrderNumber' => 'Delivery Order Number',
+    'shipmentNumber' => 'Shipment Number',
+    'remainingQty' => 'Remaining Qty',
+    'shipQty' => 'Ship Qty',
+    'batchNumber' => 'Batch Number',
 ];

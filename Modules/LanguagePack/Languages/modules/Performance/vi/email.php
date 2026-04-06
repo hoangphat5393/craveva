@@ -1,0 +1,40 @@
+<?php
+
+return [
+    'checkin' => [
+        'subject' => 'Subject',
+        'keyTitle' => 'Key Title',
+        'keyResultTitle' => 'Key Result Title',
+        'title' => 'Title',
+        'description' => 'Description',
+        'text' => 'Text',
+        'note' => 'Note',
+        'checkInNow' => 'Check In Now',
+    ],
+    'objective' => [
+        'startDate' => 'Start Date',
+        'endDate' => 'End Date',
+        'hi' => 'Hi',
+        'subject' => 'Subject',
+        'title' => 'Title',
+        'objectiveTitle' => 'Objective Title',
+        'description' => 'Description',
+        'goalType' => 'Goal Type',
+        'priorityLevel' => 'Priority Level',
+        'checkInFrequency' => 'Check In Frequency',
+        'actionRequired' => 'Action Required',
+        'actionRequiredText' => 'Action Required Text',
+        'actionRequiredNote' => 'Action Required Note',
+        'viewObjective' => 'View Objective',
+    ],
+    'meeting' => [
+        'subject' => 'Subject',
+        'youHaveBeenInvited' => 'You Have Been Invited',
+        'meetingInvitation' => 'Meeting Invitation',
+        'startTime' => 'Start Time',
+        'endTime' => 'End Time',
+        'viewMeeting' => 'View Meeting',
+        'reminderMessage' => 'Reminder Message',
+        'reminderSubject' => 'Reminder Subject',
+    ],
+];

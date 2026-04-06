@@ -10,4 +10,6 @@ return [
     'publishAllButtonPopover' => 'Publish All Below Languages',
     'publishButtonPopover' => 'Publish :language Language',
     'republishButtonPopover' => 'Republish :language Language',
+    'syncKeysButtonPopover' => 'Sync Keys Button Popover',
+    'syncKeys' => 'Sync Keys',
 ];

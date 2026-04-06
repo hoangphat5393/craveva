@@ -458,6 +458,7 @@ return [
         'text' => 'Bây giờ bạn là nhà tuyển dụng cho công việc',
         'alertMsg' => 'Có cơ hội việc làm mới cho',
         'lastDate' => 'ngày cuối cùng nộp đơn',
+        'viewJob' => 'View Job',
     ],
     'updateJob' => [
         'subject' => 'Đã xóa khỏi công việc',

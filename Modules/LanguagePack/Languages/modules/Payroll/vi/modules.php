@@ -187,5 +187,8 @@ return [
         'dayOff' => 'Ngày nghỉ',
         'dayoff' => 'Ngày nghỉ',
         'overtimeType' => 'Loại ngoài giờ',
+        'salaryExpenseHeadingWithoutMonth' => 'Salary Expense Heading Without Month',
+        'OvertimeType' => 'Overtime Type',
+        'Holiday' => 'Holiday',
     ],
 ];

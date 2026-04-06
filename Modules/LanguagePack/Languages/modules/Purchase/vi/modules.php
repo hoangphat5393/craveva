@@ -39,6 +39,8 @@ return [
         'dataTableTotalNetQtyAdjustments' => 'Tổng SL ròng (các dòng điều chỉnh Purchase)',
         'dataTableProductCardExpiry' => 'Hạn dùng trên thẻ SP (không phải lô / kho)',
         'dataTableAllowClientPurchase' => 'Cho phép khách hàng mua',
+        'manufacturingDate' => 'Manufacturing Date',
+        'expirationDate' => 'Expiration Date',
     ],
     'inventory' => [
         'adjustmentReason' => 'Lý do điều chỉnh cổ phiếu',
@@ -89,6 +91,7 @@ return [
         'endingPackageInventory' => 'Tồn kho đóng gói cuối kỳ',
         'endingInventory' => 'Tồn kho cuối kỳ',
         'importCustomFieldBadge' => ' (trường tùy chỉnh)',
+        'warehouse' => 'Warehouse',
     ],
     'vendor' => [
         'primaryContactName' => 'Tên liên hệ chính',
@@ -130,6 +133,7 @@ return [
         'closingBalance' => 'Số dư cuối kỳ',
         'purchaseOrders' => 'Đơn đặt hàng',
         'payments' => 'Thanh toán',
+        'vendor_name' => 'Vendor Name',
     ],
     'vendorPayment' => [
         'addPayment' => 'Thêm thanh toán',
@@ -234,6 +238,7 @@ return [
         'delivered' => 'Đã giao hàng',
         'expectedDeliveryDate' => 'Ngày giao hàng dự kiến',
         'orderDate' => 'Ngày đặt hàng',
+        'del_status' => 'Del Status',
     ],
     'reports' => [
         'inventorySummary' => 'Tóm tắt hàng tồn kho',
@@ -245,6 +250,7 @@ return [
         'stockOnHand' => 'Hàng có sẵn',
         'committedStock' => 'Cổ phiếu cam kết',
         'availableForSale' => 'Có sẵn để bán',
+        'committed_Stock' => 'Committed Stock',
     ],
     'deliveryOrder' => [
         'draft' => 'Nháp',
@@ -257,5 +263,9 @@ return [
         'batchLot' => 'Số lô',
         'expiryDate' => 'Hạn dùng',
         'pickingRule' => 'Quy tắc lấy hàng (FIFO / FEFO)',
+    ],
+    'salesShipment' => [
+        'delivered' => 'Delivered',
+        'reverse' => 'Reverse',
     ],
 ];

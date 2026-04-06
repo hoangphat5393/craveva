@@ -38,6 +38,7 @@ return [
         'signedOffer' => 'thư mời đã ký vào',
         'description' => 'Sự miêu tả',
         'notDisclosed' => 'Không được tiết lộ',
+        'evaluation' => 'Evaluation',
     ],
     'job' => [
         'withdraw' => 'Rút',
@@ -79,6 +80,9 @@ return [
         'inProgress' => 'Trong tiến trình',
         'scheduled' => 'Lên kế hoạch',
         'offerReleased' => 'Ưu đãi đã phát hành',
+        'workType' => 'Work Type',
+        'onsite' => 'Onsite',
+        'remote' => 'Remote',
     ],
     'jobApplication' => [
         'applied' => 'Đã áp dụng',

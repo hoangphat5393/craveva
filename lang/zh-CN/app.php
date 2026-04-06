@@ -1008,7 +1008,6 @@ return [
     'pleaseWait' => '请稍等...',
     'importProcessedJobs' => '导入中已处理 :totalJobs 条目的 :processedJobs 条目。',
     'importCompleted' => '导入完成',
-    'importFinishedWithErrors' => '导入完成但有错误。请见下方详情。',
     'exceptions' => '导入时出现异常',
     'importExcelInfo' => '日期格式应为 Y-m-d（例如 2022-04-21）格式。确保 Excel 文件中的日期格式正确。',
     'importAttendanceExcelInfo' => '日期时间格式应采用 Y-m-d H:i:s（例如 2022-04-21 12:00:00）格式。确保 Excel 文件中的日期格式正确。',

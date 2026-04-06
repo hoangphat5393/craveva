@@ -1,0 +1,14 @@
+# Directory trees copied recursively (excludes .git)
+Modules/LanguagePack/Languages/app
+Modules/LanguagePack/Languages/modules
+resources/lang
+Modules/Pricing
+Modules/Purchase
+Modules/Performance/Resources/lang
+public/vendor/dropify
+public/vendor/quill
+public/vendor/sweetalert
+app/Console
+app/Imports
+app/Jobs
+resources/views/products

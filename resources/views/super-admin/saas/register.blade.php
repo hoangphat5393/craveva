@@ -10,7 +10,7 @@
                     @lang('superadmin.signUpApprovalPending')
                 </div>
             @else
-                @if ($registrationStatus->registration_open == 1)
+                @if ($registrationStatus->registration_open == 1 && $global->enable_register == true)
                     <div class="login-box mt-5 shadow bg-white form-section ">
                         <h4 class="mb-0 text-uppercase">
                             @lang('app.signUp')

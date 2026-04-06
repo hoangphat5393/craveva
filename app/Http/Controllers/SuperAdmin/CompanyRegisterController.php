@@ -68,6 +68,10 @@ class CompanyRegisterController extends FrontBaseController
             abort_403('Registration Disabled');
         }
 
+        if (! $global->enable_register) {
+            abort_403('Registration Disabled');
+        }
+
         if ($global->google_recaptcha_status == 'active' && ! $this->recaptchaValidate($request)) {
             return Reply::error('Recaptcha not validated.');
         }
@@ -108,11 +112,11 @@ class CompanyRegisterController extends FrontBaseController
         } catch (TransportException $e) {
             DB::rollback();
 
-            return Reply::error('Please contact administrator to set SMTP details to add company.<br>'.$e->getMessage(), 'smtp_error');
+            return Reply::error('Please contact administrator to set SMTP details to add company.<br>' . $e->getMessage(), 'smtp_error');
         } catch (\Exception $e) {
             DB::rollback();
 
-            return Reply::error('Some error occurred when inserting the data. Please try again or contact support: '.$e->getMessage());
+            return Reply::error('Some error occurred when inserting the data. Please try again or contact support: ' . $e->getMessage());
         }
 
         return Reply::redirect(getDomainSpecificUrl(route('login'), $company), __('superadmin.signUpThankYou'));
@@ -161,8 +165,12 @@ class CompanyRegisterController extends FrontBaseController
         }
 
         if ($request->password != '') {
-            UserAuth::where('id', $user->user_auth_id)->update(['password' => bcrypt($request->password)]);
-            $user->notify(new NewUser($user, $request->password, signup: true));
+            if ($userAuth->wasRecentlyCreated) {
+                UserAuth::where('id', $user->user_auth_id)->update(['password' => bcrypt($request->password)]);
+                $user->notify(new NewUser($user, $request->password, signup: true));
+            } else {
+                $user->notify(new NewUser($user, '', signup: true));
+            }
         }
 
         if (! $user->hasRole('admin')) {

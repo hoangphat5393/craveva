@@ -14,7 +14,7 @@ This document is the central reference for **business flow**, **business logic**
 6. [Add-on modules](#6-add-on-modules)
 7. [Composer install chậm – khắc phục](#7-composer-install-chậm--khắc-phục)
 8. [References](#8-references)
-   - [Recent fixes (known issues)](#81-recent-fixes-known-issues)
+    - [Recent fixes (known issues)](#81-recent-fixes-known-issues)
 9. [Laravel 11 upgrade](#9-laravel-11-upgrade)
 
 ---
@@ -449,23 +449,23 @@ Laravel 10 không trực tiếp dùng hai package trên; chúng là dependency c
 
 ## 8. References
 
-| Resource                                 | Description                                                                 |
-| ---------------------------------------- | --------------------------------------------------------------------------- |
-| `FUNC_LOGIC/README.md`                   | Logic & flow docs index (login, package/module commands, flows).            |
-| `FUNC_LOGIC/FLOW_ADD_CLIENT.md`          | Flow: add client (form + import), DB writes, role/permissions.              |
-| `FUNC_LOGIC/FLOW_ADD_PRODUCT.md`         | Flow: add product.                                                          |
-| `FUNC_LOGIC/FLOW_ADD_INVENTORY.md`       | Flow: add inventory.                                                        |
-| `FUNC_LOGIC/Login_Flow.md`               | Login flow (Fortify, session).                                              |
-| `FUNC_LOGIC/Package_Modules_Flow.md`     | Package → modules → company → module_settings.                              |
-| `FUNC_LOGIC/Package_Modules_Commands.md` | Artisan commands for packages/modules.                                      |
+| Resource                                           | Description                                                                                  |
+| -------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `FUNC_LOGIC/README.md`                             | Logic & flow docs index (login, package/module commands, flows).                             |
+| `FUNC_LOGIC/FLOW_ADD_CLIENT.md`                    | Flow: add client (form + import), DB writes, role/permissions.                               |
+| `FUNC_LOGIC/FLOW_ADD_PRODUCT.md`                   | Flow: add product.                                                                           |
+| `FUNC_LOGIC/FLOW_ADD_INVENTORY.md`                 | Flow: add inventory.                                                                         |
+| `FUNC_LOGIC/Login_Flow.md`                         | Login flow (Fortify, session).                                                               |
+| `FUNC_LOGIC/Package_Modules_Flow.md`               | Package → modules → company → module_settings.                                               |
+| `FUNC_LOGIC/Package_Modules_Commands.md`           | Artisan commands for packages/modules.                                                       |
 | `FUNC_BUG/SOCIAL_AUTH_SETTINGS_MAC_INVALID_FIX.md` | Fix: Social Auth Settings crash `The MAC is invalid.` when encrypted secrets cannot decrypt. |
-| `docs/MENU_ROUTES_AND_CACHE.md`          | Why menu routes can fail and how to fix (route:clear, Route::has).          |
-| `docs/PACKAGE_MODULES_ACTIVATE.md`       | Activating package modules.                                                 |
-| `DIAGRAM/order_process_flowchart.md`     | Order process (chat → PO → DO → invoice).                                   |
-| `DIAGRAM/chat_order_flow.md`             | Chat and order flow.                                                        |
-| `app/Models/Module.php`                  | Full list of modules and permissions (MODULE_LIST, SUPERADMIN_MODULE_LIST). |
-| `database/migrations/`                   | Schema definitions.                                                         |
-| `routes/web.php`                         | Main web routes; module routes in `Modules/*/Routes/web.php`.               |
+| `docs/MENU_ROUTES_AND_CACHE.md`                    | Why menu routes can fail and how to fix (route:clear, Route::has).                           |
+| `docs/PACKAGE_MODULES_ACTIVATE.md`                 | Activating package modules.                                                                  |
+| `DIAGRAM/order_process_flowchart.md`               | Order process (chat → PO → DO → invoice).                                                    |
+| `DIAGRAM/chat_order_flow.md`                       | Chat and order flow.                                                                         |
+| `app/Models/Module.php`                            | Full list of modules and permissions (MODULE_LIST, SUPERADMIN_MODULE_LIST).                  |
+| `database/migrations/`                             | Schema definitions.                                                                          |
+| `routes/web.php`                                   | Main web routes; module routes in `Modules/*/Routes/web.php`.                                |
 
 ### 8.1 Recent fixes (known issues)
 

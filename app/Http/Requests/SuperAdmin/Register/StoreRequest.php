@@ -4,12 +4,10 @@ namespace App\Http\Requests\SuperAdmin\Register;
 
 use App\Http\Requests\CoreRequest;
 use App\Models\Company;
-use App\Models\GlobalSetting;
 use App\Models\User;
 use App\Scopes\ActiveScope;
 use App\Scopes\CompanyScope;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 
 class StoreRequest extends CoreRequest
 {
@@ -37,35 +35,24 @@ class StoreRequest extends CoreRequest
                 ->exists();
         });
 
-        // This is done to remove request()->merge(['sub_domain' => $subdomain]); and
-        // validate on sub_domain part
-        if (module_enabled('Subdomain')) {
-            if (request()->sub_domain) {
-                $subdomain = preg_replace('/\.'.preg_quote(getDomain(), '/').'/', '', request()->sub_domain, 1);
-
-                if (! preg_match('/^[A-Z][a-zA-Z0-9]+$/i', $subdomain)) {
-                    return [
-                        'sub_domain' => 'regex:/^[A-Z][a-zA-Z0-9]+$/',
-                    ];
-                }
-            }
-        }
-
         $length = str(getDomain())->length();
 
         // 1 for dot
         $min = $length + 1 + 4;
 
+        $subDomainRules = module_enabled('Subdomain')
+            ? 'required|banned_sub_domain|regex:/^[A-Z][a-zA-Z0-9]+$/i|min:' . $min . '|unique:companies,sub_domain|max:50'
+            : '';
+
         $rules = [
             'company_name' => 'required',
             'name' => 'required',
             'email' => 'required|email:rfc,strict|check_superadmin',
-            'sub_domain' => module_enabled('Subdomain') ? 'required|banned_sub_domain|min:'.$min.'|unique:companies,sub_domain|max:50' : '',
+            'sub_domain' => $subDomainRules,
         ];
 
         if (request()->has('password_confirmation')) {
             $rules['password'] = 'required|confirmed|min:8';
-
         } else {
             $rules['password'] = 'required|min:8';
         }
@@ -84,7 +71,7 @@ class StoreRequest extends CoreRequest
             }
         }
 
-        if ($global->google_recaptcha_v2_status == 'active') {
+        if ($global && $global->google_recaptcha_v2_status == 'active') {
             $rules['g-recaptcha-response'] = 'required';
         }
 
@@ -111,7 +98,7 @@ class StoreRequest extends CoreRequest
     {
         return [
             'email.check_superadmin' => __('superadmin.emailAlreadyExist'),
-            'terms_and_conditions.required' => __('superadmin.superadmin.acceptTerms').' '.__('superadmin.superadmin.termsAndCondition'),
+            'terms_and_conditions.required' => __('superadmin.superadmin.acceptTerms') . ' ' . __('superadmin.superadmin.termsAndCondition'),
             'g-recaptcha-response.required' => __('superadmin.recaptchaInvalid'),
             'g_recaptcha.prohibited' => __('superadmin.recaptchaInvalid'),
             'sub_domain.regex' => __('superadmin.validationSubDomain'),
@@ -126,7 +113,7 @@ class StoreRequest extends CoreRequest
         }
 
         // Add servername domain suffix at the end
-        $subdomain = trim($this->sub_domain, '.').'.'.getDomain();
+        $subdomain = trim($this->sub_domain, '.') . '.' . getDomain();
         $this->merge(['sub_domain' => $subdomain]);
         request()->merge(['sub_domain' => $subdomain]);
     }

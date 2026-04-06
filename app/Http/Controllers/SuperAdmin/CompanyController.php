@@ -30,7 +30,11 @@ use App\Notifications\SuperAdmin\CompanyApproved;
 use App\Scopes\ActiveScope;
 use App\Scopes\CompanyScope;
 use App\Traits\CurrencyExchange;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -54,7 +58,7 @@ class CompanyController extends AccountBaseController
     /**
      * client list
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function index(CompanyDataTable $dataTable)
     {
@@ -73,7 +77,7 @@ class CompanyController extends AccountBaseController
     /**
      * XXXXXXXXXXX
      *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @return Application|Factory|View
      */
     public function create()
     {
@@ -181,12 +185,21 @@ class CompanyController extends AccountBaseController
         $company->last_updated_by = $this->user->id;
 
         if (module_enabled('Subdomain')) {
-            $company->sub_domain = strtolower($request->sub_domain.$request->domain);
+            $company->sub_domain = strtolower($request->sub_domain . $request->domain);
         }
 
         $company->save();
 
-        $company->defaultAddress->update(['address' => $request->address]);
+        $defaultAddress = $company->defaultAddress()->first();
+        if ($defaultAddress) {
+            $defaultAddress->update(['address' => $request->address]);
+        } else {
+            $company->companyAddress()->create([
+                'address' => $request->address ?? $company->address ?? $company->company_name,
+                'location' => $company->company_name ?? 'Jaipur, India',
+                'is_default' => 1,
+            ]);
+        }
 
         return $company;
     }
@@ -196,7 +209,7 @@ class CompanyController extends AccountBaseController
         $this->editPermission = user()->permission('edit_companies');
         abort_403(! ($this->editPermission == 'all'));
 
-        $this->pageTitle = __('app.update').' '.__('superadmin.company');
+        $this->pageTitle = __('app.update') . ' ' . __('superadmin.company');
         $this->company = Company::with('defaultAddress')->findOrFail($id)->withCustomFields();
         $this->company->user = Company::firstActiveAdmin($this->company);
         $this->timezones = \DateTimeZone::listIdentifiers();
@@ -217,7 +230,6 @@ class CompanyController extends AccountBaseController
         $this->view = 'super-admin.companies.ajax.edit';
 
         return view('super-admin.companies.create', $this->data);
-
     }
 
     public function update(UpdateRequest $request, $id)
@@ -282,7 +294,7 @@ class CompanyController extends AccountBaseController
      * Display the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @return Application|Factory|View
      */
     public function show($id)
     {
@@ -343,7 +355,7 @@ class CompanyController extends AccountBaseController
 
     public function editPackage($id)
     {
-        $this->pageTitle = __('app.update').' '.__('superadmin.package');
+        $this->pageTitle = __('app.update') . ' ' . __('superadmin.package');
 
         $this->company = Company::with('package')->findOrFail($id);
         $this->packageSetting = PackageSetting::first();
@@ -460,7 +472,7 @@ class CompanyController extends AccountBaseController
             $offlineInvoice->currency_id = $currencyId;
             $offlineInvoice->package_id = $company->package_id;
             $offlineInvoice->package_type = $request->package_type;
-            $offlineInvoice->total = ($request->amount ?: $package->{$request->package_type.'_price'}) ?: 0.00;
+            $offlineInvoice->total = ($request->amount ?: $package->{$request->package_type . '_price'}) ?: 0.00;
             $offlineInvoice->gateway_name = 'offline';
             $offlineInvoice->transaction_id = $subscription->transaction_id;
 
@@ -477,11 +489,9 @@ class CompanyController extends AccountBaseController
             } else {
                 return Reply::redirect(route('superadmin.companies.show', [$company->id]), __('messages.packageChanged'));
             }
-
         } catch (\Throwable $th) {
             return Reply::error($th->getMessage());
         }
-
     }
 
     private function addEmployeeDetails($user, $employeeRole, $companyId)
@@ -489,7 +499,7 @@ class CompanyController extends AccountBaseController
         $employee = new EmployeeDetails;
         $employee->user_id = $user->id;
         $employee->company_id = $companyId;
-        $employee->employee_id = 'EMP-'.$user->id;
+        $employee->employee_id = 'EMP-' . $user->id;
         $employee->save();
 
         $search = new UniversalSearch;
@@ -545,7 +555,8 @@ class CompanyController extends AccountBaseController
                 $user->permissionTypes()->attach([
                     $permission => [
                         'permission_type_id' => $permissionType->id ?? PermissionType::ALL,
-                    ]]);
+                    ],
+                ]);
             }
         }
     }
@@ -597,7 +608,7 @@ class CompanyController extends AccountBaseController
         if ($search) {
             $companies = Company::orderby('company_name')
                 ->select('id', 'company_name', 'logo', 'light_logo')
-                ->where('company_name', 'like', '%'.$search.'%')
+                ->where('company_name', 'like', '%' . $search . '%')
                 ->take(20)
                 ->get();
         }
@@ -611,7 +622,6 @@ class CompanyController extends AccountBaseController
                 'text' => $company->company_name,
                 'logo_url' => $company->logo_url,
             ];
-
         }
 
         return response()->json($response);
@@ -628,9 +638,10 @@ class CompanyController extends AccountBaseController
         User::where('company_id', $company->id)->update(['admin_approval' => 1]);
 
         $user = Company::firstActiveAdmin($company);
-        $user->notify(new CompanyApproved($company));
+        if ($user) {
+            $user->notify(new CompanyApproved($company));
+        }
 
         return Reply::success(__('superadmin.companyApprovedSuccess'));
-
     }
 }

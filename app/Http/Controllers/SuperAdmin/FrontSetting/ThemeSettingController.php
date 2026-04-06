@@ -11,6 +11,10 @@ use App\Models\GlobalSetting;
 use App\Models\SuperAdmin\FrontDetail;
 use App\Models\SuperAdmin\GlobalCurrency;
 use App\Models\ThemeSetting;
+use App\Scopes\CompanyScope;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Application;
 
 class ThemeSettingController extends AccountBaseController
 {
@@ -30,7 +34,7 @@ class ThemeSettingController extends AccountBaseController
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Foundation\Application
+     * @return \Illuminate\Contracts\Foundation\Application|Factory|View|Application
      */
     public function index()
     {
@@ -62,12 +66,37 @@ class ThemeSettingController extends AccountBaseController
 
         $global->save();
 
-        $adminTheme = ThemeSetting::where('panel', 'superadmin')->first();
+        $adminTheme = ThemeSetting::withoutGlobalScope(CompanyScope::class)
+            ->firstOrCreate(
+                [
+                    'panel' => 'superadmin',
+                    'company_id' => null,
+                ],
+                [
+                    'header_color' => '#ed4040',
+                    'sidebar_color' => '#292929',
+                    'sidebar_text_color' => '#cbcbcb',
+                    'link_color' => '#ffffff',
+                    'sidebar_theme' => 'dark',
+                    'enable_rounded_theme' => 0,
+                ]
+            );
+
         $adminTheme->login_background = $request->logo_background_color;
-        $adminTheme->enable_rounded_theme = $request->rounded_theme;
+        $adminTheme->enable_rounded_theme = $request->has('rounded_theme') ? 1 : 0;
         $adminTheme->save();
 
         $setting = FrontDetail::first();
+        if ($setting === null) {
+            $setting = new FrontDetail;
+            $setting->get_started_show = 'yes';
+            $setting->sign_in_show = 'yes';
+            $setting->locale = $request->default_language ?? 'en';
+            $setting->homepage_background = 'default';
+            $setting->background_color = '#CDDCDC';
+            $setting->save();
+        }
+
         $setting->locale = $request->default_language;
         $setting->homepage_background = $request->homepage_background;
 
@@ -95,6 +124,5 @@ class ThemeSettingController extends AccountBaseController
         cache()->forget('global_setting');
 
         return Reply::successWithData(__('messages.updateSuccess'), ['redirectUrl' => route('superadmin.front-settings.front_theme_settings')]);
-
     }
 }

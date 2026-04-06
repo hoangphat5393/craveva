@@ -261,10 +261,6 @@
 
         function handleFail(response) {
 
-            if (typeof response.message != "undefined") {
-                showResponseMessage(response.message, "error");
-            }
-
             if (typeof response.errors != "undefined") {
                 var keys = Object.keys(response.errors);
 
@@ -369,6 +365,9 @@
                         errorElement.html(html);
                     }
                 }
+            }
+            else if (typeof response.message != "undefined") {
+                showResponseMessage(response.message, "error");
             }
         }
 

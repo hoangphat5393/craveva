@@ -6,6 +6,7 @@ use App\Helper\Reply;
 use App\Http\Requests\GoogleCaptcha\UpdateGoogleCaptchaSetting;
 use App\Models\GlobalSetting;
 use App\Models\User;
+use App\Scopes\CompanyScope;
 use Illuminate\Support\Facades\Artisan;
 
 class SecuritySettingController extends AccountBaseController
@@ -27,7 +28,18 @@ class SecuritySettingController extends AccountBaseController
      */
     public function index()
     {
-        $this->user = User::with('userAuth')->find(user()->id);
+        $this->user = User::with('userAuth')
+            ->when(user()->is_superadmin, function ($query) {
+                return $query->withoutGlobalScope(CompanyScope::class);
+            })
+            ->find(user()->id);
+
+        if (! $this->user) {
+            $this->user = User::withoutGlobalScope(CompanyScope::class)
+                ->with('userAuth')
+                ->where('user_auth_id', auth()->id())
+                ->first();
+        }
         $this->smtpSetting = smtp_setting();
         $this->setting = companyOrGlobalSetting();
 

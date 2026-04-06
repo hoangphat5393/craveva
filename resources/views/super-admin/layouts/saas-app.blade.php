@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -7,18 +8,18 @@
 
 
     <title> {{ __(isset($seoDetail) ? $seoDetail->seo_title : $pageTitle) }}
-        | {{ global_setting()->global_app_name}}</title>
+        | {{ global_setting()->global_app_name }}</title>
 
     <meta name="description" content="{{ isset($seoDetail) ? $seoDetail->seo_description : '' }}">
     <meta name="author" content="{{ isset($seoDetail) ? $seoDetail->seo_author : '' }}">
     <meta name="keywords" content="{{ isset($seoDetail) ? $seoDetail->seo_keywords : '' }}">
 
     <meta property="og:title" content="{{ isset($seoDetail) ? $seoDetail->seo_title : '' }}">
-    <meta property="og:type" content="website"/>
+    <meta property="og:type" content="website" />
     <meta property="og:url" content="{{ url('/') }}">
-    <meta property="og:site_name" content="{{global_setting()->global_app_name}}"/>
+    <meta property="og:site_name" content="{{ global_setting()->global_app_name }}" />
     <meta property="og:description" content="{{ isset($seoDetail) ? $seoDetail->seo_description : '' }}">
-    <meta property="og:image" content="{{ isset($seoDetail) ? $seoDetail->og_image_url : '' }}"/>
+    <meta property="og:image" content="{{ isset($seoDetail) ? $seoDetail->og_image_url : '' }}" />
 
     <meta name="msapplication-TileColor" content="#ffffff">
     <meta name="theme-color" content="#ffffff">
@@ -26,8 +27,7 @@
     <meta name="msapplication-TileImage" content="{{ global_setting()->favicon_url }}">
 
     <!-- Bootstrap CSS -->
-    <link type="text/css" rel="stylesheet" media="all"
-          href="{{ asset('saas/vendor/bootstrap/css/bootstrap.min.css') }}">
+    <link type="text/css" rel="stylesheet" media="all" href="{{ asset('saas/vendor/bootstrap/css/bootstrap.min.css') }}">
     <link type="text/css" rel="stylesheet" media="all" href="{{ asset('saas/vendor/animate-css/animate.min.css') }}">
     <link type="text/css" rel="stylesheet" media="all" href="{{ asset('saas/vendor/slick/slick.css') }}">
     <link type="text/css" rel="stylesheet" media="all" href="{{ asset('saas/vendor/slick/slick-theme.css') }}">
@@ -39,16 +39,13 @@
     <link type="text/css" rel="stylesheet" media="all" href="{{ asset('saas/css/main.css') }}">
     <!-- Template Font Family  -->
 
-    <link type="text/css" rel="stylesheet" media="all"
-          href="{{ asset('saas/vendor/material-design-iconic-font/css/material-design-iconic-font.min.css') }}">
+    <link type="text/css" rel="stylesheet" media="all" href="{{ asset('saas/vendor/material-design-iconic-font/css/material-design-iconic-font.min.css') }}">
     <link rel="stylesheet" href="{{ asset('saas/css/cookieconsent.css') }}" media="print" onload="this.media='all'">
     <link type="text/css" rel="stylesheet" media="all" href="{{ asset('saas/css/quill.snow.css') }}">
     <link type="text/css" rel="stylesheet" media="all" href="{{ asset('saas/css/saas-rtl.css') }}">
     <script src="https://www.google.com/recaptcha/api.js"></script>
     <style>
-
-        {!! $frontDetail->custom_css_theme_two !!}
-        :root {
+        {!! $frontDetail->custom_css_theme_two !!} :root {
             --main-color: {{ $frontDetail->primary_color }};
             --main-home-background: {{ $frontDetail->background_color }};
         }
@@ -105,7 +102,6 @@
         .f-14 {
             font-size: 14px !important;
         }
-
     </style>
 
     @if ($frontDetail->homepage_background != 'default')
@@ -128,7 +124,7 @@
         @if ($frontDetail->homepage_background == 'color' || $frontDetail->homepage_background == 'image_and_color')
             <style>
                 .section-hero .banner::after {
-                    background-color: {{ $frontDetail->background_color }}  !important;
+                    background-color: {{ $frontDetail->background_color }} !important;
                 }
 
                 .breadcrumb-section {
@@ -140,10 +136,9 @@
     @endif
 
     @foreach ($frontWidgets as $item)
-        @if(!is_null($item->header_script))
+        @if (!is_null($item->header_script))
             {!! $item->header_script !!}
         @endif
-
     @endforeach
 
     @stack('head-script')
@@ -152,34 +147,34 @@
 
 <body id="home" class="{{ isRtl() ? (session('changedRtl') === false ? '' : 'rtl') : (session('changedRtl') == true ? 'rtl' : '') }}">
 
-@include('super-admin.sections.saas.saas_header')
+    @include('super-admin.sections.saas.saas_header')
 
-@yield('header-section')
+    @yield('header-section')
 
-@yield('content')
+    @yield('content')
 
-@include('super-admin.saas.section.cta')
+    @include('super-admin.saas.section.cta')
 
-@include('super-admin.sections.saas.saas_footer')
+    @include('super-admin.sections.saas.saas_footer')
 
-<!-- Scripts -->
-<script src="{{ asset('saas/vendor/jquery/jquery.min.js') }}"></script>
-<script src="{{ asset('saas/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-<script src="{{ asset('saas/vendor/slick/slick.min.js') }}"></script>
-<script src="{{ asset('saas/vendor/wowjs/wow.min.js') }}"></script>
-<script src="{{ asset('saas/js/main.js') }}"></script>
-<script src="{{ asset('front/plugin/helper/helper.js') }}"></script>
+    <!-- Scripts -->
+    <script src="{{ asset('saas/vendor/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('saas/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('saas/vendor/slick/slick.min.js') }}"></script>
+    <script src="{{ asset('saas/vendor/wowjs/wow.min.js') }}"></script>
+    <script src="{{ asset('saas/js/main.js') }}"></script>
+    <script src="{{ asset('front/plugin/helper/helper.js') }}"></script>
 
-<!-- Global Required JS -->
-@foreach ($frontWidgets as $item)
-    @if(!is_null($item->footer_script))
-        {!! $item->footer_script !!}
-    @endif
+    <!-- Global Required JS -->
+    @foreach ($frontWidgets as $item)
+        @if (!is_null($item->footer_script))
+            {!! $item->footer_script !!}
+        @endif
+    @endforeach
 
-@endforeach
+    @stack('footer-script')
 
-@stack('footer-script')
-
-@includeIf('super-admin.sections.cookie-consent')
+    @includeIf('super-admin.sections.cookie-consent')
 </body>
+
 </html>

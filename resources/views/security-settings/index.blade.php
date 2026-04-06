@@ -6,10 +6,10 @@
     <div class="w-100 d-flex ">
 
         {{-- SAAS --}}
-        @if(user()->is_superadmin)
-            <x-super-admin.setting-sidebar :activeMenu="$activeSettingMenu"/>
+        @if (user()->is_superadmin)
+            <x-super-admin.setting-sidebar :activeMenu="$activeSettingMenu" />
         @else
-            <x-setting-sidebar :activeMenu="$activeSettingMenu"/>
+            <x-setting-sidebar :activeMenu="$activeSettingMenu" />
         @endif
 
         <x-setting-card>
@@ -18,17 +18,11 @@
                     <nav class="tabs px-4 border-bottom-grey">
                         <div class="nav" id="nav-tab" role="tablist">
 
-                            <a class="nav-item nav-link f-15 active 2fa" data-toggle="tab"
-                                href="{{ route('security-settings.index') }}" role="tab" aria-controls="nav-2fa"
-                                aria-selected="true">@lang('app.menu.twoFactorAuthentication') <i
-                                    class="fa fa-circle ml-1 {{ ($user->userAuth->two_fa_verify_via != '' && ($user->userAuth->two_factor_confirmed || $user->userAuth->two_factor_email_confirmed)) ? 'text-light-green' : 'text-red' }}"></i></a>
+                            <a class="nav-item nav-link f-15 active 2fa" data-toggle="tab" href="{{ route('security-settings.index') }}" role="tab" aria-controls="nav-2fa" aria-selected="true">@lang('app.menu.twoFactorAuthentication') <i
+                                    class="fa fa-circle ml-1 {{ $user->userAuth->two_fa_verify_via != '' && ($user->userAuth->two_factor_confirmed || $user->userAuth->two_factor_email_confirmed) ? 'text-light-green' : 'text-red' }}"></i></a>
 
-                            @if(user()->permission('manage_superadmin_security_settings') == 'all' && user()->is_superadmin)
-                                <a class="nav-item nav-link f-15 recaptcha" data-toggle="tab"
-                                    href="{{ route('security-settings.index') }}?tab=recaptcha" role="tab"
-                                    aria-controls="nav-recaptcha"
-                                    aria-selected="false">@lang('modules.accountSettings.googleRecaptcha') <i
-                                        class="fa fa-circle ml-1 {{ global_setting()->google_recaptcha_status == 'active' ? 'text-light-green' : 'text-red' }}"></i></a>
+                            @if (user()->permission('manage_superadmin_security_settings') == 'all' && user()->is_superadmin)
+                                <a class="nav-item nav-link f-15 recaptcha" data-toggle="tab" href="{{ route('security-settings.index') }}?tab=recaptcha" role="tab" aria-controls="nav-recaptcha" aria-selected="false">@lang('modules.accountSettings.googleRecaptcha') <i class="fa fa-circle ml-1 {{ global_setting()->google_recaptcha_status == 'active' ? 'text-light-green' : 'text-red' }}"></i></a>
                             @endif
 
                         </div>
@@ -43,7 +37,6 @@
 
     </div>
     <!-- SETTINGS END -->
-
 @endsection
 
 @push('scripts')

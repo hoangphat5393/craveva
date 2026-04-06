@@ -225,6 +225,8 @@
                         data: $('#login-form').serialize(),
                         disableButton: true,
                         buttonSelector: "#submit-login",
+                        messagePosition: "inline",
+                        errorPosition: "field",
                     });
                 });
 
@@ -244,6 +246,8 @@
                         buttonSelector: "#submit-next",
                         type: "POST",
                         data: $('#login-form').serialize(),
+                        messagePosition: "inline",
+                        errorPosition: "field",
                         success: function(response) {
                             if (response.status === 'success') {
                                 $('#submit-next, #signup-client-next, #signup-customer').remove();
@@ -257,18 +261,22 @@
                 });
 
                 @if (session('message'))
-                    Swal.fire({
-                        icon: 'error',
-                        text: '{{ session('message') }}',
-                        showConfirmButton: true,
-                        customClass: {
-                            confirmButton: 'btn btn-primary',
-                        },
-                        showClass: {
-                            popup: 'swal2-noanimation',
-                            backdrop: 'swal2-noanimation'
-                        },
-                    })
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            text: '{{ session('message') }}',
+                            showConfirmButton: true,
+                            customClass: {
+                                confirmButton: 'btn btn-primary',
+                            },
+                            showClass: {
+                                popup: 'swal2-noanimation',
+                                backdrop: 'swal2-noanimation'
+                            },
+                        })
+                    } else {
+                        alert('{{ session('message') }}');
+                    }
                 @endif
 
             });

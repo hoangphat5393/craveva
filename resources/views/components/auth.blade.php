@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="icon" type="image/png" sizes="16x16" href="{{ $globalSetting->favicon_url }}">
-    <link rel="manifest" href="{{ $globalSetting->favicon_url }}">
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
     <meta name="msapplication-TileColor" content="#ffffff">
     <meta name="msapplication-TileImage" content="{{ $globalSetting->favicon_url }}">
     <meta name="theme-color" content="#ffffff">
@@ -16,6 +16,7 @@
 
     <!-- Template CSS -->
     <link href="{{ asset('vendor/helper/helper.css') }}" rel="stylesheet" defer="defer">
+    <link href="{{ asset('vendor/sweetalert/sweetalert2.min.css') }}" rel="stylesheet" defer="defer">
     <link type="text/css" rel="stylesheet" media="all" href="{{ asset('css/main.css') }}">
 
     <title>{{ $globalSetting->global_app_name ?? $globalSetting->app_name }}</title>
@@ -129,6 +130,7 @@
     <script src="{{ asset('vendor/jquery/all.min.js') }}" defer="defer"></script>
 
     <!-- Template JS -->
+    <script src="{{ asset('vendor/sweetalert/sweetalert2.all.min.js') }}"></script>
     <script src="{{ asset('js/main.js') }}"></script>
     <script src="{{ asset('vendor/helper/helper.js') }}"></script>
     <script>

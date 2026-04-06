@@ -7,6 +7,8 @@ use App\Models\FileStorage;
 use App\Models\StorageSetting;
 use Exception;
 use Froiden\RestAPI\Exceptions\ApiException;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\ImageManagerStatic as Image;
@@ -24,8 +26,8 @@ class Files
      * @param  null  $width
      * @return string
      *
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
-     * @throws \Exception
+     * @throws FileNotFoundException
+     * @throws Exception
      */
     public static function upload($image, string $dir, $width = null, int $height = 800)
     {
@@ -33,24 +35,24 @@ class Files
         config(['filesystems.default' => 'local']);
 
         $uploadedFile = $image;
-        $folder = $dir . '/';
+        $folder = trim($dir, '/\\');
 
         self::validateUploadedFile($uploadedFile);
 
         $realPath = $uploadedFile->getRealPath();
         $newName = self::generateNewFileName($uploadedFile->getClientOriginalName());
         if ($newName === '') {
-            $newName = md5(microtime()) . '.xlsx';
+            $newName = md5(microtime()).'.xlsx';
         }
 
-        $tempPath = public_path(self::UPLOAD_FOLDER . '/temp/' . $newName);
+        $tempPath = public_path(self::UPLOAD_FOLDER.'/temp/'.$newName);
 
         /** Check if folder exists or not. If not then create the folder (temp + target dir for staging) */
         self::createDirectoryIfNotExist('temp');
         self::createDirectoryIfNotExist($folder);
 
-        $newPath = $folder . '/' . $newName;
-        $tempRelative = 'temp/' . $newName;
+        $newPath = ($folder !== '' ? ($folder.'/') : '').$newName;
+        $tempRelative = 'temp/'.$newName;
 
         // On Windows or some PHP configs getRealPath() can return false even when file is valid; fallback to writing content to temp
         if ($realPath === false || $realPath === '') {
@@ -96,7 +98,7 @@ class Files
      * XLSX files are ZIP archives and start with PK (0x50 0x4B).
      *
      * @param  string  $filePath  Full path to the file
-     * @return bool  True if file appears to be CSV disguised as xlsx
+     * @return bool True if file appears to be CSV disguised as xlsx
      */
     public static function isCsvDisguisedAsXlsx(string $filePath): bool
     {
@@ -223,11 +225,11 @@ class Files
         }
 
         if (in_array($extension, $forbiddenExtensions)) {
-            throw new Exception('You are not allowed to upload files with extension: ' . $extension);
+            throw new Exception('You are not allowed to upload files with extension: '.$extension);
         }
 
         if (in_array($mimeType, $forbiddenMimeTypes)) {
-            throw new Exception('You are not allowed to upload files with mime type: ' . $mimeType);
+            throw new Exception('You are not allowed to upload files with mime type: '.$mimeType);
         }
 
         // Prevent uploading .htaccess or similar files by name
@@ -260,7 +262,7 @@ class Files
             $companyAllowedStorageSize = $maxStorageInBytes - $companyFilesSize;
 
             if ($uploadedFile->getSize() > $companyAllowedStorageSize) {
-                throw new Exception('You are not allowed to upload a file with filesize greater than ' . $companyAllowedStorageSize . ' bytes');
+                throw new Exception('You are not allowed to upload a file with filesize greater than '.$companyAllowedStorageSize.' bytes');
             }
         }
     }
@@ -285,15 +287,17 @@ class Files
         $ext = strtolower(File::extension($currentFileName));
         $newName = md5(microtime());
 
-        return ($ext === '') ? $newName : $newName . '.' . $ext;
+        return ($ext === '') ? $newName : $newName.'.'.$ext;
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public static function uploadLocalOrS3($uploadedFile, $dir, $width = null, int $height = 400)
     {
         self::validateUploadedFile($uploadedFile);
+        $dir = trim((string) $dir);
+        $dir = trim($dir, '/\\');
 
         try {
             // If width and height is provided then upload image
@@ -310,8 +314,14 @@ class Files
                 $fileVisibility = ['directory_visibility' => 'public', 'visibility' => 'public'];
             }
 
-            /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
+            /** @var FilesystemAdapter $disk */
             $disk = Storage::disk(config('filesystems.default'));
+
+            if (config('filesystems.default') === 'local') {
+                self::createDirectoryIfNotExist($dir);
+            }
+
+            $filePath = ($dir !== '' ? ($dir.'/') : '').$newName;
 
             $realPath = $uploadedFile->getRealPath();
             if ($realPath === false || $realPath === '') {
@@ -321,21 +331,21 @@ class Files
                     if ($msg === 'messages.pleaseSelectFile') {
                         $msg = 'Please select a valid file to upload.';
                     }
-                    throw new \Exception($msg);
+                    throw new Exception($msg);
                 }
-                $disk->put($dir . '/' . $newName, $content, $fileVisibility);
+                $disk->put($filePath, $content, $fileVisibility);
             } else {
                 $disk->putFileAs($dir, $uploadedFile, $newName, $fileVisibility);
             }
 
             // Upload files to aws s3 or digitalocean or wasabi or minio
-            if ($disk->missing($dir . '/' . $newName)) {
-                throw new \Exception(__('app.fileNotUploaded') . ' File was not stored. Check disk: ' . config('filesystems.default'));
+            if ($disk->missing($filePath)) {
+                throw new Exception(__('app.fileNotUploaded').' File was not stored. Check disk: '.config('filesystems.default'));
             }
 
             return $newName;
-        } catch (\Exception $e) {
-            throw new \Exception(__('app.fileNotUploaded') . ' ' . $e->getMessage() . ' on ' . config('filesystems.default'));
+        } catch (Exception $e) {
+            throw new Exception(__('app.fileNotUploaded').' '.$e->getMessage().' on '.config('filesystems.default'));
         }
     }
 
@@ -373,7 +383,7 @@ class Files
             $fileExist->delete();
         }
 
-        $filePath = $dir . '/' . $filename;
+        $filePath = $dir.'/'.$filename;
         $disk = Storage::disk(config('filesystems.default'));
 
         // Delete from Cloud
@@ -382,7 +392,7 @@ class Files
                 if ($disk->exists($filePath)) {
                     $disk->delete($filePath);
                 }
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 return true;
             }
 
@@ -390,7 +400,7 @@ class Files
         }
 
         // Delete from Local
-        $path = public_path(Files::UPLOAD_FOLDER . '/' . $filePath);
+        $path = public_path(Files::UPLOAD_FOLDER.'/'.$filePath);
         if (! File::exists($path)) {
             return true;
         }
@@ -409,7 +419,7 @@ class Files
         $dir = trim($folder);
         try {
             Storage::deleteDirectory($dir);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return true;
         }
 
@@ -423,25 +433,37 @@ class Files
 
     public static function createDirectoryIfNotExist($folder)
     {
-        $directoryPath = public_path(self::UPLOAD_FOLDER . '/' . $folder);
+        $folder = trim((string) $folder);
+        $folder = trim($folder, '/\\');
+        $relativePath = self::UPLOAD_FOLDER.($folder !== '' ? ('/'.$folder) : '');
+        $directoryPath = public_path($relativePath);
 
         if (! File::exists($directoryPath)) {
-            File::makeDirectory($directoryPath, 0775, true);
+            $created = File::makeDirectory($directoryPath, 0775, true);
+
+            if (! $created && ! File::exists($directoryPath)) {
+                throw new Exception('Unable to create a directory at '.$directoryPath.'.');
+            }
+        }
+
+        if (File::exists($directoryPath) && ! is_writable($directoryPath)) {
+            throw new Exception('Directory is not writable at '.$directoryPath.'.');
         }
     }
 
     public static function uploadImage($uploadedFile, string $folder, $width = null, int $height = 800)
     {
+        $folder = trim($folder, '/\\');
         $newName = self::generateNewFileName($uploadedFile->getClientOriginalName());
 
-        $tempPath = public_path(self::UPLOAD_FOLDER . '/temp/' . $newName);
+        $tempPath = public_path(self::UPLOAD_FOLDER.'/temp/'.$newName);
 
         /** Check if folder exits or not. If not then create the folder */
         self::createDirectoryIfNotExist($folder);
         self::createDirectoryIfNotExist('temp');
 
-        $newPath = $folder . '/' . $newName;
-        $tempRelative = 'temp/' . $newName;
+        $newPath = ($folder !== '' ? ($folder.'/') : '').$newName;
+        $tempRelative = 'temp/'.$newName;
 
         $realPath = $uploadedFile->getRealPath();
         if ($realPath === false || $realPath === '') {
@@ -451,7 +473,7 @@ class Files
                 if ($msg === 'messages.pleaseSelectFile') {
                     $msg = 'Please select a valid file to upload.';
                 }
-                throw new \Exception($msg);
+                throw new Exception($msg);
             }
             File::put($tempPath, $content);
         } else {
@@ -460,7 +482,7 @@ class Files
 
         if (! Storage::disk('local')->exists($tempRelative)) {
             $msg = __('messages.pleaseSelectFile');
-            throw new \Exception($msg !== 'messages.pleaseSelectFile' ? $msg : 'Could not store uploaded file temporarily.');
+            throw new Exception($msg !== 'messages.pleaseSelectFile' ? $msg : 'Could not store uploaded file temporarily.');
         }
 
         $tempDiskPath = Storage::disk('local')->path($tempRelative);
@@ -488,7 +510,7 @@ class Files
 
     public static function uploadLocalFile($fileName, $path, $companyId = null): void
     {
-        if (! File::exists(public_path(Files::UPLOAD_FOLDER . '/' . $path . '/' . $fileName))) {
+        if (! File::exists(public_path(Files::UPLOAD_FOLDER.'/'.$path.'/'.$fileName))) {
             return;
         }
 
@@ -498,7 +520,7 @@ class Files
 
     public static function saveFileInfo($fileName, $path, $companyId = null)
     {
-        $filePath = public_path(Files::UPLOAD_FOLDER . '/' . $path . '/' . $fileName);
+        $filePath = public_path(Files::UPLOAD_FOLDER.'/'.$path.'/'.$fileName);
 
         $fileStorage = FileStorage::where('filename', $fileName)->first() ?: new FileStorage;
         $fileStorage->company_id = $companyId;
@@ -513,15 +535,15 @@ class Files
     public static function storeLocalFileOnCloud($fileName, $path)
     {
         if (config('filesystems.default') != 'local') {
-            $filePath = public_path(Files::UPLOAD_FOLDER . '/' . $path . '/' . $fileName);
+            $filePath = public_path(Files::UPLOAD_FOLDER.'/'.$path.'/'.$fileName);
             try {
                 $contents = File::get($filePath);
-                Storage::disk(config('filesystems.default'))->put($path . '/' . $fileName, $contents);
+                Storage::disk(config('filesystems.default'))->put($path.'/'.$fileName, $contents);
 
                 // TODO: Delete local file in Next release
                 // File::delete($filePath);
                 return true;
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 info($e->getMessage());
             }
         }
@@ -560,7 +582,7 @@ class Files
                 /** @phpstan-ignore-next-line */
                 $companyId = ($model == Company::class) ? $item->id : $item->company_id;
 
-                $filePath = public_path(self::UPLOAD_FOLDER . '/' . $path . '/' . $fileName);
+                $filePath = public_path(self::UPLOAD_FOLDER.'/'.$path.'/'.$fileName);
 
                 if (! File::exists($filePath)) {
                     continue;
@@ -584,7 +606,7 @@ class Files
             // Format the size in either MB or GB
             if ($sizeInBytes >= 1 << 30) {
                 return [
-                    'size' => round($sizeInBytes / (1 << 30), 2) . ' GB',
+                    'size' => round($sizeInBytes / (1 << 30), 2).' GB',
                     'greater' => true,
                 ];
             }
@@ -593,23 +615,23 @@ class Files
 
             if ($sizeInBytes >= 1 << 20) {
                 return [
-                    'size' => round($sizeInBytes / (1 << 20), 2) . ' MB',
+                    'size' => round($sizeInBytes / (1 << 20), 2).' MB',
                     'greater' => $mb >= self::REQUIRED_FILE_UPLOAD_SIZE,
                 ];
             }
 
             if ($sizeInBytes >= 1 << 10) {
                 return [
-                    'size' => round($sizeInBytes / (1 << 10), 2) . ' KB',
+                    'size' => round($sizeInBytes / (1 << 10), 2).' KB',
                     'greater' => false,
                 ];
             }
 
             return [
-                'size' => $sizeInBytes . ' Bytes',
+                'size' => $sizeInBytes.' Bytes',
                 'greater' => false,
             ];
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return [
                 'size' => '0 Bytes',
                 'greater' => true,
@@ -630,9 +652,18 @@ class Files
     // Helper function to convert human-readable size to bytes
     public static function returnBytes($val)
     {
-        $val = trim($val);
-        $valNew = substr($val, 0, -1);
+        $val = trim((string) $val);
+        if ($val === '') {
+            return 0;
+        }
+
         $last = strtolower($val[strlen($val) - 1]);
+
+        if (! ctype_alpha($last)) {
+            return (int) $val;
+        }
+
+        $valNew = (float) substr($val, 0, -1);
 
         switch ($last) {
             case 'g':

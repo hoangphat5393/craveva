@@ -139,21 +139,27 @@
 @push('footer-script')
     <script>
         $('#save-form').click(function () {
-
-
-            window.apiHttp.postUrlEncoded('{{ route('front.signup.store') }}', $('#register').serialize()).then(function (response) {
-                if (response.status == 'success') {
-                    $('#form-box').remove();
+            $.easyAjax({
+                type: 'POST',
+                url: "{{ route('front.signup.store') }}",
+                container: '#register',
+                data: $('#register').serialize(),
+                messagePosition: 'inline',
+                errorPosition: 'field',
+                success: function (response) {
+                    if (response.status === 'success') {
+                        $('#form-box').remove();
+                        if (response.action === 'redirect' && response.url) {
+                            window.location.href = response.url;
+                        }
+                    }
+                },
+                complete: function () {
+                    @if ($global->google_recaptcha_status)
+                    grecaptcha.reset();
+                    @endif
                 }
-            }).catch(function (err) {
-                $.handleApiFormError(err);
-                @if ($global->google_recaptcha_status)
-                grecaptcha.reset();
-                @endif
             });
-            @if ($global->google_recaptcha_status)
-            grecaptcha.reset();
-            @endif
         });
     </script>
     @if ($global->google_recaptcha_status == 'active' && $global->google_recaptcha_v2_status == 'active')

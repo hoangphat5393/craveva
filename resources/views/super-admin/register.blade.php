@@ -175,33 +175,39 @@
                     var prev = $btn.html();
                     $.easyBlockUI('.login_box');
                     $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (document.loading || 'Loading...'));
-                    window.apiHttp.postUrlEncoded(url, $('#login-form').serialize()).then(function (response) {
-                        if (response.status == 'success') {
-                            $('#form-box').remove();
-                            if (response.action === 'redirect' && response.url) {
-                                window.location.href = response.url;
-                            } else if (typeof response.message !== 'undefined') {
-                                var ele = $('.login_box').find('#alert');
-                                var html = '<div class="alert alert-success">' + response.message + '</div>';
-                                if (ele.length === 0) {
-                                    $('.login_box').find('.form-group:first').before('<div id="alert">' + html + '</div>');
-                                } else {
-                                    ele.html(html);
+                    $.easyAjax({
+                        type: 'POST',
+                        url: url,
+                        container: '#login-form',
+                        data: $('#login-form').serialize(),
+                        messagePosition: 'inline',
+                        errorPosition: 'field',
+                        blockUI: false,
+                        disableButton: false,
+                        success: function (response) {
+                            if (response.status === 'success') {
+                                $('#form-box').remove();
+                                if (response.action === 'redirect' && response.url) {
+                                    window.location.href = response.url;
+                                } else if (typeof response.message !== 'undefined') {
+                                    var ele = $('.login_box').find('#alert');
+                                    var html = '<div class="alert alert-success">' + response.message + '</div>';
+                                    if (ele.length === 0) {
+                                        $('.login_box').find('.form-group:first').before('<div id="alert">' + html + '</div>');
+                                    } else {
+                                        ele.html(html);
+                                    }
                                 }
                             }
+                        },
+                        complete: function () {
+                            $.easyUnblockUI('.login_box');
+                            $btn.prop('disabled', false).html(prev);
+                            @if($global->google_recaptcha_status)
+                            grecaptcha.reset();
+                            @endif
                         }
-                    }).catch(function (err) {
-                        $.handleApiFormError(err);
-                        @if($global->google_recaptcha_status)
-                        grecaptcha.reset();
-                        @endif
-                    }).finally(function () {
-                        $.easyUnblockUI('.login_box');
-                        $btn.prop('disabled', false).html(prev);
                     });
-                    @if($global->google_recaptcha_status)
-                    grecaptcha.reset();
-                    @endif
                 });
 
             // @if (session('message'))

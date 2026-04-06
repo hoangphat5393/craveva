@@ -43,7 +43,13 @@ package-lock.json
 pnpm-lock.yaml
 
 # Invalid lang file name that breaks git index (delete manually from LanguagePack app/en if present)
-Modules/LanguagePack/Languages/app/en/(Added By*
+/Modules/LanguagePack/Languages/app/en/(Added By*
+/lang/*
+/resources/lang/*
+/Modules/*/Resources/lang/*
+!/lang/.gitkeep
+!/resources/lang/.gitkeep
+!/Modules/*/Resources/lang/.gitkeep
 
 # Local copies of staging SQL/tar backups (large; do not commit)
 /staging-backups-*/

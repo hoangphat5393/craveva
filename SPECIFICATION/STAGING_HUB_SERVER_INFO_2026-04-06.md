@@ -2,6 +2,8 @@
 
 **Thu thập:** 2026-04-06 (SSH read-only). Giá trị **thay đổi theo thời gian** — cần `free -h`, `uptime` khi điều tra sự cố.
 
+**Redis / phpredis (SSH, 2026-04-06):** **Staging** — trước đó chỉ có **`php8.3-redis`**, chưa có Redis server; đã **`apt install redis-server`** (Ubuntu **6.0.16**), `redis-cli ping` → PONG. **Hub** — Redis (aaPanel) đã chạy **127.0.0.1:6379**; đã cài **`php8.3-redis`** (sury **6.3.0**), bật **CLI + FPM**. Hub: `apt` báo lỗi cấu hình gói **MariaDB client** cũ (không chặn cài phpredis) — nên xử lý khi bảo trì.
+
 **Cập nhật FPM (mục tiêu vận hành):** **`memory_limit = 1024M`** + **`pm.max_children = 2`** trên **cả staging và hub** — trần lý thuyết pool PHP web **~2 GiB** (2×1024M), phù hợp VM **~4 GiB RAM (cũ)**; hiện tại RAM đã nâng lên **16GB (Hub)** và **8GB (Staging)** nhưng vẫn giữ `max_children = 2` để an toàn cho import lớn (submit HTTP).
 
 **Ràng buộc PHP-FPM (`pm = dynamic`):** khi hạ **`pm.max_children`** xuống **2**, bắt buộc **`pm.max_spare_servers` ≤ `pm.max_children`** (và các chỉ số spare/start phải nhất quán). Nếu chỉ sửa `max_children` mà để **`pm.max_spare_servers = 3`**, FPM **không khởi động** (exit **78**) → Nginx **502 Bad Gateway**.
@@ -69,6 +71,14 @@
 
 - **memory_limit:** `-1` (không giới hạn trong ini)
 
+### Redis server & PHP phpredis (quét **2026-04-06**)
+
+| Thành phần             | Trạng thái                                                                                                           |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| **Redis server**       | Gói Ubuntu **`redis-server` 5:6.0.16** (`redis-server.service`), **`active`**, `redis-cli ping` → **PONG**.          |
+| **redis-cli**          | Có (gói `redis-tools`).                                                                                              |
+| **Extension phpredis** | Gói **`php8.3-redis`** (deb.sury.org **6.3.0**), bật cho **CLI** và **FPM** (`php -m` / `php-fpm8.3 -m` có `redis`). |
+
 ---
 
 ## 3. Hub (`craveva-hub-server`) — chi tiết
@@ -112,6 +122,16 @@
 ### PHP 8.3 CLI
 
 - **memory_limit:** `-1`
+
+### Redis server & PHP phpredis (quét **2026-04-06**)
+
+| Thành phần             | Trạng thái                                                                                                                                                                                                       |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Redis server**       | Dịch vụ **aaPanel** (`redis.service`, init script), binary **`/www/server/redis/src/redis-server`**, cấu hình **`/www/server/redis/redis.conf`**, lắng nghe **127.0.0.1:6379**, trạng thái **active (running)**. |
+| **redis-cli**          | **`/usr/bin/redis-cli`** → symlink tới `/www/server/redis/src/redis-cli`.                                                                                                                                        |
+| **Extension phpredis** | Đã cài **`php8.3-redis`** (ondrej/sury **6.3.0**, kèm **`php8.3-igbinary`**), symlink **`/etc/php/8.3/{cli,fpm}/conf.d/25-redis.ini`** → `mods-available/redis.ini`; **CLI + FPM** đều có module **`redis`**.    |
+
+**Ghi chú vận hành Hub:** Sau `apt-get install php8.3-redis`, **dpkg** báo lỗi cấu hình chuỗi **`mariadb-common` / `mariadb-client-*`** (có thể do VM dùng stack DB khác / aaPanel; lỗi **không** ngăn cài đặt phpredis). Khi bảo trì, có thể chạy `sudo dpkg --configure -a` hoặc sửa theo hướng dẫn aaPanel — **xác nhận trước** trên máy production.
 
 ---
 
@@ -163,6 +183,17 @@ free -h
 swapon --show
 uptime
 grep -E '^memory_limit|^pm.max_children' /etc/php/8.3/fpm/php.ini /etc/php/8.3/fpm/pool.d/www.conf 2>/dev/null
+```
+
+### 7a. Redis & PHP phpredis
+
+```bash
+# Redis server (Ubuntu package: systemctl status redis-server)
+redis-cli ping
+
+# Extension (CLI + FPM pool)
+php -m | grep -i '^redis$' || true
+php-fpm8.3 -m 2>/dev/null | grep -i '^redis$' || true
 ```
 
 ### 7b. Áp dụng / đồng bộ pool — `1024M` + `pm.max_children = 2` (+ spare khớp)

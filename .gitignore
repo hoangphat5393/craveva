@@ -51,6 +51,13 @@ pnpm-lock.yaml
 !/resources/lang/.gitkeep
 !/Modules/*/Resources/lang/.gitkeep
 
+# Laravel Boost
+.mcp.json
+boost.json
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+
 # Local copies of staging SQL/tar backups (large; do not commit)
 /staging-backups-*/
 

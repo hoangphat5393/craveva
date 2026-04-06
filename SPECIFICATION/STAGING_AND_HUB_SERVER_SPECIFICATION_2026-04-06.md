@@ -1,8 +1,8 @@
 # Staging & Hub — inventory tài nguyên & PHP (snapshot)
 
-**Thu thập:** 2026-04-03 (SSH read-only). Giá trị **thay đổi theo thời gian** — cần `free -h`, `uptime` khi điều tra sự cố.
+**Thu thập:** 2026-04-06 (SSH read-only). Giá trị **thay đổi theo thời gian** — cần `free -h`, `uptime` khi điều tra sự cố.
 
-**Cập nhật FPM (mục tiêu vận hành):** **`memory_limit = 1024M`** + **`pm.max_children = 2`** trên **cả staging và hub** — trần lý thuyết pool PHP web **~2 GiB** (2×1024M), phù hợp VM **~4 GiB RAM** và import lớn (submit HTTP).
+**Cập nhật FPM (mục tiêu vận hành):** **`memory_limit = 1024M`** + **`pm.max_children = 2`** trên **cả staging và hub** — trần lý thuyết pool PHP web **~2 GiB** (2×1024M), phù hợp VM **~4 GiB RAM (cũ)**; hiện tại RAM đã nâng lên **16GB (Hub)** và **8GB (Staging)** nhưng vẫn giữ `max_children = 2` để an toàn cho import lớn (submit HTTP).
 
 **Ràng buộc PHP-FPM (`pm = dynamic`):** khi hạ **`pm.max_children`** xuống **2**, bắt buộc **`pm.max_spare_servers` ≤ `pm.max_children`** (và các chỉ số spare/start phải nhất quán). Nếu chỉ sửa `max_children` mà để **`pm.max_spare_servers = 3`**, FPM **không khởi động** (exit **78**) → Nginx **502 Bad Gateway**.
 
@@ -10,16 +10,16 @@
 
 **Supervisor (staging):** đã cài **`supervisor`**, program **`craveva-queue-all`** chạy `queue:work` nền (**2026-04-04**). `.env` staging: **`IMPORT_PROGRESS_RUN_QUEUE_WORKER=false`**. Chi tiết: `docs/SERVER_RUNBOOK_VI.md`, `deploy/supervisor/craveva-queue-all.conf.example`.
 
-**Mục đích:** giải thích vì sao sau import / tăng `max_execution_time` / upload limit, máy có thể **load cao hoặc “đơ”**: RAM nhỏ, swap, và **oversubscription** `memory_limit` PHP-FPM.
+**Mục đích:** giải thích vì sao sau import / tăng `max_execution_time` / upload limit, máy có thể **load cao hoặc “đơ”**: RAM nhỏ (cũ), swap, và **oversubscription** `memory_limit` PHP-FPM.
 
 ---
 
 ## 1. Tóm tắt nhanh
 
-| Máy                    | RAM      | Swap                                           | CPU (vCPU)              | Ổ `/`            | Ghi chú FPM (mục tiêu)                                                                                                                                                                                     |
-| ---------------------- | -------- | ---------------------------------------------- | ----------------------- | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **craveva-staging**    | ~3.8 GiB | 2 GiB (file `/swapfile`, lúc quét: **0 dùng**) | 2 × AMD EPYC 7B12       | 20G (~61% used)  | **`1024M` + `pm.max_children = 2`** + **`pm.max_spare_servers = 2`**. **Supervisor** `craveva-queue-all` (**2026-04-04**). Trước đó 502 do spare **3** &gt; children **2** — xem đoạn ràng buộc phía trên. |
-| **craveva-hub-server** | ~3.8 GiB | 2 GiB (lúc quét: **~1.5 GiB đã dùng**)         | 4 × Intel Xeon @ 2.2GHz | 194G (~29% used) | Cùng bộ **`1024M` + children 2 + max_spare 2** (**2026-04-04**). Hub cũng từng lệch spare **3** → FPM fail nếu không sửa. Swap cao — xem mục **5**.                                                        |
+| Máy                    | RAM          | Swap                                                 | CPU (vCPU)              | Ổ `/`            | Ghi chú FPM (mục tiêu)                                                                                                                                                                                     |
+| ---------------------- | ------------ | ---------------------------------------------------- | ----------------------- | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **craveva-staging**    | **~7.8 GiB** | 2 GiB (file `/swapfile`, lúc quét: **~114MiB dùng**) | 2 × Intel Xeon @ 2.2GHz | 20G (~62% used)  | **`1024M` + `pm.max_children = 2`** + **`pm.max_spare_servers = 2`**. **Supervisor** `craveva-queue-all` (**2026-04-04**). Trước đó 502 do spare **3** &gt; children **2** — xem đoạn ràng buộc phía trên. |
+| **craveva-hub-server** | **~15 GiB**  | 2 GiB (lúc quét: **~811MiB đã dùng**)                | 4 × Intel Xeon @ 2.2GHz | 194G (~29% used) | Cùng bộ **`1024M` + children 2 + max_spare 2** (**2026-04-04**). Hub cũng từng lệch spare **3** → FPM fail nếu không sửa. Swap cao — xem mục **5**.                                                        |
 
 ---
 
@@ -34,23 +34,23 @@
 
 |          | Total  | Used   | Free   | Shared | Buff/cache | Available   |
 | -------- | ------ | ------ | ------ | ------ | ---------- | ----------- |
-| **Mem**  | 3.8 Gi | 1.3 Gi | 1.7 Gi | 88 Mi  | 871 Mi     | **~2.3 Gi** |
-| **Swap** | 2.0 Gi | 0 B    | 2.0 Gi |        |            |             |
+| **Mem**  | 7.8 Gi | 545 Mi | 5.6 Gi | 89 Mi  | 1.6 Gi     | **~6.9 Gi** |
+| **Swap** | 2.0 Gi | 114 Mi | 1.9 Gi |        |            |             |
 
 - **Swap device:** `/swapfile` 2G (prio -2)
 
 ### CPU
 
 - **vCPU:** 2
-- **Model:** AMD EPYC 7B12
+- **Model:** Intel(R) Xeon(R) CPU @ 2.20GHz
 
 ### Disk
 
-- **`/`:** 20G total, ~12G used, ~7.7G avail (~61%)
+- **`/`:** 20G total, ~12G used, ~7.5G avail (~62%)
 
-### Load (tại thời điểm quét, máy mới up ~2 phút)
+### Load (tại thời điểm quét, uptime ~1.5 days)
 
-- `load average: 0.96, 0.34, 0.13`
+- `load average: 0.18, 0.18, 0.18`
 
 ### PHP 8.3 FPM (`/etc/php/8.3/fpm/`)
 
@@ -80,12 +80,12 @@
 
 ### Bộ nhớ & swap
 
-|          | Total  | Used        | Free        | Shared | Buff/cache | Available   |
-| -------- | ------ | ----------- | ----------- | ------ | ---------- | ----------- |
-| **Mem**  | 3.8 Gi | 592 Mi      | 1.4 Gi      | 48 Mi  | 1.8 Gi     | **~3.0 Gi** |
-| **Swap** | 2.0 Gi | **~1.5 Gi** | **~502 Mi** |        |            |             |
+|          | Total  | Used        | Free        | Shared | Buff/cache | Available  |
+| -------- | ------ | ----------- | ----------- | ------ | ---------- | ---------- |
+| **Mem**  | 15 Gi  | 531 Mi      | 10 Gi       | 222 Mi | 4.3 Gi     | **~14 Gi** |
+| **Swap** | 2.0 Gi | **~811 Mi** | **~1.2 Gi** |        |            |            |
 
-- **Swap device:** `/swapfile` 2G — **đang dùng ~75%** → dấu hiệu **đã/đang thiếu RAM** cho workload; mọi thao tác nặng thêm (import, queue, PHP) làm **đọc/ghi swap** → load tăng.
+- **Swap device:** `/swapfile` 2G — **đang dùng ~40%** (giảm so với 75% trước khi nâng RAM).
 
 ### CPU
 
@@ -94,11 +94,11 @@
 
 ### Disk
 
-- **`/`:** 194G total, ~56G used, ~139G avail (~29%)
+- **`/`:** 194G total, ~55G used, ~140G avail (~29%)
 
-### Load (tại thời điểm quét)
+### Load (tại thời điểm quét, uptime ~1.5 days)
 
-- `load average: 0.37, 0.39, 0.43` (uptime ~2 days)
+- `load average: 0.66, 0.63, 0.53`
 
 ### PHP 8.3 FPM
 

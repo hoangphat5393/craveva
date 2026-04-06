@@ -408,6 +408,46 @@ if (! function_exists('user_modules')) {
     }
 }
 
+if (! function_exists('user_can_access_developertools_module')) {
+
+    /**
+     * Developer Tools / CodeMap: tenant company admins only, when the company package
+     * includes the developertools module and it is active in module settings.
+     * Super admins do not use this feature (no menu / no direct URL access).
+     */
+    function user_can_access_developertools_module(): bool
+    {
+        $user = user();
+
+        if (! $user || $user->is_superadmin) {
+            return false;
+        }
+
+        if (! in_array('admin', user_roles())) {
+            return false;
+        }
+
+        $company = company();
+
+        if (! $company || ! $company->package) {
+            return false;
+        }
+
+        if (! checkCompanyPackageIsValid($company->id)) {
+            return false;
+        }
+
+        $packageModules = (array) json_decode($company->package->module_in_package ?? '[]', true);
+        $packageModules = array_map(static fn($m) => strtolower(trim((string) $m)), $packageModules);
+
+        if (! in_array('developertools', $packageModules, true)) {
+            return false;
+        }
+
+        return \App\Models\ModuleSetting::checkModule('developertools');
+    }
+}
+
 if (! function_exists('craveva_plugins')) {
 
     // @codingStandardsIgnoreLine

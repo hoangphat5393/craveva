@@ -14,7 +14,7 @@ Write-Host "Starting Git-based deploy on Hub..."
 
 $RemoteCommand = "cd $HubPath"
 if ($GitPull) {
-    $RemoteCommand += " && git fetch origin && git checkout $Branch && git pull origin $Branch"
+    $RemoteCommand += " && git fetch origin && git status --porcelain | grep -q . && git stash push -u -m 'auto-stash-before-deploy' || true && git checkout $Branch && git pull origin $Branch"
 }
 
 # Lệnh bảo trì (Permissions, Migration, Optimize)

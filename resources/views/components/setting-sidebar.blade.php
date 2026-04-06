@@ -151,11 +151,11 @@
 
 
 
-        @if (in_array('admin', user_roles()) && \Route::has('developertools.index'))
+        @if (user_can_access_developertools_module() && \Route::has('developertools.index'))
             <x-setting-menu-item :active="$activeMenu" menu="developertools" :href="route('developertools.index')" text="Developer Tools" />
         @endif
 
-        @if (user()->is_superadmin && \Route::has('developertools.codemap'))
+        @if (user_can_access_developertools_module() && \Route::has('developertools.codemap'))
             <x-setting-menu-item :active="$activeMenu" menu="codemap" :href="route('developertools.codemap')" text="CodeMap" />
         @endif
 

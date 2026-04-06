@@ -24,11 +24,20 @@ class DeveloperToolsController extends AccountBaseController
         $this->activeSettingMenu = 'developertools';
     }
 
+    private function ensureDeveloperToolsAccess(): void
+    {
+        if (! user_can_access_developertools_module()) {
+            abort(403, 'Developer Tools are not available for this account.');
+        }
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
+        $this->ensureDeveloperToolsAccess();
+
         $company = company();
         if (! $company) {
             abort(403, 'Company context required');
@@ -45,9 +54,7 @@ class DeveloperToolsController extends AccountBaseController
 
     public function codeMap(Request $request)
     {
-        if (! user()->is_superadmin) {
-            abort(403, 'Only Super Admin can access CodeMap');
-        }
+        $this->ensureDeveloperToolsAccess();
 
         $this->pageTitle = 'CodeMap';
         $this->activeSettingMenu = 'codemap';
@@ -83,9 +90,7 @@ class DeveloperToolsController extends AccountBaseController
 
     public function exportCodeMap(Request $request)
     {
-        if (! user()->is_superadmin) {
-            abort(403, 'Only Super Admin can access CodeMap');
-        }
+        $this->ensureDeveloperToolsAccess();
 
         try {
             $query = FileRecord::query();
@@ -124,9 +129,7 @@ class DeveloperToolsController extends AccountBaseController
 
     public function scanCodeMap(Request $request)
     {
-        if (! user()->is_superadmin) {
-            abort(403);
-        }
+        $this->ensureDeveloperToolsAccess();
 
         (new FileScanner)->scanAndStore();
 
@@ -138,6 +141,8 @@ class DeveloperToolsController extends AccountBaseController
      */
     public function store(Request $request): RedirectResponse
     {
+        $this->ensureDeveloperToolsAccess();
+
         Log::info('DeveloperTools store method called');
         $company = company();
         if (! $company) {
@@ -390,6 +395,8 @@ class DeveloperToolsController extends AccountBaseController
      */
     public function destroy($id)
     {
+        $this->ensureDeveloperToolsAccess();
+
         $company = company();
         if (! $company) {
             abort(403);

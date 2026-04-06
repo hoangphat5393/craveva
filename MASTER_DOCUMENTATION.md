@@ -14,6 +14,7 @@ This document is the central reference for **business flow**, **business logic**
 6. [Add-on modules](#6-add-on-modules)
 7. [Composer install chậm – khắc phục](#7-composer-install-chậm--khắc-phục)
 8. [References](#8-references)
+   - [Recent fixes (known issues)](#81-recent-fixes-known-issues)
 9. [Laravel 11 upgrade](#9-laravel-11-upgrade)
 
 ---
@@ -457,6 +458,7 @@ Laravel 10 không trực tiếp dùng hai package trên; chúng là dependency c
 | `FUNC_LOGIC/Login_Flow.md`               | Login flow (Fortify, session).                                              |
 | `FUNC_LOGIC/Package_Modules_Flow.md`     | Package → modules → company → module_settings.                              |
 | `FUNC_LOGIC/Package_Modules_Commands.md` | Artisan commands for packages/modules.                                      |
+| `FUNC_BUG/SOCIAL_AUTH_SETTINGS_MAC_INVALID_FIX.md` | Fix: Social Auth Settings crash `The MAC is invalid.` when encrypted secrets cannot decrypt. |
 | `docs/MENU_ROUTES_AND_CACHE.md`          | Why menu routes can fail and how to fix (route:clear, Route::has).          |
 | `docs/PACKAGE_MODULES_ACTIVATE.md`       | Activating package modules.                                                 |
 | `DIAGRAM/order_process_flowchart.md`     | Order process (chat → PO → DO → invoice).                                   |
@@ -464,6 +466,11 @@ Laravel 10 không trực tiếp dùng hai package trên; chúng là dependency c
 | `app/Models/Module.php`                  | Full list of modules and permissions (MODULE_LIST, SUPERADMIN_MODULE_LIST). |
 | `database/migrations/`                   | Schema definitions.                                                         |
 | `routes/web.php`                         | Main web routes; module routes in `Modules/*/Routes/web.php`.               |
+
+### 8.1 Recent fixes (known issues)
+
+- **Security Settings** (`/account/settings/security-settings`): Super Admin crash `Attempt to read property "userAuth" on null` when `CompanyScope` filters out superadmin user. Fix lives in `app/Http/Controllers/SecuritySettingController.php` (query without `CompanyScope` + fallback by `user_auth_id`). Feature is shared route for both panels, but Super Admin has extra tab (reCAPTCHA).
+- **Social Auth Settings** (`/account/settings/social-auth-settings`): crash `DecryptException: The MAC is invalid.` when rendering encrypted secrets after DB restore / APP_KEY mismatch. Fix: do not prefill password inputs with decrypted secret values (views under `resources/views/social-login-settings/ajax/*`). Feature is global config: SaaS/Craveva treats it as Super Admin setting; Non-craveva can expose it in company settings depending on permissions.
 
 ---
 
@@ -473,4 +480,4 @@ Nâng cấp framework **Laravel 10 → 11** (breaking changes, migration, QA tha
 
 ---
 
-_Last updated: 2025-03-13. Update this file when adding or changing major business flows, modules, or permissions._
+_Last updated: 2026-04-06. Update this file when adding or changing major business flows, modules, or permissions._

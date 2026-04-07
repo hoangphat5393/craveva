@@ -283,10 +283,8 @@
             var value = $(this).val();
             var input = $(this);
             var span = $(this).siblings('.editable-label');
-            var originalValue = span.text().trim(); // Note: span text might include the icon text if any, but icon is <i> so .text() gets it.
-            // Wait, my span has <i class="fa fa-pencil"></i> inside. .text() will get the label text only if I am careful.
-            // Actually, the span content is "{{ __($field->label) }} <i ...></i>".
-            // .text() will ignore the html tag but return the text.
+            var originalValue = span.text().trim(); // Note: span may include icon text; icon is <i> so .text() behaviour depends on DOM.
+            // Span HTML is built in the Blade loop (label + pencil icon). .text() returns concatenated text nodes.
             // But when I set span.text(value), I will lose the icon.
             // I should reconstruct the html.
 

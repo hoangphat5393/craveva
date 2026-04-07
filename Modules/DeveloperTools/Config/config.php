@@ -225,4 +225,12 @@ return [
             ],
         ],
     ],
+
+    /*
+    | Host shown when copying MySQL credentials (Developer Tools UI).
+    | Set DEVELOPER_TOOLS_CREDENTIAL_DISPLAY_HOST in .env to your public DB IP or Cloud SQL
+    | hostname for external clients (HeidiSQL, DBeaver). If unset, defaults to the app MySQL
+    | host (database.connections.mysql.host), not the HTTP request hostname.
+    */
+    'credential_display_host' => env('DEVELOPER_TOOLS_CREDENTIAL_DISPLAY_HOST'),
 ];

@@ -255,6 +255,15 @@ Route::group(['middleware' => ['auth', 'multi-company-select', 'email_verified']
     Route::get('/pusher/beams-auth', [DashboardController::class, 'beamAuth'])->name('dashboard.beam_auth');
 
     Route::get('settings/change-language', [SettingsController::class, 'changeLanguage'])->name('settings.change_language');
+
+    /*
+     * Avoid collision with Route::resource('settings') below: GET account/settings/{setting} would
+     * bind {setting} = "developertools" while only PUT update exists for that pattern → 405 on GET.
+     */
+    Route::get('settings/developertools', function () {
+        return redirect()->route('developertools.index', [], 301);
+    })->name('settings.developertools.redirect');
+
     Route::resource('settings', SettingsController::class)->only(['edit', 'update', 'index', 'change_language']);
 
     Route::post('approve/{id}', [ClientController::class, 'approve'])->name('clients.approve');

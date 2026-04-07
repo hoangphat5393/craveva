@@ -1943,6 +1943,7 @@ return [
         'Policy' => 'Trung tâm chính sách',
         'policy' => 'Trung tâm chính sách',
         'servermanager' => 'Quản lý máy chủ',
+        'developertools' => 'Công cụ phát triển',
         'biometric' => 'Sinh trắc học',
         'pricing' => 'Tier Pricing',
     ],

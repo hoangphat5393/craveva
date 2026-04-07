@@ -5,6 +5,7 @@ namespace Modules\DeveloperTools\Http\Controllers;
 use App\Http\Controllers\AccountBaseController;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -32,6 +33,19 @@ class DeveloperToolsController extends AccountBaseController
     }
 
     /**
+     * Hostname/IP to show for gateway DB connections (external tools), not the web request host.
+     */
+    private function resolveCredentialDisplayHost(): string
+    {
+        $configured = config('developertools.credential_display_host');
+        if (is_string($configured) && trim($configured) !== '') {
+            return trim($configured);
+        }
+
+        return (string) config('database.connections.mysql.host', '127.0.0.1');
+    }
+
+    /**
      * Display a listing of the resource.
      */
     public function index()
@@ -48,6 +62,7 @@ class DeveloperToolsController extends AccountBaseController
         $this->availableModules = $policy->availableModules();
         $this->defaultModules = $policy->defaultModules();
         $this->accessLogs = DbAccessLog::where('company_id', $company->id)->latest()->limit(25)->get();
+        $this->credentialDisplayHost = $this->resolveCredentialDisplayHost();
 
         return view('developertools::index', $this->data);
     }
@@ -81,7 +96,7 @@ class DeveloperToolsController extends AccountBaseController
 
             $this->records = $query->orderBy('path')->paginate(30);
         } catch (\Throwable $e) {
-            $this->records = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 30);
+            $this->records = new LengthAwarePaginator([], 0, 30);
             session()->flash('error', 'Bảng dữ liệu CodeMap chưa migrate. Vui lòng chạy php artisan migrate.');
         }
 
@@ -322,7 +337,7 @@ class DeveloperToolsController extends AccountBaseController
                 'company_id' => $company->id,
                 'db_username' => $dbUsername,
                 'db_database' => $gatewayDb,
-                'db_host' => request()->getHost(), // Simple guess
+                'db_host' => $this->resolveCredentialDisplayHost(),
                 'allowed_modules' => $effectiveModules,
                 'created_views_count' => $createdViewsCount,
                 'generation_duration_ms' => $durationMs,

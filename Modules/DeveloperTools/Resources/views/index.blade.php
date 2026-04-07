@@ -67,8 +67,8 @@
                                                 </button>
                                             </div>
                                             <p><strong>Database Host:</strong>
-                                                <span class="credential-value" data-copy="{{ request()->getHost() }}">{{ request()->getHost() }}</span>
-                                                <button type="button" class="btn btn-sm btn-outline-dark ml-1 devtools-copy-btn" data-copy="{{ request()->getHost() }}" title="Copy"><i class="fa fa-copy"></i></button>
+                                                <span class="credential-value" data-copy="{{ $credentialDisplayHost }}">{{ $credentialDisplayHost }}</span>
+                                                <button type="button" class="btn btn-sm btn-outline-dark ml-1 devtools-copy-btn" data-copy="{{ $credentialDisplayHost }}" title="Copy"><i class="fa fa-copy"></i></button>
                                             </p>
                                             <p><strong>Database Name:</strong>
                                                 <span class="credential-value" data-copy="{{ session('new_db_name', config('developertools.gateway_db', 'api_gateway_db')) }}">{{ session('new_db_name', config('developertools.gateway_db', 'api_gateway_db')) }}</span>
@@ -97,7 +97,7 @@
                                             @endif
                                             <p class="mb-0">The password will not be shown again.</p>
                                             @php
-                                                $copyAllLines = ['Database Host: ' . request()->getHost(), 'Database Name: ' . session('new_db_name', config('developertools.gateway_db', 'api_gateway_db')), 'Username: ' . session('new_db_username'), 'Password: ' . session('new_db_password')];
+                                                $copyAllLines = ['Database Host: ' . $credentialDisplayHost, 'Database Name: ' . session('new_db_name', config('developertools.gateway_db', 'api_gateway_db')), 'Username: ' . session('new_db_username'), 'Password: ' . session('new_db_password')];
                                                 if (session('new_db_modules')) {
                                                     $copyAllLines[] = 'Allowed Modules: ' . (is_array(session('new_db_modules')) ? implode(', ', session('new_db_modules')) : session('new_db_modules'));
                                                 }
@@ -205,7 +205,7 @@
                                                         <td>{{ $cred->id }}</td>
                                                         <td>{{ $cred->db_username }}</td>
                                                         <td>{{ $cred->db_database }}</td>
-                                                        <td>{{ $cred->db_host }}</td>
+                                                        <td>{{ $credentialDisplayHost }}</td>
                                                         <td>
                                                             @if (is_array($cred->allowed_modules))
                                                                 {{ implode(', ', $cred->allowed_modules) }}
@@ -278,7 +278,7 @@
                                             <p>Use these settings to connect your AI or external tools:</p>
                                             <ul>
                                                 <li><strong>Driver:</strong> MySQL / MariaDB</li>
-                                                <li><strong>Host:</strong> {{ request()->getHost() }}</li>
+                                                <li><strong>Host:</strong> {{ $credentialDisplayHost }}</li>
                                                 <li><strong>Port:</strong> 3306 (Default)</li>
                                                 <li><strong>Database:</strong>
                                                     @if (isset($credentials) && $credentials->count() > 0)

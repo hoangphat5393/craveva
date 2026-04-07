@@ -40,6 +40,7 @@ use App\Models\SuperAdmin\GlobalInvoiceSetting;
 use App\Models\ThemeSetting;
 use App\Models\User;
 use App\Models\UserPermission;
+use App\Observers\CompanyObserver;
 use App\Scopes\CompanyScope;
 use Carbon\Carbon;
 use Carbon\CarbonInterval;
@@ -456,14 +457,18 @@ if (! function_exists('user_can_access_developertools_module')) {
             return false;
         }
 
-        $packageModules = (array) json_decode($company->package->module_in_package ?? '[]', true);
-        $packageModules = array_map(static fn($m) => strtolower(trim((string) $m)), $packageModules);
-
-        if (! in_array('developertools', $packageModules, true)) {
+        $namesInPackage = CompanyObserver::packageModuleNamesFromJson($company->package->module_in_package ?? '[]');
+        if (! in_array('developertools', $namesInPackage, true)) {
             return false;
         }
 
-        return ModuleSetting::checkModule('developertools');
+        return ModuleSetting::withoutGlobalScope(CompanyScope::class)
+            ->where('company_id', $company->id)
+            ->where('module_name', 'developertools')
+            ->where('type', 'admin')
+            ->where('status', 'active')
+            ->where('is_allowed', 1)
+            ->exists();
     }
 }
 

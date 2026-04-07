@@ -54,7 +54,7 @@ class PackageModulesCommand extends Command
             }
             $module = strtolower(trim($module));
             if (! in_array($module, $allModuleNames, true)) {
-                $this->warn("Module \"{$module}\" không nằm trong danh sách module gói. Danh sách: " . implode(', ', $allModuleNames));
+                $this->warn("Module \"{$module}\" không nằm trong danh sách module gói. Danh sách: ".implode(', ', $allModuleNames));
             }
 
             return $this->runActivateOne($module, $allModuleNames);
@@ -76,6 +76,7 @@ class PackageModulesCommand extends Command
         }
         $this->newLine();
         $this->info('Bước 2/2: Bật toàn bộ Custom Modules (toggle trang Module Settings)...');
+
         return $this->runEnableCustom();
     }
 
@@ -95,6 +96,7 @@ class PackageModulesCommand extends Command
             }
             if ($module->isEnabled()) {
                 $this->line("  [đã bật] {$name}");
+
                 continue;
             }
             $module->enable();
@@ -143,9 +145,9 @@ class PackageModulesCommand extends Command
             $inPackage = $this->getPackageModuleNames($pkg);
             $missing = array_diff($allModuleNames, $inPackage);
             $this->info("Package #{$pkg->id} — {$pkg->name} (default={$pkg->default})");
-            $this->line('  Trong gói: ' . count($inPackage) . ' — ' . implode(', ', $inPackage));
+            $this->line('  Trong gói: '.count($inPackage).' — '.implode(', ', $inPackage));
             if (count($missing) > 0) {
-                $this->warn('  Thiếu: ' . implode(', ', $missing));
+                $this->warn('  Thiếu: '.implode(', ', $missing));
             }
             $this->newLine();
         }
@@ -156,8 +158,14 @@ class PackageModulesCommand extends Command
     protected function getPackageModuleNames(Package $package): array
     {
         $decoded = json_decode($package->module_in_package, true);
+        if (! is_array($decoded)) {
+            return [];
+        }
 
-        return is_array($decoded) ? array_values($decoded) : [];
+        return array_values(array_unique(array_filter(array_map(
+            static fn ($value) => strtolower(trim((string) $value)),
+            $decoded
+        ))));
     }
 
     protected function runActivateAll(array $allModuleNames): int
@@ -179,12 +187,12 @@ class PackageModulesCommand extends Command
         foreach ($packages as $pkg) {
             $pkg->module_in_package = $modulesJson;
             $pkg->save();
-            $this->info("Đã cập nhật package #{$pkg->id} ({$pkg->name}): bật toàn bộ " . count($allModuleNames) . ' module.');
+            $this->info("Đã cập nhật package #{$pkg->id} ({$pkg->name}): bật toàn bộ ".count($allModuleNames).' module.');
 
             foreach ($pkg->companies as $company) {
                 $observer->updateModuleSettings($company);
             }
-            $this->line('  Đồng bộ module_settings cho ' . $pkg->companies->count() . ' company.');
+            $this->line('  Đồng bộ module_settings cho '.$pkg->companies->count().' company.');
         }
 
         $this->info('Xong.');
@@ -195,9 +203,10 @@ class PackageModulesCommand extends Command
     protected function runActivateOne(string $moduleName, array $allModuleNames): int
     {
         $packageId = $this->option('package');
+        $packagesQuery = Package::with('companies')->orderBy('sort')->orderBy('id');
         $packages = $packageId
-            ? Package::where('id', (int) $packageId)->get()
-            : Package::orderBy('sort')->orderBy('id')->get();
+            ? $packagesQuery->where('id', (int) $packageId)->get()
+            : $packagesQuery->get();
 
         if ($packages->isEmpty()) {
             $this->error($packageId ? "Không tìm thấy package id={$packageId}." : 'Chưa có package nào.');
@@ -211,7 +220,10 @@ class PackageModulesCommand extends Command
         foreach ($packages as $pkg) {
             $inPackage = $this->getPackageModuleNames($pkg);
             if (in_array($moduleName, $inPackage, true)) {
-                $this->line("Package #{$pkg->id} ({$pkg->name}): đã có module \"{$moduleName}\".");
+                $this->line("Package #{$pkg->id} ({$pkg->name}): đã có module \"{$moduleName}\" — đồng bộ module_settings cho company.");
+                foreach ($pkg->companies as $company) {
+                    $observer->updateModuleSettings($company);
+                }
 
                 continue;
             }

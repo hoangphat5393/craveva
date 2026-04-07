@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Scopes\CompanyScope;
 use App\Traits\HasCompany;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 
 /**
  * App\Models\ModuleSetting
@@ -71,6 +72,41 @@ class ModuleSetting extends BaseModel
     ];
 
     protected $guarded = ['id'];
+
+    /**
+     * Rows for the tenant Module Settings UI (admin / employee tabs).
+     * Includes developertools even when is_allowed = 0 so teams can see the toggle and fix package sync.
+     *
+     * @return Collection<int, ModuleSetting>
+     */
+    public static function forTenantModuleSettingsIndex(int $companyId, string $type): Collection
+    {
+        $allowed = self::withoutGlobalScope(CompanyScope::class)
+            ->where('company_id', $companyId)
+            ->where('module_name', '<>', 'settings')
+            ->where('is_allowed', 1)
+            ->where('type', $type)
+            ->get();
+
+        if ($type === 'client') {
+            return $allowed;
+        }
+
+        $hasDevToolsInAllowed = $allowed->contains(static fn (ModuleSetting $row): bool => $row->module_name === 'developertools');
+
+        if ($hasDevToolsInAllowed) {
+            return $allowed;
+        }
+
+        $extra = self::withoutGlobalScope(CompanyScope::class)
+            ->where('company_id', $companyId)
+            ->where('module_name', 'developertools')
+            ->where('type', $type)
+            ->where('is_allowed', 0)
+            ->get();
+
+        return $allowed->concat($extra)->values();
+    }
 
     public static function checkModule($moduleName)
     {

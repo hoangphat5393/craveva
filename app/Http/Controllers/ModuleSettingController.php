@@ -25,11 +25,13 @@ class ModuleSettingController extends AccountBaseController
 
         $tab = request('tab');
 
-        $this->modulesData = match ($tab) {
-            'employee' => ModuleSetting::where('module_name', '<>', 'settings')->where('is_allowed', 1)->where('type', 'employee')->get(),
-            'client' => ModuleSetting::where('module_name', '<>', 'settings')->where('is_allowed', 1)->where('type', 'client')->get(),
-            default => ModuleSetting::where('module_name', '<>', 'settings')->where('is_allowed', 1)->where('type', 'admin')->get(),
+        $type = match ($tab) {
+            'employee' => 'employee',
+            'client' => 'client',
+            default => 'admin',
         };
+
+        $this->modulesData = ModuleSetting::forTenantModuleSettingsIndex(company()->id, $type);
 
         $this->view = 'module-settings.ajax.modules';
         $this->activeTab = $tab ?: 'admin';

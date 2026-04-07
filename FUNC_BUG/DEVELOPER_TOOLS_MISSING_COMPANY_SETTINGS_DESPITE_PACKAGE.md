@@ -1,6 +1,6 @@
 # Developer Tools: gói có tick nhưng không thấy trong Settings / company panel
 
-**Cập nhật:** 2026-04-06  
+**Cập nhật:** 2026-04-06 (bổ sung UI Module Settings + quyền impersonate 2026-04-06)  
 **Liên quan:** `FUNC_BUG/DEVELOPER_TOOLS_MODULE_REVIEW.md` (tổng quan module), `FUNC_LOGIC/Package_Modules_Commands.md` (gói vs nwidart)
 
 ---
@@ -10,7 +10,7 @@
 - Bảng `packages.module_in_package` (JSON) **đã có** `developertools` (thường dạng object `{"54":"developertools",...}`).
 - Đã chạy `php artisan packages:modules activate --module=developertools` → báo đồng bộ `module_settings`.
 - Trên **Settings** (company panel) **không có** mục **Developer Tools** / **CodeMap**; tìm kiếm trong sidebar cũng không ra.
-- Trang **Module Settings** có thể **không có** toggle cho Developer Tools (chỉ liệt kê `module_settings` với `is_allowed = 1`).
+- Trang **Module Settings** trước đây **chỉ liệt kê** `module_settings` với `is_allowed = 1` → nếu gói chưa có `developertools` hoặc chưa sync, **không thấy** dòng Developer Tools (dù đã có bản ghi `is_allowed = 0`). **Đã sửa:** luôn ghép thêm dòng `developertools` (admin/employee) khi `is_allowed = 0`, kèm ghi chú “chưa trong gói”; công tắc bị khóa cho tới khi gói có module.
 
 ---
 
@@ -40,20 +40,27 @@
 
 - Cần dòng `module_settings` đúng `type` (admin/employee), `status = active`, và đúng `company_id` (scope).
 
+### 2.5 Impersonate / user có `manage_module_setting` nhưng không role `admin`
+
+- `ModuleSetting::checkModule()` chọn `type` theo **role** (admin → bản ghi admin, employee → bản ghi employee).
+- User chỉ có role **employee** nhưng được quyền **Module Settings** (`manage_module_setting == 'all'`) khi xem tab **Admin** vẫn thấy toggle **admin**; `checkModule('developertools')` lại đọc bản ghi **employee** → có thể **không** vào được Developer Tools dù bản ghi admin đã bật.
+- **Đã sửa:** `user_can_access_developertools_module()` — nếu không có role `admin` nhưng có `manage_module_setting == 'all'` thì kiểm tra bản ghi **admin** `developertools`.
+
 ---
 
 ## 3. Cách sửa đã áp dụng trong codebase (2026-04-06)
 
-| Thay đổi                                                                   | Mục đích                                                                                                            |
-| -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| `ModuleSetting::OTHER_MODULES` thêm `developertools`                       | Company **mới** được tạo đủ dòng khi `createModuleSettings()`.                                                      |
-| Migration `2026_04_06_120000_backfill_developertools_module_settings.php`  | Backfill dòng `developertools` (admin + employee) cho **mọi company** hiện có (bật nếu gói có module).              |
-| `CompanyObserver::packageModuleNamesFromJson()`                            | Chuẩn hóa JSON gói → **mảng tên module chữ thường**.                                                                |
-| `CompanyObserver::ensureModuleSettingsRowsForPackageModules()`             | Sau `updateModuleSettings`, **tạo** bản ghi thiếu cho mọi module có trong gói (gồm `developertools`).               |
-| `createModuleSettings` / `updateModuleSettings` dùng `in_array(..., true)` | So khớp ổn định với tên đã lower-case.                                                                              |
-| `user_can_access_developertools_module()`                                  | Cho phép **admin** **hoặc** `manage_module_setting == 'all'`, vẫn kiểm tra gói + `checkModule` + không super admin. |
+| Thay đổi                                                                    | Mục đích                                                                                                                  |
+| --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `ModuleSetting::OTHER_MODULES` thêm `developertools`                        | Company **mới** được tạo đủ dòng khi `createModuleSettings()`.                                                            |
+| Migration `2026_04_06_120000_backfill_developertools_module_settings.php`   | Backfill dòng `developertools` (admin + employee) cho **mọi company** hiện có (bật nếu gói có module).                    |
+| `CompanyObserver::packageModuleNamesFromJson()`                             | Chuẩn hóa JSON gói → **mảng tên module chữ thường**.                                                                      |
+| `CompanyObserver::ensureModuleSettingsRowsForPackageModules()`              | Sau `updateModuleSettings`, **tạo** bản ghi thiếu cho mọi module có trong gói (gồm `developertools`).                     |
+| `createModuleSettings` / `updateModuleSettings` dùng `in_array(..., true)`  | So khớp ổn định với tên đã lower-case.                                                                                    |
+| `user_can_access_developertools_module()`                                   | Có role **admin** → `checkModule`; chỉ có `manage_module_setting == 'all'` → kiểm tra bản ghi **admin** `developertools`. |
+| `ModuleSetting::forTenantModuleSettingsIndex()` + `ModuleSettingController` | Tab Module Settings vẫn hiện **Developer Tools** khi `is_allowed = 0`, công tắc khóa + nhắc thêm vào gói.                 |
 
-**Test tham chiếu:** `tests/Unit/CompanyObserverPackageModulesTest.php`, `tests/Feature/ModuleSettingDeveloperToolsConstantTest.php`.
+**Test tham chiếu:** `tests/Unit/CompanyObserverPackageModulesTest.php`, `tests/Feature/ModuleSettingDeveloperToolsConstantTest.php`, `tests/Feature/ModuleSettingDeveloperToolsVisibilityTest.php`.
 
 ---
 
@@ -79,3 +86,56 @@
 
 - **Pricing / marketing UI** “gói có Developer Tools” phải khớp **JSON thật** trên bảng `packages`; nếu chỉ sửa UI mà không cập nhật `module_in_package`, app vẫn coi như không có module.
 - Module **DeveloperTools** vẫn phụ thuộc **Nwidart** load route; nếu tắt module trong `modules_statuses.json`, `Route::has('developertools.index')` = false → không vẽ menu dù `module_settings` đúng.
+
+---
+
+## 7. `is_allowed = 0` dù “tưởng” gói đã có module — không phải lỗi code module
+
+**Nguồn sự thật duy nhất** cho `module_settings.is_allowed` trên company panel là cột **`packages.module_in_package`** của **đúng** bản ghi gói mà company đang trỏ tới (`companies.package_id`), sau khi chạy luồng **`CompanyObserver::updateModuleSettings()`** (ví dụ `php artisan packages:modules activate --module=developertools`).
+
+Nếu UI marketing / bảng giá có tick **Developer Tools** nhưng JSON gói trong DB **không** chứa giá trị (sau khi lower) `developertools`, hoặc company đang gắn **nhầm** `package_id`, thì `is_allowed` vẫn là **0** — đó là **lệch dữ liệu gói ↔ company**, không phải do “thiết lập phát triển module” sai.
+
+**Việc nên kiểm tra:**
+
+1. SQL: `SELECT id, package_id FROM companies WHERE id = ?` và `SELECT id, module_in_package FROM packages WHERE id = ?` — trong JSON phải có value `developertools` (object hoặc mảng đều được, code đã chuẩn hóa).
+2. Sau khi sửa gói: chạy lại `packages:modules activate --module=developertools` (hoặc đổi gói company để kích hoạt observer).
+3. Bản dịch chữ nhắc “chưa trong gói”: key `messages.moduleNotInPackage` nằm trong **LanguagePack** (`Modules/LanguagePack/Languages/app/{en,vi}/messages.php`). App khi chạy thường đọc từ **`lang/{locale}/`** sau khi publish — cần `php artisan languagepack:publish-translation` (hoặc tương đương “Publish All” trên Language Settings). Blade module settings có **fallback** tiếng Anh/Việt nếu key chưa được publish.
+
+---
+
+## 8. Lệnh `packages:modules activate --module=developertools` báo “đã có module” nhưng `is_allowed` vẫn 0
+
+**Nguyên nhân (đã sửa trong code):** `PackageModulesCommand::runActivateOne()` trước đây **`continue`** ngay khi JSON gói đã chứa module → **không gọi** `CompanyObserver::updateModuleSettings()` → `module_settings` lệch gói thì **không bao giờ** được kéo lại.
+
+**Sau sửa:** Dù gói đã có `developertools`, lệnh vẫn **đồng bộ `module_settings`** cho mọi company thuộc gói đó. Chạy lại:
+
+`php artisan packages:modules activate --module=developertools`
+
+**Tham chiếu test:** `tests/Feature/PackageModulesActivateResyncsModuleSettingsTest.php`.
+
+### Bảng / cột DB liên quan
+
+| Bảng              | Cột / ý nghĩa                                                                                           |
+| ----------------- | ------------------------------------------------------------------------------------------------------- |
+| `companies`       | `package_id` — company đang dùng gói nào                                                                |
+| `packages`        | `module_in_package` — JSON danh sách module trong gói (chuẩn hóa value lowercase khi đồng bộ)           |
+| `module_settings` | `company_id`, `module_name` (= `developertools`), `type` (`admin` / `employee`), `is_allowed`, `status` |
+
+---
+
+## 9. Route `/developertools` vs company panel; lỗi 403 “Developer Tools are not available for this account”
+
+**Route chuẩn (tenant):** `GET /account/developertools` — cùng middleware với nhóm `account` (`auth`, `multi-company-select`, `email_verified`). Tên route `developertools.index` **không đổi**; `route()` sinh URL `/account/developertools`.
+
+**Tương thích:** `GET /developertools` (root) **301** → `/account/developertools` (tránh bookmark cũ).
+
+**Xung đột `account/settings/developertools`:** Trong `routes/web.php` có `Route::resource('settings', ...)` (prefix `account`). URI `account/settings/{setting}` trùng pattern với `developertools`; resource không đăng ký `show` nên **GET** vào đường dẫn đó chỉ trùng **PUT** `update` → lỗi **405**. **Đã thêm** `GET account/settings/developertools` redirect **301** → `developertools.index` (đặt **trước** dòng `Route::resource('settings', ...)`).
+
+**403** đến từ `DeveloperToolsController::ensureDeveloperToolsAccess()` khi `user_can_access_developertools_module()` = false. Logic (trong `app/Helper/start.php`) yêu cầu đồng thời:
+
+- User **không** phải super admin; có role **admin** **hoặc** quyền **`manage_module_setting` == `all`**.
+- Có `company` + `package`; `checkCompanyPackageIsValid(company_id)` (cache `company_{id}_valid_package` — vượt `max_employees` gói → **false**).
+- `CompanyObserver::packageModuleNamesFromJson` chứa **`developertools`**.
+- Có dòng `module_settings`: `company_id`, `module_name = developertools`, `type = admin`, **`status = active`**, **`is_allowed = 1`** (truy vấn **không** dùng `CompanyScope` để khớp đúng company).
+
+Nếu vẫn 403: `php artisan cache:clear` (xoá cache gói hợp lệ), đồng bộ lại `module_settings`, kiểm tra email đã verify (`email_verified` middleware).

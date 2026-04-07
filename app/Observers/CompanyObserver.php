@@ -152,7 +152,7 @@ class CompanyObserver
         }
 
         $this->saasSaving($company);
-        cache()->forget('user_' . $company->id . '_is_active');
+        cache()->forget('user_'.$company->id.'_is_active');
 
         session()->forget(['company', 'company.*', 'company.currency', 'company.paymentGatewayCredentials']);
         cache()->forget('global_setting');
@@ -218,8 +218,8 @@ class CompanyObserver
         Notification::whereIn('type', ['App\Notifications\SuperAdmin\NewCompanyRegister', 'App\Notifications\NewUser'])
             ->whereNull('read_at')
             ->where(function ($q) use ($company) {
-                $q->where('data', 'like', '{"id":' . $company->id . '%');
-                $q->orWhere('data', 'like', '%"company_id":' . $company->id . '%');
+                $q->where('data', 'like', '{"id":'.$company->id.'%');
+                $q->orWhere('data', 'like', '%"company_id":'.$company->id.'%');
             })->delete();
     }
 
@@ -942,7 +942,7 @@ class CompanyObserver
     {
         User::withoutGlobalScopes([ActiveScope::class, CompanyScope::class])
             ->where('company_id', $company->id)->each(function ($user) {
-                cache()->forget('user_modules_' . $user->id);
+                cache()->forget('user_modules_'.$user->id);
             });
     }
 
@@ -959,7 +959,7 @@ class CompanyObserver
         }
 
         return collect($decoded)
-            ->map(static fn($value) => strtolower(trim((string) $value)))
+            ->map(static fn ($value) => strtolower(trim((string) $value)))
             ->filter()
             ->unique()
             ->values()
@@ -1019,7 +1019,9 @@ class CompanyObserver
             ];
 
             $moduleSettings = [];
-            $existingModuleSettings = ModuleSetting::where('company_id', $company->id)->get();
+            $existingModuleSettings = ModuleSetting::withoutGlobalScope(CompanyScope::class)
+                ->where('company_id', $company->id)
+                ->get();
 
             foreach ($data as $type => $moduleList) {
                 foreach ($moduleList as $module) {
@@ -1060,7 +1062,11 @@ class CompanyObserver
 
         $namesInPackage = self::packageModuleNamesFromJson($package->module_in_package);
 
-        $moduleSettings = ModuleSetting::where('company_id', $company->id)->get();
+        // Must bypass CompanyScope: this runs for arbitrary companies (e.g. Super Admin saving a package)
+        // while the session company may differ — scoped query would return no rows and never fix is_allowed.
+        $moduleSettings = ModuleSetting::withoutGlobalScope(CompanyScope::class)
+            ->where('company_id', $company->id)
+            ->get();
         self::widgetUpdate($company, $namesInPackage);
 
         $activeModuleSettings = [];
@@ -1074,8 +1080,17 @@ class CompanyObserver
             }
         }
 
-        ModuleSetting::whereIn('id', $activeModuleSettings)->update(['is_allowed' => 1, 'status' => 'active']);
-        ModuleSetting::whereIn('id', $inactiveModuleSettings)->update(['is_allowed' => 0, 'status' => 'deactive']);
+        if ($activeModuleSettings !== []) {
+            ModuleSetting::withoutGlobalScope(CompanyScope::class)
+                ->whereIn('id', $activeModuleSettings)
+                ->update(['is_allowed' => 1, 'status' => 'active']);
+        }
+
+        if ($inactiveModuleSettings !== []) {
+            ModuleSetting::withoutGlobalScope(CompanyScope::class)
+                ->whereIn('id', $inactiveModuleSettings)
+                ->update(['is_allowed' => 0, 'status' => 'deactive']);
+        }
 
         $this->ensureModuleSettingsRowsForPackageModules($company, $namesInPackage);
 

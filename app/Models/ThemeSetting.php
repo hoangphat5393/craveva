@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Scopes\CompanyScope;
 use App\Traits\HasCompany;
+use Illuminate\Support\Carbon;
 
 /**
  * App\Models\ThemeSetting
@@ -16,8 +18,8 @@ use App\Traits\HasCompany;
  * @property string $link_color
  * @property string|null $user_css
  * @property string $sidebar_theme
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property-read mixed $icon
  *
  * @method static \Illuminate\Database\Eloquent\Builder|ThemeSetting newModelQuery()
@@ -35,7 +37,7 @@ use App\Traits\HasCompany;
  * @method static \Illuminate\Database\Eloquent\Builder|ThemeSetting whereUserCss($value)
  *
  * @property int|null $company_id
- * @property-read \App\Models\Company|null $company
+ * @property-read Company|null $company
  *
  * @method static \Illuminate\Database\Eloquent\Builder|ThemeSetting whereCompanyId($value)
  *
@@ -51,5 +53,37 @@ class ThemeSetting extends BaseModel
 {
     use HasCompany;
 
-    //
+    /**
+     * Superadmin front/global theme row uses panel=superadmin and company_id NULL.
+     * Falls back to any legacy superadmin row (e.g. observer previously set company_id).
+     */
+    public static function forSuperadminGlobalTheme(): self
+    {
+        $base = static::withoutGlobalScope(CompanyScope::class)->where('panel', 'superadmin');
+
+        $theme = (clone $base)->whereNull('company_id')->first();
+
+        if ($theme !== null) {
+            return $theme;
+        }
+
+        $theme = $base->orderBy('id')->first();
+
+        if ($theme !== null) {
+            return $theme;
+        }
+
+        $theme = new static;
+        $theme->panel = 'superadmin';
+        $theme->company_id = null;
+        $theme->header_color = '#ed4040';
+        $theme->sidebar_color = '#292929';
+        $theme->sidebar_text_color = '#cbcbcb';
+        $theme->link_color = '#ffffff';
+        $theme->sidebar_theme = 'dark';
+        $theme->enable_rounded_theme = 0;
+        $theme->save();
+
+        return $theme;
+    }
 }

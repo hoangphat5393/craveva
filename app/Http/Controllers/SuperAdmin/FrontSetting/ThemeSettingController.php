@@ -11,7 +11,6 @@ use App\Models\GlobalSetting;
 use App\Models\SuperAdmin\FrontDetail;
 use App\Models\SuperAdmin\GlobalCurrency;
 use App\Models\ThemeSetting;
-use App\Scopes\CompanyScope;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
@@ -41,7 +40,7 @@ class ThemeSettingController extends AccountBaseController
         $this->global = global_setting();
         $this->frontDetail = FrontDetail::first();
         $this->currencies = GlobalCurrency::all();
-        $this->superadminTheme = ThemeSetting::where('panel', 'superadmin')->first();
+        $this->superadminTheme = ThemeSetting::forSuperadminGlobalTheme();
         $this->companyAddresses = CompanyAddress::all();
 
         return view('super-admin.front-setting.theme-setting.index', $this->data);
@@ -66,21 +65,7 @@ class ThemeSettingController extends AccountBaseController
 
         $global->save();
 
-        $adminTheme = ThemeSetting::withoutGlobalScope(CompanyScope::class)
-            ->firstOrCreate(
-                [
-                    'panel' => 'superadmin',
-                    'company_id' => null,
-                ],
-                [
-                    'header_color' => '#ed4040',
-                    'sidebar_color' => '#292929',
-                    'sidebar_text_color' => '#cbcbcb',
-                    'link_color' => '#ffffff',
-                    'sidebar_theme' => 'dark',
-                    'enable_rounded_theme' => 0,
-                ]
-            );
+        $adminTheme = ThemeSetting::forSuperadminGlobalTheme();
 
         $adminTheme->login_background = $request->logo_background_color;
         $adminTheme->enable_rounded_theme = $request->has('rounded_theme') ? 1 : 0;

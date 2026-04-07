@@ -15,6 +15,7 @@ use Modules\DeveloperTools\Entities\DeveloperToolsCredential;
 use Modules\DeveloperTools\Entities\FileRecord;
 use Modules\DeveloperTools\Services\DbAccessPolicy;
 use Modules\DeveloperTools\Services\FileScanner;
+use Modules\DeveloperTools\Support\GatewayDatabasePassword;
 
 class DeveloperToolsController extends AccountBaseController
 {
@@ -181,7 +182,7 @@ class DeveloperToolsController extends AccountBaseController
         // Limit username length to 32 chars for MySQL compatibility (older versions had 16, newer 32)
         $dbUsername = substr($dbUsername, 0, 32);
 
-        $dbPassword = Str::random(20);
+        $dbPassword = GatewayDatabasePassword::generate(24);
         // NEW: Dynamic Database Name per Company for Virtual Data Layer
         $gatewayDb = 'api_gateway_' . $company->id;
 

@@ -230,7 +230,7 @@ Pham vi Option B MVP khong sua pha flow PO/DO inbound cu.
 ### E. 🛠 Suggested Fix Plan
 
 - **Step 1:** Chốt config tenant (`WAREHOUSE_SALES_OUTBOUND_MODE`, inbound flags, negative stock), lưu trong runbook triển khai.
-- **Step 2:** QA chạy checklist theo `FUNC_LOGIC/WAREHOUSE_OPERATION_RUNBOOK_VI.md` và ký nhận kết quả từng TC.
+- **Step 2:** QA chạy checklist theo `FUNC_LOGIC/WAREHOUSE_RUNBOOK_AND_UPGRADE_PLAN_VI.md` và ký nhận kết quả từng TC.
 - **Step 3:** Cập nhật tài liệu đào tạo user: thay toàn bộ “DO bán” thành “Sales Shipment” và hướng dẫn đối soát tồn theo mode đã chốt.
 
 ---
@@ -328,7 +328,7 @@ Repo **chưa** có (hoặc chưa thấy trong `tests/`) các suite kiểu:
 - **InvoiceController** tạo/sửa invoice qua request thật + đối chiếu `stock_movements`.
 - Module **Inventory** (màn hình tồn, điều chỉnh) nếu tách khác `StockMovementService`.
 
-**Kết luận cho PM/QA:** lần chạy này **không phát hiện regression** trong phạm vi test đã có; **luồng ERP đầy đủ trên UI** vẫn nên chạy theo `FUNC_LOGIC/WAREHOUSE_OPERATION_RUNBOOK_VI.md` và checklist PO/DO/inbound trong tài liệu quy trình.
+**Kết luận cho PM/QA:** lần chạy này **không phát hiện regression** trong phạm vi test đã có; **luồng ERP đầy đủ trên UI** vẫn nên chạy theo `FUNC_LOGIC/WAREHOUSE_RUNBOOK_AND_UPGRADE_PLAN_VI.md` và checklist PO/DO/inbound trong tài liệu quy trình.
 
 ---
 
@@ -377,7 +377,7 @@ WAREHOUSE_INBOUND_FROM_DO_RECEIVED=true
 ## O. Backlog de xuat (luu de can nhac sau) — Chuan hoa ten nghiep vu: `SO -> DO`, `PO -> GRN`
 
 **Nguon de xuat:** trao doi voi user ngay 2026-03-30.
-**Tai lieu quyet dinh chi tiet:** `FUNC_LOGIC/REFATOR_SO_DO_PO_GRN_DECISION_VI.md`.
+**Tài liệu quyết định + tracker:** `FUNC_LOGIC/SO_DO_PO_GRN_REFACTOR_VI.md`.
 
 ### Muc tieu nghiep vu mong muon
 

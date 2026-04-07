@@ -19,10 +19,7 @@ Ràng buộc bắt buộc:
     - rehearsal migrate staging pass,
     - có rollback plan.
 3. Bảo đảm sau refactor xong, luồng SO và PO vẫn đúng và không double-post kho.
-4. Mọi bước triển khai phải cập nhật vào file tracker:
-    - `FUNC_LOGIC/REFACTOR_SO_DO_PO_GRN_TRACKER_VI.md`
-5. Bám kế hoạch master:
-    - `FUNC_LOGIC/REFACTOR_SO_DO_PO_GRN_IMPLEMENTATION_PLAN_VI.md`
+4. Mọi bước triển khai phải cập nhật vào **`FUNC_LOGIC/SO_DO_PO_GRN_REFACTOR_VI.md`** (mục Tracker + mục Kế hoạch triển khai trong cùng file).
 
 Yêu cầu thực thi theo phase:
 

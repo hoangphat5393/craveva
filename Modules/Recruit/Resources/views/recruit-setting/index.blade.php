@@ -37,7 +37,7 @@
                             <a class="nav-item nav-link f-15 recruit-custom-question-setting" href="{{ route('recruit-settings.index') }}?tab=recruit-custom-question-setting" role="tab" aria-controls="nav-recruit-setting" aria-selected="true" ajax="false">@lang('recruit::modules.setting.customQuestionSettings')
                             </a>
 
-                            <a class="nav-item nav-link f-15 recruit-source-setting" href="{{ route('recruit-settings.index') }}?tab=recruit-source-setting" role="tab" aria-controls="nav-recruit-setting" aria-selected="true" ajax="false">@lang('Source')
+                            <a class="nav-item nav-link f-15 recruit-source-setting" href="{{ route('recruit-settings.index') }}?tab=recruit-source-setting" role="tab" aria-controls="nav-recruit-setting" aria-selected="true" ajax="false">@lang('recruit::modules.sourceSetting.source')
                             </a>
                         </div>
                     </nav>

@@ -1,4 +1,435 @@
-# Tracker triển khai — Refactor `SO -> DO -> Invoice` và `PO -> GRN -> Bill`
+# Refactor SO → DO → Invoice & PO → GRN → Bill — Tài liệu gộp
+
+**Ngày gộp:** 2026-04-06
+**Nguồn:** Gộp từ `REFACTOR_SO_DO_PO_GRN_IMPLEMENTATION_PLAN_VI.md`, `REFACTOR_SO_DO_PO_GRN_TRACKER_VI.md`, `REFATOR_SO_DO_PO_GRN_DECISION_VI.md`.
+
+---
+
+## Mục lục
+
+1. [Quyết định kiến trúc](#1-quyết-định-kiến-trúc-tóm-tắt)
+2. [Kế hoạch triển khai chi tiết](#2-kế-hoạch-triển-khai-chi-tiết)
+3. [Tracker triển khai](#3-tracker-triển-khai)
+
+---
+
+# 1) Quyết định kiến trúc (tóm tắt)
+
+**Ngày:** 2026-03-30  
+**Trạng thái (bản gốc):** Đề xuất để ra quyết định — giữ làm bối cảnh lịch sử.  
+**Cập nhật 2026-04-06:** Trạng thái thực tế triển khai nằm ở [mục 3 — Tracker](#3-tracker-triển-khai).  
+**Bối cảnh:** Hệ thống còn ở giai đoạn phát triển, chưa có dữ liệu production chính thức.
+
+---
+
+## 1) Mục tiêu nghiệp vụ muốn đạt
+
+- Bán hàng rõ ràng theo ERP:
+    - `SO -> DO (xuất kho) -> Invoice`
+- Mua hàng rõ ràng theo ERP:
+    - `PO -> GRN (nhập kho) -> Bill`
+- Loại bỏ nhầm lẫn tên gọi hiện tại:
+    - `Sales Shipment` (thực chất là sales DO)
+    - `Delivery Orders` trong Purchase (thực chất là GRN inbound)
+
+---
+
+## 2) Tính khả thi (kết luận nhanh)
+
+**Khả thi về kỹ thuật: CÓ.**  
+**Khả thi để làm big-bang ngay (xóa bảng `sales_shipments` luôn): RỦI RO CAO.**
+
+Vì hiện tại `sales_shipments` đã gắn vào:
+
+- route/controller/view/permission riêng,
+- service xuất kho (`SalesShipmentStockService`),
+- DataTable + observer liên quan tồn kho,
+- tài liệu + test nội bộ.
+
+Nếu xóa thẳng ngay sẽ gây đứt flow và regression rộng.
+
+---
+
+## 3) Ưu điểm nếu refactor thật sự
+
+- Ngôn ngữ nghiệp vụ thống nhất, user dễ hiểu hơn (DO bán và GRN mua tách bạch).
+- Dễ training vận hành và audit quy trình kho.
+- Giảm chi phí giải thích "Sales Shipment là gì" cho team business.
+- Về dài hạn, code và quy trình đồng bộ tên gọi, giảm technical debt tên gọi.
+
+---
+
+## 4) Nhược điểm / rủi ro lớn
+
+- Phạm vi ảnh hưởng rộng: DB, API, permission, menu, report, test, tài liệu, import/export.
+- Nguy cơ lỗi tồn kho nếu chuyển sai điểm trigger (double-post hoặc miss-post).
+- Mất lịch sử tham chiếu nếu xóa bảng cũ không có migration bridge chuẩn.
+- Tăng thời gian chốt release trong ngắn hạn.
+
+---
+
+## 5) Tác động kỹ thuật chính nếu làm “xóa Sales Shipment”
+
+1. **Database**
+
+- Bỏ `sales_shipments`, `sales_shipment_items` hoặc đổi vai trò bảng.
+- Thiết kế bảng DO bán mới (hoặc đổi tên/đổi nghĩa bảng hiện có) với khóa `order_id`.
+- Tách rõ bảng GRN mua (tránh reuse mơ hồ cùng một bảng cho inbound/outbound).
+
+2. **Business services**
+
+- Chuyển outbound từ `SalesShipmentStockService` sang service mới cho DO bán.
+- Giữ inbound GRN tách biệt để không đụng logic mua.
+
+3. **Controller / Routes / Views**
+
+- `SalesShipmentController` và route `sales-shipments.*` cần thay mới hoặc compatibility layer.
+- Cập nhật menu, action button từ SO sang DO bán mới.
+
+4. **Permissions**
+
+- Bổ sung bộ quyền DO bán/GRN mới; migration map từ quyền cũ.
+
+5. **Data migration**
+
+- Nếu đã có dữ liệu dev/staging: cần map `sales_shipments` sang thực thể mới để không mất dấu lịch sử test/UAT.
+
+6. **Testing**
+
+- Viết lại các test cho flow mới: tạo DO bán, ship, reverse, invoice sync, inbound GRN.
+
+---
+
+## 6) Phương án triển khai đề xuất (an toàn nhất)
+
+## Option A — Big bang (không khuyến nghị)
+
+- Xóa ngay `sales_shipments` và chuyển toàn bộ sang DO bán.
+- Ưu điểm: “sạch” nhanh về tên gọi.
+- Nhược điểm: regression lớn, rollback khó.
+
+## Option B — Bridge migration (khuyến nghị)
+
+**Giai đoạn 1: Canonical hóa nghiệp vụ + tương thích**
+
+- Giữ bảng cũ chạy bình thường.
+- Tạo lớp compatibility:
+    - UI hiển thị `Sales Shipment` thành `Sales DO`.
+    - `Delivery Orders` (Purchase) hiển thị thành `GRN`.
+- Giữ trigger tồn kho như hiện tại để không vỡ.
+
+**Giai đoạn 2: Refactor kỹ thuật**
+
+- Tạo thực thể kỹ thuật mới theo tên chuẩn (DO bán, GRN mua).
+- Migrate data từ bảng cũ.
+- Đặt deprecate cho endpoint cũ.
+
+**Giai đoạn 3: Cutover**
+
+- Chuyển toàn bộ UI/API sang endpoint mới.
+- Chỉ khi test và UAT pass thì mới remove bảng/route cũ.
+
+---
+
+## 7) Khuyến nghị cho trạng thái dự án hiện tại
+
+Vì hệ thống chưa production thật:
+
+- **Nên làm refactor thật sự, nhưng theo Option B (bridge), không big-bang.**
+
+Lý do:
+
+- Bạn vẫn đạt mục tiêu tên gọi chuẩn ERP.
+- Vẫn kiểm soát rủi ro tồn kho và regression.
+- Có đường rollback rõ khi staging phát sinh lỗi.
+
+---
+
+## 8) Điều kiện Go / No-Go
+
+**Go** khi đáp ứng đủ:
+
+- Có mapping migration rõ từ `sales_shipments` -> DO bán mới.
+- Có test outbound/inbound idempotent + reverse pass.
+- UAT tay 2 flow chuẩn:
+    - `SO -> DO -> stock out -> invoice`
+    - `PO -> GRN -> stock in -> bill`
+- Có rollback script DB + app.
+
+**No-Go** nếu:
+
+- Chưa chốt canonical trigger cho kho (outbound/inbound).
+- Chưa có test regression đủ rộng.
+- Chưa có migration kế thừa dữ liệu.
+
+---
+
+## 9) Ước lượng effort tương đối
+
+- Chuẩn bị thiết kế + migration plan: **1-2 ngày**
+- Refactor backend + view + permission + route: **3-6 ngày**
+- Test + UAT + fix regression: **3-5 ngày**
+- Cutover + theo dõi staging: **1-2 ngày**
+
+**Tổng:** khoảng **8-15 ngày làm việc** tùy phạm vi rename kỹ thuật và mức tương thích ngược.
+
+---
+
+## 10) Quyết định đề xuất cho PM/Tech Lead
+
+- Chấp thuận refactor theo **Bridge migration**.
+- Không xóa ngay `sales_shipments` trong đợt đầu.
+- Chốt mốc:
+    1. hoàn tất compatibility + tài liệu,
+    2. hoàn tất refactor kỹ thuật,
+    3. mới remove artifact cũ.
+
+---
+
+## 11) Tài liệu triển khai liên quan
+
+- Kế hoạch + tracker: cùng file này ([mục 2](#2-kế-hoạch-triển-khai-chi-tiết), [mục 3](#3-tracker-triển-khai)).
+- Prompt thực thi cho AI: [`PROMPT_REFACTOR_SO_DO_PO_GRN_EXECUTION_VI.md`](PROMPT_REFACTOR_SO_DO_PO_GRN_EXECUTION_VI.md).
+
+---
+
+# 2) Kế hoạch triển khai chi tiết
+
+**Ngày tạo:** 2026-03-30  
+**Phạm vi:** Refactor kỹ thuật thật sự, nhưng chỉ xóa `sales_shipments` sau khi flow mới đã hoàn thiện + test pass + UAT pass + rehearsal staging pass.  
+**Nguyên tắc vàng:** Không làm big-bang phá luồng hiện tại.
+
+---
+
+## 0) Mục tiêu và ràng buộc bắt buộc
+
+## Mục tiêu
+
+- Bán: chuẩn hóa thành `SO -> DO (stock out) -> Invoice`.
+- Mua: chuẩn hóa thành `PO -> GRN (stock in) -> Bill`.
+- Giảm nhầm lẫn tên gọi và artifact lộn xộn.
+
+## Ràng buộc bắt buộc
+
+- Không xóa `sales_shipments` ở đầu dự án refactor.
+- Không cho phép double stock posting inbound/outbound.
+- Chỉ cutover khi có test + UAT sign-off.
+- Phải có rollback plan trước mỗi phase có thay đổi DB.
+
+---
+
+## 1) Kiến trúc target (sau refactor)
+
+- **Sales DO** là chứng từ outbound chính cho SO.
+- **GRN** là chứng từ inbound chính cho PO.
+- Kho được điều phối bằng 1 canonical trigger cho mỗi chiều:
+    - outbound: trigger tại Sales DO `shipped` (hoặc trạng thái chốt tương đương),
+    - inbound: trigger tại GRN `received`.
+- Invoice/Bill giữ vai trò kế toán, không thay trigger kho nếu không được thiết kế rõ.
+
+---
+
+## 2) Kế hoạch theo phase
+
+## Phase 1 — Foundation & Compatibility (không phá luồng cũ)
+
+### Công việc
+
+- Chốt domain model mới:
+    - Sales DO entity/service/route/permission.
+    - GRN entity/service/route/permission.
+- Giữ `sales_shipments` hoạt động song song (compat mode).
+- Chuẩn hóa naming UI/SOP:
+    - Sales side dùng thuật ngữ DO bán.
+    - Purchase receiving dùng thuật ngữ GRN.
+- Bổ sung feature flag/cấu hình cutover.
+
+### Deliverables
+
+- Tài liệu mapping artifact cũ -> mới.
+- Danh sách API/route cũ và mới.
+- Permission matrix mới.
+
+### Permission matrix (Phase 1 mapping)
+
+| Nghiệp vụ hiển thị mới    | Permission kỹ thuật hiện tại                                | Ghi chú                                                      |
+| ------------------------- | ----------------------------------------------------------- | ------------------------------------------------------------ |
+| Sales DO - view           | `view_sales_shipment`                                       | Giữ permission cũ trong Phase 1 để tránh migration role lớn. |
+| Sales DO - create         | `create_sales_shipment`                                     | Alias theo UI, không đổi check permission backend ở Phase 1. |
+| Sales DO - update         | `update_sales_shipment`                                     |                                                              |
+| Sales DO - ship/deliver   | `ship_sales_shipment`                                       |                                                              |
+| Sales DO - cancel/reverse | `cancel_sales_shipment`                                     |                                                              |
+| GRN - view/manage         | `view_purchase_order` (menu) + `delivery-orders.*` hiện hữu | Phase 1 chưa tách permission GRN riêng.                      |
+
+### Route/API compatibility map (Phase 1)
+
+| Nghiệp vụ hiển thị mới         | Route kỹ thuật giữ nguyên      | Ghi chú                                              |
+| ------------------------------ | ------------------------------ | ---------------------------------------------------- |
+| Sales DO list/create/edit/show | `sales-shipments.*`            | Phase 1 chỉ đổi wording UI, chưa đổi route name.     |
+| GRN list/create/edit/show      | `delivery-orders.*`            | Đây là inbound receiving path hiện hữu của Purchase. |
+| GRN đổi trạng thái nhanh       | `delivery-orders.changeStatus` | Giữ API hiện tại để tránh regression DataTable.      |
+
+### Acceptance
+
+- Không regression ở flow hiện tại.
+- User đã nhìn thấy tên nghiệp vụ nhất quán trên UI (dù backend cũ chưa bị xóa).
+
+---
+
+## Phase 2 — Xây flow mới end-to-end
+
+### Công việc Sales
+
+- Tạo Sales DO từ SO.
+- Sales DO lifecycle: draft/confirm/ship/deliver/reverse/cancel.
+- Sync outbound kho idempotent + reverse.
+- Invoice tạo sau DO (hoặc theo policy đã chốt), không double outbound.
+
+### Công việc Purchase
+
+- Chuẩn hóa GRN lifecycle cho PO.
+- Inbound kho theo GRN `received` với batch/expiry/rule (FIFO/FEFO).
+- Bill giữ vai trò AP, không tự post stock nếu không có policy mới.
+
+### Deliverables
+
+- Controller/Service/View/Route/Permission cho flow mới.
+- Unit + feature tests cho 2 flow.
+
+### Acceptance
+
+- Test pass cho:
+    - `SO -> DO -> stock out -> invoice`.
+    - `PO -> GRN -> stock in -> bill`.
+- Không double-post kho trong các edge case.
+
+---
+
+## Phase 3 — Data migration rehearsal (local -> staging)
+
+### Công việc
+
+- Viết migration/command chuyển dữ liệu:
+    - map `sales_shipments` + items sang DO bán mới.
+    - map trạng thái và timestamp quan trọng.
+- Chạy dry-run nhiều lần trên local dữ liệu clone staging.
+- Sinh báo cáo reconciliation trước/sau migration:
+    - tổng qty ship,
+    - số movement outbound,
+    - số chứng từ theo trạng thái.
+
+### Deliverables
+
+- Script migration có chế độ `--dry-run`.
+- Script verify/reconciliation.
+- Runbook chuyển dữ liệu staging.
+
+### Acceptance
+
+- Reconciliation đạt ngưỡng sai lệch = 0 (hoặc đúng policy đã chốt).
+- Có rollback script kiểm chứng chạy được.
+
+---
+
+## Phase 4 — Staging cutover có kiểm soát
+
+### Công việc
+
+- Backup DB staging.
+- Deploy code flow mới.
+- Chạy migration dữ liệu (không xóa bảng cũ ngay).
+- Bật flag cutover.
+- Chạy smoke test + UAT checklist.
+
+### Deliverables
+
+- Biên bản deploy staging.
+- Kết quả UAT checklist.
+
+### Acceptance
+
+- Luồng SO và PO chạy đúng.
+- Không lỗi critical trong log.
+- Stakeholder xác nhận pass.
+
+---
+
+## Phase 5 — Retirement `sales_shipments` (chỉ sau khi pass)
+
+### Điều kiện bắt buộc trước khi xóa
+
+- Phase 1-4 đều complete.
+- UAT pass + sign-off.
+- Không có bug blocker mở.
+- Reconciliation staging pass.
+
+### Công việc
+
+- Gỡ route/controller/view/permission cũ `sales-shipments.*`.
+- Xóa bảng cũ sau thời gian grace period.
+- Xóa code thừa do compat.
+- Cập nhật tài liệu cuối cùng.
+
+### Deliverables
+
+- Migration drop an toàn.
+- Danh sách artifact đã remove.
+- Postmortem ngắn + lessons learned.
+
+---
+
+## 3) Kiểm thử bắt buộc (Definition of Done)
+
+- Unit test:
+    - idempotent posting outbound/inbound,
+    - reverse chính xác,
+    - guard chống double.
+- Feature test:
+    - lifecycle Sales DO,
+    - lifecycle GRN,
+    - tạo invoice/bill theo policy.
+- UAT tay:
+    - 2 happy paths,
+    - partial flows,
+    - rollback scenario.
+
+---
+
+## 4) Kế hoạch chuyển dữ liệu lên staging (gợi ý thứ tự)
+
+1. Backup DB + code snapshot.
+2. Deploy code có migration ở chế độ compat.
+3. Chạy migrate schema mới.
+4. Chạy migrate data `--dry-run`, lưu report.
+5. Chạy migrate data thực tế.
+6. Chạy reconcile script.
+7. Bật cutover flag.
+8. UAT checklist.
+9. Giữ bảng `sales_shipments` trong grace period.
+10. Chỉ xóa khi có sign-off.
+
+---
+
+## 5) Rủi ro trọng yếu và cách giảm thiểu
+
+- **Double stock posting** -> khóa trigger canonical + test idempotent.
+- **Mất dữ liệu mapping** -> dry-run + reconcile + backup.
+- **UI/permission miss** -> permission matrix + smoke test theo role.
+- **Khó rollback** -> rollback script bắt buộc trước cutover.
+
+---
+
+## 6) Kết luận thực thi
+
+Kế hoạch này đảm bảo:
+
+- refactor thật sự được thực hiện,
+- luồng SO/PO vẫn đúng sau refactor,
+- chỉ xóa `sales_shipments` khi mọi thứ đã hoàn thiện và kiểm chứng trên staging.
+
+---
+
+# 3) Tracker triển khai
 
 **Owner:** AI Agent + Team ERP  
 **Ngày bắt đầu:** 2026-03-30  
@@ -38,7 +469,7 @@
     - Page title/h1 liên quan Delivery Order chuyển sang `GRN`.
     - Page title/h1 liên quan Sales Shipment chuyển sang `Sales DO`.
     - DataTable title của Sales Shipment đổi sang `Sales DO`.
-- 2026-03-30: Đã bổ sung permission mapping ở master plan (`REFACTOR_SO_DO_PO_GRN_IMPLEMENTATION_PLAN_VI.md`).
+- 2026-03-30: Đã bổ sung permission mapping ở master plan (`SO_DO_PO_GRN_REFACTOR_VI.md (mục Kế hoạch triển khai)`).
 - 2026-03-30: Đã bổ sung route/API compatibility map ở master plan (giữ `sales-shipments.*` và `delivery-orders.*` trong Phase 1).
 - 2026-03-30: Đã thêm khung feature flags:
     - `PURCHASE_FLOW_NAMING_MODE` (default `compat_v2`)

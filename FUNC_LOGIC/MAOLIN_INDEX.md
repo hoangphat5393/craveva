@@ -2,11 +2,11 @@
 
 **Mục đích:** Giảm rối khi trong `FUNC_LOGIC/` có nhiều file MAOLIN/Miaolin. **Bắt đầu từ file này.**
 
-**Quy ước:** Tài liệu **warehouse** (đa kho, Miaolin, Scope B) — **bắt đầu từ** [`WAREHOUSE_INDEX.md`](WAREHOUSE_INDEX.md). Quy trình tổng **PO / DO / SO / Invoice / kho:** [`QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md`](QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md). Cập nhật nghiệp vụ chỉ module kho vào [`WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md`](WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md); kỹ thuật/runbook vào [`WAREHOUSE_MASTER_GUIDE.md`](WAREHOUSE_MASTER_GUIDE.md); trạng thái PM/QA + audit + prompt UAT vào [`WAREHOUSE_TOM_TAT_NOI_BO.md`](WAREHOUSE_TOM_TAT_NOI_BO.md).
+**Quy ước:** Tài liệu **warehouse** (đa kho, Miaolin, Scope B) — **bắt đầu từ** [`WAREHOUSE_INDEX.md`](WAREHOUSE_INDEX.md). Quy trình tổng **PO / DO / SO / Invoice / kho:** [`QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md`](QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md). Cập nhật nghiệp vụ chỉ module kho vào [`WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md`](WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md); **runbook vận hành + kế hoạch nâng cấp (WUP)** vào [`WAREHOUSE_RUNBOOK_AND_UPGRADE_PLAN_VI.md`](WAREHOUSE_RUNBOOK_AND_UPGRADE_PLAN_VI.md); kỹ thuật DB/URL/permission vào [`WAREHOUSE_MASTER_GUIDE.md`](WAREHOUSE_MASTER_GUIDE.md); trạng thái PM/QA + audit + prompt UAT vào [`WAREHOUSE_TOM_TAT_NOI_BO.md`](WAREHOUSE_TOM_TAT_NOI_BO.md).
 
 **Trạng thái hệ thống (2026-03):** Chức năng **đa kho (multi-warehouse)** đã có trong codebase: master kho, movement/lô, `default_warehouse_id` khách, cột `warehouse_id` / `batch_number` / ngày trên luồng Purchase Inventory, v.v. Các ghi chú cũ viết _trước_ khi bật đa kho vẫn có giá trị cho **ngữ cảnh** nhưng phải đọc kèm:
 
-- [`WAREHOUSE_INDEX.md`](WAREHOUSE_INDEX.md) — mục lục warehouse; luồng nghiệp vụ: [`WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md`](WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md); kỹ thuật: [`WAREHOUSE_MASTER_GUIDE.md`](WAREHOUSE_MASTER_GUIDE.md).
+- [`WAREHOUSE_INDEX.md`](WAREHOUSE_INDEX.md) — mục lục warehouse; luồng nghiệp vụ: [`WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md`](WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md); runbook + WUP: [`WAREHOUSE_RUNBOOK_AND_UPGRADE_PLAN_VI.md`](WAREHOUSE_RUNBOOK_AND_UPGRADE_PLAN_VI.md); kỹ thuật: [`WAREHOUSE_MASTER_GUIDE.md`](WAREHOUSE_MASTER_GUIDE.md).
 
 ---
 

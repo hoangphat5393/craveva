@@ -57,7 +57,7 @@
         $('body').on('click', '#save-skill-form', function() {
             window.apiHttp.postUrlEncoded('{{ route('job-skills.store') }}', $('#save-skill-data-form').serialize())
                 .then(function(response) {
-                    if (response.data.status == 'success') {
+                    if (response.status == 'success') {
                         window.location.href = response.data.redirectUrl;
                     }
                 })

@@ -161,7 +161,7 @@
                     window.apiHttp.delete(url, {
                         _token: "{{ csrf_token() }}"
                     }).then(function(response) {
-                        if (response.data.status == "success") {
+                        if (response.status == "success") {
                             window.location.href = response.data.redirectUrl;
                         }
                     }).catch(function(err) {

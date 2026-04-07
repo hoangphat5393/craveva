@@ -113,7 +113,7 @@
                 window.apiHttp.delete(url, {
                     _token: "{{ csrf_token() }}"
                 }).then(function(response) {
-                    if (response.data.status == "success") {
+                    if (response.status == "success") {
                         $('.row' + id).fadeOut(100);
                         // location.reload();
                     }

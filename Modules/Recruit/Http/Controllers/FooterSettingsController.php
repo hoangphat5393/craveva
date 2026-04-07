@@ -120,7 +120,10 @@ class FooterSettingsController extends AccountBaseController
         abort_403(! in_array($editPermission, ['all']));
 
         $link = RecruitFooterLink::findOrFail($id);
-        $link->status = lcfirst($request->status);
+        $normalized = strtolower((string) $request->status);
+        $link->status = in_array($normalized, ['active', 'inactive'], true)
+            ? $normalized
+            : $link->status;
         $link->update();
 
         return Reply::success(__('recruit::messages.linkUpdate'));

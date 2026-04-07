@@ -157,7 +157,7 @@
 
             window.apiHttp.postForm(url, formData)
                 .then(function(response) {
-                    if (response.data.status == 'success') {
+                    if (response.status == 'success') {
                         window.location.reload();
                     }
                 })

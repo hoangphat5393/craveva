@@ -45,16 +45,18 @@ class ImportController extends Controller
         $this->assertAllowedImportQueueName($name);
 
         // Staging/production: do NOT run queue:work inside HTTP — nginx/php-fpm often times out (60s),
-        // breaking JSON polling (empty progress). Use Supervisor: `php artisan queue:work database --queue=ClientImport`.
+        // breaking JSON polling (empty progress). Use Supervisor with the same connection as
+        // config('queue.import_batch_connection'), e.g. queue:work redis --queue=ClientImport.
         // Dev: default runs worker per poll when APP_ENV matches config (e.g. craveva/local), unless
         // IMPORT_PROGRESS_RUN_QUEUE_WORKER=false. Staging/production: set that to false and use Supervisor.
         if ($this->shouldRunQueueWorkerDuringImportProgressPoll()) {
             set_time_limit(300);
             $execution_jobs = $this->resolveImportExecutionJobsPerPoll();
             $maxSeconds = (int) config('app.import_progress_worker_max_seconds', 25);
-            $command = 'queue:work database --max-jobs=' . $execution_jobs . ' --queue=' . $name . ' --stop-when-empty';
+            $connection = config('queue.import_batch_connection', 'database');
+            $command = 'queue:work '.$connection.' --max-jobs='.$execution_jobs.' --queue='.$name.' --stop-when-empty';
             if ($maxSeconds > 0) {
-                $command .= ' --max-time=' . $maxSeconds;
+                $command .= ' --max-time='.$maxSeconds;
             }
             Artisan::call($command);
         }
@@ -76,7 +78,7 @@ class ImportController extends Controller
             $progress = $totalJobs > 0 ? round((($processedJobs + $failedJobs) / $totalJobs) * 100, 2) : 0;
         }
 
-        $metrics = Cache::get('import_metrics_' . $id);
+        $metrics = Cache::get('import_metrics_'.$id);
 
         return Reply::dataOnly([
             'progress' => $progress,
@@ -116,7 +118,7 @@ class ImportController extends Controller
         $failedRows = [];
         foreach ($exceptions as $exception) {
             $raw = $this->parseExceptionMessage($exception->exception);
-            $exception->exception = '[' . $exception->queue . '] ' . $raw;
+            $exception->exception = '['.$exception->queue.'] '.$raw;
             foreach ($this->parseFailedRowsFromMessage($raw) as $item) {
                 $failedRows[] = $item;
             }
@@ -125,7 +127,7 @@ class ImportController extends Controller
 
         $importRowErrors = [];
         if ($batchId && $name === 'SalesHistoryImport') {
-            $cached = Cache::get('import_row_errors_' . $batchId, []);
+            $cached = Cache::get('import_row_errors_'.$batchId, []);
             $importRowErrors = is_array($cached) ? array_values($cached) : [];
             if ($importRowErrors !== [] && $exceptions->isNotEmpty()) {
                 foreach ($exceptions as $ex) {
@@ -204,7 +206,7 @@ class ImportController extends Controller
             'completed_at' => now()->toIso8601String(),
         ];
         $dir = sprintf('import-logs/clients/%s', $companyId);
-        $path = $dir . '/' . $batchId . '.json';
+        $path = $dir.'/'.$batchId.'.json';
         try {
             if (! Storage::disk('local')->exists($dir)) {
                 Storage::disk('local')->makeDirectory($dir);
@@ -348,7 +350,7 @@ class ImportController extends Controller
     private function batchRecordNameMatchesQueue(string $batchName, string $queueName): bool
     {
         return $batchName === $queueName
-            || str_starts_with($batchName, $queueName . '-')
-            || str_starts_with($batchName, $queueName . '_');
+            || str_starts_with($batchName, $queueName.'-')
+            || str_starts_with($batchName, $queueName.'_');
     }
 }

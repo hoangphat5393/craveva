@@ -27,7 +27,6 @@ class RecruitSettingController extends AccountBaseController
 
             return $next($request);
         });
-
     }
 
     public function index()
@@ -72,7 +71,7 @@ class RecruitSettingController extends AccountBaseController
 
         $this->activeTab = $tab ?: 'general-setting';
 
-        if (request()->ajax()) {
+        if (request()->ajax() || request()->wantsJson()) {
             $html = view($this->view, $this->data)->render();
 
             return Reply::dataOnly(['status' => 'success', 'html' => $html, 'title' => $this->pageTitle, 'activeTab' => $this->activeTab]);
@@ -109,7 +108,7 @@ class RecruitSettingController extends AccountBaseController
             if ($request->hasFile('image')) {
                 $settings->background_image = Files::uploadLocalOrS3($request->image, 'background');
 
-                $path = Files::UPLOAD_FOLDER.'/background'.'/'.$oldImage;
+                $path = Files::UPLOAD_FOLDER . '/background' . '/' . $oldImage;
 
                 if (\File::exists($path)) {
                     Files::deleteFile($oldImage, 'background');

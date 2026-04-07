@@ -292,7 +292,7 @@
                 component_id: componentId,
                 currencyId: currencyId
             }).then(function(response) {
-                if (response.data.status == 'success') {
+                if (response.status == 'success') {
                     $('#components').html(response.data.html);
                 }
             }).catch(function(err) {

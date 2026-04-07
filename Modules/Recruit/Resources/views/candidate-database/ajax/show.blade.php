@@ -256,7 +256,7 @@
             window.apiHttp.get(requestUrl, {
                 json: true
             }).then(function(response) {
-                if (response.data.status == "success") {
+                if (response.status == "success") {
                     $('#nav-tabContent').html(response.data.html);
                     if (!$(RIGHT_MODAL).hasClass('in')) {
                         window.history.pushState({
@@ -290,7 +290,7 @@
             _token: "{{ csrf_token() }}",
             job_app_id: "{{ $database->job_application_id }}"
         }).then(function(response) {
-            if (response.data.status == 'success') {
+            if (response.status == 'success') {
                 setTimeout(() => {
                     window.location.href = "{{ route('job-applications.index') }}"
                 }, 500);

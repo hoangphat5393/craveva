@@ -61,8 +61,16 @@
 
         window.apiHttp.postUrlEncoded("{{ route('footer-settings.update', $footerLink->id) }}", $('#createMethods').serialize() + '&_method=PUT')
             .then(function(response) {
-                if (response.data.status == 'success') {
-                    window.location.reload();
+                if (response.status == 'success') {
+                    $(MODAL_LG).modal('hide');
+                    if (typeof $.showApiSuccessToast === 'function') {
+                        $.showApiSuccessToast(response.message || '');
+                    }
+                    if (typeof window.refreshRecruitFooterSettingsTab === 'function') {
+                        window.refreshRecruitFooterSettingsTab();
+                    } else {
+                        window.location.reload();
+                    }
                 }
             })
             .catch(function(err) {

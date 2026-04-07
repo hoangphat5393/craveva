@@ -621,6 +621,32 @@
 
         return false;
     };
+
+    /**
+     * Success toast for axios/apiHttp flows (SweetAlert2).
+     */
+    $.showApiSuccessToast = function (message) {
+        if (typeof Swal === "undefined") {
+            return;
+        }
+
+        Swal.fire({
+            icon: "success",
+            text: message || "",
+            toast: true,
+            position: "top-end",
+            timer: 3000,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            customClass: {
+                popup: "swal2-toast",
+            },
+            showClass: {
+                popup: "swal2-noanimation",
+                backdrop: "swal2-noanimation",
+            },
+        });
+    };
 })(jQuery);
 
 //history pushstate

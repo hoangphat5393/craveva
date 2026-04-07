@@ -110,7 +110,7 @@
 
         window.apiHttp.postUrlEncoded("{{ route('custom-question-settings.store') }}", $('#createJobQuestions').serialize())
             .then(function(response) {
-                if (response.data.status == "success") {
+                if (response.status == "success") {
                     window.location.reload();
                 }
             })

@@ -30,10 +30,10 @@
                     {!! $link->description !!}
                 </td>
                 <td>
-                    @if ($addPermission == 'all')
+                    @if ($editPermission == 'all')
                         <select class="change-footer-status form-control select-picker" data-footer-id="{{ $link->id }}">
-                            <option @if ($link->status == 'active') selected @endif>@lang('app.active')</option>
-                            <option @if ($link->status == 'inactive') selected @endif>@lang('app.inactive')</option>
+                            <option value="active" data-content="<i class='fa fa-circle mr-2 text-success'></i> @lang('app.active')" @selected($link->status == 'active')></option>
+                            <option value="inactive" data-content="<i class='fa fa-circle mr-2 text-danger'></i> @lang('app.inactive')" @selected($link->status == 'inactive')></option>
                         </select>
                     @else
                         @if ($link->status == 'active')
@@ -53,7 +53,7 @@
                     </div>
                     <div class="task_view">
                         @if ($deletePermission == 'all')
-                            <a href="javascript:;" data-footer-id="{{ $link->id }}" class="delete-footer task_view_more d-flex align-items-center justify-content-center dropdown-toggle">
+                            <a href="javascript:;" data-footer-id="{{ $link->id }}" class="delete-footer task_view_more d-flex align-items-center justify-content-center">
                                 <i class="fa fa-trash icons mr-2"></i> @lang('app.delete')
                             </a>
                         @endif
@@ -67,9 +67,30 @@
 </div>
 
 <script>
-    /* delete link */
-    $('body').off('click', ".delete-footer").on('click', '.delete-footer', function() {
+    window.refreshRecruitFooterSettingsTab = function() {
+        var url = "{{ route('recruit-settings.index') }}?tab=footer-settings";
+        return window.apiHttp.get(url).then(function(response) {
+            if (!response || typeof response !== 'object' || response.status !== 'success' || !response.html) {
+                window.location.reload();
+                return;
+            }
+            var $slot = $('#editSettings #nav-tabContent .d-flex.flex-wrap').first();
+            if ($slot.length) {
+                $slot.html(response.html);
+            } else {
+                $('#nav-tabContent .flex-wrap').first().html(response.html);
+            }
+            init('#nav-tabContent');
+        }).catch(function(err) {
+            if (typeof $.handleApiFormError === 'function') {
+                $.handleApiFormError(err);
+            }
+            window.location.reload();
+        });
+    };
 
+    /* delete link */
+    $('body').off('click', '.delete-footer').on('click', '.delete-footer', function() {
         var id = $(this).data('footer-id');
         Swal.fire({
             title: "@lang('messages.sweetAlertTitle')",
@@ -88,7 +109,7 @@
                 backdrop: 'swal2-noanimation'
             },
             buttonsStyling: false
-        }).then((result) => {
+        }).then(function(result) {
             if (result.isConfirmed) {
                 var url = "{{ route('footer-settings.destroy', ':id') }}";
                 url = url.replace(':id', id);
@@ -96,9 +117,11 @@
                 window.apiHttp.delete(url, {
                     _token: "{{ csrf_token() }}"
                 }).then(function(response) {
-                    if (response.data.status == "success") {
-                        $('.row' + id).fadeOut(100);
-                        location.reload();
+                    if (response.status === 'success') {
+                        if (typeof $.showApiSuccessToast === 'function') {
+                            $.showApiSuccessToast(response.message || '');
+                        }
+                        refreshRecruitFooterSettingsTab();
                     }
                 }).catch(function(err) {
                     $.handleApiFormError(err);
@@ -108,13 +131,13 @@
     });
 
     /* change links status */
-    $('body').on('change', '.change-footer-status', function() {
-        var agentId = $(this).data('footer-id');
+    $('body').off('change', '.change-footer-status').on('change', '.change-footer-status', function() {
+        var footerId = $(this).data('footer-id');
         var status = $(this).val();
         var url = "{{ route('footer-settings.change_status', ':id') }}";
-        url = url.replace(':id', agentId);
+        url = url.replace(':id', footerId);
 
-        if (typeof agentId !== 'undefined') {
+        if (typeof footerId !== 'undefined') {
             window.apiHttp.postUrlEncoded(url, {
                 _token: '{{ csrf_token() }}',
                 status: status
@@ -125,15 +148,14 @@
     });
 
     /* open add agent modal */
-    $('body').off('click', "#addlink").on('click', '#addlink', function() {
+    $('body').off('click', '#addlink').on('click', '#addlink', function() {
         var url = "{{ route('footer-settings.create') }}";
         $(MODAL_LG + ' ' + MODAL_HEADING).html('...');
         $.ajaxModal(MODAL_LG, url);
     });
 
     // add new leave type
-    $('body').off('click', ".editLink").on('click', '.editLink', function() {
-
+    $('body').off('click', '.editLink').on('click', '.editLink', function() {
         var id = $(this).data('footer-id');
 
         var url = "{{ route('footer-settings.edit', ':id') }}";

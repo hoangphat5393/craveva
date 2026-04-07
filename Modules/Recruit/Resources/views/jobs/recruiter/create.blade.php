@@ -33,8 +33,8 @@
         var url = "{{ route('recruiter.store') }}";
         window.apiHttp.postUrlEncoded(url, $('#createMethods').serialize())
             .then(function(response) {
-                if (response.data.status == 'success') {
-                    $('#fetch-recruiter').html(response.data.data);
+                if (response.status == 'success') {
+                    $('#fetch-recruiter').html(response.data);
                     $('#fetch-recruiter').selectpicker('refresh');
                     $(MODAL_DEFAULT).modal('hide');
                 }

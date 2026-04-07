@@ -30,6 +30,7 @@ class ImportProcessRequest extends FormRequest
             'columns' => ['required', 'array', 'min:1'],
             'default_unit_id' => 'nullable|integer|exists:unit_types,id',
             'original_filename' => 'nullable|string|max:500',
+            'chunk_size' => 'nullable|integer|min:20|max:500',
         ];
     }
 

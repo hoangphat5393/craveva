@@ -65,9 +65,9 @@
                 window.apiHttp.delete(url, {
                     _token: "{{ csrf_token() }}"
                 }).then(function(response) {
-                    if (response.data.status == "success") {
+                    if (response.status == "success") {
                         $('#row-' + id).fadeOut();
-                        $('#job-type').html(response.data.data);
+                        $('#job-type').html(response.data);
                         $('#job-type').selectpicker('refresh');
                     }
                 }).catch(function(err) {
@@ -82,8 +82,8 @@
         var url = "{{ route('job-type.store') }}";
         window.apiHttp.postUrlEncoded(url, $('#createProjectCategory').serialize())
             .then(function(response) {
-                if (response.data.status == 'success') {
-                    $('#job-type').html(response.data.data);
+                if (response.status == 'success') {
+                    $('#job-type').html(response.data);
                     $('#job-type').selectpicker('refresh');
                     $(MODAL_LG).modal('hide');
                 }
@@ -109,8 +109,8 @@
                 _token: "{{ csrf_token() }}",
                 _method: 'PUT'
             }).then(function(response) {
-                if (response.data.status == 'success') {
-                    $('#job-type').html(response.data.data);
+                if (response.status == 'success') {
+                    $('#job-type').html(response.data);
                     $('#job-type').selectpicker('refresh');
                 }
             }).catch(function(err) {

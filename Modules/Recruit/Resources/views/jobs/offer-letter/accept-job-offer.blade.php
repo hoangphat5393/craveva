@@ -134,7 +134,7 @@
         window.apiHttp.postUrlEncoded("{{ route('front.job-offer.accept', $jobOffer->id) }}", {
             signature: signature
         }).then(function(response) {
-            if (response.data.status == 'success') {
+            if (response.status == 'success') {
                 window.location.reload();
             }
         }).catch(function(err) {

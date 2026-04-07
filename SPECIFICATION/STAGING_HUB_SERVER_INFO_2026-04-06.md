@@ -2,6 +2,8 @@
 
 **Thu thập:** 2026-04-06 (SSH read-only). Giá trị **thay đổi theo thời gian** — cần `free -h`, `uptime` khi điều tra sự cố.
 
+**Cập nhật 2026-04-07 (Hub):** file FPM **`/etc/php/8.3/fpm/conf.d/99-hub-match-aapanel82.ini`** — `memory_limit` **128M → 256M**; `post_max_size` / `upload_max_filesize` **50M** (giữ); `php8.3-fpm` reload OK — chi tiết **mục 3 Hub → Drop-in aaPanel**.
+
 **Redis / phpredis (SSH, 2026-04-06):** **Staging** — trước đó chỉ có **`php8.3-redis`**, chưa có Redis server; đã **`apt install redis-server`** (Ubuntu **6.0.16**), `redis-cli ping` → PONG. **Hub** — Redis (aaPanel) đã chạy **127.0.0.1:6379**; đã cài **`php8.3-redis`** (sury **6.3.0**), bật **CLI + FPM**. Hub: `apt` báo lỗi cấu hình gói **MariaDB client** cũ (không chặn cài phpredis) — nên xử lý khi bảo trì.
 
 **Cập nhật FPM (mục tiêu vận hành):** **`memory_limit = 1024M`** + **`pm.max_children = 2`** trên **cả staging và hub** — trần lý thuyết pool PHP web **~2 GiB** (2×1024M), phù hợp VM **~4 GiB RAM (cũ)**; hiện tại RAM đã nâng lên **16GB (Hub)** và **8GB (Staging)** nhưng vẫn giữ `max_children = 2` để an toàn cho import lớn (submit HTTP).
@@ -114,10 +116,52 @@
 
 | Chỉ số                 | Giá trị (sau chỉnh **2026-04-04**)                                                                                            |
 | ---------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| **memory_limit**       | **1024M**                                                                                                                     |
+| **memory_limit**       | **1024M** trong `/etc/php/8.3/fpm/php.ini` (snapshot **2026-04-06**); **ghi đè** bởi drop-in aaPanel — xem bảng ngay dưới.    |
 | **max_execution_time** | **300**                                                                                                                       |
 | **max_input_time**     | **300**                                                                                                                       |
 | **Pool**               | `pm = dynamic`: **`pm.max_children = 2`**, **`pm.max_spare_servers = 2`**, `pm.start_servers = 2`, `pm.min_spare_servers = 1` |
+
+#### Drop-in aaPanel (Hub) — cập nhật **2026-04-07**
+
+File: **`/etc/php/8.3/fpm/conf.d/99-hub-match-aapanel82.ini`**
+
+| Chỉ số                  | Giá trị hiện tại | Ghi chú                                                                              |
+| ----------------------- | ---------------- | ------------------------------------------------------------------------------------ |
+| **memory_limit**        | **256M**         | Nâng từ **128M** (cùng file); sau chỉnh: **`systemctl reload php8.3-fpm`** (active). |
+| **post_max_size**       | **50M**          | Giữ nguyên.                                                                          |
+| **upload_max_filesize** | **50M**          | Giữ nguyên.                                                                          |
+
+**Giá trị thực tế** của `memory_limit` cho request FPM là giá trị **sau** khi PHP merge toàn bộ `.ini` (thường file `conf.d/…` tải sau `php.ini`). Để xác nhận trên máy: `php-fpm8.3 -i 2>/dev/null | grep memory_limit` hoặc trang `phpinfo()` qua FPM.
+
+#### Khác nhau giữa mục « PHP 8.3 FPM » và file `99-hub-match-aapanel82.ini`?
+
+**Không phải hai bản PHP hay hai pool độc lập** — cùng một binary **`php-fpm8.3`**, cùng các worker FPM, chỉ **khác nguồn cấu hình**:
+
+| Nguồn                                                                      | Vai trò                                                                                                                                                    |
+| -------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`/etc/php/8.3/fpm/php.ini`**                                             | File INI gốc của SAPI **fpm** (snapshot doc ghi **1024M** cho `memory_limit` tại thời điểm quét).                                                          |
+| **`/etc/php/8.3/fpm/conf.d/*.ini`** (gồm **`99-hub-match-aapanel82.ini`**) | Các **snippet** được nối thêm sau `php.ini` (thứ tự tên file; `99-` thường load muộn). Dùng để **ghi đè** vài directive (ở Hub: **256M**, upload **50M**). |
+| **`/etc/php/8.3/fpm/pool.d/*.conf`**                                       | Cấu hình **pool** FPM: `pm.max_children`, **`listen`** (socket hoặc TCP), user, v.v. — **không** nằm trong file `99-hub-…ini` trên.                        |
+
+Mục **### PHP 8.3 FPM** trong tài liệu này mô tả **tổng thể** (pool + giá trị INI lúc quét); mục **Drop-in aaPanel** ghi **riêng** file chỉnh tay / đồng bộ aaPanel để biết **giá trị đang thắng** cho `memory_limit` / upload.
+
+#### Hub đang dùng socket nào?
+
+**Socket (hoặc cổng TCP)** mà Nginx gửi request PHP tới được khai báo bằng directive **`listen`** trong **`/etc/php/8.3/fpm/pool.d/*.conf`** (thường `www.conf` hoặc pool do aaPanel tạo), ví dụ:
+
+- `listen = /run/php/php8.3-fpm.sock`, hoặc
+- `listen = /tmp/php-cgi-83.sock`, hoặc
+- `listen = 127.0.0.1:9000`
+
+**Không** suy ra từ `99-hub-match-aapanel82.ini` (file đó chỉ là PHP INI).
+
+Trên server Hub, xác nhận bằng:
+
+```bash
+grep -hE '^listen\s*=' /etc/php/8.3/fpm/pool.d/*.conf
+```
+
+Và khớp với Nginx: `grep -R fastcgi_pass /www/server/panel/vhost/nginx/*.conf` (hoặc đường site thực tế trên máy).
 
 ### PHP 8.3 CLI
 

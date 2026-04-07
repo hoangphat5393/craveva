@@ -501,7 +501,7 @@
                 reason: decline_reason,
                 _token: '{{ csrf_token() }}'
             }).then(function(response) {
-                if (response.data.status == 'success') {
+                if (response.status == 'success') {
                     window.location.reload();
                 }
             }).catch(function(err) {
@@ -514,7 +514,7 @@
 
             window.apiHttp.postUrlEncoded("{{ route('front.job-offer.accept', $jobOffer->id) }}", $('#accept').serialize())
                 .then(function(response) {
-                    if (response.data.status == 'success') {
+                    if (response.status == 'success') {
                         window.location.reload();
                     }
                 })

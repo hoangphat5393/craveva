@@ -81,7 +81,12 @@
                         window.history.pushState({}, '', requestUrl);
                         showBtn(response.activeTab);
 
-                        $('#nav-tabContent .flex-wrap').html(response.html);
+                        var $slot = $('#editSettings #nav-tabContent .d-flex.flex-wrap').first();
+                        if ($slot.length) {
+                            $slot.html(response.html);
+                        } else {
+                            $('#nav-tabContent .flex-wrap').first().html(response.html);
+                        }
 
                         init('#nav-tabContent');
                     }

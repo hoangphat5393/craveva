@@ -171,7 +171,7 @@
                     window.apiHttp.delete(url, {
                         _token: "{{ csrf_token() }}"
                     }).then(function(response) {
-                        if (response.data.status == "success") {
+                        if (response.status == "success") {
                             showTable();
                         }
                     }).catch(function(err) {
@@ -190,7 +190,7 @@
             var url = "{{ route('job-skills.apply_quick_action') }}?row_ids=" + rowdIds;
             window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize())
                 .then(function(response) {
-                    if (response.data.status == 'success') {
+                    if (response.status == 'success') {
                         showTable();
                         resetActionButtons();
                         deSelectAll();

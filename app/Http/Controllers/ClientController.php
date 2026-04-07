@@ -49,10 +49,12 @@ use App\Scopes\CompanyScope;
 use App\Traits\EmployeeActivityTrait;
 use App\Traits\ImportExcel;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Modules\Warehouse\Entities\Warehouse;
 
 class ClientController extends AccountBaseController
 {
@@ -73,7 +75,7 @@ class ClientController extends AccountBaseController
     /**
      * client list
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function index(ClientsDataTable $dataTable)
     {
@@ -99,7 +101,7 @@ class ClientController extends AccountBaseController
     /**
      * XXXXXXXXXXX
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function create($leadID = null)
     {
@@ -125,8 +127,8 @@ class ClientController extends AccountBaseController
         $this->countries = countries();
         $this->categories = ClientCategory::all();
         $this->warehouses = collect();
-        if (class_exists(\Modules\Warehouse\Entities\Warehouse::class) && Schema::hasTable('warehouses')) {
-            $this->warehouses = \Modules\Warehouse\Entities\Warehouse::where('company_id', company()->id)
+        if (class_exists(Warehouse::class) && Schema::hasTable('warehouses')) {
+            $this->warehouses = Warehouse::where('company_id', company()->id)
                 ->where('status', 'active')
                 ->get();
         }
@@ -280,7 +282,7 @@ class ClientController extends AccountBaseController
         }
 
         if ($request->has('is_client_contact')) {
-            $redirectUrl = route('clients.show', $request->is_client_contact) . '?tab=contacts';
+            $redirectUrl = route('clients.show', $request->is_client_contact).'?tab=contacts';
         }
 
         if ($request->add_more == 'true') {
@@ -299,20 +301,20 @@ class ClientController extends AccountBaseController
             foreach ($teams as $team) {
                 $selected = ($team->id == $user->id) ? 'selected' : '';
 
-                $teamData .= '<option ' . $selected . ' data-content="';
+                $teamData .= '<option '.$selected.' data-content="';
 
                 $teamData .= '<div class=\'media align-items-center mw-250\'>';
 
-                $teamData .= '<div class=\'position-relative\'><img src=' . $team->image_url . ' class=\'mr-2 taskEmployeeImg rounded-circle\'></div>';
+                $teamData .= '<div class=\'position-relative\'><img src='.$team->image_url.' class=\'mr-2 taskEmployeeImg rounded-circle\'></div>';
                 $teamData .= '<div class=\'media-body\'>';
-                $teamData .= '<h5 class=\'mb-0 f-13\'>' . $team->name . '</h5>';
-                $teamData .= '<p class=\'my-0 f-11 text-dark-grey\'>' . $team->email . '</p>';
+                $teamData .= '<h5 class=\'mb-0 f-13\'>'.$team->name.'</h5>';
+                $teamData .= '<p class=\'my-0 f-11 text-dark-grey\'>'.$team->email.'</p>';
 
-                $teamData .= (! is_null($team->clientDetails->company_name)) ? '<p class=\'my-0 f-11 text-dark-grey\'>' . $team->clientDetails->company_name . '</p>' : '';
+                $teamData .= (! is_null($team->clientDetails->company_name)) ? '<p class=\'my-0 f-11 text-dark-grey\'>'.$team->clientDetails->company_name.'</p>' : '';
                 $teamData .= '</div>';
                 $teamData .= '</div>"';
 
-                $teamData .= 'value="' . $team->id . '"> ' . $team->name . '';
+                $teamData .= 'value="'.$team->id.'"> '.$team->name.'';
 
                 $teamData .= '</option>';
             }
@@ -326,7 +328,7 @@ class ClientController extends AccountBaseController
     /**
      * XXXXXXXXXXX
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function edit($id)
     {
@@ -344,8 +346,8 @@ class ClientController extends AccountBaseController
         $this->countries = countries();
         $this->categories = ClientCategory::all();
         $this->warehouses = collect();
-        if (class_exists(\Modules\Warehouse\Entities\Warehouse::class) && Schema::hasTable('warehouses')) {
-            $this->warehouses = \Modules\Warehouse\Entities\Warehouse::where('company_id', company()->id)
+        if (class_exists(Warehouse::class) && Schema::hasTable('warehouses')) {
+            $this->warehouses = Warehouse::where('company_id', company()->id)
                 ->where('status', 'active')
                 ->get();
         }
@@ -354,7 +356,7 @@ class ClientController extends AccountBaseController
             $this->employees = User::allEmployees();
         }
 
-        $this->pageTitle = __('app.update') . ' ' . __('app.client');
+        $this->pageTitle = __('app.update').' '.__('app.client');
         $this->salutations = Salutation::cases();
         $this->languages = LanguageSetting::where('status', 'enabled')->get();
 
@@ -382,7 +384,7 @@ class ClientController extends AccountBaseController
     /**
      * XXXXXXXXXXX
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function update(UpdateClientRequest $request, $id)
     {
@@ -487,7 +489,7 @@ class ClientController extends AccountBaseController
         }
 
         if ($request->has('is_client_contact')) {
-            $redirectUrl = route('clients.show', $request->is_client_contact) . '?tab=contacts';
+            $redirectUrl = route('clients.show', $request->is_client_contact).'?tab=contacts';
         }
 
         return Reply::successWithData(__('messages.updateSuccess'), ['redirectUrl' => $redirectUrl]);
@@ -497,7 +499,7 @@ class ClientController extends AccountBaseController
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function destroy($id)
     {
@@ -528,10 +530,10 @@ class ClientController extends AccountBaseController
 
         Notification::whereNull('read_at')
             ->where(function ($q) use ($user) {
-                $q->where('data', 'like', '{"id":' . $user->id . ',%');
-                $q->orWhere('data', 'like', '%,"name":' . $user->name . ',%');
-                $q->orWhere('data', 'like', '%,"user_one":' . $user->id . ',%');
-                $q->orWhere('data', 'like', '%,"client_id":' . $user->id . '%');
+                $q->where('data', 'like', '{"id":'.$user->id.',%');
+                $q->orWhere('data', 'like', '%,"name":'.$user->name.',%');
+                $q->orWhere('data', 'like', '%,"user_one":'.$user->id.',%');
+                $q->orWhere('data', 'like', '%,"client_id":'.$user->id.'%');
             })->delete();
 
         $user->delete();
@@ -547,7 +549,7 @@ class ClientController extends AccountBaseController
     /**
      * XXXXXXXXXXX
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function applyQuickAction(Request $request)
     {
@@ -611,7 +613,7 @@ class ClientController extends AccountBaseController
      * Display the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function show($id)
     {
@@ -710,11 +712,11 @@ class ClientController extends AccountBaseController
     {
         return DB::table('users')
             ->select(
-                DB::raw('(select count(projects.id) from `projects` WHERE projects.client_id = ' . $id . ' and deleted_at IS NULL) as totalProjects'),
-                DB::raw('(select count(invoices.id) from `invoices` left join projects on projects.id=invoices.project_id WHERE invoices.status != "paid" and invoices.status != "canceled" and (projects.client_id = ' . $id . ' or invoices.client_id = ' . $id . ')) as totalUnpaidInvoices'),
-                DB::raw('(select sum(payments.amount) from `payments` left join projects on projects.id=payments.project_id WHERE payments.status = "complete" and projects.client_id = ' . $id . ') as projectPayments'),
-                DB::raw('(select sum(payments.amount) from `payments` inner join invoices on invoices.id=payments.invoice_id  WHERE payments.status = "complete" and invoices.client_id = ' . $id . ') as invoicePayments'),
-                DB::raw('(select count(contracts.id) from `contracts` WHERE contracts.client_id = ' . $id . ') as totalContracts')
+                DB::raw('(select count(projects.id) from `projects` WHERE projects.client_id = '.$id.' and deleted_at IS NULL) as totalProjects'),
+                DB::raw('(select count(invoices.id) from `invoices` left join projects on projects.id=invoices.project_id WHERE invoices.status != "paid" and invoices.status != "canceled" and (projects.client_id = '.$id.' or invoices.client_id = '.$id.')) as totalUnpaidInvoices'),
+                DB::raw('(select sum(payments.amount) from `payments` left join projects on projects.id=payments.project_id WHERE payments.status = "complete" and projects.client_id = '.$id.') as projectPayments'),
+                DB::raw('(select sum(payments.amount) from `payments` inner join invoices on invoices.id=payments.invoice_id  WHERE payments.status = "complete" and invoices.client_id = '.$id.') as invoicePayments'),
+                DB::raw('(select count(contracts.id) from `contracts` WHERE contracts.client_id = '.$id.') as totalContracts')
             )
             ->first();
     }
@@ -792,7 +794,7 @@ class ClientController extends AccountBaseController
     /**
      * XXXXXXXXXXX
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function projectList($id)
     {
@@ -809,7 +811,7 @@ class ClientController extends AccountBaseController
     /**
      * XXXXXXXXXXX
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function ajaxDetails($id)
     {
@@ -825,7 +827,7 @@ class ClientController extends AccountBaseController
 
         foreach ($clientProjects as $project) {
 
-            $options .= '<option value="' . $project->id . '"> ' . $project->project_name . ' </option>';
+            $options .= '<option value="'.$project->id.'"> '.$project->project_name.' </option>';
         }
 
         $data = $client ?: null;
@@ -1014,7 +1016,7 @@ class ClientController extends AccountBaseController
 
     public function importClient()
     {
-        $this->pageTitle = __('app.importExcel') . ' ' . __('app.client');
+        $this->pageTitle = __('app.importExcel').' '.__('app.client');
 
         $addPermission = user()->permission('add_clients');
         abort_403(! in_array($addPermission, ['all', 'added', 'both']));
@@ -1050,13 +1052,15 @@ class ClientController extends AccountBaseController
         $addPermission = user()->permission('add_clients');
         abort_403(! in_array($addPermission, ['all', 'added', 'both']));
 
-        // Default chunk 100: fewer jobs, less queue overhead; bulk insert custom fields keeps each job fast.
+        // Default from config/import.php (CLIENT_IMPORT_CHUNK_SIZE, default 150): balance dispatch vs job size.
         // Override via request chunk_size if needed (e.g. 20 for easier error location when debugging).
-        $chunkSize = $request->filled('chunk_size') ? (int) $request->chunk_size : 100;
+        $chunkSize = $request->filled('chunk_size')
+            ? (int) $request->chunk_size
+            : (int) config('import.client_chunk_size', 150);
         $batch = $this->importJobProcessChunked($request, ClientImport::class, ImportClientChunkJob::class, $chunkSize);
         $batchId = data_get($batch, 'id');
         if ($batchId) {
-            Cache::put('import_metrics_' . $batchId, [
+            Cache::put('import_metrics_'.$batchId, [
                 'created' => 0,
                 'updated' => 0,
                 'skipped' => 0,
@@ -1106,16 +1110,16 @@ class ClientController extends AccountBaseController
 
                 $teamData .= '<div class=\'media align-items-center mw-250\'>';
 
-                $teamData .= '<div class=\'position-relative\'><img src=' . $client->image_url . ' class=\'mr-2 taskEmployeeImg rounded-circle\'></div>';
+                $teamData .= '<div class=\'position-relative\'><img src='.$client->image_url.' class=\'mr-2 taskEmployeeImg rounded-circle\'></div>';
                 $teamData .= '<div class=\'media-body\'>';
-                $teamData .= '<h5 class=\'mb-0 f-13\'>' . $client->name . '</h5>';
-                $teamData .= '<p class=\'my-0 f-11 text-dark-grey\'>' . $client->email . '</p>';
+                $teamData .= '<h5 class=\'mb-0 f-13\'>'.$client->name.'</h5>';
+                $teamData .= '<p class=\'my-0 f-11 text-dark-grey\'>'.$client->email.'</p>';
 
-                $teamData .= (! is_null($client->clientDetails->company_name)) ? '<p class=\'my-0 f-11 text-dark-grey\'>' . $client->clientDetails->company_name . '</p>' : '';
+                $teamData .= (! is_null($client->clientDetails->company_name)) ? '<p class=\'my-0 f-11 text-dark-grey\'>'.$client->clientDetails->company_name.'</p>' : '';
                 $teamData .= '</div>';
                 $teamData .= '</div>"';
 
-                $teamData .= 'value="' . $client->id . '"> ' . $client->name . '';
+                $teamData .= 'value="'.$client->id.'"> '.$client->name.'';
 
                 $teamData .= '</option>';
             }
@@ -1129,16 +1133,16 @@ class ClientController extends AccountBaseController
 
                 $teamData .= '<div class=\'media align-items-center mw-250\'>';
 
-                $teamData .= '<div class=\'position-relative\'><img src=' . $project->client->image_url . ' class=\'mr-2 taskEmployeeImg rounded-circle\'></div>';
+                $teamData .= '<div class=\'position-relative\'><img src='.$project->client->image_url.' class=\'mr-2 taskEmployeeImg rounded-circle\'></div>';
                 $teamData .= '<div class=\'media-body\'>';
-                $teamData .= '<h5 class=\'mb-0 f-13\'>' . $project->client->name . '</h5>';
-                $teamData .= '<p class=\'my-0 f-11 text-dark-grey\'>' . $project->client->email . '</p>';
+                $teamData .= '<h5 class=\'mb-0 f-13\'>'.$project->client->name.'</h5>';
+                $teamData .= '<p class=\'my-0 f-11 text-dark-grey\'>'.$project->client->email.'</p>';
 
-                $teamData .= (! is_null($project->client->company->company_name)) ? '<p class=\'my-0 f-11 text-dark-grey\'>' . $project->client->company->company_name . '</p>' : '';
+                $teamData .= (! is_null($project->client->company->company_name)) ? '<p class=\'my-0 f-11 text-dark-grey\'>'.$project->client->company->company_name.'</p>' : '';
                 $teamData .= '</div>';
                 $teamData .= '</div>"';
 
-                $teamData .= 'value="' . $project->client->id . '"> ' . $project->client->name . '';
+                $teamData .= 'value="'.$project->client->id.'"> '.$project->client->name.'';
 
                 $teamData .= '</option>';
             }

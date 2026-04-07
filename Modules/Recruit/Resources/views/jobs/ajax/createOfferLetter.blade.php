@@ -375,7 +375,7 @@
             window.apiHttp.get(url, {
                 component_id: componentId
             }).then(function(response) {
-                if (response.data.status == 'success') {
+                if (response.status == 'success') {
                     $('#components').html(response.data.html);
                 }
             }).catch(function(err) {
@@ -394,7 +394,7 @@
 
             window.apiHttp.postUrlEncoded(url, $('#save-job-data-form').serialize())
                 .then(function(response) {
-                    if (response.data.status == 'success') {
+                    if (response.status == 'success') {
                         if ((myDropzone.getQueuedFiles().length > 0)) {
                             $('#applicationID').val(response.data.application_id);
                             myDropzone.processQueue();
@@ -416,7 +416,7 @@
             window.apiHttp.get(url, {
                 job_id: jobId
             }).then(function(response) {
-                if (response.data.status == 'success') {
+                if (response.status == 'success') {
                     if (response.data.currencySymbol != null) {
                         document.getElementById("currency-symbol").innerHTML = response.data.currencySymbol.currency_symbol;
                         fetchedCurrency(response.data.currencySymbol);

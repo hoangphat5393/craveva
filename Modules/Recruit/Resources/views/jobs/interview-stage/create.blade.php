@@ -67,9 +67,9 @@
                 window.apiHttp.delete(url, {
                     _token: "{{ csrf_token() }}"
                 }).then(function(response) {
-                    if (response.data.status == "success") {
+                    if (response.status == "success") {
                         $('#row-' + id).fadeOut();
-                        $('#selectStages').html(response.data.data);
+                        $('#selectStages').html(response.data);
                         $('#selectStages').selectpicker('refresh');
                     }
                 }).catch(function(err) {
@@ -84,8 +84,8 @@
         const url = "{{ route('interview-stages.store') }}";
         window.apiHttp.postUrlEncoded(url, $('#createStages').serialize())
             .then(function(response) {
-                if (response.data.status == 'success') {
-                    $('#selectStages').html(response.data.data);
+                if (response.status == 'success') {
+                    $('#selectStages').html(response.data);
                     $('#selectStages').selectpicker('refresh');
                     $(MODAL_LG).modal('hide');
                 }
@@ -110,8 +110,8 @@
                 _token: "{{ csrf_token() }}",
                 selectedStages: selectedStages
             }).then(function(response) {
-                if (response.data.status === 'success') {
-                    $('#selectStages').html(response.data.data);
+                if (response.status === 'success') {
+                    $('#selectStages').html(response.data);
                     $('#selectStages').selectpicker('refresh');
                 }
             }).catch(function(err) {

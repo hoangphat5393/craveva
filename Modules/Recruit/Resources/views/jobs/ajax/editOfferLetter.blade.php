@@ -613,7 +613,7 @@
                 component_id: componentId,
                 currencyId: currencyId
             }).then(function(response) {
-                if (response.data.status == 'success') {
+                if (response.status == 'success') {
                     $('#components').html(response.data.html);
                 }
             }).catch(function(err) {
@@ -657,7 +657,7 @@
             window.apiHttp.get(url, {
                 job_id: jobId
             }).then(function(response) {
-                if (response.data.status == 'success') {
+                if (response.status == 'success') {
                     var options = [];
                     var rData = [];
 
@@ -705,7 +705,7 @@
                     window.apiHttp.delete(url, {
                         _token: "{{ csrf_token() }}"
                     }).then(function(response) {
-                        if (response.data.status == "success") {
+                        if (response.status == "success") {
                             window.location.reload();
                         }
                     }).catch(function(err) {

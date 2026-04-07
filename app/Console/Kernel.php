@@ -20,9 +20,8 @@ use App\Console\Commands\DeleteSpamCompanies;
 use App\Console\Commands\FetchTicketEmails;
 use App\Console\Commands\HideCronJobMessage;
 use App\Console\Commands\InActiveEmployee;
-use App\Console\Commands\PhpIniCheckCommand;
-use App\Console\Commands\VerifyStripePaymentEnvironmentCommand;
 use App\Console\Commands\LeavesQuotaRenew;
+use App\Console\Commands\PhpIniCheckCommand;
 use App\Console\Commands\RecalculateLeavesQuotas;
 use App\Console\Commands\RemoveSeenNotification;
 use App\Console\Commands\SendAttendanceReminder;
@@ -41,6 +40,7 @@ use App\Console\Commands\SuperAdmin\TrialExpire;
 use App\Console\Commands\SyncUserPermissions;
 use App\Console\Commands\UpdateExchangeRates;
 use App\Console\Commands\UpdateProjectProgressByDeadline;
+use App\Console\Commands\VerifyStripePaymentEnvironmentCommand;
 use DateTimeZone;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -204,8 +204,21 @@ class Kernel extends ConsoleKernel
         // $schedule->command('queue:work database --tries=3 --stop-when-empty')->withoutOverlapping();
 
         // Without --queue=..., only `default` is processed; import batches use named queues (e.g. SalesHistoryImport).
+        // When import_batch_connection is redis, import jobs live on Redis — run a redis worker for import queues
+        // and keep database worker for `default` (and any jobs still on the database connection).
         $queueList = implode(',', self::DATABASE_WORKER_QUEUE_NAMES);
-        $schedule->command("queue:work database --queue={$queueList} --tries=3 --stop-when-empty")->withoutOverlapping();
+        $importConnection = config('queue.import_batch_connection', 'database');
+
+        if ($importConnection === 'redis') {
+            $importOnlyQueues = implode(',', array_values(array_filter(
+                self::DATABASE_WORKER_QUEUE_NAMES,
+                static fn (string $q): bool => $q !== 'default'
+            )));
+            $schedule->command('queue:work database --queue=default --tries=3 --stop-when-empty')->withoutOverlapping();
+            $schedule->command("queue:work redis --queue={$importOnlyQueues} --tries=3 --stop-when-empty")->withoutOverlapping();
+        } else {
+            $schedule->command("queue:work database --queue={$queueList} --tries=3 --stop-when-empty")->withoutOverlapping();
+        }
     }
 
     /**
@@ -215,6 +228,6 @@ class Kernel extends ConsoleKernel
      */
     protected function commands()
     {
-        $this->load(__DIR__ . '/Commands');
+        $this->load(__DIR__.'/Commands');
     }
 }

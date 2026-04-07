@@ -68,9 +68,9 @@
                 window.apiHttp.delete(url, {
                     _token: "{{ csrf_token() }}"
                 }).then(function(response) {
-                    if (response.data.status == "success") {
+                    if (response.status == "success") {
                         $('#row-' + id).fadeOut();
-                        $('#selectEmployeeData').html(response.data.data);
+                        $('#selectEmployeeData').html(response.data);
                         $('#selectEmployeeData').selectpicker('refresh');
                     }
                 }).catch(function(err) {
@@ -85,8 +85,8 @@
         var url = "{{ route('job-skills.storeSkill') }}";
         window.apiHttp.postUrlEncoded(url, $('#createSkill').serialize())
             .then(function(response) {
-                if (response.data.status == 'success') {
-                    $('#selectEmployeeData').html(response.data.data);
+                if (response.status == 'success') {
+                    $('#selectEmployeeData').html(response.data);
                     $('#selectEmployeeData').selectpicker('refresh');
                     $(MODAL_LG).modal('hide');
                 }
@@ -113,8 +113,8 @@
                 _token: "{{ csrf_token() }}",
                 selectedSkills: selectedSkills
             }).then(function(response) {
-                if (response.data.status == 'success') {
-                    $('#selectEmployeeData').html(response.data.data);
+                if (response.status == 'success') {
+                    $('#selectEmployeeData').html(response.data);
                     $('#selectEmployeeData').selectpicker('refresh');
                 }
             }).catch(function(err) {

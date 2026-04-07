@@ -43,7 +43,7 @@
             const url = "{{ route('job-skills.update', [$skills->id]) }}";
             window.apiHttp.postUrlEncoded(url, $('#save-skill-data-form').serialize())
                 .then(function(response) {
-                    if (response.data.status == 'success') {
+                    if (response.status == 'success') {
                         window.location.href = response.data.redirectUrl;
                     }
                 })

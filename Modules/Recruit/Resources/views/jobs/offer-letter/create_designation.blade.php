@@ -44,7 +44,7 @@
 
             window.apiHttp.postUrlEncoded(url, $('#save-designation-data-form').serialize())
                 .then(function(response) {
-                    $('#employee_designation').html(response.data.data);
+                    $('#employee_designation').html(response.data);
                     $('#employee_designation').selectpicker('refresh');
                     var selected = response.data.selected;
                     if (selected) {

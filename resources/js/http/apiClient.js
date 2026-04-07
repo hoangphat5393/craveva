@@ -3,6 +3,8 @@
  * Loaded from resources/js/main.js — available as window.apiHttp on authenticated pages.
  *
  * Laravel: JSON replies use App\Helper\Reply (status success|fail); validation may be 422 with { errors }.
+ * get/post/put/patch/postForm/postUrlEncoded/delete return the decoded JSON body (unwrapData), not axios
+ * response — use `payload.status` / `payload.data`, never `payload.data.status` for the top-level Reply flag.
  */
 const axios = require('axios');
 
@@ -108,10 +110,21 @@ function patch(url, data, config) {
 
 /**
  * Laravel resource destroy from non-form context: POST + _method=DELETE + _token.
+ * Second argument may be a raw token string or { _token: string } (jQuery-style).
  */
-function del(url, token) {
+function del(url, tokenOrOpts) {
     const fd = new FormData();
-    fd.append('_token', token || csrfToken());
+    let token = csrfToken();
+    if (typeof tokenOrOpts === 'string' && tokenOrOpts !== '') {
+        token = tokenOrOpts;
+    } else if (
+        tokenOrOpts &&
+        typeof tokenOrOpts === 'object' &&
+        typeof tokenOrOpts._token === 'string'
+    ) {
+        token = tokenOrOpts._token;
+    }
+    fd.append('_token', token);
     fd.append('_method', 'DELETE');
     return unwrapData(apiClient.post(url, fd));
 }

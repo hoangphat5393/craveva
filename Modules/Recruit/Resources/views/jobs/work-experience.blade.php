@@ -66,9 +66,9 @@
                 window.apiHttp.delete(url, {
                     _token: "{{ csrf_token() }}"
                 }).then(function(response) {
-                    if (response.data.status == "success") {
+                    if (response.status == "success") {
                         $('#row-' + id).fadeOut();
-                        $('#work_experience_1').html(response.data.data);
+                        $('#work_experience_1').html(response.data);
                         $('#work_experience_1').selectpicker('refresh');
                     }
                 }).catch(function(err) {
@@ -83,8 +83,8 @@
         var url = "{{ route('work-experience.store') }}";
         window.apiHttp.postUrlEncoded(url, $('#createProjectCategory').serialize())
             .then(function(response) {
-                if (response.data.status == 'success') {
-                    $('#work_experience_1').html(response.data.data);
+                if (response.status == 'success') {
+                    $('#work_experience_1').html(response.data);
                     $('#work_experience_1').selectpicker('refresh');
                     $(MODAL_LG).modal('hide');
                 }
@@ -112,8 +112,8 @@
                 _token: "{{ csrf_token() }}",
                 _method: 'PUT'
             }).then(function(response) {
-                if (response.data.status == 'success') {
-                    $('#work_experience_1').html(response.data.data);
+                if (response.status == 'success') {
+                    $('#work_experience_1').html(response.data);
                     $('#work_experience_1').selectpicker('refresh');
                 }
             }).catch(function(err) {

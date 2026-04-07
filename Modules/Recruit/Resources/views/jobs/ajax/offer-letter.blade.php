@@ -247,7 +247,7 @@
 
             window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize())
                 .then(function(response) {
-                    if (response.data.status == 'success') {
+                    if (response.status == 'success') {
                         showTable();
                         resetActionButtons();
                         deSelectAll();
@@ -284,7 +284,7 @@
                     window.apiHttp.delete(url, {
                         _token: "{{ csrf_token() }}"
                     }).then(function(response) {
-                        if (response.data.status == "success") {
+                        if (response.status == "success") {
                             showTable();
                         }
                     }).catch(function(err) {
@@ -368,7 +368,7 @@
                     letterId: id,
                     status: status
                 }).then(function(response) {
-                    if (response.data.status == "success") {
+                    if (response.status == "success") {
                         showTable();
                         resetActionButtons();
                         deSelectAll();

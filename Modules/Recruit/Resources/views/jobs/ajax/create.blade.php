@@ -531,10 +531,10 @@
             url = url.replace(':id', categoryId);
 
             window.apiHttp.get(url).then(function(response) {
-                if (response.data.status == 'success') {
+                if (response.status == 'success') {
                     var options = [];
                     var rData = [];
-                    rData = response.data.data;
+                    rData = response.data;
                     $.each(rData, function(index, value) {
                         var selectData = '';
                         selectData = '<option value="' + value.id + '">' + value
@@ -576,7 +576,7 @@
         function saveJob(data, url, buttonSelector) {
             window.apiHttp.postUrlEncoded(url, data)
                 .then(function(response) {
-                    if (response.data.status === 'success') {
+                    if (response.status === 'success') {
                         if (response.data.add_more == true) {
                             $(RIGHT_MODAL_CONTENT).html(response.data.html.html);
                         } else if ($(MODAL_XL).hasClass('show')) {

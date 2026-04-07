@@ -6,6 +6,9 @@
 ; Danh sách --queue= phải khớp app\Console\Kernel::DATABASE_WORKER_QUEUE_NAMES và
 ; ImportController::ALLOWED_IMPORT_QUEUE_NAMES (+ default). Thứ tự: import trước, default sau.
 ;
+; Khi .env có IMPORT_BATCH_QUEUE_CONNECTION=redis: cần HAI worker — (1) database --queue=default
+; (2) redis --queue=ClientImport,ProductImport,... (không gồm "default"). Xem app\Console\Kernel::schedule().
+;
 ; Staging/production: đặt IMPORT_PROGRESS_RUN_QUEUE_WORKER=false (hoặc unset). Nếu vẫn true
 ; trong khi Supervisor chạy, mỗi lần poll HTTP cũng gọi queue:work — dư worker, dễ timeout FPM.
 
@@ -24,3 +27,9 @@ stdout_logfile=/var/log/supervisor/craveva-queue-all.log
 stopwaitsecs=3600
 
 ; Nếu backlog queue `default` rất lớn: thêm program thứ hai chỉ --queue=default với numprocs=2.
+;
+; --- IMPORT_BATCH_QUEUE_CONNECTION=redis (tùy chọn): thêm program thứ hai, ví dụ ---
+; [program:craveva-queue-redis-import]
+; command=php /CHANGE_ME_APP_ROOT/artisan queue:work redis --queue=ClientImport,ProductImport,EmployeeImport,ProjectImport,DealImport,LeadImport,ExpenseImport,AttendanceImport,JobApplicationImport,ClientProductPricingImport,PricingTierItemsImport,WarehouseImport,InventoryImport,SalesOrderImport,SalesHistoryImport,EstimateImport --tries=3 --sleep=3 --max-time=3600
+; ... (cùng directory, user, autostart như trên)
+; Và sửa program craveva-queue-all chỉ còn: queue:work database --queue=default ...

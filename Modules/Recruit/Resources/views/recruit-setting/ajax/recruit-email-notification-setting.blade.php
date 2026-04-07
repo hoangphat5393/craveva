@@ -35,7 +35,7 @@
 
         window.apiHttp.postUrlEncoded(url, $('#editSettings').serialize())
             .then(function(response) {
-                if (response.data.status == 'success') {
+                if (response.status == 'success') {
                     location.reload();
                 }
             })

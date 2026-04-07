@@ -115,7 +115,7 @@
 
         window.apiHttp.postUrlEncoded("{{ route('custom-question-settings.update', $question->id) }}", $('#editQuestion').serialize() + '&_method=PUT')
             .then(function(response) {
-                if (response.data.status == 'success') {
+                if (response.status == 'success') {
                     window.location.reload();
                 }
             })

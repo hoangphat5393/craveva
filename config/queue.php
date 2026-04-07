@@ -106,4 +106,17 @@ return [
         'table' => 'failed_jobs',
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Import batch queue connection (chunked / non-chunked Bus::batch)
+    |--------------------------------------------------------------------------
+    |
+    | Defaults to "database" for backward compatibility. Set IMPORT_BATCH_QUEUE_CONNECTION=redis
+    | after Redis is installed and a worker runs e.g. queue:work redis --queue=ClientImport.
+    | Job batch metadata (job_batches) stays on the database connection in config above.
+    |
+    */
+
+    'import_batch_connection' => env('IMPORT_BATCH_QUEUE_CONNECTION', 'database'),
+
 ];

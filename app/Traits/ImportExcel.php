@@ -114,7 +114,7 @@ trait ImportExcel
 
         $this->file = Files::upload($request->import_file, Files::IMPORT_FOLDER);
 
-        $filePath = public_path(Files::UPLOAD_FOLDER . '/' . Files::IMPORT_FOLDER . '/' . $this->file);
+        $filePath = public_path(Files::UPLOAD_FOLDER.'/'.Files::IMPORT_FOLDER.'/'.$this->file);
         if (Files::isCsvDisguisedAsXlsx($filePath)) {
             Files::deleteFile($this->file, Files::IMPORT_FOLDER);
             throw ValidationException::withMessages([
@@ -284,7 +284,7 @@ trait ImportExcel
                 array_pop($row);
             }
 
-            if (count(array_filter($row, static fn($value) => $value !== null && trim((string) $value) !== '')) === 0) {
+            if (count(array_filter($row, static fn ($value) => $value !== null && trim((string) $value) !== '')) === 0) {
                 continue;
             }
 
@@ -447,7 +447,7 @@ trait ImportExcel
         }
 
         $this->importSample = array_map(
-            fn(array $row) => $this->padImportRowToColumnCount($row, $columnCount),
+            fn (array $row) => $this->padImportRowToColumnCount($row, $columnCount),
             $this->importSample
         );
     }
@@ -533,13 +533,16 @@ trait ImportExcel
         $importClassName = (new ReflectionClass($importClass))->getShortName();
 
         // Clear only this import queue (do not queue:flush — that wipes all failed_jobs globally).
-        Artisan::call('queue:clear database --queue=' . $importClassName);
+        Artisan::call('queue:clear', [
+            config('queue.import_batch_connection', 'database'),
+            '--queue' => $importClassName,
+        ]);
         // Get index of an array not null value with key
         $columns = array_filter($request->columns, function ($value) {
             return $value !== null;
         });
 
-        $filePath = public_path(Files::UPLOAD_FOLDER . '/' . Files::IMPORT_FOLDER . '/' . $request->file);
+        $filePath = public_path(Files::UPLOAD_FOLDER.'/'.Files::IMPORT_FOLDER.'/'.$request->file);
         $hasHeading = $request->boolean('has_heading');
         $hasSkipFooter = $request->boolean('has_skip_footer');
 
@@ -556,7 +559,7 @@ trait ImportExcel
         }
 
         if ($importClass === EstimateImport::class) {
-            $excelData = EstimateImport::forwardFillRows($excelData, array_filter($columns, fn($v) => $v !== null));
+            $excelData = EstimateImport::forwardFillRows($excelData, array_filter($columns, fn ($v) => $v !== null));
         }
 
         $jobs = [];
@@ -568,7 +571,11 @@ trait ImportExcel
             $jobs[] = (new $importJobClass($row, $columns, company()));
         }
 
-        $batch = Bus::batch($jobs)->onConnection('database')->onQueue($importClassName)->name($importClassName)->dispatch();
+        $batch = Bus::batch($jobs)
+            ->onConnection(config('queue.import_batch_connection', 'database'))
+            ->onQueue($importClassName)
+            ->name($importClassName)
+            ->dispatch();
 
         Files::deleteFile($request->file, Files::IMPORT_FOLDER);
 
@@ -611,11 +618,14 @@ trait ImportExcel
         $importClassName = (new ReflectionClass($importClass))->getShortName();
 
         // Clear only this import queue (do not queue:flush — that wipes all failed_jobs globally).
-        Artisan::call('queue:clear database --queue=' . $importClassName);
+        Artisan::call('queue:clear', [
+            config('queue.import_batch_connection', 'database'),
+            '--queue' => $importClassName,
+        ]);
 
-        $columns = array_filter($request->columns, fn($value) => $value !== null);
+        $columns = array_filter($request->columns, fn ($value) => $value !== null);
 
-        $filePath = public_path(Files::UPLOAD_FOLDER . '/' . Files::IMPORT_FOLDER . '/' . $request->file);
+        $filePath = public_path(Files::UPLOAD_FOLDER.'/'.Files::IMPORT_FOLDER.'/'.$request->file);
         if (Files::isCsvDisguisedAsXlsx($filePath)) {
             throw ValidationException::withMessages([
                 'file' => [__('messages.importFileCsvDisguisedAsXlsx')],
@@ -637,7 +647,7 @@ trait ImportExcel
         }
 
         if ($importClass === EstimateImport::class) {
-            $excelData = EstimateImport::forwardFillRows($excelData, array_filter($columns, fn($v) => $v !== null));
+            $excelData = EstimateImport::forwardFillRows($excelData, array_filter($columns, fn ($v) => $v !== null));
         }
 
         $excelData = self::normalizeExcelRows($excelData);
@@ -649,7 +659,10 @@ trait ImportExcel
             $chunkStartIndex += count($chunk);
         }
 
-        $batch = Bus::batch($jobs)->onConnection('database')->onQueue($importClassName)->name($importClassName . '-chunked');
+        $batch = Bus::batch($jobs)
+            ->onConnection(config('queue.import_batch_connection', 'database'))
+            ->onQueue($importClassName)
+            ->name($importClassName.'-chunked');
         if ($allowBatchFailures) {
             $batch = $batch->allowFailures();
         }

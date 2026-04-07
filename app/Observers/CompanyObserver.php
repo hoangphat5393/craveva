@@ -152,7 +152,7 @@ class CompanyObserver
         }
 
         $this->saasSaving($company);
-        cache()->forget('user_'.$company->id.'_is_active');
+        cache()->forget('user_' . $company->id . '_is_active');
 
         session()->forget(['company', 'company.*', 'company.currency', 'company.paymentGatewayCredentials']);
         cache()->forget('global_setting');
@@ -218,8 +218,8 @@ class CompanyObserver
         Notification::whereIn('type', ['App\Notifications\SuperAdmin\NewCompanyRegister', 'App\Notifications\NewUser'])
             ->whereNull('read_at')
             ->where(function ($q) use ($company) {
-                $q->where('data', 'like', '{"id":'.$company->id.'%');
-                $q->orWhere('data', 'like', '%"company_id":'.$company->id.'%');
+                $q->where('data', 'like', '{"id":' . $company->id . '%');
+                $q->orWhere('data', 'like', '%"company_id":' . $company->id . '%');
             })->delete();
     }
 
@@ -942,15 +942,67 @@ class CompanyObserver
     {
         User::withoutGlobalScopes([ActiveScope::class, CompanyScope::class])
             ->where('company_id', $company->id)->each(function ($user) {
-                cache()->forget('user_modules_'.$user->id);
+                cache()->forget('user_modules_' . $user->id);
             });
+    }
+
+    /**
+     * Flat list of module names from packages.module_in_package (object or array JSON), lowercased.
+     *
+     * @return list<string>
+     */
+    public static function packageModuleNamesFromJson(?string $json): array
+    {
+        $decoded = json_decode($json ?? '[]', true);
+        if (! is_array($decoded)) {
+            return [];
+        }
+
+        return collect($decoded)
+            ->map(static fn($value) => strtolower(trim((string) $value)))
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+    }
+
+    /**
+     * Insert missing module_settings rows for modules listed in the company package (admin + employee).
+     */
+    public function ensureModuleSettingsRowsForPackageModules(Company $company, array $namesInPackage): void
+    {
+        foreach ($namesInPackage as $moduleName) {
+            if (in_array($moduleName, ['settings', 'dashboards', 'restapi'], true)) {
+                continue;
+            }
+
+            foreach (['admin', 'employee'] as $type) {
+                $exists = ModuleSetting::withoutGlobalScope(CompanyScope::class)
+                    ->where('company_id', $company->id)
+                    ->where('module_name', $moduleName)
+                    ->where('type', $type)
+                    ->exists();
+
+                if ($exists) {
+                    continue;
+                }
+
+                ModuleSetting::withoutGlobalScope(CompanyScope::class)->create([
+                    'company_id' => $company->id,
+                    'module_name' => $moduleName,
+                    'type' => $type,
+                    'status' => 'active',
+                    'is_allowed' => 1,
+                ]);
+            }
+        }
     }
 
     public function createModuleSettings($company): void
     {
         $package = Package::where('id', $company->package_id)->first();
         if (! is_null($package)) {
-            $moduleInPackage = collect(json_decode($package->module_in_package));
+            $namesInPackage = self::packageModuleNamesFromJson($package->module_in_package);
 
             $data = [
                 'admin' => [
@@ -975,8 +1027,8 @@ class CompanyObserver
 
                     if ($existingModuleSetting) {
                         $existingModuleSetting->update([
-                            'status' => $moduleInPackage->contains($module) ? 'active' : 'deactive',
-                            'is_allowed' => $moduleInPackage->contains($module) ? 1 : 0,
+                            'status' => in_array($module, $namesInPackage, true) ? 'active' : 'deactive',
+                            'is_allowed' => in_array($module, $namesInPackage, true) ? 1 : 0,
                         ]);
 
                         continue;
@@ -986,8 +1038,8 @@ class CompanyObserver
                         'company_id' => $company->id,
                         'type' => $type,
                         'module_name' => $module,
-                        'status' => $moduleInPackage->contains($module) ? 'active' : 'deactive',
-                        'is_allowed' => $moduleInPackage->contains($module) ? 1 : 0,
+                        'status' => in_array($module, $namesInPackage, true) ? 'active' : 'deactive',
+                        'is_allowed' => in_array($module, $namesInPackage, true) ? 1 : 0,
                     ];
                 }
             }
@@ -1000,16 +1052,22 @@ class CompanyObserver
 
     public function updateModuleSettings($company): void
     {
+        $package = Package::where('id', $company->package_id)->first();
+
+        if (! $package) {
+            return;
+        }
+
+        $namesInPackage = self::packageModuleNamesFromJson($package->module_in_package);
 
         $moduleSettings = ModuleSetting::where('company_id', $company->id)->get();
-        $moduleInPackage = collect(json_decode(Package::where('id', $company->package_id)->first()->module_in_package));
-        self::widgetUpdate($company, $moduleInPackage->toArray());
+        self::widgetUpdate($company, $namesInPackage);
 
         $activeModuleSettings = [];
         $inactiveModuleSettings = [];
 
         foreach ($moduleSettings as $moduleSetting) {
-            if ($moduleInPackage->contains($moduleSetting->module_name)) {
+            if (in_array(strtolower((string) $moduleSetting->module_name), $namesInPackage, true)) {
                 $activeModuleSettings[] = $moduleSetting->id;
             } else {
                 $inactiveModuleSettings[] = $moduleSetting->id;
@@ -1018,6 +1076,8 @@ class CompanyObserver
 
         ModuleSetting::whereIn('id', $activeModuleSettings)->update(['is_allowed' => 1, 'status' => 'active']);
         ModuleSetting::whereIn('id', $inactiveModuleSettings)->update(['is_allowed' => 0, 'status' => 'deactive']);
+
+        $this->ensureModuleSettingsRowsForPackageModules($company, $namesInPackage);
 
         $this->clearCompanyUserCache($company);
     }

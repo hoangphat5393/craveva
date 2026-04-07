@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Scopes\CompanyScope;
 use App\Traits\HasCompany;
+use Illuminate\Support\Carbon;
 
 /**
  * App\Models\ModuleSetting
@@ -12,8 +13,8 @@ use App\Traits\HasCompany;
  * @property string $module_name
  * @property string $status
  * @property string $type
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property-read mixed $icon
  *
  * @method static \Illuminate\Database\Eloquent\Builder|ModuleSetting newModelQuery()
@@ -27,7 +28,7 @@ use App\Traits\HasCompany;
  * @method static \Illuminate\Database\Eloquent\Builder|ModuleSetting whereUpdatedAt($value)
  *
  * @property int|null $company_id
- * @property-read \App\Models\Company|null $company
+ * @property-read Company|null $company
  *
  * @method static \Illuminate\Database\Eloquent\Builder|ModuleSetting whereCompanyId($value)
  *
@@ -55,6 +56,7 @@ class ModuleSetting extends BaseModel
 
     const OTHER_MODULES = [
         'clients',
+        'developertools',
         'employees',
         'attendance',
         'expenses',
@@ -125,7 +127,7 @@ class ModuleSetting extends BaseModel
             }
         }
 
-        $moduleExists = \App\Models\Module::withoutGlobalScopes()
+        $moduleExists = Module::withoutGlobalScopes()
             ->where('module_name', $module)
             ->exists();
 

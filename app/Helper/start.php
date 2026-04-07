@@ -15,14 +15,24 @@
 use App\Helper\Files;
 use App\Models\AttendanceSetting;
 use App\Models\Company;
+use App\Models\Country;
 use App\Models\Currency;
 use App\Models\CustomLinkSetting;
+use App\Models\EmailNotificationSetting;
+use App\Models\FileStorage;
 use App\Models\GdprSetting;
+use App\Models\GlobalSetting;
 use App\Models\InvoiceSetting;
 use App\Models\LanguageSetting;
 use App\Models\LogTimeFor;
+use App\Models\MessageSetting;
+use App\Models\ModuleSetting;
 use App\Models\Permission;
+use App\Models\PusherSetting;
+use App\Models\PushNotificationSetting;
 use App\Models\QuickBooksSetting;
+use App\Models\SlackSetting;
+use App\Models\SmtpSetting;
 use App\Models\SocialAuthSetting;
 use App\Models\StorageSetting;
 use App\Models\SuperAdmin\GlobalCurrency;
@@ -32,10 +42,15 @@ use App\Models\User;
 use App\Models\UserPermission;
 use App\Scopes\CompanyScope;
 use Carbon\Carbon;
+use Carbon\CarbonInterval;
+use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Nwidart\Modules\Facades\Module;
 
 if (! function_exists('user')) {
 
@@ -68,7 +83,7 @@ if (! function_exists('user')) {
 
                 if (! $user) {
                     // Try to find superadmin user (who has no company_id but can access company context)
-                    $user = User::withoutGlobalScope(\App\Scopes\CompanyScope::class)
+                    $user = User::withoutGlobalScope(CompanyScope::class)
                         ->where('user_auth_id', $authId)
                         ->where('status', 'active')
                         ->where('is_superadmin', 1)
@@ -137,8 +152,8 @@ if (! function_exists('getSubdomainSchema')) {
     {
 
         if (! session()->has('subdomain_schema')) {
-            if (\Illuminate\Support\Facades\Schema::hasTable('sub_domain_module_settings')) {
-                $data = \Illuminate\Support\Facades\DB::table('sub_domain_module_settings')->first();
+            if (Schema::hasTable('sub_domain_module_settings')) {
+                $data = DB::table('sub_domain_module_settings')->first();
             }
 
             session(['subdomain_schema' => isset($data->schema) ? $data->schema : 'http']);
@@ -158,7 +173,7 @@ if (! function_exists('superadmin_theme')) {
     // @codingStandardsIgnoreLine
     function superadmin_theme()
     {
-        return \App\Models\ThemeSetting::withoutGlobalScope(CompanyScope::class)
+        return ThemeSetting::withoutGlobalScope(CompanyScope::class)
             ->where('panel', 'superadmin')
             ->whereNull('company_id')
             ->first();
@@ -224,7 +239,7 @@ if (! function_exists('global_setting')) {
     function global_setting()
     {
         if (! cache()->has('global_setting')) {
-            $setting = \App\Models\GlobalSetting::first();
+            $setting = GlobalSetting::first();
             cache(['global_setting' => $setting]);
 
             return $setting;
@@ -233,16 +248,16 @@ if (! function_exists('global_setting')) {
         try {
             $setting = cache('global_setting');
             // Trigger decrypt on all encrypted attributes to detect wrong APP_KEY (e.g. after DB restore)
-            if ($setting instanceof \App\Models\GlobalSetting) {
+            if ($setting instanceof GlobalSetting) {
                 $setting->getAttributeValue('google_map_key');
                 $setting->getAttributeValue('google_client_secret');
             }
 
             return $setting;
-        } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
+        } catch (DecryptException $e) {
             cache()->forget('global_setting');
 
-            return \App\Models\GlobalSetting::first();
+            return GlobalSetting::first();
         }
     }
 }
@@ -253,7 +268,7 @@ if (! function_exists('push_setting')) {
     function push_setting()
     {
         if (! cache()->has('push_setting')) {
-            cache(['push_setting' => \App\Models\PushNotificationSetting::first()]);
+            cache(['push_setting' => PushNotificationSetting::first()]);
         }
 
         return cache('push_setting');
@@ -266,7 +281,7 @@ if (! function_exists('language_setting')) {
     function language_setting()
     {
         if (! cache()->has('language_setting')) {
-            cache(['language_setting' => \App\Models\LanguageSetting::where('status', 'enabled')->get()]);
+            cache(['language_setting' => LanguageSetting::where('status', 'enabled')->get()]);
         }
 
         return cache('language_setting');
@@ -279,7 +294,7 @@ if (! function_exists('language_setting_locale')) {
     function language_setting_locale($locale)
     {
         if (! cache()->has('language_setting_' . $locale)) {
-            cache(['language_setting_' . $locale => \App\Models\LanguageSetting::where('language_code', $locale)->first()]);
+            cache(['language_setting_' . $locale => LanguageSetting::where('language_code', $locale)->first()]);
         }
 
         return cache('language_setting_' . $locale);
@@ -292,7 +307,7 @@ if (! function_exists('smtp_setting')) {
     function smtp_setting()
     {
         if (! session()->has('smtp_setting')) {
-            session(['smtp_setting' => \App\Models\SmtpSetting::first()]);
+            session(['smtp_setting' => SmtpSetting::first()]);
         }
 
         return session('smtp_setting');
@@ -305,7 +320,7 @@ if (! function_exists('message_setting')) {
     function message_setting()
     {
         if (! session()->has('message_setting')) {
-            session(['message_setting' => \App\Models\MessageSetting::first()]);
+            session(['message_setting' => MessageSetting::first()]);
         }
 
         return session('message_setting');
@@ -335,12 +350,12 @@ if (! function_exists('email_notification_setting')) {
 
         if (in_array('client', user_roles()) || in_array('employee', user_roles())) {
             if (! session()->has('email_notification_setting')) {
-                session(['email_notification_setting' => \App\Models\EmailNotificationSetting::all()]);
+                session(['email_notification_setting' => EmailNotificationSetting::all()]);
             }
         }
 
         if (! session()->has('email_notification_setting')) {
-            session(['email_notification_setting' => \App\Models\EmailNotificationSetting::all()]);
+            session(['email_notification_setting' => EmailNotificationSetting::all()]);
         }
 
         return session('email_notification_setting');
@@ -352,7 +367,7 @@ if (! function_exists('asset_url')) {
     // @codingStandardsIgnoreLine
     function asset_url($path)
     {
-        $path = \App\Helper\Files::UPLOAD_FOLDER . '/' . $path;
+        $path = Files::UPLOAD_FOLDER . '/' . $path;
         $storageUrl = $path;
 
         if (! Str::startsWith($storageUrl, 'http')) {
@@ -382,7 +397,7 @@ if (! function_exists('user_modules')) {
             return cache('user_modules_' . $user->id);
         }
 
-        $module = \App\Models\ModuleSetting::where('is_allowed', 1);
+        $module = ModuleSetting::where('is_allowed', 1);
 
         if (in_array('admin', user_roles())) {
             $module = $module->where('type', 'admin');
@@ -411,8 +426,8 @@ if (! function_exists('user_modules')) {
 if (! function_exists('user_can_access_developertools_module')) {
 
     /**
-     * Developer Tools / CodeMap: tenant company admins only, when the company package
-     * includes the developertools module and it is active in module settings.
+     * Developer Tools / CodeMap: tenant users with admin role OR full "manage_module_setting",
+     * when the company package includes developertools and module_settings has it active.
      * Super admins do not use this feature (no menu / no direct URL access).
      */
     function user_can_access_developertools_module(): bool
@@ -423,7 +438,11 @@ if (! function_exists('user_can_access_developertools_module')) {
             return false;
         }
 
-        if (! in_array('admin', user_roles())) {
+        $roles = user_roles() ?? [];
+        $hasAdminRole = in_array('admin', $roles, true);
+        $canManageModuleSettings = user()->permission('manage_module_setting') == 'all';
+
+        if (! $hasAdminRole && ! $canManageModuleSettings) {
             return false;
         }
 
@@ -444,7 +463,7 @@ if (! function_exists('user_can_access_developertools_module')) {
             return false;
         }
 
-        return \App\Models\ModuleSetting::checkModule('developertools');
+        return ModuleSetting::checkModule('developertools');
     }
 }
 
@@ -455,7 +474,7 @@ if (! function_exists('craveva_plugins')) {
     {
 
         if (! cache()->has('craveva_plugins')) {
-            $plugins = \Nwidart\Modules\Facades\Module::allEnabled();
+            $plugins = Module::allEnabled();
             cache(['craveva_plugins' => array_keys($plugins)]);
         }
 
@@ -469,7 +488,7 @@ if (! function_exists('pusher_settings')) {
     function pusher_settings()
     {
         if (! session()->has('pusher_settings')) {
-            session(['pusher_settings' => \App\Models\PusherSetting::first()]);
+            session(['pusher_settings' => PusherSetting::first()]);
         }
 
         return session('pusher_settings');
@@ -511,12 +530,12 @@ if (! function_exists('asset_url_local_s3')) {
     {
         if (in_array(config('filesystems.default'), StorageSetting::S3_COMPATIBLE_STORAGE)) {
             // Check if the URL is already cached
-            if (\Illuminate\Support\Facades\Cache::has(config('filesystems.default') . '-' . $path)) {
-                $temporaryUrl = \Illuminate\Support\Facades\Cache::get(config('filesystems.default') . '-' . $path);
+            if (Cache::has(config('filesystems.default') . '-' . $path)) {
+                $temporaryUrl = Cache::get(config('filesystems.default') . '-' . $path);
             } else {
                 // Generate a new temporary URL and cache it
                 $temporaryUrl = Storage::disk(config('filesystems.default'))->temporaryUrl($path, now()->addMinutes(StorageSetting::HASH_TEMP_FILE_TIME));
-                \Illuminate\Support\Facades\Cache::put(config('filesystems.default') . '-' . $path, $temporaryUrl, StorageSetting::HASH_TEMP_FILE_TIME * 60);
+                Cache::put(config('filesystems.default') . '-' . $path, $temporaryUrl, StorageSetting::HASH_TEMP_FILE_TIME * 60);
             }
 
             return $temporaryUrl;
@@ -555,7 +574,7 @@ if (! function_exists('download_local_s3')) {
         $filename = $file->name ? $file->name . '.' . $ext : $file->filename;
         try {
             return response()->download($path, $filename);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->view('errors.file_not_found', ['message' => $e->getMessage()], 404);
         }
     }
@@ -663,7 +682,7 @@ if (! function_exists('countries')) {
     function countries()
     {
         if (! cache()->has('countries')) {
-            cache(['countries' => \App\Models\Country::all()]);
+            cache(['countries' => Country::all()]);
         }
 
         return cache('countries');
@@ -675,7 +694,7 @@ if (! function_exists('module_enabled')) {
     // @codingStandardsIgnoreLine
     function module_enabled($moduleName)
     {
-        return \Nwidart\Modules\Facades\Module::collections()->has($moduleName);
+        return Module::collections()->has($moduleName);
     }
 }
 
@@ -857,7 +876,7 @@ if (! function_exists('slack_setting')) {
     function slack_setting()
     {
         if (! session()->has('slack_setting')) {
-            session(['slack_setting' => \App\Models\SlackSetting::first()]);
+            session(['slack_setting' => SlackSetting::first()]);
         }
 
         return session('slack_setting');
@@ -1067,7 +1086,7 @@ if (! function_exists('minute_to_hour')) {
     // @codingStandardsIgnoreLine
     function minute_to_hour($totalMinutes)
     {
-        return \Carbon\CarbonInterval::formatHuman($totalMinutes);
+        return CarbonInterval::formatHuman($totalMinutes);
         /** @phpstan-ignore-line */
     }
 }
@@ -1090,7 +1109,7 @@ if (! function_exists('can_upload')) {
         $totalSpace = (company()->package->storage_unit == 'mb') ? company()->package->max_storage_size : company()->package->max_storage_size * 1024;
 
         // Used space in mb
-        $fileStorage = \App\Models\FileStorage::all();
+        $fileStorage = FileStorage::all();
         $usedSpace = $fileStorage->count() > 0 ? round($fileStorage->sum('size') / (1000 * 1024), 4) : 0;
 
         $remainingSpace = $totalSpace - $usedSpace;
@@ -1174,8 +1193,8 @@ if (! function_exists('getSubdomainSchema')) {
     {
 
         if (! session()->has('subdomain_schema')) {
-            if (\Illuminate\Support\Facades\Schema::hasTable('sub_domain_module_settings')) {
-                $data = \Illuminate\Support\Facades\DB::table('sub_domain_module_settings')->first();
+            if (Schema::hasTable('sub_domain_module_settings')) {
+                $data = DB::table('sub_domain_module_settings')->first();
             }
 
             session(['subdomain_schema' => isset($data->schema) ? $data->schema : 'http']);
@@ -1216,7 +1235,7 @@ if (! function_exists('getDomain')) {
 if (! function_exists('company')) {
 
     /**
-     * @return \App\Models\Company|false
+     * @return Company|false
      */
     function company()
     {

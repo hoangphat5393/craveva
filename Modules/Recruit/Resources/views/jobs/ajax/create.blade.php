@@ -577,13 +577,18 @@
             window.apiHttp.postUrlEncoded(url, data)
                 .then(function(response) {
                     if (response.status === 'success') {
-                        if (response.data.add_more == true) {
-                            $(RIGHT_MODAL_CONTENT).html(response.data.html.html);
+                        if (response.add_more === true) {
+                            var htmlFragment = response.html;
+                            if (typeof htmlFragment === 'object' && htmlFragment !== null && typeof htmlFragment.html === 'string') {
+                                $(RIGHT_MODAL_CONTENT).html(htmlFragment.html);
+                            } else if (typeof htmlFragment === 'string') {
+                                $(RIGHT_MODAL_CONTENT).html(htmlFragment);
+                            }
                         } else if ($(MODAL_XL).hasClass('show')) {
                             $(MODAL_XL).modal('hide');
                             window.location.reload();
                         } else {
-                            window.location.href = response.data.redirectUrl;
+                            window.location.href = response.redirectUrl;
                         }
                     }
                 })

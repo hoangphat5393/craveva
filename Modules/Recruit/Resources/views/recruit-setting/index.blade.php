@@ -37,7 +37,10 @@
                             <a class="nav-item nav-link f-15 recruit-custom-question-setting" href="{{ route('recruit-settings.index') }}?tab=recruit-custom-question-setting" role="tab" aria-controls="nav-recruit-setting" aria-selected="true" ajax="false">@lang('recruit::modules.setting.customQuestionSettings')
                             </a>
 
-                            <a class="nav-item nav-link f-15 recruit-source-setting" href="{{ route('recruit-settings.index') }}?tab=recruit-source-setting" role="tab" aria-controls="nav-recruit-setting" aria-selected="true" ajax="false">@lang('recruit::modules.sourceSetting.source')
+                            @php
+                                $_recruitSourceTabLabel = __('recruit::modules.sourceSetting.source');
+                            @endphp
+                            <a class="nav-item nav-link f-15 recruit-source-setting" href="{{ route('recruit-settings.index') }}?tab=recruit-source-setting" role="tab" aria-controls="nav-recruit-setting" aria-selected="true" ajax="false">{{ is_string($_recruitSourceTabLabel) ? $_recruitSourceTabLabel : __('recruit::app.dashboard.source') }}
                             </a>
                         </div>
                     </nav>
@@ -56,6 +59,28 @@
 @push('scripts')
     <script src="{{ asset('vendor/jquery/bootstrap-colorpicker.js') }}"></script>
     <script>
+        window.refreshRecruitSettingsTab = function(activeTabKey) {
+            var url = "{{ route('recruit-settings.index') }}?tab=" + encodeURIComponent(activeTabKey);
+            return window.apiHttp.get(url).then(function(response) {
+                if (!response || typeof response !== 'object' || response.status !== 'success' || !response.html) {
+                    window.location.reload();
+                    return;
+                }
+                var $slot = $('#editSettings #nav-tabContent .d-flex.flex-wrap').first();
+                if ($slot.length) {
+                    $slot.html(response.html);
+                } else {
+                    $('#nav-tabContent .flex-wrap').first().html(response.html);
+                }
+                init('#nav-tabContent');
+            }).catch(function(err) {
+                if (typeof $.handleApiFormError === 'function') {
+                    $.handleApiFormError(err);
+                }
+                window.location.reload();
+            });
+        };
+
         $('.nav-item').removeClass('active');
         const activeTab = "{{ $activeTab }}";
         $('.' + activeTab).addClass('active');

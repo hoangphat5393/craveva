@@ -481,7 +481,7 @@
             currency_id: currency_id,
             componentIds: componentIDs
         }).then(function(response) {
-            $('#components').html(response.data.component)
+            $('#components').html(response.component)
         }).catch(function(err) {
             $.handleApiFormError(err);
         });
@@ -614,7 +614,7 @@
                 currencyId: currencyId
             }).then(function(response) {
                 if (response.status == 'success') {
-                    $('#components').html(response.data.html);
+                    $('#components').html(response.html);
                 }
             }).catch(function(err) {
                 $.handleApiFormError(err);
@@ -631,17 +631,17 @@
             window.apiHttp.postUrlEncoded(url, $('#save-job-data-form').serialize())
                 .then(function(response) {
                     if ((myDropzone.getQueuedFiles().length > 0)) {
-                        $('#applicationID').val(response.data.application_id);
+                        $('#applicationID').val(response.application_id);
                         myDropzone.processQueue();
                     } else if ($(RIGHT_MODAL).hasClass('in')) {
                         document.getElementById('close-task-detail').click();
                         if ($('#offer-table').length) {
                             window.LaravelDataTables["offer-table"].draw(true);
                         } else {
-                            window.location.href = response.data.redirectUrl;
+                            window.location.href = response.redirectUrl;
                         }
                     } else {
-                        window.location.href = response.data.redirectUrl;
+                        window.location.href = response.redirectUrl;
                     }
                 })
                 .catch(function(err) {
@@ -661,7 +661,7 @@
                     var options = [];
                     var rData = [];
 
-                    rData = response.data.applications;
+                    rData = response.applications;
 
                     $.each(rData, function(index, value) {
                         var selectData = '';

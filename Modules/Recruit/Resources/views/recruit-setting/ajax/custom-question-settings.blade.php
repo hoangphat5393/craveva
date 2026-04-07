@@ -1,17 +1,15 @@
 @php
-    $addPermission = user()->permission('add_footer_link');
-    $editPermission = user()->permission('edit_footer_link');
-    $deletePermission = user()->permission('delete_footer_link');
+    $recruitSettingsPermission = user()->permission('recruit_settings');
 @endphp
 
 <div class="table-responsive p-20">
     <div id="table-actions" class="d-block d-lg-flex align-items-center">
 
-        {{-- @if ($addPermission == 'all') --}}
-        <x-forms.button-primary icon="plus" id="addQuestion" class="mb-2">
-            @lang('app.add') @lang('recruit::modules.setting.question')
-        </x-forms.button-primary>
-        {{-- @endif --}}
+        @if ($recruitSettingsPermission == 'all')
+            <x-forms.button-primary icon="plus" id="addQuestion" class="mb-2">
+                @lang('app.add') @lang('recruit::modules.setting.question')
+            </x-forms.button-primary>
+        @endif
 
     </div>
     <x-table class="table-bordered">
@@ -47,10 +45,10 @@
                 </td>
 
                 <td>
-                    @if ($addPermission == 'all')
+                    @if ($recruitSettingsPermission == 'all')
                         <select class="change-question-status form-control select-picker" data-question-id="{{ $question->id }}">
-                            <option @if ($question->status == 'enable') selected @endif>@lang('app.enable')</option>
-                            <option @if ($question->status == 'disable') selected @endif>@lang('app.disable')</option>
+                            <option value="enable" @selected($question->status == 'enable')>@lang('app.enable')</option>
+                            <option value="disable" @selected($question->status == 'disable')>@lang('app.disable')</option>
                         </select>
                     @else
                         @if ($question->status == 'enable')
@@ -62,18 +60,18 @@
                 </td>
                 <td class="text-right col-md-2">
                     <div class="task_view">
-                        {{-- @if ($editPermission == 'all') --}}
-                        <a href="javascript:;" data-question-id="{{ $question->id }}" class="editQuestion task_view_more d-flex align-items-center justify-content-center">
-                            <i class="fa fa-edit icons mr-1"></i> @lang('app.edit')
-                        </a>
-                        {{-- @endif --}}
+                        @if ($recruitSettingsPermission == 'all')
+                            <a href="javascript:;" data-question-id="{{ $question->id }}" class="editQuestion task_view_more d-flex align-items-center justify-content-center">
+                                <i class="fa fa-edit icons mr-1"></i> @lang('app.edit')
+                            </a>
+                        @endif
                     </div>
                     <div class="task_view">
-                        {{-- @if ($deletePermission == 'all') --}}
-                        <a href="javascript:;" data-question-id="{{ $question->id }}" class="delete-question task_view_more d-flex align-items-center justify-content-center dropdown-toggle">
-                            <i class="fa fa-trash icons mr-2"></i> @lang('app.delete')
-                        </a>
-                        {{-- @endif --}}
+                        @if ($recruitSettingsPermission == 'all')
+                            <a href="javascript:;" data-question-id="{{ $question->id }}" class="delete-question task_view_more d-flex align-items-center justify-content-center">
+                                <i class="fa fa-trash icons mr-2"></i> @lang('app.delete')
+                            </a>
+                        @endif
                     </div>
                 </td>
             </tr>
@@ -114,8 +112,14 @@
                     _token: "{{ csrf_token() }}"
                 }).then(function(response) {
                     if (response.status == "success") {
-                        $('.row' + id).fadeOut(100);
-                        // location.reload();
+                        if (typeof $.showApiSuccessToast === 'function') {
+                            $.showApiSuccessToast(response.message || '');
+                        }
+                        if (typeof window.refreshRecruitSettingsTab === 'function') {
+                            window.refreshRecruitSettingsTab('recruit-custom-question-setting');
+                        } else {
+                            window.location.reload();
+                        }
                     }
                 }).catch(function(err) {
                     $.handleApiFormError(err);
@@ -125,7 +129,7 @@
     });
 
     /* change links status */
-    $('body').on('change', '.change-question-status ', function() {
+    $('body').off('change', '.change-question-status').on('change', '.change-question-status', function() {
         var questionId = $(this).data('question-id');
         var status = $(this).val();
         var url = "{{ route('custom-question-settings.change_status') }}";

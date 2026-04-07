@@ -46,7 +46,7 @@
                 .then(function(response) {
                     $('#employee_designation').html(response.data);
                     $('#employee_designation').selectpicker('refresh');
-                    var selected = response.data.selected;
+                    var selected = response.selected;
                     if (selected) {
                         $('#employee_designation').selectpicker('val', selected);
                     }

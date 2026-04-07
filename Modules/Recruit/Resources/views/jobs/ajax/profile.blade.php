@@ -162,7 +162,7 @@
                         _token: "{{ csrf_token() }}"
                     }).then(function(response) {
                         if (response.status == "success") {
-                            window.location.href = response.data.redirectUrl;
+                            window.location.href = response.redirectUrl;
                         }
                     }).catch(function(err) {
                         $.handleApiFormError(err);

@@ -70,6 +70,24 @@ class JobController extends AccountBaseController
         $addPermission = user()->permission('add_job');
         abort_403(! in_array($addPermission, ['all', 'added']));
 
+        $this->loadJobCreateFormData();
+
+        if (request()->ajax()) {
+            $html = view('recruit::jobs.ajax.create', $this->data)->render();
+
+            return Reply::dataOnly(['status' => 'success', 'html' => $html, 'title' => $this->pageTitle]);
+        }
+
+        $this->view = 'recruit::jobs.ajax.create';
+
+        return view('recruit::jobs.create', $this->data);
+    }
+
+    /**
+     * Shared data for the job create form (full page, AJAX modal, or "Save & add more" after store).
+     */
+    protected function loadJobCreateFormData(): void
+    {
         $this->job = (request()['duplicate_job']) ? RecruitJob::with('team', 'skills', 'address', 'workExperience', 'employee', 'jobType', 'recruiter')->findOrFail(request()['duplicate_job']) : null;
         $this->jobSkills = RecruitJobSkill::where('recruit_job_id', request()['duplicate_job'])->get()->pluck('recruit_skill_id')->toArray();
         $this->jobLocation = RecruitJobAddress::where('recruit_job_id', request()['duplicate_job'])->get()->pluck('company_address_id')->toArray();
@@ -86,16 +104,6 @@ class JobController extends AccountBaseController
         $this->currencies = Currency::all();
         $this->Subcategories = RecruitJobSubCategory::all();
         $this->questions = RecruitCustomQuestion::where('status', 'enable')->where('category', 'job_application')->get();
-
-        if (request()->ajax()) {
-            $html = view('recruit::jobs.ajax.create', $this->data)->render();
-
-            return Reply::dataOnly(['status' => 'success', 'html' => $html, 'title' => $this->pageTitle]);
-        }
-
-        $this->view = 'recruit::jobs.ajax.create';
-
-        return view('recruit::jobs.create', $this->data);
     }
 
     public function show($id)
@@ -144,7 +152,8 @@ class JobController extends AccountBaseController
                         return $query
                             ->where('recruit_application_status_id', '!=', 4)
                             ->where('recruit_application_status_id', '!=', 5);
-                    });
+                    }
+                );
         })->count();
 
         $this->scheduledCount = RecruitJobApplication::where('recruit_job_id', $this->job->id)
@@ -315,7 +324,8 @@ class JobController extends AccountBaseController
         $job->question()->sync($request->checkQuestionColumn);
 
         if (request()->add_more == 'true') {
-            $html = $this->create();
+            $this->loadJobCreateFormData();
+            $html = view('recruit::jobs.ajax.create', $this->data)->render();
 
             return Reply::successWithData(__('recruit::messages.jobAdded'), ['html' => $html, 'add_more' => true]);
         }

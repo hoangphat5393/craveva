@@ -111,7 +111,15 @@
         window.apiHttp.postUrlEncoded("{{ route('custom-question-settings.store') }}", $('#createJobQuestions').serialize())
             .then(function(response) {
                 if (response.status == "success") {
-                    window.location.reload();
+                    $(MODAL_LG).modal('hide');
+                    if (typeof $.showApiSuccessToast === 'function') {
+                        $.showApiSuccessToast(response.message || '');
+                    }
+                    if (typeof window.refreshRecruitSettingsTab === 'function') {
+                        window.refreshRecruitSettingsTab('recruit-custom-question-setting');
+                    } else {
+                        window.location.reload();
+                    }
                 }
             })
             .catch(function(err) {

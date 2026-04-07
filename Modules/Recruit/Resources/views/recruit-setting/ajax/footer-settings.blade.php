@@ -68,25 +68,10 @@
 
 <script>
     window.refreshRecruitFooterSettingsTab = function() {
-        var url = "{{ route('recruit-settings.index') }}?tab=footer-settings";
-        return window.apiHttp.get(url).then(function(response) {
-            if (!response || typeof response !== 'object' || response.status !== 'success' || !response.html) {
-                window.location.reload();
-                return;
-            }
-            var $slot = $('#editSettings #nav-tabContent .d-flex.flex-wrap').first();
-            if ($slot.length) {
-                $slot.html(response.html);
-            } else {
-                $('#nav-tabContent .flex-wrap').first().html(response.html);
-            }
-            init('#nav-tabContent');
-        }).catch(function(err) {
-            if (typeof $.handleApiFormError === 'function') {
-                $.handleApiFormError(err);
-            }
-            window.location.reload();
-        });
+        if (typeof window.refreshRecruitSettingsTab === 'function') {
+            return window.refreshRecruitSettingsTab('footer-settings');
+        }
+        window.location.reload();
     };
 
     /* delete link */

@@ -34,7 +34,15 @@
         window.apiHttp.postUrlEncoded("{{ route('recruiter.store') }}", $('#createMethods').serialize())
             .then(function(response) {
                 if (response.status == "success") {
-                    window.location.reload();
+                    $(MODAL_DEFAULT).modal('hide');
+                    if (typeof $.showApiSuccessToast === 'function') {
+                        $.showApiSuccessToast(response.message || '');
+                    }
+                    if (typeof window.refreshRecruitSettingsTab === 'function') {
+                        window.refreshRecruitSettingsTab('recruit-setting');
+                    } else {
+                        window.location.reload();
+                    }
                 }
             })
             .catch(function(err) {

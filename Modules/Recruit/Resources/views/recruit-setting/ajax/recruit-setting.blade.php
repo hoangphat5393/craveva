@@ -28,8 +28,8 @@
                 <td>
                     @if ($editPermission == 'all')
                         <select class="change-recruiter-status form-control select-picker" data-recruiter-id="{{ $recruiter->id }}">
-                            <option @if ($recruiter->status == 'enabled') selected @endif>@lang('app.enabled')</option>
-                            <option @if ($recruiter->status == 'disabled') selected @endif>@lang('app.disabled')</option>
+                            <option value="enabled" @selected($recruiter->status == 'enabled')>@lang('app.enabled')</option>
+                            <option value="disabled" @selected($recruiter->status == 'disabled')>@lang('app.disabled')</option>
                         </select>
                     @else
                         @if ($recruiter->status == 'enabled')
@@ -42,7 +42,7 @@
                 <td class="text-right">
                     <div class="task_view">
                         @if ($deletePermission == 'all')
-                            <a href="javascript:;" data-recruiter-id="{{ $recruiter->id }}" class="delete-recruiter task_view_more d-flex align-items-center justify-content-center dropdown-toggle">
+                            <a href="javascript:;" data-recruiter-id="{{ $recruiter->id }}" class="delete-recruiter task_view_more d-flex align-items-center justify-content-center">
                                 <i class="fa fa-trash icons mr-2"></i> @lang('app.delete')
                             </a>
                         @endif
@@ -57,7 +57,7 @@
 
 <script>
     /* delete recruiter */
-    $('body').on('click', '.delete-recruiter', function() {
+    $('body').off('click', '.delete-recruiter').on('click', '.delete-recruiter', function() {
         var id = $(this).data('recruiter-id');
         Swal.fire({
             title: "@lang('messages.sweetAlertTitle')",
@@ -85,8 +85,14 @@
                     _token: "{{ csrf_token() }}"
                 }).then(function(response) {
                     if (response.status == "success") {
-                        $('.row' + id).fadeOut(100);
-                        location.reload();
+                        if (typeof $.showApiSuccessToast === 'function') {
+                            $.showApiSuccessToast(response.message || '');
+                        }
+                        if (typeof window.refreshRecruitSettingsTab === 'function') {
+                            window.refreshRecruitSettingsTab('recruit-setting');
+                        } else {
+                            window.location.reload();
+                        }
                     }
                 }).catch(function(err) {
                     $.handleApiFormError(err);
@@ -96,7 +102,7 @@
     });
 
     /* change recruiter status */
-    $('body').on('change', '.change-recruiter-status', function() {
+    $('body').off('change', '.change-recruiter-status').on('change', '.change-recruiter-status', function() {
 
         var agentId = $(this).data('recruiter-id');
         var status = $(this).val();

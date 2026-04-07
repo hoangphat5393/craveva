@@ -544,7 +544,7 @@
                             $(MODAL_XL).modal('hide');
                             window.location.reload();
                         } else {
-                            window.location.href = response.data.redirectUrl;
+                            window.location.href = response.redirectUrl;
                         }
                     }
                 })

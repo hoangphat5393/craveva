@@ -533,21 +533,48 @@
 
         $(".invalid-feedback").remove();
         $(".is-invalid").removeClass("is-invalid");
+        $(".bootstrap-select.is-invalid").removeClass("is-invalid");
+
+        var firstInvalidGroup = null;
 
         for (var i = 0; i < keys.length; i++) {
-            var ele = $("[name='" + keys[i] + "']");
-            if (ele.length == 0) {
-                ele = $("#" + keys[i]);
+            var key = keys[i];
+            var ele = $("[name='" + key + "']");
+            if (ele.length === 0) {
+                ele = $('[name="' + key + '[]"]');
             }
+            if (ele.length === 0 && key.indexOf(".") !== -1) {
+                var baseKey = key.split(".")[0];
+                ele = $('[name="' + baseKey + '[]"]');
+                if (ele.length === 0) {
+                    ele = $("[name='" + baseKey + "']");
+                }
+            }
+            if (ele.length === 0) {
+                ele = $("#" + key);
+            }
+            if (ele.length === 0) {
+                continue;
+            }
+
             var grp = ele.closest(".form-group");
             $(grp).find(".invalid-feedback").remove();
 
             var helpBlockContainer = $(grp);
 
             helpBlockContainer.append(
-                '<div class="invalid-feedback">' + object[keys[i]] + "</div>"
+                '<div class="invalid-feedback d-block">' + object[key] + "</div>"
             );
             ele.addClass("is-invalid");
+            ele.closest(".bootstrap-select").addClass("is-invalid");
+
+            if (!firstInvalidGroup && grp.length) {
+                firstInvalidGroup = grp;
+            }
+        }
+
+        if (firstInvalidGroup && firstInvalidGroup.length && firstInvalidGroup[0].scrollIntoView) {
+            firstInvalidGroup[0].scrollIntoView({ behavior: "smooth", block: "center" });
         }
     };
 

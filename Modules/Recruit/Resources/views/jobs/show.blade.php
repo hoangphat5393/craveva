@@ -63,7 +63,7 @@
             window.apiHttp.get(requestUrl)
                 .then(function(response) {
                     if (response.status == "success") {
-                        $('.content-wrapper').html(response.data.html);
+                        $('.content-wrapper').html(response.html);
                         init('.content-wrapper');
                         window.history.pushState({
                             url: requestUrl

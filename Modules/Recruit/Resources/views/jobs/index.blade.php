@@ -306,6 +306,9 @@
             window.apiHttp.postUrlEncoded(url, $('#quick-action-form').serialize())
                 .then(function(response) {
                     if (response.status == 'success') {
+                        if (typeof $.showApiSuccessToast === 'function') {
+                            $.showApiSuccessToast(response.message || '');
+                        }
                         showTable();
                         resetActionButtons();
                         deSelectAll();
@@ -343,6 +346,9 @@
                     window.apiHttp.delete(url, token)
                         .then(function(response) {
                             if (response.status == "success") {
+                                if (typeof $.showApiSuccessToast === 'function') {
+                                    $.showApiSuccessToast(response.message || '');
+                                }
                                 showTable();
                             }
                         })
@@ -368,6 +374,9 @@
                     })
                     .then(function(response) {
                         if (response.status == "success") {
+                            if (typeof $.showApiSuccessToast === 'function') {
+                                $.showApiSuccessToast(response.message || '');
+                            }
                             showTable();
                             resetActionButtons();
                             deSelectAll();

@@ -231,7 +231,7 @@
             basicValue: basicValue,
             annualSalary: annualSalary
         }).then(function(response) {
-            $('#components').html(response.data.component)
+            $('#components').html(response.component)
         }).catch(function(err) {
             $.handleApiFormError(err);
         });
@@ -297,7 +297,7 @@
         window.apiHttp.get(url, {
             currencyId: currencyId
         }).then(function(response) {
-            $('#default-structure').html(response.data.html)
+            $('#default-structure').html(response.html)
         }).catch(function(err) {
             $.handleApiFormError(err);
         });
@@ -376,7 +376,7 @@
                 component_id: componentId
             }).then(function(response) {
                 if (response.status == 'success') {
-                    $('#components').html(response.data.html);
+                    $('#components').html(response.html);
                 }
             }).catch(function(err) {
                 $.handleApiFormError(err);
@@ -396,10 +396,10 @@
                 .then(function(response) {
                     if (response.status == 'success') {
                         if ((myDropzone.getQueuedFiles().length > 0)) {
-                            $('#applicationID').val(response.data.application_id);
+                            $('#applicationID').val(response.application_id);
                             myDropzone.processQueue();
-                        } else if (typeof response.data.redirectUrl !== 'undefined') {
-                            window.location.href = response.data.redirectUrl;
+                        } else if (typeof response.redirectUrl !== 'undefined') {
+                            window.location.href = response.redirectUrl;
                         }
                     }
                 })
@@ -417,14 +417,14 @@
                 job_id: jobId
             }).then(function(response) {
                 if (response.status == 'success') {
-                    if (response.data.currencySymbol != null) {
-                        document.getElementById("currency-symbol").innerHTML = response.data.currencySymbol.currency_symbol;
-                        fetchedCurrency(response.data.currencySymbol);
+                    if (response.currencySymbol != null) {
+                        document.getElementById("currency-symbol").innerHTML = response.currencySymbol.currency_symbol;
+                        fetchedCurrency(response.currencySymbol);
                     }
                     var options = [];
                     var rData = [];
 
-                    rData = response.data.applications;
+                    rData = response.applications;
 
                     $.each(rData, function(index, value) {
                         var selectData = '';
@@ -434,8 +434,8 @@
 
                     });
 
-                    $('#pay_according').html(response.data.payAccording);
-                    $("input[name='pay_according']").val(response.data.job.pay_according);
+                    $('#pay_according').html(response.payAccording);
+                    $("input[name='pay_according']").val(response.job.pay_according);
                     $('#jobApplicant').html('<option value="">--</option>' +
                         options);
                     $('#jobApplicant').selectpicker('refresh');

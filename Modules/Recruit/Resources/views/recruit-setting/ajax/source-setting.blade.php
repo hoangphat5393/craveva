@@ -14,7 +14,10 @@
     </div>
     <x-table class="table-bordered">
         <x-slot name="thead">
-            <th>@lang('source')</th>
+            @php
+                $_sourceColumnLabel = __('recruit::modules.sourceSetting.source');
+            @endphp
+            <th>{{ is_string($_sourceColumnLabel) ? $_sourceColumnLabel : __('recruit::app.dashboard.source') }}</th>
             <th class="text-right">@lang('app.action')</th>
         </x-slot>
         @forelse($sources as $source)
@@ -30,7 +33,7 @@
                             </a>
                         </div>
                         <div class="task_view">
-                            <a href="javascript:;" data-source-id="{{ $source->id }}" class="delete-source task_view_more d-flex align-items-center justify-content-center dropdown-toggle">
+                            <a href="javascript:;" data-source-id="{{ $source->id }}" class="delete-source task_view_more d-flex align-items-center justify-content-center">
                                 <i class="fa fa-trash icons mr-2"></i> @lang('app.delete')
                             </a>
                         </div>
@@ -50,8 +53,8 @@
 </div>
 
 <script>
-    /* delete status */
-    $('body').on('click', '.delete-source', function() {
+    /* delete source */
+    $('body').off('click', '.delete-source').on('click', '.delete-source', function() {
         var id = $(this).data('source-id');
         var url = "{{ route('source-setting.destroy', ':id') }}";
         url = url.replace(':id', id);
@@ -79,7 +82,14 @@
                     _token: '{{ csrf_token() }}'
                 }).then(function(response) {
                     if (response.status == 'success') {
-                        window.location.reload();
+                        if (typeof $.showApiSuccessToast === 'function') {
+                            $.showApiSuccessToast(response.message || '');
+                        }
+                        if (typeof window.refreshRecruitSettingsTab === 'function') {
+                            window.refreshRecruitSettingsTab('recruit-source-setting');
+                        } else {
+                            window.location.reload();
+                        }
                     }
                 }).catch(function(err) {
                     $.handleApiFormError(err);
@@ -89,7 +99,7 @@
 
     });
 
-    $('body').on('click', '.edit-source', function() {
+    $('body').off('click', '.edit-source').on('click', '.edit-source', function() {
         var id = $(this).data('source-id');
         var url = "{{ route('source-setting.edit', ':id') }}";
         url = url.replace(':id', id);
@@ -98,8 +108,8 @@
         $.ajaxModal(MODAL_LG, url);
     });
 
-    /* open add status modal */
-    $('body').on('click', '#add-source', function() {
+    /* open add source modal */
+    $('body').off('click', '#add-source').on('click', '#add-source', function() {
         const url = "{{ route('source-setting.create') }}";
 
         $(MODAL_LG + ' ' + MODAL_HEADING).html('...');

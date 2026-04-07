@@ -207,7 +207,7 @@
             currency_id: currency_id,
             componentIds: componentIDs
         }).then(function(response) {
-            $('#components').html(response.data.component)
+            $('#components').html(response.component)
         }).catch(function(err) {
             $.handleApiFormError(err);
         });
@@ -293,7 +293,7 @@
                 currencyId: currencyId
             }).then(function(response) {
                 if (response.status == 'success') {
-                    $('#components').html(response.data.html);
+                    $('#components').html(response.html);
                 }
             }).catch(function(err) {
                 $.handleApiFormError(err);

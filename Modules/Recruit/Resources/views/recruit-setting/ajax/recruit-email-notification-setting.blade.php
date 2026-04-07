@@ -31,12 +31,19 @@
 <!-- Buttons End -->
 <script>
     $('body').off('click', "#save-email-form").on('click', '#save-email-form', function() {
-        var url = "{{ route('notification-settings.update', '$emailSettings->id') }}";
+        var url = "{{ $emailSettings->isNotEmpty() ? route('notification-settings.update', $emailSettings->first()->id) : '#' }}";
 
-        window.apiHttp.postUrlEncoded(url, $('#editSettings').serialize())
+        window.apiHttp.postUrlEncoded(url, $('#editSettings').serialize() + '&_method=PUT')
             .then(function(response) {
                 if (response.status == 'success') {
-                    location.reload();
+                    if (typeof $.showApiSuccessToast === 'function') {
+                        $.showApiSuccessToast(response.message || '');
+                    }
+                    if (typeof window.refreshRecruitSettingsTab === 'function') {
+                        window.refreshRecruitSettingsTab('recruit-email-notification-setting');
+                    } else {
+                        location.reload();
+                    }
                 }
             })
             .catch(function(err) {

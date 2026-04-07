@@ -24,4 +24,32 @@ class CompanyObserverPackageModulesTest extends TestCase
 
         $this->assertSame(['developertools', 'clients'], $names);
     }
+
+    public function test_package_module_names_appends_warehouse_when_purchase_present(): void
+    {
+        $json = '["purchase","clients"]';
+
+        $names = CompanyObserver::packageModuleNamesFromJson($json);
+
+        $this->assertContains('warehouse', $names);
+        $this->assertContains('purchase', $names);
+    }
+
+    public function test_package_module_names_appends_warehouse_when_products_present(): void
+    {
+        $json = '["products"]';
+
+        $names = CompanyObserver::packageModuleNamesFromJson($json);
+
+        $this->assertContains('warehouse', $names);
+    }
+
+    public function test_package_module_names_does_not_duplicate_warehouse(): void
+    {
+        $json = '["purchase","warehouse"]';
+
+        $names = CompanyObserver::packageModuleNamesFromJson($json);
+
+        $this->assertSame(1, count(array_filter($names, static fn($n) => $n === 'warehouse')));
+    }
 }

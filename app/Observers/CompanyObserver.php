@@ -152,7 +152,7 @@ class CompanyObserver
         }
 
         $this->saasSaving($company);
-        cache()->forget('user_'.$company->id.'_is_active');
+        cache()->forget('user_' . $company->id . '_is_active');
 
         session()->forget(['company', 'company.*', 'company.currency', 'company.paymentGatewayCredentials']);
         cache()->forget('global_setting');
@@ -218,8 +218,8 @@ class CompanyObserver
         Notification::whereIn('type', ['App\Notifications\SuperAdmin\NewCompanyRegister', 'App\Notifications\NewUser'])
             ->whereNull('read_at')
             ->where(function ($q) use ($company) {
-                $q->where('data', 'like', '{"id":'.$company->id.'%');
-                $q->orWhere('data', 'like', '%"company_id":'.$company->id.'%');
+                $q->where('data', 'like', '{"id":' . $company->id . '%');
+                $q->orWhere('data', 'like', '%"company_id":' . $company->id . '%');
             })->delete();
     }
 
@@ -942,12 +942,14 @@ class CompanyObserver
     {
         User::withoutGlobalScopes([ActiveScope::class, CompanyScope::class])
             ->where('company_id', $company->id)->each(function ($user) {
-                cache()->forget('user_modules_'.$user->id);
+                cache()->forget('user_modules_' . $user->id);
             });
     }
 
     /**
      * Flat list of module names from packages.module_in_package (object or array JSON), lowercased.
+     * When the package includes Purchase or Products, "warehouse" is implied (same rule as
+     * Modules\Warehouse\Database\Migrations\2026_03_25_120000_setup_warehouse_module_permissions_and_activation).
      *
      * @return list<string>
      */
@@ -958,12 +960,29 @@ class CompanyObserver
             return [];
         }
 
-        return collect($decoded)
-            ->map(static fn ($value) => strtolower(trim((string) $value)))
+        $names = collect($decoded)
+            ->map(static fn($value) => strtolower(trim((string) $value)))
             ->filter()
             ->unique()
             ->values()
             ->all();
+
+        return self::withImplicitWarehouseWhenPurchaseOrProducts($names);
+    }
+
+    /**
+     * @param  list<string>  $names  Lowercased module names from package JSON
+     * @return list<string>
+     */
+    public static function withImplicitWarehouseWhenPurchaseOrProducts(array $names): array
+    {
+        $hasPurchase = in_array('purchase', $names, true);
+        $hasProducts = in_array('products', $names, true);
+        if (($hasPurchase || $hasProducts) && ! in_array('warehouse', $names, true)) {
+            $names[] = 'warehouse';
+        }
+
+        return array_values(array_unique($names));
     }
 
     /**

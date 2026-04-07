@@ -69,6 +69,7 @@ class ModuleSetting extends BaseModel
         'settings',
         'bankaccount',
         'pricing',
+        'warehouse',
     ];
 
     protected $guarded = ['id'];
@@ -92,7 +93,7 @@ class ModuleSetting extends BaseModel
             return $allowed;
         }
 
-        $hasDevToolsInAllowed = $allowed->contains(static fn (ModuleSetting $row): bool => $row->module_name === 'developertools');
+        $hasDevToolsInAllowed = $allowed->contains(static fn(ModuleSetting $row): bool => $row->module_name === 'developertools');
 
         if ($hasDevToolsInAllowed) {
             return $allowed;

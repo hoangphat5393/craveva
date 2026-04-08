@@ -1878,6 +1878,10 @@ return [
         'onboarding' => 'Onboarding',
         'projectroadmap' => 'Project Roadmap',
         'einvoice' => 'EInvoice',
+        'subdomain' => 'Subdomain',
+        'delivery' => 'Delivery',
+        'customer_request' => 'Customer Request',
+        'invoice' => 'Invoice',
     ],
     'profile' => [
         'yourPassword' => 'Your Password',

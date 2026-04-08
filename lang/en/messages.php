@@ -432,6 +432,7 @@ return [
     'enterText' => 'Enter Text Here',
     'noConversation' => 'No conversation found.',
     'settingModuleCannotBeDisabled' => 'Setting  module cannot be disabled.',
+    'moduleNotInPackage' => 'This module is not included in your subscription package. Add it in Super Admin → Packages, then run package module sync.',
     'mailSettingSelectMessage' => 'We recommend using <b>SMTP</b>. Mail settings might not work on every server which also results in emails landing to SPAM. Please also check the test email if your mail server is working or not',
     'pusherError' => 'Your Pusher details are not correct. Please update to the correct one',
     'pusherSuccess' => 'Your Pusher details are correct',

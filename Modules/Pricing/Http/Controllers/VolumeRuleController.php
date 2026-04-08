@@ -150,7 +150,7 @@ class VolumeRuleController extends AccountBaseController
         $rule = VolumeDiscountRule::find($request->id);
 
         if (! $rule) {
-            return Reply::error('Record not found for ID: '.$request->id);
+            return Reply::error('Record not found for ID: ' . $request->id);
         }
 
         $rule->is_active = $request->status == 'active';
@@ -190,7 +190,12 @@ class VolumeRuleController extends AccountBaseController
         $deletePermission = user()->permission('delete_pricing_tiers');
         abort_403($deletePermission == 'none');
 
-        VolumeDiscountRule::whereIn('id', explode(',', $request->row_ids))->delete();
+        $ids = array_filter(array_map('intval', explode(',', (string) $request->row_ids)));
+        if (empty($ids)) {
+            return;
+        }
+
+        VolumeDiscountRule::where('company_id', user()->company_id)->whereIn('id', $ids)->delete();
     }
 
     protected function changeStatusBulk(Request $request)
@@ -198,6 +203,11 @@ class VolumeRuleController extends AccountBaseController
         $editPermission = user()->permission('edit_pricing_tiers');
         abort_403($editPermission == 'none');
 
-        VolumeDiscountRule::whereIn('id', explode(',', $request->row_ids))->update(['is_active' => $request->status == 'active']);
+        $ids = array_filter(array_map('intval', explode(',', (string) $request->row_ids)));
+        if (empty($ids)) {
+            return;
+        }
+
+        VolumeDiscountRule::where('company_id', user()->company_id)->whereIn('id', $ids)->update(['is_active' => $request->status == 'active']);
     }
 }

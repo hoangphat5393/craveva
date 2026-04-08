@@ -12,6 +12,9 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Column must be nullable before ON DELETE SET NULL (MySQL error 1830 otherwise).
+        $this->setUnsignedIntNullable('recruit_jobs', 'recruiter_id', true);
+
         Schema::table('recruit_jobs', function (Blueprint $table) {
             $table->foreign('recruiter_id')
                 ->references('id')
@@ -19,7 +22,6 @@ return new class extends Migration
                 ->onUpdate('cascade')
                 ->onDelete('set null');
         });
-        $this->setUnsignedIntNullable('recruit_jobs', 'recruiter_id', true);
     }
 
     /**
@@ -61,6 +63,6 @@ return new class extends Migration
             return;
         }
 
-        throw new \RuntimeException('change() fallback is disabled to avoid doctrine/dbal dependency in this migration.');
+        throw new RuntimeException('change() fallback is disabled to avoid doctrine/dbal dependency in this migration.');
     }
 };

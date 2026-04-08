@@ -133,10 +133,11 @@ class ModuleSetting extends BaseModel
     {
         // This is done for existing module settings. This will update the company id with 1
         // for existing module rather creating new module setting
-        if ($company->id == 1) {
+        $companyId = is_array($company) ? (int) ($company['id'] ?? 0) : (int) $company->id;
+        if ($companyId === 1) {
             ModuleSetting::withoutGlobalScope(CompanyScope::class)->where('module_name', $module)
                 ->whereNull('company_id')
-                ->update(['company_id' => $company->id]);
+                ->update(['company_id' => $companyId]);
         }
     }
 
@@ -144,20 +145,26 @@ class ModuleSetting extends BaseModel
     {
         self::addCompanyIdToNullModule($company, $module);
 
-        $moduleInPackage = collect(json_decode($company->package->module_in_package));
+        $companyId = is_array($company) ? (int) ($company['id'] ?? 0) : (int) $company->id;
+
+        $packageJson = is_array($company)
+            ? ($company['package']['module_in_package'] ?? $company['module_in_package'] ?? null)
+            : ($company->package?->module_in_package);
+        $decoded = json_decode((string) ($packageJson ?? '[]'), true);
+        $moduleInPackage = collect(is_array($decoded) ? $decoded : []);
 
         foreach ($roles as $role) {
             $data = ModuleSetting::withoutGlobalScope(CompanyScope::class)
                 ->where('module_name', $module)
                 ->where('type', $role)
-                ->where('company_id', $company->id)
+                ->where('company_id', $companyId)
                 ->first();
 
             if (! $data) {
                 ModuleSetting::create([
                     'module_name' => $module,
                     'type' => $role,
-                    'company_id' => $company->id,
+                    'company_id' => $companyId,
                     'status' => 'active',
                     'is_allowed' => $moduleInPackage->contains($module) ? 1 : 0,
                 ]);
@@ -169,7 +176,7 @@ class ModuleSetting extends BaseModel
             ->exists();
 
         if ($moduleExists) {
-            PermissionRole::insertModuleRolePermission($module, $company->id);
+            PermissionRole::insertModuleRolePermission($module, $companyId);
         }
     }
 }

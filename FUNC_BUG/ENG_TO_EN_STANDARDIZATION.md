@@ -72,4 +72,4 @@ php scripts/merge_eng_into_en_lang.php --dry-run
 
 ## Tài liệu liên quan
 
-- `FUNC_LOGIC/FLOW_LanguagePack_Module.md` — luồng LanguagePack (tránh file tên invalid trong `app/en`).
+- `FUNC_LOGIC/FLOW_Modules_Package_LanguagePack_CustomFields_VI.md` — mục LanguagePack (tránh file tên invalid trong `app/en`).

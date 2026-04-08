@@ -1,7 +1,7 @@
 # Developer Tools: gói có tick nhưng không thấy trong Settings / company panel
 
 **Cập nhật:** 2026-04-06 (bổ sung UI Module Settings + quyền impersonate 2026-04-06)  
-**Liên quan:** `FUNC_BUG/DEVELOPER_TOOLS_MODULE_REVIEW.md` (tổng quan module), `FUNC_LOGIC/Package_Modules_Commands.md` (gói vs nwidart)
+**Liên quan:** `FUNC_BUG/DEVELOPER_TOOLS_MODULE_REVIEW.md` (tổng quan module), `FUNC_LOGIC/FLOW_Modules_Package_LanguagePack_CustomFields_VI.md` (gói vs nwidart)
 
 ---
 

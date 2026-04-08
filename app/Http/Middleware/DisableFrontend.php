@@ -3,23 +3,26 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use Illuminate\Http\Request;
 
 class DisableFrontend
 {
     /**
      * Handle an incoming request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return mixed
      */
-    public function handle($request, Closure $next)
+    public function handle(Request $request, Closure $next): mixed
     {
         $global = global_setting();
 
-        if ($global->frontend_disable && request()->route()->getName() != 'front.signup.index' && ! request()->ajax()) {
-            return redirect(route('login'));
+        if (! $global || ! $global->frontend_disable) {
+            return $next($request);
         }
 
-        return $next($request);
+        $route = $request->route();
+        if (! $route || $route->getName() === 'front.signup.index' || $request->ajax()) {
+            return $next($request);
+        }
+
+        return redirect(route('login'));
     }
 }

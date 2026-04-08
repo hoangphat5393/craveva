@@ -77,7 +77,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  *
  * @property-read Collection|Company[] $companies
  * @property-read int|null $companies_count
- * @property-read \App\Models\SuperAdmin\GlobalCurrency|null $currency
+ * @property-read GlobalCurrency|null $currency
  * @property-read mixed $formatted_annual_price
  * @property-read mixed $formatted_monthly_price
  */
@@ -95,6 +95,28 @@ class Package extends BaseModel
     public function companies()
     {
         return $this->hasMany(Company::class);
+    }
+
+    /**
+     * Module names stored in `module_in_package` JSON (values keyed by module id). Used for Super Admin package list UI.
+     *
+     * @return list<string>
+     */
+    public static function normalizedModuleNamesFromPackageJson(?string $json): array
+    {
+        $decoded = json_decode($json ?? '[]', true);
+        if (! is_array($decoded)) {
+            return [];
+        }
+
+        $names = [];
+        foreach ($decoded as $value) {
+            if (is_string($value) && $value !== '') {
+                $names[] = strtolower($value);
+            }
+        }
+
+        return array_values(array_unique($names));
     }
 
     public function formatSizeUnits($bytes)

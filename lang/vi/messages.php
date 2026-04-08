@@ -327,6 +327,7 @@ return [
     'allFilesMovedtoAws' => 'Tất cả các tệp đã được chuyển sang AWS S3',
     'primaryColorRequired' => 'Màu chính là bắt buộc.',
     'settingModuleCannotBeDisabled' => 'Không thể tắt mô-đun cài đặt.',
+    'moduleNotInPackage' => 'Module này chưa nằm trong gói đăng ký. Thêm vào Super Admin → Packages, sau đó chạy đồng bộ module gói (packages:modules activate).',
     'paymentSuccessful' => 'Thanh toán thành công.',
     'darkThemeRestrictionInfo' => 'Cài đặt màu chủ đề sẽ không hoạt động khi Chế độ tối được kích hoạt.',
     'cronIsNotRunning' => 'Có vẻ như công việc định kỳ của bạn đã không chạy trong 48 giờ qua. Vui lòng kiểm tra để đảm bảo rằng nó được cấu hình đúng. Thông báo này sẽ tự động biến mất sau khi cron job hoạt động bình thường trở lại.',

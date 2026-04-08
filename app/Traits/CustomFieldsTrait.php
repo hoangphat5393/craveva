@@ -8,6 +8,7 @@ use App\Models\CustomField;
 use App\Models\CustomFieldGroup;
 use Carbon\Carbon;
 use Carbon\Exceptions\InvalidFormatException;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use ReflectionClass;
 
@@ -88,17 +89,25 @@ trait CustomFieldsTrait
 
         $modelId = $this->id;
 
-        // Get custom fields for this modal
-        /** @var \Illuminate\Database\Eloquent\Collection $data */
-        $data = DB::table('custom_fields_data')
+        // Get custom fields for this modal (must scope by company like getCustomFieldGroups — raw DB bypasses CompanyScope)
+        /** @var Collection $data */
+        $query = DB::table('custom_fields_data')
             ->rightJoin('custom_fields', function ($query) use ($modelId) {
                 $query->on('custom_fields_data.custom_field_id', '=', 'custom_fields.id');
-                $query->on('model_id', '=', DB::raw($modelId));
+                $query->where('custom_fields_data.model_id', '=', $modelId);
             })
             ->rightJoin('custom_field_groups', 'custom_fields.custom_field_group_id', '=', 'custom_field_groups.id')
             ->select('custom_fields.id', DB::raw('CONCAT("field_", custom_fields.id) as field_id'), 'custom_fields.type', 'custom_fields_data.value')
-            ->where('custom_field_groups.model', $this->getModelName())
-            ->get();
+            ->where('custom_field_groups.model', $this->getModelName());
+
+        if (method_exists($this, 'company')) {
+            $companyId = $this->company_id ?: company()->id;
+            if ($companyId) {
+                $query->where('custom_field_groups.company_id', $companyId);
+            }
+        }
+
+        $data = $query->get();
 
         $data = collect($data);
 
@@ -183,7 +192,7 @@ trait CustomFieldsTrait
      * - Carbon::parse() as fallback
      *
      * @param  string|int|float  $value  Raw date value from import
-     * @param  \App\Models\Company|null  $company
+     * @param  Company|null  $company
      * @return string Y-m-d or empty string on failure
      */
     private static function parseDateForCustomField($value, $company = null): string

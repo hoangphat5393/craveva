@@ -34,7 +34,7 @@ return new class extends Migration
 
         ModuleSetting::where('module_name', 'policy')->delete();
 
-        $companies = Company::select('id');
+        $companies = Company::query()->select('id')->get();
 
         foreach ($oldPermissionTypes as $permissionType) {
 
@@ -61,15 +61,13 @@ return new class extends Migration
                 foreach ($admins as $admin) {
                     UserPermission::where('user_id', $admin->id)->where('permission_id', $permission->id)->where('permission_type_id', 4)->delete();
                 }
-
             }
 
             Permission::where('name', $permissionType['name'])->delete();
-
         }
 
         // Added publish_date and deleted_at column...
-        if (! Schema::hasColumn('publish_date', 'status', 'deleted_at')) {
+        if (Schema::hasTable('policies') && ! Schema::hasColumn('policies', 'publish_date')) {
             Schema::table('policies', function (Blueprint $table) {
                 $table->date('publish_date')->nullable()->after('date');
                 $table->enum('status', ['draft', 'published'])->default('draft')->after('updated_by');
@@ -143,7 +141,7 @@ return new class extends Migration
      */
     public function down()
     {
-        if (Schema::hasColumn('publish_date', 'status', 'deleted_at')) {
+        if (Schema::hasTable('policies') && Schema::hasColumn('policies', 'publish_date')) {
             Schema::table('policies', function (Blueprint $table) {
                 $table->dropColumn(['publish_date', 'status', 'deleted_at']);
             });

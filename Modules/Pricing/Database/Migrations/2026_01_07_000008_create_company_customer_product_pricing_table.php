@@ -11,7 +11,8 @@ return new class extends Migration
         if (! Schema::hasTable('company_customer_product_pricing')) {
             Schema::create('company_customer_product_pricing', function (Blueprint $table) {
                 $table->bigIncrements('id');
-                $table->unsignedBigInteger('company_customer_pricing_id')->index();
+                // No explicit ->index(): auto name exceeds MySQL 64-char limit; FK below adds an index.
+                $table->unsignedBigInteger('company_customer_pricing_id');
                 $table->unsignedInteger('product_id');
                 $table->decimal('custom_price', 15, 4)->nullable();
                 $table->enum('custom_discount_type', ['percentage', 'fixed_amount'])->nullable();

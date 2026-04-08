@@ -6,6 +6,8 @@ use App\DataTables\BaseDataTable;
 use App\Models\Module;
 use App\Models\SuperAdmin\Package;
 use App\Models\SuperAdmin\PackageSetting;
+use Illuminate\Database\Eloquent\Builder;
+use Yajra\DataTables\DataTableAbstract;
 use Yajra\DataTables\Html\Column;
 
 class PackageDataTable extends BaseDataTable
@@ -26,7 +28,7 @@ class PackageDataTable extends BaseDataTable
      * Build DataTable class.
      *
      * @param  mixed  $query  Results from query() method.
-     * @return \Yajra\DataTables\DataTableAbstract
+     * @return DataTableAbstract
      */
     public function dataTable($query)
     {
@@ -35,7 +37,10 @@ class PackageDataTable extends BaseDataTable
             ->where('module_name', '<>', 'dashboards')
             ->where('module_name', '<>', 'restApi')
             ->whereNotIn('module_name', Module::disabledModuleArray())
-            ->get();
+            ->orderBy('module_name')
+            ->get()
+            ->unique('module_name')
+            ->values();
 
         $packageSetting = PackageSetting::first();
 
@@ -65,7 +70,6 @@ class PackageDataTable extends BaseDataTable
                             <i class="fa fa-trash mr-2"></i>
                             '.trans('app.delete').'
                         </a>';
-
                     }
 
                     $action .= '</div>
@@ -76,7 +80,6 @@ class PackageDataTable extends BaseDataTable
                 }
 
                 return '';
-
             })
             ->editColumn('monthly_price', function ($row) {
                 return ($row->default === 'no' && $row->monthly_status == '1' && ! $row->is_free) ? global_currency_format($row->monthly_price, $row->currency_id) : '--';
@@ -122,16 +125,17 @@ class PackageDataTable extends BaseDataTable
                 return $row->max_storage_size.' ('.strtoupper($row->storage_unit).')';
             })
             ->editColumn('module_in_package', function ($row) use ($modulesAll) {
-                $modules = json_decode($row->module_in_package, true);
+                $namesInPackage = Package::normalizedModuleNamesFromPackageJson($row->module_in_package);
 
-                if (! $modules) {
+                if ($namesInPackage === []) {
                     return 'No module selected';
                 }
 
                 $string = '';
 
                 foreach ($modulesAll as $module) {
-                    $sign = in_array($module->module_name, $modules) ? ('<i class="fa fa-check"></i>') : ('<i class="fa fa-times"></i>');
+                    $enabled = in_array(strtolower((string) $module->module_name), $namesInPackage, true);
+                    $sign = $enabled ? ('<i class="fa fa-check"></i>') : ('<i class="fa fa-times"></i>');
                     $string .= '<span class="col-md-3">'.$sign.' '.__('modules.module.'.$module->module_name).'</span>';
                 }
 
@@ -148,11 +152,9 @@ class PackageDataTable extends BaseDataTable
             if ($packageSetting->status == 'active') {
                 $string .= ' <span class="badge badge-success mr-1">'.__('app.active').'</span>';
                 $string .= ' <span class="badge badge-secondary mr-1">'.__('superadmin.packages.trialPeriod').' '.$packageSetting->no_of_days.' '.__('app.days').'</span>';
-
             } else {
                 $string .= ' <span class="badge badge-danger mr-1">'.__('app.inactive').'</span>';
             }
-
         }
 
         return $string;
@@ -161,7 +163,7 @@ class PackageDataTable extends BaseDataTable
     /**
      * Get query source of dataTable.
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function query(Package $model)
     {

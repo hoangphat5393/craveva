@@ -165,7 +165,7 @@ return new class extends Migration
                     ->onDelete('SET NULL')
                     ->onUpdate('cascade');
                 $table->string('transaction_id')->nullable();
-                $table->unsignedDecimal('amount', 12, 2);
+                $table->decimal('amount', 12, 2)->unsigned();
                 $table->date('pay_date');
                 $table->date('next_pay_date')->nullable();
                 $table->enum('status', ['paid', 'unpaid', 'pending'])->default('pending');
@@ -229,7 +229,7 @@ return new class extends Migration
                     ->onDelete('cascade')
                     ->onUpdate('cascade');
                 $table->string('transaction_id')->nullable();
-                $table->unsignedDecimal('amount', 12, 2);
+                $table->decimal('amount', 12, 2)->unsigned();
                 $table->date('pay_date');
                 $table->date('next_pay_date')->nullable();
                 $table->timestamps();
@@ -256,7 +256,7 @@ return new class extends Migration
                     ->onDelete('cascade')
                     ->onUpdate('cascade');
                 $table->string('transaction_id');
-                $table->unsignedDecimal('amount', 12, 2);
+                $table->decimal('amount', 12, 2)->unsigned();
                 $table->date('pay_date');
                 $table->date('next_pay_date')->nullable();
                 $table->timestamps();
@@ -949,7 +949,7 @@ return new class extends Migration
             return;
         }
 
-        throw new \RuntimeException('renameColumn fallback is disabled to avoid doctrine/dbal dependency in this migration.');
+        throw new RuntimeException('renameColumn fallback is disabled to avoid doctrine/dbal dependency in this migration.');
     }
 
     private function setStringNullableWithDefault(string $table, string $column, int $length, bool $nullable, ?string $default): void
@@ -964,6 +964,7 @@ return new class extends Migration
         if (in_array($driver, ['mysql', 'mariadb'], true)) {
             $defaultSql = $default !== null ? " DEFAULT '" . str_replace("'", "''", $default) . "'" : ' DEFAULT NULL';
             DB::statement("ALTER TABLE `{$table}` MODIFY `{$column}` VARCHAR({$length}) {$nullSql}{$defaultSql}");
+
             return;
         }
 
@@ -976,15 +977,17 @@ return new class extends Migration
             } else {
                 DB::statement("ALTER TABLE \"{$table}\" ALTER COLUMN \"{$column}\" DROP DEFAULT");
             }
+
             return;
         }
 
         if ($driver === 'sqlsrv') {
             DB::statement("ALTER TABLE [{$table}] ALTER COLUMN [{$column}] NVARCHAR({$length}) {$nullSql}");
+
             return;
         }
 
-        throw new \RuntimeException('change() fallback is disabled to avoid doctrine/dbal dependency in this migration.');
+        throw new RuntimeException('change() fallback is disabled to avoid doctrine/dbal dependency in this migration.');
     }
 
     private function setUnsignedIntNullable(string $table, string $column, bool $nullable): void
@@ -998,20 +1001,23 @@ return new class extends Migration
 
         if (in_array($driver, ['mysql', 'mariadb'], true)) {
             DB::statement("ALTER TABLE `{$table}` MODIFY `{$column}` INT UNSIGNED {$nullSql}");
+
             return;
         }
 
         if ($driver === 'pgsql') {
             DB::statement("ALTER TABLE \"{$table}\" ALTER COLUMN \"{$column}\" TYPE INTEGER");
             DB::statement("ALTER TABLE \"{$table}\" ALTER COLUMN \"{$column}\" " . ($nullable ? 'DROP NOT NULL' : 'SET NOT NULL'));
+
             return;
         }
 
         if ($driver === 'sqlsrv') {
             DB::statement("ALTER TABLE [{$table}] ALTER COLUMN [{$column}] INT {$nullSql}");
+
             return;
         }
 
-        throw new \RuntimeException('change() fallback is disabled to avoid doctrine/dbal dependency in this migration.');
+        throw new RuntimeException('change() fallback is disabled to avoid doctrine/dbal dependency in this migration.');
     }
 };

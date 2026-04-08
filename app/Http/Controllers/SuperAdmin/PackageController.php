@@ -16,6 +16,7 @@ use App\Models\SuperAdmin\GlobalPaymentGatewayCredentials;
 use App\Models\SuperAdmin\GlobalSubscription;
 use App\Models\SuperAdmin\Package;
 use App\Models\SuperAdmin\PackageSetting;
+use Illuminate\Http\Response;
 
 class PackageController extends AccountBaseController
 {
@@ -29,7 +30,7 @@ class PackageController extends AccountBaseController
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function index(PackageDataTable $dataTable)
     {
@@ -43,7 +44,7 @@ class PackageController extends AccountBaseController
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function create()
     {
@@ -60,7 +61,10 @@ class PackageController extends AccountBaseController
             ->where('module_name', '<>', 'dashboards')
             ->where('module_name', '<>', 'restApi')
             ->whereNotIn('module_name', Module::disabledModuleArray())
-            ->get();
+            ->orderBy('module_name')
+            ->get()
+            ->unique('module_name')
+            ->values();
 
         $this->currencies = GlobalCurrency::all();
 
@@ -80,7 +84,7 @@ class PackageController extends AccountBaseController
     /**
      * Store a newly created resource in storage.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function store(StoreRequest $request)
     {
@@ -106,7 +110,7 @@ class PackageController extends AccountBaseController
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function edit($id)
     {
@@ -130,7 +134,10 @@ class PackageController extends AccountBaseController
             ->where('module_name', '<>', 'dashboards')
             ->where('module_name', '<>', 'restApi')
             ->whereNotIn('module_name', Module::disabledModuleArray())
-            ->get();
+            ->orderBy('module_name')
+            ->get()
+            ->unique('module_name')
+            ->values();
 
         $this->paymentGateway = GlobalPaymentGatewayCredentials::first();
         $this->currencies = GlobalCurrency::all();
@@ -199,7 +206,7 @@ class PackageController extends AccountBaseController
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function destroy($id)
     {

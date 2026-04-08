@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Modules\Pricing\Entities\ClientProductPricing;
 
 class ClientPricingController extends AccountBaseController
@@ -17,7 +18,7 @@ class ClientPricingController extends AccountBaseController
         parent::__construct();
         $this->pageTitle = __('pricing::app.menu.pricing');
         $this->middleware(function ($request, $next) {
-            // Ensure strict company context
+            abort_403(! in_array('pricing', array_map('strtolower', $this->user->modules)));
             if (! company()) {
                 abort(403, 'Company context is required.');
             }
@@ -60,14 +61,24 @@ class ClientPricingController extends AccountBaseController
         $addPermission = user()->permission('add_client_pricing');
         abort_403($addPermission == 'none');
 
+        $companyId = (int) user()->company_id;
+
         $request->validate([
-            'client_id' => 'required|integer',
-            'product_id' => 'required|integer',
+            'client_id' => [
+                'required',
+                'integer',
+                Rule::exists('users', 'id')->where('company_id', $companyId),
+            ],
+            'product_id' => [
+                'required',
+                'integer',
+                Rule::exists('products', 'id')->where('company_id', $companyId),
+            ],
             'custom_price' => 'nullable|numeric',
             'discount_type' => 'nullable|in:percentage,fixed',
             'discount_value' => 'nullable|numeric',
-            'start_date' => 'required|date_format:"'.company()->date_format.'"|after_or_equal:today',
-            'end_date' => 'nullable|date_format:"'.company()->date_format.'"|after_or_equal:start_date',
+            'start_date' => 'required|date_format:"' . company()->date_format . '"|after_or_equal:today',
+            'end_date' => 'nullable|date_format:"' . company()->date_format . '"|after_or_equal:start_date',
         ], [
             'product_id.required' => __('pricing::app.productRequired'),
             'start_date.required' => __('pricing::app.startDateRequired'),
@@ -127,14 +138,24 @@ class ClientPricingController extends AccountBaseController
         $editPermission = user()->permission('edit_client_pricing');
         abort_403($editPermission == 'none');
 
+        $companyId = (int) user()->company_id;
+
         $request->validate([
-            'client_id' => 'required|integer',
-            'product_id' => 'required|integer',
+            'client_id' => [
+                'required',
+                'integer',
+                Rule::exists('users', 'id')->where('company_id', $companyId),
+            ],
+            'product_id' => [
+                'required',
+                'integer',
+                Rule::exists('products', 'id')->where('company_id', $companyId),
+            ],
             'custom_price' => 'nullable|numeric',
             'discount_type' => 'nullable|in:percentage,fixed',
             'discount_value' => 'nullable|numeric',
-            'start_date' => 'required|date_format:"'.company()->date_format.'"',
-            'end_date' => 'nullable|date_format:"'.company()->date_format.'"|after_or_equal:start_date',
+            'start_date' => 'required|date_format:"' . company()->date_format . '"',
+            'end_date' => 'nullable|date_format:"' . company()->date_format . '"|after_or_equal:start_date',
         ], [
             'product_id.required' => __('pricing::app.productRequired'),
             'start_date.required' => __('pricing::app.startDateRequired'),
@@ -179,7 +200,7 @@ class ClientPricingController extends AccountBaseController
         $pricing = ClientProductPricing::find($request->id);
 
         if (! $pricing) {
-            return Reply::error('Record not found for ID: '.($request->id ?? 'NULL'));
+            return Reply::error('Record not found for ID: ' . ($request->id ?? 'NULL'));
         }
 
         $pricing->is_active = ($request->status == 'active');
@@ -223,7 +244,12 @@ class ClientPricingController extends AccountBaseController
         $editPermission = user()->permission('edit_client_pricing');
         abort_403($editPermission == 'none');
 
-        ClientProductPricing::whereIn('id', explode(',', $request->row_ids))->delete();
+        $ids = array_filter(array_map('intval', explode(',', (string) $request->row_ids)));
+        if (empty($ids)) {
+            return;
+        }
+
+        ClientProductPricing::where('company_id', user()->company_id)->whereIn('id', $ids)->delete();
     }
 
     protected function changeStatusBulk(Request $request)
@@ -231,6 +257,11 @@ class ClientPricingController extends AccountBaseController
         $editPermission = user()->permission('edit_client_pricing');
         abort_403($editPermission == 'none');
 
-        ClientProductPricing::whereIn('id', explode(',', $request->row_ids))->update(['is_active' => $request->status == 'active']);
+        $ids = array_filter(array_map('intval', explode(',', (string) $request->row_ids)));
+        if (empty($ids)) {
+            return;
+        }
+
+        ClientProductPricing::where('company_id', user()->company_id)->whereIn('id', $ids)->update(['is_active' => $request->status == 'active']);
     }
 }

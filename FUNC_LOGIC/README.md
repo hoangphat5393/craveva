@@ -19,22 +19,23 @@ Thư mục lưu **ghi chú kỹ thuật**, **flow**, **phân tích MAOLIN/B2B**,
 
 ### Package, module, đăng nhập
 
-| File                                                           | Nội dung                                        |
-| -------------------------------------------------------------- | ----------------------------------------------- |
-| [Package_Modules_Commands.md](Package_Modules_Commands.md)     | Lệnh `packages:modules`                         |
-| [Package_Modules_Flow.md](Package_Modules_Flow.md)             | Flow Package → module_settings, observer, cache |
-| [Libraries_And_Module_Names.md](Libraries_And_Module_Names.md) | Composer / tên module trong app                 |
-| [Login_Flow.md](Login_Flow.md)                                 | Đăng nhập (Fortify, session, …)                 |
+| File                                                                                                         | Nội dung                                                                   |
+| ------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------- |
+| [SUPERADMIN_PACKAGE_AUDIT_VI.md](SUPERADMIN_PACKAGE_AUDIT_VI.md)                                             | Super Admin **Packages**: JSON module, DataTable, đồng bộ company          |
+| [DEVELOPER_TOOLS_AUDIT_AND_FLOW_VI.md](DEVELOPER_TOOLS_AUDIT_AND_FLOW_VI.md)                                 | Developer Tools: gateway DB, quyền UI, AI/SQL, `developertools:audit`      |
+| [FLOW_Modules_Package_LanguagePack_CustomFields_VI.md](FLOW_Modules_Package_LanguagePack_CustomFields_VI.md) | **Gộp:** `packages:modules` (nwidart), LanguagePack, custom fields + audit |
+| [Libraries_And_Module_Names.md](Libraries_And_Module_Names.md)                                               | Composer / tên module trong app                                            |
+| [Login_Flow.md](Login_Flow.md)                                                                               | Đăng nhập (Fortify, session, …)                                            |
 
 ### Flow nghiệp vụ (FLOW\_\*)
 
-| File                                                       | Nội dung                                   |
-| ---------------------------------------------------------- | ------------------------------------------ |
-| [FLOW_ADD_CLIENT.md](FLOW_ADD_CLIENT.md)                   | Thêm client                                |
-| [FLOW_ADD_PRODUCT.md](FLOW_ADD_PRODUCT.md)                 | Thêm sản phẩm                              |
-| [FLOW_ADD_INVENTORY.md](FLOW_ADD_INVENTORY.md)             | Thêm / tồn kho                             |
-| [FLOW_Pricing_Module_VI.md](FLOW_Pricing_Module_VI.md)     | Pricing (VI) — bản chuẩn đã hợp nhất EN/VI |
-| [FLOW_LanguagePack_Module.md](FLOW_LanguagePack_Module.md) | LanguagePack                               |
+| File                                                                                                         | Nội dung                                   |
+| ------------------------------------------------------------------------------------------------------------ | ------------------------------------------ |
+| [FLOW_ADD_CLIENT.md](FLOW_ADD_CLIENT.md)                                                                     | Thêm client                                |
+| [FLOW_ADD_PRODUCT.md](FLOW_ADD_PRODUCT.md)                                                                   | Thêm sản phẩm                              |
+| [FLOW_ADD_INVENTORY.md](FLOW_ADD_INVENTORY.md)                                                               | Thêm / tồn kho                             |
+| [FLOW_Pricing_Module_VI.md](FLOW_Pricing_Module_VI.md)                                                       | Pricing (VI) — bản chuẩn đã hợp nhất EN/VI |
+| [FLOW_Modules_Package_LanguagePack_CustomFields_VI.md](FLOW_Modules_Package_LanguagePack_CustomFields_VI.md) | Package / LanguagePack / CF (đã gộp)       |
 
 ### MAOLIN / ERP / B2B
 
@@ -79,12 +80,17 @@ Thư mục lưu **ghi chú kỹ thuật**, **flow**, **phân tích MAOLIN/B2B**,
 
 ## Lệnh nhanh (Package & Module)
 
+Chi tiết đầy đủ: [FLOW_Modules_Package_LanguagePack_CustomFields_VI.md](FLOW_Modules_Package_LanguagePack_CustomFields_VI.md).
+
 ```bash
 php artisan packages:modules list
 php artisan packages:modules activate-all
 php artisan packages:modules activate-all --package=9
 php artisan packages:modules activate --module=clients
 php artisan packages:modules enable-custom
+php artisan languagepack:publish-translation
+php artisan custom-fields:audit
+php artisan developertools:audit
 ```
 
 ---

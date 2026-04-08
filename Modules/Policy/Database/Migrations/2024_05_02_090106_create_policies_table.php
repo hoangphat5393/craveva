@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Company;
+use App\Models\Module;
 use App\Models\ModuleSetting;
 use App\Models\Permission;
 use App\Models\PermissionRole;
@@ -18,7 +19,7 @@ return new class extends Migration
      */
     public function up()
     {
-        $policyModule = \App\Models\Module::firstOrCreate(['module_name' => 'policy']);
+        $policyModule = Module::firstOrCreate(['module_name' => 'policy']);
 
         $permissionTypes = [
             ['name' => 'add_policy', 'display_name' => 'Add Policy', 'is_custom' => 1, 'allowed_permissions' => Permission::ALL_NONE],
@@ -29,7 +30,7 @@ return new class extends Migration
             ['name' => 'view_non_acknowledged', 'display_name' => 'View Non Acknowledged', 'is_custom' => 1, 'allowed_permissions' => Permission::ALL_NONE],
         ];
 
-        $companies = Company::select('id');
+        $companies = Company::query()->with('package')->get();
 
         foreach ($companies as $company) {
             $roles = ['employee', 'admin'];

@@ -6,6 +6,7 @@ use App\Helper\Reply;
 use App\Http\Controllers\AccountBaseController;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Modules\Pricing\Entities\CompanyCustomerPricing;
 use Modules\Pricing\Entities\PricingTier;
 
@@ -16,7 +17,7 @@ class CompanyPricingController extends AccountBaseController
         parent::__construct();
         $this->pageTitle = __('pricing::app.menu.pricing');
         $this->middleware(function ($request, $next) {
-            // Ensure strict company context
+            abort_403(! in_array('pricing', array_map('strtolower', $this->user->modules)));
             if (! company()) {
                 abort(403, 'Company context is required.');
             }
@@ -67,8 +68,19 @@ class CompanyPricingController extends AccountBaseController
         abort_403($addPermission == 'none');
 
         $request->validate([
-            'client_id' => 'required|integer',
-            'pricing_tier_id' => 'nullable|integer',
+            'client_id' => [
+                'required',
+                'integer',
+                Rule::exists('users', 'id')->where('company_id', user()->company_id),
+            ],
+            'pricing_tier_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('pricing_tiers', 'id')->where(function ($query) {
+                    $query->where('company_id', company()->id)
+                        ->orWhereNull('company_id');
+                }),
+            ],
             'custom_discount_type' => 'nullable|in:percentage,fixed_amount',
             'custom_discount_value' => 'nullable|numeric',
         ]);
@@ -116,13 +128,24 @@ class CompanyPricingController extends AccountBaseController
         abort_403($editPermission == 'none');
 
         $request->validate([
-            'client_id' => 'required|integer',
-            'pricing_tier_id' => 'nullable|integer',
+            'client_id' => [
+                'required',
+                'integer',
+                Rule::exists('users', 'id')->where('company_id', user()->company_id),
+            ],
+            'pricing_tier_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('pricing_tiers', 'id')->where(function ($query) {
+                    $query->where('company_id', company()->id)
+                        ->orWhereNull('company_id');
+                }),
+            ],
             'custom_discount_type' => 'nullable|in:percentage,fixed_amount',
             'custom_discount_value' => 'nullable|numeric',
         ]);
 
-        $pricing = CompanyCustomerPricing::findOrFail($id);
+        $pricing = CompanyCustomerPricing::where('company_id', user()->company_id)->findOrFail($id);
         $pricing->client_id = $request->client_id;
         $pricing->pricing_tier_id = $request->pricing_tier_id;
         $pricing->custom_discount_type = $request->custom_discount_type;
@@ -138,10 +161,12 @@ class CompanyPricingController extends AccountBaseController
         $editPermission = user()->permission('edit_client_pricing');
         abort_403($editPermission == 'none');
 
-        $pricing = CompanyCustomerPricing::find($request->id);
+        $pricing = CompanyCustomerPricing::where('company_id', user()->company_id)
+            ->where('id', $request->id)
+            ->first();
 
         if (! $pricing) {
-            return Reply::error('Record not found for ID: '.$request->id);
+            return Reply::error('Record not found for ID: ' . $request->id);
         }
 
         $pricing->is_active = ($request->status == 'active');
@@ -185,7 +210,12 @@ class CompanyPricingController extends AccountBaseController
         $editPermission = user()->permission('edit_client_pricing');
         abort_403($editPermission == 'none');
 
-        CompanyCustomerPricing::whereIn('id', explode(',', $request->row_ids))->delete();
+        $ids = array_filter(array_map('intval', explode(',', (string) $request->row_ids)));
+        if (empty($ids)) {
+            return;
+        }
+
+        CompanyCustomerPricing::where('company_id', user()->company_id)->whereIn('id', $ids)->delete();
     }
 
     protected function changeStatusBulk(Request $request)
@@ -193,6 +223,11 @@ class CompanyPricingController extends AccountBaseController
         $editPermission = user()->permission('edit_client_pricing');
         abort_403($editPermission == 'none');
 
-        CompanyCustomerPricing::whereIn('id', explode(',', $request->row_ids))->update(['is_active' => $request->status == 'active']);
+        $ids = array_filter(array_map('intval', explode(',', (string) $request->row_ids)));
+        if (empty($ids)) {
+            return;
+        }
+
+        CompanyCustomerPricing::where('company_id', user()->company_id)->whereIn('id', $ids)->update(['is_active' => $request->status == 'active']);
     }
 }

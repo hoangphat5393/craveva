@@ -235,7 +235,7 @@
                                 <td>
                                     @php($wType = $warehouse->warehouse_type ?? 'normal')
                                     <span class="badge badge-light">
-                                        @lang('warehouse::app.warehouseTypeLabel', ['type' => $wType])
+                                        @include('warehouse::partials.warehouse-type-label', ['type' => $wType])
                                     </span>
                                 </td>
                                 <td>

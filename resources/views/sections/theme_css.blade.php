@@ -60,6 +60,43 @@
         border-radius: 8px;
     }
 
+    /*
+     * Submenu items use <a> inside .accordionItemContent without .nav-item — server sets .active via SubMenuItem.
+     * Hover must stay subtler than .active so users can tell current page vs hover (sidebar.scss uses strong :hover).
+     */
+    .sidebar-light .sidebar-menu li .accordionItemContent a.active {
+        color: var(--header_color) !important;
+        background-color: color-mix(in srgb, var(--header_color) 18%, #ffffff) !important;
+        border-radius: 8px;
+        font-weight: 600;
+        box-shadow: inset 3px 0 0 0 var(--header_color);
+    }
+
+    .sidebar-light .sidebar-menu li .accordionItemContent a:hover:not(.active) {
+        color: color-mix(in srgb, var(--header_color) 70%, #334155) !important;
+        background-color: color-mix(in srgb, var(--header_color) 7%, #ffffff) !important;
+        font-weight: 500;
+    }
+
+    .sidebar-dark .sidebar-menu li .accordionItemContent a.active {
+        background-color: color-mix(in srgb, var(--header_color) 38%, rgba(255, 255, 255, 0.08)) !important;
+        color: #f8fafc !important;
+        border-radius: 8px;
+        font-weight: 600;
+        box-shadow: inset 3px 0 0 0 var(--header_color);
+    }
+
+    .sidebar-dark .sidebar-menu li .accordionItemContent a:hover:not(.active) {
+        background-color: rgba(255, 255, 255, 0.05) !important;
+        color: #f7faff !important;
+        font-weight: 500;
+    }
+
+    .sidebar-dark .sidebar-menu li .nav-item:hover:not(.active),
+    .sidebar-light .sidebar-menu li .nav-item:hover:not(.active) {
+        opacity: 0.92;
+    }
+
     .btn-primary,
     .btn-primary.disabled:hover,
     .btn-primary:disabled:hover {
@@ -111,9 +148,8 @@
     }
 
     .sidebar-light .sidebar-menu li .nav-item:focus,
-    .sidebar-light .sidebar-menu li .nav-item:hover,
-    .sidebar-light .sidebar-menu li .accordionItemContent a:hover {
-        color: var(--header_color) !important;
+    .sidebar-light .sidebar-menu li .nav-item:hover:not(.active) {
+        color: color-mix(in srgb, var(--header_color) 75%, #475569) !important;
     }
 
     .sidebar-light .accordionItem a.active {

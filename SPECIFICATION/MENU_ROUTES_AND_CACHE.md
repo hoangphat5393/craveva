@@ -4,8 +4,8 @@
 
 1. User vào **/account/dashboard** → layout load **sidebar** → sidebar include **menu.blade.php**.
 2. **menu.blade.php** hiển thị menu theo:
-   - `user_modules()` = danh sách module user được phép (từ bảng `module_settings`, theo role).
-   - Permission từng mục (vd: `view_payroll`, `view_asset`).
+    - `user_modules()` = danh sách module user được phép (từ bảng `module_settings`, theo role).
+    - Permission từng mục (vd: `view_payroll`, `view_asset`).
 3. Với mỗi module (Payroll, Asset, Policy, Zoom, Webhooks, …), menu gọi **`route('tên-route.index')`** để tạo link.
 4. **Route đó chỉ tồn tại** nếu module tương ứng **đã load** và **đăng ký route** (trong `Modules/TênModule/Routes/web.php` qua RouteServiceProvider của module).
 5. Nếu **module chưa load** hoặc **route chưa được đăng ký** (cache cũ, module tắt, lỗi bootstrap) → Laravel ném **RouteNotFoundException** → trang dashboard trắng/lỗi.
@@ -42,7 +42,7 @@ php artisan optimize:clear
 
 Sau khi chạy hai lệnh trên:
 
-- Laravel sẽ **load lại toàn bộ route** từ `routes/` và từ **từng module** (Modules/*/Routes/web.php).
+- Laravel sẽ **load lại toàn bộ route** từ `routes/` và từ **từng module** (Modules/\*/Routes/web.php).
 - Menu chỉ hiện mục khi **vừa** có quyền **vừa** có route (`Route::has()` = true). Nếu module bật và load đúng, route sẽ có và mục menu hiện lại.
 
 **Không cần** chạy thêm lệnh đặc biệt nào khác cho “route menu”. Nếu đã từng chạy `php artisan route:cache` trong môi trường có module tắt, nên **không cache route** khi dev (chỉ dùng `route:cache` khi deploy production nếu cần).
@@ -58,3 +58,10 @@ php artisan module:list
 ```
 
 Nếu một module ở trạng thái **Disabled** nhưng user vẫn có trong `module_settings` → menu vẫn tính “có quyền” nhưng route module không đăng ký → lỗi. Cách an toàn là giữ phần đã sửa: chỉ gọi `route()` khi `Route::has()` = true.
+
+## 5. Sidebar: trang con (submenu) và theme — chỉnh đâu để không “mất” khi pull
+
+- **Active state (PHP):** `app/View/Components/SubMenuItem.php` gắn class `active` theo URL hoặc prop `:active="request()->routeIs('…')"`. Module ví dụ: `Modules/Pricing/Resources/views/sections/sidebar.blade.php`.
+- **Màu / hover / trang hiện tại (CSS an toàn trong repo):** `resources/views/sections/theme_css.blade.php` — inline theo `header_color` (company/theme), **không** phụ thuộc file tùy biến trên server như `public/css/custom-css/theme-custom.css` (file đó có thể do deploy tạo; trong `layouts` chỉ load khi `file_exists`).
+- **SCSS gốc:** `resources/scss/sidebar.scss` định nghĩa hover mạnh cho `.accordionItemContent a`; nếu chỉ sửa SCSS cần `pnpm run build` / pipeline asset. Ưu tiên chỉnh `theme_css.blade.php` khi cần đồng bộ nhanh giữa các môi trường.
+- **JS:** `resources/js/custom.js` gắn `.active` theo **khớp URL tuyệt đối** với `href`; với route con (vd. `…/client-tiers/1/edit`) vẫn dựa vào Blade + `routeIs()` ở submenu, không chỉ vào đoạn JS đó.

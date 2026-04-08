@@ -113,7 +113,7 @@
                             </td>
                             <td>
                                 <span class="badge badge-light">
-                                    @lang('warehouse::app.warehouseTypeLabel', ['type' => $stock->warehouse_type ?? ($stock->warehouse->warehouse_type ?? 'normal')])
+                                    @include('warehouse::partials.warehouse-type-label', ['type' => $stock->warehouse_type ?? ($stock->warehouse->warehouse_type ?? 'normal')])
                                 </span>
                             </td>
                             <td>

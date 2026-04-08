@@ -14,7 +14,7 @@
                                 <x-cards.data-row :label="__('warehouse::app.code')" :value="$warehouse->code ?: '—'" />
                             </div>
                             <div class="col-md-6">
-                                <x-cards.data-row :label="__('warehouse::app.warehouseType')" :value="__('warehouse::app.warehouseTypeLabel', ['type' => $warehouse->warehouse_type ?? 'normal'])" />
+                                <x-cards.data-row :label="__('warehouse::app.warehouseType')" :value="view('warehouse::partials.warehouse-type-label', ['type' => $warehouse->warehouse_type ?? 'normal'])->render()" />
                             </div>
                             <div class="col-md-6">
                                 <x-cards.data-row :label="__('app.status')" :value="ucfirst($warehouse->status)" />

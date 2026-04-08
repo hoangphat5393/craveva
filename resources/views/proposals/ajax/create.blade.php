@@ -1077,7 +1077,7 @@
 
             if (items.length === 0) return;
 
-            window.apiHttp.post("{{ route('discount.calculate') }}", {
+            window.apiHttp.post("{{ route('pricing.volume_discount.calculate') }}", {
                 _token: "{{ csrf_token() }}",
                 items: items
             }).then(function(response) {

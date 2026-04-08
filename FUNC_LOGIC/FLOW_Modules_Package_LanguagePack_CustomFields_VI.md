@@ -163,8 +163,9 @@ php artisan languagepack:sync-keys --locale=en
 
 **Lưu ý:**
 
-- `@choice` nằm trong comment/docblock của command nhưng **không** nằm trong `buildRegexPatterns()`, nên key dùng `@choice` sẽ không bị quét.
+- `@choice` nằm trong comment/docblock của command nhưng **không** nằm trong `buildRegexPatterns()`, nên key dùng `@choice` sẽ bị bỏ qua khi quét.
 - Key thuộc module chỉ được thêm nếu module đã có thư mục trong `Languages/modules/` (tên thư mục trùng với vendor, không phân biệt hoa thường).
+- **Ví dụ kho ngôn ngữ module:** key `warehouse::app.warehouseType` (và các key `warehouse::app.*` khác) nên sửa trong repo tại `Modules/LanguagePack/Languages/modules/Warehouse/{locale}/app.php` (vd. `zh-CN`, `zh-TW`, `vi`, `en`). File `Modules/Warehouse/Resources/lang/{locale}/app.php` là bản **publish** ra; sau khi sửa LanguagePack cần chạy `languagepack:publish-translation` để đồng bộ lên module và `lang/`.
 
 ### 2.3. Workflow khuyến nghị
 

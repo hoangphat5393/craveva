@@ -51,7 +51,7 @@ Route::group(['middleware' => 'auth', 'prefix' => 'account/pricing'], function (
     Route::post('import/store', [PricingImportController::class, 'importStore'])->name('pricing.import.store');
     Route::post('import/process', [PricingImportController::class, 'importProcess'])->name('pricing.import.process');
 
-    Route::post('discount/calculate', [VolumeDiscountController::class, 'calculate'])->name('discount.calculate');
+    Route::post('discount/calculate', [VolumeDiscountController::class, 'calculate'])->name('pricing.volume_discount.calculate');
 
     Route::post('volume-rules/apply-quick-action', [VolumeRuleController::class, 'applyQuickAction'])->name('pricing.volume_rules.apply_quick_action');
     Route::post('volume-rules/change-status', [VolumeRuleController::class, 'changeStatus'])->name('pricing.volume_rules.change_status');

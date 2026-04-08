@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AppSettingController;
 use App\Http\Controllers\CustomModuleController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\SuperAdmin\AuthorizeController;
@@ -53,8 +54,8 @@ Route::group(['middleware' => ['auth'], 'prefix' => 'account', 'as' => 'superadm
     Route::get('impersonate/stop_impersonate', [SuperAdminController::class, 'stopImpersonate'])->name('superadmin.stop_impersonate');
     Route::get('workspaces', [SuperAdminController::class, 'workspaces'])->name('superadmin.workspaces');
     Route::post('choose-workspace', [SuperAdminController::class, 'chooseWorkspace'])->name('superadmin.choose_workspace');
-    Route::get('refresh-cache', [\App\Http\Controllers\AppSettingController::class, 'refreshCache'])->name('superadmin.refresh-cache');
-    Route::get('clearCache', [\App\Http\Controllers\AppSettingController::class, 'resetCache'])->name('superadmin.clear-cache');
+    Route::get('refresh-cache', [AppSettingController::class, 'refreshCache'])->name('superadmin.refresh-cache');
+    Route::get('clearCache', [AppSettingController::class, 'resetCache'])->name('superadmin.clear-cache');
 
     Route::post('signup/verifyEmail', [SignUpController::class, 'verifyEmail'])->name('signup.verifyEmail');
     Route::get('notify-admin', [NotificationController::class, 'notifyAdmin'])->name('notify.admin');
@@ -230,11 +231,11 @@ Route::group(['middleware' => ['auth', 'multi-company-select'], 'prefix' => 'acc
 
     Route::get('billing', [BillingController::class, 'index'])->name('billing.index');
 });
-Route::post('save-invoices', [StripeWebhookController::class, 'saveInvoices'])->name('billing.save_webhook');
+Route::post('save-invoices', [StripeWebhookController::class, 'verifyStripeWebhook'])->name('billing.save_webhook');
 Route::post('billing-verify-webhook/{id}', [StripeWebhookController::class, 'verifyStripeWebhook'])->name('billing.verify-webhook');
 Route::post('save-razorpay-webhook/{id}', [RazorpayWebhookController::class, 'saveInvoices'])->name('billing.save_razorpay-webhook');
 Route::post('save-paystack-webhook/{id}', [PaystackWebhookController::class, 'saveInvoices'])->name('billing.save_paystack-webhook');
-Route::post('save-paypal-webhook/{id}', [PaypalIPNController::class, 'verpayment-authorizeifyBillingIPN'])->name('billing.save_paypal-webhook');
+Route::post('save-paypal-webhook/{id}', [PaypalIPNController::class, 'verifyBillingIPN'])->name('billing.save_paypal-webhook');
 Route::post('save-authorize-webhook/{id}', [AuthorizeWebhookController::class, 'saveInvoices'])->name('billing.save_authorize-webhook');
 Route::get('save-mollie-callback/{paymentId}/{hash}', [MollieController::class, 'handleGatewayCallback'])->name('billing.mollie.callback');
 Route::post('save-mollie-webhook/{subscriptionId}/{hash}', [MollieController::class, 'handleGatewayWebhook'])->name('billing.mollie.webhook');
@@ -243,7 +244,7 @@ Route::get('billing/paystack/callback', [PaystackController::class, 'handleGatew
 Route::group(['middleware' => ['auth', 'admin-or-super-admin'], 'prefix' => 'account', 'as' => 'superadmin.'], function () {
     Route::get('superadmin-invoices/download/{id}', [InvoiceController::class, 'download'])->name('invoices.download');
     Route::get('offline-plan-files/download/{id}', [OfflinePlanChangeController::class, 'download'])->name('offline-plan.download');
-    Route::get('billing-offline-plan-file/download/{id}', [BillingController::class, 'offlineFileDownload'])->name('billin-offline-plan.download');
+    Route::get('billing-offline-plan-file/download/{id}', [BillingController::class, 'offlineFileDownload'])->name('billing-offline-plan.download');
     Route::get('faqs/searchquery/{query?}', [FaqController::class, 'searchQuery'])->name('faqs.searchQuery');
     Route::get('faqs/download/{id}', [FaqController::class, 'download'])->name('faqs.download');
     Route::resource('faqs', FaqController::class);

@@ -21,6 +21,7 @@ class VerifyCsrfToken extends Middleware
         '/lead-form/ticket-store',
         '*/iclock/*',
         '/billing-verify-webhook/*',
+        'save-invoices',
         '*/payfast-notification/*',
     ];
 }

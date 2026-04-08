@@ -4,6 +4,8 @@ namespace App\DataTables\SuperAdmin;
 
 use App\DataTables\BaseDataTable;
 use App\Models\SuperAdmin\OfflinePlanChange;
+use Illuminate\Database\Eloquent\Builder;
+use Yajra\DataTables\DataTableAbstract;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
 
@@ -13,7 +15,7 @@ class OfflinePlanChangeDataTable extends BaseDataTable
      * Build DataTable class.
      *
      * @param  mixed  $query  Results from query() method.
-     * @return \Yajra\DataTables\DataTableAbstract
+     * @return DataTableAbstract
      */
     public function dataTable($query)
     {
@@ -32,7 +34,7 @@ class OfflinePlanChangeDataTable extends BaseDataTable
                             <i class="icon-options-vertical icons"></i>
                         </a>
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-'.$row->id.'" tabindex="0">';
-            $action .= '<a href="'.route('superadmin.billin-offline-plan.download', md5($row->id)).'" id="downloadFile"
+            $action .= '<a href="'.route('superadmin.billing-offline-plan.download', md5($row->id)).'" id="downloadFile"
                             data-id="'.$row->id.'" class="dropdown-item">
                             <i class="fa fa-download mr-2"></i>'.__('app.download').' '.__('app.receipt').'
                         </a>';
@@ -70,7 +72,6 @@ class OfflinePlanChangeDataTable extends BaseDataTable
         $datatables->addColumn('package_name', function ($row) {
             if ($row->package->package == 'lifetime') {
                 return $row->package->name;
-
             }
 
             return $row->package->name.' ('.($row->package_type == 'annual' ? __('app.annually') : __('app.monthly')).')';
@@ -95,7 +96,7 @@ class OfflinePlanChangeDataTable extends BaseDataTable
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function query(OfflinePlanChange $model)
     {
@@ -166,6 +167,5 @@ class OfflinePlanChangeDataTable extends BaseDataTable
         ];
 
         return array_merge($data1, $company, $data2);
-
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Traits\HasCompany;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\DB;
@@ -32,15 +33,15 @@ use Illuminate\Support\Facades\DB;
  * @method static \Illuminate\Database\Eloquent\Builder|CustomField whereValues($value)
  *
  * @property int|null $company_id
- * @property-read \App\Models\Company|null $company
- * @property-read \App\Models\LeadCustomForm|null $leadCustomForm
- * @property-read \App\Models\TicketCustomForm|null $ticketCustomForm
+ * @property-read Company|null $company
+ * @property-read LeadCustomForm|null $leadCustomForm
+ * @property-read TicketCustomForm|null $ticketCustomForm
  *
  * @method static \Illuminate\Database\Eloquent\Builder|CustomField whereCompanyId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|CustomField whereExport($value)
  *
- * @property-read \App\Models\CustomFieldGroup|null $customFieldGroup
- * @property-read \App\Models\CustomFieldGroup|null $fieldGroup
+ * @property-read CustomFieldGroup|null $customFieldGroup
+ * @property-read CustomFieldGroup|null $fieldGroup
  *
  * @method static \Illuminate\Database\Eloquent\Builder|CustomField whereVisible($value)
  *
@@ -86,6 +87,47 @@ class CustomField extends BaseModel
         }
 
         return $customFields;
+    }
+
+    /**
+     * Resolve the display label for a select-type custom field from stored JSON option definitions and the stored value.
+     *
+     * Handles numeric indices, string keys, and legacy values that match option labels case-insensitively (avoids undefined array key when DB holds a label but options are 0-indexed).
+     */
+    public static function resolveSelectFieldDisplayValue(?string $valuesJson, mixed $storedValue): string
+    {
+        if ($storedValue === null || $storedValue === '') {
+            return '--';
+        }
+
+        $decoded = json_decode($valuesJson ?? '', true);
+        if (! is_array($decoded)) {
+            $decoded = [];
+        }
+
+        if ($decoded === []) {
+            return (string) $storedValue;
+        }
+
+        $candidates = [$storedValue];
+        if (is_numeric($storedValue)) {
+            $candidates[] = (int) $storedValue;
+            $candidates[] = (string) (int) $storedValue;
+        }
+
+        foreach ($candidates as $key) {
+            if (array_key_exists($key, $decoded)) {
+                return (string) $decoded[$key];
+            }
+        }
+
+        foreach ($decoded as $optionLabel) {
+            if (is_string($optionLabel) && strcasecmp((string) $optionLabel, (string) $storedValue) === 0) {
+                return $optionLabel;
+            }
+        }
+
+        return (string) $storedValue;
     }
 
     /**
@@ -149,17 +191,16 @@ class CustomField extends BaseModel
                 })->first();
 
                 if ($customField->type == 'select') {
-                    $data = $customField->values;
-                    $data = json_decode($data); // string to array
-
-                    return $finalData ? (($finalData->value >= 0 && $finalData->value != null) ? $data[$finalData->value] : '--') : '--';
+                    return $finalData
+                        ? self::resolveSelectFieldDisplayValue($customField->values, $finalData->value)
+                        : '--';
                 }
 
                 if ($customField->type == 'date') {
                     $dateValue = $finalData?->value;
                     if (! empty($dateValue)) {
                         try {
-                            $formattedDate = \Carbon\Carbon::parse($dateValue)->translatedFormat(company()->date_format);
+                            $formattedDate = Carbon::parse($dateValue)->translatedFormat(company()->date_format);
 
                             return $formattedDate;
                         } catch (\Exception $e) {

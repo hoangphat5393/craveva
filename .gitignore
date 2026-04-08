@@ -63,3 +63,6 @@ GEMINI.md
 
 # Local backups (e.g. hub .env); do not commit
 /backup/
+
+# Deploy: GitHub PAT for upload_*.ps1 (never commit)
+/scripts/deploy-secrets.local.ps1

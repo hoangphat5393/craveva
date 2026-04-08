@@ -3,6 +3,7 @@
 use App\Http\Controllers\AppreciationController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AttendanceReportController;
+use App\Http\Controllers\AuditReportController;
 use App\Http\Controllers\AwardController;
 use App\Http\Controllers\BankAccountController;
 use App\Http\Controllers\ClientCategoryController;
@@ -985,6 +986,8 @@ Route::group(['middleware' => ['auth', 'multi-company-select', 'email_verified']
 
     Route::resource('lead-report', LeadReportController::class);
     Route::resource('sales-report', SalesReportController::class);
+
+    Route::resource('audit-report', AuditReportController::class)->only(['index']);
 
     Route::resource('sticky-notes', StickyNoteController::class);
 

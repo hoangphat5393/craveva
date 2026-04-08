@@ -436,6 +436,7 @@ return [
         'leadReport' => 'Báo cáo chính',
         'quickBookSettings' => 'Cài đặt Quickbooks',
         'salesReport' => 'Báo cáo bán hàng',
+        'auditReport' => 'Báo cáo kiểm tra (hoạt động)',
         'addContract' => 'Thêm hợp đồng',
         'customLinkSetting' => 'Cài đặt liên kết tùy chỉnh',
         'addProducts' => 'Thêm sản phẩm',

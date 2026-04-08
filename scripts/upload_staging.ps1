@@ -1,20 +1,49 @@
 # Git-based deploy for Staging. SSH Host must exist in ~/.ssh/config.
 # This script pulls code from Git on the server and runs post-deploy maintenance.
+#
+# Nếu trên server `git pull` báo "could not read Password" (HTTPS + không có TTY):
+# - Khuyến nghị lâu dài: đổi origin sang SSH + deploy key trên server.
+# - Tạm thời: đặt PAT trong biến môi trường CRAVEVA_GITHUB_DEPLOY_TOKEN hoặc file
+#   scripts/deploy-secrets.local.ps1 (copy từ deploy-secrets.local.ps1.example). Không commit token.
 
 param(
     [switch]$GitPull = $true, # Mặc định là pull code
-    [string]$Branch = "main"
+    [string]$Branch = "main",
+    [string]$GitHubToken = "" # Tùy chọn; nếu rỗng dùng env CRAVEVA_GITHUB_DEPLOY_TOKEN
 )
 
 $ErrorActionPreference = "Stop"
 $StagingHost = "craveva-staging"
 $StagingPath = "/var/www/craveva-staging/current/craveva"
 
+$secretsFile = Join-Path $PSScriptRoot "deploy-secrets.local.ps1"
+if (Test-Path $secretsFile) {
+    . $secretsFile
+}
+
+$resolvedToken = $GitHubToken
+if (-not $resolvedToken) {
+    $resolvedToken = $env:CRAVEVA_GITHUB_DEPLOY_TOKEN
+}
+
 Write-Host "Starting Git-based deploy on Staging..."
 
 $RemoteCommand = "cd $StagingPath"
 if ($GitPull) {
-    $RemoteCommand += " && git fetch origin && git checkout $Branch && git pull origin $Branch"
+    $stashBeforePull = " && git status --porcelain | grep -q . && git stash push -u -m 'auto-stash-before-deploy' || true"
+    if ($resolvedToken) {
+        $escaped = $resolvedToken.Replace("'", "'\''")
+        $RemoteCommand += " && export GIT_TERMINAL_PROMPT=0"
+        $RemoteCommand += " && export GITHUB_DEPLOY_TOKEN='$escaped'"
+        $RemoteCommand += " && git -c http.extraHeader=`"AUTHORIZATION: bearer `$GITHUB_DEPLOY_TOKEN`" fetch origin"
+        $RemoteCommand += $stashBeforePull
+        $RemoteCommand += " && git checkout $Branch"
+        $RemoteCommand += " && git -c http.extraHeader=`"AUTHORIZATION: bearer `$GITHUB_DEPLOY_TOKEN`" pull origin $Branch"
+    } else {
+        $RemoteCommand += " && git fetch origin"
+        $RemoteCommand += $stashBeforePull
+        $RemoteCommand += " && git checkout $Branch && git pull origin $Branch"
+    }
 }
 
 # Lệnh bảo trì (Permissions, Migration, Optimize)

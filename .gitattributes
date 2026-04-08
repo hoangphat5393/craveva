@@ -1,6 +1,2 @@
-* text=auto
+# Bash scripts must use LF so they run on Linux after scp from Windows
 *.sh text eol=lf
-*.css linguist-vendored
-*.scss linguist-vendored
-*.js linguist-vendored
-CHANGELOG.md export-ignore

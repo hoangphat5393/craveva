@@ -367,6 +367,7 @@ return [
     'manage_contract_setting' => 'Manage Contract Setting',
     'manage_custom_link_setting' => 'Manage Custom Link Setting',
     'view_sales_report' => 'View Sales Report',
+    'view_audit_report' => 'View Audit Report',
     'view_webhooks_logs' => 'View Webhooks Logs',
     'add_letter' => 'Add Letter',
     'edit_letter' => 'Edit Letter',

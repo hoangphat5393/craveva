@@ -269,6 +269,9 @@
                     @if (isset($sidebarUserPermissions['view_sales_report']) && $sidebarUserPermissions['view_sales_report'] == 4 && $sidebarUserPermissions['view_sales_report'] != 'none' && in_array('invoices', user_modules()))
                         <x-sub-menu-item :link="route('sales-report.index')" :text="__('app.menu.salesReport')" />
                     @endif
+                    @if (isset($sidebarUserPermissions['view_audit_report']) && $sidebarUserPermissions['view_audit_report'] == 4 && $sidebarUserPermissions['view_audit_report'] != 'none')
+                        <x-sub-menu-item :link="route('audit-report.index')" :text="__('app.menu.auditReport')" />
+                    @endif
                 </div>
             </x-menu-item>
         @endif
@@ -768,7 +771,8 @@
                     $sidebarUserPermissions['view_leave_report'] != 5 ||
                     $sidebarUserPermissions['view_attendance_report'] == 4 ||
                     $sidebarUserPermissions['view_lead_report'] == 4 ||
-                    $sidebarUserPermissions['view_sales_report'] == 4) &&
+                    $sidebarUserPermissions['view_sales_report'] == 4 ||
+                    (isset($sidebarUserPermissions['view_audit_report']) && $sidebarUserPermissions['view_audit_report'] == 4)) &&
                 ($sidebarUserPermissions['view_task_report'] != 'none' ||
                     $sidebarUserPermissions['view_time_log_report'] != 'none' ||
                     $sidebarUserPermissions['view_finance_report'] != 'none' ||
@@ -777,7 +781,8 @@
                     $sidebarUserPermissions['view_attendance_report'] != 'none' ||
                     $sidebarUserPermissions['view_lead_report'] != 'none' ||
                     $sidebarUserPermissions['view_sales_report'] != 'none' ||
-                    (isset($sidebarUserPermissions['view_expense_report']) && $sidebarUserPermissions['view_expense_report'] != 'none')))
+                    (isset($sidebarUserPermissions['view_expense_report']) && $sidebarUserPermissions['view_expense_report'] != 'none') ||
+                    (isset($sidebarUserPermissions['view_audit_report']) && $sidebarUserPermissions['view_audit_report'] != 'none')))
             <x-menu-item icon="graph-up" :text="__('app.menu.reports')">
                 <x-slot name="iconPath">
                     <path d="M7.5 1.018a7 7 0 0 0-4.79 11.566L7.5 7.793V1.018zm1 0V7.5h6.482A7.001 7.001 0 0 0 8.5 1.018zM14.982 8.5H8.207l-4.79 4.79A7 7 0 0 0 14.982 8.5zM0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8z" />
@@ -819,6 +824,9 @@
                     @endif
                     @if (isset($sidebarUserPermissions['view_sales_report']) && $sidebarUserPermissions['view_sales_report'] == 4 && $sidebarUserPermissions['view_sales_report'] != 'none' && in_array('invoices', user_modules()))
                         <x-sub-menu-item :link="route('sales-report.index')" :text="__('app.menu.salesReport')" />
+                    @endif
+                    @if (isset($sidebarUserPermissions['view_audit_report']) && $sidebarUserPermissions['view_audit_report'] == 4 && $sidebarUserPermissions['view_audit_report'] != 'none')
+                        <x-sub-menu-item :link="route('audit-report.index')" :text="__('app.menu.auditReport')" />
                     @endif
                 </div>
             </x-menu-item>

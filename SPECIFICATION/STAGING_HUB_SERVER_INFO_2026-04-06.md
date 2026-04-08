@@ -2,15 +2,34 @@
 
 **Thu thập:** 2026-04-06 (SSH read-only). Giá trị **thay đổi theo thời gian** — cần `free -h`, `uptime` khi điều tra sự cố.
 
+**Hai server — SSH & thư mục app (cấu hình `~/.ssh/config` trên máy dev):**
+
+| Máy         | Host SSH (`ssh …`)   | Đường dẫn code (deploy script)             | Ghi chú                      |
+| ----------- | -------------------- | ------------------------------------------ | ---------------------------- |
+| **Staging** | `craveva-staging`    | `/var/www/craveva-staging/current/craveva` | `scripts/upload_staging.ps1` |
+| **Hub**     | `craveva-hub-server` | `/var/www/hub.craveva.com`                 | `scripts/upload_hub.ps1`     |
+
+Sau khi đổi RAM / FPM, chạy lại các lệnh ở **mục 7** trên **từng** máy và cập nhật bảng **mục 1** trong file này.
+
 **Cập nhật 2026-04-07 (Hub):** file FPM **`/etc/php/8.3/fpm/conf.d/99-hub-match-aapanel82.ini`** — `memory_limit` **128M → 256M**; `post_max_size` / `upload_max_filesize` **50M** (giữ); `php8.3-fpm` reload OK — chi tiết **mục 3 Hub → Drop-in aaPanel**.
 
 **Redis / phpredis (SSH, 2026-04-06):** **Staging** — trước đó chỉ có **`php8.3-redis`**, chưa có Redis server; đã **`apt install redis-server`** (Ubuntu **6.0.16**), `redis-cli ping` → PONG. **Hub** — Redis (aaPanel) đã chạy **127.0.0.1:6379**; đã cài **`php8.3-redis`** (sury **6.3.0**), bật **CLI + FPM**. Hub: `apt` báo lỗi cấu hình gói **MariaDB client** cũ (không chặn cài phpredis) — nên xử lý khi bảo trì.
 
-**Cập nhật FPM (mục tiêu vận hành):** **`memory_limit = 1024M`** + **`pm.max_children = 2`** trên **cả staging và hub** — trần lý thuyết pool PHP web **~2 GiB** (2×1024M), phù hợp VM **~4 GiB RAM (cũ)**; hiện tại RAM đã nâng lên **16GB (Hub)** và **8GB (Staging)** nhưng vẫn giữ `max_children = 2` để an toàn cho import lớn (submit HTTP).
+**Cập nhật 2026-04-08 (áp dụng trên server):**
+
+- **Staging FPM pool:** `pm.max_children = **4**`, `pm.max_spare_servers = **4**` (`www.conf` + backup `www.conf.bak.fpm_scale_*`). `php-fpm8.3 -t` + **reload** OK.
+- **Hub FPM pool:** `pm.max_children = **8**`, `pm.max_spare_servers = **8**`.
+- **Hub drop-in** `99-hub-match-aapanel82.ini`: `memory_limit` **256M → 1024M** (đồng bộ hiệu lực FPM với staging; có file `.bak.*` cạnh đó).
+- **Dọn dung lượng (không đụng DB):** Staging — xóa **2 file zip cũ nhất** trong `storage/backup/` (giữ 3 bản gần nhất). Hub — xóa thư mục **`/var/www/hub.craveva.com.bak-20251210152231`** (~840M, bản sao code cũ). **Không** xóa `hub.craveva.com_release`, `.git-src`, `/var/www/html` (có thể đang dùng).
+- Script tái áp dụng: `scripts/fpm_scale_pool_apply.sh` (chạy trên server: `sudo bash … staging|hub`; từ Windows: `scp` rồi `sed -i 's/\r$//'` nếu CRLF).
+
+**RAM đã nâng:** **~8 GiB (Staging)** / **~15 GiB (Hub)** — đã tăng **`pm.max_children`** theo **mục 9**. Chi tiết điều chỉnh thêm: **mục 9**.
+
+**Hub — drop-in:** trước **2026-04-08** file **`99-hub-match-aapanel82.ini`** ghi **`memory_limit = 256M`** và ghi đè `php.ini`; đã nâng **1024M**.
 
 **Ràng buộc PHP-FPM (`pm = dynamic`):** khi hạ **`pm.max_children`** xuống **2**, bắt buộc **`pm.max_spare_servers` ≤ `pm.max_children`** (và các chỉ số spare/start phải nhất quán). Nếu chỉ sửa `max_children` mà để **`pm.max_spare_servers = 3`**, FPM **không khởi động** (exit **78**) → Nginx **502 Bad Gateway**.
 
-- **Hub / staging:** đã đồng bộ **`pm.max_spare_servers = 2`** cùng **`pm.max_children = 2`** (**2026-04-04**).
+- **2026-04-04:** Hub / staging **`pm.max_spare_servers = 2`** cùng **`pm.max_children = 2`** (sửa 502). **2026-04-08:** staging **4/4**, hub **8/8** — vẫn **`max_spare` ≤ `max_children`**.
 
 **Supervisor (staging):** đã cài **`supervisor`**, program **`craveva-queue-all`** chạy `queue:work` nền (**2026-04-04**). `.env` staging: **`IMPORT_PROGRESS_RUN_QUEUE_WORKER=false`**. Chi tiết: `docs/SERVER_RUNBOOK_VI.md`, `deploy/supervisor/craveva-queue-all.conf.example`.
 
@@ -20,10 +39,24 @@
 
 ## 1. Tóm tắt nhanh
 
-| Máy                    | RAM          | Swap                                                 | CPU (vCPU)              | Ổ `/`            | Ghi chú FPM (mục tiêu)                                                                                                                                                                                     |
-| ---------------------- | ------------ | ---------------------------------------------------- | ----------------------- | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **craveva-staging**    | **~7.8 GiB** | 2 GiB (file `/swapfile`, lúc quét: **~114MiB dùng**) | 2 × Intel Xeon @ 2.2GHz | 20G (~62% used)  | **`1024M` + `pm.max_children = 2`** + **`pm.max_spare_servers = 2`**. **Supervisor** `craveva-queue-all` (**2026-04-04**). Trước đó 502 do spare **3** &gt; children **2** — xem đoạn ràng buộc phía trên. |
-| **craveva-hub-server** | **~15 GiB**  | 2 GiB (lúc quét: **~811MiB đã dùng**)                | 4 × Intel Xeon @ 2.2GHz | 194G (~29% used) | Cùng bộ **`1024M` + children 2 + max_spare 2** (**2026-04-04**). Hub cũng từng lệch spare **3** → FPM fail nếu không sửa. Swap cao — xem mục **5**.                                                        |
+| Máy                    | RAM          | Swap                                                 | CPU (vCPU)              | Ổ `/`            | Ghi chú FPM (mục tiêu)                                                                                                                                                                      |
+| ---------------------- | ------------ | ---------------------------------------------------- | ----------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **craveva-staging**    | **~7.8 GiB** | 2 GiB (file `/swapfile`, lúc quét: **~114MiB dùng**) | 2 × Intel Xeon @ 2.2GHz | 20G (~62% used)  | **`1024M` + `pm.max_children = 4` + `pm.max_spare_servers = 4`** (**2026-04-08**). **Supervisor** `craveva-queue-all`.                                                                      |
+| **craveva-hub-server** | **~15 GiB**  | 2 GiB (lúc quét: **~811MiB đã dùng**)                | 4 × Intel Xeon @ 2.2GHz | 194G (~29% used) | **`memory_limit` FPM hiệu lực 1024M** (drop-in **2026-04-08**) + **`pm.max_children = 8` + `pm.max_spare_servers = 8`**. Đã xóa bản backup thư mục `.bak-20251210152231`. Swap — mục **5**. |
+
+### Redis — Local / Staging / Hub (kiểm **2026-04-08**)
+
+| Môi trường      | Redis server                                                          | PHP **phpredis**   | `redis-cli ping`                                                                                                           | `systemctl` boot           |
+| --------------- | --------------------------------------------------------------------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
+| **Local (dev)** | Tùy máy — thường **chưa cài**; queue/cache có thể `database` / `file` | Tùy cài đặt        | N/A                                                                                                                        | N/A                        |
+| **Staging**     | **`redis-server` (apt)** — **active**, **enabled**                    | **Có** (CLI + FPM) | **PONG**                                                                                                                   | `redis-server` **enabled** |
+| **Hub**         | **aaPanel** `redis.service` — **active**, **enabled**                 | **Có** (CLI + FPM) | **PONG** (thường cần **`sudo redis-cli ping`** — thư mục `/www/server/redis` hạn quyền; **Laravel không cần** `redis-cli`) | **enabled**                |
+
+**Không cần cài thêm** trên staging/hub tại thời điểm kiểm — dịch vụ đã chạy.
+
+**Git chung 3 nguồn:** Trong repo có `config/database.php` và **`.env.example`**; **`.env`** mỗi máy **không** commit — không làm lệch code. Đồng bộ **tên biến** `REDIS_*`, `QUEUE_CONNECTION`, `IMPORT_BATCH_QUEUE_CONNECTION`. Prefix key Laravel gắn `APP_NAME` — **khác `APP_NAME`** hoặc set **`REDIS_PREFIX`** nếu hai app dùng chung một Redis.
+
+**Redis có tự tắt khi không dùng lâu?** — **Bản tự host (staging/hub) không tự dừng vì idle.** Có `systemctl enable` → khởi động lại máy vẫn lên. Nếu “mất” Redis: kiểm tra `systemctl status`, log `journalctl`, OOM, VM preemptible — không phải do “lâu không gọi”.
 
 ---
 
@@ -58,28 +91,29 @@
 
 ### PHP 8.3 FPM (`/etc/php/8.3/fpm/`)
 
-| Chỉ số                   | Giá trị                                                            |
-| ------------------------ | ------------------------------------------------------------------ |
-| **memory_limit**         | **1024M**                                                          |
-| **max_execution_time**   | **300**                                                            |
-| **max_input_time**       | **300**                                                            |
-| **Pool `www.conf`**      | `pm = dynamic`                                                     |
-| **pm.max_children**      | **2**                                                              |
-| **pm.start_servers**     | 2                                                                  |
-| **pm.min_spare_servers** | 1                                                                  |
-| **pm.max_spare_servers** | **2** (bắt buộc ≤ `max_children`; **3** làm FPM không start → 502) |
+| Chỉ số                   | Giá trị                                                     |
+| ------------------------ | ----------------------------------------------------------- |
+| **memory_limit**         | **1024M**                                                   |
+| **max_execution_time**   | **300**                                                     |
+| **max_input_time**       | **300**                                                     |
+| **Pool `www.conf`**      | `pm = dynamic`                                              |
+| **pm.max_children**      | **4** (**2026-04-08**; trước đó 2)                          |
+| **pm.start_servers**     | 2                                                           |
+| **pm.min_spare_servers** | 1                                                           |
+| **pm.max_spare_servers** | **4** (≤ `max_children`; **3** khi children=2 từng gây 502) |
 
 ### PHP 8.3 CLI
 
 - **memory_limit:** `-1` (không giới hạn trong ini)
 
-### Redis server & PHP phpredis (quét **2026-04-06**)
+### Redis server & PHP phpredis (quét **2026-04-06**, tái kiểm **2026-04-08**)
 
-| Thành phần             | Trạng thái                                                                                                           |
-| ---------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| **Redis server**       | Gói Ubuntu **`redis-server` 5:6.0.16** (`redis-server.service`), **`active`**, `redis-cli ping` → **PONG**.          |
-| **redis-cli**          | Có (gói `redis-tools`).                                                                                              |
-| **Extension phpredis** | Gói **`php8.3-redis`** (deb.sury.org **6.3.0**), bật cho **CLI** và **FPM** (`php -m` / `php-fpm8.3 -m` có `redis`). |
+| Thành phần             | Trạng thái                                                                                                                 |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| **Redis server**       | Gói Ubuntu **`redis-server` 5:6.0.16** (`redis-server.service`), **`active`**, **`enabled`**, `redis-cli ping` → **PONG**. |
+| **redis-cli**          | Có (gói `redis-tools`).                                                                                                    |
+| **Extension phpredis** | Gói **`php8.3-redis`** (deb.sury.org **6.3.0**), bật cho **CLI** và **FPM** (`php -m` / `php-fpm8.3 -m` có `redis`).       |
+| **timeout (server)**   | `CONFIG GET timeout` → **0** (không hết hạn client idle do Redis).                                                         |
 
 ---
 
@@ -114,22 +148,22 @@
 
 ### PHP 8.3 FPM
 
-| Chỉ số                 | Giá trị (sau chỉnh **2026-04-04**)                                                                                            |
-| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| **memory_limit**       | **1024M** trong `/etc/php/8.3/fpm/php.ini` (snapshot **2026-04-06**); **ghi đè** bởi drop-in aaPanel — xem bảng ngay dưới.    |
-| **max_execution_time** | **300**                                                                                                                       |
-| **max_input_time**     | **300**                                                                                                                       |
-| **Pool**               | `pm = dynamic`: **`pm.max_children = 2`**, **`pm.max_spare_servers = 2`**, `pm.start_servers = 2`, `pm.min_spare_servers = 1` |
+| Chỉ số                 | Giá trị (sau chỉnh **2026-04-04**)                                                                                                             |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| **memory_limit**       | **1024M** trong `/etc/php/8.3/fpm/php.ini` (snapshot **2026-04-06**); **ghi đè** bởi drop-in aaPanel — xem bảng ngay dưới.                     |
+| **max_execution_time** | **300**                                                                                                                                        |
+| **max_input_time**     | **300**                                                                                                                                        |
+| **Pool**               | `pm = dynamic`: **`pm.max_children = 8`**, **`pm.max_spare_servers = 8`** (**2026-04-08**), `pm.start_servers = 2`, `pm.min_spare_servers = 1` |
 
 #### Drop-in aaPanel (Hub) — cập nhật **2026-04-07**
 
 File: **`/etc/php/8.3/fpm/conf.d/99-hub-match-aapanel82.ini`**
 
-| Chỉ số                  | Giá trị hiện tại | Ghi chú                                                                              |
-| ----------------------- | ---------------- | ------------------------------------------------------------------------------------ |
-| **memory_limit**        | **256M**         | Nâng từ **128M** (cùng file); sau chỉnh: **`systemctl reload php8.3-fpm`** (active). |
-| **post_max_size**       | **50M**          | Giữ nguyên.                                                                          |
-| **upload_max_filesize** | **50M**          | Giữ nguyên.                                                                          |
+| Chỉ số                  | Giá trị hiện tại | Ghi chú                                                                             |
+| ----------------------- | ---------------- | ----------------------------------------------------------------------------------- |
+| **memory_limit**        | **1024M**        | **2026-04-08:** **256M → 1024M** (đồng bộ staging / import). Reload **php8.3-fpm**. |
+| **post_max_size**       | **50M**          | Giữ nguyên.                                                                         |
+| **upload_max_filesize** | **50M**          | Giữ nguyên.                                                                         |
 
 **Giá trị thực tế** của `memory_limit` cho request FPM là giá trị **sau** khi PHP merge toàn bộ `.ini` (thường file `conf.d/…` tải sau `php.ini`). Để xác nhận trên máy: `php-fpm8.3 -i 2>/dev/null | grep memory_limit` hoặc trang `phpinfo()` qua FPM.
 
@@ -137,11 +171,11 @@ File: **`/etc/php/8.3/fpm/conf.d/99-hub-match-aapanel82.ini`**
 
 **Không phải hai bản PHP hay hai pool độc lập** — cùng một binary **`php-fpm8.3`**, cùng các worker FPM, chỉ **khác nguồn cấu hình**:
 
-| Nguồn                                                                      | Vai trò                                                                                                                                                    |
-| -------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`/etc/php/8.3/fpm/php.ini`**                                             | File INI gốc của SAPI **fpm** (snapshot doc ghi **1024M** cho `memory_limit` tại thời điểm quét).                                                          |
-| **`/etc/php/8.3/fpm/conf.d/*.ini`** (gồm **`99-hub-match-aapanel82.ini`**) | Các **snippet** được nối thêm sau `php.ini` (thứ tự tên file; `99-` thường load muộn). Dùng để **ghi đè** vài directive (ở Hub: **256M**, upload **50M**). |
-| **`/etc/php/8.3/fpm/pool.d/*.conf`**                                       | Cấu hình **pool** FPM: `pm.max_children`, **`listen`** (socket hoặc TCP), user, v.v. — **không** nằm trong file `99-hub-…ini` trên.                        |
+| Nguồn                                                                      | Vai trò                                                                                                                                                                      |
+| -------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`/etc/php/8.3/fpm/php.ini`**                                             | File INI gốc của SAPI **fpm** (snapshot doc ghi **1024M** cho `memory_limit` tại thời điểm quét).                                                                            |
+| **`/etc/php/8.3/fpm/conf.d/*.ini`** (gồm **`99-hub-match-aapanel82.ini`**) | Các **snippet** được nối thêm sau `php.ini` (thứ tự tên file; `99-` thường load muộn). Dùng để **ghi đè** (Hub: `memory_limit` **1024M** từ **2026-04-08**, upload **50M**). |
+| **`/etc/php/8.3/fpm/pool.d/*.conf`**                                       | Cấu hình **pool** FPM: `pm.max_children`, **`listen`** (socket hoặc TCP), user, v.v. — **không** nằm trong file `99-hub-…ini` trên.                                          |
 
 Mục **### PHP 8.3 FPM** trong tài liệu này mô tả **tổng thể** (pool + giá trị INI lúc quét); mục **Drop-in aaPanel** ghi **riêng** file chỉnh tay / đồng bộ aaPanel để biết **giá trị đang thắng** cho `memory_limit` / upload.
 
@@ -167,13 +201,13 @@ Và khớp với Nginx: `grep -R fastcgi_pass /www/server/panel/vhost/nginx/*.co
 
 - **memory_limit:** `-1`
 
-### Redis server & PHP phpredis (quét **2026-04-06**)
+### Redis server & PHP phpredis (quét **2026-04-06**, tái kiểm **2026-04-08**)
 
-| Thành phần             | Trạng thái                                                                                                                                                                                                       |
-| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Redis server**       | Dịch vụ **aaPanel** (`redis.service`, init script), binary **`/www/server/redis/src/redis-server`**, cấu hình **`/www/server/redis/redis.conf`**, lắng nghe **127.0.0.1:6379**, trạng thái **active (running)**. |
-| **redis-cli**          | **`/usr/bin/redis-cli`** → symlink tới `/www/server/redis/src/redis-cli`.                                                                                                                                        |
-| **Extension phpredis** | Đã cài **`php8.3-redis`** (ondrej/sury **6.3.0**, kèm **`php8.3-igbinary`**), symlink **`/etc/php/8.3/{cli,fpm}/conf.d/25-redis.ini`** → `mods-available/redis.ini`; **CLI + FPM** đều có module **`redis`**.    |
+| Thành phần             | Trạng thái                                                                                                                                                                                                    |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Redis server**       | Dịch vụ **aaPanel** (`redis.service`), **active**, **`enabled`**, **127.0.0.1:6379**. **`sudo redis-cli ping`** → **PONG**.                                                                                   |
+| **redis-cli**          | Symlink **`/usr/bin/redis-cli`** → `/www/server/redis/src/redis-cli` — user thường **Permission denied** nếu không `sudo` (quyền thư mục aaPanel). Ứng dụng PHP **không** phụ thuộc `redis-cli`.              |
+| **Extension phpredis** | Đã cài **`php8.3-redis`** (ondrej/sury **6.3.0**, kèm **`php8.3-igbinary`**), symlink **`/etc/php/8.3/{cli,fpm}/conf.d/25-redis.ini`** → `mods-available/redis.ini`; **CLI + FPM** đều có module **`redis`**. |
 
 **Ghi chú vận hành Hub:** Sau `apt-get install php8.3-redis`, **dpkg** báo lỗi cấu hình chuỗi **`mariadb-common` / `mariadb-client-*`** (có thể do VM dùng stack DB khác / aaPanel; lỗi **không** ngăn cài đặt phpredis). Khi bảo trì, có thể chạy `sudo dpkg --configure -a` hoặc sửa theo hướng dẫn aaPanel — **xác nhận trước** trên máy production.
 
@@ -193,14 +227,14 @@ Và khớp với Nginx: `grep -R fastcgi_pass /www/server/panel/vhost/nginx/*.co
 
 ## 5. Hướng xử lý (vận hành / kiến trúc)
 
-| Hướng                                   | Ý nghĩa                                                                                                                                                               |
-| --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **FPM `1024M` + `pm.max_children = 2`** | **Nên giữ** trên VM ~4G để tránh oversubscribe RAM; luôn chỉnh **`pm.max_spare_servers` ≤ `pm.max_children`** (mục **7b**). Đã áp **hub + staging** (**2026-04-04**). |
-| **Theo dõi**                            | `free -h`, `swapon --show`, `uptime` khi import — xác nhận swap có nhảy không.                                                                                        |
-| **Queue / import**                      | Giữ chunk hợp lý; tránh nhiều import song song trên cùng VM nhỏ.                                                                                                      |
-| **Hub: swap cao**                       | Tìm process ăn RAM (`ps aux --sort=-%mem \| head`); cân nhắc **nâng RAM VM** hoặc giảm service trùng.                                                                 |
-| **Quyền / cache**                       | `docs/SERVER_RUNBOOK_VI.md`.                                                                                                                                          |
-| **Supervisor**                          | Staging: worker queue nền; tránh **`IMPORT_PROGRESS_RUN_QUEUE_WORKER=true`** đồng thời. `docs/SERVER_RUNBOOK_VI.md`.                                                  |
+| Hướng                               | Ý nghĩa                                                                                                                                                                                        |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **FPM `1024M` + `pm.max_children`** | Trên VM **4G**: **2** children là hợp lý. Trên **8G / 16G**: có thể **tăng children** (ví dụ **4** staging, **6–8** hub) — xem **mục 9**. Luôn **`pm.max_spare_servers` ≤ `pm.max_children`**. |
+| **Theo dõi**                        | `free -h`, `swapon --show`, `uptime` khi import — xác nhận swap có nhảy không.                                                                                                                 |
+| **Queue / import**                  | Giữ chunk hợp lý; tránh nhiều import song song trên cùng VM nhỏ.                                                                                                                               |
+| **Hub: swap cao**                   | Tìm process ăn RAM (`ps aux --sort=-%mem \| head`); cân nhắc **nâng RAM VM** hoặc giảm service trùng.                                                                                          |
+| **Quyền / cache**                   | `docs/SERVER_RUNBOOK_VI.md`.                                                                                                                                                                   |
+| **Supervisor**                      | Staging: worker queue nền; tránh **`IMPORT_PROGRESS_RUN_QUEUE_WORKER=true`** đồng thời. `docs/SERVER_RUNBOOK_VI.md`.                                                                           |
 
 ---
 
@@ -264,7 +298,49 @@ sudo php-fpm8.3 -t && sudo systemctl restart php8.3-fpm
 
 ## 8. Liên quan trong repo
 
+- Scale FPM pool (staging 4 / hub 8): `scripts/fpm_scale_pool_apply.sh`
 - PHP ini tuning script: `scripts/tune_php83_import_limits.sh`
 - Staging vận hành (Supervisor, deploy): `docs/SERVER_RUNBOOK_VI.md`; rehearsal/zip: `docs/STAGING_OPERATIONS.md`
 - Supervisor mẫu cấu hình queue: `deploy/supervisor/craveva-queue-all.conf.example`
 - Import & poll: `FUNC_IMPORT/IMPORT_MECHANISMS_POLL_AND_QUEUE_VI.md`
+
+---
+
+## 9. Sau khi nâng RAM — có tăng `1024M` / `pm.max_children` cho import (17k dòng, nhiều sheet)?
+
+### 9.1. Tóm tắt quyết định
+
+| Thành phần                                      | Có cần tăng?                                                                            | Ghi chú                                                                                                                                                 |
+| ----------------------------------------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`memory_limit` FPM (1024M)**                  | **Thường giữ 1024M**                                                                    | Chỉ cân nhắc **2048M** nếu log / `Allowed memory size exhausted` khi import **qua đúng request FPM** (web).                                             |
+| **`pm.max_children`**                           | **Nên cân nhắc tăng** trên 8G/16G                                                       | RAM lớn hơn cho phép **nhiều worker web đồng thời** mà không bó 2 children như VM 4G. Vẫn tránh “bắn” quá cao (oversubscribe).                          |
+| **Import nặng (17k client, Excel nhiều sheet)** | **Ưu tiên queue + CLI**                                                                 | Worker `queue:work` dùng **CLI** (`memory_limit` thường **-1** trên staging doc) — phù hợp xử lý từng chunk; FPM chỉ nhận upload / trigger job.         |
+| **Upload**                                      | Kiểm tra **post_max_size** / **upload_max_filesize** / **Nginx `client_max_body_size`** | File lớn hoặc nhiều sheet → cần đủ cả PHP và Nginx. Script: `scripts/tune_php83_import_limits.sh` (FPM 64M mặc định script — chỉnh tay nếu file > 64M). |
+| **Hub drop-in INI**                             | **Bắt buộc kiểm tra**                                                                   | Nếu `conf.d/99-hub-match-*.ini` vẫn **256M**, mọi request FPM chỉ có **256M** → import web dễ fail trước khi tới 1024M của `php.ini`.                   |
+
+### 9.2. Công thức thô (lập ngân sách RAM cho pool FPM)
+
+- Giữ chừng **~1.5–2.5 GiB** cho OS + Nginx + Redis + **ít nhất một** `queue:work` (Supervisor) + buffer.
+- Mỗi child FPM **tệ nhất** có thể gần **`memory_limit`** khi peak (import, Opcache, framework).
+- **Trần lý thuyết pool:** `pm.max_children × memory_limit` — không nên gần bằng toàn bộ RAM còn lại; để chừng **30–40%** dự phòng cho spike MySQL client, cache, cron.
+
+**Ví dụ (làm tròn thận trọng):**
+
+- **Staging ~8 GiB:** còn ~5–5.5 GiB cho “app”; với **1024M/child** → **4 children** (~4 GiB trần lý thuyết) thường **an toàn** nếu queue không ăn hết RAM cùng lúc.
+- **Hub ~16 GiB:** **6–8 children** @ 1024M có thể chấp nhận nếu không chạy thêm DB nặng trên cùng VM và đã theo dõi `free -h` khi import.
+
+Luôn: **`pm.max_spare_servers` ≤ `pm.max_children`**, **`pm.start_servers`** không vượt **`max_children`** (thường **2** hoặc bằng **min(max_children, 4)**).
+
+### 9.3. Import 17k dòng & Excel nhiều sheet — không chỉ FPM
+
+- **PhpSpreadsheet / đọc toàn bộ sheet:** RAM tăng theo số ô tải; **nhiều sheet** có thể nặng hơn một sheet 17k dòng — ưu tiên **đọc theo chunk**, **queue**, giới hạn sheet/cột nếu nghiệp vụ cho phép.
+- **Thời gian:** `max_execution_time = 300` — nếu vẫn **504**, tăng **`fastcgi_read_timeout`** (Nginx) tương ứng; hoặc chuyển hẳn sang **job nền** (không giữ FPM 5 phút).
+- **MySQL (Cloud SQL):** với batch insert lớn, xem **`max_allowed_packet`** / timeout phía DB (ngoài phạm vi FPM).
+
+### 9.4. Việc nên làm ngay trên 2 server (SSH)
+
+1. `free -h` / `uptime` — ghi lại vào **mục 1–3** của tài liệu này.
+2. Xác nhận **giá trị thực tế** FPM: `php-fpm8.3 -i 2>/dev/null | grep memory_limit` (hoặc `phpinfo()` qua site).
+3. Hub: mở **`/etc/php/8.3/fpm/conf.d/99-hub-match-aapanel82.ini`** — đảm bảo **`memory_limit` không thấp hơn** mức bạn mong muốn cho import (khuyến nghị **1024M** đồng bộ staging nếu import qua web).
+4. Nếu tăng **`pm.max_children`**: sửa **`www.conf`** (hoặc pool aaPanel), chạy **`sudo php-fpm8.3 -t`** rồi **`systemctl reload php8.3-fpm`**.
+5. Sau thay đổi: thử import mẫu (17k dòng) **một phiên** + theo dõi `htop` / `free -h` — tránh nhiều import song song cho đến khi ổn định.

@@ -41,19 +41,20 @@ Thư mục lưu **ghi chú kỹ thuật**, **flow**, **phân tích MAOLIN/B2B**,
 
 **Mục lục gộp MAOLIN (nên mở trước):** [MAOLIN_INDEX.md](MAOLIN_INDEX.md).
 
-| File                                                                                                       | Nội dung                                                                   |
-| ---------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| [WAREHOUSE_INDEX.md](WAREHOUSE_INDEX.md)                                                                   | **Mục lục Warehouse** (FLOW, UAT, audit, PM)                               |
-| [QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md](QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md)                   | Quy trình PO / DO / SO / Invoice / Kho (VI, một chỗ)                       |
-| [WAREHOUSE_MASTER_GUIDE.md](WAREHOUSE_MASTER_GUIDE.md)                                                     | Tài liệu Warehouse gộp (analysis + UI + DB)                                |
-| [WAREHOUSE_TOM_TAT_NOI_BO.md](WAREHOUSE_TOM_TAT_NOI_BO.md) §10–11                                          | Audit trước nâng cấp kho + prompt Cursor UAT (đã gộp)                      |
-| [B2B_ERP_PO_DO_INVOICE_GUIDE.md](B2B_ERP_PO_DO_INVOICE_GUIDE.md)                                           | Stub → trỏ `QUY_TRINH_…` + `SALES_PURCHASE_FLOW`                           |
-| [MAOLIN_MASTER_GUIDE.md](MAOLIN_MASTER_GUIDE.md)                                                           | **Bản gộp MAOLIN** (đọc 1 file là đủ)                                      |
-| [MAOLIN_IMPORT_MAPPING.md](MAOLIN_IMPORT_MAPPING.md)                                                       | Map cột import MAOLIN (ready to use)                                       |
-| [CUSTOM_FIELDS_GO_BO_TRUNG_COT_PO_DO_SO_CLIENT_VI.md](CUSTOM_FIELDS_GO_BO_TRUNG_COT_PO_DO_SO_CLIENT_VI.md) | CF nên gỡ (trùng cột chuẩn): PO, DO, SO, Client + link migration           |
-| [CUSTOM_FIELDS_SYSTEMWIDE_AUDIT_TABLE_VI.md](CUSTOM_FIELDS_SYSTEMWIDE_AUDIT_TABLE_VI.md)                   | **Bảng CF toàn hệ** — slug seed vs nghiệp vụ vs core + SQL xuất DB thực tế |
-| [PROJECT_MAOLIN_NEW_FILES_ANALYSIS.md](PROJECT_MAOLIN_NEW_FILES_ANALYSIS.md)                               | Phân tích chi tiết file `PROJECT MAOLIN New`                               |
-| [ERP_TECH_REVIEW_REPORT_VI.md](ERP_TECH_REVIEW_REPORT_VI.md)                                               | Tech review (VI)                                                           |
+| File                                                                                                       | Nội dung                                                                       |
+| ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| [WAREHOUSE_INDEX.md](WAREHOUSE_INDEX.md)                                                                   | **Mục lục Warehouse** (FLOW, UAT, audit, PM)                                   |
+| [AUDIT_WAREHOUSE_MODULE_VI.md](AUDIT_WAREHOUSE_MODULE_VI.md)                                               | Audit **code** module Warehouse (route, quyền, API, liên kết Purchase/Invoice) |
+| [QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md](QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md)                   | Quy trình PO / DO / SO / Invoice / Kho (VI, một chỗ)                           |
+| [WAREHOUSE_MASTER_GUIDE.md](WAREHOUSE_MASTER_GUIDE.md)                                                     | Tài liệu Warehouse gộp (analysis + UI + DB)                                    |
+| [WAREHOUSE_TOM_TAT_NOI_BO.md](WAREHOUSE_TOM_TAT_NOI_BO.md) §10–11                                          | Audit trước nâng cấp kho + prompt Cursor UAT (đã gộp)                          |
+| [B2B_ERP_PO_DO_INVOICE_GUIDE.md](B2B_ERP_PO_DO_INVOICE_GUIDE.md)                                           | Stub → trỏ `QUY_TRINH_…` + `SALES_PURCHASE_FLOW`                               |
+| [MAOLIN_MASTER_GUIDE.md](MAOLIN_MASTER_GUIDE.md)                                                           | **Bản gộp MAOLIN** (đọc 1 file là đủ)                                          |
+| [MAOLIN_IMPORT_MAPPING.md](MAOLIN_IMPORT_MAPPING.md)                                                       | Map cột import MAOLIN (ready to use)                                           |
+| [CUSTOM_FIELDS_GO_BO_TRUNG_COT_PO_DO_SO_CLIENT_VI.md](CUSTOM_FIELDS_GO_BO_TRUNG_COT_PO_DO_SO_CLIENT_VI.md) | CF nên gỡ (trùng cột chuẩn): PO, DO, SO, Client + link migration               |
+| [CUSTOM_FIELDS_SYSTEMWIDE_AUDIT_TABLE_VI.md](CUSTOM_FIELDS_SYSTEMWIDE_AUDIT_TABLE_VI.md)                   | **Bảng CF toàn hệ** — slug seed vs nghiệp vụ vs core + SQL xuất DB thực tế     |
+| [PROJECT_MAOLIN_NEW_FILES_ANALYSIS.md](PROJECT_MAOLIN_NEW_FILES_ANALYSIS.md)                               | Phân tích chi tiết file `PROJECT MAOLIN New`                                   |
+| [ERP_TECH_REVIEW_REPORT_VI.md](ERP_TECH_REVIEW_REPORT_VI.md)                                               | Tech review (VI)                                                               |
 
 ### Import / client / DB
 

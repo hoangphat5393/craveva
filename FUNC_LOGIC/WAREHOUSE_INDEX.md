@@ -13,6 +13,7 @@
 | Luồng chi tiết **chỉ module kho** (điều chỉnh, chuyển, ledger…)        | [`WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md`](WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md)                       |
 | **Runbook vận hành + kế hoạch nâng cấp (WUP)**                         | [`WAREHOUSE_RUNBOOK_AND_UPGRADE_PLAN_VI.md`](WAREHOUSE_RUNBOOK_AND_UPGRADE_PLAN_VI.md)         |
 | Kiến trúc, DB, URL, permission                                         | [`WAREHOUSE_MASTER_GUIDE.md`](WAREHOUSE_MASTER_GUIDE.md)                                       |
+| Audit **code** (route web/API, config, rủi ro API)                     | [`AUDIT_WAREHOUSE_MODULE_VI.md`](AUDIT_WAREHOUSE_MODULE_VI.md)                                 |
 | Trạng thái code, Scope A/B, **audit trước upgrade**, **prompt Cursor** | [`WAREHOUSE_TOM_TAT_NOI_BO.md`](WAREHOUSE_TOM_TAT_NOI_BO.md) §10–11                            |
 | Câu hỏi PM (VI + **EN** cuối file)                                     | [`WAREHOUSE_PM_CAU_HOI_CHOT_NGHIEP_VU_VI.md`](WAREHOUSE_PM_CAU_HOI_CHOT_NGHIEP_VU_VI.md)       |
 | Checklist UAT tay                                                      | [`WAREHOUSE_UAT_CHECKLIST_MIAOLIN.md`](WAREHOUSE_UAT_CHECKLIST_MIAOLIN.md)                     |

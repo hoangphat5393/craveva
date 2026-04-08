@@ -972,6 +972,7 @@ if (! function_exists('sidebar_user_perms')) {
                 'manage_award',
                 'view_lead_report',
                 'view_sales_report',
+                'view_audit_report',
                 'view_sales_history',
                 'view_deals',
                 'view_employee_menu',

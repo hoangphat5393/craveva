@@ -178,6 +178,7 @@ return [
         'incomeVsExpenseReport' => 'Income Vs Expense',
         'dealReport' => 'Deal Report',
         'salesReport' => 'Sales Report',
+        'auditReport' => 'Audit Report',
         'work' => 'Work',
         'knowledgebase' => 'Knowledge Base',
         'settings' => 'Settings',

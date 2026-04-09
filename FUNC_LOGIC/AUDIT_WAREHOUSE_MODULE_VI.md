@@ -7,13 +7,13 @@
 
 ## 1. Tổng quan
 
-| Hạng mục                   | Giá trị                                                                                                                                     |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Tên nwidart**            | `Warehouse` / alias `warehouse` (`module.json`)                                                                                             |
-| **Service provider**       | `WarehouseServiceProvider` — merge `config/warehouse.php`, migrations, views, singleton services, command `warehouse:reconciliation-report` |
-| **Route provider**         | `RouteServiceProvider` — web qua middleware `web`; API prefix `api` + middleware `api`                                                      |
-| **Observers trong module** | Không có thư mục `Observers` trong Warehouse — luồng tồn kho gắn qua **app** và **Purchase** (xem §6)                                       |
-| **Tests trong repo**       | `WarehouseRoutesTest`, `WarehouseUpgradeP0Test`, `WarehouseUnitConversionFlowTest`, GRN/Sales DO tests có `config('warehouse.*')`, v.v.     |
+| Hạng mục                   | Giá trị                                                                                                                                                                 |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Tên nwidart**            | `Warehouse` / alias `warehouse` (`module.json`)                                                                                                                         |
+| **Service provider**       | `WarehouseServiceProvider` — merge `config/warehouse.php`, migrations, views, singleton services, command `warehouse:reconciliation-report`                             |
+| **Route provider**         | `RouteServiceProvider` — web qua middleware `web`; API prefix `api` + middleware `api`                                                                                  |
+| **Observers trong module** | Không có thư mục `Observers` trong Warehouse — luồng tồn kho gắn qua **app** và **Purchase** (xem §6)                                                                   |
+| **Tests trong repo**       | `WarehouseRoutesTest`, `WarehouseAvailabilityApiTest`, `WarehouseUpgradeP0Test`, `WarehouseUnitConversionFlowTest`, GRN/Sales DO tests có `config('warehouse.*')`, v.v. |
 
 Tài liệu nghiệp vụ / UAT / kiến trúc tổng thể: xem [`WAREHOUSE_INDEX.md`](WAREHOUSE_INDEX.md) và [`WAREHOUSE_MASTER_GUIDE.md`](WAREHOUSE_MASTER_GUIDE.md). File này tập trung **audit code & route**.
 
@@ -49,17 +49,18 @@ Tài liệu nghiệp vụ / UAT / kiến trúc tổng thể: xem [`WAREHOUSE_IND
 
 Nhóm: `auth:sanctum`, prefix `v1`, name prefix `api.`, full path kiểu `/api/v1/...`.
 
-| Method + URI                        | Handler                                | Ghi chú                                                                                      |
-| ----------------------------------- | -------------------------------------- | -------------------------------------------------------------------------------------------- |
-| `GET api/v1/warehouse`              | Closure trả về `$request->user()`      | **Placeholder / debug** — không nghiệp vụ warehouse; nên rà soát trước khi expose production |
-| `GET api/v1/warehouse/availability` | `WarehouseAvailabilityController@show` | Query: `company_id`, `product_id`, `warehouse_ids?`                                          |
+| Method + URI                        | Handler                                | Ghi chú                                                                    |
+| ----------------------------------- | -------------------------------------- | -------------------------------------------------------------------------- |
+| `GET api/v1/warehouse/availability` | `WarehouseAvailabilityController@show` | Query: `product_id` (bắt buộc), `warehouse_ids?`, `company_id?` — xem §3.1 |
 
-### 3.1. Rủi ro bảo mật API availability
+### 3.1. API availability — đã siết (2026-04-08)
 
-`WarehouseAvailabilityController` nhận **`company_id` từ request** và gọi `WarehouseAvailabilityService::availabilityByProduct` **không** so khớp với company của user/token.
-
-- Với token Sanctum hợp lệ, lý thuyết có thể đọc tồn theo **bất kỳ** `company_id` (IDOR nếu không có lớp kiểm tra ở middleware/policy khác).
-- **Khuyến nghị:** chỉ cho phép `company_id` trùng context đăng nhập (hoặc bỏ tham số, lấy từ `user()->company_id` / multi-company hiện tại).
+- **`GET api/v1/warehouse`** (closure trả user) đã **gỡ** khỏi route.
+- `company_id` **không** tin tưởng tuyệt đối:
+    - Principal **`UserAuth`:** danh sách company từ `users.user_auth_id` (query `DB::table`, tránh scope ẩn Eloquent). Một company → bỏ qua hoặc ép khớp `company_id` request; nhiều company → **bắt buộc** `company_id` và phải thuộc danh sách; sai → **403** JSON.
+    - Principal **`User`:** dùng `company_id` bản ghi; nếu client gửi `company_id` thì phải khớp.
+- Từ chối truy cập: **`HttpResponseException` JSON 403** (tránh handler API biến `abort(403)` thành 500).
+- **Tests:** `tests/Feature/WarehouseAvailabilityApiTest.php`.
 
 ---
 
@@ -130,10 +131,9 @@ Cấu hình sai (hai inbound cùng lúc, hoặc vừa shipment vừa invoice out
 
 ## 9. Khuyến nghị / việc nên làm tiếp
 
-1. **API availability:** Ràng buộc `company_id` (hoặc bỏ) để tránh IDOR; thêm test feature với Sanctum + company khác.
-2. **GET `api/v1/warehouse`:** Xóa, bảo vệ, hoặc thay bằng endpoint có nghĩa; không để placeholder trong production nếu không chủ đích.
-3. **Document:** Giữ `WAREHOUSE_*` env đồng bộ với `config.php` trong runbook vận hành.
-4. **Test:** Giữ chạy `WarehouseRoutesTest` + các test upgrade/unit liên quan khi đổi flag warehouse hoặc observer.
+1. **Document:** Giữ `WAREHOUSE_*` env đồng bộ với `config.php` trong runbook vận hành; client API gọi availability: nếu tài khoản đa company thì luôn gửi `company_id` hợp lệ.
+2. **Test:** Giữ chạy `WarehouseRoutesTest`, `WarehouseAvailabilityApiTest` và các test upgrade/unit liên quan khi đổi flag warehouse hoặc observer.
+3. **Handler API (toàn app):** Cân nhắc chuẩn hóa JSON cho `abort(403)` / `HttpException` thay vì 500 — hiện warehouse availability đã workaround bằng `HttpResponseException`.
 
 ---
 

@@ -57,7 +57,7 @@ Kết luận: rủi ro chính là **bundle đã compile** (`public/js/app.js`) v
 1. Đăng nhập / logout.
 2. Một màn có submit không reload full page (nếu có).
 3. Bất kỳ tính năng biết dùng `window.axios` (nếu team xác nhận).
-4. Module **Warehouse** (Vite): build riêng `pnpm run build` trong module nếu deploy script có bước đó — đảm bảo không ghi đè nhầm dependency.
+4. Module **Warehouse** (Vite): từ thư mục `Modules/Warehouse`, chạy `pnpm run build` (hoặc `pnpm run dev`) nếu deploy script có bước đó — đảm bảo không ghi đè nhầm dependency so với root Mix.
 
 ### Phase E — Staging trước live
 

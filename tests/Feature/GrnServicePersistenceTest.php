@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\DeliveryOrder;
+use App\Models\Grn;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -15,13 +15,13 @@ beforeEach(function () {
     Config::set('warehouse.inbound_from_delivery_order_received', false);
     Config::set('warehouse.inbound_from_purchase_order_delivered', false);
 
-    Schema::create('delivery_orders', function ($table) {
+    Schema::create('grns', function ($table) {
         $table->id();
         $table->unsignedInteger('company_id')->nullable();
         $table->unsignedBigInteger('purchase_order_id')->nullable();
         $table->string('type')->nullable();
-        $table->string('delivery_number')->nullable();
-        $table->date('delivery_date')->nullable();
+        $table->string('grn_number')->nullable();
+        $table->date('grn_date')->nullable();
         $table->unsignedBigInteger('warehouse_id')->nullable();
         $table->string('status')->default('draft');
         $table->string('erp_shipment_reference')->nullable();
@@ -31,9 +31,9 @@ beforeEach(function () {
         $table->timestamps();
     });
 
-    Schema::create('delivery_order_items', function ($table) {
+    Schema::create('grn_items', function ($table) {
         $table->id();
-        $table->unsignedBigInteger('delivery_order_id');
+        $table->unsignedBigInteger('grn_id');
         $table->unsignedBigInteger('purchase_item_id')->nullable();
         $table->unsignedBigInteger('product_id')->nullable();
         $table->double('quantity_ordered')->default(0);
@@ -46,8 +46,8 @@ beforeEach(function () {
 });
 
 afterEach(function () {
-    Schema::dropIfExists('delivery_order_items');
-    Schema::dropIfExists('delivery_orders');
+    Schema::dropIfExists('grn_items');
+    Schema::dropIfExists('grns');
 });
 
 it('creates grn header and items via service', function () {
@@ -71,10 +71,10 @@ it('creates grn header and items via service', function () {
         'picking_rule_applied' => ['FIFO', 'FEFO'],
     ], 10);
 
-    expect($delivery)->toBeInstanceOf(DeliveryOrder::class);
+    expect($delivery)->toBeInstanceOf(Grn::class);
     expect((int) $delivery->company_id)->toBe(10);
-    expect($delivery->delivery_number)->toBe('GRN-0001');
-    expect(DB::table('delivery_order_items')->where('delivery_order_id', $delivery->id)->count())->toBe(2);
+    expect($delivery->grn_number)->toBe('GRN-0001');
+    expect(DB::table('grn_items')->where('grn_id', $delivery->id)->count())->toBe(2);
 });
 
 it('updates grn and replaces items via service', function () {
@@ -115,6 +115,6 @@ it('updates grn and replaces items via service', function () {
 
     expect((int) $updated->warehouse_id)->toBe(8);
     expect($updated->status)->toBe('inbound');
-    expect(DB::table('delivery_order_items')->where('delivery_order_id', $updated->id)->count())->toBe(2);
-    expect(DB::table('delivery_order_items')->where('delivery_order_id', $updated->id)->where('batch_number', 'OLD')->count())->toBe(0);
+    expect(DB::table('grn_items')->where('grn_id', $updated->id)->count())->toBe(2);
+    expect(DB::table('grn_items')->where('grn_id', $updated->id)->where('batch_number', 'OLD')->count())->toBe(0);
 });

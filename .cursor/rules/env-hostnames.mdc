@@ -1,0 +1,11 @@
+---
+description: Distinguish local Herd/Valet *.test hosts from real deployed servers
+alwaysApply: true
+---
+
+# Local hostname vs server
+
+- A URL like **`https://craveva-staging.test`** (or any **`*.test`**) is **local development** (e.g. Laravel Herd/Valet) on the developer machine. It is **not** a remote staging/production server **unless** the user explicitly says they mapped that hostname to a remote box.
+- Do **not** infer “this is the staging server” from the word *staging* in the folder name or hostname alone.
+- When debugging DB/schema issues, tie statements to **which** database the app uses (that machine’s `.env`), not to the word “staging” in the URL.
+- Project note (human + AI): `FUNC_LOGIC/ENV_LOCAL_VS_SERVER_HOSTNAMES_VI.md`.

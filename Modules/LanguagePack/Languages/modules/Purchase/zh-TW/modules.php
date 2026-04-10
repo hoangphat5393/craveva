@@ -251,4 +251,12 @@ return [
         'expiryDate' => '有效期限',
         'pickingRule' => '揀貨規則（FIFO / FEFO）',
     ],
+    'salesShipment' => [
+        'draft' => '草稿',
+        'confirmed' => '已確認',
+        'shipped' => '已出貨',
+        'delivered' => '已送達',
+        'cancelled' => '已取消',
+        'reverse' => '撤銷出貨',
+    ],
 ];

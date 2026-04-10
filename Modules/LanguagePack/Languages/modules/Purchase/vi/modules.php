@@ -265,7 +265,11 @@ return [
         'pickingRule' => 'Quy tắc lấy hàng (FIFO / FEFO)',
     ],
     'salesShipment' => [
-        'delivered' => 'Delivered',
-        'reverse' => 'Reverse',
+        'draft' => 'Nháp',
+        'confirmed' => 'Đã xác nhận',
+        'shipped' => 'Đã giao hàng',
+        'delivered' => 'Đã hoàn tất giao',
+        'cancelled' => 'Đã hủy',
+        'reverse' => 'Hoàn tác giao hàng',
     ],
 ];

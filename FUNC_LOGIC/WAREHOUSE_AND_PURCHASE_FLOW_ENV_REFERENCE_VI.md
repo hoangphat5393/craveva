@@ -13,15 +13,15 @@
 
 ## 1) Module Warehouse (`config/warehouse.php` ← `Modules/Warehouse/Config/config.php`)
 
-| Biến `.env`                              | Mặc định   | Ý nghĩa nghiệp vụ                                                                                                                                                         |
-| ---------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `WAREHOUSE_ALLOW_NEGATIVE_STOCK`         | `false`    | Cho phép tồn âm khi xuất/adjust (thường **false** trừ khi có quy trình đặc biệt).                                                                                         |
-| `WAREHOUSE_STRICT_UNIT_CONVERSION`       | `false`    | Bật **true** khi đã map đủ `product_unit_conversions`: thiếu mapping sẽ lỗi thay vì cộng số “nguyên đơn vị”.                                                              |
-| `WAREHOUSE_INBOUND_FROM_PO_DELIVERED`    | `true`     | **Nhập kho** khi PO chuyển trạng thái **delivered** (đường nhập canonical thường dùng).                                                                                   |
-| `WAREHOUSE_INBOUND_FROM_DO_RECEIVED`     | `false`    | **Nhập kho** khi phiếu nhận hàng mua (GRN / DO nhập) **received**. Chỉ bật khi DO là nguồn nhập chuẩn.                                                                    |
-| `WAREHOUSE_SALES_OUTBOUND_ENABLED`       | `true`     | Bật tích hợp xuất kho bán (invoice/shipment tùy mode). `false` = không tự động trừ tồn qua các service warehouse.                                                         |
-| `WAREHOUSE_SALES_OUTBOUND_MODE`          | `shipment` | **`shipment`**: trừ tồn khi **Sales DO / Sales Shipment** → **ship**. **`invoice`**: trừ kho theo hóa đơn (legacy). **Không** để hai nguồn xuất cùng lúc — chọn một mode. |
-| `WAREHOUSE_AI_ORDER_WEBHOOK_CHECK_STOCK` | `true`     | Webhook `POST /ai-order-webhook/{hash}`: kiểm tra **sellable** trước khi tạo SO. `false` nếu tích hợp chưa gửi `unit_id` / chưa sẵn dữ liệu tồn.                          |
+| Biến `.env`                              | Mặc định   | Ý nghĩa nghiệp vụ                                                                                                                                                      |
+| ---------------------------------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `WAREHOUSE_ALLOW_NEGATIVE_STOCK`         | `false`    | Cho phép tồn âm khi xuất/adjust (thường **false** trừ khi có quy trình đặc biệt).                                                                                      |
+| `WAREHOUSE_STRICT_UNIT_CONVERSION`       | `false`    | Bật **true** khi đã map đủ `product_unit_conversions`: thiếu mapping sẽ lỗi thay vì cộng số “nguyên đơn vị”.                                                           |
+| `WAREHOUSE_INBOUND_FROM_PO_DELIVERED`    | `true`     | **Nhập kho** khi PO chuyển trạng thái **delivered** (đường nhập canonical thường dùng).                                                                                |
+| `WAREHOUSE_INBOUND_FROM_DO_RECEIVED`     | `false`    | **Nhập kho** khi phiếu nhận hàng mua (GRN / DO nhập) **received**. Chỉ bật khi DO là nguồn nhập chuẩn.                                                                 |
+| `WAREHOUSE_SALES_OUTBOUND_ENABLED`       | `true`     | Bật tích hợp xuất kho bán (invoice/shipment tùy mode). `false` = không tự động trừ tồn qua các service warehouse.                                                      |
+| `WAREHOUSE_SALES_OUTBOUND_MODE`          | `shipment` | **`shipment`**: trừ tồn khi **Sales DO** (`sales_dos`) → **ship**. **`invoice`**: trừ kho theo hóa đơn (legacy). **Không** để hai nguồn xuất cùng lúc — chọn một mode. |
+| `WAREHOUSE_AI_ORDER_WEBHOOK_CHECK_STOCK` | `true`     | Webhook `POST /ai-order-webhook/{hash}`: kiểm tra **sellable** trước khi tạo SO. `false` nếu tích hợp chưa gửi `unit_id` / chưa sẵn dữ liệu tồn.                       |
 
 **Quy tắc tránh nhập đôi (PO delivered vs DO received):** chỉ **một** trong hai cờ inbound nên là `true` cho cùng một quy trình nhận hàng. Bật cả hai → `WarehouseFlowPolicyService` báo **conflict** (guard).
 
@@ -31,12 +31,12 @@
 
 Các biến này **không** thay đổi logic xuất/nhập kho cốt lõi như bảng trên, nhưng cần cho **vận hành PO / GRN / Inventory** và tên màn hình SO/DO.
 
-| Biến `.env`                                 | Mặc định    | Ý nghĩa                                                                                                                                                                 |
-| ------------------------------------------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `PURCHASE_FLOW_NAMING_MODE`                 | `compat_v2` | **`legacy`**: nhãn/route kiểu cũ (Sales Shipments / Delivery Orders). **`compat_v2`**: nhãn nghiệp vụ **Sales DO / GRN** (route kỹ thuật có thể giữ `sales-do`, `grn`). |
-| `PURCHASE_DO_GRN_CUTOVER_ENABLED`           | `false`     | Công tắc dự phòng cutover DO/GRN (framework); khi `false` giữ hành vi hiện tại.                                                                                         |
-| `PURCHASE_INVENTORY_MAX_CUSTOM_FIELD_JOINS` | `0`         | Giới hạn JOIN custom field trên DataTable Inventory (0 = tắt, tránh chậm).                                                                                              |
-| `PURCHASE_INVENTORY_NEAR_EXPIRY_DAYS`       | `30`        | Ngưỡng “gần hết HSD” (ngày) cho lọc / trạng thái near expiry.                                                                                                           |
+| Biến `.env`                                 | Mặc định    | Ý nghĩa                                                                                                                                                                                                                                                                                                      |
+| ------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `PURCHASE_FLOW_NAMING_MODE`                 | `compat_v2` | **`legacy`**: nhãn/route kiểu cũ (Sales Shipments / Delivery Orders). **`compat_v2`**: nhãn nghiệp vụ **Sales DO / GRN** (route kỹ thuật có thể giữ `sales-do`, `grn`).                                                                                                                                      |
+| `PURCHASE_DO_GRN_CUTOVER_ENABLED`           | `false`     | Ảnh hưởng **`FlowPermission`** (alias quyền legacy vs mới). **`GrnRuntime` / `SalesDoRuntime` đã pin luôn dùng bảng `grns` / `sales_dos`** — biến này **không** tắt lại bảng cũ qua runtime. Chi tiết: [`ERP_SO_PO_DO_GRN_SCHEMA_AND_LEGACY_MATRIX_VI.md`](ERP_SO_PO_DO_GRN_SCHEMA_AND_LEGACY_MATRIX_VI.md). |
+| `PURCHASE_INVENTORY_MAX_CUSTOM_FIELD_JOINS` | `0`         | Giới hạn JOIN custom field trên DataTable Inventory (0 = tắt, tránh chậm).                                                                                                                                                                                                                                   |
+| `PURCHASE_INVENTORY_NEAR_EXPIRY_DAYS`       | `30`        | Ngưỡng “gần hết HSD” (ngày) cho lọc / trạng thái near expiry.                                                                                                                                                                                                                                                |
 
 ---
 

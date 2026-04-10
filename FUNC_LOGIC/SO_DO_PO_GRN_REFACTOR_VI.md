@@ -1,7 +1,9 @@
 # Refactor SO → DO → Invoice & PO → GRN → Bill — Tài liệu gộp
 
-**Ngày gộp:** 2026-04-06
+**Ngày gộp:** 2026-04-06  
 **Nguồn:** Gộp từ `REFACTOR_SO_DO_PO_GRN_IMPLEMENTATION_PLAN_VI.md`, `REFACTOR_SO_DO_PO_GRN_TRACKER_VI.md`, `REFATOR_SO_DO_PO_GRN_DECISION_VI.md`.
+
+**Schema, luồng bán, DROP legacy, audit gộp (không thay thế file lịch sử này):** [`ERP_SO_PO_DO_GRN_SCHEMA_AND_LEGACY_MATRIX_VI.md`](ERP_SO_PO_DO_GRN_SCHEMA_AND_LEGACY_MATRIX_VI.md).
 
 ---
 

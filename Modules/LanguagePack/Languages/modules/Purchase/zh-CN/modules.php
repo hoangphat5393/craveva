@@ -232,4 +232,12 @@ return [
         'expiryDate' => '有效期至',
         'pickingRule' => '拣货规则（先进先出 / 先到期先出）',
     ],
+    'salesShipment' => [
+        'draft' => '草稿',
+        'confirmed' => '已确认',
+        'shipped' => '已发货',
+        'delivered' => '已送达',
+        'cancelled' => '已取消',
+        'reverse' => '撤销发货',
+    ],
 ];

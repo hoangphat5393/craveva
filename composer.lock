@@ -219,16 +219,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.378.0",
+            "version": "3.378.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "7a95e0665ad13c2cb8999d64439cf969c86724dd"
+                "reference": "c7a07701703e95c888a24959d5ea426c3d374240"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/7a95e0665ad13c2cb8999d64439cf969c86724dd",
-                "reference": "7a95e0665ad13c2cb8999d64439cf969c86724dd",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/c7a07701703e95c888a24959d5ea426c3d374240",
+                "reference": "c7a07701703e95c888a24959d5ea426c3d374240",
                 "shasum": ""
             },
             "require": {
@@ -310,9 +310,9 @@
             "support": {
                 "forum": "https://github.com/aws/aws-sdk-php/discussions",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.378.0"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.378.1"
             },
-            "time": "2026-04-08T18:13:19+00:00"
+            "time": "2026-04-09T18:16:50+00:00"
         },
         {
             "name": "azjezz/psl",
@@ -2145,12 +2145,12 @@
             "version": "6.x-dev",
             "source": {
                 "type": "git",
-                "url": "https://github.com/firebase/php-jwt.git",
+                "url": "https://github.com/googleapis/php-jwt.git",
                 "reference": "d1e91ecf8c598d073d0995afa8cd5c75c6e19e66"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/firebase/php-jwt/zipball/d1e91ecf8c598d073d0995afa8cd5c75c6e19e66",
+                "url": "https://api.github.com/repos/googleapis/php-jwt/zipball/d1e91ecf8c598d073d0995afa8cd5c75c6e19e66",
                 "reference": "d1e91ecf8c598d073d0995afa8cd5c75c6e19e66",
                 "shasum": ""
             },
@@ -2198,8 +2198,8 @@
                 "php"
             ],
             "support": {
-                "issues": "https://github.com/firebase/php-jwt/issues",
-                "source": "https://github.com/firebase/php-jwt/tree/v6.11.1"
+                "issues": "https://github.com/googleapis/php-jwt/issues",
+                "source": "https://github.com/googleapis/php-jwt/tree/v6.11.1"
             },
             "time": "2025-04-09T20:32:01+00:00"
         },
@@ -2638,16 +2638,16 @@
         },
         {
             "name": "google/cloud-core",
-            "version": "v1.71.2",
+            "version": "v1.72.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/googleapis/google-cloud-php-core.git",
-                "reference": "1030847fcbb6b2ae70c48379cc5dbc7603f8faac"
+                "reference": "62cf5d2243af167c75019743c5aebcf25c3905ca"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/googleapis/google-cloud-php-core/zipball/1030847fcbb6b2ae70c48379cc5dbc7603f8faac",
-                "reference": "1030847fcbb6b2ae70c48379cc5dbc7603f8faac",
+                "url": "https://api.github.com/repos/googleapis/google-cloud-php-core/zipball/62cf5d2243af167c75019743c5aebcf25c3905ca",
+                "reference": "62cf5d2243af167c75019743c5aebcf25c3905ca",
                 "shasum": ""
             },
             "require": {
@@ -2699,9 +2699,9 @@
             ],
             "description": "Google Cloud PHP shared dependency, providing functionality useful to all components.",
             "support": {
-                "source": "https://github.com/googleapis/google-cloud-php-core/tree/v1.71.2"
+                "source": "https://github.com/googleapis/google-cloud-php-core/tree/v1.72.0"
             },
-            "time": "2026-03-17T23:07:39+00:00"
+            "time": "2026-04-09T21:01:46+00:00"
         },
         {
             "name": "google/cloud-translate",
@@ -2761,16 +2761,16 @@
         },
         {
             "name": "google/common-protos",
-            "version": "4.13.0",
+            "version": "4.14.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/googleapis/common-protos-php.git",
-                "reference": "d9890769dbd7b1f240596db35ddaaec0cfe12cb4"
+                "reference": "f8e72f7b581702e7c3ee0776144f4974da172428"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/googleapis/common-protos-php/zipball/d9890769dbd7b1f240596db35ddaaec0cfe12cb4",
-                "reference": "d9890769dbd7b1f240596db35ddaaec0cfe12cb4",
+                "url": "https://api.github.com/repos/googleapis/common-protos-php/zipball/f8e72f7b581702e7c3ee0776144f4974da172428",
+                "reference": "f8e72f7b581702e7c3ee0776144f4974da172428",
                 "shasum": ""
             },
             "require": {
@@ -2814,9 +2814,9 @@
                 "google"
             ],
             "support": {
-                "source": "https://github.com/googleapis/common-protos-php/tree/v4.13.0"
+                "source": "https://github.com/googleapis/common-protos-php/tree/v4.14.0"
             },
-            "time": "2026-03-31T19:52:22+00:00"
+            "time": "2026-04-09T21:01:46+00:00"
         },
         {
             "name": "google/gax",
@@ -9907,16 +9907,16 @@
         },
         {
             "name": "phpoffice/phpspreadsheet",
-            "version": "1.30.2",
+            "version": "1.30.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPOffice/PhpSpreadsheet.git",
-                "reference": "09cdde5e2f078b9a3358dd217e2c8cb4dac84be2"
+                "reference": "d28d4827f934469e7ca4de940ab0abd0788d1e65"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/09cdde5e2f078b9a3358dd217e2c8cb4dac84be2",
-                "reference": "09cdde5e2f078b9a3358dd217e2c8cb4dac84be2",
+                "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/d28d4827f934469e7ca4de940ab0abd0788d1e65",
+                "reference": "d28d4827f934469e7ca4de940ab0abd0788d1e65",
                 "shasum": ""
             },
             "require": {
@@ -10009,9 +10009,9 @@
             ],
             "support": {
                 "issues": "https://github.com/PHPOffice/PhpSpreadsheet/issues",
-                "source": "https://github.com/PHPOffice/PhpSpreadsheet/tree/1.30.2"
+                "source": "https://github.com/PHPOffice/PhpSpreadsheet/tree/1.30.3"
             },
-            "time": "2026-01-11T05:58:24+00:00"
+            "time": "2026-04-10T03:47:16+00:00"
         },
         {
             "name": "phpoption/phpoption",
@@ -10090,16 +10090,16 @@
         },
         {
             "name": "phpseclib/phpseclib",
-            "version": "3.0.50",
+            "version": "3.0.51",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpseclib/phpseclib.git",
-                "reference": "aa6ad8321ed103dc3624fb600a25b66ebf78ec7b"
+                "reference": "d59c94077f9c9915abb51ddb52ce85188ece1748"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/aa6ad8321ed103dc3624fb600a25b66ebf78ec7b",
-                "reference": "aa6ad8321ed103dc3624fb600a25b66ebf78ec7b",
+                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/d59c94077f9c9915abb51ddb52ce85188ece1748",
+                "reference": "d59c94077f9c9915abb51ddb52ce85188ece1748",
                 "shasum": ""
             },
             "require": {
@@ -10180,7 +10180,7 @@
             ],
             "support": {
                 "issues": "https://github.com/phpseclib/phpseclib/issues",
-                "source": "https://github.com/phpseclib/phpseclib/tree/3.0.50"
+                "source": "https://github.com/phpseclib/phpseclib/tree/3.0.51"
             },
             "funding": [
                 {
@@ -10196,7 +10196,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-03-19T02:57:58+00:00"
+            "time": "2026-04-10T01:33:53+00:00"
         },
         {
             "name": "pragmarx/google2fa",

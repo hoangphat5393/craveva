@@ -33,10 +33,9 @@ class DeliveryOrderObserver
             return;
         }
 
-        app(WarehouseFlowPolicyService::class)->assertInboundSourceAllowed('delivery_order', $companyId);
-
         // Safety guard: if both inbound channels are enabled and the linked PO is already delivered,
-        // skip DO inbound posting to avoid double-counting the same receiving event.
+        // skip DO inbound posting to avoid double-counting the same receiving event. This must run
+        // before assertInboundSourceAllowed(), which forbids both flags globally for active posting.
         if (
             $flowConfig->inboundFromPurchaseOrderDelivered($companyId)
             && $deliveryOrder->purchaseOrder
@@ -49,6 +48,8 @@ class DeliveryOrderObserver
 
             return;
         }
+
+        app(WarehouseFlowPolicyService::class)->assertInboundSourceAllowed('delivery_order', $companyId);
 
         if ($deliveryOrder->inbound_stock_applied) {
             return;

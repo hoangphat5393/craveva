@@ -268,7 +268,11 @@ return [
         'pickingRule' => 'Picking rule (FIFO / FEFO)',
     ],
     'salesShipment' => [
+        'draft' => 'Draft',
+        'confirmed' => 'Confirmed',
+        'shipped' => 'Shipped',
         'delivered' => 'Delivered',
-        'reverse' => 'Reverse',
+        'cancelled' => 'Cancelled',
+        'reverse' => 'Reverse shipment',
     ],
 ];

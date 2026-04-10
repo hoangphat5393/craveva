@@ -6,6 +6,8 @@
 
 **Multi-company:** `Order`, `Invoice`, `PurchaseOrder`, `ClientDetails`, warehouse entities, and `StockMovement` use the **`HasCompany` trait**, which applies **`CompanyScope`** — queries default to `company_id = company()->id`. Always assume tenant isolation unless `withoutGlobalScopes()` is used (e.g. some stock paths).
 
+**GRN / Sales DO tables (2026-04):** Purchase receiving persists to **`grns` / `grn_items`** (`Grn`, `GrnItem`); sales outbound documents use **`sales_dos` / `sales_do_items`** (`SalesDo`, `SalesDoItem`). Tables **`delivery_orders`** / **`sales_shipments`** (và bảng dòng tương ứng) **đã DROP** trên các môi trường triển khai đã xác nhận — xem [`ERP_SO_PO_DO_GRN_SCHEMA_AND_LEGACY_MATRIX_VI.md`](ERP_SO_PO_DO_GRN_SCHEMA_AND_LEGACY_MATRIX_VI.md).
+
 ---
 
 ## 1. Overview

@@ -1,29 +1,32 @@
 # Warehouse — Mục lục tài liệu (điểm vào)
 
-**Cập nhật:** 2026-04-09  
+**Cập nhật:** 2026-04-10  
 **Mục đích:** Ít file hơn — bắt đầu từ bảng dưới.
 
 ---
 
 ## Đọc theo nhu cầu
 
-| Bạn cần…                                                                        | File                                                                                                   |
-| ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| **Chỉ cần nắm cơ bản** (+ **đa kho** tóm tắt §3): SO→DO→kho→invoice; PO→GRN→kho | **[`HUONG_DAN_KHO_BAN_CO_BAN_VA_PHAN_MO_RONG_VI.md`](HUONG_DAN_KHO_BAN_CO_BAN_VA_PHAN_MO_RONG_VI.md)** |
-| **Quy trình PO / DO / SO / Invoice / Kho (một chỗ)**                            | **[`QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md`](QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md)**         |
-| **Audit E2E SO·PO·DO/GRN·Invoice·Kho (ổn định + rủi)**                          | [`AUDIT_FLOWS_SO_PO_DO_GRN_INVOICE_WAREHOUSE_VI.md`](AUDIT_FLOWS_SO_PO_DO_GRN_INVOICE_WAREHOUSE_VI.md) |
-| **Audit riêng Sales DO** (remaining, confirm, đổi kho)                          | [`AUDIT_SALES_DO_FUNCTIONAL_VI.md`](AUDIT_SALES_DO_FUNCTIONAL_VI.md)                                   |
-| Luồng chi tiết **chỉ module kho** (điều chỉnh, chuyển, ledger…)                 | [`WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md`](WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md)                               |
-| **Runbook vận hành + kế hoạch nâng cấp (WUP)**                                  | [`WAREHOUSE_RUNBOOK_AND_UPGRADE_PLAN_VI.md`](WAREHOUSE_RUNBOOK_AND_UPGRADE_PLAN_VI.md)                 |
-| **Biến `.env` / kho + PO·GRN·Sales DO·webhook AI**                              | [`WAREHOUSE_AND_PURCHASE_FLOW_ENV_REFERENCE_VI.md`](WAREHOUSE_AND_PURCHASE_FLOW_ENV_REFERENCE_VI.md)   |
-| Kiến trúc, DB, URL, permission                                                  | [`WAREHOUSE_MASTER_GUIDE.md`](WAREHOUSE_MASTER_GUIDE.md)                                               |
-| Audit **code** (route web/API, config, rủi ro API)                              | [`AUDIT_WAREHOUSE_MODULE_VI.md`](AUDIT_WAREHOUSE_MODULE_VI.md)                                         |
-| Trạng thái code, Scope A/B, **audit trước upgrade**, **prompt Cursor**          | [`WAREHOUSE_TOM_TAT_NOI_BO.md`](WAREHOUSE_TOM_TAT_NOI_BO.md) §10–11                                    |
-| Câu hỏi PM (VI + **EN** cuối file)                                              | [`WAREHOUSE_PM_CAU_HOI_CHOT_NGHIEP_VU_VI.md`](WAREHOUSE_PM_CAU_HOI_CHOT_NGHIEP_VU_VI.md)               |
-| Checklist UAT tay                                                               | [`WAREHOUSE_UAT_CHECKLIST_MIAOLIN.md`](WAREHOUSE_UAT_CHECKLIST_MIAOLIN.md)                             |
-| Luồng code SO/Invoice/PO (English, deep)                                        | [`SALES_PURCHASE_FLOW.md`](SALES_PURCHASE_FLOW.md)                                                     |
-| Audit đa kho (lịch sử + note Scope B)                                           | [`multi_warehouse_audit_report.md`](multi_warehouse_audit_report.md)                                   |
-| Refactor **Sales DO / GRN** (quyết định + kế hoạch + tracker)                   | [`SO_DO_PO_GRN_REFACTOR_VI.md`](SO_DO_PO_GRN_REFACTOR_VI.md)                                           |
+| Bạn cần…                                                                        | File                                                                                                                                        |
+| ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Rà migration: trùng tên file, bảng Sales DO/GRN**                             | `php database/scripts/audit_migrations_registry.php` · test `MigrationRegistryAuditTest`                                                    |
+| **Phân biệt `*.test` (local Herd) vs server thật**                              | **[`ENV_LOCAL_VS_SERVER_HOSTNAMES_VI.md`](ENV_LOCAL_VS_SERVER_HOSTNAMES_VI.md)**                                                            |
+| **Master: luồng bán, schema, bảng legacy đã gỡ (3 env), audit gộp**             | **[`ERP_SO_PO_DO_GRN_SCHEMA_AND_LEGACY_MATRIX_VI.md`](ERP_SO_PO_DO_GRN_SCHEMA_AND_LEGACY_MATRIX_VI.md)**                                    |
+| **Chỉ cần nắm cơ bản** (+ **đa kho** tóm tắt §3): SO→DO→kho→invoice; PO→GRN→kho | **[`HUONG_DAN_KHO_BAN_CO_BAN_VA_PHAN_MO_RONG_VI.md`](HUONG_DAN_KHO_BAN_CO_BAN_VA_PHAN_MO_RONG_VI.md)**                                      |
+| **Quy trình PO / DO / SO / Invoice / Kho (một chỗ)**                            | **[`QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md`](QUY_TRINH_PO_DO_SO_INVOICE_WAREHOUSE_VI.md)**                                              |
+| **Audit E2E (tên file cũ)**                                                     | [`AUDIT_FLOWS_SO_PO_DO_GRN_INVOICE_WAREHOUSE_VI.md`](AUDIT_FLOWS_SO_PO_DO_GRN_INVOICE_WAREHOUSE_VI.md) → stub; nội dung trong **master** §7 |
+| **Audit riêng Sales DO** (remaining, confirm, đổi kho)                          | [`AUDIT_SALES_DO_FUNCTIONAL_VI.md`](AUDIT_SALES_DO_FUNCTIONAL_VI.md)                                                                        |
+| Luồng chi tiết **chỉ module kho** (điều chỉnh, chuyển, ledger…)                 | [`WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md`](WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md)                                                                    |
+| **Runbook vận hành + kế hoạch nâng cấp (WUP)**                                  | [`WAREHOUSE_RUNBOOK_AND_UPGRADE_PLAN_VI.md`](WAREHOUSE_RUNBOOK_AND_UPGRADE_PLAN_VI.md)                                                      |
+| **Biến `.env` / kho + PO·GRN·Sales DO·webhook AI**                              | [`WAREHOUSE_AND_PURCHASE_FLOW_ENV_REFERENCE_VI.md`](WAREHOUSE_AND_PURCHASE_FLOW_ENV_REFERENCE_VI.md)                                        |
+| Kiến trúc, DB, URL, permission                                                  | [`WAREHOUSE_MASTER_GUIDE.md`](WAREHOUSE_MASTER_GUIDE.md)                                                                                    |
+| Audit **code** (route web/API, config, rủi ro API)                              | [`AUDIT_WAREHOUSE_MODULE_VI.md`](AUDIT_WAREHOUSE_MODULE_VI.md)                                                                              |
+| Trạng thái code, Scope A/B, **audit trước upgrade**, **prompt Cursor**          | [`WAREHOUSE_TOM_TAT_NOI_BO.md`](WAREHOUSE_TOM_TAT_NOI_BO.md) §10–11                                                                         |
+| Câu hỏi PM (VI + **EN** cuối file)                                              | [`WAREHOUSE_PM_CAU_HOI_CHOT_NGHIEP_VU_VI.md`](WAREHOUSE_PM_CAU_HOI_CHOT_NGHIEP_VU_VI.md)                                                    |
+| Checklist UAT tay                                                               | [`WAREHOUSE_UAT_CHECKLIST_MIAOLIN.md`](WAREHOUSE_UAT_CHECKLIST_MIAOLIN.md)                                                                  |
+| Luồng code SO/Invoice/PO (English, deep)                                        | [`SALES_PURCHASE_FLOW.md`](SALES_PURCHASE_FLOW.md)                                                                                          |
+| Audit đa kho (lịch sử + note Scope B)                                           | [`multi_warehouse_audit_report.md`](multi_warehouse_audit_report.md)                                                                        |
+| Refactor **Sales DO / GRN** (quyết định + kế hoạch + tracker)                   | [`SO_DO_PO_GRN_REFACTOR_VI.md`](SO_DO_PO_GRN_REFACTOR_VI.md)                                                                                |
 
 **Link cũ giữ tên:** [`B2B_ERP_PO_DO_INVOICE_GUIDE.md`](B2B_ERP_PO_DO_INVOICE_GUIDE.md) → stub trỏ về **QUY*TRINH*…**.
 
@@ -36,6 +39,10 @@ Nội dung đã chuyển vào **`WAREHOUSE_TOM_TAT_NOI_BO.md`** (§10–11) ho�
 - `WAREHOUSE_PRE_UPGRADE_DEPENDENCY_AUDIT_CHECKLIST.md`
 - `WAREHOUSE_CURSOR_PROMPT_UAT_COMPLETION.md`
 - `WAREHOUSE_PM_BUSINESS_QUESTIONS_EN.md`
+
+**Gộp 2026-04-10:**
+
+- `AUDIT_FLOWS_SO_PO_DO_GRN_INVOICE_WAREHOUSE_VI.md` → nội dung vào [`ERP_SO_PO_DO_GRN_SCHEMA_AND_LEGACY_MATRIX_VI.md`](ERP_SO_PO_DO_GRN_SCHEMA_AND_LEGACY_MATRIX_VI.md) §7; file audit giữ **stub**.
 
 **Gộp 2026-04-06:**
 

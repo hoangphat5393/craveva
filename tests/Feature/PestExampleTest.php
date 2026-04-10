@@ -1,7 +1,7 @@
 <?php
 
-test('homepage works', function () {
+test('homepage root redirects guests', function () {
     $response = $this->get('/');
 
-    $response->assertStatus(200);
+    $response->assertRedirect();
 });

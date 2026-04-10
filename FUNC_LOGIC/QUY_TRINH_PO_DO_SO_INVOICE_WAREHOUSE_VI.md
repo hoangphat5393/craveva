@@ -2,7 +2,9 @@
 
 **Mục đích:** Một file **hướng dẫn nghiệp vụ + vận hành** theo thứ tự: mua (PO/DO), kho, bán (SO/Invoice), cấu hình.  
 **Đối tượng:** PM, BA, vận hành, dev mới.  
-**Cập nhật:** 2026-03-29
+**Cập nhật:** 2026-04-09
+
+**Bảng thật trên DB (GRN / Sales DO) vs legacy:** [`ERP_SO_PO_DO_GRN_SCHEMA_AND_LEGACY_MATRIX_VI.md`](ERP_SO_PO_DO_GRN_SCHEMA_AND_LEGACY_MATRIX_VI.md) — trong file này vẫn dùng từ nghiệp vụ “DO nhận hàng”, “phiếu giao bán”; **bảng ghi hiện tại** lần lượt là `grns` và `sales_dos`, không còn `delivery_orders` / `sales_shipments` cho CRUD chính.
 
 **Chi tiết kỹ thuật (class, bảng, observer):** [`SALES_PURCHASE_FLOW.md`](SALES_PURCHASE_FLOW.md)  
 **Chỉ riêng module kho (điều chỉnh, chuyển, ledger):** [`WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md`](WAREHOUSE_FLOW_VA_NGHIEP_VU_VI.md)  
@@ -32,9 +34,9 @@
     - Nếu `WAREHOUSE_INBOUND_FROM_PO_DELIVERED=true` và module Warehouse bật → hệ thống ghi **nhập kho** qua `StockMovementService` (tham chiếu PO).
 3. **PurchaseBill** (hóa đơn NCC): cập nhật trạng thái thanh toán/billed — **không** tự tạo movement kho trong observer bill.
 
-### 2.2 Delivery Order (DO) — **nhận hàng inbound** (tuỳ cấu hình)
+### 2.2 Phiếu nhận hàng mua (GRN / DO inbound — bảng `grns`)
 
-- Trong Craveva, DO thường dùng cho **Purchase**: DO kiểu **inbound**, khi **received** có thể ghi nhập lô nếu `WAREHOUSE_INBOUND_FROM_DO_RECEIVED=true`.
+- Trong Craveva, chứng từ nhận hàng mua gắn PO: nghiệp vụ thường gọi **GRN** hoặc “DO nhập”; **bảng ghi hiện tại** là **`grns` / `grn_items`** (không còn là nguồn ghi chính trên `delivery_orders`). Khi trạng thái **received** có thể ghi nhập lô nếu `WAREHOUSE_INBOUND_FROM_DO_RECEIVED=true`.
 - **Quan trọng:** Trên cùng môi trường chỉ nên coi **một** nguồn nhập “chuẩn” cho cùng một lần nhận thật: **PO delivered** **hoặc** **DO received** — bật cả hai dễ **nhập đôi** cùng một lô.
 
 ### 2.3 Purchase Inventory (phiếu tồn / sync tuyệt đối)
@@ -59,9 +61,9 @@
 2. **Lưu ý sản phẩm:** Với một SO, hệ thống **mặc định** coi **tối đa một** `Invoice` gắn `order_id` (1 SO → 1 HĐ kiểu “Cách 1”). Chi tiết: `SALES_PURCHASE_FLOW.md` §2.1.
 3. **Trừ tồn:** Trạng thái Order **không** tự gọi xuất kho; phụ thuộc mode outbound ở bước sau.
 
-### 4.2 Sales DO (technical entity hiện tại: `Sales Shipment`)
+### 4.2 Sales DO (entity: `SalesDo` — bảng `sales_dos`)
 
-1. Tạo một hoặc nhiều `Sales DO` (technical: `Sales Shipment`) từ cùng một SO (partial shipment).
+1. Tạo một hoặc nhiều **Sales DO** từ cùng một SO (partial shipment). Route/controller có thể vẫn mang tên “shipment”; dữ liệu lưu ở **`sales_dos` / `sales_do_items`** (xem ma trận legacy).
 2. Chuyển trạng thái: `draft -> confirmed -> shipped -> delivered` (hoặc `cancelled`).
 3. Khi mode outbound là `shipment`, lúc `shipped` hệ thống post outbound qua `SalesShipmentStockService`.
 4. Có action `reverse outbound` để hoàn kho và đưa shipment về `confirmed` khi cần xử lý sai lệch vận hành.
@@ -83,7 +85,7 @@
 
 Quy tắc tránh double deduction:
 
-- Mode `shipment`: chỉ Sales DO/Sales Shipment trừ tồn, invoice không trừ thêm.
+- Mode `shipment`: chỉ **Sales DO** (`sales_dos` → ship) trừ tồn, invoice không trừ thêm.
 - Mode `invoice`: giữ legacy invoice outbound.
 
 **Tắt flag** = không tự tạo outbound từ shipment/invoice (tồn chỉ thay đổi bởi PO/DO/inventory/chuyển kho/điều chỉnh).

@@ -367,6 +367,7 @@ return [
     'manage_contract_setting' => 'Quản lý cài đặt hợp đồng',
     'manage_custom_link_setting' => 'Quản lý cài đặt liên kết tùy chỉnh',
     'view_sales_report' => 'Xem báo cáo bán hàng',
+    'view_audit_report' => 'Xem báo cáo kiểm tra (hoạt động người dùng)',
     'view_webhooks_logs' => 'Xem nhật ký Webhooks',
     'add_letter' => 'Thêm thư',
     'edit_letter' => 'Chỉnh sửa thư',
